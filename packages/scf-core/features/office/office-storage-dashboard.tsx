@@ -10,7 +10,6 @@ import {
   Button,
   Card,
   Input,
-  Paragraph,
   Progress,
   Spinner,
   Table,
@@ -159,7 +158,6 @@ export function OfficeStorageDashboard() {
                 size="sm"
               >
                 <Progress.Indicator
-                  animation="bouncy"
                   style={{
                     backgroundColor:
                       percent > 100 ? theme === "light" ? colors.error[700] : colors.error[300] : theme === "light" ? colors.green[700] : colors.green[300],
@@ -241,9 +239,9 @@ export function OfficeStorageDashboard() {
       <Row justify="space-between" align="center">
         <Stack>
           <Text>Storage Analytics</Text>
-          <Paragraph style={{ color: colors.text[theme].secondary }}>
+          <Text style={{ color: colors.text[theme].secondary }}>
             Monitor how workers consume storage across work logs, portfolios, and certifications.
-          </Paragraph>
+          </Text>
         </Stack>
         <Button
           size="sm"
@@ -309,7 +307,6 @@ export function OfficeStorageDashboard() {
                       size="sm"
                     >
                       <Progress.Indicator
-                        animation="bouncy"
                         style={{ backgroundColor: theme === "light" ? colors.blue[700] : colors.blue[300] }}
                       />
                     </Progress>

@@ -340,12 +340,12 @@ vi.mock('@scaffald/ui', () => {
   const Checkbox = ({
     accessibilityLabel,
     checked,
-    onCheckedChange,
+    onChange,
     children,
   }: {
     accessibilityLabel?: string
     checked?: boolean
-    onCheckedChange: (checked: boolean) => void
+    onChange: (checked: boolean) => void
     children?: ReactNode
   }) => (
     <label>
@@ -353,28 +353,68 @@ vi.mock('@scaffald/ui', () => {
         type="checkbox"
         aria-label={accessibilityLabel}
         checked={Boolean(checked)}
-        onChange={() => onCheckedChange(!checked)}
+        onChange={() => onChange(!checked)}
       />
       <View>{children}</View>
     </label>
   )
-  Checkbox.Indicator = ({ children }: { children?: ReactNode }) => <View>{children}</View>
 
-  const AnimatePresence = ({ children }: { children?: ReactNode }) => <>{children}</>
+  const Toggle = ({
+    checked,
+    onChange,
+    accessibilityLabel,
+  }: {
+    checked: boolean
+    onChange: (checked: boolean) => void
+    accessibilityLabel?: string
+  }) => (
+    <button
+      type="button"
+      role="switch"
+      aria-label={accessibilityLabel}
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+    >
+      {checked ? 'On' : 'Off'}
+    </button>
+  )
+
   const Spinner = () => <Text>Spinner</Text>
 
   return {
     Stack: createView(),
     Row: createView(),
+    Card: createView(),
     Text: TextComponent,
     Button,
     Input,
     H4: ({ children }: { children?: ReactNode }) => <Text>{children}</Text>,
     Spinner,
-    AnimatePresence,
     Slider,
     Checkbox,
+    Toggle,
     Label: ({ children }: { children?: ReactNode }) => <Text>{children}</Text>,
+    ConfirmationModal: () => null,
+    DashboardWidget: ({ children }: { children?: ReactNode }) => <View>{children}</View>,
+    SkeletonForm: ({ fields }: { fields: number }) => <View><Text>Loading {fields} fields</Text></View>,
+    LocationListInput: ({
+      value = [],
+      onChange: onChangeProp,
+    }: {
+      value?: string[]
+      onChange: (next: string[]) => void
+    }) => (
+      <View>
+        <Text data-testid="location-count">Locations: {value.length}</Text>
+        <button
+          type="button"
+          aria-label="Add location"
+          onClick={() => onChangeProp([...value, `Location ${value.length + 1}`])}
+        >
+          <Text>Add Location</Text>
+        </button>
+      </View>
+    ),
   }
 })
 

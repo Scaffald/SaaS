@@ -11,7 +11,7 @@ import {
 } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
-import { type GetThemeValueForKey, Text, Row, Stack } from '@scaffald/ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 type JobListOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
@@ -100,29 +100,31 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
             />
             <Text
               style={{
+                flex: 1,
                 color: isSelected ? theme === "light" ? colors.yellow[700] : colors.yellow[300] : colors.text[theme].primary,
               }}
-              flex={1}
             >
               {job.title}
             </Text>
           </Row>
           {job.organization && (
-            <Row align="center" gap={6} marginLeft="$7">
-              <Building2 size="md" style={{ color: colors.text[theme].secondary }} />
+            <Row align="center" gap={6} style={{ marginLeft: 28 }}>
+              <Building2 size={20} color={colors.text[theme].secondary} />
               <Text style={{ color: colors.text[theme].secondary }}>{job.organization.name}</Text>
             </Row>
           )}
         </Stack>
         <Row
-          paddingHorizontal={8}
-          paddingVertical={4}
-          borderRadius={12}
-          backgroundColor={statusColors.backgroundColor as GetThemeValueForKey<'backgroundColor'>}
-          borderWidth={1}
-          borderColor={statusColors.border as GetThemeValueForKey<'borderColor'>}
+          style={{
+            paddingHorizontal: 8,
+            paddingVertical: 4,
+            borderRadius: 12,
+            backgroundColor: statusColors.backgroundColor,
+            borderWidth: 1,
+            borderColor: statusColors.border,
+          }}
         >
-          <Text color={statusColors.text as GetThemeValueForKey<'color'>}>
+          <Text style={{ color: statusColors.text }}>
             {getStatusLabel(job.status)}
           </Text>
         </Row>
@@ -132,20 +134,20 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       <Row gap={12} wrap>
         {applicationCount !== undefined && (
           <MetricItem
-            iconStart={<Users size="md" />}
+            icon={<Users size={20} />}
             label="Applications"
             value={applicationCount.toString()}
           />
         )}
         {teamName && (
-          <MetricItem iconStart={<Briefcase size="md" />} label="Team" value={teamName} />
+          <MetricItem icon={<Briefcase size={20} />} label="Team" value={teamName} />
         )}
         {postedDate && (
-          <MetricItem iconStart={<Calendar size="md" />} label="Posted" value={postedDate} />
+          <MetricItem icon={<Calendar size={20} />} label="Posted" value={postedDate} />
         )}
         {job.created_by && (
           <MetricItem
-            iconStart={<User size="md" />}
+            icon={<User size={20} />}
             label="Created by"
             value={job.created_by.display_name || job.created_by.username || 'Unknown'}
           />
@@ -156,26 +158,32 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       <Row gap={12} wrap>
         {job.location && (
           <Row align="center" gap={6}>
-            <MapPin size="md" style={{ color: colors.text[theme].secondary }} />
+            <MapPin size={20} color={colors.text[theme].secondary} />
             <Text style={{ color: colors.text[theme].secondary }}>{job.location}</Text>
           </Row>
         )}
         {job.remote_option && (
           <Text
-            style={{ color: colors.text[theme].secondary, backgroundColor: colors.bg[theme].muted }}
-            paddingHorizontal={8}
-            paddingVertical={4}
-            borderRadius={8}
+            style={{
+              color: colors.text[theme].secondary,
+              backgroundColor: colors.bg[theme].muted,
+              paddingHorizontal: 8,
+              paddingVertical: 4,
+              borderRadius: 8,
+            }}
           >
             {job.remote_option.replace('_', ' ').toUpperCase()}
           </Text>
         )}
         {job.employment_type && (
           <Text
-            style={{ color: colors.text[theme].secondary, backgroundColor: colors.bg[theme].muted }}
-            paddingHorizontal={8}
-            paddingVertical={4}
-            borderRadius={8}
+            style={{
+              color: colors.text[theme].secondary,
+              backgroundColor: colors.bg[theme].muted,
+              paddingHorizontal: 8,
+              paddingVertical: 4,
+              borderRadius: 8,
+            }}
           >
             {job.employment_type.replace('_', ' ').toUpperCase()}
           </Text>
@@ -185,7 +193,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       {/* Pay Range */}
       {payRange && (
         <Row align="center" gap={6}>
-          <DollarSign size="md" style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }} />
+          <DollarSign size={20} color={theme === "light" ? colors.green[700] : colors.green[300]} />
           <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>{payRange}</Text>
         </Row>
       )}
@@ -193,7 +201,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       {/* Footer: Created date if not posted */}
       {!postedDate && createdDate && (
         <Row align="center" gap={6}>
-          <Calendar size="sm" style={{ color: colors.text[theme].secondary }} />
+          <Calendar size={16} color={colors.text[theme].secondary} />
           <Text style={{ color: colors.text[theme].secondary }}>Created {createdDate}</Text>
         </Row>
       )}
@@ -216,7 +224,7 @@ function MetricItem({ icon, label, value }: { icon: ReactNode; label: string; va
     >
       {icon}
       <Stack gap={0}>
-        <Text style={{ color: colors.text[theme].secondary }} textTransform="uppercase">
+        <Text style={{ color: colors.text[theme].secondary, textTransform: 'uppercase' }}>
           {label}
         </Text>
         <Text style={{ color: colors.text[theme].secondary }}>{value}</Text>

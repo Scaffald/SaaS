@@ -13,17 +13,18 @@ import {
 } from '@scf/core/utils/profile-employment-sdk-hooks'
 import {
   Button,
+  Card,
   Checkbox,
   DashboardWidget,
   LocationListInput,
-  ToggleCard,
+  Toggle,
 } from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, Car, Shield } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useEffect, useState } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { AnimatePresence, Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import {
   AVAILABILITY_OPTIONS,
   DRIVERS_LICENSE_OPTIONS,
@@ -190,7 +191,7 @@ export function EmploymentSection({
             render={({ field }) => (
               <Row gap={12} align="center">
                 <Input
-                  flex={1}
+                  style={{ flex: 1, opacity: readOnly ? 0.7 : 1 }}
                   placeholder="Enter your hourly rate"
                   value={field.value?.toString() || '0'}
                   onChangeText={(text) => {
@@ -198,14 +199,12 @@ export function EmploymentSection({
                     field.onChange(Number.isNaN(numValue) ? 0 : numValue)
                   }}
                   keyboardType="numeric"
-                  borderColor={errors.hourly_rate ? '$red8' : '$borderColor'}
                   editable={!readOnly}
-                  opacity={readOnly ? 0.7 : 1}
                 />
               </Row>
             )}
           />
-          {errors.hourly_rate && <Text color="$red10">{errors.hourly_rate.message}</Text>}
+          {errors.hourly_rate && <Text style={{ color: '#ef4444' }}>{errors.hourly_rate.message}</Text>}
         </Stack>
 
         {/* Preferred Work Locations */}
@@ -289,24 +288,33 @@ export function EmploymentSection({
               )
 
               return (
-                <ToggleCard
-                  iconStart={<Car size="sm" color="$gray11" />}
-                  title="I have a valid driver's license"
-                  description="Class D (standard license) is automatically selected. Add any additional classes below."
-                  checked={isExpanded}
-                  onChange={(checked: boolean) => {
-                    if (readOnly) return
-                    setIsExpanded(checked)
-                    if (checked) {
-                      // Auto-select Class D when toggle is checked
-                      field.onChange(['Class D'])
-                    } else {
-                      field.onChange([])
-                    }
-                  }}
-                  disabled={readOnly}
-                  expandedContent={
-                    <Stack gap={8} paddingTop={8}>
+                <Card variant="outlined" padding="md">
+                  <Row gap={12} align="center">
+                    <Car size={20} color="#414e62" />
+                    <Stack gap={4} style={{ flex: 1 }}>
+                      <Text>I have a valid driver's license</Text>
+                      <Text style={{ color: '#414e62' }}>
+                        Class D (standard license) is automatically selected. Add any additional classes below.
+                      </Text>
+                    </Stack>
+                    <Toggle
+                      checked={isExpanded}
+                      onChange={(checked: boolean) => {
+                        if (readOnly) return
+                        setIsExpanded(checked)
+                        if (checked) {
+                          field.onChange(['Class D'])
+                        } else {
+                          field.onChange([])
+                        }
+                      }}
+                      disabled={readOnly}
+                      size="sm"
+                      color="primary"
+                    />
+                  </Row>
+                  {isExpanded && (
+                    <Stack gap={8} style={{ paddingTop: 8 }}>
                       {DRIVERS_LICENSE_OPTIONS.map((license) => (
                         <Row key={license} gap={12} align="center">
                           <Checkbox
@@ -322,7 +330,7 @@ export function EmploymentSection({
                               }
                             }}
                             disabled={readOnly}
-                            aria-label={
+                            accessibilityLabel={
                               license === 'Class D'
                                 ? "Class D (standard driver's license)"
                                 : `Class ${license}`
@@ -348,8 +356,8 @@ export function EmploymentSection({
                         </Row>
                       ))}
                     </Stack>
-                  }
-                />
+                  )}
+                </Card>
               )
             }}
           />
@@ -367,21 +375,29 @@ export function EmploymentSection({
               )
 
               return (
-                <ToggleCard
-                  iconStart={<Shield size="sm" color="$gray11" />}
-                  title="Former/Current Military"
-                  description="Select all that apply"
-                  checked={isExpanded}
-                  onChange={(checked: boolean) => {
-                    if (readOnly) return
-                    setIsExpanded(checked)
-                    if (!checked) {
-                      field.onChange([])
-                    }
-                  }}
-                  disabled={readOnly}
-                  expandedContent={
-                    <Stack gap={8} paddingTop={8}>
+                <Card variant="outlined" padding="md">
+                  <Row gap={12} align="center">
+                    <Shield size={20} color="#414e62" />
+                    <Stack gap={4} style={{ flex: 1 }}>
+                      <Text>Former/Current Military</Text>
+                      <Text style={{ color: '#414e62' }}>Select all that apply</Text>
+                    </Stack>
+                    <Toggle
+                      checked={isExpanded}
+                      onChange={(checked: boolean) => {
+                        if (readOnly) return
+                        setIsExpanded(checked)
+                        if (!checked) {
+                          field.onChange([])
+                        }
+                      }}
+                      disabled={readOnly}
+                      size="sm"
+                      color="primary"
+                    />
+                  </Row>
+                  {isExpanded && (
+                    <Stack gap={8} style={{ paddingTop: 8 }}>
                       {MILITARY_STATUS_OPTIONS.map((status) => (
                         <Row key={status} gap={12} align="center">
                           <Checkbox
@@ -396,14 +412,14 @@ export function EmploymentSection({
                               }
                             }}
                             disabled={readOnly}
-                            aria-label={status}
+                            accessibilityLabel={status}
                           />
                           <Text>{status}</Text>
                         </Row>
                       ))}
                     </Stack>
-                  }
-                />
+                  )}
+                </Card>
               )
             }}
           />
@@ -421,21 +437,29 @@ export function EmploymentSection({
               )
 
               return (
-                <ToggleCard
-                  iconStart={<Calendar size="sm" color="$gray11" />}
-                  title="I'm available for work"
-                  description="Select all that apply"
-                  checked={isExpanded}
-                  onChange={(checked: boolean) => {
-                    if (readOnly) return
-                    setIsExpanded(checked)
-                    if (!checked) {
-                      field.onChange([])
-                    }
-                  }}
-                  disabled={readOnly}
-                  expandedContent={
-                    <Stack gap={8} paddingTop={8}>
+                <Card variant="outlined" padding="md">
+                  <Row gap={12} align="center">
+                    <Calendar size={20} color="#414e62" />
+                    <Stack gap={4} style={{ flex: 1 }}>
+                      <Text>I'm available for work</Text>
+                      <Text style={{ color: '#414e62' }}>Select all that apply</Text>
+                    </Stack>
+                    <Toggle
+                      checked={isExpanded}
+                      onChange={(checked: boolean) => {
+                        if (readOnly) return
+                        setIsExpanded(checked)
+                        if (!checked) {
+                          field.onChange([])
+                        }
+                      }}
+                      disabled={readOnly}
+                      size="sm"
+                      color="primary"
+                    />
+                  </Row>
+                  {isExpanded && (
+                    <Stack gap={8} style={{ paddingTop: 8 }}>
                       {AVAILABILITY_OPTIONS.map((option) => (
                         <Row key={option} gap={12} align="center">
                           <Checkbox
@@ -450,14 +474,14 @@ export function EmploymentSection({
                               }
                             }}
                             disabled={readOnly}
-                            aria-label={option}
+                            accessibilityLabel={option}
                           />
                           <Text>{option}</Text>
                         </Row>
                       ))}
                     </Stack>
-                  }
-                />
+                  )}
+                </Card>
               )
             }}
           />
@@ -470,19 +494,14 @@ export function EmploymentSection({
               variant="filled" color="primary"
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
-              opacity={!isDirty || isLoading ? 0.5 : 1}
-              space={isLoading ? '$2' : 0}
+              style={{ opacity: !isDirty || isLoading ? 0.5 : 1 }}
             >
-              <AnimatePresence>
-                {isLoading && (
-                  <Spinner
-                    animation="bouncy"
-                    enterStyle={{ scale: 0 }}
-                    exitStyle={{ scale: 0 }}
-                  />
-                )}
-              </AnimatePresence>
-              {isLoading ? 'Saving...' : 'Save Changes'}
+              {isLoading ? (
+                <Row gap={8} align="center">
+                  <Spinner size="sm" />
+                  <Text>Saving...</Text>
+                </Row>
+              ) : 'Save Changes'}
             </Button>
           </Row>
         )}

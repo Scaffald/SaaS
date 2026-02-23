@@ -121,7 +121,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
       {
         label: categoryLabels[activeCategory],
         data: chartData,
-        fillColor: '$blue3',
+        fillColor: '#bfdbfe',
         strokeColor: '#1B6B93',
         strokeWidth: 2,
         fillOpacity: 0.3,
@@ -141,8 +141,8 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text color="$red10">Failed to load skills</Text>
-          <Text color="$gray11">{error.message}</Text>
+          <Text style={{ color: '#ef4444' }}>Failed to load skills</Text>
+          <Text style={{ color: '#414e62' }}>{error.message}</Text>
           <Button
             variant="filled" color="primary"
             size="sm"
@@ -227,8 +227,8 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
             <LoadingState message="Loading skills..." />
           ) : error ? (
             <Stack gap={16} align="center" paddingVertical={32}>
-              <Text color="$red10">Failed to load skills</Text>
-              <Text color="$gray11">{(error as unknown as Record<string, unknown>).message}</Text>
+              <Text style={{ color: '#ef4444' }}>Failed to load skills</Text>
+              <Text style={{ color: '#414e62' }}>{(error as unknown as Record<string, unknown>).message}</Text>
               <Button
                 variant="filled" color="primary"
                 size="sm"
@@ -260,7 +260,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               {sortedTaxonomies.slice(0, showCompact ? 1 : undefined).map((taxonomy) => (
                 <Stack key={taxonomy} gap={8}>
                   {/* Taxonomy Header */}
-                  <Text color="$gray11" textTransform="uppercase">
+                  <Text style={{ color: '#414e62', textTransform: 'uppercase' }}>
                     {taxonomy === 'onet' ? 'O*NET' : taxonomy === 'csi' ? 'CSI' : taxonomy}
                   </Text>
 
@@ -271,27 +271,29 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                       .map((skill: EnrichedUserSkill) => (
                         <Row
                           key={skill.id}
-                          backgroundColor="$blue2"
                           paddingHorizontal={12}
                           paddingVertical={8}
                           borderRadius={12}
-                          borderWidth={1}
-                          borderColor={skill.verified ? '$blue7' : '$blue5'}
                           gap={8}
                           align="center"
+                          style={{
+                            backgroundColor: '#eff6ff',
+                            borderWidth: 1,
+                            borderColor: skill.verified ? '#3b82f6' : '#bfdbfe',
+                          }}
                         >
-                          {skill.verified && <CheckCircle size="md" color="$blue11" />}
+                          {skill.verified && <CheckCircle size={16} color="#1d4ed8" />}
                           <Stack gap={2}>
-                            <Text color="$blue11">{skill.name}</Text>
+                            <Text style={{ color: '#1d4ed8' }}>{skill.name}</Text>
                             {!showCompact && (
                               <Row gap={8}>
                                 {skill.proficiency > 0 && (
-                                  <Text color="$blue10">
+                                  <Text style={{ color: '#2563eb' }}>
                                     {getProficiencyLabel(skill.proficiency)}
                                   </Text>
                                 )}
                                 {skill.yearsExperience !== null && skill.yearsExperience > 0 && (
-                                  <Text color="$blue10">• {skill.yearsExperience}y</Text>
+                                  <Text style={{ color: '#2563eb' }}>• {skill.yearsExperience}y</Text>
                                 )}
                               </Row>
                             )}
@@ -305,10 +307,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               {/* Show More link for compact view */}
               {showCompact && skills.length > 5 && (
                 <Text
-                  color="$blue7"
-                  cursor="pointer"
-                  hoverStyle={{ color: '$blue8' }}
-                  pressStyle={{ color: '$blue9' }}
+                  style={{ color: '#3b82f6' }}
                   onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                 >
                   View all {skills.length} skills →
@@ -323,8 +322,8 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
             <LoadingState message="Loading soft skills..." />
           ) : softSkillsError ? (
             <Stack gap={16} align="center" paddingVertical={32}>
-              <Text color="$red10">Failed to load soft skills</Text>
-              <Text color="$gray11">{softSkillsError.message}</Text>
+              <Text style={{ color: '#ef4444' }}>Failed to load soft skills</Text>
+              <Text style={{ color: '#414e62' }}>{softSkillsError.message}</Text>
               <Button
                 variant="filled" color="primary"
                 size="sm"
@@ -363,7 +362,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               {/* Skills Chart for Active Category */}
               {categoryChartData && categoryChartData.length > 0 && (
                 <Stack gap={8} align="center">
-                  <Text color="$gray11">{categoryLabels[activeCategory]} Skills</Text>
+                  <Text style={{ color: '#414e62' }}>{categoryLabels[activeCategory]} Skills</Text>
                   <SkillsChart
                     datasets={categoryChartData}
                     height={variant === 'compact' ? 200 : 300}
@@ -371,7 +370,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                     maxValue={100}
                     isAnimated={true}
                   />
-                  <Text color="$gray11" style={{ textAlign: 'center' }}>
+                  <Text style={{ color: '#414e62', textAlign: 'center' }}>
                     Individual skill ratings in {categoryLabels[activeCategory]}
                   </Text>
                 </Stack>
@@ -417,14 +416,16 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
           {/* View Toggle */}
           <Row gap={8} justify="center">
             <Button
-              variant={historyView === 'timeline' ? 'primary' : 'outline'}
+              variant={historyView === 'timeline' ? 'filled' : 'outline'}
+              color={historyView === 'timeline' ? 'primary' : undefined}
               size="sm"
               onPress={() => setHistoryView('timeline')}
             >
               Timeline
             </Button>
             <Button
-              variant={historyView === 'progression' ? 'primary' : 'outline'}
+              variant={historyView === 'progression' ? 'filled' : 'outline'}
+              color={historyView === 'progression' ? 'primary' : undefined}
               size="sm"
               onPress={() => setHistoryView('progression')}
             >

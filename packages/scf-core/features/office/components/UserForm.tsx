@@ -106,7 +106,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
   }
 
   return (
-    <ScrollView flex={1} style={{ backgroundColor: colors.bg[theme].default }}>
+    <ScrollView style={{ flex: 1, backgroundColor: colors.bg[theme].default }}>
       <Stack padding="md" gap={16}>
         <Row align="center" justify="space-between">
           <Text>Edit User</Text>
@@ -118,7 +118,6 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
               data-testid="save-button"
               onPress={handleSubmit}
               disabled={updateUserMutation.isPending}
-              themeInverse
             >
               {updateUserMutation.isPending ? 'Saving...' : 'Save Changes'}
             </Button>
@@ -128,7 +127,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
         {/* Profile Information */}
         <Card padding="md">
           <Stack gap={12}>
-            <Text marginBottom={8}>Profile Information</Text>
+            <Text style={{ marginBottom: 8 }}>Profile Information</Text>
 
             <Stack gap={8}>
               <Text>First Name</Text>
@@ -176,7 +175,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
         {/* Private Information */}
         <Card padding="md">
           <Stack gap={12}>
-            <Text marginBottom={8}>Private Information</Text>
+            <Text style={{ marginBottom: 8 }}>Private Information</Text>
 
             <Stack gap={8}>
               <Text>Email</Text>
@@ -226,7 +225,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
         {/* Employment Information */}
         <Card padding="md">
           <Stack gap={12}>
-            <Text marginBottom={8}>Employment Information</Text>
+            <Text style={{ marginBottom: 8 }}>Employment Information</Text>
 
             <Stack gap={8}>
               <Text>Employment Status</Text>
@@ -296,7 +295,6 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
             flex={1}
             onPress={handleSubmit}
             disabled={updateUserMutation.isPending}
-            themeInverse
           >
             {updateUserMutation.isPending ? 'Saving...' : 'Save Changes'}
           </Button>

@@ -122,7 +122,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
           {loadingGeneral ? (
             <Stack gap={16} align="center" paddingVertical={32}>
               <Spinner size="lg" />
-              <Text color="$gray11">Loading profile...</Text>
+              <Text style={{ color: '#414e62' }}>Loading profile...</Text>
             </Stack>
           ) : generalInfo ? (
             <Stack gap={16}>
@@ -131,20 +131,17 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
 
               {/* Avatar & Name Section */}
               <Stack gap={12} align="center">
-                <Avatar size={32}>
-                  <Avatar.Image
-                    source={{
-                      uri: getAvatarUrl(generalInfo.avatar_path) || generalInfo.avatar_url || '',
-                    }}
-                  />
-                  <Avatar.Fallback backgroundColor="$color6" />
-                </Avatar>
+                <Avatar
+                  size={32}
+                  src={getAvatarUrl(generalInfo.avatar_path) || generalInfo.avatar_url || ''}
+                  initials={displayName?.charAt(0) || '?'}
+                />
 
                 <Stack gap={4} align="center">
                   <Text>{displayName}</Text>
                   {generalInfo.headline && (
                     <Stack align="center">
-                      <Text color="$gray11">{generalInfo.headline}</Text>
+                      <Text style={{ color: '#414e62' }}>{generalInfo.headline}</Text>
                     </Stack>
                   )}
                 </Stack>
@@ -152,24 +149,19 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                 {/* Open to Work Badge */}
                 {generalInfo.open_to_work && (
                   <Row
-                    backgroundColor="$green3"
-                    paddingHorizontal={12}
-                    paddingVertical={6}
-                    borderRadius="$10"
-                    borderWidth={1}
-                    borderColor="$green7"
+                    style={{ backgroundColor: '#f0fdf4', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: '#bbf7d0' }}
                   >
-                    <Text color="$green11">Open to Work</Text>
+                    <Text style={{ color: '#16a34a' }}>Open to Work</Text>
                   </Row>
                 )}
               </Stack>
 
               {/* Current Role */}
               {currentRole && (
-                <Stack gap={4} backgroundColor="$color2" padding="sm" borderRadius={12}>
-                  <Text color="$gray11">Current Role</Text>
-                  <Text>{currentRole.job_title}</Text>
-                  <Text color="$gray11">{currentRole.company_name}</Text>
+                <Stack gap={4} style={{ backgroundColor: '#f8fafc', padding: 8, borderRadius: 12 }}>
+                  <Text style={{ color: '#414e62' }}>Current Role</Text>
+                  <Text>{currentRole.job_title as string}</Text>
+                  <Text style={{ color: '#414e62' }}>{currentRole.company_name as string}</Text>
                 </Stack>
               )}
 
@@ -180,12 +172,10 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                 {/* Completion Bar */}
                 <Stack gap={8}>
                   <Row justify="space-between">
-                    <Text color="$gray11">Completion</Text>
+                    <Text style={{ color: '#414e62' }}>Completion</Text>
                     <Text>{completion}%</Text>
                   </Row>
-                  <ProgressBar value={completion} max={100}>
-                    <ProgressBar.Indicator animation="bouncy" backgroundColor="$green9" />
-                  </ProgressBar>
+                  <ProgressBar value={completion} color="success" />
                 </Stack>
 
                 {/* Stats Row */}
@@ -194,39 +184,33 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                     gap={4}
                     flex={1}
                     minWidth={80}
-                    backgroundColor="$color2"
-                    padding="sm"
-                    borderRadius={12}
+                    style={{ backgroundColor: '#f8fafc', padding: 8, borderRadius: 12 }}
                     align="center"
                   >
-                    <Text color="$blue10">{skills?.length || 0}</Text>
-                    <Text color="$gray11">Skills</Text>
+                    <Text style={{ color: '#2563eb' }}>{skills?.length || 0}</Text>
+                    <Text style={{ color: '#414e62' }}>Skills</Text>
                   </Stack>
 
                   <Stack
                     gap={4}
                     flex={1}
                     minWidth={80}
-                    backgroundColor="$color2"
-                    padding="sm"
-                    borderRadius={12}
+                    style={{ backgroundColor: '#f8fafc', padding: 8, borderRadius: 12 }}
                     align="center"
                   >
-                    <Text color="$green10">{certifications?.length || 0}</Text>
-                    <Text color="$gray11">Certs</Text>
+                    <Text style={{ color: '#16a34a' }}>{certifications?.length || 0}</Text>
+                    <Text style={{ color: '#414e62' }}>Certs</Text>
                   </Stack>
 
                   <Stack
                     gap={4}
                     flex={1}
                     minWidth={80}
-                    backgroundColor="$color2"
-                    padding="sm"
-                    borderRadius={12}
+                    style={{ backgroundColor: '#f8fafc', padding: 8, borderRadius: 12 }}
                     align="center"
                   >
-                    <Text color="$gray11">{formattedYearsOfExperience}</Text>
-                    <Text color="$gray11">Years</Text>
+                    <Text style={{ color: '#414e62' }}>{formattedYearsOfExperience}</Text>
+                    <Text style={{ color: '#414e62' }}>Years</Text>
                   </Stack>
                 </Row>
               </Stack>
@@ -250,15 +234,17 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                       return (
                         <Row
                           key={skill.id as string}
-                          backgroundColor="$color3"
-                          paddingHorizontal={10}
-                          paddingVertical={6}
-                          borderRadius={8}
-                          borderWidth={1}
-                          borderColor={skill.verified ? '$green7' : '$color6'}
+                          style={{
+                            backgroundColor: '#f1f5f9',
+                            paddingHorizontal: 10,
+                            paddingVertical: 6,
+                            borderRadius: 8,
+                            borderWidth: 1,
+                            borderColor: skill.verified ? '#86efac' : '#e2e8f0',
+                          }}
                         >
                           {skill.verified && (
-                            <Text color="$green10" marginRight={4}>
+                            <Text style={{ color: '#16a34a', marginRight: 4 }}>
                               ✓
                             </Text>
                           )}

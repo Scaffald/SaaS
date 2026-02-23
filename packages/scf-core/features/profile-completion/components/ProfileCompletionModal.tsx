@@ -1,7 +1,7 @@
 import { ResponsiveModal } from '@scaffald/ui'
 import { PartyPopper, UploadCloud } from 'lucide-react-native'
 import { memo } from 'react'
-import { Button, Paragraph, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Text, Row, Stack } from '@scaffald/ui'
 
 type ModalMode = 'first-login' | 'progress-reminder'
 
@@ -32,33 +32,33 @@ export const ProfileCompletionModal = memo(function ProfileCompletionModal({
       onOpenChange={(value) => {
         if (!value) onDismiss()
       }}
-      title={isFirstTime ? 'Welcome! Let’s build your profile' : 'Keep going — you’re close!'}
+      title={isFirstTime ? 'Welcome! Let\u2019s build your profile' : 'Keep going \u2014 you\u2019re close!'}
       size="md"
     >
       <Stack gap={16}>
         <Stack gap={8}>
           <Row gap={8} align="center">
-            <PartyPopper size={24} color="$blue10" />
+            <PartyPopper size={24} color="#2563eb" />
             <Text>
-              {isFirstTime ? 'Finish in 5 minutes' : `You’re ${completionPercentage}% complete`}
+              {isFirstTime ? 'Finish in 5 minutes' : `You're ${completionPercentage}% complete`}
             </Text>
           </Row>
 
-          <Paragraph color="$gray11" aria-live="polite">
+          <Text style={{ color: '#414e62' }} aria-live="polite">
             {isFirstTime
-              ? 'We’ll walk you through six quick steps so employers can get to know you. Auto-save is enabled, and you can come back anytime.'
+              ? 'We\u2019ll walk you through six quick steps so employers can get to know you. Auto-save is enabled, and you can come back anytime.'
               : benefitMessage}
-          </Paragraph>
+          </Text>
         </Stack>
 
         <Stack gap={12}>
-          <Button size="lg" themeInverse onPress={onStartWizard}>
+          <Button size="lg" variant="filled" color="primary" onPress={onStartWizard}>
             {isFirstTime ? 'Start Wizard' : 'Continue Profile'}
           </Button>
           <Button size="lg" iconStart={UploadCloud} onPress={onUploadResume}>
             Upload Resume
           </Button>
-          <Button size="sm" chromeless onPress={onDismiss}>
+          <Button size="sm" variant="text" onPress={onDismiss}>
             {isFirstTime ? 'Skip and continue later' : 'Remind me later'}
           </Button>
         </Stack>

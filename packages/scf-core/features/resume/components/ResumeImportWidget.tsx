@@ -47,7 +47,7 @@ export function ResumeImportWidget() {
             <Stack gap={4}>
               <Text color="$gray11">Import Your Resume</Text>
               <Text color="$gray11">
-                Upload a PDF or Word document and we’ll auto-fill your profile details for you.
+                Upload a PDF or Word document and we'll auto-fill your profile details for you.
               </Text>
             </Stack>
           </Row>

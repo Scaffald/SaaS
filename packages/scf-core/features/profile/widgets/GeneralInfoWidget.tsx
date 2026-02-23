@@ -55,8 +55,8 @@ export function GeneralInfoWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text color="$red10">Failed to load profile information</Text>
-          <Text color="$gray11">{error.message}</Text>
+          <Text style={{ color: '#ef4444' }}>Failed to load profile information</Text>
+          <Text style={{ color: '#414e62' }}>{error.message}</Text>
           <Button
             variant="filled" color="primary"
             size="sm"
@@ -76,7 +76,7 @@ export function GeneralInfoWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text color="$gray11">No profile data available</Text>
+          <Text style={{ color: '#414e62' }}>No profile data available</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -127,7 +127,7 @@ export function GeneralInfoWidget({
                 {canLeaveReview && (
                   <Button
                     size="sm"
-                    theme="info"
+                    color="primary"
                     iconStart={MessageSquarePlus}
                     onPress={handleLeaveReview}
                   >
@@ -140,21 +140,20 @@ export function GeneralInfoWidget({
 
           {/* Avatar & Name Section */}
           <Stack gap={12} align="center">
-            <Avatar size="$10">
-              <Avatar.Image
-                source={{ uri: getAvatarUrl(data.avatar_path) || data.avatar_url || '' }}
-              />
-              <Avatar.Fallback backgroundColor="$color6" />
-            </Avatar>
+            <Avatar
+              size={40}
+              src={getAvatarUrl(data.avatar_path) || data.avatar_url || ''}
+              initials={displayName?.slice(0, 2).toUpperCase()}
+            />
 
             <Stack gap={4} align="center">
               <Text>{displayName}</Text>
               {data.headline && (
                 <Stack align="center" maxWidth="100%">
-                  <Text color="$gray11">{data.headline}</Text>
+                  <Text style={{ color: '#414e62' }}>{data.headline}</Text>
                 </Stack>
               )}
-              {data.username && <Text color="$gray11">@{data.username}</Text>}
+              {data.username && <Text style={{ color: '#414e62' }}>@{data.username}</Text>}
               {badge && (
                 <IdVerificationBadge
                   status={badge.badge_status as 'active' | 'expired' | 'revoked' | null}
@@ -168,14 +167,14 @@ export function GeneralInfoWidget({
             {/* Status Badges */}
             {data.open_to_work && (
               <Row
-                backgroundColor="$blue2"
+                backgroundColor="#eff6ff"
                 paddingHorizontal={12}
                 paddingVertical={6}
-                borderRadius="$10"
+                borderRadius={999}
                 borderWidth={1}
-                borderColor="$blue7"
+                borderColor="#93c5fd"
               >
-                <Text color="$blue11">Open to Work</Text>
+                <Text style={{ color: '#1d4ed8' }}>Open to Work</Text>
               </Row>
             )}
           </Stack>
@@ -184,7 +183,7 @@ export function GeneralInfoWidget({
           {data.about && variant === 'full' && (
             <Stack gap={8}>
               <Text>About</Text>
-              <Text color="$gray11" lineHeight={12}>
+              <Text style={{ color: '#414e62', lineHeight: 12 }}>
                 {data.about}
               </Text>
             </Stack>
@@ -197,21 +196,21 @@ export function GeneralInfoWidget({
 
               {data.privateData.email && (
                 <Stack gap={4}>
-                  <Text color="$gray11">Email</Text>
+                  <Text style={{ color: '#414e62' }}>Email</Text>
                   <Text>{data.privateData.email}</Text>
                 </Stack>
               )}
 
               {data.privateData.phone && (
                 <Stack gap={4}>
-                  <Text color="$gray11">Phone</Text>
+                  <Text style={{ color: '#414e62' }}>Phone</Text>
                   <Text>{data.privateData.phone}</Text>
                 </Stack>
               )}
 
               {data.privateData.location && (
                 <Stack gap={4}>
-                  <Text color="$gray11">Location</Text>
+                  <Text style={{ color: '#414e62' }}>Location</Text>
                   <Text>{data.privateData.location}</Text>
                 </Stack>
               )}
@@ -238,7 +237,7 @@ export function GeneralInfoWidget({
                   if (formattedYears === null) return null
                   return (
                     <Stack gap={4} flex={1} minWidth={120}>
-                      <Text color="$gray11">Experience</Text>
+                      <Text style={{ color: '#414e62' }}>Experience</Text>
                       <Text>
                         {formattedYears} {Number(formattedYears) === 1 ? 'year' : 'years'}
                       </Text>
@@ -248,7 +247,7 @@ export function GeneralInfoWidget({
 
                 {data.industries && (
                   <Stack gap={4} flex={1} minWidth={120}>
-                    <Text color="$gray11">Industry</Text>
+                    <Text style={{ color: '#414e62' }}>Industry</Text>
                     <Text>{data.industries.name}</Text>
                   </Stack>
                 )}

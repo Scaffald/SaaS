@@ -82,7 +82,7 @@ export function ProfileSkillsLeft() {
         <DashboardWidget>
           <Stack gap={16}>
             {/* Header with Save Status Indicator */}
-            <Row justify="space-between" align="center" marginBottom={8}>
+            <Row justify="space-between" align="center" style={{ marginBottom: 8 }}>
               <Stack flex={1} />
               <SaveStatusIndicator
                 status={saveStatus}
@@ -103,7 +103,7 @@ export function ProfileSkillsLeft() {
                 testID="primary-industry-select-trigger"
                 sheetTitle="Select Industry"
               />
-              <Text color="$gray11">Select your industry to search for relevant skills</Text>
+              <Text style={{ color: '#414e62' }}>Select your industry to search for relevant skills</Text>
             </Stack>
 
             <Separator />
@@ -114,10 +114,9 @@ export function ProfileSkillsLeft() {
                 padding="md"
                 align="center"
                 gap={8}
-                backgroundColor="$color3"
                 borderRadius={16}
               >
-                <Text color="$gray11" textAlign="center">
+                <Text style={{ color: '#414e62', textAlign: 'center' }}>
                   Please select an industry above to search for skills
                 </Text>
               </Stack>
@@ -140,7 +139,6 @@ export function ProfileSkillsLeft() {
             <Row justify="flex-end" paddingTop={8}>
               <Button
                 size="md"
-                themeInverse
                 onPress={handleForceSave}
                 disabled={saveButtonState === 'saving' || saveButtonState === 'saved'}
                 iconStart={saveButtonState === 'saved' ? Check : undefined}

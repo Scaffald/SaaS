@@ -38,8 +38,8 @@ export function ProfileGeneralRight() {
           <Stack gap={spacing.sm}>
             <H4>Import from your resume</H4>
             <Text color="$gray11">
-              Upload a PDF or Word document under 1MB and we’ll walk you through reviewing the
-              details before they’re saved to your profile.
+              Upload a PDF or Word document under 1MB and we'll walk you through reviewing the
+              details before they're saved to your profile.
             </Text>
             <Text color="$gray11">
               Accepted formats: PDF, DOC, DOCX. You can re-import your resume at any time.

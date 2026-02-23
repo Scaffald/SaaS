@@ -10,7 +10,6 @@ import { useQueryClient } from '@tanstack/react-query'
 import {
   AvatarImagePicker,
   Button,
-  ConfirmationDialog,
   DashboardWidget,
   PhoneNumberInput,
   plainTextToTipTap,
@@ -22,7 +21,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import type { JSONContent } from '@tiptap/core'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { AnimatePresence, Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Input, Spinner, Text, Row, Stack, Modal, ModalHeader, ModalContent, ModalActions } from '@scaffald/ui'
 import { type GeneralProfileFormData, generalProfileDefaults, generalProfileSchema } from './config'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
@@ -279,7 +278,7 @@ export function ProfileGeneralLeft() {
             }
             placeholder="Upload Avatar"
           />
-          {uploadAvatarMutation.isPending && <Text color="$gray11">Uploading avatar...</Text>}
+          {uploadAvatarMutation.isPending && <Text style={{ color: '#414e62' }}>Uploading avatar...</Text>}
         </Stack>
 
         {/* Name Fields */}
@@ -294,8 +293,6 @@ export function ProfileGeneralLeft() {
                   placeholder="First name"
                   value={field.value}
                   onChangeText={field.onChange}
-                  borderColor={errors.first_name ? '$red8' : '$borderColor'}
-                  aria-label="First name"
                   accessibilityLabel="First name"
                   aria-required="true"
                   aria-invalid={!!errors.first_name}
@@ -304,7 +301,7 @@ export function ProfileGeneralLeft() {
               )}
             />
             {errors.first_name && (
-              <Text id="first_name-error" color="$red10" role="alert">
+              <Text id="first_name-error" style={{ color: '#ef4444' }} role="alert">
                 {errors.first_name.message}
               </Text>
             )}
@@ -320,8 +317,6 @@ export function ProfileGeneralLeft() {
                   placeholder="Last name"
                   value={field.value}
                   onChangeText={field.onChange}
-                  borderColor={errors.last_name ? '$red8' : '$borderColor'}
-                  aria-label="Last name"
                   accessibilityLabel="Last name"
                   aria-required="true"
                   aria-invalid={!!errors.last_name}
@@ -330,7 +325,7 @@ export function ProfileGeneralLeft() {
               )}
             />
             {errors.last_name && (
-              <Text id="last_name-error" color="$red10" role="alert">
+              <Text id="last_name-error" style={{ color: '#ef4444' }} role="alert">
                 {errors.last_name.message}
               </Text>
             )}
@@ -393,17 +388,15 @@ export function ProfileGeneralLeft() {
               <Input
                 placeholder="Email address"
                 value={field.value}
-                onChangeText={() => {}} // Make read-only
+                onChangeText={() => {}}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 editable={false}
-                opacity={0.7}
-                backgroundColor="$color2"
-                borderColor="$color6"
+                style={{ opacity: 0.7 }}
               />
             )}
           />
-          <Text color="$gray11">Email changes must be made through account settings</Text>
+          <Text style={{ color: '#414e62' }}>Email changes must be made through account settings</Text>
         </Stack>
 
         {/* Home Address with Smart Autocomplete */}
@@ -423,7 +416,7 @@ export function ProfileGeneralLeft() {
             variant="outline"
             disabled={!isDirty}
             onPress={() => setShowCancelDialog(true)}
-            opacity={!isDirty ? 0.5 : 1}
+            style={{ opacity: !isDirty ? 0.5 : 1 }}
           >
             Cancel
           </Button>
@@ -431,42 +424,40 @@ export function ProfileGeneralLeft() {
             variant="filled" color="primary"
             onPress={handleSubmit(onSubmit, onError)}
             disabled={!isDirty || isLoading || Object.keys(errors).length > 0}
-            opacity={!isDirty || isLoading || Object.keys(errors).length > 0 ? 0.5 : 1}
-            space={isSyncing ? '$2' : 0}
+            style={{ opacity: !isDirty || isLoading || Object.keys(errors).length > 0 ? 0.5 : 1 }}
           >
-            <AnimatePresence>
-              {isSyncing && (
-                <Spinner
-                  animation="bouncy"
-                  enterStyle={{
-                    scale: 0,
-                  }}
-                  exitStyle={{
-                    scale: 0,
-                  }}
-                />
-              )}
-            </AnimatePresence>
-            {isSyncing ? 'Saving...' : 'Save Changes'}
+            {isSyncing ? (
+              <Row gap={8} align="center">
+                <Spinner size="sm" />
+                <Text>Saving...</Text>
+              </Row>
+            ) : 'Save Changes'}
           </Button>
         </Row>
 
         {/* Cancel Confirmation Dialog */}
-        <ConfirmationDialog
-          open={showCancelDialog}
-          onOpenChange={setShowCancelDialog}
-          title="Discard Changes?"
-          message="You have unsaved changes. Are you sure you want to discard them?"
-          confirmLabel="Discard Changes"
-          cancelLabel="Keep Editing"
-          confirmTheme="red"
-          onConfirm={() => {
-            if (originalDataRef.current) {
-              reset(originalDataRef.current)
-              setShowCancelDialog(false)
-            }
-          }}
-        />
+        <Modal visible={showCancelDialog} onClose={() => setShowCancelDialog(false)}>
+          <ModalHeader title="Discard Changes?" />
+          <ModalContent>
+            <Text>You have unsaved changes. Are you sure you want to discard them?</Text>
+          </ModalContent>
+          <ModalActions
+            primaryAction={{
+              label: 'Discard Changes',
+              onPress: () => {
+                if (originalDataRef.current) {
+                  reset(originalDataRef.current)
+                  setShowCancelDialog(false)
+                }
+              },
+              color: 'error',
+            }}
+            secondaryAction={{
+              label: 'Keep Editing',
+              onPress: () => setShowCancelDialog(false),
+            }}
+          />
+        </Modal>
       </Stack>
     </DashboardWidget>
   )

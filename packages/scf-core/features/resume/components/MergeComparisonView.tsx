@@ -39,7 +39,7 @@ export function MergeComparisonView({ sections, isLoading = false }: MergeCompar
       <Stack gap={8}>
         <Text>Nothing to review</Text>
         <Text color="$gray11">
-          We didn’t detect any changes to compare. You can still finish the wizard to exit.
+          We didn't detect any changes to compare. You can still finish the wizard to exit.
         </Text>
       </Stack>
     )

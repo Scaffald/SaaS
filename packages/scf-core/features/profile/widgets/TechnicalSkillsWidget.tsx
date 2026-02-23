@@ -52,8 +52,8 @@ export function TechnicalSkillsWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text color="$red10">Failed to load skills</Text>
-          <Text color="$gray11">{error.message}</Text>
+          <Text style={{ color: '#ef4444' }}>Failed to load skills</Text>
+          <Text style={{ color: '#414e62' }}>{error.message}</Text>
           <Button
             variant="filled" color="primary"
             size="sm"
@@ -135,7 +135,7 @@ export function TechnicalSkillsWidget({
             {sortedTaxonomies.slice(0, showCompact ? 1 : undefined).map((taxonomy) => (
               <Stack key={taxonomy} gap={8}>
                 {/* Taxonomy Header */}
-                <Text color="$gray11" textTransform="uppercase">
+                <Text style={{ color: '#414e62', textTransform: 'uppercase' }}>
                   {taxonomy === 'onet' ? 'O*NET' : taxonomy === 'csi' ? 'CSI' : taxonomy}
                 </Text>
 
@@ -146,27 +146,29 @@ export function TechnicalSkillsWidget({
                     .map((skill: EnrichedUserSkill) => (
                       <Row
                         key={skill.id}
-                        backgroundColor="$blue2"
                         paddingHorizontal={12}
                         paddingVertical={8}
                         borderRadius={12}
                         borderWidth={1}
-                        borderColor={skill.verified ? '$blue7' : '$blue5'}
                         gap={8}
                         align="center"
+                        style={{
+                          backgroundColor: '#bfdbfe',
+                          borderColor: skill.verified ? '#1d4ed8' : '#3b82f6',
+                        }}
                       >
-                        {skill.verified && <CheckCircle size="md" color="$blue11" />}
+                        {skill.verified && <CheckCircle size={16} color="#1d4ed8" />}
                         <Stack gap={2}>
-                          <Text color="$blue11">{skill.name}</Text>
+                          <Text style={{ color: '#1d4ed8' }}>{skill.name}</Text>
                           {!showCompact && (
                             <Row gap={8}>
                               {skill.proficiency > 0 && (
-                                <Text color="$blue10">
+                                <Text style={{ color: '#1e40af' }}>
                                   {getProficiencyLabel(skill.proficiency)}
                                 </Text>
                               )}
                               {skill.yearsExperience !== null && skill.yearsExperience > 0 && (
-                                <Text color="$blue10">• {skill.yearsExperience}y</Text>
+                                <Text style={{ color: '#1e40af' }}>• {skill.yearsExperience}y</Text>
                               )}
                             </Row>
                           )}
@@ -180,10 +182,7 @@ export function TechnicalSkillsWidget({
             {/* Show More link for compact view */}
             {showCompact && skills.length > 5 && (
               <Text
-                color="$blue7"
-                cursor="pointer"
-                hoverStyle={{ color: '$blue8' }}
-                pressStyle={{ color: '$blue9' }}
+                style={{ color: '#1d4ed8', cursor: 'pointer' }}
                 onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
               >
                 View all {skills.length} skills →

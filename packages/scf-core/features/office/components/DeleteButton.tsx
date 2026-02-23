@@ -1,30 +1,13 @@
 import { Trash2 } from 'lucide-react-native'
-import { useToast, useThemeContext } from '@scaffald/ui'
+import { useToast } from '@scaffald/ui'
 import { useState } from 'react'
-import { Button, Spinner, Text, Row, Stack } from '@scaffald/ui'
-import { Dialog } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { Button, Row, Stack, Modal, ModalContent, ModalHeader } from '@scaffald/ui'
 
 interface DeleteButtonProps {
-  /**
-   * Name of the item being deleted (displayed in confirmation)
-   */
   itemName: string
-  /**
-   * Type of item (e.g., "job", "user", "university")
-   */
   itemType: string
-  /**
-   * Async function to execute the delete operation
-   */
   onDelete: () => Promise<void>
-  /**
-   * Optional size for the button
-   */
-  size?: '$2' | '$3' | '$4'
-  /**
-   * Optional variant for the button
-   */
+  size?: 'sm' | 'md' | 'lg'
   variant?: 'outline'
 }
 
@@ -49,10 +32,9 @@ export function DeleteButton({
   itemName,
   itemType,
   onDelete,
-  size = '$2',
+  size = 'md',
   variant = 'outline',
 }: DeleteButtonProps) {
-  const { theme } = useThemeContext()
   const [isOpen, setIsOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const toast = useToast()
@@ -61,13 +43,17 @@ export function DeleteButton({
     setIsDeleting(true)
     try {
       await onDelete()
-      toast.show('Success', {
+      toast.show({
+        title: 'Success',
         message: `${itemType.charAt(0).toUpperCase() + itemType.slice(1)} deleted successfully`,
+        variant: 'success',
       })
       setIsOpen(false)
-    } catch (error) {
-      toast.show('Error', {
-        message: error instanceof Error ? error.message : `Failed to delete ${itemType}`,
+    } catch (err) {
+      toast.show({
+        title: 'Error',
+        message: err instanceof Error ? err.message : `Failed to delete ${itemType}`,
+        variant: 'error',
       })
     } finally {
       setIsDeleting(false)
@@ -79,7 +65,7 @@ export function DeleteButton({
       <Button
         size={size}
         variant={variant}
-        theme="error"
+        color="error"
         iconStart={Trash2}
         onPress={() => setIsOpen(true)}
         disabled={isDeleting}
@@ -87,41 +73,31 @@ export function DeleteButton({
         Delete
       </Button>
 
-      <Dialog modal open={isOpen} onOpenChange={setIsOpen}>
-        <Dialog.Portal>
-          <Dialog.Overlay key="overlay" />
-          <Dialog.Content key="content" width={500}>
-            <Dialog.Title>Confirm Delete</Dialog.Title>
-            <Dialog.Description>
-              Are you sure you want to delete <Text>"{itemName}"</Text>?
-            </Dialog.Description>
-
-            <Stack gap={8}>
-              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
-                This action cannot be undone. This will permanently delete the {itemType} and all
-                associated data.
-              </Text>
-            </Stack>
-
+      <Modal visible={isOpen} onClose={() => setIsOpen(false)} width={500}>
+        <ModalContent>
+          <ModalHeader
+            title="Confirm Delete"
+            description={`Are you sure you want to delete "${itemName}"? This action cannot be undone. This will permanently delete the ${itemType} and all associated data.`}
+            onClose={() => setIsOpen(false)}
+          />
+          <Stack gap={16}>
             <Row gap={12} align="center" justify="flex-end">
-              <Dialog.Close asChild>
-                <Button variant="outline" disabled={isDeleting}>
-                  Cancel
-                </Button>
-              </Dialog.Close>
-
+              <Button variant="outline" onPress={() => setIsOpen(false)} disabled={isDeleting}>
+                Cancel
+              </Button>
               <Button
-                theme="error"
+                color="error"
                 onPress={handleDelete}
                 disabled={isDeleting}
-                iconStart={isDeleting ? <Spinner /> : Trash2}
+                loading={isDeleting}
+                iconStart={Trash2}
               >
                 {isDeleting ? 'Deleting...' : 'Delete'}
               </Button>
             </Row>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog>
+          </Stack>
+        </ModalContent>
+      </Modal>
     </>
   )
 }

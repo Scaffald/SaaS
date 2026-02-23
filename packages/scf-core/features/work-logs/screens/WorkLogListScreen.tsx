@@ -8,7 +8,6 @@ import { RefreshControl, ScrollView } from 'react-native'
 import {
   Button,
   Card,
-  Paragraph,
   Separator,
   Spinner,
   Text,
@@ -65,14 +64,14 @@ export function WorkLogListScreen() {
         <RefreshControl refreshing={listQuery.isFetching} onRefresh={handleRefresh} />
       }
     >
-      <Stack gap={16} padding="md" flex={1}>
+      <Stack gap={16} style={{ padding: 16 }} flex={1}>
         <Row justify="space-between" align="center">
           <Stack gap={4}>
             <Text>Work Logs</Text>
-            <Paragraph color="$gray11">
+            <Text style={{ color: '#414e62' }}>
               Track and review your daily work history, collaborate with teammates, and manage
               verification.
-            </Paragraph>
+            </Text>
           </Stack>
           <Button
             size="md"
@@ -84,16 +83,16 @@ export function WorkLogListScreen() {
         </Row>
 
         {hasOfflineQueue && (
-          <Card backgroundColor="$yellow3" borderColor="$yellow7" borderWidth={1}>
-            <Stack gap={12} padding="sm">
+          <Card style={{ backgroundColor: '#fef3c7', borderColor: '#fbbf24', borderWidth: 1 }}>
+            <Stack gap={12} style={{ padding: 8 }}>
               <Row gap={12} align="center">
                 <CloudOff color="#b45309" />
                 <Stack gap={4} flex={1}>
-                  <Text color="$yellow11">Offline drafts ready to sync</Text>
-                  <Paragraph color="$yellow11">
+                  <Text style={{ color: '#92400e' }}>Offline drafts ready to sync</Text>
+                  <Text style={{ color: '#92400e' }}>
                     {offlineWorkLogs.length} draft{offlineWorkLogs.length === 1 ? '' : 's'} will
                     sync once you are back online.
-                  </Paragraph>
+                  </Text>
                 </Stack>
               </Row>
               <Row gap={12} justify="flex-end">
@@ -122,7 +121,7 @@ export function WorkLogListScreen() {
         {listQuery.isLoading ? (
           <Stack flex={1} align="center" justify="center" gap={12}>
             <Spinner size="lg" />
-            <Text color="$gray11">Loading work logs…</Text>
+            <Text style={{ color: '#414e62' }}>Loading work logs…</Text>
           </Stack>
         ) : items.length === 0 ? (
           <EmptyState onCreate={() => router.push(ROUTES.DASHBOARD.WORK_LOGS.CREATE.path)} />
@@ -131,46 +130,42 @@ export function WorkLogListScreen() {
             {items.map((item) => (
               <Card
                 key={item.id}
-                hoverStyle={{ borderColor: '$color10' }}
-                pressStyle={{ borderColor: '$color8' }}
-                borderColor="$color6"
-                borderWidth={1}
+                style={{ borderWidth: 1 }}
                 onPress={() =>
                   router.push(buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId: item.id }))
                 }
               >
-                <Stack gap={12} padding="sm">
+                <Stack gap={12} style={{ padding: 8 }}>
                   <Row justify="space-between" align="center">
                     <Stack gap={4}>
                       <Text>{item.project?.name ?? 'Unknown Project'}</Text>
-                      <Text color="$gray11">
+                      <Text style={{ color: '#414e62' }}>
                         {item.logDate ? formatDate(item.logDate) : 'No date recorded'}
                       </Text>
                     </Stack>
-                    <Text color={getStatusColor(item.status) as never}>
+                    <Text style={{ color: getStatusColor(item.status) }}>
                       {getStatusLabel(item.status)}
                     </Text>
                   </Row>
 
                   <Row gap={8} wrap>
                     <Stack
-                      paddingHorizontal={8}
-                      paddingVertical={4}
-                      borderRadius={12}
-                      backgroundColor={item.visibility === 'public' ? '$green4' : '$gray4'}
+                      style={{
+                        paddingHorizontal: 8,
+                        paddingVertical: 4,
+                        borderRadius: 12,
+                        backgroundColor: item.visibility === 'public' ? '#dcfce7' : '#f3f4f6',
+                      }}
                     >
-                      <Text color={item.visibility === 'public' ? '$green11' : '$gray11'}>
+                      <Text style={{ color: item.visibility === 'public' ? '#16a34a' : '#414e62' }}>
                         {item.visibility === 'public' ? 'Public' : 'Private'}
                       </Text>
                     </Stack>
                     {item.showOnProfile && (
                       <Stack
-                        paddingHorizontal={8}
-                        paddingVertical={4}
-                        borderRadius={12}
-                        backgroundColor="$blue4"
+                        style={{ paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12, backgroundColor: '#dbeafe' }}
                       >
-                        <Text color="$blue11">On profile</Text>
+                        <Text style={{ color: '#1d4ed8' }}>On profile</Text>
                       </Stack>
                     )}
                   </Row>
@@ -194,11 +189,11 @@ export function WorkLogListScreen() {
                   </Row>
 
                   {item.descriptionPreview && (
-                    <Paragraph color="$gray11">{item.descriptionPreview}</Paragraph>
+                    <Text style={{ color: '#414e62' }}>{item.descriptionPreview}</Text>
                   )}
 
                   <Row justify="space-between" align="center">
-                    <Text color="$gray11">
+                    <Text style={{ color: '#414e62' }}>
                       Updated {item.updatedAt ? formatDate(item.updatedAt) : 'recently'}
                     </Text>
                     <Button
@@ -242,13 +237,13 @@ function AnalyticsBanner({
   statusSummary,
 }: AnalyticsBannerProps) {
   return (
-    <Card borderColor="$color6" borderWidth={1}>
-      <Stack gap={12} padding="sm">
+    <Card style={{ borderWidth: 1 }}>
+      <Stack gap={12} style={{ padding: 8 }}>
         <Text>Quick summary</Text>
         {isLoading && !statusSummary ? (
           <Row gap={12} align="center">
             <Spinner size="sm" />
-            <Text color="$gray11">Calculating analytics…</Text>
+            <Text style={{ color: '#414e62' }}>Calculating analytics…</Text>
           </Row>
         ) : (
           <Stack gap={12}>
@@ -259,7 +254,7 @@ function AnalyticsBanner({
                 label="Verified"
                 value={String(statusSummary?.verified.count ?? 0)}
                 subtitle={`${(statusSummary?.verified.hours ?? 0).toFixed(1)}h`}
-                color="$green10"
+                color="#16a34a"
               />
               <SummaryTile
                 label="Needs Attention"
@@ -271,7 +266,7 @@ function AnalyticsBanner({
                   (statusSummary?.pending_verification.hours ?? 0) +
                     (statusSummary?.disputed.hours ?? 0)
                 ).toFixed(1)}h`}
-                color="$orange10"
+                color="#ea580c"
               />
             </Row>
           </Stack>
@@ -288,42 +283,36 @@ interface SummaryTileProps {
   color?: string
 }
 
-function SummaryTile({ label, value, subtitle, color = '$color12' }: SummaryTileProps) {
+function SummaryTile({ label, value, subtitle, color }: SummaryTileProps) {
   return (
     <Stack
-      backgroundColor="$color2"
-      borderRadius={16}
-      paddingHorizontal={16}
-      paddingVertical={12}
+      style={{ borderRadius: 16, paddingHorizontal: 16, paddingVertical: 12 }}
       gap={4}
       flexShrink={0}
     >
-      <Text color="$gray11">{label}</Text>
-      <Text color={color as never}>{value}</Text>
-      {subtitle && <Text color="$gray11">{subtitle}</Text>}
+      <Text style={{ color: '#414e62' }}>{label}</Text>
+      <Text style={color ? { color } : undefined}>{value}</Text>
+      {subtitle && <Text style={{ color: '#414e62' }}>{subtitle}</Text>}
     </Stack>
   )
 }
 
 interface MetricPillProps {
-  icon: IconRenderer
+  iconStart: IconRenderer
   label: string
   value: string
 }
 
-function MetricPill({ icon: IconComponent, label, value }: MetricPillProps) {
+function MetricPill({ iconStart: IconComponent, label, value }: MetricPillProps) {
   return (
     <Row
-      backgroundColor="$color3"
-      paddingHorizontal={12}
-      paddingVertical={8}
-      borderRadius={16}
+      style={{ borderRadius: 16, paddingHorizontal: 12, paddingVertical: 8 }}
       gap={8}
       align="center"
     >
-      <IconComponent size="md" color="$gray11" />
+      <IconComponent size="md" color="#414e62" />
       <Text>{value}</Text>
-      <Text color="$gray11">{label}</Text>
+      <Text style={{ color: '#414e62' }}>{label}</Text>
     </Row>
   )
 }
@@ -334,13 +323,13 @@ interface EmptyStateProps {
 
 function EmptyState({ onCreate }: EmptyStateProps) {
   return (
-    <Card borderColor="$color6" borderWidth={1}>
-      <Stack gap={12} align="center" paddingVertical={32} paddingHorizontal={16}>
+    <Card style={{ borderWidth: 1 }}>
+      <Stack gap={12} align="center" style={{ paddingVertical: 32, paddingHorizontal: 16 }}>
         <Text>No work logs yet</Text>
-        <Paragraph color="$gray11" paddingHorizontal={24} style={{ textAlign: 'center' }}>
+        <Text style={{ color: '#414e62', textAlign: 'center', paddingHorizontal: 24 }}>
           Create your first work log to start tracking hours, documenting tasks, and collaborating
           with your team.
-        </Paragraph>
+        </Text>
         <Button size="md" iconStart={DownloadCloud} onPress={onCreate}>
           Record Work Log
         </Button>

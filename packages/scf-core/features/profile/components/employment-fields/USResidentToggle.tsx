@@ -1,11 +1,15 @@
-import { ToggleCard } from '@scaffald/ui'
-import type { ToggleCardProps } from '@scaffald/ui'
+import { SettingsToggleCard } from '@scaffald/ui'
+import type { SettingsToggleCardProps } from '@scaffald/ui'
 import { Flag } from 'lucide-react-native'
 
 export interface USResidentToggleProps
-  extends Omit<ToggleCardProps, 'icon' | 'title' | 'description'> {
+  extends Omit<SettingsToggleCardProps, 'icon' | 'title' | 'description' | 'enabled' | 'onToggleChange'> {
   /** Optional override for description */
   description?: string
+  /** Whether the toggle is checked */
+  checked?: boolean
+  /** Callback when toggle state changes */
+  onChange?: (checked: boolean) => void
 }
 
 /**
@@ -14,14 +18,18 @@ export interface USResidentToggleProps
  */
 export function USResidentToggle({
   description = 'I am a resident of the United States',
-  ...toggleCardProps
+  checked,
+  onChange,
+  ...settingsToggleCardProps
 }: USResidentToggleProps) {
   return (
-    <ToggleCard
-      iconStart={<Flag size="sm" color="$gray11" />}
+    <SettingsToggleCard
+      icon={Flag}
       title="US Resident"
       description={description}
-      {...toggleCardProps}
+      enabled={checked}
+      onToggleChange={onChange}
+      {...settingsToggleCardProps}
     />
   )
 }

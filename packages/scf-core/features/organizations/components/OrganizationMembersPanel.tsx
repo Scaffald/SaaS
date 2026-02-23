@@ -1,5 +1,5 @@
 import { type OrganizationInvite, organizationInviteSchema } from '@scf/schemas'
-import { Table, useThemeContext } from '@scaffald/ui'
+import { Table, type TableColumn, type TableRowData, useThemeContext } from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -30,7 +30,7 @@ type OrganizationMembersPanelProps = {
 
 export function OrganizationMembersPanel({ organizationId }: OrganizationMembersPanelProps) {
   const { theme } = useThemeContext()
-  const { data: members, isLoading: membersLoading } = useOrganizationMembers(organizationId)
+  const { data: membersResponse, isLoading: membersLoading } = useOrganizationMembers(organizationId)
   const {
     data: invites,
     isLoading: invitesLoading,
@@ -50,9 +50,11 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
     await inviteMutation.mutateAsync(
       {
         organizationId,
-        email: values.email,
-        roleName: values.roleName ?? 'member',
-        message: values.message,
+        params: {
+          email: values.email,
+          roleName: values.roleName ?? 'member',
+          message: values.message,
+        },
       },
       {
         onSuccess: () => {
@@ -63,7 +65,7 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
     )
   })
 
-  const activeMembers = members ?? []
+  const activeMembers = membersResponse?.data ?? []
   const pendingInvites = invites ?? []
   const activityByUser = useMemo(() => {
     if (!activity) return new Map<string, { actions: number; lastActionAt: string | null }>()
@@ -75,9 +77,61 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
     )
   }, [activity])
 
+  const membersColumns: TableColumn[] = [
+    {
+      id: 'name',
+      title: 'Name',
+      render: (_value, row) => (
+        <>
+          <Text>{String(row.display_name ?? 'Unknown')}</Text>
+          {row.headline ? (
+            <Paragraph style={{ color: colors.text[theme].secondary }}>
+              {String(row.headline)}
+            </Paragraph>
+          ) : null}
+        </>
+      ),
+    },
+    {
+      id: 'roles',
+      title: 'Roles',
+      render: (_value, row) => {
+        const roles = row.roles as string[]
+        return <>{roles.join(', ') || 'Member'}</>
+      },
+    },
+    {
+      id: 'activity',
+      title: 'Recent Activity',
+      render: (_value, row) => {
+        const activitySummary = row.userId
+          ? activityByUser.get(String(row.userId))
+          : undefined
+        return (
+          <>
+            {activitySummary ? `${activitySummary.actions} actions` : '—'}
+            {activitySummary?.lastActionAt ? (
+              <Paragraph style={{ color: colors.text[theme].secondary }}>
+                {new Date(activitySummary.lastActionAt).toLocaleDateString()}
+              </Paragraph>
+            ) : null}
+          </>
+        )
+      },
+    },
+  ]
+
+  const membersTableData: TableRowData[] = activeMembers.map((member) => ({
+    id: member.userId,
+    userId: member.userId,
+    display_name: member.profile?.display_name ?? null,
+    headline: member.profile?.headline ?? null,
+    roles: member.roles,
+  }))
+
   return (
     <Stack gap={16}>
-      <Card bordered padding="md" gap={16}>
+      <Card variant="outlined" padding="md">
         <H4>Invite a member</H4>
         <Stack gap={12}>
           <Controller
@@ -92,7 +146,7 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
                   placeholder="teammate@example.com"
                 />
                 {fieldState.error ? (
-                  <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
+                  <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
                     {fieldState.error?.message}
                   </Text>
                 ) : null}
@@ -128,7 +182,7 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
         </Stack>
       </Card>
 
-      <Card bordered padding="md" gap={12}>
+      <Card variant="outlined" padding="md">
         <Row justify="space-between" align="center">
           <H4>Members</H4>
           {membersLoading ? (
@@ -143,55 +197,17 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
         {membersLoading ? (
           <Paragraph>Loading members…</Paragraph>
         ) : (
-          <Table>
-            <Table.Head>
-              <Table.Row>
-                <Table.HeaderCell>Name</Table.HeaderCell>
-                <Table.HeaderCell>Roles</Table.HeaderCell>
-                <Table.HeaderCell>Recent Activity</Table.HeaderCell>
-              </Table.Row>
-            </Table.Head>
-            <Table.Body>
-              {activeMembers.map(
-                (member: {
-                  userId: string
-                  roles: string[]
-                  profile?: { display_name?: string; headline?: string } | null
-                }) => {
-                  const activitySummary:
-                    | { actions: number; lastActionAt: string | null }
-                    | undefined = member.userId
-                    ? (activityByUser.get(member.userId) as
-                        | { actions: number; lastActionAt: string | null }
-                        | undefined)
-                    : undefined
-                  return (
-                    <Table.Row key={member.userId}>
-                      <Table.Cell>
-                        <Text>{member.profile?.display_name ?? 'Unknown'}</Text>
-                        <Paragraph style={{ color: colors.text[theme].secondary }}>
-                          {member.profile?.headline}
-                        </Paragraph>
-                      </Table.Cell>
-                      <Table.Cell>{member.roles.join(', ') || 'Member'}</Table.Cell>
-                      <Table.Cell>
-                        {activitySummary ? `${activitySummary.actions} actions` : '—'}
-                        {activitySummary?.lastActionAt ? (
-                          <Paragraph style={{ color: colors.text[theme].secondary }}>
-                            {new Date(activitySummary.lastActionAt).toLocaleDateString()}
-                          </Paragraph>
-                        ) : null}
-                      </Table.Cell>
-                    </Table.Row>
-                  )
-                }
-              )}
-            </Table.Body>
-          </Table>
+          <Table
+            columns={membersColumns}
+            data={membersTableData}
+            loading={membersLoading}
+            emptyMessage="No members found."
+            showHeader={false}
+          />
         )}
       </Card>
 
-      <Card bordered padding="md" gap={12}>
+      <Card variant="outlined" padding="md">
         <Row justify="space-between" align="center">
           <H4>Pending invitations</H4>
           {invitesLoading ? (

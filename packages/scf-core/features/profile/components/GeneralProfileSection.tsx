@@ -19,7 +19,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast } from '@scaffald/ui'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { AnimatePresence, Input, Spinner, Text, TextArea, Row, Stack } from '@scaffald/ui'
+import { Input, Spinner, Text, TextArea, Row, Stack } from '@scaffald/ui'
 import {
   type GeneralProfileFormData,
   generalProfileDefaults,
@@ -236,7 +236,7 @@ export function GeneralProfileSection({
             disabled={readOnly || uploadAvatarMutation.isPending}
             placeholder="Upload Avatar"
           />
-          {uploadAvatarMutation.isPending && <Text color="$gray11">Uploading avatar...</Text>}
+          {uploadAvatarMutation.isPending && <Text style={{ color: '#414e62' }}>Uploading avatar...</Text>}
         </Stack>
 
         {/* Name Fields */}
@@ -251,14 +251,13 @@ export function GeneralProfileSection({
                   placeholder="First name"
                   value={field.value}
                   onChangeText={field.onChange}
-                  borderColor={errors.first_name ? '$red8' : '$borderColor'}
                   editable={!readOnly}
-                  opacity={readOnly ? 0.7 : 1}
+                  style={{ opacity: readOnly ? 0.7 : 1 }}
                 />
               )}
             />
             {errors.first_name && (
-              <Text color="$red10">
+              <Text style={{ color: '#ef4444' }}>
                 {getErrorMessage(errors.first_name.message) ?? 'First name is required'}
               </Text>
             )}
@@ -274,14 +273,13 @@ export function GeneralProfileSection({
                   placeholder="Last name"
                   value={field.value}
                   onChangeText={field.onChange}
-                  borderColor={errors.last_name ? '$red8' : '$borderColor'}
                   editable={!readOnly}
-                  opacity={readOnly ? 0.7 : 1}
+                  style={{ opacity: readOnly ? 0.7 : 1 }}
                 />
               )}
             />
             {errors.last_name && (
-              <Text color="$red10">
+              <Text style={{ color: '#ef4444' }}>
                 {getErrorMessage(errors.last_name.message) ?? 'Last name is required'}
               </Text>
             )}
@@ -300,14 +298,13 @@ export function GeneralProfileSection({
                 value={typeof field.value === 'string' ? field.value : ''}
                 onChangeText={field.onChange}
                 minHeight={100}
-                borderColor={errors.about ? '$red8' : '$borderColor'}
                 editable={!readOnly}
-                opacity={readOnly ? 0.7 : 1}
+                style={{ opacity: readOnly ? 0.7 : 1 }}
               />
             )}
           />
           {errors.about && (
-            <Text color="$red10">
+            <Text style={{ color: '#ef4444' }}>
               {getErrorMessage(errors.about.message) ?? 'Please provide a short bio'}
             </Text>
           )}
@@ -345,14 +342,12 @@ export function GeneralProfileSection({
                 keyboardType="email-address"
                 autoCapitalize="none"
                 editable={false}
-                opacity={0.7}
-                backgroundColor="$color2"
-                borderColor="$color6"
+                style={{ opacity: 0.7 }}
               />
             )}
           />
           {mode === 'user' && (
-            <Text color="$gray11">Email changes must be made through account settings</Text>
+            <Text style={{ color: '#414e62' }}>Email changes must be made through account settings</Text>
           )}
         </Stack>
 
@@ -418,19 +413,14 @@ export function GeneralProfileSection({
               variant="filled" color="primary"
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
-              opacity={!isDirty || isLoading ? 0.5 : 1}
-              space={isLoading ? '$2' : 0}
+              style={{ opacity: !isDirty || isLoading ? 0.5 : 1 }}
             >
-              <AnimatePresence>
-                {isLoading && (
-                  <Spinner
-                    animation="bouncy"
-                    enterStyle={{ scale: 0 }}
-                    exitStyle={{ scale: 0 }}
-                  />
-                )}
-              </AnimatePresence>
-              {isLoading ? 'Saving...' : 'Save Changes'}
+              {isLoading ? (
+                <Row gap={8} align="center">
+                  <Spinner size="sm" />
+                  <Text>Saving...</Text>
+                </Row>
+              ) : 'Save Changes'}
             </Button>
           </Row>
         )}

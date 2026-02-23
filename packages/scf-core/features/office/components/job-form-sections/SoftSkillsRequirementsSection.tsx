@@ -90,8 +90,8 @@ export function SoftSkillsRequirementsSection({
       >
         <Text>Soft Skills Requirements</Text>
         <Stack align="center" padding="md">
-          <Spinner size="lg" style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }} />
-          <Text marginTop={8} style={{ color: colors.text[theme].secondary }}>
+          <Spinner size="lg" color="primary" />
+          <Text style={{ marginTop: 8, color: colors.text[theme].secondary }}>
             Loading soft skills catalog...
           </Text>
         </Stack>
@@ -159,8 +159,8 @@ export function SoftSkillsRequirementsSection({
                   <Stack key={skill.id} gap={8}>
                     <Button
                       size="sm"
-                      variant={isSelected ? 'outlined' : 'outlined'}
-                      theme={isSelected ? 'blue' : undefined}
+                      variant="outline"
+                      color={isSelected ? 'primary' : 'gray'}
                       onPress={() => handleSkillToggle(skill.id)}
                     >
                       {skill.name}
@@ -176,8 +176,8 @@ export function SoftSkillsRequirementsSection({
                             <Button
                               key={level}
                               size="sm"
-                              variant={importance === level ? 'outlined' : 'outlined'}
-                              theme={importance === level ? 'blue' : undefined}
+                              variant="outline"
+                              color={importance === level ? 'primary' : 'gray'}
                               onPress={() => handleImportanceChange(skill.id, level)}
                             >
                               {level}
@@ -209,15 +209,9 @@ export function SoftSkillsRequirementsSection({
           </Text>
           <Stack gap={4}>
             {Array.from(selectedSkills.entries()).map(([skillId, importance]) => {
-              type SoftSkill = {
-                id?: string
-                name?: string
-                category?: string
-                [key: string]: unknown
-              }
-              const skill = (Object.values(softSkillsData) as Array<SoftSkill[]>)
-                .flat()
-                .find((s) => (s as SoftSkill).id === skillId)
+              type SoftSkill = { id?: string; name?: string; category?: string; [key: string]: unknown }
+              const skillsArray = Object.values(softSkillsData) as unknown as SoftSkill[][]
+              const skill = skillsArray.flat().find((s) => s.id === skillId)
               if (!skill) return null
 
               const importanceLabel =

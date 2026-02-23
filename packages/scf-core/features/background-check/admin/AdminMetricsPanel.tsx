@@ -30,7 +30,7 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
       >
         <Text color="$gray11">Metrics unavailable</Text>
         <Text color="$gray11">
-          We couldn’t load the latest metrics. Try refreshing to retrieve the most recent data.
+          We couldn't load the latest metrics. Try refreshing to retrieve the most recent data.
         </Text>
         <Button iconStart={RefreshCcw} onPress={onRefresh} size="sm" variant="outline">
           Refresh

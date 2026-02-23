@@ -9,6 +9,7 @@ import { Button, DashboardWidget, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { Award, ChevronDown, ChevronRight, ExternalLink, Trash2, Upload } from 'lucide-react-native'
 import { useState } from 'react'
+import { Pressable } from 'react-native'
 import { Card, H4, Input, ScrollView, Text, Row, Stack } from '@scaffald/ui'
 import { useProfileCertificationsHighlight } from './profile-certifications-highlight-context'
 
@@ -190,42 +191,41 @@ export function ProfileCertificationsRight() {
             {/* Depth 0 - Top Level Categories */}
             {depth0.length > 0 && (
               <Stack gap={8}>
-                <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Top-Level Categories</Text>
+                <Text style={{ color: theme === 'light' ? colors.blue[700] : colors.blue[300] }}>Top-Level Categories</Text>
                 {depth0.map((cert) => {
                   const changeStatus = recentlyChangedCerts[cert.certification_id]
                   return (
                     <Card
                       key={cert.id}
                       padding="sm"
-                      bordered
-                      animation="quick"
                       style={{
                         backgroundColor:
                           changeStatus === 'added'
-                            ? theme === "light" ? colors.green[50] : colors.green[900]
+                            ? theme === 'light' ? colors.green[50] : colors.green[900]
                             : changeStatus === 'removed'
-                              ? theme === "light" ? colors.error[50] : colors.error[900]
+                              ? theme === 'light' ? colors.error[50] : colors.error[900]
                               : colors.bg[theme].default,
+                        borderWidth: 1,
                         borderColor:
                           changeStatus === 'added'
-                            ? theme === "light" ? colors.green[300] : colors.green[700]
+                            ? theme === 'light' ? colors.green[300] : colors.green[700]
                             : changeStatus === 'removed'
-                              ? theme === "light" ? colors.error[300] : colors.error[700]
+                              ? theme === 'light' ? colors.error[300] : colors.error[700]
                               : colors.border[theme].default,
                       }}
                     >
                       <Row justify="space-between" align="center">
-                        <Stack flex={1} gap={4}>
+                        <Stack style={{ flex: 1 }} gap={4}>
                           <Row gap={8} align="center">
                             <Text>{cert.catalog.title}</Text>
                             <Text
                               style={{
-                                color: theme === "light" ? colors.blue[700] : colors.blue[300],
-                                backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
+                                color: theme === 'light' ? colors.blue[700] : colors.blue[300],
+                                backgroundColor: theme === 'light' ? colors.blue[50] : colors.blue[900],
+                                paddingHorizontal: 8,
+                                paddingVertical: 2,
+                                borderRadius: 8,
                               }}
-                              paddingHorizontal={8}
-                              paddingVertical={2}
-                              borderRadius={8}
                             >
                               Top Level
                             </Text>
@@ -238,7 +238,7 @@ export function ProfileCertificationsRight() {
                         </Stack>
                       </Row>
                       {changeStatus === 'added' && (
-                        <Text marginTop={8} style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
+                        <Text style={{ marginTop: 8, color: theme === 'light' ? colors.green[700] : colors.green[300] }}>
                           ✓ Added to profile
                         </Text>
                       )}
@@ -251,51 +251,52 @@ export function ProfileCertificationsRight() {
             {/* Depth 1 - Categories */}
             {depth1.length > 0 && (
               <Stack gap={8}>
-                <Text color="$green11">Sub-Categories</Text>
+                <Text style={{ color: theme === 'light' ? colors.success[700] : colors.success[300] }}>Sub-Categories</Text>
                 {depth1.map((cert) => {
                   const changeStatus = recentlyChangedCerts[cert.certification_id]
                   return (
                     <Card
                       key={cert.id}
                       padding="sm"
-                      bordered
-                      animation="quick"
-                      backgroundColor={
-                        changeStatus === 'added'
-                          ? '$green2'
-                          : changeStatus === 'removed'
-                            ? '$red2'
-                            : '$color1'
-                      }
-                      borderColor={
-                        changeStatus === 'added'
-                          ? '$green7'
-                          : changeStatus === 'removed'
-                            ? '$red7'
-                            : '$borderColor'
-                      }
+                      style={{
+                        backgroundColor:
+                          changeStatus === 'added'
+                            ? theme === 'light' ? colors.green[50] : colors.green[900]
+                            : changeStatus === 'removed'
+                              ? theme === 'light' ? colors.error[50] : colors.error[900]
+                              : colors.bg[theme].default,
+                        borderWidth: 1,
+                        borderColor:
+                          changeStatus === 'added'
+                            ? theme === 'light' ? colors.green[300] : colors.green[700]
+                            : changeStatus === 'removed'
+                              ? theme === 'light' ? colors.error[300] : colors.error[700]
+                              : colors.border[theme].default,
+                      }}
                     >
                       <Row justify="space-between" align="center">
-                        <Stack flex={1} gap={4}>
+                        <Stack style={{ flex: 1 }} gap={4}>
                           <Row gap={8} align="center">
                             <Text>{cert.catalog.title}</Text>
                             <Text
-                              color="$green9"
-                              backgroundColor="$green2"
-                              paddingHorizontal={8}
-                              paddingVertical={2}
-                              borderRadius={8}
+                              style={{
+                                color: theme === 'light' ? colors.success[700] : colors.success[300],
+                                backgroundColor: theme === 'light' ? colors.success[50] : colors.success[900],
+                                paddingHorizontal: 8,
+                                paddingVertical: 2,
+                                borderRadius: 8,
+                              }}
                             >
                               Category
                             </Text>
                           </Row>
                           {cert.catalog.description && (
-                            <Text color="$gray11">{cert.catalog.description}</Text>
+                            <Text style={{ color: colors.text[theme].secondary }}>{cert.catalog.description}</Text>
                           )}
                         </Stack>
                       </Row>
                       {changeStatus === 'added' && (
-                        <Text marginTop={8} color="$green11">
+                        <Text style={{ marginTop: 8, color: theme === 'light' ? colors.success[700] : colors.success[300] }}>
                           ✓ Added to profile
                         </Text>
                       )}
@@ -308,7 +309,7 @@ export function ProfileCertificationsRight() {
             {/* Depth 2 - Specific Certifications */}
             {depth2.length > 0 && (
               <Stack gap={8}>
-                <Text color="$purple11">Specific Certifications</Text>
+                <Text style={{ color: theme === 'light' ? colors.purple[700] : colors.purple[300] }}>Specific Certifications</Text>
                 {depth2.map((cert) => {
                   const isExpanded = expandedCards.has(cert.id)
                   const hasProof = !!(cert.credential_url || cert.certificate_file_path)
@@ -317,58 +318,59 @@ export function ProfileCertificationsRight() {
                   return (
                     <Card
                       key={cert.id}
-                      padding="$0"
-                      bordered
-                      animation="quick"
-                      backgroundColor={
-                        changeStatus === 'added'
-                          ? '$green2'
-                          : changeStatus === 'removed'
-                            ? '$red2'
-                            : undefined
-                      }
-                      borderColor={
-                        changeStatus === 'added'
-                          ? '$green7'
-                          : changeStatus === 'removed'
-                            ? '$red7'
-                            : '$borderColor'
-                      }
+                      padding={0}
+                      style={{
+                        backgroundColor:
+                          changeStatus === 'added'
+                            ? theme === 'light' ? colors.green[50] : colors.green[900]
+                            : changeStatus === 'removed'
+                              ? theme === 'light' ? colors.error[50] : colors.error[900]
+                              : colors.bg[theme].default,
+                        borderWidth: 1,
+                        borderColor:
+                          changeStatus === 'added'
+                            ? theme === 'light' ? colors.green[300] : colors.green[700]
+                            : changeStatus === 'removed'
+                              ? theme === 'light' ? colors.error[300] : colors.error[700]
+                              : colors.border[theme].default,
+                      }}
                     >
                       {/* Header - Always Visible */}
+                      <Pressable onPress={() => toggleExpand(cert.id)}>
                       <Row
-                        padding="sm"
+                        style={{ padding: 12 }}
                         gap={12}
                         align="center"
-                        pressStyle={{ backgroundColor: '$backgroundHover' }}
-                        cursor="pointer"
-                        onPress={() => toggleExpand(cert.id)}
                       >
                         {isExpanded ? (
-                          <ChevronDown size="lg" color="$gray11" />
+                          <ChevronDown size={20} color={colors.text[theme].secondary} />
                         ) : (
-                          <ChevronRight size="lg" color="$gray11" />
+                          <ChevronRight size={20} color={colors.text[theme].secondary} />
                         )}
 
-                        <Stack flex={1} gap={4}>
+                        <Stack style={{ flex: 1 }} gap={4}>
                           <Row gap={8} align="center" wrap>
                             <Text>{cert.catalog.title}</Text>
                             <Text
-                              color="$purple9"
-                              backgroundColor="$purple2"
-                              paddingHorizontal={8}
-                              paddingVertical={2}
-                              borderRadius={8}
+                              style={{
+                                color: theme === 'light' ? colors.purple[700] : colors.purple[300],
+                                backgroundColor: theme === 'light' ? colors.purple[50] : colors.purple[900],
+                                paddingHorizontal: 8,
+                                paddingVertical: 2,
+                                borderRadius: 8,
+                              }}
                             >
                               Certification
                             </Text>
                           </Row>
-                          {hasProof && <Text color="$green10">✓ Proof added</Text>}
+                          {hasProof && (
+                            <Text style={{ color: theme === 'light' ? colors.success[600] : colors.success[400] }}>✓ Proof added</Text>
+                          )}
                           {changeStatus === 'added' && (
-                            <Text color="$green11">✓ Added to profile</Text>
+                            <Text style={{ color: theme === 'light' ? colors.success[700] : colors.success[300] }}>✓ Added to profile</Text>
                           )}
                           {changeStatus === 'removed' && (
-                            <Text color="$red11">Removed from profile</Text>
+                            <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>Removed from profile</Text>
                           )}
                         </Stack>
 
@@ -376,10 +378,9 @@ export function ProfileCertificationsRight() {
                           {hasProof && (
                             <Button
                               size="sm"
-                              chromeless
-                              iconStart={<ExternalLink size="md" />}
-                              onPress={(e) => {
-                                e.stopPropagation()
+                              variant="text"
+                              iconStart={ExternalLink}
+                              onPress={() => {
                                 const url =
                                   cert.credential_url ||
                                   getStorageUrl('certifications', cert.certificate_file_path)
@@ -391,35 +392,37 @@ export function ProfileCertificationsRight() {
                           )}
                           <Button
                             size="sm"
-                            chromeless
-                            iconStart={<Trash2 size="md" />}
-                            onPress={(e) => {
-                              e.stopPropagation()
+                            variant="text"
+                            color="error"
+                            iconStart={Trash2}
+                            onPress={() => {
                               handleRemove(cert)
                             }}
-                            theme="error"
                           >
                             Remove
                           </Button>
                         </Row>
                       </Row>
+                      </Pressable>
 
                       {/* Expanded Content - File Upload & URL */}
                       {isExpanded && (
                         <Stack
-                          padding="sm"
-                          paddingTop="$0"
+                          style={{
+                            padding: 12,
+                            paddingTop: 0,
+                            borderTopWidth: 1,
+                            borderColor: colors.border[theme].default,
+                          }}
                           gap={16}
-                          borderTopWidth={1}
-                          borderColor="$borderColor"
                         >
                           {/* File Upload */}
                           <Stack gap={8}>
                             <Text>Upload Certificate</Text>
                             <Row gap={8} style={{ alignItems: 'center' }}>
                               <Button
-                                flex={1}
-                                iconStart={<Upload size="md" />}
+                                style={{ flex: 1 }}
+                                iconStart={Upload}
                                 onPress={() => {
                                   // Trigger file input
                                   const input = document.createElement('input')
@@ -431,7 +434,8 @@ export function ProfileCertificationsRight() {
                                   }
                                   input.click()
                                 }}
-                                backgroundColor={selectedFiles[cert.id] ? '$blue9' : undefined}
+                                variant={selectedFiles[cert.id] ? 'filled' : 'outline'}
+                                color={selectedFiles[cert.id] ? 'primary' : 'gray'}
                               >
                                 {selectedFiles[cert.id]
                                   ? selectedFiles[cert.id]?.name
@@ -439,7 +443,7 @@ export function ProfileCertificationsRight() {
                               </Button>
                               {selectedFiles[cert.id] && (
                                 <Button
-                                  iconStart={<Upload size="md" />}
+                                  iconStart={Upload}
                                   onPress={() => handleSaveFile(cert.id)}
                                   disabled={updateProof.isPending}
                                 >
@@ -448,7 +452,7 @@ export function ProfileCertificationsRight() {
                               )}
                             </Row>
                             {cert.certificate_file_path && (
-                              <Text color="$gray11">
+                              <Text style={{ color: colors.text[theme].secondary }}>
                                 Current: {cert.certificate_file_path.split('/').pop()}
                               </Text>
                             )}
@@ -459,7 +463,7 @@ export function ProfileCertificationsRight() {
                             <Text>Or Add URL</Text>
                             <Row gap={8}>
                               <Input
-                                flex={1}
+                                style={{ flex: 1 }}
                                 placeholder="https://..."
                                 value={urlInputs[cert.id] || ''}
                                 onChangeText={(text) =>
@@ -468,7 +472,7 @@ export function ProfileCertificationsRight() {
                               />
                               <Button
                                 variant="filled" color="primary"
-                                iconStart={<ExternalLink size="md" />}
+                                iconStart={ExternalLink}
                                 onPress={() => handleSaveUrl(cert.id)}
                                 disabled={!urlInputs[cert.id] || updateProof.isPending}
                               >
@@ -476,7 +480,7 @@ export function ProfileCertificationsRight() {
                               </Button>
                             </Row>
                             {cert.credential_url && (
-                              <Text color="$gray11">Current: {cert.credential_url}</Text>
+                              <Text style={{ color: colors.text[theme].secondary }}>Current: {cert.credential_url}</Text>
                             )}
                           </Stack>
                         </Stack>

@@ -3,10 +3,13 @@ import { useRequestWorkerDeletionMutation } from '@scf/core/utils/account-deleti
 import { AlertTriangle, Trash2 } from 'lucide-react-native'
 import { useState } from 'react'
 import {
-  AlertDialog,
   Button,
   Card,
   Input,
+  Modal,
+  ModalHeader,
+  ModalContent,
+  ModalActions,
   Text,
   TextArea,
   Row,
@@ -54,91 +57,90 @@ export function AccountDeletionPanel() {
   }
 
   return (
-    <Card borderWidth={1} borderColor="$red6" backgroundColor="$red2" padding="md">
+    <Card
+      variant="outlined"
+      padding="md"
+      style={{ borderColor: '#fca5a5', backgroundColor: '#fef2f2' }}
+    >
       <Stack gap={12}>
         <Row align="center" gap={8}>
-          <AlertTriangle color="$red11" size="lg" />
-          <Text color="$red11">Delete Account</Text>
+          <AlertTriangle color="#ef4444" size={20} />
+          <Text style={{ color: '#ef4444' }}>Delete Account</Text>
         </Row>
 
-        <Text color="$gray11">
+        <Text style={{ color: '#414e62' }}>
           Permanently delete your account and all associated data. This action cannot be undone.
         </Text>
 
-        <Text color="$gray11">
+        <Text style={{ color: '#414e62' }}>
           • All payment data will be anonymized • Your profile will be removed • You will lose
           access to all organizations and teams
         </Text>
 
         <Button
           variant="outline"
-          borderColor="$red8"
-          color="$red11"
+          style={{ borderColor: '#f87171' }}
+          color="error"
           iconStart={Trash2}
           onPress={() => setIsOpen(true)}
         >
           Request Account Deletion
         </Button>
 
-        <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-          <AlertDialog.Portal>
-            <AlertDialog.Overlay />
-            <AlertDialog.Content style={{ maxWidth: 500 }}>
-              <Stack gap={16} padding="md">
-                <Stack gap={8}>
-                  <Text color="$red11">Delete Your Account?</Text>
-                  <Text color="$gray11">
-                    This action cannot be undone. All your data will be permanently deleted or
-                    anonymized.
-                  </Text>
-                </Stack>
+        <Modal visible={isOpen} onClose={() => setIsOpen(false)} width={500}>
+          <ModalHeader
+            title="Delete Your Account?"
+            onClose={() => setIsOpen(false)}
+          />
+          <ModalContent>
+            <Stack gap={16}>
+              <Text style={{ color: '#414e62' }}>
+                This action cannot be undone. All your data will be permanently deleted or
+                anonymized.
+              </Text>
 
-                <Stack gap={8}>
-                  <Text>Reason (optional)</Text>
-                  <TextArea
-                    value={reason}
-                    onChangeText={setReason}
-                    placeholder="Help us improve by sharing why you're deleting your account..."
-                    style={{ minHeight: 80 }}
-                  />
-                </Stack>
-
-                <Stack gap={8}>
-                  <Text>Type "DELETE" to confirm</Text>
-                  <Input
-                    value={confirmText}
-                    onChangeText={setConfirmText}
-                    placeholder="DELETE"
-                    borderColor={confirmText === 'DELETE' ? '$green8' : '$red8'}
-                  />
-                </Stack>
-
-                <Row gap={12} justify="flex-end">
-                  <Button
-                    variant="outline"
-                    onPress={() => {
-                      setIsOpen(false)
-                      setConfirmText('')
-                      setReason('')
-                    }}
-                    disabled={deletionMutation.isPending}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    backgroundColor="$red9"
-                    color="white"
-                    iconStart={Trash2}
-                    onPress={handleDelete}
-                    disabled={confirmText !== 'DELETE' || deletionMutation.isPending}
-                  >
-                    {deletionMutation.isPending ? 'Deleting...' : 'Delete Account'}
-                  </Button>
-                </Row>
+              <Stack gap={8}>
+                <Text>Reason (optional)</Text>
+                <TextArea
+                  value={reason}
+                  onChangeText={setReason}
+                  placeholder="Help us improve by sharing why you're deleting your account..."
+                  style={{ minHeight: 80 }}
+                />
               </Stack>
-            </AlertDialog.Content>
-          </AlertDialog.Portal>
-        </AlertDialog>
+
+              <Stack gap={8}>
+                <Text>Type "DELETE" to confirm</Text>
+                <Input
+                  value={confirmText}
+                  onChangeText={setConfirmText}
+                  placeholder="DELETE"
+                  style={{
+                    borderColor: confirmText === 'DELETE' ? '#86efac' : '#f87171',
+                  }}
+                />
+              </Stack>
+            </Stack>
+          </ModalContent>
+          <ModalActions
+            orientation="right"
+            secondaryAction={{
+              label: 'Cancel',
+              onPress: () => {
+                setIsOpen(false)
+                setConfirmText('')
+                setReason('')
+              },
+              disabled: deletionMutation.isPending,
+            }}
+            primaryAction={{
+              label: deletionMutation.isPending ? 'Deleting...' : 'Delete Account',
+              onPress: handleDelete,
+              disabled: confirmText !== 'DELETE' || deletionMutation.isPending,
+              color: 'error',
+            }}
+          />
+        </Modal>
       </Stack>
     </Card>
   )

@@ -6,13 +6,17 @@ import {
 import { useQueryClient } from '@tanstack/react-query'
 import {
   Button,
-  ConfirmationDialog,
   Checkbox,
   DashboardWidget,
   FieldError,
+  Modal,
+  ModalActions,
+  ModalHeader,
   MonthYearPicker,
   Popover,
+  PopoverContent,
 } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { UniversityAutocomplete } from '@scf/core/components/university'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChevronDown, Plus, X } from 'lucide-react-native'
@@ -31,6 +35,7 @@ import {
   Row,
   Stack,
 } from '@scaffald/ui'
+import { useThemeContext } from '@scaffald/ui'
 import {
   createNewEducationEntry,
   DEGREE_TYPE_OPTIONS,
@@ -108,6 +113,7 @@ export function ProfileEducationLeft({
   editingEntryId,
   onEditComplete,
 }: ProfileEducationLeftProps = {}) {
+  const { theme } = useThemeContext()
   const [isLoading, setIsLoading] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const [hiddenEntryIds, setHiddenEntryIds] = useState<Set<string>>(new Set())
@@ -199,6 +205,7 @@ export function ProfileEducationLeft({
   const [manualEntryMode, setManualEntryMode] = useState<Record<number, boolean>>({})
 
   // University search query (only runs when query is valid)
+  // @ts-ignore - TODO: migrate to SDK
   const searchUniversitiesQuery = api.office.universities.searchUniversities.useQuery(
     {
       query: searchQuery,
@@ -207,7 +214,7 @@ export function ProfileEducationLeft({
     },
     {
       enabled: searchQuery.length >= 3,
-      placeholderData: (previousData) => previousData,
+      placeholderData: (previousData: unknown) => previousData,
     }
   )
 
@@ -473,9 +480,9 @@ export function ProfileEducationLeft({
   if (educationQuery.isLoading || educationLevelQuery.isLoading) {
     return (
       <DashboardWidget>
-        <Stack align="center" justify="center" padding={32} gap={16}>
+        <Stack align="center" justify="center" style={{ padding: 32 }} gap={16}>
           <Spinner size="lg" />
-          <Text color="$gray11">Loading education data...</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading education data...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -485,8 +492,8 @@ export function ProfileEducationLeft({
   if (educationQuery.isError || educationLevelQuery.isError) {
     return (
       <DashboardWidget>
-        <Stack align="center" justify="center" padding={32} gap={16}>
-          <Text color="$red10">Failed to load education data</Text>
+        <Stack align="center" justify="center" style={{ padding: 32 }} gap={16}>
+          <Text style={{ color: colors.error[500] }}>Failed to load education data</Text>
           <Button onPress={() => educationQuery.refetch()}>Retry</Button>
         </Stack>
       </DashboardWidget>
@@ -499,20 +506,21 @@ export function ProfileEducationLeft({
 
       {errorSummary.length > 0 && (
         <Stack
-          role="alert"
-          marginTop={8}
-          marginBottom={8}
-          padding="sm"
-          gap={8}
-          borderWidth={1}
-          borderColor="$red7"
-          backgroundColor="$red3"
-          borderRadius={16}
+          style={{
+            marginTop: 8,
+            marginBottom: 8,
+            padding: 12,
+            gap: 8,
+            borderWidth: 1,
+            borderColor: colors.error[300],
+            backgroundColor: colors.error[50],
+            borderRadius: 16,
+          }}
         >
-          <Text color="$red11">Please resolve the following issues:</Text>
+          <Text style={{ color: colors.error[700] }}>Please resolve the following issues:</Text>
           <Stack gap={4}>
             {errorSummary.map((message) => (
-              <Text key={message} color="$red11">
+              <Text key={message} style={{ color: colors.error[700] }}>
                 • {message}
               </Text>
             ))}
@@ -583,11 +591,21 @@ export function ProfileEducationLeft({
                   }
                 }}
                 gap={12}
-                padding="sm"
-                borderWidth={1}
-                borderColor={isEditing ? '$blue7' : hasEntryErrors ? '$red7' : '$borderColor'}
-                backgroundColor={isEditing ? '$blue2' : hasEntryErrors ? '$red2' : '$background'}
-                borderRadius={16}
+                style={{
+                  padding: 12,
+                  borderWidth: 1,
+                  borderColor: isEditing
+                    ? colors.blue[300]
+                    : hasEntryErrors
+                      ? colors.error[300]
+                      : colors.border[theme].default,
+                  backgroundColor: isEditing
+                    ? theme === 'light' ? colors.blue[50] : colors.blue[900]
+                    : hasEntryErrors
+                      ? theme === 'light' ? colors.error[50] : colors.error[900]
+                      : colors.bg[theme].default,
+                  borderRadius: 16,
+                }}
               >
                 <Row justify="space-between" align="center">
                   <Text>{entryData?.id ? 'Edit Education' : `Education ${index + 1}`}</Text>
@@ -845,7 +863,7 @@ export function ProfileEducationLeft({
                 {/* Start and End Dates */}
                 <Stack gap={8}>
                   <Row gap={12}>
-                    <Stack gap={8} flex={1}>
+                    <Stack gap={8} style={{ flex: 1 }}>
                       <Controller
                         name={`education_entries.${index}.start_date`}
                         control={control}
@@ -863,7 +881,7 @@ export function ProfileEducationLeft({
                         )}
                       />
                     </Stack>
-                    <Stack gap={8} flex={1}>
+                    <Stack gap={8} style={{ flex: 1 }}>
                       <Controller
                         name={`education_entries.${index}.end_date`}
                         control={control}
@@ -972,19 +990,19 @@ export function ProfileEducationLeft({
           })}
 
           {fields.length === 0 && (
-            <Stack padding="md" align="center" gap={8}>
-              <Text color="$gray11">No education entries added yet</Text>
+            <Stack style={{ padding: 16 }} align="center" gap={8}>
+              <Text style={{ color: colors.text[theme].secondary }}>No education entries added yet</Text>
             </Stack>
           )}
         </Stack>
 
         {/* Action Buttons */}
-        <Row justify="flex-end" gap={12} paddingTop={16}>
+        <Row justify="flex-end" gap={12} style={{ paddingTop: 16 }}>
           <Button
             variant="outline"
             disabled={!isDirty}
             onPress={() => setShowCancelDialog(true)}
-            opacity={!isDirty ? 0.5 : 1}
+            style={{ opacity: !isDirty ? 0.5 : 1 }}
           >
             Cancel
           </Button>
@@ -992,28 +1010,40 @@ export function ProfileEducationLeft({
             variant="filled" color="primary"
             onPress={handleSubmit(onSubmit)}
             disabled={!isDirty || isLoading}
-            opacity={!isDirty || isLoading ? 0.5 : 1}
+            style={{ opacity: !isDirty || isLoading ? 0.5 : 1 }}
           >
             {isSyncing ? 'Saving...' : 'Save Changes'}
           </Button>
         </Row>
 
-        {/* Cancel Confirmation Dialog */}
-        <ConfirmationDialog
-          open={showCancelDialog}
-          onOpenChange={setShowCancelDialog}
-          title="Discard Changes?"
-          message="You have unsaved changes. Are you sure you want to discard them?"
-          confirmLabel="Discard Changes"
-          cancelLabel="Keep Editing"
-          confirmTheme="red"
-          onConfirm={() => {
-            if (originalDataRef.current) {
-              reset(originalDataRef.current)
-              setShowCancelDialog(false)
-            }
-          }}
-        />
+        {/* Cancel Confirmation Modal */}
+        <Modal
+          visible={showCancelDialog}
+          onClose={() => setShowCancelDialog(false)}
+        >
+          <ModalHeader
+            title="Discard Changes?"
+            description="You have unsaved changes. Are you sure you want to discard them?"
+            onClose={() => setShowCancelDialog(false)}
+          />
+          <ModalActions
+            orientation="right"
+            primaryAction={{
+              label: 'Discard Changes',
+              color: 'error',
+              onPress: () => {
+                if (originalDataRef.current) {
+                  reset(originalDataRef.current)
+                  setShowCancelDialog(false)
+                }
+              },
+            }}
+            secondaryAction={{
+              label: 'Keep Editing',
+              onPress: () => setShowCancelDialog(false),
+            }}
+          />
+        </Modal>
       </Stack>
     </DashboardWidget>
   )
@@ -1043,8 +1073,8 @@ function SmartSelect({
   error,
   allowClear = false,
 }: SmartSelectProps) {
+  const { theme } = useThemeContext()
   const [open, setOpen] = useState(false)
-  const [_placement, setPlacement] = useState<'top' | 'bottom'>('bottom')
   const [contentWidth, setContentWidth] = useState<number | undefined>()
   const triggerRef = useRef<HTMLButtonElement | null>(null)
 
@@ -1053,53 +1083,16 @@ function SmartSelect({
     [options, value]
   )
 
-  const evaluatePlacement = useCallback(() => {
-    if (typeof window === 'undefined' || !triggerRef.current) {
-      return
-    }
-
-    const rect = triggerRef.current.getBoundingClientRect()
-    const spaceBelow = window.innerHeight - rect.bottom
-    const spaceAbove = rect.top
-    const preferredHeight = 280
-
-    if (spaceBelow < preferredHeight && spaceAbove > spaceBelow) {
-      setPlacement('top')
-    } else {
-      setPlacement('bottom')
-    }
-
-    setContentWidth(rect.width)
-  }, [])
-
-  useEffect(() => {
-    if (!open) {
-      return
-    }
-
-    const frame = requestAnimationFrame(evaluatePlacement)
-
-    const handleResize = () => evaluatePlacement()
-
-    window.addEventListener('resize', handleResize)
-    window.addEventListener('scroll', handleResize, true)
-
-    return () => {
-      cancelAnimationFrame(frame)
-      window.removeEventListener('resize', handleResize)
-      window.removeEventListener('scroll', handleResize, true)
-    }
-  }, [open, evaluatePlacement])
-
   const handleOpenChange = useCallback(
     (nextOpen: boolean) => {
       if (disabled) return
       setOpen(nextOpen)
-      if (nextOpen) {
-        requestAnimationFrame(evaluatePlacement)
+      if (nextOpen && triggerRef.current) {
+        const rect = triggerRef.current.getBoundingClientRect()
+        setContentWidth(rect.width)
       }
     },
-    [disabled, evaluatePlacement]
+    [disabled]
   )
 
   const handleSelect = useCallback(
@@ -1112,78 +1105,63 @@ function SmartSelect({
 
   const displayLabel = selectedOption?.label ?? placeholder ?? 'Select'
 
+  const popoverContent = (
+    <PopoverContent>
+      <ScrollView style={{ maxHeight: 280 }}>
+        <Stack gap={4} style={{ minWidth: contentWidth ?? 220, maxWidth: 320 }}>
+          {allowClear && (
+            <Button
+              size="sm"
+              variant="text"
+              onPress={() => handleSelect(undefined)}
+              disabled={disabled}
+            >
+              Clear selection
+            </Button>
+          )}
+          {allowClear && options.length > 0 && <Separator />}
+          {options.map((option) => {
+            const isSelected = option.value === value
+            return (
+              <Button
+                key={option.value}
+                size="sm"
+                variant={isSelected ? 'light' : 'text'}
+                color={isSelected ? 'primary' : 'gray'}
+                onPress={() => handleSelect(option.value)}
+                disabled={disabled}
+              >
+                {option.label}
+              </Button>
+            )
+          })}
+        </Stack>
+      </ScrollView>
+    </PopoverContent>
+  )
+
   return (
     <Stack gap={8}>
-      <Popover open={open} onOpenChange={handleOpenChange}>
-        <Popover.Trigger asChild>
-          <Button
-            ref={triggerRef}
-            variant="outline"
-            justify="space-between"
-            iconEnd={ChevronDown}
-            disabled={disabled}
-            borderColor={error ? '$red9' : '$borderColor'}
-            color={selectedOption ? '$color12' : '$color11'}
-            onPress={() => handleOpenChange(!open)}
-          >
-            {displayLabel}
-          </Button>
-        </Popover.Trigger>
-
-        <Popover.Content
-          elevate
-          animation="quick"
-          enterStyle={{ opacity: 0, scale: 0.96 }}
-          exitStyle={{ opacity: 0, scale: 0.96 }}
-          borderWidth={1}
-          borderColor="$borderColor"
-          backgroundColor="$color2"
-          padding="xs"
+      <Popover
+        open={open}
+        onOpenChange={handleOpenChange}
+        content={popoverContent}
+        placement="bottom-start"
+        width="trigger"
+      >
+        <Button
+          variant="outline"
+          iconEnd={ChevronDown}
+          disabled={disabled}
           style={{
-            width: contentWidth,
-            minWidth: contentWidth ?? 220,
-            maxWidth: 320,
+            borderColor: error ? colors.error[500] : colors.border[theme].default,
           }}
+          onPress={() => handleOpenChange(!open)}
         >
-          <ScrollView style={{ maxHeight: 280 }}>
-            <Stack gap={4}>
-              {allowClear && (
-                <Button
-                  size="sm"
-                  chromeless
-                  justify="flex-start"
-                  onPress={() => handleSelect(undefined)}
-                  disabled={disabled}
-                  hoverStyle={{ backgroundColor: '$color3' }}
-                >
-                  Clear selection
-                </Button>
-              )}
-              {allowClear && options.length > 0 && <Separator />}
-              {options.map((option) => {
-                const isSelected = option.value === value
-                return (
-                  <Button
-                    key={option.value}
-                    size="sm"
-                    chromeless
-                    justify="flex-start"
-                    onPress={() => handleSelect(option.value)}
-                    disabled={disabled}
-                    backgroundColor={isSelected ? '$blue3' : 'transparent'}
-                    hoverStyle={{ backgroundColor: '$blue4' }}
-                    borderRadius={12}
-                    color={isSelected ? '$blue12' : '$color12'}
-                  >
-                    {option.label}
-                  </Button>
-                )
-              })}
-            </Stack>
-          </ScrollView>
-        </Popover.Content>
+          {displayLabel}
+        </Button>
       </Popover>
-      {error && <Text color="$red10">{error}</Text>}
+      {error && <Text style={{ color: colors.error[600] }}>{error}</Text>}
     </Stack>
   )
 }

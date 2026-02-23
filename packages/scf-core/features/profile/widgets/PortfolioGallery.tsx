@@ -3,7 +3,8 @@ import { getStorageUrl } from '@scf/core/utils/supabase/storage'
 import { DashboardWidget, ResponsiveModal } from '@scaffald/ui'
 import { Eye } from 'lucide-react-native'
 import { useState } from 'react'
-import { Card, H4, Image, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Image } from 'react-native'
+import { Card, H4, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import type { ProfileWidgetProps } from './types'
 
 interface PortfolioItem {
@@ -45,7 +46,7 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
           <Spinner size="lg" />
-          <Text color="$gray11">Loading portfolio...</Text>
+          <Text style={{ color: '#414e62' }}>Loading portfolio...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -71,26 +72,22 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
               return (
                 <Card
                   key={item.id}
-                  bordered
-                  elevate
-                  pressStyle={{ scale: 0.98 }}
-                  cursor="pointer"
+                  variant="outlined"
+                  pressable
                   onPress={() => handleItemClick(item)}
                 >
                   <Stack gap={12}>
                     {imageUrl && (
                       <Image
                         source={{ uri: imageUrl }}
-                        width="100%"
-                        height={variant === 'compact' ? 150 : 200}
-                        objectFit="cover"
-                        borderRadius={12}
+                        style={{ width: '100%', height: variant === 'compact' ? 150 : 200, borderRadius: 12 }}
+                        resizeMode="cover"
                       />
                     )}
                     <Stack gap={8} padding="sm">
                       <Text>{item.title}</Text>
                       {item.description && variant === 'full' && (
-                        <Text color="$gray11">
+                        <Text style={{ color: '#414e62' }}>
                           {/* Render rich text description - simplified for now */}
                           {typeof item.description === 'string'
                             ? item.description
@@ -98,9 +95,9 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
                         </Text>
                       )}
                       {imageUrl && (
-                        <Row gap={8} align="center" marginTop={8}>
-                          <Eye size="md" color="$gray11" />
-                          <Text color="$gray11">Click to view</Text>
+                        <Row gap={8} align="center" style={{ marginTop: 8 }}>
+                          <Eye size={16} color="#414e62" />
+                          <Text style={{ color: '#414e62' }}>Click to view</Text>
                         </Row>
                       )}
                     </Stack>
@@ -131,16 +128,14 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
                   {imageUrl && (
                     <Image
                       source={{ uri: imageUrl }}
-                      width="100%"
-                      height={400}
-                      objectFit="contain"
-                      borderRadius={12}
+                      style={{ width: '100%', height: 400, borderRadius: 12 }}
+                      resizeMode="contain"
                     />
                   )}
                   {selectedItem.description && (
                     <Stack gap={8}>
                       <Text>Description</Text>
-                      <Text color="$gray11" lineHeight={16}>
+                      <Text style={{ color: '#414e62', lineHeight: 16 }}>
                         {typeof selectedItem.description === 'string'
                           ? selectedItem.description
                           : 'Rich text description'}

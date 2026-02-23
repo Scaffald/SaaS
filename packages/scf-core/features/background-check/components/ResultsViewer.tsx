@@ -71,7 +71,7 @@ export const ResultsViewer = memo(function ResultsViewer({
       >
         <Row gap={8} align="center">
           <AlertTriangle size={18} color="$red10" />
-          <Text color="$red11">We couldn’t load your background check details. Try again.</Text>
+          <Text color="$red11">We couldn't load your background check details. Try again.</Text>
         </Row>
         <Button size="sm" variant="outline" onPress={() => getCheckQuery.refetch()}>
           Retry

@@ -6,6 +6,8 @@ import {
   Label,
   ResponsiveSelect,
   Sheet,
+  SheetHeader,
+  SheetContent,
   Switch,
   Text,
   ToggleSwitch,
@@ -213,10 +215,12 @@ export function ApplicationProcessSection({
       {/* Inquiry Capability Questions */}
       <Stack
         gap={12}
-        marginTop={16}
-        paddingTop={16}
-        borderTopWidth={1}
-        borderTopColor={colors.border[theme].default}
+        style={{
+          marginTop: 16,
+          paddingTop: 16,
+          borderTopWidth: 1,
+          borderTopColor: colors.border[theme].default,
+        }}
       >
         <Stack gap={4}>
           <Text>Inquiry Capability Questions</Text>
@@ -233,9 +237,9 @@ export function ApplicationProcessSection({
                 <Card
                   key={question.name}
                   padding="sm"
-                  gap={8}
                   style={{ backgroundColor: colors.bg[theme].subtle }}
                 >
+                  <Stack gap={8}>
                   <Row justify="space-between" align="center">
                     <Stack flex={1} gap={4}>
                       <Text>{question.label}</Text>
@@ -261,6 +265,7 @@ export function ApplicationProcessSection({
                       aria-label="Remove question"
                     />
                   </Row>
+                  </Stack>
                 </Card>
               ))}
             </Stack>
@@ -273,19 +278,22 @@ export function ApplicationProcessSection({
 
         {/* Add Question Modal */}
         <Sheet
-          modal
-          open={showAddQuestionModal}
-          onOpenChange={(nextOpen: boolean) => {
-            setShowAddQuestionModal(nextOpen)
-            if (!nextOpen) {
-              setNewQuestion({ name: '', label: '', type: 'boolean', unit: '', required: false })
-            }
+          visible={showAddQuestionModal}
+          onClose={() => {
+            setShowAddQuestionModal(false)
+            setNewQuestion({ name: '', label: '', type: 'boolean', unit: '', required: false })
           }}
+          height="half"
         >
-          <Sheet.Frame padding="md" gap={16}>
-            <Stack gap={12}>
-              <Text>Add Capability Question</Text>
-
+          <SheetHeader
+            title="Add Capability Question"
+            onClose={() => {
+              setShowAddQuestionModal(false)
+              setNewQuestion({ name: '', label: '', type: 'boolean', unit: '', required: false })
+            }}
+          />
+          <SheetContent>
+            <Stack gap={16} style={{ padding: 16 }}>
               {/* Question Label */}
               <Stack gap={8}>
                 <Label>Question Label *</Label>
@@ -347,7 +355,7 @@ export function ApplicationProcessSection({
               </Row>
 
               {/* Actions */}
-              <Row gap={12} justify="flex-end" marginTop={8}>
+              <Row gap={12} justify="flex-end" style={{ marginTop: 8 }}>
                 <Button
                   variant="outline"
                   onPress={() => {
@@ -372,8 +380,7 @@ export function ApplicationProcessSection({
                 </Button>
               </Row>
             </Stack>
-          </Sheet.Frame>
-          <Sheet.Overlay />
+          </SheetContent>
         </Sheet>
       </Stack>
     </Stack>

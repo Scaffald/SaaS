@@ -278,7 +278,7 @@ const ProfileCompletionWizardSheet = memo(function ProfileCompletionWizardSheet(
       <SheetContent>
         <Stack padding="md" gap={16} flex={1}>
           <Stack gap={8}>
-            <Text color="$gray11">We’ll auto-save as you go. You can exit anytime.</Text>
+            <Text color="$gray11">We'll auto-save as you go. You can exit anytime.</Text>
           </Stack>
           {open ? (
             <ProfileWizard

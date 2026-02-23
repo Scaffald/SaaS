@@ -251,9 +251,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
 
   return (
     <ScrollView
-      flex={1}
-      style={{ backgroundColor: colors.bg[theme].subtle }}
-      padding="lg"
+      style={{ flex: 1, backgroundColor: colors.bg[theme].subtle, padding: 24 }}
       showsVerticalScrollIndicator={false}
     >
       {/* Name */}
@@ -268,7 +266,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               value={field.value}
               onChangeText={handleNameChange}
               placeholder="Enter organization name"
-              borderColor={errors.name ? theme === "light" ? colors.error[300] : colors.error[700] : colors.border[theme].default}
+              style={{ borderColor: errors.name ? theme === "light" ? colors.error[300] : colors.error[700] : colors.border[theme].default }}
             />
             {errors.name && (
               <Text data-testid="name-error" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
@@ -293,13 +291,14 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               placeholder="organization-username"
               autoCapitalize="none"
               autoCorrect={false}
-              borderColor={
-                slugHasAvailabilityError || errors.slug
-                  ? theme === "light" ? colors.error[300] : colors.error[700]
-                  : colors.border[theme].default
-              }
+              style={{
+                borderColor:
+                  slugHasAvailabilityError || errors.slug
+                    ? theme === "light" ? colors.error[300] : colors.error[700]
+                    : colors.border[theme].default,
+              }}
             />
-            <Text opacity={0.7}>Lowercase, URL-friendly username (hyphens only)</Text>
+            <Text style={{ opacity: 0.7 }}>Lowercase, URL-friendly username (hyphens only)</Text>
             {errors.slug && (
               <Text data-testid="slug-error" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                 {errors.slug.message}
@@ -382,9 +381,10 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               value={field.value || ''}
               onChangeText={field.onChange}
               placeholder="https://example.com/logo.png"
-              borderColor={
-                errors.logo_url ? theme === "light" ? colors.error[300] : colors.error[700] : colors.border[theme].default
-              }
+              style={{
+                borderColor:
+                  errors.logo_url ? theme === "light" ? colors.error[300] : colors.error[700] : colors.border[theme].default,
+              }}
             />
             {errors.logo_url && (
               <Text data-testid="logo-error" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>

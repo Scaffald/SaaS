@@ -98,19 +98,11 @@ export function AdminDisputeResolutionDialog({
       <Dialog.Portal>
         <Dialog.Overlay
           key="overlay"
-          animation="quick"
-          opacity={0.4}
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
+          style={{ opacity: 0.4 }}
         />
 
         <Dialog.Content
           key="content"
-          bordered
-          elevate
-          animation="quick"
-          enterStyle={{ opacity: 0, scale: 0.95 }}
-          exitStyle={{ opacity: 0, scale: 0.95 }}
           style={{ width: '90%', maxWidth: 640, maxHeight: '85%' }}
         >
           <Stack gap={16}>
@@ -127,22 +119,18 @@ export function AdminDisputeResolutionDialog({
               <Stack gap={12}>
                 <Stack
                   gap={8}
-                  padding="sm"
-                  backgroundColor="$color2"
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  borderRadius={16}
+                  style={{ padding: 8, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 16 }}
                 >
                   <Row gap={8} align="center">
-                    <AlertTriangle size={18} color="$yellow10" />
-                    <Text color="$gray11">{workerName}</Text>
+                    <AlertTriangle size={18} color="#b45309" />
+                    <Text style={{ color: '#414e62' }}>{workerName}</Text>
                   </Row>
-                  <Text color="$gray11">Submitted {formatDateTime(dispute.created_at)}</Text>
-                  <Text color="$gray11">Current status: {dispute.status}</Text>
+                  <Text style={{ color: '#414e62' }}>Submitted {formatDateTime(dispute.created_at)}</Text>
+                  <Text style={{ color: '#414e62' }}>Current status: {dispute.status}</Text>
                 </Stack>
 
                 <Stack gap={8}>
-                  <Text color="$gray11">Dispute reason</Text>
+                  <Text style={{ color: '#414e62' }}>Dispute reason</Text>
                   <TextArea
                     value={dispute.dispute_reason ?? ''}
                     editable={false}
@@ -152,7 +140,7 @@ export function AdminDisputeResolutionDialog({
                 </Stack>
 
                 <Stack gap={8}>
-                  <Text color="$gray11">Dispute details</Text>
+                  <Text style={{ color: '#414e62' }}>Dispute details</Text>
                   <TextArea
                     value={dispute.dispute_details ?? ''}
                     editable={false}
@@ -193,9 +181,9 @@ export function AdminDisputeResolutionDialog({
                 </Stack>
               </Stack>
             ) : (
-              <Stack gap={12} align="center" justify="center" paddingVertical={24}>
+              <Stack gap={12} align="center" justify="center" style={{ paddingVertical: 24 }}>
                 <Spinner size="lg" />
-                <Text color="$gray11">Loading dispute…</Text>
+                <Text style={{ color: '#414e62' }}>Loading dispute…</Text>
               </Stack>
             )}
 
@@ -216,7 +204,7 @@ export function AdminDisputeResolutionDialog({
                 {isSubmitting ? (
                   <Row gap={8} align="center">
                     <Spinner size="sm" color="gray" />
-                    <Text color="$gray11">Resolving…</Text>
+                    <Text style={{ color: '#414e62' }}>Resolving…</Text>
                   </Row>
                 ) : (
                   'Resolve dispute'

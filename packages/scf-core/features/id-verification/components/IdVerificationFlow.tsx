@@ -332,7 +332,7 @@ function PricingSection({
         <Stack gap={8}>
           <Text>Verification temporarily unavailable</Text>
           <Text color="$gray11">
-            Pricing hasn’t been published yet. Check back soon or contact support@scaffald.com.
+            Pricing hasn't been published yet. Check back soon or contact support@scaffald.com.
           </Text>
         </Stack>
       </Card>

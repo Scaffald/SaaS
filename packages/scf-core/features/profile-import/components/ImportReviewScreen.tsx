@@ -126,7 +126,7 @@ export function ImportReviewScreen() {
     return (
       <Stack gap={12} padding="md" align="center">
         <FileWarning size={32} color="$red10" />
-        <Text color="$red11">We couldn’t load your import data</Text>
+        <Text color="$red11">We couldn't load your import data</Text>
         <Text color="$gray11">
           Please retry. If the issue persists, try uploading your resume again.
         </Text>
@@ -335,7 +335,7 @@ export function ImportReviewScreen() {
       <Stack gap={8}>
         <Text>Review Imported Data</Text>
         <Text color="$gray11">
-          Select the items you’d like to import. We’ll highlight anything that might need attention.
+          Select the items you'd like to import. We'll highlight anything that might need attention.
         </Text>
       </Stack>
 

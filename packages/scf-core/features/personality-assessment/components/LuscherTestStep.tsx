@@ -75,13 +75,13 @@ export function LuscherTestStep({
   return (
     <Stack gap={24} maxWidth={800} width="100%" marginHorizontal="auto">
       <Stack gap={8} align="center">
-        <Text color="$gray11" textAlign="center">
+        <Text style={{ color: '#414e62', textAlign: 'center' }}>
           {step === 'luscher1' ? 'First Color Test' : 'Second Color Test'}
         </Text>
-        <Text color="$gray11" textAlign="center">
+        <Text style={{ color: '#414e62', textAlign: 'center' }}>
           Click the colors in order based on what makes you feel the best.
         </Text>
-        <Text color="$gray11" textAlign="center">
+        <Text style={{ color: '#414e62', textAlign: 'center' }}>
           {isComplete
             ? 'All 8 colors selected!'
             : `Select ${remaining} more color${remaining > 1 ? 's' : ''}`}
@@ -90,8 +90,7 @@ export function LuscherTestStep({
 
       {/* Color Grid: 2x4 on mobile, 4x2 on desktop */}
       <Stack gap={12} width="100%">
-        {/* Mobile: 2 columns, 4 rows */}
-        <Row gap={12} wrap justify="center" display="flex">
+        <Row gap={12} wrap justify="center">
           {colors.map((color) => {
             const isSelected = selectedOrder.includes(color.value)
 
@@ -100,68 +99,30 @@ export function LuscherTestStep({
                 key={String(color.key)}
                 gap={8}
                 align="center"
-                cursor={isSelected ? 'default' : 'pointer'}
-                opacity={isSelected ? 0 : 1}
-                animation="quick"
-                pressStyle={{ scale: 0.95 }}
+                style={{
+                  opacity: isSelected ? 0 : 1,
+                  cursor: isSelected ? 'default' : 'pointer',
+                  maxWidth: 200,
+                  minWidth: 120,
+                  pointerEvents: isSelected ? 'none' : 'auto',
+                }}
                 onPress={() => !isSelected && handleColorPress(color.value)}
-                disabled={isSelected || isLoading}
-                maxWidth={200}
-                minWidth={120}
-                pointerEvents={isSelected ? 'none' : 'auto'}
               >
                 <Stack
                   width="100%"
                   aspectRatio={1}
-                  maxWidth={200}
-                  maxHeight={200}
-                  style={{ backgroundColor: color.hex }}
-                  borderRadius={16}
+                  style={{
+                    backgroundColor: color.hex,
+                    borderRadius: 16,
+                    maxWidth: 200,
+                    maxHeight: 200,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 4,
+                  }}
                   justify="center"
                   align="center"
-                  shadowColor="$shadowColor"
-                  shadowOffset={{ width: 0, height: 2 }}
-                  shadowOpacity={0.1}
-                  shadowRadius={4}
-                />
-              </Stack>
-            )
-          })}
-        </Row>
-
-        {/* Desktop: 4 columns, 2 rows */}
-        <Row gap={12} wrap justify="center" display="none">
-          {colors.map((color) => {
-            const isSelected = selectedOrder.includes(color.value)
-
-            return (
-              <Stack
-                key={String(color.key)}
-                gap={8}
-                align="center"
-                cursor={isSelected ? 'default' : 'pointer'}
-                opacity={isSelected ? 0 : 1}
-                animation="quick"
-                pressStyle={{ scale: 0.95 }}
-                onPress={() => !isSelected && handleColorPress(color.value)}
-                disabled={isSelected || isLoading}
-                maxWidth={250}
-                minWidth={150}
-                pointerEvents={isSelected ? 'none' : 'auto'}
-              >
-                <Stack
-                  width="100%"
-                  aspectRatio={1}
-                  maxWidth={250}
-                  maxHeight={250}
-                  style={{ backgroundColor: color.hex }}
-                  borderRadius={16}
-                  justify="center"
-                  align="center"
-                  shadowColor="$shadowColor"
-                  shadowOffset={{ width: 0, height: 2 }}
-                  shadowOpacity={0.1}
-                  shadowRadius={4}
                 />
               </Stack>
             )

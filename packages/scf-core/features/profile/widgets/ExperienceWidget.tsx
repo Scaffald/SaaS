@@ -50,8 +50,8 @@ export function ExperienceWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text color="$red10">Failed to load experience</Text>
-          <Text color="$gray11">{error.message}</Text>
+          <Text style={{ color: '#ef4444' }}>Failed to load experience</Text>
+          <Text style={{ color: '#414e62' }}>{error.message}</Text>
           <Button
             variant="filled" color="primary"
             size="sm"
@@ -112,26 +112,24 @@ export function ExperienceWidget({
                   {/* Job Title & Company */}
                   <Stack gap={4}>
                     <Text>{exp.job_title}</Text>
-                    <Text color="$gray11">{exp.company_name}</Text>
+                    <Text style={{ color: '#414e62' }}>{exp.company_name}</Text>
                   </Stack>
 
                   {/* Duration */}
                   <Row gap={8} align="center">
-                    <Text color="$gray11">{formatDate(exp.start_date)}</Text>
-                    <Text color="$gray11">-</Text>
-                    <Text color="$gray11">
+                    <Text style={{ color: '#414e62' }}>{formatDate(exp.start_date)}</Text>
+                    <Text style={{ color: '#414e62' }}>-</Text>
+                    <Text style={{ color: '#414e62' }}>
                       {exp.is_current ? 'Present' : formatDate(exp.end_date)}
                     </Text>
                     {exp.is_current && (
                       <Row
-                        backgroundColor="$blue2"
                         paddingHorizontal={8}
                         paddingVertical={2}
                         borderRadius={8}
-                        borderWidth={1}
-                        borderColor="$blue7"
+                        style={{ backgroundColor: '#eff6ff', borderWidth: 1, borderColor: '#3b82f6' }}
                       >
-                        <Text color="$blue11">Current</Text>
+                        <Text style={{ color: '#1d4ed8' }}>Current</Text>
                       </Row>
                     )}
                   </Row>
@@ -139,31 +137,28 @@ export function ExperienceWidget({
                   {/* Location & Employment Type */}
                   {(exp.location || exp.employment_type || exp.is_remote) && (
                     <Row gap={8} wrap>
-                      {exp.location && <Text color="$gray11">📍 {exp.location}</Text>}
-                      {exp.employment_type && <Text color="$gray11">• {exp.employment_type}</Text>}
-                      {exp.is_remote && <Text color="$gray11">• Remote</Text>}
+                      {exp.location && <Text style={{ color: '#414e62' }}>📍 {exp.location}</Text>}
+                      {exp.employment_type && <Text style={{ color: '#414e62' }}>• {exp.employment_type}</Text>}
+                      {exp.is_remote && <Text style={{ color: '#414e62' }}>• Remote</Text>}
                     </Row>
                   )}
 
                   {/* Description */}
                   {exp.description && !showCompact && (
-                    <Text color="$gray11" lineHeight={12}>
+                    <Text style={{ color: '#414e62', lineHeight: 20 }}>
                       {exp.description}
                     </Text>
                   )}
 
                   {/* Separator between items */}
-                  {index < experiences.length - 1 && <Separator marginVertical={8} />}
+                  {index < experiences.length - 1 && <Separator style={{ marginVertical: 8 }} />}
                 </Stack>
               ))}
 
             {/* Show More link for compact view */}
             {showCompact && experiences.length > 3 && (
               <Text
-                color="$blue7"
-                cursor="pointer"
-                hoverStyle={{ color: '$blue8' }}
-                pressStyle={{ color: '$blue9' }}
+                style={{ color: '#3b82f6' }}
                 onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EXPERIENCE.path)}
               >
                 View all {experiences.length} positions →

@@ -57,7 +57,7 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
       <Row gap={12} align="center" justify="space-between">
         <Row gap={8} align="center" flex={1}>
           <Label>Reject automatically</Label>
-          <HelpCircle size="md" style={{ color: colors.text[theme].secondary }} />
+          <HelpCircle size={20} color={colors.text[theme].secondary} />
         </Row>
         <ToggleSwitch
           checked={localState.enabled}

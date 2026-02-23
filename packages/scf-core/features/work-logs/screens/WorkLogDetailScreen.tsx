@@ -495,7 +495,7 @@ export function WorkLogDetailScreen() {
                   <Text>Verification status</Text>
                   <Paragraph color="$gray11">
                     {isVerified
-                      ? 'Verified entries display a “Verified by Scaffald” badge on your public profile.'
+                      ? 'Verified entries display a "Verified by Scaffald" badge on your public profile.'
                       : 'Awaiting verification. Visibility controls unlock once this log is verified.'}
                   </Paragraph>
                 </Stack>

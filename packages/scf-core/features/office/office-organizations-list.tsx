@@ -5,7 +5,7 @@ import {
   useDeleteOfficeOrganizationMutation,
   useReviewOrganizationRequestMutation,
 } from '@scf/core/utils/office-organizations-sdk-hooks'
-import { DashboardWidget, Dialog, useThemeContext } from '@scaffald/ui'
+import { DashboardWidget, Modal, ModalHeader, ModalContent, ModalActions, useThemeContext } from '@scaffald/ui'
 import { Check, Loader2, RefreshCw, X as XIcon } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
@@ -128,6 +128,7 @@ export function OfficeOrganizationsList() {
       const _message = error instanceof Error ? error.message : 'Please try again shortly.'
       toast.show({
         title: 'Unable to review request',
+        message: 'Please try again shortly.',
         variant: 'error',
       })
     },
@@ -151,8 +152,10 @@ export function OfficeOrganizationsList() {
     setProcessingId(request.id)
     try {
       await reviewMutation.mutateAsync({ id: request.id, params: { action: 'approve' } })
-      toast.show('Organization approved', {
+      toast.show({
+        title: 'Organization approved',
         message: `${request.name} is now available for office management.`,
+        variant: 'success',
       })
     } catch (error) {
       // onError handler already surfaces toast feedback
@@ -190,8 +193,10 @@ export function OfficeOrganizationsList() {
         id: rejectDialog.requestId,
         params: { action: 'reject', rejectionReason: rejectDialog.reason.trim() },
       })
-      toast.show('Request rejected', {
+      toast.show({
+        title: 'Request rejected',
         message: `${rejectDialog.name} has been rejected.`,
+        variant: 'success',
       })
       resetRejectDialog()
     } catch (error) {
@@ -204,7 +209,7 @@ export function OfficeOrganizationsList() {
   const pendingRequests = (requestData?.requests as OrganizationRequestRow[]) ?? []
   const moderationCounts = requestData?.counts ?? { pending: 0, approved: 0, rejected: 0 }
 
-  const organizations = data?.organizations ?? []
+  const organizations = (data?.organizations ?? []) as unknown as Organization[]
   const filteredOrganizations = organizations.filter(
     (org: Organization) =>
       org.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -232,91 +237,51 @@ export function OfficeOrganizationsList() {
 
   return (
     <>
-      <Dialog
-        modal
-        open={rejectDialog.open}
-        onOpenChange={(open) => {
-          if (!open) {
-            resetRejectDialog()
-          } else {
-            setRejectDialog((prev) => ({
-              ...prev,
-              open: true,
-            }))
-          }
-        }}
-      >
-        <Dialog.Portal>
-          <Dialog.Overlay
-            key="overlay"
-            animation="quick"
-            opacity={0.5}
-            enterStyle={{ opacity: 0 }}
-            exitStyle={{ opacity: 0 }}
-          />
-          <Dialog.Content
-            key="content"
-            bordered
-            elevate
-            gap={16}
-            width={520}
-            animateOnly={['transform', 'opacity']}
-            animation={[
-              'quick',
-              {
-                opacity: {
-                  overshootClamping: true,
-                },
-              },
-            ]}
-            enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.92 }}
-            exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
-          >
-            <Dialog.Title>Reject Request</Dialog.Title>
-            <Dialog.Description>
+      <Modal visible={rejectDialog.open} onClose={resetRejectDialog}>
+        <ModalHeader title="Reject Request" onClose={resetRejectDialog} />
+        <ModalContent>
+          <Stack gap={8}>
+            <Text>
               Provide a short reason for rejecting <Text>{rejectDialog.name}</Text>. This helps the
               requester understand what to do next.
-            </Dialog.Description>
-            <Stack gap={8}>
-              <Label htmlFor="organization-reject-reason">Rejection Reason</Label>
-              <TextArea
-                id="organization-reject-reason"
-                value={rejectDialog.reason}
-                onChangeText={(value) => {
-                  setRejectDialog((prev) => ({
-                    ...prev,
-                    reason: value,
-                  }))
-                  if (rejectError) {
-                    setRejectError(null)
-                  }
-                }}
-                placeholder="Share why this request cannot be approved right now..."
-                style={{ minHeight: 120 }}
-                autoFocus
-              />
-              {rejectError ? (
-                <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{rejectError}</Text>
-              ) : null}
-            </Stack>
-            <Row gap={12} justify="flex-end">
-              <Dialog.Close asChild>
-                <Button variant="outline" disabled={reviewMutation.isPending}>
-                  Cancel
-                </Button>
-              </Dialog.Close>
-              <Button
-                theme="error"
-                iconStart={isProcessingAction(rejectDialog.requestId) ? Loader2 : XIcon}
-                disabled={reviewMutation.isPending}
-                onPress={handleRejectConfirm}
-              >
-                Reject Request
-              </Button>
-            </Row>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog>
+            </Text>
+            <Label htmlFor="organization-reject-reason">Rejection Reason</Label>
+            <TextArea
+              id="organization-reject-reason"
+              value={rejectDialog.reason}
+              onChangeText={(value) => {
+                setRejectDialog((prev) => ({
+                  ...prev,
+                  reason: value,
+                }))
+                if (rejectError) {
+                  setRejectError(null)
+                }
+              }}
+              placeholder="Share why this request cannot be approved right now..."
+              style={{ minHeight: 120 }}
+              autoFocus
+            />
+            {rejectError ? (
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{rejectError}</Text>
+            ) : null}
+          </Stack>
+        </ModalContent>
+        <ModalActions
+          primaryAction={{
+            label: 'Reject Request',
+            onPress: handleRejectConfirm,
+            color: 'error',
+            disabled: reviewMutation.isPending,
+            loading: isProcessingAction(rejectDialog.requestId),
+          }}
+          secondaryAction={{
+            label: 'Cancel',
+            onPress: resetRejectDialog,
+            disabled: reviewMutation.isPending,
+          }}
+        />
+      </Modal>
 
       <OfficePageLayout
         wrapWithOfficeLayout
@@ -416,7 +381,7 @@ export function OfficeOrganizationsList() {
                       <Row gap={8}>
                         <Button
                           size="sm"
-                          theme="success"
+                          color="success"
                           iconStart={isProcessingAction(request.id) ? Loader2 : Check}
                           disabled={reviewMutation.isPending}
                           onPress={() => handleApprove(request)}
@@ -426,7 +391,7 @@ export function OfficeOrganizationsList() {
                         <Button
                           size="sm"
                           variant="outline"
-                          theme="error"
+                          color="error"
                           iconStart={XIcon}
                           disabled={reviewMutation.isPending}
                           onPress={() => openRejectDialog(request)}

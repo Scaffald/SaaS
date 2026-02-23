@@ -96,7 +96,7 @@ export function DisputeForm({
           >
             <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>Dispute already in review</Text>
             <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
-              You have a dispute awaiting review. We’ll notify you when the team has an update.
+              You have a dispute awaiting review. We'll notify you when the team has an update.
             </Text>
           </Card>
         ) : null}
@@ -154,7 +154,7 @@ export function DisputeForm({
             name="details"
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <Stack gap={4}>
-                <Label htmlFor="dispute-details">Explain what’s incorrect</Label>
+                <Label htmlFor="dispute-details">Explain what's incorrect</Label>
                 <TextArea
                   id="dispute-details"
                   rows={5}

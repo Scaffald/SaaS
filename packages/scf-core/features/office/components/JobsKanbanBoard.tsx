@@ -49,7 +49,7 @@ function DroppableColumn({
 }) {
   const { isOver, setNodeRef } = useDroppable({ id, data: { type: 'column' } })
   return (
-    <View ref={setNodeRef} style={isOver ? { opacity: 0.9 } : undefined}>
+    <View ref={(el) => setNodeRef(el as unknown as HTMLElement | null)} style={isOver ? { opacity: 0.9 } : undefined}>
       {children}
     </View>
   )
@@ -70,8 +70,9 @@ function DraggableCard({
     data: { type: 'card' },
     disabled,
   })
+  const { tabIndex: _tabIndex, role: _role, ...restAttributes } = attributes
   return (
-    <View ref={setNodeRef} {...attributes} {...listeners}>
+    <View ref={(el) => setNodeRef(el as unknown as HTMLElement | null)} {...restAttributes} {...listeners}>
       {children}
     </View>
   )
@@ -187,7 +188,7 @@ export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
 
       <DragOverlay>
         {activeJob ? (
-          <Stack width={300} opacity={0.9}>
+          <Stack width={300} style={{ opacity: 0.9 }}>
             <JobCard job={activeJob} onPress={() => {}} />
           </Stack>
         ) : null}
@@ -223,7 +224,7 @@ function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: St
         {/* Column Header */}
         <Row justify="space-between" align="center" style={{ marginBottom: 12 }}>
           <Row gap={8} align="center">
-            <Stack width={8} height={8} borderRadius="$10" backgroundColor={color} />
+            <Stack width={8} height={8} borderRadius={10} style={{ backgroundColor: color }} />
             <Text>{label}</Text>
           </Row>
           <Stack
@@ -253,7 +254,7 @@ function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: St
           ) : (
             jobs.map((job) => (
               <DraggableCard key={job.id} id={job.id} disabled={isUpdating}>
-                <Stack opacity={isUpdating ? 0.5 : 1}>
+                <Stack style={{ opacity: isUpdating ? 0.5 : 1 }}>
                   <JobCard job={job} onPress={() => onJobPress(job)} />
                 </Stack>
               </DraggableCard>

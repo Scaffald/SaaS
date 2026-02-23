@@ -3,9 +3,12 @@ import { useEducation, useSaveEducationMutation } from '@scf/core/utils/profile-
 import { useQueryClient } from '@tanstack/react-query'
 import {
   Button,
-  ConfirmationDialog,
   Checkbox,
   FieldError,
+  Modal,
+  ModalActions,
+  ModalContent,
+  ModalHeader,
   MonthYearPicker,
   ResponsiveModal,
   ResponsiveSelect,
@@ -457,7 +460,7 @@ export function EducationEntryEditModal({
                       checked={isCurrent}
                       onChange={handleChange}
                       testID="education-modal-current"
-                      aria-label="Currently enrolled"
+                      accessibilityLabel="Currently enrolled"
                     />
                     <Label onPress={() => handleChange(!isCurrent)}>Currently enrolled</Label>
                   </Row>
@@ -511,7 +514,7 @@ export function EducationEntryEditModal({
               variant="outline"
               disabled={!isDirty}
               onPress={() => setShowCancelDialog(true)}
-              opacity={!isDirty ? 0.5 : 1}
+              style={{ opacity: !isDirty ? 0.5 : 1 }}
             >
               Cancel
             </Button>
@@ -519,7 +522,7 @@ export function EducationEntryEditModal({
               variant="filled" color="primary"
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
-              opacity={!isDirty || isLoading ? 0.5 : 1}
+              style={{ opacity: !isDirty || isLoading ? 0.5 : 1 }}
             >
               {isLoading ? (
                 <Row gap={8} align="center">
@@ -535,22 +538,29 @@ export function EducationEntryEditModal({
       </ResponsiveModal>
 
       {/* Cancel Confirmation Dialog */}
-      <ConfirmationDialog
-        open={showCancelDialog}
-        onOpenChange={setShowCancelDialog}
-        title="Discard Changes?"
-        message="You have unsaved changes. Are you sure you want to discard them?"
-        confirmLabel="Discard Changes"
-        cancelLabel="Keep Editing"
-        confirmTheme="red"
-        onConfirm={() => {
-          if (originalDataRef.current) {
-            reset(originalDataRef.current)
-            setShowCancelDialog(false)
-            onOpenChange(false)
-          }
-        }}
-      />
+      <Modal visible={showCancelDialog} onClose={() => setShowCancelDialog(false)}>
+        <ModalHeader title="Discard Changes?" />
+        <ModalContent>
+          <Text>You have unsaved changes. Are you sure you want to discard them?</Text>
+        </ModalContent>
+        <ModalActions
+          primaryAction={{
+            label: 'Discard Changes',
+            onPress: () => {
+              if (originalDataRef.current) {
+                reset(originalDataRef.current)
+                setShowCancelDialog(false)
+                onOpenChange(false)
+              }
+            },
+            color: 'error',
+          }}
+          secondaryAction={{
+            label: 'Keep Editing',
+            onPress: () => setShowCancelDialog(false),
+          }}
+        />
+      </Modal>
     </>
   )
 }

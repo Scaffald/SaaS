@@ -72,7 +72,7 @@ export function OfficeCMSList() {
           <Row gap={8} align="center">
             <Button
               size="sm"
-              chromeless={!includeInactive}
+              variant={!includeInactive ? 'text' : undefined}
               onPress={() => setIncludeInactive(!includeInactive)}
             >
               {includeInactive ? 'Hide' : 'Show'} Inactive
@@ -112,10 +112,10 @@ export function OfficeCMSList() {
                           <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>(Inactive)</Text>
                         )}
                       </Row>
-                      <Text opacity={0.7}>{slide.description}</Text>
+                      <Text style={{ opacity: 0.7 }}>{slide.description}</Text>
                       <Row gap={8}>
-                        <Text opacity={0.5}>Icon: {slide.icon_name}</Text>
-                        <Text opacity={0.5}>• Order: {slide.display_order}</Text>
+                        <Text style={{ opacity: 0.5 }}>Icon: {slide.icon_name}</Text>
+                        <Text style={{ opacity: 0.5 }}>• Order: {slide.display_order}</Text>
                       </Row>
                     </Stack>
 
@@ -124,20 +124,20 @@ export function OfficeCMSList() {
                         size="sm"
                         iconStart={slide.is_active ? EyeOff : Eye}
                         onPress={() => handleToggleActive(slide)}
-                        chromeless
+                        variant="text"
                       />
                       <Link
                         href={ROUTES.OFFICE.CMS.WELCOME.EDIT.path.replace(':id', slide.id)}
                         asChild
                       >
-                        <Button size="sm" iconStart={Pencil} chromeless />
+                        <Button size="sm" iconStart={Pencil} variant="text" />
                       </Link>
                       <Button
                         size="sm"
                         iconStart={Trash2}
                         onPress={() => handleDelete(slide.id, slide.title)}
-                        chromeless
-                        theme="error"
+                        variant="text"
+                        color="error"
                       />
                     </Row>
                   </Row>
@@ -146,7 +146,7 @@ export function OfficeCMSList() {
 
               {(!data?.slides || data.slides.length === 0) && (
                 <Stack align="center" justify="center" gap={16} paddingVertical={32}>
-                  <Text opacity={0.5}>No slides found</Text>
+                  <Text style={{ opacity: 0.5 }}>No slides found</Text>
                   <Link href={ROUTES.OFFICE.CMS.WELCOME.CREATE.path} asChild>
                     <Button iconStart={Plus}>Create First Slide</Button>
                   </Link>

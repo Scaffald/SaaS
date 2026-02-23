@@ -145,7 +145,7 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
             value={formData.description}
             onChangeText={(text: string) => setFormData({ ...formData, description: text })}
             disabled={isLoading}
-            height={150}
+            style={{ minHeight: 150 }}
           />
         </Stack>
 
@@ -245,11 +245,11 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
 
         {/* Actions */}
         <Row gap={12} paddingTop={16}>
-          <Button flex={1} variant="outline" onPress={() => router.back()} disabled={isLoading}>
+          <Button style={{ flex: 1 }} variant="outline" onPress={() => router.back()} disabled={isLoading}>
             Cancel
           </Button>
           <Button
-            flex={1}
+            style={{ flex: 1 }}
             onPress={() => handleSubmit(true)}
             disabled={isLoading || !formData.title || !formData.description}
           >
@@ -257,8 +257,9 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
             {!isLoading && 'Save as Draft'}
           </Button>
           <Button
-            flex={1}
-            themeInverse
+            style={{ flex: 1 }}
+            variant="filled"
+            color="primary"
             onPress={() => handleSubmit(false)}
             disabled={isLoading || !formData.title || !formData.description || !formData.location}
           >

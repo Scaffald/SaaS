@@ -3,7 +3,7 @@ import {
   useRemoveSkillMultiTaxonomyMutation,
 } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
-import { ConfirmationDialog, DashboardWidget } from '@scaffald/ui'
+import { ConfirmationModal, DashboardWidget } from '@scaffald/ui'
 import { Award } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { TRPCClientError } from '@trpc/client'
@@ -202,20 +202,14 @@ export function ProfileSkillsRight() {
 
   return (
     <Stack gap={16} flex={1}>
-      <ConfirmationDialog
-        open={confirmRemoveSkillId !== null}
-        onOpenChange={(open) => {
-          if (!open) {
-            setConfirmRemoveSkillId(null)
-          }
-        }}
+      <ConfirmationModal
+        visible={confirmRemoveSkillId !== null}
+        onClose={() => setConfirmRemoveSkillId(null)}
         title="Remove Skill?"
         message={`Are you sure you want to remove "${skillName}" from your profile?`}
         confirmLabel="Remove Skill"
         cancelLabel="Cancel"
-        confirmTheme="red"
         onConfirm={handleConfirmRemove}
-        isLoading={removeSkillMutation.isPending}
       />
       <DashboardWidget>
         <Stack gap={12}>
@@ -253,10 +247,10 @@ export function ProfileSkillsRight() {
             }) => (
               <Stack
                 key={skill.id}
-                animation="quick"
-                opacity={removingSkillId === skill.id ? 0 : 1}
-                height={removingSkillId === skill.id ? 0 : 'auto'}
-                overflow="hidden"
+                style={{
+                  opacity: removingSkillId === skill.id ? 0 : 1,
+                  overflow: 'hidden',
+                }}
               >
                 <ProfileResultCard
                   onRemove={() => handleRemoveSkill(skill.id)}
@@ -269,13 +263,13 @@ export function ProfileSkillsRight() {
                   <Stack gap={8}>
                     <Text>{skill.skill_details?.name || 'Unknown Skill'}</Text>
                     {skill.skill_details?.display_code && (
-                      <Text color="$gray11">Code: {skill.skill_details.display_code}</Text>
+                      <Text style={{ color: '#414e62' }}>Code: {skill.skill_details.display_code}</Text>
                     )}
 
                     {/* Proficiency Level */}
                     <Row justify="space-between" align="center" paddingTop={8}>
                       <Stack gap={4}>
-                        <Text color="$gray11">Proficiency</Text>
+                        <Text style={{ color: '#414e62' }}>Proficiency</Text>
                         <Text>
                           {skill.proficiency_level && getProficiencyLabel(skill.proficiency_level)}{' '}
                           ({skill.proficiency_level}/5)

@@ -51,8 +51,8 @@ export function CertificationsWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text color="$red10">Failed to load certifications</Text>
-          <Text color="$gray11">{error.message}</Text>
+          <Text style={{ color: '#ef4444' }}>Failed to load certifications</Text>
+          <Text style={{ color: '#414e62' }}>{error.message}</Text>
           <Button
             variant="filled" color="primary"
             size="sm"
@@ -129,21 +129,19 @@ export function CertificationsWidget({
                         <Row gap={8} align="center">
                           <Text>{cert.name}</Text>
                           <Row
-                            backgroundColor="$blue2"
                             paddingHorizontal={8}
                             paddingVertical={2}
                             borderRadius={8}
-                            borderWidth={1}
-                            borderColor="$blue7"
+                            style={{ backgroundColor: '#eff6ff', borderWidth: 1, borderColor: '#3b82f6' }}
                           >
-                            <CheckCircle size="sm" color="$blue11" />
-                            <Text color="$blue11" marginLeft={4}>
+                            <CheckCircle size={14} color="#1d4ed8" />
+                            <Text style={{ color: '#1d4ed8', marginLeft: 4 }}>
                               Active
                             </Text>
                           </Row>
                         </Row>
                         {cert.issuing_organization && (
-                          <Text color="$gray11">{cert.issuing_organization}</Text>
+                          <Text style={{ color: '#414e62' }}>{cert.issuing_organization}</Text>
                         )}
                       </Stack>
 
@@ -151,19 +149,19 @@ export function CertificationsWidget({
                       <Row gap={16} wrap>
                         {cert.issue_date && (
                           <Stack gap={4}>
-                            <Text color="$gray11">Issued</Text>
+                            <Text style={{ color: '#414e62' }}>Issued</Text>
                             <Text>{formatDate(cert.issue_date)}</Text>
                           </Stack>
                         )}
                         {!cert.does_not_expire && cert.expiration_date && (
                           <Stack gap={4}>
-                            <Text color="$gray11">Expires</Text>
+                            <Text style={{ color: '#414e62' }}>Expires</Text>
                             <Text>{formatDate(cert.expiration_date)}</Text>
                           </Stack>
                         )}
                         {cert.does_not_expire && (
                           <Stack gap={4}>
-                            <Text color="$gray11">Validity</Text>
+                            <Text style={{ color: '#414e62' }}>Validity</Text>
                             <Text>No Expiration</Text>
                           </Stack>
                         )}
@@ -174,18 +172,15 @@ export function CertificationsWidget({
                         <Row gap={16} wrap>
                           {cert.credential_id && (
                             <Stack gap={4}>
-                              <Text color="$gray11">Credential ID</Text>
+                              <Text style={{ color: '#414e62' }}>Credential ID</Text>
                               <Text>{cert.credential_id}</Text>
                             </Stack>
                           )}
                           {cert.credential_url && (
                             <Stack gap={4}>
-                              <Text color="$gray11">Verification</Text>
+                              <Text style={{ color: '#414e62' }}>Verification</Text>
                               <Text
-                                color="$blue7"
-                                textDecorationLine="underline"
-                                cursor="pointer"
-                                hoverStyle={{ color: '$blue8' }}
+                                style={{ color: '#3b82f6', textDecorationLine: 'underline' }}
                                 onPress={() => Linking.openURL(cert.credential_url || '')}
                               >
                                 View Certificate →
@@ -196,7 +191,7 @@ export function CertificationsWidget({
                       )}
 
                       {/* Separator */}
-                      {index < activeCerts.length - 1 && <Separator marginVertical={8} />}
+                      {index < activeCerts.length - 1 && <Separator style={{ marginVertical: 8 }} />}
                     </Stack>
                   ))}
               </Stack>
@@ -205,24 +200,22 @@ export function CertificationsWidget({
             {/* Expired Certifications (collapsed by default, only in full variant) */}
             {!showCompact && expiredCerts.length > 0 && (
               <Stack gap={12}>
-                <Text color="$gray11">Expired ({expiredCerts.length})</Text>
+                <Text style={{ color: '#414e62' }}>Expired ({expiredCerts.length})</Text>
                 {expiredCerts.slice(0, 2).map((cert: UserCertification) => (
-                  <Stack key={cert.id} gap={4} opacity={0.6}>
+                  <Stack key={cert.id} gap={4} style={{ opacity: 0.6 }}>
                     <Row gap={8} align="center">
                       <Text>{cert.name}</Text>
                       <Row
-                        backgroundColor="$color3"
                         paddingHorizontal={8}
                         paddingVertical={2}
                         borderRadius={8}
-                        borderWidth={1}
-                        borderColor="$color6"
+                        style={{ borderWidth: 1, borderColor: '#e2e8f0' }}
                       >
-                        <Text color="$gray11">Expired</Text>
+                        <Text style={{ color: '#414e62' }}>Expired</Text>
                       </Row>
                     </Row>
                     {cert.issuing_organization && (
-                      <Text color="$gray11">{cert.issuing_organization}</Text>
+                      <Text style={{ color: '#414e62' }}>{cert.issuing_organization}</Text>
                     )}
                   </Stack>
                 ))}
@@ -232,10 +225,7 @@ export function CertificationsWidget({
             {/* Show More link for compact view */}
             {showCompact && certifications.length > 3 && (
               <Text
-                color="$blue7"
-                cursor="pointer"
-                hoverStyle={{ color: '$blue8' }}
-                pressStyle={{ color: '$blue9' }}
+                style={{ color: '#3b82f6' }}
                 onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)}
               >
                 View all {certifications.length} certifications →

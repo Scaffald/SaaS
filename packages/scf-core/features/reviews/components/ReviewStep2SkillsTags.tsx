@@ -1,5 +1,7 @@
+import { Pressable } from 'react-native'
 import { CheckCircle2, Circle } from 'lucide-react-native'
 import { Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 // Mock soft skills - will be replaced with real data from API
 const MOCK_SOFT_SKILLS = [
@@ -27,39 +29,39 @@ export function ReviewStep2SkillsTags({
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text color="$gray11">Technical Skills - Details</Text>
-        <Text color="$gray11">Select their key strengths and areas to improve</Text>
+        <Text style={{ color: '#414e62' }}>Technical Skills - Details</Text>
+        <Text style={{ color: '#414e62' }}>Select their key strengths and areas to improve</Text>
       </Stack>
 
       {/* Strengths Section */}
       <Stack gap={12}>
-        <Text color="$green11">✓ Strengths</Text>
+        <Text style={{ color: '#16a34a' }}>✓ Strengths</Text>
         <Row gap={8} wrap>
           {MOCK_SOFT_SKILLS.map((skill) => {
             const isSelected = strengths.includes(skill.id)
             return (
-              <Row
+              <Pressable
                 key={`strength-${skill.id}`}
-                paddingHorizontal={12}
-                paddingVertical={8}
-                backgroundColor={isSelected ? '$green3' : '$color3'}
-                borderWidth={2}
-                borderColor={isSelected ? '$green8' : '$color5'}
-                borderRadius={12}
-                gap={8}
-                align="center"
-                cursor="pointer"
-                hoverStyle={{ backgroundColor: isSelected ? '$green4' : '$color4' }}
-                pressStyle={{ scale: 0.97 }}
                 onPress={() => onToggleStrength(skill.id)}
+                style={{
+                  flexDirection: 'row',
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                  backgroundColor: isSelected ? colors.green[100] : colors.gray[100],
+                  borderWidth: 2,
+                  borderColor: isSelected ? colors.green[300] : colors.gray[200],
+                  borderRadius: 12,
+                  gap: 8,
+                  alignItems: 'center',
+                }}
               >
                 {isSelected ? (
-                  <CheckCircle2 size="md" color="$green11" />
+                  <CheckCircle2 size={16} color={colors.green[700]} />
                 ) : (
-                  <Circle size="md" color="$gray11" />
+                  <Circle size={16} color={colors.gray[500]} />
                 )}
-                <Text color={isSelected ? '$green11' : '$color11'}>{skill.name}</Text>
-              </Row>
+                <Text style={{ color: isSelected ? colors.green[700] : colors.gray[700] }}>{skill.name}</Text>
+              </Pressable>
             )
           })}
         </Row>
@@ -67,40 +69,40 @@ export function ReviewStep2SkillsTags({
 
       {/* Areas to Improve Section */}
       <Stack gap={12}>
-        <Text color="$red11">→ Areas to Improve</Text>
+        <Text style={{ color: '#ef4444' }}>→ Areas to Improve</Text>
         <Row gap={8} wrap>
           {MOCK_SOFT_SKILLS.map((skill) => {
             const isSelected = improvements.includes(skill.id)
             return (
-              <Row
+              <Pressable
                 key={`improvement-${skill.id}`}
-                paddingHorizontal={12}
-                paddingVertical={8}
-                backgroundColor={isSelected ? '$red3' : '$color3'}
-                borderWidth={2}
-                borderColor={isSelected ? '$red8' : '$color5'}
-                borderRadius={12}
-                gap={8}
-                align="center"
-                cursor="pointer"
-                hoverStyle={{ backgroundColor: isSelected ? '$red4' : '$color4' }}
-                pressStyle={{ scale: 0.97 }}
                 onPress={() => onToggleImprovement(skill.id)}
+                style={{
+                  flexDirection: 'row',
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                  backgroundColor: isSelected ? colors.error[50] : colors.gray[100],
+                  borderWidth: 2,
+                  borderColor: isSelected ? colors.error[300] : colors.gray[200],
+                  borderRadius: 12,
+                  gap: 8,
+                  alignItems: 'center',
+                }}
               >
                 {isSelected ? (
-                  <CheckCircle2 size="md" color="$red11" />
+                  <CheckCircle2 size={16} color={colors.error[700]} />
                 ) : (
-                  <Circle size="md" color="$gray11" />
+                  <Circle size={16} color={colors.gray[500]} />
                 )}
-                <Text color={isSelected ? '$red11' : '$color11'}>{skill.name}</Text>
-              </Row>
+                <Text style={{ color: isSelected ? colors.error[700] : colors.gray[700] }}>{skill.name}</Text>
+              </Pressable>
             )
           })}
         </Row>
       </Stack>
 
       {/* Helper Text */}
-      <Text color="$gray11" fontStyle="italic">
+      <Text style={{ color: '#414e62', fontStyle: 'italic' }}>
         Select multiple skills for each category. Skills can only be in one category.
       </Text>
     </Stack>

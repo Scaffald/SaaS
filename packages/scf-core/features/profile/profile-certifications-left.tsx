@@ -15,10 +15,12 @@ import {
   CertificationChip,
   CertificationSearch,
 } from '@scf/core/components/certifications'
-import { Button, DashboardWidget, MonthYearPicker, ToggleCard } from '@scaffald/ui'
+import { Button, DashboardWidget, MonthYearPicker, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { Award, PlusCircle, UploadCloud } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useCallback, useEffect, useState } from 'react'
+import { Pressable } from 'react-native'
 import {
   Card,
   H4,
@@ -82,6 +84,7 @@ interface ProfileCertificationsLeftProps {
 export function ProfileCertificationsLeft({
   onSelectCertificationForProof,
 }: ProfileCertificationsLeftProps) {
+  const { theme } = useThemeContext()
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<Certification[]>([])
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
@@ -613,8 +616,8 @@ export function ProfileCertificationsLeft({
             <Button
               size="sm"
               iconStart={PlusCircle}
-              variant={showCustomForm ? 'outline' : undefined}
-              theme={showCustomForm ? undefined : 'accent'}
+              variant={showCustomForm ? 'outline' : 'filled'}
+              color={showCustomForm ? 'gray' : 'primary'}
               onPress={() =>
                 setShowCustomForm((prev) => {
                   if (prev) {
@@ -629,9 +632,15 @@ export function ProfileCertificationsLeft({
           </Row>
 
           {showCustomForm && (
-            <Card bordered backgroundColor="$color2">
-              <Stack gap={12} padding="md">
-                <Text color="$gray11">
+            <Card
+              style={{
+                borderWidth: 1,
+                borderColor: colors.border[theme].default,
+                backgroundColor: colors.bg[theme].subtle,
+              }}
+            >
+              <Stack gap={12} style={{ padding: 16 }}>
+                <Text style={{ color: colors.text[theme].secondary }}>
                   Add certifications that are not in our catalog. These appear alongside saved
                   certifications on the right panel.
                 </Text>
@@ -644,7 +653,9 @@ export function ProfileCertificationsLeft({
                     onChangeText={(text) => setCustomForm((prev) => ({ ...prev, name: text }))}
                     disabled={isSavingCustom}
                   />
-                  {customErrors.name && <Text color="$red10">{customErrors.name}</Text>}
+                  {customErrors.name && (
+                    <Text style={{ color: colors.error[600] }}>{customErrors.name}</Text>
+                  )}
                 </Stack>
 
                 <Stack gap={8}>
@@ -658,12 +669,12 @@ export function ProfileCertificationsLeft({
                     disabled={isSavingCustom}
                   />
                   {customErrors.organization && (
-                    <Text color="$red10">{customErrors.organization}</Text>
+                    <Text style={{ color: colors.error[600] }}>{customErrors.organization}</Text>
                   )}
                 </Stack>
 
                 <Row gap={12} wrap>
-                  <Stack flex={1} gap={8} style={{ minWidth: 200 }}>
+                  <Stack style={{ flex: 1, minWidth: 200 }} gap={8}>
                     <Text>Issue Date</Text>
                     <MonthYearPicker
                       value={customForm.issueDate}
@@ -672,7 +683,7 @@ export function ProfileCertificationsLeft({
                       error={customErrors.issueDate}
                     />
                   </Stack>
-                  <Stack flex={1} gap={8} style={{ minWidth: 200 }}>
+                  <Stack style={{ flex: 1, minWidth: 200 }} gap={8}>
                     <Text>Expiration Date</Text>
                     <MonthYearPicker
                       value={customForm.expirationDate}
@@ -686,7 +697,7 @@ export function ProfileCertificationsLeft({
                 </Row>
 
                 <Row gap={12} wrap>
-                  <Stack flex={1} gap={8} style={{ minWidth: 200 }}>
+                  <Stack style={{ flex: 1, minWidth: 200 }} gap={8}>
                     <Text>Credential ID</Text>
                     <Input
                       placeholder="Credential ID or number"
@@ -697,7 +708,7 @@ export function ProfileCertificationsLeft({
                       disabled={isSavingCustom}
                     />
                   </Stack>
-                  <Stack flex={1} gap={8} style={{ minWidth: 200 }}>
+                  <Stack style={{ flex: 1, minWidth: 200 }} gap={8}>
                     <Text>Credential URL</Text>
                     <Input
                       placeholder="https://..."
@@ -710,7 +721,7 @@ export function ProfileCertificationsLeft({
                       disabled={isSavingCustom}
                     />
                     {customErrors.credentialUrl && (
-                      <Text color="$red10">{customErrors.credentialUrl}</Text>
+                      <Text style={{ color: colors.error[600] }}>{customErrors.credentialUrl}</Text>
                     )}
                   </Stack>
                 </Row>
@@ -773,14 +784,15 @@ export function ProfileCertificationsLeft({
                       !customForm.name.trim() ||
                       !customForm.organization.trim()
                     }
-                    opacity={
-                      isSavingCustom ||
-                      Object.keys(customErrors).length > 0 ||
-                      !customForm.name.trim() ||
-                      !customForm.organization.trim()
-                        ? 0.5
-                        : 1
-                    }
+                    style={{
+                      opacity:
+                        isSavingCustom ||
+                        Object.keys(customErrors).length > 0 ||
+                        !customForm.name.trim() ||
+                        !customForm.organization.trim()
+                          ? 0.5
+                          : 1,
+                    }}
                   >
                     {showAdaptiveCustomSaving ? 'Saving...' : 'Save Certification'}
                   </Button>
@@ -797,7 +809,7 @@ export function ProfileCertificationsLeft({
               (topLevel: UserCertification) => {
                 return (
                   <Stack key={topLevel.id} gap={8}>
-                    <Text color="$blue11">{topLevel.catalog.title}</Text>
+                    <Text style={{ color: theme === 'light' ? colors.blue[700] : colors.blue[300] }}>{topLevel.catalog.title}</Text>
 
                     {/* Fetch and display depth 1 categories */}
                     <Depth1Categories
@@ -809,6 +821,7 @@ export function ProfileCertificationsLeft({
                       onSelectForProof={onSelectCertificationForProof}
                       toggleCertMutation={toggleCert}
                       recentlyChangedCerts={recentlyChangedCerts}
+                      theme={theme}
                     />
                   </Stack>
                 )
@@ -836,6 +849,7 @@ function Depth1Categories({
   onSelectForProof,
   toggleCertMutation,
   recentlyChangedCerts,
+  theme,
 }: {
   parentId: string
   expandedCategories: Set<string>
@@ -851,6 +865,7 @@ function Depth1Categories({
   onSelectForProof?: (certId: string, certTitle: string) => void
   toggleCertMutation: { isPending: boolean }
   recentlyChangedCerts: Record<string, 'added' | 'removed'>
+  theme: 'light' | 'dark'
 }) {
   const { data: childrenData } = useCertificationChildren(
     { parent_id: parentId },
@@ -861,7 +876,7 @@ function Depth1Categories({
   const typedTree = certTree as unknown as CertificationTree
 
   if (depth1Categories.length === 0) {
-    return <Text color="$gray11">No sub-categories available</Text>
+    return <Text style={{ color: colors.text[theme].secondary }}>No sub-categories available</Text>
   }
 
   return (
@@ -873,24 +888,44 @@ function Depth1Categories({
           typeof category.description === 'string' ? category.description : undefined
 
         return (
-          <ToggleCard
+          <Card
             key={category.id}
-            title={category.title}
-            description={categoryDescription}
-            checked={isExpanded}
-            onChange={() => onToggle(category.id, parentId, category.title)}
-            expandedContent={
-              <Depth2Certifications
-                categoryId={category.id}
-                parentId={category.id}
-                savedDepth2={depth2Items}
-                onCheck={onCheckCertification}
-                onSelectForProof={onSelectForProof}
-                toggleMutation={toggleCertMutation}
-                recentlyChangedCerts={recentlyChangedCerts}
-              />
-            }
-          />
+            padding="sm"
+            style={{
+              borderWidth: 1,
+              borderColor: colors.border[theme].default,
+            }}
+          >
+            <Pressable onPress={() => onToggle(category.id, parentId, category.title)}>
+              <Row
+                justify="space-between"
+                align="center"
+              >
+                <Stack style={{ flex: 1 }} gap={2}>
+                  <Text>{category.title}</Text>
+                  {categoryDescription ? (
+                    <Text style={{ color: colors.text[theme].secondary }}>{categoryDescription}</Text>
+                  ) : null}
+                </Stack>
+                <Text style={{ color: colors.text[theme].secondary }}>{isExpanded ? '▲' : '▼'}</Text>
+              </Row>
+            </Pressable>
+
+            {isExpanded && (
+              <Stack style={{ marginTop: 8 }}>
+                <Depth2Certifications
+                  categoryId={category.id}
+                  parentId={category.id}
+                  savedDepth2={depth2Items}
+                  onCheck={onCheckCertification}
+                  onSelectForProof={onSelectForProof}
+                  toggleMutation={toggleCertMutation}
+                  recentlyChangedCerts={recentlyChangedCerts}
+                  theme={theme}
+                />
+              </Stack>
+            )}
+          </Card>
         )
       })}
     </Stack>
@@ -906,6 +941,7 @@ function Depth2Certifications({
   onSelectForProof,
   toggleMutation,
   recentlyChangedCerts,
+  theme,
 }: {
   categoryId: string
   parentId: string
@@ -920,6 +956,7 @@ function Depth2Certifications({
   onSelectForProof?: (certId: string, certTitle: string) => void
   toggleMutation: { isPending: boolean }
   recentlyChangedCerts: Record<string, 'added' | 'removed'>
+  theme: 'light' | 'dark'
 }) {
   const { data: childrenData } = useCertificationChildren(
     { parent_id: parentId },
@@ -929,7 +966,7 @@ function Depth2Certifications({
   const depth2Certs: CertificationWithParent[] = childrenData?.certifications || []
 
   if (depth2Certs.length === 0) {
-    return <Text color="$gray11">No specific certifications available</Text>
+    return <Text style={{ color: colors.text[theme].secondary }}>No specific certifications available</Text>
   }
 
   // Create a map of saved certifications
@@ -938,7 +975,7 @@ function Depth2Certifications({
   )
 
   return (
-    <Stack gap={8} paddingTop={8}>
+    <Stack gap={8} style={{ paddingTop: 8 }}>
       {depth2Certs.map((cert: CertificationWithParent) => {
         const userCert = savedMap.get(cert.id)
         const isChecked = !!userCert
@@ -952,24 +989,23 @@ function Depth2Certifications({
         return (
           <Stack
             key={cert.id}
-            padding="sm"
-            borderRadius={16}
-            borderWidth={1}
-            animation="quick"
-            backgroundColor={
-              changeStatus === 'added'
-                ? '$green2'
-                : changeStatus === 'removed'
-                  ? '$red2'
-                  : '$color1'
-            }
-            borderColor={
-              changeStatus === 'added'
-                ? '$green7'
-                : changeStatus === 'removed'
-                  ? '$red7'
-                  : '$borderColor'
-            }
+            style={{
+              padding: 12,
+              borderRadius: 16,
+              borderWidth: 1,
+              backgroundColor:
+                changeStatus === 'added'
+                  ? theme === 'light' ? colors.green[50] : colors.green[900]
+                  : changeStatus === 'removed'
+                    ? theme === 'light' ? colors.error[50] : colors.error[900]
+                    : colors.bg[theme].default,
+              borderColor:
+                changeStatus === 'added'
+                  ? theme === 'light' ? colors.green[300] : colors.green[700]
+                  : changeStatus === 'removed'
+                    ? theme === 'light' ? colors.error[300] : colors.error[700]
+                    : colors.border[theme].default,
+            }}
           >
             <CertificationCheckbox
               certification={sanitizedCert}
@@ -986,12 +1022,12 @@ function Depth2Certifications({
               disabled={toggleMutation.isPending}
             />
             {changeStatus === 'added' && (
-              <Text marginTop={8} color="$green11">
+              <Text style={{ marginTop: 8, color: theme === 'light' ? colors.success[700] : colors.success[300] }}>
                 ✓ Added to profile
               </Text>
             )}
             {changeStatus === 'removed' && (
-              <Text marginTop={8} color="$red11">
+              <Text style={{ marginTop: 8, color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
                 Removed from profile
               </Text>
             )}

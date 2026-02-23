@@ -28,12 +28,12 @@ import {
 } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useMemo } from 'react'
+import { Image } from 'react-native'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   Avatar,
   Button,
   Card,
-  Image,
   Text,
   useWindowDimensions,
   Row,
@@ -303,43 +303,38 @@ export function UserProfileHeaderEnhanced({
         : resolvedYears
       : null
 
+  const buttonSize = isMobile ? 'sm' : 'md'
+
   return (
-    <Card elevate bordered overflow="hidden" padding={0}>
+    <Card variant="elevated" style={{ overflow: 'hidden' }} padding="none">
       {/* Banner Section */}
-      <Stack position="relative" height={bannerHeight} backgroundColor="$color4">
+      <Stack style={{ position: 'relative', height: bannerHeight, backgroundColor: '#e2e8f0' }}>
         {bannerUrl ? (
           <Image
             source={{ uri: bannerUrl }}
-            width="100%"
-            height={bannerHeight}
-            objectFit="cover"
-            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: bannerHeight }}
+            resizeMode="cover"
           />
         ) : (
           <Stack
-            backgroundColor="$blue5"
-            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#bfdbfe' }}
           />
         )}
 
         {/* Avatar Overlay */}
         <Stack
-          position="absolute"
           style={{
+            position: 'absolute',
             bottom: -60,
             left: isMobile ? 16 : 24,
             zIndex: 10,
           }}
         >
-          <Avatar size={isMobile ? 120 : 160} borderWidth={4} borderColor="$background">
-            {avatarUrl ? (
-              <Avatar.Image source={{ uri: avatarUrl }} />
-            ) : (
-              <Avatar.Fallback backgroundColor="$blue4">
-                <Text color="$blue10">{profile.name?.charAt(0) || '?'}</Text>
-              </Avatar.Fallback>
-            )}
-          </Avatar>
+          <Avatar
+            size={isMobile ? 80 : 80}
+            src={avatarUrl || undefined}
+            initials={profile.name?.charAt(0) || '?'}
+          />
         </Stack>
       </Stack>
 
@@ -349,23 +344,23 @@ export function UserProfileHeaderEnhanced({
         <Row gap={16} align="flex-start" justify="space-between" wrap>
           <Stack flex={1} gap={8} minWidth={200}>
             {/* Name */}
-            <Text color="$gray11">{profile.name || 'User'}</Text>
+            <Text style={{ color: '#414e62' }}>{profile.name || 'User'}</Text>
 
             {/* Headline */}
-            {profile.headline && <Text color="$gray11">{profile.headline}</Text>}
+            {profile.headline && <Text style={{ color: '#414e62' }}>{profile.headline}</Text>}
 
             {/* Industry and Location */}
             <Row gap={12} wrap align="center">
               {profile.industry_name && (
                 <Row gap={8} align="center">
-                  <Briefcase size="md" color="$gray11" />
-                  <Text color="$gray11">{profile.industry_name}</Text>
+                  <Briefcase size={16} color="#414e62" />
+                  <Text style={{ color: '#414e62' }}>{profile.industry_name}</Text>
                 </Row>
               )}
               {profile.location && (
                 <Row gap={8} align="center">
-                  <MapPin size="md" color="$gray11" />
-                  <Text color="$gray11">{profile.location}</Text>
+                  <MapPin size={16} color="#414e62" />
+                  <Text style={{ color: '#414e62' }}>{profile.location}</Text>
                 </Row>
               )}
             </Row>
@@ -374,7 +369,7 @@ export function UserProfileHeaderEnhanced({
           {/* Action Buttons */}
           <Row gap={8} wrap align="center">
             {isOwnProfile && onEdit && (
-              <Button size={isMobile ? '$3' : '$4'} theme="info" iconStart={Edit3} onPress={onEdit}>
+              <Button size={buttonSize} color="primary" iconStart={Edit3} onPress={onEdit}>
                 Edit Profile
               </Button>
             )}
@@ -384,8 +379,8 @@ export function UserProfileHeaderEnhanced({
               <>
                 {connectionButtonState.type === 'none' && (
                   <Button
-                    size={isMobile ? '$3' : '$4'}
-                    theme="info"
+                    size={buttonSize}
+                    color="primary"
                     iconStart={isConnectionMutating ? Loader2 : UserPlus}
                     onPress={handleConnect}
                     disabled={isConnectionMutating}
@@ -396,7 +391,7 @@ export function UserProfileHeaderEnhanced({
 
                 {connectionButtonState.type === 'pending_sent' && (
                   <Button
-                    size={isMobile ? '$3' : '$4'}
+                    size={buttonSize}
                     variant="outline"
                     iconStart={Loader2}
                     disabled
@@ -408,8 +403,8 @@ export function UserProfileHeaderEnhanced({
                 {connectionButtonState.type === 'pending_received' && (
                   <>
                     <Button
-                      size={isMobile ? '$3' : '$4'}
-                      theme="info"
+                      size={buttonSize}
+                      color="primary"
                       iconStart={CheckCircle2}
                       onPress={handleAccept}
                       disabled={isConnectionMutating}
@@ -417,7 +412,7 @@ export function UserProfileHeaderEnhanced({
                       {isConnectionMutating ? 'Accepting...' : 'Accept'}
                     </Button>
                     <Button
-                      size={isMobile ? '$3' : '$4'}
+                      size={buttonSize}
                       variant="outline"
                       iconStart={X}
                       onPress={handleDecline}
@@ -430,7 +425,7 @@ export function UserProfileHeaderEnhanced({
 
                 {connectionButtonState.type === 'connected' && (
                   <Button
-                    size={isMobile ? '$3' : '$4'}
+                    size={buttonSize}
                     variant="outline"
                     iconStart={UserCheck}
                     onPress={handleRemoveConnection}
@@ -447,7 +442,7 @@ export function UserProfileHeaderEnhanced({
               !followStatus.isLoading &&
               (!followStatus.isFollowing ? (
                 <Button
-                  size={isMobile ? '$3' : '$4'}
+                  size={buttonSize}
                   variant="outline"
                   iconStart={isFollowMutating ? Loader2 : UserPlus}
                   onPress={handleFollow}
@@ -457,7 +452,7 @@ export function UserProfileHeaderEnhanced({
                 </Button>
               ) : (
                 <Button
-                  size={isMobile ? '$3' : '$4'}
+                  size={buttonSize}
                   variant="outline"
                   iconStart={isFollowMutating ? Loader2 : UserMinus}
                   onPress={handleUnfollow}
@@ -468,21 +463,21 @@ export function UserProfileHeaderEnhanced({
               ))}
 
             {!isOwnProfile && (
-              <Button size={isMobile ? '$3' : '$4'} variant="outline" iconStart={Share2}>
+              <Button size={buttonSize} variant="outline" iconStart={Share2}>
                 Share
               </Button>
             )}
             {canLeaveReview && onLeaveReview && (
               <Button
-                size={isMobile ? '$3' : '$4'}
-                theme="info"
+                size={buttonSize}
+                color="primary"
                 iconStart={MessageSquare}
                 onPress={onLeaveReview}
               >
                 Leave Review
               </Button>
             )}
-            <Button size={isMobile ? '$3' : '$4'} variant="outline" iconStart={MoreVertical} />
+            <Button size={buttonSize} variant="outline" iconStart={MoreVertical} iconOnly />
           </Row>
         </Row>
 
@@ -491,25 +486,19 @@ export function UserProfileHeaderEnhanced({
           gap={12}
           wrap
           paddingTop={8}
-          borderTopWidth={1}
-          borderTopColor="$borderColor"
+          style={{ borderTopWidth: 1, borderTopColor: '#e2e8f0' }}
         >
           {/* Scaffald Score */}
           {profile.gamified_score !== null && (
             <Row
-              backgroundColor="$blue2"
-              paddingHorizontal={16}
-              paddingVertical={8}
-              borderRadius={16}
+              style={{ backgroundColor: '#eff6ff', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 16, borderWidth: 1, borderColor: '#bfdbfe' }}
               gap={8}
               align="center"
-              borderWidth={1}
-              borderColor="$blue6"
             >
-              <Star size={24} color="$blue10" fill="$blue10" />
+              <Star size={24} color="#2563eb" />
               <Stack>
-                <Text color="$blue11">{profile.gamified_score}</Text>
-                <Text color="$blue10">Scaffald Score</Text>
+                <Text style={{ color: '#1d4ed8' }}>{profile.gamified_score}</Text>
+                <Text style={{ color: '#2563eb' }}>Scaffald Score</Text>
               </Stack>
             </Row>
           )}
@@ -521,11 +510,10 @@ export function UserProfileHeaderEnhanced({
               align="center"
               paddingHorizontal={12}
               paddingVertical={8}
-              backgroundColor="$color2"
-              borderRadius={12}
+              style={{ backgroundColor: '#f8fafc', borderRadius: 12 }}
             >
-              <Award size={18} color="$gray11" />
-              <Text color="$gray11">{formattedYears} years experience</Text>
+              <Award size={18} color="#414e62" />
+              <Text style={{ color: '#414e62' }}>{formattedYears} years experience</Text>
             </Row>
           )}
 
@@ -536,25 +524,19 @@ export function UserProfileHeaderEnhanced({
               align="center"
               paddingHorizontal={12}
               paddingVertical={8}
-              backgroundColor="$color2"
-              borderRadius={12}
+              style={{ backgroundColor: '#f8fafc', borderRadius: 12 }}
             >
-              <DollarSign size={18} color="$gray11" />
-              <Text color="$gray11">{formatHourlyRate(profile.hourly_rate_cents)}</Text>
+              <DollarSign size={18} color="#414e62" />
+              <Text style={{ color: '#414e62' }}>{formatHourlyRate(profile.hourly_rate_cents)}</Text>
             </Row>
           )}
 
           {/* Open to Work Badge */}
           {profile.open_to_work && (
             <Row
-              paddingHorizontal={12}
-              paddingVertical={8}
-              backgroundColor="$green3"
-              borderRadius={12}
-              borderWidth={1}
-              borderColor="$green7"
+              style={{ paddingHorizontal: 12, paddingVertical: 8, backgroundColor: '#f0fdf4', borderRadius: 12, borderWidth: 1, borderColor: '#bbf7d0' }}
             >
-              <Text color="$green11">✓ Available for Work</Text>
+              <Text style={{ color: '#15803d' }}>✓ Available for Work</Text>
             </Row>
           )}
         </Row>

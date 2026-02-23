@@ -357,9 +357,7 @@ function SettingsToggle({
         checked={value}
         disabled={disabled}
         onChange={(checked) => onValueChange(Boolean(checked))}
-      >
-        <Switch.Thumb animation="quick" />
-      </Switch>
+      />
     </Row>
   )
 }

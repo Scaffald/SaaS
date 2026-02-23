@@ -106,8 +106,8 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
     <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Job Preview" size="lg">
       {isLoading ? (
         <Stack paddingVertical={32} align="center" justify="center">
-          <Spinner size="lg" style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }} />
-          <Text marginTop={16} style={{ color: colors.text[theme].secondary }}>
+          <Spinner size="lg" color="primary" />
+          <Text style={{ marginTop: 16, color: colors.text[theme].secondary }}>
             Loading job details...
           </Text>
         </Stack>
@@ -128,14 +128,14 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                 align="center"
                 justify="center"
               >
-                <Briefcase size={40} style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }} />
+                <Briefcase size={40} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
               </Stack>
 
               <Stack gap={8} align="center">
                 <Text style={{ color: colors.text[theme].secondary }}>{job.title}</Text>
                 {job.organization && (
                   <Row gap={8} align="center">
-                    <Building2 size="md" style={{ color: colors.text[theme].secondary }} />
+                    <Building2 size={20} color={colors.text[theme].secondary} />
                     <Text style={{ color: colors.text[theme].secondary }}>
                       {job.organization.name}
                     </Text>
@@ -154,7 +154,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                     gap={8}
                     align="center"
                   >
-                    <Briefcase size="md" style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }} />
+                    <Briefcase size={20} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
                     <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
                       {formatEmploymentType(job.employment_type ?? null)}
                     </Text>
@@ -169,7 +169,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                     gap={8}
                     align="center"
                   >
-                    <MapPin size="md" style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }} />
+                    <MapPin size={20} color={theme === "light" ? colors.green[700] : colors.green[300]} />
                     <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
                       {formatRemoteOption(job.remote_option ?? null)}
                     </Text>
@@ -184,7 +184,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             <Stack gap={12}>
               {job.location && (
                 <Row gap={8} align="center">
-                  <MapPin size="md" style={{ color: colors.text[theme].secondary }} />
+                  <MapPin size={20} color={colors.text[theme].secondary} />
                   <Text style={{ color: colors.text[theme].secondary }}>{job.location}</Text>
                 </Row>
               )}
@@ -195,7 +195,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                 job.pay_range_type ?? null
               ) && (
                 <Row gap={8} align="center">
-                  <DollarSign size="md" style={{ color: colors.text[theme].secondary }} />
+                  <DollarSign size={20} color={colors.text[theme].secondary} />
                   <Text style={{ color: colors.text[theme].secondary }}>
                     {formatPayRange(
                       job.pay_range_min_cents ?? null,
@@ -208,7 +208,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
 
               {job.posted_at && (
                 <Row gap={8} align="center">
-                  <Calendar size="md" style={{ color: colors.text[theme].secondary }} />
+                  <Calendar size={20} color={colors.text[theme].secondary} />
                   <Text style={{ color: colors.text[theme].secondary }}>
                     Posted{' '}
                     {job.posted_at ? new Date(job.posted_at).toLocaleDateString() : 'Recently'}
@@ -223,7 +223,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             {job.description && (
               <Stack gap={8}>
                 <Text style={{ color: colors.text[theme].secondary }}>Job Description</Text>
-                <Text style={{ color: colors.text[theme].secondary }} lineHeight={4}>
+                <Text style={{ color: colors.text[theme].secondary, lineHeight: 24 }}>
                   {typeof job.description === 'string'
                     ? job.description
                     : extractPlainText(job.description)}
@@ -235,7 +235,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             {job.job_skills && job.job_skills.length > 0 && (
               <Stack gap={8}>
                 <Row gap={8} align="center">
-                  <Users size="md" style={{ color: colors.text[theme].secondary }} />
+                  <Users size={20} color={colors.text[theme].secondary} />
                   <Text style={{ color: colors.text[theme].secondary }}>Required Skills</Text>
                 </Row>
                 <Row gap={8} wrap>
@@ -268,7 +268,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             {job.job_certifications && job.job_certifications.length > 0 && (
               <Stack gap={8}>
                 <Row gap={8} align="center">
-                  <Award size="md" style={{ color: colors.text[theme].secondary }} />
+                  <Award size={20} color={colors.text[theme].secondary} />
                   <Text style={{ color: colors.text[theme].secondary }}>
                     Required Certifications
                   </Text>

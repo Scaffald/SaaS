@@ -124,7 +124,7 @@ export function ProfileSnapshotWidget() {
           <H4>Profile</H4>
           <Button
             size="sm"
-            chromeless
+            variant="ghost"
             style={{ color: theme === 'light' ? colors.blue[700] : colors.blue[300] }}
             onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
           >
@@ -257,7 +257,7 @@ export function ProfileSnapshotWidget() {
               <Text>Top Skills</Text>
               <Button
                 size="sm"
-                chromeless
+                variant="ghost"
                 onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
               >
                 View All
@@ -305,7 +305,7 @@ export function ProfileSnapshotWidget() {
             color="primary"
             size="sm"
             onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
-            width="100%"
+            style={{ width: '100%' }}
           >
             Edit Profile
           </Button>

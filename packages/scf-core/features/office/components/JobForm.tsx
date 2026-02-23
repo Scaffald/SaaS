@@ -1,6 +1,10 @@
 import { useTeams } from '@scaffald/sdk/react'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import {
+  useOfficeCreateJobMutation,
+  useOfficeUpdateJobMutation,
+} from '@scf/core/utils/jobs-sdk-hooks'
+import {
   useSearchParentSkillsMutation,
   usePrimaryIndustry,
 } from '@scf/core/utils/profile-skills-sdk-hooks'
@@ -23,7 +27,7 @@ import { Eye, X } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
-import { Card, Switch } from '@scaffald/ui'
+import { Card, Toggle } from '@scaffald/ui'
 import { JobPreviewModal } from './JobPreviewModal'
 import { colors } from '@scaffald/ui/tokens'
 import {
@@ -270,7 +274,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     },
     { enabled: teamsQueryEnabled }
   )
-  const teams = (teamsData?.data ?? []) as Array<{ id: string; name: string | null }>
+  const teams = (teamsData?.teams ?? []) as Array<{ id: string; name: string | null }>
 
   useEffect(() => {
     if (formData.organization_id) {
@@ -372,7 +376,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     })
   }, [primaryTeamId])
 
-  const createJob = api.office.createJob.useMutation({
+  const createJob = useOfficeCreateJobMutation({
     onSuccess: () => {
       toast.show({
         title: 'Job created successfully',
@@ -392,7 +396,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     },
   })
 
-  const updateJob = api.office.updateJob.useMutation({
+  const updateJob = useOfficeUpdateJobMutation({
     onSuccess: () => {
       toast.show({
         title: 'Job updated successfully',
@@ -476,13 +480,9 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     }
 
     if (mode === 'create') {
-      // Form data is compatible with mutation input but has slightly different structure
       createJob.mutate(submitData as unknown as Parameters<typeof createJob.mutate>[0])
     } else if (jobId) {
-      // Form data is compatible with mutation input but has slightly different structure
-      updateJob.mutate({ id: jobId, ...submitData } as unknown as Parameters<
-        typeof updateJob.mutate
-      >[0])
+      updateJob.mutate({ id: jobId, params: submitData } as Parameters<typeof updateJob.mutate>[0])
     }
   }
 
@@ -495,10 +495,12 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
   // Skills and certifications handlers
   const searchParentSkillsMutation = useSearchParentSkillsMutation()
   const { data: primaryIndustryData } = usePrimaryIndustry()
-  const searchCertificationsQuery = api.office.searchCertifications.useQuery(
-    { query: '', limit: 50 },
-    { enabled: false }
-  )
+  // Certifications search: no SDK hook yet; stub returns empty until office certifications search is available
+  const searchCertificationsQuery = {
+    data: { certifications: [] as Array<{ id: string; name: string; slug: string; parent_slug: string | null }> },
+    isLoading: false,
+    refetch: async () => ({ data: { certifications: [] as Array<{ id: string; name: string; slug: string }> } }),
+  }
 
   const handleSearchSkills = useCallback(
     async (query: string) => {
@@ -513,19 +515,18 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           industryId,
           limit: 25,
         })
-        return (result.skills || []).map(
-          (skill: {
-            skill_id: string
-            skill_name: string
-            csi_display: string | null
-            csi_code: string[] | null
-            child_count: number
-          }) => ({
-            id: skill.skill_id,
-            name: skill.skill_name,
-            code: skill.csi_display || skill.skill_id,
-          })
-        )
+        type SkillHit = {
+          skill_id: string
+          skill_name: string
+          csi_display: string | null
+          csi_code: string[] | null
+          child_count: number
+        }
+        return ((result.skills || []) as unknown as SkillHit[]).map((skill) => ({
+          id: skill.skill_id,
+          name: skill.skill_name,
+          code: skill.csi_display || skill.skill_id,
+        }))
       } catch (error) {
         console.error('Failed to search skills', error)
         return []
@@ -640,7 +641,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     const selectedSkills = Array.from(selectedSkillsMap.values())
 
     return (
-      <Stack gap={8} position="relative">
+      <Stack gap={8} style={{ position: 'relative' }}>
         <Input
           placeholder={placeholder}
           value={searchQuery}
@@ -666,11 +667,11 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 <Text>{skill.name}</Text>
                 <Button
                   size="sm"
-                  unstyled
+                  variant="text"
                   onPress={() => handleRemoveSkill(skill.id)}
                   disabled={disabled}
                 >
-                  <X size="sm" />
+                  <X size={16} />
                 </Button>
               </Row>
             ))}
@@ -678,24 +679,25 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         )}
         {showResults && availableResults.length > 0 && (
           <Card
-            position="absolute"
-            top="$12"
-            left={0}
-            right={0}
-            zIndex={1000}
             elevation="lg"
-            height={300}
-            overflow="hidden"
+            style={{
+              position: 'absolute',
+              top: 48,
+              left: 0,
+              right: 0,
+              zIndex: 1000,
+              height: 300,
+              overflow: 'hidden',
+            }}
           >
-            <ScrollView height={300}>
+            <ScrollView style={{ height: 300 }}>
               <Stack>
                 {availableResults.map((skill) => (
                   <Button
                     key={skill.id}
-                    unstyled
+                    variant="text"
                     onPress={() => handleAddSkill(skill)}
-                    padding="sm"
-                    hoverStyle={{ backgroundColor: colors.bg[theme].subtle }}
+                    style={{ padding: 8, backgroundColor: colors.bg[theme].subtle }}
                   >
                     <Text>{skill.name}</Text>
                   </Button>
@@ -801,7 +803,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     const selectedCerts = Array.from(selectedCertsMap.values())
 
     return (
-      <Stack gap={8} position="relative">
+      <Stack gap={8} style={{ position: 'relative' }}>
         <Input
           placeholder={placeholder}
           value={searchQuery}
@@ -827,11 +829,11 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 <Text>{cert.name}</Text>
                 <Button
                   size="sm"
-                  unstyled
+                  variant="text"
                   onPress={() => handleRemoveCertification(cert.id)}
                   disabled={disabled}
                 >
-                  <X size="sm" />
+                  <X size={16} />
                 </Button>
               </Row>
             ))}
@@ -839,24 +841,25 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         )}
         {showResults && availableResults.length > 0 && (
           <Card
-            position="absolute"
-            top="$12"
-            left={0}
-            right={0}
-            zIndex={1000}
             elevation="lg"
-            height={300}
-            overflow="hidden"
+            style={{
+              position: 'absolute',
+              top: 48,
+              left: 0,
+              right: 0,
+              zIndex: 1000,
+              height: 300,
+              overflow: 'hidden',
+            }}
           >
-            <ScrollView height={300}>
+            <ScrollView style={{ height: 300 }}>
               <Stack>
                 {availableResults.map((cert) => (
                   <Button
                     key={cert.id}
-                    unstyled
+                    variant="text"
                     onPress={() => handleAddCertification(cert)}
-                    padding="sm"
-                    hoverStyle={{ backgroundColor: colors.bg[theme].subtle }}
+                    style={{ padding: 8, backgroundColor: colors.bg[theme].subtle }}
                   >
                     <Text>{cert.name}</Text>
                   </Button>
@@ -916,14 +919,18 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             <Text>Job description *</Text>
             <RichTextEditor
               data-testid="job-description-input"
-              value={formData.description as JSONContent | null}
-              onChange={(content: JSONContent) =>
-                setFormData({ ...formData, description: content })
+              value={
+                formData.description != null
+                  ? typeof formData.description === 'string'
+                    ? formData.description
+                    : extractPlainText(formData.description as JSONContent)
+                  : ''
               }
-              fieldType="JOB_DESCRIPTION"
+              onChange={(value: string) =>
+                setFormData({ ...formData, description: value })
+              }
               placeholder="e.g. responsibilities, expectations and requirements"
               disabled={isLoading}
-              showCharacterCount
               minHeight={200}
             />
           </Stack>
@@ -934,9 +941,8 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             <AddressForm
               mode="hybrid"
               placeholder="Search location"
-              provider="mapbox"
-              apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
-              zoomLevel="city"
+              provider={null}
+              searchOptions={{ zoomLevel: 'city' }}
               addressValue={{
                 streetAddress: formData.address?.street || '',
                 locality: formData.address?.city || '',
@@ -1175,20 +1181,13 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           borderColor={colors.border[theme].default}
         >
           <Row gap={12} align="center" justify="space-between">
-            <Stack flex={1} gap={4}>
-              <Text style={{ color: colors.text[theme].secondary }}>Schedule Publish</Text>
-              <Text style={{ color: colors.text[theme].secondary }}>
-                Set a date and time to automatically publish this job
-              </Text>
-            </Stack>
-            <Switch
+            <Toggle
               checked={!!formData.scheduled_publish_at}
               onChange={(checked) => {
                 if (checked) {
-                  // Set default to 1 hour from now
                   const defaultDate = new Date()
                   defaultDate.setHours(defaultDate.getHours() + 1)
-                  defaultDate.setMinutes(0) // Round to nearest hour
+                  defaultDate.setMinutes(0)
                   setFormData((prev) => ({
                     ...prev,
                     scheduled_publish_at: defaultDate.toISOString(),
@@ -1200,9 +1199,9 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                   }))
                 }
               }}
-            >
-              <Switch.Thumb />
-            </Switch>
+              label="Schedule Publish"
+              helperText="Set a date and time to automatically publish this job"
+            />
           </Row>
           {formData.scheduled_publish_at && (
             <Stack gap={8}>
@@ -1250,7 +1249,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         <Row gap={12} paddingTop={16}>
           <Button
             data-testid="job-cancel-button"
-            flex={1}
+            style={{ flex: 1 }}
             variant="outline"
             onPress={() => router.back()}
             disabled={isLoading}
@@ -1270,7 +1269,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           )}
           <Button
             data-testid="job-save-draft-button"
-            flex={1}
+            style={{ flex: 1 }}
             onPress={() => handleSubmit(true)}
             disabled={
               isLoading ||
@@ -1287,8 +1286,9 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           </Button>
           <Button
             data-testid="job-publish-button"
-            flex={1}
-            themeInverse
+            style={{ flex: 1 }}
+            variant="filled"
+            color="primary"
             onPress={() => handleSubmit(false)}
             disabled={Boolean(
               isLoading ||

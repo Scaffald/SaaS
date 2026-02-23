@@ -90,7 +90,7 @@ describe('ProfileCompletionModal', () => {
     )
 
     expect(screen.getByTestId('responsive-modal')).toBeInTheDocument()
-    expect(screen.getByText('Welcome! Let’s build your profile')).toBeInTheDocument()
+    expect(screen.getByText("Welcome! Let's build your profile")).toBeInTheDocument()
     expect(screen.getByText('Finish in 5 minutes')).toBeInTheDocument()
 
     fireEvent.click(screen.getByText('Start Wizard'))
@@ -120,8 +120,8 @@ describe('ProfileCompletionModal', () => {
       />
     )
 
-    expect(screen.getByText('Keep going — you’re close!')).toBeInTheDocument()
-    expect(screen.getByText('You’re 64% complete')).toBeInTheDocument()
+    expect(screen.getByText("Keep going — you're close!")).toBeInTheDocument()
+    expect(screen.getByText("You're 64% complete")).toBeInTheDocument()
     expect(screen.getByText('Keep going to unlock new opportunities.')).toBeInTheDocument()
 
     fireEvent.click(screen.getByText('Continue Profile'))

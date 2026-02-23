@@ -3,7 +3,8 @@ import {
   useDeleteEducationMutation,
 } from '@scf/core/utils/profile-education-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
-import { DashboardWidget, Dialog } from '@scaffald/ui'
+import { DashboardWidget, Modal, ModalHeader, ModalActions, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { AlertCircle, Calendar, GraduationCap, MapPin, Pencil, Trash2 } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useState } from 'react'
@@ -21,6 +22,7 @@ interface ProfileEducationRightProps {
  * Displays saved education entries in the right column
  */
 export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProps = {}) {
+  const { theme } = useThemeContext()
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<string | null>(null)
   const toast = useToast()
   const queryClient = useQueryClient()
@@ -67,9 +69,9 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
   if (educationQuery.isPending) {
     return (
       <DashboardWidget>
-        <Stack align="center" justify="center" padding={32} gap={16}>
+        <Stack align="center" justify="center" style={{ padding: 32 }} gap={16}>
           <Spinner size="lg" />
-          <Text color="$gray11">Loading education data...</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading education data...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -79,8 +81,8 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
   if (educationQuery.isError) {
     return (
       <DashboardWidget>
-        <Stack align="center" justify="center" padding={32} gap={16}>
-          <Text color="$red10">Failed to load education data</Text>
+        <Stack align="center" justify="center" style={{ padding: 32 }} gap={16}>
+          <Text style={{ color: colors.error[500] }}>Failed to load education data</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -90,7 +92,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
     <DashboardWidget>
       <H4>Saved Education</H4>
 
-      <Text color="$gray11" marginBottom={16}>
+      <Text style={{ color: colors.text[theme].secondary, marginBottom: 16 }}>
         Your education history is displayed here. Edit entries in the left panel.
       </Text>
 
@@ -109,25 +111,23 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
             return (
               <Stack
                 key={edu.id}
-                padding="md"
-                gap={12}
-                backgroundColor="$background"
-                borderWidth={1}
-                borderColor="$borderColor"
-                borderRadius={16}
-                hoverStyle={{
-                  borderColor: '$borderColorHover',
-                  backgroundColor: '$backgroundHover',
+                style={{
+                  padding: 16,
+                  gap: 12,
+                  backgroundColor: colors.bg[theme].default,
+                  borderWidth: 1,
+                  borderColor: colors.border[theme].default,
+                  borderRadius: 16,
                 }}
               >
                 {/* Institution Name with Verification Badge */}
                 <Stack gap={4}>
                   <Row gap={8} align="center" wrap>
-                    <Text color="$gray11">{edu.institution_name}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>{edu.institution_name}</Text>
                     {!edu.is_verified && (
                       <Row gap={4} align="center">
-                        <AlertCircle size="md" color="$orange10" />
-                        <Text color="$orange10">Pending verification</Text>
+                        <AlertCircle size={16} color={colors.warning[500]} />
+                        <Text style={{ color: colors.warning[600] }}>Pending verification</Text>
                       </Row>
                     )}
                   </Row>
@@ -135,56 +135,60 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                   {/* Current Education Badge */}
                   {edu.is_current && (
                     <Row gap={4} align="center">
-                      <Text color="$blue10">Current</Text>
+                      <Text style={{ color: colors.blue[500] }}>Current</Text>
                     </Row>
                   )}
 
                   {/* Degree Type */}
-                  {edu.degree_type && <Text color="$gray11">{edu.degree_type}</Text>}
+                  {edu.degree_type && (
+                    <Text style={{ color: colors.text[theme].secondary }}>{edu.degree_type}</Text>
+                  )}
 
                   {/* Field of Study */}
-                  {edu.field_of_study && <Text color="$gray11">{edu.field_of_study}</Text>}
+                  {edu.field_of_study && (
+                    <Text style={{ color: colors.text[theme].secondary }}>{edu.field_of_study}</Text>
+                  )}
 
                   {/* GPA */}
-                  {hasValidGpa && <Text color="$gray11">GPA: {normalizedGpa.toFixed(1)}/4.0</Text>}
+                  {hasValidGpa && (
+                    <Text style={{ color: colors.text[theme].secondary }}>
+                      GPA: {normalizedGpa.toFixed(1)}/4.0
+                    </Text>
+                  )}
                 </Stack>
 
-                {/* Delete Confirmation Dialog */}
-                <Dialog
-                  open={deleteDialogOpen === edu.id}
-                  onOpenChange={(open) => !open && setDeleteDialogOpen(null)}
+                {/* Delete Confirmation Modal */}
+                <Modal
+                  visible={deleteDialogOpen === edu.id}
+                  onClose={() => setDeleteDialogOpen(null)}
                 >
-                  <Dialog.Portal>
-                    <Dialog.Overlay />
-                    <Dialog.Content>
-                      <Dialog.Title>Delete Education Entry</Dialog.Title>
-                      <Dialog.Description>
-                        Are you sure you want to delete this education entry? This action cannot be
-                        undone.
-                      </Dialog.Description>
-                      <Row gap={12} justify="flex-end" marginTop={16}>
-                        <Button variant="outline" onPress={() => setDeleteDialogOpen(null)}>
-                          Cancel
-                        </Button>
-                        <Button
-                          theme="error"
-                          onPress={() => handleDelete(edu.id)}
-                          disabled={deleteEducationMutation.isPending}
-                        >
-                          {deleteEducationMutation.isPending ? 'Deleting...' : 'Delete'}
-                        </Button>
-                      </Row>
-                    </Dialog.Content>
-                  </Dialog.Portal>
-                </Dialog>
+                  <ModalHeader
+                    title="Delete Education Entry"
+                    description="Are you sure you want to delete this education entry? This action cannot be undone."
+                    onClose={() => setDeleteDialogOpen(null)}
+                  />
+                  <ModalActions
+                    orientation="right"
+                    primaryAction={{
+                      label: deleteEducationMutation.isPending ? 'Deleting...' : 'Delete',
+                      color: 'error',
+                      disabled: deleteEducationMutation.isPending,
+                      onPress: () => handleDelete(edu.id),
+                    }}
+                    secondaryAction={{
+                      label: 'Cancel',
+                      onPress: () => setDeleteDialogOpen(null),
+                    }}
+                  />
+                </Modal>
 
                 {/* Details */}
                 <Stack gap={8}>
                   <Row align="center" wrap gap={12}>
                     {(edu.start_date || edu.end_date || edu.is_current) && (
                       <Row gap={8} align="center">
-                        <Calendar size="md" color="$gray11" />
-                        <Text color="$gray11">
+                        <Calendar size={16} color={colors.text[theme].secondary} />
+                        <Text style={{ color: colors.text[theme].secondary }}>
                           {formatDateRange(
                             edu.start_date,
                             edu.end_date,
@@ -195,7 +199,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                       </Row>
                     )}
 
-                    <Row gap={8} marginLeft="auto">
+                    <Row gap={8} style={{ marginLeft: 'auto' }}>
                       <Button
                         size="sm"
                         variant="outline"
@@ -228,16 +232,16 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                   {/* Location */}
                   {edu.location && (
                     <Row gap={8} align="center">
-                      <MapPin size="md" color="$gray11" />
-                      <Text color="$gray11">{edu.location}</Text>
+                      <MapPin size={16} color={colors.text[theme].secondary} />
+                      <Text style={{ color: colors.text[theme].secondary }}>{edu.location}</Text>
                     </Row>
                   )}
 
                   {/* Description */}
                   {edu.description && (
                     <Stack gap={4}>
-                      <Text color="$gray11">Description:</Text>
-                      <Text color="$gray11">{edu.description}</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>Description:</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>{edu.description}</Text>
                     </Stack>
                   )}
                 </Stack>

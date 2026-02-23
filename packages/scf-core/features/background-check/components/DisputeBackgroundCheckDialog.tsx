@@ -74,18 +74,10 @@ export function DisputeBackgroundCheckDialog({
       <Dialog.Portal>
         <Dialog.Overlay
           key="overlay"
-          animation="quick"
-          opacity={0.5}
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
+          style={{ opacity: 0.5 }}
         />
         <Dialog.Content
           key="content"
-          bordered
-          elevate
-          animation="quick"
-          enterStyle={{ y: -10, opacity: 0 }}
-          exitStyle={{ y: -10, opacity: 0 }}
           style={{ width: '90%', maxWidth: 520 }}
         >
           <Stack gap={16}>
@@ -99,17 +91,17 @@ export function DisputeBackgroundCheckDialog({
             </Row>
 
             {check ? (
-              <Stack gap={8} backgroundColor="$color3" padding="sm" borderRadius={16}>
+              <Stack gap={8} style={{ borderRadius: 16, padding: 8 }}>
                 <Row gap={8} align="center">
-                  <AlertTriangle size={18} color="$yellow10" />
-                  <Text color="$gray11">{statusMeta?.label ?? 'Background check'}</Text>
+                  <AlertTriangle size={18} color="#b45309" />
+                  <Text style={{ color: '#414e62' }}>{statusMeta?.label ?? 'Background check'}</Text>
                 </Row>
-                <Text color="$gray11">
-                  Package: <Text color="$gray11">{summaryPackage}</Text>
+                <Text style={{ color: '#414e62' }}>
+                  Package: <Text style={{ color: '#414e62' }}>{summaryPackage}</Text>
                 </Text>
-                <Text color="$gray11">Completed: {formatDate(check.completed_at)}</Text>
-                <Text color="$gray11">Expires: {formatDate(check.expires_at)}</Text>
-                <Text color="$gray11">
+                <Text style={{ color: '#414e62' }}>Completed: {formatDate(check.completed_at)}</Text>
+                <Text style={{ color: '#414e62' }}>Expires: {formatDate(check.expires_at)}</Text>
+                <Text style={{ color: '#414e62' }}>
                   Disputes should focus on factual inaccuracies, missing context, or mismatched
                   records.
                 </Text>
@@ -141,8 +133,8 @@ export function DisputeBackgroundCheckDialog({
                 />
               </>
             ) : (
-              <Stack gap={12} align="center" paddingVertical={24}>
-                <Text color="$gray11">
+              <Stack gap={12} align="center" style={{ paddingVertical: 24 }}>
+                <Text style={{ color: '#414e62' }}>
                   Select a background check to review dispute information.
                 </Text>
               </Stack>

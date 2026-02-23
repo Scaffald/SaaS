@@ -101,7 +101,7 @@ export function CompensationBenefitsSection({
           placeholder="Describe health insurance, PTO, retirement plans, etc."
           value={localState.benefits_summary || ''}
           onChangeText={(text) => handleChange('benefits_summary', text || undefined)}
-          height={100}
+          style={{ minHeight: 100 }}
         />
       </Stack>
 
@@ -127,7 +127,7 @@ export function CompensationBenefitsSection({
             placeholder="Describe bonus structure, eligibility, and potential amounts"
             value={localState.bonus_details || ''}
             onChangeText={(text) => handleChange('bonus_details', text || undefined)}
-            height={80}
+            style={{ minHeight: 80 }}
           />
         </Stack>
       )}
@@ -154,7 +154,7 @@ export function CompensationBenefitsSection({
             placeholder="Describe equity compensation structure"
             value={localState.equity_details || ''}
             onChangeText={(text) => handleChange('equity_details', text || undefined)}
-            height={80}
+            style={{ minHeight: 80 }}
           />
         </Stack>
       )}
@@ -197,7 +197,7 @@ export function CompensationBenefitsSection({
             placeholder="Describe relocation assistance offered"
             value={localState.relocation_package_details || ''}
             onChangeText={(text) => handleChange('relocation_package_details', text || undefined)}
-            height={80}
+            style={{ minHeight: 80 }}
           />
         </Stack>
       )}

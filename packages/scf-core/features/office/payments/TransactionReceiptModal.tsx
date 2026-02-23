@@ -1,6 +1,6 @@
 import { useTransactionReceipt } from '@scf/core/utils/payments-sdk-hooks'
-import { Dialog, useThemeContext } from '@scaffald/ui'
-import { Download, X } from 'lucide-react-native'
+import { Modal, ModalHeader, ModalContent, ModalActions, useThemeContext } from '@scaffald/ui'
+import { Download } from 'lucide-react-native'
 import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
@@ -48,117 +48,76 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} modal>
-      <Dialog.Portal>
-        <Dialog.Overlay
-          key="overlay"
-          animation="quick"
-          opacity={0.5}
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
-        />
-        <Dialog.Content
-          bordered
-          elevate
-          key="content"
-          animateOnly={['transform', 'opacity']}
-          animation={[
-            'quick',
-            {
-              opacity: {
-                overshootClamping: true,
-              },
-            },
-          ]}
-          enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
-          exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
-          gap={16}
-          width="90%"
-          style={{ maxWidth: 600 }}
-        >
-          <Dialog.Title>Transaction Receipt</Dialog.Title>
-          <Dialog.Description>View and download receipt for this transaction.</Dialog.Description>
-
-          {receiptQuery.isLoading ? (
-            <Stack align="center" paddingVertical={24} gap={12}>
-              <Spinner size="lg" />
-              <Text style={{ color: colors.text[theme].secondary }}>Loading receipt…</Text>
-            </Stack>
-          ) : receiptQuery.error ? (
+    <Modal visible={open} onClose={() => onOpenChange(false)} width="90%" style={{ maxWidth: 600 }}>
+      <ModalHeader title="Transaction Receipt" description="View and download receipt for this transaction." />
+      <ModalContent>
+        {receiptQuery.isLoading ? (
+          <Stack align="center" style={{ paddingVertical: 24 }} gap={12}>
+            <Spinner size="lg" />
+            <Text style={{ color: colors.text[theme].secondary }}>Loading receipt…</Text>
+          </Stack>
+        ) : receiptQuery.error ? (
+          <Card
+            padding="md"
+            style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
+            borderColor={theme === "light" ? colors.error[300] : colors.error[700]}
+            borderWidth={1}
+          >
+            <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
+              Failed to load receipt: {receiptQuery.error.message}
+            </Text>
+          </Card>
+        ) : receiptQuery.data ? (
+          <Stack gap={16}>
             <Card
               padding="md"
-              style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
-              borderColor={theme === "light" ? colors.error[300] : colors.error[700]}
+              style={{ backgroundColor: colors.bg[theme].subtle }}
+              borderColor={colors.border[theme].default}
               borderWidth={1}
             >
-              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
-                Failed to load receipt: {receiptQuery.error.message}
-              </Text>
-            </Card>
-          ) : receiptQuery.data ? (
-            <Stack gap={16}>
-              <Card
-                padding="md"
-                style={{ backgroundColor: colors.bg[theme].subtle }}
-                borderColor={colors.border[theme].default}
-                borderWidth={1}
-              >
-                <Stack gap={12}>
-                  <Row justify="space-between" align="center">
-                    <Text>{receiptQuery.data.receiptNumber}</Text>
-                    <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
-                      {receiptQuery.data.amount}
+              <Stack gap={12}>
+                <Row justify="space-between" align="center">
+                  <Text>{receiptQuery.data.receiptNumber}</Text>
+                  <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
+                    {receiptQuery.data.amount}
+                  </Text>
+                </Row>
+                <Stack gap={8}>
+                  <Row justify="space-between">
+                    <Text style={{ color: colors.text[theme].secondary }}>Date:</Text>
+                    <Text>{new Date(receiptQuery.data.date).toLocaleString()}</Text>
+                  </Row>
+                  <Row justify="space-between">
+                    <Text style={{ color: colors.text[theme].secondary }}>Organization:</Text>
+                    <Text>{receiptQuery.data.organizationName}</Text>
+                  </Row>
+                  <Row justify="space-between">
+                    <Text style={{ color: colors.text[theme].secondary }}>Type:</Text>
+                    <Text>{receiptQuery.data.transactionType}</Text>
+                  </Row>
+                  <Row justify="space-between">
+                    <Text style={{ color: colors.text[theme].secondary }}>Status:</Text>
+                    <Text>{receiptQuery.data.status}</Text>
+                  </Row>
+                  <Row justify="space-between">
+                    <Text style={{ color: colors.text[theme].secondary }}>Payment Intent:</Text>
+                    <Text style={{ fontFamily: 'monospace' }}>
+                      {receiptQuery.data.stripePaymentIntentId}
                     </Text>
                   </Row>
-                  <Stack gap={8}>
-                    <Row justify="space-between">
-                      <Text style={{ color: colors.text[theme].secondary }}>Date:</Text>
-                      <Text>{new Date(receiptQuery.data.date).toLocaleString()}</Text>
-                    </Row>
-                    <Row justify="space-between">
-                      <Text style={{ color: colors.text[theme].secondary }}>Organization:</Text>
-                      <Text>{receiptQuery.data.organizationName}</Text>
-                    </Row>
-                    <Row justify="space-between">
-                      <Text style={{ color: colors.text[theme].secondary }}>Type:</Text>
-                      <Text>{receiptQuery.data.transactionType}</Text>
-                    </Row>
-                    <Row justify="space-between">
-                      <Text style={{ color: colors.text[theme].secondary }}>Status:</Text>
-                      <Text>{receiptQuery.data.status}</Text>
-                    </Row>
-                    <Row justify="space-between">
-                      <Text style={{ color: colors.text[theme].secondary }}>Payment Intent:</Text>
-                      <Text style={{ fontFamily: 'monospace' }}>
-                        {receiptQuery.data.stripePaymentIntentId}
-                      </Text>
-                    </Row>
-                  </Stack>
                 </Stack>
-              </Card>
-
-              <Row gap={8} justify="flex-end">
-                <Button
-                  size="md"
-                  variant="outline"
-                  iconStart={Download}
-                  onPress={handleDownloadReceipt}
-                >
-                  Download Receipt
-                </Button>
-                <Button
-                  size="md"
-                  variant="outline"
-                  iconStart={X}
-                  onPress={() => onOpenChange(false)}
-                >
-                  Close
-                </Button>
-              </Row>
-            </Stack>
-          ) : null}
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog>
+              </Stack>
+            </Card>
+          </Stack>
+        ) : null}
+      </ModalContent>
+      <ModalActions
+        secondaryAction={{ label: 'Close', onPress: () => onOpenChange(false) }}
+        primaryAction={receiptQuery.data ? {
+          label: 'Download Receipt',
+          onPress: handleDownloadReceipt,
+        } : undefined}
+      />
+    </Modal>
   )
 }

@@ -104,7 +104,7 @@ export function BackgroundCheckWizard() {
             <Stack gap={8}>
               <Text color="$gray11">Background Check Submitted</Text>
               <Text color="$gray11">
-                We’ve started your background check request. We’ll notify you when results are
+                We've started your background check request. We'll notify you when results are
                 ready.
               </Text>
             </Stack>
@@ -151,7 +151,7 @@ export function BackgroundCheckWizard() {
           style={{ borderBottomWidth: 1, borderBottomColor: '$red7' }}
         >
           <Text color="$red11">
-            We couldn’t submit your background check: {submitError.message}
+            We couldn't submit your background check: {submitError.message}
           </Text>
         </Stack>
       )}

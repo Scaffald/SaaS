@@ -50,8 +50,8 @@ export function EducationWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text color="$red10">Failed to load education</Text>
-          <Text color="$gray11">{error.message}</Text>
+          <Text style={{ color: '#ef4444' }}>Failed to load education</Text>
+          <Text style={{ color: '#414e62' }}>{error.message}</Text>
           <Button
             variant="filled" color="primary"
             size="sm"
@@ -115,36 +115,35 @@ export function EducationWidget({
                       {edu.degree_type || 'Degree'}
                       {edu.field_of_study && ` in ${edu.field_of_study}`}
                     </Text>
-                    <Text color="$gray11">{edu.institution_name || 'Institution'}</Text>
+                    <Text style={{ color: '#414e62' }}>{edu.institution_name || 'Institution'}</Text>
                   </Stack>
 
                   {/* Duration */}
                   <Row gap={8} align="center">
-                    <Text color="$gray11">{formatDate(edu.start_date)}</Text>
-                    <Text color="$gray11">-</Text>
-                    <Text color="$gray11">
+                    <Text style={{ color: '#414e62' }}>{formatDate(edu.start_date)}</Text>
+                    <Text style={{ color: '#414e62' }}>-</Text>
+                    <Text style={{ color: '#414e62' }}>
                       {edu.is_current ? 'Present' : formatDate(edu.end_date)}
                     </Text>
                     {edu.is_current && (
                       <Row
-                        backgroundColor="$blue2"
                         paddingHorizontal={8}
                         paddingVertical={2}
                         borderRadius={8}
                         borderWidth={1}
-                        borderColor="$blue7"
+                        style={{ backgroundColor: '#bfdbfe', borderColor: '#1d4ed8' }}
                       >
-                        <Text color="$blue11">Current</Text>
+                        <Text style={{ color: '#1d4ed8' }}>Current</Text>
                       </Row>
                     )}
                   </Row>
 
                   {/* Location */}
-                  {edu.location && <Text color="$gray11">📍 {edu.location}</Text>}
+                  {edu.location && <Text style={{ color: '#414e62' }}>📍 {edu.location}</Text>}
 
                   {/* Description */}
                   {edu.description && !showCompact && (
-                    <Text color="$gray11" lineHeight={12}>
+                    <Text style={{ color: '#414e62', lineHeight: 12 }}>
                       {edu.description}
                     </Text>
                   )}
@@ -157,10 +156,7 @@ export function EducationWidget({
             {/* Show More link for compact view */}
             {showCompact && education.length > 2 && (
               <Text
-                color="$blue7"
-                cursor="pointer"
-                hoverStyle={{ color: '$blue8' }}
-                pressStyle={{ color: '$blue9' }}
+                style={{ color: '#1d4ed8', cursor: 'pointer' }}
                 onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)}
               >
                 View all {education.length} entries →

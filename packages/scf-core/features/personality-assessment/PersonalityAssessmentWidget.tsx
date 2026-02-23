@@ -81,9 +81,7 @@ export function PersonalityAssessmentWidget() {
               </Text>
               <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{completionScore}%</Text>
             </Row>
-            <ProgressBar value={completionScore} max={100}>
-              <ProgressBar.Indicator animation="bouncy" />
-            </ProgressBar>
+            <ProgressBar value={completionScore} showLabel={false} showIndicator={false} showHintMessage={false} />
             <Text style={{ color: colors.text[theme].secondary }}>
               {hasStarted ? 'Continue where you left off' : 'Start your assessment'}
             </Text>
@@ -95,7 +93,7 @@ export function PersonalityAssessmentWidget() {
           variant="filled" color="primary"
           onPress={handleStart}
           size="lg"
-          marginTop={hasStarted ? spacing.xs : spacing.md}
+          style={{ marginTop: hasStarted ? spacing.xs : spacing.md }}
         >
           {hasStarted ? 'Continue Assessment' : 'Start Assessment'}
         </Button>

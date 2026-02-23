@@ -7,6 +7,7 @@
  */
 
 import { Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 /**
  * Privacy right structure
@@ -76,11 +77,11 @@ const CCPA_RIGHTS: PrivacyRight[] = [
  * Action type to color mapping
  */
 const ACTION_COLORS: Record<string, string> = {
-  export: '$blue10',
-  delete: '$red10',
-  optout: '$orange10',
-  correct: '$purple10',
-  info: '$color11',
+  export: '#2563eb',
+  delete: '#ef4444',
+  optout: colors.orange[600],
+  correct: colors.purple[600],
+  info: colors.gray[600],
 }
 
 /**
@@ -102,26 +103,24 @@ function RightCard({
   return (
     <Stack
       padding="md"
-      backgroundColor="$color2"
+      backgroundColor={colors.bg.light.subtle}
       borderRadius={12}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border.light.default}
       gap={12}
     >
       <Row gap={8} align="center">
-        <Stack width={8} height={8} borderRadius={4} backgroundColor="$green10" />
+        <Stack width={8} height={8} borderRadius={4} backgroundColor={colors.green[500]} />
         <Text>{right.title}</Text>
       </Row>
 
-      <Text color="$gray11" lineHeight={16}>
+      <Text style={{ color: '#414e62', lineHeight: 16 }}>
         {right.description}
       </Text>
 
       {right.actionLabel && right.actionType !== 'info' && (
         <Text
-          color={ACTION_COLORS[right.actionType || 'info']}
-          cursor="pointer"
-          hoverStyle={{ textDecorationLine: 'underline' }}
+          style={{ color: ACTION_COLORS[right.actionType || 'info'] }}
           onPress={handleAction}
         >
           {right.actionLabel} →
@@ -151,8 +150,13 @@ export function PrivacyRightsList({ onAction }: PrivacyRightsListProps) {
       ))}
 
       {/* Legal reference */}
-      <Stack padding="sm" backgroundColor="$color3" borderRadius={8} marginTop={8}>
-        <Text color="$gray11">
+      <Stack
+        padding="sm"
+        backgroundColor={colors.bg.light.muted}
+        borderRadius={8}
+        marginTop={8}
+      >
+        <Text style={{ color: '#414e62' }}>
           These rights are provided under the California Consumer Privacy Act (CCPA) and California
           Privacy Rights Act (CPRA). To exercise any of these rights, you can use the quick actions
           at the top of this page or contact our Privacy Team.

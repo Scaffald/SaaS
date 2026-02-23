@@ -6,7 +6,7 @@ import { useEmployment } from '@scf/core/utils/profile-employment-sdk-hooks'
 import { useEducation } from '@scf/core/utils/profile-education-sdk-hooks'
 import { useUserCertificationTree } from '@scf/core/utils/profile-certifications-sdk-hooks'
 import { useUserSkillsMultiTaxonomy } from '@scf/core/utils/profile-skills-sdk-hooks'
-import { Button, ToggleCard, spacing } from '@scaffald/ui'
+import { Button } from '@scaffald/ui'
 import {
   AlertCircle,
   CheckCircle2,
@@ -19,7 +19,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Checkbox,
   Input,
-  Paragraph,
   ScrollView,
   Separator,
   Spinner,
@@ -455,19 +454,21 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
 
   if (isLoading) {
     return (
-      <Stack align="center" justify="center" flex={1} gap={12} paddingVertical="$10">
+      <Stack align="center" justify="center" flex={1} gap={12}>
         <Spinner size="lg" />
-        <Text color="$gray11">Loading resume import wizard...</Text>
+        <Text style={{ color: '#414e62' }}>Loading resume import wizard...</Text>
       </Stack>
     )
   }
 
   if (!wizard) {
     return (
-      <Stack align="center" justify="center" flex={1} gap={12} paddingVertical="$10">
-        <AlertCircle size={32} color="$red10" />
-        <Text color="$red11">Wizard session not found</Text>
-        <Text color="$gray11">Please upload your resume again to kick off the import flow.</Text>
+      <Stack align="center" justify="center" flex={1} gap={12}>
+        <AlertCircle size={32} />
+        <Text style={{ color: '#ef4444' }}>Wizard session not found</Text>
+        <Text style={{ color: '#414e62' }}>
+          Please upload your resume again to kick off the import flow.
+        </Text>
       </Stack>
     )
   }
@@ -543,19 +544,19 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
   }
 
   return (
-    <Stack flex={1} gap={spacing.lg}>
+    <Stack flex={1} gap={16}>
       <Stack gap={8}>
         <Text>Resume Import</Text>
-        <Text color="$gray11">
+        <Text style={{ color: '#414e62' }}>
           Review each section parsed from your resume. Make edits or skip sections you don't want to
           import.
         </Text>
       </Stack>
 
       {hasExistingProfileData ? (
-        <Stack gap={8} backgroundColor="$blue3" padding="sm" borderRadius={16}>
-          <Text color="$blue11">Merge resume with existing profile data</Text>
-          <Text color="$blue11">
+        <Stack gap={8} style={{ backgroundColor: '#dbeafe', borderRadius: 16 }} padding="sm">
+          <Text style={{ color: '#2563eb' }}>Merge resume with existing profile data</Text>
+          <Text style={{ color: '#2563eb' }}>
             We found previously saved information. Choose how each section merges to avoid
             overwriting details you want to keep.
           </Text>
@@ -563,10 +564,10 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       ) : null}
 
       {mergedErrors && mergedErrors.length > 0 && (
-        <Stack gap={8} backgroundColor="$yellow3" padding="sm" borderRadius={16}>
-          <Text color="$yellow11">We couldn’t parse everything in this section.</Text>
+        <Stack gap={8} style={{ backgroundColor: '#fef9c3', borderRadius: 16 }} padding="sm">
+          <Text style={{ color: '#92400e' }}>We couldn't parse everything in this section.</Text>
           {mergedErrors.map((error) => (
-            <Text key={`${error.section}-${error.message}`} color="$yellow11">
+            <Text key={`${error.section}-${error.message}`} style={{ color: '#92400e' }}>
               {error.message}
             </Text>
           ))}
@@ -574,7 +575,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       )}
 
       <ScrollView flex={1}>
-        <Stack gap={spacing.lg} paddingBottom={32}>
+        <Stack gap={16} paddingBottom={32}>
           {renderCurrentStep()}
         </Stack>
       </ScrollView>
@@ -644,9 +645,9 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     return (
       <Stack gap={16}>
         <Text>General Information</Text>
-        <Paragraph color="$gray11">
+        <Text style={{ color: '#414e62' }}>
           Update your basic profile details. We only update the fields you confirm.
-        </Paragraph>
+        </Text>
         <Row gap={16} wrap>
           <Stack gap={8} flex={1}>
             <Text>First Name</Text>
@@ -699,7 +700,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
             <SelectableCard
               key={`${entry.title}-${entry.company}-${index}`}
               checked={experienceSelections[index]}
-              onChange={(value) => experienceSelections.set(index, value)}
+              onChange={(value) => experienceSelections.set(index, Boolean(value))}
               title={entry.title ?? 'Untitled Role'}
               subtitle={entry.company ?? 'Unknown Company'}
               details={details}
@@ -713,7 +714,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
   function renderEducationStep() {
     const education = parsedData.education ?? []
     if (education.length === 0) {
-      return <EmptyState message="We didn’t find education entries in this resume." />
+      return <EmptyState message="We didn't find education entries in this resume." />
     }
     return (
       <Stack gap={16}>
@@ -734,7 +735,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
             <SelectableCard
               key={`${entry.school}-${index}`}
               checked={educationSelections[index]}
-              onChange={(value) => educationSelections.set(index, value)}
+              onChange={(value) => educationSelections.set(index, Boolean(value))}
               title={entry.school ?? 'Institution'}
               subtitle={entry.degree}
               details={details}
@@ -763,10 +764,10 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           disabled={isSaving}
         />
         {skills.map((skill, index) => (
-          <ToggleCard
+          <SelectableCard
             key={`${skill.name}-${index}`}
             checked={skillSelections[index]}
-            onChange={(value) => skillSelections.set(index, value)}
+            onChange={(value) => skillSelections.set(index, Boolean(value))}
             title={skill.name}
           />
         ))}
@@ -793,25 +794,15 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           const details = buildDetails([
             cert.issuedOn ? `Issued ${cert.issuedOn}` : undefined,
             cert.expiresOn ? `Expires ${cert.expiresOn}` : undefined,
+            cert.issuer,
           ])
           return (
-            <ToggleCard
+            <SelectableCard
               key={`${cert.name}-${index}`}
               checked={certificationSelections[index]}
-              onChange={(value) => certificationSelections.set(index, value)}
+              onChange={(value) => certificationSelections.set(index, Boolean(value))}
               title={cert.name ?? 'Certification'}
-              description={cert.issuer}
-              expandedContent={
-                details.length > 0 ? (
-                  <Stack gap={4} paddingTop={8}>
-                    {details.map((detail) => (
-                      <Text key={detail} color="$gray11">
-                        • {detail}
-                      </Text>
-                    ))}
-                  </Stack>
-                ) : undefined
-              }
+              details={details}
             />
           )
         })}
@@ -823,10 +814,10 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     return (
       <Stack gap={16}>
         <Text>Employment Preferences</Text>
-        <Paragraph color="$gray11">
+        <Text style={{ color: '#414e62' }}>
           Tell us about your ideal working conditions. We'll update your profile with these
           preferences.
-        </Paragraph>
+        </Text>
         <OpenToTravelCard
           checked={employmentForm.openToTravel}
           onChange={(checked) => setEmploymentForm((prev) => ({ ...prev, openToTravel: checked }))}
@@ -858,7 +849,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           {employmentForm.locations.map((entry) => (
             <Row key={entry.id} gap={8} align="center">
               <Input
-                flex={1}
+                style={{ flex: 1 }}
                 value={entry.value}
                 onChangeText={(value) =>
                   setEmploymentForm((prev) => {
@@ -910,21 +901,21 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     return (
       <Stack gap={16}>
         <Text>Review & Confirm</Text>
-        <Paragraph color="$gray11">
-          All set! When you finish, we’ll save the confirmed details to your profile. You can always
+        <Text style={{ color: '#414e62' }}>
+          All set! When you finish, we'll save the confirmed details to your profile. You can always
           make further edits from the profile sections later on.
-        </Paragraph>
+        </Text>
         <MergeComparisonView
           sections={mergeComparisonSections}
           isLoading={mergeComparisonLoading}
         />
-        <Stack gap={8} backgroundColor="$green3" padding="sm" borderRadius={16}>
+        <Stack gap={8} style={{ backgroundColor: '#dcfce7', borderRadius: 16 }} padding="sm">
           <Row gap={8} align="center">
-            <CheckCircle2 color="$green10" />
-            <Text color="$green11">Ready to finalize</Text>
+            <CheckCircle2 />
+            <Text style={{ color: '#16a34a' }}>Ready to finalize</Text>
           </Row>
-          <Text color="$green11">
-            Click “Finish Import” to exit the wizard and continue updating your profile.
+          <Text style={{ color: '#16a34a' }}>
+            Click "Finish Import" to exit the wizard and continue updating your profile.
           </Text>
         </Stack>
       </Stack>
@@ -934,21 +925,21 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <Stack gap={8} backgroundColor="$gray3" padding="sm" borderRadius={16}>
-      <Text color="$gray11">{message}</Text>
+    <Stack gap={8} style={{ backgroundColor: '#f2f4f7', borderRadius: 16 }} padding="sm">
+      <Text style={{ color: '#414e62' }}>{message}</Text>
     </Stack>
   )
 }
 
 function SelectableCard({
   checked,
-  onCheckedChange,
+  onChange,
   title,
   subtitle,
   details,
 }: {
   checked: boolean
-  onCheckedChange: (next: boolean) => void
+  onChange: (next: boolean) => void
   title: string
   subtitle?: string
   details?: string[]
@@ -957,26 +948,28 @@ function SelectableCard({
     <Stack
       gap={8}
       padding="sm"
-      borderWidth={1}
-      borderColor={checked ? '$blue8' : '$borderColor'}
-      backgroundColor={checked ? '$blue3' : '$background'}
-      borderRadius={16}
+      style={{
+        borderWidth: 1,
+        borderColor: checked ? '#3b82f6' : '#e4e7ec',
+        backgroundColor: checked ? '#dbeafe' : '#ffffff',
+        borderRadius: 16,
+      }}
     >
       <Row gap={8} align="center">
         <Checkbox
           size="sm"
           checked={checked}
-          onChange={(value) => onCheckedChange(value === true)}
+          onChange={(value) => onChange(value === true)}
         />
         <Stack gap={4} flex={1}>
           <Text>{title}</Text>
-          {subtitle ? <Text color="$gray11">{subtitle}</Text> : null}
+          {subtitle ? <Text style={{ color: '#414e62' }}>{subtitle}</Text> : null}
         </Stack>
       </Row>
       {!!details?.length && (
-        <Stack gap={4} paddingLeft={16}>
+        <Stack gap={4} style={{ paddingLeft: 16 }}>
           {details.map((detail) => (
-            <Text key={detail} color="$gray11">
+            <Text key={detail} style={{ color: '#414e62' }}>
               • {detail}
             </Text>
           ))}
@@ -1056,23 +1049,24 @@ function MergeStrategySelector({
   }
 
   return (
-    <Stack gap={8} backgroundColor="$color2" padding="sm" borderRadius={16}>
+    <Stack gap={8} style={{ backgroundColor: '#f9fafb', borderRadius: 16 }} padding="sm">
       <Text>Merge strategy</Text>
       <Stack gap={8}>
         {options.map((option) => (
           <Button
             key={`${section}-${option.value}`}
             size="sm"
+            variant="outline"
             disabled={disabled || option.disabled}
             onPress={() => onChange(section, option.value)}
-            borderWidth={1}
-            borderColor={strategy === option.value ? '$blue7' : '$color6'}
-            backgroundColor={strategy === option.value ? '$blue3' : '$color1'}
-            pressStyle={{ backgroundColor: strategy === option.value ? '$blue4' : '$color2' }}
+            style={{
+              borderColor: strategy === option.value ? '#3b82f6' : '#e4e7ec',
+              backgroundColor: strategy === option.value ? '#dbeafe' : '#ffffff',
+            }}
           >
             <Stack gap={4} align="flex-start">
               <Text>{option.label}</Text>
-              <Text color="$gray11">{option.description}</Text>
+              <Text style={{ color: '#414e62' }}>{option.description}</Text>
             </Stack>
           </Button>
         ))}

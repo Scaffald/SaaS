@@ -335,7 +335,7 @@ export function ResumeUploadModal({
     <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Import Resume" size="md">
       <Stack gap={spacing.md}>
         <Paragraph color="$gray11">
-          Upload a PDF or Word document under 1MB. We’ll extract your experience, education, skills,
+          Upload a PDF or Word document under 1MB. We'll extract your experience, education, skills,
           and preferences so you can confirm the details before saving them to your profile.
         </Paragraph>
 

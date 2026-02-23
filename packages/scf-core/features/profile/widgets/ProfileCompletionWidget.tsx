@@ -45,7 +45,7 @@ export function ProfileCompletionWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={16}>
-          <Text color="$gray11">Loading completion status...</Text>
+          <Text style={{ color: '#414e62' }}>Loading completion status...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -65,7 +65,7 @@ export function ProfileCompletionWidget({
         <Row justify="space-between" align="center">
           <H4>Profile Completion</H4>
           {variant === 'full' && (
-            <Text color="$gray11">
+            <Text style={{ color: '#414e62' }}>
               {completionData.totalComplete} of {completionData.totalItems} complete
             </Text>
           )}
@@ -74,9 +74,9 @@ export function ProfileCompletionWidget({
         {/* Progress Bar */}
         <Stack gap={8}>
           <Row justify="space-between" align="center">
-            <Text color="$gray11">{completionData.completionPercentage}%</Text>
+            <Text style={{ color: '#414e62' }}>{completionData.completionPercentage}%</Text>
             {variant === 'full' && (
-              <Text color="$gray11">
+              <Text style={{ color: '#414e62' }}>
                 {completionData.completionPercentage < 100 ? 'Keep going!' : 'Profile complete!'}
               </Text>
             )}
@@ -84,12 +84,10 @@ export function ProfileCompletionWidget({
           <ProgressBar
             value={completionData.completionPercentage}
             max={100}
-            backgroundColor="$color4"
             size="sm"
           >
             <ProgressBar.Indicator
-              animation="bouncy"
-              backgroundColor={completionData.completionPercentage === 100 ? '$green10' : '$blue10'}
+              style={{ backgroundColor: completionData.completionPercentage === 100 ? '#16a34a' : '#2563eb' }}
             />
           </ProgressBar>
         </Stack>
@@ -99,18 +97,16 @@ export function ProfileCompletionWidget({
           <Stack
             gap={12}
             padding="sm"
-            backgroundColor="$color3"
             borderRadius={12}
-            borderWidth={1}
-            borderColor="$borderColor"
+            style={{ borderWidth: 1, borderColor: '#e2e8f0' }}
           >
-            <Text color="$gray11">Next Step</Text>
+            <Text style={{ color: '#414e62' }}>Next Step</Text>
             <Row gap={8} align="center">
-              <Circle size="md" color="$gray11" />
+              <Circle size={20} color="#414e62" />
               <Stack flex={1} gap={4}>
                 <Text>{nextIncompleteItem.title}</Text>
                 {nextIncompleteItem.description && (
-                  <Text color="$gray11">{nextIncompleteItem.description}</Text>
+                  <Text style={{ color: '#414e62' }}>{nextIncompleteItem.description}</Text>
                 )}
               </Stack>
               {showEdit && nextIncompleteItem.actionRoute && (
@@ -130,7 +126,7 @@ export function ProfileCompletionWidget({
         {/* Checklist (Full variant only) */}
         {variant === 'full' && (
           <Stack gap={8}>
-            <Text color="$gray11">Sections</Text>
+            <Text style={{ color: '#414e62' }}>Sections</Text>
             <Stack gap={8}>
               {completionData.items.map((item) => (
                 <Row
@@ -138,18 +134,17 @@ export function ProfileCompletionWidget({
                   gap={8}
                   align="center"
                   padding="xs"
-                  backgroundColor={item.complete ? '$color2' : '$color3'}
                   borderRadius={8}
-                  opacity={item.complete ? 0.7 : 1}
+                  style={{ opacity: item.complete ? 0.7 : 1 }}
                 >
                   {item.complete ? (
-                    <CheckCircle size={18} color="$green10" />
+                    <CheckCircle size={18} color="#16a34a" />
                   ) : (
-                    <Circle size={18} color="$gray11" />
+                    <Circle size={18} color="#414e62" />
                   )}
                   <Stack flex={1} gap={4}>
-                    <Text color={item.complete ? '$color11' : '$color12'}>{item.title}</Text>
-                    {item.description && <Text color="$gray11">{item.description}</Text>}
+                    <Text>{item.title}</Text>
+                    {item.description && <Text style={{ color: '#414e62' }}>{item.description}</Text>}
                   </Stack>
                   {!item.complete && showEdit && item.actionRoute && (
                     <Button

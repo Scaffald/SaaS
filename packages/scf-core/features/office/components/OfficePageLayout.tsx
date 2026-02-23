@@ -136,7 +136,7 @@ export function OfficePageLayout<TData>({
       {children}
 
       <Table
-        columns={columnsFromTanStack(columns)}
+        columns={columnsFromTanStack(columns as ColumnDef<Record<string, unknown>, unknown>[])}
         data={data as Array<Record<string, unknown> & { id?: string }>}
         loading={isLoading}
         renderLoading={() => (
@@ -151,9 +151,8 @@ export function OfficePageLayout<TData>({
           columnVisibility as Record<string, boolean> | undefined
         }
         onRowPress={
-          onRowView || onRowEdit || onRowDelete || onRowDuplicate
+          onRowView || onRowEdit || _onRowDelete || _onRowDuplicate
             ? (row) => {
-                // Row click: for now just call onRowView if present; RowActionOverlay integration is app-specific
                 onRowView?.(row as TData)
               }
             : undefined

@@ -19,13 +19,13 @@ export function OfficePageHeader({
   return (
     <Row gap={12} align="center" flex={1} paddingHorizontal={16}>
       <Input
-        flex={1}
+        style={{ flex: 1 }}
         placeholder={searchPlaceholder}
         value={searchValue}
         onChangeText={onSearchChange}
       />
       {createButtonLabel && onCreateClick && (
-        <Button iconStart={Plus} onPress={onCreateClick} themeInverse>
+        <Button iconStart={Plus} onPress={onCreateClick} variant="filled" color="primary">
           {createButtonLabel}
         </Button>
       )}

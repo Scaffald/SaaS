@@ -7,7 +7,7 @@ import {
 import { useQueryClient } from '@tanstack/react-query'
 import {
   Button,
-  ConfirmationDialog,
+  ConfirmationModal,
   Checkbox,
   DashboardWidget,
   MonthYearPicker,
@@ -18,7 +18,8 @@ import { AlertTriangle, Check, CheckCircle, Plus, X } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
-import { H4, Input, Label, Spinner, Text, TextArea, Row, Stack } from '@scaffald/ui'
+import { H4, Input, Spinner, Text, TextArea, Row, Stack } from '@scaffald/ui'
+import { Pressable } from 'react-native'
 import {
   CAREER_LEVEL_OPTIONS,
   createNewExperienceEntry,
@@ -336,9 +337,9 @@ export function ProfileExperienceLeft() {
   if (experienceQuery.isLoading || experienceSummaryQuery.isLoading) {
     return (
       <DashboardWidget>
-        <Stack align="center" justify="center" padding={32} gap={16}>
+        <Stack style={{ alignItems: 'center', justifyContent: 'center', padding: 32, gap: 16 }}>
           <Spinner size="lg" />
-          <Text color="$gray11">Loading experience data...</Text>
+          <Text style={{ color: '#414e62' }}>Loading experience data...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -348,8 +349,8 @@ export function ProfileExperienceLeft() {
   if (experienceQuery.isError || experienceSummaryQuery.isError) {
     return (
       <DashboardWidget>
-        <Stack align="center" justify="center" padding={32} gap={16}>
-          <Text color="$red10">Failed to load experience data</Text>
+        <Stack style={{ alignItems: 'center', justifyContent: 'center', padding: 32, gap: 16 }}>
+          <Text style={{ color: '#ef4444' }}>Failed to load experience data</Text>
           <Button onPress={() => experienceQuery.refetch()}>Retry</Button>
         </Stack>
       </DashboardWidget>
@@ -360,17 +361,17 @@ export function ProfileExperienceLeft() {
     <DashboardWidget>
       <H4>Work Experience</H4>
 
-      <Stack gap={16}>
+      <Stack style={{ gap: 16 }}>
         {/* Experience Summary */}
         <Row gap={12}>
-          <Stack gap={8} flex={1}>
+          <Stack style={{ gap: 8, flex: 1 }}>
             <Text>Total Years Experience</Text>
-            <Text color="$blue10">
+            <Text style={{ color: '#3b82f6' }}>
               {totalExperience.years} years {totalExperience.months} months
             </Text>
           </Stack>
 
-          <Stack gap={8} flex={1}>
+          <Stack style={{ gap: 8, flex: 1 }}>
             <Text>Career Level</Text>
             <Controller
               name="career_level"
@@ -391,7 +392,7 @@ export function ProfileExperienceLeft() {
         </Row>
 
         {/* Experience Entries */}
-        <Stack gap={12}>
+        <Stack style={{ gap: 12 }}>
           <Row justify="space-between" align="center">
             <Text>Work History</Text>
             <Button size="sm" onPress={addExperienceEntry} iconStart={Plus}>
@@ -402,11 +403,7 @@ export function ProfileExperienceLeft() {
           {fields.map((field, index) => (
             <Stack
               key={field.id}
-              gap={12}
-              padding="sm"
-              borderWidth={1}
-              borderColor="$borderColor"
-              borderRadius={16}
+              style={{ gap: 12, padding: 8, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 16 }}
             >
               <Row justify="space-between" align="center">
                 <Text>Position {index + 1}</Text>
@@ -417,7 +414,7 @@ export function ProfileExperienceLeft() {
 
               {/* Job Title and Company */}
               <Row gap={12}>
-                <Stack gap={8} flex={1}>
+                <Stack style={{ gap: 8, flex: 1 }}>
                   <Text>Job Title *</Text>
                   <Controller
                     name={`experience_entries.${index}.job_title`}
@@ -427,20 +424,22 @@ export function ProfileExperienceLeft() {
                         placeholder="e.g. Electrician"
                         value={field.value}
                         onChangeText={field.onChange}
-                        borderColor={
-                          errors.experience_entries?.[index]?.job_title ? '$red8' : '$borderColor'
-                        }
+                        style={{
+                          borderColor: errors.experience_entries?.[index]?.job_title
+                            ? '#ef4444'
+                            : '#e2e8f0',
+                        }}
                       />
                     )}
                   />
                   {errors.experience_entries?.[index]?.job_title && (
-                    <Text color="$red10">
+                    <Text style={{ color: '#ef4444' }}>
                       {errors.experience_entries[index]?.job_title?.message}
                     </Text>
                   )}
                 </Stack>
 
-                <Stack gap={8} flex={1}>
+                <Stack style={{ gap: 8, flex: 1 }}>
                   <Text>Company Name *</Text>
                   <Controller
                     name={`experience_entries.${index}.company_name`}
@@ -450,16 +449,16 @@ export function ProfileExperienceLeft() {
                         placeholder="e.g. ABC Construction"
                         value={field.value}
                         onChangeText={field.onChange}
-                        borderColor={
-                          errors.experience_entries?.[index]?.company_name
-                            ? '$red8'
-                            : '$borderColor'
-                        }
+                        style={{
+                          borderColor: errors.experience_entries?.[index]?.company_name
+                            ? '#ef4444'
+                            : '#e2e8f0',
+                        }}
                       />
                     )}
                   />
                   {errors.experience_entries?.[index]?.company_name && (
-                    <Text color="$red10">
+                    <Text style={{ color: '#ef4444' }}>
                       {errors.experience_entries[index]?.company_name?.message}
                     </Text>
                   )}
@@ -468,7 +467,7 @@ export function ProfileExperienceLeft() {
 
               {/* Employment Type and Location */}
               <Row gap={12}>
-                <Stack gap={8} flex={1}>
+                <Stack style={{ gap: 8, flex: 1 }}>
                   <Text>Employment Type</Text>
                   <Controller
                     name={`experience_entries.${index}.employment_type`}
@@ -487,7 +486,7 @@ export function ProfileExperienceLeft() {
                   />
                 </Stack>
 
-                <Stack gap={8} flex={1}>
+                <Stack style={{ gap: 8, flex: 1 }}>
                   <ControlledAddressForm
                     control={control}
                     name={`experience_entries.${index}.location`}
@@ -504,10 +503,10 @@ export function ProfileExperienceLeft() {
                     error={errors.experience_entries?.[index]?.location?.message}
                   />
                   {watch(`experience_entries.${index}.is_remote`) && (
-                    <Text color="$gray11">Enter company headquarters location</Text>
+                    <Text style={{ color: '#414e62' }}>Enter company headquarters location</Text>
                   )}
                   {errors.experience_entries?.[index]?.location && (
-                    <Text color="$red10">
+                    <Text style={{ color: '#ef4444' }}>
                       {errors.experience_entries[index]?.location?.message}
                     </Text>
                   )}
@@ -526,11 +525,11 @@ export function ProfileExperienceLeft() {
                         checked={isRemote}
                         onChange={field.onChange}
                         testID={`remote-${index}`}
-                        aria-label="Remote work"
+                        accessibilityLabel="Remote work"
                       />
-                      <Label cursor="pointer" onPress={() => field.onChange(!isRemote)}>
-                        Remote Work
-                      </Label>
+                      <Pressable onPress={() => field.onChange(!isRemote)}>
+                        <Text>Remote Work</Text>
+                      </Pressable>
                     </Row>
                   )
                 }}
@@ -538,7 +537,7 @@ export function ProfileExperienceLeft() {
 
               {/* Start and End Dates */}
               <Row gap={12}>
-                <Stack gap={8} flex={1}>
+                <Stack style={{ gap: 8, flex: 1 }}>
                   <Controller
                     name={`experience_entries.${index}.start_date`}
                     control={control}
@@ -557,7 +556,7 @@ export function ProfileExperienceLeft() {
                   />
                 </Stack>
 
-                <Stack gap={8} flex={1}>
+                <Stack style={{ gap: 8, flex: 1 }}>
                   <Controller
                     name={`experience_entries.${index}.end_date`}
                     control={control}
@@ -590,18 +589,18 @@ export function ProfileExperienceLeft() {
                         checked={isCurrent}
                         onChange={field.onChange}
                         testID={`current-${index}`}
-                        aria-label="Currently work here"
+                        accessibilityLabel="Currently work here"
                       />
-                      <Label cursor="pointer" onPress={() => field.onChange(!isCurrent)}>
-                        I currently work here
-                      </Label>
+                      <Pressable onPress={() => field.onChange(!isCurrent)}>
+                        <Text>I currently work here</Text>
+                      </Pressable>
                     </Row>
                   )
                 }}
               />
 
               {/* Description */}
-              <Stack gap={8}>
+              <Stack style={{ gap: 8 }}>
                 <Text>Job Description</Text>
                 <Controller
                   name={`experience_entries.${index}.description`}
@@ -611,7 +610,7 @@ export function ProfileExperienceLeft() {
                       placeholder="Describe your responsibilities and duties..."
                       value={field.value || ''}
                       onChangeText={field.onChange}
-                      minHeight={80}
+                      style={{ minHeight: 80 }}
                     />
                   )}
                 />
@@ -620,8 +619,8 @@ export function ProfileExperienceLeft() {
           ))}
 
           {fields.length === 0 && (
-            <Stack padding="md" align="center" gap={8}>
-              <Text color="$gray11">No work experience added yet</Text>
+            <Stack style={{ padding: 16, alignItems: 'center', gap: 8 }}>
+              <Text style={{ color: '#414e62' }}>No work experience added yet</Text>
             </Stack>
           )}
         </Stack>
@@ -629,21 +628,23 @@ export function ProfileExperienceLeft() {
         {/* Save Feedback */}
         {saveBanner && (
           <Stack
-            marginTop={16}
-            padding="sm"
-            gap={8}
-            borderWidth={1}
-            borderColor={saveBanner.type === 'success' ? '$green7' : '$red7'}
-            backgroundColor={saveBanner.type === 'success' ? '$green3' : '$red3'}
-            borderRadius={16}
+            style={{
+              marginTop: 16,
+              padding: 8,
+              gap: 8,
+              borderWidth: 1,
+              borderColor: saveBanner.type === 'success' ? '#86efac' : '#fca5a5',
+              backgroundColor: saveBanner.type === 'success' ? '#f0fdf4' : '#fef2f2',
+              borderRadius: 16,
+            }}
           >
             <Row gap={8} align="center">
               {saveBanner.type === 'success' ? (
-                <CheckCircle size={18} color="$green10" />
+                <CheckCircle size={18} color="#22c55e" />
               ) : (
-                <AlertTriangle size={18} color="$red10" />
+                <AlertTriangle size={18} color="#ef4444" />
               )}
-              <Text color={saveBanner.type === 'success' ? '$green11' : '$red11'}>
+              <Text style={{ color: saveBanner.type === 'success' ? '#16a34a' : '#ef4444' }}>
                 {saveBanner.message}
               </Text>
             </Row>
@@ -651,7 +652,7 @@ export function ProfileExperienceLeft() {
         )}
 
         {/* Action Buttons */}
-        <Row justify="flex-end" gap={12} paddingTop={16}>
+        <Row justify="flex-end" gap={12} style={{ paddingTop: 16 }}>
           {(editingEntryId || isDirty) && (
             <Button
               variant="outline"
@@ -666,7 +667,7 @@ export function ProfileExperienceLeft() {
                   setShowCancelDialog(true)
                 }
               }}
-              opacity={!isDirty && !editingEntryId ? 0.5 : 1}
+              style={{ opacity: !isDirty && !editingEntryId ? 0.5 : 1 }}
             >
               Cancel
             </Button>
@@ -675,16 +676,16 @@ export function ProfileExperienceLeft() {
             variant="filled" color="primary"
             onPress={handleSubmit(onSubmit)}
             disabled={!isDirty || saveState === 'saving'}
-            opacity={!isDirty || saveState === 'saving' ? 0.5 : 1}
+            style={{ opacity: !isDirty || saveState === 'saving' ? 0.5 : 1 }}
           >
             {saveState === 'success' ? (
               <Row gap={8} align="center">
-                <Check size={18} color="$green10" />
-                <Text color="$green10">Saved!</Text>
+                <Check size={18} color="#22c55e" />
+                <Text style={{ color: '#22c55e' }}>Saved!</Text>
               </Row>
             ) : isSyncing && saveState === 'saving' ? (
               <Row gap={8} align="center">
-                <Spinner size="sm" color="$gray11" />
+                <Spinner size="sm" />
                 <Text>Saving...</Text>
               </Row>
             ) : editingEntryId ? (
@@ -696,14 +697,13 @@ export function ProfileExperienceLeft() {
         </Row>
 
         {/* Cancel Confirmation Dialog */}
-        <ConfirmationDialog
-          open={showCancelDialog}
-          onOpenChange={setShowCancelDialog}
+        <ConfirmationModal
+          visible={showCancelDialog}
+          onClose={() => setShowCancelDialog(false)}
           title="Discard Changes?"
           message="You have unsaved changes. Are you sure you want to discard them?"
           confirmLabel="Discard Changes"
           cancelLabel="Keep Editing"
-          confirmTheme="red"
           onConfirm={() => {
             if (originalDataRef.current) {
               reset(originalDataRef.current)

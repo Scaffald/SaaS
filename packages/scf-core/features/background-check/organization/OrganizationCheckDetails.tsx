@@ -100,7 +100,7 @@ export function OrganizationCheckDetails({
       {checkQuery.isError ? (
         <Stack gap={8} padding="sm" backgroundColor="$color3" borderRadius={16}>
           <Text color="$gray11">
-            We couldn’t load the background check details. Please try again.
+            We couldn't load the background check details. Please try again.
           </Text>
           <Button
             size="sm"

@@ -5,12 +5,9 @@ import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react-native'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ViewStyle } from 'react-native'
 import {
-  AnimatePresence,
   Button,
   Card,
   CardHeader,
-  Progress,
-  styled,
   Text,
   Row,
   Stack,
@@ -36,10 +33,10 @@ export interface EnhancedProfileCompletionWidgetProps {
 }
 
 const PROGRESS_GRADIENTS: Array<{ threshold: number; colors: [string, string] }> = [
-  { threshold: 25, colors: ['$red9', '$red10'] },
-  { threshold: 50, colors: ['$orange9', '$orange10'] },
-  { threshold: 75, colors: ['$yellow9', '$yellow10'] },
-  { threshold: 100, colors: ['$green9', '$green10'] },
+  { threshold: 25, colors: ['#ef4444', '#dc2626'] },
+  { threshold: 50, colors: ['#f97316', '#ea580c'] },
+  { threshold: 75, colors: ['#eab308', '#ca8a04'] },
+  { threshold: 100, colors: ['#22c55e', '#16a34a'] },
 ]
 
 function resolveProgressGradient(percentage: number): [string, string] {
@@ -50,25 +47,6 @@ function resolveProgressGradient(percentage: number): [string, string] {
   }
   return PROGRESS_GRADIENTS[PROGRESS_GRADIENTS.length - 1].colors
 }
-
-const AnimatedSuggestion = styled(Stack, {
-  name: 'AnimatedSuggestion',
-  gap: '$2',
-  animation: '200ms',
-  enterStyle: { opacity: 0, y: -4 },
-  exitStyle: { opacity: 0, y: 4 },
-  opacity: 1,
-  y: 0,
-  position: 'absolute',
-  inset: 0,
-})
-
-const SuggestionViewport = styled(Stack, {
-  name: 'SuggestionViewport',
-  position: 'relative',
-  width: '100%',
-  overflow: 'hidden',
-})
 
 const suggestionFallbackStyle: ViewStyle = { minHeight: 64 }
 
@@ -140,7 +118,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={24}>
-          <Text color="$gray11">Loading profile insights...</Text>
+          <Text style={{ color: '#414e62' }}>Loading profile insights...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -153,7 +131,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
   const gradient = resolveProgressGradient(completionStatus.completionPercentage)
   const headline =
     completionStatus.completionPercentage < 25
-      ? 'Let’s get your profile started'
+      ? "Let's get your profile started"
       : completionStatus.completionPercentage < 50
         ? 'Making great progress!'
         : completionStatus.completionPercentage < 75
@@ -166,84 +144,78 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
     <DashboardWidget>
       <Stack gap={16}>
         <Stack gap={8}>
-          <Text color="$gray11">Profile Progress</Text>
+          <Text style={{ color: '#414e62' }}>Profile Progress</Text>
           <Text>{headline}</Text>
         </Stack>
 
         <Stack gap={12}>
           <Row justify="space-between" align="center">
             <Text>{completionStatus.completionPercentage}%</Text>
-            <Text color="$gray11">
+            <Text style={{ color: '#414e62' }}>
               {completionStatus.incompleteSections.length} sections remaining
             </Text>
           </Row>
-          <Progress
-            size="sm"
-            backgroundColor="$color4"
-            borderRadius={20}
-            height={18}
-            value={completionStatus.completionPercentage}
-          >
-            <Progress.Indicator asChild>
-              <LinearGradient start={[0, 1]} end={[1, 0]} colors={gradient} borderRadius={20} />
-            </Progress.Indicator>
-          </Progress>
+          <Stack style={{ height: 18, borderRadius: 20, overflow: 'hidden' }}>
+            <LinearGradient
+              start={[0, 1]}
+              end={[1, 0]}
+              colors={gradient}
+              style={{ flex: completionStatus.completionPercentage / 100, height: '100%' }}
+            />
+          </Stack>
         </Stack>
 
-        <Card bordered backgroundColor="$color2">
-          <CardHeader padded gap={12}>
-            <Row justify="space-between" align="center">
-              <Row gap={8} align="center">
-                <Sparkles size="lg" color="$blue10" />
-                <Text>Profile Suggestion</Text>
+        <Card variant="outlined">
+          <CardHeader>
+            <Stack gap={12}>
+              <Row justify="space-between" align="center">
+                <Row gap={8} align="center">
+                  <Sparkles size={20} color="#3b82f6" />
+                  <Text>Profile Suggestion</Text>
+                </Row>
+
+                {showCarouselControls && (
+                  <Row gap={4}>
+                    <Button
+                      size="sm"
+                      variant="text"
+                      style={{ width: 32, height: 32 }}
+                      iconStart={ChevronLeft}
+                      disabled={isBenefitLoading}
+                      accessibilityLabel="View previous profile suggestion"
+                      onPress={retreatBenefit}
+                    />
+                    <Button
+                      size="sm"
+                      variant="text"
+                      style={{ width: 32, height: 32 }}
+                      iconStart={ChevronRight}
+                      disabled={isBenefitLoading}
+                      accessibilityLabel="View next profile suggestion"
+                      onPress={advanceBenefit}
+                    />
+                  </Row>
+                )}
               </Row>
 
-              {showCarouselControls && (
-                <Row gap={4}>
-                  <Button
-                    size="sm"
-                    chromeless
-                    width={32}
-                    height={32}
-                    align="center"
-                    justify="center"
-                    iconStart={ChevronLeft}
-                    disabled={isBenefitLoading}
-                    accessibilityLabel="View previous profile suggestion"
-                    onPress={retreatBenefit}
-                  />
-                  <Button
-                    size="sm"
-                    chromeless
-                    width={32}
-                    height={32}
-                    align="center"
-                    justify="center"
-                    iconStart={ChevronRight}
-                    disabled={isBenefitLoading}
-                    accessibilityLabel="View next profile suggestion"
-                    onPress={advanceBenefit}
-                  />
-                </Row>
-              )}
-            </Row>
-
-            <Stack gap={12}>
-              <SuggestionViewport
-                height={suggestionHeight ?? undefined}
-                justify="center"
-                style={suggestionHeight == null ? suggestionFallbackStyle : undefined}
-              >
-                <AnimatePresence initial={false}>
+              <Stack gap={12}>
+                <Stack
+                  style={{
+                    position: 'relative',
+                    width: '100%',
+                    overflow: 'hidden',
+                    ...(suggestionHeight != null ? { height: suggestionHeight } : suggestionFallbackStyle),
+                  }}
+                >
                   {isBenefitLoading ? (
-                    <AnimatedSuggestion key="loading" onLayout={handleSuggestionLayout}>
-                      <Text color="$gray11">Gathering personalized suggestions…</Text>
-                    </AnimatedSuggestion>
+                    <Stack gap={4} onLayout={handleSuggestionLayout}>
+                      <Text style={{ color: '#414e62' }}>Gathering personalized suggestions…</Text>
+                    </Stack>
                   ) : currentBenefit ? (
-                    <AnimatedSuggestion key={currentBenefit.id} onLayout={handleSuggestionLayout}>
-                      <Text color="$gray11">{currentBenefit.title}</Text>
-                      <Text color="$gray11">{currentBenefit.description}</Text>
-                      <Text color="$gray11">
+                    <Stack key={currentBenefit.id} gap={4} onLayout={handleSuggestionLayout}>
+                      <Text style={{ color: '#414e62' }}>{currentBenefit.title}</Text>
+                      <Text style={{ color: '#414e62' }}>{currentBenefit.description}</Text>
+                      <Text style={{ color: '#414e62' }}>
                         Suggested section: {(() => {
                           try {
                             const sectionId = currentBenefit.relatedSection as ProfileWizardStepId
@@ -257,46 +229,46 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
                           ? ` • Unlock ${currentBenefit.opportunityCount} new opportunity${currentBenefit.opportunityCount === 1 ? '' : 'ies'}`
                           : ''}
                       </Text>
-                    </AnimatedSuggestion>
+                    </Stack>
                   ) : (
-                    <AnimatedSuggestion key="empty" onLayout={handleSuggestionLayout}>
-                      <Text color="$gray11">
-                        Stay on track by finishing your remaining sections. We’ll surface targeted
+                    <Stack gap={4} onLayout={handleSuggestionLayout}>
+                      <Text style={{ color: '#414e62' }}>
+                        Stay on track by finishing your remaining sections. We'll surface targeted
                         ideas here once more data is available.
                       </Text>
-                    </AnimatedSuggestion>
+                    </Stack>
                   )}
-                </AnimatePresence>
-              </SuggestionViewport>
+                </Stack>
 
-              {showCarouselControls && (
-                <Row gap={8} justify="center" align="center">
-                  {benefitDotIndices.map((dotIndex) => (
-                    <Button
-                      key={`profile-suggestion-dot-${dotIndex}`}
-                      width={20}
-                      height={20}
-                      padding={0}
-                      chromeless
-                      disabled={isBenefitLoading}
-                      accessibilityLabel={`View profile suggestion ${dotIndex + 1} of ${totalBenefits}`}
-                      onPress={() => {
-                        if (dotIndex !== currentBenefitIndex) {
-                          goToBenefit(dotIndex)
-                        }
-                      }}
-                    >
-                      <Stack
-                        width={8}
-                        height={8}
-                        borderRadius="$10"
-                        backgroundColor={dotIndex === currentBenefitIndex ? '$blue9' : '$color6'}
-                        opacity={dotIndex === currentBenefitIndex ? 1 : 0.4}
-                      />
-                    </Button>
-                  ))}
-                </Row>
-              )}
+                {showCarouselControls && (
+                  <Row gap={8} justify="center" align="center">
+                    {benefitDotIndices.map((dotIndex) => (
+                      <Button
+                        key={`profile-suggestion-dot-${dotIndex}`}
+                        style={{ width: 20, height: 20, padding: 0 }}
+                        variant="text"
+                        disabled={isBenefitLoading}
+                        accessibilityLabel={`View profile suggestion ${dotIndex + 1} of ${totalBenefits}`}
+                        onPress={() => {
+                          if (dotIndex !== currentBenefitIndex) {
+                            goToBenefit(dotIndex)
+                          }
+                        }}
+                      >
+                        <Stack
+                          style={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: 999,
+                            backgroundColor: dotIndex === currentBenefitIndex ? '#3b82f6' : '#9ca3af',
+                            opacity: dotIndex === currentBenefitIndex ? 1 : 0.4,
+                          }}
+                        />
+                      </Button>
+                    ))}
+                  </Row>
+                )}
+              </Stack>
             </Stack>
           </CardHeader>
         </Card>
@@ -311,7 +283,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
         </Stack>
 
         <Row gap={12} wrap>
-          <Button size="md" flex={1} themeInverse iconEnd={ChevronRight} onPress={onStartWizard}>
+          <Button size="md" style={{ flex: 1 }} variant="filled" color="primary" iconEnd={ChevronRight} onPress={onStartWizard}>
             Complete Profile
           </Button>
           {/* TODO: Uncomment this when we fix the route

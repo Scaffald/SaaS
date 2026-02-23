@@ -88,7 +88,7 @@ export function ProfileExperienceRight() {
       <DashboardWidget>
         <Stack align="center" justify="center" padding={32} gap={16}>
           <Spinner size="lg" />
-          <Text color="$gray11">Loading experience data...</Text>
+          <Text style={{ color: '#414e62' }}>Loading experience data...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -99,7 +99,7 @@ export function ProfileExperienceRight() {
     return (
       <DashboardWidget>
         <Stack align="center" justify="center" padding={32} gap={16}>
-          <Text color="$red10">Failed to load experience data</Text>
+          <Text style={{ color: '#ef4444' }}>Failed to load experience data</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -109,27 +109,29 @@ export function ProfileExperienceRight() {
     <DashboardWidget>
       <H4>Saved Work Experience</H4>
 
-      <Text color="$gray11" marginBottom={16}>
+      <Text style={{ color: '#414e62', marginBottom: 16 }}>
         Your work experience history is displayed here. Edit entries in the left panel.
       </Text>
 
       {/* Experience Summary Section */}
       <Stack
         gap={12}
-        marginBottom={16}
-        padding="sm"
-        backgroundColor="$background"
-        borderWidth={1}
-        borderColor="$borderColor"
-        borderRadius={16}
+        style={{
+          marginBottom: 16,
+          padding: 8,
+          backgroundColor: '#ffffff',
+          borderWidth: 1,
+          borderColor: '#e2e8f0',
+          borderRadius: 16,
+        }}
       >
         <H4>Experience Summary</H4>
         {experienceSummaryQuery.data?.career_level ? (
-          <Text color="$gray11">
+          <Text style={{ color: '#414e62' }}>
             Career Level: <Text>{experienceSummaryQuery.data.career_level}</Text>
           </Text>
         ) : (
-          <Text color="$gray11">Add a career level to highlight your experience level</Text>
+          <Text style={{ color: '#414e62' }}>Add a career level to highlight your experience level</Text>
         )}
       </Stack>
 
@@ -146,28 +148,26 @@ export function ProfileExperienceRight() {
             return (
               <Stack
                 key={exp.id}
-                padding="md"
                 gap={12}
-                backgroundColor="$background"
-                borderWidth={1}
-                borderColor="$borderColor"
-                borderRadius={16}
-                hoverStyle={{
-                  borderColor: '$borderColorHover',
-                  backgroundColor: '$backgroundHover',
+                style={{
+                  padding: 16,
+                  backgroundColor: '#ffffff',
+                  borderWidth: 1,
+                  borderColor: '#e2e8f0',
+                  borderRadius: 16,
                 }}
               >
                 {/* Job Title */}
                 <Stack gap={4}>
-                  <Text color="$gray11">{exp.job_title}</Text>
+                  <Text style={{ color: '#414e62' }}>{exp.job_title}</Text>
 
                   {/* Company Name */}
                   <Row gap={8} align="center" wrap>
-                    <Text color="$gray11">{exp.company_name}</Text>
+                    <Text style={{ color: '#414e62' }}>{exp.company_name}</Text>
                     {exp.employment_type && (
                       <>
-                        <Text color="$gray11">•</Text>
-                        <Text color="$gray11">{exp.employment_type}</Text>
+                        <Text style={{ color: '#414e62' }}>•</Text>
+                        <Text style={{ color: '#414e62' }}>{exp.employment_type}</Text>
                       </>
                     )}
                   </Row>
@@ -175,7 +175,7 @@ export function ProfileExperienceRight() {
                   {/* Current Position Badge */}
                   {exp.is_current && (
                     <Row gap={4} align="center">
-                      <Text color="$blue10">Current Position</Text>
+                      <Text style={{ color: '#3b82f6' }}>Current Position</Text>
                     </Row>
                   )}
                 </Stack>
@@ -185,8 +185,8 @@ export function ProfileExperienceRight() {
                   {/* Date Range */}
                   {(exp.start_date || exp.end_date || exp.is_current) && (
                     <Row gap={8} align="center">
-                      <Calendar size="md" color="$gray11" />
-                      <Text color="$gray11">
+                      <Calendar size={16} color="#414e62" />
+                      <Text style={{ color: '#414e62' }}>
                         {formatDateRange(exp.start_date, exp.end_date, exp.is_current)}
                       </Text>
                     </Row>
@@ -195,16 +195,16 @@ export function ProfileExperienceRight() {
                   {/* Location */}
                   {locationDisplay && (
                     <Row gap={8} align="center">
-                      <MapPin size="md" color="$gray11" />
-                      <Text color="$gray11">{locationDisplay}</Text>
+                      <MapPin size={16} color="#414e62" />
+                      <Text style={{ color: '#414e62' }}>{locationDisplay}</Text>
                     </Row>
                   )}
 
                   {/* Description */}
                   {exp.description && (
                     <Stack gap={4}>
-                      <Text color="$gray11">Description:</Text>
-                      <Text color="$gray11">
+                      <Text style={{ color: '#414e62' }}>Description:</Text>
+                      <Text style={{ color: '#414e62' }}>
                         {exp.description.length > 200
                           ? `${exp.description.substring(0, 200)}...`
                           : exp.description}
@@ -214,7 +214,7 @@ export function ProfileExperienceRight() {
                 </Stack>
 
                 {/* Edit Button */}
-                <Row justify="flex-end" marginTop={8}>
+                <Row justify="flex-end" style={{ marginTop: 8 }}>
                   <Button
                     size="sm"
                     variant="outline"

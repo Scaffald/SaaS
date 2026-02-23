@@ -7,7 +7,6 @@ import {
   Image,
   Input,
   Separator,
-  SizableText,
   Spinner,
   Text,
   View,
@@ -133,14 +132,10 @@ export function PhotoCard({
 
   return (
     <Stack
-      borderWidth={1}
-      borderColor="$borderColor"
-      borderRadius={16}
-      overflow="hidden"
-      backgroundColor="$color2"
+      style={{ borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 16, overflow: 'hidden' }}
       width="100%"
     >
-      <View position="relative" aspectRatio={4 / 3} backgroundColor="$color3">
+      <View position="relative" style={{ aspectRatio: 4 / 3 }}>
         {photo.signedUrl ? (
           <Image source={{ uri: photo.signedUrl }} width="100%" height="100%" resizeMode="cover" />
         ) : (
@@ -152,9 +147,8 @@ export function PhotoCard({
             right={0}
             bottom={0}
             left={0}
-            backgroundColor="$color3"
           >
-            <Spinner color="$gray11" />
+            <Spinner color="#414e62" />
           </Stack>
         )}
         {(photo.isRefreshingUrl || isDeleting) && (
@@ -170,17 +164,17 @@ export function PhotoCard({
             gap={8}
           >
             <Spinner color="white" size="lg" />
-            <SizableText color="white" size="sm">
+            <Text style={{ color: 'white' }}>
               {isDeleting ? 'Removing…' : 'Refreshing…'}
-            </SizableText>
+            </Text>
           </Stack>
         )}
       </View>
 
-      <Stack gap={12} padding="sm">
+      <Stack gap={12} style={{ padding: 8 }}>
         <Row align="center" justify="space-between" gap={12}>
           <Row gap={8} align="center">
-            <Tag size="md" color="$gray11" />
+            <Tag size="md" color="#414e62" />
             <Text>{typeOption?.label ?? 'Uncategorized'}</Text>
           </Row>
           <Row gap={8}>
@@ -195,7 +189,7 @@ export function PhotoCard({
                 {photo.showOnProfile ? 'Public' : 'Private'}
               </Button>
             ) : (
-              <Text color="$gray11">
+              <Text style={{ color: '#414e62' }}>
                 {photo.showOnProfile ? 'Visible on profile' : 'Hidden from profile'}
               </Text>
             )}
@@ -246,7 +240,7 @@ export function PhotoCard({
             </Stack>
           ) : canEditCaption ? (
             <Row gap={8} align="center">
-              <Text flex={1} color={photo.caption ? '$color12' : '$color9'}>
+              <Text flex={1} style={{ color: photo.caption ? undefined : '#414e62' }}>
                 {photo.caption ?? 'No caption provided.'}
               </Text>
               <Button
@@ -260,7 +254,7 @@ export function PhotoCard({
               </Button>
             </Row>
           ) : (
-            <Text flex={1} color={photo.caption ? '$color12' : '$color9'}>
+            <Text flex={1} style={{ color: photo.caption ? undefined : '#414e62' }}>
               {photo.caption ?? 'No caption provided.'}
             </Text>
           )}
@@ -283,7 +277,7 @@ export function PhotoCard({
               triggerProps={{ width: '100%' }}
             />
           ) : (
-            <Text color="$gray11">{typeOption?.label ?? 'Uncategorized'}</Text>
+            <Text style={{ color: '#414e62' }}>{typeOption?.label ?? 'Uncategorized'}</Text>
           )}
         </Stack>
 
@@ -291,12 +285,12 @@ export function PhotoCard({
 
         <Stack gap={4}>
           <Text>Details</Text>
-          <Text color="$gray11">Size: {formatBytes(photo.fileSizeBytes)}</Text>
+          <Text style={{ color: '#414e62' }}>Size: {formatBytes(photo.fileSizeBytes)}</Text>
           {photo.takenAt ? (
-            <Text color="$gray11">Taken: {formatDate(photo.takenAt) ?? 'Unknown'}</Text>
+            <Text style={{ color: '#414e62' }}>Taken: {formatDate(photo.takenAt) ?? 'Unknown'}</Text>
           ) : null}
           {photo.createdAt ? (
-            <Text color="$gray11">Uploaded: {formatDate(photo.createdAt) ?? 'Unknown'}</Text>
+            <Text style={{ color: '#414e62' }}>Uploaded: {formatDate(photo.createdAt) ?? 'Unknown'}</Text>
           ) : null}
         </Stack>
       </Stack>

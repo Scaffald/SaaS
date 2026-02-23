@@ -50,7 +50,7 @@ export function StripeSettingsPage() {
     },
     onError: () => {
       toast.show({
-        title: 'Error',
+        message: 'Error updating publishable key',
         variant: 'error',
       })
     },
@@ -67,7 +67,7 @@ export function StripeSettingsPage() {
     },
     onError: () => {
       toast.show({
-        title: 'Error',
+        message: 'Error storing API secret',
         variant: 'error',
       })
     },
@@ -84,7 +84,7 @@ export function StripeSettingsPage() {
     },
     onError: () => {
       toast.show({
-        title: 'Error',
+        message: 'Error storing webhook secret',
         variant: 'error',
       })
     },
@@ -96,7 +96,7 @@ export function StripeSettingsPage() {
     },
     onError: () => {
       toast.show({
-        title: 'Error',
+        message: 'Error updating test mode',
         variant: 'error',
       })
     },
@@ -113,7 +113,7 @@ export function StripeSettingsPage() {
     },
     onError: () => {
       toast.show({
-        title: 'Error',
+        message: 'Error testing connection',
         variant: 'error',
       })
     },
@@ -178,188 +178,208 @@ export function StripeSettingsPage() {
       </Stack>
 
       <Stack gap={16} style={{ maxWidth: 720, width: '100%' }}>
-        <Card padding="md" gap={16}>
-          <Stack gap={8}>
-            <Text>Publishable Key</Text>
-            <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
-              Used on the client to initialize Stripe.js. Updating this key does not affect existing
-              payment intents.
-            </Paragraph>
-            <Input
-              value={publishableKey}
-              onChangeText={setPublishableKey}
-              autoCapitalize="none"
-              autoCorrect={false}
-              placeholder="pk_live_..."
-            />
+        <Card padding="md">
+          <Stack gap={16}>
+            <Stack gap={8}>
+              <Text>Publishable Key</Text>
+              <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
+                Used on the client to initialize Stripe.js. Updating this key does not affect
+                existing payment intents.
+              </Paragraph>
+              <Input
+                value={publishableKey}
+                onChangeText={setPublishableKey}
+                autoCapitalize="none"
+                autoCorrect={false}
+                placeholder="pk_live_..."
+              />
+              <Row gap={8} justify="flex-end">
+                <Button
+                  style={{
+                    backgroundColor: colors.bg[theme].default,
+                  }}
+                  disabled={updatePublishableKey.isPending || publishableKey.length < 16}
+                  onPress={() =>
+                    updatePublishableKey.mutate({
+                      publishableKey,
+                    })
+                  }
+                >
+                  {updatePublishableKey.isPending ? <Spinner /> : 'Save Publishable Key'}
+                </Button>
+              </Row>
+            </Stack>
+          </Stack>
+        </Card>
+
+        <Card padding="md">
+          <Stack gap={16}>
+            <Stack gap={8}>
+              <Text>Secret Keys</Text>
+              <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
+                Secrets are encrypted with Supabase Vault. They are never returned by the API after
+                storage.
+              </Paragraph>
+            </Stack>
+
+            <Stack gap={12}>
+              <Stack gap={8}>
+                <Text>Stripe API Secret</Text>
+                <Input
+                  value={apiSecret}
+                  onChangeText={setApiSecret}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  secureTextEntry
+                  placeholder="sk_live_..."
+                />
+                <Row gap={8} justify="flex-end">
+                  <Button
+                    style={{
+                      backgroundColor: theme === 'light' ? colors.green[50] : colors.green[900],
+                    }}
+                    disabled={updateApiKey.isPending || apiSecret.length < 20}
+                    onPress={() => {
+                      updateApiKey.mutate({ secret: apiSecret })
+                      setApiSecret('')
+                    }}
+                  >
+                    {updateApiKey.isPending ? <Spinner /> : 'Store API Secret'}
+                  </Button>
+                </Row>
+                {data?.hasApiKey ? (
+                  <Text
+                    style={{ color: theme === 'light' ? colors.green[700] : colors.green[300] }}
+                  >
+                    ✓ Secret stored in Vault
+                  </Text>
+                ) : (
+                  <Text
+                    style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}
+                  >
+                    API secret not configured
+                  </Text>
+                )}
+              </Stack>
+
+              <Stack gap={8}>
+                <Text>Webhook Signing Secret</Text>
+                <Input
+                  value={webhookSecret}
+                  onChangeText={setWebhookSecret}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  secureTextEntry
+                  placeholder="whsec_..."
+                />
+                <Row gap={8} justify="flex-end">
+                  <Button
+                    style={{
+                      backgroundColor: theme === 'light' ? colors.green[50] : colors.green[900],
+                    }}
+                    disabled={updateWebhookSecret.isPending || webhookSecret.length < 10}
+                    onPress={() => {
+                      updateWebhookSecret.mutate({ secret: webhookSecret })
+                      setWebhookSecret('')
+                    }}
+                  >
+                    {updateWebhookSecret.isPending ? <Spinner /> : 'Store Webhook Secret'}
+                  </Button>
+                </Row>
+                {data?.hasWebhookSecret ? (
+                  <Text
+                    style={{ color: theme === 'light' ? colors.green[700] : colors.green[300] }}
+                  >
+                    ✓ Webhook secret stored
+                  </Text>
+                ) : (
+                  <Text
+                    style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}
+                  >
+                    Webhook secret not configured
+                  </Text>
+                )}
+              </Stack>
+            </Stack>
+          </Stack>
+        </Card>
+
+        <Card padding="md">
+          <Stack gap={16}>
+            <Stack gap={8}>
+              <Text>Webhook Endpoint</Text>
+              <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
+                Configure this URL inside the Stripe Dashboard and supply the signing secret above.
+              </Paragraph>
+              <Input value={webhookUrl} editable={false} />
+              <Row gap={8}>
+                <Button variant="outline" style={{ flex: 1 }} onPress={handleCopyWebhook}>
+                  Copy Endpoint
+                </Button>
+              </Row>
+            </Stack>
+          </Stack>
+        </Card>
+
+        <Card padding="md">
+          <Stack gap={16}>
+            <Stack gap={8}>
+              <Text>Test Mode</Text>
+              <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
+                Toggle between live and test credentials without redeploying the backend.
+              </Paragraph>
+            </Stack>
+            <Row gap={12} align="center">
+              <Switch
+                checked={data?.testMode ?? true}
+                disabled={updateTestMode.isPending}
+                onChange={(checked) =>
+                  updateTestMode.mutate({
+                    testMode: Boolean(checked),
+                  })
+                }
+              />
+              <Text>{(data?.testMode ?? true) ? 'Test mode' : 'Live mode'}</Text>
+            </Row>
+          </Stack>
+        </Card>
+
+        <Card padding="md">
+          <Stack gap={16}>
+            <Stack gap={8}>
+              <Text>Connection Diagnostics</Text>
+              <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
+                Validates the current secret by calling Stripe. Fails if the API key lacks required
+                permissions.
+              </Paragraph>
+            </Stack>
+
+            <Stack gap={8}>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                Last test: {formatDate(data?.lastTestedAt) ?? 'Never'}
+              </Text>
+              {data?.lastTestedStatus === 'failed' && data?.lastTestedError ? (
+                <Paragraph
+                  size="sm"
+                  style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}
+                >
+                  {data.lastTestedError}
+                </Paragraph>
+              ) : null}
+            </Stack>
+
             <Row gap={8} justify="flex-end">
               <Button
                 style={{
-                  backgroundColor: colors.bg[theme].primary,
-                  color: colors.text[theme].secondary,
+                  backgroundColor: colors.bg[theme].default,
                 }}
-                disabled={updatePublishableKey.isPending || publishableKey.length < 16}
-                onPress={() =>
-                  updatePublishableKey.mutate({
-                    publishableKey,
-                  })
-                }
+                disabled={testConnection.isPending || !data?.hasApiKey}
+                onPress={() => testConnection.mutate()}
               >
-                {updatePublishableKey.isPending ? <Spinner /> : 'Save Publishable Key'}
+                {testConnection.isPending ? <Spinner /> : 'Run Connection Test'}
               </Button>
             </Row>
           </Stack>
-        </Card>
-
-        <Card padding="md" gap={16}>
-          <Stack gap={8}>
-            <Text>Secret Keys</Text>
-            <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
-              Secrets are encrypted with Supabase Vault. They are never returned by the API after
-              storage.
-            </Paragraph>
-          </Stack>
-
-          <Stack gap={12}>
-            <Stack gap={8}>
-              <Text>Stripe API Secret</Text>
-              <Input
-                value={apiSecret}
-                onChangeText={setApiSecret}
-                autoCapitalize="none"
-                autoCorrect={false}
-                secureTextEntry
-                placeholder="sk_live_..."
-              />
-              <Row gap={8} justify="flex-end">
-                <Button
-                  style={{
-                    backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
-                    color: colors.text[theme].secondary,
-                  }}
-                  disabled={updateApiKey.isPending || apiSecret.length < 20}
-                  onPress={() => {
-                    updateApiKey.mutate({ secret: apiSecret })
-                    setApiSecret('')
-                  }}
-                >
-                  {updateApiKey.isPending ? <Spinner /> : 'Store API Secret'}
-                </Button>
-              </Row>
-              {data?.hasApiKey ? (
-                <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>✓ Secret stored in Vault</Text>
-              ) : (
-                <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>API secret not configured</Text>
-              )}
-            </Stack>
-
-            <Stack gap={8}>
-              <Text>Webhook Signing Secret</Text>
-              <Input
-                value={webhookSecret}
-                onChangeText={setWebhookSecret}
-                autoCapitalize="none"
-                autoCorrect={false}
-                secureTextEntry
-                placeholder="whsec_..."
-              />
-              <Row gap={8} justify="flex-end">
-                <Button
-                  style={{
-                    backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
-                    color: colors.text[theme].secondary,
-                  }}
-                  disabled={updateWebhookSecret.isPending || webhookSecret.length < 10}
-                  onPress={() => {
-                    updateWebhookSecret.mutate({ secret: webhookSecret })
-                    setWebhookSecret('')
-                  }}
-                >
-                  {updateWebhookSecret.isPending ? <Spinner /> : 'Store Webhook Secret'}
-                </Button>
-              </Row>
-              {data?.hasWebhookSecret ? (
-                <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>✓ Webhook secret stored</Text>
-              ) : (
-                <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
-                  Webhook secret not configured
-                </Text>
-              )}
-            </Stack>
-          </Stack>
-        </Card>
-
-        <Card padding="md" gap={16}>
-          <Stack gap={8}>
-            <Text>Webhook Endpoint</Text>
-            <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
-              Configure this URL inside the Stripe Dashboard and supply the signing secret above.
-            </Paragraph>
-            <Input value={webhookUrl} editable={false} />
-            <Row gap={8}>
-              <Button variant="outline" flex={1} onPress={handleCopyWebhook}>
-                Copy Endpoint
-              </Button>
-            </Row>
-          </Stack>
-        </Card>
-
-        <Card padding="md" gap={16}>
-          <Stack gap={8}>
-            <Text>Test Mode</Text>
-            <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
-              Toggle between live and test credentials without redeploying the backend.
-            </Paragraph>
-          </Stack>
-          <Row gap={12} align="center">
-            <Switch
-              id="stripe-test-mode"
-              checked={data?.testMode ?? true}
-              disabled={updateTestMode.isPending}
-              onChange={(checked) =>
-                updateTestMode.mutate({
-                  testMode: Boolean(checked),
-                })
-              }
-            >
-              <Switch.Thumb />
-            </Switch>
-            <Text>{(data?.testMode ?? true) ? 'Test mode' : 'Live mode'}</Text>
-          </Row>
-        </Card>
-
-        <Card padding="md" gap={16}>
-          <Stack gap={8}>
-            <Text>Connection Diagnostics</Text>
-            <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
-              Validates the current secret by calling Stripe. Fails if the API key lacks required
-              permissions.
-            </Paragraph>
-          </Stack>
-
-          <Stack gap={8}>
-            <Text style={{ color: colors.text[theme].secondary }}>
-              Last test: {formatDate(data?.lastTestedAt) ?? 'Never'}
-            </Text>
-            {data?.lastTestedStatus === 'failed' && data?.lastTestedError ? (
-              <Paragraph size="sm" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
-                {data.lastTestedError}
-              </Paragraph>
-            ) : null}
-          </Stack>
-
-          <Row gap={8} justify="flex-end">
-            <Button
-              style={{
-                backgroundColor: colors.bg[theme].primary,
-                color: colors.text[theme].secondary,
-              }}
-              disabled={testConnection.isPending || !data?.hasApiKey}
-              onPress={() => testConnection.mutate()}
-            >
-              {testConnection.isPending ? <Spinner /> : 'Run Connection Test'}
-            </Button>
-          </Row>
         </Card>
       </Stack>
     </Stack>

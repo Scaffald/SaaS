@@ -18,20 +18,22 @@ import {
 import { useQueryClient } from '@tanstack/react-query'
 import {
   Button,
-  ConfirmationDialog,
+  Card,
   Checkbox,
+  ConfirmationModal,
   DashboardWidget,
   LocationListInput,
   SkeletonForm,
-  ToggleCard,
+  Spinner,
+  Toggle,
+  useToast,
 } from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, Car, Shield } from 'lucide-react-native'
-import { useToast } from '@scaffald/ui'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
-import { Platform } from 'react-native'
+import { Platform, Pressable } from 'react-native'
 import { type Control, Controller, useController, useForm } from 'react-hook-form'
-import { AnimatePresence, Input, Label, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Input, Text, Row, Stack } from '@scaffald/ui'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
   completeProfileSync,
@@ -52,7 +54,7 @@ interface UpdateEmploymentContext {
 interface MultiSelectToggleFieldProps {
   control: Control<EmploymentProfileFormData>
   name: MultiSelectFieldName
-  icon: ReactNode
+  iconStart: ReactNode
   title: string
   description: string
   options: readonly string[]
@@ -63,7 +65,7 @@ interface MultiSelectToggleFieldProps {
 function MultiSelectToggleField({
   control,
   name,
-  icon,
+  iconStart,
   title,
   description,
   options,
@@ -110,35 +112,43 @@ function MultiSelectToggleField({
   }
 
   return (
-    <ToggleCard
-      iconStart={icon}
-      title={title}
-      description={description}
-      checked={isExpanded || hasValues}
-      onChange={(checked) => handleToggleChange(Boolean(checked))}
-      testID={testID}
-      expandedContent={
-        <Stack gap={8} paddingTop={8}>
+    <Card variant="outlined" testID={testID}>
+      <Row gap={12} align="center" style={{ padding: 12 }}>
+        {iconStart}
+        <Stack style={{ flex: 1, gap: 4 }}>
+          <Text weight="medium">{title}</Text>
+          <Text size="sm">{description}</Text>
+        </Stack>
+        <Toggle
+          checked={isExpanded || hasValues}
+          onChange={(checked) => handleToggleChange(Boolean(checked))}
+          accessibilityLabel={title}
+        />
+      </Row>
+      {(isExpanded || hasValues) && (
+        <Stack style={{ gap: 8, paddingTop: 8, paddingBottom: 12, paddingHorizontal: 12 }}>
           {options.map((option) => {
             const checkboxId = `${name}-${option.replace(/\s+/g, '-').toLowerCase()}`
             const isChecked = selectedValues.includes(option)
             return (
-              <Row key={option} gap={12} align="center">
+              <Pressable
+                key={option}
+                onPress={() => handleOptionChange(option, !isChecked)}
+                style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}
+              >
                 <Checkbox
-                  aria-label={option}
+                  accessibilityLabel={option}
                   checked={isChecked}
                   onChange={(value) => handleOptionChange(option, value)}
                   testID={checkboxId}
                 />
-                <Label cursor="pointer" onPress={() => handleOptionChange(option, !isChecked)}>
-                  {option}
-                </Label>
-              </Row>
+                <Text>{option}</Text>
+              </Pressable>
             )
           })}
         </Stack>
-      }
-    />
+      )}
+    </Card>
   )
 }
 
@@ -369,17 +379,17 @@ export function ProfileEmploymentLeft() {
           {/* Debug: Show validation errors */}
           {Object.keys(errors).length > 0 && (
             <Stack
-              backgroundColor="$red2"
-              padding="sm"
-              borderRadius={16}
-              borderWidth={1}
-              borderColor="$red8"
+              style={{
+                backgroundColor: '#fef2f2',
+                padding: 8,
+                borderRadius: 16,
+                borderWidth: 1,
+                borderColor: '#fca5a5',
+              }}
             >
-              <Text color="$red11" marginBottom={8}>
-                Validation Errors:
-              </Text>
+              <Text style={{ color: '#ef4444', marginBottom: 8 }}>Validation Errors:</Text>
               {Object.entries(errors).map(([key, error]) => (
-                <Text key={key} color="$red11">
+                <Text key={key} style={{ color: '#ef4444' }}>
                   • {key}: {error?.message?.toString() || 'Invalid value'}
                 </Text>
               ))}
@@ -396,7 +406,7 @@ export function ProfileEmploymentLeft() {
                 render={({ field }) => (
                   <Row gap={12} align="center">
                     <Input
-                      flex={1}
+                      style={{ flex: 1 }}
                       placeholder="Enter your hourly rate"
                       value={field.value?.toString() || '0'}
                       onChangeText={(text) => {
@@ -404,16 +414,17 @@ export function ProfileEmploymentLeft() {
                         field.onChange(Number.isNaN(numValue) ? 0 : numValue)
                       }}
                       keyboardType="numeric"
-                      borderColor={errors.hourly_rate ? '$red8' : '$borderColor'}
                     />
                   </Row>
                 )}
               />
-              {errors.hourly_rate && <Text color="$red10">{errors.hourly_rate.message}</Text>}
+              {errors.hourly_rate && (
+                <Text style={{ color: '#ef4444' }}>{errors.hourly_rate.message}</Text>
+              )}
             </Stack>
 
             {/* Preferred Work Locations */}
-            <Stack gap={12} paddingVertical={12}>
+            <Stack gap={12} style={{ paddingVertical: 12 }}>
               <Text>Preferred Work Locations</Text>
               <Controller
                 name="preferred_work_locations"
@@ -451,7 +462,9 @@ export function ProfileEmploymentLeft() {
               />
               <Controller name="travel_distance_miles" control={control} render={() => <></>} />
               {errors.travel_distance_miles && (
-                <Text color="$red10">{errors.travel_distance_miles.message?.toString()}</Text>
+                <Text style={{ color: '#ef4444' }}>
+                  {errors.travel_distance_miles.message?.toString()}
+                </Text>
               )}
             </Stack>
 
@@ -480,7 +493,7 @@ export function ProfileEmploymentLeft() {
               />
             </Stack>
             {errors.us_resident && (
-              <Text color="$red10">{errors.us_resident.message?.toString()}</Text>
+              <Text style={{ color: '#ef4444' }}>{errors.us_resident.message?.toString()}</Text>
             )}
 
             {/* Drivers License */}
@@ -489,7 +502,7 @@ export function ProfileEmploymentLeft() {
               <MultiSelectToggleField
                 control={control}
                 name="drivers_license_classes"
-                iconStart={<Car size="sm" color="$gray11" />}
+                iconStart={<Car size={16} />}
                 title="I have a valid driver's license"
                 description="Select all license classes that apply"
                 options={DRIVERS_LICENSE_OPTIONS}
@@ -499,7 +512,9 @@ export function ProfileEmploymentLeft() {
                 }}
               />
               {errors.drivers_license_classes && (
-                <Text color="$red10">{errors.drivers_license_classes.message?.toString()}</Text>
+                <Text style={{ color: '#ef4444' }}>
+                  {errors.drivers_license_classes.message?.toString()}
+                </Text>
               )}
             </Stack>
 
@@ -509,7 +524,7 @@ export function ProfileEmploymentLeft() {
               <MultiSelectToggleField
                 control={control}
                 name="military_status"
-                iconStart={<Shield size="sm" color="$gray11" />}
+                iconStart={<Shield size={16} />}
                 title="Former/Current Military"
                 description="Select all that apply"
                 options={MILITARY_STATUS_OPTIONS}
@@ -523,7 +538,7 @@ export function ProfileEmploymentLeft() {
               <MultiSelectToggleField
                 control={control}
                 name="availability"
-                iconStart={<Calendar size="sm" color="$gray11" />}
+                iconStart={<Calendar size={16} />}
                 title="I'm available for work"
                 description="Select all that apply"
                 options={AVAILABILITY_OPTIONS}
@@ -537,43 +552,30 @@ export function ProfileEmploymentLeft() {
                 variant="outline"
                 disabled={!isDirty}
                 onPress={() => setShowCancelDialog(true)}
-                opacity={!isDirty ? 0.5 : 1}
+                style={{ opacity: !isDirty ? 0.5 : 1 }}
               >
                 Cancel
               </Button>
               <Button
-                variant="filled" color="primary"
+                variant="filled"
+                color="primary"
                 onPress={handleSubmit(onSubmit, onFormError)}
                 disabled={!isDirty || isLoading}
-                opacity={!isDirty || isLoading ? 0.5 : 1}
-                space={isSyncing ? '$2' : 0}
+                style={{ opacity: !isDirty || isLoading ? 0.5 : 1 }}
               >
-                <AnimatePresence>
-                  {isSyncing && (
-                    <Spinner
-                      animation="bouncy"
-                      enterStyle={{
-                        scale: 0,
-                      }}
-                      exitStyle={{
-                        scale: 0,
-                      }}
-                    />
-                  )}
-                </AnimatePresence>
+                {isSyncing && <Spinner size="sm" />}
                 {isSyncing ? 'Saving...' : 'Save Changes'}
               </Button>
             </Row>
 
             {/* Cancel Confirmation Dialog */}
-            <ConfirmationDialog
-              open={showCancelDialog}
-              onOpenChange={setShowCancelDialog}
+            <ConfirmationModal
+              visible={showCancelDialog}
+              onClose={() => setShowCancelDialog(false)}
               title="Discard Changes?"
               message="You have unsaved changes. Are you sure you want to discard them?"
               confirmLabel="Discard Changes"
               cancelLabel="Keep Editing"
-              confirmTheme="red"
               onConfirm={() => {
                 if (originalDataRef.current) {
                   reset(originalDataRef.current)

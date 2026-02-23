@@ -10,35 +10,28 @@ interface ScoreThresholdSectionProps {
 
 export function ScoreThresholdSection({ minimumScore, onUpdate }: ScoreThresholdSectionProps) {
   const { theme } = useThemeContext()
-  const [value, setValue] = useState<number[]>([minimumScore || 50])
+  const [value, setValue] = useState<number>(minimumScore ?? 50)
 
-  const handleChange = (newValue: number[]) => {
+  const handleChange = (newValue: number) => {
     setValue(newValue)
-    onUpdate(newValue[0])
+    onUpdate(newValue)
   }
-
-  const currentScore = value[0] || 50
 
   return (
     <Stack gap={16} padding="md">
       <Stack gap={8}>
         <Row gap={8}>
-          <Label flex={1}>Minimum Score</Label>
-          <Text>{currentScore}</Text>
+          <Label style={{ flex: 1 }}>Minimum Score</Label>
+          <Text>{value}</Text>
         </Row>
         <Text>Set the minimum score threshold for auto-screening applicants (0-100 scale)</Text>
       </Stack>
 
       <Stack gap={12}>
-        <Slider value={value} onValueChange={handleChange} min={0} max={100} step={1} width="100%">
-          <Slider.Track>
-            <Slider.TrackActive />
-          </Slider.Track>
-          <Slider.Thumb index={0} />
-        </Slider>
+        <Slider value={value} onValueChange={handleChange} min={0} max={100} step={1} />
 
         <Row gap={8}>
-          <Text flex={1}>0 (Low)</Text>
+          <Text style={{ flex: 1 }}>0 (Low)</Text>
           <Text>100 (High)</Text>
         </Row>
       </Stack>

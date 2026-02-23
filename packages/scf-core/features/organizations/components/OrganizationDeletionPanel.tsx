@@ -3,10 +3,13 @@ import { useRequestOrganizationDeletionMutation } from '@scf/core/utils/account-
 import { AlertTriangle, Trash2 } from 'lucide-react-native'
 import { useState } from 'react'
 import {
-  AlertDialog,
   Button,
   Card,
   Input,
+  Modal,
+  ModalHeader,
+  ModalContent,
+  ModalActions,
   Text,
   TextArea,
   Row,
@@ -61,17 +64,17 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
 
   return (
     <Card
-      borderWidth={1}
+      variant="outlined"
       style={{
-        borderColor: theme === "light" ? colors.error[300] : colors.error[700],
-        backgroundColor: theme === "light" ? colors.error[50] : colors.error[900],
+        borderColor: theme === 'light' ? colors.error[300] : colors.error[700],
+        backgroundColor: theme === 'light' ? colors.error[50] : colors.error[900],
       }}
       padding="md"
     >
       <Stack gap={12}>
         <Row align="center" gap={8}>
-          <AlertTriangle color={theme === "light" ? colors.error[700] : colors.error[300]} size="lg" />
-          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Delete Organization</Text>
+          <AlertTriangle color={theme === 'light' ? colors.error[700] : colors.error[300]} size={20} />
+          <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>Delete Organization</Text>
         </Row>
 
         <Text style={{ color: colors.text[theme].secondary }}>
@@ -86,7 +89,7 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
 
         <Button
           variant="outline"
-          style={{ borderColor: theme === "light" ? colors.error[300] : colors.error[700] }}
+          style={{ borderColor: theme === 'light' ? colors.error[300] : colors.error[700] }}
           color="error"
           iconStart={Trash2}
           onPress={() => setIsOpen(true)}
@@ -94,70 +97,63 @@ export function OrganizationDeletionPanel({ organizationId }: OrganizationDeleti
           Request Organization Deletion
         </Button>
 
-        <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-          <AlertDialog.Portal>
-            <AlertDialog.Overlay />
-            <AlertDialog.Content style={{ maxWidth: 500 }}>
-              <Stack gap={16} padding="md">
-                <Stack gap={8}>
-                  <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Delete This Organization?</Text>
-                  <Text style={{ color: colors.text[theme].secondary }}>
-                    This action cannot be undone. All organization data will be permanently deleted
-                    or anonymized.
-                  </Text>
-                </Stack>
+        <Modal visible={isOpen} onClose={() => setIsOpen(false)} width={500}>
+          <ModalHeader
+            title="Delete This Organization?"
+            onClose={() => setIsOpen(false)}
+          />
+          <ModalContent>
+            <Stack gap={16}>
+              <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+                This action cannot be undone. All organization data will be permanently deleted
+                or anonymized.
+              </Text>
 
-                <Stack gap={8}>
-                  <Text>Reason (optional)</Text>
-                  <TextArea
-                    value={reason}
-                    onChangeText={setReason}
-                    placeholder="Help us improve by sharing why you're deleting this organization..."
-                    style={{ minHeight: 80 }}
-                  />
-                </Stack>
-
-                <Stack gap={8}>
-                  <Text>Type "DELETE" to confirm</Text>
-                  <Input
-                    value={confirmText}
-                    onChangeText={setConfirmText}
-                    placeholder="DELETE"
-                    style={{
-                      borderColor:
-                        confirmText === 'DELETE'
-                          ? theme === "light" ? colors.green[300] : colors.green[700]
-                          : theme === "light" ? colors.error[300] : colors.error[700],
-                    }}
-                  />
-                </Stack>
-
-                <Row gap={12} justify="flex-end">
-                  <Button
-                    variant="outline"
-                    onPress={() => {
-                      setIsOpen(false)
-                      setConfirmText('')
-                      setReason('')
-                    }}
-                    disabled={deletionMutation.isPending}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
-                    color="white"
-                    iconStart={Trash2}
-                    onPress={handleDelete}
-                    disabled={confirmText !== 'DELETE' || deletionMutation.isPending}
-                  >
-                    {deletionMutation.isPending ? 'Deleting...' : 'Delete Organization'}
-                  </Button>
-                </Row>
+              <Stack gap={8}>
+                <Text>Reason (optional)</Text>
+                <TextArea
+                  value={reason}
+                  onChangeText={setReason}
+                  placeholder="Help us improve by sharing why you're deleting this organization..."
+                  style={{ minHeight: 80 }}
+                />
               </Stack>
-            </AlertDialog.Content>
-          </AlertDialog.Portal>
-        </AlertDialog>
+
+              <Stack gap={8}>
+                <Text>Type "DELETE" to confirm</Text>
+                <Input
+                  value={confirmText}
+                  onChangeText={setConfirmText}
+                  placeholder="DELETE"
+                  style={{
+                    borderColor:
+                      confirmText === 'DELETE'
+                        ? theme === 'light' ? colors.green[300] : colors.green[700]
+                        : theme === 'light' ? colors.error[300] : colors.error[700],
+                  }}
+                />
+              </Stack>
+            </Stack>
+          </ModalContent>
+          <ModalActions
+            orientation="right"
+            secondaryAction={{
+              label: 'Cancel',
+              onPress: () => {
+                setIsOpen(false)
+                setConfirmText('')
+                setReason('')
+              },
+              disabled: deletionMutation.isPending,
+            }}
+            primaryAction={{
+              label: deletionMutation.isPending ? 'Deleting...' : 'Delete Organization',
+              onPress: handleDelete,
+              disabled: confirmText !== 'DELETE' || deletionMutation.isPending,
+              color: 'error',
+            }}
+          />
+        </Modal>
       </Stack>
     </Card>
   )

@@ -75,7 +75,7 @@ export function LocationSchedulingSection({
             onChangeText={(text) =>
               handleChange('relocation_assistance_details', text || undefined)
             }
-            height={80}
+            style={{ minHeight: 80 }}
           />
         </Stack>
       )}
@@ -87,7 +87,7 @@ export function LocationSchedulingSection({
           placeholder="e.g. Monday-Friday 8am-5pm, flexible hours, compressed workweek"
           value={localState.work_schedule_details || ''}
           onChangeText={(text) => handleChange('work_schedule_details', text || undefined)}
-          height={80}
+          style={{ minHeight: 80 }}
         />
       </Stack>
 

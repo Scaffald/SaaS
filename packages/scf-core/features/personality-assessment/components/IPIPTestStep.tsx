@@ -147,9 +147,9 @@ export function IPIPTestStep({
         width="100%"
         align="center"
         padding={32}
-        style={{ maxWidth: 800, alignSelf: 'center', color: theme === "light" ? colors.green[700] : colors.green[300] }}
+        style={{ maxWidth: 800, alignSelf: 'center' }}
       >
-        <Text>✓ All Questions Complete!</Text>
+        <Text style={{ color: theme === 'light' ? colors.green[700] : colors.green[300] }}>✓ All Questions Complete!</Text>
         <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
           You've answered all 120 questions. Great job!
         </Text>
@@ -199,9 +199,7 @@ export function IPIPTestStep({
           </Text>
           <Text style={{ color: colors.text[theme].secondary }}>{overallProgress}%</Text>
         </Row>
-        <ProgressBar value={overallProgress} max={100}>
-          <ProgressBar.Indicator animation="bouncy" />
-        </ProgressBar>
+        <ProgressBar value={overallProgress} showLabel={false} showIndicator={false} showHintMessage={false} />
       </Stack>
 
       {/* Question */}
@@ -229,13 +227,8 @@ export function IPIPTestStep({
             variant="outline"
             onPress={() => handleAnswer(choice)}
             disabled={isLoading}
-            pressStyle={{ scale: 0.98 }}
             style={{
               borderColor: colors.border[theme].default,
-            }}
-            hoverStyle={{
-              borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
-              backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
             }}
           >
             <Text style={{ color: colors.text[theme].secondary }}>{choice.text}</Text>

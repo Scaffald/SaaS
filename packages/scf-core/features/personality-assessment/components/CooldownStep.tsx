@@ -122,9 +122,7 @@ export function CooldownStep({
           </Text>
           <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{formatTime(timeRemaining)}</Text>
         </Stack>
-        <ProgressBar value={cooldownProgress} max={100} size="sm">
-          <ProgressBar.Indicator animation="quick" />
-        </ProgressBar>
+        <ProgressBar value={cooldownProgress} showLabel={false} showIndicator={false} showHintMessage={false} />
       </Stack>
 
       {/* IPIP Questions Section */}
@@ -158,7 +156,7 @@ export function CooldownStep({
                   variant="outline"
                   onPress={() => handleAnswer(choice)}
                   disabled={isLoading}
-                  width="100%"
+                  fullWidth
                 >
                   {choice.text}
                 </Button>
