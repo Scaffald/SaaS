@@ -1,5 +1,6 @@
-# Enable auto-merge for Dependabot PRs after required checks pass.
-# Requires: Repo Settings → General → Pull Requests → "Allow auto-merge" enabled.
+# Enable auto-merge for Dependabot PRs (patch and minor only) after required checks pass.
+# Major version bumps are left for manual review. Requires: Repo Settings → General →
+# Pull Requests → "Allow auto-merge" enabled.
 name: Dependabot automerge
 
 on:
@@ -16,7 +17,14 @@ jobs:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
     steps:
-      - name: Enable pull request automerge
+      - name: Fetch Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable pull request automerge (patch and minor only)
+        if: steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor'
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

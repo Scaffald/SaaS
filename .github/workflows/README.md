@@ -108,7 +108,7 @@ pnpm test:contracts
 
 ## Dependabot automerge
 
-The `dependabot-automerge.yml` workflow enables auto-merge (squash) on Dependabot PRs when they are opened or updated. Merges occur automatically after required status checks pass.
+The `dependabot-automerge.yml` workflow enables auto-merge (squash) on Dependabot PRs when they are opened or updated. Only **patch** and **minor** version updates are auto-merged; **major** version bumps are left for manual review. Merges occur automatically after required status checks pass.
 
 - **Requires:** Repo **Settings → General → Pull Requests** → **Allow auto-merge** enabled.
 - **Config:** Version updates and schedule are in [`.github/dependabot.yml`](../dependabot.yml).
