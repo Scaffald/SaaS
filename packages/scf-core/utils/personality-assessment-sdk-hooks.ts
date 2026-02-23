@@ -300,3 +300,21 @@ export function useAwardResultsViewXPMutation(
     ...options,
   })
 }
+
+/**
+ * Get primary archetype for the current user.
+ * Returns null if IPIP has not been completed yet.
+ */
+export function useGetArchetype(options?: { enabled?: boolean; staleTime?: number; gcTime?: number }) {
+  const client = useScaffaldJobsClient()
+  return useQuery({
+    queryKey: ['personality-assessment', 'archetype'],
+    queryFn: async (): Promise<PersonalityArchetype | null> => {
+      if (!client) throw new Error('Missing client')
+      return client.personalityAssessments.getArchetype()
+    },
+    enabled: !!client && options?.enabled !== false,
+    staleTime: options?.staleTime ?? 5 * 60 * 1000,
+    gcTime: options?.gcTime,
+  })
+}
