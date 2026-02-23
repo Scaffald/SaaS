@@ -2,7 +2,7 @@ import {
   useCareerAssessmentStatus,
   useSaveCareerAssessmentMutation,
 } from '@scf/core/utils/onet-sdk-hooks'
-import { Button, DashboardWidget, spacing, useThemeContext } from '@scaffald/ui'
+import { Button, DashboardWidget, gap, useThemeContext } from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast } from '@scaffald/ui'
 import { useState } from 'react'
@@ -85,7 +85,7 @@ export function CareerAssessmentWidget() {
   if (isCheckingStatus) {
     return (
       <DashboardWidget>
-        <Stack gap={spacing.sm} align="center" paddingVertical={40}>
+        <Stack gap={gap.sm} align="center" paddingVertical={40}>
           <Spinner size="lg" color="$blue7" />
           <Text color="$gray11">Loading...</Text>
         </Stack>
@@ -100,8 +100,8 @@ export function CareerAssessmentWidget() {
 
   return (
     <DashboardWidget>
-      <Stack gap={spacing.md}>
-        <Stack gap={spacing.xs}>
+      <Stack gap={gap.md}>
+        <Stack gap={gap.xs}>
           <Text color="$gray11">Career Assessment</Text>
           <Text color="$gray11">
             Take a quick assessment to help us recommend jobs that match your interests and skills
@@ -155,10 +155,10 @@ export function CareerAssessmentWidget() {
           disabled={isSubmitting}
           opacity={isSubmitting ? 0.5 : 1}
           size="lg"
-          marginTop={spacing.xs}
+          marginTop={gap.xs}
         >
           {isSubmitting ? (
-            <Row gap={spacing.xs} align="center">
+            <Row gap={gap.xs} align="center">
               <Spinner size="sm" color="white" />
               Saving Assessment...
             </Row>

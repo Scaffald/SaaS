@@ -1,5 +1,10 @@
 import { PaymentIntentForm } from '@scf/core/features/payments/components/PaymentIntentForm'
-import { api } from '@scf/core/utils/api'
+import {
+  useIdVerificationPricing,
+  useIdVerificationRequest,
+  useIdVerificationConfirm,
+} from '@scf/core/utils/id-verification-sdk-hooks'
+import type { IdVerificationPricingItem } from '@scf/core/utils/id-verification-sdk-hooks'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import { useWorkers } from '@scf/core/utils/workers-sdk-hooks'
 import type { AppRouter } from '@scf/supabase/client-types'
@@ -14,7 +19,6 @@ import { useQueryClient } from '@tanstack/react-query'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type OrganizationOption = RouterOutputs['office']['getOrganizations']['organizations'][number]
-type PricingOption = RouterOutputs['idVerification']['getPricing'][number]
 
 interface IdVerificationRequestPanelProps {
   selectedOrganizationId: string | null
@@ -70,10 +74,8 @@ export function IdVerificationRequestPanel({
     [workersQuery.data?.workers]
   )
 
-  const pricingQuery = api.idVerification.getPricing.useQuery(undefined, {
-    staleTime: 5 * 60_000,
-  })
-  const pricingOptions = (pricingQuery.data ?? []) as PricingOption[]
+  const pricingQuery = useIdVerificationPricing({ staleTime: 5 * 60_000 })
+  const pricingOptions = (pricingQuery.data ?? []) as IdVerificationPricingItem[]
 
   const [selectedWorkerId, setSelectedWorkerId] = useState<string | null>(null)
   const [selectedPricingId, setSelectedPricingId] = useState<string | null>(null)
@@ -83,36 +85,8 @@ export function IdVerificationRequestPanel({
     }
   }, [pricingOptions, selectedPricingId])
 
-  const requestVerification = api.idVerification.requestVerification.useMutation({
-    onError: (error: unknown) => {
-      const _message = error instanceof Error ? error.message : 'Unable to create payment'
-      toast.show({
-        title: 'Unable to create payment',
-        message: error instanceof Error ? error.message : 'Please try again.',
-        variant: 'error',
-      })
-    },
-  })
-
-  const confirmVerification = api.idVerification.confirmVerificationPayment.useMutation({
-    onSuccess: async () => {
-      toast.show({
-        title: 'Verification requested',
-        message: 'Worker receives a Persona link immediately.',
-        variant: 'success',
-      })
-      await queryClient.invalidateQueries({ queryKey: [['idVerification', 'listVerifications']] })
-      resetForm()
-    },
-    onError: (error: unknown) => {
-      const _message = error instanceof Error ? error.message : 'Payment confirmation failed'
-      toast.show({
-        title: 'Payment confirmation failed',
-        message: error instanceof Error ? error.message : 'Please try again.',
-        variant: 'error',
-      })
-    },
-  })
+  const requestVerification = useIdVerificationRequest()
+  const confirmVerification = useIdVerificationConfirm()
 
   const [paymentSession, setPaymentSession] = useState<PaymentSession | null>(null)
   const [paymentError, setPaymentError] = useState<string | null>(null)
@@ -151,14 +125,39 @@ export function IdVerificationRequestPanel({
       })
       setPaymentSession(session)
     } catch (error) {
-      setPaymentError(
-        error instanceof Error ? error.message : 'Unable to create Stripe payment session.'
-      )
+      const msg = error instanceof Error ? error.message : 'Unable to create Stripe payment session.'
+      setPaymentError(msg)
+      toast.show({
+        title: 'Unable to create payment',
+        message: msg,
+        variant: 'error',
+      })
     }
   }
 
   const handlePaymentSuccess = async (paymentIntentId: string) => {
-    await confirmVerification.mutateAsync({ paymentIntentId })
+    try {
+      await confirmVerification.mutateAsync(
+        { paymentIntentId },
+        {
+          onSuccess: () => {
+            toast.show({
+              title: 'Verification requested',
+              message: 'Worker receives a Persona link immediately.',
+              variant: 'success',
+            })
+            void queryClient.invalidateQueries({ queryKey: ['idVerification'] })
+            resetForm()
+          },
+        }
+      )
+    } catch {
+      toast.show({
+        title: 'Payment confirmation failed',
+        message: confirmVerification.error instanceof Error ? confirmVerification.error.message : 'Please try again.',
+        variant: 'error',
+      })
+    }
   }
 
   const resetForm = () => {
@@ -242,7 +241,7 @@ export function IdVerificationRequestPanel({
                 : 'Select pricing'
           }
           label="Verification plan"
-          options={pricingOptions.map((option: PricingOption) => ({
+          options={pricingOptions.map((option: IdVerificationPricingItem) => ({
             value: option.id,
             label: `${option.name} · ${formatCurrency(option.priceCents)}`,
           }))}

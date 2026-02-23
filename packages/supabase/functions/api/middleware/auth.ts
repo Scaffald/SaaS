@@ -213,6 +213,24 @@ export async function requireAuth(c: Context, next: Next) {
 }
 
 /**
+ * Add supabaseAdmin to context for JWT-authenticated users.
+ * Used by protected endpoints that need service-role client (e.g. id-verification, Stripe).
+ * Does nothing for API key auth (user is undefined).
+ */
+export async function addSupabaseAdminForUser(c: Context, next: Next) {
+  const user = c.get('user')
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')
+  const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+
+  if (user && supabaseUrl && supabaseServiceKey) {
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+    c.set('supabaseAdmin', supabaseAdmin)
+  }
+
+  await next()
+}
+
+/**
  * Require specific role - throws 403 if user doesn't have required role
  * When scope is provided and user has the role, adds supabaseAdmin to context for office operations
  */

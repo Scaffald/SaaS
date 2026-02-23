@@ -2,6 +2,9 @@
  * Background checks admin SDK hooks.
  * Requires ScaffaldJobsSdkProviderFromSession (client from context).
  * Office or platform role required.
+ *
+ * Organization/user-facing hooks (useOrganizationBackgroundChecks, useBackgroundCheck,
+ * useBackgroundChecks) use tRPC until REST parity; admin hooks use SDK.
  */
 
 import {
@@ -10,17 +13,13 @@ import {
   useQueryClient,
   type UseMutationOptions,
 } from '@tanstack/react-query'
+import { api } from './api'
 import { useScaffaldJobsClient } from './jobs-sdk-context'
 import type {
   AdminCheckType,
   AdminPackage,
   AdminUpsertCheckTypeParams,
   AdminUpsertPackageParams,
-  AdminCheckDetail,
-  AdminCheckSummary,
-  AdminDisputeSummary,
-  AdminMetrics,
-  AdminAccessLogEntry,
   AdminUpdateStatusParams,
   AdminUpdatePrivacyParams,
   AdminResolveDisputeParams,
@@ -28,6 +27,45 @@ import type {
 
 const ADMIN_CATALOG_KEY = ['backgroundChecks', 'admin'] as const
 const ADMIN_KEY = ['backgroundChecks', 'adminData'] as const
+
+// ===== Organization/User hooks (tRPC until REST parity) =====
+
+/** List background checks for an organization (office role). Uses tRPC. */
+export function useOrganizationBackgroundChecks(
+  organizationId: string | undefined,
+  options?: { enabled?: boolean; staleTime?: number }
+) {
+  return api.backgroundChecks.organizationListChecks.useQuery(
+    { organization_id: organizationId ?? '' },
+    {
+      enabled: !!organizationId && options?.enabled !== false,
+      staleTime: options?.staleTime ?? 30_000,
+    }
+  )
+}
+
+/** Get a single background check with documents (user's own check). Uses tRPC. */
+export function useBackgroundCheck(
+  checkId: string | undefined,
+  options?: { enabled?: boolean }
+) {
+  return api.backgroundChecks.getCheck.useQuery(
+    { background_check_id: checkId ?? '' },
+    {
+      enabled: !!checkId && options?.enabled !== false,
+    }
+  )
+}
+
+/** List background checks for the current user. Uses tRPC. */
+export function useBackgroundChecks(options?: { enabled?: boolean; staleTime?: number }) {
+  return api.backgroundChecks.listChecks.useQuery(undefined, {
+    enabled: options?.enabled !== false,
+    staleTime: options?.staleTime ?? 30_000,
+  })
+}
+
+// ===== Admin SDK hooks =====
 
 /** List admin packages (office/platform) */
 export function useAdminPackages(options?: { staleTime?: number }) {

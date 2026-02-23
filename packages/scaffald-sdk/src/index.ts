@@ -29,6 +29,9 @@ export type {
   CreateJobParams,
   ExternalJob,
   ExternalJobFilterOptions,
+  OfficeJob,
+  OfficeListJobsParams,
+  OfficeListJobsResponse,
 } from './resources/jobs.js'
 
 export type {
@@ -529,6 +532,20 @@ export type {
   GetUserFeedbackParams,
   GetUserFeedbackResponse,
 } from './resources/feedback.js'
+
+export type {
+  IdVerificationPricingItem,
+  RequestVerificationParams,
+  RequestVerificationResponse,
+  ConfirmVerificationParams,
+  ConfirmVerificationResponse,
+  CurrentVerificationResponse,
+  VerificationStatusResponse,
+  IdVerificationListItem,
+  ListVerificationsParams,
+  ListVerificationsResponse,
+  RevokeVerificationParams,
+} from './resources/id-verification.js'
 
 export type {
   PersonalityAssessment,

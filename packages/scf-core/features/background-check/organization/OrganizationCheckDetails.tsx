@@ -1,12 +1,29 @@
 import { useBackgroundCheck } from '@scf/core/utils/background-checks-sdk-hooks'
 import { RefreshCcw, X } from 'lucide-react-native'
 import { useMemo } from 'react'
+import { Platform } from 'react-native'
 import { Button, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { getStatusMetadata } from '../components/status.utils'
 
 type OrganizationCheckSummary = {
   id: string
   status: string
+  worker_user_id?: string
+  worker?: {
+    display_name?: string | null
+    username?: string | null
+    email?: string | null
+    avatar_path?: string | null
+  } | null
+  package?: {
+    display_name?: string | null
+    slug?: string | null
+  } | null
+  job?: { id?: string | null; title?: string | null } | null
+  completed_at?: string | null
+  created_at?: string | null
+  invited_at?: string | null
+  expires_at?: string | null
   [key: string]: unknown
 }
 type OrganizationCheckDetail = {
@@ -39,7 +56,7 @@ export function OrganizationCheckDetails({
 }: OrganizationCheckDetailsProps) {
   const checkQuery = useBackgroundCheck(checkId || undefined)
 
-  const detail = checkQuery.data
+  const detail = checkQuery.data?.check
 
   const componentStatuses = useMemo(() => {
     if (!detail || !Array.isArray(detail.component_statuses)) return []
@@ -112,12 +129,16 @@ export function OrganizationCheckDetails({
             <InfoRow
               label="Worker"
               value={
-                summary
-                  ? (summary.worker?.display_name ??
-                    summary.worker?.username ??
-                    (summary.worker_user_id
-                      ? `User ${summary.worker_user_id.substring(0, 8)}`
-                      : 'Unknown worker'))
+                summary && typeof summary === 'object' && 'worker' in summary
+                  ? ((
+                      (summary as { worker?: { display_name?: string; username?: string }; worker_user_id?: string }).worker
+                        ?.display_name ??
+                      (summary as { worker?: { username?: string }; worker_user_id?: string }).worker
+                        ?.username ??
+                      ((summary as { worker_user_id?: string }).worker_user_id
+                        ? `User ${(summary as { worker_user_id: string }).worker_user_id.substring(0, 8)}`
+                        : 'Unknown worker'))
+                  )
                   : '—'
               }
             />
@@ -203,7 +224,13 @@ export function OrganizationCheckDetails({
           {detail?.metadata ? (
             <Stack gap={8}>
               <Text color="$gray11">Metadata</Text>
-              <Text color="$gray11" style={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
+              <Text
+                color="$gray11"
+                style={{
+                  fontFamily: 'monospace',
+                  ...(Platform.OS === 'web' && { whiteSpace: 'pre-wrap' }),
+                }}
+              >
                 {JSON.stringify(detail.metadata, null, 2)}
               </Text>
             </Stack>

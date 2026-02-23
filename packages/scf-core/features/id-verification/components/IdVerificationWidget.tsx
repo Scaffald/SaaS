@@ -1,5 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useCurrentIdVerification } from '@scf/core/utils/id-verification-sdk-hooks'
 import { Button, DashboardWidget } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
@@ -8,12 +8,7 @@ import { IdVerificationBadge } from './IdVerificationBadge'
 
 export function IdVerificationWidget() {
   const router = useRouter()
-  const badgeQuery = api.idVerification.getCurrentVerification.useQuery(
-    {},
-    {
-      staleTime: 60 * 1000,
-    }
-  )
+  const badgeQuery = useCurrentIdVerification(undefined, { staleTime: 60 * 1000 })
 
   const status = useMemo(() => deriveStatus(badgeQuery), [badgeQuery])
 
@@ -49,7 +44,7 @@ type StatusDescriptor = {
 }
 
 function deriveStatus(
-  badgeQuery: ReturnType<typeof api.idVerification.getCurrentVerification.useQuery>
+  badgeQuery: ReturnType<typeof useCurrentIdVerification>
 ): StatusDescriptor {
   if (badgeQuery.isLoading) {
     return {

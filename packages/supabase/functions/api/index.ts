@@ -107,6 +107,7 @@ app.route("/v1/personality-assessment", personalityAssessmentRouter);
 app.route("/v1/cms", cmsRouter); // Personality assessments
 app.route("/v1/feedback", feedbackRouter); // User feedback (submit, upload-url)
 app.route("/v1/office/jobs", officeJobsRouter); // Office jobs list (office role)
+app.route("/v1/id-verification", idVerificationRouter); // ID verification (pricing, request, confirm, status, list, revoke)
 
 // OpenAPI documentation
 app.route("/", openapi);

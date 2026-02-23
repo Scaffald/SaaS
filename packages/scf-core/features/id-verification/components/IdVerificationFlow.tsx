@@ -1,5 +1,10 @@
 import { PaymentIntentForm } from '@scf/core/features/payments/components/PaymentIntentForm'
-import { api } from '@scf/core/utils/api'
+import {
+  useIdVerificationPricing,
+  useCurrentIdVerification,
+  useIdVerificationRequest,
+  useIdVerificationConfirm,
+} from '@scf/core/utils/id-verification-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import { AlertCircle } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
@@ -45,18 +50,11 @@ export function IdVerificationContent() {
   const { user } = useUser()
   const toast = useToast()
 
-  const pricingQuery = api.idVerification.getPricing.useQuery(undefined, {
-    staleTime: 5 * 60 * 1000,
-  })
-  const currentVerificationQuery = api.idVerification.getCurrentVerification.useQuery(
-    {},
-    {
-      staleTime: 60 * 1000,
-    }
-  )
+  const pricingQuery = useIdVerificationPricing({ staleTime: 5 * 60 * 1000 })
+  const currentVerificationQuery = useCurrentIdVerification(undefined, { staleTime: 60 * 1000 })
 
-  const requestVerification = api.idVerification.requestVerification.useMutation()
-  const confirmVerification = api.idVerification.confirmVerificationPayment.useMutation()
+  const requestVerification = useIdVerificationRequest()
+  const confirmVerification = useIdVerificationConfirm()
 
   const [selectedPricingId, setSelectedPricingId] = useState<string | null>(null)
   const [paymentSession, setPaymentSession] = useState<PaymentSession | null>(null)
@@ -230,7 +228,7 @@ export function IdVerificationFlow() {
 }
 
 function renderStatusCard(
-  queryReturn: ReturnType<typeof api.idVerification.getCurrentVerification.useQuery>
+  queryReturn: ReturnType<typeof useCurrentIdVerification>
 ) {
   if (queryReturn.isLoading) {
     return (

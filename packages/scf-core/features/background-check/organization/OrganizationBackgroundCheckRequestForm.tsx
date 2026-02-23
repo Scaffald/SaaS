@@ -5,7 +5,9 @@ import {
   useRequestBackgroundCheckMutation,
   useConfirmCheckPaymentMutation,
 } from '@scf/core/utils/background-checks-sdk-hooks'
+import { useOfficeListJobs } from '@scf/core/utils/jobs-sdk-hooks'
 import { useWorkers } from '@scf/core/utils/workers-sdk-hooks'
+import type { OfficeJob } from '@scaffald/sdk'
 import type { Worker } from '@scaffald/sdk/resources/workers'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
@@ -424,42 +426,45 @@ export function OrganizationBackgroundCheckRequestForm() {
         </Stack>
 
         <Row gap={12}>
-          <Button
-            flex={1}
-            size="md"
-            variant="outline"
-            disabled={requestPaymentMutation.isPending || confirmPaymentMutation.isPending}
-            onPress={() => router.back()}
-          >
-            Cancel
-          </Button>
-          {!paymentSession && (
+          <Stack flex={1}>
             <Button
-              flex={1}
               size="md"
-              color="primary"
-              onPress={handleSubmit}
-              disabled={requestPaymentMutation.isPending}
+              variant="outline"
+              disabled={requestPaymentMutation.isPending || confirmPaymentMutation.isPending}
+              onPress={() => router.back()}
             >
-              {requestPaymentMutation.isPending ? 'Preparing payment…' : 'Continue to payment'}
+              Cancel
             </Button>
+          </Stack>
+          {!paymentSession && (
+            <Stack flex={1}>
+              <Button
+                size="md"
+                color="primary"
+                onPress={handleSubmit}
+                disabled={requestPaymentMutation.isPending}
+              >
+                {requestPaymentMutation.isPending ? 'Preparing payment…' : 'Continue to payment'}
+              </Button>
+            </Stack>
           )}
         </Row>
         {paymentSession && (
-          <Button
-            size="sm"
-            variant="outline"
-            marginTop={8}
-            onPress={() => {
-              if (!confirmPaymentMutation.isPending) {
-                setPaymentSession(null)
-                setRequestError(null)
-              }
-            }}
-            disabled={confirmPaymentMutation.isPending}
-          >
-            Reset payment form
-          </Button>
+          <Stack marginTop={8}>
+            <Button
+              size="sm"
+              variant="outline"
+              onPress={() => {
+                if (!confirmPaymentMutation.isPending) {
+                  setPaymentSession(null)
+                  setRequestError(null)
+                }
+              }}
+              disabled={confirmPaymentMutation.isPending}
+            >
+              Reset payment form
+            </Button>
+          </Stack>
         )}
       </Stack>
     </ScrollView>

@@ -10,6 +10,13 @@ import type { Job } from '@scaffald/sdk'
 import { createClient } from '../utils/client.js'
 import { formatTable, formatJson, formatCompact } from '../utils/output.js'
 
+type JobLocation = Job['location']
+const formatLocation = (location: JobLocation): string => {
+  if (!location) return 'Remote'
+  if (typeof location === 'string') return location || 'Remote'
+  return [location.city, location.state, location.country].filter(Boolean).join(', ') || 'Remote'
+}
+
 export const jobsCommand = new Command('jobs')
   .description('Manage jobs')
   .addCommand(
@@ -45,7 +52,7 @@ export const jobsCommand = new Command('jobs')
               job.organization_id || 'N/A',
               job.status,
               job.employment_type || 'N/A',
-              job.location?.city || job.location?.state || 'Remote',
+              formatLocation(job.location),
             ])
             formatTable(headers, rows, { title: 'Jobs' })
           }
@@ -84,12 +91,7 @@ export const jobsCommand = new Command('jobs')
               { label: 'Status:', value: job.status },
               { label: 'Organization:', value: job.organization_id || 'N/A' },
               { label: 'Employment Type:', value: job.employment_type || 'N/A' },
-              {
-                label: 'Location:',
-                value: job.location
-                  ? [job.location.city, job.location.state, job.location.country].filter(Boolean).join(', ') || 'Remote'
-                  : 'Remote'
-              },
+              { label: 'Location:', value: formatLocation(job.location) },
               ...(job.salary_min && job.salary_max
                 ? [
                     {
@@ -148,7 +150,7 @@ export const jobsCommand = new Command('jobs')
               job.title,
               job.organization_id || 'N/A',
               job.employment_type || 'N/A',
-              job.location?.city || job.location?.state || 'Remote',
+              formatLocation(job.location),
             ])
             formatTable(headers, rows, { title: 'Similar Jobs' })
           }

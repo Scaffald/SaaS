@@ -1,5 +1,6 @@
 import { OfficePageLayout } from '@scf/core/features/office/components/OfficePageLayout'
-import { api } from '@scf/core/utils/api'
+import { useIdVerificationList } from '@scf/core/utils/id-verification-sdk-hooks'
+import type { IdVerificationListItem } from '@scf/core/utils/id-verification-sdk-hooks'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import type { AppRouter } from '@scf/supabase/client-types'
@@ -20,8 +21,6 @@ import {
 } from '@scaffald/ui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
-type VerificationListResponse = RouterOutputs['idVerification']['listVerifications']
-type VerificationItem = VerificationListResponse['items'][number]
 type OrganizationOption = RouterOutputs['office']['getOrganizations']['organizations'][number]
 type StatusFilter = 'all' | 'active' | 'expired' | 'revoked'
 
@@ -99,7 +98,7 @@ export function IdVerificationAdminPage({
     }
   }, [organizations, selectedOrganizationId, onOrganizationChange])
 
-  const listQuery = api.idVerification.listVerifications.useQuery(
+  const listQuery = useIdVerificationList(
     {
       limit: 200,
       offset: 0,
@@ -107,7 +106,7 @@ export function IdVerificationAdminPage({
       organizationId: selectedOrganizationId ?? undefined,
       search: debouncedSearch || undefined,
     },
-    { placeholderData: (previousData) => previousData, staleTime: 30_000 }
+    { enabled: true }
   )
 
   const summary = listQuery.data?.summary ?? {
@@ -117,12 +116,12 @@ export function IdVerificationAdminPage({
     revoked: 0,
   }
 
-  const columns = useMemo<ColumnDef<VerificationItem, unknown>[]>(() => {
+  const columns = useMemo<ColumnDef<IdVerificationListItem, unknown>[]>(() => {
     return [
       {
         accessorKey: 'workerName',
         header: 'Worker',
-        cell: ({ row }: CellContext<VerificationItem, unknown>) => (
+        cell: ({ row }: CellContext<IdVerificationListItem, unknown>) => (
           <Stack>
             <Text color="$gray11">{row.original.workerName}</Text>
             {row.original.workerEmail ? (
@@ -135,7 +134,7 @@ export function IdVerificationAdminPage({
       {
         accessorKey: 'badgeStatus',
         header: 'Badge status',
-        cell: ({ row }: CellContext<VerificationItem, unknown>) => {
+        cell: ({ row }: CellContext<IdVerificationListItem, unknown>) => {
           const badgeKey = row.original.badgeStatus as Exclude<StatusFilter, 'all'>
           const meta = STATUS_META[badgeKey]
           if (!meta) {
@@ -157,31 +156,31 @@ export function IdVerificationAdminPage({
       {
         accessorKey: 'verificationLevel',
         header: 'Level',
-        cell: ({ row }: CellContext<VerificationItem, unknown>) =>
+        cell: ({ row }: CellContext<IdVerificationListItem, unknown>) =>
           row.original.verificationLevel ?? '—',
       },
       {
         accessorKey: 'verifiedAt',
         header: 'Verified',
-        cell: ({ row }: CellContext<VerificationItem, unknown>) =>
+        cell: ({ row }: CellContext<IdVerificationListItem, unknown>) =>
           formatDate(row.original.verifiedAt),
       },
       {
         accessorKey: 'badgeExpiresAt',
         header: 'Expires',
-        cell: ({ row }: CellContext<VerificationItem, unknown>) =>
+        cell: ({ row }: CellContext<IdVerificationListItem, unknown>) =>
           formatDate(row.original.badgeExpiresAt),
       },
       {
         accessorKey: 'organizationName',
         header: 'Organization',
-        cell: ({ row }: CellContext<VerificationItem, unknown>) =>
+        cell: ({ row }: CellContext<IdVerificationListItem, unknown>) =>
           row.original.organizationName ?? '—',
       },
       {
         accessorKey: 'source',
         header: 'Source',
-        cell: ({ row }: CellContext<VerificationItem, unknown>) => {
+        cell: ({ row }: CellContext<IdVerificationListItem, unknown>) => {
           const sourceKey = (row.original.source ?? 'worker') as keyof typeof SOURCE_META
           const meta = SOURCE_META[sourceKey]
           return (
@@ -200,13 +199,13 @@ export function IdVerificationAdminPage({
       {
         accessorKey: 'personaStatus',
         header: 'Persona status',
-        cell: ({ row }: CellContext<VerificationItem, unknown>) =>
+        cell: ({ row }: CellContext<IdVerificationListItem, unknown>) =>
           row.original.personaStatus ?? '—',
       },
       {
         accessorKey: 'priceCents',
         header: 'Amount',
-        cell: ({ row }: CellContext<VerificationItem, unknown>) =>
+        cell: ({ row }: CellContext<IdVerificationListItem, unknown>) =>
           formatCurrency(row.original.priceCents ?? 0),
       },
     ]
