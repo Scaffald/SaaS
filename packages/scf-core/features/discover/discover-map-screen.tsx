@@ -17,9 +17,8 @@ import {
   SlidersHorizontal,
   X,
 } from 'lucide-react-native'
-import type { ComponentRef } from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Platform } from 'react-native'
+import { Platform, View } from 'react-native'
 import {
   Button,
   ScrollView,
@@ -43,6 +42,7 @@ import { type ClusterInfo, type MapPinType, useMapPinState } from './hooks/useMa
 import { useOrganizations } from './hooks/useOrganizations'
 import { useTalentProfiles } from './hooks/useTalentProfiles'
 import { useUserLocation } from './hooks/useUserLocation'
+import { createMapboxGeocodingProvider } from '../../utils/mapbox-geocoding-provider'
 import { useMapState } from './providers/MapStateProvider'
 import { isPinNearViewportEdge } from './utils/hoverCardPositioning'
 
@@ -58,7 +58,7 @@ export const DiscoverMapScreen = () => {
   const isSmallScreen = width <= 800 || isNativeMobile // ensure native mobile always treated as small
   const resultListRef = useRef<ResultListRef>(null)
   const mapRef = useRef<MapContainerRef>(null)
-  const layoutRef = useRef<ComponentRef<typeof Stack> | null>(null)
+  const layoutRef = useRef<View>(null)
 
   // Location functionality
   const { location } = useUserLocation()
@@ -266,8 +266,8 @@ export const DiscoverMapScreen = () => {
   }, [clusters, mapPins, setPinCluster, pinStates])
 
   // Handle cluster changes from MapContainer
-  const handleClustersChange = useCallback((newClusters: ClusterInfo[]) => {
-    setClusters(newClusters)
+  const handleClustersChange = useCallback((clusters: unknown[]) => {
+    setClusters(clusters as ClusterInfo[])
   }, [])
 
   const clearHoverState = useCallback(() => {
@@ -305,7 +305,7 @@ export const DiscoverMapScreen = () => {
       const layoutNode = layoutRef.current
       const layoutRect =
         layoutNode && 'getBoundingClientRect' in layoutNode
-          ? (layoutNode as HTMLElement).getBoundingClientRect()
+          ? (layoutNode as unknown as HTMLElement).getBoundingClientRect()
           : null
       if (mapRect && layoutRect) {
         setHoverCardPosition({
@@ -492,20 +492,15 @@ export const DiscoverMapScreen = () => {
       }
       setViewportBounds(immediateBounds)
       setMapReady(true)
-
-      // Center the map on the new location
-      if (mapRef.current?.flyTo) {
-        mapRef.current.flyTo([location.longitude, location.latitude], 12)
-      }
+      // Map recenters via centerLocation prop from state.lastSearchLocation
     },
     [updateSearchLocation]
   )
 
   // Handle viewport changes from map (debounced by 500ms in MapContainer)
   // Only update viewport bounds for data fetching, not persisted state (to avoid excessive updates)
-  const handleViewportChange = useCallback(
-    (bounds: ViewportBounds, _zoom: number) => {
-      // Only update bounds if they've changed significantly (avoid unnecessary refetches)
+  const handleViewportChange = useCallback((bounds: ViewportBounds) => {
+    // Only update bounds if they've changed significantly (avoid unnecessary refetches)
       // Check both center position and bounds size to determine if viewport changed meaningfully
       setViewportBounds((prevBounds) => {
         if (!prevBounds) {
@@ -582,7 +577,7 @@ export const DiscoverMapScreen = () => {
   }, [])
 
   return (
-    <Stack ref={layoutRef} flex={1} height="100vh" overflow="hidden" position="relative">
+    <View ref={layoutRef} style={{ flex: 1, height: '100%', overflow: 'hidden', position: 'relative' }}>
       {/* Filter Bar / Mobile Header */}
       {isSmallScreen ? (
         <MobileSearchHeader
@@ -611,7 +606,7 @@ export const DiscoverMapScreen = () => {
       )}
 
       {/* Map and Results Container */}
-      <Row flex={1} overflow="hidden" position="relative">
+      <Row style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
         {isSmallScreen ? (
           mobileListActive ? (
             <Stack
@@ -744,7 +739,7 @@ export const DiscoverMapScreen = () => {
       {isSmallScreen && (
         <MobileViewToggleBar activeView={mobileViewMode} onViewChange={handleMobileViewChange} />
       )}
-    </Stack>
+    </View>
   )
 }
 
@@ -789,14 +784,16 @@ const MobileSearchHeader = ({
 
   return (
     <Row
-      width="100%"
-      paddingHorizontal={16}
-      paddingVertical={12}
-      gap={12}
-      backgroundColor="$background"
-      borderBottomWidth={1}
-      borderBottomColor="$borderColor"
-      align="center"
+      style={{
+        width: '100%',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        gap: 12,
+        backgroundColor: 'transparent',
+        borderBottomWidth: 1,
+        borderBottomColor: '#e5e7eb',
+        alignItems: 'center',
+      }}
     >
       {tokenValidation.valid ? (
         <AddressAutocomplete
@@ -804,24 +801,14 @@ const MobileSearchHeader = ({
           onChange={onSearchQueryChange}
           onAddressSelect={handleAddressSelect}
           placeholder="Search city, county, or region..."
-          provider="mapbox"
-          apiKey={mapboxToken}
-          zoomLevel="city"
+          provider={createMapboxGeocodingProvider(mapboxToken ?? '')}
           searchOptions={{
             types: ['place', 'region', 'district', 'locality'],
+            zoomLevel: 'city',
           }}
           minLength={2}
           maxResults={5}
           debounceMs={300}
-          containerProps={{
-            flex: 1,
-            w: '100%',
-            backgroundColor: '$background',
-            borderRadius: '$5',
-            height: 25,
-            justifyContent: 'center',
-            style: { flexShrink: 1 },
-          }}
         />
       ) : (
         <Stack
@@ -859,28 +846,37 @@ type MobileViewToggleBarProps = {
 const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarProps) => {
   return (
     <Row
-      position="absolute"
-      bottom={12}
-      left={12}
-      right={12}
-      backgroundColor="$color2"
-      borderRadius={24}
-      padding={4}
-      shadowColor="$shadowColor"
-      shadowOffset={{ width: 0, height: -2 }}
-      shadowOpacity={0.15}
-      shadowRadius={12}
-      style={{ zIndex: 60 }}
-      gap={8}
+      style={{
+        position: 'absolute',
+        bottom: 12,
+        left: 12,
+        right: 12,
+        backgroundColor: '#f2f4f7',
+        borderRadius: 24,
+        padding: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 12,
+        zIndex: 60,
+        gap: 8,
+      }}
     >
-      <Tabs value={activeView} onValueChange={onViewChange} activationMode="manual" flex={1}>
+      <Tabs
+        value={activeView}
+        onValueChange={onViewChange}
+        triggerSizing="equal"
+        containerStyle={{ flex: 1 }}
+      >
         <Tabs.Item value="map">
           <Tabs.Trigger
-            flex={1}
-            backgroundColor={activeView === 'map' ? '$background' : 'transparent'}
-            borderRadius={20}
-            paddingHorizontal={16}
-            paddingVertical={12}
+            containerStyle={{
+              flex: 1,
+              backgroundColor: activeView === 'map' ? '#ffffff' : 'transparent',
+              borderRadius: 20,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+            }}
           >
             <Row align="center" justify="center" gap={8}>
               <MapIcon size="md" />
@@ -890,11 +886,13 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
         </Tabs.Item>
         <Tabs.Item value="list">
           <Tabs.Trigger
-            flex={1}
-            backgroundColor={activeView === 'list' ? '$background' : 'transparent'}
-            borderRadius={20}
-            paddingHorizontal={16}
-            paddingVertical={12}
+            containerStyle={{
+              flex: 1,
+              backgroundColor: activeView === 'list' ? '#ffffff' : 'transparent',
+              borderRadius: 20,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+            }}
           >
             <Row align="center" justify="center" gap={8}>
               <ListIcon size="md" />
@@ -955,7 +953,6 @@ const MobileFiltersContent = ({
         size="md"
         variant="outline"
         iconStart={RotateCcw}
-        scaleIcon={1.2}
         onPress={onReset}
         aria-label="Reset filters"
       >

@@ -13,6 +13,7 @@ import { type BreadcrumbItemData, DashboardWidget } from '@scaffald/ui'
 import { LinearGradient } from 'expo-linear-gradient'
 import type { ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
+import type { DimensionValue } from 'react-native'
 import { Animated, Easing } from 'react-native'
 import { Text, Row, Stack } from '@scaffald/ui'
 
@@ -63,14 +64,13 @@ function SkeletonBlock({
 
   return (
     <Stack
-      position="relative"
-      overflow="hidden"
-      backgroundColor="$color4"
-      height={height}
-      width={typeof width === 'number' ? width : undefined}
       style={{
+        position: 'relative',
+        overflow: 'hidden',
+        backgroundColor: '#e4e7ec',
+        height,
+        width: (width ?? '100%') as DimensionValue,
         borderRadius: radius,
-        width: typeof width === 'string' ? width : undefined,
       }}
     >
       <Animated.View
