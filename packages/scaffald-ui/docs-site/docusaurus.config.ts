@@ -2,6 +2,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import path from 'path';
+import webpack from 'webpack';
 
 /** Docs site: deploy workflow runs on push to main when docs-site/ or src/ change. */
 const config: Config = {
@@ -46,6 +47,7 @@ const config: Config = {
 
   plugins: [
     function reactNativeWebPlugin() {
+      const mockDir = path.resolve(__dirname, '../.storybook/mocks');
       return {
         name: 'react-native-web-docusaurus-plugin',
         configureWebpack() {
@@ -56,16 +58,22 @@ const config: Config = {
                 '.tsx', '.ts', '.jsx', '.js', '.json',
               ],
               alias: {
-                'react-native$': 'react-native-web',
-                'react-native-svg': path.resolve(__dirname, '../.storybook/mocks/react-native-svg.jsx'),
+                'react-native/Libraries/Utilities/codegenNativeComponent': path.join(mockDir, 'codegenNativeComponent.js'),
+                'react-native/Libraries/ReactNative/requireNativeComponent': path.join(mockDir, 'requireNativeComponent.js'),
+                'react-native/Libraries/Alert/RCTAlertManager': path.join(mockDir, 'RCTAlertManager.js'),
+                'react-native/Libraries/TurboModule/TurboModuleRegistry': path.join(mockDir, 'TurboModuleRegistry.js'),
+                'react-native': 'react-native-web',
+                'react-native-svg': path.join(mockDir, 'react-native-svg.jsx'),
                 'lucide-react-native': 'lucide-react',
-                'react-native/Libraries/ReactNative/requireNativeComponent': path.resolve(__dirname, '../.storybook/mocks/requireNativeComponent.js'),
-                'react-native/Libraries/Alert/RCTAlertManager': path.resolve(__dirname, '../.storybook/mocks/RCTAlertManager.js'),
-                'react-native/Libraries/TurboModule/TurboModuleRegistry': path.resolve(__dirname, '../.storybook/mocks/TurboModuleRegistry.js'),
               },
             },
             module: {
               rules: [
+                {
+                  test: /\.m?js$/,
+                  include: /node_modules\/@react-native-async-storage/,
+                  resolve: { fullySpecified: false },
+                },
                 {
                   test: /\.(js|jsx|ts|tsx)$/,
                   include: /node_modules\/(react-native-web|@scaffald\/ui)/,
@@ -78,6 +86,13 @@ const config: Config = {
                 },
               ],
             },
+            plugins: [
+              // Force replacement of react-native codegen file so server bundle never parses Flow
+              new webpack.NormalModuleReplacementPlugin(
+                /[/\\]react-native[/\\]Libraries[/\\]Utilities[/\\]codegenNativeComponent\.js$/,
+                path.join(mockDir, 'codegenNativeComponent.js'),
+              ),
+            ],
           };
         },
       };

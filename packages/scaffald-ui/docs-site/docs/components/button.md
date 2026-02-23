@@ -19,7 +19,7 @@ import { Button } from '@scaffald/ui';
 
 export default function Example() {
   return (
-    <Button>
+    <Button variant="filled" color="primary">
       Click Me
     </Button>
   );
@@ -54,10 +54,12 @@ All Button components accept standard React Native [`View` props](https://reactn
 ### With Icon
 
 ```tsx
-// Example implementation
-<Button variant="default">
-  Example content
-</Button>
+// Example: multiple variants
+<Stack gap={12} direction="row" flexWrap="wrap">
+  <Button variant="filled" color="primary">Filled</Button>
+  <Button variant="outline" color="primary">Outline</Button>
+  <Button variant="ghost" color="primary">Ghost</Button>
+</Stack>
 ```
 
 ## Accessibility

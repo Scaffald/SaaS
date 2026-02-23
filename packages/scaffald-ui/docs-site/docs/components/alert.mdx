@@ -2,6 +2,8 @@
 sidebar_position: 22
 ---
 
+import LivePreview from '@site/src/components/LivePreview';
+
 # Alert
 
 Inline notification component for contextual messages. Supports different severity levels and actions.
@@ -14,17 +16,9 @@ import { Alert } from '@scaffald/ui';
 
 ## Basic Usage
 
-```tsx
-import { Alert } from '@scaffald/ui';
-
-export default function Example() {
-  return (
-    <Alert>
-      Content
-    </Alert>
-  );
-}
-```
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Alert>Content</Alert>
+</ThemeProvider>`} />
 
 ## Props
 
@@ -32,7 +26,7 @@ See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/co
 
 ### Common Props
 
-All Alert components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+All Alert components accept standard React Native [View props](https://reactnative.dev/docs/view#props).
 
 ## Variants
 
@@ -47,12 +41,14 @@ All Alert components accept standard React Native [`View` props](https://reactna
 
 ### Advanced Usage
 
-```tsx
-// Example implementation
-<Alert variant="default">
-  Example content
-</Alert>
-```
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={12}>
+    <Alert variant="info">Informational message</Alert>
+    <Alert variant="success">Success message</Alert>
+    <Alert variant="warning">Warning message</Alert>
+    <Alert variant="error">Error message</Alert>
+  </Stack>
+</ThemeProvider>`} />
 
 ## Accessibility
 
