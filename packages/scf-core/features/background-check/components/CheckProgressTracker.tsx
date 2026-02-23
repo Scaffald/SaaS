@@ -1,6 +1,6 @@
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
 import { memo, useMemo } from 'react'
-import { Progress, Separator, Text, Row, Stack } from '@scaffald/ui'
+import { ProgressBarBase, Separator, Text, Row, Stack } from '@scaffald/ui'
 
 import {
   type BackgroundCheckDetail,
@@ -107,9 +107,7 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
           <Text color="$gray11">Overall progress</Text>
           <Text color="$gray11">{progress}%</Text>
         </Row>
-        <Progress value={progress} max={100} backgroundColor="$color3" size="sm">
-          <Progress.Indicator animation="bouncy" backgroundColor={statusColors.border} />
-        </Progress>
+        <ProgressBarBase value={progress} color="primary" />
         <Text color="$gray11">{statusMeta.description}</Text>
       </Stack>
 
@@ -171,12 +169,12 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
               return (
                 <Row key={`${entry.status}-${index}`} gap={12} align="center">
                   <Stack width={10} align="center">
-                    <Stack
-                      width={2}
-                      flex={1}
-                      backgroundColor="$color5"
-                      opacity={index === normalizedHistory.length - 1 ? 0 : 1}
-                    />
+                  <Stack
+                    width={2}
+                    flex={1}
+                    backgroundColor="$color5"
+                    style={{ opacity: index === normalizedHistory.length - 1 ? 0 : 1 }}
+                  />
                   </Stack>
                   <Stack
                     flex={1}
@@ -194,7 +192,7 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
                       )}
                       {entry.actor && (
                         <>
-                          <Separator vertical />
+                          <Separator orientation="vertical" />
                           <Text color="$gray11">{entry.actor}</Text>
                         </>
                       )}

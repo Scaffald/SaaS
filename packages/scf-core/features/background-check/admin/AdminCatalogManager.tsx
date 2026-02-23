@@ -7,11 +7,11 @@ import {
   useAdminUpsertPackageMutation,
 } from '@scf/core/utils/background-checks-sdk-hooks'
 import type { AdminCheckType, AdminPackage } from '@scaffald/sdk'
+import { DialogCompound as Dialog } from '@scf/core/components/ui/DialogCompound'
 import {
   Button,
   Card,
   Checkbox,
-  Dialog,
   Input,
   Row,
   ScrollView,

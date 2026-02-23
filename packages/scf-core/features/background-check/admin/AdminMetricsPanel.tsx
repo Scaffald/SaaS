@@ -22,11 +22,11 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
     return (
       <Card
         padding="md"
-        gap={12}
+        style={{ gap: 12 }}
         backgroundColor="$color2"
         borderColor="$borderColor"
         borderWidth={1}
-        borderRadius={16}
+        radius="xl"
       >
         <Text color="$gray11">Metrics unavailable</Text>
         <Text color="$gray11">
@@ -68,13 +68,12 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
 
       <Row wrap gap={12}>
         <Card
-          flexGrow={1}
+          style={{ flexGrow: 1, gap: 12 }}
           padding="md"
-          gap={12}
           backgroundColor="$color2"
           borderColor="$borderColor"
           borderWidth={1}
-          borderRadius={16}
+          radius="xl"
         >
           <Text color="$gray11">Dispute status</Text>
           <Stack gap={8}>
@@ -86,13 +85,12 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
         </Card>
 
         <Card
-          flexGrow={1}
+          style={{ flexGrow: 1, gap: 12 }}
           padding="md"
-          gap={12}
           backgroundColor="$color2"
           borderColor="$borderColor"
           borderWidth={1}
-          borderRadius={16}
+          radius="xl"
         >
           <Text color="$gray11">Average completion time</Text>
           <Text color="$gray11">
@@ -104,11 +102,11 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
 
       <Card
         padding="md"
-        gap={12}
+        style={{ gap: 12 }}
         backgroundColor="$color2"
         borderColor="$borderColor"
         borderWidth={1}
-        borderRadius={16}
+        radius="xl"
       >
         <Row justify="space-between" align="center" wrap gap={8}>
           <Text color="$gray11">Package distribution</Text>
@@ -152,13 +150,12 @@ interface MetricCardProps {
 function MetricCard({ title, value, description }: MetricCardProps) {
   return (
     <Card
-      flexGrow={1}
+      style={{ flexGrow: 1, gap: 8 }}
       padding="md"
-      gap={8}
       backgroundColor="$color2"
       borderColor="$borderColor"
       borderWidth={1}
-      borderRadius={16}
+      radius="xl"
     >
       <Text color="$gray11">{title}</Text>
       <Text color="$gray11">{value}</Text>

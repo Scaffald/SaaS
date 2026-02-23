@@ -38,9 +38,9 @@ const PackageCard = memo(function PackageCard({
       backgroundColor={isSelected ? '$blue3' : '$background'}
       borderColor={isSelected ? '$blue8' : '$borderColor'}
       borderWidth={2}
-      borderRadius={16}
+      radius="lg"
       padding="md"
-      gap={12}
+      style={{ gap: 12 }}
       onPress={onSelect}
     >
       <Stack gap={8}>
@@ -86,7 +86,7 @@ export const PackageSelectionStep = memo(function PackageSelectionStep({
         </Text>
       </Stack>
 
-      <ScrollView flex={1}>
+      <ScrollView style={{ flex: 1 }}>
         <Stack gap={12} paddingBottom={24}>
           {isLoading && <Text color="$gray11">Loading packages…</Text>}
           {!isLoading && (!packages || packages.length === 0) && (

@@ -4,9 +4,9 @@ import { AlertTriangle } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useEffect, useMemo, useState } from 'react'
 import { ResponsiveSelect } from '@scaffald/ui'
+import { DialogCompound as Dialog } from '@scf/core/components/ui/DialogCompound'
 import {
   Button,
-  Dialog,
   Label,
   Separator,
   Spinner,
@@ -147,7 +147,7 @@ export function AdminDisputeResolutionDialog({
                     value={dispute.dispute_reason ?? ''}
                     editable={false}
                     rows={3}
-                    backgroundColor="$color2"
+                    style={{ backgroundColor: '#f2f4f7' }}
                   />
                 </Stack>
 
@@ -157,7 +157,7 @@ export function AdminDisputeResolutionDialog({
                     value={dispute.dispute_details ?? ''}
                     editable={false}
                     rows={5}
-                    backgroundColor="$color2"
+                    style={{ backgroundColor: '#f2f4f7' }}
                   />
                 </Stack>
 
@@ -215,7 +215,7 @@ export function AdminDisputeResolutionDialog({
               >
                 {isSubmitting ? (
                   <Row gap={8} align="center">
-                    <Spinner size="sm" color="$gray11" />
+                    <Spinner size="sm" color="gray" />
                     <Text color="$gray11">Resolving…</Text>
                   </Row>
                 ) : (

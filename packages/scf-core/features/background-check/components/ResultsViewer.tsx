@@ -52,7 +52,7 @@ export const ResultsViewer = memo(function ResultsViewer({
         borderColor="$borderColor"
       >
         <Row gap={8} align="center">
-          <Spinner size="sm" color="$gray11" />
+          <Spinner size="sm" color="gray" />
           <Text color="$gray11">Loading background check details…</Text>
         </Row>
       </Stack>

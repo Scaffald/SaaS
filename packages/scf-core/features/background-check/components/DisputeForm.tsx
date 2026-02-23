@@ -197,7 +197,6 @@ export function DisputeForm({
               <Stack
                 {...getRootProps()}
                 borderWidth={1}
-                borderStyle="dashed"
                 borderRadius={16}
                 paddingHorizontal={16}
                 paddingVertical={20}
@@ -212,7 +211,7 @@ export function DisputeForm({
                 }}
               >
                 <input {...getInputProps()} />
-                <Upload size={24} style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }} />
+                <Upload size={24} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
                 <Text style={{ color: colors.text[theme].secondary }}>
                   {isProcessing ? 'Processing…' : 'Drag a file here'}
                 </Text>
@@ -238,7 +237,7 @@ export function DisputeForm({
               style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
               borderRadius={12}
             >
-              <AlertCircle size="md" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }} />
+              <AlertCircle size="md" color={theme === "light" ? colors.error[700] : colors.error[300]} />
               <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{attachmentError}</Text>
             </Row>
           ) : null}
@@ -290,7 +289,7 @@ export function DisputeForm({
             style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
             borderRadius={12}
           >
-            <AlertCircle size="md" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }} />
+            <AlertCircle size="md" color={theme === "light" ? colors.error[700] : colors.error[300]} />
             <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{submissionError}</Text>
           </Row>
         ) : null}

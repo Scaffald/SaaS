@@ -133,8 +133,7 @@ export function BackgroundCheckWizard() {
       <Stack
         padding="md"
         gap={12}
-        borderBottomWidth={1}
-        borderBottomColor="$borderColor"
+        style={{ borderBottomWidth: 1, borderBottomColor: '$borderColor' }}
         backgroundColor="$background"
       >
         <Stack gap={4}>
@@ -146,14 +145,18 @@ export function BackgroundCheckWizard() {
       </Stack>
 
       {submitError && (
-        <Stack backgroundColor="$red3" padding="sm" borderBottomWidth={1} borderBottomColor="$red7">
+        <Stack
+          backgroundColor="$red3"
+          padding="sm"
+          style={{ borderBottomWidth: 1, borderBottomColor: '$red7' }}
+        >
           <Text color="$red11">
             We couldn’t submit your background check: {submitError.message}
           </Text>
         </Stack>
       )}
 
-      <ScrollView flex={1}>
+      <ScrollView style={{ flex: 1 }}>
         <Stack gap={16} flex={1} paddingHorizontal={16} paddingBottom={24}>
           {renderStepContent()}
         </Stack>

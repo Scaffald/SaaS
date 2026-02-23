@@ -127,9 +127,7 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
             checked={sharePublicly}
             onChange={handleToggleSharePublicly}
             disabled={isSaving}
-          >
-            <Switch.Thumb />
-          </Switch>
+          />
         </Row>
       </Stack>
 
@@ -183,7 +181,6 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
               <Button
                 size="sm"
                 variant="outline"
-                theme="error"
                 onPress={() => handleRevokeAccess(organizationId)}
                 disabled={isSaving}
               >

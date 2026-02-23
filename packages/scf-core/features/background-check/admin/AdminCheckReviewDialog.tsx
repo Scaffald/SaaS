@@ -9,7 +9,8 @@ import type {
   AdminCheckDispute,
   AdminCheckSummary,
 } from '@scaffald/sdk'
-import { Button, Dialog } from '@scaffald/ui'
+import { DialogCompound as Dialog } from '@scf/core/components/ui/DialogCompound'
+import { Button } from '@scaffald/ui'
 import { CheckCircle2, DownloadCloud, RefreshCcw } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -105,7 +106,7 @@ const parsePrivacySettings = (metadata: unknown): PrivacyState => {
   }
 }
 
-function safeJson(value: unknown) {
+function safeJson(value: unknown): string {
   if (!value) return ''
   if (typeof value === 'string') return value
   try {
@@ -389,7 +390,14 @@ export function AdminCheckReviewDialog({
                     <Text color="$gray11">
                       Package: <Text color="$gray11">{packageLabel}</Text>
                     </Text>
-                    <Text color="$gray11">Created: {formatDateTime(detailedCheck.created_at)}</Text>
+                    <Text color="$gray11">
+                      Created:{' '}
+                      {formatDateTime(
+                        typeof detailedCheck.created_at === 'string'
+                          ? detailedCheck.created_at
+                          : null
+                      )}
+                    </Text>
                     {(() => {
                       const checkWithCompletedAt = detailedCheck as typeof detailedCheck & {
                         completed_at?: string | null
@@ -398,7 +406,7 @@ export function AdminCheckReviewDialog({
                       if (!completedAt) return null
                       return <Text color="$gray11">Completed: {formatDateTime(completedAt)}</Text>
                     })()}
-                    {detailedCheck.expires_at ? (
+                    {typeof detailedCheck.expires_at === 'string' ? (
                       <Text color="$gray11">
                         Expires: {formatDateTime(detailedCheck.expires_at)}
                       </Text>
@@ -423,16 +431,31 @@ export function AdminCheckReviewDialog({
                 </Stack>
 
                 <CheckProgressTracker
-                  status={detailedCheck.status}
-                  createdAt={detailedCheck.created_at}
+                  status={
+                    typeof detailedCheck.status === 'string'
+                      ? (detailedCheck.status as BackgroundCheckStatus)
+                      : 'under_review'
+                  }
+                  createdAt={
+                    typeof detailedCheck.created_at === 'string'
+                      ? detailedCheck.created_at
+                      : undefined
+                  }
                   componentStatuses={detailedCheck.component_statuses}
                   statusHistory={detailedCheck.status_history}
-                  estimatedCompletionDate={detailedCheck.estimated_completion_date}
-                  completedAt={
-                    (detailedCheck as typeof detailedCheck & { completed_at?: string | null })
-                      .completed_at ?? null
+                  estimatedCompletionDate={
+                    typeof detailedCheck.estimated_completion_date === 'string'
+                      ? detailedCheck.estimated_completion_date
+                      : undefined
                   }
-                  expiresAt={detailedCheck.expires_at ?? null}
+                  completedAt={
+                    (detailedCheck as { completed_at?: string | null }).completed_at ?? null
+                  }
+                  expiresAt={
+                    typeof detailedCheck.expires_at === 'string'
+                      ? detailedCheck.expires_at
+                      : null
+                  }
                 />
 
                 <Separator />
@@ -497,14 +520,14 @@ export function AdminCheckReviewDialog({
                     rows={6}
                     value={safeJson(detailedCheck.summary)}
                     editable={false}
-                    backgroundColor="$color2"
+                    style={{ backgroundColor: '#f2f4f7' }}
                   />
                   <Text color="$gray11">Provider findings</Text>
                   <TextArea
                     rows={6}
                     value={safeJson(detailedCheck.findings)}
                     editable={false}
-                    backgroundColor="$color2"
+                    style={{ backgroundColor: '#f2f4f7' }}
                   />
                 </Stack>
 
@@ -594,9 +617,7 @@ export function AdminCheckReviewDialog({
                           handlePrivacyUpdate(Boolean(value), sharedOrganizations)
                         }
                         disabled={isPrivacySaving}
-                      >
-                        <Switch.Thumb />
-                      </Switch>
+                      />
                     </Row>
                   </Stack>
 
@@ -691,7 +712,7 @@ export function AdminCheckReviewDialog({
                     <Separator />
                     <Stack gap={8}>
                       <Text color="$gray11">Status history</Text>
-                      <Stack gap={8} overflow="scroll" style={{ maxHeight: 200 }}>
+                      <Stack gap={8} style={{ maxHeight: 200, overflow: 'scroll' }}>
                         {statusHistory
                           .slice()
                           .reverse()
@@ -741,7 +762,7 @@ export function AdminCheckReviewDialog({
               <Button size="sm" onPress={handleSubmit} disabled={!detailedCheck || isSubmitting}>
                 {isSubmitting ? (
                   <Row gap={8} align="center">
-                    <Spinner size="sm" color="$gray11" />
+                    <Spinner size="sm" color="gray" />
                     <Text color="$gray11">Saving…</Text>
                   </Row>
                 ) : (

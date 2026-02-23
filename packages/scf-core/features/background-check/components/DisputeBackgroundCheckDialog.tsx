@@ -3,7 +3,8 @@ import type { AppRouter } from '@scf/supabase/client-types'
 import { AlertTriangle } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo } from 'react'
-import { Button, Dialog, Separator, Text, Row, Stack } from '@scaffald/ui'
+import { DialogCompound as Dialog } from '@scf/core/components/ui/DialogCompound'
+import { Button, Separator, Text, Row, Stack } from '@scaffald/ui'
 import { useDispute } from '../hooks/useDispute'
 import { DisputeForm } from './DisputeForm'
 import { DisputeStatusTracker } from './DisputeStatusTracker'
@@ -69,7 +70,7 @@ export function DisputeBackgroundCheckDialog({
     check?.package?.display_name ?? check?.package?.slug ?? 'Background check package'
 
   return (
-    <Dialog modal open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay
           key="overlay"

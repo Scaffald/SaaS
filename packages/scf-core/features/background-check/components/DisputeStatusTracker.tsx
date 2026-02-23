@@ -94,7 +94,7 @@ export function DisputeStatusTracker({
   if (isLoading) {
     return (
       <Stack gap={8} align="center" paddingVertical={16}>
-        <Spinner size="sm" color="$gray11" />
+        <Spinner size="sm" color="gray" />
         <Text color="$gray11">Loading dispute history…</Text>
       </Stack>
     )
@@ -106,7 +106,7 @@ export function DisputeStatusTracker({
         backgroundColor="$color2"
         borderColor="$borderColor"
         borderWidth={1}
-        borderRadius={16}
+        radius="lg"
         padding="sm"
         gap={8}
       >
@@ -157,9 +157,9 @@ export function DisputeStatusTracker({
         backgroundColor="$color2"
         borderColor="$borderColor"
         borderWidth={1}
-        borderRadius={16}
+        radius="lg"
         padding="sm"
-        gap={12}
+        style={{ gap: 12 }}
       >
         <Text color="$gray11">Dispute history</Text>
 

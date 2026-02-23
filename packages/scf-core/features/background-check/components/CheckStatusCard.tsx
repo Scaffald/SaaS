@@ -2,7 +2,7 @@ import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
 import { DashboardWidget } from '@scaffald/ui'
 import { AlertTriangle, Eye, RefreshCcw } from 'lucide-react-native'
 import { memo, useMemo } from 'react'
-import { Button, Progress, Text, Row, Stack } from '@scaffald/ui'
+import { Button, ProgressBarBase, Text, Row, Stack } from '@scaffald/ui'
 
 import {
   type BackgroundCheckSummary,
@@ -98,9 +98,7 @@ export const CheckStatusCard = memo(function CheckStatusCard({
             <Text color="$gray11">Progress</Text>
             <Text color="$gray11">{progress}%</Text>
           </Row>
-          <Progress value={progress} max={100} backgroundColor="$color3" size="sm">
-            <Progress.Indicator animation="bouncy" backgroundColor={statusColors.border} />
-          </Progress>
+          <ProgressBarBase value={progress} color="primary" />
           <Text color="$gray11">{statusMeta.description}</Text>
         </Stack>
 
@@ -123,7 +121,7 @@ export const CheckStatusCard = memo(function CheckStatusCard({
             Renew
           </Button>
           {onDispute && (
-            <Button size="sm" variant="outline" theme="warning" onPress={() => onDispute(check)}>
+            <Button size="sm" variant="outline" onPress={() => onDispute(check)}>
               Dispute
             </Button>
           )}

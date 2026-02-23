@@ -85,14 +85,13 @@ export function CheckStatusDashboard() {
 
   return (
     <Stack flex={1} backgroundColor="$background">
-      <ScrollView flex={1}>
+      <ScrollView style={{ flex: 1 }}>
         <Stack gap={16} paddingHorizontal={16} paddingBottom={24}>
           <Stack
             gap={12}
             padding="md"
             backgroundColor="$background"
-            borderBottomWidth={1}
-            borderBottomColor="$borderColor"
+            style={{ borderBottomWidth: 1, borderBottomColor: '$borderColor' }}
           >
             <Row gap={12} align="center">
               <ShieldCheck size={28} color="$blue10" />
@@ -110,8 +109,7 @@ export function CheckStatusDashboard() {
                   <Button
                     key={filter.value}
                     size="sm"
-                    theme={isActive ? 'blue' : undefined}
-                    variant={isActive ? undefined : 'outlined'}
+                    variant={isActive ? undefined : 'outline'}
                     onPress={() => setActiveFilter(filter.value)}
                   >
                     {filter.label}
@@ -127,7 +125,7 @@ export function CheckStatusDashboard() {
 
           {checksQuery.isLoading && (
             <Stack gap={8} align="center" paddingVertical={24}>
-              <Spinner size="lg" color="$gray11" />
+              <Spinner size="lg" color="gray" />
               <Text color="$gray11">Loading your background checks…</Text>
             </Stack>
           )}

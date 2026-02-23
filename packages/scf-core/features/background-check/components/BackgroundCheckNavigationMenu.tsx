@@ -60,14 +60,6 @@ export function BackgroundCheckNavigationMenu() {
                 borderWidth={1}
                 borderColor={isActive ? '$blue7' : '$color6'}
                 backgroundColor={isActive ? '$blue4' : '$color2'}
-                hoverStyle={{
-                  backgroundColor: isActive ? '$blue5' : '$color3',
-                }}
-                pressStyle={{
-                  backgroundColor: isActive ? '$blue6' : '$color4',
-                }}
-                cursor="pointer"
-                animation="quick"
               >
                 <Stack gap={4}>
                   <Text color={isActive ? '$blue12' : '$color12'}>{item.title}</Text>

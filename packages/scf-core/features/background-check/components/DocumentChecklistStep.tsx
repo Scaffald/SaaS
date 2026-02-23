@@ -43,7 +43,7 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
               <Card
                 key={docType}
                 bordered
-                borderRadius={16}
+                radius="lg"
                 padding="sm"
                 backgroundColor={isChecked ? '$green3' : '$color2'}
               >
@@ -66,7 +66,7 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
             )
           })
         ) : (
-          <Card bordered borderRadius={16} padding="sm" backgroundColor="$color2">
+          <Card bordered radius="lg" padding="sm" backgroundColor="$color2">
             <Text color="$gray11">No documents are required for this package.</Text>
           </Card>
         )}
