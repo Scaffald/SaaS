@@ -1,9 +1,8 @@
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
+import { useTeamActivityFeed, usePostTeamCommentMutation } from '@scf/core/utils/teams-sdk-hooks'
+import type { TeamActivityEvent } from '@scaffald/sdk'
 import { MessageCircle, Send } from 'lucide-react-native'
 import { useToast, useThemeContext } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
-import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useMemo, useState } from 'react'
 import { ResponsiveSelect } from '@scaffald/ui'
@@ -28,9 +27,6 @@ interface TeamActivityFeedProps {
 
 const PAGE_SIZE = 20
 
-type TeamActivityOutput = inferRouterOutputs<AppRouter>['teams']['analytics']['activity']
-type TeamActivityEvent = NonNullable<TeamActivityOutput['events']>[number]
-
 export function TeamActivityFeed({
   teamId,
   mentionOptions = [],
@@ -43,23 +39,17 @@ export function TeamActivityFeed({
   const [mentions, setMentions] = useState<MentionOption[]>([])
   const [mentionSelection, setMentionSelection] = useState('none')
 
-  const activityQuery = api.teams.analytics.activity.useInfiniteQuery(
-    {
-      teamId,
-      pageSize: PAGE_SIZE,
-    },
-    {
-      getNextPageParam: (lastPage: TeamActivityOutput | undefined) =>
-        lastPage?.nextCursor ?? undefined,
-      staleTime: 30_000,
-    }
+  const activityQuery = useTeamActivityFeed(
+    teamId,
+    { pageSize: PAGE_SIZE },
+    { staleTime: 30_000 }
   )
 
-  const postCommentMutation = api.teams.analytics.postComment.useMutation({
+  const postCommentMutation = usePostTeamCommentMutation({
     onSuccess: async () => {
       setCommentBody('')
       setMentions([])
-      await queryClient.invalidateQueries({ queryKey: [['teams', 'analytics', 'activity']] })
+      await queryClient.invalidateQueries({ queryKey: ['teams', teamId, 'analytics', 'activity'] })
       toast.show({
         title: 'Comment posted',
         message: 'Your update is now visible to the team.',
@@ -77,7 +67,7 @@ export function TeamActivityFeed({
   const events: TeamActivityEvent[] = useMemo(() => {
     const pages = activityQuery.data?.pages ?? []
     return pages
-      .flatMap((page: TeamActivityOutput | undefined) => page?.events ?? [])
+      .flatMap((page) => page?.events ?? [])
       .map((event: TeamActivityEvent) => ({
         ...event,
         // Ensure payload is an object to simplify downstream use

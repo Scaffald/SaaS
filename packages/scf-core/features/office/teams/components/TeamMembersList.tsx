@@ -1,10 +1,14 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import {
+  useTeamMembers,
+  useTeamWorkload,
+  useTransferTeamOwnershipMutation,
+  useSelfRemoveFromTeamMutation,
+} from '@scf/core/utils/teams-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
-import type { AppRouter } from '@scf/supabase/client-types'
+import type { TeamMember, TeamWorkloadSnapshot } from '@scaffald/sdk'
 import { Crown, LogOut, Plus, UserMinus } from 'lucide-react-native'
 import { useToast, useThemeContext } from '@scaffald/ui'
-import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import {
@@ -30,12 +34,7 @@ interface TeamMembersListProps {
   organizationId: string
 }
 
-type MembersListOutput = inferRouterOutputs<AppRouter>['teams']['members']['list']
-type MemberRecord = NonNullable<MembersListOutput['members']>[number]
-type WorkloadOutput = inferRouterOutputs<AppRouter>['teams']['analytics']['workload']
-type WorkloadSnapshot = WorkloadOutput['snapshots'][number]
-
-interface TeamMember {
+interface LocalTeamMember {
   id: string
   userId?: string | null
   status: string
@@ -44,37 +43,30 @@ interface TeamMember {
   displayName?: string | null
   username?: string | null
   avatarPath?: string | null
-  record: MemberRecord
+  record: TeamMember
 }
 
 export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps) {
   const { theme } = useThemeContext()
   const toast = useToast()
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
-  const [memberToRemove, setMemberToRemove] = useState<TeamMember | null>(null)
+  const [memberToRemove, setMemberToRemove] = useState<LocalTeamMember | null>(null)
   const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false)
   const [leaveReason, setLeaveReason] = useState('')
   const router = useRouter()
   const { user: currentUser } = useUser()
 
-  const membersQuery = api.teams.members.list.useQuery(
-    { teamId },
-    {
-      refetchOnWindowFocus: true,
-    }
-  )
+  const membersQuery = useTeamMembers(teamId, { enabled: Boolean(teamId) })
 
-  const workloadQuery = api.teams.analytics.workload.useQuery(
-    { teamId, includeHistorical: false },
-    {
-      enabled: Boolean(teamId),
-      refetchOnWindowFocus: true,
-    }
+  const workloadQuery = useTeamWorkload(
+    teamId,
+    { includeHistorical: false },
+    { enabled: Boolean(teamId) }
   )
 
   const { roles, isLoading: isLoadingRoles } = useTeamFormOptions({ organizationId })
 
-  const transferOwnershipMutation = api.teams.members.transferOwnership.useMutation({
+  const transferOwnershipMutation = useTransferTeamOwnershipMutation({
     onSuccess: () => {
       toast.show({
         title: 'Ownership transferred',
@@ -91,7 +83,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
     },
   })
 
-  const selfRemoveMutation = api.teams.members.selfRemove.useMutation({
+  const selfRemoveMutation = useSelfRemoveFromTeamMutation({
     onSuccess: () => {
       toast.show({
         title: 'You left the team',
@@ -111,8 +103,8 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
     },
   })
 
-  const members = useMemo<TeamMember[]>(() => {
-    const list = (membersQuery.data?.members ?? []) as MemberRecord[]
+  const members = useMemo<LocalTeamMember[]>(() => {
+    const list = (membersQuery.data?.members ?? []) as TeamMember[]
     return list.map((member) => ({
       id: member.id,
       userId: member.userId,
@@ -127,7 +119,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
   }, [membersQuery.data?.members])
 
   const workloadsByMemberId = useMemo(() => {
-    const map = new Map<string, WorkloadSnapshot>()
+    const map = new Map<string, TeamWorkloadSnapshot>()
     for (const snapshot of workloadQuery.data?.snapshots ?? []) {
       map.set(snapshot.teamMemberId, snapshot)
     }
@@ -162,7 +154,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
     membersQuery.refetch()
   }
 
-  const handleTransferOwnership = async (member: TeamMember) => {
+  const handleTransferOwnership = async (member: LocalTeamMember) => {
     await transferOwnershipMutation.mutateAsync({
       teamId,
       memberId: member.id,
@@ -427,7 +419,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
               <TextArea
                 value={leaveReason}
                 onChangeText={setLeaveReason}
-                placeholder="Let the team know why you’re leaving…"
+                placeholder="Let the team know why you're leaving…"
                 rows={3}
                 accessibilityLabel="Reason for leaving the team"
                 accessibilityHint="Optional message sent to the team about your departure"

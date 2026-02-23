@@ -1,15 +1,11 @@
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
+import { useTeamComments, usePostTeamCommentMutation } from '@scf/core/utils/teams-sdk-hooks'
+import type { TeamComment } from '@scaffald/sdk'
 import { MessageCircle, Send } from 'lucide-react-native'
 import { useToast, useThemeContext } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
-import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo, useState } from 'react'
 import { Button, Card, Spinner, Text, TextArea, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-
-type CommentsOutput = inferRouterOutputs<AppRouter>['teams']['analytics']['comments']
-type CommentRecord = NonNullable<CommentsOutput['comments']>[number]
 
 type MentionOption = {
   id: string
@@ -37,24 +33,18 @@ export function TeamCommentThread({
     return new Map(mentionOptions.map((option) => [option.id, option.label]))
   }, [mentionOptions])
 
-  const commentsQuery = api.teams.analytics.comments.useQuery(
-    {
-      teamId,
-      applicationId,
-      limit: 50,
-    },
-    {
-      enabled: Boolean(teamId),
-      staleTime: 30_000,
-    }
+  const commentsQuery = useTeamComments(
+    teamId,
+    { applicationId, limit: 50 },
+    { enabled: Boolean(teamId), staleTime: 30_000 }
   )
 
-  const postCommentMutation = api.teams.analytics.postComment.useMutation({
+  const postCommentMutation = usePostTeamCommentMutation({
     onSuccess: async () => {
       setCommentBody('')
       setSelectedMentionId(null)
-      await queryClient.invalidateQueries({ queryKey: [['teams', 'analytics', 'comments']] })
-      await queryClient.invalidateQueries({ queryKey: [['teams', 'analytics', 'activity']] })
+      await queryClient.invalidateQueries({ queryKey: ['teams', teamId, 'analytics', 'comments'] })
+      await queryClient.invalidateQueries({ queryKey: ['teams', teamId, 'analytics', 'activity'] })
       toast.show({
         title: 'Comment posted',
         message: 'Your update was shared with the team.',
@@ -69,7 +59,7 @@ export function TeamCommentThread({
     },
   })
 
-  const comments = (commentsQuery.data?.comments ?? []) as CommentRecord[]
+  const comments = (commentsQuery.data?.comments ?? []) as TeamComment[]
 
   const isSubmitting = postCommentMutation.isPending
 
