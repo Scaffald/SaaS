@@ -1,5 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useHasUploadedResume } from '@scf/core/utils/resume-sdk-hooks'
 import { DashboardWidget, spacing } from '@scaffald/ui'
 import { FileText, ShieldCheck } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
@@ -21,9 +21,7 @@ export function ResumeImportWidget() {
     },
     [router]
   )
-  const { data, isLoading } = api.resume.hasUploaded.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  })
+  const { data, isLoading } = useHasUploadedResume({ refetchOnWindowFocus: false })
 
   const shouldHideWidget = !isLoading && data?.hasUploaded
 

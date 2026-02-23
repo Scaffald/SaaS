@@ -1,4 +1,7 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useUploadResumeMutation,
+  useParseResumeMutation,
+} from '@scf/core/utils/resume-sdk-hooks'
 import { FileUpload, ResponsiveModal, spacing } from '@scaffald/ui'
 import { AlertCircle, CheckCircle2, Loader2, UploadCloud } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
@@ -47,8 +50,8 @@ export function ResumeUploadModal({
 }: ResumeUploadModalProps) {
   const toast = useToast()
   const queryClient = useQueryClient()
-  const uploadResumeMutation = api.resume.upload.useMutation()
-  const parseResumeMutation = api.resume.parse.useMutation()
+  const uploadResumeMutation = useUploadResumeMutation()
+  const parseResumeMutation = useParseResumeMutation()
 
   const [status, setStatus] = useState<UploadStatus>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -195,7 +198,7 @@ export function ResumeUploadModal({
           return
         }
 
-        await queryClient.invalidateQueries({ queryKey: [['resume', 'hasUploaded']] })
+        await queryClient.invalidateQueries({ queryKey: ['resume', 'has-uploaded'] })
 
         if (sequence !== uploadSequenceRef.current) {
           return

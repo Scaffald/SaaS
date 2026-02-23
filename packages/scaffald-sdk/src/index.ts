@@ -713,5 +713,28 @@ export {
 
 export { generateCodeVerifier, generateCodeChallenge, generateState } from './auth/pkce.js'
 
+export type {
+  ResumeSection,
+  ResumeMergeStrategyMode,
+  UploadResumeParams,
+  UploadResumeResponse,
+  ParseResumeParams,
+  ParsedGeneralEntry,
+  ParsedExperienceEntry,
+  ParsedEducationEntry,
+  ParsedCertificationEntry,
+  ParsedSkillEntry,
+  ParsedEmploymentEntry,
+  ParsedResumeData,
+  ResumeParseError,
+  ParseResumeResponse,
+  HasUploadedResumeResponse,
+  ResumeWizardState,
+  SaveResumeSectionParams,
+  SaveResumeSectionResponse,
+  UpdateResumeProgressParams,
+  UpdateResumeProgressResponse,
+} from './types/resume.js'
+
 import { Scaffald } from './client.js'
 export default Scaffald

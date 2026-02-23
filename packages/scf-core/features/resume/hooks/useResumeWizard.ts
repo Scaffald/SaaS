@@ -1,4 +1,8 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useResumeWizardState,
+  useSaveResumeSectionMutation,
+  useUpdateResumeProgressMutation,
+} from '@scf/core/utils/resume-sdk-hooks'
 import { useEffect, useMemo, useState } from 'react'
 
 export type ResumeWizardSection =
@@ -27,16 +31,13 @@ const BASE_STEPS: ResumeWizardStep[] = [
 ]
 
 export function useResumeWizard(resumeId: string) {
-  const wizardQuery = api.resume.getWizardState.useQuery(
-    { resumeId },
-    {
-      refetchInterval: false,
-      refetchOnWindowFocus: false,
-    }
-  )
+  const wizardQuery = useResumeWizardState(resumeId, {
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
+  })
 
-  const saveSectionMutation = api.resume.saveSection.useMutation()
-  const updateProgressMutation = api.resume.updateProgress.useMutation()
+  const saveSectionMutation = useSaveResumeSectionMutation()
+  const updateProgressMutation = useUpdateResumeProgressMutation()
 
   const steps = BASE_STEPS
 

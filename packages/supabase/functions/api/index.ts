@@ -48,6 +48,7 @@ import legalAgreementsRouter from "./routes/legal-agreements.ts";
 import notificationsAdminRouter from "./routes/notifications-admin.ts";
 import accountDeletionRouter from "./routes/account-deletion.ts";
 import mapRouter from "./routes/map.ts";
+import resumeRouter from "./routes/resume.ts";
 import openapi from "./openapi.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { authMiddleware } from "./middleware/auth.ts";
@@ -125,6 +126,7 @@ app.route("/v1/legal-agreements", legalAgreementsRouter); // Legal agreements / 
 app.route("/v1/notifications/admin", notificationsAdminRouter); // Notifications admin (office)
 app.route("/v1/account-deletion", accountDeletionRouter); // Account deletion requests
 app.route("/v1/map", mapRouter); // Map location counts and nearest results
+app.route("/v1/resume", resumeRouter); // Resume upload, AI parsing, wizard state
 
 // OpenAPI documentation
 app.route("/", openapi);

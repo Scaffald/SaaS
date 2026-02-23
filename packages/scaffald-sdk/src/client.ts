@@ -45,6 +45,7 @@ import { LegalAgreements } from './resources/legal-agreements.js'
 import { NotificationsAdmin } from './resources/notifications-admin.js'
 import { AccountDeletion } from './resources/account-deletion.js'
 import { Map } from './resources/map.js'
+import { Resume } from './resources/resume.js'
 
 export class Scaffald {
   private http: HttpClient
@@ -94,6 +95,7 @@ export class Scaffald {
   public readonly notificationsAdmin: NotificationsAdmin
   public readonly accountDeletion: AccountDeletion
   public readonly map: Map
+  public readonly resume: Resume
 
   constructor(config: ScaffaldConfig) {
     if (!config.apiKey && !config.accessToken && !config.supabaseToken) {
@@ -151,6 +153,7 @@ export class Scaffald {
     this.notificationsAdmin = new NotificationsAdmin(this.http)
     this.accountDeletion = new AccountDeletion(this.http)
     this.map = new Map(this.http)
+    this.resume = new Resume(this.http)
   }
 
   getRateLimitInfo(): RateLimitInfo | undefined {
