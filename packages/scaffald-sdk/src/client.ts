@@ -37,6 +37,7 @@ import { Workers } from './resources/workers.js'
 import { PersonalityAssessments } from './resources/personality-assessment.js'
 import { Feedback } from './resources/feedback.js'
 import { IdVerification } from './resources/id-verification.js'
+import { SuccessFees } from './resources/success-fees.js'
 
 export class Scaffald {
   private http: HttpClient
@@ -78,6 +79,7 @@ export class Scaffald {
   public readonly personalityAssessments: PersonalityAssessments
   public readonly feedback: Feedback
   public readonly idVerification: IdVerification
+  public readonly successFees: SuccessFees
 
   constructor(config: ScaffaldConfig) {
     if (!config.apiKey && !config.accessToken && !config.supabaseToken) {
@@ -127,6 +129,7 @@ export class Scaffald {
     this.personalityAssessments = new PersonalityAssessments(this.http)
     this.feedback = new Feedback(this.http)
     this.idVerification = new IdVerification(this.http)
+    this.successFees = new SuccessFees(this.http)
   }
 
   getRateLimitInfo(): RateLimitInfo | undefined {

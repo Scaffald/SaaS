@@ -1,5 +1,11 @@
-import { api } from '@scf/core/utils/api'
 import { colors } from '@scaffald/ui/tokens'
+import {
+  useCreateSuccessFeeMutation,
+  useConfirmUpfrontPaymentMutation,
+  useSuccessFeeStatus,
+  type SuccessFeeStatus,
+  type CreateSuccessFeeResponse,
+} from '@scf/core/utils/success-fees-sdk-hooks'
 import {
   Button,
   Card,
@@ -51,8 +57,8 @@ export const ApplicationStatusChangeModal = ({
   const { theme } = useThemeContext()
   const [reason, setReason] = useState('')
   const toast = useToast()
-  const successFeeMutation = api.successFees.createSuccessFee.useMutation()
-  const confirmUpfrontPaymentMutation = api.successFees.confirmUpfrontPayment.useMutation()
+  const successFeeMutation = useCreateSuccessFeeMutation()
+  const confirmUpfrontPaymentMutation = useConfirmUpfrontPaymentMutation()
 
   const isRejection = toStatus === 'rejected'
   const isHire = toStatus === 'hired'
@@ -74,9 +80,7 @@ export const ApplicationStatusChangeModal = ({
   )
 
   const [initializingIntent, setInitializingIntent] = useState(false)
-  const [intentState, setIntentState] = useState<Awaited<
-    ReturnType<typeof successFeeMutation.mutateAsync>
-  > | null>(null)
+  const [intentState, setIntentState] = useState<CreateSuccessFeeResponse | null>(null)
   const [paymentError, setPaymentError] = useState<string | null>(null)
   const [isProcessingPayment, setIsProcessingPayment] = useState(false)
   const [paymentCompleted, setPaymentCompleted] = useState(false)
@@ -88,7 +92,7 @@ export const ApplicationStatusChangeModal = ({
       isHire && open && application?.organizationId && application?.id && hireInputs?.workerUserId
     ) && Boolean(hireInputs?.organizationId)
 
-  const successFeeStatusQuery = api.successFees.getStatusByApplication.useQuery(
+  const successFeeStatusQuery = useSuccessFeeStatus(
     {
       organizationId: hireInputs?.organizationId ?? application?.organizationId ?? '',
       applicationId: application?.id ?? '',
@@ -394,9 +398,7 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 0,
 })
 
-type SuccessFeeStatusResult = ReturnType<
-  typeof api.successFees.getStatusByApplication.useQuery
->['data']
+type SuccessFeeStatusResult = SuccessFeeStatus | null | undefined
 
 interface HireInputs {
   organizationId: string

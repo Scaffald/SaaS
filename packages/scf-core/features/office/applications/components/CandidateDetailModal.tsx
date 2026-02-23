@@ -1,5 +1,6 @@
 import { InquiryCreateForm } from '@scf/core/features/inquiries/components/InquiryCreateForm'
 import { api } from '@scf/core/utils/api'
+import { useSuccessFeeStatus } from '@scf/core/utils/success-fees-sdk-hooks'
 import { useContactInfo } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import type { InquiryCreateInput } from '@scf/schemas'
@@ -67,7 +68,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
   const workerUserId = application?.workerUserId ?? application?.candidate.id ?? ''
   const applicationId = application?.id ?? ''
 
-  const successFeeStatusQuery = api.successFees.getStatusByApplication.useQuery(
+  const successFeeStatusQuery = useSuccessFeeStatus(
     {
       organizationId,
       applicationId,

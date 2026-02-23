@@ -39,6 +39,8 @@ import personalityAssessmentRouter from "./routes/personality-assessment.ts";
 import cmsRouter from "./routes/cms.ts";
 import feedbackRouter from "./routes/feedback.ts";
 import officeJobsRouter from "./routes/office-jobs.ts";
+import idVerificationRouter from "./routes/id-verification.ts";
+import successFeesRouter from "./routes/success-fees.ts";
 import openapi from "./openapi.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { authMiddleware } from "./middleware/auth.ts";
@@ -108,6 +110,7 @@ app.route("/v1/cms", cmsRouter); // Personality assessments
 app.route("/v1/feedback", feedbackRouter); // User feedback (submit, upload-url)
 app.route("/v1/office/jobs", officeJobsRouter); // Office jobs list (office role)
 app.route("/v1/id-verification", idVerificationRouter); // ID verification (pricing, request, confirm, status, list, revoke)
+app.route("/v1/success-fees", successFeesRouter); // Success fees (status, create, confirm-upfront)
 
 // OpenAPI documentation
 app.route("/", openapi);

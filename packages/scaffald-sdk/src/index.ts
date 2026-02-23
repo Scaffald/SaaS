@@ -313,6 +313,15 @@ export type {
 export { Webhooks, type WebhookEvent, type WebhookPayload } from './webhooks/verify.js'
 
 export type {
+  SuccessFeeSchedule,
+  SuccessFeeStatus,
+  CreateSuccessFeeParams,
+  CreateSuccessFeeResponse,
+  GetStatusByApplicationParams,
+  ConfirmUpfrontPaymentParams,
+} from './resources/success-fees.js'
+
+export type {
   Connection,
   ConnectionRequest,
   SendConnectionRequestParams,
@@ -532,6 +541,65 @@ export type {
   GetUserFeedbackParams,
   GetUserFeedbackResponse,
 } from './resources/feedback.js'
+
+export type {
+  WorkLogStatus,
+  WorkLogEntryType,
+  WorkLogVisibility,
+  TimeEntry,
+  WorkLog,
+  WorkLogCollaborator,
+  WorkLogComment,
+  WorkLogListItem,
+  WorkLogOverview,
+  WorkLogPhoto,
+  ProjectOption,
+  StatusSummary,
+  ProjectRollup,
+  GetProjectOptionsParams,
+  ListWorkLogsParams,
+  GetOverviewParams,
+  GetProjectRollupParams,
+  PublicProfileFeedParams,
+  CreateWorkLogParams,
+  UpdateWorkLogParams,
+  SubmitWorkLogParams,
+  AddCollaboratorParams,
+  UpdateCollaboratorParams,
+  AddCommentParams,
+  GetSuggestedSkillsParams,
+  AddSkillToProfileParams,
+  UploadPhotoParams,
+  UpdatePhotoMetadataParams,
+  UpdatePhotoVisibilityParams,
+  UpdateProfileVisibilityParams,
+  MoveToProjectParams,
+  ApproveMoveRequestParams,
+  DenyMoveRequestParams,
+  CancelMoveRequestParams,
+  ExportWorkLogParams,
+  CheckTimeOverlapParams,
+  WorkLogsListResponse,
+  UploadPhotoResponse,
+  ExportWorkLogResponse,
+  CheckTimeOverlapResponse,
+} from './resources/work-logs.js'
+
+export type {
+  InquiryStatus,
+  InquiryType,
+  Inquiry,
+  InquiryTemplate,
+  CreateInquiryParams,
+  ListInquiriesParams,
+  RespondToInquiryParams,
+  TemplatesParams,
+  InquiriesListResponse,
+  InquiryResponse,
+  TemplatesResponse,
+  BulkMarkAsReadResponse,
+  BulkArchiveResponse,
+} from './resources/inquiries.js'
 
 export type {
   IdVerificationPricingItem,
