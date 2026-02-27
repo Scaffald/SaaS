@@ -15,6 +15,14 @@ interface SendEmailPayload {
 
 const SENDGRID_ENDPOINT = 'https://api.sendgrid.com/v3/mail/send'
 
+/** Prepend the app base URL if the CTA URL is relative (starts with /). */
+function resolveCtaUrl(url: string | null): string {
+  if (!url) return '#'
+  if (url.startsWith('http://') || url.startsWith('https://')) return url
+  const baseUrl = Deno.env.get('APP_BASE_URL') ?? ''
+  return baseUrl ? `${baseUrl}${url}` : url
+}
+
 const SEVERITY_URGENCY: Record<string, string> = {
   critical: 'Urgent',
   important: 'Important',
@@ -45,7 +53,7 @@ function buildRenewalHtml(
   const severityColor =
     severity === 'critical' ? '#dc2626' : severity === 'important' ? '#f59e0b' : '#3b82f6'
 
-  const ctaUrl = notification.cta_url ?? '#'
+  const ctaUrl = resolveCtaUrl(notification.cta_url)
   const ctaLabel = notification.cta_label ?? 'View Policy'
 
   return `<!DOCTYPE html>
@@ -105,7 +113,7 @@ function buildRenewalPlainText(
   const expirationDate = String(body.expiration_date ?? '')
   const companyName = String(body.company_name ?? '')
   const intervalDays = Number(body.interval_days ?? 0)
-  const ctaUrl = notification.cta_url ?? ''
+  const ctaUrl = resolveCtaUrl(notification.cta_url)
 
   const lines = [
     notification.message ?? notification.title,
@@ -152,7 +160,7 @@ function buildRenewalTemplateData(
     days_until_expiration: body.interval_days ?? null,
     interval_days: body.interval_days ?? null,
     recipient_role: body.recipient_role ?? null,
-    cta_url: notification.cta_url ?? null,
+    cta_url: resolveCtaUrl(notification.cta_url),
     cta_label: notification.cta_label ?? 'View Policy',
   }
 }

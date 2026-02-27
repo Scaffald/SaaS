@@ -23,6 +23,7 @@ import {
   useUpdateOrganizationSettings,
   useUpdateRenewalSettings,
 } from '../api'
+import { api } from '@scf/core/utils/api'
 
 type RenewalSettingsSectionProps = {
   organizationId: string
@@ -30,6 +31,7 @@ type RenewalSettingsSectionProps = {
 
 function RenewalSettingsSection({ organizationId }: RenewalSettingsSectionProps) {
   const toast = useToast()
+  const utils = api.useUtils()
   const { data: renewalSettings, isLoading } = useRenewalSettings(organizationId)
   const updateMutation = useUpdateRenewalSettings()
   const [enabled, setEnabled] = useState<boolean | null>(null)
@@ -76,7 +78,8 @@ function RenewalSettingsSection({ organizationId }: RenewalSettingsSectionProps)
       toast.show('Renewal settings saved', {
         message: 'Your renewal reminder settings have been updated.',
       })
-      // Clear local overrides so we re-sync from server
+      // Invalidate cache and clear local overrides so we re-sync from server
+      void utils.organizations.getRenewalSettings.invalidate({ organizationId })
       setEnabled(null)
       setIntervals(null)
     } catch (error: unknown) {
