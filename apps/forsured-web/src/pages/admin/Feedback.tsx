@@ -40,7 +40,7 @@ import {
 } from '@scaffald/ui';
 import { toast } from 'sonner';
 import { trpc } from '../../lib/trpc';
-import { FeedbackReassignModal } from '../../components/Admin/FeedbackReassignModal';
+import { FeedbackReassignModal } from '../../components/admin/FeedbackReassignModal';
 
 type FeedbackType = 'bug' | 'feature' | 'support' | 'general';
 type FeedbackStatus = 'open' | 'in_progress' | 'resolved' | 'archived';
