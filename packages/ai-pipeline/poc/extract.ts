@@ -5,7 +5,8 @@
  *   pnpm --filter @scf/ai-pipeline poc:extract <path-to-pdf>
  *   pnpm --filter @scf/ai-pipeline poc:extract poc/fixtures/input/sample.pdf
  */
-import 'dotenv/config';
+import { config } from 'dotenv';
+config({ path: new URL('../../../.env', import.meta.url).pathname });
 import { readFileSync } from 'node:fs';
 import { resolve, basename } from 'node:path';
 import { convertPdfToImages } from '../src/extraction/pdf-to-images.js';

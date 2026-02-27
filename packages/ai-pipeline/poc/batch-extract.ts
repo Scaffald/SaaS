@@ -4,7 +4,8 @@
  * Usage:
  *   pnpm --filter @scf/ai-pipeline poc:batch
  */
-import 'dotenv/config';
+import { config } from 'dotenv';
+config({ path: new URL('../../../.env', import.meta.url).pathname });
 import { readFileSync, writeFileSync, readdirSync, mkdirSync } from 'node:fs';
 import { resolve, join, basename, extname } from 'node:path';
 import { convertPdfToImages } from '../src/extraction/pdf-to-images.js';

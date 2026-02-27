@@ -1,6 +1,5 @@
 import OpenAI from 'openai';
-import { zodResponseFormat } from 'openai/helpers/zod';
-import type { ZodType } from 'zod';
+import { zodToJsonSchema } from 'zod-to-json-schema';
 import { ExtractedCertificateSchema, type ExtractedCertificate } from './schemas/extracted-certificate.js';
 import type { PageImage } from '../extraction/pdf-to-images.js';
 
@@ -48,7 +47,10 @@ export class AIExtractionService {
       },
     }));
 
-    const completion = await this.client.beta.chat.completions.parse({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Zod v3 compat layer types don't match zod-to-json-schema's expected Zod v3 types
+    const jsonSchema = zodToJsonSchema(ExtractedCertificateSchema as any, { target: 'openAi' }) as Record<string, unknown>;
+
+    const completion = await this.client.chat.completions.create({
       model: this.model,
       messages: [
         { role: 'system', content: systemPrompt },
@@ -63,24 +65,33 @@ export class AIExtractionService {
           ],
         },
       ],
-      response_format: zodResponseFormat(ExtractedCertificateSchema as unknown as ZodType, 'certificate_extraction'),
+      response_format: {
+        type: 'json_schema',
+        json_schema: {
+          name: 'certificate_extraction',
+          strict: true,
+          schema: jsonSchema,
+        },
+      },
       temperature: 0,
     });
 
     const duration_ms = Date.now() - startTime;
 
     const message = completion.choices[0]?.message;
-    if (!message?.parsed) {
+    if (!message?.content) {
       const refusal = message?.refusal;
       throw new Error(
         refusal
           ? `Model refused extraction: ${refusal}`
-          : 'AI extraction returned no parsed result',
+          : 'AI extraction returned no content',
       );
     }
 
+    const parsed = ExtractedCertificateSchema.parse(JSON.parse(message.content));
+
     return {
-      data: message.parsed as ExtractedCertificate,
+      data: parsed,
       model: completion.model,
       usage: completion.usage
         ? {

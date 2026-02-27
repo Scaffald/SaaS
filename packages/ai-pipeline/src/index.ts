@@ -3,6 +3,10 @@ export {
   CoverageSchema,
   EndorsementSchema,
   CoverageLimitsSchema,
+  GLDetailsSchema,
+  AutoDetailsSchema,
+  UmbrellaDetailsSchema,
+  WorkersCompDetailsSchema,
   type ExtractedCertificate,
 } from './ai/schemas/extracted-certificate.js';
 export { convertPdfToImages, type PageImage } from './extraction/pdf-to-images.js';
