@@ -25,7 +25,9 @@
       "@unicornlove/ui": ["./packages/ui/src"],
       "@unicornlove/ui/*": ["./packages/ui/src/*"],
       "expo-clipboard": ["./types/expo-clipboard.d.ts"],
-      "flow-remove-types": ["./types/flow-remove-types.d.ts"]
+      "flow-remove-types": ["./types/flow-remove-types.d.ts"],
+      "zod": ["./node_modules/zod"],
+      "zod/*": ["./node_modules/zod/*"]
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,
