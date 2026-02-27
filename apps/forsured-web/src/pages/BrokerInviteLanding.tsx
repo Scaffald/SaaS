@@ -15,7 +15,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Stack, Row, Text, Button, Card, H1, H2, Spinner, Input, Checkbox } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card, H1, H2, Spinner, Input, Checkbox } from '@scaffald/ui';
 import {
   Upload,
   X,
