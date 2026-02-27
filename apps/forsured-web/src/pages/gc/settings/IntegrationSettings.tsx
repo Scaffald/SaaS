@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { RefreshCcw } from 'lucide-react-native';
 import { Stack, Row, Text, Button, H3, Spinner, Modal, ModalHeader, ModalContent, SettingsIntegrationsGrid, SettingsSectionHeader } from '@scaffald/ui';
 import type { Integration } from '@scaffald/ui';
-import { Plug, Figma, Github, Notion, Slack, Mail } from 'lucide-react-native';
+import { Plug, Figma, Github, Notebook, Slack, Mail } from 'lucide-react-native';
 import SyncStatus from '../../../components/scaffald/SyncStatus';
 import SyncHistory from '../../../components/scaffald/SyncHistory';
 
@@ -11,7 +11,7 @@ import SyncHistory from '../../../components/scaffald/SyncHistory';
 const initialIntegrations: Integration[] = [
   { id: '1', icon: Figma, title: 'Figma', description: 'Preview your Figma files easy', enabled: false },
   { id: '2', icon: Github, title: 'GitHub', description: 'Streamline code collaboration.', enabled: false },
-  { id: '3', icon: Notion, title: 'Notion', description: 'Centralize workspace tasks', enabled: false },
+  { id: '3', icon: Notebook, title: 'Notion', description: 'Centralize workspace tasks', enabled: false },
   { id: '4', icon: Slack, title: 'Slack', description: 'Real-time team communication', enabled: false },
   { id: '5', icon: Mail, title: 'Gmail', description: 'Simplify email management', enabled: false },
 ];
