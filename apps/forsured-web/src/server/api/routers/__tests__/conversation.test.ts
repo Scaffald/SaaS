@@ -32,9 +32,19 @@ describe('conversationRouter', () => {
     expect(procedureKeys).toContain('promoteAttachment');
   });
 
-  it('should have exactly 9 procedures', () => {
+  it('should have exactly 11 procedures', () => {
     const procedureKeys = Object.keys(conversationRouter._def.procedures);
-    expect(procedureKeys).toHaveLength(9);
+    expect(procedureKeys).toHaveLength(11);
+  });
+
+  it('should have getEmailPolicy procedure defined', () => {
+    const procedureKeys = Object.keys(conversationRouter._def.procedures);
+    expect(procedureKeys).toContain('getEmailPolicy');
+  });
+
+  it('should have updateEmailPolicy procedure defined', () => {
+    const procedureKeys = Object.keys(conversationRouter._def.procedures);
+    expect(procedureKeys).toContain('updateEmailPolicy');
   });
 
   it('should have sendMessage procedure defined', () => {

@@ -15,6 +15,7 @@ import {
   Briefcase,
   Gift,
   Palette,
+  MessageSquare,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -64,6 +65,7 @@ function SettingsNav({ userType }: SettingsNavProps) {
     { path: `/${routePrefix}/settings/notifications`, label: 'Notifications', icon: Bell },
     { path: `/${routePrefix}/settings/team`, label: 'Team', icon: Users },
     { path: `/${routePrefix}/settings/integrations`, label: 'Integrations', icon: Plug },
+    { path: `/${routePrefix}/settings/communications`, label: 'Communications', icon: MessageSquare },
     { path: `/${routePrefix}/settings/appearance`, label: 'Appearance', icon: Palette },
     { path: `/${routePrefix}/settings/referrals`, label: 'Referrals', icon: Gift },
   ];

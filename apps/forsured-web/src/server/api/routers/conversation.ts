@@ -728,4 +728,55 @@ export const conversationRouter = createTRPCRouter({
 
       return document;
     }),
+
+  /**
+   * Get the conversation email policy for the caller's organization.
+   * Task 11: Org Settings Email Policy UI
+   */
+  getEmailPolicy: protectedProcedure.query(async ({ ctx }) => {
+    const { data, error } = await forsured('organizations')
+      .select('conversation_email_policy')
+      .eq('id', ctx.organizationId)
+      .maybeSingle();
+
+    if (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to fetch email policy',
+        cause: error,
+      });
+    }
+
+    return {
+      policy: (data?.conversation_email_policy ?? 'full_content') as
+        | 'full_content'
+        | 'links_only',
+    };
+  }),
+
+  /**
+   * Update the conversation email policy for the caller's organization.
+   * Task 11: Org Settings Email Policy UI
+   */
+  updateEmailPolicy: protectedProcedure
+    .input(
+      z.object({
+        policy: z.enum(['full_content', 'links_only']),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { error } = await forsured('organizations')
+        .update({ conversation_email_policy: input.policy })
+        .eq('id', ctx.organizationId);
+
+      if (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update email policy',
+          cause: error,
+        });
+      }
+
+      return { policy: input.policy };
+    }),
 });
