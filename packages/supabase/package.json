@@ -37,6 +37,7 @@
   "devDependencies": {
     "@types/pg": "^8.15.5",
     "pg": "^8.16.3",
+    "stripe": "^20.0.0",
     "supabase": "catalog:",
     "typescript": "catalog:",
     "uuid": "^13.0.0"
