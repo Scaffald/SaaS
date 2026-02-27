@@ -25,6 +25,10 @@ const defaultPreferences: NotificationPreference[] = [
   { id: '15', name: 'Collaborator Activity', category: 'Sharing', email: true, mobile: true, inbox: false, browser: false },
   { id: '16', name: 'Shared Workspace Announcements', category: 'Sharing', email: true, mobile: true, inbox: false, browser: false },
   { id: '17', name: 'Expiration Notices', category: 'Sharing', email: true, mobile: true, inbox: true, browser: false },
+  // TODO: policy.renewal type_override wiring — these preferences are currently static defaults.
+  // Per-notification-type channel overrides (type_override) are deferred until the notification
+  // preferences schema is extended to support per-type settings for all notification types.
+  { id: '18', name: 'Policy Renewal Reminders', category: 'Insurance', email: true, mobile: false, inbox: true, browser: false },
 ];
 
 function GCNotificationSettings() {

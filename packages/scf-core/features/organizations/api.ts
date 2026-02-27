@@ -125,3 +125,12 @@ export const useOrganizationStorageUsage = (organizationId: string) =>
     { organizationId },
     { enabled: Boolean(organizationId), refetchInterval: 60_000 }
   )
+
+export const useRenewalSettings = (organizationId: string) =>
+  api.organizations.getRenewalSettings.useQuery(
+    { organizationId },
+    { enabled: Boolean(organizationId) }
+  )
+
+export const useUpdateRenewalSettings = () =>
+  api.organizations.updateRenewalSettings.useMutation()
