@@ -24,6 +24,7 @@ export interface SendEmailOptions {
   subject: string
   html: string
   text?: string
+  replyTo?: string
   metadata?: Record<string, unknown>
 }
 
@@ -72,7 +73,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<SendEmailRes
     }
   }
 
-  const payload = {
+  const payload: Record<string, unknown> = {
     personalizations: [
       {
         to: recipients.map((email) => ({ email })),
@@ -90,6 +91,10 @@ export async function sendEmail(options: SendEmailOptions): Promise<SendEmailRes
     ],
     categories: ['forsured'],
     custom_args: customArgs,
+  }
+
+  if (options.replyTo) {
+    payload.reply_to = { email: options.replyTo }
   }
 
   try {
