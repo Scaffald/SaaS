@@ -49,7 +49,7 @@ jobs:
         run: pnpm check
 
       - name: Standalone Type Check (nx run-many)
-        run: nx run-many -t typecheck
+        run: pnpm exec nx run-many -t typecheck
 
       - name: Build all packages (nx run-many)
         run: pnpm build
