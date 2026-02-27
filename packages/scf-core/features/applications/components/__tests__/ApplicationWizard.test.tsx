@@ -27,7 +27,15 @@ const mockUseApplicationForm = {
   saveError: null,
 }
 
-vi.mock('../hooks/useApplicationForm', () => ({
+vi.mock('@scf/core/utils/engagement-sdk-hooks', () => ({
+  useTrackEngagementMutation: () => ({
+    mutate: vi.fn(),
+    mutateAsync: vi.fn().mockResolvedValue(undefined),
+    isPending: false,
+  }),
+}))
+
+vi.mock('../../hooks/useApplicationForm', () => ({
   useApplicationForm: () => mockUseApplicationForm,
 }))
 
@@ -90,11 +98,32 @@ vi.mock('../SuccessStep', () => ({
   SuccessStep: () => <div data-testid="success-step">Application Submitted</div>,
 }))
 
-vi.mock('@scaffald/ui', () => ({
-  SaveStatusIndicator: ({ status }: { status: string }) => (
-    <div data-testid="save-status">{status}</div>
-  ),
-}))
+vi.mock('@scaffald/ui', () => {
+  const React = require('react')
+  const createEl =
+    (tag: string) =>
+    ({ children, ...rest }: { children?: React.ReactNode; [key: string]: unknown }) =>
+      React.createElement(tag, rest, children)
+  return {
+    Stack: createEl('div'),
+    Row: createEl('div'),
+    Text: createEl('span'),
+    Button: ({
+      children,
+      onPress,
+      disabled,
+      ...rest
+    }: {
+      children?: React.ReactNode
+      onPress?: () => void
+      disabled?: boolean
+      [key: string]: unknown
+    }) => React.createElement('button', { type: 'button', disabled, onClick: onPress, ...rest }, children),
+    SaveStatusIndicator: ({ status }: { status: string }) =>
+      React.createElement('div', { 'data-testid': 'save-status' }, status),
+    useThemeContext: () => ({ theme: 'light' as const }),
+  }
+})
 
 describe('ApplicationWizard', () => {
   const defaultProps = {

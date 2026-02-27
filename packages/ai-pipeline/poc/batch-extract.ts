@@ -42,11 +42,11 @@ async function main() {
   // Ensure results directory exists
   mkdirSync(RESULTS_DIR, { recursive: true });
 
-  console.log(`\n=== ACORD Batch Extraction ===`);
+  console.log('\n=== ACORD Batch Extraction ===');
   console.log(`Prompt: ${PROMPT_VERSION}`);
-  console.log(`Model: gpt-4o`);
+  console.log('Model: gpt-4o');
   console.log(`Documents: ${files.length}`);
-  console.log(`=============================\n`);
+  console.log('=============================\n');
 
   const service = new AIExtractionService(apiKey);
   const summary: Array<{
@@ -115,7 +115,7 @@ async function main() {
     ? succeeded.reduce((sum, s) => sum + s.confidence, 0) / succeeded.length
     : 0;
 
-  console.log(`\n=== Batch Summary ===`);
+  console.log('\n=== Batch Summary ===');
   console.log(`Succeeded: ${succeeded.length}/${files.length}`);
   console.log(`Failed: ${failed.length}/${files.length}`);
   console.log(`Avg confidence: ${avgConfidence.toFixed(1)}%`);
@@ -123,7 +123,7 @@ async function main() {
   console.log(`Results saved to: ${RESULTS_DIR}`);
 
   if (failed.length > 0) {
-    console.log(`\nFailed documents:`);
+    console.log('\nFailed documents:');
     for (const f of failed) {
       console.log(`  - ${f.file}: ${f.error}`);
     }

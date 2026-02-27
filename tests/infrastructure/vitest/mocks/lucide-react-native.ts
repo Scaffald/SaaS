@@ -1,0 +1,144 @@
+/**
+ * Mock for lucide-react-native in unit tests.
+ * Provides no-op icon components to avoid loading react-native-svg and its
+ * Flow-typed react-native dependency chain.
+ */
+import { createElement } from 'react'
+
+const Icon = () => createElement('span', { 'data-testid': 'icon' })
+
+export default Icon
+
+// Export all icons as the same mock component
+// Add more as needed when tests import specific icons
+export const CheckCircle2 = Icon
+export const CheckCircle = Icon
+export const Check = Icon
+export const ChevronDown = Icon
+export const ChevronRight = Icon
+export const ChevronLeft = Icon
+export const ChevronUp = Icon
+export const X = Icon
+export const Plus = Icon
+export const Minus = Icon
+export const Search = Icon
+export const Settings = Icon
+export const User = Icon
+export const Users = Icon
+export const Home = Icon
+export const Menu = Icon
+export const Bell = Icon
+export const Star = Icon
+export const Heart = Icon
+export const Share = Icon
+export const Edit = Icon
+export const Trash = Icon
+export const Trash2 = Icon
+export const Eye = Icon
+export const EyeOff = Icon
+export const Lock = Icon
+export const Unlock = Icon
+export const Mail = Icon
+export const Phone = Icon
+export const Calendar = Icon
+export const Clock = Icon
+export const Map = Icon
+export const MapPin = Icon
+export const AlertCircle = Icon
+export const AlertTriangle = Icon
+export const Info = Icon
+export const HelpCircle = Icon
+export const Upload = Icon
+export const Download = Icon
+export const File = Icon
+export const FileText = Icon
+export const Image = Icon
+export const Video = Icon
+export const Music = Icon
+export const Link = Icon
+export const ExternalLink = Icon
+export const ArrowLeft = Icon
+export const ArrowRight = Icon
+export const ArrowUp = Icon
+export const ArrowDown = Icon
+export const MoreHorizontal = Icon
+export const MoreVertical = Icon
+export const Filter = Icon
+export const SortAsc = Icon
+export const SortDesc = Icon
+export const Grid = Icon
+export const List = Icon
+export const Bookmark = Icon
+export const Tag = Icon
+export const Flag = Icon
+export const Globe = Icon
+export const Wifi = Icon
+export const Zap = Icon
+export const Shield = Icon
+export const ShieldCheck = Icon
+export const Building = Icon
+export const Building2 = Icon
+export const Briefcase = Icon
+export const GraduationCap = Icon
+export const Award = Icon
+export const Target = Icon
+export const TrendingUp = Icon
+export const TrendingDown = Icon
+export const BarChart = Icon
+export const BarChart2 = Icon
+export const PieChart = Icon
+export const Activity = Icon
+export const RefreshCw = Icon
+export const RotateCw = Icon
+export const Copy = Icon
+export const Clipboard = Icon
+export const Paste = Icon
+export const Send = Icon
+export const MessageSquare = Icon
+export const MessageCircle = Icon
+export const LogIn = Icon
+export const LogOut = Icon
+export const Power = Icon
+export const Loader = Icon
+export const Loader2 = Icon
+export const Save = Icon
+export const Database = Icon
+export const Server = Icon
+export const Code = Icon
+export const Terminal = Icon
+export const Package = Icon
+export const Layers = Icon
+export const Layout = Icon
+export const Sidebar = Icon
+export const Maximize = Icon
+export const Minimize = Icon
+export const Expand = Icon
+export const Compress = Icon
+export const Crop = Icon
+export const Scissors = Icon
+export const Pen = Icon
+export const Pencil = Icon
+export const Eraser = Icon
+export const Palette = Icon
+export const Brush = Icon
+export const Sliders = Icon
+export const ToggleLeft = Icon
+export const ToggleRight = Icon
+export const Volume = Icon
+export const Volume2 = Icon
+export const VolumeX = Icon
+export const Mic = Icon
+export const MicOff = Icon
+export const Camera = Icon
+export const CameraOff = Icon
+export const Airplay = Icon
+export const Cast = Icon
+export const Monitor = Icon
+export const Smartphone = Icon
+export const Tablet = Icon
+export const Laptop = Icon
+export const Printer = Icon
+export const HardDrive = Icon
+export const Cpu = Icon
+export const Battery = Icon
+export const BatteryCharging = Icon

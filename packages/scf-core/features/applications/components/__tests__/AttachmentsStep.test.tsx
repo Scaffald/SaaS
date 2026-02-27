@@ -9,21 +9,15 @@ const mockOnContinue = vi.fn()
 const mockGetUploadUrl = vi.fn()
 const mockConfirmUpload = vi.fn()
 
-vi.mock('@scf/core/utils/api', () => ({
-  api: {
-    applications: {
-      getUploadUrl: {
-        useMutation: () => ({
-          mutateAsync: mockGetUploadUrl,
-        }),
-      },
-      confirmUpload: {
-        useMutation: () => ({
-          mutateAsync: mockConfirmUpload,
-        }),
-      },
-    },
-  },
+vi.mock('@scf/core/utils/jobs-sdk-hooks', () => ({
+  useGetUploadUrlMutation: () => ({
+    mutateAsync: mockGetUploadUrl,
+    isPending: false,
+  }),
+  useConfirmUploadMutation: () => ({
+    mutateAsync: mockConfirmUpload,
+    isPending: false,
+  }),
 }))
 
 // Mock fetch for file uploads
@@ -64,13 +58,13 @@ describe('AttachmentsStep', () => {
   it('shows resume as required when requireResume is true', () => {
     render(<AttachmentsStep {...defaultProps} requireResume={true} />)
 
-    expect(screen.getByText(/Resume \*/)).toBeInTheDocument()
+    expect(screen.getByText('Required')).toBeInTheDocument()
   })
 
   it('validates resume is required before continuing', async () => {
     render(<AttachmentsStep {...defaultProps} requireResume={true} />)
 
-    const continueButton = screen.getByText('Continue')
+    const continueButton = screen.getByText('Continue to Review')
     fireEvent.click(continueButton)
 
     await waitFor(() => {
@@ -105,7 +99,7 @@ describe('AttachmentsStep', () => {
     if (fileInput) {
       Object.defineProperty(fileInput, 'files', {
         value: [file],
-        writable: false,
+        configurable: true,
       })
       fireEvent.change(fileInput)
     }
@@ -152,7 +146,7 @@ describe('AttachmentsStep', () => {
 
     render(<AttachmentsStep {...defaultProps} attachments={attachments} />)
 
-    const continueButton = screen.getByText('Continue')
+    const continueButton = screen.getByText('Continue to Review')
     fireEvent.click(continueButton)
 
     await waitFor(() => {
@@ -173,7 +167,11 @@ describe('AttachmentsStep', () => {
 
     render(<AttachmentsStep {...defaultProps} attachments={attachments} />)
 
-    const removeButton = screen.getByLabelText(/Remove/)
+    // The remove button renders with no text (icon-only button); it's the only button
+    // that isn't "Previous" or "Continue to Review"
+    const allButtons = screen.getAllByRole('button')
+    const removeButton = allButtons.find((btn) => !btn.textContent?.trim())
+    expect(removeButton).toBeDefined()
     if (removeButton) {
       fireEvent.click(removeButton)
       expect(mockOnAttachmentsChange).toHaveBeenCalled()

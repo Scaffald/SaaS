@@ -1,16 +1,9 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Children, isValidElement, type ReactElement, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-// TODO: Fix syntax error - vitest has trouble parsing z.infer<typeof employmentSchema>
-// in the component file. This is a known issue with vitest's TypeScript transform.
-// Possible solutions:
-// 1. Update vitest config to handle typeof in type definitions
-// 2. Refactor component to avoid z.infer<typeof> pattern
-// 3. Use a different import strategy
-
-vi.mock('../StepNavigation', () => ({
+vi.mock('../../StepNavigation', () => ({
   StepNavigation: ({
     canGoNext,
     isSaving,
@@ -133,76 +126,6 @@ vi.mock('@scaffald/ui', () => {
     children?: ReactNode
   } & Record<string, unknown>) => <p {...rest}>{children}</p>
 
-  type SelectOption = { value: string; label: ReactNode }
-  const SelectItem = ({ value, children }: { value: string; children?: ReactNode }) => (
-    <span data-value={value}>{children}</span>
-  )
-
-  const isSelectItemElement = (element: ReactNode): boolean => {
-    return isValidElement(element) && element.type === SelectItem
-  }
-
-  const extractOptions = (nodes: ReactNode): SelectOption[] => {
-    const options: SelectOption[] = []
-    Children.forEach(nodes, (child) => {
-      if (!isValidElement(child)) {
-        return
-      }
-      if (isSelectItemElement(child)) {
-        const props = child.props as { value: string; children?: ReactNode }
-        options.push({ value: props.value, label: props.children })
-        return
-      }
-      const nestedChildren = (child.props as { children?: ReactNode }).children
-      if (nestedChildren) {
-        options.push(...extractOptions(nestedChildren))
-      }
-    })
-    return options
-  }
-
-  const SelectComponent = ({
-    value,
-    onValueChange,
-    children,
-  }: {
-    value?: string
-    onValueChange?: (value: string) => void
-    children?: ReactNode
-  }) => {
-    const options = extractOptions(children)
-
-    return (
-      <div data-testid="select-wrapper">
-        <select value={value || ''} onChange={(e) => onValueChange?.(e.target.value)}>
-          <option value="">Select...</option>
-          {options.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
-    )
-  }
-
-  SelectComponent.Trigger = () => null
-  SelectComponent.Value = () => null
-  SelectComponent.Content = ({ children }: { children?: ReactNode }) => <>{children}</>
-  SelectComponent.Viewport = ({ children }: { children?: ReactNode }) => <>{children}</>
-  SelectComponent.Item = SelectItem
-  SelectComponent.ItemText = ({ children }: { children?: ReactNode }) => <>{children}</>
-  SelectComponent.ScrollUpButton = () => null
-  SelectComponent.ScrollDownButton = () => null
-
-  const Adapt = ({ children }: { children?: ReactNode }) => <>{children}</>
-  const Sheet = ({ children }: { children?: ReactNode }) => <div>{children}</div>
-  Sheet.Frame = ({ children }: { children?: ReactNode }) => <div>{children}</div>
-  Sheet.ScrollView = () => null
-  Sheet.Overlay = () => null
-
-  SelectComponent.Adapt = Adapt
-
   const Button = ({
     children,
     onPress,
@@ -218,21 +141,7 @@ vi.mock('@scaffald/ui', () => {
     </button>
   )
 
-  return {
-    Stack: Stack,
-    Row: Stack,
-    Input,
-    Text,
-    Paragraph,
-    Select: SelectComponent,
-    Adapt,
-    Sheet,
-    Button,
-  }
-})
-
-vi.mock('@scaffald/ui', () => ({
-  ResponsiveSelect: ({
+  const ResponsiveSelect = ({
     value,
     onValueChange,
     options,
@@ -243,16 +152,28 @@ vi.mock('@scaffald/ui', () => ({
     options: Array<{ value: string; label: string }>
     placeholder?: string
   }) => (
-    <select value={value ?? ''} onChange={(event) => onValueChange(event.target.value)}>
-      {placeholder && <option value="">{placeholder}</option>}
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
-  ),
-}))
+    <div data-testid="select-wrapper">
+      <select value={value ?? ''} onChange={(event) => onValueChange(event.target.value)}>
+        {placeholder && <option value="">{placeholder}</option>}
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  )
+
+  return {
+    Stack: Stack,
+    Row: Stack,
+    Input,
+    Text,
+    Paragraph,
+    Button,
+    ResponsiveSelect,
+  }
+})
 
 // Use dynamic import to avoid parsing issues with z.infer<typeof>
 const { EmploymentPrefsStep } = await import('../EmploymentPrefsStep')

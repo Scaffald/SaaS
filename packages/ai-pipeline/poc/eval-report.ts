@@ -178,12 +178,12 @@ function main() {
 
   // Print report
   console.log(`\n${'='.repeat(60)}`);
-  console.log(`  ACORD Extraction POC - Eval Report`);
+  console.log('  ACORD Extraction POC - Eval Report');
   console.log(`  Documents compared: ${total}`);
   console.log(`  Date: ${new Date().toISOString().split('T')[0]}`);
   console.log(`${'='.repeat(60)}\n`);
 
-  console.log(`Per-field accuracy:\n`);
+  console.log('Per-field accuracy:\n');
 
   const sortedFields = [...comparisons.entries()].sort((a, b) => {
     const aRatio = a[1].matches / a[1].total;

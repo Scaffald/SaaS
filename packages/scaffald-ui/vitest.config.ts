@@ -9,6 +9,7 @@ const packageRoot = fileURLToPath(new URL('.', import.meta.url))
 const packageConfig = {
   root: workspaceRoot,
   resolve: {
+    dedupe: ['react', 'react-dom'],
     alias: [
       { find: 'react-native', replacement: 'react-native-web' },
       {
