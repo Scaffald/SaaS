@@ -23,8 +23,8 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@tamagui/toast', () => ({
-  useToastController: () => ({ show: mockShow }),
+vi.mock('@scaffald/ui', () => ({
+  useToast: () => ({ show: mockShow }),
 }))
 
 vi.mock('expo-router', () => ({
@@ -35,7 +35,7 @@ vi.mock('@scf/core/utils/useUser', () => ({
   useUser: () => ({ user: { id: 'current-user-id' } }),
 }))
 
-vi.mock('tamagui', () => {
+vi.mock('@scaffald/ui', () => {
   const Stack = ({ children }: { children?: ReactNode }) => <div>{children}</div>
   const Text = ({ children }: { children?: ReactNode }) => <span>{children}</span>
   const Button = ({ children, onPress }: { children?: ReactNode; onPress?: () => void }) => (
@@ -97,8 +97,8 @@ vi.mock('tamagui', () => {
 
   return {
     Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Text,
     Button,
     Card,
@@ -110,7 +110,7 @@ vi.mock('tamagui', () => {
   }
 })
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Crown: () => <span data-testid="crown-icon">Crown</span>,
   LogOut: () => <span data-testid="log-out-icon">LogOut</span>,
   Plus: () => <span data-testid="plus-icon">Plus</span>,

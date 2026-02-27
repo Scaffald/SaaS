@@ -1,7 +1,16 @@
-import { Input, ResponsiveSelect, Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
+import {
+  Input,
+  ResponsiveSelect,
+  Text,
+  ToggleSwitch,
+  Row,
+  Stack,
+  useThemeContext,
+} from '@scaffald/ui'
 import { UserSearch } from '@scf/core/components/user'
 import { useState } from 'react'
-import { Label } from '@unicornlove/ui'
+import { Label } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface JobMetadataSectionProps {
   internalJobCode?: string
@@ -57,6 +66,7 @@ export function JobMetadataSection({
   estimatedHireDate,
   onUpdate,
 }: JobMetadataSectionProps) {
+  const { theme } = useThemeContext()
   const [localState, setLocalState] = useState({
     internal_job_code: internalJobCode,
     department,
@@ -83,53 +93,51 @@ export function JobMetadataSection({
   }
 
   return (
-    <YStack
-      gap="$4"
-      padding="$4"
-      backgroundColor="$background"
-      borderRadius="$4"
+    <Stack
+      gap={16}
+      padding="md"
+      style={{ backgroundColor: colors.bg[theme].default }}
+      borderRadius={16}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
     >
-      <Text fontSize="$6" fontWeight="600">
-        Job Metadata & Management
-      </Text>
-      <Text fontSize="$2" color="$color10">
+      <Text>Job Metadata & Management</Text>
+      <Text style={{ color: colors.text[theme].secondary }}>
         Internal tracking and management information
       </Text>
 
       {/* Internal Job Code */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Internal job code</Label>
         <Input
           placeholder="e.g. JOB-2025-001"
           value={localState.internal_job_code || ''}
           onChangeText={(text) => handleChange('internal_job_code', text || undefined)}
         />
-      </YStack>
+      </Stack>
 
       {/* Department */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Department</Label>
         <Input
           placeholder="e.g. Operations, Sales, Engineering"
           value={localState.department || ''}
           onChangeText={(text) => handleChange('department', text || undefined)}
         />
-      </YStack>
+      </Stack>
 
       {/* Cost Center */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Cost center</Label>
         <Input
           placeholder="e.g. CC-1234"
           value={localState.cost_center || ''}
           onChangeText={(text) => handleChange('cost_center', text || undefined)}
         />
-      </YStack>
+      </Stack>
 
       {/* Hiring Manager */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Hiring manager</Label>
         <UserSearch
           value={localState.hiring_manager_id}
@@ -141,10 +149,10 @@ export function JobMetadataSection({
           }}
           placeholder="Search for hiring manager..."
         />
-      </YStack>
+      </Stack>
 
       {/* Recruiter */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Recruiter</Label>
         <UserSearch
           value={localState.recruiter_id}
@@ -156,10 +164,10 @@ export function JobMetadataSection({
           }}
           placeholder="Search for recruiter..."
         />
-      </YStack>
+      </Stack>
 
       {/* Number of Openings */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Number of openings</Label>
         <Input
           placeholder="1"
@@ -170,10 +178,10 @@ export function JobMetadataSection({
             handleChange('number_of_openings', Number.isNaN(num) ? undefined : num)
           }}
         />
-      </YStack>
+      </Stack>
 
       {/* Priority Level */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Priority level</Label>
         <ResponsiveSelect
           value={localState.priority_level || ''}
@@ -184,79 +192,75 @@ export function JobMetadataSection({
             label: level.label,
           }))}
         />
-      </YStack>
+      </Stack>
 
       {/* Requisition Number */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Requisition number</Label>
         <Input
           placeholder="e.g. REQ-2025-001"
           value={localState.requisition_number || ''}
           onChangeText={(text) => handleChange('requisition_number', text || undefined)}
         />
-      </YStack>
+      </Stack>
 
       {/* Job Category */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Job category</Label>
         <Input
           placeholder="e.g. Trade Skills, Management, Administrative"
           value={localState.job_category || ''}
           onChangeText={(text) => handleChange('job_category', text || undefined)}
         />
-      </YStack>
+      </Stack>
 
       {/* Is Confidential */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Confidential posting</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Hide company name and details from job listings
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.is_confidential || false}
-          onCheckedChange={(checked) => handleChange('is_confidential', checked)}
+          onChange={(checked) => handleChange('is_confidential', checked)}
           aria-label="Confidential posting"
         />
-      </XStack>
+      </Row>
 
       {/* Date Fields */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Application deadline</Label>
         <Input
           placeholder="YYYY-MM-DD"
           value={localState.application_deadline || ''}
           onChangeText={(text) => handleChange('application_deadline', text || undefined)}
         />
-        <Text fontSize="$2" color="$color10">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Last date to accept applications
         </Text>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Target start date</Label>
         <Input
           placeholder="YYYY-MM-DD"
           value={localState.target_start_date || ''}
           onChangeText={(text) => handleChange('target_start_date', text || undefined)}
         />
-        <Text fontSize="$2" color="$color10">
-          When you want the hire to start
-        </Text>
-      </YStack>
+        <Text style={{ color: colors.text[theme].secondary }}>When you want the hire to start</Text>
+      </Stack>
 
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Estimated hire date</Label>
         <Input
           placeholder="YYYY-MM-DD"
           value={localState.estimated_hire_date || ''}
           onChangeText={(text) => handleChange('estimated_hire_date', text || undefined)}
         />
-        <Text fontSize="$2" color="$color10">
-          When you expect to make a hire
-        </Text>
-      </YStack>
-    </YStack>
+        <Text style={{ color: colors.text[theme].secondary }}>When you expect to make a hire</Text>
+      </Stack>
+    </Stack>
   )
 }

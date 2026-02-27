@@ -1,21 +1,22 @@
-import { ScaffaldLogo } from '@scf/core/assets'
 import { ROUTES } from '@scf/core/constants/routes'
 import { i18n } from '@scf/core/locales'
 import { captureEvent } from '@scf/core/utils/analytics/client'
 import { captureEventWithQueue } from '@scf/core/utils/analytics/queue'
-import { api } from '@scf/core/utils/api'
+import { useRequestMagicLinkMutation } from '@scf/core/utils/auth-sdk-hooks'
 import { translateError } from '@scf/core/utils/errors/translateError'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { useUser } from '@scf/core/utils/useUser'
 import { applyZodErrorMap } from '@scf/core/utils/zodErrorMap'
-import { Button, Form, Input, LoadingOverlay, Paragraph, YStack } from '@unicornlove/ui'
+import { Button, Card, Form, H5, Input, Paragraph, Stack, useThemeContext } from '@scaffald/ui'
+import { colors, spacing } from '@scaffald/ui/tokens'
 import type { AuthChangeEvent } from '@supabase/auth-js'
-import { TRPCClientError } from '@trpc/client'
+import { Mail } from 'lucide-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { LoadingOverlay } from '@scaffald/ui'
 import { SocialLogin } from './components/SocialLogin'
 
 applyZodErrorMap()
@@ -28,17 +29,18 @@ const LoginSchema = z.object({
 })
 
 export const LoginScreen = () => {
-  // Using supabase directly from import
   const params = useLocalSearchParams<{ email?: string }>()
   const router = useRouter()
   useRedirectAfterSignIn()
   const { isLoadingSession } = useUser()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const requestMagicLink = api.auth.requestMagicLink.useMutation()
+  const requestMagicLink = useRequestMagicLinkMutation()
   const { t } = useTranslation()
+  const { theme } = useThemeContext()
+  const textSecondary = colors.text[theme].secondary
+  const textTertiary = colors.text[theme].tertiary
 
   useEffect(() => {
-    // remove the persisted email from the url, mostly to not leak user's email in case they share it
     if (params?.email) {
       router.replace(ROUTES.AUTH.LOGIN.path)
     }
@@ -81,20 +83,15 @@ export const LoginScreen = () => {
       })
 
       console.log('Magic link sent successfully!')
-      // Navigate to verify screen with email
       router.push({
         pathname: ROUTES.AUTH.VERIFY.path,
         params: { email: normalizedEmail, mode: result?.mode },
       })
     } catch (error) {
       console.error('Error sending magic link:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-      const errorCode =
-        error instanceof TRPCClientError
-          ? (error.data?.code ?? error.name)
-          : error instanceof Error
-            ? error.name
-            : 'unknown'
+      const err = error as Error & { data?: { code?: string } }
+      const errorMessage = err?.message ?? 'Unknown error'
+      const errorCode = err?.data?.code ?? err?.name ?? 'unknown'
 
       captureEvent('auth_magic_link_failed', {
         email_domain: emailDomain || null,
@@ -102,13 +99,6 @@ export const LoginScreen = () => {
         message: errorMessage ?? null,
       })
 
-      if (error instanceof TRPCClientError) {
-        form.setError('email', {
-          type: 'custom',
-          message: translateError(error),
-        })
-        return
-      }
       form.setError('email', {
         type: 'custom',
         message: translateError(error),
@@ -122,61 +112,76 @@ export const LoginScreen = () => {
 
   return (
     <FormProvider {...form}>
-      <YStack gap="$4" padding="$4">
-        <YStack gap="$4" marginBottom="$3" alignItems="center">
-          <ScaffaldLogo width={200} height={33} />
-          <YStack gap="$2" alignItems="center">
-            <Paragraph textAlign="center">{t('auth.login.description')}</Paragraph>
-          </YStack>
-        </YStack>
-
-        <Form onSubmit={handleSubmit}>
-          <YStack gap="$4">
-            <Input
-              placeholder={t('auth.login.emailPlaceholder')}
-              value={form.watch('email')}
-              onChangeText={(text) => form.setValue('email', text)}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-            />
-
-            {form.formState.errors.email && (
-              <Paragraph color="$red10" fontSize="$2">
-                {form.formState.errors.email.message}
+      <Stack
+        gap={spacing[20]}
+        padding={spacing[20]}
+        align="center"
+        style={{ width: '100%', maxWidth: 440 }}
+      >
+        <Card variant="elevated" radius="lg" elevation="md" padding="lg" style={{ width: '100%' }}>
+          <Stack gap={spacing[20]} align="center">
+            <Stack gap={spacing[2]} align="center">
+              <H5
+                serif
+                weight="regular"
+                align="center"
+                style={{
+                  color: colors.text[theme].primary,
+                  fontFamily: 'RobotoSerif_400Regular',
+                }}
+              >
+                {t('auth.login.title')}
+              </H5>
+              <Paragraph size="sm" style={{ textAlign: 'center', color: textSecondary }}>
+                {t('auth.login.description')}
               </Paragraph>
-            )}
+            </Stack>
+          </Stack>
 
-            <Button
-              onPress={handleSubmit}
-              disabled={isSubmitting || requestMagicLink.isPending}
-              opacity={isSubmitting || requestMagicLink.isPending ? 0.5 : 1}
-              backgroundColor="$blue9"
-              color="$blue1"
-              animation="quick"
-              hoverStyle={{ scale: 1.02, backgroundColor: '$blue9' }}
-              pressStyle={{ scale: 0.98 }}
-            >
-              {isSubmitting || requestMagicLink.isPending
-                ? t('auth.login.sending')
-                : t('auth.login.submitButton')}
-            </Button>
+          <Form onSubmit={handleSubmit} gap={spacing[20]}>
+            <Stack gap={spacing[20]}>
+              <Input
+                label={t('auth.login.emailLabel')}
+                placeholder={t('auth.login.emailPlaceholder')}
+                value={form.watch('email')}
+                onChangeText={(text) => form.setValue('email', text)}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+                iconStart={Mail}
+                error={!!form.formState.errors.email}
+                errorMessage={form.formState.errors.email?.message}
+              />
 
-            <SocialLogin />
-            <Paragraph textAlign="center">{t('auth.login.socialDescription')}</Paragraph>
-          </YStack>
-        </Form>
-      </YStack>
-      {/* this is displayed when the session is being updated - usually when the user is redirected back from an auth provider */}
+              <Button
+                onPress={handleSubmit}
+                disabled={isSubmitting || requestMagicLink.isPending}
+                color="primary"
+                variant="filled"
+                style={{
+                  alignSelf: 'stretch',
+                  opacity: isSubmitting || requestMagicLink.isPending ? 0.5 : 1,
+                }}
+              >
+                {isSubmitting || requestMagicLink.isPending
+                  ? t('auth.login.sending')
+                  : t('auth.login.submitButton')}
+              </Button>
+
+              <SocialLogin />
+              <Paragraph size="sm" style={{ textAlign: 'center', color: textTertiary }}>
+                {t('auth.login.socialDescription')}
+              </Paragraph>
+            </Stack>
+          </Form>
+        </Card>
+      </Stack>
       {isLoadingSession && <LoadingOverlay />}
     </FormProvider>
   )
 }
 
-// we use this hook here because this is the page we redirect unauthenticated users to
-// if they authenticate on this page, this will redirect them to the home page
 function useRedirectAfterSignIn() {
-  // Using supabase directly from import
   const router = useRouter()
   useEffect(() => {
     const signOutListener = supabase.auth.onAuthStateChange((event: AuthChangeEvent) => {

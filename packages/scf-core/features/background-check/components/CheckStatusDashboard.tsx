@@ -1,10 +1,10 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
-import { RefreshCcw, ShieldCheck } from '@tamagui/lucide-icons'
+import { useBackgroundChecks } from '@scf/core/utils/background-checks-sdk-hooks'
+import { RefreshCcw, ShieldCheck } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Platform } from 'react-native'
-import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, ScrollView, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 import { CheckStatusCard } from './CheckStatusCard'
 import { DisputeBackgroundCheckDialog } from './DisputeBackgroundCheckDialog'
@@ -27,10 +27,7 @@ export function CheckStatusDashboard() {
   const [disputeCheck, setDisputeCheck] = useState<BackgroundCheckSummary | null>(null)
   const isWeb = Platform.OS === 'web'
 
-  const checksQuery = api.backgroundChecks.listChecks.useQuery(undefined, {
-    refetchOnWindowFocus: true,
-    staleTime: 1000 * 60,
-  })
+  const checksQuery = useBackgroundChecks()
 
   const selectedCheck = useMemo(
     () =>
@@ -87,36 +84,32 @@ export function CheckStatusDashboard() {
   }
 
   return (
-    <YStack flex={1} backgroundColor="$background">
-      <ScrollView flex={1}>
-        <YStack gap="$4" paddingHorizontal="$4" paddingBottom="$6">
-          <YStack
-            gap="$3"
-            padding="$4"
+    <Stack flex={1} backgroundColor="$background">
+      <ScrollView style={{ flex: 1 }}>
+        <Stack gap={16} paddingHorizontal={16} paddingBottom={24}>
+          <Stack
+            gap={12}
+            padding="md"
             backgroundColor="$background"
-            borderBottomWidth={1}
-            borderBottomColor="$borderColor"
+            style={{ borderBottomWidth: 1, borderBottomColor: '$borderColor' }}
           >
-            <XStack gap="$3" alignItems="center">
+            <Row gap={12} align="center">
               <ShieldCheck size={28} color="$blue10" />
-              <YStack gap="$1">
-                <Text fontSize="$6" fontWeight="700" color="$color12">
-                  Background check dashboard
-                </Text>
-                <Text fontSize="$2" color="$color10">
+              <Stack gap={4}>
+                <Text color="$gray11">Background check dashboard</Text>
+                <Text color="$gray11">
                   Track your screenings, monitor progress, and manage who can see your results.
                 </Text>
-              </YStack>
-            </XStack>
-            <XStack gap="$2" flexWrap="wrap">
+              </Stack>
+            </Row>
+            <Row gap={8} wrap>
               {FILTER_DEFINITIONS.map((filter) => {
                 const isActive = activeFilter === filter.value
                 return (
                   <Button
                     key={filter.value}
-                    size="$3"
-                    theme={isActive ? 'blue' : undefined}
-                    variant={isActive ? undefined : 'outlined'}
+                    size="sm"
+                    variant={isActive ? undefined : 'outline'}
                     onPress={() => setActiveFilter(filter.value)}
                   >
                     {filter.label}
@@ -127,57 +120,53 @@ export function CheckStatusDashboard() {
                   </Button>
                 )
               })}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
 
           {checksQuery.isLoading && (
-            <YStack gap="$2" alignItems="center" paddingVertical="$6">
-              <Spinner size="large" color="$color11" />
-              <Text fontSize="$3" color="$color10">
-                Loading your background checks…
-              </Text>
-            </YStack>
+            <Stack gap={8} align="center" paddingVertical={24}>
+              <Spinner size="lg" color="gray" />
+              <Text color="$gray11">Loading your background checks…</Text>
+            </Stack>
           )}
 
           {checksQuery.isError && (
-            <YStack
-              gap="$3"
-              padding="$4"
+            <Stack
+              gap={12}
+              padding="md"
               backgroundColor="$color2"
-              borderRadius="$4"
+              borderRadius={16}
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <Text fontSize="$3" color="$color11">
-                We couldn’t load your background checks. Please try again.
+              <Text color="$gray11">
+                We couldn't load your background checks. Please try again.
               </Text>
               <Button
-                size="$3"
-                variant="outlined"
-                icon={RefreshCcw}
+                size="sm"
+                variant="outline"
+                iconStart={RefreshCcw}
                 onPress={() => checksQuery.refetch()}
               >
                 Retry
               </Button>
-            </YStack>
+            </Stack>
           )}
 
           {!checksQuery.isLoading && !checksQuery.isError && filteredChecks.length === 0 && (
-            <YStack
-              gap="$3"
-              padding="$4"
+            <Stack
+              gap={12}
+              padding="md"
               backgroundColor="$color2"
-              borderRadius="$4"
+              borderRadius={16}
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <Text fontSize="$3" color="$color11">
-                No background checks found for this filter.
-              </Text>
-              <Button size="$3" theme="blue" onPress={handleStartNewCheck}>
+              <Text color="$gray11">No background checks found for this filter.</Text>
+              <Button size="sm" color="primary" onPress={handleStartNewCheck}>
                 Start a background check
               </Button>
-            </YStack>
+            </Stack>
           )}
 
           {filteredChecks.map((check: BackgroundCheckSummary) => (
@@ -196,27 +185,25 @@ export function CheckStatusDashboard() {
             />
           ))}
 
-          <YStack
-            gap="$2"
-            padding="$3"
+          <Stack
+            gap={8}
+            padding="sm"
             backgroundColor="$color2"
-            borderRadius="$4"
+            borderRadius={16}
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <Text fontSize="$3" fontWeight="600" color="$color12">
-              Need a new screening?
-            </Text>
-            <Text fontSize="$2" color="$color10">
+            <Text color="$gray11">Need a new screening?</Text>
+            <Text color="$gray11">
               Start a new background check whenever you need to refresh your credentials.
             </Text>
-            <Button size="$3" theme="blue" onPress={handleStartNewCheck}>
+            <Button size="sm" color="primary" onPress={handleStartNewCheck}>
               Start background check
             </Button>
-          </YStack>
+          </Stack>
 
           {selectedCheckId && (
-            <YStack gap="$3">
+            <Stack gap={12}>
               <Separator />
               <ResultsViewer
                 checkId={selectedCheckId}
@@ -230,9 +217,9 @@ export function CheckStatusDashboard() {
                   }
                 }}
               />
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       </ScrollView>
 
       {isWeb && (
@@ -250,6 +237,6 @@ export function CheckStatusDashboard() {
           }}
         />
       )}
-    </YStack>
+    </Stack>
   )
 }

@@ -1,28 +1,28 @@
 /**
  * ManualUserCreateModal - Modal wrapper for ManualUserForm
- * REQ-12: Add Manual Broker and Contractor Registration
- * TASK-7: Build manual user creation UI components
+ * Manual user creation modal
+ * Manual user creation modal
  *
  * Modal that opens when "Add Contractor" or "Add Client" button is clicked.
  * Reusable across manager and broker dashboards.
  */
 
-'use client';
+'use client'
 
-import React, { useEffect, useState } from 'react';
-import { UserPlus, X } from 'lucide-react';
-import { Stack, Row, Text, Button, Card, H2 } from '@unicornlove/beyond-ui';
-import { toast } from 'sonner';
-import { ManualUserForm, type ManualUserRole, type ManualUserFormData } from './ManualUserForm';
-import { trpc } from '../../lib/trpc';
+import React, { useEffect, useState } from 'react'
+import { UserPlus, X } from 'lucide-react'
+import { Stack, Row, Text, Button, Card, H2 } from '@scaffald/ui'
+import { toast } from 'sonner'
+import { ManualUserForm, type ManualUserRole, type ManualUserFormData } from './ManualUserForm'
+import { trpc } from '../../lib/trpc'
 
 interface ManualUserCreateModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  role: ManualUserRole;
-  organizationId: string;
-  onSuccess?: (userId: string) => void;
-  existingEmails?: string[];
+  isOpen: boolean
+  onClose: () => void
+  role: ManualUserRole
+  organizationId: string
+  onSuccess?: (userId: string) => void
+  existingEmails?: string[]
 }
 
 export function ManualUserCreateModal({
@@ -33,44 +33,44 @@ export function ManualUserCreateModal({
   onSuccess,
   existingEmails = [],
 }: ManualUserCreateModalProps) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
 
-  const createMutation = trpc.manualUsers.create.useMutation();
+  const createMutation = trpc.manualUsers.create.useMutation()
 
   // Handle backdrop click
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget && !loading) {
-      onClose();
+      onClose()
     }
-  };
+  }
 
   // Handle escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen && !loading) {
-        onClose();
+        onClose()
       }
-    };
+    }
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, onClose, loading]);
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [isOpen, onClose, loading])
 
   // Prevent body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden'
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = ''
     }
     return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
+      document.body.style.overflow = ''
+    }
+  }, [isOpen])
 
   // Handle form submit
   const handleSubmit = async (data: ManualUserFormData) => {
-    setLoading(true);
+    setLoading(true)
     try {
       const result = await createMutation.mutateAsync({
         name: data.name,
@@ -79,57 +79,68 @@ export function ManualUserCreateModal({
         company: data.company,
         userType: data.role,
         sendInvitation: data.sendInvitation,
-      });
+      })
 
-      const toastRoleLabel = data.role === 'contractor' ? 'Contractor' : data.role === 'broker' ? 'Broker' : data.role === 'manager' ? 'Manager' : 'Client';
+      const toastRoleLabel =
+        data.role === 'contractor'
+          ? 'Contractor'
+          : data.role === 'broker'
+            ? 'Broker'
+            : data.role === 'manager'
+              ? 'Manager'
+              : 'Client'
 
       if (data.sendInvitation && data.email) {
         toast.success(`${toastRoleLabel} added and invitation sent`, {
           description: `${data.name} will receive an invitation at ${data.email}`,
-        });
+        })
       } else {
         toast.success(`${toastRoleLabel} added successfully`, {
           description: `${data.name} has been added as a placeholder. They won't receive notifications until they register.`,
-        });
+        })
       }
 
-      onSuccess?.(result.user.id);
-      onClose();
+      onSuccess?.(result.user.id)
+      onClose()
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to create user';
-      toast.error('Failed to add user', { description: message });
-      throw error; // Re-throw to show in form
+      const message = error instanceof Error ? error.message : 'Failed to create user'
+      toast.error('Failed to add user', { description: message })
+      throw error // Re-throw to show in form
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   const getRoleLabel = () => {
     switch (role) {
-      case 'contractor': return 'Contractor';
-      case 'broker': return 'Broker';
-      case 'manager': return 'Manager';
-      default: return 'Client';
+      case 'contractor':
+        return 'Contractor'
+      case 'broker':
+        return 'Broker'
+      case 'manager':
+        return 'Manager'
+      default:
+        return 'Client'
     }
-  };
+  }
 
   const getRoleDescription = () => {
     switch (role) {
       case 'contractor':
-        return 'Add a contractor to your organization. They can be assigned tasks immediately.';
+        return 'Add a contractor to your organization. They can be assigned tasks immediately.'
       case 'broker':
-        return 'Add a broker to your network. You can invite them to connect later.';
+        return 'Add a broker to your network. You can invite them to connect later.'
       case 'manager':
-        return 'Add a manager to your network. You can invite them to connect later.';
+        return 'Add a manager to your network. You can invite them to connect later.'
       default:
-        return 'Add a client to your organization. You can manage their insurance and compliance.';
+        return 'Add a client to your organization. You can manage their insurance and compliance.'
     }
-  };
+  }
 
-  const roleLabel = getRoleLabel();
-  const roleDescription = getRoleDescription();
+  const roleLabel = getRoleLabel()
+  const roleDescription = getRoleDescription()
 
   return (
     <div
@@ -198,9 +209,7 @@ export function ManualUserCreateModal({
               >
                 Add {roleLabel}
               </H2>
-              <Text style={{ fontSize: 14, color: 'var(--color-gray-10)' }}>
-                {roleDescription}
-              </Text>
+              <Text style={{ fontSize: 14, color: 'var(--color-gray-10)' }}>{roleDescription}</Text>
             </Stack>
           </Row>
 
@@ -229,7 +238,7 @@ export function ManualUserCreateModal({
         </Stack>
       </Card>
     </div>
-  );
+  )
 }
 
-export default ManualUserCreateModal;
+export default ManualUserCreateModal

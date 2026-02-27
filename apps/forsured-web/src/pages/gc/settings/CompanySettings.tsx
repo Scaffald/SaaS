@@ -1,6 +1,6 @@
 // src/pages/gc/settings/CompanySettings.tsx
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Stack, Row, Text, Button, H2, Input, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, H2, Input, Card } from '@scaffald/ui';
 import { useAuth } from '../../../contexts/AuthContext';
 import { scaffaldClient } from '../../../lib/scaffald/client';
 import { toast } from 'sonner';

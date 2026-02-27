@@ -6,7 +6,7 @@ import {
   type DashboardBreadcrumbSegment,
 } from '@scf/core/utils/navigation/buildDashboardBreadcrumbs'
 import { ProfileLayout } from '@scf/core/components/layouts'
-import type { BreadcrumbItem } from '@unicornlove/ui'
+import type { BreadcrumbItemData } from '@scaffald/ui'
 import { usePathname } from 'expo-router'
 import type { ComponentProps } from 'react'
 import { useMemo } from 'react'
@@ -15,7 +15,7 @@ type ProfileLayoutProps = ComponentProps<typeof ProfileLayout>
 
 type ProfilePageProps = Omit<ProfileLayoutProps, 'breadcrumbItems'> & {
   breadcrumbs?: DashboardBreadcrumbSegment[]
-  breadcrumbItems?: BreadcrumbItem[]
+  breadcrumbItems?: BreadcrumbItemData[]
   pageTitle?: string | (() => string | null)
   pageTitleDeps?: ReadonlyArray<unknown>
   formatDocumentTitle?: (title: string) => string
@@ -73,8 +73,7 @@ export function ProfilePage({
 
       const trail = computedBreadcrumbItems
       if (trail && trail.length > 0) {
-        const activeItem =
-          [...trail].reverse().find((item) => item.isActive) ?? trail[trail.length - 1]
+        const activeItem = trail[trail.length - 1]
         if (activeItem?.label) {
           return activeItem.label
         }

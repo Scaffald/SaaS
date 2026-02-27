@@ -44,4 +44,3 @@ export const ANDROID_PACKAGE = Constants.expoConfig?.android?.package
 
 const isProductionBuild = APP_ENV === 'production'
 export const isAllowedEnvironment = !isProductionBuild || (CHANNEL === 'production' && !__DEV__)
-

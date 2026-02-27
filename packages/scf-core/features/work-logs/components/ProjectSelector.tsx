@@ -1,37 +1,37 @@
-import { ResponsiveSelect } from '@unicornlove/ui'
-import { AlertCircle, RefreshCw } from '@tamagui/lucide-icons'
-import { memo, useMemo } from 'react'
-import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { ResponsiveSelect } from "@scaffald/ui";
+import { AlertCircle, RefreshCw } from "lucide-react-native";
+import { memo, useMemo } from "react";
+import { Button, Spinner, Text, Row, Stack } from "@scaffald/ui";
 
 export interface ProjectSelectorOrganization {
-  id: string
-  name: string
-  isAdmin: boolean
-  isOwner: boolean
+  id: string;
+  name: string;
+  isAdmin: boolean;
+  isOwner: boolean;
 }
 
 export interface ProjectSelectorProject {
-  id: string
-  name: string
-  organizationId: string
-  status: string | null
-  isArchived: boolean
-  startsAt: string | null
-  endsAt: string | null
+  id: string;
+  name: string;
+  organizationId: string;
+  status: string | null;
+  isArchived: boolean;
+  startsAt: string | null;
+  endsAt: string | null;
 }
 
 export interface ProjectSelectorProps {
-  value: string
-  onChange: (projectId: string) => void
-  organizations: ProjectSelectorOrganization[]
-  projects: ProjectSelectorProject[]
-  isLoading?: boolean
-  error?: string | null
-  onRetry?: () => void
-  organizationFilter: string | null
-  onOrganizationFilterChange: (organizationId: string | null) => void
-  disabled?: boolean
-  helperText?: string
+  value: string;
+  onChange: (projectId: string) => void;
+  organizations: ProjectSelectorOrganization[];
+  projects: ProjectSelectorProject[];
+  isLoading?: boolean;
+  error?: string | null;
+  onRetry?: () => void;
+  organizationFilter: string | null;
+  onOrganizationFilterChange: (organizationId: string | null) => void;
+  disabled?: boolean;
+  helperText?: string;
 }
 
 export const ProjectSelector = memo(function ProjectSelector({
@@ -49,108 +49,102 @@ export const ProjectSelector = memo(function ProjectSelector({
 }: ProjectSelectorProps) {
   const filteredProjects = useMemo(() => {
     if (!organizationFilter) {
-      return projects
+      return projects;
     }
-    return projects.filter((project) => project.organizationId === organizationFilter)
-  }, [organizationFilter, projects])
+    return projects.filter(
+      (project) => project.organizationId === organizationFilter
+    );
+  }, [organizationFilter, projects]);
 
-  const hasMultipleOrganizations = organizations.length > 1
+  const hasMultipleOrganizations = organizations.length > 1;
 
   return (
-    <YStack gap="$2">
-      <Text fontWeight="600" fontSize="$4">
-        Project
-      </Text>
+    <Stack gap={8}>
+      <Text>Project</Text>
 
       {hasMultipleOrganizations && (
-        <YStack gap="$1">
-          <Text fontSize="$3" color="$color10">
-            Organization
-          </Text>
+        <Stack gap={4}>
+          <Text color="$gray11">Organization</Text>
           <ResponsiveSelect
-            value={organizationFilter ?? 'all'}
+            value={organizationFilter ?? "all"}
             onValueChange={(nextValue) => {
-              if (nextValue === 'all') {
-                onOrganizationFilterChange(null)
+              if (nextValue === "all") {
+                onOrganizationFilterChange(null);
               } else {
-                onOrganizationFilterChange(nextValue)
+                onOrganizationFilterChange(nextValue);
               }
             }}
             placeholder="All organizations"
-            size="$4"
+            size="md"
             options={[
-              { value: 'all', label: 'All organizations' },
+              { value: "all", label: "All organizations" },
               ...organizations.map((organization) => ({
                 value: organization.id,
                 label: organization.name,
               })),
             ]}
           />
-        </YStack>
+        </Stack>
       )}
 
-      <YStack gap="$1">
-        <Text fontSize="$3" color="$color10">
+      <Stack gap={4}>
+        <Text color="$gray11">
           Select a project to associate with this work log.
         </Text>
         <ResponsiveSelect
           value={value}
           onValueChange={onChange}
-          placeholder={isLoading ? 'Loading projects...' : 'Select a project'}
-          size="$4"
+          placeholder={isLoading ? "Loading projects..." : "Select a project"}
+          size="md"
           disabled={disabled || isLoading || filteredProjects.length === 0}
           options={filteredProjects.map((project) => ({
             value: project.id,
-            label: `${project.name}${project.isArchived ? ' (Archived)' : ''}`,
+            label: `${project.name}${project.isArchived ? " (Archived)" : ""}`,
           }))}
         />
-      </YStack>
+      </Stack>
 
       {isLoading && (
-        <XStack gap="$2" alignItems="center">
-          <Spinner size="small" />
-          <Text fontSize="$3">Loading projects…</Text>
-        </XStack>
+        <Row gap={8} align="center">
+          <Spinner size="sm" />
+          <Text>Loading projects…</Text>
+        </Row>
       )}
 
       {error && (
-        <XStack
-          gap="$2"
-          alignItems="center"
+        <Row
+          gap={8}
+          align="center"
           backgroundColor="$red3"
           borderColor="$red6"
           borderWidth={1}
-          borderRadius="$3"
-          paddingHorizontal="$3"
-          paddingVertical="$2"
+          borderRadius={12}
+          paddingHorizontal={12}
+          paddingVertical={8}
         >
-          <AlertCircle size={16} color="$red10" />
-          <Text flex={1} fontSize="$3" color="$red10">
+          <AlertCircle size="md" color="$red10" />
+          <Text style={{ flex: 1 }} color="$red10">
             {error}
           </Text>
           {onRetry && (
             <Button
-              size="$2"
-              variant="outlined"
-              icon={RefreshCw}
+              size="sm"
+              variant="outline"
+              iconStart={RefreshCw}
               onPress={onRetry}
               aria-label="Retry loading projects"
             />
           )}
-        </XStack>
+        </Row>
       )}
 
-      {helperText && (
-        <Text fontSize="$2" color="$color10">
-          {helperText}
-        </Text>
-      )}
+      {helperText && <Text color="$gray11">{helperText}</Text>}
 
       {!isLoading && !error && filteredProjects.length === 0 && (
-        <Text fontSize="$3" color="$color10">
+        <Text color="$gray11">
           No projects available for the selected organization.
         </Text>
       )}
-    </YStack>
-  )
-})
+    </Stack>
+  );
+});

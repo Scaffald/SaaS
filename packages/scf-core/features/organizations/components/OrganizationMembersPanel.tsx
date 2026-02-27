@@ -1,5 +1,5 @@
 import { type OrganizationInvite, organizationInviteSchema } from '@scf/schemas'
-import { Table } from '@unicornlove/ui'
+import { Table, type TableColumn, type TableRowData, useThemeContext } from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -13,9 +13,10 @@ import {
   Spinner,
   Text,
   TextArea,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import {
   useInviteOrganizationMember,
   useOrganizationInvites,
@@ -28,7 +29,8 @@ type OrganizationMembersPanelProps = {
 }
 
 export function OrganizationMembersPanel({ organizationId }: OrganizationMembersPanelProps) {
-  const { data: members, isLoading: membersLoading } = useOrganizationMembers(organizationId)
+  const { theme } = useThemeContext()
+  const { data: membersResponse, isLoading: membersLoading } = useOrganizationMembers(organizationId)
   const {
     data: invites,
     isLoading: invitesLoading,
@@ -48,9 +50,11 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
     await inviteMutation.mutateAsync(
       {
         organizationId,
-        email: values.email,
-        roleName: values.roleName ?? 'member',
-        message: values.message,
+        params: {
+          email: values.email,
+          roleName: values.roleName ?? 'member',
+          message: values.message,
+        },
       },
       {
         onSuccess: () => {
@@ -61,7 +65,7 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
     )
   })
 
-  const activeMembers = members ?? []
+  const activeMembers = membersResponse?.data ?? []
   const pendingInvites = invites ?? []
   const activityByUser = useMemo(() => {
     if (!activity) return new Map<string, { actions: number; lastActionAt: string | null }>()
@@ -73,134 +77,156 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
     )
   }, [activity])
 
+  const membersColumns: TableColumn[] = [
+    {
+      id: 'name',
+      title: 'Name',
+      render: (_value, row) => (
+        <>
+          <Text>{String(row.display_name ?? 'Unknown')}</Text>
+          {row.headline ? (
+            <Paragraph style={{ color: colors.text[theme].secondary }}>
+              {String(row.headline)}
+            </Paragraph>
+          ) : null}
+        </>
+      ),
+    },
+    {
+      id: 'roles',
+      title: 'Roles',
+      render: (_value, row) => {
+        const roles = row.roles as string[]
+        return <>{roles.join(', ') || 'Member'}</>
+      },
+    },
+    {
+      id: 'activity',
+      title: 'Recent Activity',
+      render: (_value, row) => {
+        const activitySummary = row.userId
+          ? activityByUser.get(String(row.userId))
+          : undefined
+        return (
+          <>
+            {activitySummary ? `${activitySummary.actions} actions` : '—'}
+            {activitySummary?.lastActionAt ? (
+              <Paragraph style={{ color: colors.text[theme].secondary }}>
+                {new Date(activitySummary.lastActionAt).toLocaleDateString()}
+              </Paragraph>
+            ) : null}
+          </>
+        )
+      },
+    },
+  ]
+
+  const membersTableData: TableRowData[] = activeMembers.map((member) => ({
+    id: member.userId,
+    userId: member.userId,
+    display_name: member.profile?.display_name ?? null,
+    headline: member.profile?.headline ?? null,
+    roles: member.roles,
+  }))
+
   return (
-    <YStack gap="$4">
-      <Card bordered padding="$4" gap="$4">
+    <Stack gap={16}>
+      <Card variant="outlined" padding="md">
         <H4>Invite a member</H4>
-        <YStack gap="$3">
+        <Stack gap={12}>
           <Controller
             control={form.control}
             name="email"
             render={({ field, fieldState }) => (
-              <YStack gap="$1">
-                <Text fontWeight="600">Email</Text>
+              <Stack gap={4}>
+                <Text>Email</Text>
                 <Input
                   value={field.value}
                   onChangeText={(value) => field.onChange(value)}
                   placeholder="teammate@example.com"
                 />
                 {fieldState.error ? (
-                  <Text color="$red10" fontSize="$2">
+                  <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
                     {fieldState.error?.message}
                   </Text>
                 ) : null}
-              </YStack>
+              </Stack>
             )}
           />
           <Controller
             control={form.control}
             name="roleName"
             render={({ field }) => (
-              <YStack gap="$1">
-                <Text fontWeight="600">Role</Text>
+              <Stack gap={4}>
+                <Text>Role</Text>
                 <Input value={field.value} onChangeText={(value) => field.onChange(value)} />
-              </YStack>
+              </Stack>
             )}
           />
           <Controller
             control={form.control}
             name="message"
             render={({ field }) => (
-              <YStack gap="$1">
-                <Text fontWeight="600">Message (optional)</Text>
+              <Stack gap={4}>
+                <Text>Message (optional)</Text>
                 <TextArea
                   value={field.value ?? ''}
                   onChangeText={(value) => field.onChange(value ?? '')}
                 />
-              </YStack>
+              </Stack>
             )}
           />
           <Button onPress={() => void onSubmit()} disabled={isSubmitting}>
             {isSubmitting ? 'Sending invite…' : 'Send Invitation'}
           </Button>
-        </YStack>
+        </Stack>
       </Card>
 
-      <Card bordered padding="$4" gap="$3">
-        <XStack justifyContent="space-between" alignItems="center">
+      <Card variant="outlined" padding="md">
+        <Row justify="space-between" align="center">
           <H4>Members</H4>
           {membersLoading ? (
             <Spinner />
           ) : (
-            <Text color="$color10">{activeMembers.length} total</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              {activeMembers.length} total
+            </Text>
           )}
-        </XStack>
+        </Row>
         <Separator />
         {membersLoading ? (
           <Paragraph>Loading members…</Paragraph>
         ) : (
-          <Table>
-            <Table.Head>
-              <Table.Row>
-                <Table.HeaderCell>Name</Table.HeaderCell>
-                <Table.HeaderCell>Roles</Table.HeaderCell>
-                <Table.HeaderCell>Recent Activity</Table.HeaderCell>
-              </Table.Row>
-            </Table.Head>
-            <Table.Body>
-              {activeMembers.map(
-                (member: {
-                  userId: string
-                  roles: string[]
-                  profile?: { display_name?: string; headline?: string } | null
-                }) => {
-                  const activitySummary:
-                    | { actions: number; lastActionAt: string | null }
-                    | undefined = member.userId
-                    ? (activityByUser.get(member.userId) as
-                        | { actions: number; lastActionAt: string | null }
-                        | undefined)
-                    : undefined
-                  return (
-                    <Table.Row key={member.userId}>
-                      <Table.Cell>
-                        <Text fontWeight="600">{member.profile?.display_name ?? 'Unknown'}</Text>
-                        <Paragraph color="$color10">{member.profile?.headline}</Paragraph>
-                      </Table.Cell>
-                      <Table.Cell>{member.roles.join(', ') || 'Member'}</Table.Cell>
-                      <Table.Cell>
-                        {activitySummary ? `${activitySummary.actions} actions` : '—'}
-                        {activitySummary?.lastActionAt ? (
-                          <Paragraph color="$color10">
-                            {new Date(activitySummary.lastActionAt).toLocaleDateString()}
-                          </Paragraph>
-                        ) : null}
-                      </Table.Cell>
-                    </Table.Row>
-                  )
-                }
-              )}
-            </Table.Body>
-          </Table>
+          <Table
+            columns={membersColumns}
+            data={membersTableData}
+            loading={membersLoading}
+            emptyMessage="No members found."
+            showHeader={false}
+          />
         )}
       </Card>
 
-      <Card bordered padding="$4" gap="$3">
-        <XStack justifyContent="space-between" alignItems="center">
+      <Card variant="outlined" padding="md">
+        <Row justify="space-between" align="center">
           <H4>Pending invitations</H4>
           {invitesLoading ? (
             <Spinner />
           ) : (
-            <Text color="$color10">{pendingInvites.length} pending</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              {pendingInvites.length} pending
+            </Text>
           )}
-        </XStack>
+        </Row>
         <Separator />
         {invitesLoading ? (
           <Paragraph>Loading invitations…</Paragraph>
         ) : pendingInvites.length === 0 ? (
-          <Paragraph color="$color10">No pending invitations</Paragraph>
+          <Paragraph style={{ color: colors.text[theme].secondary }}>
+            No pending invitations
+          </Paragraph>
         ) : (
-          <YStack gap="$2">
+          <Stack gap={8}>
             {pendingInvites.map(
               (invite: {
                 id: string
@@ -208,18 +234,20 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
                 role_name?: string | null
                 status: string
               }) => (
-                <XStack key={invite.id} justifyContent="space-between" alignItems="center">
-                  <YStack>
-                    <Text fontWeight="600">{invite.invitee_email}</Text>
-                    <Paragraph color="$color10">{invite.role_name ?? 'member'}</Paragraph>
-                  </YStack>
-                  <Text color="$color10">{invite.status}</Text>
-                </XStack>
+                <Row key={invite.id} justify="space-between" align="center">
+                  <Stack>
+                    <Text>{invite.invitee_email}</Text>
+                    <Paragraph style={{ color: colors.text[theme].secondary }}>
+                      {invite.role_name ?? 'member'}
+                    </Paragraph>
+                  </Stack>
+                  <Text style={{ color: colors.text[theme].secondary }}>{invite.status}</Text>
+                </Row>
               )
             )}
-          </YStack>
+          </Stack>
         )}
       </Card>
-    </YStack>
+    </Stack>
   )
 }

@@ -1,8 +1,8 @@
-import { EmptyState, ErrorState, SkeletonList } from '@unicornlove/ui'
-import { Search } from '@tamagui/lucide-icons'
+import { EmptyState, ErrorState, SkeletonList } from '@scaffald/ui'
+import { Search } from 'lucide-react-native'
 import { forwardRef, memo, useImperativeHandle, useMemo, useRef } from 'react'
 import { Platform } from 'react-native'
-import { ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
+import { ScrollView, Text, Row, Stack } from '@scaffald/ui'
 import type { JobMapPin } from '../hooks/useJobs'
 import type { OrganizationMapPin } from '../hooks/useOrganizations'
 import type { TalentProfile } from '../types'
@@ -131,15 +131,15 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
 
     if (isLoading) {
       return (
-        <YStack flex={1} gap="$3" padding="$3" width="100%">
-          <SkeletonList count={5} gap="$2" variant="profile" />
-        </YStack>
+        <Stack flex={1} gap={12} padding="sm" width="100%">
+          <SkeletonList count={5} gap={8} variant="profile" />
+        </Stack>
       )
     }
 
     if (error) {
       return (
-        <YStack flex={1} padding="$4" width="100%">
+        <Stack flex={1} padding="md" width="100%">
           <ErrorState
             title="Failed to load results"
             description="We encountered an error while loading workers. Please try again."
@@ -147,40 +147,37 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
             retry={onRetry}
             retryText="Retry"
           />
-        </YStack>
+        </Stack>
       )
     }
 
     return (
-      <YStack flex={1} gap="$3" overflow="hidden" width="100%">
-        <XStack
-          justifyContent="space-between"
-          alignItems="center"
+      <Stack flex={1} gap={12} width="100%" style={{ overflow: 'hidden' }}>
+        <Row
+          justify="space-between"
+          align="center"
           flexShrink={0}
-          paddingTop="$3"
-          paddingHorizontal="$3"
+          paddingTop={12}
+          paddingHorizontal={12}
         >
-          <Text fontWeight="700" fontSize="$5">
-            {allResults.length} results
-          </Text>
-        </XStack>
+          <Text>{allResults.length} results</Text>
+        </Row>
         <ScrollView
           ref={scrollViewRef}
-          flex={1}
           showsVerticalScrollIndicator
           renderToHardwareTextureAndroid
-          width="100%"
+          style={{ flex: 1, width: '100%' }}
         >
-          <YStack gap="$3" paddingBottom="$6" width="100%">
+          <Stack gap={12} paddingBottom={24} width="100%">
             {allResults.length === 0 ? (
               <EmptyState
-                icon={<Search size={48} color="$color9" />}
+                icon={Search}
                 title="No results found"
                 description="Try adjusting your search filters or search terms to find more workers."
               />
             ) : (
               allResults.map((result) => (
-                <YStack key={result.id}>
+                <Stack key={result.id}>
                   {result.type === 'profile' ? (
                     <ResultCard
                       ref={(ref) => registerCardRef(result.id, ref)}
@@ -202,12 +199,12 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
                       onPress={() => onSelect(result.id)}
                     />
                   )}
-                </YStack>
+                </Stack>
               ))
             )}
-          </YStack>
+          </Stack>
         </ScrollView>
-      </YStack>
+      </Stack>
     )
   }
 )

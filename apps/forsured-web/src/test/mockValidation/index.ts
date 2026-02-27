@@ -1,10 +1,10 @@
 /**
- * REQ-306: Mock Validation Framework
+ * Mock Validation Framework
  *
  * Barrel export for the mock validation system.
  * Import validators from here and register them with the framework.
  *
- * Note: Per testing policy (REQ-9), only external third-party service mocks
+ * Note: Per testing policy, only external third-party service mocks
  * are allowed. Internal systems (database, tRPC) must be tested directly
  * against real implementations.
  */

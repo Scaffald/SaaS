@@ -4,7 +4,7 @@
 
 import React, { useState } from 'react';
 import { Download, FileText, Image, File } from 'lucide-react';
-import { Row, Text, Button } from '@unicornlove/beyond-ui';
+import { Row, Text, Button } from '@scaffald/ui';
 import { trpc } from '../../lib/trpc';
 
 interface FeedbackAttachmentProps {

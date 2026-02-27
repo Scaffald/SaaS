@@ -1,8 +1,8 @@
-import { DiscoverCard } from '@unicornlove/ui'
-import { Building, MapPin, Users } from '@tamagui/lucide-icons'
+import { DiscoverCard } from '@scaffald/ui'
+import { Building, MapPin, Users } from 'lucide-react-native'
+import type { ComponentRef } from 'react'
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from '@unicornlove/ui'
-import { Button, SizableText, Text, XStack } from '@unicornlove/ui'
+import { Button, Text, Row } from '@scaffald/ui'
 import type { OrganizationMapPin } from '../hooks/useOrganizations'
 
 type OrganizationCardProps = {
@@ -12,7 +12,7 @@ type OrganizationCardProps = {
 }
 
 export const OrganizationCard = memo(
-  forwardRef<TamaguiElement, OrganizationCardProps>(
+  forwardRef<ComponentRef<typeof DiscoverCard>, OrganizationCardProps>(
     ({ organization, isSelected, onSelect }, forwardedRef) => {
       return (
         <DiscoverCard
@@ -21,48 +21,38 @@ export const OrganizationCard = memo(
           isSelected={isSelected}
           onPress={() => onSelect(organization.id)}
         >
-          <XStack justifyContent="space-between" alignItems="center">
-            <XStack alignItems="center" gap="$2" flex={1}>
-              <Building size={20} color={isSelected ? '$color1' : '$blue11'} />
-              <SizableText
-                size="$5"
-                fontWeight="700"
-                color={isSelected ? '$color1' : '$color12'}
-                flex={1}
-              >
+          <Row justify="space-between" align="center">
+            <Row align="center" gap={8} flex={1}>
+              <Building size="lg" color={isSelected ? '$color1' : '$blue11'} />
+              <Text size="lg" color={isSelected ? '$color1' : '$color12'} style={{ flex: 1 }}>
                 {organization.name}
-              </SizableText>
-            </XStack>
-          </XStack>
+              </Text>
+            </Row>
+          </Row>
 
           {organization.address && (
-            <XStack alignItems="center" gap="$1">
-              <MapPin size={14} color={isSelected ? '$color1' : '$color10'} />
-              <Text color={isSelected ? '$color1' : '$color11'} fontSize="$2">
+            <Row align="center" gap={4}>
+              <MapPin size="md" color={isSelected ? '$color1' : '$color10'} />
+              <Text color={isSelected ? '$color1' : '$color11'}>
                 {organization.address.city}
                 {organization.address.state && `, ${organization.address.state}`}
               </Text>
-            </XStack>
+            </Row>
           )}
 
           {organization.employeeCount && (
-            <XStack alignItems="center" gap="$1">
-              <Users size={14} color={isSelected ? '$color1' : '$color10'} />
-              <Text color={isSelected ? '$color1' : '$color11'} fontSize="$2">
+            <Row align="center" gap={4}>
+              <Users size="md" color={isSelected ? '$color1' : '$color10'} />
+              <Text color={isSelected ? '$color1' : '$color11'}>
                 {organization.employeeCount} employees
               </Text>
-            </XStack>
+            </Row>
           )}
 
           <Button
-            size="$2"
-            borderRadius="$2"
-            backgroundColor={isSelected ? '$color1' : '$blue9'}
-            color={isSelected ? '$blue9' : '$color1'}
-            hoverStyle={{
-              backgroundColor: isSelected ? '$color2' : '$blue10',
-            }}
-            marginTop="$2"
+            size="sm"
+            color={isSelected ? 'gray' : 'primary'}
+            style={{ borderRadius: 8, marginTop: 8 }}
           >
             View Organization
           </Button>

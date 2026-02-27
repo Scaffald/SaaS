@@ -1,72 +1,81 @@
-import { api } from '@scf/core/utils/api'
-import { ResponsiveSelect } from '@unicornlove/ui'
-import { useToastController } from '@tamagui/toast'
-import { useEffect, useMemo, useState } from 'react'
-import { Text, YStack } from '@unicornlove/ui'
-import type { TeamRoleOption } from '../hooks/useTeamFormOptions'
+import { useUpdateTeamMember } from "@scaffald/sdk/react";
+import { ResponsiveSelect, useThemeContext } from "@scaffald/ui";
+import { useToast } from "@scaffald/ui";
+import { useEffect, useMemo, useState } from "react";
+import { Text, Stack } from "@scaffald/ui";
+import type { TeamRoleOption } from "../hooks/useTeamFormOptions";
+import { colors } from "@scaffald/ui/tokens";
 
 interface TeamMemberRoleSelectProps {
-  teamId: string
-  teamMemberId: string
-  currentRoleId?: string | null
-  roles: TeamRoleOption[]
-  disabled?: boolean
-  onRoleChanged?: (roleId: string) => void
-  fullWidth?: boolean
+  teamId: string;
+  userId: string;
+  currentRoleId?: string | null;
+  roles: TeamRoleOption[];
+  disabled?: boolean;
+  onRoleChanged?: (roleId: string) => void;
+  fullWidth?: boolean;
 }
 
 export function TeamMemberRoleSelect({
   teamId,
-  teamMemberId,
+  userId,
   currentRoleId,
   roles,
   disabled = false,
   onRoleChanged,
-  fullWidth = false,
+  fullWidth: _fullWidth = false,
 }: TeamMemberRoleSelectProps) {
-  const toast = useToastController()
-  const [selectedRoleId, setSelectedRoleId] = useState(currentRoleId ?? '')
+  const { theme } = useThemeContext();
+  const toast = useToast();
+  const [selectedRoleId, setSelectedRoleId] = useState(currentRoleId ?? "");
 
   useEffect(() => {
-    setSelectedRoleId(currentRoleId ?? '')
-  }, [currentRoleId])
+    setSelectedRoleId(currentRoleId ?? "");
+  }, [currentRoleId]);
 
   const _roleLookup = useMemo(() => {
-    const map = new Map<string, TeamRoleOption>()
+    const map = new Map<string, TeamRoleOption>();
     for (const role of roles) {
-      map.set(role.id, role)
+      map.set(role.id, role);
     }
-    return map
-  }, [roles])
+    return map;
+  }, [roles]);
 
-  const updateRoleMutation = api.teams.members.update.useMutation({
-    onSuccess: (_data: unknown, variables: { roleId?: string } | undefined) => {
-      toast.show('Role updated', { message: 'Team member role changed successfully.' })
-      if (variables?.roleId) {
-        onRoleChanged?.(variables.roleId)
+  const updateRoleMutation = useUpdateTeamMember({
+    onSuccess: (_data, variables) => {
+      toast.show({
+        title: "Role updated",
+        message: "Team member role changed successfully.",
+        variant: "success",
+      });
+      if (variables?.params?.roleId) {
+        onRoleChanged?.(variables.params.roleId);
       }
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show('Unable to update role', { message })
-      setSelectedRoleId(currentRoleId ?? '')
+      const message =
+        error instanceof Error ? error.message : "An error occurred";
+      toast.show({
+        title: "Unable to update role",
+        message,
+        variant: "error",
+      });
+      setSelectedRoleId(currentRoleId ?? "");
     },
-  })
+  });
 
   const handleRoleChange = async (roleId: string) => {
-    setSelectedRoleId(roleId)
+    setSelectedRoleId(roleId);
     await updateRoleMutation.mutateAsync({
-      teamMemberId,
       teamId,
-      roleId,
-    })
-  }
+      userId,
+      params: { roleId },
+    });
+  };
 
   return (
-    <YStack gap="$2">
-      <Text fontSize="$3" color="$color11">
-        Role
-      </Text>
+    <Stack gap={8}>
+      <Text style={{ color: colors.text[theme].secondary }}>Role</Text>
       <ResponsiveSelect
         value={selectedRoleId}
         onValueChange={handleRoleChange}
@@ -76,10 +85,7 @@ export function TeamMemberRoleSelect({
           value: role.id,
           label: role.name,
         }))}
-        triggerProps={{
-          width: fullWidth ? '100%' : undefined,
-        }}
       />
-    </YStack>
-  )
+    </Stack>
+  );
 }

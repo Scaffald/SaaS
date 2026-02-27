@@ -1,25 +1,31 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import {
+  useWelcomeSlidesList,
+  useUpdateWelcomeSlideMutation,
+  useDeleteWelcomeSlideMutation,
+} from '@scf/core/utils/cms-sdk-hooks'
 import { OfficeLayout } from '@scf/core/components/layouts'
-import { Eye, EyeOff, Pencil, Plus, Trash2 } from '@tamagui/lucide-icons'
+import { Eye, EyeOff, Pencil, Plus, Trash2 } from 'lucide-react-native'
 import { Link } from 'expo-router'
 import { useState } from 'react'
-import { Button, H2, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, H2, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 export function OfficeCMSList() {
+  const { theme } = useThemeContext()
   const [includeInactive, setIncludeInactive] = useState(false)
 
-  const { data, isLoading, refetch } = api.cms.listWelcomeSlides.useQuery({
+  const { data, isLoading, refetch } = useWelcomeSlidesList({
     include_inactive: includeInactive,
   })
 
-  const deleteSlide = api.cms.deleteWelcomeSlide.useMutation({
+  const deleteSlide = useDeleteWelcomeSlideMutation({
     onSuccess: () => {
       refetch()
     },
   })
 
-  const toggleActive = api.cms.updateWelcomeSlide.useMutation({
+  const toggleActive = useUpdateWelcomeSlideMutation({
     onSuccess: () => {
       refetch()
     },
@@ -27,7 +33,7 @@ export function OfficeCMSList() {
 
   const handleDelete = async (id: string, title: string) => {
     if (confirm(`Are you sure you want to delete "${title}"?`)) {
-      await deleteSlide.mutateAsync({ id })
+      await deleteSlide.mutateAsync(id)
     }
   }
 
@@ -55,30 +61,30 @@ export function OfficeCMSList() {
     <OfficeLayout
       showBreadcrumb
       leftContent={
-        <YStack flex={1} gap="$4">
-          <XStack justifyContent="space-between" alignItems="center">
+        <Stack flex={1} gap={16}>
+          <Row justify="space-between" align="center">
             <H2>Welcome Slides CMS</H2>
             <Link href={ROUTES.OFFICE.CMS.WELCOME.CREATE.path} asChild>
-              <Button icon={Plus}>Create Slide</Button>
+              <Button iconStart={Plus}>Create Slide</Button>
             </Link>
-          </XStack>
+          </Row>
 
-          <XStack gap="$2" alignItems="center">
+          <Row gap={8} align="center">
             <Button
-              size="$3"
-              chromeless={!includeInactive}
+              size="sm"
+              variant={!includeInactive ? 'text' : undefined}
               onPress={() => setIncludeInactive(!includeInactive)}
             >
               {includeInactive ? 'Hide' : 'Show'} Inactive
             </Button>
-          </XStack>
+          </Row>
 
           {isLoading ? (
-            <YStack alignItems="center" justifyContent="center" flex={1}>
-              <Spinner size="large" />
-            </YStack>
+            <Stack align="center" justify="center" flex={1}>
+              <Spinner size="lg" />
+            </Stack>
           ) : (
-            <YStack gap="$2">
+            <Stack gap={8}>
               {data?.slides.map(
                 (slide: {
                   id: string
@@ -89,82 +95,74 @@ export function OfficeCMSList() {
                   display_order: number
                   is_active: boolean
                 }) => (
-                  <XStack
+                  <Row
                     key={slide.id}
-                    padding="$4"
-                    gap="$3"
-                    backgroundColor="$background"
-                    borderRadius="$4"
+                    padding="md"
+                    gap={12}
+                    style={{ backgroundColor: colors.bg[theme].default }}
+                    borderRadius={16}
                     borderWidth={1}
-                    borderColor="$borderColor"
-                    alignItems="center"
+                    borderColor={colors.border[theme].default}
+                    align="center"
                   >
-                    <YStack flex={1} gap="$2">
-                      <XStack gap="$2" alignItems="center">
-                        <Text fontWeight="bold">{slide.title}</Text>
+                    <Stack flex={1} gap={8}>
+                      <Row gap={8} align="center">
+                        <Text>{slide.title}</Text>
                         {!slide.is_active && (
-                          <Text fontSize="$2" color="$red10">
-                            (Inactive)
-                          </Text>
+                          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>(Inactive)</Text>
                         )}
-                      </XStack>
-                      <Text opacity={0.7}>{slide.description}</Text>
-                      <XStack gap="$2">
-                        <Text fontSize="$2" opacity={0.5}>
-                          Icon: {slide.icon_name}
-                        </Text>
-                        <Text fontSize="$2" opacity={0.5}>
-                          • Order: {slide.display_order}
-                        </Text>
-                      </XStack>
-                    </YStack>
+                      </Row>
+                      <Text style={{ opacity: 0.7 }}>{slide.description}</Text>
+                      <Row gap={8}>
+                        <Text style={{ opacity: 0.5 }}>Icon: {slide.icon_name}</Text>
+                        <Text style={{ opacity: 0.5 }}>• Order: {slide.display_order}</Text>
+                      </Row>
+                    </Stack>
 
-                    <XStack gap="$2">
+                    <Row gap={8}>
                       <Button
-                        size="$3"
-                        icon={slide.is_active ? EyeOff : Eye}
+                        size="sm"
+                        iconStart={slide.is_active ? EyeOff : Eye}
                         onPress={() => handleToggleActive(slide)}
-                        chromeless
+                        variant="text"
                       />
                       <Link
                         href={ROUTES.OFFICE.CMS.WELCOME.EDIT.path.replace(':id', slide.id)}
                         asChild
                       >
-                        <Button size="$3" icon={Pencil} chromeless />
+                        <Button size="sm" iconStart={Pencil} variant="text" />
                       </Link>
                       <Button
-                        size="$3"
-                        icon={Trash2}
+                        size="sm"
+                        iconStart={Trash2}
                         onPress={() => handleDelete(slide.id, slide.title)}
-                        chromeless
-                        theme="error"
+                        variant="text"
+                        color="error"
                       />
-                    </XStack>
-                  </XStack>
+                    </Row>
+                  </Row>
                 )
               )}
 
               {(!data?.slides || data.slides.length === 0) && (
-                <YStack alignItems="center" justifyContent="center" gap="$4" paddingVertical="$8">
-                  <Text opacity={0.5}>No slides found</Text>
+                <Stack align="center" justify="center" gap={16} paddingVertical={32}>
+                  <Text style={{ opacity: 0.5 }}>No slides found</Text>
                   <Link href={ROUTES.OFFICE.CMS.WELCOME.CREATE.path} asChild>
-                    <Button icon={Plus}>Create First Slide</Button>
+                    <Button iconStart={Plus}>Create First Slide</Button>
                   </Link>
-                </YStack>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       }
       rightContent={
-        <YStack gap="$4">
-          <Text fontSize="$5" fontWeight="bold">
-            About Welcome Slides
-          </Text>
+        <Stack gap={16}>
+          <Text>About Welcome Slides</Text>
           <Text>Manage the onboarding slides shown to new users when they first sign in.</Text>
           <Text>Slides are displayed in order based on the &quot;display_order&quot; value.</Text>
           <Text>Only active slides are shown to users.</Text>
-        </YStack>
+        </Stack>
       }
     />
   )

@@ -1,6 +1,6 @@
 /**
  * AddTeamMemberForm - Form for adding new team members
- * REQ-283: Team Member Management UI
+ * Team Member Management UI
  * TASK-3: Implement Add Team Member Form with Email Invitation
  *
  * Form with:
@@ -14,7 +14,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { Loader2 } from 'lucide-react';
-import { Stack, Row, Text, Input, Button } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Input, Button } from '@scaffald/ui';
 import { AccessLevelSelector, type AccessLevel } from './AccessLevelSelector';
 
 interface AddTeamMemberFormProps {

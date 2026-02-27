@@ -1,5 +1,5 @@
 /**
- * OCR Extraction Types for REQ-167
+ * OCR Extraction Types for
  * Document Metadata Editor & Validation UI
  */
 

@@ -15,7 +15,7 @@ import {
   Search,
 } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
-import { Stack, Row, Text, H1, H2, H3, Button, Card, Input, Checkbox } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H1, H2, H3, Button, Card, Input, Checkbox } from '@scaffald/ui';
 import Select from '../Common/Select';
 import Textarea from '../Common/Textarea';
 import ForsuredLogo from '../Common/ForsuredLogo';

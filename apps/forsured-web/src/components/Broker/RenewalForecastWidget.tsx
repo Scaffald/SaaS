@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { Calendar, AlertTriangle } from 'lucide-react'
-import { Stack, Row, Text, H2, H3, Card, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H2, H3, Card, Grid } from '@scaffald/ui'
 import { PolicyData } from '../../types'
 
 interface RenewalForecastWidgetProps {

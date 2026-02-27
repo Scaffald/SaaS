@@ -7,7 +7,8 @@ import {
   QUESTIONS_PER_DOMAIN,
 } from '@scf/core/features/ipip-assessment/utils/domainGrouping'
 import { useEffect, useState } from 'react'
-import { Button, Progress, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, ProgressBar, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import {
   getChoices,
   getQuestions,
@@ -38,6 +39,7 @@ export function IPIPTestStep({
   onDomainComplete,
   isLoading = false,
 }: IPIPTestStepProps) {
+  const { theme } = useThemeContext()
   const allQuestions = getQuestions()
   const choices = getChoices()
   const [currentIndex, setCurrentIndex] = useState(initialCurrentIndex)
@@ -140,130 +142,114 @@ export function IPIPTestStep({
 
   if (isComplete) {
     return (
-      <YStack
-        gap="$6"
+      <Stack
+        gap={24}
         width="100%"
-        alignItems="center"
-        padding="$8"
+        align="center"
+        padding={32}
         style={{ maxWidth: 800, alignSelf: 'center' }}
       >
-        <Text fontSize="$8" fontWeight="bold" color="$green10">
-          ✓ All Questions Complete!
-        </Text>
-        <Text fontSize="$4" color="$color11" style={{ textAlign: 'center' }}>
+        <Text style={{ color: theme === 'light' ? colors.green[700] : colors.green[300] }}>✓ All Questions Complete!</Text>
+        <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
           You've answered all 120 questions. Great job!
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (!currentQuestion) {
     return (
-      <YStack gap="$4" alignItems="center" padding="$8">
-        <Text fontSize="$5" color="$color11">
-          Loading question...
-        </Text>
-      </YStack>
+      <Stack gap={16} align="center" padding={32}>
+        <Text style={{ color: colors.text[theme].secondary }}>Loading question...</Text>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$6" width="100%" style={{ maxWidth: 800, alignSelf: 'center' }}>
+    <Stack gap={24} width="100%" style={{ maxWidth: 800, alignSelf: 'center' }}>
       {/* Domain Header */}
       {currentDomain && (
-        <XStack
-          gap="$2"
-          padding="$4"
-          backgroundColor="$blue2"
-          borderRadius="$4"
-          borderWidth={1}
-          borderColor="$blue7"
-          justifyContent="space-between"
-          alignItems="center"
+        <Row
+          gap={8}
+          padding="md"
+          style={{
+            backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
+            borderRadius: 16,
+            borderWidth: 1,
+            borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
+          }}
+          justify="space-between"
+          align="center"
         >
-          <YStack gap="$1">
-            <Text fontSize="$5" fontWeight="bold" color="$blue11">
-              {DOMAIN_NAMES[currentDomain]}
-            </Text>
-            <Text fontSize="$3" color="$blue10">
+          <Stack gap={4}>
+            <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{DOMAIN_NAMES[currentDomain]}</Text>
+            <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
               Question {questionIndexInDomain + 1} of {QUESTIONS_PER_DOMAIN} in this domain
             </Text>
-          </YStack>
-          <Text fontSize="$5" fontWeight="600" color="$blue11">
-            {domainProgress}%
-          </Text>
-        </XStack>
+          </Stack>
+          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{domainProgress}%</Text>
+        </Row>
       )}
 
       {/* Progress Bar */}
-      <YStack gap="$2">
-        <XStack justifyContent="space-between" alignItems="center">
-          <Text fontSize="$4" fontWeight="600" color="$color12">
+      <Stack gap={8}>
+        <Row justify="space-between" align="center">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Question {currentIndex + 1} of 120
           </Text>
-          <Text fontSize="$3" color="$color11">
-            {overallProgress}%
-          </Text>
-        </XStack>
-        <Progress value={overallProgress} max={100}>
-          <Progress.Indicator animation="bouncy" />
-        </Progress>
-      </YStack>
+          <Text style={{ color: colors.text[theme].secondary }}>{overallProgress}%</Text>
+        </Row>
+        <ProgressBar value={overallProgress} showLabel={false} showIndicator={false} showHintMessage={false} />
+      </Stack>
 
       {/* Question */}
-      <YStack
-        gap="$4"
-        padding="$6"
-        backgroundColor="$color2"
-        borderRadius="$4"
-        borderWidth={1}
-        borderColor="$borderColor"
+      <Stack
+        gap={16}
+        padding="xl"
+        style={{
+          backgroundColor: colors.bg[theme].subtle,
+          borderRadius: 16,
+          borderWidth: 1,
+          borderColor: colors.border[theme].default,
+        }}
       >
-        <Text
-          fontSize="$7"
-          fontWeight="bold"
-          color="$color12"
-          style={{ textAlign: 'center' }}
-          lineHeight="$6"
-        >
+        <Text style={{ color: colors.text[theme].secondary, textAlign: 'center', lineHeight: 24 }}>
           I {currentQuestion.text.toLowerCase()}
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Choices */}
-      <YStack gap="$3">
+      <Stack gap={12}>
         {[...currentChoices].reverse().map((choice) => (
           <Button
             key={`${currentQuestion.id}-${choice.score}`}
-            size="$5"
-            variant="outlined"
+            size="lg"
+            variant="outline"
             onPress={() => handleAnswer(choice)}
             disabled={isLoading}
-            pressStyle={{ scale: 0.98 }}
-            borderColor="$borderColor"
-            hoverStyle={{ borderColor: '$blue8', backgroundColor: '$blue2' }}
+            style={{
+              borderColor: colors.border[theme].default,
+            }}
           >
-            <Text fontSize="$4" color="$color12" fontWeight="500">
-              {choice.text}
-            </Text>
+            <Text style={{ color: colors.text[theme].secondary }}>{choice.text}</Text>
           </Button>
         ))}
-      </YStack>
+      </Stack>
 
       {/* Navigation */}
-      <XStack gap="$3" justifyContent="space-between">
+      <Row gap={12} justify="space-between">
         <Button
-          size="$4"
-          variant="outlined"
+          size="md"
+          variant="outline"
           onPress={handlePrevious}
           disabled={currentIndex === 0 || isLoading}
         >
           Previous
         </Button>
-        <Text fontSize="$3" color="$color11" style={{ alignSelf: 'center' }}>
+        <Text style={{ color: colors.text[theme].secondary, alignSelf: 'center' }}>
           {answers.length} answers saved
         </Text>
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

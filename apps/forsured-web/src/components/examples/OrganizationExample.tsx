@@ -1,13 +1,13 @@
 /**
  * Organization Example Component
- * REQ-286: tRPC Client Setup - Example Usage
+ * tRPC Client Setup - Example Usage
  *
  * Demonstrates how to use tRPC hooks in React components.
  * This is an example component showing the tRPC integration patterns.
  */
 
 import { trpc } from '../../lib/trpc';
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card } from '@scaffald/ui';
 
 interface OrganizationExampleProps {
   organizationId: string;

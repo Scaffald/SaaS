@@ -1,6 +1,6 @@
 // src/pages/gc/GCProjects.tsx
 import { Archive } from 'lucide-react';
-import { Stack, H1 } from '@unicornlove/beyond-ui';
+import { Stack, H1 } from '@scaffald/ui';
 import { EmptyState } from '../../ui/EmptyState';
 // import { useScaffaldSync } from '../../hooks/useScaffaldSync';
 // import { useAuth } from '../../contexts/AuthContext';

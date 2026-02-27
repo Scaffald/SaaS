@@ -1,54 +1,45 @@
 import { OfficePageLayout } from '@scf/core/features/office/components/OfficePageLayout'
-import { api } from '@scf/core/utils/api'
+import { useIdVerificationList } from '@scf/core/utils/id-verification-sdk-hooks'
+import type { IdVerificationListItem } from '@scf/core/utils/id-verification-sdk-hooks'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { RefreshCcw } from '@tamagui/lucide-icons'
+import { RefreshCcw } from 'lucide-react-native'
 import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@scaffald/ui'
 import {
   Button,
   Card,
-  type GetThemeValueForKey,
   Spinner,
   Tabs,
   Text,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
-type VerificationListResponse = RouterOutputs['idVerification']['listVerifications']
-type VerificationItem = VerificationListResponse['items'][number]
 type OrganizationOption = RouterOutputs['office']['getOrganizations']['organizations'][number]
 type StatusFilter = 'all' | 'active' | 'expired' | 'revoked'
 
 const STATUS_META: Record<
   Exclude<StatusFilter, 'all'>,
-  {
-    label: string
-    color: GetThemeValueForKey<'color'>
-    backgroundColor: GetThemeValueForKey<'backgroundColor'>
-  }
+  { label: string; color: string; backgroundColor: string }
 > = {
-  active: { label: 'Active', color: '$green11', backgroundColor: '$green4' },
-  expired: { label: 'Expired', color: '$orange11', backgroundColor: '$orange4' },
-  revoked: { label: 'Revoked', color: '$red11', backgroundColor: '$red4' },
+  active: { label: 'Active', color: colors.success[700], backgroundColor: colors.success[100] },
+  expired: { label: 'Expired', color: colors.warning[700], backgroundColor: colors.warning[100] },
+  revoked: { label: 'Revoked', color: colors.error[600], backgroundColor: colors.error[100] },
 }
 
 const SOURCE_META: Record<
   'worker' | 'organization' | 'platform',
-  {
-    label: string
-    color: GetThemeValueForKey<'color'>
-    backgroundColor: GetThemeValueForKey<'backgroundColor'>
-  }
+  { label: string; color: string; backgroundColor: string }
 > = {
-  worker: { label: 'Worker self-serve', color: '$color11', backgroundColor: '$color4' },
-  organization: { label: 'Organization', color: '$blue11', backgroundColor: '$blue4' },
-  platform: { label: 'Platform initiated', color: '$purple11', backgroundColor: '$purple4' },
+  worker: { label: 'Worker self-serve', color: colors.gray[800], backgroundColor: colors.gray[100] },
+  organization: { label: 'Organization', color: colors.info[700], backgroundColor: colors.info[100] },
+  platform: { label: 'Platform initiated', color: colors.primary[700], backgroundColor: colors.primary[100] },
 }
 
 interface IdVerificationAdminPageProps {
@@ -99,7 +90,7 @@ export function IdVerificationAdminPage({
     }
   }, [organizations, selectedOrganizationId, onOrganizationChange])
 
-  const listQuery = api.idVerification.listVerifications.useQuery(
+  const listQuery = useIdVerificationList(
     {
       limit: 200,
       offset: 0,
@@ -107,7 +98,7 @@ export function IdVerificationAdminPage({
       organizationId: selectedOrganizationId ?? undefined,
       search: debouncedSearch || undefined,
     },
-    { placeholderData: (previousData) => previousData, staleTime: 30_000 }
+    { enabled: true }
   )
 
   const summary = listQuery.data?.summary ?? {
@@ -117,47 +108,39 @@ export function IdVerificationAdminPage({
     revoked: 0,
   }
 
-  const columns = useMemo<ColumnDef<VerificationItem, unknown>[]>(() => {
+  const columns = useMemo<ColumnDef<IdVerificationListItem, unknown>[]>(() => {
     return [
       {
         accessorKey: 'workerName',
         header: 'Worker',
-        cell: ({ row }: CellContext<VerificationItem, unknown>) => (
-          <YStack>
-            <Text fontSize="$3" fontWeight="600" color="$color12">
-              {row.original.workerName}
-            </Text>
+        cell: ({ row }: CellContext<IdVerificationListItem, unknown>) => (
+          <Stack>
+            <Text color="$gray11">{row.original.workerName}</Text>
             {row.original.workerEmail ? (
-              <Text fontSize="$2" color="$color10">
-                {row.original.workerEmail}
-              </Text>
+              <Text color="$gray11">{row.original.workerEmail}</Text>
             ) : null}
-          </YStack>
+          </Stack>
         ),
         meta: { width: '$20' },
       },
       {
         accessorKey: 'badgeStatus',
         header: 'Badge status',
-        cell: ({ row }: CellContext<VerificationItem, unknown>) => {
+        cell: ({ row }: CellContext<IdVerificationListItem, unknown>) => {
           const badgeKey = row.original.badgeStatus as Exclude<StatusFilter, 'all'>
           const meta = STATUS_META[badgeKey]
           if (!meta) {
-            return (
-              <Text fontSize="$3" color="$color11">
-                {row.original.badgeStatus}
-              </Text>
-            )
+            return <Text color="$gray11">{row.original.badgeStatus}</Text>
           }
           return (
             <Text
-              fontSize="$2"
-              fontWeight="600"
-              color={meta.color}
-              backgroundColor={meta.backgroundColor}
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-              borderRadius="$3"
+              style={{
+                color: meta.color,
+                backgroundColor: meta.backgroundColor,
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                borderRadius: 12,
+              }}
             >
               {meta.label}
             </Text>
@@ -167,42 +150,42 @@ export function IdVerificationAdminPage({
       {
         accessorKey: 'verificationLevel',
         header: 'Level',
-        cell: ({ row }: CellContext<VerificationItem, unknown>) =>
+        cell: ({ row }: CellContext<IdVerificationListItem, unknown>) =>
           row.original.verificationLevel ?? '—',
       },
       {
         accessorKey: 'verifiedAt',
         header: 'Verified',
-        cell: ({ row }: CellContext<VerificationItem, unknown>) =>
+        cell: ({ row }: CellContext<IdVerificationListItem, unknown>) =>
           formatDate(row.original.verifiedAt),
       },
       {
         accessorKey: 'badgeExpiresAt',
         header: 'Expires',
-        cell: ({ row }: CellContext<VerificationItem, unknown>) =>
+        cell: ({ row }: CellContext<IdVerificationListItem, unknown>) =>
           formatDate(row.original.badgeExpiresAt),
       },
       {
         accessorKey: 'organizationName',
         header: 'Organization',
-        cell: ({ row }: CellContext<VerificationItem, unknown>) =>
+        cell: ({ row }: CellContext<IdVerificationListItem, unknown>) =>
           row.original.organizationName ?? '—',
       },
       {
         accessorKey: 'source',
         header: 'Source',
-        cell: ({ row }: CellContext<VerificationItem, unknown>) => {
+        cell: ({ row }: CellContext<IdVerificationListItem, unknown>) => {
           const sourceKey = (row.original.source ?? 'worker') as keyof typeof SOURCE_META
           const meta = SOURCE_META[sourceKey]
           return (
             <Text
-              fontSize="$2"
-              fontWeight="600"
-              color={meta.color}
-              backgroundColor={meta.backgroundColor}
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-              borderRadius="$3"
+              style={{
+                color: meta.color,
+                backgroundColor: meta.backgroundColor,
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                borderRadius: 12,
+              }}
             >
               {meta.label}
             </Text>
@@ -212,13 +195,13 @@ export function IdVerificationAdminPage({
       {
         accessorKey: 'personaStatus',
         header: 'Persona status',
-        cell: ({ row }: CellContext<VerificationItem, unknown>) =>
+        cell: ({ row }: CellContext<IdVerificationListItem, unknown>) =>
           row.original.personaStatus ?? '—',
       },
       {
         accessorKey: 'priceCents',
         header: 'Amount',
-        cell: ({ row }: CellContext<VerificationItem, unknown>) =>
+        cell: ({ row }: CellContext<IdVerificationListItem, unknown>) =>
           formatCurrency(row.original.priceCents ?? 0),
       },
     ]
@@ -233,79 +216,66 @@ export function IdVerificationAdminPage({
   }
 
   return (
-    <YStack flex={1} gap="$4">
-      <YStack paddingHorizontal="$4" gap="$3">
-        <XStack gap="$3" flexWrap="wrap">
+    <Stack flex={1} gap={16}>
+      <Stack paddingHorizontal={16} gap={12}>
+        <Row gap={12} wrap>
           {[
             {
               label: 'Active badges',
               value: summary.active,
-              color: '$green12' as GetThemeValueForKey<'color'>,
+              color: colors.success[800],
             },
             {
               label: 'Expired badges',
               value: summary.expired,
-              color: '$orange12' as GetThemeValueForKey<'color'>,
+              color: colors.warning[800],
             },
             {
               label: 'Revoked badges',
               value: summary.revoked,
-              color: '$red12' as GetThemeValueForKey<'color'>,
+              color: colors.error[700],
             },
             {
               label: 'Total verifications',
               value: summary.total,
-              color: '$color12' as GetThemeValueForKey<'color'>,
+              color: colors.gray[900],
             },
           ].map((item) => (
             <Card
               key={item.label}
-              flex={1}
-              minWidth={200}
-              padding="$3"
-              borderColor="$borderColor"
-              borderWidth={1}
+              padding="sm"
+              style={{ flex: 1, minWidth: 200, borderColor: colors.gray[200], borderWidth: 1 }}
             >
-              <Text fontSize="$2" color="$color11">
-                {item.label}
-              </Text>
-              <Text fontSize="$6" fontWeight="700" color={item.color}>
-                {item.value}
-              </Text>
+              <Text style={{ color: colors.gray[600] }}>{item.label}</Text>
+              <Text style={{ color: item.color }}>{item.value}</Text>
             </Card>
           ))}
-        </XStack>
+        </Row>
 
-        <YStack gap="$2">
-          <Text fontSize="$3" fontWeight="600" color="$color12">
-            Badge status filter
-          </Text>
-          <Tabs
-            value={statusFilter}
-            onValueChange={(value) => setStatusFilter(value as StatusFilter)}
+        <Stack gap={8}>
+          <Text color="$gray11">Badge status filter</Text>
+          <Row
+            backgroundColor={colors.gray[50]}
+            borderRadius={16}
+            borderWidth={1}
+            borderColor={colors.gray[200]}
+            style={{ overflow: 'hidden' }}
           >
-            <Tabs.List
-              backgroundColor="$color2"
-              borderRadius="$4"
-              borderWidth={1}
-              borderColor="$borderColor"
-              overflow="hidden"
+            <Tabs
+              value={statusFilter}
+              onValueChange={(value) => setStatusFilter(value as StatusFilter)}
             >
               {STATUS_TABS.map((tab) => (
-                <Tabs.Tab key={tab.value} flex={1} value={tab.value}>
-                  <Text fontSize="$3" fontWeight="600">
-                    {tab.label}
-                  </Text>
-                </Tabs.Tab>
+                <Tabs.Item key={tab.value} value={tab.value}>
+                  <Tabs.Trigger containerStyle={{ flex: 1 }}>{tab.label}</Tabs.Trigger>
+                </Tabs.Item>
               ))}
-            </Tabs.List>
-          </Tabs>
-        </YStack>
+            </Tabs>
+          </Row>
+        </Stack>
 
-        <YStack gap="$2">
-          <Text fontSize="$3" fontWeight="600" color="$color12">
-            Organization
-          </Text>
+        <Stack gap={8}>
+          <Text color="$gray11">Organization</Text>
           <ResponsiveSelect
             value={selectedOrganizationId ?? '__all__'}
             onValueChange={handleOrganizationChange}
@@ -325,27 +295,25 @@ export function IdVerificationAdminPage({
             ]}
           />
           {isLoadingOrganizations ? (
-            <XStack gap="$2" alignItems="center">
-              <Spinner size="small" />
-              <Text fontSize="$2" color="$color11">
-                Loading organizations…
-              </Text>
-            </XStack>
+            <Row gap={8} align="center">
+              <Spinner size="sm" />
+              <Text color="$gray11">Loading organizations…</Text>
+            </Row>
           ) : null}
-        </YStack>
+        </Stack>
 
-        <XStack justifyContent="flex-end">
+        <Row justify="flex-end">
           <Button
-            size="$3"
-            variant="outlined"
-            icon={RefreshCcw}
+            size="sm"
+            variant="outline"
+            iconStart={RefreshCcw}
             onPress={() => listQuery.refetch()}
             disabled={listQuery.isFetching}
           >
             Refresh
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       <OfficePageLayout
         title="ID Verifications"
@@ -366,6 +334,6 @@ export function IdVerificationAdminPage({
         itemType="verification"
         pageSize={25}
       />
-    </YStack>
+    </Stack>
   )
 }

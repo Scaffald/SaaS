@@ -1,9 +1,14 @@
-import { api } from '@scf/core/utils/api'
-import { ResponsiveSelect } from '@unicornlove/ui'
-import { ExternalLink } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import {
+  useOrganization,
+  useOrganizationProjectsWithOverrides,
+  useUpdateOrganizationLocationVisibilityMutation,
+} from '@scf/core/utils/organizations-sdk-hooks'
+import { ResponsiveSelect, useThemeContext } from '@scaffald/ui'
+import { ExternalLink } from 'lucide-react-native'
+import { useToast } from '@scaffald/ui'
 import { useEffect, useState } from 'react'
-import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface OrganizationProjectPrivacySettingsProps {
   organizationId: string
@@ -33,20 +38,17 @@ const VISIBILITY_OPTIONS = [
 export function OrganizationProjectPrivacySettings({
   organizationId,
 }: OrganizationProjectPrivacySettingsProps) {
-  const toast = useToastController()
-  const { data: orgData, isLoading } = api.organizations.getOrganization.useQuery(
-    { id: organizationId },
-    { enabled: !!organizationId }
-  )
+  const { theme } = useThemeContext()
+  const toast = useToast()
+  const { data: orgData, isLoading } = useOrganization(organizationId, { enabled: !!organizationId })
 
-  const { data: projectsWithOverrides } = api.organizations.getProjectsWithOverrides.useQuery(
-    { organization_id: organizationId },
-    { enabled: !!organizationId }
-  )
+  const { data: projectsWithOverrides } = useOrganizationProjectsWithOverrides(organizationId, {
+    enabled: !!organizationId,
+  })
 
   const [selectedVisibility, setSelectedVisibility] =
     useState<ProjectLocationVisibility>('organization_only')
-  const updateMutation = api.organizations.updateLocationVisibility.useMutation()
+  const updateMutation = useUpdateOrganizationLocationVisibilityMutation()
 
   useEffect(() => {
     if (orgData?.default_project_location_visibility) {
@@ -57,13 +59,21 @@ export function OrganizationProjectPrivacySettings({
   const handleSave = async () => {
     try {
       await updateMutation.mutateAsync({
-        organization_id: organizationId,
+        organizationId,
         default_project_location_visibility: selectedVisibility as ProjectLocationVisibility,
       })
-      toast.show('Success', { message: 'Location visibility setting updated' })
+      toast.show({
+        title: 'Success',
+        message: 'Location visibility setting updated',
+        variant: 'success',
+      })
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to update setting'
-      toast.show('Error', { message })
+      const _message = error instanceof Error ? error.message : 'Failed to update setting'
+      toast.show({
+        title: 'Error',
+        message: _message,
+        variant: 'error',
+      })
     }
   }
 
@@ -72,25 +82,28 @@ export function OrganizationProjectPrivacySettings({
 
   if (isLoading) {
     return (
-      <Card padding="$4" backgroundColor="$gray2">
+      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Spinner />
       </Card>
     )
   }
 
   return (
-    <Card padding="$4" backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
-      <YStack gap="$4">
-        <Text fontSize="$6" fontWeight="600">
-          Project Location Privacy
-        </Text>
-        <Text fontSize="$3" color="$gray11">
+    <Card
+      padding="md"
+      style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
+      borderColor={theme === "light" ? colors.blue[300] : colors.blue[700]}
+      borderWidth={1}
+    >
+      <Stack gap={16}>
+        <Text>Project Location Privacy</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
           Set the default visibility level for project locations. Individual projects can override
           this setting.
         </Text>
 
-        <YStack gap="$2">
-          <Text fontWeight="600">Default Project Location Visibility</Text>
+        <Stack gap={8}>
+          <Text>Default Project Location Visibility</Text>
           <ResponsiveSelect
             value={selectedVisibility}
             onValueChange={(value) => setSelectedVisibility(value as ProjectLocationVisibility)}
@@ -100,21 +113,24 @@ export function OrganizationProjectPrivacySettings({
               label: option.label,
             }))}
           />
-        </YStack>
+        </Stack>
 
-        <Card padding="$3" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
-          <YStack gap="$2">
-            <Text fontWeight="600" fontSize="$3">
-              Project Override Statistics
-            </Text>
-            <Text fontSize="$2" color="$gray11">
+        <Card
+          padding="sm"
+          style={{ backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900] }}
+          borderColor={theme === "light" ? colors.yellow[300] : colors.yellow[700]}
+          borderWidth={1}
+        >
+          <Stack gap={8}>
+            <Text>Project Override Statistics</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
               {overrideCount} project{overrideCount !== 1 ? 's' : ''} override this default setting
             </Text>
             {overrideCount > 0 && (
               <Button
-                size="$2"
-                variant="outlined"
-                icon={ExternalLink}
+                size="sm"
+                variant="outline"
+                iconStart={ExternalLink}
                 onPress={() => {
                   // TODO: Navigate to projects list filtered by this org
                   console.log('View projects with overrides')
@@ -123,12 +139,12 @@ export function OrganizationProjectPrivacySettings({
                 View Projects with Overrides
               </Button>
             )}
-          </YStack>
+          </Stack>
         </Card>
 
-        <XStack justifyContent="flex-end">
+        <Row justify="flex-end">
           <Button
-            theme="blue"
+            color="primary"
             onPress={handleSave}
             disabled={
               updateMutation.isPending ||
@@ -137,8 +153,8 @@ export function OrganizationProjectPrivacySettings({
           >
             {updateMutation.isPending ? <Spinner /> : 'Save Setting'}
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </Card>
   )
 }

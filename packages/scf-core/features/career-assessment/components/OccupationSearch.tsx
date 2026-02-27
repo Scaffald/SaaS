@@ -1,7 +1,10 @@
-import { api } from '@scf/core/utils/api'
 import { useDebounce } from '@scf/core/utils/useDebounce'
+import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
+import { useSearchOccupations } from '@scf/core/utils/onet-sdk-hooks'
+import type { Occupation as SDKOccupation } from '@scaffald/sdk'
 import { useEffect, useRef, useState } from 'react'
-import { Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Pressable } from 'react-native'
+import { Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 interface OccupationSearchProps {
   value?: string
@@ -10,9 +13,10 @@ interface OccupationSearchProps {
   disabled?: boolean
 }
 
-interface Occupation {
-  onetsoc_code: string
-  title: string
+/** Normalize API occupation to { onetCode, title } for display */
+function toDisplayOcc(occ: SDKOccupation): { onetCode: string; title: string } {
+  const code = (occ as { onet_code?: string }).onet_code ?? (occ as { onetsoc_code?: string }).onetsoc_code ?? ''
+  return { onetCode: code, title: occ.title }
 }
 
 /**
@@ -39,18 +43,15 @@ export function OccupationSearch({
   const lastTrackedSearchRef = useRef<string>('') // Track last searched query to avoid duplicate tracking
 
   // Track occupation searches for engagement analytics
-  const trackEventMutation = api.engagement.trackEvent.useMutation()
+  const trackEventMutation = useTrackEngagementMutation()
 
   // Search occupations
   const {
     data,
     isLoading,
     error: queryError,
-  } = api.onet.searchOccupations.useQuery(
-    {
-      query: debouncedSearch,
-      limit: 10,
-    },
+  } = useSearchOccupations(
+    { query: debouncedSearch, limit: 10 } as { query: string; limit?: number },
     {
       enabled: debouncedSearch.length >= 2,
     }
@@ -69,13 +70,14 @@ export function OccupationSearch({
       lastTrackedSearchRef.current = debouncedSearch
 
       try {
+        const list = (data as { occupations?: SDKOccupation[] }).occupations ?? []
         trackEventMutation.mutate({
           eventType: 'occupation.searched',
           targetType: undefined,
           targetId: undefined,
           metadata: {
             query: debouncedSearch.trim(),
-            results_count: data.occupations.length,
+            results_count: list.length,
           },
         })
       } catch (error) {
@@ -83,13 +85,13 @@ export function OccupationSearch({
         console.warn('Failed to track occupation search:', error)
       }
     }
-  }, [debouncedSearch, data?.occupations, isLoading, trackEventMutation.mutate])
+  }, [debouncedSearch, data, isLoading, trackEventMutation.mutate, trackEventMutation])
 
   // Get selected occupation title
   useEffect(() => {
-    if (value && !selectedTitle) {
-      // Try to find the title from current search results
-      const occupation = data?.occupations?.find((occ: Occupation) => occ.onetsoc_code === value)
+    if (value && !selectedTitle && data) {
+      const list = (data as { occupations?: SDKOccupation[] }).occupations ?? (data as { data?: SDKOccupation[] }).data ?? []
+      const occupation = list.find((occ: SDKOccupation) => (occ as { onet_code?: string }).onet_code === value || (occ as { onetsoc_code?: string }).onetsoc_code === value)
       if (occupation) {
         setSelectedTitle(occupation.title)
         setSearchTerm(occupation.title)
@@ -97,11 +99,12 @@ export function OccupationSearch({
     }
   }, [value, data, selectedTitle])
 
-  const handleSelect = (occupation: Occupation) => {
-    setSearchTerm(occupation.title)
-    setSelectedTitle(occupation.title)
+  const handleSelect = (occupation: SDKOccupation) => {
+    const { onetCode, title } = toDisplayOcc(occupation)
+    setSearchTerm(title)
+    setSelectedTitle(title)
     setShowResults(false)
-    onChange(occupation.onetsoc_code, occupation.title)
+    onChange(onetCode, title)
   }
 
   const handleInputChange = (text: string) => {
@@ -124,15 +127,15 @@ export function OccupationSearch({
     setTimeout(() => setShowResults(false), 200)
   }
 
-  const occupations = data?.occupations || []
+  const occupations = (data as { occupations?: SDKOccupation[] } | undefined)?.occupations ?? (data as { data?: SDKOccupation[] } | undefined)?.data ?? []
   const showDropdown =
     showResults && debouncedSearch.length >= 2 && occupations.length > 0 && !queryError
 
   return (
-    <YStack gap="$2" position="relative" width="100%">
-      <XStack gap="$2" alignItems="center">
+    <Stack gap={8} width="100%" style={{ position: 'relative' }}>
+      <Row gap={8} align="center">
         <Input
-          flex={1}
+          style={{ flex: 1 }}
           placeholder={placeholder}
           value={searchTerm}
           onChangeText={handleInputChange}
@@ -140,94 +143,88 @@ export function OccupationSearch({
           onBlur={handleInputBlur}
           disabled={disabled}
         />
-        {isLoading && <Spinner size="small" />}
-      </XStack>
+        {isLoading && <Spinner size="sm" />}
+      </Row>
 
       {showDropdown && (
-        <YStack
-          position="absolute"
-          top="100%"
-          left={0}
-          right={0}
-          marginTop="$1"
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius="$3"
-          backgroundColor="$background"
-          maxHeight={300}
-          overflow="scroll"
-          zIndex={1000}
-          shadowColor="$shadowColor"
-          shadowOffset={{ width: 0, height: 2 }}
-          shadowOpacity={0.1}
-          shadowRadius={4}
+        <Stack
+          gap={0}
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            marginTop: 4,
+            borderWidth: 1,
+            borderColor: 'var(--color-border)',
+            borderRadius: 12,
+            backgroundColor: 'var(--color-background)',
+            maxHeight: 300,
+            overflow: 'scroll',
+            zIndex: 1000,
+            shadowColor: 'var(--color-shadow)',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+          }}
         >
-          {occupations.map((occupation: Occupation) => (
-            <XStack
-              key={occupation.onetsoc_code}
-              padding="$3"
-              gap="$2"
-              hoverStyle={{
-                backgroundColor: '$backgroundHover',
-              }}
-              pressStyle={{
-                backgroundColor: '$backgroundPress',
-              }}
-              cursor="pointer"
-              onPress={() => handleSelect(occupation)}
-            >
-              <YStack flex={1} gap="$1">
-                <Text fontSize="$3" fontWeight="600">
-                  {occupation.title}
-                </Text>
-                <Text fontSize="$2" color="$color11">
-                  {occupation.onetsoc_code}
-                </Text>
-              </YStack>
-            </XStack>
-          ))}
-        </YStack>
+          {occupations.map((occupation: SDKOccupation) => {
+            const { onetCode, title } = toDisplayOcc(occupation)
+            return (
+              <Pressable key={onetCode} onPress={() => handleSelect(occupation)}>
+                <Row padding="sm" gap={8} style={{ cursor: 'pointer' }}>
+                  <Stack style={{ flex: 1 }} gap={4}>
+                    <Text>{title}</Text>
+                    <Text color="$gray11">{onetCode}</Text>
+                  </Stack>
+                </Row>
+              </Pressable>
+            )
+          })}
+        </Stack>
       )}
 
       {debouncedSearch.length >= 2 && queryError && (
-        <YStack
-          position="absolute"
-          top="100%"
-          left={0}
-          right={0}
-          marginTop="$1"
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius="$3"
-          backgroundColor="$background"
-          padding="$3"
-          zIndex={1000}
+        <Stack
+          padding="sm"
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            marginTop: 4,
+            borderWidth: 1,
+            borderColor: 'var(--color-border)',
+            borderRadius: 12,
+            backgroundColor: 'var(--color-background)',
+            zIndex: 1000,
+          }}
         >
-          <Text fontSize="$3" color="$red10">
+          <Text color="$red10">
             {queryError.message || 'Unable to load occupations. Please try again.'}
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {debouncedSearch.length >= 2 && !isLoading && occupations.length === 0 && showResults && (
-        <YStack
-          position="absolute"
-          top="100%"
-          left={0}
-          right={0}
-          marginTop="$1"
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius="$3"
-          backgroundColor="$background"
-          padding="$3"
-          zIndex={1000}
+        <Stack
+          padding="sm"
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            marginTop: 4,
+            borderWidth: 1,
+            borderColor: 'var(--color-border)',
+            borderRadius: 12,
+            backgroundColor: 'var(--color-background)',
+            zIndex: 1000,
+          }}
         >
-          <Text fontSize="$3" color="$color11">
-            No occupations found for "{debouncedSearch}"
-          </Text>
-        </YStack>
+          <Text color="$gray11">No occupations found for "{debouncedSearch}"</Text>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

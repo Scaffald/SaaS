@@ -1,6 +1,6 @@
 // src/pages/broker/settings/AgencySettings.tsx
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Stack, Text, Button, H2, Input } from '@unicornlove/beyond-ui';
+import { Stack, Text, Button, H2, Input } from '@scaffald/ui';
 import { useSettings } from '../../../hooks/useSettings';
 import { toast } from 'sonner';
 

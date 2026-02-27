@@ -3,31 +3,30 @@ import {
   type AddressResult,
   MapContainer,
   type MapContainerRef,
-  type MapPinType,
   Sheet,
-  ToggleSwitch,
+  SheetContent,
+  SheetHeader,
+  Switch,
   type ViewportBounds,
-} from '@unicornlove/ui'
+} from '@scaffald/ui'
 import { captureEvent } from '@scf/core/utils/analytics/client'
 import {
   List as ListIcon,
   Map as MapIcon,
   RotateCcw,
   SlidersHorizontal,
-  X,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Platform } from 'react-native'
+import { Platform, View } from 'react-native'
 import {
   Button,
   ScrollView,
   Tabs,
   Text,
   useWindowDimensions,
-  XStack,
-  YStack,
-  type TamaguiElement,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@scaffald/ui'
 import { JobPreviewModal } from './components/JobPreviewModal'
 import { MapFilterBar } from './components/MapFilterBar'
 import { OrganizationPreviewModal } from './components/OrganizationPreviewModal'
@@ -38,10 +37,11 @@ import { UserProfilePanel } from './components/UserProfilePanel'
 import { WorkerPreviewModal } from './components/WorkerPreviewModal'
 import { defaultCenter } from './data/mockProfiles'
 import { useJobs } from './hooks/useJobs'
-import { type ClusterInfo, useMapPinState } from './hooks/useMapPinState'
+import { type ClusterInfo, type MapPinType, useMapPinState } from './hooks/useMapPinState'
 import { useOrganizations } from './hooks/useOrganizations'
 import { useTalentProfiles } from './hooks/useTalentProfiles'
 import { useUserLocation } from './hooks/useUserLocation'
+import { createMapboxGeocodingProvider } from '../../utils/mapbox-geocoding-provider'
 import { useMapState } from './providers/MapStateProvider'
 import { isPinNearViewportEdge } from './utils/hoverCardPositioning'
 
@@ -50,14 +50,14 @@ const MAP_RECENTER_DELAY_MS = 360
 
 export const DiscoverMapScreen = () => {
   // Use window dimensions for conditional rendering
-  // Breakpoint: 800px (matches Tamagui $sm/$md breakpoint)
+  // Breakpoint: 800px (small/medium layout)
   // Native mobile is always treated as small screen
   const { width } = useWindowDimensions()
   const isNativeMobile = Platform.OS !== 'web'
   const isSmallScreen = width <= 800 || isNativeMobile // ensure native mobile always treated as small
   const resultListRef = useRef<ResultListRef>(null)
   const mapRef = useRef<MapContainerRef>(null)
-  const layoutRef = useRef<TamaguiElement | null>(null)
+  const layoutRef = useRef<View>(null)
 
   // Location functionality
   const { location } = useUserLocation()
@@ -265,8 +265,8 @@ export const DiscoverMapScreen = () => {
   }, [clusters, mapPins, setPinCluster, pinStates])
 
   // Handle cluster changes from MapContainer
-  const handleClustersChange = useCallback((newClusters: ClusterInfo[]) => {
-    setClusters(newClusters)
+  const handleClustersChange = useCallback((clusters: unknown[]) => {
+    setClusters(clusters as ClusterInfo[])
   }, [])
 
   const clearHoverState = useCallback(() => {
@@ -304,7 +304,7 @@ export const DiscoverMapScreen = () => {
       const layoutNode = layoutRef.current
       const layoutRect =
         layoutNode && 'getBoundingClientRect' in layoutNode
-          ? (layoutNode as HTMLElement).getBoundingClientRect()
+          ? (layoutNode as unknown as HTMLElement).getBoundingClientRect()
           : null
       if (mapRect && layoutRect) {
         setHoverCardPosition({
@@ -491,20 +491,15 @@ export const DiscoverMapScreen = () => {
       }
       setViewportBounds(immediateBounds)
       setMapReady(true)
-
-      // Center the map on the new location
-      if (mapRef.current?.flyTo) {
-        mapRef.current.flyTo([location.longitude, location.latitude], 12)
-      }
+      // Map recenters via centerLocation prop from state.lastSearchLocation
     },
     [updateSearchLocation]
   )
 
   // Handle viewport changes from map (debounced by 500ms in MapContainer)
   // Only update viewport bounds for data fetching, not persisted state (to avoid excessive updates)
-  const handleViewportChange = useCallback(
-    (bounds: ViewportBounds, _zoom: number) => {
-      // Only update bounds if they've changed significantly (avoid unnecessary refetches)
+  const handleViewportChange = useCallback((bounds: ViewportBounds) => {
+    // Only update bounds if they've changed significantly (avoid unnecessary refetches)
       // Check both center position and bounds size to determine if viewport changed meaningfully
       setViewportBounds((prevBounds) => {
         if (!prevBounds) {
@@ -581,7 +576,7 @@ export const DiscoverMapScreen = () => {
   }, [])
 
   return (
-    <YStack ref={layoutRef} flex={1} height="100vh" overflow="hidden" position="relative">
+    <View ref={layoutRef} style={{ flex: 1, height: '100%', overflow: 'hidden', position: 'relative' }}>
       {/* Filter Bar / Mobile Header */}
       {isSmallScreen ? (
         <MobileSearchHeader
@@ -610,14 +605,14 @@ export const DiscoverMapScreen = () => {
       )}
 
       {/* Map and Results Container */}
-      <XStack flex={1} overflow="hidden" position="relative">
+      <Row style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
         {isSmallScreen ? (
           mobileListActive ? (
-            <YStack
+            <Stack
               flex={1}
               backgroundColor="$background"
-              paddingHorizontal="$3"
-              paddingVertical="$3"
+              paddingHorizontal={12}
+              paddingVertical={12}
             >
               <ResultList
                 ref={resultListRef}
@@ -628,7 +623,7 @@ export const DiscoverMapScreen = () => {
                 onSelect={handleMobileResultSelect}
                 isLoading={isLoading || isLoadingOrgs || isLoadingJobs}
               />
-            </YStack>
+            </Stack>
           ) : (
             <MapContainer
               ref={mapRef}
@@ -678,7 +673,7 @@ export const DiscoverMapScreen = () => {
             />
           </>
         )}
-      </XStack>
+      </Row>
 
       {/* Hover Card - Web only */}
       {Platform.OS === 'web' && (
@@ -706,15 +701,16 @@ export const DiscoverMapScreen = () => {
       {/* Mobile Search & Filters Sheet */}
       {isSmallScreen && (
         <Sheet
-          modal
-          open={filtersSheetOpen}
-          onOpenChange={setFiltersSheetOpen}
-          snapPoints={[85, 60]}
-          dismissOnSnapToBottom
+          visible={filtersSheetOpen}
+          onClose={() => setFiltersSheetOpen(false)}
+          height="three-quarters"
         >
-          <Sheet.Overlay />
-          <Sheet.Handle />
-          <Sheet.Frame>
+          <SheetHeader
+            title="Filters"
+            onClose={() => setFiltersSheetOpen(false)}
+            showCloseButton
+          />
+          <SheetContent>
             <MobileFiltersContent
               showWorkers={showWorkers}
               showOrganizations={showOrganizations}
@@ -722,10 +718,9 @@ export const DiscoverMapScreen = () => {
               onShowWorkersChange={(value) => updateFilters({ showWorkers: value })}
               onShowOrganizationsChange={(value) => updateFilters({ showOrganizations: value })}
               onShowJobsChange={(value) => updateFilters({ showJobs: value })}
-              onClose={() => setFiltersSheetOpen(false)}
               onReset={handleReset}
             />
-          </Sheet.Frame>
+          </SheetContent>
         </Sheet>
       )}
 
@@ -743,7 +738,7 @@ export const DiscoverMapScreen = () => {
       {isSmallScreen && (
         <MobileViewToggleBar activeView={mobileViewMode} onViewChange={handleMobileViewChange} />
       )}
-    </YStack>
+    </View>
   )
 }
 
@@ -787,15 +782,17 @@ const MobileSearchHeader = ({
   )
 
   return (
-    <XStack
-      width="100%"
-      paddingHorizontal="$4"
-      paddingVertical="$3"
-      gap="$3"
-      backgroundColor="$background"
-      borderBottomWidth={1}
-      borderBottomColor="$borderColor"
-      alignItems="center"
+    <Row
+      style={{
+        width: '100%',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        gap: 12,
+        backgroundColor: 'transparent',
+        borderBottomWidth: 1,
+        borderBottomColor: '#e5e7eb',
+        alignItems: 'center',
+      }}
     >
       {tokenValidation.valid ? (
         <AddressAutocomplete
@@ -803,55 +800,40 @@ const MobileSearchHeader = ({
           onChange={onSearchQueryChange}
           onAddressSelect={handleAddressSelect}
           placeholder="Search city, county, or region..."
-          provider="mapbox"
-          apiKey={mapboxToken}
-          zoomLevel="city"
+          provider={createMapboxGeocodingProvider(mapboxToken ?? '')}
           searchOptions={{
             types: ['place', 'region', 'district', 'locality'],
+            zoomLevel: 'city',
           }}
           minLength={2}
           maxResults={5}
           debounceMs={300}
-          containerProps={{
-            flex: 1,
-            w: '100%',
-            backgroundColor: '$background',
-            borderRadius: '$5',
-            height: 25,
-            justifyContent: 'center',
-            style: { flexShrink: 1 },
-          }}
         />
       ) : (
-        <YStack
+        <Stack
           flex={1}
           backgroundColor="$background"
-          padding="$3"
-          borderRadius="$4"
+          padding="sm"
+          borderRadius={16}
           borderWidth={1}
           borderColor="$red8"
-          gap="$2"
+          gap={8}
           style={{ flexShrink: 1 }}
         >
-          <Text fontSize="$4" fontWeight="600" color="$red10">
-            Map Search Unavailable
-          </Text>
-          <Text fontSize="$2" color="$color10">
-            {tokenValidation.error}
-          </Text>
-        </YStack>
+          <Text color="$red10">Map Search Unavailable</Text>
+          <Text color="$gray11">{tokenValidation.error}</Text>
+        </Stack>
       )}
 
       <Button
-        size="$4"
-        circular
-        variant="outlined"
-        icon={SlidersHorizontal}
+        size="md"
+        variant="outline"
+        iconStart={SlidersHorizontal}
         aria-label="Open filters"
         onPress={onFiltersPress}
         style={{ flexShrink: 0 }}
       />
-    </XStack>
+    </Row>
   )
 }
 
@@ -862,55 +844,63 @@ type MobileViewToggleBarProps = {
 
 const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarProps) => {
   return (
-    <XStack
-      position="absolute"
-      bottom="$3"
-      left="$3"
-      right="$3"
-      backgroundColor="$color2"
-      borderRadius="$6"
-      padding="$1"
-      shadowColor="$shadowColor"
-      shadowOffset={{ width: 0, height: -2 }}
-      shadowOpacity={0.15}
-      shadowRadius={12}
-      style={{ zIndex: 60 }}
+    <Row
+      style={{
+        position: 'absolute',
+        bottom: 12,
+        left: 12,
+        right: 12,
+        backgroundColor: '#f2f4f7',
+        borderRadius: 24,
+        padding: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 12,
+        zIndex: 60,
+        gap: 8,
+      }}
     >
-      <Tabs value={activeView} onValueChange={onViewChange} activationMode="manual" flex={1}>
-        <Tabs.List flex={1} gap="$2" backgroundColor="transparent">
-          <Tabs.Tab
-            value="map"
-            flex={1}
-            backgroundColor={activeView === 'map' ? '$background' : 'transparent'}
-            borderRadius="$5"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+      <Tabs
+        value={activeView}
+        onValueChange={onViewChange}
+        triggerSizing="equal"
+        containerStyle={{ flex: 1 }}
+      >
+        <Tabs.Item value="map">
+          <Tabs.Trigger
+            containerStyle={{
+              flex: 1,
+              backgroundColor: activeView === 'map' ? '#ffffff' : 'transparent',
+              borderRadius: 20,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+            }}
           >
-            <XStack alignItems="center" justifyContent="center" gap="$2">
-              <MapIcon size={16} />
-              <Text fontSize="$4" fontWeight="600">
-                Map
-              </Text>
-            </XStack>
-          </Tabs.Tab>
-          <Tabs.Tab
-            value="list"
-            flex={1}
-            backgroundColor={activeView === 'list' ? '$background' : 'transparent'}
-            borderRadius="$5"
-            paddingHorizontal="$4"
-            paddingVertical="$3"
+            <Row align="center" justify="center" gap={8}>
+              <MapIcon size="md" />
+              <Text>Map</Text>
+            </Row>
+          </Tabs.Trigger>
+        </Tabs.Item>
+        <Tabs.Item value="list">
+          <Tabs.Trigger
+            containerStyle={{
+              flex: 1,
+              backgroundColor: activeView === 'list' ? '#ffffff' : 'transparent',
+              borderRadius: 20,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+            }}
           >
-            <XStack alignItems="center" justifyContent="center" gap="$2">
-              <ListIcon size={16} />
-              <Text fontSize="$4" fontWeight="600">
-                List
-              </Text>
-            </XStack>
-          </Tabs.Tab>
-        </Tabs.List>
+            <Row align="center" justify="center" gap={8}>
+              <ListIcon size="md" />
+              <Text>List</Text>
+            </Row>
+          </Tabs.Trigger>
+        </Tabs.Item>
       </Tabs>
-    </XStack>
+    </Row>
   )
 }
 
@@ -921,7 +911,6 @@ type MobileFiltersContentProps = {
   onShowWorkersChange: (value: boolean) => void
   onShowOrganizationsChange: (value: boolean) => void
   onShowJobsChange: (value: boolean) => void
-  onClose: () => void
   onReset: () => void
 }
 
@@ -932,27 +921,12 @@ const MobileFiltersContent = ({
   onShowWorkersChange,
   onShowOrganizationsChange,
   onShowJobsChange,
-  onClose,
   onReset,
 }: MobileFiltersContentProps) => {
   return (
-    <YStack flex={1} padding="$4" gap="$4">
-      <XStack justifyContent="space-between" alignItems="center">
-        <Text fontSize="$6" fontWeight="700">
-          Filters
-        </Text>
-        <Button
-          size="$3"
-          circular
-          variant="outlined"
-          icon={X}
-          aria-label="Close filters"
-          onPress={onClose}
-        />
-      </XStack>
-
-      <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-        <YStack gap="$4" paddingBottom="$6">
+    <Stack flex={1} gap={16}>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+        <Stack gap={16} paddingBottom={24}>
           <FilterToggle
             label="Workers"
             description="Show worker profiles on the map"
@@ -971,20 +945,19 @@ const MobileFiltersContent = ({
             value={showJobs}
             onValueChange={onShowJobsChange}
           />
-        </YStack>
+        </Stack>
       </ScrollView>
 
       <Button
-        size="$4"
-        variant="outlined"
-        icon={RotateCcw}
-        scaleIcon={1.2}
+        size="md"
+        variant="outline"
+        iconStart={RotateCcw}
         onPress={onReset}
         aria-label="Reset filters"
       >
         Reset Filters
       </Button>
-    </YStack>
+    </Stack>
   )
 }
 
@@ -996,24 +969,20 @@ type FilterToggleProps = {
 }
 
 const FilterToggle = ({ label, description, value, onValueChange }: FilterToggleProps) => (
-  <YStack
-    gap="$2"
+  <Stack
+    gap={8}
     backgroundColor="$color2"
-    padding="$3"
-    borderRadius="$4"
+    padding="sm"
+    borderRadius={16}
     borderWidth={1}
     borderColor="$borderColor"
   >
-    <XStack justifyContent="space-between" alignItems="center" gap="$2">
-      <Text fontSize="$4" fontWeight="600">
-        {label}
-      </Text>
-      <ToggleSwitch checked={value} onCheckedChange={onValueChange} aria-label={label} />
-    </XStack>
-    <Text fontSize="$2" color="$color10">
-      {description}
-    </Text>
-  </YStack>
+    <Row justify="space-between" align="center" gap={8}>
+      <Text>{label}</Text>
+      <Switch checked={value} onChange={onValueChange} accessibilityLabel={label} />
+    </Row>
+    <Text color="$gray11">{description}</Text>
+  </Stack>
 )
 
 export default DiscoverMapScreen

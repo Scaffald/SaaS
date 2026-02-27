@@ -1,7 +1,7 @@
 // src/components/onboarding/steps/gc/ProjectStep.tsx
-// REQ-126: GC Onboarding - First Project Step (Optional)
+// GC Onboarding - First Project Step (Optional)
 import { useState } from 'react';
-import { Stack, Text, H2, Input, Button } from '@unicornlove/beyond-ui';
+import { Stack, Text, H2, Input, Button } from '@scaffald/ui';
 
 interface ProjectStepProps {
   onComplete: (data: any) => Promise<void>;

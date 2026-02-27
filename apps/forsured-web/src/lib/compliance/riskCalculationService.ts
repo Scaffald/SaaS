@@ -153,7 +153,7 @@ export class RiskCalculationService {
   }
 
   /**
-   * Get risk level color for UI (Tamagui compatible)
+   * Get risk level color for UI (theme tokens)
    */
   getRiskColor(level: RiskLevel): string {
     const colors: Record<RiskLevel, string> = {
@@ -166,7 +166,7 @@ export class RiskCalculationService {
   }
 
   /**
-   * Get risk level background color for UI (Tamagui compatible)
+   * Get risk level background color for UI (theme tokens)
    */
   getRiskBackgroundColor(level: RiskLevel): string {
     const colors: Record<RiskLevel, string> = {

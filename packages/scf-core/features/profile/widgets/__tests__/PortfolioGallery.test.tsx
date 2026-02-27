@@ -45,7 +45,7 @@ vi.mock('@scf/core/utils/supabase/storage', () => ({
 }))
 
 // Mock UI components
-vi.mock('@unicornlove/ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   DashboardWidget: ({ children }: { children?: ReactNode }) => (
     <div data-testid="dashboard-widget">{children}</div>
   ),
@@ -76,8 +76,8 @@ vi.mock('@unicornlove/ui', () => ({
   ),
 }))
 
-// Mock Tamagui components
-vi.mock('tamagui', () => {
+// Beyond UI mock
+vi.mock('@scaffald/ui', () => {
   const Stack = ({
     children,
     testID,
@@ -136,8 +136,8 @@ vi.mock('tamagui', () => {
   const Spinner = (props: Record<string, unknown>) => <div data-testid="spinner" {...props} />
 
   return {
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Text,
     Image,
     Card,
@@ -147,7 +147,7 @@ vi.mock('tamagui', () => {
 })
 
 // Mock lucide icons
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Eye: ({ size, color }: { size?: number; color?: string }) => (
     <span data-testid="eye-icon" data-size={size} data-color={color}>
       Eye

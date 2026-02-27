@@ -6,6 +6,7 @@
 import { Command } from 'commander'
 import ora from 'ora'
 import chalk from 'chalk'
+import type { ApiKey } from '@scaffald/sdk'
 import { createClient } from '../utils/client.js'
 import { formatTable, formatJson, formatCompact } from '../utils/output.js'
 import { getOrganizationId } from '../config.js'
@@ -30,20 +31,20 @@ export const keysCommand = new Command('keys')
 
         try {
           const client = createClient()
-          const response = await client.apiKeys.list({ organizationId })
+          const keys = await client.apiKeys.list()
 
-          spinner.succeed(`Found ${response.data.length} API key(s)`)
+          spinner.succeed(`Found ${keys.length} API key(s)`)
 
-          if (response.data.length === 0) {
+          if (keys.length === 0) {
             console.log(chalk.yellow('No API keys found'))
             return
           }
 
           if (options.format === 'json') {
-            formatJson(response.data)
+            formatJson(keys)
           } else {
             const headers = ['ID', 'Name', 'Prefix', 'Status', 'Last Used', 'Created']
-            const rows = response.data.map((key: any) => [
+            const rows = keys.map((key: ApiKey) => [
               key.id.slice(0, 8),
               key.name,
               key.key_prefix,
@@ -69,13 +70,18 @@ export const keysCommand = new Command('keys')
       .description('View API key details')
       .argument('<id>', 'API Key ID')
       .option('--format <format>', 'Output format (compact, json)', 'compact')
-      .action(async (id: string, options: any) => {
+      .action(async (id: string, options: Record<string, string>) => {
         const spinner = ora('Fetching API key...').start()
 
         try {
           const client = createClient()
-          const response = await client.apiKeys.retrieve(id)
-          const apiKey = response.data
+          const keys = await client.apiKeys.list()
+          const apiKey = keys.find((k) => k.id === id)
+
+          if (!apiKey) {
+            spinner.fail('API key not found')
+            process.exit(1)
+          }
 
           spinner.succeed('API key fetched')
 
@@ -133,44 +139,36 @@ export const keysCommand = new Command('keys')
       .argument('<id>', 'API Key ID')
       .option('-d, --days <days>', 'Number of days to look back', '7')
       .option('--format <format>', 'Output format (compact, json)', 'compact')
-      .action(async (id: string, options: any) => {
+      .action(async (id: string, options: Record<string, string>) => {
         const spinner = ora('Fetching usage statistics...').start()
 
         try {
           const client = createClient()
-          const response = await client.apiKeys.getUsage(id, Number.parseInt(options.days, 10))
-          const usage = response.data.usage
+          const stats = await client.apiKeys.getUsage(id, { days: Number.parseInt(options.days, 10) })
 
           spinner.succeed('Usage statistics fetched')
 
           if (options.format === 'json') {
-            formatJson(usage)
+            formatJson(stats)
           } else {
             console.log(chalk.bold.cyan(`\nAPI Key Usage (Last ${options.days} days)`))
             console.log(chalk.gray('─'.repeat(60)))
             console.log()
 
-            // Calculate metrics from usage array
-            const totalRequests = usage.length
-            const successRequests = usage.filter((u: any) => u.status_code < 400).length
-            const errorRequests = usage.filter((u: any) => u.status_code >= 400).length
-            const avgResponseTime =
-              usage.reduce((sum: number, u: any) => sum + (u.response_time_ms || 0), 0) / totalRequests || 0
-
             formatCompact([
-              { label: 'Total Requests:', value: totalRequests.toString() },
-              { label: 'Successful:', value: chalk.green(successRequests.toString()) },
-              { label: 'Errors:', value: errorRequests > 0 ? chalk.red(errorRequests.toString()) : '0' },
+              { label: 'Total Requests:', value: stats.total_requests.toString() },
+              { label: 'Successful:', value: chalk.green(stats.success_requests.toString()) },
+              { label: 'Errors:', value: stats.error_requests > 0 ? chalk.red(stats.error_requests.toString()) : '0' },
               {
                 label: 'Error Rate:',
-                value: `${((errorRequests / totalRequests) * 100 || 0).toFixed(2)}%`,
+                value: `${stats.error_rate}%`,
               },
-              { label: 'Avg Response Time:', value: `${Math.round(avgResponseTime)}ms` },
+              { label: 'Avg Response Time:', value: `${Math.round(stats.avg_response_time_ms)}ms` },
             ])
 
             // Endpoint breakdown
             const endpoints: Record<string, number> = {}
-            for (const u of usage) {
+            for (const u of stats.usage) {
               const key = `${u.method} ${u.endpoint}`
               endpoints[key] = (endpoints[key] || 0) + 1
             }

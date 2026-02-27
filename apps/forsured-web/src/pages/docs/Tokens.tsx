@@ -1,7 +1,7 @@
 // src/pages/docs/Tokens.tsx
 import React from 'react';
-import { Stack, Row, Box, Text, H1, H2 } from '@unicornlove/beyond-ui';
-import { colors, spacing, fontSize, borderRadius, shadows } from '@unicornlove/beyond-ui';
+import { Stack, Row, Box, Text, H1, H2 } from '@scaffald/ui';
+import { colors, spacing, fontSize, borderRadius, shadows } from '@scaffald/ui';
 
 function TokensDoc() {
   return (

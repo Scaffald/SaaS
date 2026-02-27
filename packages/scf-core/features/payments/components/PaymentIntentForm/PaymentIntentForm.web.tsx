@@ -1,179 +1,245 @@
-import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
-import type { PaymentIntent, StripeElementsOptions } from '@stripe/stripe-js'
-import { loadStripe } from '@stripe/stripe-js'
-import { useMemo, useState } from 'react'
-import { Card } from '@unicornlove/ui'
+import {
+  Button,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+  useThemeContext,
+} from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
+import {
+  Elements,
+  PaymentElement,
+  useElements,
+  useStripe,
+} from "@stripe/react-stripe-js";
+import type { PaymentIntent, StripeElementsOptions } from "@stripe/stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import { useMemo, useState } from "react";
+import { Card } from "@scaffald/ui";
 
-import { useStripeConfig } from '../../hooks/useStripeConfig'
+import { useStripeConfig } from "../../hooks/useStripeConfig";
 
 type PaymentIntentFormProps = {
-  clientSecret: string
-  amountCents: number
-  description?: string
-  submitLabel?: string
-  onSuccess: (paymentIntentId: string, intent?: PaymentIntent | null) => void | Promise<void>
-  disabled?: boolean
-}
+  clientSecret: string;
+  amountCents: number;
+  description?: string;
+  submitLabel?: string;
+  onSuccess: (
+    paymentIntentId: string,
+    intent?: PaymentIntent | null
+  ) => void | Promise<void>;
+  disabled?: boolean;
+};
 
 export function PaymentIntentForm(props: PaymentIntentFormProps) {
-  const { clientSecret, amountCents } = props
-  const config = useStripeConfig(Boolean(clientSecret))
+  const { theme } = useThemeContext();
+  const { clientSecret, amountCents } = props;
+  const config = useStripeConfig(Boolean(clientSecret));
 
   const stripePromise = useMemo(() => {
-    if (!config.publishableKey) return null
-    return loadStripe(config.publishableKey)
-  }, [config.publishableKey])
+    if (!config.publishableKey) return null;
+    return loadStripe(config.publishableKey);
+  }, [config.publishableKey]);
 
   const options: StripeElementsOptions | null = useMemo(() => {
-    if (!clientSecret) return null
+    if (!clientSecret) return null;
     return {
       clientSecret,
       appearance: {
-        theme: 'flat',
-        labels: 'floating',
+        theme: "flat",
+        labels: "floating",
         variables: {
-          colorText: 'hsl(206,6%,25%)',
-          colorDanger: 'hsl(359,72%,55%)',
-          borderRadius: '8px',
+          colorText: "hsl(206,6%,25%)",
+          colorDanger: "hsl(359,72%,55%)",
+          borderRadius: "8px",
         },
       },
-    }
-  }, [clientSecret])
+    };
+  }, [clientSecret]);
 
   if (config.isLoading || !options || !stripePromise) {
     return (
-      <Card padding="$3" backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
-        <Text fontSize="$3" color="$color11">
+      <Card
+        padding="sm"
+        style={{
+          backgroundColor: colors.bg[theme].subtle,
+          borderColor: colors.border[theme].default,
+        }}
+        borderWidth={1}
+      >
+        <Text style={{ color: colors.text[theme].secondary }}>
           Preparing secure payment form…
         </Text>
       </Card>
-    )
+    );
   }
 
   if (!config.publishableKey) {
     return (
-      <Card padding="$3" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
-        <Text color="$red11">
-          Stripe publishable key is missing. Contact support to configure payments.
+      <Card
+        padding="sm"
+        style={{
+          backgroundColor:
+            theme === "light" ? colors.error[50] : colors.error[900],
+          borderColor:
+            theme === "light" ? colors.error[300] : colors.error[700],
+        }}
+        borderWidth={1}
+      >
+        <Text
+          style={{
+            color: theme === "light" ? colors.error[700] : colors.error[300],
+          }}
+        >
+          Stripe publishable key is missing. Contact support to configure
+          payments.
         </Text>
       </Card>
-    )
+    );
   }
 
   return (
     <Elements key={clientSecret} stripe={stripePromise} options={options}>
-      <PaymentIntentFormInner {...props} amountCents={amountCents} testMode={config.testMode} />
+      <PaymentIntentFormInner
+        {...props}
+        amountCents={amountCents}
+        testMode={config.testMode}
+      />
     </Elements>
-  )
+  );
 }
 
 type InnerProps = PaymentIntentFormProps & {
-  testMode: boolean
-}
+  testMode: boolean;
+};
 
 function PaymentIntentFormInner({
   amountCents,
   description,
-  submitLabel = 'Pay now',
+  submitLabel = "Pay now",
   onSuccess,
   disabled,
   testMode,
 }: InnerProps) {
-  const stripe = useStripe()
-  const elements = useElements()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const { theme } = useThemeContext();
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const currencyFormatter = useMemo(
     () =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
+      new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
         maximumFractionDigits: 2,
       }),
     []
-  )
+  );
 
   const handleSubmit = async () => {
-    if (!stripe || !elements) return
-    setIsSubmitting(true)
-    setErrorMessage(null)
+    if (!stripe || !elements) return;
+    setIsSubmitting(true);
+    setErrorMessage(null);
 
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
-      redirect: 'if_required',
-    })
+      redirect: "if_required",
+    });
 
     if (error) {
-      setErrorMessage(error.message ?? 'Unable to confirm payment. Try again.')
-      setIsSubmitting(false)
-      return
+      setErrorMessage(error.message ?? "Unable to confirm payment. Try again.");
+      setIsSubmitting(false);
+      return;
     }
 
     if (
       paymentIntent &&
-      (paymentIntent.status === 'succeeded' || paymentIntent.status === 'processing')
+      (paymentIntent.status === "succeeded" ||
+        paymentIntent.status === "processing")
     ) {
-      await onSuccess(paymentIntent.id, paymentIntent)
+      await onSuccess(paymentIntent.id, paymentIntent);
     } else {
-      setErrorMessage('Payment did not complete. Please try again.')
-      setIsSubmitting(false)
+      setErrorMessage("Payment did not complete. Please try again.");
+      setIsSubmitting(false);
     }
-  }
+  };
 
-  const amountLabel = currencyFormatter.format(amountCents / 100)
+  const amountLabel = currencyFormatter.format(amountCents / 100);
 
   return (
-    <Card padding="$4" borderColor="$borderColor" borderWidth={1} gap="$3">
-      <YStack gap="$1">
-        <XStack justifyContent="space-between" alignItems="center">
-          <Text fontSize="$4" fontWeight="600">
-            Charge amount
-          </Text>
-          <Text fontSize="$5" fontWeight="700">
-            {amountLabel}
-          </Text>
-        </XStack>
-        {description ? (
-          <Text fontSize="$3" color="$color11">
-            {description}
-          </Text>
-        ) : null}
-        {testMode && (
-          <Text fontSize="$2" color="$orange11">
-            Stripe test mode is active. Use test card numbers only.
-          </Text>
-        )}
-      </YStack>
-
-      <PaymentElement />
-
-      {errorMessage ? (
-        <Card padding="$3" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
-          <XStack gap="$2" alignItems="center">
-            <Text color="$red11" fontSize="$3" flex={1}>
-              {errorMessage}
+    <Card
+      padding="md"
+      style={{ borderColor: colors.border[theme].default }}
+      borderWidth={1}
+    >
+      <Stack gap={12}>
+        <Stack gap={4}>
+          <Row justify="space-between" align="center">
+            <Text>Charge amount</Text>
+            <Text>{amountLabel}</Text>
+          </Row>
+          {description ? (
+            <Text style={{ color: colors.text[theme].secondary }}>
+              {description}
             </Text>
-          </XStack>
-        </Card>
-      ) : null}
+          ) : null}
+          {testMode && (
+            <Text
+              style={{
+                color:
+                  theme === "light" ? colors.yellow[700] : colors.yellow[300],
+              }}
+            >
+              Stripe test mode is active. Use test card numbers only.
+            </Text>
+          )}
+        </Stack>
 
-      <Button
-        size="$4"
-        theme="blue"
-        disabled={disabled || isSubmitting || !stripe || !elements}
-        onPress={handleSubmit}
-      >
-        {isSubmitting ? (
-          <XStack gap="$2" alignItems="center">
-            <Spinner size="small" color="white" />
-            <Text>Processing…</Text>
-          </XStack>
-        ) : (
-          submitLabel
-        )}
-      </Button>
+        <PaymentElement />
+
+        {errorMessage ? (
+          <Card
+            padding="sm"
+            style={{
+              backgroundColor:
+                theme === "light" ? colors.error[50] : colors.error[900],
+              borderColor:
+                theme === "light" ? colors.error[300] : colors.error[700],
+            }}
+            borderWidth={1}
+          >
+            <Row gap={8} align="center">
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.error[700] : colors.error[300],
+                  flex: 1,
+                }}
+              >
+                {errorMessage}
+              </Text>
+            </Row>
+          </Card>
+        ) : null}
+
+        <Button
+          size="md"
+          color="primary"
+          disabled={disabled || isSubmitting || !stripe || !elements}
+          onPress={handleSubmit}
+        >
+          {isSubmitting ? (
+            <Row gap={8} align="center">
+              <Spinner size="sm" color="gray" />
+              <Text>Processing…</Text>
+            </Row>
+          ) : (
+            submitLabel
+          )}
+        </Button>
+      </Stack>
     </Card>
-  )
+  );
 }

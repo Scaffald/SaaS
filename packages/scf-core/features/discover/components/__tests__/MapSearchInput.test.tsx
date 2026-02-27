@@ -6,8 +6,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const selectHandler = vi.fn()
 const closeHandler = vi.fn()
 
-// Mock Tamagui before imports
-vi.mock('tamagui', () => {
+// Beyond UI mock before imports
+vi.mock('@scaffald/ui', () => {
   const mapStyleProps = (props: Record<string, unknown>) => {
     const style: Record<string, unknown> = { ...(props.style as Record<string, unknown> | undefined) }
     const passthrough: Record<string, unknown> = {}
@@ -57,13 +57,13 @@ vi.mock('tamagui', () => {
 
   return {
     AnimatePresence: (props: { children: ReactNode }) => <>{props.children}</>,
-    XStack: MockXStack,
-    YStack: MockYStack,
+    Row: MockXStack,
+    Stack: MockYStack,
     Text: (props: { children: ReactNode }) => <span>{props.children}</span>,
   }
 })
 
-vi.mock('@unicornlove/ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   AddressAutocomplete: (props: {
     onChange: (value: string) => void
     onAddressSelect: (result: {
@@ -89,7 +89,7 @@ vi.mock('@unicornlove/ui', () => ({
   ),
 }))
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   AlertCircle: () => <span data-testid="alert-icon" />,
 }))
 

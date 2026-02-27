@@ -1,8 +1,7 @@
-import { Award, BadgeCheck, Clock3, DollarSign, Star } from '@tamagui/lucide-icons'
-import type { ReactNode } from 'react'
+import { Award, BadgeCheck, Clock3, DollarSign, Star } from 'lucide-react-native'
+import type { ComponentRef, ReactNode } from 'react'
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from '@unicornlove/ui'
-import { Paragraph, Text, XStack, useWindowDimensions } from '@unicornlove/ui'
+import { Paragraph, Text, Row, useWindowDimensions } from '@scaffald/ui'
 import {
   CardBadges,
   CardHeader,
@@ -10,7 +9,7 @@ import {
   SelectableCard,
   type BadgeConfig,
   type MetadataItem,
-} from '@unicornlove/ui'
+} from '@scaffald/ui'
 
 /**
  * Profile card badge configuration
@@ -56,13 +55,13 @@ export interface ProfileCardProps {
  *   experienceYears={8}
  *   hourlyRate={125}
  *   locationLabel="San Francisco, CA"
- *   isSelected={selected === "profile-1"}
+ *   isSelected={selected === "profile-1"
  *   onSelect={setSelected}
  * />
  * ```
  */
 export const ProfileCard = memo(
-  forwardRef<TamaguiElement, ProfileCardProps>(
+  forwardRef<ComponentRef<typeof SelectableCard>, ProfileCardProps>(
     (
       {
         id,
@@ -82,7 +81,7 @@ export const ProfileCard = memo(
       forwardedRef
     ) => {
       // Use window dimensions for text truncation behavior
-      // Breakpoint: 800px (matches Tamagui $sm/$md breakpoint)
+      // Breakpoint: 800px (small/medium layout)
       const dimensions = useWindowDimensions()
       const titleNumberOfLines = dimensions.width <= 800 ? 3 : 2
       // Build metadata items
@@ -91,7 +90,7 @@ export const ProfileCard = memo(
       if (experienceYears) {
         metadataItems.push({
           key: 'experience',
-          icon: <Clock3 size={14} color={isSelected ? '$color1' : '$color10'} />,
+          icon: <Clock3 size="md" color={isSelected ? '$color1' : '$color10'} />,
           label: `${experienceYears} years`,
         })
       }
@@ -99,7 +98,7 @@ export const ProfileCard = memo(
       if (hourlyRate) {
         metadataItems.push({
           key: 'rate',
-          icon: <DollarSign size={14} color={isSelected ? '$color1' : '$color10'} />,
+          icon: <DollarSign size="md" color={isSelected ? '$color1' : '$color10'} />,
           label: `$${hourlyRate}/hr`,
         })
       }
@@ -107,7 +106,7 @@ export const ProfileCard = memo(
       if (locationLabel) {
         metadataItems.push({
           key: 'location',
-          icon: <Award size={14} color={isSelected ? '$color1' : '$color10'} />,
+          icon: <Award size="md" color={isSelected ? '$color1' : '$color10'} />,
           label: locationLabel,
         })
       }
@@ -116,15 +115,15 @@ export const ProfileCard = memo(
       const profileBadgeConfigs: BadgeConfig[] = badges.slice(0, 3).map((badge) => ({
         key: badge.id,
         label: badge.label,
-        bg:
+        backgroundColor:
           badge.tone === 'success' ? '$green3' : badge.tone === 'warning' ? '$yellow3' : '$red3',
         color:
           badge.tone === 'success' ? '$green11' : badge.tone === 'warning' ? '$yellow11' : '$red11',
         icon:
           badge.tone === 'success' ? (
-            <BadgeCheck size={12} color="$green11" />
+            <BadgeCheck size="sm" color="$green11" />
           ) : (
-            <Award size={12} color={badge.tone === 'warning' ? '$yellow11' : '$red11'} />
+            <Award size="sm" color={badge.tone === 'warning' ? '$yellow11' : '$red11'} />
           ),
       }))
 
@@ -133,7 +132,7 @@ export const ProfileCard = memo(
         profileBadgeConfigs.push({
           key: 'overflow',
           label: `+${badges.length - 3} more`,
-          bg: 'transparent',
+          backgroundColor: 'transparent',
           color: isSelected ? '$color1' : '$color10',
         })
       }
@@ -143,13 +142,13 @@ export const ProfileCard = memo(
         ...certifications.slice(0, 2).map((cert, idx) => ({
           key: `cert-${idx}`,
           label: cert,
-          bg: 'transparent',
+          backgroundColor: 'transparent',
           color: '$color1',
         })),
         ...skills.slice(0, 3).map((skill, idx) => ({
           key: `skill-${idx}`,
           label: skill,
-          bg: 'transparent',
+          backgroundColor: 'transparent',
           color: '$color1',
         })),
       ]
@@ -160,7 +159,7 @@ export const ProfileCard = memo(
         skillBadges.push({
           key: 'skills-overflow',
           label: `+${totalSkillsAndCerts - displayedSkillsAndCerts} more`,
-          bg: 'transparent',
+          backgroundColor: 'transparent',
           color: '$color11',
         })
       }
@@ -179,28 +178,26 @@ export const ProfileCard = memo(
           }}
         >
           {/* Header with score badge */}
-          <XStack justifyContent="space-between" alignItems="center">
-            <CardHeader title={name} isSelected={isSelected} icon={avatar} />
+          <Row justify="space-between" align="center">
+            <CardHeader title={name} action={avatar} children={undefined} />
             {score && (
-              <XStack
-                alignItems="center"
-                gap="$1"
+              <Row
+                align="center"
+                gap={4}
                 backgroundColor="$blue3"
-                borderRadius="$4"
-                paddingHorizontal="$2"
-                paddingVertical="$1"
+                borderRadius={16}
+                paddingHorizontal={8}
+                paddingVertical={4}
               >
-                <Star size={12} color="$blue11" />
-                <Text color="$blue11" fontWeight="700" fontSize="$2">
-                  {score}
-                </Text>
-              </XStack>
+                <Star size="sm" color="$blue11" />
+                <Text color="$blue11">{score}</Text>
+              </Row>
             )}
-          </XStack>
+          </Row>
 
           {/* Title/Role */}
           <Paragraph
-            size="$3"
+            size="sm"
             color={isSelected ? '$color1' : '$color11'}
             numberOfLines={titleNumberOfLines}
           >
@@ -214,24 +211,19 @@ export const ProfileCard = memo(
 
           {/* Profile badges (certifications, achievements, etc.) */}
           {profileBadgeConfigs.length > 0 && (
-            <XStack gap="$1" flexWrap="wrap">
+            <Row gap={4} wrap>
               {profileBadgeConfigs.map((badgeConfig) => (
-                <XStack
+                <Row
                   key={badgeConfig.key}
-                  alignItems="center"
-                  gap="$1"
-                  paddingHorizontal="$1"
-                  paddingVertical="$0.5"
-                  borderRadius="$8"
-                  backgroundColor={
-                    badgeConfig.bg as typeof badgeConfig.bg extends string
-                      ? typeof badgeConfig.bg
-                      : never
-                  }
+                  align="center"
+                  gap={4}
+                  paddingHorizontal={4}
+                  paddingVertical={2}
+                  borderRadius={32}
+                  backgroundColor={badgeConfig.backgroundColor}
                 >
                   {badgeConfig.icon}
                   <Text
-                    fontSize="$1"
                     color={
                       badgeConfig.color as typeof badgeConfig.color extends string
                         ? typeof badgeConfig.color
@@ -240,13 +232,13 @@ export const ProfileCard = memo(
                   >
                     {badgeConfig.label}
                   </Text>
-                </XStack>
+                </Row>
               ))}
-            </XStack>
+            </Row>
           )}
 
           {/* Skills and certifications */}
-          {skillBadges.length > 0 && <CardBadges badges={skillBadges} isSelected={isSelected} />}
+          {skillBadges.length > 0 && <CardBadges badges={skillBadges} />}
         </SelectableCard>
       )
     }

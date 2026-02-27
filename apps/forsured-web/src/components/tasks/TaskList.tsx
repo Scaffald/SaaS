@@ -1,11 +1,11 @@
 /**
- * REQ-166: Task Management Workflow & UI
+ * Task Management Workflow & UI
  * TaskList component with sorting, pagination, and filtering
  */
 
 import { useState, useMemo } from 'react';
 import { ChevronUp, ChevronDown, FileText, Loader2 } from 'lucide-react';
-import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card } from '@scaffald/ui';
 import { Task } from '../../types';
 import { TaskStatusBadge } from './TaskStatusBadge';
 

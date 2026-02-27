@@ -1,5 +1,5 @@
 /**
- * REQ-6: CCPA Admin Breach Notifications List Page
+ * CCPA Admin Breach Notifications List Page
  * TASK-6: Create Breach Notification Management Pages
  *
  * Lists all breach incidents with:
@@ -12,7 +12,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Stack, Row, Text, Button, Card, Heading, Spinner, colors, spacing } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Card, Heading, Spinner, colors, spacing } from '@scaffald/ui'
 import { useRouter } from 'next/navigation'
 import { trpc } from '../../../../../lib/trpc'
 

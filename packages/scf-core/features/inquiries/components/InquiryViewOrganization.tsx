@@ -1,10 +1,10 @@
-import { api } from '@scf/core/utils/api'
+import { useInquiryByApplication } from '@scf/core/utils/inquiries-sdk-hooks'
 import { useInquirySubscription } from '@scf/core/utils/supabase/useInquirySubscription'
 import type { InquirySectionName } from '@scf/schemas'
-import { ScrollView, Separator, Text, XStack, YStack } from '@unicornlove/ui'
-import { Check } from '@tamagui/lucide-icons'
+import { ScrollView, Separator, Text, Row, Stack } from '@scaffald/ui'
+import { Check } from 'lucide-react-native'
 import { type ReactNode, useMemo } from 'react'
-import { Card } from '@unicornlove/ui'
+import { Card } from '@scaffald/ui'
 import { InquiryCommentThread } from './InquiryCommentThread'
 
 interface InquiryViewOrganizationProps {
@@ -17,6 +17,39 @@ interface InquiryViewOrganizationProps {
 interface AcceptanceBadgeProps {
   acceptedBy?: string
   acceptedAt?: string
+}
+
+interface InquiryRecord {
+  rate_min_cents?: number | null
+  rate_max_cents?: number | null
+  workdays?: string[] | null
+  employment_type?: string | null
+  employment_type_negotiable?: boolean
+  work_schedule?: string | null
+  work_schedule_negotiable?: boolean
+  working_hours_start?: string | null
+  working_hours_end?: string | null
+  working_hours_timezone?: string | null
+  working_hours_negotiable?: boolean
+  workdays_negotiable?: boolean
+  employment_start_date?: string | null
+  employment_end_date?: string | null
+  employment_dates_negotiable?: boolean
+  rate_type?: string | null
+  rate_negotiable?: boolean
+  endurance_required?: boolean
+  willing_to_travel?: boolean | null
+  travel_distance_miles?: number | null
+  willing_to_work_overtime?: boolean | null
+  has_drivers_license?: boolean | null
+  additional_notes?: string | null
+  [key: string]: unknown
+}
+
+interface InquirySectionRecord {
+  section_name: string
+  accepted_by?: string | null
+  accepted_at?: string | null
 }
 
 function AcceptanceBadge({ acceptedBy, acceptedAt }: AcceptanceBadgeProps) {
@@ -32,19 +65,17 @@ function AcceptanceBadge({ acceptedBy, acceptedAt }: AcceptanceBadgeProps) {
   }
 
   return (
-    <XStack
+    <Row
       backgroundColor="$green9"
-      paddingHorizontal="$3"
-      paddingVertical="$1.5"
-      borderRadius="$6"
-      alignItems="center"
-      gap="$2"
+      paddingHorizontal={12}
+      paddingVertical={6}
+      borderRadius={24}
+      align="center"
+      gap={8}
     >
-      <Check size={14} color="white" />
-      <Text fontSize="$3" color="white" fontWeight="500">
-        Accepted on {formatDate(acceptedAt)}
-      </Text>
-    </XStack>
+      <Check size="md" color="white" />
+      <Text color="white">Accepted on {formatDate(acceptedAt)}</Text>
+    </Row>
   )
 }
 
@@ -57,36 +88,38 @@ export function InquiryViewOrganization({
   // Subscribe to real-time updates for this inquiry
   useInquirySubscription(inquiryId)
 
-  const { data, isLoading, error } = api.inquiries.getByApplication.useQuery({
-    applicationId,
-  })
+  const { data, isLoading, error } = useInquiryByApplication(applicationId)
 
   if (isLoading) {
     return (
-      <YStack padding="$4" alignItems="center" gap="$4">
+      <Stack padding="md" align="center" gap={16}>
         <Text>Loading inquiry...</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (error || !data || !data.inquiry) {
     return (
-      <YStack padding="$4" alignItems="center" gap="$4">
+      <Stack padding="md" align="center" gap={16}>
         <Text color="$red10">Failed to load inquiry</Text>
-      </YStack>
+      </Stack>
     )
   }
 
-  const { inquiry, sections, comments } = data
+  const { comments } = data
+  const inquiry = data.inquiry as InquiryRecord
+  const sections = data.sections as InquirySectionRecord[]
 
   // Group comments by section
   const commentsBySection = useMemo(() => {
     const grouped: Record<string, typeof comments> = {}
     for (const comment of comments) {
-      if (!grouped[comment.section_name]) {
-        grouped[comment.section_name] = []
+      const sectionName = comment.section_name
+      if (sectionName == null) continue
+      if (!grouped[sectionName]) {
+        grouped[sectionName] = []
       }
-      grouped[comment.section_name].push(comment)
+      grouped[sectionName].push(comment)
     }
     return grouped
   }, [comments])
@@ -129,11 +162,9 @@ export function InquiryViewOrganization({
   const jobTitle = providedJobTitle || 'Job'
 
   const NonNegotiableBadge = () => (
-    <XStack backgroundColor="$gray3" paddingHorizontal="$2" paddingVertical="$1" borderRadius="$2">
-      <Text fontSize="$1" color="$gray11" fontWeight="600">
-        Non-negotiable
-      </Text>
-    </XStack>
+    <Row backgroundColor="$gray3" paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
+      <Text color="$gray11">Non-negotiable</Text>
+    </Row>
   )
 
   const InquiryField = ({
@@ -145,15 +176,13 @@ export function InquiryViewOrganization({
     value: string | null | undefined
     negotiable: boolean
   }) => (
-    <XStack justifyContent="space-between" alignItems="center">
-      <Text fontSize="$3" color="$color11">
-        {label}
-      </Text>
-      <XStack alignItems="center" gap="$2">
-        <Text fontSize="$3">{value || 'Not specified'}</Text>
+    <Row justify="space-between" align="center">
+      <Text color="$gray11">{label}</Text>
+      <Row align="center" gap={8}>
+        <Text>{value || 'Not specified'}</Text>
         {!negotiable && <NonNegotiableBadge />}
-      </XStack>
-    </XStack>
+      </Row>
+    </Row>
   )
 
   const InquirySection = ({
@@ -166,26 +195,24 @@ export function InquiryViewOrganization({
     children: ReactNode
   }) => {
     const section = sections.find(
-      (s: { section_name: InquirySectionName }) => s.section_name === sectionName
+      (s) => s.section_name === sectionName
     )
     const sectionComments = commentsBySection[sectionName] || []
 
     return (
-      <Card padding="$4" gap="$3">
+      <Card padding="md" style={{ gap: 12 }}>
         {/* Section Header */}
-        <XStack justifyContent="space-between" alignItems="center">
-          <Text fontSize="$6" fontWeight="600">
-            {title}
-          </Text>
+        <Row justify="space-between" align="center">
+          <Text>{title}</Text>
           {section && (
-            <AcceptanceBadge acceptedBy={section.accepted_by} acceptedAt={section.accepted_at} />
+            <AcceptanceBadge acceptedBy={section.accepted_by ?? undefined} acceptedAt={section.accepted_at ?? undefined} />
           )}
-        </XStack>
+        </Row>
 
         <Separator />
 
         {/* Section Content */}
-        <YStack gap="$3">{children}</YStack>
+        <Stack gap={12}>{children}</Stack>
 
         {/* Comment Thread */}
         <Separator />
@@ -200,14 +227,12 @@ export function InquiryViewOrganization({
 
   return (
     <ScrollView>
-      <YStack gap="$4" padding="$4" $sm={{ gap: '$6', padding: '$3' }}>
+      <Stack gap={16} padding="md">
         {/* Header with Edit button */}
-        <XStack justifyContent="space-between" alignItems="center">
-          <Text fontSize="$8" fontWeight="600">
-            Inquiry
-          </Text>
-        </XStack>
-        <Text fontSize="$4" color="$color11">
+        <Row justify="space-between" align="center">
+          <Text>Inquiry</Text>
+        </Row>
+        <Text color="$gray11">
           {candidateName} - {jobTitle}
         </Text>
 
@@ -222,7 +247,7 @@ export function InquiryViewOrganization({
                   ? 'Temporary'
                   : null
             }
-            negotiable={inquiry.employment_type_negotiable}
+            negotiable={inquiry.employment_type_negotiable ?? true}
           />
           <InquiryField
             label="Work schedule"
@@ -235,7 +260,7 @@ export function InquiryViewOrganization({
                     ? 'Day-Week'
                     : null
             }
-            negotiable={inquiry.work_schedule_negotiable}
+            negotiable={inquiry.work_schedule_negotiable ?? true}
           />
           {inquiry.working_hours_start && inquiry.working_hours_end && (
             <InquiryField
@@ -243,24 +268,24 @@ export function InquiryViewOrganization({
               value={`${inquiry.working_hours_start} - ${inquiry.working_hours_end}${
                 inquiry.working_hours_timezone ? ` (${inquiry.working_hours_timezone})` : ''
               }`}
-              negotiable={inquiry.working_hours_negotiable}
+              negotiable={inquiry.working_hours_negotiable ?? true}
             />
           )}
           <InquiryField
             label="Workdays"
             value={formatWorkdays()}
-            negotiable={inquiry.workdays_negotiable}
+            negotiable={inquiry.workdays_negotiable ?? true}
           />
           <InquiryField
             label="Start date"
             value={formatDate(inquiry.employment_start_date)}
-            negotiable={inquiry.employment_dates_negotiable}
+            negotiable={inquiry.employment_dates_negotiable ?? true}
           />
           {inquiry.employment_end_date && (
             <InquiryField
               label="End date"
               value={formatDate(inquiry.employment_end_date)}
-              negotiable={inquiry.employment_dates_negotiable}
+              negotiable={inquiry.employment_dates_negotiable ?? true}
             />
           )}
         </InquirySection>
@@ -270,7 +295,7 @@ export function InquiryViewOrganization({
           <InquiryField
             label="Rate"
             value={`${formatRate()} ${inquiry.rate_type === 'hourly' ? '/hr' : '/yr'}`}
-            negotiable={inquiry.rate_negotiable}
+            negotiable={inquiry.rate_negotiable ?? true}
           />
         </InquirySection>
 
@@ -311,17 +336,13 @@ export function InquiryViewOrganization({
             />
           )}
           {inquiry.additional_notes && (
-            <YStack gap="$2">
-              <Text fontSize="$3" fontWeight="600" color="$color11">
-                Additional notes
-              </Text>
-              <Text fontSize="$3" color="$color12">
-                {inquiry.additional_notes}
-              </Text>
-            </YStack>
+            <Stack gap={8}>
+              <Text color="$gray11">Additional notes</Text>
+              <Text color="$gray11">{inquiry.additional_notes}</Text>
+            </Stack>
           )}
         </InquirySection>
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }

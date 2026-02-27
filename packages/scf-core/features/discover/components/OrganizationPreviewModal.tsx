@@ -1,10 +1,13 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
-import { extractPlainText, ResponsiveModal } from '@unicornlove/ui'
-import { Briefcase, Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
+import {
+  useOrganization,
+  useOrganizationOpenJobsCount,
+} from '@scf/core/utils/organizations-sdk-hooks'
+import { extractPlainText, ResponsiveModal } from '@scaffald/ui'
+import { Briefcase, Building2, ExternalLink, MapPin, Users } from 'lucide-react-native'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
-import { Button, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 interface OrganizationPreviewModalProps {
   organizationId: string | null
@@ -24,16 +27,14 @@ export function OrganizationPreviewModal({
   const router = useRouter()
 
   // Fetch organization data
-  const { data: organization, isLoading } = api.organizations.getOrganization.useQuery(
-    { id: organizationId || '' },
-    { enabled: !!organizationId && open }
-  )
+  const { data: organization, isLoading } = useOrganization(organizationId || undefined, {
+    enabled: !!organizationId && open,
+  })
 
   // Fetch open jobs count for this organization
-  const jobsCountQuery = api.organizations.getOpenJobsCount.useQuery(
-    { organizationId: organizationId || '' },
-    { enabled: !!organizationId && open }
-  )
+  const jobsCountQuery = useOrganizationOpenJobsCount(organizationId || undefined, {
+    enabled: !!organizationId && open,
+  })
   const jobsCount: number = (() => {
     const data = jobsCountQuery.data
     if (typeof data === 'number') return data
@@ -69,156 +70,138 @@ export function OrganizationPreviewModal({
       open={open}
       onOpenChange={onOpenChange}
       title={organization?.name || 'Organization Details'}
-      size="medium"
+      size="md"
     >
       {isLoading ? (
-        <YStack paddingVertical="$8" alignItems="center" justifyContent="center">
-          <Spinner size="large" color="$blue10" />
-          <Text marginTop="$4" color="$color11">
+        <Stack paddingVertical={32} align="center" justify="center">
+          <Spinner size="lg" color="primary" />
+          <Text color="$gray11" style={{ marginTop: 16 }}>
             Loading organization details...
           </Text>
-        </YStack>
+        </Stack>
       ) : !organization ? (
-        <YStack paddingVertical="$8" alignItems="center">
-          <Text color="$red10" fontSize="$5" fontWeight="600">
-            Organization not found
-          </Text>
-        </YStack>
+        <Stack paddingVertical={32} align="center">
+          <Text color="$red10">Organization not found</Text>
+        </Stack>
       ) : (
         <>
           {/* Organization Header */}
-          <YStack gap="$3" alignItems="center">
-            <YStack
+          <Stack gap={12} align="center">
+            <Stack
               width={80}
               height={80}
-              borderRadius="$6"
+              borderRadius={24}
               backgroundColor="$blue4"
-              alignItems="center"
-              justifyContent="center"
+              align="center"
+              justify="center"
             >
               <Building2 size={40} color="$blue10" />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2" alignItems="center">
-              <Text fontSize="$8" fontWeight="700" color="$color12">
-                {organization.name}
-              </Text>
-              {organization.industry_name && (
-                <Text fontSize="$5" color="$color11">
-                  {organization.industry_name}
-                </Text>
+            <Stack gap={8} align="center">
+              <Text color="$gray11">{organization.name}</Text>
+              {(organization as { industry_name?: string }).industry_name && (
+                <Text color="$gray11">{(organization as { industry_name?: string }).industry_name}</Text>
               )}
-            </YStack>
+            </Stack>
 
             {/* Open Jobs Badge */}
             {jobsCount > 0 && (
-              <XStack
+              <Row
                 backgroundColor="$green2"
-                paddingHorizontal="$4"
-                paddingVertical="$2"
-                borderRadius="$10"
-                gap="$2"
-                alignItems="center"
+                paddingHorizontal={16}
+                paddingVertical={8}
+                borderRadius={10}
+                gap={8}
+                align="center"
                 borderWidth={1}
                 borderColor="$green5"
               >
-                <Briefcase size={16} color="$green10" />
-                <Text fontSize="$4" fontWeight="700" color="$green11">
+                <Briefcase size="md" color="$green10" />
+                <Text color="$green11">
                   {jobsCount} Open {jobsCount === 1 ? 'Position' : 'Positions'}
                 </Text>
-              </XStack>
+              </Row>
             )}
-          </YStack>
+          </Stack>
 
           <Separator />
 
           {/* Quick Info */}
-          <YStack gap="$3">
+          <Stack gap={12}>
             {formatAddress(organization.address) && (
-              <XStack gap="$2" alignItems="center">
-                <MapPin size={18} color="$color10" />
-                <Text fontSize="$4" color="$color11">
-                  {formatAddress(organization.address)}
-                </Text>
-              </XStack>
+              <Row gap={8} align="center">
+                <MapPin size={18} color="$gray11" />
+                <Text color="$gray11">{formatAddress(organization.address)}</Text>
+              </Row>
             )}
 
-            {organization.employee_count_range && (
-              <XStack gap="$2" alignItems="center">
-                <Users size={18} color="$color10" />
-                <Text fontSize="$4" color="$color11">
-                  {organization.employee_count_range} employees
-                </Text>
-              </XStack>
+            {(organization as { employee_count_range?: string }).employee_count_range && (
+              <Row gap={8} align="center">
+                <Users size={18} color="$gray11" />
+                <Text color="$gray11">{(organization as { employee_count_range?: string }).employee_count_range} employees</Text>
+              </Row>
             )}
 
-            {organization.is_verified && (
-              <XStack
+            {(organization as { is_verified?: boolean }).is_verified && (
+              <Row
                 backgroundColor="$blue3"
-                paddingHorizontal="$3"
-                paddingVertical="$1.5"
-                borderRadius="$3"
+                paddingHorizontal={12}
+                paddingVertical={6}
+                borderRadius={12}
               >
-                <Text fontSize="$3" fontWeight="600" color="$blue11">
-                  ✓ Verified Organization
-                </Text>
-              </XStack>
+                <Text color="$blue11">✓ Verified Organization</Text>
+              </Row>
             )}
-          </YStack>
+          </Stack>
 
           {/* Description */}
           {organization.description && (
             <>
               <Separator />
-              <YStack gap="$2">
-                <Text fontSize="$5" fontWeight="600" color="$color12">
-                  About
-                </Text>
-                <Text fontSize="$4" color="$color11" lineHeight="$1" numberOfLines={4}>
+              <Stack gap={8}>
+                <Text color="$gray11">About</Text>
+                <Text color="$gray11" style={{ lineHeight: 16 }}>
                   {typeof organization.description === 'string'
                     ? organization.description
                     : extractPlainText(organization.description as JSONContent)}
                 </Text>
-              </YStack>
+              </Stack>
             </>
           )}
 
           {/* Website Link */}
-          {organization.website_url && (
+          {(organization as { website_url?: string }).website_url && (
             <>
               <Separator />
-              <XStack gap="$2" alignItems="center">
-                <ExternalLink size={16} color="$blue10" />
+              <Row gap={8} align="center">
+                <ExternalLink size="md" color="$blue10" />
                 <Text
-                  fontSize="$4"
                   color="$blue10"
-                  textDecorationLine="underline"
+                  style={{ textDecorationLine: 'underline' }}
                   onPress={() => {
-                    if (organization.website_url) {
-                      // Open in new window/tab
-                      if (typeof window !== 'undefined') {
-                        window.open(organization.website_url, '_blank')
-                      }
+                    const url = (organization as { website_url?: string }).website_url
+                    if (url && typeof window !== 'undefined') {
+                      window.open(url, '_blank')
                     }
                   }}
-                  cursor="pointer"
                 >
-                  {organization.website_url.replace(/^https?:\/\//, '')}
+                  {(organization as { website_url?: string }).website_url?.replace(/^https?:\/\//, '')}
                 </Text>
-              </XStack>
+              </Row>
             </>
           )}
 
           <Separator />
 
           {/* CTA Buttons */}
-          <YStack gap="$3">
+          <Stack gap={12}>
             {typeof window !== 'undefined' && (
               <Button
-                size="$5"
-                theme="blue"
-                variant="outlined"
-                iconAfter={<ExternalLink size={18} />}
+                size="lg"
+                color="primary"
+                variant="outline"
+                iconEnd={ExternalLink}
                 onPress={handleOpenInNewTab}
               >
                 Open in New Tab
@@ -226,21 +209,19 @@ export function OrganizationPreviewModal({
             )}
             {jobsCount > 0 ? (
               <Button
-                size="$5"
-                theme="info"
-                iconAfter={<Briefcase size={18} />}
+                size="lg"
+                color="primary"
+                iconEnd={Briefcase}
                 onPress={handleViewJobs}
               >
                 View Open Positions ({jobsCount})
               </Button>
             ) : (
-              <YStack backgroundColor="$color3" padding="$3" borderRadius="$3" alignItems="center">
-                <Text fontSize="$4" color="$color11">
-                  No open positions at this time
-                </Text>
-              </YStack>
+              <Stack backgroundColor="$color3" padding="sm" borderRadius={12} align="center">
+                <Text color="$gray11">No open positions at this time</Text>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
         </>
       )}
     </ResponsiveModal>

@@ -1,6 +1,7 @@
-import { Input, Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
+import { Input, Text, ToggleSwitch, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { useState } from 'react'
-import { Label } from '@unicornlove/ui'
+import { Label } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface ComplianceAnalyticsSectionProps {
   eeoJobCategory?: string
@@ -25,6 +26,7 @@ export function ComplianceAnalyticsSection({
   sourceTrackingEnabled,
   onUpdate,
 }: ComplianceAnalyticsSectionProps) {
+  const { theme } = useThemeContext()
   const [localState, setLocalState] = useState({
     eeo_job_category: eeoJobCategory,
     is_veteran_friendly: isVeteranFriendly,
@@ -40,93 +42,91 @@ export function ComplianceAnalyticsSection({
   }
 
   return (
-    <YStack
-      gap="$4"
-      padding="$4"
-      backgroundColor="$background"
-      borderRadius="$4"
+    <Stack
+      gap={16}
+      padding="md"
+      style={{ backgroundColor: colors.bg[theme].default }}
+      borderRadius={16}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
     >
-      <Text fontSize="$6" fontWeight="600">
-        Compliance & Analytics
-      </Text>
-      <Text fontSize="$2" color="$color10">
+      <Text>Compliance & Analytics</Text>
+      <Text style={{ color: colors.text[theme].secondary }}>
         EEO compliance and tracking settings
       </Text>
 
       {/* EEO Job Category */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>EEO job category</Label>
         <Input
           placeholder="e.g. Craft Workers, Laborers, Operatives"
           value={localState.eeo_job_category || ''}
           onChangeText={(text) => handleChange('eeo_job_category', text || undefined)}
         />
-        <Text fontSize="$2" color="$color10">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Equal Employment Opportunity category
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Veteran Friendly */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Veteran friendly</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Position suitable for veterans
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.is_veteran_friendly || false}
-          onCheckedChange={(checked) => handleChange('is_veteran_friendly', checked)}
+          onChange={(checked) => handleChange('is_veteran_friendly', checked)}
           aria-label="Veteran friendly"
         />
-      </XStack>
+      </Row>
 
       {/* Disability Friendly */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Disability friendly</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Accommodations available for disabilities
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.is_disability_friendly || false}
-          onCheckedChange={(checked) => handleChange('is_disability_friendly', checked)}
+          onChange={(checked) => handleChange('is_disability_friendly', checked)}
           aria-label="Disability friendly"
         />
-      </XStack>
+      </Row>
 
       {/* Affirmative Action Plan */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Affirmative action plan</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Part of affirmative action hiring
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.affirmative_action_plan || false}
-          onCheckedChange={(checked) => handleChange('affirmative_action_plan', checked)}
+          onChange={(checked) => handleChange('affirmative_action_plan', checked)}
           aria-label="Affirmative action plan"
         />
-      </XStack>
+      </Row>
 
       {/* Source Tracking */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Source tracking enabled</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Track where applicants find this job
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.source_tracking_enabled || false}
-          onCheckedChange={(checked) => handleChange('source_tracking_enabled', checked)}
+          onChange={(checked) => handleChange('source_tracking_enabled', checked)}
           aria-label="Source tracking enabled"
         />
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

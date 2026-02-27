@@ -1,76 +1,94 @@
-import { ROUTES } from '@scf/core/constants/routes'
-import { AssessmentWizard } from '@scf/core/features/assessments'
-import { RiasecQuickAssessment } from '@scf/core/features/career-assessment/components/RiasecQuickAssessment'
+import { ROUTES } from "@scf/core/constants/routes";
+import { AssessmentWizard } from "@scf/core/features/assessments";
+import { RiasecQuickAssessment } from "@scf/core/features/career-assessment/components/RiasecQuickAssessment";
 import {
   careerAssessmentDefaults,
   type RiasecScores,
-} from '@scf/core/features/career-assessment/config/career-assessment-schema'
-import { api } from '@scf/core/utils/api'
-import { useToastController } from '@tamagui/toast'
-import { useRouter } from 'expo-router'
-import { useEffect, useState } from 'react'
-import { Button, YStack } from '@unicornlove/ui'
+} from "@scf/core/features/career-assessment/config/career-assessment-schema";
+import {
+  useRIASECStatus,
+  useSaveCareerAssessmentMutation,
+} from "@scf/core/utils/onet-sdk-hooks";
+import { useToast } from "@scaffald/ui";
+import { useRouter } from "expo-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { Button, Stack } from "@scaffald/ui";
 
 /**
  * RIASECAssessmentWizard - Standalone wizard for RIASEC Career Interests
  */
 export function RIASECAssessmentWizard() {
-  const router = useRouter()
-  const toast = useToastController()
+  const router = useRouter();
+  const toast = useToast();
 
-  const { data: status, isLoading, error } = api.onet.getRIASECStatus.useQuery()
-  const [scores, setScores] = useState<RiasecScores>(careerAssessmentDefaults.riasec_scores)
-  const utils = api.useUtils()
+  const { data: status, isLoading, error } = useRIASECStatus();
+  const [scores, setScores] = useState<RiasecScores>(
+    careerAssessmentDefaults.riasec_scores
+  );
+  const queryClient = useQueryClient();
 
   // Load existing scores when status is available
   useEffect(() => {
     if (status?.scores) {
-      setScores(status.scores as RiasecScores)
+      setScores(status.scores as RiasecScores);
     }
-  }, [status])
+  }, [status]);
 
-  const saveMutation = api.onet.saveCareerAssessment.useMutation({
+  const saveMutation = useSaveCareerAssessmentMutation({
     onSuccess: () => {
       // Invalidate status queries to update drawer checkmarks
-      utils.onet.getRIASECStatus.invalidate()
-      toast.show('Assessment Complete', {
-        message: 'Your career interests have been saved!',
-      })
-      router.push(ROUTES.DASHBOARD.path)
+      queryClient.invalidateQueries({
+        queryKey: ["scaffald", "onet", "riasec", "status"],
+      });
+      toast.show({
+        title: "Assessment Complete",
+        message: "Your career interests have been saved!",
+        variant: "success",
+      });
+      router.push(ROUTES.DASHBOARD.path);
     },
     onError: (error: { message?: string }) => {
-      toast.show('Error', {
-        message: error.message || 'Failed to save assessment. Please try again.',
-      })
+      toast.show({
+        title: "Error",
+        message:
+          error.message || "Failed to save assessment. Please try again.",
+        variant: "error",
+      });
     },
-  })
+  });
 
   const handleComplete = () => {
     saveMutation.mutate({
       riasec_scores: scores,
-      current_occupation_code: undefined,
-      target_occupation_codes: undefined,
-    })
-  }
+    });
+  };
 
   const allRated = Object.values(scores).every(
-    (score) => typeof score === 'number' && score >= 1 && score <= 5
-  )
+    (score) => typeof score === "number" && score >= 1 && score <= 5
+  );
 
-  const queryError = error ? new Error(error.message ?? 'Failed to load assessment status.') : null
+  const queryError = error
+    ? new Error(error.message ?? "Failed to load assessment status.")
+    : null;
 
   return (
     <AssessmentWizard
       title="Career Interests"
       description="Rate your interest in each career dimension using the sliders below."
-      steps={[{ id: 'interests', label: 'Interest Rating', order: 1 }]}
+      steps={[{ id: "interests", label: "Interest Rating", order: 1 }]}
       currentStep="interests"
       completionScore={status?.isCompleted ? 100 : 0}
       isLoading={isLoading}
       error={queryError}
       showNext={false}
     >
-      <YStack gap="$4" width="100%" maxWidth={800} marginHorizontal="auto">
+      <Stack
+        gap={16}
+        width="100%"
+        maxWidth={800}
+        style={{ marginHorizontal: "auto" }}
+      >
         <RiasecQuickAssessment
           value={scores}
           onChange={setScores}
@@ -78,14 +96,15 @@ export function RIASECAssessmentWizard() {
         />
 
         <Button
-          size="$5"
-          themeInverse
+          size="lg"
+          variant="filled"
+          color="primary"
           onPress={handleComplete}
           disabled={!allRated || saveMutation.isPending}
         >
-          <Button.Text>Complete Assessment</Button.Text>
+          Complete Assessment
         </Button>
-      </YStack>
+      </Stack>
     </AssessmentWizard>
-  )
+  );
 }

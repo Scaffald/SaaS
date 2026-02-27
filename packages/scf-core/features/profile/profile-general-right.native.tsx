@@ -1,5 +1,5 @@
-import { DashboardWidget } from '@unicornlove/ui'
-import { H3, Text, YStack } from '@unicornlove/ui'
+import { DashboardWidget } from '@scaffald/ui'
+import { H3, Text, Stack } from '@scaffald/ui'
 
 /**
  * Profile General Right Component
@@ -7,13 +7,13 @@ import { H3, Text, YStack } from '@unicornlove/ui'
  */
 export function ProfileGeneralRight() {
   return (
-    <YStack gap="$4">
+    <Stack gap={16}>
       <DashboardWidget>
         <H3>General Information</H3>
-        <Text color="$color11" fontSize="$3">
+        <Text color="$gray11">
           Update your basic profile information including your name, photo, and contact details.
         </Text>
       </DashboardWidget>
-    </YStack>
+    </Stack>
   )
 }

@@ -1,7 +1,8 @@
-import { Button } from '@unicornlove/ui'
+import { Button } from '@scaffald/ui'
 import type { MainColor } from 'luscher-test'
 import { useEffect, useState } from 'react'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Pressable } from 'react-native'
+import { Text, Row, Stack } from '@scaffald/ui'
 import { type Color, shuffleColors } from '../lib/luscher/utils'
 
 export interface LuscherTestStepProps {
@@ -73,124 +74,64 @@ export function LuscherTestStep({
   const remaining = 8 - selectedOrder.length
 
   return (
-    <YStack gap="$6" maxWidth={800} width="100%" marginHorizontal="auto">
-      <YStack gap="$2" alignItems="center">
-        <Text fontSize="$6" fontWeight="600" color="$color12" textAlign="center">
+    <Stack gap={24} maxWidth={800} width="100%" style={{ marginHorizontal: 'auto' }}>
+      <Stack gap={8} align="center">
+        <Text style={{ color: '#414e62', textAlign: 'center' }}>
           {step === 'luscher1' ? 'First Color Test' : 'Second Color Test'}
         </Text>
-        <Text fontSize="$4" color="$color11" textAlign="center">
+        <Text style={{ color: '#414e62', textAlign: 'center' }}>
           Click the colors in order based on what makes you feel the best.
         </Text>
-        <Text fontSize="$3" color="$color10" textAlign="center">
+        <Text style={{ color: '#414e62', textAlign: 'center' }}>
           {isComplete
             ? 'All 8 colors selected!'
             : `Select ${remaining} more color${remaining > 1 ? 's' : ''}`}
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Color Grid: 2x4 on mobile, 4x2 on desktop */}
-      <YStack gap="$3" width="100%">
-        {/* Mobile: 2 columns, 4 rows */}
-        <XStack
-          gap="$3"
-          flexWrap="wrap"
-          justifyContent="center"
-          display="flex"
-          $md={{ display: 'none' }}
-        >
+      <Stack gap={12} width="100%">
+        <Row gap={12} wrap justify="center">
           {colors.map((color) => {
             const isSelected = selectedOrder.includes(color.value)
 
             return (
-              <YStack
+              <Pressable
                 key={String(color.key)}
-                gap="$2"
-                alignItems="center"
-                cursor={isSelected ? 'default' : 'pointer'}
-                opacity={isSelected ? 0 : 1}
-                animation="quick"
-                pressStyle={{ scale: 0.95 }}
-                onPress={() => !isSelected && handleColorPress(color.value)}
                 disabled={isSelected || isLoading}
-                flexBasis="48%"
-                maxWidth={200}
-                minWidth={120}
-                pointerEvents={isSelected ? 'none' : 'auto'}
+                onPress={() => !isSelected && handleColorPress(color.value)}
+                style={{ opacity: isSelected ? 0 : 1, maxWidth: 200, minWidth: 120 }}
               >
-                <YStack
+                <Stack
                   width="100%"
-                  aspectRatio={1}
-                  maxWidth={200}
-                  maxHeight={200}
-                  style={{ backgroundColor: color.hex }}
-                  borderRadius="$4"
-                  justifyContent="center"
-                  alignItems="center"
-                  shadowColor="$shadowColor"
-                  shadowOffset={{ width: 0, height: 2 }}
-                  shadowOpacity={0.1}
-                  shadowRadius={4}
+                  style={{
+                    aspectRatio: 1,
+                    backgroundColor: color.hex,
+                    borderRadius: 16,
+                    maxWidth: 200,
+                    maxHeight: 200,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 4,
+                  }}
+                  justify="center"
+                  align="center"
                 />
-              </YStack>
+              </Pressable>
             )
           })}
-        </XStack>
-
-        {/* Desktop: 4 columns, 2 rows */}
-        <XStack
-          gap="$3"
-          flexWrap="wrap"
-          justifyContent="center"
-          display="none"
-          $md={{ display: 'flex' }}
-        >
-          {colors.map((color) => {
-            const isSelected = selectedOrder.includes(color.value)
-
-            return (
-              <YStack
-                key={String(color.key)}
-                gap="$2"
-                alignItems="center"
-                cursor={isSelected ? 'default' : 'pointer'}
-                opacity={isSelected ? 0 : 1}
-                animation="quick"
-                pressStyle={{ scale: 0.95 }}
-                onPress={() => !isSelected && handleColorPress(color.value)}
-                disabled={isSelected || isLoading}
-                flexBasis="23%"
-                maxWidth={250}
-                minWidth={150}
-                pointerEvents={isSelected ? 'none' : 'auto'}
-              >
-                <YStack
-                  width="100%"
-                  aspectRatio={1}
-                  maxWidth={250}
-                  maxHeight={250}
-                  style={{ backgroundColor: color.hex }}
-                  borderRadius="$4"
-                  justifyContent="center"
-                  alignItems="center"
-                  shadowColor="$shadowColor"
-                  shadowOffset={{ width: 0, height: 2 }}
-                  shadowOpacity={0.1}
-                  shadowRadius={4}
-                />
-              </YStack>
-            )
-          })}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       {/* Manual Save Button (if not auto-saved) */}
       {isComplete && !isLoading && (
-        <XStack justifyContent="center">
-          <Button variant="primary" size="$4" onPress={() => onSave(selectedOrder)}>
+        <Row justify="center">
+          <Button variant="filled" color="primary" size="md" onPress={() => onSave(selectedOrder)}>
             Continue
           </Button>
-        </XStack>
+        </Row>
       )}
-    </YStack>
+    </Stack>
   )
 }

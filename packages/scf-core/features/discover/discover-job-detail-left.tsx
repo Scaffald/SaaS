@@ -2,11 +2,12 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { ApplicationWizard, QuickApplyModal } from '@scf/core/features/applications/components'
 import { getApplicationFlow } from '@scf/core/features/applications/utils/getApplicationFlow'
 import { captureEvent } from '@scf/core/utils/analytics/client'
-import { api } from '@scf/core/utils/api'
-import { ExternalLink } from '@tamagui/lucide-icons'
+import { useExternalJobs, useJobDetails } from '@scf/core/utils/jobs-sdk-hooks'
+import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
+import { ExternalLink } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Button, Spinner, Text, YStack } from '@unicornlove/ui'
+import { Button, Spinner, Text, Stack, Row } from '@scaffald/ui'
 
 interface DiscoverJobDetailLeftProps {
   jobId: string
@@ -22,22 +23,18 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   // Hooks must be called unconditionally at the top level
   const [showQuickApply, setShowQuickApply] = useState(false)
 
-  // Try fetching as internal job first
-  const { data: internalJobData, isLoading: internalLoading } = api.jobs.getJobDetails.useQuery(
-    { id: jobId },
-    { enabled: !!jobId }
-  )
+  // Try fetching as internal job first (SDK)
+  const { data: internalJob, isLoading: internalLoading } = useJobDetails(jobId, {
+    enabled: !!jobId,
+  })
 
-  const internalJob = internalJobData?.job
-
-  // If not found as internal, try external
-  const { data: externalJobs, isLoading: externalLoading } = api.jobs.getExternalJobs.useQuery(
-    undefined,
-    { enabled: !!jobId && !internalJob && !internalLoading }
-  )
+  // If not found as internal, try external (SDK)
+  const { data: externalJobsList, isLoading: externalLoading } = useExternalJobs({
+    enabled: !!jobId && !internalJob && !internalLoading,
+  })
 
   const isLoading = internalLoading || externalLoading
-  const externalJob = externalJobs?.jobs?.find((j: { id: string }) => j.id === jobId)
+  const externalJob = externalJobsList?.find((j: { id: string }) => j.id === jobId)
   const job = internalJob || externalJob
   const isExternal = !!externalJob
 
@@ -46,8 +43,10 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
     job && !isExternal && 'organization' in job
       ? getApplicationFlow({
           id: job.id,
-          title: job.title,
-          organization: job.organization,
+          title: job.title ?? 'Job',
+          organization: job.organization
+            ? { name: job.organization.name ?? 'Unknown Organization' }
+            : null,
           custom_application_questions:
             'custom_application_questions' in job
               ? (job.custom_application_questions as
@@ -89,7 +88,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   }, [job, flowType])
 
   // Track job view for engagement analytics
-  const trackEventMutation = api.engagement.trackEvent.useMutation()
+  const trackEventMutation = useTrackEngagementMutation()
 
   useEffect(() => {
     if (job) {
@@ -101,10 +100,10 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
           !isExternal && 'organization' in job ? (job.organization?.id ?? null) : null,
       })
 
-      // Track in engagement analytics (REQ-254)
+      // Track in engagement analytics
       try {
         trackEventMutation.mutate({
-          eventType: 'job.viewed',
+          eventType: 'job_view',
           targetType: 'job',
           targetId: job.id,
           metadata: {
@@ -119,26 +118,24 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
         console.warn('Failed to track job view:', error)
       }
     }
-  }, [job, isExternal, trackEventMutation.mutate])
+  }, [job, isExternal, trackEventMutation])
 
   if (isLoading) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4">
-        <Spinner size="large" color="$blue10" />
-        <Text marginTop="$2" color="$color11">
+      <Stack style={{ flex: 1 }} align="center" justify="center" padding="md">
+        <Spinner size="lg" color="primary" />
+        <Text color="secondary" style={{ marginTop: 8 }}>
           Loading...
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (!job) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
-        <Text fontSize="$6" fontWeight="600" color="$color12">
-          Job not found
-        </Text>
-      </YStack>
+      <Stack style={{ flex: 1 }} align="center" justify="center" padding="md" gap={8}>
+        <Text color="secondary">Job not found</Text>
+      </Stack>
     )
   }
 
@@ -147,26 +144,24 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
     // Quick apply flow
     if (flowType === 'quick') {
       return (
-        <YStack flex={1} padding="$4" gap="$4">
-          <YStack gap="$3">
-            <Text fontSize="$6" fontWeight="700" color="$color12">
-              Apply to {job.title}
-            </Text>
-            <Text fontSize="$4" color="$color11" lineHeight="$5">
+        <Stack style={{ flex: 1 }} padding="md" gap={16}>
+          <Stack gap={12}>
+            <Text color="secondary">Apply to {job.title}</Text>
+            <Text color="secondary" style={{ lineHeight: 20 }}>
               This is a quick application. You'll answer a few screening questions and submit your
               application.
             </Text>
-          </YStack>
+          </Stack>
 
           <Button
-            size="$5"
-            theme="info"
+            size="lg"
+            color="primary"
             onPress={() => {
               setShowQuickApply(true)
               // Track application started for quick apply flow
               try {
                 trackEventMutation.mutate({
-                  eventType: 'application.started',
+                  eventType: 'application_start',
                   targetType: 'job',
                   targetId: job.id,
                   metadata: {
@@ -185,8 +180,8 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
           </Button>
 
           <Button
-            size="$4"
-            chromeless
+            size="md"
+            variant="outline"
             onPress={() => {
               router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
             }}
@@ -197,15 +192,15 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
           {showQuickApply && (
             <QuickApplyModal
               jobId={job.id}
-              jobTitle={job.title}
-              organizationName={job.organization?.name || 'Unknown Organization'}
+              jobTitle={job.title ?? 'Job'}
+              organizationName={job.organization?.name ?? 'Unknown Organization'}
               open={showQuickApply}
               onOpenChange={setShowQuickApply}
               onSuccess={(applicationId) => {
                 // Track application submitted for quick apply flow
                 try {
                   trackEventMutation.mutate({
-                    eventType: 'application.submitted',
+                    eventType: 'application_complete',
                     targetType: 'job',
                     targetId: job.id,
                     metadata: {
@@ -225,22 +220,22 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
               }}
             />
           )}
-        </YStack>
+        </Stack>
       )
     }
 
     // Full wizard flow
     return (
-      <YStack flex={1} height="100%">
+      <Stack style={{ flex: 1, height: '100%' }}>
         <ApplicationWizard
           jobId={job.id}
-          jobTitle={job.title}
-          organizationName={job.organization?.name || 'Unknown Organization'}
+          jobTitle={job.title ?? 'Job'}
+          organizationName={job.organization?.name ?? 'Unknown Organization'}
           onSuccess={(applicationId) => {
             // Track application submitted for full wizard flow
             try {
               trackEventMutation.mutate({
-                eventType: 'application.submitted',
+                eventType: 'application_complete',
                 targetType: 'job',
                 targetId: job.id,
                 metadata: {
@@ -264,28 +259,25 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
             router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
           }}
         />
-      </YStack>
+      </Stack>
     )
   }
 
   // External job - show external link button
   if (isExternal && 'company_name' in job && job.url) {
     return (
-      <YStack flex={1} padding="$4" gap="$4">
-        <YStack gap="$3">
-          <Text fontSize="$6" fontWeight="700" color="$color12">
-            Apply to this Position
-          </Text>
-          <Text fontSize="$4" color="$color11" lineHeight="$5">
+      <Stack style={{ flex: 1 }} padding="md" gap={16}>
+        <Stack gap={12}>
+          <Text color="secondary">Apply to this Position</Text>
+          <Text color="secondary" style={{ lineHeight: 20 }}>
             This job is hosted on an external site. Click the button below to visit their
             application page and apply directly through their system.
           </Text>
-        </YStack>
+        </Stack>
 
         <Button
-          size="$5"
-          theme="info"
-          icon={ExternalLink}
+          size="lg"
+          color="primary"
           onPress={() => {
             captureEvent('job_external_link_clicked', {
               job_id: job.id,
@@ -299,39 +291,42 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
             }
           }}
         >
-          Apply on External Site
+          <Row gap={8} align="center">
+            <ExternalLink size={20} />
+            <Text>Apply on External Site</Text>
+          </Row>
         </Button>
 
         <Button
-          size="$4"
-          chromeless
+          size="md"
+          variant="outline"
           onPress={() => {
             router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
           }}
         >
           Back to Jobs
         </Button>
-      </YStack>
+      </Stack>
     )
   }
 
   // External job without URL
   if (isExternal) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$3">
-        <Text fontSize="$5" fontWeight="600" color="$color11" textAlign="center">
+      <Stack style={{ flex: 1 }} align="center" justify="center" padding="md" gap={12}>
+        <Text color="secondary" style={{ textAlign: 'center' }}>
           Application link not available
         </Text>
         <Button
-          size="$4"
-          theme="info"
+          size="md"
+          color="primary"
           onPress={() => {
             router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
           }}
         >
           Back to Jobs
         </Button>
-      </YStack>
+      </Stack>
     )
   }
 

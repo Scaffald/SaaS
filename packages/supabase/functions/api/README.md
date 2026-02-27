@@ -18,7 +18,7 @@ api/
 │   └── auth.ts             # Authentication middleware (shared with tRPC)
 ├── routes/
 │   ├── jobs.ts            # Jobs API (Week 2)
-│   ├── oauth.ts           # OAuth 2.0 server (Week 1, REQ-10)
+│   ├── oauth.ts           # OAuth 2.0 server (Week 1)
 │   ├── applications.ts    # Applications API (Week 3)
 │   └── profiles.ts        # Public profiles API (Week 4)
 └── openapi.ts             # OpenAPI/Swagger documentation
@@ -92,7 +92,7 @@ supabase functions serve api
   - Only shows active employers
   - Rate limited: 100 requests per 15 minutes
 
-### OAuth 2.0 (Week 1, REQ-10)
+### OAuth 2.0 (Week 1)
 - `GET /oauth/authorize` - Authorization endpoint
 - `POST /oauth/token` - Token endpoint
 - `POST /oauth/revoke` - Token revocation
@@ -117,7 +117,7 @@ OAuth integration endpoints are protected by OAuth 2.0 with PKCE.
 ## Implementation Progress
 
 - [x] Week 1, Day 1: Foundation (Hono, middleware, OpenAPI)
-- [x] Week 1, Days 2-5: OAuth router migration (REQ-10)
+- [x] Week 1, Days 2-5: OAuth router migration
 - [x] Week 2: Jobs API with OpenAPI docs
   - [x] GET /v1/jobs - List published jobs with filtering
   - [x] GET /v1/jobs/:id - Get job details

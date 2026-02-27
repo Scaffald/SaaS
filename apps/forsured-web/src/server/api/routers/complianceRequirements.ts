@@ -1,6 +1,6 @@
 /**
  * Compliance Requirements Router
- * REQ-2, TASK-7: tRPC CRUD Operations for Compliance Requirements
+ * tRPC CRUD Operations for Compliance Requirements
  * TASK-19: Integrated with Compliance Authorization System
  *
  * Implements full CRUD operations with:

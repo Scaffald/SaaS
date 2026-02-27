@@ -1,9 +1,9 @@
 /**
  * TaskStatusBadge - Task status badge using Beyond UI
- * REQ-166: Task Management Workflow & UI
+ * Task Management Workflow & UI
  */
 import React from 'react';
-import { Row, Text, Chip } from '@unicornlove/beyond-ui';
+import { Row, Text, Chip } from '@scaffald/ui';
 import { Clock, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { TaskStatus } from '../../types';
 

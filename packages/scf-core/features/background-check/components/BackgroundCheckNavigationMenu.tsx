@@ -1,6 +1,6 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { DashboardWidget, Text, XStack, YStack } from '@unicornlove/ui'
-import { ArrowRight } from '@tamagui/lucide-icons'
+import { DashboardWidget, Text, Row, Stack } from '@scaffald/ui'
+import { ArrowRight } from 'lucide-react-native'
 import { Link, usePathname } from 'expo-router'
 
 type BackgroundCheckNavItem = {
@@ -35,17 +35,13 @@ export function BackgroundCheckNavigationMenu() {
   const pathname = usePathname()
 
   return (
-    <DashboardWidget gap="$4">
-      <YStack gap="$1">
-        <Text fontSize="$5" fontWeight="700" color="$color12">
-          Background Check Tools
-        </Text>
-        <Text fontSize="$3" color="$color10">
-          Switch between related workflows and management tools.
-        </Text>
-      </YStack>
+    <DashboardWidget gap={16}>
+      <Stack gap={4}>
+        <Text color="$gray11">Background Check Tools</Text>
+        <Text color="$gray11">Switch between related workflows and management tools.</Text>
+      </Stack>
 
-      <YStack gap="$2">
+      <Stack gap={8}>
         {BACKGROUND_CHECK_NAV_ITEMS.map((item) => {
           const normalizedPath = pathname?.replace(/\/$/, '') ?? ''
           const itemPath = item.path.replace(/\/$/, '')
@@ -56,43 +52,29 @@ export function BackgroundCheckNavigationMenu() {
 
           return (
             <Link key={item.key} href={item.path} asChild>
-              <YStack
-                paddingHorizontal="$4"
-                paddingVertical="$3"
-                gap="$2"
-                borderRadius="$4"
+              <Stack
+                paddingHorizontal={16}
+                paddingVertical={12}
+                gap={8}
+                borderRadius={16}
                 borderWidth={1}
                 borderColor={isActive ? '$blue7' : '$color6'}
                 backgroundColor={isActive ? '$blue4' : '$color2'}
-                hoverStyle={{
-                  backgroundColor: isActive ? '$blue5' : '$color3',
-                }}
-                pressStyle={{
-                  backgroundColor: isActive ? '$blue6' : '$color4',
-                }}
-                cursor="pointer"
-                animation="quick"
               >
-                <YStack gap="$1">
-                  <Text fontSize="$4" fontWeight="600" color={isActive ? '$blue12' : '$color12'}>
-                    {item.title}
-                  </Text>
-                  <Text fontSize="$3" color={isActive ? '$blue11' : '$color10'}>
-                    {item.description}
-                  </Text>
-                </YStack>
+                <Stack gap={4}>
+                  <Text color={isActive ? '$blue12' : '$color12'}>{item.title}</Text>
+                  <Text color={isActive ? '$blue11' : '$color10'}>{item.description}</Text>
+                </Stack>
 
-                <XStack gap="$2" alignItems="center">
-                  <Text fontSize="$3" fontWeight="600" color={isActive ? '$blue12' : '$color11'}>
-                    View workspace
-                  </Text>
-                  <ArrowRight size={16} color={isActive ? '$blue11' : '$color10'} />
-                </XStack>
-              </YStack>
+                <Row gap={8} align="center">
+                  <Text color={isActive ? '$blue12' : '$color11'}>View workspace</Text>
+                  <ArrowRight size="md" color={isActive ? '$blue11' : '$color10'} />
+                </Row>
+              </Stack>
             </Link>
           )
         })}
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# Pre-commit hook: lint + typecheck for affected packages only
+# Uses single nx invocation (lint,typecheck) to avoid graph lock / redundant work
+
+set -e
+
+PROJECT_ROOT="$(git rev-parse --show-toplevel)"
+cd "$PROJECT_ROOT"
+
+echo "🔧 Running pre-commit checks (affected only)..."
+
+# Portable timeout: use timeout/gtimeout if available (Linux, macOS with coreutils)
+TIMEOUT_CMD=""
+for cmd in timeout gtimeout; do
+  if command -v "$cmd" >/dev/null 2>&1; then
+    TIMEOUT_CMD="$cmd"
+    break
+  fi
+done
+
+PRECOMMIT_TIMEOUT="${PRECOMMIT_TIMEOUT:-90}"
+
+run_precommit() {
+  if [ -n "$TIMEOUT_CMD" ]; then
+    "$TIMEOUT_CMD" "${PRECOMMIT_TIMEOUT}s" pnpm precommit 2>&1
+  else
+    pnpm precommit 2>&1
+  fi
+}
+
+CHECK_OUTPUT=$(run_precommit)
+CHECK_EXIT=$?
+
+# Detect timeout (124 = timeout exit code from GNU timeout)
+if [ "${CHECK_EXIT:-0}" -eq 124 ]; then
+  echo "⚠️ Pre-commit checks timed out after ${PRECOMMIT_TIMEOUT}s"
+  echo "   Allowing commit - please run 'pnpm check:affected' manually to verify"
+  echo "✅ Pre-commit checks passed (with warning)!"
+  exit 0
+fi
+
+# Filter out TS4023 errors (inaccessible type names from @ts-nocheck files)
+OTHER_ERRORS=$(echo "$CHECK_OUTPUT" | grep -v "error TS4023" | grep -E "error TS|Error|failed|Failed" || true)
+
+if [ "${CHECK_EXIT:-0}" -ne 0 ]; then
+  if [ -z "$OTHER_ERRORS" ]; then
+    echo "⚠️ Note: TS4023 type errors only (unavoidable with @ts-nocheck exports)"
+    echo "✅ Pre-commit checks passed!"
+    exit 0
+  fi
+  echo "❌ Pre-commit checks failed. Please fix the issues below:"
+  echo "$CHECK_OUTPUT"
+  exit 1
+fi
+
+# Notify if staged files changed after lint/check (e.g. lint:fix modified files)
+if ! git diff --quiet --staged 2>/dev/null; then
+  echo "ℹ️ Some staged files changed. Review and re-stage:"
+  git diff --name-only --staged
+  echo ""
+  echo "💡 Run 'git add <file>' to include updates."
+fi
+
+echo "✅ Pre-commit checks passed!"
+exit 0

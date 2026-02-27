@@ -147,7 +147,7 @@ test.describe('Prerequisites Form', () => {
 
       await page.getByTestId('prereq-industry-select').waitFor({ state: 'visible', timeout: 10000 })
 
-      // Open industry selector (Tamagui Select)
+      // Open industry selector (custom Select)
       const industrySelect = page.getByTestId('prereq-industry-select')
       await industrySelect.click()
 

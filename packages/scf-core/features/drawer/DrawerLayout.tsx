@@ -1,13 +1,19 @@
 import { useNotificationDeviceRegistration } from '@scf/core/hooks/useNotificationDeviceRegistration'
-import { api } from '@scf/core/utils/api'
-import { shadows } from '@unicornlove/ui'
+import {
+  useNotificationPreferences,
+  useNotifications,
+  useUnreadCount,
+  useMarkAsReadMutation,
+} from '@scf/core/utils/notifications-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
+import { shadows, useThemeContext, useWindowDimensions, Row } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import type { NotificationItem } from '@scf/core/components/notifications'
 import { DrawerActions } from '@react-navigation/native'
-import { Menu } from '@tamagui/lucide-icons'
+import { Menu } from 'lucide-react-native'
 import { Drawer } from 'expo-router/drawer'
 import { useEffect, useState, type ReactNode } from 'react'
 import { Pressable } from 'react-native'
-import { useTheme, useWindowDimensions, XStack } from '@unicornlove/ui'
 import { DrawerContent } from './DrawerContent'
 import { ScaffaldLogo } from '@scf/core/assets'
 
@@ -33,36 +39,35 @@ interface DrawerLayoutProps {
  */
 export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProps) {
   const { width } = useWindowDimensions()
-  const theme = useTheme()
+  const { theme } = useThemeContext()
   // Permanent drawer when width >= 1024px, front drawer otherwise
   const isSmall = width < 1024
   const [isDrawerCollapsed, setIsDrawerCollapsed] = useState(false)
-  const { data: preferencesData } = api.notifications.preferences.get.useQuery(undefined, {
+  const { data: preferencesData } = useNotificationPreferences({
     staleTime: 5 * 60 * 1000,
     refetchOnMount: false,
   })
 
-  const pushEnabled = preferencesData
-    ? preferencesData.globalEnabled && preferencesData.channelEnabled.push
-    : true
+  const pushEnabled = preferencesData?.data?.push_notifications ?? true
 
   useNotificationDeviceRegistration(pushEnabled)
 
   // Fetch notifications
-  const { data: notificationsData, isLoading: _isLoadingNotifications } =
-    api.notifications.list.useQuery({ limit: 25 })
+  const { data: notificationsData, isPending: _isLoadingNotifications } = useNotifications({
+    limit: 25,
+  })
 
   // Fetch unread count
-  const { data: unreadCountData } = api.notifications.getUnreadCount.useQuery()
-  const _unreadCount = unreadCountData?.count || 0
+  const { data: unreadCountData } = useUnreadCount()
+  const _unreadCount = unreadCountData?.data?.unread_count ?? 0
 
   // Mark as read mutation
-  const utils = api.useUtils()
-  const markAsReadMutation = api.notifications.markAsRead.useMutation({
+  const queryClient = useQueryClient()
+  const markAsReadMutation = useMarkAsReadMutation({
     onSuccess: () => {
       // Invalidate and refetch notifications and unread count
-      utils.notifications.list.invalidate()
-      utils.notifications.getUnreadCount.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'list'] })
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'notifications', 'unread-count'] })
     },
   })
 
@@ -70,17 +75,17 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
   const _handleNotificationClick = (notification: NotificationItem) => {
     // Mark as read if unread
     if (!notification.read) {
-      markAsReadMutation.mutate({ id: notification.id })
+      markAsReadMutation.mutate(notification.id)
     }
   }
 
   // Handle mark as read
   const _handleMarkAsRead = (notificationId: string) => {
-    markAsReadMutation.mutate({ id: notificationId })
+    markAsReadMutation.mutate(notificationId)
   }
 
   // Transform notifications to match NotificationItem interface
-  const _transformedNotifications: NotificationItem[] = (notificationsData?.items ?? []).map(
+  const _transformedNotifications: NotificationItem[] = (notificationsData?.data ?? []).map(
     (notification: unknown): NotificationItem => {
       const item = notification as {
         id: string
@@ -133,7 +138,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
           swipeEnabled: isSmall,
           headerShown: isSmall,
           headerStyle: {
-            backgroundColor: theme.blue1.val,
+            backgroundColor: colors.bg[theme].default,
             borderWidth: 0,
           },
           headerLeftContainerStyle: {
@@ -143,17 +148,17 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
             paddingRight: 20,
           },
           headerTitleStyle: {
-            color: theme.color12.val,
+            color: colors.text[theme].primary,
           },
           drawerStyle: {
-            backgroundColor: theme.color3.val,
+            backgroundColor: colors.bg[theme].subtle,
             borderRightWidth: 0,
             borderRadius: 0,
             width: drawerWidth,
             maxWidth: drawerWidth,
             minWidth: drawerWidth,
           },
-          overlayColor: shadows.shadowColor,
+          overlayColor: shadows.xs.shadowColor,
           headerLeft: () => {
             return isSmall ? (
               <Pressable
@@ -166,9 +171,9 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
             ) : null
           },
           headerRight: () => (
-            <XStack gap="$3" alignItems="center">
+            <Row gap={12} align="center">
               <ScaffaldLogo height={22} width={22} showWordmark={false} />
-            </XStack>
+            </Row>
           ),
         })}
         drawerContent={(props) => (

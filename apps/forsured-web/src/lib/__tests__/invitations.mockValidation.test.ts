@@ -1,6 +1,6 @@
 /**
- * REQ-126: Broker Invitation System
- * REQ-306: Mock Validation Tests
+ * Broker Invitation System
+ * Mock Validation Tests
  *
  * CRITICAL: These tests validate that our mocks match the real Supabase API
  * As per requirement: "Mocks must always be setup to be validated against reality before they are used in tests"

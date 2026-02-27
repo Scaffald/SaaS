@@ -1,48 +1,37 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
-import { Button, DashboardWidget } from '@unicornlove/ui'
+import { useCurrentIdVerification } from '@scf/core/utils/id-verification-sdk-hooks'
+import { Button, DashboardWidget } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack } from '@scaffald/ui'
 import { IdVerificationBadge } from './IdVerificationBadge'
 
 export function IdVerificationWidget() {
   const router = useRouter()
-  const badgeQuery = api.idVerification.getCurrentVerification.useQuery(
-    {},
-    {
-      staleTime: 60 * 1000,
-    }
-  )
+  const badgeQuery = useCurrentIdVerification(undefined, { staleTime: 60 * 1000 })
 
   const status = useMemo(() => deriveStatus(badgeQuery), [badgeQuery])
 
   return (
     <DashboardWidget>
-      <YStack gap="$3">
-        <Text fontSize="$4" fontWeight="600" color="$color12">
-          Identity verification
-        </Text>
+      <Stack gap={12}>
+        <Text color="$gray11">Identity verification</Text>
         <IdVerificationBadge
           status={status.badgeStatus}
           badgeExpiresAt={status.badgeExpiresAt}
           muted={status.muted}
           size="md"
         />
-        {status.caption && (
-          <Text fontSize="$2" color="$color11">
-            {status.caption}
-          </Text>
-        )}
+        {status.caption && <Text color="$gray11">{status.caption}</Text>}
 
         <Button
-          size="$3"
-          theme="blue"
+          size="sm"
+          color="primary"
           onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.ID_VERIFICATION.path)}
         >
           Manage verification
         </Button>
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }
@@ -55,7 +44,7 @@ type StatusDescriptor = {
 }
 
 function deriveStatus(
-  badgeQuery: ReturnType<typeof api.idVerification.getCurrentVerification.useQuery>
+  badgeQuery: ReturnType<typeof useCurrentIdVerification>
 ): StatusDescriptor {
   if (badgeQuery.isLoading) {
     return {

@@ -1,5 +1,5 @@
 // src/api/webhooks/ccpa.ts
-// REQ-3: CCPA Compliance Implementation
+// CCPA Compliance Implementation
 //
 // Webhook handler for CCPA requests from Scaffald.
 // Handles export and deletion requests, contributing Forsured-specific data.

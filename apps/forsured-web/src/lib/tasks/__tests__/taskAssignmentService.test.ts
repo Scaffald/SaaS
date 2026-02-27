@@ -1,5 +1,5 @@
 /**
- * REQ-127: Task Auto-Generation from Compliance Gaps
+ * Task Auto-Generation from Compliance Gaps
  * Unit tests for task assignment service (TDD - Red phase)
  */
 

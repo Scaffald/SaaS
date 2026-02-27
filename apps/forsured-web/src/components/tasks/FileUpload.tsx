@@ -1,10 +1,10 @@
 /**
  * FileUpload - File upload component using Beyond UI
- * REQ-166: Task Management Workflow & UI
+ * Task Management Workflow & UI
  */
 import type React from 'react'
 import { useState, useRef } from 'react'
-import { Stack, Text } from '@unicornlove/beyond-ui'
+import { Stack, Text } from '@scaffald/ui'
 import { Upload, CloudUpload } from 'lucide-react'
 
 interface FileUploadProps {

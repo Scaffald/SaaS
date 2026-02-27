@@ -1,13 +1,15 @@
 import { captureEvent } from '@scf/core/utils/analytics/client'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import { Button, Theme } from '@unicornlove/ui'
+import { Button, useToast } from '@scaffald/ui'
+import { logger } from '@scf/core'
 
 import { IconApple } from './IconApple'
 
 export function AppleSignIn() {
-  // Using supabase directly from import
   const { t } = useTranslation()
+  const toast = useToast()
+
   const handleOAuthSignIn = async () => {
     captureEvent('auth_social_sign_in_started', { provider: 'apple' })
     const { error } = await supabase.auth.signInWithOAuth({
@@ -17,33 +19,29 @@ export function AppleSignIn() {
       },
     })
     if (error) {
-      console.error('Apple Sign-In Error:', error)
+      logger.error('Apple Sign-In Error', error, { provider: 'apple' })
       captureEvent('auth_social_sign_in_failed', {
         provider: 'apple',
         error_code: error.name ?? null,
         message: error.message ?? null,
       })
-      // TODO: Add proper error handling/toast notification
+      toast.show({
+        message: t('auth.errors.appleSignInFailed'),
+        variant: 'error',
+        duration: 5000,
+      })
       return
     }
   }
 
   return (
-    <Theme inverse>
-      <Button
-        borderRadius="$10"
-        flex={1}
-        backgroundColor="$background"
-        color="$color"
-        borderColor="$borderColor"
-        animation="quick"
-        hoverStyle={{ scale: 1.02, backgroundColor: '$background' }}
-        pressStyle={{ scale: 0.98 }}
-        onPress={() => handleOAuthSignIn()}
-        icon={IconApple}
-      >
-        {t('auth.login.appleButton')}
-      </Button>
-    </Theme>
+    <Button
+      variant="outline"
+      onPress={() => handleOAuthSignIn()}
+      iconStart={IconApple}
+      style={{ flex: 1, borderRadius: 20 }}
+    >
+      {t('auth.login.appleButton')}
+    </Button>
   )
 }

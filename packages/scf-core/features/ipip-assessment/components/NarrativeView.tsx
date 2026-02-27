@@ -1,5 +1,5 @@
 import type { IPIPResults, IPIPScores } from '@scf/core/features/personality-assessment/lib/ipip'
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack } from '@scaffald/ui'
 import { DOMAIN_ORDER } from '../utils/domainGrouping'
 import { generateOverallSummary } from '../utils/narrativeGenerator'
 import type { NormalizedScores } from '../utils/scoreNormalizer'
@@ -26,11 +26,11 @@ export function NarrativeView({
   // Handle missing data gracefully - show partial results if available
   if (!scores && completedDomains === 0) {
     return (
-      <YStack gap="$4" padding="$4" alignItems="center" aria-live="polite">
-        <Text fontSize="$4" color="$color11">
+      <Stack gap={16} padding="md" align="center" accessibilityLiveRegion="polite">
+        <Text color="$gray11">
           No results available yet. Complete at least one domain to see results.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -38,48 +38,44 @@ export function NarrativeView({
   const overallSummary = scores ? generateOverallSummary(scores) : null
 
   return (
-    <YStack gap="$6" width="100%">
+    <Stack gap={24} width="100%">
       {/* Overall Summary - only show if we have scores and narratives */}
       {overallSummary && (
-        <YStack
-          gap="$3"
-          padding="$5"
+        <Stack
+          gap={12}
+          padding="lg"
           backgroundColor="$blue2"
-          borderRadius="$4"
+          borderRadius={16}
           borderWidth={1}
           borderColor="$blue7"
         >
-          <Text fontSize="$6" fontWeight="bold" color="$blue11">
-            Your Personality Profile
-          </Text>
-          <Text fontSize="$4" color="$blue10" lineHeight="$5">
+          <Text color="$blue11">Your Personality Profile</Text>
+          <Text color="$blue10" style={{ lineHeight: 20 }}>
             {overallSummary}
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {/* Show message if summary unavailable but we have partial data */}
       {!overallSummary && completedDomains > 0 && (
-        <YStack
-          gap="$2"
-          padding="$4"
+        <Stack
+          gap={8}
+          padding="md"
           backgroundColor="$blue2"
-          borderRadius="$4"
+          borderRadius={16}
           borderWidth={1}
           borderColor="$blue7"
-          aria-live="polite"
+          accessibilityLiveRegion="polite"
         >
-          <Text fontSize="$4" fontWeight="600" color="$blue11">
-            Partial Results
-          </Text>
-          <Text fontSize="$3" color="$blue10">
+          <Text color="$blue11">Partial Results</Text>
+          <Text color="$blue10">
             Complete more domains to see your full personality profile summary.
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {/* Domain Cards */}
-      <YStack gap="$4">
+      <Stack gap={16}>
         {DOMAIN_ORDER.map((domain) => {
           const domainScore = scores?.[domain] ?? null
           const normalizedDomainScore = normalizedScores?.[domain]
@@ -98,27 +94,25 @@ export function NarrativeView({
             />
           )
         })}
-      </YStack>
+      </Stack>
 
       {/* Partial Results Message */}
       {!isComplete && completedDomains > 0 && (
-        <YStack
-          gap="$2"
-          padding="$4"
+        <Stack
+          gap={8}
+          padding="md"
           backgroundColor="$yellow2"
-          borderRadius="$4"
+          borderRadius={16}
           borderWidth={1}
           borderColor="$yellow7"
         >
-          <Text fontSize="$4" fontWeight="600" color="$yellow11">
-            Complete Your Assessment
-          </Text>
-          <Text fontSize="$3" color="$yellow10">
+          <Text color="$yellow11">Complete Your Assessment</Text>
+          <Text color="$yellow10">
             You've completed {completedDomains} of 5 domains. Finish the remaining questions to see
             your complete personality profile and archetype.
           </Text>
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

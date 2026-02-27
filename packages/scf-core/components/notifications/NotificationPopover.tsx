@@ -1,159 +1,165 @@
-import { Popover } from '@unicornlove/ui'
-import { AlertCircle, Bell, Info, ShieldAlert, X } from '@tamagui/lucide-icons'
-import type { Href } from 'expo-router'
-import { useRouter } from 'expo-router'
-import { type ElementRef, useCallback, useEffect, useRef, useState } from 'react'
+import { Popover, PopoverHeader, PopoverContent } from "@scaffald/ui";
+import { AlertCircle, Bell, Info, ShieldAlert } from "lucide-react-native";
+import type { Href } from "expo-router";
+import { useRouter } from "expo-router";
+import {
+  type ElementRef,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { ScrollView } from "react-native";
 import {
   Button,
   Card,
-  ScrollView,
   Separator,
   Spinner,
   type StackProps,
   Text,
   type TextProps,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from "@scaffald/ui";
 
 export interface NotificationItem {
-  id: string
-  type: string
-  severity: 'info' | 'important' | 'critical'
-  title: string
-  preview: string
-  createdAt: string
-  read: boolean
-  ctaUrl?: string | null
-  ctaLabel?: string | null
-  channels: string[]
+  id: string;
+  type: string;
+  severity: "info" | "important" | "critical";
+  title: string;
+  preview: string;
+  createdAt: string;
+  read: boolean;
+  ctaUrl?: string | null;
+  ctaLabel?: string | null;
+  channels: string[];
   metadata?: {
-    notification_type?: string
-    site_id?: string
-    overlapping_site_id?: string
-    overlap_percent?: number
-    threshold?: number
-    [key: string]: unknown
-  } | null
+    notification_type?: string;
+    site_id?: string;
+    overlapping_site_id?: string;
+    overlap_percent?: number;
+    threshold?: number;
+    [key: string]: unknown;
+  } | null;
 }
 
-type ButtonRef = ElementRef<typeof Button>
+type ButtonRef = ElementRef<typeof Button>;
 
 const SEVERITY_PILL_STYLES = {
-  critical: { backgroundColor: '$red4', color: '$red11' },
-  important: { backgroundColor: '$yellow4', color: '$yellow11' },
-  info: { backgroundColor: '$blue4', color: '$blue11' },
+  critical: { backgroundColor: "$red4", color: "$red11" },
+  important: { backgroundColor: "$yellow4", color: "$yellow11" },
+  info: { backgroundColor: "$blue4", color: "$blue11" },
 } as const satisfies Record<
-  NotificationItem['severity'],
-  { backgroundColor: StackProps['backgroundColor']; color: TextProps['color'] }
->
+  NotificationItem["severity"],
+  { backgroundColor: StackProps["backgroundColor"]; color: TextProps["color"] }
+>;
 
 interface PillProps {
-  label: string
-  backgroundColor: StackProps['backgroundColor']
-  color: TextProps['color']
+  label: string;
+  backgroundColor: StackProps["backgroundColor"];
+  color: TextProps["color"];
 }
 
 const CHANNEL_PILL_STYLE = {
-  backgroundColor: '$color3',
-  color: '$color11',
-} as const satisfies Pick<PillProps, 'backgroundColor' | 'color'>
+  backgroundColor: "$color3",
+  color: "$color11",
+} as const satisfies Pick<PillProps, "backgroundColor" | "color">;
 
 function Pill({ label, backgroundColor, color }: PillProps) {
   return (
-    <XStack
+    <Row
       backgroundColor={backgroundColor}
-      paddingHorizontal="$2"
-      paddingVertical="$1"
-      borderRadius="$3"
-      alignItems="center"
+      paddingHorizontal="xs"
+      paddingVertical="xs"
+      borderRadius={12}
+      align="center"
     >
-      <Text fontSize="$1" fontWeight="600" color={color}>
-        {label}
-      </Text>
-    </XStack>
-  )
+      <Text color={color}>{label}</Text>
+    </Row>
+  );
 }
 
 interface NotificationPopoverProps {
   /**
    * Array of notifications to display
    */
-  notifications: NotificationItem[]
+  notifications: NotificationItem[];
   /**
    * Unread count to display on badge
    */
-  unreadCount: number
+  unreadCount: number;
   /**
    * Loading state
    */
-  isLoading?: boolean
+  isLoading?: boolean;
   /**
    * Callback when notification is clicked
    */
-  onNotificationClick?: (notification: NotificationItem) => void
+  onNotificationClick?: (notification: NotificationItem) => void;
   /**
    * Callback to mark notification as read
    */
-  onMarkAsRead?: (notificationId: string) => void
+  onMarkAsRead?: (notificationId: string) => void;
 }
 
 /**
  * Format relative time (e.g., "2 hours ago", "1 day ago")
  */
 function formatRelativeTime(dateString: string): string {
-  if (!dateString) return ''
+  if (!dateString) return "";
 
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffSeconds = Math.floor(diffMs / 1000)
-  const diffMinutes = Math.floor(diffSeconds / 60)
-  const diffHours = Math.floor(diffMinutes / 60)
-  const diffDays = Math.floor(diffHours / 24)
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffSeconds = Math.floor(diffMs / 1000);
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
 
-  if (diffSeconds < 60) return 'Just now'
-  if (diffMinutes < 60) return `${diffMinutes} ${diffMinutes === 1 ? 'minute' : 'minutes'} ago`
-  if (diffHours < 24) return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`
-  if (diffDays === 1) return 'Yesterday'
-  if (diffDays < 7) return `${diffDays} days ago`
+  if (diffSeconds < 60) return "Just now";
+  if (diffMinutes < 60)
+    return `${diffMinutes} ${diffMinutes === 1 ? "minute" : "minutes"} ago`;
+  if (diffHours < 24)
+    return `${diffHours} ${diffHours === 1 ? "hour" : "hours"} ago`;
+  if (diffDays === 1) return "Yesterday";
+  if (diffDays < 7) return `${diffDays} days ago`;
   if (diffDays < 30) {
-    const weeks = Math.floor(diffDays / 7)
-    return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`
+    const weeks = Math.floor(diffDays / 7);
+    return `${weeks} ${weeks === 1 ? "week" : "weeks"} ago`;
   }
   if (diffDays < 365) {
-    const months = Math.floor(diffDays / 30)
-    return `${months} ${months === 1 ? 'month' : 'months'} ago`
+    const months = Math.floor(diffDays / 30);
+    return `${months} ${months === 1 ? "month" : "months"} ago`;
   }
-  const years = Math.floor(diffDays / 365)
-  return `${years} ${years === 1 ? 'year' : 'years'} ago`
+  const years = Math.floor(diffDays / 365);
+  return `${years} ${years === 1 ? "year" : "years"} ago`;
 }
 
 /**
  * Get notification icon based on type
  */
-function getNotificationIcon(severity: NotificationItem['severity']) {
+function getNotificationIcon(severity: NotificationItem["severity"]) {
   switch (severity) {
-    case 'critical':
-      return ShieldAlert
-    case 'important':
-      return AlertCircle
+    case "critical":
+      return ShieldAlert;
+    case "important":
+      return AlertCircle;
     default:
-      return Info
+      return Info;
   }
 }
 
 /**
  * Get notification color based on type
  */
-function getNotificationColor(severity: NotificationItem['severity']) {
+function getNotificationColor(severity: NotificationItem["severity"]) {
   switch (severity) {
-    case 'critical':
-      return '$red10'
-    case 'important':
-      return '$orange10'
+    case "critical":
+      return "$red10";
+    case "important":
+      return "$orange10";
     default:
-      return '$blue10'
+      return "$blue10";
   }
 }
 
@@ -169,370 +175,376 @@ export function NotificationPopover({
   onNotificationClick,
   onMarkAsRead,
 }: NotificationPopoverProps) {
-  const [open, setOpen] = useState(false)
-  const router = useRouter()
-  const triggerRef = useRef<ButtonRef>(null)
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const triggerRef = useRef<ButtonRef>(null);
 
   // Separate notifications into unread and read
-  const unreadNotifications = notifications.filter((n) => !n.read)
-  const readNotifications = notifications.filter((n) => n.read)
+  const unreadNotifications = notifications.filter((n) => !n.read);
+  const readNotifications = notifications.filter((n) => n.read);
 
   // Handle notification click
   const handleNotificationClick = useCallback(
     (notification: NotificationItem) => {
       // Mark as read if unread
       if (!notification.read && onMarkAsRead) {
-        onMarkAsRead(notification.id)
+        onMarkAsRead(notification.id);
       }
 
       // Call custom handler if provided
       if (onNotificationClick) {
-        onNotificationClick(notification)
+        onNotificationClick(notification);
       }
 
       // Navigate to destination if provided
       if (notification.ctaUrl) {
-        router.push(notification.ctaUrl as Href)
+        router.push(notification.ctaUrl as Href);
       }
 
       // Close popover
-      setOpen(false)
+      setOpen(false);
     },
     [onNotificationClick, onMarkAsRead, router]
-  )
+  );
 
   // Handle escape key to close
   useEffect(() => {
-    if (!open) return
+    if (!open) return;
 
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setOpen(false)
-        // Return focus to trigger
-        triggerRef.current?.focus?.()
+      if (e.key === "Escape") {
+        setOpen(false);
+        // Return focus to trigger (web only; trigger may be View on RN)
+        (triggerRef.current as unknown as { focus?: () => void })?.focus?.();
       }
-    }
+    };
 
-    if (typeof window !== 'undefined') {
-      window.addEventListener('keydown', handleEscape)
-      return () => window.removeEventListener('keydown', handleEscape)
+    if (typeof window !== "undefined") {
+      window.addEventListener("keydown", handleEscape);
+      return () => window.removeEventListener("keydown", handleEscape);
     }
-  }, [open])
+  }, [open]);
 
   // Handle click outside to close
   const handleOpenChange = useCallback((newOpen: boolean) => {
-    setOpen(newOpen)
+    setOpen(newOpen);
     if (!newOpen && triggerRef.current) {
-      // Return focus to trigger when closing
-      setTimeout(() => {
-        triggerRef.current?.focus?.()
-      }, 100)
+      // Return focus to trigger when closing (web only)
+      const el = triggerRef.current as unknown as { focus?: () => void };
+      setTimeout(() => el?.focus?.(), 100);
     }
-  }, [])
+  }, []);
 
-  return (
-    <Popover placement="bottom-end" open={open} onOpenChange={handleOpenChange}>
-      <Popover.Trigger asChild>
-        <Button
-          ref={triggerRef}
-          borderStyle="unset"
-          borderWidth={0}
-          backgroundColor="transparent"
-          height={30}
-          position="relative"
-          aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
-          onPress={() => setOpen(!open)}
-        >
-          <Bell size={20} />
-          {unreadCount > 0 && (
-            <YStack
-              position="absolute"
-              top={-4}
-              right={-4}
-              backgroundColor="$red9"
-              borderRadius="$10"
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-              minWidth={20}
-              alignItems="center"
-              justifyContent="center"
-              style={{ zIndex: 1 }}
-            >
-              <Text fontSize="$1" fontWeight="600" color="white">
-                {unreadCount > 99 ? '99+' : unreadCount}
-              </Text>
-            </YStack>
-          )}
-        </Button>
-      </Popover.Trigger>
-
-      <Popover.Content
-        role="menu"
-        aria-labelledby="notifications-title"
-        animation="quick"
-        enterStyle={{ opacity: 0, scale: 0.95, y: -10 }}
-        exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
-      >
-        {/* Header */}
-        <XStack
-          justifyContent="space-between"
-          alignItems="center"
-          padding="$4"
-          borderBottomWidth={1}
-          borderBottomColor="$borderColor"
-        >
-          <XStack alignItems="center" gap="$3">
-            <Bell size={20} color="$color11" />
-            <Text id="notifications-title" fontSize="$5" fontWeight="700" color="$color12">
-              Notifications
-            </Text>
-          </XStack>
-          <XStack>
-            <Button
-              size="$2"
-              circular
-              icon={X}
-              onPress={() => handleOpenChange(false)}
-              backgroundColor="transparent"
-              borderWidth={0}
-              aria-label="Close notifications"
-            />
-          </XStack>
-        </XStack>
-
+  const popoverContent = (
+    <>
+      <PopoverHeader
+        title="Notifications"
+        showCloseButton
+        onClose={() => handleOpenChange(false)}
+      />
+      <PopoverContent>
         {/* Content */}
         {isLoading ? (
-          <YStack padding="$4" alignItems="center" gap="$3">
-            <Spinner size="small" color="$color10" />
-            <Text color="$color11">Loading notifications...</Text>
-          </YStack>
+          <Stack padding="md" align="center" gap={12}>
+            <Spinner size="sm" color="gray" />
+            <Text color="gray">Loading notifications...</Text>
+          </Stack>
         ) : notifications.length === 0 ? (
-          <YStack padding="$4" alignItems="center" gap="$3">
-            <Bell size={32} color="$color8" opacity={0.5} />
-            <Text color="$color11" style={{ textAlign: 'center' }}>
+          <Stack padding="md" align="center" gap={12}>
+            <Bell size={32} color="gray" opacity={0.5} />
+            <Text color="gray" style={{ textAlign: "center" }}>
               No notifications
             </Text>
-            <Text fontSize="$2" color="$color10" style={{ textAlign: 'center' }}>
+            <Text color="gray" style={{ textAlign: "center" }}>
               You're all caught up!
             </Text>
-          </YStack>
+          </Stack>
         ) : (
-          <ScrollView maxHeight={320} showsVerticalScrollIndicator={false}>
-            <YStack>
+          <ScrollView
+            style={{ maxHeight: 320 }}
+            showsVerticalScrollIndicator={false}
+          >
+            <Stack>
               {/* Unread Section */}
               {unreadNotifications.length > 0 && (
                 <>
-                  <XStack
-                    padding="$3"
-                    paddingHorizontal="$4"
+                  <Row
+                    padding="sm"
+                    paddingHorizontal="md"
                     backgroundColor="$color2"
-                    borderBottomWidth={1}
-                    borderBottomColor="$borderColor"
+                    style={{
+                      borderBottomWidth: 1,
+                      borderBottomColor: "var(--color-border)",
+                    }}
                   >
-                    <Text fontSize="$3" fontWeight="600" color="$color12">
+                    <Text color="gray">
                       Unread ({unreadNotifications.length})
                     </Text>
-                  </XStack>
-                  <YStack>
+                  </Row>
+                  <Stack>
                     {unreadNotifications.map((notification, index) => {
-                      const IconComponent = getNotificationIcon(notification.severity)
-                      const iconColor = getNotificationColor(notification.severity)
+                      const IconComponent = getNotificationIcon(
+                        notification.severity
+                      );
+                      const iconColor = getNotificationColor(
+                        notification.severity
+                      );
 
                       return (
-                        <YStack key={notification.id}>
+                        <Stack key={notification.id}>
                           <Card
-                            role="menuitem"
-                            tabIndex={0}
-                            padding="$3"
-                            backgroundColor="$color3"
-                            borderWidth={1}
-                            borderColor="$color5"
-                            borderRadius={0}
-                            pressStyle={{ backgroundColor: '$color4' }}
-                            hoverStyle={{ backgroundColor: '$color4' }}
-                            onPress={() => handleNotificationClick(notification)}
-                            cursor="pointer"
-                            aria-label={`${notification.title}. ${notification.preview}. ${formatRelativeTime(notification.createdAt)}`}
+                            pressable
+                            padding="sm"
+                            onPress={() =>
+                              handleNotificationClick(notification)
+                            }
+                            style={{
+                              backgroundColor: "var(--color-3)",
+                              borderWidth: 1,
+                              borderColor: "var(--color-5)",
+                              borderRadius: 0,
+                            }}
+                            accessibilityLabel={`${notification.title}. ${
+                              notification.preview
+                            }. ${formatRelativeTime(notification.createdAt)}`}
                           >
-                            <XStack gap="$3" alignItems="flex-start">
+                            <Row gap={12} align="flex-start">
                               <IconComponent size={18} color={iconColor} />
-                              <YStack flex={1} gap="$2">
-                                <XStack
-                                  justifyContent="space-between"
-                                  alignItems="flex-start"
-                                  gap="$2"
+                              <Stack style={{ flex: 1 }} gap={8}>
+                                <Row
+                                  justify="space-between"
+                                  align="flex-start"
+                                  gap={8}
                                 >
-                                  <Text
-                                    fontSize="$3"
-                                    fontWeight="600"
-                                    color="$color12"
-                                    flex={1}
-                                    numberOfLines={1}
-                                  >
+                                  <Text color="gray" style={{ flex: 1 }}>
                                     {notification.title}
                                   </Text>
-                                  <YStack
+                                  <Stack
                                     width={6}
                                     height={6}
                                     backgroundColor="$blue9"
-                                    borderRadius="$10"
-                                    marginTop="$1"
+                                    borderRadius={8}
+                                    style={{ marginTop: 4 }}
                                   />
-                                </XStack>
-                                <Text
-                                  fontSize="$2"
-                                  color="$color11"
-                                  lineHeight="$3"
-                                  numberOfLines={2}
-                                >
+                                </Row>
+                                <Text color="gray" style={{ lineHeight: 12 }}>
                                   {notification.preview}
                                 </Text>
-                                <XStack gap="$2" alignItems="center" marginTop="$1">
-                                  <Text fontSize="$1" color="$color10">
+                                <Row gap={8} align="center" marginTop={8}>
+                                  <Text color="gray">
                                     {formatRelativeTime(notification.createdAt)}
                                   </Text>
                                   <Pill
                                     label={notification.severity.toUpperCase()}
                                     backgroundColor={
-                                      SEVERITY_PILL_STYLES[notification.severity].backgroundColor
+                                      SEVERITY_PILL_STYLES[
+                                        notification.severity
+                                      ].backgroundColor
                                     }
-                                    color={SEVERITY_PILL_STYLES[notification.severity].color}
+                                    color={
+                                      SEVERITY_PILL_STYLES[
+                                        notification.severity
+                                      ].color
+                                    }
                                   />
                                   {notification.channels?.length > 0 && (
                                     <Pill
-                                      label={notification.channels.join(', ')}
-                                      backgroundColor={CHANNEL_PILL_STYLE.backgroundColor}
+                                      label={notification.channels.join(", ")}
+                                      backgroundColor={
+                                        CHANNEL_PILL_STYLE.backgroundColor
+                                      }
                                       color={CHANNEL_PILL_STYLE.color}
                                     />
                                   )}
-                                </XStack>
+                                </Row>
                                 {notification.ctaLabel && (
                                   <Button
-                                    size="$2"
-                                    marginTop="$2"
-                                    theme="info"
-                                    onPress={() => handleNotificationClick(notification)}
+                                    size="sm"
+                                    color="primary"
+                                    style={{ marginTop: 4 }}
+                                    onPress={() =>
+                                      handleNotificationClick(notification)
+                                    }
                                   >
                                     {notification.ctaLabel}
                                   </Button>
                                 )}
-                              </YStack>
-                            </XStack>
+                              </Stack>
+                            </Row>
                           </Card>
                           {index < unreadNotifications.length - 1 && (
-                            <Separator backgroundColor="$borderColor" />
+                            <Separator
+                              style={{ backgroundColor: "var(--color-border)" }}
+                            />
                           )}
-                        </YStack>
-                      )
+                        </Stack>
+                      );
                     })}
-                  </YStack>
+                  </Stack>
                 </>
               )}
 
               {/* Separator between sections */}
-              {unreadNotifications.length > 0 && readNotifications.length > 0 && (
-                <Separator backgroundColor="$borderColor" />
-              )}
+              {unreadNotifications.length > 0 &&
+                readNotifications.length > 0 && (
+                  <Separator
+                    style={{ backgroundColor: "var(--color-border)" }}
+                  />
+                )}
 
               {/* Read Section */}
               {readNotifications.length > 0 && (
                 <>
-                  <XStack
-                    padding="$3"
-                    paddingHorizontal="$4"
+                  <Row
+                    padding="sm"
+                    paddingHorizontal="md"
                     backgroundColor="$color2"
-                    borderBottomWidth={1}
-                    borderBottomColor="$borderColor"
+                    style={{
+                      borderBottomWidth: 1,
+                      borderBottomColor: "var(--color-border)",
+                    }}
                   >
-                    <Text fontSize="$3" fontWeight="600" color="$color12">
-                      Read
-                    </Text>
-                  </XStack>
-                  <YStack>
+                    <Text color="gray">Read</Text>
+                  </Row>
+                  <Stack>
                     {readNotifications.map((notification, index) => {
-                      const IconComponent = getNotificationIcon(notification.severity)
-                      const iconColor = getNotificationColor(notification.severity)
+                      const IconComponent = getNotificationIcon(
+                        notification.severity
+                      );
+                      const iconColor = getNotificationColor(
+                        notification.severity
+                      );
 
                       return (
-                        <YStack key={notification.id}>
+                        <Stack key={notification.id}>
                           <Card
-                            role="menuitem"
-                            tabIndex={0}
-                            padding="$3"
-                            backgroundColor="$color2"
-                            borderWidth={0}
-                            borderRadius={0}
-                            opacity={0.7}
-                            pressStyle={{ backgroundColor: '$color3', opacity: 1 }}
-                            hoverStyle={{ backgroundColor: '$color3', opacity: 1 }}
-                            onPress={() => handleNotificationClick(notification)}
-                            cursor="pointer"
-                            aria-label={`${notification.title}. ${notification.preview}. ${formatRelativeTime(notification.createdAt)}`}
+                            pressable
+                            padding="sm"
+                            onPress={() =>
+                              handleNotificationClick(notification)
+                            }
+                            style={{
+                              backgroundColor: "var(--color-2)",
+                              borderWidth: 0,
+                              borderRadius: 0,
+                              opacity: 0.7,
+                            }}
+                            accessibilityLabel={`${notification.title}. ${
+                              notification.preview
+                            }. ${formatRelativeTime(notification.createdAt)}`}
                           >
-                            <XStack gap="$3" alignItems="flex-start">
+                            <Row gap={12} align="flex-start">
                               <IconComponent size={18} color={iconColor} />
-                              <YStack flex={1} gap="$2">
-                                <Text
-                                  fontSize="$3"
-                                  fontWeight="normal"
-                                  color="$color12"
-                                  numberOfLines={1}
-                                >
-                                  {notification.title}
-                                </Text>
-                                <Text
-                                  fontSize="$2"
-                                  color="$color11"
-                                  lineHeight="$3"
-                                  numberOfLines={2}
-                                >
+                              <Stack style={{ flex: 1 }} gap={8}>
+                                <Text color="gray">{notification.title}</Text>
+                                <Text color="gray" style={{ lineHeight: 12 }}>
                                   {notification.preview}
                                 </Text>
-                                <XStack gap="$2" alignItems="center" marginTop="$1">
-                                  <Text fontSize="$1" color="$color10">
+                                <Row gap={8} align="center" marginTop={8}>
+                                  <Text color="gray">
                                     {formatRelativeTime(notification.createdAt)}
                                   </Text>
                                   <Pill
                                     label={notification.severity.toUpperCase()}
                                     backgroundColor={
-                                      SEVERITY_PILL_STYLES[notification.severity].backgroundColor
+                                      SEVERITY_PILL_STYLES[
+                                        notification.severity
+                                      ].backgroundColor
                                     }
-                                    color={SEVERITY_PILL_STYLES[notification.severity].color}
+                                    color={
+                                      SEVERITY_PILL_STYLES[
+                                        notification.severity
+                                      ].color
+                                    }
                                   />
                                   {notification.channels?.length > 0 && (
                                     <Pill
-                                      label={notification.channels.join(', ')}
-                                      backgroundColor={CHANNEL_PILL_STYLE.backgroundColor}
+                                      label={notification.channels.join(", ")}
+                                      backgroundColor={
+                                        CHANNEL_PILL_STYLE.backgroundColor
+                                      }
                                       color={CHANNEL_PILL_STYLE.color}
                                     />
                                   )}
-                                </XStack>
+                                </Row>
                                 {notification.ctaLabel && (
                                   <Button
-                                    size="$2"
-                                    marginTop="$2"
-                                    theme="info"
-                                    onPress={() => handleNotificationClick(notification)}
+                                    size="sm"
+                                    color="primary"
+                                    style={{ marginTop: 4 }}
+                                    onPress={() =>
+                                      handleNotificationClick(notification)
+                                    }
                                   >
                                     {notification.ctaLabel}
                                   </Button>
                                 )}
-                              </YStack>
-                            </XStack>
+                              </Stack>
+                            </Row>
                           </Card>
                           {index < readNotifications.length - 1 && (
-                            <Separator backgroundColor="$borderColor" />
+                            <Separator
+                              style={{ backgroundColor: "var(--color-border)" }}
+                            />
                           )}
-                        </YStack>
-                      )
+                        </Stack>
+                      );
                     })}
-                  </YStack>
+                  </Stack>
                 </>
               )}
-            </YStack>
+            </Stack>
           </ScrollView>
         )}
-      </Popover.Content>
+      </PopoverContent>
+    </>
+  );
+
+  return (
+    <Popover
+      placement="bottom-end"
+      open={open}
+      onOpenChange={handleOpenChange}
+      content={popoverContent}
+    >
+      <Button
+        ref={triggerRef}
+        variant="text"
+        color="gray"
+        style={{
+          borderWidth: 0,
+          backgroundColor: "transparent",
+          height: 30,
+          position: "relative",
+        }}
+        accessibilityLabel={`Notifications${
+          unreadCount > 0 ? ` (${unreadCount} unread)` : ""
+        }`}
+        onPress={() => setOpen(!open)}
+      >
+        <Bell size={20} />
+        {unreadCount > 0 && (
+          <Stack
+            style={{
+              position: "absolute",
+              top: -4,
+              right: -4,
+              backgroundColor: "var(--red-9)",
+              borderRadius: 8,
+              paddingHorizontal: 4,
+              paddingVertical: 4,
+              minWidth: 20,
+              zIndex: 1,
+            }}
+          >
+            <Row align="center" justify="center">
+              <Text color="white">
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </Text>
+            </Row>
+          </Stack>
+        )}
+      </Button>
     </Popover>
-  )
+  );
 }

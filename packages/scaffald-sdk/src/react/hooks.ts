@@ -47,9 +47,15 @@ import type {
   TeamMemberResponse,
   TeamInvitationsListResponse,
   TeamInvitationResponse,
+  RespondToInvitationWithTokenParams,
+  RespondToInvitationWithTokenResponse,
   TeamJobAssignmentsListResponse,
   TeamJobAssignmentResponse,
   DeleteResponse,
+  RolesListResponse,
+  PrerequisitesCheckResponse,
+  CompletePrerequisitesParams,
+  CompletePrerequisitesResponse,
   ApiKey,
   ApiKeyCreated,
   CreateApiKeyParams,
@@ -57,10 +63,6 @@ import type {
   GetUsageParams,
   ApiKeyUsageStats,
   RevokeApiKeyResponse,
-  Webhook,
-  WebhookWithSecret,
-  WebhookDelivery,
-  WebhookEventTypeInfo,
   CreateWebhookParams,
   UpdateWebhookParams,
   ListDeliveriesParams,
@@ -100,13 +102,17 @@ export function useJobs(
   options?: Omit<UseQueryOptions<JobListResponse>, 'queryKey' | 'queryFn'>
 ) {
   const client = useScaffald()
+  const queryKey = ['jobs', params] as const
 
-  return useQuery({
-    queryKey: ['jobs', params],
-    queryFn: () => client.jobs.list(params),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    ...options,
-  })
+  return {
+    ...useQuery({
+      queryKey,
+      queryFn: () => client.jobs.list(params),
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      ...options,
+    }),
+    queryKey,
+  }
 }
 
 /**
@@ -190,13 +196,17 @@ export function useSimilarJobs(
  */
 export function useJobFilterOptions(options?: Omit<UseQueryOptions<any>, 'queryKey' | 'queryFn'>) {
   const client = useScaffald()
+  const queryKey = ['jobs', 'filterOptions'] as const
 
-  return useQuery({
-    queryKey: ['jobs', 'filterOptions'],
-    queryFn: () => client.jobs.filterOptions(),
-    staleTime: 30 * 60 * 1000, // 30 minutes (rarely changes)
-    ...options,
-  })
+  return {
+    ...useQuery({
+      queryKey,
+      queryFn: () => client.jobs.filterOptions(),
+      staleTime: 30 * 60 * 1000, // 30 minutes (rarely changes)
+      ...options,
+    }),
+    queryKey,
+  }
 }
 
 /**
@@ -223,13 +233,15 @@ export function useCreateJob(
 
   return useMutation({
     mutationFn: (params: CreateJobParams) => client.jobs.create(params),
-    onSuccess: (data) => {
+    ...options,
+    onSuccess: async (data, variables, context) => {
       // Invalidate jobs list
       queryClient.invalidateQueries({ queryKey: ['jobs'] })
       // Set the cache for the new job
       queryClient.setQueryData(['jobs', data.id], data)
+      // Call user's onSuccess if provided
+      await (options?.onSuccess as any)?.(data, variables, context)
     },
-    ...options,
   })
 }
 
@@ -359,13 +371,15 @@ export function useCreateApplication(
 
   return useMutation({
     mutationFn: (params: CreateApplicationParams) => client.applications.create(params),
-    onSuccess: (data) => {
+    ...options,
+    onSuccess: async (data, variables, context) => {
       // Invalidate applications list (if we had one)
       queryClient.invalidateQueries({ queryKey: ['applications'] })
       // Set the cache for the new application
       queryClient.setQueryData(['applications', data.id], data)
+      // Call user's onSuccess if provided
+      await (options?.onSuccess as any)?.(data, variables, context)
     },
-    ...options,
   })
 }
 
@@ -1250,6 +1264,193 @@ export function useCancelTeamInvitation(
 }
 
 /**
+ * Hook to resend a team invitation
+ */
+export function useResendTeamInvitation(
+  options?: Omit<
+    UseMutationOptions<{ success: boolean }, Error, { teamId: string; invitationId: string }>,
+    'mutationFn'
+  >
+) {
+  const client = useScaffald()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ teamId, invitationId }: { teamId: string; invitationId: string }) =>
+      client.teams.resendInvitation(teamId, invitationId),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['teams', variables.teamId, 'invitations'] })
+    },
+    ...options,
+  })
+}
+
+/**
+ * Hook to list team roles for an organization
+ */
+export function useTeamRoles(
+  organizationId: string,
+  options?: Omit<UseQueryOptions<RolesListResponse>, 'queryKey' | 'queryFn'>
+) {
+  const client = useScaffald()
+
+  return useQuery({
+    queryKey: ['teams', 'roles', organizationId],
+    queryFn: () => client.teams.listRoles(organizationId),
+    enabled: !!organizationId,
+    staleTime: 5 * 60 * 1000, // 5 minutes - roles don't change often
+    ...options,
+  })
+}
+
+/**
+ * Hook to list invitations sent to the current user
+ *
+ * @example
+ * ```tsx
+ * function MyInvitations() {
+ *   const { data, isLoading } = useMyTeamInvitations({ status: 'pending' })
+ *
+ *   if (isLoading) return <div>Loading...</div>
+ *
+ *   return (
+ *     <div>
+ *       <h2>Pending Invitations</h2>
+ *       {data?.invitations.map(inv => (
+ *         <div key={inv.id}>
+ *           {inv.team?.name} - {inv.role?.name}
+ *         </div>
+ *       ))}
+ *     </div>
+ *   )
+ * }
+ * ```
+ */
+export function useMyTeamInvitations(
+  params?: { status?: 'pending' | 'accepted' | 'declined' | 'revoked' | 'expired' },
+  options?: Omit<UseQueryOptions<TeamInvitationsListResponse>, 'queryKey' | 'queryFn'>
+) {
+  const client = useScaffald()
+
+  return useQuery({
+    queryKey: ['teams', 'invitations', 'mine', params],
+    queryFn: () => client.teams.listMyInvitations(params),
+    staleTime: 30 * 1000, // 30 seconds
+    ...options,
+  })
+}
+
+/**
+ * Hook to respond to a team invitation
+ *
+ * @example
+ * ```tsx
+ * function InvitationCard({ invitationId }: { invitationId: string }) {
+ *   const respondMutation = useRespondToTeamInvitation()
+ *
+ *   const handleAccept = async () => {
+ *     await respondMutation.mutateAsync({
+ *       invitationId,
+ *       params: { action: 'accept' }
+ *     })
+ *   }
+ *
+ *   const handleDecline = async () => {
+ *     await respondMutation.mutateAsync({
+ *       invitationId,
+ *       params: { action: 'decline' }
+ *     })
+ *   }
+ *
+ *   return (
+ *     <div>
+ *       <button onClick={handleAccept}>Accept</button>
+ *       <button onClick={handleDecline}>Decline</button>
+ *     </div>
+ *   )
+ * }
+ * ```
+ */
+export function useRespondToTeamInvitation(
+  options?: Omit<
+    UseMutationOptions<
+      TeamInvitationResponse,
+      Error,
+      { invitationId: string; params: { action: 'accept' | 'decline' } }
+    >,
+    'mutationFn'
+  >
+) {
+  const client = useScaffald()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ invitationId, params }: { invitationId: string; params: { action: 'accept' | 'decline' } }) =>
+      client.teams.respondToInvitation(invitationId, params),
+    onSuccess: () => {
+      // Invalidate my invitations
+      queryClient.invalidateQueries({ queryKey: ['teams', 'invitations', 'mine'] })
+      // Invalidate teams list (user may now be a member of new team)
+      queryClient.invalidateQueries({ queryKey: ['teams'] })
+    },
+    ...options,
+  })
+}
+
+/**
+ * Hook to respond to a team invitation using a token (public endpoint)
+ *
+ * @remarks
+ * This hook is used for email invitation links and does not require authentication.
+ * The token is validated server-side to identify the invitation.
+ *
+ * @example
+ * ```tsx
+ * function AcceptInvitationPage() {
+ *   const { token } = useParams()
+ *   const { user } = useAuth()
+ *   const respondMutation = useRespondToTeamInvitationWithToken()
+ *
+ *   const handleAccept = async () => {
+ *     const { status, teamId } = await respondMutation.mutateAsync({
+ *       token,
+ *       action: 'accept',
+ *       responderId: user?.id
+ *     })
+ *
+ *     if (status === 'accepted') {
+ *       // Navigate to team page using your routing constants
+ *       // router.push(ROUTES.TEAMS.DETAIL(teamId))
+ *     }
+ *   }
+ *
+ *   return <button onClick={handleAccept}>Accept Invitation</button>
+ * }
+ * ```
+ */
+export function useRespondToTeamInvitationWithToken(
+  options?: Omit<
+    UseMutationOptions<RespondToInvitationWithTokenResponse, Error, RespondToInvitationWithTokenParams>,
+    'mutationFn'
+  >
+) {
+  const client = useScaffald()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (params: RespondToInvitationWithTokenParams) =>
+      client.teams.respondToInvitationWithToken(params),
+    onSuccess: () => {
+      // Invalidate my invitations (user may now see fewer pending invitations)
+      queryClient.invalidateQueries({ queryKey: ['teams', 'invitations', 'mine'] })
+      // Invalidate teams list (user may now be a member of new team)
+      queryClient.invalidateQueries({ queryKey: ['teams'] })
+    },
+    ...options,
+  })
+}
+
+/**
  * Hook to list team job assignments
  */
 export function useTeamJobAssignments(
@@ -1310,6 +1511,85 @@ export function useDeleteTeamJobAssignment(
       client.teams.deleteJobAssignment(teamId, assignmentId),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['teams', variables.teamId, 'jobs'] })
+    },
+    ...options,
+  })
+}
+
+// ===== Prerequisites Hooks =====
+
+/**
+ * Hook to check prerequisites completion status
+ *
+ * @example
+ * ```typescript
+ * const { data: prerequisites, isLoading } = usePrerequisites()
+ *
+ * if (!prerequisites?.isComplete) {
+ *   // Redirect to onboarding page
+ *   // Example: router.push(ROUTES.ONBOARDING.path)
+ * }
+ * ```
+ */
+export function usePrerequisites(
+  options?: Omit<UseQueryOptions<PrerequisitesCheckResponse>, 'queryKey' | 'queryFn'>
+) {
+  const client = useScaffald()
+
+  return useQuery({
+    queryKey: ['prerequisites'],
+    queryFn: () => client.prerequisites.check(),
+    staleTime: 5 * 60 * 1000, // 5 minutes - prerequisites don't change often
+    ...options,
+  })
+}
+
+/**
+ * Hook to complete prerequisites
+ *
+ * @example
+ * ```typescript
+ * const completeMutation = useCompletePrerequisites({
+ *   onSuccess: () => {
+ *     // Redirect to dashboard after completion
+ *     // Example: router.push(ROUTES.DASHBOARD.path)
+ *   }
+ * })
+ *
+ * // Submit prerequisites
+ * await completeMutation.mutateAsync({
+ *   first_name: 'John',
+ *   last_name: 'Doe',
+ *   address: {
+ *     street: '123 Main St',
+ *     city: 'San Francisco',
+ *     state: 'CA',
+ *     zip: '94102',
+ *     country: 'US'
+ *   },
+ *   user_types: ['worker'],
+ *   industry_id: 'ind_123',
+ *   accepts_privacy_policy: true,
+ *   accepts_terms_of_service: true
+ * })
+ * ```
+ */
+export function useCompletePrerequisites(
+  options?: Omit<
+    UseMutationOptions<CompletePrerequisitesResponse, Error, CompletePrerequisitesParams>,
+    'mutationFn'
+  >
+) {
+  const client = useScaffald()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (params: CompletePrerequisitesParams) => client.prerequisites.complete(params),
+    onSuccess: () => {
+      // Invalidate prerequisites to refetch the new status
+      queryClient.invalidateQueries({ queryKey: ['prerequisites'] })
+      // Also invalidate user profile data as it was updated
+      queryClient.invalidateQueries({ queryKey: ['profiles'] })
     },
     ...options,
   })

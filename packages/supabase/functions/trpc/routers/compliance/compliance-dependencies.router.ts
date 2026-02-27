@@ -1,6 +1,6 @@
 /**
  * Compliance Dependencies Router
- * REQ-2, TASK-19: Integrate Authorization Checks into tRPC Routers
+ * Compliance dependencies router with authorization checks
  *
  * tRPC router for managing dependencies between compliance requirements.
  * Includes dependency relationships, umbrella underlying schedules, and rules.
@@ -116,7 +116,7 @@ const createUnderlyingScheduleInputSchema = z.object({
   followsForm: z.boolean().default(true),
   dropDownAllowed: z.boolean().default(false),
   dropDownSir: z.number().positive().optional(),
-  exclusions: z.record(z.boolean()).optional(),
+  exclusions: z.record(z.string(), z.boolean()).optional(),
   notes: z.string().optional(),
 })
 
@@ -129,7 +129,7 @@ const updateUnderlyingScheduleInputSchema = z.object({
   followsForm: z.boolean().optional(),
   dropDownAllowed: z.boolean().optional(),
   dropDownSir: z.number().positive().nullable().optional(),
-  exclusions: z.record(z.boolean()).nullable().optional(),
+  exclusions: z.record(z.string(), z.boolean()).nullable().optional(),
   notes: z.string().nullable().optional(),
 })
 

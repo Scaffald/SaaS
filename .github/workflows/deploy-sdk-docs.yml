@@ -1,0 +1,61 @@
+name: Deploy SDK Documentation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/scaffald-sdk/docs-site/**'
+      - 'packages/scaffald-sdk/docs/**'
+      - 'packages/scaffald-sdk/README.md'
+      - 'packages/scaffald-sdk/ARCHITECTURE.md'
+      - 'packages/scaffald-sdk/CONTRIBUTING.md'
+      - '.github/workflows/deploy-sdk-docs.yml'
+
+  # Manual trigger
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout monorepo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install monorepo dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Install Docusaurus dependencies
+        run: |
+          cd packages/scaffald-sdk/docs-site
+          npm install
+
+      - name: Build Docusaurus site
+        run: |
+          cd packages/scaffald-sdk/docs-site
+          npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{ secrets.SCAFFALD_SDK_SYNC_TOKEN }}
+          publish_dir: ./packages/scaffald-sdk/docs-site/build
+          # Deploy to Scaffald/sdk repository
+          external_repository: Scaffald/sdk
+          publish_branch: gh-pages
+          user_name: 'Scaffald CI'
+          user_email: 'dev@scaffald.com'
+          cname: docs.scaffald.com

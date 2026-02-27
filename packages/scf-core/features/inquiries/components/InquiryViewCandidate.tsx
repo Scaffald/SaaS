@@ -1,10 +1,15 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useInquiryByApplication,
+  useAcceptInquirySectionMutation,
+  useSubmitCapabilityResponseMutation,
+} from '@scf/core/utils/inquiries-sdk-hooks'
 import { useInquirySubscription } from '@scf/core/utils/supabase/useInquirySubscription'
 import type { InquirySectionName } from '@scf/schemas'
-import { Button, Input, ScrollView, Separator, Text, XStack, YStack } from '@unicornlove/ui'
-import { Check, ChevronDown, ChevronUp, MessageSquare } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { Button, Input, ScrollView, Separator, Text, Row, Stack } from '@scaffald/ui'
+import { Check, ChevronDown, ChevronUp, MessageSquare } from 'lucide-react-native'
+import { useToast } from '@scaffald/ui'
 import { useEffect, useMemo, useState } from 'react'
+import { Pressable } from 'react-native'
 import { CapabilityQuestionInput } from './CapabilityQuestionInput'
 import { InquiryCommentThread } from './InquiryCommentThread'
 import { InquiryHistoryTimeline } from './InquiryHistoryTimeline'
@@ -29,7 +34,7 @@ interface InquiryViewCandidateProps {
 }
 
 export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCandidateProps) {
-  const toast = useToastController()
+  const toast = useToast()
 
   // Subscribe to real-time updates for this inquiry
   useInquirySubscription(inquiryId)
@@ -47,9 +52,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
   const [capabilityResponseState, setCapabilityResponseState] = useState<
     Record<string, { responseValue?: boolean; responseText?: string }>
   >({})
-  const { data, isLoading, error } = api.inquiries.getByApplication.useQuery({
-    applicationId,
-  })
+  const { data, isLoading, error } = useInquiryByApplication(applicationId)
 
   useEffect(() => {
     if (!data?.capabilityResponses) {
@@ -66,28 +69,35 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
     setCapabilityResponseState(nextState)
   }, [data?.capabilityResponses])
 
-  const acceptSectionMutation = api.inquiries.acceptSection.useMutation({
+  const acceptSectionMutation = useAcceptInquirySectionMutation({
     onSuccess: () => {
-      toast.show('Section accepted', {
-        message: 'You have accepted this section of the inquiry.',
+      toast.show({
+        title: 'Section accepted',
+        message: 'You have accepted this section of the inv.',
       })
     },
-    onError: (error: { message?: string }) => {
-      toast.show('Failed to accept section', {
+    onError: (error) => {
+      toast.show({
+        title: 'Failed to accept section',
         message: error.message ?? 'Please try again.',
+        variant: 'error',
       })
     },
   })
 
-  const submitCapabilityResponseMutation = api.inquiries.submitCapabilityResponse.useMutation({
+  const submitCapabilityResponseMutation = useSubmitCapabilityResponseMutation({
     onSuccess: () => {
-      toast.show('Response saved', {
+      toast.show({
+        title: 'Response saved',
         message: 'Your capability response has been saved.',
+        variant: 'success',
       })
     },
-    onError: (error: { message?: string }) => {
-      toast.show('Failed to save response', {
+    onError: (error) => {
+      toast.show({
+        title: 'Failed to save response',
         message: error.message ?? 'Please try again.',
+        variant: 'error',
       })
     },
   })
@@ -138,25 +148,27 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
 
   if (isLoading) {
     return (
-      <YStack padding="$4" alignItems="center" gap="$4">
-        <Text>Loading inquiry...</Text>
-      </YStack>
+      <Stack padding="md" align="center" gap={16}>
+        <Text>Loading inv...</Text>
+      </Stack>
     )
   }
 
   if (error || !data || !data.inquiry) {
     return (
-      <YStack padding="$4" alignItems="center" gap="$4">
+      <Stack padding="md" align="center" gap={16}>
         <Text color="$red10">Failed to load inquiry</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   // Format rate for display
   const formatRate = () => {
-    if (!inquiry.rate_min_cents) return 'Not specified'
-    const min = (inquiry.rate_min_cents / 100).toFixed(2)
-    const max = inquiry.rate_max_cents ? (inquiry.rate_max_cents / 100).toFixed(2) : null
+    const minCents = Number((inquiry as Record<string, unknown>).rate_min_cents)
+    if (!minCents || Number.isNaN(minCents)) return 'Not specified'
+    const min = (minCents / 100).toFixed(2)
+    const maxCents = Number((inquiry as Record<string, unknown>).rate_max_cents)
+    const max = maxCents && !Number.isNaN(maxCents) ? (maxCents / 100).toFixed(2) : null
     return max ? `$${min} - $${max}` : `$${min}`
   }
 
@@ -186,7 +198,8 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
 
   // Format workdays
   const formatWorkdays = () => {
-    if (!inquiry.workdays || inquiry.workdays.length === 0) return 'Not specified'
+    const workdays = (inquiry as Record<string, unknown>).workdays
+    if (!Array.isArray(workdays) || workdays.length === 0) return 'Not specified'
     const dayLabels: Record<string, string> = {
       monday: 'Mon',
       tuesday: 'Tue',
@@ -196,7 +209,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
       saturday: 'Sat',
       sunday: 'Sun',
     }
-    return inquiry.workdays.map((day: string) => dayLabels[day] || day).join(', ')
+    return workdays.map((day: string) => dayLabels[day] || day).join(', ')
   }
 
   type JobPayRangeSource = {
@@ -275,17 +288,39 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
     return status.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
   }
 
-  const { inquiry, sections: rawSections, comments } = data
+  const { sections: rawSections, comments } = data
+  const inquiry = data.inquiry as Record<string, unknown>
+  const inv = inquiry as Record<string, string | boolean | number | string[] | undefined>
   const sections = rawSections as InquirySectionStatus[]
-  const jobInfo = data.job ?? data.application?.job ?? null
-  const applicationInfo = data.application ?? null
+  type JobInfoSource = {
+    title?: string
+    location?: string
+    organizationName?: string
+    organization?: { name?: string }
+    employmentType?: string
+    remoteOption?: string
+    payRangeMinCents?: number | null
+    payRangeMaxCents?: number | null
+    payRangeType?: string | null
+  }
+  type ApplicationInfoSource = {
+    job?: JobInfoSource
+    status?: string
+    createdAt?: string
+    updatedAt?: string
+    stageChangedAt?: string
+    jobTitle?: string
+    applicationScore?: number | null
+  }
+  const jobInfo = (data.job ?? (data.application as ApplicationInfoSource | undefined)?.job ?? null) as JobInfoSource | null
+  const applicationInfo = (data.application ?? null) as ApplicationInfoSource | null
   const capabilityQuestions =
     (data.capabilityQuestions as CapabilityQuestionDefinition[] | undefined) ?? []
   const jobTitleDisplay =
     jobInfo?.title ??
     applicationInfo?.job?.title ??
     data.application?.jobTitle ??
-    inquiry.job_title ??
+    inv.job_title ??
     'Job'
   const jobOrganizationName =
     jobInfo?.organizationName ??
@@ -293,19 +328,19 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
     applicationInfo?.job?.organization?.name ??
     null
   const jobLocation =
-    jobInfo?.location ?? applicationInfo?.job?.location ?? inquiry.working_hours_timezone ?? null
+    jobInfo?.location ?? applicationInfo?.job?.location ?? inv.working_hours_timezone ?? null
   const jobEmploymentType = formatEmploymentTypeLabel(
-    jobInfo?.employmentType ?? applicationInfo?.job?.employmentType ?? inquiry.employment_type
+    (jobInfo?.employmentType ?? applicationInfo?.job?.employmentType ?? inv.employment_type) as string | null | undefined
   )
   const jobRemoteOption = formatRemoteOptionLabel(
     jobInfo?.remoteOption ?? applicationInfo?.job?.remoteOption ?? null
   )
   const jobPayRange =
     formatJobPayRange(jobInfo) ?? formatJobPayRange(applicationInfo?.job ?? null) ?? null
-  const applicationStatus = formatStatus(applicationInfo?.status)
-  const submittedAtDisplay = formatDateTime(applicationInfo?.createdAt)
-  const updatedAtDisplay = formatDateTime(applicationInfo?.updatedAt)
-  const stageChangedDisplay = formatDateTime(applicationInfo?.stageChangedAt)
+  const applicationStatus = formatStatus(applicationInfo?.status ?? null)
+  const submittedAtDisplay = formatDateTime(applicationInfo?.createdAt ?? null)
+  const updatedAtDisplay = formatDateTime(applicationInfo?.updatedAt ?? null)
+  const stageChangedDisplay = formatDateTime(applicationInfo?.stageChangedAt ?? null)
 
   // Calculate progress
   const acceptedSections = sections.filter((s) => s.accepted_by).length
@@ -316,22 +351,33 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
   const commentsBySection = useMemo(() => {
     const grouped: Record<string, typeof comments> = {}
     for (const comment of comments) {
-      if (!grouped[comment.section_name]) {
-        grouped[comment.section_name] = []
+      const sectionName = comment.section_name
+      if (sectionName == null) continue
+      if (!grouped[sectionName]) {
+        grouped[sectionName] = []
       }
-      grouped[comment.section_name].push(comment)
+      grouped[sectionName].push(comment)
     }
     return grouped
   }, [comments])
 
-  const DetailRow = ({ label, value }: { label: string; value?: string | null }) => (
-    <XStack justifyContent="space-between" alignItems="center">
-      <Text fontSize="$3">{label}</Text>
-      <Text fontWeight="600" fontSize="$3" color="$color12">
-        {value && value.length > 0 ? value : 'Not specified'}
-      </Text>
-    </XStack>
-  )
+  const DetailRow = ({ label, value }: { label: string; value?: unknown }) => {
+    const display =
+      value == null
+        ? 'Not specified'
+        : typeof value === 'object' && !Array.isArray(value)
+          ? 'Not specified'
+          : Array.isArray(value)
+            ? value.join(', ')
+            : String(value)
+    const text = display.length > 0 ? display : 'Not specified'
+    return (
+      <Row justify="space-between" align="center">
+        <Text>{label}</Text>
+        <Text color="$gray11">{text}</Text>
+      </Row>
+    )
+  }
 
   const SectionHeader = ({
     title,
@@ -346,86 +392,73 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
   }) => {
     const isExpanded = expandedSections.has(sectionName)
     return (
-      <XStack
-        alignItems="center"
-        justifyContent="space-between"
-        padding="$3"
-        backgroundColor="$color2"
-        borderRadius="$3"
-        cursor="pointer"
-        onPress={() => toggleSection(sectionName)}
-        $sm={{ padding: '$4', height: 48 }}
-      >
-        <XStack alignItems="center" gap="$2" flex={1}>
+      <Pressable onPress={() => toggleSection(sectionName)}>
+        <Row
+          align="center"
+          justify="space-between"
+          padding="sm"
+          backgroundColor="$color2"
+          borderRadius={12}
+        >
+        <Row align="center" gap={8} style={{ flex: 1 }}>
           {isExpanded ? (
-            <ChevronUp size={16} color="$color11" />
+            <ChevronUp size="md" color="$gray11" />
           ) : (
-            <ChevronDown size={16} color="$color11" />
+            <ChevronDown size="md" color="$gray11" />
           )}
-          <Text fontWeight="600" fontSize="$4">
-            {title}
-          </Text>
+          <Text>{title}</Text>
           {isAccepted && (
-            <XStack
+            <Row
               backgroundColor="$green3"
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-              borderRadius="$2"
-              alignItems="center"
-              gap="$1"
+              paddingHorizontal={8}
+              paddingVertical={4}
+              borderRadius={8}
+              align="center"
+              gap={4}
             >
-              <Check size={12} color="$green11" />
-              <Text fontSize="$1" color="$green11" fontWeight="600">
-                Accepted
-              </Text>
-            </XStack>
+              <Check size="sm" color="$green11" />
+              <Text color="$green11">Accepted</Text>
+            </Row>
           )}
           {commentCount > 0 && (
-            <XStack alignItems="center" gap="$1">
-              <MessageSquare size={14} color="$color11" />
-              <Text fontSize="$2" color="$color11">
-                {commentCount}
-              </Text>
-            </XStack>
+            <Row align="center" gap={4}>
+              <MessageSquare size="md" color="$gray11" />
+              <Text color="$gray11">{commentCount}</Text>
+            </Row>
           )}
-        </XStack>
-      </XStack>
+          </Row>
+        </Row>
+      </Pressable>
     )
   }
 
   const NonNegotiableBadge = () => (
-    <XStack backgroundColor="$gray3" paddingHorizontal="$2" paddingVertical="$1" borderRadius="$2">
-      <Text fontSize="$1" color="$gray11" fontWeight="600">
-        Non-negotiable
-      </Text>
-    </XStack>
+    <Row backgroundColor="$gray3" paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
+      <Text color="$gray11">Non-negotiable</Text>
+    </Row>
   )
 
   return (
     <ScrollView>
-      <YStack gap="$4" padding="$4" $sm={{ gap: '$6', padding: '$3' }}>
+      <Stack gap={16} padding="md">
         {/* Progress Indicator */}
-        <YStack gap="$2" padding="$4" backgroundColor="$blue2" borderRadius="$4">
-          <XStack justifyContent="space-between" alignItems="center">
-            <Text fontWeight="600" fontSize="$5">
-              Inquiry Progress
-            </Text>
-            <Text fontWeight="600" fontSize="$4" color="$blue11">
+          <Stack gap={8} padding="md" backgroundColor="$blue2" borderRadius={16}>
+          <Row justify="space-between" align="center">
+            <Text>Inquiry Progress</Text>
+            <Text color="$blue11">
               {acceptedSections}/{totalSections}
             </Text>
-          </XStack>
-          <YStack height={8} backgroundColor="$color3" borderRadius="$10" overflow="hidden">
-            <YStack
-              height="100%"
+          </Row>
+          <Stack style={{ height: 8, overflow: 'hidden', borderRadius: 10 }} backgroundColor="$color3">
+            <Stack
+              style={{ height: '100%', width: `${progress}%` }}
               backgroundColor="$blue9"
-              width={`${progress}%`}
-              animation="quick"
             />
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
 
         {/* Job Details (Collapsible) */}
-        <YStack gap="$2">
+        <Stack gap={8}>
           <SectionHeader
             title="Job Details"
             sectionName="job_details"
@@ -433,11 +466,11 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
             commentCount={0}
           />
           {expandedSections.has('job_details') && (
-            <YStack
-              gap="$2"
-              padding="$3"
+            <Stack
+              gap={8}
+              padding="sm"
               backgroundColor="$background"
-              borderRadius="$3"
+              borderRadius={12}
               borderWidth={1}
               borderColor="$borderColor"
             >
@@ -447,12 +480,12 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               <DetailRow label="Employment type" value={jobEmploymentType} />
               <DetailRow label="Remote option" value={jobRemoteOption} />
               <DetailRow label="Pay range" value={jobPayRange} />
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
 
         {/* Application Data (Collapsible) */}
-        <YStack gap="$2">
+        <Stack gap={8}>
           <SectionHeader
             title="Application Data"
             sectionName="application_data"
@@ -460,16 +493,16 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
             commentCount={0}
           />
           {expandedSections.has('application_data') && (
-            <YStack
-              gap="$2"
-              padding="$3"
+            <Stack
+              gap={8}
+              padding="sm"
               backgroundColor="$background"
-              borderRadius="$3"
+              borderRadius={12}
               borderWidth={1}
               borderColor="$borderColor"
             >
               {applicationInfo ? (
-                <YStack gap="$2">
+                <Stack gap={8}>
                   <DetailRow label="Status" value={applicationStatus} />
                   <DetailRow
                     label="Application score"
@@ -482,18 +515,16 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                   <DetailRow label="Submitted" value={submittedAtDisplay} />
                   <DetailRow label="Last updated" value={updatedAtDisplay} />
                   <DetailRow label="Stage changed" value={stageChangedDisplay} />
-                </YStack>
+                </Stack>
               ) : (
-                <Text fontSize="$3" color="$color11">
-                  Application metadata is unavailable.
-                </Text>
+                <Text color="$gray11">Application metadata is unavailable.</Text>
               )}
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
 
         {/* Employment Section */}
-        <YStack gap="$2">
+        <Stack gap={8}>
           <SectionHeader
             title="Employment"
             sectionName="employment"
@@ -506,88 +537,82 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
             commentCount={commentsBySection.employment?.length || 0}
           />
           {expandedSections.has('employment') && (
-            <YStack
-              gap="$3"
-              padding="$3"
+            <Stack
+              gap={12}
+              padding="sm"
               backgroundColor="$background"
-              borderRadius="$3"
+              borderRadius={12}
               borderWidth={1}
               borderColor="$borderColor"
             >
               {/* Employment Terms */}
-              <YStack gap="$2">
-                {inquiry.employment_type && (
-                  <XStack justifyContent="space-between" alignItems="center">
-                    <Text fontSize="$3">Employment type</Text>
-                    <XStack alignItems="center" gap="$2">
-                      <Text fontWeight="600" fontSize="$3">
-                        {inquiry.employment_type === 'permanent' ? 'Permanent' : 'Temporary'}
+              <Stack gap={8}>
+                {inv.employment_type && (
+                  <Row justify="space-between" align="center">
+                    <Text>Employment type</Text>
+                    <Row align="center" gap={8}>
+                      <Text>
+                        {inv.employment_type === 'permanent' ? 'Permanent' : 'Temporary'}
                       </Text>
-                      {!inquiry.employment_type_negotiable && <NonNegotiableBadge />}
-                    </XStack>
-                  </XStack>
+                      {!inv.employment_type_negotiable && <NonNegotiableBadge />}
+                    </Row>
+                  </Row>
                 )}
-                {inquiry.work_schedule && (
-                  <XStack justifyContent="space-between" alignItems="center">
-                    <Text fontSize="$3">Work schedule</Text>
-                    <XStack alignItems="center" gap="$2">
-                      <Text fontWeight="600" fontSize="$3">
-                        {inquiry.work_schedule === 'full_time'
+                {inv.work_schedule && (
+                  <Row justify="space-between" align="center">
+                    <Text>Work schedule</Text>
+                    <Row align="center" gap={8}>
+                      <Text>
+                        {inv.work_schedule === 'full_time'
                           ? 'Full time'
-                          : inquiry.work_schedule === 'part_time'
+                          : inv.work_schedule === 'part_time'
                             ? 'Part time'
                             : 'Day-Week'}
                       </Text>
-                      {!inquiry.work_schedule_negotiable && <NonNegotiableBadge />}
-                    </XStack>
-                  </XStack>
+                      {!inv.work_schedule_negotiable && <NonNegotiableBadge />}
+                    </Row>
+                  </Row>
                 )}
-                {inquiry.working_hours_start && inquiry.working_hours_end && (
-                  <XStack justifyContent="space-between" alignItems="center">
-                    <Text fontSize="$3">Working hours</Text>
-                    <XStack alignItems="center" gap="$2">
-                      <Text fontWeight="600" fontSize="$3">
-                        {inquiry.working_hours_start} - {inquiry.working_hours_end}
-                        {inquiry.working_hours_timezone && ` (${inquiry.working_hours_timezone})`}
+                {inv.working_hours_start && inv.working_hours_end && (
+                  <Row justify="space-between" align="center">
+                    <Text>Working hours</Text>
+                    <Row align="center" gap={8}>
+                      <Text>
+                        {inv.working_hours_start} - {inv.working_hours_end}
+                        {inv.working_hours_timezone && ` (${inv.working_hours_timezone})`}
                       </Text>
-                      {!inquiry.working_hours_negotiable && <NonNegotiableBadge />}
-                    </XStack>
-                  </XStack>
+                      {!inv.working_hours_negotiable && <NonNegotiableBadge />}
+                    </Row>
+                  </Row>
                 )}
-                {inquiry.workdays && inquiry.workdays.length > 0 && (
-                  <XStack justifyContent="space-between" alignItems="center">
-                    <Text fontSize="$3">Workdays</Text>
-                    <XStack alignItems="center" gap="$2">
-                      <Text fontWeight="600" fontSize="$3">
-                        {formatWorkdays()}
-                      </Text>
-                      {!inquiry.workdays_negotiable && <NonNegotiableBadge />}
-                    </XStack>
-                  </XStack>
+                {Array.isArray(inv.workdays) && inv.workdays.length > 0 && (
+                  <Row justify="space-between" align="center">
+                    <Text>Workdays</Text>
+                    <Row align="center" gap={8}>
+                      <Text>{formatWorkdays()}</Text>
+                      {!inv.workdays_negotiable && <NonNegotiableBadge />}
+                    </Row>
+                  </Row>
                 )}
-                {inquiry.employment_start_date && (
-                  <XStack justifyContent="space-between" alignItems="center">
-                    <Text fontSize="$3">Start date</Text>
-                    <XStack alignItems="center" gap="$2">
-                      <Text fontWeight="600" fontSize="$3">
-                        {formatDate(inquiry.employment_start_date)}
-                      </Text>
-                      {!inquiry.employment_dates_negotiable && <NonNegotiableBadge />}
-                    </XStack>
-                  </XStack>
+                {inv.employment_start_date && (
+                  <Row justify="space-between" align="center">
+                    <Text>Start date</Text>
+                    <Row align="center" gap={8}>
+                      <Text>{formatDate(typeof inv.employment_start_date === 'string' ? inv.employment_start_date : null)}</Text>
+                      {!inv.employment_dates_negotiable && <NonNegotiableBadge />}
+                    </Row>
+                  </Row>
                 )}
-                {inquiry.employment_end_date && (
-                  <XStack justifyContent="space-between" alignItems="center">
-                    <Text fontSize="$3">End date</Text>
-                    <XStack alignItems="center" gap="$2">
-                      <Text fontWeight="600" fontSize="$3">
-                        {formatDate(inquiry.employment_end_date)}
-                      </Text>
-                      {!inquiry.employment_dates_negotiable && <NonNegotiableBadge />}
-                    </XStack>
-                  </XStack>
+                {inv.employment_end_date && (
+                  <Row justify="space-between" align="center">
+                    <Text>End date</Text>
+                    <Row align="center" gap={8}>
+                      <Text>{formatDate(typeof inv.employment_end_date === 'string' ? inv.employment_end_date : null)}</Text>
+                      {!inv.employment_dates_negotiable && <NonNegotiableBadge />}
+                    </Row>
+                  </Row>
                 )}
-              </YStack>
+              </Stack>
 
               <Separator />
 
@@ -603,8 +628,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                 <Button
                   onPress={() => handleAcceptSection('employment')}
                   disabled={acceptSectionMutation.isPending}
-                  theme="success"
-                  $sm={{ height: 48 }}
+                  color="primary"
                 >
                   {acceptSectionMutation.isPending ? 'Accepting...' : 'Accept Employment Terms'}
                 </Button>
@@ -612,25 +636,25 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
 
               {/* Acceptance Badge */}
               {sections.find((s) => s.section_name === 'employment')?.accepted_by && (
-                <YStack
-                  padding="$3"
+                <Stack
+                  padding="sm"
                   backgroundColor="$green2"
-                  borderRadius="$3"
+                  borderRadius={12}
                   borderWidth={1}
                   borderColor="$green9"
                 >
-                  <Text fontSize="$3" color="$green11" fontWeight="600">
+                  <Text color="$green11">
                     ✓ You accepted the employment terms on{' '}
                     {formatDate(sections.find((s) => s.section_name === 'employment')?.accepted_at)}
                   </Text>
-                </YStack>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
 
         {/* Compensation Section */}
-        <YStack gap="$2">
+        <Stack gap={8}>
           <SectionHeader
             title="Compensation"
             sectionName="compensation"
@@ -640,24 +664,24 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
             commentCount={commentsBySection.compensation?.length || 0}
           />
           {expandedSections.has('compensation') && (
-            <YStack
-              gap="$3"
-              padding="$3"
+            <Stack
+              gap={12}
+              padding="sm"
               backgroundColor="$background"
-              borderRadius="$3"
+              borderRadius={12}
               borderWidth={1}
               borderColor="$borderColor"
             >
               {/* Rate Display */}
-              <XStack justifyContent="space-between" alignItems="center">
-                <Text fontSize="$3">Rate</Text>
-                <XStack alignItems="center" gap="$2">
-                  <Text fontWeight="600" fontSize="$4">
-                    {formatRate()} {inquiry.rate_type === 'hourly' ? '/hr' : '/yr'}
+              <Row justify="space-between" align="center">
+                <Text>Rate</Text>
+                <Row align="center" gap={8}>
+                  <Text>
+                    {formatRate()} {inv.rate_type === 'hourly' ? '/hr' : '/yr'}
                   </Text>
-                  {!inquiry.rate_negotiable && <NonNegotiableBadge />}
-                </XStack>
-              </XStack>
+                  {!inv.rate_negotiable && <NonNegotiableBadge />}
+                </Row>
+              </Row>
 
               <Separator />
 
@@ -673,8 +697,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                 <Button
                   onPress={() => handleAcceptSection('compensation')}
                   disabled={acceptSectionMutation.isPending}
-                  theme="success"
-                  $sm={{ height: 48 }}
+                  color="primary"
                 >
                   {acceptSectionMutation.isPending ? 'Accepting...' : 'Accept Compensation Terms'}
                 </Button>
@@ -682,27 +705,27 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
 
               {/* Acceptance Badge */}
               {sections.find((s) => s.section_name === 'compensation')?.accepted_by && (
-                <YStack
-                  padding="$3"
+                <Stack
+                  padding="sm"
                   backgroundColor="$green2"
-                  borderRadius="$3"
+                  borderRadius={12}
                   borderWidth={1}
                   borderColor="$green9"
                 >
-                  <Text fontSize="$3" color="$green11" fontWeight="600">
+                  <Text color="$green11">
                     ✓ You accepted the compensation terms on{' '}
                     {formatDate(
                       sections.find((s) => s.section_name === 'compensation')?.accepted_at
                     )}
                   </Text>
-                </YStack>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
 
         {/* Capabilities Section */}
-        <YStack gap="$2">
+        <Stack gap={8}>
           <SectionHeader
             title="Capabilities"
             sectionName="capabilities"
@@ -712,30 +735,28 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
             commentCount={commentsBySection.capabilities?.length || 0}
           />
           {expandedSections.has('capabilities') && (
-            <YStack
-              gap="$3"
-              padding="$3"
+            <Stack
+              gap={12}
+              padding="sm"
               backgroundColor="$background"
-              borderRadius="$3"
+              borderRadius={12}
               borderWidth={1}
               borderColor="$borderColor"
             >
               {/* Endurance Requirement */}
-              {inquiry.endurance_required && (
-                <YStack gap="$2">
-                  <Text fontWeight="600" fontSize="$4">
-                    Endurance Required
-                  </Text>
+              {inv.endurance_required && (
+                <Stack gap={8}>
+                  <Text>Endurance Required</Text>
                   <CapabilityQuestionInput
                     question="Can you meet the endurance requirements for this role?"
                     value={capabilityResponseState.endurance?.responseValue}
                     onChange={(value) => handleCapabilityResponse('endurance', value, undefined)}
                   />
-                </YStack>
+                </Stack>
               )}
 
               {capabilityQuestions.length > 0 && (
-                <YStack gap="$3">
+                <Stack gap={12}>
                   {capabilityQuestions.map((question) => {
                     const response = capabilityResponseState[question.name]
                     const normalizedType = question.type?.toLowerCase()
@@ -763,8 +784,8 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                       : 'Add response'
 
                     return (
-                      <YStack key={question.name} gap="$1">
-                        <Text fontWeight="600" fontSize="$3">
+                      <Stack key={question.name} gap={4}>
+                        <Text>
                           {question.label}
                           {question.required ? ' *' : ''}
                         </Text>
@@ -783,10 +804,10 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                           multiline={!isNumeric}
                           numberOfLines={!isNumeric ? 3 : 1}
                         />
-                      </YStack>
+                      </Stack>
                     )
                   })}
-                </YStack>
+                </Stack>
               )}
 
               <Separator />
@@ -803,8 +824,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                 <Button
                   onPress={() => handleAcceptSection('capabilities')}
                   disabled={acceptSectionMutation.isPending}
-                  theme="success"
-                  $sm={{ height: 48 }}
+                  color="primary"
                 >
                   {acceptSectionMutation.isPending ? 'Accepting...' : 'Accept Capabilities Terms'}
                 </Button>
@@ -812,27 +832,27 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
 
               {/* Acceptance Badge */}
               {sections.find((s) => s.section_name === 'capabilities')?.accepted_by && (
-                <YStack
-                  padding="$3"
+                <Stack
+                  padding="sm"
                   backgroundColor="$green2"
-                  borderRadius="$3"
+                  borderRadius={12}
                   borderWidth={1}
                   borderColor="$green9"
                 >
-                  <Text fontSize="$3" color="$green11" fontWeight="600">
+                  <Text color="$green11">
                     ✓ You accepted the capabilities terms on{' '}
                     {formatDate(
                       sections.find((s) => s.section_name === 'capabilities')?.accepted_at
                     )}
                   </Text>
-                </YStack>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
 
         {/* Other Section */}
-        <YStack gap="$2">
+        <Stack gap={8}>
           <SectionHeader
             title="Other"
             sectionName="other"
@@ -840,53 +860,45 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
             commentCount={commentsBySection.other?.length || 0}
           />
           {expandedSections.has('other') && (
-            <YStack
-              gap="$3"
-              padding="$3"
+            <Stack
+              gap={12}
+              padding="sm"
               backgroundColor="$background"
-              borderRadius="$3"
+              borderRadius={12}
               borderWidth={1}
               borderColor="$borderColor"
             >
               {/* Other Terms */}
-              <YStack gap="$2">
-                {inquiry.willing_to_travel !== null && (
-                  <XStack justifyContent="space-between" alignItems="center">
-                    <Text fontSize="$3">Willing to travel</Text>
-                    <Text fontWeight="600" fontSize="$3">
-                      {inquiry.willing_to_travel ? 'Yes' : 'No'}
-                      {inquiry.travel_distance_miles &&
-                        ` (up to ${inquiry.travel_distance_miles} miles)`}
+              <Stack gap={8}>
+                {inv.willing_to_travel !== null && (
+                  <Row justify="space-between" align="center">
+                    <Text>Willing to travel</Text>
+                    <Text>
+                      {inv.willing_to_travel ? 'Yes' : 'No'}
+                      {inv.travel_distance_miles &&
+                        ` (up to ${inv.travel_distance_miles} miles)`}
                     </Text>
-                  </XStack>
+                  </Row>
                 )}
-                {inquiry.willing_to_work_overtime !== null && (
-                  <XStack justifyContent="space-between" alignItems="center">
-                    <Text fontSize="$3">Willing to work overtime</Text>
-                    <Text fontWeight="600" fontSize="$3">
-                      {inquiry.willing_to_work_overtime ? 'Yes' : 'No'}
-                    </Text>
-                  </XStack>
+                {inv.willing_to_work_overtime !== null && (
+                  <Row justify="space-between" align="center">
+                    <Text>Willing to work overtime</Text>
+                    <Text>{inv.willing_to_work_overtime ? 'Yes' : 'No'}</Text>
+                  </Row>
                 )}
-                {inquiry.has_drivers_license !== null && (
-                  <XStack justifyContent="space-between" alignItems="center">
-                    <Text fontSize="$3">Has driver's license</Text>
-                    <Text fontWeight="600" fontSize="$3">
-                      {inquiry.has_drivers_license ? 'Yes' : 'No'}
-                    </Text>
-                  </XStack>
+                {inv.has_drivers_license !== null && (
+                  <Row justify="space-between" align="center">
+                    <Text>Has driver's license</Text>
+                    <Text>{inv.has_drivers_license ? 'Yes' : 'No'}</Text>
+                  </Row>
                 )}
-                {inquiry.additional_notes && (
-                  <YStack gap="$2">
-                    <Text fontSize="$3" fontWeight="600">
-                      Additional notes
-                    </Text>
-                    <Text fontSize="$3" color="$color11">
-                      {inquiry.additional_notes}
-                    </Text>
-                  </YStack>
+                {inv.additional_notes && (
+                  <Stack gap={8}>
+                    <Text>Additional notes</Text>
+                    <Text color="$gray11">{inv.additional_notes}</Text>
+                  </Stack>
                 )}
-              </YStack>
+              </Stack>
 
               <Separator />
 
@@ -902,8 +914,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                 <Button
                   onPress={() => handleAcceptSection('other')}
                   disabled={acceptSectionMutation.isPending}
-                  theme="success"
-                  $sm={{ height: 48 }}
+                  color="primary"
                 >
                   {acceptSectionMutation.isPending ? 'Accepting...' : 'Accept Other Terms'}
                 </Button>
@@ -911,25 +922,25 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
 
               {/* Acceptance Badge */}
               {sections.find((s) => s.section_name === 'other')?.accepted_by && (
-                <YStack
-                  padding="$3"
+                <Stack
+                  padding="sm"
                   backgroundColor="$green2"
-                  borderRadius="$3"
+                  borderRadius={12}
                   borderWidth={1}
                   borderColor="$green9"
                 >
-                  <Text fontSize="$3" color="$green11" fontWeight="600">
+                  <Text color="$green11">
                     ✓ You accepted the other terms on{' '}
                     {formatDate(sections.find((s) => s.section_name === 'other')?.accepted_at)}
                   </Text>
-                </YStack>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
 
         <InquiryHistoryTimeline inquiryId={inquiryId} />
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }

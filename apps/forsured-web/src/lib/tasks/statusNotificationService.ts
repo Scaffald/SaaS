@@ -1,6 +1,5 @@
 /**
- * REQ-259: Status Change Notifications
- * TASK-3: Service to create notifications when task status changes
+ * Service to create notifications when task status changes
  *
  * This service:
  * - Checks if a status transition should trigger notifications
@@ -9,15 +8,18 @@
  * - Is fire-and-forget (errors are logged but don't block operations)
  */
 
-import { Task, TaskStatus } from '../../types';
+import { Task, TaskStatus } from "../../types";
 import {
   findStatusTransitionConfig,
   formatNotificationMessage,
   getStatusLabel,
   NotificationRecipient,
   StatusTransitionConfig,
-} from './statusNotificationConfig';
-import { filterManualUsers, logSkippedManualUserNotification } from '../notifications/manualUserFilter';
+} from "./statusNotificationConfig";
+import {
+  filterManualUsers,
+  logSkippedManualUserNotification,
+} from "../notifications/manualUserFilter";
 
 /**
  * Notification record structure matching the database schema
@@ -29,7 +31,7 @@ export interface NotificationRecord {
   type: string;
   title: string;
   message: string;
-  entity_type: 'task' | 'project' | 'document' | 'policy';
+  entity_type: "task" | "project" | "document" | "policy";
   entity_id: string;
   triggered_by?: string;
   is_read: boolean;
@@ -60,24 +62,24 @@ export interface StatusNotificationResult {
 export function determineRecipients(
   config: StatusTransitionConfig,
   task: Task,
-  changerId?: string
+  changerId?: string,
 ): string[] {
   const recipients = new Set<string>();
 
   switch (config.recipients) {
-    case 'creator':
+    case "creator":
       if (task.created_by_user_id && task.created_by_user_id !== changerId) {
         recipients.add(task.created_by_user_id);
       }
       break;
 
-    case 'assignee':
+    case "assignee":
       if (task.assigned_to_user_id && task.assigned_to_user_id !== changerId) {
         recipients.add(task.assigned_to_user_id);
       }
       break;
 
-    case 'both':
+    case "both":
       if (task.created_by_user_id && task.created_by_user_id !== changerId) {
         recipients.add(task.created_by_user_id);
       }
@@ -92,7 +94,7 @@ export function determineRecipients(
 
 /**
  * Determine notification recipients with manual user filtering
- * REQ-12: Manual users cannot receive notifications
+ * Manual users cannot receive notifications
  *
  * @param config - The notification configuration
  * @param task - The task being updated
@@ -102,7 +104,7 @@ export function determineRecipients(
 export async function determineRecipientsFiltered(
   config: StatusTransitionConfig,
   task: Task,
-  changerId?: string
+  changerId?: string,
 ): Promise<string[]> {
   const rawRecipients = determineRecipients(config, task, changerId);
 
@@ -117,9 +119,9 @@ export async function determineRecipientsFiltered(
   const skippedCount = rawRecipients.length - filteredRecipients.length;
   if (skippedCount > 0) {
     logSkippedManualUserNotification(
-      rawRecipients.filter(id => !filteredRecipients.includes(id)).join(', '),
-      'status_change',
-      { taskId: task.id, taskTitle: task.title }
+      rawRecipients.filter((id) => !filteredRecipients.includes(id)).join(", "),
+      "status_change",
+      { taskId: task.id, taskTitle: task.title },
     );
   }
 
@@ -143,9 +145,9 @@ async function createNotificationRecord(
   task: Task,
   oldStatus: TaskStatus | undefined,
   newStatus: TaskStatus,
-  changerId?: string
+  changerId?: string,
 ): Promise<NotificationRecord> {
-  throw new Error('createNotificationRecord not implemented with Supabase');
+  throw new Error("createNotificationRecord not implemented with Supabase");
 }
 
 /**
@@ -164,7 +166,7 @@ export async function createStatusChangeNotifications(
   task: Task,
   oldStatus: TaskStatus | undefined,
   newStatus: TaskStatus,
-  changerId?: string
+  changerId?: string,
 ): Promise<StatusNotificationResult> {
   try {
     // Find the notification config for this transition
@@ -175,13 +177,17 @@ export async function createStatusChangeNotifications(
       return {
         notificationsCreated: 0,
         recipientIds: [],
-        notificationType: 'none',
+        notificationType: "none",
       };
     }
 
     // Determine who should receive the notification (excluding manual users)
-    // REQ-12: Manual users cannot receive notifications
-    const recipientIds = await determineRecipientsFiltered(config, task, changerId);
+    // Manual users cannot receive notifications
+    const recipientIds = await determineRecipientsFiltered(
+      config,
+      task,
+      changerId,
+    );
 
     if (recipientIds.length === 0) {
       // No recipients to notify (e.g., creator is the one making the change)
@@ -194,7 +200,14 @@ export async function createStatusChangeNotifications(
 
     // Create notifications for each recipient
     const notificationPromises = recipientIds.map((recipientId) =>
-      createNotificationRecord(recipientId, config, task, oldStatus, newStatus, changerId)
+      createNotificationRecord(
+        recipientId,
+        config,
+        task,
+        oldStatus,
+        newStatus,
+        changerId,
+      )
     );
 
     await Promise.all(notificationPromises);
@@ -206,11 +219,11 @@ export async function createStatusChangeNotifications(
     };
   } catch (error) {
     // Log but don't throw - notification failures shouldn't block task updates
-    console.error('Failed to create status change notifications:', error);
+    console.error("Failed to create status change notifications:", error);
     return {
       notificationsCreated: 0,
       recipientIds: [],
-      notificationType: 'error',
+      notificationType: "error",
     };
   }
 }
@@ -224,7 +237,7 @@ export async function createStatusChangeNotifications(
  */
 export function shouldNotifyStatusChange(
   oldStatus: TaskStatus | undefined,
-  newStatus: TaskStatus
+  newStatus: TaskStatus,
 ): boolean {
   return findStatusTransitionConfig(oldStatus, newStatus) !== undefined;
 }

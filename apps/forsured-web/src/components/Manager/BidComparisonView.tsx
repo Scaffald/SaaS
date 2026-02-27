@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { XCircle, MessageSquare, Trophy, ArrowUpDown, Sparkles, Loader2 } from 'lucide-react'
-import { Stack, Row, Text, H2, Card, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H2, Card, Grid } from '@scaffald/ui'
 import { useBids } from '../../hooks/useBids'
 import { useProjects } from '../../hooks/useProjects'
 import { useUsers } from '../../hooks/useUsers'

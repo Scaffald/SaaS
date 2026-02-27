@@ -1,7 +1,7 @@
 /**
  * ForSured Email Integration
  *
- * REQ-130: Email Communication Auditability
+ * Email communication auditability
  *
  * Wraps @bernierllc/email-manager with:
  * - ForSured-specific context tracking (project, task, subcontractor, etc.)
@@ -12,75 +12,95 @@
  * critical for claims and compliance in the insurance industry.
  */
 
-import { sendEmail as sendEmailViaManager, sendTemplatedEmail as sendTemplatedViaManager } from './emailConfig'
-import { auditService } from '../audit'
+import {
+  sendEmail as sendEmailViaManager,
+  sendTemplatedEmail as sendTemplatedViaManager,
+} from "./emailConfig";
+import { auditService } from "../audit";
 
 /**
  * ForSured-specific context for email tracking
  * Links emails to projects, tasks, subcontractors for claims/compliance
  */
 export interface ForSuredEmailContext {
-  projectId?: string
-  taskId?: string
-  subcontractorId?: string
-  organizationId?: string
-  brokerId?: string
-  managerId?: string
-  invitationId?: string
-  invitationType?: 'broker' | 'relationship' | 'referral' | 'project'
+  projectId?: string;
+  taskId?: string;
+  subcontractorId?: string;
+  organizationId?: string;
+  brokerId?: string;
+  managerId?: string;
+  invitationId?: string;
+  invitationType?: "broker" | "relationship" | "referral" | "project";
 }
 
 /**
  * Email send result with tracking information
  */
 export interface EmailSendResult {
-  success: boolean
-  messageId?: string
-  sentAt: Date
-  error?: string
+  success: boolean;
+  messageId?: string;
+  sentAt: Date;
+  error?: string;
 }
 
 /**
  * Email audit metadata structure
  */
 interface EmailAuditMetadata {
-  message_id?: string
-  template?: string
-  recipient_email: string | string[]
-  recipient_count: number
-  subject?: string
-  provider: 'sendgrid'
+  message_id?: string;
+  template?: string;
+  recipient_email: string | string[];
+  recipient_count: number;
+  subject?: string;
+  provider: "sendgrid";
   // Context links for claims/compliance
-  project_id?: string
-  task_id?: string
-  subcontractor_id?: string
-  organization_id?: string
-  broker_id?: string
-  manager_id?: string
-  invitation_id?: string
-  invitation_type?: string
+  project_id?: string;
+  task_id?: string;
+  subcontractor_id?: string;
+  organization_id?: string;
+  broker_id?: string;
+  manager_id?: string;
+  invitation_id?: string;
+  invitation_type?: string;
   // Delivery tracking (updated via webhooks)
-  delivery_status?: 'pending' | 'sent' | 'delivered' | 'opened' | 'clicked' | 'bounced' | 'failed'
+  delivery_status?:
+    | "pending"
+    | "sent"
+    | "delivered"
+    | "opened"
+    | "clicked"
+    | "bounced"
+    | "failed";
 }
 
 /**
  * Log email event to audit trail
  */
 async function logEmailAudit(
-  action: 'email_sent' | 'email_delivered' | 'email_opened' | 'email_clicked' | 'email_bounced' | 'email_failed',
+  action:
+    | "email_sent"
+    | "email_delivered"
+    | "email_opened"
+    | "email_clicked"
+    | "email_bounced"
+    | "email_failed",
   metadata: EmailAuditMetadata,
   context: ForSuredEmailContext,
-  userId?: string
+  userId?: string,
 ): Promise<void> {
   try {
     await auditService.log({
-      category: 'system', // Using 'system' since 'communication' isn't in the type
+      category: "system", // Using 'system' since 'communication' isn't in the type
       action,
-      severity: action === 'email_bounced' || action === 'email_failed' ? 'medium' : 'info',
+      severity: action === "email_bounced" || action === "email_failed"
+        ? "medium"
+        : "info",
       user_id: userId,
       organization_id: context.organizationId,
-      resource_type: 'email',
-      status: action === 'email_bounced' || action === 'email_failed' ? 'failure' : 'success',
+      resource_type: "email",
+      status: action === "email_bounced" || action === "email_failed"
+        ? "failure"
+        : "success",
       metadata: {
         ...metadata,
         project_id: context.projectId,
@@ -91,10 +111,10 @@ async function logEmailAudit(
         invitation_id: context.invitationId,
         invitation_type: context.invitationType,
       },
-    })
+    });
   } catch (error) {
     // Never fail the application due to audit logging
-    console.error('[EmailIntegration] Audit logging failed:', error)
+    console.error("[EmailIntegration] Audit logging failed:", error);
   }
 }
 
@@ -102,16 +122,16 @@ async function logEmailAudit(
  * Send an email with ForSured context tracking and audit logging
  */
 export async function sendForSuredEmail(options: {
-  to: string | string[]
-  subject: string
-  html: string
-  text?: string
-  context: ForSuredEmailContext
-  userId?: string
+  to: string | string[];
+  subject: string;
+  html: string;
+  text?: string;
+  context: ForSuredEmailContext;
+  userId?: string;
 }): Promise<EmailSendResult> {
-  const { to, subject, html, text, context, userId } = options
-  const recipients = Array.isArray(to) ? to : [to]
-  const sentAt = new Date()
+  const { to, subject, html, text, context, userId } = options;
+  const recipients = Array.isArray(to) ? to : [to];
+  const sentAt = new Date();
 
   try {
     // Send email via @bernierllc/email-manager
@@ -128,52 +148,54 @@ export async function sendForSuredEmail(options: {
         subcontractor_id: context.subcontractorId,
         invitation_id: context.invitationId,
       },
-    })
+    });
 
     // Log successful send to audit trail
     await logEmailAudit(
-      'email_sent',
+      "email_sent",
       {
         message_id: result.messageId,
         recipient_email: to,
         recipient_count: recipients.length,
         subject,
-        provider: 'sendgrid',
-        delivery_status: 'sent',
+        provider: "sendgrid",
+        delivery_status: "sent",
       },
       context,
-      userId
-    )
+      userId,
+    );
 
     return {
       success: true,
       messageId: result.messageId,
       sentAt,
-    }
+    };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error sending email'
+    const errorMessage = error instanceof Error
+      ? error.message
+      : "Unknown error sending email";
 
     // Log failed send to audit trail
     await logEmailAudit(
-      'email_failed',
+      "email_failed",
       {
         recipient_email: to,
         recipient_count: recipients.length,
         subject,
-        provider: 'sendgrid',
-        delivery_status: 'failed',
+        provider: "sendgrid",
+        delivery_status: "failed",
       },
       context,
-      userId
-    )
+      userId,
+    );
 
-    console.error('[EmailIntegration] Send failed:', errorMessage)
+    console.error("[EmailIntegration] Send failed:", errorMessage);
 
     return {
       success: false,
       sentAt,
       error: errorMessage,
-    }
+    };
   }
 }
 
@@ -181,15 +203,15 @@ export async function sendForSuredEmail(options: {
  * Send a templated email with ForSured context tracking and audit logging
  */
 export async function sendForSuredTemplatedEmail(options: {
-  templateId: string
-  to: string | string[]
-  templateData: Record<string, unknown>
-  context: ForSuredEmailContext
-  userId?: string
+  templateId: string;
+  to: string | string[];
+  templateData: Record<string, unknown>;
+  context: ForSuredEmailContext;
+  userId?: string;
 }): Promise<EmailSendResult> {
-  const { templateId, to, templateData, context, userId } = options
-  const recipients = Array.isArray(to) ? to : [to]
-  const sentAt = new Date()
+  const { templateId, to, templateData, context, userId } = options;
+  const recipients = Array.isArray(to) ? to : [to];
+  const sentAt = new Date();
 
   try {
     // Send templated email via @bernierllc/email-manager
@@ -212,53 +234,55 @@ export async function sendForSuredTemplatedEmail(options: {
         task_id: context.taskId,
         subcontractor_id: context.subcontractorId,
         invitation_id: context.invitationId,
-      }
-    )
+      },
+    );
 
     // Log successful send to audit trail
     await logEmailAudit(
-      'email_sent',
+      "email_sent",
       {
         message_id: result.messageId,
         template: templateId,
         recipient_email: to,
         recipient_count: recipients.length,
-        provider: 'sendgrid',
-        delivery_status: 'sent',
+        provider: "sendgrid",
+        delivery_status: "sent",
       },
       context,
-      userId
-    )
+      userId,
+    );
 
     return {
       success: true,
       messageId: result.messageId,
       sentAt,
-    }
+    };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error sending email'
+    const errorMessage = error instanceof Error
+      ? error.message
+      : "Unknown error sending email";
 
     // Log failed send to audit trail
     await logEmailAudit(
-      'email_failed',
+      "email_failed",
       {
         template: templateId,
         recipient_email: to,
         recipient_count: recipients.length,
-        provider: 'sendgrid',
-        delivery_status: 'failed',
+        provider: "sendgrid",
+        delivery_status: "failed",
       },
       context,
-      userId
-    )
+      userId,
+    );
 
-    console.error('[EmailIntegration] Send failed:', errorMessage)
+    console.error("[EmailIntegration] Send failed:", errorMessage);
 
     return {
       success: false,
       sentAt,
       error: errorMessage,
-    }
+    };
   }
 }
 
@@ -267,25 +291,38 @@ export async function sendForSuredTemplatedEmail(options: {
  * Called from the SendGrid webhook handler
  */
 export async function processEmailWebhookEvent(event: {
-  type: 'delivered' | 'opened' | 'clicked' | 'bounced' | 'dropped' | 'spam_report'
-  messageId: string
-  recipient: string
-  timestamp: Date
-  metadata?: Record<string, unknown>
+  type:
+    | "delivered"
+    | "opened"
+    | "clicked"
+    | "bounced"
+    | "dropped"
+    | "spam_report";
+  messageId: string;
+  recipient: string;
+  timestamp: Date;
+  metadata?: Record<string, unknown>;
 }): Promise<void> {
-  const { type, messageId, recipient, timestamp, metadata } = event
+  const { type, messageId, recipient, timestamp, metadata } = event;
 
   // Map webhook event types to audit actions
-  const actionMap: Record<string, 'email_delivered' | 'email_opened' | 'email_clicked' | 'email_bounced' | 'email_failed'> = {
-    delivered: 'email_delivered',
-    opened: 'email_opened',
-    clicked: 'email_clicked',
-    bounced: 'email_bounced',
-    dropped: 'email_failed',
-    spam_report: 'email_bounced',
-  }
+  const actionMap: Record<
+    string,
+    | "email_delivered"
+    | "email_opened"
+    | "email_clicked"
+    | "email_bounced"
+    | "email_failed"
+  > = {
+    delivered: "email_delivered",
+    opened: "email_opened",
+    clicked: "email_clicked",
+    bounced: "email_bounced",
+    dropped: "email_failed",
+    spam_report: "email_bounced",
+  };
 
-  const action = actionMap[type] || 'email_delivered'
+  const action = actionMap[type] || "email_delivered";
 
   // Extract ForSured context from metadata if available
   const context: ForSuredEmailContext = {
@@ -293,7 +330,7 @@ export async function processEmailWebhookEvent(event: {
     taskId: metadata?.task_id as string | undefined,
     subcontractorId: metadata?.subcontractor_id as string | undefined,
     invitationId: metadata?.invitation_id as string | undefined,
-  }
+  };
 
   await logEmailAudit(
     action,
@@ -301,12 +338,14 @@ export async function processEmailWebhookEvent(event: {
       message_id: messageId,
       recipient_email: recipient,
       recipient_count: 1,
-      provider: 'sendgrid',
-      delivery_status: type === 'bounced' || type === 'dropped' ? 'failed' : type as EmailAuditMetadata['delivery_status'],
+      provider: "sendgrid",
+      delivery_status: type === "bounced" || type === "dropped"
+        ? "failed"
+        : type as EmailAuditMetadata["delivery_status"],
     },
-    context
-  )
+    context,
+  );
 }
 
 // Re-export for convenience
-export { auditService }
+export { auditService };

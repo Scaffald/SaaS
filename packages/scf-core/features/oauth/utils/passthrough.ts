@@ -1,6 +1,6 @@
 /**
  * OAuth Passthrough Utilities
- * REQ-10 Task 12: Google/Apple OAuth passthrough for seamless authorization
+ * Google/Apple OAuth passthrough for seamless authorization
  */
 
 const PENDING_AUTH_KEY = 'oauth_pending_authorization'
@@ -80,4 +80,3 @@ export async function continueOAuthFlowIfPending(): Promise<boolean> {
   window.location.href = consentUrl.toString()
   return true
 }
-

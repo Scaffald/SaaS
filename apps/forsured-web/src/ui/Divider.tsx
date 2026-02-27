@@ -1,14 +1,14 @@
 /**
- * Divider wrapper - migrated from Tamagui to Beyond UI Separator
+ * Divider wrapper Separator
  * Provides backwards-compatible API for existing code
  */
-import React, { ReactNode } from 'react';
-import { Separator, Row, Text } from '@unicornlove/beyond-ui';
+import React, { ReactNode } from 'react'
+import { Separator, Row, Text } from '@scaffald/ui'
 
 export interface DividerProps {
-  orientation?: 'horizontal' | 'vertical';
-  label?: ReactNode;
-  className?: string;
+  orientation?: 'horizontal' | 'vertical'
+  label?: ReactNode
+  className?: string
 }
 
 export default function Divider({
@@ -18,7 +18,7 @@ export default function Divider({
 }: DividerProps) {
   // Beyond UI Separator uses 'horizontal' | 'vertical' orientation, same as this wrapper
   if (orientation === 'vertical') {
-    return <Separator orientation="vertical" />;
+    return <Separator orientation="vertical" />
   }
 
   // For labeled dividers, we need a custom implementation
@@ -32,8 +32,8 @@ export default function Divider({
         </Text>
         <Separator orientation="horizontal" style={{ flex: 1 }} />
       </Row>
-    );
+    )
   }
 
-  return <Separator orientation="horizontal" />;
+  return <Separator orientation="horizontal" />
 }

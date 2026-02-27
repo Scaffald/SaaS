@@ -1,7 +1,7 @@
 /**
  * Audit Queries Tests
  *
- * REQ-130: Comprehensive Audit Logging with 7-Year Retention
+ * Comprehensive Audit Logging with 7-Year Retention
  *
  * Tests for fine-grained audit log queries for compliance reporting.
  * Tests verify that queries are built correctly with all filters and options.

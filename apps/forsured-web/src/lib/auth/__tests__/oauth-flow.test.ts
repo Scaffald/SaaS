@@ -1,7 +1,7 @@
 /**
  * OAuth 2.0 Flow Integration Tests
- * REQ-214: Migration Testing & Validation
- * REQ-126: OAuth 2.0 + RBAC Authentication System
+ * Migration Testing & Validation
+ * OAuth 2.0 + RBAC Authentication System
  *
  * Tests complete OAuth 2.0 Authorization Code Flow with PKCE:
  * - initiateLogin flow

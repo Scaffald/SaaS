@@ -1,6 +1,6 @@
 import type { ComponentType, ReactNode } from 'react'
-import { Stack, Row, Text, Button, colors, spacing } from '@unicornlove/beyond-ui'
-import type { ButtonProps } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, colors, spacing } from '@scaffald/ui'
+import type { ButtonProps } from '@scaffald/ui'
 
 /**
  * EmptyState component props

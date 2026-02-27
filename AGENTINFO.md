@@ -16,6 +16,7 @@
 - [Testing](#testing)
 - [Code Quality](#code-quality)
 - [Deployment](#deployment)
+- [Publishing](#publishing)
 
 ---
 
@@ -29,7 +30,7 @@
 
 ### Tech Stack
 
-- **Frontend**: React Native (Expo), React, Tamagui UI
+- **Frontend**: React Native (Expo), React, Beyond UI
 - **Backend**: Supabase (PostgreSQL + Edge Functions)
 - **API**: tRPC (internal), REST API (external)
 - **Build**: pnpm workspaces, Nx, tsup
@@ -41,6 +42,7 @@
 - **Main App**: `apps/scaffald` - Expo app (iOS, Android, Web)
 - **Web Apps**: `apps/forsured-web` - Vite web app
 - **SDK**: `packages/scaffald-sdk` - Published npm package
+- **UI**: `packages/scaffald-ui` - Published npm package (`@scaffald/ui`)
 - **Core**: `packages/scf-core` - Shared business logic
 - **Supabase**: `packages/supabase` - Database, migrations, edge functions
 
@@ -58,11 +60,12 @@ UNI-Construct/
 │
 ├── packages/
 │   ├── scaffald-sdk/          # @scaffald/sdk - Published SDK
+│   ├── scaffald-ui/           # @scaffald/ui - Published UI framework
 │   ├── scf-core/              # @scf/core - Shared features
 │   ├── scf-schemas/           # Zod schemas
 │   ├── scf-trpc/              # tRPC routers (internal API)
 │   ├── supabase/              # Database + Edge Functions
-│   ├── ui/                    # @unicornlove/ui - Tamagui components
+│   ├── beyond-ui/             # @unicornlove/beyond-ui - UI components
 │   ├── forsured/              # Forsured exports
 │   ├── insurance/             # Insurance components
 │   ├── compliance/            # Compliance features
@@ -672,6 +675,22 @@ git commit --no-verify
 - **Naming**: PascalCase for components, camelCase for functions
 - **Imports**: Absolute imports via `@app/*`, `@scf/*` aliases
 
+### @scaffald/ui Prop Mapping (Tamagui Migration)
+
+When migrating from Tamagui-style props to scaffald-ui, use this mapping:
+
+| Tamagui | scaffald-ui |
+|---------|-------------|
+| `ai` | `align` |
+| `jc` | `justify` |
+| `f` | `flex` |
+| `position`, `borderWidth`, `borderColor` on layout | Pass via `style` |
+| `backgroundColor`, `padded`, `bordered` on Card | Use `style`, `padding`, `variant="outlined"` |
+| `chromeless` on Button | `variant="text"` |
+| `fontFamily`, `mt`, `textAlign` on Paragraph | Use `style` or `align` |
+| `"outlined"` (ButtonVariant) | `"outline"` |
+| `"$red12"`, `"$blue10"` for colors | Use semantic: `color="error"`, `color="primary"` |
+
 ---
 
 ## Deployment
@@ -690,7 +709,7 @@ pnpm preview:forsured
 
 ```bash
 # EAS build
-cd apps/expo
+cd apps/scaffald
 eas build --platform ios
 eas build --platform android
 
@@ -726,11 +745,50 @@ pnpm --filter @scaffald/sdk publish --access public
 
 ---
 
+## Publishing
+
+### Published Packages
+
+| Package | Location | CI Workflow | Trigger |
+|---------|----------|-------------|---------|
+| `@scaffald/ui` | `packages/scaffald-ui` | `semantic-release-ui.yml` | Push to `main` when `packages/scaffald-ui/**` changes |
+| `@scaffald/sdk` | `packages/scaffald-sdk` | `semantic-release-sdk.yml` | Push to `main` when `packages/scaffald-sdk/**` changes |
+
+### NPM_TOKEN Requirement
+
+Publishing `@scaffald/ui` and `@scaffald/sdk` to npm requires `NPM_TOKEN` in GitHub repository secrets.
+
+- **Verify**: GitHub repo → Settings → Secrets and variables → Actions → ensure `NPM_TOKEN` exists
+- **Scope**: Automation token with publish access for `@scaffald` org/package
+- **Used by**: `semantic-release-ui.yml`, `semantic-release-sdk.yml`
+
+### scaffald-ui Release Workflow
+
+1. Make changes in `packages/scaffald-ui/` (exclude `docs-site/` and `.md`-only changes to trigger release)
+2. Use [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, or `BREAKING CHANGE:` for version bumps
+3. Push to `main` — CI runs semantic-release, publishes to npm, and creates `ui-vX.Y.Z` tag
+4. Manual trigger: GitHub Actions → "Release @scaffald/ui" → "Run workflow"
+
+### scaffald-ui Docs (GitHub Pages)
+
+- **Docs site** (e.g. https://ui.scaffald.com) is **not** deployed from this monorepo. It is built and deployed from the **[Scaffald/ui](https://github.com/Scaffald/ui)** repo.
+- **Sync**: Pushing to `main` with `packages/scaffald-ui/**` changes runs **Sync @scaffald/ui to Public Repository**, which updates Scaffald/ui. The workflow **Deploy Docs** (`.github/workflows/deploy-docs.yml`) lives inside `packages/scaffald-ui` and runs in Scaffald/ui after sync.
+- **Enable Pages**: In the Scaffald/ui repo, set Settings → Pages → Source to **GitHub Actions**. See `packages/scaffald-ui/RELEASE.md` and `packages/scaffald-ui/AGENTINFO.md` (synced to Scaffald/ui) for details.
+
+### Root Release (App Version)
+
+- **Workflow**: `release.yml` on every push to `main`
+- **Updates**: `apps/scaffald/package.json` version, `CHANGELOG.md`, GitHub release
+- **Concurrency**: All release workflows use `release-${{ github.ref }}` to avoid overlapping git pushes
+
+---
+
 ## Additional Resources
 
 - **Main README**: `/README.md`
 - **Supabase README**: `/packages/supabase/README.md`
 - **SDK README**: `/packages/scaffald-sdk/README.md`
+- **UI README**: `/packages/scaffald-ui/README.md`
 - **O*NET Database**: `/packages/supabase/onet/README.md`
 - **Tests README**: `/tests/README.md`
 

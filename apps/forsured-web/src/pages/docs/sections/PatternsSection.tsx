@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Stack, Row, Box, Text, H2, H3, Alert } from '@unicornlove/beyond-ui';
+import { Stack, Row, Box, Text, H2, H3, Alert } from '@scaffald/ui';
 import ComponentShowcase from '../../../components/DesignSystem/ComponentShowcase';
 import Input from '../../../components/Common/Input';
 import Select from '../../../components/Common/Select';

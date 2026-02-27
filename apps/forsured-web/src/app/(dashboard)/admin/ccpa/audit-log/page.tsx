@@ -1,5 +1,5 @@
 /**
- * REQ-6: CCPA Admin Audit Log Page
+ * CCPA Admin Audit Log Page
  * TASK-7: Implement CCPA Audit Log Page with Filtering and Export
  *
  * Shows audit trail for CCPA-related events:
@@ -12,7 +12,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Stack, Row, Text, Button, Card, Heading, Input, Spinner, colors, spacing } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Card, Heading, Input, Spinner, colors, spacing } from '@scaffald/ui'
 import { useRouter } from 'next/navigation'
 import { trpc } from '../../../../../lib/trpc'
 

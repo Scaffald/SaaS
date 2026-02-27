@@ -1,17 +1,17 @@
-import { api } from '@scf/core/utils/api'
+import { useReviewsBySubject } from '@scf/core/utils/reviews-sdk-hooks'
+import { useUserProfile } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import {
   Button,
   DashboardWidget,
-  Heading,
+  H4,
   LoadingState,
   ResponsiveModal,
-  spacing,
-} from '@unicornlove/ui'
+} from '@scaffald/ui'
 import { randomUUID } from 'expo-crypto'
-import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from '@tamagui/lucide-icons'
+import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from 'lucide-react-native'
 import { useState } from 'react'
-import { Card, Text, XStack, YStack } from '@unicornlove/ui'
+import { Card, Text, Row, Stack } from '@scaffald/ui'
 import { ReviewWizard } from '../../reviews/components/ReviewWizard'
 import type { ProfileWidgetProps } from './types'
 
@@ -41,10 +41,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
   const { user: currentUser } = useUser()
 
   // Fetch profile data for review modal
-  const { data: profile } = api.userProfile.getUserProfile.useQuery(
-    { userId: userId || '' },
-    { enabled: !!userId }
-  )
+  const { data: profile } = useUserProfile(userId)
 
   // Fetch reviews
   const {
@@ -53,7 +50,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
     error,
     refetch,
     isFetching,
-  } = api.reviews.getBySubject.useQuery(
+  } = useReviewsBySubject(
     {
       subjectId: userId || '',
       subjectType: 'user',
@@ -92,14 +89,12 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.md} alignItems="center" paddingVertical="$6">
-          <Text color="$red10">Failed to load reviews</Text>
-          <Text color="$color11" fontSize="$2">
-            {error.message}
-          </Text>
+        <Stack gap={16} align="center" paddingVertical={24}>
+          <Text style={{ color: '#ef4444' }}>Failed to load reviews</Text>
+          <Text style={{ color: '#414e62' }}>{error.message}</Text>
           <Button
-            variant="primary"
-            size="$2"
+            variant="filled" color="primary"
+            size="sm"
             onPress={() => {
               void refetch()
             }}
@@ -107,7 +102,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
           >
             Retry
           </Button>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -116,31 +111,25 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
     return (
       <>
         <DashboardWidget>
-          <YStack gap={spacing.md}>
-            <XStack justifyContent="space-between" alignItems="center">
-              <Heading variant="h4">Reviews & Ratings</Heading>
+          <Stack gap={16}>
+            <Row justify="space-between" align="center">
+              <H4>Reviews & Ratings</H4>
               {canLeaveReview && (
                 <Button
-                  variant="primary"
-                  size="$2"
-                  icon={<MessageSquarePlus size={16} />}
+                  variant="filled" color="primary"
+                  size="sm"
+                  iconStart={MessageSquarePlus}
                   onPress={handleLeaveReview}
                 >
                   Leave Review
                 </Button>
               )}
-            </XStack>
-            <YStack alignItems="center" justifyContent="center" minHeight={150} gap="$2">
-              <Text fontSize="$5" color="$color10">
-                No reviews yet
-              </Text>
-              {canLeaveReview && (
-                <Text fontSize="$3" color="$color9">
-                  Be the first to leave a review
-                </Text>
-              )}
-            </YStack>
-          </YStack>
+            </Row>
+            <Stack align="center" justify="center" minHeight={150} gap={8}>
+              <Text style={{ color: '#414e62' }}>No reviews yet</Text>
+              {canLeaveReview && <Text style={{ color: '#414e62' }}>Be the first to leave a review</Text>}
+            </Stack>
+          </Stack>
         </DashboardWidget>
 
         {canLeaveReview && (
@@ -148,7 +137,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
             open={showReviewModal}
             onOpenChange={setShowReviewModal}
             title={`Review ${profile?.name || 'User'}`}
-            size="large"
+            size="lg"
           >
             <ReviewWizard
               subjectId={userId || ''}
@@ -192,150 +181,131 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
   return (
     <>
       <DashboardWidget>
-        <YStack gap={spacing.md}>
+        <Stack gap={16}>
           {/* Header */}
-          <XStack justifyContent="space-between" alignItems="center">
-            <Heading variant="h4">Reviews & Ratings</Heading>
+          <Row justify="space-between" align="center">
+            <H4>Reviews & Ratings</H4>
             {canLeaveReview && (
               <Button
-                variant="primary"
-                size="$2"
-                icon={<MessageSquarePlus size={16} />}
+                variant="filled" color="primary"
+                size="sm"
+                iconStart={MessageSquarePlus}
                 onPress={handleLeaveReview}
               >
                 Leave Review
               </Button>
             )}
-          </XStack>
+          </Row>
 
           {/* Rating Summary */}
-          <Card bordered backgroundColor="$color2">
-            <YStack gap="$3" padding="$4">
-              <XStack gap="$4" alignItems="center">
-                <YStack alignItems="center">
-                  <Text fontSize="$10" fontWeight="700" color="$color12">
-                    {overallRating.toFixed(1)}
-                  </Text>
-                  <XStack gap="$1">
+          <Card variant="outlined" backgroundColor="#f9fafb">
+            <Stack gap={12} padding="md">
+              <Row gap={16} align="center">
+                <Stack align="center">
+                  <Text style={{ color: '#414e62' }}>{overallRating.toFixed(1)}</Text>
+                  <Row gap={4}>
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={randomUUID()}
                         size={16}
-                        color="$yellow10"
-                        fill={i < Math.floor(overallRating) ? '$yellow10' : 'transparent'}
+                        color="#d97706"
+                        fill={i < Math.floor(overallRating) ? '#d97706' : 'transparent'}
                       />
                     ))}
-                  </XStack>
-                  <Text fontSize="$3" color="$color10">
+                  </Row>
+                  <Text style={{ color: '#414e62' }}>
                     {totalReviews} {totalReviews === 1 ? 'review' : 'reviews'}
                   </Text>
-                </YStack>
+                </Stack>
 
                 {Object.keys(avgByCategory).length > 0 && !showCompact && (
-                  <YStack flex={1} gap="$2">
+                  <Stack flex={1} gap={8}>
                     {Object.entries(avgByCategory).map(([category, data]) => {
                       const categoryData = data as { sum: number; count: number }
                       return (
-                        <XStack key={category} gap="$2" alignItems="center">
-                          <Text
-                            fontSize="$3"
-                            color="$color11"
-                            width={100}
-                            textTransform="capitalize"
-                          >
+                        <Row key={category} gap={8} align="center">
+                          <Text style={{ color: '#414e62', width: 100, textTransform: 'capitalize' }}>
                             {category}
                           </Text>
-                          <XStack
+                          <Row
                             flex={1}
                             height={6}
-                            backgroundColor="$color3"
-                            borderRadius="$2"
-                            overflow="hidden"
+                            backgroundColor="#f3f4f6"
+                            borderRadius={8}
+                            style={{ overflow: 'hidden' }}
                           >
-                            <XStack
+                            <Row
                               width={`${(categoryData.sum / categoryData.count / 5) * 100}%`}
-                              backgroundColor="$yellow10"
+                              backgroundColor="#d97706"
                             />
-                          </XStack>
-                          <Text fontSize="$3" color="$color10" width={30}>
+                          </Row>
+                          <Text style={{ color: '#414e62', width: 30 }}>
                             {(categoryData.sum / categoryData.count).toFixed(1)}
                           </Text>
-                        </XStack>
+                        </Row>
                       )
                     })}
-                  </YStack>
+                  </Stack>
                 )}
-              </XStack>
+              </Row>
 
               {/* Recommend Stats */}
-              <XStack gap="$3" justifyContent="center">
-                <XStack
-                  gap="$2"
-                  alignItems="center"
-                  paddingHorizontal="$3"
-                  paddingVertical="$2"
-                  backgroundColor="$green3"
-                  borderRadius="$3"
+              <Row gap={12} justify="center">
+                <Row
+                  gap={8}
+                  align="center"
+                  paddingHorizontal={12}
+                  paddingVertical={8}
+                  backgroundColor="#dcfce7"
+                  borderRadius={12}
                 >
-                  <ThumbsUp size={16} color="$green11" />
-                  <Text fontSize="$4" fontWeight="600" color="$green11">
-                    {recommendCount} Recommend
-                  </Text>
-                </XStack>
-                <XStack
-                  gap="$2"
-                  alignItems="center"
-                  paddingHorizontal="$3"
-                  paddingVertical="$2"
-                  backgroundColor="$red3"
-                  borderRadius="$3"
+                  <ThumbsUp size={16} color="#16a34a" />
+                  <Text style={{ color: '#16a34a' }}>{recommendCount} Recommend</Text>
+                </Row>
+                <Row
+                  gap={8}
+                  align="center"
+                  paddingHorizontal={12}
+                  paddingVertical={8}
+                  backgroundColor="#fef2f2"
+                  borderRadius={12}
                 >
-                  <ThumbsDown size={16} color="$red11" />
-                  <Text fontSize="$4" fontWeight="600" color="$red11">
-                    {notRecommendCount} Don't Recommend
-                  </Text>
-                </XStack>
-              </XStack>
-            </YStack>
+                  <ThumbsDown size={16} color="#ef4444" />
+                  <Text style={{ color: '#ef4444' }}>{notRecommendCount} Don't Recommend</Text>
+                </Row>
+              </Row>
+            </Stack>
           </Card>
 
           {/* Reviews List */}
-          <YStack gap="$3">
-            <Text fontSize="$5" fontWeight="700" color="$color12">
-              Reviews ({totalReviews})
-            </Text>
+          <Stack gap={12}>
+            <Text style={{ color: '#414e62' }}>Reviews ({totalReviews})</Text>
             {reviewsToShow.map((review: Review) => (
-              <Card key={review.id} bordered backgroundColor="$color2">
-                <YStack gap="$3" padding="$4">
-                  <XStack justifyContent="space-between" alignItems="flex-start">
-                    <YStack gap="$1">
-                      <XStack gap="$2" alignItems="center">
-                        <Text fontSize="$5" fontWeight="700" color="$color12">
-                          Anonymous Reviewer
-                        </Text>
-                        <XStack
-                          gap="$1"
-                          alignItems="center"
-                          paddingHorizontal="$2"
-                          paddingVertical="$0.5"
-                          backgroundColor="$blue2"
-                          borderRadius="$2"
+              <Card key={review.id} variant="outlined" backgroundColor="#f9fafb">
+                <Stack gap={12} padding="md">
+                  <Row justify="space-between" align="flex-start">
+                    <Stack gap={4}>
+                      <Row gap={8} align="center">
+                        <Text style={{ color: '#414e62' }}>Anonymous Reviewer</Text>
+                        <Row
+                          gap={4}
+                          align="center"
+                          paddingHorizontal={8}
+                          paddingVertical={2}
+                          backgroundColor="#dbeafe"
+                          borderRadius={8}
                         >
-                          <Shield size={12} color="$blue11" />
-                          <Text fontSize="$1" color="$blue11" fontWeight="600">
-                            VERIFIED
-                          </Text>
-                        </XStack>
-                      </XStack>
-                    </YStack>
-                    <Text fontSize="$3" color="$color10">
-                      {new Date(review.created_at).toLocaleDateString()}
-                    </Text>
-                  </XStack>
+                          <Shield size={14} color="#2563eb" />
+                          <Text style={{ color: '#2563eb' }}>VERIFIED</Text>
+                        </Row>
+                      </Row>
+                    </Stack>
+                    <Text style={{ color: '#414e62' }}>{new Date(review.created_at).toLocaleDateString()}</Text>
+                  </Row>
 
                   {/* Overall Rating */}
                   {review.review_category_ratings && review.review_category_ratings.length > 0 && (
-                    <XStack gap="$1">
+                    <Row gap={4}>
                       {[...Array(5)].map((_, i) => {
                         const avgRating =
                           review.review_category_ratings.reduce(
@@ -346,52 +316,44 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                           <Star
                             key={randomUUID()}
                             size={16}
-                            color="$yellow10"
-                            fill={i < Math.floor(avgRating) ? '$yellow10' : 'transparent'}
+                            color="#d97706"
+                            fill={i < Math.floor(avgRating) ? '#d97706' : 'transparent'}
                           />
                         )
                       })}
-                    </XStack>
+                    </Row>
                   )}
 
                   {/* Comment */}
-                  {review.comment && (
-                    <Text fontSize="$4" color="$color11">
-                      {review.comment}
-                    </Text>
-                  )}
+                  {review.comment && <Text style={{ color: '#414e62' }}>{review.comment}</Text>}
 
                   {/* Recommendation */}
                   {review.reaction !== null && (
-                    <XStack gap="$2" alignItems="center">
+                    <Row gap={8} align="center">
                       {review.reaction === 1 ? (
                         <>
-                          <ThumbsUp size={16} color="$green11" />
-                          <Text fontSize="$3" color="$green11" fontWeight="600">
-                            Recommends this person
-                          </Text>
+                          <ThumbsUp size={16} color="#16a34a" />
+                          <Text style={{ color: '#16a34a' }}>Recommends this person</Text>
                         </>
                       ) : (
                         <>
-                          <ThumbsDown size={16} color="$red11" />
-                          <Text fontSize="$3" color="$red11" fontWeight="600">
-                            Does not recommend
-                          </Text>
+                          <ThumbsDown size={16} color="#ef4444" />
+                          <Text style={{ color: '#ef4444' }}>Does not recommend</Text>
                         </>
                       )}
-                    </XStack>
+                    </Row>
                   )}
-                </YStack>
+                </Stack>
               </Card>
             ))}
 
             {showCompact && reviews.length > 2 && (
-              <Text fontSize="$3" color="$blue7" fontWeight="600" cursor="pointer">
+              <Text style={{ color: '#3b82f6', cursor: 'pointer' }}>
                 + {reviews.length - 2} more reviews
               </Text>
             )}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       </DashboardWidget>
 
       {/* Review Modal */}
@@ -400,7 +362,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
           open={showReviewModal}
           onOpenChange={setShowReviewModal}
           title={`Review ${profile?.name || 'User'}`}
-          size="large"
+          size="lg"
         >
           <ReviewWizard
             subjectId={userId || ''}

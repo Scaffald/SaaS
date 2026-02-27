@@ -1,6 +1,12 @@
-import { api } from '@scf/core/utils/api'
-import { getStorageUrl } from '@scf/core/utils/supabase/storage'
-import { Button, DashboardWidget } from '@unicornlove/ui'
+import {
+  useUserCertificationTree,
+  useUpdateCertificationProofMutation,
+  useToggleSpecificCertificationMutation,
+} from "@scf/core/utils/profile-certifications-sdk-hooks";
+import { useQueryClient } from "@tanstack/react-query";
+import { getStorageUrl } from "@scf/core/utils/supabase/storage";
+import { Button, DashboardWidget, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import {
   Award,
   ChevronDown,
@@ -8,27 +14,28 @@ import {
   ExternalLink,
   Trash2,
   Upload,
-} from '@tamagui/lucide-icons'
-import { useState } from 'react'
-import { Card, H4, Input, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
-import { useProfileCertificationsHighlight } from './profile-certifications-highlight-context'
+} from "lucide-react-native";
+import { useState } from "react";
+import { Pressable } from "react-native";
+import { Card, H4, Input, ScrollView, Text, Row, Stack } from "@scaffald/ui";
+import { useProfileCertificationsHighlight } from "./profile-certifications-highlight-context";
 
 interface UserCertification {
-  id: string
-  certification_id: string
-  credential_url: string | null
-  certificate_file_path: string | null
+  id: string;
+  certification_id: string;
+  credential_url: string | null;
+  certificate_file_path: string | null;
   catalog: {
-    title: string
-    description: string | null
-    depth: number
-  }
+    title: string;
+    description: string | null;
+    depth: number;
+  };
 }
 
 interface CertificationTree {
-  depth0: UserCertification[]
-  depth1ByParent: Record<string, UserCertification[]>
-  depth2ByParent: Record<string, UserCertification[]>
+  depth0: UserCertification[];
+  depth1ByParent: Record<string, UserCertification[]>;
+  depth2ByParent: Record<string, UserCertification[]>;
 }
 
 /**
@@ -36,476 +43,614 @@ interface CertificationTree {
  * Displays all certifications at all depth levels with proof management
  */
 export function ProfileCertificationsRight() {
-  const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set())
-  const [selectedFiles, setSelectedFiles] = useState<Record<string, File | null>>({})
-  const [urlInputs, setUrlInputs] = useState<Record<string, string>>({})
-  const { highlights: recentlyChangedCerts } = useProfileCertificationsHighlight()
+  const { theme } = useThemeContext();
+  const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
+  const [selectedFiles, setSelectedFiles] = useState<
+    Record<string, File | null>
+  >({});
+  const [urlInputs, setUrlInputs] = useState<Record<string, string>>({});
+  const { highlights: recentlyChangedCerts } =
+    useProfileCertificationsHighlight();
+  const queryClient = useQueryClient();
 
-  const { data: certTree, refetch: refetchTree } =
-    api.profile.certifications.getUserCertificationTree.useQuery()
+  const { data: certTree } = useUserCertificationTree();
 
-  const updateProof = api.profile.certifications.updateCertificationProof.useMutation({
-    onSuccess: () => refetchTree(),
-  })
+  const updateProof = useUpdateCertificationProofMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["profiles", "certifications", "tree"],
+      });
+    },
+  });
 
-  const removeCert = api.profile.certifications.toggleSpecificCertification.useMutation({
-    onSuccess: () => refetchTree(),
-  })
+  const removeCert = useToggleSpecificCertificationMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["profiles", "certifications", "tree"],
+      });
+    },
+  });
 
   // Get all certifications at all depth levels
   const getAllCertifications = (): {
-    depth0: UserCertification[]
-    depth1: UserCertification[]
-    depth2: UserCertification[]
+    depth0: UserCertification[];
+    depth1: UserCertification[];
+    depth2: UserCertification[];
   } => {
-    const typedTree = certTree as unknown as CertificationTree | undefined
+    const typedTree = certTree as unknown as CertificationTree | undefined;
     if (!typedTree) {
-      return { depth0: [], depth1: [], depth2: [] }
+      return { depth0: [], depth1: [], depth2: [] };
     }
 
-    const depth0 = typedTree.depth0 || []
-    const depth1: UserCertification[] = []
-    const depth2: UserCertification[] = []
+    const depth0 = typedTree.depth0 || [];
+    const depth1: UserCertification[] = [];
+    const depth2: UserCertification[] = [];
 
     // Flatten depth 1 certifications
     for (const items of Object.values(typedTree.depth1ByParent || {})) {
       if (Array.isArray(items)) {
-        depth1.push(...items)
+        depth1.push(...items);
       }
     }
 
     // Flatten depth 2 certifications
     for (const items of Object.values(typedTree.depth2ByParent || {})) {
       if (Array.isArray(items)) {
-        depth2.push(...items)
+        depth2.push(...items);
       }
     }
 
-    return { depth0, depth1, depth2 }
-  }
+    return { depth0, depth1, depth2 };
+  };
 
-  const { depth0, depth1, depth2 } = getAllCertifications()
-  const allCerts = [...depth0, ...depth1, ...depth2]
+  const { depth0, depth1, depth2 } = getAllCertifications();
+  const allCerts = [...depth0, ...depth1, ...depth2];
 
   const toggleExpand = (certId: string) => {
     setExpandedCards((prev) => {
-      const next = new Set(prev)
+      const next = new Set(prev);
       if (next.has(certId)) {
-        next.delete(certId)
+        next.delete(certId);
       } else {
-        next.add(certId)
+        next.add(certId);
       }
-      return next
-    })
-  }
+      return next;
+    });
+  };
 
   const handleFileSelect = (userCertId: string, file: File | null) => {
-    setSelectedFiles((prev) => ({ ...prev, [userCertId]: file }))
-  }
+    setSelectedFiles((prev) => ({ ...prev, [userCertId]: file }));
+  };
 
   const handleSaveFile = async (userCertId: string) => {
-    const file = selectedFiles[userCertId]
-    if (!file) return
+    const file = selectedFiles[userCertId];
+    if (!file) return;
 
     try {
       // Convert file to base64
       const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onload = () => resolve(reader.result as string)
-        reader.onerror = reject
-        reader.readAsDataURL(file)
-      })
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
 
       await updateProof.mutateAsync({
         user_certification_id: userCertId,
-        proof_type: 'file',
+        proof_type: "file",
         certificate_file: base64,
         file_name: file.name,
         content_type: file.type,
-      })
-      setSelectedFiles((prev) => ({ ...prev, [userCertId]: null }))
+      });
+      setSelectedFiles((prev) => ({ ...prev, [userCertId]: null }));
     } catch (error) {
-      console.error('Error saving file:', error)
+      console.error("Error saving file:", error);
     }
-  }
+  };
 
   const handleSaveUrl = async (userCertId: string) => {
-    const url = urlInputs[userCertId]
-    if (!url) return
+    const url = urlInputs[userCertId];
+    if (!url) return;
 
     try {
       await updateProof.mutateAsync({
         user_certification_id: userCertId,
-        proof_type: 'url',
+        proof_type: "url",
         credential_url: url,
-      })
-      setUrlInputs((prev) => ({ ...prev, [userCertId]: '' }))
+      });
+      setUrlInputs((prev) => ({ ...prev, [userCertId]: "" }));
     } catch (error) {
-      console.error('Error saving URL:', error)
+      console.error("Error saving URL:", error);
     }
-  }
+  };
 
   const handleRemove = async (userCert: UserCertification) => {
-    const confirmed = confirm(`Remove ${userCert.catalog.title}?`)
-    if (!confirmed) return
+    const confirmed = confirm(`Remove ${userCert.catalog.title}?`);
+    if (!confirmed) return;
 
     try {
       await removeCert.mutateAsync({
         certification_id: userCert.certification_id,
         parent_id: userCert.certification_id, // This will be the depth 1 category
         checked: false,
-      })
+      });
     } catch (error) {
-      console.error('Error removing certification:', error)
+      console.error("Error removing certification:", error);
     }
-  }
+  };
 
   if (allCerts.length === 0) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingTop="$8">
-          <Award size={48} color="$color11" />
-          <YStack gap="$2" alignItems="center">
+        <Stack gap={16} align="center" paddingTop={32}>
+          <Award size={48} color={colors.text[theme].secondary} />
+          <Stack gap={8} align="center">
             <H4>Your Certifications</H4>
-            <Text color="$color11">Search and add certifications on the left</Text>
-          </YStack>
-        </YStack>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              Search and add certifications on the left
+            </Text>
+          </Stack>
+        </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
+      <Stack gap={16}>
         <H4>Your Certifications</H4>
 
-        <ScrollView height={700}>
-          <YStack gap="$4">
+        <ScrollView style={{ height: 700 }}>
+          <Stack gap={16}>
             {/* Depth 0 - Top Level Categories */}
             {depth0.length > 0 && (
-              <YStack gap="$2">
-                <Text fontWeight="600" fontSize="$4" color="$blue11">
+              <Stack gap={8}>
+                <Text
+                  style={{
+                    color:
+                      theme === "light" ? colors.blue[700] : colors.blue[300],
+                  }}
+                >
                   Top-Level Categories
                 </Text>
                 {depth0.map((cert) => {
-                  const changeStatus = recentlyChangedCerts[cert.certification_id]
+                  const changeStatus =
+                    recentlyChangedCerts[cert.certification_id];
                   return (
                     <Card
                       key={cert.id}
-                      padding="$3"
-                      bordered
-                      animation="quick"
-                      backgroundColor={
-                        changeStatus === 'added'
-                          ? '$green2'
-                          : changeStatus === 'removed'
-                            ? '$red2'
-                            : '$color1'
-                      }
-                      borderColor={
-                        changeStatus === 'added'
-                          ? '$green7'
-                          : changeStatus === 'removed'
-                            ? '$red7'
-                            : '$borderColor'
-                      }
+                      padding="sm"
+                      style={{
+                        backgroundColor:
+                          changeStatus === "added"
+                            ? theme === "light"
+                              ? colors.green[50]
+                              : colors.green[900]
+                            : changeStatus === "removed"
+                            ? theme === "light"
+                              ? colors.error[50]
+                              : colors.error[900]
+                            : colors.bg[theme].default,
+                        borderWidth: 1,
+                        borderColor:
+                          changeStatus === "added"
+                            ? theme === "light"
+                              ? colors.green[300]
+                              : colors.green[700]
+                            : changeStatus === "removed"
+                            ? theme === "light"
+                              ? colors.error[300]
+                              : colors.error[700]
+                            : colors.border[theme].default,
+                      }}
                     >
-                      <XStack justifyContent="space-between" alignItems="center">
-                        <YStack flex={1} gap="$1">
-                          <XStack gap="$2" alignItems="center">
-                            <Text fontWeight="600">{cert.catalog.title}</Text>
+                      <Row justify="space-between" align="center">
+                        <Stack style={{ flex: 1 }} gap={4}>
+                          <Row gap={8} align="center">
+                            <Text>{cert.catalog.title}</Text>
                             <Text
-                              fontSize="$1"
-                              color="$blue9"
-                              backgroundColor="$blue2"
-                              paddingHorizontal="$2"
-                              paddingVertical="$0.5"
-                              borderRadius="$2"
+                              style={{
+                                color:
+                                  theme === "light"
+                                    ? colors.blue[700]
+                                    : colors.blue[300],
+                                backgroundColor:
+                                  theme === "light"
+                                    ? colors.blue[50]
+                                    : colors.blue[900],
+                                paddingHorizontal: 8,
+                                paddingVertical: 2,
+                                borderRadius: 8,
+                              }}
                             >
                               Top Level
                             </Text>
-                          </XStack>
+                          </Row>
                           {cert.catalog.description && (
-                            <Text fontSize="$2" color="$color11">
+                            <Text
+                              style={{ color: colors.text[theme].secondary }}
+                            >
                               {cert.catalog.description}
                             </Text>
                           )}
-                        </YStack>
-                      </XStack>
-                      {changeStatus === 'added' && (
-                        <Text marginTop="$2" fontSize="$2" color="$green11">
+                        </Stack>
+                      </Row>
+                      {changeStatus === "added" && (
+                        <Text
+                          style={{
+                            marginTop: 8,
+                            color:
+                              theme === "light"
+                                ? colors.green[700]
+                                : colors.green[300],
+                          }}
+                        >
                           ✓ Added to profile
                         </Text>
                       )}
                     </Card>
-                  )
+                  );
                 })}
-              </YStack>
+              </Stack>
             )}
 
             {/* Depth 1 - Categories */}
             {depth1.length > 0 && (
-              <YStack gap="$2">
-                <Text fontWeight="600" fontSize="$4" color="$green11">
+              <Stack gap={8}>
+                <Text
+                  style={{
+                    color:
+                      theme === "light"
+                        ? colors.success[700]
+                        : colors.success[300],
+                  }}
+                >
                   Sub-Categories
                 </Text>
                 {depth1.map((cert) => {
-                  const changeStatus = recentlyChangedCerts[cert.certification_id]
+                  const changeStatus =
+                    recentlyChangedCerts[cert.certification_id];
                   return (
                     <Card
                       key={cert.id}
-                      padding="$3"
-                      bordered
-                      animation="quick"
-                      backgroundColor={
-                        changeStatus === 'added'
-                          ? '$green2'
-                          : changeStatus === 'removed'
-                            ? '$red2'
-                            : '$color1'
-                      }
-                      borderColor={
-                        changeStatus === 'added'
-                          ? '$green7'
-                          : changeStatus === 'removed'
-                            ? '$red7'
-                            : '$borderColor'
-                      }
+                      padding="sm"
+                      style={{
+                        backgroundColor:
+                          changeStatus === "added"
+                            ? theme === "light"
+                              ? colors.green[50]
+                              : colors.green[900]
+                            : changeStatus === "removed"
+                            ? theme === "light"
+                              ? colors.error[50]
+                              : colors.error[900]
+                            : colors.bg[theme].default,
+                        borderWidth: 1,
+                        borderColor:
+                          changeStatus === "added"
+                            ? theme === "light"
+                              ? colors.green[300]
+                              : colors.green[700]
+                            : changeStatus === "removed"
+                            ? theme === "light"
+                              ? colors.error[300]
+                              : colors.error[700]
+                            : colors.border[theme].default,
+                      }}
                     >
-                      <XStack justifyContent="space-between" alignItems="center">
-                        <YStack flex={1} gap="$1">
-                          <XStack gap="$2" alignItems="center">
-                            <Text fontWeight="600">{cert.catalog.title}</Text>
+                      <Row justify="space-between" align="center">
+                        <Stack style={{ flex: 1 }} gap={4}>
+                          <Row gap={8} align="center">
+                            <Text>{cert.catalog.title}</Text>
                             <Text
-                              fontSize="$1"
-                              color="$green9"
-                              backgroundColor="$green2"
-                              paddingHorizontal="$2"
-                              paddingVertical="$0.5"
-                              borderRadius="$2"
+                              style={{
+                                color:
+                                  theme === "light"
+                                    ? colors.success[700]
+                                    : colors.success[300],
+                                backgroundColor:
+                                  theme === "light"
+                                    ? colors.success[50]
+                                    : colors.success[900],
+                                paddingHorizontal: 8,
+                                paddingVertical: 2,
+                                borderRadius: 8,
+                              }}
                             >
                               Category
                             </Text>
-                          </XStack>
+                          </Row>
                           {cert.catalog.description && (
-                            <Text fontSize="$2" color="$color11">
+                            <Text
+                              style={{ color: colors.text[theme].secondary }}
+                            >
                               {cert.catalog.description}
                             </Text>
                           )}
-                        </YStack>
-                      </XStack>
-                      {changeStatus === 'added' && (
-                        <Text marginTop="$2" fontSize="$2" color="$green11">
+                        </Stack>
+                      </Row>
+                      {changeStatus === "added" && (
+                        <Text
+                          style={{
+                            marginTop: 8,
+                            color:
+                              theme === "light"
+                                ? colors.success[700]
+                                : colors.success[300],
+                          }}
+                        >
                           ✓ Added to profile
                         </Text>
                       )}
                     </Card>
-                  )
+                  );
                 })}
-              </YStack>
+              </Stack>
             )}
 
             {/* Depth 2 - Specific Certifications */}
             {depth2.length > 0 && (
-              <YStack gap="$2">
-                <Text fontWeight="600" fontSize="$4" color="$purple11">
+              <Stack gap={8}>
+                <Text
+                  style={{
+                    color:
+                      theme === "light"
+                        ? colors.purple[700]
+                        : colors.purple[300],
+                  }}
+                >
                   Specific Certifications
                 </Text>
                 {depth2.map((cert) => {
-                  const isExpanded = expandedCards.has(cert.id)
-                  const hasProof = !!(cert.credential_url || cert.certificate_file_path)
-                  const changeStatus = recentlyChangedCerts[cert.certification_id]
+                  const isExpanded = expandedCards.has(cert.id);
+                  const hasProof = !!(
+                    cert.credential_url || cert.certificate_file_path
+                  );
+                  const changeStatus =
+                    recentlyChangedCerts[cert.certification_id];
 
                   return (
                     <Card
                       key={cert.id}
-                      padding="$0"
-                      bordered
-                      animation="quick"
-                      backgroundColor={
-                        changeStatus === 'added'
-                          ? '$green2'
-                          : changeStatus === 'removed'
-                            ? '$red2'
-                            : undefined
-                      }
-                      borderColor={
-                        changeStatus === 'added'
-                          ? '$green7'
-                          : changeStatus === 'removed'
-                            ? '$red7'
-                            : '$borderColor'
-                      }
+                      padding="none"
+                      style={{
+                        backgroundColor:
+                          changeStatus === "added"
+                            ? theme === "light"
+                              ? colors.green[50]
+                              : colors.green[900]
+                            : changeStatus === "removed"
+                            ? theme === "light"
+                              ? colors.error[50]
+                              : colors.error[900]
+                            : colors.bg[theme].default,
+                        borderWidth: 1,
+                        borderColor:
+                          changeStatus === "added"
+                            ? theme === "light"
+                              ? colors.green[300]
+                              : colors.green[700]
+                            : changeStatus === "removed"
+                            ? theme === "light"
+                              ? colors.error[300]
+                              : colors.error[700]
+                            : colors.border[theme].default,
+                      }}
                     >
                       {/* Header - Always Visible */}
-                      <XStack
-                        padding="$3"
-                        gap="$3"
-                        alignItems="center"
-                        pressStyle={{ backgroundColor: '$backgroundHover' }}
-                        cursor="pointer"
-                        onPress={() => toggleExpand(cert.id)}
-                      >
-                        {isExpanded ? (
-                          <ChevronDown size={20} color="$color11" />
-                        ) : (
-                          <ChevronRight size={20} color="$color11" />
-                        )}
+                      <Pressable onPress={() => toggleExpand(cert.id)}>
+                        <Row style={{ padding: 12 }} gap={12} align="center">
+                          {isExpanded ? (
+                            <ChevronDown
+                              size={20}
+                              color={colors.text[theme].secondary}
+                            />
+                          ) : (
+                            <ChevronRight
+                              size={20}
+                              color={colors.text[theme].secondary}
+                            />
+                          )}
 
-                        <YStack flex={1} gap="$1">
-                          <XStack gap="$2" alignItems="center" flexWrap="wrap">
-                            <Text fontWeight="600">{cert.catalog.title}</Text>
-                            <Text
-                              fontSize="$1"
-                              color="$purple9"
-                              backgroundColor="$purple2"
-                              paddingHorizontal="$2"
-                              paddingVertical="$0.5"
-                              borderRadius="$2"
-                            >
-                              Certification
-                            </Text>
-                          </XStack>
-                          {hasProof && (
-                            <Text fontSize="$2" color="$green10">
-                              ✓ Proof added
-                            </Text>
-                          )}
-                          {changeStatus === 'added' && (
-                            <Text fontSize="$2" color="$green11">
-                              ✓ Added to profile
-                            </Text>
-                          )}
-                          {changeStatus === 'removed' && (
-                            <Text fontSize="$2" color="$red11">
-                              Removed from profile
-                            </Text>
-                          )}
-                        </YStack>
+                          <Stack style={{ flex: 1 }} gap={4}>
+                            <Row gap={8} align="center" wrap>
+                              <Text>{cert.catalog.title}</Text>
+                              <Text
+                                style={{
+                                  color:
+                                    theme === "light"
+                                      ? colors.purple[700]
+                                      : colors.purple[300],
+                                  backgroundColor:
+                                    theme === "light"
+                                      ? colors.purple[50]
+                                      : colors.purple[900],
+                                  paddingHorizontal: 8,
+                                  paddingVertical: 2,
+                                  borderRadius: 8,
+                                }}
+                              >
+                                Certification
+                              </Text>
+                            </Row>
+                            {hasProof && (
+                              <Text
+                                style={{
+                                  color:
+                                    theme === "light"
+                                      ? colors.success[600]
+                                      : colors.success[400],
+                                }}
+                              >
+                                ✓ Proof added
+                              </Text>
+                            )}
+                            {changeStatus === "added" && (
+                              <Text
+                                style={{
+                                  color:
+                                    theme === "light"
+                                      ? colors.success[700]
+                                      : colors.success[300],
+                                }}
+                              >
+                                ✓ Added to profile
+                              </Text>
+                            )}
+                            {changeStatus === "removed" && (
+                              <Text
+                                style={{
+                                  color:
+                                    theme === "light"
+                                      ? colors.error[700]
+                                      : colors.error[300],
+                                }}
+                              >
+                                Removed from profile
+                              </Text>
+                            )}
+                          </Stack>
 
-                        <XStack gap="$2">
-                          {hasProof && (
+                          <Row gap={8}>
+                            {hasProof && (
+                              <Button
+                                size="sm"
+                                variant="text"
+                                iconStart={ExternalLink}
+                                onPress={() => {
+                                  const url =
+                                    cert.credential_url ||
+                                    getStorageUrl(
+                                      "certifications",
+                                      cert.certificate_file_path
+                                    );
+                                  if (url) window.open(url, "_blank");
+                                }}
+                              >
+                                View
+                              </Button>
+                            )}
                             <Button
-                              size="$2"
-                              chromeless
-                              icon={<ExternalLink size={16} />}
-                              onPress={(e) => {
-                                e.stopPropagation()
-                                const url =
-                                  cert.credential_url ||
-                                  getStorageUrl('certifications', cert.certificate_file_path)
-                                if (url) window.open(url, '_blank')
+                              size="sm"
+                              variant="text"
+                              color="error"
+                              iconStart={Trash2}
+                              onPress={() => {
+                                handleRemove(cert);
                               }}
                             >
-                              View
+                              Remove
                             </Button>
-                          )}
-                          <Button
-                            size="$2"
-                            chromeless
-                            icon={<Trash2 size={16} />}
-                            onPress={(e) => {
-                              e.stopPropagation()
-                              handleRemove(cert)
-                            }}
-                            theme="error"
-                          >
-                            Remove
-                          </Button>
-                        </XStack>
-                      </XStack>
+                          </Row>
+                        </Row>
+                      </Pressable>
 
                       {/* Expanded Content - File Upload & URL */}
                       {isExpanded && (
-                        <YStack
-                          padding="$3"
-                          paddingTop="$0"
-                          gap="$4"
-                          borderTopWidth={1}
-                          borderColor="$borderColor"
+                        <Stack
+                          style={{
+                            padding: 12,
+                            paddingTop: 0,
+                            borderTopWidth: 1,
+                            borderColor: colors.border[theme].default,
+                          }}
+                          gap={16}
                         >
                           {/* File Upload */}
-                          <YStack gap="$2">
-                            <Text fontWeight="600" fontSize="$3">
-                              Upload Certificate
-                            </Text>
-                            <XStack gap="$2" style={{ alignItems: 'center' }}>
+                          <Stack gap={8}>
+                            <Text>Upload Certificate</Text>
+                            <Row gap={8} style={{ alignItems: "center" }}>
                               <Button
-                                flex={1}
-                                icon={<Upload size={16} />}
+                                style={{ flex: 1 }}
+                                iconStart={Upload}
                                 onPress={() => {
                                   // Trigger file input
-                                  const input = document.createElement('input')
-                                  input.type = 'file'
-                                  input.accept = '.pdf,.jpg,.jpeg,.png'
+                                  const input = document.createElement("input");
+                                  input.type = "file";
+                                  input.accept = ".pdf,.jpg,.jpeg,.png";
                                   input.onchange = (e) => {
-                                    const file = (e.target as HTMLInputElement).files?.[0]
-                                    handleFileSelect(cert.id, file || null)
-                                  }
-                                  input.click()
+                                    const file = (e.target as HTMLInputElement)
+                                      .files?.[0];
+                                    handleFileSelect(cert.id, file || null);
+                                  };
+                                  input.click();
                                 }}
-                                backgroundColor={selectedFiles[cert.id] ? '$blue9' : undefined}
+                                variant={
+                                  selectedFiles[cert.id] ? "filled" : "outline"
+                                }
+                                color={
+                                  selectedFiles[cert.id] ? "primary" : "gray"
+                                }
                               >
                                 {selectedFiles[cert.id]
                                   ? selectedFiles[cert.id]?.name
-                                  : 'Choose File'}
+                                  : "Choose File"}
                               </Button>
                               {selectedFiles[cert.id] && (
                                 <Button
-                                  icon={<Upload size={16} />}
+                                  iconStart={Upload}
                                   onPress={() => handleSaveFile(cert.id)}
                                   disabled={updateProof.isPending}
                                 >
                                   Upload
                                 </Button>
                               )}
-                            </XStack>
+                            </Row>
                             {cert.certificate_file_path && (
-                              <Text fontSize="$2" color="$color11">
-                                Current: {cert.certificate_file_path.split('/').pop()}
+                              <Text
+                                style={{ color: colors.text[theme].secondary }}
+                              >
+                                Current:{" "}
+                                {cert.certificate_file_path.split("/").pop()}
                               </Text>
                             )}
-                          </YStack>
+                          </Stack>
 
                           {/* URL Input */}
-                          <YStack gap="$2">
-                            <Text fontWeight="600" fontSize="$3">
-                              Or Add URL
-                            </Text>
-                            <XStack gap="$2">
+                          <Stack gap={8}>
+                            <Text>Or Add URL</Text>
+                            <Row gap={8}>
                               <Input
-                                flex={1}
+                                style={{ flex: 1 }}
                                 placeholder="https://..."
-                                value={urlInputs[cert.id] || ''}
+                                value={urlInputs[cert.id] || ""}
                                 onChangeText={(text) =>
-                                  setUrlInputs((prev) => ({ ...prev, [cert.id]: text }))
+                                  setUrlInputs((prev) => ({
+                                    ...prev,
+                                    [cert.id]: text,
+                                  }))
                                 }
                               />
                               <Button
-                                variant="primary"
-                                icon={<ExternalLink size={16} />}
+                                variant="filled"
+                                color="primary"
+                                iconStart={ExternalLink}
                                 onPress={() => handleSaveUrl(cert.id)}
-                                disabled={!urlInputs[cert.id] || updateProof.isPending}
+                                disabled={
+                                  !urlInputs[cert.id] || updateProof.isPending
+                                }
                               >
                                 Save
                               </Button>
-                            </XStack>
+                            </Row>
                             {cert.credential_url && (
-                              <Text fontSize="$2" color="$color11">
+                              <Text
+                                style={{ color: colors.text[theme].secondary }}
+                              >
                                 Current: {cert.credential_url}
                               </Text>
                             )}
-                          </YStack>
-                        </YStack>
+                          </Stack>
+                        </Stack>
                       )}
                     </Card>
-                  )
+                  );
                 })}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
         </ScrollView>
-      </YStack>
+      </Stack>
     </DashboardWidget>
-  )
+  );
 }

@@ -11,7 +11,7 @@ export async function getPrimaryIndustryTrigger(page: Page): Promise<Locator> {
   await page.waitForTimeout(1500)
 
   // Try multiple selector strategies
-  // Strategy 1: data-testid (if Tamagui passes it through)
+  // Strategy 1: data-testid (if the component passes it through)
   let trigger = page.getByTestId('primary-industry-select-trigger')
   const testIdCount = await trigger.count().catch(() => 0)
 

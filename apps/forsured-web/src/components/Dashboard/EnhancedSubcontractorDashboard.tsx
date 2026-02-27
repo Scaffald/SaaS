@@ -23,7 +23,7 @@ import {
   UserCheck,
   UserX,
 } from 'lucide-react'
-import { Stack, Row, Text, Card, Grid, Button, H1, H3, Spinner } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Card, Grid, Button, H1, H3, Spinner } from '@scaffald/ui'
 import { EmptyState, LoadingContainer, ErrorContainer } from '../../ui'
 import { useTasks } from '../../hooks/useTasks'
 import { Task, SubcontractorTaskMetadata } from '../../types'

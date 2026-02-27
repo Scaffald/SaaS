@@ -1,6 +1,6 @@
 /**
  * Test Fixtures
- * REQ-9: Testing Policy - Use real Supabase instance for tests
+ * Testing policy - use real Supabase instance for tests
  *
  * Export all fixtures for easy importing in tests:
  * ```typescript
@@ -15,60 +15,50 @@
 
 // Supabase fixtures
 export {
-  // Clients
-  testSupabase,
-  testSupabaseAdmin,
-  forsured,
+  cleanupByPrefix,
+  // Cleanup helpers
+  cleanupTestData,
   core,
-
-  // Test IDs
-  TEST_USER_IDS,
-  TEST_ORG_IDS,
-  TEST_PROJECT_IDS,
-
+  // Policy fixtures
+  createTestPolicy,
+  // Project fixtures
+  createTestProject,
+  // Subcontractor fixtures
+  createTestSubcontractor,
   // Task fixtures
   createTestTask,
   createTestTasks,
-  getTestTask,
+  forsured,
   getTestProjectTasks,
-
-  // Project fixtures
-  createTestProject,
-
-  // Subcontractor fixtures
-  createTestSubcontractor,
-
-  // Policy fixtures
-  createTestPolicy,
-
-  // Cleanup helpers
-  cleanupTestData,
-  cleanupByPrefix,
-
+  getTestTask,
+  TEST_ORG_IDS,
+  TEST_PROJECT_IDS,
+  // Test IDs
+  TEST_USER_IDS,
+  // Clients
+  testSupabase,
+  testSupabaseAdmin,
   // Utility
   waitForSupabase,
-} from './supabase';
+} from "./supabase";
 
 export type {
-  CreateTaskInput,
+  CreatePolicyInput,
   CreateProjectInput,
   CreateSubcontractorInput,
-  CreatePolicyInput,
-} from './supabase';
+  CreateTaskInput,
+} from "./supabase";
 
-// Manual user fixtures (REQ-12)
+// Manual user fixtures
 export {
+  cleanupManualUsersByPrefix,
+  cleanupManualUserTestData,
+  createMergeScenario,
   createTestManualUser,
   createTestManualUserWithInvitation,
-  createMergeScenario,
-  getTestManualUser,
   getManualUsersByCreator,
   getMergeAuditLogs,
-  cleanupManualUserTestData,
-  cleanupManualUsersByPrefix,
-} from './manual-users';
+  getTestManualUser,
+} from "./manual-users";
 
-export type {
-  CreateManualUserInput,
-  MergeScenarioInput,
-} from './manual-users';
+export type { CreateManualUserInput, MergeScenarioInput } from "./manual-users";

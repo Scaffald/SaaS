@@ -1,7 +1,7 @@
 /**
- * REQ-128: Compliance Rule Evaluation Engine
+ * Compliance Rule Evaluation Engine
  * Unit tests for scoring algorithm
- * Following REQ-112 TDD principles
+ * Following TDD principles
  */
 
 import { describe, it, expect } from 'vitest';

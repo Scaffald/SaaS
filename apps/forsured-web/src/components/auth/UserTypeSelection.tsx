@@ -1,10 +1,10 @@
 /**
  * User Type Selection Component
- * REQ-4: Multi-Industry User Set Type System with Configurable Lexicon
+ * Multi-Industry User Set Type System with Configurable Lexicon
  *
  * Displays role options (Manager/Contractor) with dynamic lexicon labels
  */
-import { Stack, Row, Text, Button } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button } from '@scaffald/ui'
 import { Building2, HardHat, ChevronLeft, Loader2 } from 'lucide-react'
 import type { UserSetType } from './IndustrySelection'
 

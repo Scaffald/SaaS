@@ -86,6 +86,7 @@ export async function createTestJob(overrides: {
   employment_type?: 'full_time' | 'part_time' | 'contract' | 'temp' | 'intern'
   remote_option?: 'on_site' | 'hybrid' | 'remote'
   location?: string
+  slug?: string
 } = {}) {
   const admin = createAdminClient()
 
@@ -96,12 +97,13 @@ export async function createTestJob(overrides: {
     organizationId = org.id
   }
 
+  const testId = generateTestId()
   const { data, error } = await admin
     .schema('core')
     .from('jobs')
     .insert({
       organization_id: organizationId,
-      title: overrides.title || `Test Job ${generateTestId()}`,
+      title: overrides.title || `Test Job ${testId}`,
       description: overrides.description || 'This is a test job description',
       status: overrides.status || 'published',
       employment_type: overrides.employment_type || 'full_time',
@@ -112,6 +114,7 @@ export async function createTestJob(overrides: {
       pay_range_type: 'salary',
       number_of_openings: 1,
       is_featured: false,
+      ...(overrides.slug != null && { slug: overrides.slug }),
     })
     .select()
     .single()

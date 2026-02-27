@@ -1,17 +1,17 @@
 /**
  * InsuranceRequirementsModal - Insurance requirements modal using Beyond UI
- * Migrated from Tamagui to Beyond UI
+
  */
-import { Shield, FileText, Users, AlertCircle } from 'lucide-react';
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
-import Modal from '../Common/Modal';
-import { Project, Task } from '../../types';
-import { useProjects } from '../../hooks/useProjects';
+import { Shield, FileText, Users, AlertCircle } from 'lucide-react'
+import { Stack, Row, Text, Card } from '@scaffald/ui'
+import Modal from '../Common/Modal'
+import { Project, Task } from '../../types'
+import { useProjects } from '../../hooks/useProjects'
 
 interface InsuranceRequirementsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  task: Task | null;
+  isOpen: boolean
+  onClose: () => void
+  task: Task | null
 }
 
 export default function InsuranceRequirementsModal({
@@ -19,23 +19,21 @@ export default function InsuranceRequirementsModal({
   onClose,
   task,
 }: InsuranceRequirementsModalProps) {
-  const { projects } = useProjects();
+  const { projects } = useProjects()
 
-  const project = task?.project_id
-    ? projects.find((p) => p.id === task.project_id)
-    : null;
+  const project = task?.project_id ? projects.find((p) => p.id === task.project_id) : null
 
   if (!task || !project) {
-    return null;
+    return null
   }
 
   const formatCurrency = (amount: number | null | undefined) => {
-    if (!amount) return 'Not Required';
+    if (!amount) return 'Not Required'
     if (amount >= 1000000) {
-      return `$${(amount / 1000000).toFixed(1)}M`;
+      return `$${(amount / 1000000).toFixed(1)}M`
     }
-    return `$${(amount / 1000).toFixed(0)}K`;
-  };
+    return `$${(amount / 1000).toFixed(0)}K`
+  }
 
   const coverageRequirements = [
     {
@@ -73,7 +71,7 @@ export default function InsuranceRequirementsModal({
       limit: project.builders_risk_required,
       description: 'Property coverage during construction',
     },
-  ].filter((req) => req.limit);
+  ].filter((req) => req.limit)
 
   const requiredEndorsements = [
     {
@@ -91,8 +89,7 @@ export default function InsuranceRequirementsModal({
           {
             form: 'CG 24 04',
             name: 'Waiver of Subrogation',
-            description:
-              "Waives insurer's right to subrogate against additional insured",
+            description: "Waives insurer's right to subrogate against additional insured",
           },
         ]
       : []),
@@ -101,20 +98,14 @@ export default function InsuranceRequirementsModal({
           {
             form: 'CG 20 01',
             name: 'Primary and Non-Contributory',
-            description:
-              'Policy responds first and does not share coverage with other policies',
+            description: 'Policy responds first and does not share coverage with other policies',
           },
         ]
       : []),
-  ];
+  ]
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Insurance Requirements"
-      size="large"
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title="Insurance Requirements" size="large">
       <Stack gap={24}>
         {/* Project Header */}
         <Card
@@ -161,9 +152,7 @@ export default function InsuranceRequirementsModal({
               >
                 <Row align="flex-start" justify="space-between">
                   <Stack flex={1}>
-                    <Text weight="medium">
-                      {req.label}
-                    </Text>
+                    <Text weight="medium">{req.label}</Text>
                     <Text size="sm" color="secondary">
                       {req.description}
                     </Text>
@@ -218,8 +207,7 @@ export default function InsuranceRequirementsModal({
                 }}
               >
                 <Text size="sm" color="secondary">
-                  No specific endorsements required beyond standard Additional
-                  Insured coverage.
+                  No specific endorsements required beyond standard Additional Insured coverage.
                 </Text>
               </Card>
             )}
@@ -227,33 +215,32 @@ export default function InsuranceRequirementsModal({
         </Stack>
 
         {/* Additional Insureds */}
-        {project.additional_insureds &&
-          project.additional_insureds.length > 0 && (
-            <Stack>
-              <Row align="center" gap={8} style={{ marginBottom: 16 }}>
-                <Users color="var(--color-blue-10)" size={20} />
-                <Text size="lg" weight="semibold">
-                  Additional Insureds
-                </Text>
-              </Row>
-              <Stack gap={8}>
-                {project.additional_insureds.map((insured, index) => (
-                  <Card
-                    key={index}
-                    variant="filled"
-                    style={{
-                      padding: 12,
-                      backgroundColor: 'var(--color-gray-3)',
-                      borderRadius: 8,
-                      border: '1px solid var(--color-border)',
-                    }}
-                  >
-                    <Text>{insured}</Text>
-                  </Card>
-                ))}
-              </Stack>
+        {project.additional_insureds && project.additional_insureds.length > 0 && (
+          <Stack>
+            <Row align="center" gap={8} style={{ marginBottom: 16 }}>
+              <Users color="var(--color-blue-10)" size={20} />
+              <Text size="lg" weight="semibold">
+                Additional Insureds
+              </Text>
+            </Row>
+            <Stack gap={8}>
+              {project.additional_insureds.map((insured, index) => (
+                <Card
+                  key={index}
+                  variant="filled"
+                  style={{
+                    padding: 12,
+                    backgroundColor: 'var(--color-gray-3)',
+                    borderRadius: 8,
+                    border: '1px solid var(--color-border)',
+                  }}
+                >
+                  <Text>{insured}</Text>
+                </Card>
+              ))}
             </Stack>
-          )}
+          </Stack>
+        )}
 
         {/* Certificate Holder */}
         {project.certificate_holder && (
@@ -273,9 +260,7 @@ export default function InsuranceRequirementsModal({
                 border: '1px solid var(--color-border)',
               }}
             >
-              <Text>
-                {project.certificate_holder}
-              </Text>
+              <Text>{project.certificate_holder}</Text>
             </Card>
           </Stack>
         )}
@@ -342,5 +327,5 @@ export default function InsuranceRequirementsModal({
         </Stack>
       </Stack>
     </Modal>
-  );
+  )
 }

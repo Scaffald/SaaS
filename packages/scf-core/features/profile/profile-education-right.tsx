@@ -1,87 +1,119 @@
-import { api } from '@scf/core/utils/api'
-import { DashboardWidget, Dialog } from '@unicornlove/ui'
-import { AlertCircle, Calendar, GraduationCap, MapPin, Pencil, Trash2 } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-import { useState } from 'react'
-import { Button, H4, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-import { ProfileEmptyState } from './components'
-import type { EducationEntry } from './types/education'
-import { formatDateRange } from './utils/date-formatting'
+import {
+  useEducation,
+  useDeleteEducationMutation,
+} from "@scf/core/utils/profile-education-sdk-hooks";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  DashboardWidget,
+  Modal,
+  ModalHeader,
+  ModalActions,
+  useThemeContext,
+} from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
+import {
+  AlertCircle,
+  Calendar,
+  GraduationCap,
+  MapPin,
+  Pencil,
+  Trash2,
+} from "lucide-react-native";
+import { useToast } from "@scaffald/ui";
+import { useState } from "react";
+import { Button, H4, Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { ProfileEmptyState } from "./components";
+import type { EducationEntry } from "./types/education";
+import { formatDateRange } from "./utils/date-formatting";
 
 interface ProfileEducationRightProps {
-  onEditEntry?: (entryId: string) => void
+  onEditEntry?: (entryId: string) => void;
 }
 
 /**
  * Profile Education Right Component
  * Displays saved education entries in the right column
  */
-export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProps = {}) {
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState<string | null>(null)
-  const toast = useToastController()
+export function ProfileEducationRight({
+  onEditEntry,
+}: ProfileEducationRightProps = {}) {
+  const { theme } = useThemeContext();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<string | null>(null);
+  const toast = useToast();
+  const queryClient = useQueryClient();
 
   // Query saved education data
-  const educationQuery = api.profile.education.getEducation.useQuery()
-  const educationEntries = (educationQuery.data ?? []) as EducationEntry[]
+  const educationQuery = useEducation();
+  const educationEntries = (educationQuery.data ?? []) as EducationEntry[];
 
   // Delete mutation
-  const deleteEducationMutation = api.profile.education.deleteEducation.useMutation({
+  const deleteEducationMutation = useDeleteEducationMutation({
     onError: (error: unknown) => {
-      toast.show('Delete Failed', {
+      toast.show({
+        title: "Delete Failed",
         message:
           error instanceof Error
             ? error.message
-            : 'Failed to delete education entry. Please try again.',
-      })
+            : "Failed to delete education entry. Please try again.",
+        variant: "error",
+      });
     },
     onSuccess: () => {
-      toast.show('Education Deleted', {
-        message: 'The education entry has been removed.',
-      })
-      educationQuery.refetch()
-      setDeleteDialogOpen(null)
+      toast.show({
+        title: "Education Deleted",
+        message: "The education entry has been removed.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["profiles", "education"] });
+      setDeleteDialogOpen(null);
     },
-  })
+  });
 
   const handleDelete = (educationId: string | null | undefined) => {
     if (!educationId) {
-      toast.show('Delete Failed', {
-        message: 'Missing education identifier. Please try again.',
-      })
-      return
+      toast.show({
+        title: "Delete Failed",
+        message: "Missing education identifier. Please try again.",
+        variant: "error",
+      });
+      return;
     }
-    deleteEducationMutation.mutate({ educationId })
-  }
+    deleteEducationMutation.mutate({ educationId });
+  };
 
   // Show loading state
-  if (educationQuery.isLoading) {
+  if (educationQuery.isPending) {
     return (
       <DashboardWidget>
-        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$4">
-          <Spinner size="large" />
-          <Text color="$color11">Loading education data...</Text>
-        </YStack>
+        <Stack align="center" justify="center" style={{ padding: 32 }} gap={16}>
+          <Spinner size="lg" />
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Loading education data...
+          </Text>
+        </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
   // Show error state
   if (educationQuery.isError) {
     return (
       <DashboardWidget>
-        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$4">
-          <Text color="$red10">Failed to load education data</Text>
-        </YStack>
+        <Stack align="center" justify="center" style={{ padding: 32 }} gap={16}>
+          <Text style={{ color: colors.error[500] }}>
+            Failed to load education data
+          </Text>
+        </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
   return (
     <DashboardWidget>
       <H4>Saved Education</H4>
 
-      <Text color="$color11" fontSize="$3" marginBottom="$4">
-        Your education history is displayed here. Edit entries in the left panel.
+      <Text style={{ color: colors.text[theme].secondary, marginBottom: 16 }}>
+        Your education history is displayed here. Edit entries in the left
+        panel.
       </Text>
 
       {educationEntries.length === 0 ? (
@@ -90,109 +122,111 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
           message="No education history saved yet. Add your first education entry in the left panel."
         />
       ) : (
-        <YStack gap="$3">
+        <Stack gap={12}>
           {educationEntries.map((edu) => {
             const normalizedGpa =
-              typeof edu.gpa === 'number' ? edu.gpa : edu.gpa != null ? Number(edu.gpa) : undefined
-            const hasValidGpa = typeof normalizedGpa === 'number' && !Number.isNaN(normalizedGpa)
+              typeof edu.gpa === "number"
+                ? edu.gpa
+                : edu.gpa != null
+                ? Number(edu.gpa)
+                : undefined;
+            const hasValidGpa =
+              typeof normalizedGpa === "number" && !Number.isNaN(normalizedGpa);
 
             return (
-              <YStack
+              <Stack
                 key={edu.id}
-                padding="$4"
-                gap="$3"
-                backgroundColor="$background"
-                borderWidth={1}
-                borderColor="$borderColor"
-                borderRadius="$4"
-                hoverStyle={{
-                  borderColor: '$borderColorHover',
-                  backgroundColor: '$backgroundHover',
+                style={{
+                  padding: 16,
+                  gap: 12,
+                  backgroundColor: colors.bg[theme].default,
+                  borderWidth: 1,
+                  borderColor: colors.border[theme].default,
+                  borderRadius: 16,
                 }}
               >
                 {/* Institution Name with Verification Badge */}
-                <YStack gap="$1">
-                  <XStack gap="$2" alignItems="center" flexWrap="wrap">
-                    <Text fontSize="$6" fontWeight="700" color="$color12">
+                <Stack gap={4}>
+                  <Row gap={8} align="center" wrap>
+                    <Text style={{ color: colors.text[theme].secondary }}>
                       {edu.institution_name}
                     </Text>
                     {!edu.is_verified && (
-                      <XStack gap="$1" alignItems="center">
-                        <AlertCircle size={14} color="$orange10" />
-                        <Text fontSize="$1" color="$orange10">
+                      <Row gap={4} align="center">
+                        <AlertCircle size={16} color={colors.warning[500]} />
+                        <Text style={{ color: colors.warning[600] }}>
                           Pending verification
                         </Text>
-                      </XStack>
+                      </Row>
                     )}
-                  </XStack>
+                  </Row>
 
                   {/* Current Education Badge */}
                   {edu.is_current && (
-                    <XStack gap="$1" alignItems="center">
-                      <Text fontSize="$2" fontWeight="600" color="$blue10">
-                        Current
-                      </Text>
-                    </XStack>
+                    <Row gap={4} align="center">
+                      <Text style={{ color: colors.blue[500] }}>Current</Text>
+                    </Row>
                   )}
 
                   {/* Degree Type */}
                   {edu.degree_type && (
-                    <Text fontSize="$4" fontWeight="600" color="$color11">
+                    <Text style={{ color: colors.text[theme].secondary }}>
                       {edu.degree_type}
                     </Text>
                   )}
 
                   {/* Field of Study */}
                   {edu.field_of_study && (
-                    <Text fontSize="$3" color="$color11">
+                    <Text style={{ color: colors.text[theme].secondary }}>
                       {edu.field_of_study}
                     </Text>
                   )}
 
                   {/* GPA */}
                   {hasValidGpa && (
-                    <Text fontSize="$3" color="$color11">
+                    <Text style={{ color: colors.text[theme].secondary }}>
                       GPA: {normalizedGpa.toFixed(1)}/4.0
                     </Text>
                   )}
-                </YStack>
+                </Stack>
 
-                {/* Delete Confirmation Dialog */}
-                <Dialog
-                  open={deleteDialogOpen === edu.id}
-                  onOpenChange={(open) => !open && setDeleteDialogOpen(null)}
+                {/* Delete Confirmation Modal */}
+                <Modal
+                  visible={deleteDialogOpen === edu.id}
+                  onClose={() => setDeleteDialogOpen(null)}
                 >
-                  <Dialog.Portal>
-                    <Dialog.Overlay />
-                    <Dialog.Content>
-                      <Dialog.Title>Delete Education Entry</Dialog.Title>
-                      <Dialog.Description>
-                        Are you sure you want to delete this education entry? This action cannot be
-                        undone.
-                      </Dialog.Description>
-                      <XStack gap="$3" justifyContent="flex-end" marginTop="$4">
-                        <Button variant="outlined" onPress={() => setDeleteDialogOpen(null)}>
-                          Cancel
-                        </Button>
-                        <Button
-                          theme="error"
-                          onPress={() => handleDelete(edu.id)}
-                          disabled={deleteEducationMutation.isPending}
-                        >
-                          {deleteEducationMutation.isPending ? 'Deleting...' : 'Delete'}
-                        </Button>
-                      </XStack>
-                    </Dialog.Content>
-                  </Dialog.Portal>
-                </Dialog>
+                  <ModalHeader
+                    title="Delete Education Entry"
+                    description="Are you sure you want to delete this education entry? This action cannot be undone."
+                    onClose={() => setDeleteDialogOpen(null)}
+                  />
+                  <ModalActions
+                    orientation="right"
+                    primaryAction={{
+                      label: deleteEducationMutation.isPending
+                        ? "Deleting..."
+                        : "Delete",
+                      color: "error",
+                      disabled: deleteEducationMutation.isPending,
+                      onPress: () => handleDelete(edu.id),
+                    }}
+                    secondaryAction={{
+                      label: "Cancel",
+                      onPress: () => setDeleteDialogOpen(null),
+                    }}
+                  />
+                </Modal>
 
                 {/* Details */}
-                <YStack gap="$2">
-                  <XStack alignItems="center" flexWrap="wrap" gap="$3">
+                <Stack gap={8}>
+                  <Row align="center" wrap gap={12}>
                     {(edu.start_date || edu.end_date || edu.is_current) && (
-                      <XStack gap="$2" alignItems="center">
-                        <Calendar size={16} color="$color11" />
-                        <Text fontSize="$2" color="$color11">
+                      <Row gap={8} align="center">
+                        <Calendar
+                          size={16}
+                          color={colors.text[theme].secondary}
+                        />
+                        <Text style={{ color: colors.text[theme].secondary }}>
                           {formatDateRange(
                             edu.start_date,
                             edu.end_date,
@@ -200,66 +234,67 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                             edu.expected_graduation_date
                           )}
                         </Text>
-                      </XStack>
+                      </Row>
                     )}
 
-                    <XStack gap="$2" marginLeft="auto">
+                    <Row gap={8} style={{ marginLeft: "auto" }}>
                       <Button
-                        size="$2"
-                        variant="outlined"
-                        circular
-                        icon={Pencil}
+                        size="sm"
+                        variant="outline"
+                        iconStart={Pencil}
                         aria-label="Edit education entry"
                         accessibilityLabel="Edit education entry"
                         onPress={() => {
                           if (edu.id && onEditEntry) {
-                            onEditEntry(edu.id)
+                            onEditEntry(edu.id);
                           } else {
-                            toast.show('Error', {
-                              message: 'Unable to edit this entry. Please try again.',
-                            })
+                            toast.show({
+                              title: "Error",
+                              message:
+                                "Unable to edit this entry. Please try again.",
+                              variant: "error",
+                            });
                           }
                         }}
                       />
                       <Button
-                        size="$2"
-                        variant="outlined"
-                        circular
-                        icon={Trash2}
+                        size="sm"
+                        variant="outline"
+                        iconStart={Trash2}
                         aria-label="Delete education entry"
                         accessibilityLabel="Delete education entry"
                         onPress={() => setDeleteDialogOpen(edu.id ?? null)}
                       />
-                    </XStack>
-                  </XStack>
+                    </Row>
+                  </Row>
 
                   {/* Location */}
                   {edu.location && (
-                    <XStack gap="$2" alignItems="center">
-                      <MapPin size={16} color="$color11" />
-                      <Text fontSize="$2" color="$color11">
+                    <Row gap={8} align="center">
+                      <MapPin size={16} color={colors.text[theme].secondary} />
+                      <Text style={{ color: colors.text[theme].secondary }}>
                         {edu.location}
                       </Text>
-                    </XStack>
+                    </Row>
                   )}
 
                   {/* Description */}
                   {edu.description && (
-                    <YStack gap="$1">
-                      <Text fontSize="$2" fontWeight="600" color="$color11">
+                    <Stack gap={4}>
+                      <Text style={{ color: colors.text[theme].secondary }}>
                         Description:
                       </Text>
-                      <Text fontSize="$2" color="$color11">
+                      <Text style={{ color: colors.text[theme].secondary }}>
                         {edu.description}
                       </Text>
-                    </YStack>
+                    </Stack>
                   )}
-                </YStack>
-              </YStack>
-            )
+                </Stack>
+              </Stack>
+            );
           })}
-        </YStack>
+        </Stack>
       )}
     </DashboardWidget>
-  )
+  );
 }

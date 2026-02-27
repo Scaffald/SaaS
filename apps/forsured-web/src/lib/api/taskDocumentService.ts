@@ -1,5 +1,5 @@
 /**
- * REQ-265: Task Document Service Layer
+ * Task Document Service Layer
  * API functions for managing task documents (uploads and linked references)
  */
 

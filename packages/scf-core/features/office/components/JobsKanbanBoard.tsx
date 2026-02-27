@@ -1,18 +1,24 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
-import { DraggableCard, DroppableColumn } from '@unicornlove/ui'
+import { useOfficeUpdateJobMutation } from '@scf/core/utils/jobs-sdk-hooks'
+import { useThemeContext } from '@scaffald/ui'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
-import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
-import type { inferRouterOutputs } from '@trpc/server'
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useDraggable,
+  useDroppable,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { ScrollView } from 'react-native'
-import { type GetThemeValueForKey, Text, XStack, YStack } from '@unicornlove/ui'
+import { ScrollView, View } from 'react-native'
+import { Text, Row, Stack, useToast } from '@scaffald/ui'
+import { logger } from '@scf/core'
 import { JobCard } from './JobCard'
-
-type JobListOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
-type Job = JobListOutput['jobs'][number]
+import { colors } from '@scaffald/ui/tokens'
+import type { Job } from '@scaffald/sdk/resources/jobs'
 
 export type JobStatus = 'draft' | 'open' | 'paused' | 'closed'
 
@@ -25,11 +31,51 @@ const STATUS_LABELS: Record<JobStatus, string> = {
   closed: 'Closed',
 }
 
-const STATUS_COLORS: Record<JobStatus, GetThemeValueForKey<'backgroundColor'>> = {
-  draft: '$gray9',
-  open: '$green9',
-  paused: '$yellow9',
-  closed: '$red9',
+const getStatusColors = (theme: 'light' | 'dark'): Record<JobStatus, string> => ({
+  draft: colors.bg[theme].muted,
+  open: theme === 'light' ? colors.green[50] : colors.green[900],
+  paused: theme === 'light' ? colors.yellow[50] : colors.yellow[900],
+  closed: theme === 'light' ? colors.error[50] : colors.error[900],
+})
+
+/** Local droppable column using @dnd-kit (scaffald does not export DroppableColumn) */
+function DroppableColumn({
+  id,
+  children,
+}: {
+  id: string
+  align?: string[]
+  children?: React.ReactNode
+}) {
+  const { isOver, setNodeRef } = useDroppable({ id, data: { type: 'column' } })
+  return (
+    <View ref={(el) => setNodeRef(el as unknown as HTMLElement | null)} style={isOver ? { opacity: 0.9 } : undefined}>
+      {children}
+    </View>
+  )
+}
+
+/** Local draggable card using @dnd-kit (scaffald does not export DraggableCard) */
+function DraggableCard({
+  id,
+  disabled,
+  children,
+}: {
+  id: string
+  disabled?: boolean
+  children?: React.ReactNode
+}) {
+  const { attributes, listeners, setNodeRef } = useDraggable({
+    id,
+    data: { type: 'card' },
+    disabled,
+  })
+  const { tabIndex: _tabIndex, role: _role, ...restAttributes } = attributes
+  return (
+    <View ref={(el) => setNodeRef(el as unknown as HTMLElement | null)} {...(restAttributes as object)} {...listeners}>
+      {children}
+    </View>
+  )
 }
 
 interface JobsKanbanBoardProps {
@@ -38,19 +84,26 @@ interface JobsKanbanBoardProps {
 }
 
 export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
+  const { theme } = useThemeContext()
   const router = useRouter()
+  const toast = useToast()
   const [activeId, setActiveId] = useState<string | null>(null)
   const [updatingJobId, setUpdatingJobId] = useState<string | null>(null)
 
-  const updateJobMutation = api.office.updateJob.useMutation({
+  const updateJobMutation = useOfficeUpdateJobMutation({
     onSuccess: () => {
       setUpdatingJobId(null)
       onJobUpdate?.()
     },
     onError: (error: unknown) => {
-      console.error('Failed to update job status:', error)
+      logger.error('Failed to update job status', error, { context: 'JobsKanbanBoard' })
       setUpdatingJobId(null)
-      // TODO: Show error toast
+      toast.show({
+        title: 'Failed to update job status',
+        message: 'Please try again.',
+        variant: 'error',
+        duration: 5000,
+      })
     },
   })
 
@@ -95,7 +148,7 @@ export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
     setUpdatingJobId(jobId)
     await updateJobMutation.mutateAsync({
       id: jobId,
-      status: newStatus,
+      params: { status: newStatus },
     })
   }
 
@@ -118,26 +171,26 @@ export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
       onDragCancel={handleDragCancel}
     >
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <XStack gap="$3" paddingBottom="$4" paddingHorizontal="$4">
+        <Row gap={12} paddingBottom={16} paddingHorizontal={16}>
           {STATUSES.map((status) => (
             <StatusColumn
               key={status}
               status={status}
               label={STATUS_LABELS[status]}
-              color={STATUS_COLORS[status]}
+              color={getStatusColors(theme)[status]}
               jobs={groupedJobs[status]}
               onJobPress={handleJobPress}
               isUpdating={updatingJobId !== null}
             />
           ))}
-        </XStack>
+        </Row>
       </ScrollView>
 
       <DragOverlay>
         {activeJob ? (
-          <YStack width={300} opacity={0.9}>
+          <Stack width={300} style={{ opacity: 0.9 }}>
             <JobCard job={activeJob} onPress={() => {}} />
-          </YStack>
+          </Stack>
         ) : null}
       </DragOverlay>
     </DndContext>
@@ -147,70 +200,68 @@ export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
 interface StatusColumnProps {
   status: JobStatus
   label: string
-  color: GetThemeValueForKey<'backgroundColor'>
+  color: string
   jobs: Job[]
   onJobPress: (job: Job) => void
   isUpdating: boolean
 }
 
 function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: StatusColumnProps) {
+  const { theme } = useThemeContext()
   return (
-    <DroppableColumn id={status} alignItems={jobs.map((job) => job.id)}>
-      <YStack
+    <DroppableColumn id={status} align={jobs.map((job) => job.id)}>
+      <Stack
         data-testid={`kanban-column-${status}`}
         width={320}
-        backgroundColor="$color2"
-        borderRadius="$4"
-        padding="$3"
-        borderWidth={1}
-        borderColor="$borderColor"
+        style={{
+          backgroundColor: colors.bg[theme].subtle,
+          borderWidth: 1,
+          borderColor: colors.border[theme].default,
+        }}
+        borderRadius={16}
+        padding="sm"
       >
         {/* Column Header */}
-        <XStack justifyContent="space-between" alignItems="center" marginBottom="$3">
-          <XStack gap="$2" alignItems="center">
-            <YStack width={8} height={8} borderRadius="$10" backgroundColor={color} />
-            <Text fontWeight="600" fontSize="$4">
-              {label}
-            </Text>
-          </XStack>
-          <YStack
-            backgroundColor="$color5"
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
+        <Row justify="space-between" align="center" style={{ marginBottom: 12 }}>
+          <Row gap={8} align="center">
+            <Stack width={8} height={8} borderRadius={10} style={{ backgroundColor: color }} />
+            <Text>{label}</Text>
+          </Row>
+          <Stack
+            style={{ backgroundColor: colors.bg[theme].muted }}
+            paddingHorizontal={8}
+            paddingVertical={4}
+            borderRadius={8}
           >
-            <Text fontSize="$2" fontWeight="600">
-              {jobs.length}
-            </Text>
-          </YStack>
-        </XStack>
+            <Text>{jobs.length}</Text>
+          </Stack>
+        </Row>
 
         {/* Job Cards */}
-        <YStack gap="$3" flex={1}>
+        <Stack gap={12} flex={1}>
           {jobs.length === 0 ? (
-            <YStack
-              padding="$4"
-              backgroundColor="$color3"
-              borderRadius="$3"
-              alignItems="center"
-              justifyContent="center"
-              style={{ minHeight: 100 }}
+            <Stack
+              padding="md"
+              style={{ backgroundColor: colors.bg[theme].muted, minHeight: 100 }}
+              borderRadius={12}
+              align="center"
+              justify="center"
             >
-              <Text fontSize="$2" color="$color10" style={{ textAlign: 'center' }}>
+              <Text style={{ color: colors.text[theme].secondary }} align="center">
                 No jobs
               </Text>
-            </YStack>
+            </Stack>
           ) : (
             jobs.map((job) => (
               <DraggableCard key={job.id} id={job.id} disabled={isUpdating}>
-                <YStack opacity={isUpdating ? 0.5 : 1}>
+                <Stack style={{ opacity: isUpdating ? 0.5 : 1 }}>
                   <JobCard job={job} onPress={() => onJobPress(job)} />
-                </YStack>
+                </Stack>
               </DraggableCard>
             ))
           )}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </DroppableColumn>
   )
 }

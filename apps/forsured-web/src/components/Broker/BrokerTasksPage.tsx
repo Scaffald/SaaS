@@ -14,7 +14,7 @@ import {
   List,
   Plus,
 } from 'lucide-react'
-import { Stack, Row, Text, H1, H3, Card, Input, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H1, H3, Card, Input, Grid } from '@scaffald/ui'
 import { useTasks } from '../../hooks/useTasks'
 import { useProjects } from '../../hooks/useProjects'
 import { useClients } from '../../hooks/useClients'
@@ -33,7 +33,7 @@ type TaskStatus = 'pending' | 'in_progress' | 'completed' | 'overdue'
 type TaskPriority = 'critical' | 'high' | 'medium' | 'low'
 
 /**
- * REQ-260: Task Assignment Workflow
+ *  Task Assignment Workflow
  * View types for task list filtering based on assignment
  */
 type TaskViewType = 'inbox' | 'assigned_by_me' | 'all'
@@ -128,7 +128,7 @@ export default function BrokerTasksPage() {
   }
 
   /**
-   * REQ-260: Get initial view type from URL params or saved preferences
+   *  Get initial view type from URL params or saved preferences
    * Defaults to 'inbox' to show user's assigned tasks first
    */
   const getInitialView = (): TaskViewType => {
@@ -143,7 +143,7 @@ export default function BrokerTasksPage() {
   }
 
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '')
-  // REQ-260: Task view state for inbox vs assigned-by-me filtering
+  //  Task view state for inbox vs assigned-by-me filtering
   const [selectedView, setSelectedView] = useState<TaskViewType>(getInitialView())
   const [selectedStatus, setSelectedStatus] = useState<TaskStatus | 'all'>(getInitialStatus())
   const [selectedPriority, setSelectedPriority] = useState<TaskPriority | 'all'>(
@@ -185,7 +185,7 @@ export default function BrokerTasksPage() {
     if (selectedClient !== 'all') params.set('client', selectedClient)
     if (selectedProject !== 'all') params.set('project', selectedProject)
     if (searchQuery) params.set('search', searchQuery)
-    // REQ-260: Include view in URL params (don't include if 'inbox' since it's the default)
+    //  Include view in URL params (don't include if 'inbox' since it's the default)
     if (selectedView !== 'inbox') params.set('view', selectedView)
 
     // Only update if params actually changed to avoid infinite loops
@@ -309,7 +309,7 @@ export default function BrokerTasksPage() {
   ])
 
   const filteredAndSortedTasks = useMemo(() => {
-    // REQ-260: Apply view-based filtering first using taskAssignmentTypeService
+    //  Apply view-based filtering first using taskAssignmentTypeService
     const userId = currentUser?.id || ''
     let viewFilteredTasks: Task[]
 
@@ -460,7 +460,7 @@ export default function BrokerTasksPage() {
   }, [tasks])
 
   /**
-   * REQ-260: Compute view counts for tab badges
+   *  Compute view counts for tab badges
    */
   const viewCounts = useMemo(() => {
     const userId = currentUser?.id || ''
@@ -485,7 +485,7 @@ export default function BrokerTasksPage() {
     if (selectedTask) {
       await updateTask(selectedTask.id, taskData)
 
-      // REQ-260: If task was assigned to someone else, switch to "assigned by me" view
+      //  If task was assigned to someone else, switch to "assigned by me" view
       if (
         taskData.assigned_to_user_id &&
         taskData.assigned_to_user_id !== currentUser?.id &&
@@ -496,7 +496,7 @@ export default function BrokerTasksPage() {
     } else {
       await createTask(taskData as Omit<Task, 'id'>)
 
-      // REQ-260: If new task is self-assigned, stay in inbox
+      //  If new task is self-assigned, stay in inbox
       // If delegated to someone else, switch to "assigned by me" view
       if (taskData.assigned_to_user_id && taskData.assigned_to_user_id !== currentUser?.id) {
         setSelectedView('assigned_by_me')
@@ -563,7 +563,7 @@ export default function BrokerTasksPage() {
         </Button>
       </Row>
 
-      {/* REQ-260: View navigation tabs */}
+      {/*  View navigation tabs */}
       <Row alignItems="center" style={{ borderBottom: '1px solid var(--color-border)' }}>
         <button
           onClick={() => setSelectedView('inbox')}
@@ -957,7 +957,7 @@ export default function BrokerTasksPage() {
                       >
                         {task.priority?.toUpperCase()}
                       </span>
-                      {/* REQ-282: Use TaskStatusBadge with tooltip and rejection reason */}
+                      {/*  Use TaskStatusBadge with tooltip and rejection reason */}
                       <TaskStatusBadge
                         status={task.status}
                         rejectionReason={task.rejection_reason}
@@ -1006,7 +1006,7 @@ export default function BrokerTasksPage() {
                           </button>
                         </>
                       )}
-                      {/* REQ-282 TASK-4: Display sub company context */}
+                      {/* Display sub company context */}
                       {task.sub_company_name && (
                         <>
                           <Text size="xs" muted>

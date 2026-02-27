@@ -1,10 +1,10 @@
 /**
- * Badge - Re-export Chip from @unicornlove/beyond-ui as Badge
- * Migrated from Tamagui to Beyond UI
+ * Badge - Re-export Chip from @scaffald/ui as Badge
+
  */
-export { Chip as Badge } from '@unicornlove/beyond-ui';
-export type { ChipProps as BadgeProps } from '@unicornlove/beyond-ui';
+export { Chip as Badge } from '@scaffald/ui'
+export type { ChipProps as BadgeProps } from '@scaffald/ui'
 
 // Default export for backward compatibility
-import { Chip } from '@unicornlove/beyond-ui';
-export default Chip;
+import { Chip } from '@scaffald/ui'
+export default Chip

@@ -1,10 +1,16 @@
-import type { Boundary } from '@unicornlove/ui'
-import { SiteBoundaryDrawer } from '@scf/core/components/sites'
+import {
+  SiteBoundaryDrawer,
+  type SiteBoundaryDrawerProps,
+} from "@scf/core/components/sites";
+
+type Boundary = SiteBoundaryDrawerProps["boundary"] extends infer B | undefined
+  ? B
+  : never;
 
 export interface SiteBoundaryEditorProps {
-  boundary?: Boundary
-  onBoundaryChange?: (boundary: Boundary) => void
-  onAreaChange?: (areaSqft: number) => void
+  boundary?: Boundary;
+  onBoundaryChange?: (boundary: Boundary) => void;
+  onAreaChange?: (areaSqft: number) => void;
 }
 
 /**
@@ -22,5 +28,5 @@ export function SiteBoundaryEditor({
       onBoundaryChange={onBoundaryChange}
       onAreaChange={onAreaChange}
     />
-  )
+  );
 }

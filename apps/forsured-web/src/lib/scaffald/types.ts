@@ -72,7 +72,7 @@ export interface Invitation {
 }
 
 // ============================================
-// Document Types (REQ-1: Document Storage)
+// Document Types (Document Storage)
 // ============================================
 
 export type DocumentCategory =

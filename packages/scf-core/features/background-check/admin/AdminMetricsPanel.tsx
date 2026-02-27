@@ -1,13 +1,9 @@
-import type { AppRouter } from '@scf/supabase/client-types'
-import { RefreshCcw } from '@tamagui/lucide-icons'
-import type { inferRouterOutputs } from '@trpc/server'
-import { Button, Card, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-
-type RouterOutputs = inferRouterOutputs<AppRouter>
-type MetricsSummary = RouterOutputs['backgroundChecks']['adminGetMetrics']
+import type { AdminMetrics } from '@scaffald/sdk'
+import { RefreshCcw } from 'lucide-react-native'
+import { Button, Card, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 interface AdminMetricsPanelProps {
-  metrics: MetricsSummary | undefined
+  metrics: AdminMetrics | undefined
   isLoading: boolean
   onRefresh: () => void
 }
@@ -15,32 +11,28 @@ interface AdminMetricsPanelProps {
 export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetricsPanelProps) {
   if (isLoading) {
     return (
-      <YStack gap="$3" alignItems="center" paddingVertical="$6">
-        <Spinner size="large" />
-        <Text fontSize="$3" color="$color10">
-          Loading metrics…
-        </Text>
-      </YStack>
+      <Stack gap={12} align="center" paddingVertical={24}>
+        <Spinner size="lg" />
+        <Text color="$gray11">Loading metrics…</Text>
+      </Stack>
     )
   }
 
   if (!metrics) {
     return (
       <Card
-        padding="$4"
-        gap="$3"
+        padding="md"
+        style={{ gap: 12 }}
         backgroundColor="$color2"
         borderColor="$borderColor"
         borderWidth={1}
-        borderRadius="$4"
+        radius="xl"
       >
-        <Text fontSize="$4" fontWeight="600" color="$color12">
-          Metrics unavailable
+        <Text color="$gray11">Metrics unavailable</Text>
+        <Text color="$gray11">
+          We couldn't load the latest metrics. Try refreshing to retrieve the most recent data.
         </Text>
-        <Text fontSize="$2" color="$color10">
-          We couldn’t load the latest metrics. Try refreshing to retrieve the most recent data.
-        </Text>
-        <Button icon={RefreshCcw} onPress={onRefresh} size="$3" variant="outlined">
+        <Button iconStart={RefreshCcw} onPress={onRefresh} size="sm" variant="outline">
           Refresh
         </Button>
       </Card>
@@ -48,8 +40,8 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
   }
 
   return (
-    <YStack gap="$4">
-      <XStack gap="$3" flexWrap="wrap">
+    <Stack gap={16}>
+      <Row gap={12} wrap>
         <MetricCard
           title="Checks in system"
           value={metrics.totals.checks}
@@ -70,100 +62,82 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
           value={metrics.totals.completed}
           description="Checks completed and ready to share"
         />
-      </XStack>
+      </Row>
 
       <Separator />
 
-      <XStack flexWrap="wrap" gap="$3">
+      <Row wrap gap={12}>
         <Card
-          flexBasis={260}
-          flexGrow={1}
-          padding="$4"
-          gap="$3"
+          style={{ flexGrow: 1, gap: 12 }}
+          padding="md"
           backgroundColor="$color2"
           borderColor="$borderColor"
           borderWidth={1}
-          borderRadius="$4"
+          radius="xl"
         >
-          <Text fontSize="$4" fontWeight="600" color="$color12">
-            Dispute status
-          </Text>
-          <YStack gap="$2">
+          <Text color="$gray11">Dispute status</Text>
+          <Stack gap={8}>
             <DisputeMetric label="Pending review" value={metrics.disputes.pending} tone="warning" />
             <DisputeMetric label="Under review" value={metrics.disputes.under_review} tone="info" />
             <DisputeMetric label="Resolved" value={metrics.disputes.resolved} tone="success" />
             <DisputeMetric label="Upheld" value={metrics.disputes.upheld} tone="neutral" />
-          </YStack>
+          </Stack>
         </Card>
 
         <Card
-          flexBasis={260}
-          flexGrow={1}
-          padding="$4"
-          gap="$3"
+          style={{ flexGrow: 1, gap: 12 }}
+          padding="md"
           backgroundColor="$color2"
           borderColor="$borderColor"
           borderWidth={1}
-          borderRadius="$4"
+          radius="xl"
         >
-          <Text fontSize="$4" fontWeight="600" color="$color12">
-            Average completion time
-          </Text>
-          <Text fontSize="$7" fontWeight="700" color="$color12">
+          <Text color="$gray11">Average completion time</Text>
+          <Text color="$gray11">
             {metrics.averageCompletionDays != null ? `${metrics.averageCompletionDays} days` : '—'}
           </Text>
-          <Text fontSize="$2" color="$color10">
-            Based on fully completed checks in the system.
-          </Text>
+          <Text color="$gray11">Based on fully completed checks in the system.</Text>
         </Card>
-      </XStack>
+      </Row>
 
       <Card
-        padding="$4"
-        gap="$3"
+        padding="md"
+        style={{ gap: 12 }}
         backgroundColor="$color2"
         borderColor="$borderColor"
         borderWidth={1}
-        borderRadius="$4"
+        radius="xl"
       >
-        <XStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$2">
-          <Text fontSize="$4" fontWeight="600" color="$color12">
-            Package distribution
-          </Text>
-          <Button variant="outlined" size="$2" icon={RefreshCcw} onPress={onRefresh}>
+        <Row justify="space-between" align="center" wrap gap={8}>
+          <Text color="$gray11">Package distribution</Text>
+          <Button variant="outline" size="sm" iconStart={RefreshCcw} onPress={onRefresh}>
             Refresh
           </Button>
-        </XStack>
-        <YStack gap="$2">
+        </Row>
+        <Stack gap={8}>
           {metrics.packageDistribution.length === 0 ? (
-            <Text fontSize="$2" color="$color10">
-              No package usage data available yet.
-            </Text>
+            <Text color="$gray11">No package usage data available yet.</Text>
           ) : (
             metrics.packageDistribution.map((item: { label: string; count: number }) => (
-              <XStack
+              <Row
                 key={item.label}
-                justifyContent="space-between"
-                alignItems="center"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
+                justify="space-between"
+                align="center"
+                paddingHorizontal={12}
+                paddingVertical={8}
                 backgroundColor="$color1"
                 borderColor="$borderColor"
                 borderWidth={1}
-                borderRadius="$3"
+                borderRadius={12}
               >
-                <Text fontSize="$3" color="$color12">
-                  {item.label}
-                </Text>
-                <Text fontSize="$3" fontWeight="600" color="$color12">
-                  {item.count}
-                </Text>
-              </XStack>
+                <Text color="$gray11">{item.label}</Text>
+                <Text color="$gray11">{item.count}</Text>
+              </Row>
             ))
           )}
-        </YStack>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   )
 }
 
@@ -176,24 +150,16 @@ interface MetricCardProps {
 function MetricCard({ title, value, description }: MetricCardProps) {
   return (
     <Card
-      flexBasis={200}
-      flexGrow={1}
-      padding="$4"
-      gap="$2"
+      style={{ flexGrow: 1, gap: 8 }}
+      padding="md"
       backgroundColor="$color2"
       borderColor="$borderColor"
       borderWidth={1}
-      borderRadius="$4"
+      radius="xl"
     >
-      <Text fontSize="$2" color="$color10">
-        {title}
-      </Text>
-      <Text fontSize="$7" fontWeight="700" color="$color12">
-        {value}
-      </Text>
-      <Text fontSize="$2" color="$color10">
-        {description}
-      </Text>
+      <Text color="$gray11">{title}</Text>
+      <Text color="$gray11">{value}</Text>
+      <Text color="$gray11">{description}</Text>
     </Card>
   )
 }
@@ -213,13 +179,9 @@ function DisputeMetric({ label, value, tone }: DisputeMetricProps) {
   } as const
 
   return (
-    <XStack justifyContent="space-between" alignItems="center">
-      <Text fontSize="$2" color="$color10">
-        {label}
-      </Text>
-      <Text fontSize="$3" fontWeight="600" color={toneColors[tone]}>
-        {value}
-      </Text>
-    </XStack>
+    <Row justify="space-between" align="center">
+      <Text color="$gray11">{label}</Text>
+      <Text color={toneColors[tone]}>{value}</Text>
+    </Row>
   )
 }

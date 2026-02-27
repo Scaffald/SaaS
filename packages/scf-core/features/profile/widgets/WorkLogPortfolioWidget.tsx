@@ -1,43 +1,49 @@
-import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
-import type { PublicWorkLog, PublicWorkLogPhoto } from '@scf/schemas'
-import { api } from '@scf/core/utils/api'
-import { ShieldCheck } from '@tamagui/lucide-icons'
-import { useMemo } from 'react'
-import { Card, Image, Paragraph, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { formatDate } from "@scf/core/features/profile/utils/date-formatting";
+import type { PublicWorkLog, PublicWorkLogPhoto } from "@scf/schemas";
+import { usePublicWorkLogsFeed } from "@scf/core/utils/work-logs-sdk-hooks";
+import { ShieldCheck } from "lucide-react-native";
+import { useMemo } from "react";
+import { Image } from "react-native";
+import { Card, Paragraph, Spinner, Text, Row, Stack } from "@scaffald/ui";
 
 interface WorkLogPortfolioWidgetProps {
-  userId: string
+  userId: string;
 }
 
-export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) {
-  const { data, isLoading } = api.workLogs.publicProfileFeed.useQuery(
-    { userId, limit: 12 },
-    { enabled: Boolean(userId), staleTime: 60_000 }
-  )
+export function WorkLogPortfolioWidget({
+  userId,
+}: WorkLogPortfolioWidgetProps) {
+  const { data, isLoading } = usePublicWorkLogsFeed(
+    userId ? { userId, limit: 12 } : undefined,
+    {
+      enabled: Boolean(userId),
+      staleTime: 60_000,
+    }
+  );
 
-  const workLogs: PublicWorkLog[] = data?.workLogs ?? []
+  const workLogs: PublicWorkLog[] = (data as unknown as PublicWorkLog[]) ?? [];
 
   const groupedLogs = useMemo(() => {
     const groups = new Map<
       string,
       {
-        projectName: string | null
-        organizationName: string | null
-        entries: PublicWorkLog[]
+        projectName: string | null;
+        organizationName: string | null;
+        entries: PublicWorkLog[];
       }
-    >()
+    >();
 
     for (const log of workLogs) {
-      const key = log.projectId ?? log.id
-      const existing = groups.get(key)
+      const key = log.projectId ?? log.id;
+      const existing = groups.get(key);
       if (existing) {
-        existing.entries.push(log)
+        existing.entries.push(log);
       } else {
         groups.set(key, {
           projectName: log.projectName,
           organizationName: log.organizationName,
           entries: [log],
-        })
+        });
       }
     }
 
@@ -46,138 +52,145 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
       projectName: value.projectName,
       organizationName: value.organizationName,
       entries: value.entries,
-    }))
-  }, [workLogs])
+    }));
+  }, [workLogs]);
 
   return (
     <Card borderColor="$color6" borderWidth={1}>
-      <YStack gap="$4" padding="$4">
-        <YStack gap="$2">
-          <Text fontSize="$6" fontWeight="700">
-            Verified work history
-          </Text>
-          <Paragraph color="$color10">
-            Recent verified work logs selected by this worker. Projects appear here only when the
-            worker has chosen to share them publicly.
+      <Stack gap={16} padding="md">
+        <Stack gap={8}>
+          <Text>Verified work history</Text>
+          <Paragraph color="$gray11">
+            Recent verified work logs selected by this worker. Projects appear
+            here only when the worker has chosen to share them publicly.
           </Paragraph>
-        </YStack>
+        </Stack>
 
         {isLoading ? (
-          <XStack gap="$2" alignItems="center">
-            <Spinner size="small" />
-            <Text color="$color10">Loading work history…</Text>
-          </XStack>
+          <Row gap={8} align="center">
+            <Spinner size="sm" />
+            <Text color="$gray11">Loading work history…</Text>
+          </Row>
         ) : workLogs.length === 0 ? (
-          <Paragraph color="$color10">
+          <Paragraph color="$gray11">
             No verified work logs are currently visible on this profile.
           </Paragraph>
         ) : (
-          <YStack gap="$4">
+          <Stack gap={16}>
             {groupedLogs.map((group) => {
               const allDates = group.entries
                 .map((entry) => entry.logDate)
-                .filter((value): value is string => Boolean(value))
-              const earliest = allDates.reduce<string | null>((current, candidate) => {
-                if (!current) return candidate
-                return current <= candidate ? current : candidate
-              }, null)
-              const latest = allDates.reduce<string | null>((current, candidate) => {
-                if (!current) return candidate
-                return current >= candidate ? current : candidate
-              }, null)
+                .filter((value): value is string => Boolean(value));
+              const earliest = allDates.reduce<string | null>(
+                (current, candidate) => {
+                  if (!current) return candidate;
+                  return current <= candidate ? current : candidate;
+                },
+                null
+              );
+              const latest = allDates.reduce<string | null>(
+                (current, candidate) => {
+                  if (!current) return candidate;
+                  return current >= candidate ? current : candidate;
+                },
+                null
+              );
 
               const dateLabel = (() => {
-                if (!allDates.length) return 'Date hidden by worker'
+                if (!allDates.length) return "Date hidden by worker";
                 if (earliest && latest && earliest !== latest) {
-                  return `${formatDate(earliest)} – ${formatDate(latest)}`
+                  return `${formatDate(earliest)} – ${formatDate(latest)}`;
                 }
                 if (earliest) {
-                  return formatDate(earliest)
+                  return formatDate(earliest);
                 }
-                return 'Date hidden by worker'
-              })()
+                return "Date hidden by worker";
+              })();
 
-              const photos = group.entries.flatMap((entry) => entry.photos) as PublicWorkLogPhoto[]
+              const photos = group.entries.flatMap(
+                (entry) => entry.photos
+              ) as PublicWorkLogPhoto[];
 
               return (
-                <YStack
+                <Stack
                   key={group.id}
                   borderWidth={1}
                   borderColor="$color6"
-                  borderRadius="$4"
-                  paddingHorizontal="$3"
-                  paddingVertical="$3"
-                  gap="$3"
+                  borderRadius={16}
+                  paddingHorizontal={12}
+                  paddingVertical={12}
+                  gap={12}
                   backgroundColor="$color2"
                 >
-                  <XStack alignItems="center" justifyContent="space-between">
-                    <YStack gap="$1">
-                      <Text fontWeight="700">{group.projectName ?? 'Project'}</Text>
+                  <Row align="center" justify="space-between">
+                    <Stack gap={4}>
+                      <Text>{group.projectName ?? "Project"}</Text>
                       {group.organizationName ? (
-                        <Text color="$color10">{group.organizationName}</Text>
+                        <Text color="$gray11">{group.organizationName}</Text>
                       ) : null}
-                      <Text color="$color10">{dateLabel}</Text>
-                    </YStack>
-                    <XStack
-                      gap="$2"
-                      alignItems="center"
-                      paddingHorizontal="$2"
-                      paddingVertical="$1"
-                      borderRadius="$4"
+                      <Text color="$gray11">{dateLabel}</Text>
+                    </Stack>
+                    <Row
+                      gap={8}
+                      align="center"
+                      paddingHorizontal={8}
+                      paddingVertical={4}
+                      borderRadius={16}
                       backgroundColor="$green4"
                     >
-                      <ShieldCheck size={16} color="$green11" />
-                      <Text color="$green11" fontSize="$2" fontWeight="600">
-                        Verified by Scaffald
-                      </Text>
-                    </XStack>
-                  </XStack>
+                      <ShieldCheck size="md" color="$green11" />
+                      <Text color="$green11">Verified by Scaffald</Text>
+                    </Row>
+                  </Row>
 
                   {photos.length > 0 ? (
-                    <XStack gap="$2" flexWrap="wrap">
+                    <Row gap={8} wrap>
                       {photos.map((photo) => (
                         <Card
                           key={`${group.id}-${photo.id}`}
-                          width="30%"
-                          minWidth={120}
-                          height={90}
-                          overflow="hidden"
                           borderWidth={1}
-                          borderColor="$color5"
+                          style={{
+                            width: "30%",
+                            minWidth: 120,
+                            height: 90,
+                            overflow: "hidden",
+                          }}
                         >
                           {photo.thumbnailSignedUrl || photo.signedUrl ? (
                             <Image
                               source={{
-                                uri: photo.thumbnailSignedUrl ?? photo.signedUrl ?? undefined,
+                                uri:
+                                  photo.thumbnailSignedUrl ??
+                                  photo.signedUrl ??
+                                  undefined,
                               }}
-                              width="100%"
-                              height="100%"
+                              style={{ width: "100%", height: "100%" }}
                               resizeMode="cover"
                             />
                           ) : (
-                            <YStack
+                            <Stack
                               flex={1}
-                              alignItems="center"
-                              justifyContent="center"
+                              align="center"
+                              justify="center"
                               backgroundColor="$color3"
                             >
-                              <Text color="$color10" fontSize="$2">
-                                Photo unavailable
-                              </Text>
-                            </YStack>
+                              <Text color="$gray11">Photo unavailable</Text>
+                            </Stack>
                           )}
                         </Card>
                       ))}
-                    </XStack>
+                    </Row>
                   ) : (
-                    <Paragraph color="$color10">No photos were shared for this project.</Paragraph>
+                    <Paragraph color="$gray11">
+                      No photos were shared for this project.
+                    </Paragraph>
                   )}
-                </YStack>
-              )
+                </Stack>
+              );
             })}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     </Card>
-  )
+  );
 }

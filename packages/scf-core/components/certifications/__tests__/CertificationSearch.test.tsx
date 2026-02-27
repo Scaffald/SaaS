@@ -41,7 +41,7 @@ const mockResults = [
 
 const userFactory = () => userEvent.setup()
 
-const mockTamagui = vi.hoisted(() => {
+const mockBeyondUI = vi.hoisted(() => {
   const React = require('react') as typeof import('react')
 
   const createComponent =
@@ -89,8 +89,8 @@ const mockTamagui = vi.hoisted(() => {
   return {
     Input,
     Text,
-    YStack: createComponent(),
-    XStack: createComponent(),
+    Stack: createComponent(),
+    Row: createComponent(),
     ScrollView: ({ children }: { children?: ReactNode }) => (
       <div data-testid="scroll-view">{children}</div>
     ),
@@ -98,9 +98,9 @@ const mockTamagui = vi.hoisted(() => {
   }
 })
 
-vi.mock('tamagui', () => mockTamagui)
+// Use real @scaffald/ui (no mock) so CertificationSearch renders correctly
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Search: () => <span data-testid="icon-search" />,
   Award: () => <span data-testid="icon-award" />,
 }))

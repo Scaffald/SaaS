@@ -1,6 +1,6 @@
 /**
  * Privacy Dashboard - Main CCPA Privacy Management Page
- * REQ-3: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  *
  * User-facing dashboard for:
  * - Viewing data categories collected
@@ -10,259 +10,260 @@
  * - Quick actions for data requests and opt-outs
  */
 
-import { useState } from 'react'
-import { Button, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-import { api } from '@scf/core/utils/api'
-import { DataCategorySummary } from './components/DataCategorySummary'
-import { PrivacyRightsList } from './components/PrivacyRightsList'
-import { RequestHistoryTable } from './components/RequestHistoryTable'
-import { ConnectedAppsPanel } from './components/ConnectedAppsPanel'
+import { useState } from "react";
+import { Button, ScrollView, Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
+import {
+  useCCPADataSummary,
+  useCCPAMyRequests,
+  useCCPAConnectedApps,
+  useCCPAMyOptOuts,
+} from "@scf/core/utils/ccpa-sdk-hooks";
+import {
+  DataCategorySummary,
+  type CCPACategory,
+} from "./components/DataCategorySummary";
+import { PrivacyRightsList } from "./components/PrivacyRightsList";
+import { RequestHistoryTable } from "./components/RequestHistoryTable";
+import { ConnectedAppsPanel } from "./components/ConnectedAppsPanel";
 
 /**
  * Main Privacy Dashboard component
  */
 export function PrivacyDashboard() {
-  const [_showRequestForm, setShowRequestForm] = useState(false)
-  const [_showOptOutManager, setShowOptOutManager] = useState(false)
+  const [_showRequestForm, setShowRequestForm] = useState(false);
+  const [_showOptOutManager, setShowOptOutManager] = useState(false);
 
   // Fetch user's data summary
   const {
     data: dataSummary,
     isLoading: isLoadingData,
     error: dataError,
-  } = api.ccpa.getDataSummary.useQuery()
+  } = useCCPADataSummary();
 
   // Fetch request history
   const {
     data: requestHistory,
     isLoading: isLoadingHistory,
     error: historyError,
-  } = api.ccpa.getMyRequests.useQuery({
-    limit: 10,
-  })
+  } = useCCPAMyRequests({ limit: 10 });
 
   // Fetch connected OAuth apps
   const {
     data: connectedApps,
     isLoading: isLoadingApps,
     error: appsError,
-  } = api.ccpa.getConnectedApps.useQuery()
+  } = useCCPAConnectedApps();
 
   // Fetch opt-out status
-  const {
-    data: optOutStatus,
-    isLoading: isLoadingOptOut,
-  } = api.ccpa.getMyOptOuts.useQuery()
+  const { data: optOutStatus, isLoading: isLoadingOptOut } = useCCPAMyOptOuts();
 
-  const isLoading = isLoadingData || isLoadingHistory || isLoadingApps || isLoadingOptOut
-  const hasError = dataError || historyError || appsError
+  const isLoading =
+    isLoadingData || isLoadingHistory || isLoadingApps || isLoadingOptOut;
+  const hasError = dataError || historyError || appsError;
 
   if (hasError) {
     return (
-      <YStack padding="$4" gap="$4" alignItems="center" justifyContent="center" flex={1}>
-        <Text color="$red10" fontSize="$5" fontWeight="600">
+      <Stack padding="md" gap={16} align="center" justify="center" flex={1}>
+        <Text style={{ color: "#ef4444" }}>
           Error Loading Privacy Dashboard
         </Text>
-        <Text color="$color11" textAlign="center">
+        <Text style={{ color: "#414e62", textAlign: "center" }}>
           {dataError?.message || historyError?.message || appsError?.message}
         </Text>
-        <Button
-          onPress={() => window.location.reload()}
-          variant="outlined"
-        >
+        <Button onPress={() => window.location.reload()} variant="outline">
           Retry
         </Button>
-      </YStack>
-    )
+      </Stack>
+    );
   }
 
   return (
     <ScrollView>
-      <YStack padding="$4" gap="$6" maxWidth={1200} marginHorizontal="auto">
+      <Stack
+        padding="md"
+        gap={24}
+        style={{ maxWidth: 1200, marginHorizontal: "auto" as const }}
+      >
         {/* Page Header */}
-        <YStack gap="$2">
-          <Text fontSize="$8" fontWeight="700">
-            Privacy & Data
+        <Stack gap={8}>
+          <Text>Privacy & Data</Text>
+          <Text style={{ color: "#414e62" }}>
+            Manage your privacy settings, view your data, and exercise your
+            California Consumer Privacy Act (CCPA) rights.
           </Text>
-          <Text color="$color11" fontSize="$4">
-            Manage your privacy settings, view your data, and exercise your California
-            Consumer Privacy Act (CCPA) rights.
-          </Text>
-        </YStack>
+        </Stack>
 
         {/* Quick Actions */}
-        <YStack
-          gap="$4"
-          padding="$4"
-          backgroundColor="$color2"
-          borderRadius="$4"
+        <Stack
+          gap={16}
+          padding="md"
+          backgroundColor={colors.bg.light.subtle}
+          borderRadius={16}
           borderWidth={1}
-          borderColor="$borderColor"
+          borderColor={colors.border.light.default}
         >
-          <Text fontSize="$5" fontWeight="600">
-            Quick Actions
-          </Text>
-          <XStack gap="$3" flexWrap="wrap">
+          <Text>Quick Actions</Text>
+          <Row gap={12} wrap>
             <Button
               onPress={() => setShowRequestForm(true)}
-              icon={undefined}
-              size="$4"
+              iconStart={undefined}
+              size="md"
             >
               Request My Data
             </Button>
             <Button
               onPress={() => setShowRequestForm(true)}
-              variant="outlined"
-              size="$4"
+              variant="outline"
+              size="md"
             >
               Delete My Data
             </Button>
             <Button
               onPress={() => setShowOptOutManager(true)}
-              variant="outlined"
-              size="$4"
+              variant="outline"
+              size="md"
             >
               Manage Opt-Outs
             </Button>
-          </XStack>
+          </Row>
           {optOutStatus?.hasGPCOptOut && (
-            <XStack
-              gap="$2"
-              padding="$3"
-              backgroundColor="$blue2"
-              borderRadius="$2"
-              alignItems="center"
+            <Row
+              gap={8}
+              padding="sm"
+              backgroundColor={colors.blue[50]}
+              borderRadius={8}
+              align="center"
             >
-              <Text fontSize="$3" color="$blue11">
-                Your browser&apos;s Global Privacy Control signal has been detected and honored.
-                You have been automatically opted out of the sale and sharing of your personal
-                information.
+              <Text style={{ color: "#2563eb" }}>
+                Your browser&apos;s Global Privacy Control signal has been
+                detected and honored. You have been automatically opted out of
+                the sale and sharing of your personal information.
               </Text>
-            </XStack>
+            </Row>
           )}
-        </YStack>
+        </Stack>
 
         {/* Data Categories Summary */}
-        <YStack gap="$3">
-          <Text fontSize="$6" fontWeight="600">
-            Your Data Categories
-          </Text>
-          <Text color="$color11" fontSize="$3">
+        <Stack gap={12}>
+          <Text>Your Data Categories</Text>
+          <Text style={{ color: "#414e62" }}>
             Categories of personal information we collect about you
           </Text>
           {isLoading ? (
-            <XStack padding="$6" justifyContent="center">
-              <Spinner size="large" />
-            </XStack>
+            <Row padding="xl" justify="center">
+              <Spinner size="lg" />
+            </Row>
           ) : (
-            <DataCategorySummary categories={dataSummary?.categories || []} />
+            <DataCategorySummary
+              categories={(dataSummary?.categories || []).map((c) => ({
+                category: c.id as CCPACategory,
+                record_count: c.itemCount ?? 0,
+                data_types: [],
+              }))}
+            />
           )}
-        </YStack>
+        </Stack>
 
         {/* CCPA Rights */}
-        <YStack gap="$3">
-          <Text fontSize="$6" fontWeight="600">
-            Your Privacy Rights
-          </Text>
-          <Text color="$color11" fontSize="$3">
-            Under the California Consumer Privacy Act (CCPA), you have the following rights
+        <Stack gap={12}>
+          <Text>Your Privacy Rights</Text>
+          <Text style={{ color: "#414e62" }}>
+            Under the California Consumer Privacy Act (CCPA), you have the
+            following rights
           </Text>
           <PrivacyRightsList />
-        </YStack>
+        </Stack>
 
         {/* Request History */}
-        <YStack gap="$3">
-          <Text fontSize="$6" fontWeight="600">
-            Request History
-          </Text>
-          <Text color="$color11" fontSize="$3">
+        <Stack gap={12}>
+          <Text>Request History</Text>
+          <Text style={{ color: "#414e62" }}>
             Your privacy request history and their status
           </Text>
           {isLoading ? (
-            <XStack padding="$6" justifyContent="center">
-              <Spinner size="large" />
-            </XStack>
+            <Row padding="xl" justify="center">
+              <Spinner size="lg" />
+            </Row>
           ) : (
-            <RequestHistoryTable requests={requestHistory?.requests || []} />
+            <RequestHistoryTable
+              requests={
+                (requestHistory?.requests ||
+                  []) as import("./components/RequestHistoryTable").PrivacyRequest[]
+              }
+            />
           )}
-        </YStack>
+        </Stack>
 
         {/* Connected Apps */}
-        <YStack gap="$3">
-          <Text fontSize="$6" fontWeight="600">
-            Connected Applications
-          </Text>
-          <Text color="$color11" fontSize="$3">
+        <Stack gap={12}>
+          <Text>Connected Applications</Text>
+          <Text style={{ color: "#414e62" }}>
             Third-party applications that have access to your data
           </Text>
           {isLoading ? (
-            <XStack padding="$6" justifyContent="center">
-              <Spinner size="large" />
-            </XStack>
+            <Row padding="xl" justify="center">
+              <Spinner size="lg" />
+            </Row>
           ) : (
-            <ConnectedAppsPanel apps={connectedApps || []} />
+            <ConnectedAppsPanel
+              apps={
+                (connectedApps ||
+                  []) as import("./components/ConnectedAppsPanel").ConnectedApp[]
+              }
+            />
           )}
-        </YStack>
+        </Stack>
 
         {/* Footer Links */}
-        <YStack
-          gap="$3"
-          padding="$4"
-          backgroundColor="$color2"
-          borderRadius="$4"
+        <Stack
+          gap={12}
+          padding="md"
+          backgroundColor={colors.bg.light.subtle}
+          borderRadius={16}
           borderWidth={1}
-          borderColor="$borderColor"
+          borderColor={colors.border.light.default}
         >
-          <Text fontSize="$4" fontWeight="600">
-            Additional Resources
-          </Text>
-          <YStack gap="$2">
+          <Text>Additional Resources</Text>
+          <Stack gap={8}>
             <Text
-              color="$blue10"
-              fontSize="$3"
-              cursor="pointer"
-              hoverStyle={{ textDecorationLine: 'underline' }}
-              onPress={() => window.open('/privacy-policy', '_blank')}
+              style={{ color: "#2563eb" }}
+              onPress={() => window.open("/privacy-policy", "_blank")}
             >
               Read our full Privacy Policy
             </Text>
             <Text
-              color="$blue10"
-              fontSize="$3"
-              cursor="pointer"
-              hoverStyle={{ textDecorationLine: 'underline' }}
-              onPress={() => window.open('/terms', '_blank')}
+              style={{ color: "#2563eb" }}
+              onPress={() => window.open("/terms", "_blank")}
             >
               Terms of Service
             </Text>
             <Text
-              color="$blue10"
-              fontSize="$3"
-              cursor="pointer"
-              hoverStyle={{ textDecorationLine: 'underline' }}
-              onPress={() => window.open('https://oag.ca.gov/privacy/ccpa', '_blank')}
+              style={{ color: "#2563eb" }}
+              onPress={() =>
+                window.open("https://oag.ca.gov/privacy/ccpa", "_blank")
+              }
             >
               Learn more about CCPA
             </Text>
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
 
         {/* Contact Info */}
-        <YStack gap="$2" paddingBottom="$6">
-          <Text color="$color11" fontSize="$3">
-            Questions about your privacy? Contact our Privacy Team at{' '}
+        <Stack gap={8} paddingBottom={24}>
+          <Text style={{ color: "#414e62" }}>
+            Questions about your privacy? Contact our Privacy Team at{" "}
             <Text
-              color="$blue10"
-              cursor="pointer"
-              onPress={() => window.open('mailto:privacy@scaffald.com')}
+              style={{ color: "#2563eb" }}
+              onPress={() => window.open("mailto:privacy@scaffald.com")}
             >
               privacy@scaffald.com
             </Text>
           </Text>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </ScrollView>
-  )
+  );
 }
 
-export default PrivacyDashboard
+export default PrivacyDashboard;

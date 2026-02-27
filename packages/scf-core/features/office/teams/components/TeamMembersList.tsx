@@ -1,40 +1,42 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import {
+  useTeamMembers,
+  useTeamWorkload,
+  useTransferTeamOwnershipMutation,
+  useSelfRemoveFromTeamMutation,
+} from '@scf/core/utils/teams-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
-import type { AppRouter } from '@scf/supabase/client-types'
-import { Crown, LogOut, Plus, UserMinus } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-import type { inferRouterOutputs } from '@trpc/server'
+import type { TeamMember, TeamWorkloadSnapshot } from '@scaffald/sdk'
+import { Crown, LogOut, Plus, UserMinus } from 'lucide-react-native'
+import { useToast, useThemeContext } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import {
-  AlertDialog,
   Avatar,
   Button,
   Card,
+  Modal,
+  ModalHeader,
+  ModalActions,
   Spinner,
   Text,
   TextArea,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@scaffald/ui'
 import { type TeamRoleOption, useTeamFormOptions } from '../hooks/useTeamFormOptions'
 
 import { AddTeamMemberModal } from './AddTeamMemberModal'
 import { RemoveMemberModal } from './RemoveMemberModal'
 import { TeamMemberRoleSelect } from './TeamMemberRoleSelect'
+import { colors } from '@scaffald/ui/tokens'
 
 interface TeamMembersListProps {
   teamId: string
   organizationId: string
 }
 
-type MembersListOutput = inferRouterOutputs<AppRouter>['teams']['members']['list']
-type MemberRecord = NonNullable<MembersListOutput['members']>[number]
-type WorkloadOutput = inferRouterOutputs<AppRouter>['teams']['analytics']['workload']
-type WorkloadSnapshot = WorkloadOutput['snapshots'][number]
-
-interface TeamMember {
+interface LocalTeamMember {
   id: string
   userId?: string | null
   status: string
@@ -43,51 +45,50 @@ interface TeamMember {
   displayName?: string | null
   username?: string | null
   avatarPath?: string | null
-  record: MemberRecord
+  record: TeamMember
 }
 
 export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps) {
-  const toast = useToastController()
+  const { theme } = useThemeContext()
+  const toast = useToast()
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
-  const [memberToRemove, setMemberToRemove] = useState<TeamMember | null>(null)
+  const [memberToRemove, setMemberToRemove] = useState<LocalTeamMember | null>(null)
   const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false)
   const [leaveReason, setLeaveReason] = useState('')
   const router = useRouter()
   const { user: currentUser } = useUser()
 
-  const membersQuery = api.teams.members.list.useQuery(
-    { teamId },
-    {
-      refetchOnWindowFocus: true,
-    }
-  )
+  const membersQuery = useTeamMembers(teamId, { enabled: Boolean(teamId) })
 
-  const workloadQuery = api.teams.analytics.workload.useQuery(
-    { teamId, includeHistorical: false },
-    {
-      enabled: Boolean(teamId),
-      refetchOnWindowFocus: true,
-    }
+  const workloadQuery = useTeamWorkload(
+    teamId,
+    { includeHistorical: false },
+    { enabled: Boolean(teamId) }
   )
 
   const { roles, isLoading: isLoadingRoles } = useTeamFormOptions({ organizationId })
 
-  const transferOwnershipMutation = api.teams.members.transferOwnership.useMutation({
+  const transferOwnershipMutation = useTransferTeamOwnershipMutation({
     onSuccess: () => {
-      toast.show('Ownership transferred', {
+      toast.show({
+        title: 'Ownership transferred',
         message: 'Team ownership has been updated.',
       })
       void membersQuery.refetch()
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show('Unable to transfer ownership', { message })
+      const _message = error instanceof Error ? error.message : 'An error occurred'
+      toast.show({
+        message: 'Unable to transfer ownership',
+        variant: 'error',
+      })
     },
   })
 
-  const selfRemoveMutation = api.teams.members.selfRemove.useMutation({
+  const selfRemoveMutation = useSelfRemoveFromTeamMutation({
     onSuccess: () => {
-      toast.show('You left the team', {
+      toast.show({
+        title: 'You left the team',
         message: 'Redirecting to teams list.',
       })
       setLeaveReason('')
@@ -95,14 +96,17 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
       router.replace(ROUTES.OFFICE.CMS.TEAMS.path)
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show('Unable to leave team', { message })
+      const _message = error instanceof Error ? error.message : 'An error occurred'
+      toast.show({
+        message: 'Unable to leave team',
+        variant: 'error',
+      })
       setIsLeaveDialogOpen(false)
     },
   })
 
-  const members = useMemo<TeamMember[]>(() => {
-    const list = (membersQuery.data?.members ?? []) as MemberRecord[]
+  const members = useMemo<LocalTeamMember[]>(() => {
+    const list = (membersQuery.data?.members ?? []) as TeamMember[]
     return list.map((member) => ({
       id: member.id,
       userId: member.userId,
@@ -117,7 +121,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
   }, [membersQuery.data?.members])
 
   const workloadsByMemberId = useMemo(() => {
-    const map = new Map<string, WorkloadSnapshot>()
+    const map = new Map<string, TeamWorkloadSnapshot>()
     for (const snapshot of workloadQuery.data?.snapshots ?? []) {
       map.set(snapshot.teamMemberId, snapshot)
     }
@@ -136,17 +140,23 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
   }
 
   const handleMemberAdded = () => {
-    toast.show('Member added', { message: 'The team roster has been updated.' })
+    toast.show({
+      title: 'Member added',
+      message: 'The team roster has been updated.',
+    })
     membersQuery.refetch()
   }
 
   const handleMemberRemoved = () => {
-    toast.show('Member removed', { message: 'The member no longer has access to this team.' })
+    toast.show({
+      title: 'Member removed',
+      message: 'The member no longer has access to this team.',
+    })
     setMemberToRemove(null)
     membersQuery.refetch()
   }
 
-  const handleTransferOwnership = async (member: TeamMember) => {
+  const handleTransferOwnership = async (member: LocalTeamMember) => {
     await transferOwnershipMutation.mutateAsync({
       teamId,
       memberId: member.id,
@@ -166,44 +176,32 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
   const workloadErrorMessage = workloadQuery.error?.message ?? null
 
   return (
-    <YStack gap="$4" flex={1} paddingHorizontal="$3" $md={{ paddingHorizontal: undefined }}>
-      <XStack
-        justifyContent="space-between"
-        alignItems="flex-start"
-        gap="$3"
-        flexDirection="column"
-        width="100%"
-        $md={{
-          alignItems: 'center',
-          flexDirection: 'row',
-        }}
-      >
-        <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
-          Team members
-        </Text>
+    <Stack gap={16} flex={1} paddingHorizontal={12}>
+      <Stack gap={12} style={{ width: '100%' }}>
+        <Text accessibilityRole="header">Team members</Text>
         <Button
-          icon={Plus}
+          iconStart={Plus}
           onPress={() => setIsAddModalOpen(true)}
-          backgroundColor="$color9"
-          color="$color1"
-          size="$3"
+          style={{
+            backgroundColor: colors.bg[theme].default,
+            width: '100%',
+          }}
+          size="sm"
           accessibilityLabel="Add a new team member"
-          width="100%"
-          $md={{ width: undefined }}
         >
           Add Member
         </Button>
-      </XStack>
+      </Stack>
 
       {isLoadingMembers ? (
-        <YStack alignItems="center" justifyContent="center" paddingVertical="$8" gap="$2">
-          <Spinner size="large" />
-          <Text color="$color11">Loading team members…</Text>
-        </YStack>
+        <Stack align="center" justify="center" paddingVertical={32} gap={8}>
+          <Spinner size="lg" />
+          <Text style={{ color: colors.text[theme].secondary }}>Loading team members…</Text>
+        </Stack>
       ) : hasMembers ? (
-        <YStack gap="$3">
+        <Stack gap={12}>
           {workloadErrorMessage ? (
-            <Text color="$red10" fontSize="$3">
+            <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
               Unable to load workload snapshots: {workloadErrorMessage}
             </Text>
           ) : null}
@@ -225,174 +223,142 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
             return (
               <Card
                 key={member.id}
-                padding="$4"
-                borderColor="$borderColor"
+                padding="md"
+                borderColor={colors.border[theme].default}
                 borderWidth={1}
-                gap="$3"
-                accessible
-                accessibilityRole="summary"
                 accessibilityLabel={`${member.displayName ?? 'Team member'} · Role ${memberRoleName} · Status ${memberStatusLabel}`}
-                width="100%"
+                style={{ width: '100%' }}
               >
-                <XStack
-                  gap="$3"
-                  alignItems="flex-start"
-                  justifyContent="space-between"
-                  flexDirection="column"
-                  width="100%"
-                  $md={{
-                    alignItems: 'center',
-                    flexDirection: 'row',
-                  }}
-                >
-                  <XStack
-                    gap="$3"
-                    width="100%"
-                    flexDirection="column"
-                    alignItems="flex-start"
-                    $md={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Avatar circular size="$4">
-                      <Avatar.Image
-                        accessibilityLabel={member.displayName ?? 'Member avatar'}
+                <Stack gap={12}>
+                  <Stack gap={12} style={{ width: '100%' }}>
+                    <Row gap={12} align="flex-start">
+                      <Avatar
                         src={member.avatarPath ?? undefined}
+                        initials={member.displayName?.[0] ?? '?'}
+                        size={48}
+                        alt={member.displayName ?? 'Member avatar'}
                       />
-                      <Avatar.Fallback>{member.displayName?.[0] ?? '?'}</Avatar.Fallback>
-                    </Avatar>
-                    <YStack>
-                      <Text fontWeight="600">{member.displayName}</Text>
-                      {member.username ? (
-                        <Text fontSize="$3" color="$color11">
-                          @{member.username}
+                      <Stack>
+                        <Text>{member.displayName}</Text>
+                        {member.username ? (
+                          <Text style={{ color: colors.text[theme].secondary }}>
+                            @{member.username}
+                          </Text>
+                        ) : null}
+                      </Stack>
+                    </Row>
+                    <Stack gap={12} style={{ width: '100%' }}>
+                      <Stack width="100%">
+                        <TeamMemberRoleSelect
+                          teamId={teamId}
+                          userId={member.userId ?? ''}
+                          currentRoleId={member.roleId ?? undefined}
+                          roles={roles as TeamRoleOption[]}
+                          disabled={isLoadingRoles}
+                          onRoleChanged={handleRoleChange}
+                          fullWidth={true}
+                        />
+                      </Stack>
+                      {canTransferToMember ? (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          iconStart={Crown}
+                          disabled={transferOwnershipMutation.isPending}
+                          onPress={() => void handleTransferOwnership(member)}
+                          accessibilityLabel={`Promote ${member.displayName ?? 'this member'} to team owner`}
+                          accessibilityHint="Updates the member's permissions and notifies the team"
+                          style={{ width: '100%' }}
+                        >
+                          Make owner
+                        </Button>
+                      ) : null}
+                      <Button
+                        variant="outline"
+                        color="error"
+                        iconStart={UserMinus}
+                        onPress={() =>
+                          setMemberToRemove({
+                            id: member.id,
+                            userId: member.userId,
+                            displayName: member.displayName,
+                            status: member.status,
+                            roleId: member.roleId,
+                            roleKey: member.roleKey,
+                            avatarPath: member.avatarPath,
+                            record: member.record,
+                          })
+                        }
+                        accessibilityLabel={`Remove ${member.displayName ?? 'this member'} from the team`}
+                        accessibilityHint="Opens a dialog to confirm removal"
+                        style={{ width: '100%' }}
+                      >
+                        Remove
+                      </Button>
+                    </Stack>
+                  </Stack>
+                  <Text style={{ color: colors.text[theme].secondary }}>
+                    Status: {memberStatusLabel}
+                  </Text>
+                  {workload ? (
+                    <Row gap={12} wrap>
+                      <Text style={{ color: colors.text[theme].secondary }}>
+                        Active: {workload.activeAssignments}
+                      </Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>
+                        Pending: {workload.pendingAssignments}
+                      </Text>
+                      {workload.overdueAssignments > 0 ? (
+                        <Text
+                          style={{
+                            color: theme === 'light' ? colors.error[700] : colors.error[300],
+                          }}
+                        >
+                          Overdue: {workload.overdueAssignments}
                         </Text>
                       ) : null}
-                    </YStack>
-                  </XStack>
-                  <XStack
-                    gap="$3"
-                    flexWrap="wrap"
-                    width="100%"
-                    flexDirection="column"
-                    justifyContent="flex-start"
-                    alignItems="stretch"
-                    $md={{
-                      flexDirection: 'row',
-                      justify: 'flex-end',
-                      items: 'center',
-                    }}
-                  >
-                    <YStack width="100%" $md={{ width: undefined }}>
-                      <TeamMemberRoleSelect
-                        teamId={teamId}
-                        teamMemberId={member.id}
-                        currentRoleId={member.roleId ?? undefined}
-                        roles={roles as TeamRoleOption[]}
-                        disabled={isLoadingRoles}
-                        onRoleChanged={handleRoleChange}
-                        fullWidth={true}
-                      />
-                    </YStack>
-                    {canTransferToMember ? (
-                      <Button
-                        size="$2"
-                        variant="outlined"
-                        icon={Crown}
-                        disabled={transferOwnershipMutation.isPending}
-                        onPress={() => void handleTransferOwnership(member)}
-                        accessibilityLabel={`Promote ${member.displayName ?? 'this member'} to team owner`}
-                        accessibilityHint="Updates the member's permissions and notifies the team"
-                        width="100%"
-                        $md={{ width: undefined }}
-                      >
-                        Make owner
-                      </Button>
-                    ) : null}
-                    <Button
-                      variant="outlined"
-                      color="$red10"
-                      icon={UserMinus}
-                      onPress={() =>
-                        setMemberToRemove({
-                          id: member.id,
-                          userId: member.userId,
-                          displayName: member.displayName,
-                          status: member.status,
-                          roleId: member.roleId,
-                          roleKey: member.roleKey,
-                          avatarPath: member.avatarPath,
-                          record: member.record,
-                        })
-                      }
-                      accessibilityLabel={`Remove ${member.displayName ?? 'this member'} from the team`}
-                      accessibilityHint="Opens a dialog to confirm removal"
-                      width="100%"
-                      $md={{ width: undefined }}
-                    >
-                      Remove
-                    </Button>
-                  </XStack>
-                </XStack>
-                <Text fontSize="$3" color="$color11">
-                  Status: {memberStatusLabel}
-                </Text>
-                {workload ? (
-                  <XStack gap="$3" flexWrap="wrap">
-                    <Text fontSize="$2" color="$color10">
-                      Active: {workload.activeAssignments}
-                    </Text>
-                    <Text fontSize="$2" color="$color10">
-                      Pending: {workload.pendingAssignments}
-                    </Text>
-                    {workload.overdueAssignments > 0 ? (
-                      <Text fontSize="$2" color="$red10">
-                        Overdue: {workload.overdueAssignments}
+                      <Text style={{ color: colors.text[theme].secondary }}>
+                        Reviews completed: {workload.completedReviews}
                       </Text>
-                    ) : null}
-                    <Text fontSize="$2" color="$color10">
-                      Reviews completed: {workload.completedReviews}
-                    </Text>
-                    {availabilityLabel ? (
-                      <Text fontSize="$2" color="$color10">
-                        Availability: {availabilityLabel}
-                      </Text>
-                    ) : null}
-                  </XStack>
-                ) : null}
+                      {availabilityLabel ? (
+                        <Text style={{ color: colors.text[theme].secondary }}>
+                          Availability: {availabilityLabel}
+                        </Text>
+                      ) : null}
+                    </Row>
+                  ) : null}
+                </Stack>
               </Card>
             )
           })}
-        </YStack>
+        </Stack>
       ) : (
-        <YStack
-          gap="$2"
+        <Stack
+          gap={8}
           borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius="$4"
-          padding="$4"
-          backgroundColor="$color2"
+          borderColor={colors.border[theme].default}
+          borderRadius={16}
+          padding="md"
+          style={{ backgroundColor: colors.bg[theme].subtle }}
         >
-          <Text fontWeight="600">No team members yet</Text>
-          <Text color="$color11">
+          <Text>No team members yet</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
             Add collaborators to this team to manage jobs and applications together.
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {viewerMembership ? (
         <Button
-          variant="outlined"
-          color="$red10"
-          icon={LogOut}
-          size="$3"
+          variant="outline"
+          color="error"
+          iconStart={LogOut}
+          size="sm"
           disabled={selfRemoveMutation.isPending}
           onPress={() => setIsLeaveDialogOpen(true)}
           accessibilityLabel="Open leave team dialog"
           accessibilityHint="Opens a confirmation dialog to leave this team"
-          width="100%"
-          $md={{ width: undefined }}
+          style={{ width: '100%' }}
         >
           Leave team
         </Button>
@@ -418,65 +384,40 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
         onRemoved={handleMemberRemoved}
       />
 
-      <AlertDialog open={isLeaveDialogOpen} onOpenChange={setIsLeaveDialogOpen}>
-        <AlertDialog.Portal>
-          <AlertDialog.Overlay
-            key="overlay"
-            animation="quick"
-            opacity={0.6}
-            enterStyle={{ opacity: 0 }}
-            exitStyle={{ opacity: 0 }}
-          />
-          <AlertDialog.Content
-            key="content"
-            bordered
-            elevate
-            animation="quick"
-            enterStyle={{ opacity: 0, scale: 0.95 }}
-            exitStyle={{ opacity: 0, scale: 0.95 }}
-            gap="$4"
-          >
-            <AlertDialog.Title>Leave team</AlertDialog.Title>
-            <AlertDialog.Description>
-              You will lose access to jobs, applications, and notifications for this team. This
-              action cannot be undone.
-            </AlertDialog.Description>
-            <YStack gap="$2">
-              <Text fontSize="$3" color="$color11">
-                Optional reason
-              </Text>
-              <TextArea
-                value={leaveReason}
-                onChangeText={setLeaveReason}
-                placeholder="Let the team know why you’re leaving…"
-                rows={3}
-                accessibilityLabel="Reason for leaving the team"
-                accessibilityHint="Optional message sent to the team about your departure"
-              />
-            </YStack>
-            <XStack gap="$3" justifyContent="flex-end">
-              <AlertDialog.Cancel asChild>
-                <Button variant="outlined">Cancel</Button>
-              </AlertDialog.Cancel>
-              <AlertDialog.Action asChild>
-                <Button
-                  backgroundColor="$red9"
-                  color="$color1"
-                  icon={LogOut}
-                  onPress={() => void handleLeaveTeam()}
-                  disabled={selfRemoveMutation.isPending}
-                >
-                  {selfRemoveMutation.isPending ? (
-                    <Spinner size="small" color="$color1" />
-                  ) : (
-                    'Leave team'
-                  )}
-                </Button>
-              </AlertDialog.Action>
-            </XStack>
-          </AlertDialog.Content>
-        </AlertDialog.Portal>
-      </AlertDialog>
-    </YStack>
+      <Modal visible={isLeaveDialogOpen} onClose={() => setIsLeaveDialogOpen(false)}>
+        <ModalHeader title="Leave team" onClose={() => setIsLeaveDialogOpen(false)} />
+        <Stack gap={16} padding="md">
+          <Text style={{ color: colors.text[theme].secondary }}>
+            You will lose access to jobs, applications, and notifications for this team. This action
+            cannot be undone.
+          </Text>
+          <Stack gap={8}>
+            <Text style={{ color: colors.text[theme].secondary }}>Optional reason</Text>
+            <TextArea
+              value={leaveReason}
+              onChangeText={setLeaveReason}
+              placeholder="Let the team know why you're leaving…"
+              rows={3}
+              accessibilityLabel="Reason for leaving the team"
+              accessibilityHint="Optional message sent to the team about your departure"
+            />
+          </Stack>
+        </Stack>
+        <ModalActions
+          orientation="right"
+          primaryAction={{
+            label: selfRemoveMutation.isPending ? 'Leaving…' : 'Leave team',
+            onPress: () => void handleLeaveTeam(),
+            color: 'error',
+            disabled: selfRemoveMutation.isPending,
+            loading: selfRemoveMutation.isPending,
+          }}
+          secondaryAction={{
+            label: 'Cancel',
+            onPress: () => setIsLeaveDialogOpen(false),
+          }}
+        />
+      </Modal>
+    </Stack>
   )
 }

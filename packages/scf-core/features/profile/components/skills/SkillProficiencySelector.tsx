@@ -1,6 +1,7 @@
 import { PROFICIENCY_LEVELS, getProficiencyLevel } from '../../constants/proficiency-levels'
 import type { ParentSkill } from '../../types/profile-skills-types'
-import { Button, Card, Separator, Slider, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, CardHeader, Separator, Slider, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface SkillProficiencySelectorProps {
   /** Selected skill details */
@@ -29,98 +30,81 @@ export function SkillProficiencySelector({
   onAdd,
   onCancel,
 }: SkillProficiencySelectorProps) {
+  const { theme } = useThemeContext()
   const currentLevel = getProficiencyLevel(proficiency)
 
   return (
-    <YStack gap="$4">
-      <Text fontWeight="600" fontSize="$4">
-        Set Proficiency Level
-      </Text>
+    <Stack gap={16}>
+      <Text>Set Proficiency Level</Text>
 
       {/* Selected Skill */}
-      <Card bordered backgroundColor="$color3">
-        <Card.Header>
-          <YStack gap="$1">
-            <Text fontSize="$4" fontWeight="600">
-              {skill.name}
-            </Text>
+      <Card bordered style={{ backgroundColor: colors.bg[theme].muted }}>
+        <CardHeader>
+          <Stack gap={4}>
+            <Text>{skill.name}</Text>
             {skill.code && (
-              <Text fontSize="$2" color="$color10">
+              <Text style={{ color: colors.text[theme].secondary }}>
                 {skill.code} ({taxonomy.toUpperCase()})
               </Text>
             )}
-          </YStack>
-        </Card.Header>
+          </Stack>
+        </CardHeader>
       </Card>
 
       <Separator />
 
       {/* Proficiency Slider */}
-      <YStack gap="$3">
-        <Text fontWeight="600">Proficiency</Text>
+      <Stack gap={12}>
+        <Text>Proficiency</Text>
 
         <Slider
-          value={[proficiency]}
-          onValueChange={(value) => onProficiencyChange(value[0])}
+          value={proficiency}
+          onValueChange={(value) => onProficiencyChange(value)}
           min={1}
           max={5}
           step={1}
-          size="$3"
-        >
-          <Slider.Track backgroundColor="$color4" height={6}>
-            <Slider.TrackActive backgroundColor="$green9" />
-          </Slider.Track>
-          <Slider.Thumb index={0} circular size="$1" />
-        </Slider>
+        />
 
         {/* Current Level Display */}
-        <Card bordered backgroundColor="$color3">
-          <Card.Header>
-            <XStack justifyContent="space-between" alignItems="center">
-              <YStack>
-                <Text fontWeight="600" fontSize="$4" color="$green9">
-                  {currentLevel?.label}
-                </Text>
-                <Text fontSize="$2" color="$color11">
-                  {currentLevel?.description}
-                </Text>
-              </YStack>
-              <Text fontSize="$8" fontWeight="bold" color="$green9">
-                {proficiency}
-              </Text>
-            </XStack>
-          </Card.Header>
+        <Card bordered style={{ backgroundColor: colors.bg[theme].muted }}>
+          <CardHeader>
+            <Row justify="space-between" align="center">
+              <Stack>
+                <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>{currentLevel?.label}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>{currentLevel?.description}</Text>
+              </Stack>
+              <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>{proficiency}</Text>
+            </Row>
+          </CardHeader>
         </Card>
 
         {/* Level Guide */}
-        <YStack gap="$2">
+        <Stack gap={8}>
           {PROFICIENCY_LEVELS.map((level) => (
-            <XStack
+            <Row
               key={level.value}
-              gap="$2"
-              alignItems="center"
-              opacity={proficiency === level.value ? 1 : 0.5}
+              gap={8}
+              align="center"
+              style={{ opacity: proficiency === level.value ? 1 : 0.5 }}
             >
-              <Text fontWeight="600" minWidth={30}>
-                {level.value}
-              </Text>
-              <Text flex={1} fontSize="$2">
+              <Text style={{ minWidth: 30 }}>{level.value}</Text>
+              <Text style={{ flex: 1 }}>
                 {level.label} - {level.description}
               </Text>
-            </XStack>
+            </Row>
           ))}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
 
       {/* Actions */}
-      <XStack gap="$3">
-        <Button flex={1} variant="outlined" onPress={onCancel}>
+      <Row gap={12}>
+        <Button style={{ flex: 1 }} variant="outline" onPress={onCancel}>
           Cancel
         </Button>
-        <Button flex={1} themeInverse onPress={onAdd}>
+        <Button style={{ flex: 1 }} variant="filled" color="primary" onPress={onAdd}>
           Add Skill
         </Button>
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

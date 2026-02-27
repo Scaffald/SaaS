@@ -1,6 +1,6 @@
 /**
  * Compliance Authorization Middleware for tRPC
- * REQ-2, TASK-19: Integrate Authorization Checks into tRPC Routers
+ * Compliance authorization checks for tRPC routers
  *
  * Provides database-driven authorization middleware for compliance endpoints.
  * Uses the forsured.compliance_role_permissions table for runtime configuration.

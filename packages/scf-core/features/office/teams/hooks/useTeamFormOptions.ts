@@ -1,11 +1,7 @@
-import { api } from '@scf/core/utils/api'
+import { useTeamRoles } from '@scaffald/sdk/react'
 import { teamRoleKeySchema } from '@scf/schemas'
-import type { AppRouter } from '@scf/supabase/client-types'
-import type { inferRouterOutputs } from '@trpc/server'
+import type { TeamRole } from '@scaffald/sdk'
 import { useMemo } from 'react'
-
-type TeamRolesOutput = inferRouterOutputs<AppRouter>['teams']['members']['roles']
-type RoleRecord = NonNullable<TeamRolesOutput['roles']>[number]
 
 type TeamRoleKey = ReturnType<(typeof teamRoleKeySchema)['parse']>
 
@@ -21,17 +17,14 @@ interface UseTeamFormOptionsParams {
 }
 
 export function useTeamFormOptions({ organizationId }: UseTeamFormOptionsParams) {
-  const rolesQuery = api.teams.members.roles.useQuery(
-    { organizationId },
-    {
-      enabled: Boolean(organizationId),
-    }
-  )
+  const rolesQuery = useTeamRoles(organizationId ?? '', {
+    enabled: Boolean(organizationId),
+  })
 
   const roles: TeamRoleOption[] = useMemo(() => {
     return (
       rolesQuery.data?.roles?.map(
-        (role: RoleRecord): TeamRoleOption => ({
+        (role: TeamRole): TeamRoleOption => ({
           id: role.id,
           key: teamRoleKeySchema.parse(role.key),
           name: role.name,

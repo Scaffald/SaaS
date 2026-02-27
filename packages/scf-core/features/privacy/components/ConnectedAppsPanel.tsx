@@ -1,111 +1,113 @@
 /**
  * Connected Apps Panel Component
- * REQ-3: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  *
  * Displays third-party applications that have access to user data
  * with options to view permissions and revoke access
  */
 
-import { Text, XStack, YStack, Button } from '@unicornlove/ui'
+import { Text, Row, Stack, Button } from "@scaffald/ui";
 
 /**
  * Connected app structure
  */
 export interface ConnectedApp {
-  id: string
-  app_id: string
-  app_name: string
-  app_icon_url?: string
-  description?: string
-  connected_at: string
-  last_accessed_at?: string
-  permissions: string[]
-  data_categories: string[]
-  can_revoke: boolean
+  id: string;
+  app_id: string;
+  app_name: string;
+  app_icon_url?: string;
+  description?: string;
+  connected_at: string;
+  last_accessed_at?: string;
+  permissions: string[];
+  data_categories: string[];
+  can_revoke: boolean;
 }
 
 /**
  * Props for ConnectedAppsPanel
  */
 interface ConnectedAppsPanelProps {
-  apps: ConnectedApp[]
-  onRevoke?: (appId: string) => void
-  onViewDetails?: (appId: string) => void
+  apps: ConnectedApp[];
+  onRevoke?: (appId: string) => void;
+  onViewDetails?: (appId: string) => void;
 }
 
 /**
  * Permission badge colors based on sensitivity
  */
 const PERMISSION_COLORS: Record<string, { bg: string; text: string }> = {
-  read: { bg: '$blue3', text: '$blue11' },
-  write: { bg: '$orange3', text: '$orange11' },
-  delete: { bg: '$red3', text: '$red11' },
-  default: { bg: '$color4', text: '$color11' },
-}
+  read: { bg: "#dbeafe", text: "#1d4ed8" },
+  write: { bg: "#fed7aa", text: "#c2410c" },
+  delete: { bg: "#fef2f2", text: "#ef4444" },
+  default: { bg: "#f3f4f6", text: "#374151" },
+};
 
 /**
  * Get color for permission type
  */
 function getPermissionColor(permission: string): { bg: string; text: string } {
-  const lowerPerm = permission.toLowerCase()
-  if (lowerPerm.includes('delete') || lowerPerm.includes('remove')) {
-    return PERMISSION_COLORS.delete
+  const lowerPerm = permission.toLowerCase();
+  if (lowerPerm.includes("delete") || lowerPerm.includes("remove")) {
+    return PERMISSION_COLORS.delete;
   }
-  if (lowerPerm.includes('write') || lowerPerm.includes('create') || lowerPerm.includes('update')) {
-    return PERMISSION_COLORS.write
+  if (
+    lowerPerm.includes("write") ||
+    lowerPerm.includes("create") ||
+    lowerPerm.includes("update")
+  ) {
+    return PERMISSION_COLORS.write;
   }
-  if (lowerPerm.includes('read') || lowerPerm.includes('view')) {
-    return PERMISSION_COLORS.read
+  if (lowerPerm.includes("read") || lowerPerm.includes("view")) {
+    return PERMISSION_COLORS.read;
   }
-  return PERMISSION_COLORS.default
+  return PERMISSION_COLORS.default;
 }
 
 /**
  * Format date string
  */
 function formatDate(dateString: string): string {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 }
 
 /**
  * Format relative time
  */
 function formatRelativeTime(dateString: string): string {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  if (diffDays === 0) return 'Today'
-  if (diffDays === 1) return 'Yesterday'
-  if (diffDays < 7) return `${diffDays} days ago`
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`
-  if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`
-  return `${Math.floor(diffDays / 365)} years ago`
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "Yesterday";
+  if (diffDays < 7) return `${diffDays} days ago`;
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+  if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
+  return `${Math.floor(diffDays / 365)} years ago`;
 }
 
 /**
  * Permission badge
  */
 function PermissionBadge({ permission }: { permission: string }) {
-  const colors = getPermissionColor(permission)
+  const colors = getPermissionColor(permission);
   return (
-    <XStack
+    <Row
       backgroundColor={colors.bg}
-      paddingHorizontal="$2"
-      paddingVertical="$1"
-      borderRadius="$2"
+      paddingHorizontal={8}
+      paddingVertical={4}
+      borderRadius={8}
     >
-      <Text fontSize="$1" color={colors.text} fontWeight="500">
-        {permission}
-      </Text>
-    </XStack>
-  )
+      <Text style={{ color: colors.text }}>{permission}</Text>
+    </Row>
+  );
 }
 
 /**
@@ -113,26 +115,24 @@ function PermissionBadge({ permission }: { permission: string }) {
  */
 function AppIconPlaceholder({ name }: { name: string }) {
   const initials = name
-    .split(' ')
+    .split(" ")
     .map((word) => word[0])
-    .join('')
+    .join("")
     .slice(0, 2)
-    .toUpperCase()
+    .toUpperCase();
 
   return (
-    <YStack
+    <Stack
       width={48}
       height={48}
-      borderRadius="$3"
-      backgroundColor="$color4"
-      alignItems="center"
-      justifyContent="center"
+      borderRadius={12}
+      backgroundColor="#f3f4f6"
+      align="center"
+      justify="center"
     >
-      <Text fontSize="$4" fontWeight="600" color="$color11">
-        {initials}
-      </Text>
-    </YStack>
-  )
+      <Text style={{ color: "#414e62" }}>{initials}</Text>
+    </Stack>
+  );
 }
 
 /**
@@ -143,111 +143,91 @@ function AppCard({
   onRevoke,
   onViewDetails,
 }: {
-  app: ConnectedApp
-  onRevoke?: (appId: string) => void
-  onViewDetails?: (appId: string) => void
+  app: ConnectedApp;
+  onRevoke?: (appId: string) => void;
+  onViewDetails?: (appId: string) => void;
 }) {
   return (
-    <YStack
-      padding="$4"
+    <Stack
+      padding="md"
       backgroundColor="$color2"
-      borderRadius="$3"
+      borderRadius={12}
       borderWidth={1}
       borderColor="$borderColor"
-      gap="$3"
+      gap={12}
     >
       {/* App header */}
-      <XStack gap="$3" alignItems="flex-start">
+      <Row gap={12} align="flex-start">
         <AppIconPlaceholder name={app.app_name} />
-        <YStack flex={1} gap="$1">
-          <Text fontSize="$4" fontWeight="600">
-            {app.app_name}
-          </Text>
+        <Stack flex={1} gap={4}>
+          <Text>{app.app_name}</Text>
           {app.description && (
-            <Text fontSize="$3" color="$color11" numberOfLines={2}>
-              {app.description}
-            </Text>
+            <Text style={{ color: "#414e62" }}>{app.description}</Text>
           )}
-        </YStack>
-      </XStack>
+        </Stack>
+      </Row>
 
       {/* Connection info */}
-      <XStack gap="$4" flexWrap="wrap">
-        <YStack gap="$1">
-          <Text fontSize="$2" color="$color10">
-            Connected
-          </Text>
-          <Text fontSize="$3">
-            {formatDate(app.connected_at)}
-          </Text>
-        </YStack>
+      <Row gap={16} wrap>
+        <Stack gap={4}>
+          <Text style={{ color: "#414e62" }}>Connected</Text>
+          <Text>{formatDate(app.connected_at)}</Text>
+        </Stack>
         {app.last_accessed_at && (
-          <YStack gap="$1">
-            <Text fontSize="$2" color="$color10">
-              Last Access
-            </Text>
-            <Text fontSize="$3">
-              {formatRelativeTime(app.last_accessed_at)}
-            </Text>
-          </YStack>
+          <Stack gap={4}>
+            <Text style={{ color: "#414e62" }}>Last Access</Text>
+            <Text>{formatRelativeTime(app.last_accessed_at)}</Text>
+          </Stack>
         )}
-      </XStack>
+      </Row>
 
       {/* Permissions */}
-      <YStack gap="$2">
-        <Text fontSize="$2" color="$color10" fontWeight="500">
-          Permissions
-        </Text>
-        <XStack gap="$1" flexWrap="wrap">
+      <Stack gap={8}>
+        <Text style={{ color: "#414e62" }}>Permissions</Text>
+        <Row gap={4} wrap>
           {app.permissions.slice(0, 5).map((permission) => (
             <PermissionBadge key={permission} permission={permission} />
           ))}
           {app.permissions.length > 5 && (
-            <XStack
-              backgroundColor="$color4"
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-              borderRadius="$2"
+            <Row
+              backgroundColor="#f3f4f6"
+              paddingHorizontal={8}
+              paddingVertical={4}
+              borderRadius={8}
             >
-              <Text fontSize="$1" color="$color11">
+              <Text style={{ color: "#414e62" }}>
                 +{app.permissions.length - 5} more
               </Text>
-            </XStack>
+            </Row>
           )}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       {/* Data categories */}
-      <YStack gap="$2">
-        <Text fontSize="$2" color="$color10" fontWeight="500">
-          Data Categories Accessed
+      <Stack gap={8}>
+        <Text style={{ color: "#414e62" }}>Data Categories Accessed</Text>
+        <Text style={{ color: "#414e62" }}>
+          {app.data_categories.join(" • ")}
         </Text>
-        <Text fontSize="$3" color="$color11">
-          {app.data_categories.join(' • ')}
-        </Text>
-      </YStack>
+      </Stack>
 
       {/* Actions */}
-      <XStack gap="$2" justifyContent="flex-end" marginTop="$1">
+      <Row gap={8} justify="flex-end" style={{ marginTop: 4 }}>
         <Button
-          size="$3"
-          variant="outlined"
+          size="sm"
+          variant="outline"
           onPress={() => onViewDetails?.(app.id)}
         >
           View Details
         </Button>
         {app.can_revoke && (
-          <Button
-            size="$3"
-            theme="red"
-            onPress={() => onRevoke?.(app.id)}
-          >
+          <Button size="sm" color="error" onPress={() => onRevoke?.(app.id)}>
             Revoke Access
           </Button>
         )}
-      </XStack>
-    </YStack>
-  )
+      </Row>
+    </Stack>
+  );
 }
 
 /**
@@ -255,24 +235,22 @@ function AppCard({
  */
 function EmptyState() {
   return (
-    <YStack
-      padding="$6"
+    <Stack
+      padding="xl"
       backgroundColor="$color2"
-      borderRadius="$3"
+      borderRadius={12}
       borderWidth={1}
       borderColor="$borderColor"
-      alignItems="center"
-      gap="$2"
+      align="center"
+      gap={8}
     >
-      <Text fontSize="$4" color="$color11">
-        No Connected Applications
+      <Text style={{ color: "#414e62" }}>No Connected Applications</Text>
+      <Text style={{ color: "#414e62", textAlign: "center" }}>
+        When you connect third-party applications to your account, they will
+        appear here so you can manage their access to your data.
       </Text>
-      <Text fontSize="$3" color="$color10" textAlign="center">
-        When you connect third-party applications to your account,
-        they will appear here so you can manage their access to your data.
-      </Text>
-    </YStack>
-  )
+    </Stack>
+  );
 }
 
 /**
@@ -286,24 +264,24 @@ export function ConnectedAppsPanel({
   onViewDetails,
 }: ConnectedAppsPanelProps) {
   if (!apps || apps.length === 0) {
-    return <EmptyState />
+    return <EmptyState />;
   }
 
   return (
-    <YStack gap="$3">
+    <Stack gap={12}>
       {/* Summary */}
-      <XStack
-        padding="$3"
-        backgroundColor="$orange2"
-        borderRadius="$3"
-        gap="$2"
-        alignItems="center"
+      <Row
+        padding="sm"
+        backgroundColor="#fff7ed"
+        borderRadius={12}
+        gap={8}
+        align="center"
       >
-        <Text fontSize="$3" color="$orange11">
-          {apps.length} application{apps.length === 1 ? '' : 's'} currently have access to your data.
-          You can revoke access at any time.
+        <Text style={{ color: "#c2410c" }}>
+          {apps.length} application{apps.length === 1 ? "" : "s"} currently have
+          access to your data. You can revoke access at any time.
         </Text>
-      </XStack>
+      </Row>
 
       {/* App cards */}
       {apps.map((app) => (
@@ -316,12 +294,13 @@ export function ConnectedAppsPanel({
       ))}
 
       {/* Info text */}
-      <Text fontSize="$2" color="$color10" marginTop="$2">
-        Revoking access will immediately prevent the application from accessing your data.
-        Some applications may require you to re-authorize access to restore functionality.
+      <Text style={{ color: "#414e62", marginTop: 8 }}>
+        Revoking access will immediately prevent the application from accessing
+        your data. Some applications may require you to re-authorize access to
+        restore functionality.
       </Text>
-    </YStack>
-  )
+    </Stack>
+  );
 }
 
-export default ConnectedAppsPanel
+export default ConnectedAppsPanel;

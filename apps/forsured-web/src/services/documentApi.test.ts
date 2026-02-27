@@ -1,5 +1,5 @@
 /**
- * Tests for documentApi service (REQ-167)
+ * Tests for documentApi service
  * Mock validation tests as required by CLAUDE.md
  */
 

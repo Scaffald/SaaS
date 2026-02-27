@@ -2,8 +2,11 @@
  * CoverageTable - Display coverage details for an insurance policy
  */
 
-import { styled, YStack, XStack, Text, View, type YStackProps } from 'tamagui'
-import { Check, X, AlertCircle } from '@tamagui/lucide-icons'
+import { Stack, Row, Box, Text } from '@scaffald/ui'
+import { colors, spacing, borderRadius } from '@scaffald/ui/tokens'
+import type { StackProps } from '@scaffald/ui'
+import { Check, X, AlertCircle } from 'lucide-react-native'
+import { View } from 'react-native'
 
 export interface Coverage {
   id: string
@@ -16,129 +19,12 @@ export interface Coverage {
   notes?: string
 }
 
-export interface CoverageTableProps extends Omit<YStackProps, 'children'> {
-  /** Array of coverage items */
+export interface CoverageTableProps extends Omit<StackProps, 'children'> {
   coverages: Coverage[]
-  /** Whether to show premium column */
   showPremium?: boolean
-  /** Whether to show deductible column */
   showDeductible?: boolean
-  /** Title for the table */
   title?: string
 }
-
-const TableContainer = styled(YStack, {
-  name: 'CoverageTable',
-  backgroundColor: '$background',
-  borderRadius: '$lg',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  overflow: 'hidden',
-})
-
-const TableHeader = styled(XStack, {
-  name: 'CoverageTableHeader',
-  padding: '$3',
-  backgroundColor: '$color2',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-})
-
-const TableTitle = styled(Text, {
-  name: 'CoverageTableTitle',
-  fontSize: '$4',
-  fontWeight: '600',
-  color: '$color12',
-})
-
-const HeaderRow = styled(XStack, {
-  name: 'CoverageHeaderRow',
-  padding: '$3',
-  backgroundColor: '$color3',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-  gap: '$2',
-})
-
-const HeaderCell = styled(Text, {
-  name: 'CoverageHeaderCell',
-  fontSize: '$2',
-  fontWeight: '600',
-  color: '$color11',
-  textTransform: 'uppercase',
-})
-
-const TableRow = styled(XStack, {
-  name: 'CoverageTableRow',
-  padding: '$3',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-  gap: '$2',
-  alignItems: 'center',
-
-  variants: {
-    isLast: {
-      true: {
-        borderBottomWidth: 0,
-      },
-    },
-  } as const,
-
-  hoverStyle: {
-    backgroundColor: '$color2',
-  },
-})
-
-const Cell = styled(View, {
-  name: 'CoverageCell',
-})
-
-const CoverageName = styled(Text, {
-  name: 'CoverageName',
-  fontSize: '$3',
-  fontWeight: '500',
-  color: '$color12',
-})
-
-const CoverageDescription = styled(Text, {
-  name: 'CoverageDescription',
-  fontSize: '$2',
-  color: '$color9',
-  marginTop: '$1',
-})
-
-const CellValue = styled(Text, {
-  name: 'CoverageCellValue',
-  fontSize: '$3',
-  color: '$color11',
-})
-
-const IncludedBadge = styled(XStack, {
-  name: 'IncludedBadge',
-  width: 24,
-  height: 24,
-  borderRadius: '$full',
-  alignItems: 'center',
-  justifyContent: 'center',
-
-  variants: {
-    included: {
-      true: {
-        backgroundColor: '$green3',
-      },
-      false: {
-        backgroundColor: '$red3',
-      },
-    },
-  } as const,
-})
-
-const NotesText = styled(Text, {
-  name: 'CoverageNotes',
-  fontSize: '$2',
-  color: '$yellow11',
-  fontStyle: 'italic',
-})
 
 function formatCurrency(amount: number | string): string {
   if (typeof amount === 'string') return amount
@@ -158,81 +44,141 @@ export function CoverageTable({
   ...props
 }: CoverageTableProps) {
   return (
-    <TableContainer {...props}>
+    <Stack
+      style={{
+        backgroundColor: colors.bg?.primary ?? colors.gray[50],
+        borderRadius: borderRadius.l,
+        borderWidth: 1,
+        borderColor: colors.border?.default ?? colors.gray[200],
+        overflow: 'hidden',
+      }}
+      {...props}
+    >
       {title && (
-        <TableHeader>
-          <TableTitle>{title}</TableTitle>
-        </TableHeader>
+        <Row
+          style={{
+            padding: spacing[12],
+            backgroundColor: colors.gray[100],
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border?.default ?? colors.gray[200],
+          }}
+        >
+          <Text size="lg" weight="semibold" style={{ color: colors.gray[800] }}>
+            {title}
+          </Text>
+        </Row>
       )}
 
-      <HeaderRow>
-        <Cell flex={3}>
-          <HeaderCell>Coverage</HeaderCell>
-        </Cell>
-        <Cell flex={2}>
-          <HeaderCell>Limit</HeaderCell>
-        </Cell>
+      <Row
+        style={{
+          padding: spacing[12],
+          backgroundColor: colors.gray[200],
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border?.default ?? colors.gray[200],
+          gap: spacing[8],
+        }}
+      >
+        <View style={{ flex: 3 }}>
+          <Text size="sm" weight="semibold" style={{ color: colors.gray[700], textTransform: 'uppercase' }}>
+            Coverage
+          </Text>
+        </View>
+        <View style={{ flex: 2 }}>
+          <Text size="sm" weight="semibold" style={{ color: colors.gray[700], textTransform: 'uppercase' }}>
+            Limit
+          </Text>
+        </View>
         {showDeductible && (
-          <Cell flex={1}>
-            <HeaderCell>Deductible</HeaderCell>
-          </Cell>
+          <View style={{ flex: 1 }}>
+            <Text size="sm" weight="semibold" style={{ color: colors.gray[700], textTransform: 'uppercase' }}>
+              Deductible
+            </Text>
+          </View>
         )}
         {showPremium && (
-          <Cell flex={1}>
-            <HeaderCell>Premium</HeaderCell>
-          </Cell>
+          <View style={{ flex: 1 }}>
+            <Text size="sm" weight="semibold" style={{ color: colors.gray[700], textTransform: 'uppercase' }}>
+              Premium
+            </Text>
+          </View>
         )}
-        <Cell width={60} alignItems="center">
-          <HeaderCell>Status</HeaderCell>
-        </Cell>
-      </HeaderRow>
+        <View style={{ width: 60, alignItems: 'center' }}>
+          <Text size="sm" weight="semibold" style={{ color: colors.gray[700], textTransform: 'uppercase' }}>
+            Status
+          </Text>
+        </View>
+      </Row>
 
       {coverages.map((coverage, index) => (
-        <TableRow key={coverage.id} isLast={index === coverages.length - 1}>
-          <Cell flex={3}>
-            <YStack>
-              <CoverageName>{coverage.name}</CoverageName>
+        <Row
+          key={coverage.id}
+          align="center"
+          gap={spacing[8]}
+          style={{
+            padding: spacing[12],
+            borderBottomWidth: index === coverages.length - 1 ? 0 : 1,
+            borderBottomColor: colors.border?.default ?? colors.gray[200],
+          }}
+        >
+          <View style={{ flex: 3 }}>
+            <Stack gap={spacing[4]}>
+              <Text size="md" weight="medium" style={{ color: colors.gray[800] }}>
+                {coverage.name}
+              </Text>
               {coverage.description && (
-                <CoverageDescription>{coverage.description}</CoverageDescription>
+                <Text size="sm" style={{ color: colors.gray[500], marginTop: spacing[4] }}>
+                  {coverage.description}
+                </Text>
               )}
               {coverage.notes && (
-                <XStack alignItems="center" gap="$1" marginTop="$1">
-                  <AlertCircle size={12} color="$yellow11" />
-                  <NotesText>{coverage.notes}</NotesText>
-                </XStack>
+                <Row align="center" gap={spacing[4]} style={{ marginTop: spacing[4] }}>
+                  <AlertCircle size={12} color={colors.warning[700]} />
+                  <Text size="sm" style={{ color: colors.warning[700], fontStyle: 'italic' }}>
+                    {coverage.notes}
+                  </Text>
+                </Row>
               )}
-            </YStack>
-          </Cell>
-          <Cell flex={2}>
-            <CellValue>
+            </Stack>
+          </View>
+          <View style={{ flex: 2 }}>
+            <Text size="md" style={{ color: colors.gray[700] }}>
               {coverage.limit !== undefined ? formatCurrency(coverage.limit) : '-'}
-            </CellValue>
-          </Cell>
+            </Text>
+          </View>
           {showDeductible && (
-            <Cell flex={1}>
-              <CellValue>
+            <View style={{ flex: 1 }}>
+              <Text size="md" style={{ color: colors.gray[700] }}>
                 {coverage.deductible !== undefined ? formatCurrency(coverage.deductible) : '-'}
-              </CellValue>
-            </Cell>
+              </Text>
+            </View>
           )}
           {showPremium && (
-            <Cell flex={1}>
-              <CellValue>
+            <View style={{ flex: 1 }}>
+              <Text size="md" style={{ color: colors.gray[700] }}>
                 {coverage.premium !== undefined ? formatCurrency(coverage.premium) : '-'}
-              </CellValue>
-            </Cell>
+              </Text>
+            </View>
           )}
-          <Cell width={60} alignItems="center">
-            <IncludedBadge included={coverage.included}>
+          <View style={{ width: 60, alignItems: 'center' }}>
+            <Box
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: borderRadius.max,
+                backgroundColor: coverage.included ? colors.success[100] : colors.error[100],
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
               {coverage.included ? (
-                <Check size={14} color="$green11" />
+                <Check size={14} color={colors.success[700]} />
               ) : (
-                <X size={14} color="$red11" />
+                <X size={14} color={colors.error[700]} />
               )}
-            </IncludedBadge>
-          </Cell>
-        </TableRow>
+            </Box>
+          </View>
+        </Row>
       ))}
-    </TableContainer>
+    </Stack>
   )
 }

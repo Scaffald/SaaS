@@ -2,8 +2,8 @@
  * Unauthorized Page - Access denied page using Beyond UI
  */
 import { useNavigate } from 'react-router-dom';
-import { Stack, Row, Text, Button, H2, Box } from '@unicornlove/beyond-ui';
-import { colors, spacing, fontSize, borderRadius, shadows } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, H2, Box } from '@scaffald/ui';
+import { colors, spacing, fontSize, borderRadius, shadows } from '@scaffald/ui';
 import { ShieldX } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 

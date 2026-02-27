@@ -4,7 +4,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { Bug, Lightbulb, HelpCircle, MessageCircle, Upload, X, Loader2 } from 'lucide-react';
-import { Stack, Row, Text, Button, Input } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Input } from '@scaffald/ui';
 import { toast } from 'sonner';
 import { trpc } from '../../lib/trpc';
 import { PageScreenshot } from './PageScreenshot';

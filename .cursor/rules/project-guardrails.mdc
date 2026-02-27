@@ -37,7 +37,7 @@ alwaysApply: true
 - **Supabase operations**: `pnpm supa` (local Supabase), `pnpm supa:studio`, `pnpm supa:mailpit`
 - **Code quality**: `pnpm check`, `pnpm build`
 - **Testing**: `pnpm test:all`, `pnpm test:build`, `pnpm test:lint`, `pnpm test:deps`
-- **UI/Tamagui**: `pnpm ui:check`, `pnpm ui:optimize`, `pnpm tamagui:check`, `pnpm tamagui:upgrade`
+- **UI (Beyond UI)**: `pnpm ui:check`, `pnpm ui:optimize`, `pnpm --filter @unicornlove/beyond-ui build`
 
 ## File Structure Awareness
 - This is a **monorepo** with workspaces in `apps/` and `packages/`
@@ -47,7 +47,7 @@ alwaysApply: true
 - Each app has its own `package.json` and dependencies
 
 ## UI Development Standards
-- **ALWAYS prefer Tamagui vanilla components** when creating/updating UI
+- **ALWAYS prefer Beyond UI components** when creating/updating UI
 - **ALWAYS prefer Bento components** for complex UI patterns
 - **CREATE reusable components** in `packages/ui/` directory
 - **MAKE components cross-platform** and well-documented

@@ -1,6 +1,6 @@
 /**
  * Performance Test Utilities
- * REQ-3: CCPA Compliance Implementation - TASK-19
+ * CCPA Compliance Implementation - TASK-19
  *
  * Common utilities for CCPA performance testing including:
  * - Execution time measurement

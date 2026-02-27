@@ -1,5 +1,5 @@
 import { FileText, DollarSign, Calendar, Award, Building } from 'lucide-react';
-import { Row, Stack, Text, Card } from '@unicornlove/beyond-ui';
+import { Row, Stack, Text, Card } from '@scaffald/ui';
 import Button from '../Common/Button';
 import { PublicRFP } from '../../types';
 

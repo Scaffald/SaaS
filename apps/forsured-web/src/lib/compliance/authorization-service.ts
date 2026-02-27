@@ -1,6 +1,6 @@
 /**
  * Compliance Authorization Service (Server-Side)
- * REQ-2, TASK-18: Extensible Authorization System with Permission Matrix
+ * Extensible Authorization System with Permission Matrix
  *
  * Database-driven authorization service with caching for tRPC routers.
  * Uses the forsured.compliance_role_permissions table for runtime configuration.

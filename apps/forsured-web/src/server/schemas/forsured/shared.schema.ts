@@ -1,6 +1,6 @@
 /**
  * Shared Schema Definitions for Forsured Entities
- * REQ-287: Create Zod Schemas for Forsured Entities
+ * Create Zod Schemas for Forsured Entities
  * TASK-1: Create shared schema definitions
  *
  * Common Zod schemas and types reused across all Forsured entity schemas.
@@ -36,7 +36,7 @@ export const optionalMonetaryAmountSchema = z.number().positive().optional();
  * Policy provision type enum
  * Defines all valid provision types for policy provisions
  * Must match database constraint in 010_create_insurance_policy_parent_child.sql
- * Extended for REQ-280 GL sub-limits requirements
+ * Extended for GL sub-limits requirements
  */
 export const provisionTypeEnum = z.enum([
   // GL sub-limits (monetary)
@@ -48,7 +48,7 @@ export const provisionTypeEnum = z.enum([
   'damage_to_premises',
   'fire_damage',
   'employee_benefits',
-  // GL requirements (boolean/string) - Added for REQ-280
+  // GL requirements (boolean/string) - Added for
   'per_project_aggregate',
   'occurrence_form',
   'auto_symbol',
@@ -58,7 +58,7 @@ export const provisionTypeEnum = z.enum([
 
 /**
  * GL provision validation requirements
- * REQ-280: Defines validation rules for each GL provision type
+ * Defines validation rules for each GL provision type
  */
 export const glProvisionRequirements = {
   per_occurrence: { minLimit: 1000000, type: 'monetary' as const },
@@ -77,7 +77,7 @@ export const glProvisionRequirements = {
 
 /**
  * Deductible validation for GL policies
- * REQ-280: Maximum deductible allowed is $10,000
+ * Maximum deductible allowed is $10,000
  */
 export const glMaxDeductible = 10000;
 

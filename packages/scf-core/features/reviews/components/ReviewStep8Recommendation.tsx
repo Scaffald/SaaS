@@ -1,5 +1,5 @@
-import { ThumbsDown, ThumbsUp } from '@tamagui/lucide-icons'
-import { Button, Text, XStack, YStack } from '@unicornlove/ui'
+import { ThumbsDown, ThumbsUp } from 'lucide-react-native'
+import { Button, Text, Row, Stack } from '@scaffald/ui'
 
 interface ReviewStep8RecommendationProps {
   recommendation: boolean | null
@@ -11,82 +11,72 @@ export function ReviewStep8Recommendation({
   onChange,
 }: ReviewStep8RecommendationProps) {
   return (
-    <YStack gap="$4">
-      <YStack gap="$2">
-        <Text fontSize="$7" fontWeight="700" color="$color12">
-          Final Recommendation
-        </Text>
-        <Text fontSize="$5" color="$color11">
-          Would you recommend working with this person?
-        </Text>
-      </YStack>
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Text color="$gray11">Final Recommendation</Text>
+        <Text color="$gray11">Would you recommend working with this person?</Text>
+      </Stack>
 
       {/* Recommendation Buttons */}
-      <XStack gap="$4" justifyContent="center">
+      <Row gap={16} justify="center">
         <Button
-          size="$6"
-          theme={recommendation === true ? 'success' : undefined}
-          variant={recommendation === true ? undefined : 'outlined'}
-          icon={ThumbsUp}
+          size="md"
+          color={recommendation === true ? 'success' : 'gray'}
+          variant={recommendation === true ? undefined : 'outline'}
+          iconStart={ThumbsUp}
           onPress={() => onChange(true)}
-          flex={1}
-          maxWidth={300}
+          style={{ flex: 1, maxWidth: 300 }}
         >
           Yes, Recommend
         </Button>
 
         <Button
-          size="$6"
-          theme={recommendation === false ? 'error' : undefined}
-          variant={recommendation === false ? undefined : 'outlined'}
-          icon={ThumbsDown}
+          size="md"
+          color={recommendation === false ? 'error' : 'gray'}
+          variant={recommendation === false ? undefined : 'outline'}
+          iconStart={ThumbsDown}
           onPress={() => onChange(false)}
-          flex={1}
-          maxWidth={300}
+          style={{ flex: 1, maxWidth: 300 }}
         >
           No, Don't Recommend
         </Button>
-      </XStack>
+      </Row>
 
       {/* Selection Display */}
       {recommendation !== null && (
-        <YStack
-          gap="$3"
-          padding="$4"
+        <Stack
+          gap={12}
+          padding="md"
           backgroundColor={recommendation ? '$green3' : '$red3'}
-          borderRadius="$4"
+          borderRadius={16}
         >
-          <XStack gap="$2" alignItems="center" justifyContent="center">
+          <Row gap={8} align="center" justify="center">
             {recommendation ? (
               <>
                 <ThumbsUp size={24} color="$green11" />
-                <Text fontSize="$6" fontWeight="700" color="$green11">
-                  You recommend this person
-                </Text>
+                <Text color="$green11">You recommend this person</Text>
               </>
             ) : (
               <>
                 <ThumbsDown size={24} color="$red11" />
-                <Text fontSize="$6" fontWeight="700" color="$red11">
-                  You don't recommend this person
-                </Text>
+                <Text color="$red11">You don't recommend this person</Text>
               </>
             )}
-          </XStack>
-          <XStack justifyContent="center">
-            <Text fontSize="$4" color={recommendation ? '$green11' : '$red11'}>
+          </Row>
+          <Row justify="center">
+            <Text color={recommendation ? '$green11' : '$red11'}>
               {recommendation
                 ? 'Based on your positive experience, you would work with them again.'
                 : 'Based on your experience, you would not recommend working with them again.'}
             </Text>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       )}
 
       {/* Helper Text */}
-      <Text fontSize="$3" color="$color10" fontStyle="italic">
+      <Text style={{ color: '#414e62', fontStyle: 'italic' }}>
         This is your final assessment. Please be honest and fair in your recommendation.
       </Text>
-    </YStack>
+    </Stack>
   )
 }

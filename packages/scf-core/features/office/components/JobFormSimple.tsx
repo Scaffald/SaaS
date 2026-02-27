@@ -1,9 +1,12 @@
-import { api } from '@scf/core/utils/api'
-import { Button, Input, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-import { useToastController } from '@tamagui/toast'
+import {
+  useOfficeCreateJobMutation,
+  useOfficeUpdateJobMutation,
+} from '@scf/core/utils/jobs-sdk-hooks'
+import { Button, Input, ScrollView, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
-import { TextArea } from '@unicornlove/ui'
+import { TextArea } from '@scaffald/ui'
 
 type JobFormData = {
   title: string
@@ -27,7 +30,7 @@ type JobFormProps = {
 
 export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormProps) {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
 
   const [formData, setFormData] = useState<JobFormData>({
     title: initialData?.title || '',
@@ -42,44 +45,79 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
     position_level: initialData?.position_level || '',
   })
 
-  const createJob = api.office.createJob.useMutation({
+  const createJob = useOfficeCreateJobMutation({
     onSuccess: () => {
-      toast.show('Job created successfully', { variant: 'success' })
+      toast.show({
+        title: 'Job created successfully',
+        message: '',
+        variant: 'success',
+      })
       onSuccess?.()
       router.back()
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show(`Error: ${message}`, { variant: 'error' })
+      toast.show({
+        title: `Error: ${message}`,
+        message: '',
+        variant: 'error',
+      })
     },
   })
 
-  const updateJob = api.office.updateJob.useMutation({
+  const updateJob = useOfficeUpdateJobMutation({
     onSuccess: () => {
-      toast.show('Job updated successfully', { variant: 'success' })
+      toast.show({
+        title: 'Job updated successfully',
+        message: '',
+        variant: 'success',
+      })
       onSuccess?.()
       router.back()
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show(`Error: ${message}`, { variant: 'error' })
+      toast.show({
+        title: `Error: ${message}`,
+        message: '',
+        variant: 'error',
+      })
     },
   })
 
   const handleSubmit = (asDraft = true) => {
-    const submitData = {
-      ...formData,
-      status: asDraft ? ('draft' as const) : ('open' as const),
-    }
+    const status = asDraft ? ('draft' as const) : ('open' as const)
 
     if (mode === 'create') {
-      // Form data is compatible with mutation input but has slightly different structure
-      createJob.mutate(submitData as unknown as Parameters<typeof createJob.mutate>[0])
+      createJob.mutate({
+        organization_id: formData.organization_id,
+        title: formData.title,
+        description: formData.description,
+        status,
+        employment_type: formData.employment_type as 'full_time' | 'part_time' | 'contract' | 'temp' | 'intern' | undefined,
+        remote_option: formData.remote_option as 'on_site' | 'hybrid' | 'remote' | undefined,
+        position_level: formData.position_level,
+        location: formData.location,
+        pay_range_min_cents: formData.pay_range_min_cents,
+        pay_range_max_cents: formData.pay_range_max_cents,
+        pay_range_type: formData.pay_range_type as 'hourly' | 'salary' | 'contract' | 'project' | undefined,
+      })
     } else if (jobId) {
-      // Form data is compatible with mutation input but has slightly different structure
-      updateJob.mutate({ id: jobId, ...submitData } as unknown as Parameters<
-        typeof updateJob.mutate
-      >[0])
+      updateJob.mutate({
+        id: jobId,
+        params: {
+          title: formData.title,
+          description: formData.description,
+          status,
+          employment_type: formData.employment_type as 'full_time' | 'part_time' | 'contract' | 'temp' | 'intern' | undefined,
+          remote_option: formData.remote_option as 'on_site' | 'hybrid' | 'remote' | undefined,
+          position_level: formData.position_level,
+          location: formData.location,
+          pay_range_min_cents: formData.pay_range_min_cents,
+          pay_range_max_cents: formData.pay_range_max_cents,
+          pay_range_type: formData.pay_range_type as 'hourly' | 'salary' | 'contract' | 'project' | undefined,
+        },
+      })
     }
   }
 
@@ -87,69 +125,69 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
 
   return (
     <ScrollView>
-      <YStack gap="$4" padding="$4">
+      <Stack gap={16} padding="md">
         {/* Title */}
-        <YStack gap="$2">
-          <Text fontWeight="600">Job Title *</Text>
+        <Stack gap={8}>
+          <Text>Job Title *</Text>
           <Input
             placeholder="e.g. Senior Construction Manager"
             value={formData.title}
             onChangeText={(text: string) => setFormData({ ...formData, title: text })}
             disabled={isLoading}
           />
-        </YStack>
+        </Stack>
 
         {/* Description */}
-        <YStack gap="$2">
-          <Text fontWeight="600">Description *</Text>
+        <Stack gap={8}>
+          <Text>Description *</Text>
           <TextArea
             placeholder="Describe the job role, responsibilities, and requirements..."
             value={formData.description}
             onChangeText={(text: string) => setFormData({ ...formData, description: text })}
             disabled={isLoading}
-            height={150}
+            style={{ minHeight: 150 }}
           />
-        </YStack>
+        </Stack>
 
         {/* Employment Type */}
-        <YStack gap="$2">
-          <Text fontWeight="600">Employment Type</Text>
+        <Stack gap={8}>
+          <Text>Employment Type</Text>
           <Input
             placeholder="e.g. full_time, part_time, contract"
             value={formData.employment_type}
             onChangeText={(text: string) => setFormData({ ...formData, employment_type: text })}
             disabled={isLoading}
           />
-        </YStack>
+        </Stack>
 
         {/* Remote Option */}
-        <YStack gap="$2">
-          <Text fontWeight="600">Work Location</Text>
+        <Stack gap={8}>
+          <Text>Work Location</Text>
           <Input
             placeholder="e.g. on_site, hybrid, remote"
             value={formData.remote_option}
             onChangeText={(text: string) => setFormData({ ...formData, remote_option: text })}
             disabled={isLoading}
           />
-        </YStack>
+        </Stack>
 
         {/* Location */}
-        <YStack gap="$2">
-          <Text fontWeight="600">Location *</Text>
+        <Stack gap={8}>
+          <Text>Location *</Text>
           <Input
             placeholder="e.g. San Francisco, CA"
             value={formData.location}
             onChangeText={(text: string) => setFormData({ ...formData, location: text })}
             disabled={isLoading}
           />
-        </YStack>
+        </Stack>
 
         {/* Pay Range */}
-        <YStack gap="$2">
-          <Text fontWeight="600">Pay Range</Text>
-          <XStack gap="$2">
-            <YStack gap="$2" flex={1}>
-              <Text fontSize="$2">Min ($)</Text>
+        <Stack gap={8}>
+          <Text>Pay Range</Text>
+          <Row gap={8}>
+            <Stack gap={8} flex={1}>
+              <Text>Min ($)</Text>
               <Input
                 placeholder="Min"
                 keyboardType="numeric"
@@ -164,9 +202,9 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
                 }}
                 disabled={isLoading}
               />
-            </YStack>
-            <YStack gap="$2" flex={1}>
-              <Text fontSize="$2">Max ($)</Text>
+            </Stack>
+            <Stack gap={8} flex={1}>
+              <Text>Max ($)</Text>
               <Input
                 placeholder="Max"
                 keyboardType="numeric"
@@ -181,37 +219,37 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
                 }}
                 disabled={isLoading}
               />
-            </YStack>
-            <YStack gap="$2" flex={1}>
-              <Text fontSize="$2">Type</Text>
+            </Stack>
+            <Stack gap={8} flex={1}>
+              <Text>Type</Text>
               <Input
                 placeholder="hourly/salary"
                 value={formData.pay_range_type}
                 onChangeText={(text: string) => setFormData({ ...formData, pay_range_type: text })}
                 disabled={isLoading}
               />
-            </YStack>
-          </XStack>
-        </YStack>
+            </Stack>
+          </Row>
+        </Stack>
 
         {/* Position Level */}
-        <YStack gap="$2">
-          <Text fontWeight="600">Position Level</Text>
+        <Stack gap={8}>
+          <Text>Position Level</Text>
           <Input
             placeholder="e.g. Senior, Mid-Level, Entry Level"
             value={formData.position_level}
             onChangeText={(text: string) => setFormData({ ...formData, position_level: text })}
             disabled={isLoading}
           />
-        </YStack>
+        </Stack>
 
         {/* Actions */}
-        <XStack gap="$3" paddingTop="$4">
-          <Button flex={1} variant="outlined" onPress={() => router.back()} disabled={isLoading}>
+        <Row gap={12} paddingTop={16}>
+          <Button style={{ flex: 1 }} variant="outline" onPress={() => router.back()} disabled={isLoading}>
             Cancel
           </Button>
           <Button
-            flex={1}
+            style={{ flex: 1 }}
             onPress={() => handleSubmit(true)}
             disabled={isLoading || !formData.title || !formData.description}
           >
@@ -219,16 +257,17 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
             {!isLoading && 'Save as Draft'}
           </Button>
           <Button
-            flex={1}
-            themeInverse
+            style={{ flex: 1 }}
+            variant="filled"
+            color="primary"
             onPress={() => handleSubmit(false)}
             disabled={isLoading || !formData.title || !formData.description || !formData.location}
           >
             {isLoading && <Spinner />}
             {!isLoading && 'Publish'}
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </ScrollView>
   )
 }

@@ -1,12 +1,12 @@
-import '../tamagui-web.css'
-
 import { ErrorBoundary } from '@scf/core/components/ErrorBoundary'
 import { getVersionDebugPayload } from '@scf/core/constants/appVersion'
 import { loadThemePromise, Provider } from '@scf/core/provider'
 import { initSentry } from '@scf/core/utils/sentry'
 import { supabase } from '@scf/core/utils/supabase/client'
+import { logger } from '@scf/core'
+import { ThemeProvider } from '@scaffald/ui'
+import { RobotoSerif_400Regular, useFonts } from '@expo-google-fonts/roboto-serif'
 import type { Session } from '@supabase/auth-js'
-import { useFonts } from 'expo-font'
 import { SplashScreen, Stack, useSegments } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
 import { View } from 'react-native'
@@ -20,15 +20,16 @@ SplashScreen.preventAutoHideAsync()
 export default function DashboardLayout() {
   const segments = useSegments()
   const [fontLoaded] = useFonts({
-    Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
-    InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
+    RobotoSerif_400Regular,
   })
 
   const [themeLoaded, setThemeLoaded] = useState(false)
   const [sessionLoadAttempted, setSessionLoadAttempted] = useState(false)
   const [initialSession, setInitialSession] = useState<Session | null>(null)
   useEffect(() => {
-    console.info('[app version]', getVersionDebugPayload())
+    if (__DEV__) {
+      logger.info('App initialized', getVersionDebugPayload())
+    }
   }, [])
   useEffect(() => {
     supabase.auth
@@ -60,36 +61,38 @@ export default function DashboardLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-        <Provider initialSession={initialSession}>
-          <ErrorBoundary
-            context={{
-              environment: process.env.APP_ENV,
-              route: segments.join('/') || '/',
-            }}
-          >
-            <Stack
-              screenOptions={{
-                headerShown: false,
+    <ThemeProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+          <Provider initialSession={initialSession}>
+            <ErrorBoundary
+              context={{
+                environment: process.env.APP_ENV,
+                route: segments.join('/') || '/',
               }}
             >
-              <Stack.Screen
-                name="auth"
-                options={{
+              <Stack
+                screenOptions={{
                   headerShown: false,
                 }}
-              />
-              <Stack.Screen
-                name="dashboard"
-                options={{
-                  headerShown: false,
-                }}
-              />
-            </Stack>
-          </ErrorBoundary>
-        </Provider>
-      </View>
-    </GestureHandlerRootView>
+              >
+                <Stack.Screen
+                  name="auth"
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="dashboard"
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+              </Stack>
+            </ErrorBoundary>
+          </Provider>
+        </View>
+      </GestureHandlerRootView>
+    </ThemeProvider>
   )
 }

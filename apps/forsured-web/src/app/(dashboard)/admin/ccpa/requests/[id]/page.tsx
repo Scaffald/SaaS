@@ -1,5 +1,5 @@
 /**
- * REQ-6: CCPA Admin Request Detail Page
+ * CCPA Admin Request Detail Page
  * TASK-3: Build CCPA Request Detail Page with Timeline and Actions
  *
  * Comprehensive request detail view with:
@@ -24,7 +24,7 @@ import {
   Modal,
   colors,
   spacing,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import Textarea from '../../../../../../components/Common/Textarea'
 import { useRouter, useParams } from 'next/navigation'
 import { trpc } from '../../../../../../lib/trpc'

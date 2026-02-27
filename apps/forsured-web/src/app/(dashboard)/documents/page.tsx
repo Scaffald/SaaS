@@ -1,6 +1,6 @@
 /**
  * Documents Page
- * REQ-284: Document Organization by Client/Project/GC
+ * Document Organization by Client/Project/GC
  * TASK-4: Integrate Document Organization Page with All Components
  *
  * Main document organization page with:
@@ -13,7 +13,7 @@
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { Stack, Row, Text, Card, H1 } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card, H1 } from '@scaffald/ui';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   DocumentList,

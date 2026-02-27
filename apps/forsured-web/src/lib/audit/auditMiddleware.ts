@@ -1,7 +1,7 @@
 /**
  * Audit Middleware for tRPC
  *
- * REQ-130: Comprehensive Audit Logging with 7-Year Retention
+ * Comprehensive Audit Logging with 7-Year Retention
  *
  * This middleware automatically logs all tRPC procedure calls with:
  * - Request timing and duration

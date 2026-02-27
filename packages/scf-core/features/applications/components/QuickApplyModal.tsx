@@ -1,11 +1,21 @@
-import { api } from '@scf/core/utils/api'
+import { useCreateJobApplicationMutation } from '@scf/core/utils/jobs-sdk-hooks'
+import { createMapboxGeocodingProvider } from '@scf/core/utils/mapbox-geocoding-provider'
 import type { ScreeningAnswers } from '@scf/schemas'
-import type { AddressResult } from '@unicornlove/ui'
-import { AddressAutocomplete, Dialog, ResponsiveSelect } from '@unicornlove/ui'
-import { CheckCircle2, X } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-import { useState } from 'react'
-import { Button, Label, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
+import type { AddressResult } from '@scaffald/ui'
+import {
+  AddressAutocomplete,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ResponsiveSelect,
+  useThemeContext,
+} from '@scaffald/ui'
+import { CheckCircle2 } from 'lucide-react-native'
+import { useToast } from '@scaffald/ui'
+import { useMemo, useState } from 'react'
+import { ScrollView } from 'react-native'
+import { Button, Label, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 export interface QuickApplyModalProps {
   /**
@@ -94,15 +104,22 @@ export function QuickApplyModal({
   const [errors, setErrors] = useState<Partial<Record<keyof ScreeningAnswers, string>>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+  const { theme } = useThemeContext()
 
   const mapboxToken = process.env.EXPO_PUBLIC_MAPBOX_TOKEN
-  const toast = useToastController()
+  const toast = useToast()
+  const mapboxProvider = useMemo(
+    () => (mapboxToken ? createMapboxGeocodingProvider(mapboxToken) : null),
+    [mapboxToken]
+  )
 
-  const submitMutation = api.applications.submit.useMutation({
+  const submitMutation = useCreateJobApplicationMutation({
     onSuccess: (application: { id: string }) => {
       setShowSuccess(true)
-      toast.show('Application sent successfully', {
+      toast.show({
+        title: 'Application sent successfully',
         message: `Your application to ${jobTitle} has been submitted.`,
+        variant: 'success',
       })
       onSuccess?.(application.id)
       // Close modal after 2 seconds
@@ -112,8 +129,10 @@ export function QuickApplyModal({
     },
     onError: (error: { message?: string }) => {
       const message = error.message || 'Failed to submit application. Please try again.'
-      toast.show('Error', {
+      toast.show({
+        title: 'Error',
         message,
+        variant: 'error',
       })
       setIsSubmitting(false)
     },
@@ -257,126 +276,116 @@ export function QuickApplyModal({
   }
 
   return (
-    <Dialog modal open={open} onOpenChange={handleClose}>
-      <Dialog.Portal>
-        <Dialog.Overlay key="overlay" />
-        <Dialog.Content key="content" gap="$4" width="90%" maxWidth={600} maxHeight="90%">
-          {/* Header */}
-          <YStack gap="$2">
-            <XStack justifyContent="space-between" alignItems="center">
-              <YStack flex={1} gap="$1">
-                <Text fontSize="$6" fontWeight="700" color="$color12">
-                  Apply to {organizationName}
-                </Text>
-                <Text fontSize="$4" color="$color11">
-                  {jobTitle}
-                </Text>
-              </YStack>
-              <Dialog.Close asChild>
-                <Button size="$3" circular icon={X} chromeless />
-              </Dialog.Close>
-            </XStack>
-          </YStack>
+    <Modal visible={open} onClose={handleClose} width="90%">
+      <ModalHeader
+        title={`Apply to ${organizationName}`}
+        description={jobTitle}
+        onClose={handleClose}
+      />
+      <ModalContent>
+        <Stack gap={16}>
 
           {/* Success State */}
           {showSuccess ? (
-            <YStack gap="$4" padding="$6" alignItems="center" justifyContent="center" flex={1}>
-              <YStack
+            <Stack gap={16} padding="xl" align="center" justify="center" flex={1}>
+              <Stack
                 width={80}
                 height={80}
-                borderRadius="$12"
-                backgroundColor="$green2"
-                borderWidth={2}
-                borderColor="$green9"
-                alignItems="center"
-                justifyContent="center"
+                borderRadius={16}
+                style={{
+                  backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
+                  borderColor: theme === "light" ? colors.green[300] : colors.green[700],
+                  borderWidth: 2,
+                }}
+                align="center"
+                justify="center"
               >
-                <CheckCircle2 size={48} color="$green10" />
-              </YStack>
-              <YStack gap="$2" alignItems="center">
-                <Text fontSize="$7" fontWeight="bold" color="$color12" textAlign="center">
+                <CheckCircle2 size={48} color={theme === "light" ? colors.green[700] : colors.green[300]} />
+              </Stack>
+              <Stack gap={8} align="center">
+                <Text style={{ color: colors.text[theme].secondary }} align="center">
                   Application Submitted!
                 </Text>
-                <Text fontSize="$4" color="$color11" textAlign="center">
+                <Text style={{ color: colors.text[theme].secondary }} align="center">
                   Your application to {jobTitle} at {organizationName} has been sent successfully.
                 </Text>
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           ) : (
             /* Form Content */
-            <ScrollView showsVerticalScrollIndicator={false} flex={1}>
-              <YStack gap="$4" padding="$4">
+            <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
+              <Stack gap={16} padding="md">
                 {/* Current Location */}
-                <YStack gap="$2">
-                  <Label htmlFor="current_location" fontSize="$4" fontWeight="600">
-                    You current location <Text color="$red10">*</Text>
+                <Stack gap={8}>
+                  <Label htmlFor="current_location">
+                    You current location <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
                   </Label>
-                  {mapboxToken ? (
+                  {mapboxProvider ? (
                     <AddressAutocomplete
                       value={formData.current_location || ''}
                       onChange={handleLocationChange}
                       onAddressSelect={handleLocationSelect}
                       placeholder="Search locations"
-                      provider="mapbox"
-                      apiKey={mapboxToken}
-                      zoomLevel="city"
+                      provider={mapboxProvider}
+                      searchOptions={{ zoomLevel: 'city' }}
                       error={errors.current_location}
                       disabled={isSubmitting}
                     />
                   ) : (
-                    <YStack gap="$2">
-                      <Text fontSize="$3" color="$red10">
+                    <Stack gap={8}>
+                      <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                         Location search is unavailable. Please enter your location manually.
                       </Text>
-                      <Text fontSize="$2" color="$color10">
+                      <Text style={{ color: colors.text[theme].secondary }}>
                         Location search requires Mapbox API key configuration.
                       </Text>
-                    </YStack>
+                    </Stack>
                   )}
                   {errors.current_location && (
-                    <Text fontSize="$2" color="$red10">
+                    <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                       {errors.current_location}
                     </Text>
                   )}
-                </YStack>
+                </Stack>
 
                 {/* Willing to Relocate */}
-                <YStack gap="$2">
-                  <Label fontSize="$4" fontWeight="600">
-                    Are you willing to relocate? <Text color="$red10">*</Text>
+                <Stack gap={8}>
+                  <Label>
+                    Are you willing to relocate?{' '}
+                    <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
                   </Label>
-                  <XStack gap="$3">
+                  <Row gap={12}>
                     <Button
-                      flex={1}
-                      size="$4"
-                      theme={formData.willing_to_relocate ? 'info' : undefined}
-                      variant={formData.willing_to_relocate ? undefined : 'outlined'}
+                      size="md"
+                      color={formData.willing_to_relocate ? 'primary' : undefined}
+                      variant={formData.willing_to_relocate ? undefined : 'outline'}
                       onPress={() => {
                         setFormData((prev) => ({ ...prev, willing_to_relocate: true }))
                       }}
                       disabled={isSubmitting}
+                      style={{ flex: 1 }}
                     >
                       Yes
                     </Button>
                     <Button
-                      flex={1}
-                      size="$4"
-                      theme={!formData.willing_to_relocate ? 'info' : undefined}
-                      variant={!formData.willing_to_relocate ? undefined : 'outlined'}
+                      size="md"
+                      color={!formData.willing_to_relocate ? 'primary' : undefined}
+                      variant={!formData.willing_to_relocate ? undefined : 'outline'}
                       onPress={() => {
                         setFormData((prev) => ({ ...prev, willing_to_relocate: false }))
                       }}
                       disabled={isSubmitting}
+                      style={{ flex: 1 }}
                     >
                       No
                     </Button>
-                  </XStack>
-                </YStack>
+                  </Row>
+                </Stack>
 
                 {/* Years of Experience */}
-                <YStack gap="$2">
-                  <Label htmlFor="years_experience" fontSize="$4" fontWeight="600">
-                    Years of experience <Text color="$red10">*</Text>
+                <Stack gap={8}>
+                  <Label htmlFor="years_experience">
+                    Years of experience <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
                   </Label>
                   <ResponsiveSelect
                     value={getYearsExperienceValue()}
@@ -387,97 +396,95 @@ export function QuickApplyModal({
                       value: option.value,
                       label: option.label,
                     }))}
-                    triggerProps={{
-                      id: 'years_experience',
-                      borderColor: errors.years_experience ? '$red9' : '$borderColor',
-                    }}
+                    testID="years_experience"
                   />
-                </YStack>
+                </Stack>
 
                 {/* Required Skills (Display Only) */}
                 {requiredSkills.length > 0 && (
-                  <YStack gap="$2">
-                    <Label fontSize="$4" fontWeight="600">
-                      Required skills
-                    </Label>
-                    <YStack
-                      padding="$3"
-                      backgroundColor="$gray3"
-                      borderRadius="$3"
-                      borderWidth={1}
-                      borderColor="$borderColor"
+                  <Stack gap={8}>
+                    <Label>Required skills</Label>
+                    <Stack
+                      padding="sm"
+                      borderRadius={12}
+                      style={{
+                        backgroundColor: colors.bg[theme].muted,
+                        borderColor: colors.border[theme].default,
+                        borderWidth: 1,
+                      }}
                     >
-                      <Text fontSize="$3" color="$color11">
+                      <Text style={{ color: colors.text[theme].secondary }}>
                         {requiredSkills.join(', ')}
                       </Text>
-                    </YStack>
-                  </YStack>
+                    </Stack>
+                  </Stack>
                 )}
 
                 {/* Optional Skills (Display Only) */}
                 {optionalSkills.length > 0 && (
-                  <YStack gap="$2">
-                    <Label fontSize="$4" fontWeight="600">
-                      Optional skills
-                    </Label>
-                    <YStack
-                      padding="$3"
-                      backgroundColor="$gray3"
-                      borderRadius="$3"
-                      borderWidth={1}
-                      borderColor="$borderColor"
+                  <Stack gap={8}>
+                    <Label>Optional skills</Label>
+                    <Stack
+                      padding="sm"
+                      borderRadius={12}
+                      style={{
+                        backgroundColor: colors.bg[theme].muted,
+                        borderColor: colors.border[theme].default,
+                        borderWidth: 1,
+                      }}
                     >
-                      <Text fontSize="$3" color="$color11">
+                      <Text style={{ color: colors.text[theme].secondary }}>
                         {optionalSkills.join(', ')}
                       </Text>
-                    </YStack>
-                  </YStack>
+                    </Stack>
+                  </Stack>
                 )}
 
                 {/* Work Authorization */}
-                <YStack gap="$2">
-                  <Label fontSize="$4" fontWeight="600">
-                    Are you authorized to work legally in the US? <Text color="$red10">*</Text>
+                <Stack gap={8}>
+                  <Label>
+                    Are you authorized to work legally in the US?{' '}
+                    <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
                   </Label>
-                  <XStack gap="$3">
+                  <Row gap={12}>
                     <Button
-                      flex={1}
-                      size="$4"
-                      theme={formData.is_authorized_to_work ? 'info' : undefined}
-                      variant={formData.is_authorized_to_work ? undefined : 'outlined'}
+                      size="md"
+                      color={formData.is_authorized_to_work ? 'primary' : undefined}
+                      variant={formData.is_authorized_to_work ? undefined : 'outline'}
                       onPress={() => {
                         setFormData((prev) => ({ ...prev, is_authorized_to_work: true }))
                         validateField('is_authorized_to_work', true)
                       }}
                       disabled={isSubmitting}
+                      style={{ flex: 1 }}
                     >
                       Yes
                     </Button>
                     <Button
-                      flex={1}
-                      size="$4"
-                      theme={!formData.is_authorized_to_work ? 'info' : undefined}
-                      variant={!formData.is_authorized_to_work ? undefined : 'outlined'}
+                      size="md"
+                      color={!formData.is_authorized_to_work ? 'primary' : undefined}
+                      variant={!formData.is_authorized_to_work ? undefined : 'outline'}
                       onPress={() => {
                         setFormData((prev) => ({ ...prev, is_authorized_to_work: false }))
                         validateField('is_authorized_to_work', false)
                       }}
                       disabled={isSubmitting}
+                      style={{ flex: 1 }}
                     >
                       No
                     </Button>
-                  </XStack>
+                  </Row>
                   {errors.is_authorized_to_work && (
-                    <Text fontSize="$2" color="$red10">
+                    <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                       {errors.is_authorized_to_work}
                     </Text>
                   )}
-                </YStack>
+                </Stack>
 
                 {/* Earliest Start Date */}
-                <YStack gap="$2">
-                  <Label htmlFor="earliest_start_date" fontSize="$4" fontWeight="600">
-                    Earliest start date <Text color="$red10">*</Text>
+                <Stack gap={8}>
+                  <Label htmlFor="earliest_start_date">
+                    Earliest start date <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
                   </Label>
                   <ResponsiveSelect
                     value={formData.earliest_start_date || ''}
@@ -488,31 +495,30 @@ export function QuickApplyModal({
                       value: option.value,
                       label: option.label,
                     }))}
-                    triggerProps={{
-                      id: 'earliest_start_date',
-                      borderColor: errors.earliest_start_date ? '$red9' : '$borderColor',
-                    }}
+                    testID="earliest_start_date"
                   />
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
             </ScrollView>
           )}
 
           {/* Footer */}
           {!showSuccess && (
-            <XStack
-              gap="$3"
-              justifyContent="flex-end"
-              paddingTop="$4"
-              borderTopWidth={1}
-              borderTopColor="$borderColor"
+            <Row
+              gap={12}
+              justify="flex-end"
+              style={{
+                paddingTop: 16,
+                borderTopWidth: 1,
+                borderTopColor: colors.border[theme].default,
+              }}
             >
-              <Button size="$4" variant="outlined" onPress={handleClose} disabled={isSubmitting}>
+              <Button size="md" variant="outline" onPress={handleClose} disabled={isSubmitting}>
                 Cancel
               </Button>
               <Button
-                size="$4"
-                theme="info"
+                size="md"
+                color="primary"
                 onPress={handleSubmit}
                 disabled={
                   isSubmitting || Object.values(errors).some((error) => error !== undefined)
@@ -520,10 +526,10 @@ export function QuickApplyModal({
               >
                 {isSubmitting ? 'Submitting...' : 'Submit'}
               </Button>
-            </XStack>
+            </Row>
           )}
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog>
+        </Stack>
+      </ModalContent>
+    </Modal>
   )
 }

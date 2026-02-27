@@ -1,6 +1,6 @@
 /**
  * ActivityLog - Display member activity from audit logs
- * REQ-283: Team Member Management UI
+ * Team Member Management UI
  * TASK-2: Build Member Detail Modal with Access Management
  *
  * Shows chronological list of member actions with timestamps.
@@ -11,7 +11,7 @@
 
 import React from 'react';
 import { LogIn, LogOut, Edit, Plus, Trash2, Info } from 'lucide-react';
-import { Stack, Row, Text } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text } from '@scaffald/ui';
 
 export interface ActivityEntry {
   id: string;

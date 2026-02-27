@@ -1,6 +1,6 @@
 /**
  * Authorized Apps Settings Page
- * REQ-10 Task 11: User can view and manage authorized OAuth apps
+ * User can view and manage authorized OAuth apps
  */
 
 import { SafeAreaView } from 'react-native-safe-area-context'

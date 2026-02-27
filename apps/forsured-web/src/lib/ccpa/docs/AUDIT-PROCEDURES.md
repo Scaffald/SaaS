@@ -1,6 +1,5 @@
 # CCPA Audit Procedures
 
-**REQ-3: CCPA Compliance Implementation - TASK-20**
 **Version:** 1.0
 **Last Updated:** December 2025
 

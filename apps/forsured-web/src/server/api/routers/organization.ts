@@ -1,6 +1,6 @@
 /**
  * Organization Router
- * REQ-286: Create tRPC Router Structure for Forsured
+ * Create tRPC Router Structure for Forsured
  * TASK-2: Create Organization-Scoped Router with Authorization
  *
  * Handles organization-specific data access with proper authorization.
@@ -180,7 +180,7 @@ export const organizationRouter = createTRPCRouter({
 
   /**
    * Get project with subcontractors and users (Cross-Schema Query)
-   * REQ-286 TASK-3: Implement Cross-Schema Query Procedures
+    * TASK-3: Implement Cross-Schema Query Procedures
    *
    * Demonstrates querying across multiple schemas:
    * - forsured.projects (project data)

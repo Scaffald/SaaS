@@ -1,6 +1,14 @@
-import { api } from '@scf/core/utils/api'
-import { useToastController } from '@tamagui/toast'
+import { useQueryClient } from '@tanstack/react-query'
+import { useToast, useThemeContext } from '@scaffald/ui'
 import { useEffect, useMemo, useState } from 'react'
+import {
+  useStripeSettings,
+  useUpdatePublishableKeyMutation,
+  useUpdateTestModeMutation,
+  useUpdateApiKeyMutation,
+  useUpdateWebhookSecretMutation,
+  useTestConnectionMutation,
+} from '@scf/core/utils/stripe-settings-sdk-hooks'
 import {
   Button,
   Card,
@@ -9,9 +17,10 @@ import {
   Spinner,
   Switch,
   Text,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 function formatDate(value?: string | null): string | null {
   if (!value) return null
@@ -24,64 +33,89 @@ function formatDate(value?: string | null): string | null {
 }
 
 export function StripeSettingsPage() {
-  const toast = useToastController()
-  const utils = api.useContext()
+  const { theme } = useThemeContext()
+  const toast = useToast()
+  const queryClient = useQueryClient()
 
-  const { data, isLoading } = api.stripeSettings.getSettings.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  })
+  const { data, isLoading } = useStripeSettings({ refetchOnWindowFocus: false })
 
-  const updatePublishableKey = api.stripeSettings.updatePublishableKey.useMutation({
+  const updatePublishableKey = useUpdatePublishableKeyMutation({
     onSuccess: async () => {
-      await utils.stripeSettings.getSettings.invalidate()
-      toast.show('Success', { message: 'Publishable key updated' })
+      await queryClient.invalidateQueries({ queryKey: ['stripe-settings'] })
+      toast.show({
+        title: 'Success',
+        message: 'Publishable key updated',
+        variant: 'success',
+      })
     },
-    onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Failed to update publishable key'
-      toast.show('Error', { message })
-    },
-  })
-
-  const updateApiKey = api.stripeSettings.updateApiKey.useMutation({
-    onSuccess: async () => {
-      await utils.stripeSettings.getSettings.invalidate()
-      toast.show('Success', { message: 'Secret key stored securely' })
-    },
-    onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Failed to store API secret'
-      toast.show('Error', { message })
+    onError: () => {
+      toast.show({
+        message: 'Error updating publishable key',
+        variant: 'error',
+      })
     },
   })
 
-  const updateWebhookSecret = api.stripeSettings.updateWebhookSecret.useMutation({
+  const updateApiKey = useUpdateApiKeyMutation({
     onSuccess: async () => {
-      await utils.stripeSettings.getSettings.invalidate()
-      toast.show('Success', { message: 'Webhook secret stored securely' })
+      await queryClient.invalidateQueries({ queryKey: ['stripe-settings'] })
+      toast.show({
+        title: 'Success',
+        message: 'Secret key stored securely',
+        variant: 'success',
+      })
     },
-    onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Failed to store webhook secret'
-      toast.show('Error', { message })
+    onError: () => {
+      toast.show({
+        message: 'Error storing API secret',
+        variant: 'error',
+      })
     },
   })
 
-  const updateTestMode = api.stripeSettings.updateTestMode.useMutation({
+  const updateWebhookSecret = useUpdateWebhookSecretMutation({
     onSuccess: async () => {
-      await utils.stripeSettings.getSettings.invalidate()
+      await queryClient.invalidateQueries({ queryKey: ['stripe-settings'] })
+      toast.show({
+        title: 'Success',
+        message: 'Webhook secret stored securely',
+        variant: 'success',
+      })
     },
-    onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Failed to update mode'
-      toast.show('Error', { message })
+    onError: () => {
+      toast.show({
+        message: 'Error storing webhook secret',
+        variant: 'error',
+      })
     },
   })
 
-  const testConnection = api.stripeSettings.testConnection.useMutation({
+  const updateTestMode = useUpdateTestModeMutation({
     onSuccess: async () => {
-      await utils.stripeSettings.getSettings.invalidate()
-      toast.show('Success', { message: 'Stripe connection verified' })
+      await queryClient.invalidateQueries({ queryKey: ['stripe-settings'] })
     },
-    onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Stripe connection test failed'
-      toast.show('Error', { message })
+    onError: () => {
+      toast.show({
+        message: 'Error updating test mode',
+        variant: 'error',
+      })
+    },
+  })
+
+  const testConnection = useTestConnectionMutation({
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['stripe-settings'] })
+      toast.show({
+        title: 'Success',
+        message: 'Stripe connection verified',
+        variant: 'success',
+      })
+    },
+    onError: () => {
+      toast.show({
+        message: 'Error testing connection',
+        variant: 'error',
+      })
     },
   })
 
@@ -102,234 +136,253 @@ export function StripeSettingsPage() {
     const canCopy = typeof navigator !== 'undefined' && Boolean(navigator?.clipboard?.writeText)
 
     if (!canCopy) {
-      toast.show('Error', {
+      toast.show({
+        title: 'Error',
         message: 'Clipboard access is not available on this device.',
+        variant: 'error',
       })
       return
     }
 
     try {
       await navigator.clipboard.writeText(webhookUrl)
-      toast.show('Copied', { message: 'Webhook endpoint copied to clipboard' })
+      toast.show({
+        title: 'Copied',
+        message: 'Webhook endpoint copied to clipboard',
+      })
     } catch {
-      toast.show('Error', { message: 'Unable to copy to clipboard' })
+      toast.show({
+        title: 'Error',
+        message: 'Unable to copy to clipboard',
+        variant: 'error',
+      })
     }
   }
 
   if (isLoading) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
-        <Spinner size="large" />
+      <Stack flex={1} align="center" justify="center" gap={12}>
+        <Spinner size="lg" />
         <Text>Loading Stripe settings…</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack flex={1} padding="$4" gap="$4">
-      <YStack gap="$2">
-        <Text fontSize="$8" fontWeight="700">
-          Stripe Payments
-        </Text>
-        <Paragraph size="$4" color="$color11">
+    <Stack flex={1} padding="md" gap={16}>
+      <Stack gap={8}>
+        <Text>Stripe Payments</Text>
+        <Paragraph size="md" style={{ color: colors.text[theme].secondary }}>
           Manage API keys, webhook secrets, and connection diagnostics for the Stripe integration.
         </Paragraph>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$4" style={{ maxWidth: 720, width: '100%' }}>
-        <Card padding="$4" gap="$4">
-          <YStack gap="$2">
-            <Text fontSize="$6" fontWeight="600">
-              Publishable Key
-            </Text>
-            <Paragraph size="$3" color="$color10">
-              Used on the client to initialize Stripe.js. Updating this key does not affect existing
-              payment intents.
-            </Paragraph>
-            <Input
-              value={publishableKey}
-              onChangeText={setPublishableKey}
-              autoCapitalize="none"
-              autoCorrect={false}
-              placeholder="pk_live_..."
-            />
-            <XStack gap="$2" justifyContent="flex-end">
-              <Button
-                backgroundColor="$blue9"
-                color="$color1"
-                disabled={updatePublishableKey.isPending || publishableKey.length < 16}
-                onPress={() =>
-                  updatePublishableKey.mutate({
-                    publishableKey,
+      <Stack gap={16} style={{ maxWidth: 720, width: '100%' }}>
+        <Card padding="md">
+          <Stack gap={16}>
+            <Stack gap={8}>
+              <Text>Publishable Key</Text>
+              <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
+                Used on the client to initialize Stripe.js. Updating this key does not affect
+                existing payment intents.
+              </Paragraph>
+              <Input
+                value={publishableKey}
+                onChangeText={setPublishableKey}
+                autoCapitalize="none"
+                autoCorrect={false}
+                placeholder="pk_live_..."
+              />
+              <Row gap={8} justify="flex-end">
+                <Button
+                  style={{
+                    backgroundColor: colors.bg[theme].default,
+                  }}
+                  disabled={updatePublishableKey.isPending || publishableKey.length < 16}
+                  onPress={() =>
+                    updatePublishableKey.mutate({
+                      publishableKey,
+                    })
+                  }
+                >
+                  {updatePublishableKey.isPending ? <Spinner /> : 'Save Publishable Key'}
+                </Button>
+              </Row>
+            </Stack>
+          </Stack>
+        </Card>
+
+        <Card padding="md">
+          <Stack gap={16}>
+            <Stack gap={8}>
+              <Text>Secret Keys</Text>
+              <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
+                Secrets are encrypted with Supabase Vault. They are never returned by the API after
+                storage.
+              </Paragraph>
+            </Stack>
+
+            <Stack gap={12}>
+              <Stack gap={8}>
+                <Text>Stripe API Secret</Text>
+                <Input
+                  value={apiSecret}
+                  onChangeText={setApiSecret}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  secureTextEntry
+                  placeholder="sk_live_..."
+                />
+                <Row gap={8} justify="flex-end">
+                  <Button
+                    style={{
+                      backgroundColor: theme === 'light' ? colors.green[50] : colors.green[900],
+                    }}
+                    disabled={updateApiKey.isPending || apiSecret.length < 20}
+                    onPress={() => {
+                      updateApiKey.mutate({ secret: apiSecret })
+                      setApiSecret('')
+                    }}
+                  >
+                    {updateApiKey.isPending ? <Spinner /> : 'Store API Secret'}
+                  </Button>
+                </Row>
+                {data?.hasApiKey ? (
+                  <Text
+                    style={{ color: theme === 'light' ? colors.green[700] : colors.green[300] }}
+                  >
+                    ✓ Secret stored in Vault
+                  </Text>
+                ) : (
+                  <Text
+                    style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}
+                  >
+                    API secret not configured
+                  </Text>
+                )}
+              </Stack>
+
+              <Stack gap={8}>
+                <Text>Webhook Signing Secret</Text>
+                <Input
+                  value={webhookSecret}
+                  onChangeText={setWebhookSecret}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  secureTextEntry
+                  placeholder="whsec_..."
+                />
+                <Row gap={8} justify="flex-end">
+                  <Button
+                    style={{
+                      backgroundColor: theme === 'light' ? colors.green[50] : colors.green[900],
+                    }}
+                    disabled={updateWebhookSecret.isPending || webhookSecret.length < 10}
+                    onPress={() => {
+                      updateWebhookSecret.mutate({ secret: webhookSecret })
+                      setWebhookSecret('')
+                    }}
+                  >
+                    {updateWebhookSecret.isPending ? <Spinner /> : 'Store Webhook Secret'}
+                  </Button>
+                </Row>
+                {data?.hasWebhookSecret ? (
+                  <Text
+                    style={{ color: theme === 'light' ? colors.green[700] : colors.green[300] }}
+                  >
+                    ✓ Webhook secret stored
+                  </Text>
+                ) : (
+                  <Text
+                    style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}
+                  >
+                    Webhook secret not configured
+                  </Text>
+                )}
+              </Stack>
+            </Stack>
+          </Stack>
+        </Card>
+
+        <Card padding="md">
+          <Stack gap={16}>
+            <Stack gap={8}>
+              <Text>Webhook Endpoint</Text>
+              <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
+                Configure this URL inside the Stripe Dashboard and supply the signing secret above.
+              </Paragraph>
+              <Input value={webhookUrl} editable={false} />
+              <Row gap={8}>
+                <Button variant="outline" style={{ flex: 1 }} onPress={handleCopyWebhook}>
+                  Copy Endpoint
+                </Button>
+              </Row>
+            </Stack>
+          </Stack>
+        </Card>
+
+        <Card padding="md">
+          <Stack gap={16}>
+            <Stack gap={8}>
+              <Text>Test Mode</Text>
+              <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
+                Toggle between live and test credentials without redeploying the backend.
+              </Paragraph>
+            </Stack>
+            <Row gap={12} align="center">
+              <Switch
+                checked={data?.testMode ?? true}
+                disabled={updateTestMode.isPending}
+                onChange={(checked) =>
+                  updateTestMode.mutate({
+                    testMode: Boolean(checked),
                   })
                 }
-              >
-                {updatePublishableKey.isPending ? <Spinner /> : 'Save Publishable Key'}
-              </Button>
-            </XStack>
-          </YStack>
-        </Card>
-
-        <Card padding="$4" gap="$4">
-          <YStack gap="$2">
-            <Text fontSize="$6" fontWeight="600">
-              Secret Keys
-            </Text>
-            <Paragraph size="$3" color="$color10">
-              Secrets are encrypted with Supabase Vault. They are never returned by the API after
-              storage.
-            </Paragraph>
-          </YStack>
-
-          <YStack gap="$3">
-            <YStack gap="$2">
-              <Text fontWeight="600">Stripe API Secret</Text>
-              <Input
-                value={apiSecret}
-                onChangeText={setApiSecret}
-                autoCapitalize="none"
-                autoCorrect={false}
-                secureTextEntry
-                placeholder="sk_live_..."
               />
-              <XStack gap="$2" justifyContent="flex-end">
-                <Button
-                  backgroundColor="$green9"
-                  color="$color1"
-                  disabled={updateApiKey.isPending || apiSecret.length < 20}
-                  onPress={() => {
-                    updateApiKey.mutate({ secret: apiSecret })
-                    setApiSecret('')
-                  }}
-                >
-                  {updateApiKey.isPending ? <Spinner /> : 'Store API Secret'}
-                </Button>
-              </XStack>
-              {data?.hasApiKey ? (
-                <Text fontSize="$2" color="$green10">
-                  ✓ Secret stored in Vault
-                </Text>
-              ) : (
-                <Text fontSize="$2" color="$red10">
-                  API secret not configured
-                </Text>
-              )}
-            </YStack>
-
-            <YStack gap="$2">
-              <Text fontWeight="600">Webhook Signing Secret</Text>
-              <Input
-                value={webhookSecret}
-                onChangeText={setWebhookSecret}
-                autoCapitalize="none"
-                autoCorrect={false}
-                secureTextEntry
-                placeholder="whsec_..."
-              />
-              <XStack gap="$2" justifyContent="flex-end">
-                <Button
-                  backgroundColor="$green9"
-                  color="$color1"
-                  disabled={updateWebhookSecret.isPending || webhookSecret.length < 10}
-                  onPress={() => {
-                    updateWebhookSecret.mutate({ secret: webhookSecret })
-                    setWebhookSecret('')
-                  }}
-                >
-                  {updateWebhookSecret.isPending ? <Spinner /> : 'Store Webhook Secret'}
-                </Button>
-              </XStack>
-              {data?.hasWebhookSecret ? (
-                <Text fontSize="$2" color="$green10">
-                  ✓ Webhook secret stored
-                </Text>
-              ) : (
-                <Text fontSize="$2" color="$red10">
-                  Webhook secret not configured
-                </Text>
-              )}
-            </YStack>
-          </YStack>
+              <Text>{(data?.testMode ?? true) ? 'Test mode' : 'Live mode'}</Text>
+            </Row>
+          </Stack>
         </Card>
 
-        <Card padding="$4" gap="$4">
-          <YStack gap="$2">
-            <Text fontSize="$6" fontWeight="600">
-              Webhook Endpoint
-            </Text>
-            <Paragraph size="$3" color="$color10">
-              Configure this URL inside the Stripe Dashboard and supply the signing secret above.
-            </Paragraph>
-            <Input value={webhookUrl} editable={false} />
-            <XStack gap="$2">
-              <Button variant="outlined" flex={1} onPress={handleCopyWebhook}>
-                Copy Endpoint
-              </Button>
-            </XStack>
-          </YStack>
-        </Card>
-
-        <Card padding="$4" gap="$4">
-          <YStack gap="$2">
-            <Text fontSize="$6" fontWeight="600">
-              Test Mode
-            </Text>
-            <Paragraph size="$3" color="$color10">
-              Toggle between live and test credentials without redeploying the backend.
-            </Paragraph>
-          </YStack>
-          <XStack gap="$3" alignItems="center">
-            <Switch
-              id="stripe-test-mode"
-              checked={data?.testMode ?? true}
-              disabled={updateTestMode.isPending}
-              onCheckedChange={(checked) =>
-                updateTestMode.mutate({
-                  testMode: Boolean(checked),
-                })
-              }
-            >
-              <Switch.Thumb />
-            </Switch>
-            <Text>{(data?.testMode ?? true) ? 'Test mode' : 'Live mode'}</Text>
-          </XStack>
-        </Card>
-
-        <Card padding="$4" gap="$4">
-          <YStack gap="$2">
-            <Text fontSize="$6" fontWeight="600">
-              Connection Diagnostics
-            </Text>
-            <Paragraph size="$3" color="$color10">
-              Validates the current secret by calling Stripe. Fails if the API key lacks required
-              permissions.
-            </Paragraph>
-          </YStack>
-
-          <YStack gap="$2">
-            <Text fontSize="$3" color="$color11">
-              Last test: {formatDate(data?.lastTestedAt) ?? 'Never'}
-            </Text>
-            {data?.lastTestedStatus === 'failed' && data?.lastTestedError ? (
-              <Paragraph size="$3" color="$red10">
-                {data.lastTestedError}
+        <Card padding="md">
+          <Stack gap={16}>
+            <Stack gap={8}>
+              <Text>Connection Diagnostics</Text>
+              <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
+                Validates the current secret by calling Stripe. Fails if the API key lacks required
+                permissions.
               </Paragraph>
-            ) : null}
-          </YStack>
+            </Stack>
 
-          <XStack gap="$2" justifyContent="flex-end">
-            <Button
-              backgroundColor="$blue9"
-              color="$color1"
-              disabled={testConnection.isPending || !data?.hasApiKey}
-              onPress={() => testConnection.mutate()}
-            >
-              {testConnection.isPending ? <Spinner /> : 'Run Connection Test'}
-            </Button>
-          </XStack>
+            <Stack gap={8}>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                Last test: {formatDate(data?.lastTestedAt) ?? 'Never'}
+              </Text>
+              {data?.lastTestedStatus === 'failed' && data?.lastTestedError ? (
+                <Paragraph
+                  size="sm"
+                  style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}
+                >
+                  {data.lastTestedError}
+                </Paragraph>
+              ) : null}
+            </Stack>
+
+            <Row gap={8} justify="flex-end">
+              <Button
+                style={{
+                  backgroundColor: colors.bg[theme].default,
+                }}
+                disabled={testConnection.isPending || !data?.hasApiKey}
+                onPress={() => testConnection.mutate()}
+              >
+                {testConnection.isPending ? <Spinner /> : 'Run Connection Test'}
+              </Button>
+            </Row>
+          </Stack>
         </Card>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }
 

@@ -1,9 +1,11 @@
 /**
- * GCProfileHeader - Header component for General Contractor profile pages
- * REQ-288: Tamagui UI Component Library
+ * GCProfileHeader - Header component for General Contractor profile pages.
+ * Beyond UI component.
  */
 
-import { styled, YStack, XStack, Text, View, type YStackProps } from 'tamagui'
+import { Stack, Row, Text } from '@scaffald/ui'
+import { colors, spacing, borderRadius } from '@scaffald/ui/tokens'
+import type { StackProps } from '@scaffald/ui'
 import {
   Building,
   MapPin,
@@ -15,11 +17,12 @@ import {
   FileText,
   Calendar,
   ChevronLeft,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
+import { Pressable, View } from 'react-native'
 
 export type ComplianceLevel = 'compliant' | 'warning' | 'critical' | 'unknown'
 
-export interface GCProfileHeaderProps extends Omit<YStackProps, 'children'> {
+export interface GCProfileHeaderProps extends Omit<StackProps, 'children'> {
   /** GC company name */
   name: string
   /** Company logo URL */
@@ -51,155 +54,11 @@ export interface GCProfileHeaderProps extends Omit<YStackProps, 'children'> {
 }
 
 const complianceConfig: Record<ComplianceLevel, { label: string; color: string; bgColor: string }> = {
-  compliant: { label: 'Compliant', color: '$green11', bgColor: '$green3' },
-  warning: { label: 'Warning', color: '$yellow11', bgColor: '$yellow3' },
-  critical: { label: 'Critical', color: '$red11', bgColor: '$red3' },
-  unknown: { label: 'Unknown', color: '$gray11', bgColor: '$gray3' },
+  compliant: { label: 'Compliant', color: colors.green[700], bgColor: colors.green[100] },
+  warning: { label: 'Warning', color: colors.yellow[700], bgColor: colors.yellow[100] },
+  critical: { label: 'Critical', color: colors.error[700], bgColor: colors.error[100] },
+  unknown: { label: 'Unknown', color: colors.gray[700], bgColor: colors.gray[100] },
 }
-
-const HeaderContainer = styled(YStack, {
-  name: 'GCProfileHeader',
-  backgroundColor: '$background',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-})
-
-const TopBar = styled(XStack, {
-  name: 'GCProfileHeaderTopBar',
-  padding: '$3',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-})
-
-const BackButton = styled(XStack, {
-  name: 'GCProfileHeaderBackButton',
-  alignItems: 'center',
-  gap: '$1',
-  padding: '$2',
-  borderRadius: '$md',
-  cursor: 'pointer',
-
-  hoverStyle: {
-    backgroundColor: '$color3',
-  },
-
-  pressStyle: {
-    backgroundColor: '$color4',
-  },
-})
-
-const BackText = styled(Text, {
-  name: 'GCProfileHeaderBackText',
-  fontSize: '$3',
-  color: '$color11',
-})
-
-const MainContent = styled(XStack, {
-  name: 'GCProfileHeaderMain',
-  padding: '$4',
-  paddingTop: '$2',
-  gap: '$4',
-  flexWrap: 'wrap',
-})
-
-const LogoContainer = styled(View, {
-  name: 'GCProfileHeaderLogo',
-  width: 80,
-  height: 80,
-  borderRadius: '$lg',
-  backgroundColor: '$blue3',
-  alignItems: 'center',
-  justifyContent: 'center',
-  overflow: 'hidden',
-})
-
-const InfoContainer = styled(YStack, {
-  name: 'GCProfileHeaderInfo',
-  flex: 1,
-  minWidth: 250,
-  gap: '$2',
-})
-
-const CompanyName = styled(Text, {
-  name: 'GCProfileHeaderName',
-  fontSize: '$7',
-  fontWeight: '700',
-  color: '$color12',
-})
-
-const ContactRow = styled(XStack, {
-  name: 'GCProfileHeaderContact',
-  gap: '$4',
-  flexWrap: 'wrap',
-})
-
-const ContactItem = styled(XStack, {
-  name: 'GCProfileHeaderContactItem',
-  alignItems: 'center',
-  gap: '$2',
-})
-
-const ContactText = styled(Text, {
-  name: 'GCProfileHeaderContactText',
-  fontSize: '$3',
-  color: '$color10',
-})
-
-const ContactLink = styled(Text, {
-  name: 'GCProfileHeaderContactLink',
-  fontSize: '$3',
-  color: '$blue10',
-  cursor: 'pointer',
-
-  hoverStyle: {
-    textDecorationLine: 'underline',
-  },
-})
-
-const StatsContainer = styled(XStack, {
-  name: 'GCProfileHeaderStats',
-  padding: '$4',
-  paddingTop: 0,
-  gap: '$4',
-  flexWrap: 'wrap',
-})
-
-const StatCard = styled(YStack, {
-  name: 'GCProfileHeaderStatCard',
-  padding: '$3',
-  backgroundColor: '$color2',
-  borderRadius: '$md',
-  minWidth: 120,
-  gap: '$1',
-})
-
-const StatValue = styled(Text, {
-  name: 'GCProfileHeaderStatValue',
-  fontSize: '$6',
-  fontWeight: '700',
-  color: '$color12',
-})
-
-const StatLabel = styled(Text, {
-  name: 'GCProfileHeaderStatLabel',
-  fontSize: '$2',
-  color: '$color9',
-})
-
-const ComplianceBadge = styled(XStack, {
-  name: 'GCProfileHeaderComplianceBadge',
-  paddingHorizontal: '$3',
-  paddingVertical: '$2',
-  borderRadius: '$md',
-  alignItems: 'center',
-  gap: '$2',
-})
-
-const ComplianceText = styled(Text, {
-  name: 'GCProfileHeaderComplianceText',
-  fontSize: '$4',
-  fontWeight: '600',
-})
 
 export function GCProfileHeader({
   name,
@@ -221,107 +80,192 @@ export function GCProfileHeader({
   const compliance = complianceConfig[complianceLevel]
 
   return (
-    <HeaderContainer {...props}>
+    <Stack
+      style={{
+        backgroundColor: colors.bg.light.default,
+        borderBottomWidth: 1,
+        borderBottomColor: colors.border.light.default,
+      }}
+      {...props}
+    >
       {onBack && (
-        <TopBar>
-          <BackButton onPress={onBack}>
-            <ChevronLeft size={16} color="$color11" />
-            <BackText>Back</BackText>
-          </BackButton>
-        </TopBar>
+        <Row padding={spacing[4]} align="center" justify="space-between">
+          <Pressable
+            onPress={onBack}
+            style={({ pressed }) => ({
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: spacing[2],
+              padding: spacing[2],
+              borderRadius: borderRadius.m,
+              backgroundColor: pressed ? colors.gray[100] : 'transparent',
+            })}
+          >
+            <ChevronLeft size={16} color={colors.gray[700]} />
+            <Text size="sm" style={{ color: colors.gray[700] }}>
+              Back
+            </Text>
+          </Pressable>
+        </Row>
       )}
 
-      <MainContent>
-        <LogoContainer>
+      <Row
+        padding={spacing[4]}
+        paddingTop={spacing[2]}
+        gap={spacing[4]}
+        wrap
+      >
+        <View
+          style={{
+            width: 80,
+            height: 80,
+            borderRadius: borderRadius.l,
+            backgroundColor: colors.blue[100],
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+          }}
+        >
           {logoUrl ? (
-            <View
-              width="100%"
-              height="100%"
-              // Image would go here in actual implementation
-            />
+            <View style={{ width: '100%', height: '100%' }} />
           ) : (
-            <Building size={40} color="$blue10" />
+            <Building size={40} color={colors.blue[600]} />
           )}
-        </LogoContainer>
+        </View>
 
-        <InfoContainer>
-          <XStack alignItems="center" gap="$3" flexWrap="wrap">
-            <CompanyName>{name}</CompanyName>
-            <ComplianceBadge backgroundColor={compliance.bgColor}>
+        <Stack flex={1} minWidth={250} gap={spacing[2]}>
+          <Row align="center" gap={spacing[4]} wrap>
+            <Text size="xl" weight="bold" style={{ color: colors.gray[900] }}>
+              {name}
+            </Text>
+            <Row
+              paddingHorizontal={spacing[4]}
+              paddingVertical={spacing[2]}
+              borderRadius={borderRadius.m}
+              align="center"
+              gap={spacing[2]}
+              style={{ backgroundColor: compliance.bgColor }}
+            >
               <Shield size={14} color={compliance.color} />
-              <ComplianceText color={compliance.color}>
+              <Text size="sm" weight="semibold" style={{ color: compliance.color }}>
                 {complianceScore !== undefined ? `${complianceScore}%` : compliance.label}
-              </ComplianceText>
-            </ComplianceBadge>
-          </XStack>
+              </Text>
+            </Row>
+          </Row>
 
-          <ContactRow>
+          <Row gap={spacing[4]} wrap>
             {address && (
-              <ContactItem>
-                <MapPin size={14} color="$color9" />
-                <ContactText>{address}</ContactText>
-              </ContactItem>
+              <Row align="center" gap={spacing[2]}>
+                <MapPin size={14} color={colors.gray[500]} />
+                <Text size="sm" style={{ color: colors.gray[600] }}>
+                  {address}
+                </Text>
+              </Row>
             )}
             {phone && (
-              <ContactItem>
-                <Phone size={14} color="$color9" />
-                <ContactText>{phone}</ContactText>
-              </ContactItem>
+              <Row align="center" gap={spacing[2]}>
+                <Phone size={14} color={colors.gray[500]} />
+                <Text size="sm" style={{ color: colors.gray[600] }}>
+                  {phone}
+                </Text>
+              </Row>
             )}
             {email && (
-              <ContactItem>
-                <Mail size={14} color="$color9" />
-                <ContactLink>{email}</ContactLink>
-              </ContactItem>
+              <Row align="center" gap={spacing[2]}>
+                <Mail size={14} color={colors.gray[500]} />
+                <Text size="sm" style={{ color: colors.blue[600] }}>
+                  {email}
+                </Text>
+              </Row>
             )}
             {website && (
-              <ContactItem>
-                <Globe size={14} color="$color9" />
-                <ContactLink>{website}</ContactLink>
-              </ContactItem>
+              <Row align="center" gap={spacing[2]}>
+                <Globe size={14} color={colors.gray[500]} />
+                <Text size="sm" style={{ color: colors.blue[600] }}>
+                  {website}
+                </Text>
+              </Row>
             )}
-          </ContactRow>
+          </Row>
 
           {memberSince && (
-            <ContactRow>
-              <ContactItem>
-                <Calendar size={14} color="$color9" />
-                <ContactText>Member since {memberSince}</ContactText>
-              </ContactItem>
-            </ContactRow>
+            <Row gap={spacing[4]} wrap>
+              <Row align="center" gap={spacing[2]}>
+                <Calendar size={14} color={colors.gray[500]} />
+                <Text size="sm" style={{ color: colors.gray[600] }}>
+                  Member since {memberSince}
+                </Text>
+              </Row>
+            </Row>
           )}
-        </InfoContainer>
-      </MainContent>
+        </Stack>
+      </Row>
 
-      <StatsContainer>
+      <Row padding={spacing[4]} paddingTop={0} gap={spacing[4]} wrap>
         {activeSubcontractors !== undefined && (
-          <StatCard>
-            <XStack alignItems="center" gap="$2">
-              <Users size={16} color="$blue10" />
-              <StatValue>{activeSubcontractors}</StatValue>
-            </XStack>
-            <StatLabel>Active Subcontractors</StatLabel>
-          </StatCard>
+          <Stack
+            padding={spacing[4]}
+            style={{
+              backgroundColor: colors.gray[50],
+              borderRadius: borderRadius.m,
+              minWidth: 120,
+            }}
+            gap={spacing[2]}
+          >
+            <Row align="center" gap={spacing[2]}>
+              <Users size={16} color={colors.blue[600]} />
+              <Text size="lg" weight="bold" style={{ color: colors.gray[900] }}>
+                {activeSubcontractors}
+              </Text>
+            </Row>
+            <Text size="xs" style={{ color: colors.gray[500] }}>
+              Active Subcontractors
+            </Text>
+          </Stack>
         )}
         {activeProjects !== undefined && (
-          <StatCard>
-            <XStack alignItems="center" gap="$2">
-              <Building size={16} color="$purple10" />
-              <StatValue>{activeProjects}</StatValue>
-            </XStack>
-            <StatLabel>Active Projects</StatLabel>
-          </StatCard>
+          <Stack
+            padding={spacing[4]}
+            style={{
+              backgroundColor: colors.gray[50],
+              borderRadius: borderRadius.m,
+              minWidth: 120,
+            }}
+            gap={spacing[2]}
+          >
+            <Row align="center" gap={spacing[2]}>
+              <Building size={16} color={colors.violet[600]} />
+              <Text size="lg" weight="bold" style={{ color: colors.gray[900] }}>
+                {activeProjects}
+              </Text>
+            </Row>
+            <Text size="xs" style={{ color: colors.gray[500] }}>
+              Active Projects
+            </Text>
+          </Stack>
         )}
         {activePolicies !== undefined && (
-          <StatCard>
-            <XStack alignItems="center" gap="$2">
-              <FileText size={16} color="$green10" />
-              <StatValue>{activePolicies}</StatValue>
-            </XStack>
-            <StatLabel>Active Policies</StatLabel>
-          </StatCard>
+          <Stack
+            padding={spacing[4]}
+            style={{
+              backgroundColor: colors.gray[50],
+              borderRadius: borderRadius.m,
+              minWidth: 120,
+            }}
+            gap={spacing[2]}
+          >
+            <Row align="center" gap={spacing[2]}>
+              <FileText size={16} color={colors.green[600]} />
+              <Text size="lg" weight="bold" style={{ color: colors.gray[900] }}>
+                {activePolicies}
+              </Text>
+            </Row>
+            <Text size="xs" style={{ color: colors.gray[500] }}>
+              Active Policies
+            </Text>
+          </Stack>
         )}
-      </StatsContainer>
-    </HeaderContainer>
+      </Row>
+    </Stack>
   )
 }

@@ -1,4 +1,4 @@
-import { Slider, Text, XStack, YStack } from '@unicornlove/ui'
+import { Slider, Text, Row, Stack } from '@scaffald/ui'
 import { RIASEC_DIMENSIONS, type RiasecScores } from '../config/career-assessment-schema'
 
 interface RiasecQuickAssessmentProps {
@@ -22,86 +22,71 @@ export function RiasecQuickAssessment({
   onChange,
   disabled = false,
 }: RiasecQuickAssessmentProps) {
-  const handleSliderChange = (key: keyof RiasecScores, newValue: number[]) => {
+  const handleSliderChange = (key: keyof RiasecScores, newValue: number) => {
     onChange({
       ...value,
-      [key]: newValue[0],
+      [key]: newValue,
     })
   }
 
   return (
-    <YStack gap="$4" width="100%">
-      <YStack gap="$2">
-        <Text fontSize="$3" fontWeight="600" color="$color12">
-          Rate Your Interests
-        </Text>
-        <Text fontSize="$2" color="$color11">
+    <Stack gap={16} width="100%">
+      <Stack gap={8}>
+        <Text color="$gray11">Rate Your Interests</Text>
+        <Text color="$gray11">
           Move the sliders to indicate how much you agree with each statement (1 = Disagree, 5 =
           Strongly Agree)
         </Text>
-      </YStack>
+      </Stack>
 
       {RIASEC_DIMENSIONS.map((dimension) => (
-        <YStack key={dimension.key} gap="$3">
-          <XStack gap="$3" alignItems="center">
-            <YStack flex={1} gap="$1">
-              <Text fontSize="$4" fontWeight="600">
-                {dimension.label}
-              </Text>
-              <Text fontSize="$2" color="$color11">
-                {dimension.description}
-              </Text>
-            </YStack>
-            <XStack
+        <Stack key={dimension.key} gap={12}>
+          <Row gap={12} align="center">
+            <Stack style={{ flex: 1 }} gap={4}>
+              <Text>{dimension.label}</Text>
+              <Text color="$gray11">{dimension.description}</Text>
+            </Stack>
+            <Row
               width={60}
               height={32}
-              alignItems="center"
+              align="center"
               borderWidth={1}
               borderColor="$borderColor"
-              paddingHorizontal="$2"
+              paddingHorizontal={8}
             >
-              <Text fontSize="$6" fontWeight="bold">
-                {value[dimension.key]}
-              </Text>
-            </XStack>
-          </XStack>
+              <Text>{value[dimension.key]}</Text>
+            </Row>
+          </Row>
 
-          <XStack alignItems="center" gap="$3">
-            <Text fontSize="$2" color="$color10" width={20}>
+          <Row align="center" gap={12}>
+            <Text color="$gray11" style={{ width: 20 }}>
               1
             </Text>
-            <YStack flex={1}>
+            <Stack style={{ flex: 1 }}>
               <Slider
-                value={[value[dimension.key]]}
+                value={value[dimension.key]}
                 onValueChange={(newValue) => handleSliderChange(dimension.key, newValue)}
                 min={1}
                 max={5}
                 step={1}
                 disabled={disabled}
-              >
-                <Slider.Track height={8}>
-                  <Slider.TrackActive />
-                </Slider.Track>
-                <Slider.Thumb index={0} circular size={24} />
-              </Slider>
-            </YStack>
-            <Text fontSize="$2" color="$color10" width={20}>
+              />
+            </Stack>
+            <Text color="$gray11" style={{ width: 20 }}>
               5
             </Text>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       ))}
 
-      <YStack gap="$2" padding="$3" borderWidth={1} borderColor="$blue6">
-        <Text fontSize="$3" fontWeight="600" color="$blue11">
-          💡 What is RIASEC?
-        </Text>
-        <Text fontSize="$2" color="$blue11">
+      <Stack gap={8} padding="sm" borderWidth={1} borderColor="$blue6">
+        <Text color="$blue11">💡 What is RIASEC?</Text>
+        <Text color="$blue11">
           RIASEC (Holland Codes) is a career interest model that helps match your personality to
           compatible occupations. Your scores help us recommend careers that align with your natural
           interests and work style.
         </Text>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

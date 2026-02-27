@@ -1,16 +1,16 @@
 /**
  * AIProcessingIndicator - AI processing indicator using Beyond UI
- * Migrated from Tamagui to Beyond UI
- */
-import { Row, Stack, Text, Spinner } from '@unicornlove/beyond-ui';
-import { CheckCircle, AlertCircle, Sparkles } from 'lucide-react';
 
-export type AIProcessingState = 'analyzing' | 'processing' | 'complete' | 'error';
+ */
+import { Row, Stack, Text, Spinner } from '@scaffald/ui'
+import { CheckCircle, AlertCircle, Sparkles } from 'lucide-react'
+
+export type AIProcessingState = 'analyzing' | 'processing' | 'complete' | 'error'
 
 interface AIProcessingIndicatorProps {
-  state: AIProcessingState;
-  message?: string;
-  progress?: number; // 0-100
+  state: AIProcessingState
+  message?: string
+  progress?: number // 0-100
 }
 
 const stateStyles = {
@@ -30,14 +30,14 @@ const stateStyles = {
     backgroundColor: 'var(--color-red-2)',
     borderColor: 'var(--color-red-6)',
   },
-};
+}
 
 const textColors = {
   analyzing: 'var(--color-blue-11)',
   processing: 'var(--color-blue-11)',
   complete: 'var(--color-green-11)',
   error: 'var(--color-red-11)',
-};
+}
 
 export default function AIProcessingIndicator({
   state,
@@ -47,17 +47,17 @@ export default function AIProcessingIndicator({
   const getDefaultMessage = () => {
     switch (state) {
       case 'analyzing':
-        return 'AI analyzing...';
+        return 'AI analyzing...'
       case 'processing':
-        return 'AI processing...';
+        return 'AI processing...'
       case 'complete':
-        return 'Analysis complete';
+        return 'Analysis complete'
       case 'error':
-        return 'Analysis failed, please retry';
+        return 'Analysis failed, please retry'
     }
-  };
+  }
 
-  const displayMessage = message || getDefaultMessage();
+  const displayMessage = message || getDefaultMessage()
 
   return (
     <Stack
@@ -82,11 +82,7 @@ export default function AIProcessingIndicator({
         {state === 'error' && <AlertCircle size={20} />}
 
         <Stack flex={1} gap={8}>
-          <Text
-            size="sm"
-            weight="medium"
-            style={{ color: textColors[state] }}
-          >
+          <Text size="sm" weight="medium" style={{ color: textColors[state] }}>
             {displayMessage}
           </Text>
           {state === 'processing' && progress !== undefined && (
@@ -113,5 +109,5 @@ export default function AIProcessingIndicator({
         </Stack>
       </Row>
     </Stack>
-  );
+  )
 }

@@ -1,6 +1,6 @@
 /**
  * Error Formatter for tRPC
- * REQ-292: Configure tRPC for production deployment
+ * Configure tRPC for production deployment
  * TASK-4: Configure environment-based error handling and sanitization
  *
  * Provides environment-aware error formatting:

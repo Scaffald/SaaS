@@ -1,6 +1,6 @@
 /**
  * Admin Compliance Components
- * REQ-2: Compliance Requirements Management
+ * Compliance Requirements Management
  */
 
 export { RequirementsList } from './RequirementsList'

@@ -1,25 +1,39 @@
-import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
-import { api } from '@scf/core/utils/api'
-import { AlertTriangle, X as CloseIcon, DownloadCloud } from '@tamagui/lucide-icons'
-import { memo } from 'react'
-import { Alert } from 'react-native'
-import { Button, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-import { useDispute } from '../hooks/useDispute'
-import { CheckProgressTracker } from './CheckProgressTracker'
-import { DisputeStatusTracker } from './DisputeStatusTracker'
-import { PrivacyControls } from './PrivacyControls'
+import { formatDate } from "@scf/core/features/profile/utils/date-formatting";
+import { useBackgroundCheck } from "@scf/core/utils/background-checks-sdk-hooks";
+import {
+  AlertTriangle,
+  X as CloseIcon,
+  DownloadCloud,
+} from "lucide-react-native";
+import { memo } from "react";
+import { Alert } from "react-native";
+import { Button, Separator, Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { useDispute } from "../hooks/useDispute";
+import { CheckProgressTracker } from "./CheckProgressTracker";
+import { DisputeStatusTracker } from "./DisputeStatusTracker";
+import { PrivacyControls } from "./PrivacyControls";
+import type { BackgroundCheck } from "@scaffald/sdk";
 import {
   type BackgroundCheckDocument,
   type BackgroundCheckSummary,
   getStatusMetadata,
   getStatusToneColors,
-} from './status.utils'
+} from "./status.utils";
+
+/** API can return check with extended fields beyond base BackgroundCheck */
+type CheckDetail = BackgroundCheck & {
+  status_history?: unknown;
+  component_statuses?: unknown;
+  estimated_completion_date?: string | null;
+  summary?: unknown;
+  findings?: unknown;
+};
 
 interface ResultsViewerProps {
-  checkId: string | null
-  summary?: BackgroundCheckSummary
-  onClose: () => void
-  onRequestDispute?: (checkId: string) => void
+  checkId: string | null;
+  summary?: BackgroundCheckSummary;
+  onClose: () => void;
+  onRequestDispute?: (checkId: string) => void;
 }
 
 export const ResultsViewer = memo(function ResultsViewer({
@@ -28,123 +42,133 @@ export const ResultsViewer = memo(function ResultsViewer({
   onClose,
   onRequestDispute,
 }: ResultsViewerProps) {
-  const getCheckQuery = api.backgroundChecks.getCheck.useQuery(
-    { background_check_id: checkId ?? '' },
-    {
-      enabled: Boolean(checkId),
-      refetchOnMount: false,
-      refetchOnWindowFocus: true,
-    }
-  )
-
-  const { disputes, isLoadingDisputes, hasActiveDispute, refetchDisputes } = useDispute({
-    checkId: checkId ?? null,
+  const getCheckQuery = useBackgroundCheck(checkId || undefined, {
     enabled: Boolean(checkId),
-  })
+  });
+
+  const { disputes, isLoadingDisputes, hasActiveDispute, refetchDisputes } =
+    useDispute({
+      checkId: checkId ?? null,
+      enabled: Boolean(checkId),
+    });
 
   if (!checkId) {
-    return null
+    return null;
   }
 
   if (getCheckQuery.isLoading || getCheckQuery.isFetching) {
     return (
-      <YStack
-        gap="$3"
-        padding="$4"
+      <Stack
+        gap={12}
+        padding="md"
         backgroundColor="$background"
-        borderRadius="$4"
+        borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <XStack gap="$2" alignItems="center">
-          <Spinner size="small" color="$color11" />
-          <Text fontSize="$3" color="$color11">
-            Loading background check details…
-          </Text>
-        </XStack>
-      </YStack>
-    )
+        <Row gap={8} align="center">
+          <Spinner size="sm" color="gray" />
+          <Text color="$gray11">Loading background check details…</Text>
+        </Row>
+      </Stack>
+    );
   }
 
-  if (getCheckQuery.isError || !getCheckQuery.data?.check) {
+  const data = getCheckQuery.data as typeof getCheckQuery.data & {
+    check?: CheckDetail;
+    documents?: unknown[];
+  };
+  const detail: CheckDetail | undefined = (data?.check ?? data) as
+    | CheckDetail
+    | undefined;
+  const documents = data?.documents ?? [];
+
+  if (getCheckQuery.isError || !detail) {
     return (
-      <YStack
-        gap="$3"
-        padding="$4"
+      <Stack
+        gap={12}
+        padding="md"
         backgroundColor="$background"
-        borderRadius="$4"
+        borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <XStack gap="$2" alignItems="center">
+        <Row gap={8} align="center">
           <AlertTriangle size={18} color="$red10" />
-          <Text fontSize="$3" color="$red11">
-            We couldn’t load your background check details. Try again.
+          <Text color="$red11">
+            We couldn't load your background check details. Try again.
           </Text>
-        </XStack>
-        <Button size="$3" variant="outlined" onPress={() => getCheckQuery.refetch()}>
+        </Row>
+        <Button
+          size="sm"
+          variant="outline"
+          onPress={() => getCheckQuery.refetch()}
+        >
           Retry
         </Button>
-      </YStack>
-    )
+      </Stack>
+    );
   }
+  const statusMeta = getStatusMetadata(detail.status);
+  const statusColors = getStatusToneColors(statusMeta.tone);
 
-  const detail = getCheckQuery.data.check
-  const documents = getCheckQuery.data.documents ?? []
-  const statusMeta = getStatusMetadata(detail.status)
-  const statusColors = getStatusToneColors(statusMeta.tone)
-
-  let completedAtFromHistory: string | null = null
+  let completedAtFromHistory: string | null = null;
   if (Array.isArray(detail.status_history)) {
     for (const entry of detail.status_history as unknown[]) {
-      if (!entry || typeof entry !== 'object') continue
-      const record = entry as Record<string, unknown>
-      const statusValue = typeof record.status === 'string' ? record.status : null
-      if (!statusValue || !statusValue.startsWith('completed')) continue
+      if (!entry || typeof entry !== "object") continue;
+      const record = entry as Record<string, unknown>;
+      const statusValue =
+        typeof record.status === "string" ? record.status : null;
+      if (!statusValue || !statusValue.startsWith("completed")) continue;
       const occurredAt =
-        typeof record.occurred_at === 'string' ? (record.occurred_at as string) : null
+        typeof record.occurred_at === "string"
+          ? (record.occurred_at as string)
+          : null;
       if (occurredAt) {
-        completedAtFromHistory = occurredAt
+        completedAtFromHistory = occurredAt;
       }
     }
   }
 
   return (
-    <YStack
-      gap="$4"
-      padding="$4"
+    <Stack
+      gap={16}
+      padding="md"
       backgroundColor="$background"
-      borderRadius="$4"
+      borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <XStack justifyContent="space-between" alignItems="center">
-        <YStack gap="$1">
-          <Text fontSize="$5" fontWeight="600" color="$color12">
-            {summary?.package?.display_name ?? 'Background check results'}
+      <Row justify="space-between" align="center">
+        <Stack gap={4}>
+          <Text color="$gray11">
+            {summary?.package?.display_name ?? "Background check results"}
           </Text>
-          <XStack gap="$2" alignItems="center">
-            <YStack
-              paddingHorizontal="$3"
-              paddingVertical="$1"
+          <Row gap={8} align="center">
+            <Stack
+              paddingHorizontal={12}
+              paddingVertical={4}
               backgroundColor={statusColors.background}
               borderWidth={1}
               borderColor={statusColors.border}
-              borderRadius="$3"
+              borderRadius={12}
             >
-              <Text fontSize="$2" fontWeight="600" color={statusColors.text}>
-                {statusMeta.label}
-              </Text>
-            </YStack>
-            <Text fontSize="$2" color="$color10">
+              <Text color={statusColors.text}>{statusMeta.label}</Text>
+            </Stack>
+            <Text color="$gray11">
               Last updated {formatDate(detail.updated_at)}
             </Text>
-          </XStack>
-        </YStack>
-        <Button size="$3" variant="outlined" icon={CloseIcon} onPress={onClose}>
+          </Row>
+        </Stack>
+        <Button
+          size="sm"
+          variant="outline"
+          iconStart={CloseIcon}
+          onPress={onClose}
+        >
           Close
         </Button>
-      </XStack>
+      </Row>
 
       <CheckProgressTracker
         status={detail.status}
@@ -163,114 +187,107 @@ export const ResultsViewer = memo(function ResultsViewer({
       />
 
       {onRequestDispute && summary?.status && (
-        <YStack
-          gap="$2"
-          padding="$3"
+        <Stack
+          gap={8}
+          padding="sm"
           backgroundColor="$color2"
-          borderRadius="$4"
+          borderRadius={16}
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <Text fontSize="$3" fontWeight="600" color="$color12">
-            Notice something inaccurate?
-          </Text>
-          <Text fontSize="$2" color="$color10">
-            Submit a dispute so our compliance team can review and correct any issues.
+          <Text color="$gray11">Notice something inaccurate?</Text>
+          <Text color="$gray11">
+            Submit a dispute so our compliance team can review and correct any
+            issues.
           </Text>
           <Button
-            size="$3"
-            theme="blue"
+            size="sm"
+            color="primary"
             disabled={hasActiveDispute}
             onPress={() => {
               if (checkId) {
-                onRequestDispute(checkId)
+                onRequestDispute(checkId);
               }
             }}
           >
-            {hasActiveDispute ? 'Dispute in progress' : 'Dispute results'}
+            {hasActiveDispute ? "Dispute in progress" : "Dispute results"}
           </Button>
-        </YStack>
+        </Stack>
       )}
 
-      {detail.summary && (
-        <YStack gap="$2">
-          <Text fontSize="$3" fontWeight="600" color="$color12">
-            Summary
+      {detail.summary != null && (
+        <Stack gap={8}>
+          <Text color="$gray11">Summary</Text>
+          <Text color="$gray11">
+            {String(
+              typeof detail.summary === "string"
+                ? detail.summary
+                : JSON.stringify(detail.summary)
+            )}
           </Text>
-          <Text fontSize="$2" color="$color10">
-            {detail.summary}
-          </Text>
-        </YStack>
+        </Stack>
       )}
 
       {detail.findings && (
-        <YStack gap="$2">
-          <Text fontSize="$3" fontWeight="600" color="$color12">
-            Findings
-          </Text>
-          <Text fontSize="$2" color="$color10">
+        <Stack gap={8}>
+          <Text color="$gray11">Findings</Text>
+          <Text color="$gray11">
             {JSON.stringify(detail.findings, null, 2)}
           </Text>
-        </YStack>
+        </Stack>
       )}
 
-      <YStack gap="$3">
-        <XStack justifyContent="space-between" alignItems="center">
-          <Text fontSize="$3" fontWeight="600" color="$color12">
-            Documents
-          </Text>
+      <Stack gap={12}>
+        <Row justify="space-between" align="center">
+          <Text color="$gray11">Documents</Text>
           <Button
-            size="$3"
-            variant="outlined"
-            icon={DownloadCloud}
+            size="sm"
+            variant="outline"
+            iconStart={DownloadCloud}
             onPress={() =>
               Alert.alert(
-                'Download coming soon',
-                'Downloadable reports will be available once signed report URLs are enabled.'
+                "Download coming soon",
+                "Downloadable reports will be available once signed report URLs are enabled."
               )
             }
             disabled={documents.length === 0}
           >
             Download report
           </Button>
-        </XStack>
+        </Row>
         {documents.length === 0 ? (
-          <Text fontSize="$2" color="$color10">
-            No documents uploaded yet.
-          </Text>
+          <Text color="$gray11">No documents uploaded yet.</Text>
         ) : (
-          <YStack gap="$2">
+          <Stack gap={8}>
             {documents.map((document: BackgroundCheckDocument) => (
-              <XStack
+              <Row
                 key={document.id}
-                justifyContent="space-between"
-                alignItems="center"
-                padding="$3"
+                justify="space-between"
+                align="center"
+                padding="sm"
                 backgroundColor="$color2"
-                borderRadius="$3"
+                borderRadius={12}
                 borderWidth={1}
                 borderColor="$borderColor"
               >
-                <YStack gap="$1">
-                  <Text fontSize="$3" color="$color12">
-                    {document.file_name}
-                  </Text>
-                  <Text fontSize="$2" color="$color10">
+                <Stack gap={4}>
+                  <Text color="$gray11">{document.file_name}</Text>
+                  <Text color="$gray11">
                     Uploaded {formatDate(document.uploaded_at)}
                   </Text>
-                </YStack>
-                <Button size="$2" variant="outlined" disabled>
+                </Stack>
+                <Button size="sm" variant="outline" disabled>
                   View
                 </Button>
-              </XStack>
+              </Row>
             ))}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
 
       <Separator />
 
       <PrivacyControls checkId={checkId} metadata={detail.metadata} />
-    </YStack>
-  )
-})
+    </Stack>
+  );
+});

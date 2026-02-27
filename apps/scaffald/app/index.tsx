@@ -1,12 +1,12 @@
 import { AUTH_ROUTES, ROUTES } from '@scf/core/constants/routes'
 import { continueOAuthFlowIfPending } from '@scf/core/features/oauth/utils/passthrough'
-import { api } from '@scf/core/utils/api'
 import { supabase } from '@scf/core/utils/supabase/client'
+import { usePrerequisites } from '@scaffald/sdk/react'
 import { useUser } from '@scf/core/utils/useUser'
 import { useLocalSearchParams, useRouter, useSegments } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { Platform } from 'react-native'
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack } from '@scaffald/ui'
 
 export default function RootIndex() {
   const { user, isPending } = useUser()
@@ -25,13 +25,10 @@ export default function RootIndex() {
   const [isRouterReady, setIsRouterReady] = useState(false)
 
   // Check prerequisites status for authenticated users
-  const { data: prereqStatus, isLoading: isCheckingPrereqs } = api.prerequisites.check.useQuery(
-    undefined,
-    {
-      enabled: !!user && !isVerifying, // Only check when user is authenticated and not verifying
-      staleTime: 60000, // Cache for 1 minute
-    }
-  )
+  const { data: prereqStatus, isLoading: isCheckingPrereqs } = usePrerequisites({
+    enabled: !!user && !isVerifying, // Only check when user is authenticated and not verifying
+    staleTime: 60000, // Cache for 1 minute
+  })
 
   // Check if router is ready
   useEffect(() => {
@@ -106,7 +103,7 @@ export default function RootIndex() {
     const performNavigation = async () => {
       try {
         if (user) {
-          // Check for pending OAuth authorization (Task 12: OAuth passthrough)
+          // Check for pending OAuth authorization (OAuth passthrough)
           const continuedOAuth = await continueOAuthFlowIfPending()
           if (continuedOAuth) {
             // OAuth flow will handle redirect
@@ -116,7 +113,7 @@ export default function RootIndex() {
           // Check prerequisites and route accordingly
           if (!prereqStatus?.isComplete) {
             console.log('Prerequisites incomplete, navigating to onboarding')
-            router.replace('/onboarding')
+            router.replace(ROUTES.ONBOARDING.path)
           } else {
             console.log('Prerequisites complete, navigating to dashboard')
             router.replace(ROUTES.DASHBOARD.path)
@@ -156,37 +153,35 @@ export default function RootIndex() {
   // Show loading state while verifying magic link
   if (isVerifying) {
     return (
-      <YStack flex={1} justifyContent="center" alignItems="center">
+      <Stack justify="center" align="center">
         <Text>Verifying your email...</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   // Show error if verification failed
   if (verificationError) {
     return (
-      <YStack flex={1} justifyContent="center" alignItems="center" padding="$4">
-        <Text color="$red10" textAlign="center" marginBottom="$4">
-          Verification failed: {verificationError}
-        </Text>
-        <Text textAlign="center">Please try requesting a new magic link.</Text>
-      </YStack>
+      <Stack justify="center" align="center" padding={16}>
+        <Text color="red">Verification failed: {verificationError}</Text>
+        <Text>Please try requesting a new magic link.</Text>
+      </Stack>
     )
   }
 
   // Show loading state while checking auth, prerequisites, or waiting for navigation
   if (isPending || !isRouterReady || !hasNavigated || (user && isCheckingPrereqs)) {
     return (
-      <YStack flex={1} justifyContent="center" alignItems="center">
+      <Stack justify="center" align="center">
         <Text>Loading...</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   // This should rarely be reached, but provides a fallback
   return (
-    <YStack flex={1} justifyContent="center" alignItems="center">
+    <Stack justify="center" align="center">
       <Text>Initializing...</Text>
-    </YStack>
+    </Stack>
   )
 }

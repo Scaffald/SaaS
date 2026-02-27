@@ -35,6 +35,14 @@ export default defineConfig({
         find: /^react-native\//,
         replacement: reactNativeMockPath,
       },
+      // More specific @scf/core aliases must come before the generic @scf/core
+      {
+        find: "@scf/core/constants/routes",
+        replacement: resolve(
+          workspaceRoot,
+          "tests/infrastructure/vitest/mocks/routes.ts",
+        ),
+      },
       {
         find: "@scf/core",
         replacement: resolve(workspaceRoot, "packages/scf-core"),
@@ -42,6 +50,20 @@ export default defineConfig({
       {
         find: "@unicornlove/ui",
         replacement: resolve(workspaceRoot, "packages/ui/src"),
+      },
+      {
+        find: "@scaffald/ui/tokens",
+        replacement: resolve(
+          workspaceRoot,
+          "tests/infrastructure/vitest/mocks/beyond-ui-tokens.ts",
+        ),
+      },
+      {
+        find: "@scaffald/ui",
+        replacement: resolve(
+          workspaceRoot,
+          "tests/infrastructure/vitest/mocks/beyond-ui.tsx",
+        ),
       },
       {
         find: "@scf/supabase",
@@ -81,13 +103,6 @@ export default defineConfig({
         replacement: resolve(
           workspaceRoot,
           "tests/infrastructure/vitest/mocks/expo-localization.ts",
-        ),
-      },
-      {
-        find: "@scf/core/constants/routes",
-        replacement: resolve(
-          workspaceRoot,
-          "tests/infrastructure/vitest/mocks/routes.ts",
         ),
       },
       {

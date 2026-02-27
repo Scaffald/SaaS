@@ -1,6 +1,6 @@
-import { CustomCheckbox } from '@unicornlove/ui'
+import { Checkbox } from '@scaffald/ui'
 import { useCallback } from 'react'
-import { Label, Text, XStack, YStack } from '@unicornlove/ui'
+import { Label, Text, Row, Stack } from '@scaffald/ui'
 import type { ParentSkill } from '../../types/profile-skills-types'
 import { SimpleSkillAutocomplete } from './SimpleSkillAutocomplete'
 
@@ -54,39 +54,31 @@ export function SkillSearchForm({
   )
 
   return (
-    <YStack gap="$4">
-      <XStack justifyContent="space-between" alignItems="center">
-        <Text fontWeight="600" fontSize="$4">
-          Search for Skills
-        </Text>
+    <Stack gap={16}>
+      <Row justify="space-between" align="center">
+        <Text>Search for Skills</Text>
 
         {/* Taxonomy Checkboxes */}
-        <XStack gap="$3" alignItems="center">
-          <XStack gap="$2" alignItems="center">
-            <CustomCheckbox
+        <Row gap={12} align="center">
+          <Row gap={8} align="center">
+            <Checkbox
               checked={searchCSI}
-              onCheckedChange={onSearchCSIChange}
+              onChange={onSearchCSIChange}
               aria-label="Filter CSI taxonomy"
-              testID="search-csi"
             />
-            <Label fontSize="$2" onPress={() => onSearchCSIChange(!searchCSI)}>
-              CSI
-            </Label>
-          </XStack>
+            <Label onPress={() => onSearchCSIChange(!searchCSI)}>CSI</Label>
+          </Row>
 
-          <XStack gap="$2" alignItems="center">
-            <CustomCheckbox
+          <Row gap={8} align="center">
+            <Checkbox
               checked={searchONET}
-              onCheckedChange={onSearchONETChange}
+              onChange={onSearchONETChange}
               aria-label="Filter O*NET taxonomy"
-              testID="search-onet"
             />
-            <Label fontSize="$2" onPress={() => onSearchONETChange(!searchONET)}>
-              O*NET
-            </Label>
-          </XStack>
-        </XStack>
-      </XStack>
+            <Label onPress={() => onSearchONETChange(!searchONET)}>O*NET</Label>
+          </Row>
+        </Row>
+      </Row>
 
       {/* Simple Skill Autocomplete Component */}
       <SimpleSkillAutocomplete
@@ -98,6 +90,6 @@ export function SkillSearchForm({
         placeholder="Search for a skill (e.g., Concrete, Plumbing)..."
         existingSkillIds={existingSkillIds}
       />
-    </YStack>
+    </Stack>
   )
 }

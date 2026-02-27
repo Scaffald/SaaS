@@ -1,6 +1,6 @@
 import { JobForm } from '@scf/core/features/office/components/JobForm'
-import { api } from '@scf/core/utils/api'
-import { Spinner, YStack } from '@unicornlove/ui'
+import { useJobDetails } from '@scf/core/utils/jobs-sdk-hooks'
+import { Spinner, Stack } from '@scaffald/ui'
 import { useLocalSearchParams } from 'expo-router'
 
 export default function EditJobPage() {
@@ -8,31 +8,31 @@ export default function EditJobPage() {
 
   if (!id) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center">
-        <YStack>Invalid job ID</YStack>
-      </YStack>
+      <Stack align="center" justify="center">
+        <Stack>Invalid job ID</Stack>
+      </Stack>
     )
   }
 
-  const { data, isLoading } = api.office.getJob.useQuery({ id }, { enabled: !!id })
+  const { data, isLoading } = useJobDetails(id || undefined, { enabled: !!id })
 
   if (isLoading) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center">
-        <Spinner size="large" />
-      </YStack>
+      <Stack align="center" justify="center">
+        <Spinner size="lg" />
+      </Stack>
     )
   }
 
-  if (!data?.job) {
+  if (!data) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center">
-        <YStack>Job not found</YStack>
-      </YStack>
+      <Stack align="center" justify="center">
+        <Stack>Job not found</Stack>
+      </Stack>
     )
   }
 
-  const job = data.job as Record<string, unknown>
+  const job = data as unknown as Record<string, unknown>
 
   return (
     <JobForm

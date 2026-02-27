@@ -1,6 +1,6 @@
 /**
  * SLA Notification Banner Component
- * REQ-6, TASK-12: SLA Notification System for CCPA Deadlines
+ * SLA notification system for CCPA deadlines
  *
  * Displays a prominent banner on the CCPA dashboard when there are
  * overdue or approaching deadline requests.
@@ -8,7 +8,7 @@
 
 import React, { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Card } from '@scaffald/ui'
 import { trpc } from '../../../lib/trpc'
 import {
   generateSLASummary,

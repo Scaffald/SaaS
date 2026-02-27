@@ -10,7 +10,7 @@ import {
   Info,
   Loader2,
 } from 'lucide-react';
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card } from '@scaffald/ui';
 import { useBrokerAcknowledgements } from '../../hooks/useBrokerAcknowledgements';
 import { AcknowledgementCoverageItem } from '../../types';
 import CoverageVerificationSection from './CoverageVerificationSection';

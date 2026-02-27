@@ -1,7 +1,7 @@
 /**
  * SyncStatus - Sync status indicator using Beyond UI
  */
-import { Row, Text } from '@unicornlove/beyond-ui';
+import { Row, Text } from '@scaffald/ui';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import type React from 'react';
 

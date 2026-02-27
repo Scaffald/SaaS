@@ -1,12 +1,17 @@
-import { api } from '@scf/core/utils/api';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  useProfileWizardProgress,
+  useSaveProfileWizardStepMutation,
+  useCompleteProfileWizardMutation,
+  type ProfileWizardSaveStepParams,
+} from "@scf/core/utils/profile-wizard-sdk-hooks";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   DEFAULT_WIZARD_PROGRESS,
   PROFILE_WIZARD_STEP_META,
   PROFILE_WIZARD_STEPS,
   type ProfileWizardProgress,
   type ProfileWizardStepId,
-} from '../utils/wizardSteps';
+} from "../utils/wizardSteps";
 
 export interface GeneralInfoStepData {
   firstName: string;
@@ -18,7 +23,7 @@ export interface GeneralInfoStepData {
 export interface SkillEntry {
   id: string;
   name: string;
-  taxonomy: 'csi' | 'onet';
+  taxonomy: "csi" | "onet";
   proficiency: number;
 }
 
@@ -74,57 +79,15 @@ export type WizardStepPayloads = {
 export type WizardStepData = Partial<WizardStepPayloads>;
 
 export interface SaveStepInput<
-  TStep extends ProfileWizardStepId = ProfileWizardStepId,
+  TStep extends ProfileWizardStepId = ProfileWizardStepId
 > {
   step: TStep;
   data: WizardStepPayloads[TStep];
   skip?: boolean;
 }
 
-interface UseQueryLike<TData> {
-  data: TData | undefined;
-  isLoading: boolean;
-  isError: boolean;
-  refetch: () => Promise<unknown>;
-}
-
-interface UseMutationLike<TData, TVariables> {
-  mutateAsync: (variables: TVariables) => Promise<TData>;
-  isPending: boolean;
-}
-
-interface ProfileWizardApi {
-  getProgress: {
-    useQuery: (
-      input?: undefined,
-      options?: {
-        enabled?: boolean;
-        staleTime?: number;
-      },
-    ) => UseQueryLike<ProfileWizardProgressResponse>;
-  };
-  saveStep: {
-    useMutation: () => UseMutationLike<
-      ProfileWizardProgressResponse,
-      SaveStepInput
-    >;
-  };
-  complete: {
-    useMutation: () => UseMutationLike<
-      ProfileWizardProgressResponse,
-      { celebrate?: boolean }
-    >;
-  };
-}
-
 export interface ProfileWizardProgressResponse extends ProfileWizardProgress {
   stepData: WizardStepData;
-}
-
-interface ProfileWizardUtils {
-  getProgress: {
-    invalidate: () => Promise<unknown>;
-  };
 }
 
 export interface WizardState {
@@ -143,11 +106,11 @@ export interface UseProfileWizardReturn {
   goNext: () => void;
   goBack: () => void;
   saveStep: <TStep extends ProfileWizardStepId>(
-    input: SaveStepInput<TStep>,
+    input: SaveStepInput<TStep>
   ) => Promise<ProfileWizardProgressResponse>;
-  completeWizard: (
-    options?: { celebrate?: boolean },
-  ) => Promise<ProfileWizardProgressResponse>;
+  completeWizard: (options?: {
+    celebrate?: boolean;
+  }) => Promise<ProfileWizardProgressResponse>;
   markStepSkipped: (step: ProfileWizardStepId) => void;
   refresh: () => Promise<void>;
   isLoading: boolean;
@@ -163,16 +126,9 @@ const DEFAULT_STATE: WizardState = {
   lastSavedAt: null,
 };
 
-const profileWizardApi =
-  (api as unknown as { profileWizard: ProfileWizardApi }).profileWizard;
-
-const profileWizardUtils = () =>
-  (api.useUtils() as unknown as { profileWizard: ProfileWizardUtils })
-    .profileWizard;
-
 function getAdjacentStep(
   current: ProfileWizardStepId,
-  direction: 1 | -1,
+  direction: 1 | -1
 ): ProfileWizardStepId {
   const currentIndex = PROFILE_WIZARD_STEPS.indexOf(current);
   const nextIndex = currentIndex + direction;
@@ -187,7 +143,7 @@ function getAdjacentStep(
 
 function mergeProgress(
   response: ProfileWizardProgressResponse | undefined,
-  previousState: WizardState,
+  previousState: WizardState
 ): WizardState {
   if (!response) {
     return previousState;
@@ -212,27 +168,26 @@ function mergeProgress(
 }
 
 export function useProfileWizard(
-  initialStep?: ProfileWizardStepId,
+  initialStep?: ProfileWizardStepId
 ): UseProfileWizardReturn {
   const [state, setState] = useState<WizardState>({
     ...DEFAULT_STATE,
     currentStep: initialStep ?? DEFAULT_STATE.currentStep,
   });
 
-  const utils = profileWizardUtils();
-  const { data, isLoading, isError, refetch } = profileWizardApi.getProgress
-    .useQuery(undefined, {
-      staleTime: 60_000,
-    });
+  const { data, isLoading, isError, refetch } = useProfileWizardProgress({
+    staleTime: 60_000,
+  });
 
   useEffect(() => {
     if (!data) return;
 
     setState((prev) => ({
       ...mergeProgress(data, prev),
-      currentStep: initialStep && PROFILE_WIZARD_STEPS.includes(initialStep)
-        ? initialStep
-        : data.currentStep,
+      currentStep:
+        initialStep && PROFILE_WIZARD_STEPS.includes(initialStep)
+          ? initialStep
+          : data.currentStep,
     }));
   }, [data, initialStep]);
 
@@ -259,7 +214,7 @@ export function useProfileWizard(
     }));
   }, []);
 
-  const saveStepMutation = profileWizardApi.saveStep.useMutation();
+  const saveStepMutation = useSaveProfileWizardStepMutation();
 
   const saveStep = useCallback(
     async <TStep extends ProfileWizardStepId>(input: SaveStepInput<TStep>) => {
@@ -272,18 +227,18 @@ export function useProfileWizard(
         },
       }));
 
-      const result = await saveStepMutation.mutateAsync(input);
+      const result = await saveStepMutation.mutateAsync(
+        input as unknown as ProfileWizardSaveStepParams
+      );
 
       setState((prev) => ({
         ...mergeProgress(result, prev),
         isSaving: false,
       }));
 
-      await utils.getProgress.invalidate();
-
       return result;
     },
-    [saveStepMutation, utils],
+    [saveStepMutation]
   );
 
   const markStepSkipped = useCallback((step: ProfileWizardStepId) => {
@@ -291,14 +246,14 @@ export function useProfileWizard(
       ...prev,
       progress: {
         ...prev.progress,
-        completedSteps: prev.progress.completedSteps.filter((id) =>
-          id !== step
+        completedSteps: prev.progress.completedSteps.filter(
+          (id) => id !== step
         ),
       },
     }));
   }, []);
 
-  const completeMutation = profileWizardApi.complete.useMutation();
+  const completeMutation = useCompleteProfileWizardMutation();
 
   const completeWizard = useCallback(
     async (options?: { celebrate?: boolean }) => {
@@ -316,11 +271,9 @@ export function useProfileWizard(
         isCompleting: false,
       }));
 
-      await utils.getProgress.invalidate();
-
       return result;
     },
-    [completeMutation, utils],
+    [completeMutation]
   );
 
   const refresh = useCallback(async () => {

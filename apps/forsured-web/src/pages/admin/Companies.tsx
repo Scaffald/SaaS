@@ -1,7 +1,7 @@
 // src/pages/admin/Companies.tsx
 import React from 'react';
 import { Building } from 'lucide-react';
-import { Stack, Row, Text, H1, H2, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H1, H2, Card } from '@scaffald/ui';
 
 function AdminCompanies() {
   return (

@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { StepNavigation } from '../StepNavigation'
 
-vi.mock('tamagui', () => {
+vi.mock('@scaffald/ui', () => {
   const Stack = ({
     children,
     ...rest
@@ -35,8 +35,8 @@ vi.mock('tamagui', () => {
   } & Record<string, unknown>) => <span {...rest}>{children}</span>
 
   return {
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Button,
     Text,
   }

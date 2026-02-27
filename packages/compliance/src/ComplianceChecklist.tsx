@@ -1,8 +1,11 @@
 /**
  * ComplianceChecklist - Checklist for tracking compliance requirements
+ * Beyond UI Component Library
  */
 
-import { styled, YStack, XStack, Text, type YStackProps } from 'tamagui'
+import { Stack, Row, Text } from '@scaffald/ui'
+import { colors, spacing, borderRadius } from '@scaffald/ui/tokens'
+import type { StackProps } from '@scaffald/ui'
 import {
   CheckCircle,
   Circle,
@@ -11,285 +14,69 @@ import {
   ChevronDown,
   ChevronRight,
   FileText,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import { useState } from 'react'
+import { Pressable } from 'react-native'
+import type { ComponentType } from 'react'
 
 export type ChecklistItemStatus = 'completed' | 'pending' | 'in-progress' | 'overdue' | 'not-applicable'
 
 export interface ChecklistItem {
   id: string
-  /** Title of the item */
   title: string
-  /** Description */
   description?: string
-  /** Status */
   status: ChecklistItemStatus
-  /** Due date */
   dueDate?: string
-  /** Completed date */
   completedDate?: string
-  /** Assignee name */
   assignee?: string
-  /** Category/section */
   category?: string
-  /** Required for compliance */
   required?: boolean
-  /** Related document or link */
   documentUrl?: string
 }
 
-export interface ComplianceChecklistProps extends Omit<YStackProps, 'children'> {
-  /** Array of checklist items */
+export interface ComplianceChecklistProps extends Omit<StackProps, 'children'> {
   items: ChecklistItem[]
-  /** Title for the checklist */
   title?: string
-  /** Whether to group by category */
   groupByCategory?: boolean
-  /** Callback when item status changes */
   onStatusChange?: (itemId: string, newStatus: ChecklistItemStatus) => void
-  /** Callback when item is clicked */
   onItemPress?: (item: ChecklistItem) => void
 }
 
 const statusConfig: Record<
   ChecklistItemStatus,
-  { label: string; bgColor: string; textColor: string; icon: typeof CheckCircle }
+  { label: string; bgColor: string; textColor: string; icon: ComponentType<{ size: number; color: string }> }
 > = {
   completed: {
     label: 'Completed',
-    bgColor: '$green3',
-    textColor: '$green11',
+    bgColor: colors.green[100],
+    textColor: colors.green[700],
     icon: CheckCircle,
   },
   pending: {
     label: 'Pending',
-    bgColor: '$gray3',
-    textColor: '$gray11',
+    bgColor: colors.gray[100],
+    textColor: colors.gray[700],
     icon: Circle,
   },
   'in-progress': {
     label: 'In Progress',
-    bgColor: '$blue3',
-    textColor: '$blue11',
+    bgColor: colors.blue[100],
+    textColor: colors.blue[700],
     icon: Clock,
   },
   overdue: {
     label: 'Overdue',
-    bgColor: '$red3',
-    textColor: '$red11',
+    bgColor: colors.error[100],
+    textColor: colors.error[700],
     icon: AlertTriangle,
   },
   'not-applicable': {
     label: 'N/A',
-    bgColor: '$gray3',
-    textColor: '$gray9',
+    bgColor: colors.gray[100],
+    textColor: colors.gray[500],
     icon: Circle,
   },
 }
-
-const ChecklistContainer = styled(YStack, {
-  name: 'ComplianceChecklist',
-  backgroundColor: '$background',
-  borderRadius: '$lg',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  overflow: 'hidden',
-})
-
-const ChecklistHeader = styled(XStack, {
-  name: 'ComplianceChecklistHeader',
-  padding: '$3',
-  backgroundColor: '$color2',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-})
-
-const ChecklistTitle = styled(Text, {
-  name: 'ComplianceChecklistTitle',
-  fontSize: '$4',
-  fontWeight: '600',
-  color: '$color12',
-})
-
-const ProgressText = styled(Text, {
-  name: 'ChecklistProgressText',
-  fontSize: '$2',
-  color: '$color9',
-})
-
-const CategoryHeader = styled(XStack, {
-  name: 'ChecklistCategoryHeader',
-  padding: '$3',
-  backgroundColor: '$color3',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-  alignItems: 'center',
-  gap: '$2',
-  cursor: 'pointer',
-
-  hoverStyle: {
-    backgroundColor: '$color4',
-  },
-})
-
-const CategoryTitle = styled(Text, {
-  name: 'ChecklistCategoryTitle',
-  fontSize: '$3',
-  fontWeight: '600',
-  color: '$color11',
-  flex: 1,
-})
-
-const CategoryCount = styled(Text, {
-  name: 'ChecklistCategoryCount',
-  fontSize: '$2',
-  color: '$color9',
-})
-
-const ChecklistItem = styled(XStack, {
-  name: 'ChecklistItem',
-  padding: '$3',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-  gap: '$3',
-  alignItems: 'flex-start',
-
-  variants: {
-    isLast: {
-      true: {
-        borderBottomWidth: 0,
-      },
-    },
-  } as const,
-
-  hoverStyle: {
-    backgroundColor: '$color2',
-  },
-})
-
-const StatusIndicator = styled(XStack, {
-  name: 'ChecklistStatusIndicator',
-  width: 28,
-  height: 28,
-  borderRadius: '$full',
-  alignItems: 'center',
-  justifyContent: 'center',
-  cursor: 'pointer',
-
-  pressStyle: {
-    scale: 0.95,
-  },
-})
-
-const ItemContent = styled(YStack, {
-  name: 'ChecklistItemContent',
-  flex: 1,
-  gap: '$1',
-})
-
-const ItemHeader = styled(XStack, {
-  name: 'ChecklistItemHeader',
-  alignItems: 'center',
-  gap: '$2',
-})
-
-const ItemTitle = styled(Text, {
-  name: 'ChecklistItemTitle',
-  fontSize: '$3',
-  fontWeight: '500',
-  color: '$color12',
-  flex: 1,
-
-  variants: {
-    completed: {
-      true: {
-        textDecorationLine: 'line-through',
-        color: '$color9',
-      },
-    },
-  } as const,
-})
-
-const RequiredBadge = styled(Text, {
-  name: 'ChecklistRequiredBadge',
-  fontSize: '$1',
-  color: '$red11',
-  fontWeight: '600',
-})
-
-const ItemDescription = styled(Text, {
-  name: 'ChecklistItemDescription',
-  fontSize: '$2',
-  color: '$color9',
-})
-
-const ItemMeta = styled(XStack, {
-  name: 'ChecklistItemMeta',
-  gap: '$3',
-  marginTop: '$1',
-  flexWrap: 'wrap',
-})
-
-const MetaItem = styled(XStack, {
-  name: 'ChecklistMetaItem',
-  alignItems: 'center',
-  gap: '$1',
-})
-
-const MetaText = styled(Text, {
-  name: 'ChecklistMetaText',
-  fontSize: '$2',
-  color: '$color9',
-})
-
-const DueText = styled(Text, {
-  name: 'ChecklistDueText',
-  fontSize: '$2',
-
-  variants: {
-    overdue: {
-      true: {
-        color: '$red11',
-        fontWeight: '500',
-      },
-      false: {
-        color: '$color9',
-      },
-    },
-  } as const,
-})
-
-const DocumentLink = styled(XStack, {
-  name: 'ChecklistDocumentLink',
-  alignItems: 'center',
-  gap: '$1',
-  cursor: 'pointer',
-
-  hoverStyle: {
-    opacity: 0.7,
-  },
-})
-
-const DocumentText = styled(Text, {
-  name: 'ChecklistDocumentText',
-  fontSize: '$2',
-  color: '$blue10',
-})
-
-const EmptyState = styled(YStack, {
-  name: 'ChecklistEmptyState',
-  padding: '$6',
-  alignItems: 'center',
-  gap: '$2',
-})
-
-const EmptyText = styled(Text, {
-  name: 'ChecklistEmptyText',
-  fontSize: '$3',
-  color: '$color9',
-})
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString)
@@ -331,14 +118,31 @@ function CategorySection({
   const completedCount = items.filter((i) => i.status === 'completed').length
 
   return (
-    <YStack>
-      <CategoryHeader onPress={() => setExpanded(!expanded)}>
-        {expanded ? <ChevronDown size={16} color="$color9" /> : <ChevronRight size={16} color="$color9" />}
-        <CategoryTitle>{category}</CategoryTitle>
-        <CategoryCount>
+    <Stack>
+      <Pressable
+        onPress={() => setExpanded(!expanded)}
+        style={{
+          flexDirection: 'row',
+          padding: spacing[4],
+          backgroundColor: colors.gray[100],
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border.light.default,
+          alignItems: 'center',
+          gap: spacing[2],
+        }}
+      >
+        {expanded ? (
+          <ChevronDown size={16} color={colors.gray[500]} />
+        ) : (
+          <ChevronRight size={16} color={colors.gray[500]} />
+        )}
+        <Text size="sm" weight="semibold" style={{ flex: 1, color: colors.gray[700] }}>
+          {category}
+        </Text>
+        <Text size="xs" style={{ color: colors.gray[500] }}>
           {completedCount}/{items.length}
-        </CategoryCount>
-      </CategoryHeader>
+        </Text>
+      </Pressable>
       {expanded &&
         items.map((item, index) => (
           <ChecklistItemRow
@@ -349,7 +153,7 @@ function CategorySection({
             onItemPress={onItemPress}
           />
         ))}
-    </YStack>
+    </Stack>
   )
 }
 
@@ -376,46 +180,96 @@ function ChecklistItemRow({
   }
 
   return (
-    <ChecklistItem isLast={isLast}>
-      <StatusIndicator backgroundColor={config.bgColor} onPress={handleStatusToggle}>
+    <Row
+      padding={spacing[4]}
+      style={{
+        borderBottomWidth: isLast ? 0 : 1,
+        borderBottomColor: colors.border.light.default,
+      }}
+      gap={spacing[4]}
+      align="flex-start"
+    >
+      <Pressable
+        onPress={handleStatusToggle}
+        style={{
+          width: 28,
+          height: 28,
+          borderRadius: 14,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: config.bgColor,
+        }}
+      >
         <StatusIcon size={16} color={config.textColor} />
-      </StatusIndicator>
+      </Pressable>
 
-      <ItemContent onPress={() => onItemPress?.(item)}>
-        <ItemHeader>
-          <ItemTitle completed={item.status === 'completed'}>{item.title}</ItemTitle>
-          {item.required && <RequiredBadge>Required</RequiredBadge>}
-        </ItemHeader>
+      <Pressable onPress={() => onItemPress?.(item)} style={{ flex: 1 }}>
+        <Stack gap={spacing[2]}>
+          <Row align="center" gap={spacing[2]}>
+            <Text
+              size="sm"
+              weight="medium"
+              style={{
+                flex: 1,
+                color: colors.gray[900],
+                textDecorationLine: item.status === 'completed' ? 'line-through' : undefined,
+              }}
+            >
+              {item.title}
+            </Text>
+            {item.required && (
+              <Text size="xs" weight="semibold" style={{ color: colors.error[700] }}>
+                Required
+              </Text>
+            )}
+          </Row>
 
-        {item.description && <ItemDescription>{item.description}</ItemDescription>}
+          {item.description && (
+            <Text size="xs" style={{ color: colors.gray[500] }}>
+              {item.description}
+            </Text>
+          )}
 
-        <ItemMeta>
-          {item.dueDate && item.status !== 'completed' && (
-            <MetaItem>
-              <Clock size={12} color={overdue ? '$red11' : '$color9'} />
-              <DueText overdue={overdue}>Due: {formatDate(item.dueDate)}</DueText>
-            </MetaItem>
-          )}
-          {item.completedDate && item.status === 'completed' && (
-            <MetaItem>
-              <CheckCircle size={12} color="$green11" />
-              <MetaText>Completed: {formatDate(item.completedDate)}</MetaText>
-            </MetaItem>
-          )}
-          {item.assignee && (
-            <MetaItem>
-              <MetaText>Assignee: {item.assignee}</MetaText>
-            </MetaItem>
-          )}
-          {item.documentUrl && (
-            <DocumentLink>
-              <FileText size={12} color="$blue10" />
-              <DocumentText>View Document</DocumentText>
-            </DocumentLink>
-          )}
-        </ItemMeta>
-      </ItemContent>
-    </ChecklistItem>
+          <Row gap={spacing[4]} wrap style={{ marginTop: spacing[2] }}>
+            {item.dueDate && item.status !== 'completed' && (
+              <Row align="center" gap={spacing[2]}>
+                <Clock size={12} color={overdue ? colors.error[700] : colors.gray[500]} />
+                <Text
+                  size="xs"
+                  style={{
+                    color: overdue ? colors.error[700] : colors.gray[500],
+                    fontWeight: overdue ? '500' : '400',
+                  }}
+                >
+                  Due: {formatDate(item.dueDate)}
+                </Text>
+              </Row>
+            )}
+            {item.completedDate && item.status === 'completed' && (
+              <Row align="center" gap={spacing[2]}>
+                <CheckCircle size={12} color={colors.green[700]} />
+                <Text size="xs" style={{ color: colors.gray[500] }}>
+                  Completed: {formatDate(item.completedDate)}
+                </Text>
+              </Row>
+            )}
+            {item.assignee && (
+              <Text size="xs" style={{ color: colors.gray[500] }}>
+                Assignee: {item.assignee}
+              </Text>
+            )}
+            {item.documentUrl && (
+              <Row align="center" gap={spacing[2]}>
+                <FileText size={12} color={colors.blue[600]} />
+                <Text size="xs" style={{ color: colors.blue[600] }}>
+                  View Document
+                </Text>
+              </Row>
+            )}
+          </Row>
+        </Stack>
+      </Pressable>
+    </Row>
   )
 }
 
@@ -431,19 +285,41 @@ export function ComplianceChecklist({
   const totalRequired = items.filter((i) => i.required !== false).length
 
   return (
-    <ChecklistContainer {...props}>
-      <ChecklistHeader>
-        <ChecklistTitle>{title}</ChecklistTitle>
-        <ProgressText>
+    <Stack
+      style={{
+        backgroundColor: colors.bg.light.default,
+        borderRadius: borderRadius.l,
+        borderWidth: 1,
+        borderColor: colors.border.light.default,
+        overflow: 'hidden',
+      }}
+      {...props}
+    >
+      <Row
+        padding={spacing[4]}
+        style={{
+          backgroundColor: colors.gray[50],
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border.light.default,
+        }}
+        align="center"
+        justify="space-between"
+      >
+        <Text size="sm" weight="semibold" style={{ color: colors.gray[900] }}>
+          {title}
+        </Text>
+        <Text size="xs" style={{ color: colors.gray[500] }}>
           {completedCount}/{totalRequired} completed
-        </ProgressText>
-      </ChecklistHeader>
+        </Text>
+      </Row>
 
       {items.length === 0 ? (
-        <EmptyState>
-          <CheckCircle size={32} color="$color7" />
-          <EmptyText>No checklist items</EmptyText>
-        </EmptyState>
+        <Stack padding={spacing[6]} align="center" gap={spacing[2]}>
+          <CheckCircle size={32} color={colors.gray[400]} />
+          <Text size="sm" style={{ color: colors.gray[500] }}>
+            No checklist items
+          </Text>
+        </Stack>
       ) : groupByCategory ? (
         Array.from(groupItemsByCategory(items).entries()).map(([category, categoryItems]) => (
           <CategorySection
@@ -465,6 +341,6 @@ export function ComplianceChecklist({
           />
         ))
       )}
-    </ChecklistContainer>
+    </Stack>
   )
 }

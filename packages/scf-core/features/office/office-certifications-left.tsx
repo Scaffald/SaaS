@@ -1,61 +1,81 @@
-import { api } from '@scf/core/utils/api'
-import { CustomCheckbox, DashboardWidget, ResponsiveSelect } from '@unicornlove/ui'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus, Save, X } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-import { useEffect, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import {
+  useCreateOfficeCertificationMutation,
+  useUpdateOfficeCertificationMutation,
+} from "@scf/core/utils/office-certifications-sdk-hooks";
+import {
+  Checkbox,
+  DashboardWidget,
+  ResponsiveSelect,
+  useThemeContext,
+} from "@scaffald/ui";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Plus, Save, X } from "lucide-react-native";
+import { useToast } from "@scaffald/ui";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
   Button,
   H4,
   Input,
-  Label,
-  Spinner,
   Text,
   TextArea,
   useWindowDimensions,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
-import { z } from 'zod'
+  Row,
+  Stack,
+} from "@scaffald/ui";
+import { z } from "zod";
+import { colors } from "@scaffald/ui/tokens";
 
 const certificationSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  slug: z.string().min(1, 'Vanity URL is required'),
+  name: z.string().min(1, "Name is required"),
+  slug: z.string().min(1, "Vanity URL is required"),
   issuing_organization: z.string().optional(),
-  category: z.enum(['safety', 'trade', 'equipment', 'license', 'management', 'other']),
+  category: z.enum([
+    "safety",
+    "trade",
+    "equipment",
+    "license",
+    "management",
+    "other",
+  ]),
   description: z.string().optional(),
   typical_duration_days: z.number().int().positive().optional(),
   requires_renewal: z.boolean(),
   renewal_period_months: z.number().int().positive().optional(),
-})
+});
 
-type CertificationFormData = z.infer<typeof certificationSchema>
+type CertificationFormData = z.infer<typeof certificationSchema>;
 
 const CATEGORY_OPTIONS = [
-  { value: 'safety', label: 'Safety' },
-  { value: 'trade', label: 'Trade' },
-  { value: 'equipment', label: 'Equipment' },
-  { value: 'license', label: 'License' },
-  { value: 'management', label: 'Management' },
-  { value: 'other', label: 'Other' },
-] as const
+  { value: "safety", label: "Safety" },
+  { value: "trade", label: "Trade" },
+  { value: "equipment", label: "Equipment" },
+  { value: "license", label: "License" },
+  { value: "management", label: "Management" },
+  { value: "other", label: "Other" },
+] as const;
 
 interface OfficeCertificationsLeftProps {
   selectedCertification?: {
-    id: string
-    name: string
-    slug: string
-    issuing_organization: string | null
-    category: 'safety' | 'trade' | 'equipment' | 'license' | 'management' | 'other'
-    description: string | null
-    typical_duration_days: number | null
-    requires_renewal: boolean
-    renewal_period_months: number | null
-    is_active: boolean
-  } | null
-  onCertificationSaved: () => void
-  onCancel: () => void
+    id: string;
+    name: string;
+    slug: string;
+    issuing_organization: string | null;
+    category:
+      | "safety"
+      | "trade"
+      | "equipment"
+      | "license"
+      | "management"
+      | "other";
+    description: string | null;
+    typical_duration_days: number | null;
+    requires_renewal: boolean;
+    renewal_period_months: number | null;
+    is_active: boolean;
+  } | null;
+  onCertificationSaved: () => void;
+  onCancel: () => void;
 }
 
 /**
@@ -67,10 +87,11 @@ export function OfficeCertificationsLeft({
   onCertificationSaved,
   onCancel,
 }: OfficeCertificationsLeftProps) {
-  const [isLoading, setIsLoading] = useState(false)
-  const toast = useToastController()
-  const { width } = useWindowDimensions()
-  const _isMobile = width < 640
+  const { theme } = useThemeContext();
+  const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
+  const { width } = useWindowDimensions();
+  const _isMobile = width < 640;
 
   const {
     control,
@@ -82,50 +103,64 @@ export function OfficeCertificationsLeft({
   } = useForm<CertificationFormData>({
     resolver: zodResolver(certificationSchema),
     defaultValues: {
-      name: '',
-      slug: '',
-      issuing_organization: '',
-      category: 'safety',
-      description: '',
+      name: "",
+      slug: "",
+      issuing_organization: "",
+      category: "safety",
+      description: "",
       typical_duration_days: undefined,
       requires_renewal: false,
       renewal_period_months: undefined,
     },
-  })
+  });
 
-  const requiresRenewal = watch('requires_renewal')
+  const requiresRenewal = watch("requires_renewal");
 
   // Mutations
-  const createMutation = api.office.createCertification.useMutation({
+  const createMutation = useCreateOfficeCertificationMutation({
     onSuccess: () => {
-      toast.show('Success', {
-        message: 'Certification created successfully',
-      })
-      reset()
-      onCertificationSaved()
+      toast.show({
+        title: "Success",
+        message: "Certification created successfully",
+        variant: "success",
+      });
+      reset();
+      onCertificationSaved();
     },
     onError: (error: unknown) => {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to create certification'
-      toast.show('Error', {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to create certification";
+      toast.show({
+        title: "Error",
         message: errorMessage,
-      })
+        variant: "error",
+      });
     },
-  })
+  });
 
-  const updateMutation = api.office.updateCertification.useMutation({
+  const updateMutation = useUpdateOfficeCertificationMutation({
     onSuccess: () => {
-      toast.show('Success', {
-        message: 'Certification updated successfully',
-      })
-      onCertificationSaved()
+      toast.show({
+        title: "Success",
+        message: "Certification updated successfully",
+        variant: "success",
+      });
+      onCertificationSaved();
     },
     onError: (error: unknown) => {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to update certification'
-      toast.show('Error', {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to update certification";
+      toast.show({
+        title: "Error",
         message: errorMessage,
-      })
+        variant: "error",
+      });
     },
-  })
+  });
 
   // Load selected certification data
   useEffect(() => {
@@ -133,64 +168,82 @@ export function OfficeCertificationsLeft({
       reset({
         name: selectedCertification.name,
         slug: selectedCertification.slug,
-        issuing_organization: selectedCertification.issuing_organization || '',
+        issuing_organization: selectedCertification.issuing_organization || "",
         category: selectedCertification.category,
-        description: selectedCertification.description || '',
-        typical_duration_days: selectedCertification.typical_duration_days || undefined,
+        description: selectedCertification.description || "",
+        typical_duration_days:
+          selectedCertification.typical_duration_days || undefined,
         requires_renewal: selectedCertification.requires_renewal,
-        renewal_period_months: selectedCertification.renewal_period_months || undefined,
-      })
+        renewal_period_months:
+          selectedCertification.renewal_period_months || undefined,
+      });
     }
-  }, [selectedCertification, reset])
+  }, [selectedCertification, reset]);
 
   // Auto-generate slug from name
-  const handleNameChange = (name: string, onChange: (value: string) => void) => {
-    onChange(name)
+  const handleNameChange = (
+    name: string,
+    onChange: (value: string) => void
+  ) => {
+    onChange(name);
     if (!selectedCertification) {
       // Only auto-generate slug for new certifications
       const slug = name
         .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '')
-      setValue('slug', slug, { shouldValidate: true })
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+      setValue("slug", slug, { shouldValidate: true });
     }
-  }
+  };
 
   const onSubmit = async (data: CertificationFormData) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       if (selectedCertification) {
         await updateMutation.mutateAsync({
           id: selectedCertification.id,
-          ...data,
-        })
+          params: data,
+        });
       } else {
-        await createMutation.mutateAsync(data)
+        await createMutation.mutateAsync(data);
       }
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
-  const isEditing = !!selectedCertification
+  const isEditing = !!selectedCertification;
 
   return (
     <DashboardWidget>
-      <YStack gap="$4" padding="$4">
-        <XStack justifyContent="space-between" alignItems="center">
-          <H4>{isEditing ? 'Edit Certification' : 'New Certification'}</H4>
+      <Stack gap={16} padding="md">
+        <Row justify="space-between" align="center">
+          <H4>{isEditing ? "Edit Certification" : "New Certification"}</H4>
           {isEditing && (
-            <Button size="$2" variant="outlined" onPress={onCancel} icon={X}>
+            <Button
+              size="sm"
+              variant="outline"
+              onPress={onCancel}
+              iconStart={X}
+            >
               Cancel
             </Button>
           )}
-        </XStack>
+        </Row>
 
-        <YStack gap="$4">
+        <Stack gap={16}>
           {/* Name */}
-          <YStack gap="$2">
-            <Text fontWeight="600">
-              Name <Text color="$red10">*</Text>
+          <Stack gap={8}>
+            <Text>
+              Name{" "}
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.error[700] : colors.error[300],
+                }}
+              >
+                *
+              </Text>
             </Text>
             <Controller
               name="name"
@@ -199,24 +252,45 @@ export function OfficeCertificationsLeft({
                 <Input
                   placeholder="e.g. OSHA 30-Hour Construction"
                   value={field.value}
-                  onChangeText={(text) => handleNameChange(text, field.onChange)}
-                  borderColor={errors.name ? '$red8' : '$borderColor'}
+                  onChangeText={(text) =>
+                    handleNameChange(text, field.onChange)
+                  }
+                  style={{
+                    borderColor: errors.name
+                      ? theme === "light"
+                        ? colors.error[300]
+                        : colors.error[700]
+                      : colors.border[theme].default,
+                  }}
                 />
               )}
             />
             {errors.name && (
-              <Text color="$red10" fontSize="$2">
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.error[700] : colors.error[300],
+                }}
+              >
                 {errors.name.message}
               </Text>
             )}
-          </YStack>
+          </Stack>
 
           {/* Vanity URL */}
-          <YStack gap="$2">
-            <Text fontWeight="600">
-              Vanity URL <Text color="$red10">*</Text>
+          <Stack gap={8}>
+            <Text>
+              Vanity URL{" "}
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.error[700] : colors.error[300],
+                }}
+              >
+                *
+              </Text>
             </Text>
-            <Text fontSize="$2" color="$color11">
+            <Text style={{ color: colors.text[theme].secondary }}>
               URL-friendly username (auto-generated from name)
             </Text>
             <Controller
@@ -227,21 +301,40 @@ export function OfficeCertificationsLeft({
                   placeholder="e.g. osha-30-hour-construction"
                   value={field.value}
                   onChangeText={field.onChange}
-                  borderColor={errors.slug ? '$red8' : '$borderColor'}
+                  style={{
+                    borderColor: errors.slug
+                      ? theme === "light"
+                        ? colors.error[300]
+                        : colors.error[700]
+                      : colors.border[theme].default,
+                  }}
                 />
               )}
             />
             {errors.slug && (
-              <Text color="$red10" fontSize="$2">
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.error[700] : colors.error[300],
+                }}
+              >
                 {errors.slug.message}
               </Text>
             )}
-          </YStack>
+          </Stack>
 
           {/* Category */}
-          <YStack gap="$2">
-            <Text fontWeight="600">
-              Category <Text color="$red10">*</Text>
+          <Stack gap={8}>
+            <Text>
+              Category{" "}
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.error[700] : colors.error[300],
+                }}
+              >
+                *
+              </Text>
             </Text>
             <Controller
               name="category"
@@ -258,11 +351,11 @@ export function OfficeCertificationsLeft({
                 />
               )}
             />
-          </YStack>
+          </Stack>
 
           {/* Issuing Organization */}
-          <YStack gap="$2">
-            <Text fontWeight="600">Issuing Organization</Text>
+          <Stack gap={8}>
+            <Text>Issuing Organization</Text>
             <Controller
               name="issuing_organization"
               control={control}
@@ -274,11 +367,11 @@ export function OfficeCertificationsLeft({
                 />
               )}
             />
-          </YStack>
+          </Stack>
 
           {/* Description */}
-          <YStack gap="$2">
-            <Text fontWeight="600">Description</Text>
+          <Stack gap={8}>
+            <Text>Description</Text>
             <Controller
               name="description"
               control={control}
@@ -287,16 +380,16 @@ export function OfficeCertificationsLeft({
                   placeholder="Brief description of what this certification covers..."
                   value={field.value}
                   onChangeText={field.onChange}
-                  minHeight={80}
+                  style={{ minHeight: 80 }}
                 />
               )}
             />
-          </YStack>
+          </Stack>
 
           {/* Typical Duration */}
-          <YStack gap="$2">
-            <Text fontWeight="600">Typical Duration (days)</Text>
-            <Text fontSize="$2" color="$color11">
+          <Stack gap={8}>
+            <Text>Typical Duration (days)</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
               How many days it typically takes to complete this certification
             </Text>
             <Controller
@@ -305,7 +398,7 @@ export function OfficeCertificationsLeft({
               render={({ field }) => (
                 <Input
                   placeholder="e.g. 2"
-                  value={field.value?.toString() || ''}
+                  value={field.value?.toString() || ""}
                   onChangeText={(text) =>
                     field.onChange(text ? Number.parseInt(text, 10) : undefined)
                   }
@@ -313,37 +406,33 @@ export function OfficeCertificationsLeft({
                 />
               )}
             />
-          </YStack>
+          </Stack>
 
           {/* Requires Renewal */}
-          <YStack gap="$2">
+          <Stack gap={8}>
             <Controller
               name="requires_renewal"
               control={control}
               render={({ field }) => {
-                const isChecked = Boolean(field.value)
+                const isChecked = Boolean(field.value);
                 return (
-                  <XStack gap="$3" alignItems="center">
-                    <CustomCheckbox
+                  <Row gap={12} align="center">
+                    <Checkbox
                       checked={isChecked}
-                      onCheckedChange={field.onChange}
-                      aria-label="Requires renewal"
-                      testID="requires-renewal"
+                      onChange={(checked) => field.onChange(checked)}
+                      label="Requires Renewal"
                     />
-                    <Label cursor="pointer" onPress={() => field.onChange(!isChecked)}>
-                      <Text fontWeight="600">Requires Renewal</Text>
-                    </Label>
-                  </XStack>
-                )
+                  </Row>
+                );
               }}
             />
-          </YStack>
+          </Stack>
 
           {/* Renewal Period (conditional) */}
           {requiresRenewal && (
-            <YStack gap="$2">
-              <Text fontWeight="600">Renewal Period (months)</Text>
-              <Text fontSize="$2" color="$color11">
+            <Stack gap={8}>
+              <Text>Renewal Period (months)</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
                 How often this certification must be renewed
               </Text>
               <Controller
@@ -352,35 +441,38 @@ export function OfficeCertificationsLeft({
                 render={({ field }) => (
                   <Input
                     placeholder="e.g. 36"
-                    value={field.value?.toString() || ''}
+                    value={field.value?.toString() || ""}
                     onChangeText={(text) =>
-                      field.onChange(text ? Number.parseInt(text, 10) : undefined)
+                      field.onChange(
+                        text ? Number.parseInt(text, 10) : undefined
+                      )
                     }
                     keyboardType="numeric"
                   />
                 )}
               />
-            </YStack>
+            </Stack>
           )}
 
           {/* Submit Button */}
-          <XStack justifyContent="flex-end" paddingTop="$4" gap="$2">
+          <Row justify="flex-end" paddingTop={16} gap={8}>
             {isEditing && (
-              <Button variant="outlined" onPress={onCancel} disabled={isLoading}>
+              <Button variant="outline" onPress={onCancel} disabled={isLoading}>
                 Cancel
               </Button>
             )}
             <Button
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
-              opacity={!isDirty || isLoading ? 0.5 : 1}
-              icon={isLoading ? <Spinner /> : isEditing ? Save : Plus}
+              style={{ opacity: !isDirty || isLoading ? 0.5 : 1 }}
+              loading={isLoading}
+              iconStart={isEditing ? Save : Plus}
             >
-              {isLoading ? 'Saving...' : isEditing ? 'Update' : 'Create'}
+              {isLoading ? "Saving..." : isEditing ? "Update" : "Create"}
             </Button>
-          </XStack>
-        </YStack>
-      </YStack>
+          </Row>
+        </Stack>
+      </Stack>
     </DashboardWidget>
-  )
+  );
 }

@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Pre-push hook: run affected unit tests before pushing
+# Catches regressions before CI. Skip with: git push --no-verify
+
+set -e
+
+echo "🧪 Running pre-push checks (affected tests)..."
+
+PROJECT_ROOT="$(git rev-parse --show-toplevel)"
+cd "$PROJECT_ROOT"
+
+# Fetch to ensure nx affected has correct base
+git fetch origin main 2>/dev/null || true
+
+if ! pnpm test:affected; then
+    echo "❌ Affected tests failed. Fix failures or push with: git push --no-verify"
+    exit 1
+fi
+
+echo "✅ Pre-push checks passed!"
+exit 0

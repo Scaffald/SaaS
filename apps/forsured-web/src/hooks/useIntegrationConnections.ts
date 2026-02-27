@@ -1,6 +1,6 @@
 /**
  * Integration Connections Hook
- * REQ-212: Code Updates for Shared Database Architecture
+ * Code Updates for Shared Database Architecture
  *
  * Uses `integration_connections` table in forsured schema:
  * - id (uuid, primary key)

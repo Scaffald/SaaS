@@ -1,5 +1,5 @@
 // src/hooks/useSettings.ts
-// REQ-126: Settings management with database integration
+// Settings management with database integration
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { forsured } from '../lib/supabase';

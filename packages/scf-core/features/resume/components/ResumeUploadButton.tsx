@@ -1,22 +1,28 @@
-import { UploadCloud } from '@tamagui/lucide-icons'
-import { Button, type ButtonProps } from '@unicornlove/ui'
+import { UploadCloud } from "lucide-react-native";
+import { Button, type ButtonProps } from "@scaffald/ui";
 
-export interface ResumeUploadButtonProps extends Omit<ButtonProps, 'children' | 'text'> {
-  onPress: () => void
-  label?: string
+export interface ResumeUploadButtonProps extends Omit<ButtonProps, "children"> {
+  onPress: () => void;
+  label?: string;
 }
 
 export function ResumeUploadButton({
   onPress,
-  label = 'Import from Resume',
-  size = '$4',
-  variant = 'outlined',
-  icon = UploadCloud,
+  label = "Import from Resume",
+  size = "md",
+  variant = "outline",
+  iconStart = UploadCloud,
   ...rest
 }: ResumeUploadButtonProps) {
   return (
-    <Button size={size} variant={variant} icon={icon} onPress={onPress} {...rest}>
+    <Button
+      size={size}
+      variant={variant}
+      iconStart={iconStart}
+      onPress={onPress}
+      {...rest}
+    >
       {label}
     </Button>
-  )
+  );
 }

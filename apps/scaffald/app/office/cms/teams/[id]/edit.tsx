@@ -4,7 +4,7 @@ import {
   TeamInviteModal,
   TeamMembersList,
 } from '@scf/core/features/office/teams'
-import { api } from '@scf/core/utils/api'
+import { useTeam } from '@scaffald/sdk/react'
 import {
   type TEAM_INVITATION_POLICIES,
   TEAM_VISIBILITIES,
@@ -13,7 +13,7 @@ import {
 } from '@scf/schemas'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 export default function EditTeamPage() {
   const router = useRouter()
@@ -28,54 +28,47 @@ export default function EditTeamPage() {
     return Array.isArray(value) ? value[0] : value
   }, [params.id])
 
-  const { data, isLoading, isFetching, error, refetch } = api.teams.byId.useQuery(
-    { teamId: teamId ?? '' },
-    {
-      enabled: Boolean(teamId),
-    }
-  )
+  const { data, isLoading, isFetching, error, refetch } = useTeam(teamId ?? '', {
+    enabled: Boolean(teamId),
+  })
 
   if (!teamId) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$4" padding="$6">
-        <Text fontSize="$6" fontWeight="700">
-          Missing team identifier
-        </Text>
-        <Text color="$color11" style={{ textAlign: 'center' }}>
+      <Stack align="center" justify="center" gap={16} padding={24}>
+        <Text>Missing team identifier</Text>
+        <Text color="gray" style={{ textAlign: 'center' }}>
           We couldn&apos;t determine which team you want to edit.
         </Text>
-        <Button onPress={() => router.back()} variant="outlined">
+        <Button onPress={() => router.back()} variant="outline">
           Go Back
         </Button>
-      </YStack>
+      </Stack>
     )
   }
 
   if (isLoading || isFetching) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center">
-        <Spinner size="large" />
-        <Text marginTop="$4">Loading team details…</Text>
-      </YStack>
+      <Stack align="center" justify="center">
+        <Spinner size="lg" />
+        <Text>Loading team details…</Text>
+      </Stack>
     )
   }
 
   if (error || !data?.team) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3" padding="$6">
-        <Text fontSize="$6" fontWeight="700">
-          Unable to load team
-        </Text>
-        <Text color="$color11" style={{ textAlign: 'center' }}>
+      <Stack align="center" justify="center" gap={12} padding={24}>
+        <Text>Unable to load team</Text>
+        <Text color="gray" style={{ textAlign: 'center' }}>
           {error?.message ?? 'We ran into a problem retrieving this team. Please try again.'}
         </Text>
-        <XStack gap="$2">
-          <Button onPress={() => router.back()} variant="outlined">
+        <Row gap={8}>
+          <Button onPress={() => router.back()} variant="outline">
             Go Back
           </Button>
           <Button onPress={() => refetch()}>Try Again</Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     )
   }
 
@@ -101,7 +94,7 @@ export default function EditTeamPage() {
     : undefined
 
   return (
-    <YStack flex={1} gap="$6" padding="$4">
+    <Stack gap={24} padding={16}>
       <TeamForm
         mode="edit"
         organizationId={team.organizationId}
@@ -132,12 +125,7 @@ export default function EditTeamPage() {
         teamId={team.id}
         refreshKey={inviteRefreshKey}
         headerAction={
-          <Button
-            backgroundColor="$color9"
-            color="$color1"
-            size="$3"
-            onPress={() => setIsInviteModalOpen(true)}
-          >
+          <Button color="primary" size="md" onPress={() => setIsInviteModalOpen(true)}>
             Invite member
           </Button>
         }
@@ -151,6 +139,6 @@ export default function EditTeamPage() {
         defaultRoleId={team.defaultRoleId ?? team.defaultRole?.id ?? null}
         onInvited={() => setInviteRefreshKey((value) => value + 1)}
       />
-    </YStack>
+    </Stack>
   )
 }

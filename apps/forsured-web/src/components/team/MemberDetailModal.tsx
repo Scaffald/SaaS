@@ -1,6 +1,6 @@
 /**
  * MemberDetailModal - Modal for viewing and managing team member details
- * REQ-283: Team Member Management UI
+ * Team Member Management UI
  * TASK-2: Build Member Detail Modal with Access Management
  *
  * Displays when clicking a team member card, allowing:
@@ -13,7 +13,7 @@
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { Stack, Row, Text, Button, Card, H2 } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card, H2 } from '@scaffald/ui';
 import { X } from 'lucide-react';
 import { AccessLevelSelector, type AccessLevel } from './AccessLevelSelector';
 import { ActivityLog, type ActivityEntry } from './ActivityLog';

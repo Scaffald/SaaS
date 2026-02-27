@@ -1,5 +1,5 @@
 /**
- * REQ-259: Status Change Notifications
+ * Status Change Notifications
  * TASK-3: Configuration defining which status transitions trigger notifications
  *
  * This configuration determines:

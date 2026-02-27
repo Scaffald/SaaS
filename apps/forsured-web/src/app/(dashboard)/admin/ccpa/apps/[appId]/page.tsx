@@ -1,5 +1,5 @@
 /**
- * REQ-6: CCPA Admin OAuth App Configuration Page
+ * CCPA Admin OAuth App Configuration Page
  * TASK-5: Build OAuth App CCPA Configuration Management Pages
  *
  * Configuration form with 5 sections:
@@ -25,7 +25,7 @@ import {
   Switch,
   colors,
   spacing,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import Checkbox from '../../../../../../ui/Checkbox'
 import Textarea from '../../../../../../components/Common/Textarea'
 import { useRouter, useParams } from 'next/navigation'

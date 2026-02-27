@@ -1,30 +1,21 @@
-import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { ROUTES } from "@scf/core/constants/routes";
+import { useCertificationsWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
 import {
   Button,
   DashboardWidget,
   EmptyState,
-  Heading,
+  H4,
   LoadingState,
-  spacing,
-} from '@unicornlove/ui'
-import { Award, CheckCircle } from '@tamagui/lucide-icons'
-import { useRouter } from 'expo-router'
-import { Linking } from 'react-native'
-import { Separator, Text, XStack, YStack } from '@unicornlove/ui'
-import { formatDate } from '../utils/date-formatting'
-import type { ProfileWidgetProps } from './types'
+} from "@scaffald/ui";
+import { Award, CheckCircle } from "lucide-react-native";
+import { useRouter } from "expo-router";
+import { Linking } from "react-native";
+import { Separator, Text, Row, Stack } from "@scaffald/ui";
+import { formatDate } from "../utils/date-formatting";
+import type { ProfileWidgetProps } from "./types";
+import type { CertificationWidgetEntry } from "@scaffald/sdk";
 
-interface UserCertification {
-  id: string
-  name: string
-  issuing_organization: string | null
-  issue_date: string | null
-  expiration_date: string | null
-  credential_id: string | null
-  credential_url: string | null
-  does_not_expire: boolean | null
-}
+type UserCertification = CertificationWidgetEntry;
 
 /**
  * CertificationsWidget
@@ -37,249 +28,244 @@ interface UserCertification {
 export function CertificationsWidget({
   userId,
   showEdit = false,
-  variant = 'full',
+  variant = "full",
 }: ProfileWidgetProps) {
-  const router = useRouter()
+  const router = useRouter();
   const { data, isLoading, error, refetch, isFetching } =
-    api.profile.widgets.getCertifications.useQuery(
+    useCertificationsWidget(
       { userId },
       {
         staleTime: 5 * 60 * 1000, // Cache for 5 minutes
       }
-    )
+    );
 
   if (isLoading) {
     return (
       <DashboardWidget>
         <LoadingState message="Loading certifications..." />
       </DashboardWidget>
-    )
+    );
   }
 
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingVertical="$8">
-          <Text color="$red10">Failed to load certifications</Text>
-          <Text color="$color11" fontSize="$2">
-            {error.message}
+        <Stack gap={16} align="center" paddingVertical={32}>
+          <Text style={{ color: "#ef4444" }}>
+            Failed to load certifications
           </Text>
+          <Text style={{ color: "#414e62" }}>{error.message}</Text>
           <Button
-            variant="primary"
-            size="$2"
+            variant="filled"
+            color="primary"
+            size="sm"
             onPress={() => {
-              void refetch()
+              void refetch();
             }}
             disabled={isFetching}
           >
             Retry
           </Button>
-        </YStack>
+        </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
-  const certifications = data || []
-  const showCompact = variant === 'compact'
+  const certifications = data || [];
+  const showCompact = variant === "compact";
 
   // Helper to check if certification is expired
   const isExpired = (cert: UserCertification): boolean => {
-    if (cert.does_not_expire) return false
-    if (!cert.expiration_date) return false
-    return new Date(cert.expiration_date) < new Date()
-  }
+    if (cert.does_not_expire) return false;
+    if (!cert.expiration_date) return false;
+    return new Date(cert.expiration_date) < new Date();
+  };
 
   // Separate active and expired certifications
-  const activeCerts = certifications.filter((cert: UserCertification) => !isExpired(cert))
-  const expiredCerts = certifications.filter((cert: UserCertification) => isExpired(cert))
+  const activeCerts = certifications.filter(
+    (cert: UserCertification) => !isExpired(cert)
+  );
+  const expiredCerts = certifications.filter((cert: UserCertification) =>
+    isExpired(cert)
+  );
 
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
+      <Stack gap={12}>
         {/* Header */}
-        <XStack justifyContent="space-between" alignItems="center">
-          <Heading variant="h4">Certifications</Heading>
+        <Row justify="space-between" align="center">
+          <H4>Certifications</H4>
           {showEdit && (
             <Button
-              variant="outlined"
-              size="$2"
-              onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)}
+              variant="outline"
+              size="sm"
+              onPress={() =>
+                router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)
+              }
             >
               Edit
             </Button>
           )}
-        </XStack>
+        </Row>
 
         {certifications.length === 0 ? (
           <EmptyState
-            icon={<Award />}
+            icon={Award}
             title="No certifications added yet"
             description="Add your professional certifications and licenses"
             action={
-              showEdit ? (
-                <Button
-                  variant="primary"
-                  onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)}
-                >
-                  Add Certification
-                </Button>
-              ) : undefined
+              showEdit
+                ? {
+                    label: "Add Certification",
+                    onPress: () =>
+                      router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path),
+                  }
+                : undefined
             }
           />
         ) : (
-          <YStack gap="$4">
+          <Stack gap={16}>
             {/* Active Certifications */}
             {activeCerts.length > 0 && (
-              <YStack gap="$3">
+              <Stack gap={12}>
                 {activeCerts
                   .slice(0, showCompact ? 3 : undefined)
                   .map((cert: UserCertification, index: number) => (
-                    <YStack key={cert.id} gap="$2">
+                    <Stack key={cert.id} gap={8}>
                       {/* Certification Name & Organization */}
-                      <YStack gap="$1">
-                        <XStack gap="$2" alignItems="center">
-                          <Text fontSize="$4" fontWeight="600">
-                            {cert.name}
-                          </Text>
-                          <XStack
-                            backgroundColor="$blue2"
-                            paddingHorizontal="$2"
-                            paddingVertical="$0.5"
-                            borderRadius="$2"
-                            borderWidth={1}
-                            borderColor="$blue7"
+                      <Stack gap={4}>
+                        <Row gap={8} align="center">
+                          <Text>{cert.name}</Text>
+                          <Row
+                            paddingHorizontal={8}
+                            paddingVertical={2}
+                            borderRadius={8}
+                            style={{
+                              backgroundColor: "#eff6ff",
+                              borderWidth: 1,
+                              borderColor: "#3b82f6",
+                            }}
                           >
-                            <CheckCircle size={12} color="$blue11" />
-                            <Text color="$blue11" fontSize="$1" fontWeight="600" marginLeft="$1">
+                            <CheckCircle size={14} color="#1d4ed8" />
+                            <Text style={{ color: "#1d4ed8", marginLeft: 4 }}>
                               Active
                             </Text>
-                          </XStack>
-                        </XStack>
+                          </Row>
+                        </Row>
                         {cert.issuing_organization && (
-                          <Text fontSize="$3" color="$color11">
+                          <Text style={{ color: "#414e62" }}>
                             {cert.issuing_organization}
                           </Text>
                         )}
-                      </YStack>
+                      </Stack>
 
                       {/* Dates */}
-                      <XStack gap="$4" flexWrap="wrap">
+                      <Row gap={16} wrap>
                         {cert.issue_date && (
-                          <YStack gap="$1">
-                            <Text fontSize="$2" color="$color10">
-                              Issued
-                            </Text>
-                            <Text fontSize="$2">{formatDate(cert.issue_date)}</Text>
-                          </YStack>
+                          <Stack gap={4}>
+                            <Text style={{ color: "#414e62" }}>Issued</Text>
+                            <Text>{formatDate(cert.issue_date)}</Text>
+                          </Stack>
                         )}
                         {!cert.does_not_expire && cert.expiration_date && (
-                          <YStack gap="$1">
-                            <Text fontSize="$2" color="$color10">
-                              Expires
-                            </Text>
-                            <Text fontSize="$2">{formatDate(cert.expiration_date)}</Text>
-                          </YStack>
+                          <Stack gap={4}>
+                            <Text style={{ color: "#414e62" }}>Expires</Text>
+                            <Text>{formatDate(cert.expiration_date)}</Text>
+                          </Stack>
                         )}
                         {cert.does_not_expire && (
-                          <YStack gap="$1">
-                            <Text fontSize="$2" color="$color10">
-                              Validity
-                            </Text>
-                            <Text fontSize="$2">No Expiration</Text>
-                          </YStack>
+                          <Stack gap={4}>
+                            <Text style={{ color: "#414e62" }}>Validity</Text>
+                            <Text>No Expiration</Text>
+                          </Stack>
                         )}
-                      </XStack>
+                      </Row>
 
                       {/* Credential Details */}
-                      {!showCompact && (cert.credential_id || cert.credential_url) && (
-                        <XStack gap="$4" flexWrap="wrap">
-                          {cert.credential_id && (
-                            <YStack gap="$1">
-                              <Text fontSize="$2" color="$color10">
-                                Credential ID
-                              </Text>
-                              <Text fontSize="$2">{cert.credential_id}</Text>
-                            </YStack>
-                          )}
-                          {cert.credential_url && (
-                            <YStack gap="$1">
-                              <Text fontSize="$2" color="$color10">
-                                Verification
-                              </Text>
-                              <Text
-                                fontSize="$2"
-                                color="$blue7"
-                                textDecorationLine="underline"
-                                cursor="pointer"
-                                hoverStyle={{ color: '$blue8' }}
-                                onPress={() => Linking.openURL(cert.credential_url || '')}
-                              >
-                                View Certificate →
-                              </Text>
-                            </YStack>
-                          )}
-                        </XStack>
-                      )}
+                      {!showCompact &&
+                        (cert.credential_id || cert.credential_url) && (
+                          <Row gap={16} wrap>
+                            {cert.credential_id && (
+                              <Stack gap={4}>
+                                <Text style={{ color: "#414e62" }}>
+                                  Credential ID
+                                </Text>
+                                <Text>{cert.credential_id}</Text>
+                              </Stack>
+                            )}
+                            {cert.credential_url && (
+                              <Stack gap={4}>
+                                <Text style={{ color: "#414e62" }}>
+                                  Verification
+                                </Text>
+                                <Text
+                                  style={{
+                                    color: "#3b82f6",
+                                    textDecorationLine: "underline",
+                                  }}
+                                  onPress={() =>
+                                    Linking.openURL(cert.credential_url || "")
+                                  }
+                                >
+                                  View Certificate →
+                                </Text>
+                              </Stack>
+                            )}
+                          </Row>
+                        )}
 
                       {/* Separator */}
-                      {index < activeCerts.length - 1 && <Separator marginVertical="$2" />}
-                    </YStack>
+                      {index < activeCerts.length - 1 && (
+                        <Separator style={{ marginVertical: 8 }} />
+                      )}
+                    </Stack>
                   ))}
-              </YStack>
+              </Stack>
             )}
 
             {/* Expired Certifications (collapsed by default, only in full variant) */}
             {!showCompact && expiredCerts.length > 0 && (
-              <YStack gap="$3">
-                <Text fontSize="$3" fontWeight="600" color="$color11">
+              <Stack gap={12}>
+                <Text style={{ color: "#414e62" }}>
                   Expired ({expiredCerts.length})
                 </Text>
                 {expiredCerts.slice(0, 2).map((cert: UserCertification) => (
-                  <YStack key={cert.id} gap="$1" opacity={0.6}>
-                    <XStack gap="$2" alignItems="center">
-                      <Text fontSize="$3" fontWeight="600">
-                        {cert.name}
-                      </Text>
-                      <XStack
-                        backgroundColor="$color3"
-                        paddingHorizontal="$2"
-                        paddingVertical="$0.5"
-                        borderRadius="$2"
-                        borderWidth={1}
-                        borderColor="$color6"
+                  <Stack key={cert.id} gap={4} style={{ opacity: 0.6 }}>
+                    <Row gap={8} align="center">
+                      <Text>{cert.name}</Text>
+                      <Row
+                        paddingHorizontal={8}
+                        paddingVertical={2}
+                        borderRadius={8}
+                        style={{ borderWidth: 1, borderColor: "#e2e8f0" }}
                       >
-                        <Text color="$color10" fontSize="$1" fontWeight="600">
-                          Expired
-                        </Text>
-                      </XStack>
-                    </XStack>
+                        <Text style={{ color: "#414e62" }}>Expired</Text>
+                      </Row>
+                    </Row>
                     {cert.issuing_organization && (
-                      <Text fontSize="$2" color="$color11">
+                      <Text style={{ color: "#414e62" }}>
                         {cert.issuing_organization}
                       </Text>
                     )}
-                  </YStack>
+                  </Stack>
                 ))}
-              </YStack>
+              </Stack>
             )}
 
             {/* Show More link for compact view */}
             {showCompact && certifications.length > 3 && (
               <Text
-                color="$blue7"
-                fontSize="$3"
-                fontWeight="600"
-                cursor="pointer"
-                hoverStyle={{ color: '$blue8' }}
-                pressStyle={{ color: '$blue9' }}
-                onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)}
+                style={{ color: "#3b82f6" }}
+                onPress={() =>
+                  router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)
+                }
               >
                 View all {certifications.length} certifications →
               </Text>
             )}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     </DashboardWidget>
-  )
+  );
 }

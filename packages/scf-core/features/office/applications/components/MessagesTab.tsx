@@ -1,8 +1,13 @@
-import { Send } from '@tamagui/lucide-icons'
+import { Send } from 'lucide-react-native'
 import { useState } from 'react'
-import { Button, Card, Spinner, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
-import { api } from '@scf/core/utils/api'
-import { useToastController } from '@tamagui/toast'
+import { Button, Card, Spinner, Text, TextArea, Row, Stack, useThemeContext } from '@scaffald/ui'
+import {
+  useApplicationMessages,
+  useSendApplicationMessageMutation,
+} from '@scf/core/utils/jobs-sdk-hooks'
+import { useToast } from '@scaffald/ui'
+import { useQueryClient } from '@tanstack/react-query'
+import { colors } from '@scaffald/ui/tokens'
 
 interface MessagesTabProps {
   applicationId: string
@@ -18,87 +23,85 @@ interface Message {
 }
 
 export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
+  const { theme } = useThemeContext()
   const [newMessage, setNewMessage] = useState('')
-  const toast = useToastController()
-  const utils = api.useUtils()
+  const toast = useToast()
+  const queryClient = useQueryClient()
 
   // Fetch messages
-  const { data: messagesData, isLoading, error } = api.applications.getMessages.useQuery({
-    applicationId,
-  })
+  const { data: messagesData, isLoading, error } = useApplicationMessages(applicationId)
 
   // Send message mutation
-  const sendMessageMutation = api.applications.sendMessage.useMutation({
-    onSuccess: () => {
-      setNewMessage('')
-      // Invalidate and refetch messages
-      utils.applications.getMessages.invalidate({ applicationId })
-    },
-    onError: (error) => {
-      toast.show('Error', {
-        message: error.message || 'Failed to send message',
-      })
-    },
-  })
+  const sendMessageMutation = useSendApplicationMessageMutation()
 
   const handleSend = () => {
     if (!newMessage.trim()) return
 
-    sendMessageMutation.mutate({
-      applicationId,
-      body: newMessage.trim(),
-    })
+    sendMessageMutation.mutate(
+      {
+        applicationId,
+        body: newMessage.trim(),
+      },
+      {
+        onSuccess: () => {
+          setNewMessage('')
+          queryClient.invalidateQueries({ queryKey: ['application', applicationId, 'messages'] })
+        },
+        onError: (err: Error) => {
+          toast.show({
+            title: 'Error',
+            message: err.message || 'Failed to send message',
+            variant: 'error',
+          })
+        },
+      }
+    )
   }
 
   // Transform API response to UI format
-  const transformedMessages: Message[] = messagesData
-    ? messagesData.messages.map((msg) => {
-        // Determine if sender is recruiter or candidate
-        const isCandidate = messagesData.application_user_id === msg.author_user_id
-        return {
-          id: msg.id,
-          sender: isCandidate ? ('candidate' as const) : ('recruiter' as const),
-          senderName: msg.author_name,
-          content: msg.body,
-          sentAt: msg.created_at,
-          isRead: false, // MVP: default to false, can implement read tracking later
-        }
-      })
-    : []
+  const messages = messagesData?.data ?? []
+  const transformedMessages: Message[] = messages.map((msg) => {
+    // Use sender_role from SDK to determine sender type
+    const sender = msg.sender_role === 'applicant' ? 'candidate' : 'recruiter'
+    return {
+      id: msg.id,
+      sender: sender as 'candidate' | 'recruiter',
+      senderName: msg.sender_name ?? 'Unknown',
+      content: msg.body,
+      sentAt: msg.created_at,
+      isRead: false, // MVP: default to false, can implement read tracking later
+    }
+  })
 
   if (isLoading) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
-        <Spinner size="large" />
-        <Text fontSize="$3" opacity={0.7}>
-          Loading messages...
-        </Text>
-      </YStack>
+      <Stack flex={1} align="center" justify="center" gap={12}>
+        <Spinner size="lg" />
+        <Text style={{ opacity: 0.7 }}>Loading messages...</Text>
+      </Stack>
     )
   }
 
   if (error) {
     return (
-      <YStack gap="$3" padding="$4">
-        <Card padding="$4" backgroundColor="$red3">
-          <Text fontSize="$3" color="$red10" fontWeight="600">
-            Error loading messages
-          </Text>
-          <Text fontSize="$2" color="$red10" marginTop="$2">
+      <Stack gap={12} padding="md">
+        <Card padding="md" style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}>
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Error loading messages</Text>
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300], marginTop: 8 }}>
             {error.message || 'Failed to load messages'}
           </Text>
         </Card>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$4">
+    <Stack gap={16}>
       {/* Message Thread */}
-      <YStack gap="$3">
+      <Stack gap={12}>
         {transformedMessages.length === 0 ? (
-          <Card padding="$4" backgroundColor="$color2">
-            <Text fontSize="$3" opacity={0.7} textAlign="center">
+          <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+            <Text style={{ opacity: 0.7, textAlign: 'center' }}>
               No messages yet. Start the conversation below!
             </Text>
           </Card>
@@ -106,16 +109,17 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
           transformedMessages.map((message) => (
             <Card
               key={message.id}
-              padding="$4"
-              backgroundColor={message.sender === 'recruiter' ? '$blue3' : '$color2'}
-              alignSelf={message.sender === 'recruiter' ? 'flex-end' : 'flex-start'}
-              maxWidth="80%"
+              padding="md"
+              style={{
+                backgroundColor:
+                  message.sender === 'recruiter' ? theme === "light" ? colors.blue[50] : colors.blue[900] : colors.bg[theme].subtle,
+                alignSelf: message.sender === 'recruiter' ? 'flex-end' : 'flex-start',
+                maxWidth: '80%',
+              }}
             >
-              <XStack justifyContent="space-between" alignItems="center" marginBottom="$2" gap="$3">
-                <Text fontWeight="600" fontSize="$3">
-                  {message.senderName}
-                </Text>
-                <Text fontSize="$1" opacity={0.7}>
+              <Row justify="space-between" align="center" gap={12} style={{ marginBottom: 8 }}>
+                <Text>{message.senderName}</Text>
+                <Text style={{ opacity: 0.7 }}>
                   {new Date(message.sentAt).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
@@ -123,45 +127,40 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
                     minute: '2-digit',
                   })}
                 </Text>
-              </XStack>
+              </Row>
 
-              <Text fontSize="$3">{message.content}</Text>
+              <Text>{message.content}</Text>
 
               {!message.isRead && message.sender === 'candidate' && (
-                <YStack marginTop="$2">
-                  <Text fontSize="$2" color="$red10" fontWeight="600">
-                    Unread
-                  </Text>
-                </YStack>
+                <Stack style={{ marginTop: 8 }}>
+                  <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Unread</Text>
+                </Stack>
               )}
             </Card>
           ))
         )}
-      </YStack>
+      </Stack>
 
       {/* Send Message */}
-      <Card padding="$4" backgroundColor="$color2">
-        <Text fontSize="$5" fontWeight="600" marginBottom="$3">
-          Send Message
-        </Text>
+      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+        <Text style={{ marginBottom: 12 }}>Send Message</Text>
 
         <TextArea
           placeholder="Type your message..."
           value={newMessage}
           onChangeText={setNewMessage}
-          numberOfLines={4}
-          marginBottom="$3"
+          style={{ marginBottom: 12 }}
         />
 
         <Button
+          color="primary"
           onPress={handleSend}
           disabled={!newMessage.trim() || sendMessageMutation.isPending}
-          theme="info"
-          icon={Send}
+          iconStart={Send}
         >
           {sendMessageMutation.isPending ? 'Sending...' : 'Send Message'}
         </Button>
       </Card>
-    </YStack>
+    </Stack>
   )
 }

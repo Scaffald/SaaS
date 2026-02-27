@@ -1,5 +1,5 @@
 // src/hooks/useOnboarding.ts
-// REQ-126: Onboarding State Management Hook
+// Onboarding State Management Hook
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';

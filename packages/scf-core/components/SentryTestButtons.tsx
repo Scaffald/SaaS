@@ -1,17 +1,17 @@
 import { captureException, captureMessage } from '@scf/core/utils/sentry'
-import { Button, Text, YStack } from '@unicornlove/ui'
+import { Button, Text, Stack } from '@scaffald/ui'
 
 /**
  * Test buttons for verifying Sentry integration
- * 
+ *
  * Usage:
  * ```tsx
  * import { SentryTestButtons } from '@scf/core/components/SentryTestButtons'
- * 
+ *
  * // In a development or debug screen
  * <SentryTestButtons />
  * ```
- * 
+ *
  * These buttons should only be used in development builds and removed before production.
  */
 export function SentryTestButtons() {
@@ -48,41 +48,38 @@ export function SentryTestButtons() {
   }
 
   return (
-    <YStack gap="$3" padding="$4">
-      <Text fontSize="$6" fontWeight="bold">
-        Sentry Integration Tests
-      </Text>
-      <Text fontSize="$3" color="$gray11">
-        Use these buttons to verify Sentry is capturing errors correctly.
-        Check your Sentry dashboard after clicking.
+    <Stack gap={12} padding={16}>
+      <Text>Sentry Integration Tests</Text>
+      <Text color="$gray11">
+        Use these buttons to verify Sentry is capturing errors correctly. Check your Sentry
+        dashboard after clicking.
       </Text>
 
-      <YStack gap="$2" marginTop="$3">
-        <Button onPress={testJSError} theme="blue">
+      <Stack gap={8} marginTop={12}>
+        <Button onPress={testJSError} color="primary">
           Test JS Error (Handled)
         </Button>
 
-        <Button onPress={testMessage} theme="success">
+        <Button onPress={testMessage} color="success">
           Test Info Message
         </Button>
 
-        <Button onPress={testWarning} theme="info">
+        <Button onPress={testWarning} color="primary">
           Test Warning Message
         </Button>
 
-        <Button onPress={testCriticalError} theme="error">
+        <Button onPress={testCriticalError} color="error">
           Test Critical Error
         </Button>
 
-        <Button onPress={testUnhandledError} theme="error" chromeless>
+        <Button onPress={testUnhandledError} color="error" variant="text">
           Test Unhandled Error (Crashes Component)
         </Button>
-      </YStack>
+      </Stack>
 
-      <Text fontSize="$2" color="$gray10" marginTop="$3">
+      <Text color="$gray10" style={{ marginTop: 12 }}>
         ⚠️ Remove these test buttons before production deployment
       </Text>
-    </YStack>
+    </Stack>
   )
 }
-

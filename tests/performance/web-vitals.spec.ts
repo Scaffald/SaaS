@@ -2,7 +2,7 @@
  * Core Web Vitals Testing
  *
  * Tests for Core Web Vitals measurement and validation.
- * Validates that all Core Web Vitals meet REQ-198 targets:
+ * Validates that all Core Web Vitals meet targets:
  * - Time to Interactive (TTI): < 3s
  * - First Contentful Paint (FCP): < 1s
  * - Largest Contentful Paint (LCP): < 2.5s

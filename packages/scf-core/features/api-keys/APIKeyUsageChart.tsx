@@ -4,6 +4,7 @@
  */
 
 import { useState } from 'react'
+import { View } from 'react-native'
 import {
   Button,
   Card,
@@ -12,9 +13,9 @@ import {
   Paragraph,
   Separator,
   Spinner,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@scaffald/ui'
 import {
   Activity,
   AlertCircle,
@@ -24,11 +25,11 @@ import {
   Clock,
   TrendingUp,
   XCircle,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import { format } from 'date-fns'
 import { useAPIKeyUsage } from './hooks'
 
-interface APIKeyUsageData {
+export interface APIKeyUsageData {
   apiKeyId: string
   apiKeyName: string
   metrics: {
@@ -62,7 +63,7 @@ interface APIKeyUsageData {
   statusCodeBreakdown: Record<string, number>
 }
 
-interface APIKeyUsageChartProps {
+export interface APIKeyUsageChartProps {
   apiKeyId: string
   onClose?: () => void
 }
@@ -107,10 +108,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
     : null
 
   // Helper function to calculate requests in a time period
-  function calculateRequestsInPeriod(
-    usage: Array<{ timestamp: string }>,
-    days: number
-  ): number {
+  function calculateRequestsInPeriod(usage: Array<{ timestamp: string }>, days: number): number {
     const cutoff = new Date()
     cutoff.setDate(cutoff.getDate() - days)
     return usage.filter((u) => new Date(u.timestamp) >= cutoff).length
@@ -125,10 +123,8 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
     }>,
     days: number
   ): Array<{ date: string; requests: number; errors: number; avgResponseTime: number }> {
-    const series: Record<
-      string,
-      { requests: number; errors: number; totalResponseTime: number }
-    > = {}
+    const series: Record<string, { requests: number; errors: number; totalResponseTime: number }> =
+      {}
 
     // Group by date
     usage.forEach((u) => {
@@ -232,268 +228,290 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
     ? ((data.metrics.successfulRequests / data.metrics.totalRequests) * 100).toFixed(2)
     : '0'
 
-  const getRateLimitPercentage = () => {
-    if (!data) return 0
+  const getRateLimitPercentage = (): string => {
+    if (!data) return '0'
     return ((data.rateLimitInfo.remaining / data.rateLimitInfo.limit) * 100).toFixed(0)
   }
 
-  const getRateLimitColor = () => {
-    const percentage = parseInt(getRateLimitPercentage(), 10)
-    if (percentage > 50) return '$green10'
-    if (percentage > 20) return '$orange10'
-    return '$red10'
+  const getRateLimitColor = (): string => {
+    const percentage = Number.parseInt(getRateLimitPercentage(), 10)
+    if (percentage > 50) return '#22c55e'
+    if (percentage > 20) return '#f97316'
+    return '#ef4444'
   }
 
   if (isLoading) {
     return (
-      <YStack f={1} jc="center" ai="center" padding="$8">
-        <Spinner size="large" color="$blue10" />
-        <Paragraph mt="$4" color="$gray11">
+      <Stack flex={1} justify="center" align="center" padding={32}>
+        <Spinner size="lg" color="primary" />
+        <Paragraph style={{ marginTop: 16 }} color="$gray11">
           Loading usage analytics...
         </Paragraph>
-      </YStack>
+      </Stack>
     )
   }
 
   if (!data) {
     return (
-      <Card padded bordered>
-        <YStack ai="center" gap="$4" padding="$6">
+      <Card padding="lg" variant="outlined">
+        <Stack align="center" gap={16} padding="xl">
           <AlertCircle size={48} color="$gray9" />
-          <YStack ai="center" gap="$2">
+          <Stack align="center" gap={8}>
             <H4>No Data Available</H4>
-            <Paragraph color="$gray11" textAlign="center">
+            <Paragraph color="$gray11" align="center">
               Unable to load usage analytics for this API key
             </Paragraph>
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       </Card>
     )
   }
 
   return (
-    <YStack f={1} gap="$4">
+    <Stack flex={1} gap={16}>
       {/* Header */}
-      <XStack jc="space-between" ai="center">
-        <YStack gap="$2">
+      <Row justify="space-between" align="center">
+        <Stack gap={8}>
           <H3>API Key Usage Analytics</H3>
           <Paragraph color="$gray11">{data.apiKeyName}</Paragraph>
-        </YStack>
+        </Stack>
         {onClose && (
-          <Button variant="outlined" onPress={onClose}>
+          <Button variant="outline" onPress={onClose}>
             Close
           </Button>
         )}
-      </XStack>
+      </Row>
 
       <Separator />
 
       {/* Time Range Selector */}
-      <XStack gap="$2">
+      <Row gap={8}>
         {TIME_RANGES.map((range) => (
           <Button
             key={range.value}
-            size="$3"
-            variant={timeRange === range.value ? 'outlined' : 'outlined'}
-            theme={timeRange === range.value ? 'blue' : undefined}
+            size="sm"
+            variant="outline"
+            color={timeRange === range.value ? 'primary' : 'gray'}
             onPress={() => setTimeRange(range.value)}
           >
             {range.label}
           </Button>
         ))}
-      </XStack>
+      </Row>
 
       {/* Key Metrics */}
-      <XStack gap="$3" flexWrap="wrap">
+      <Row gap={12} wrap>
         {/* Total Requests */}
-        <Card f={1} minWidth={200} padded bordered>
-          <YStack gap="$3">
-            <XStack jc="space-between" ai="center">
-              <Paragraph size="$2" color="$gray11">
+        <Card style={{ flex: 1, minWidth: 200 }} padding="lg" variant="outlined">
+          <Stack gap={12}>
+            <Row justify="space-between" align="center">
+              <Paragraph size="sm" color="$gray11">
                 Total Requests
               </Paragraph>
-              <Activity size={20} color="$blue10" />
-            </XStack>
+              <Activity size="lg" color="$blue10" />
+            </Row>
             <H3>{data.metrics.totalRequests.toLocaleString()}</H3>
-            <XStack ai="center" gap="$2">
-              <TrendingUp size={16} color="$green10" />
-              <Paragraph size="$2" color="$green10">
+            <Row align="center" gap={8}>
+              <TrendingUp size="md" color="$green10" />
+              <Paragraph size="sm" color="$green10">
                 +12% from last period
               </Paragraph>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         </Card>
 
         {/* Success Rate */}
-        <Card f={1} minWidth={200} padded bordered>
-          <YStack gap="$3">
-            <XStack jc="space-between" ai="center">
-              <Paragraph size="$2" color="$gray11">
+        <Card style={{ flex: 1, minWidth: 200 }} padding="lg" variant="outlined">
+          <Stack gap={12}>
+            <Row justify="space-between" align="center">
+              <Paragraph size="sm" color="$gray11">
                 Success Rate
               </Paragraph>
-              <CheckCircle size={20} color="$green10" />
-            </XStack>
+              <CheckCircle size="lg" color="$green10" />
+            </Row>
             <H3>{successRate}%</H3>
-            <XStack ai="center" gap="$2">
-              <Paragraph size="$2" color="$gray11">
+            <Row align="center" gap={8}>
+              <Paragraph size="sm" color="$gray11">
                 {data.metrics.successfulRequests.toLocaleString()} successful
               </Paragraph>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         </Card>
 
         {/* Avg Response Time */}
-        <Card f={1} minWidth={200} padded bordered>
-          <YStack gap="$3">
-            <XStack jc="space-between" ai="center">
-              <Paragraph size="$2" color="$gray11">
+        <Card style={{ flex: 1, minWidth: 200 }} padding="lg" variant="outlined">
+          <Stack gap={12}>
+            <Row justify="space-between" align="center">
+              <Paragraph size="sm" color="$gray11">
                 Avg Response Time
               </Paragraph>
-              <Clock size={20} color="$orange10" />
-            </XStack>
+              <Clock size="lg" color="$orange10" />
+            </Row>
             <H3>{data.metrics.averageResponseTime}ms</H3>
-            <XStack ai="center" gap="$2">
-              <ArrowDown size={16} color="$green10" />
-              <Paragraph size="$2" color="$green10">
+            <Row align="center" gap={8}>
+              <ArrowDown size="md" color="$green10" />
+              <Paragraph size="sm" color="$green10">
                 8% faster
               </Paragraph>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         </Card>
 
         {/* Errors */}
-        <Card f={1} minWidth={200} padded bordered>
-          <YStack gap="$3">
-            <XStack jc="space-between" ai="center">
-              <Paragraph size="$2" color="$gray11">
+        <Card style={{ flex: 1, minWidth: 200 }} padding="lg" variant="outlined">
+          <Stack gap={12}>
+            <Row justify="space-between" align="center">
+              <Paragraph size="sm" color="$gray11">
                 Failed Requests
               </Paragraph>
-              <XCircle size={20} color="$red10" />
-            </XStack>
+              <XCircle size="lg" color="$red10" />
+            </Row>
             <H3>{data.metrics.failedRequests}</H3>
-            <XStack ai="center" gap="$2">
-              <Paragraph size="$2" color="$gray11">
+            <Row align="center" gap={8}>
+              <Paragraph size="sm" color="$gray11">
                 {((data.metrics.failedRequests / data.metrics.totalRequests) * 100).toFixed(2)}%
                 error rate
               </Paragraph>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         </Card>
-      </XStack>
+      </Row>
 
       {/* Rate Limit Status */}
-      <Card bordered padding="$4" backgroundColor="$blue2">
-        <YStack gap="$3">
-          <XStack jc="space-between" ai="center">
+      <Card variant="outlined" padding="md" style={{ backgroundColor: '#eff6ff' }}>
+        <Stack gap={12}>
+          <Row justify="space-between" align="center">
             <H4>Rate Limit Status</H4>
             <Card
-              backgroundColor={getRateLimitColor()}
-              paddingHorizontal="$3"
-              paddingVertical="$1"
-              borderRadius="$3"
+              style={{
+                backgroundColor: getRateLimitColor(),
+                paddingHorizontal: 12,
+                paddingVertical: 4,
+                borderRadius: 12,
+              }}
             >
-              <Paragraph size="$3" color="$gray12" fontWeight="600">
+              <Paragraph size="sm" color="$gray12">
                 {data.rateLimitInfo.tier.toUpperCase()}
               </Paragraph>
             </Card>
-          </XStack>
+          </Row>
 
-          <XStack ai="center" gap="$4">
-            <YStack f={1} gap="$2">
-              <XStack jc="space-between">
-                <Paragraph size="$2" color="$gray11">
+          <Row align="center" gap={16}>
+            <Stack flex={1} gap={8}>
+              <Row justify="space-between">
+                <Paragraph size="sm" color="$gray11">
                   Remaining
                 </Paragraph>
-                <Paragraph size="$2" fontWeight="600">
+                <Paragraph size="sm">
                   {data.rateLimitInfo.remaining} / {data.rateLimitInfo.limit}
                 </Paragraph>
-              </XStack>
+              </Row>
 
               {/* Progress Bar */}
-              <Card height={8} backgroundColor="$gray4" borderRadius="$10" overflow="hidden">
-                <Card
-                  height="100%"
-                  width={`${getRateLimitPercentage()}%`}
-                  backgroundColor={getRateLimitColor()}
+              <View
+                style={{ height: 8, backgroundColor: '#a1a1aa', borderRadius: 10, overflow: 'hidden' }}
+              >
+                <View
+                  style={{
+                    position: 'absolute',
+                    left: 0,
+                    top: 0,
+                    bottom: 0,
+                    width: `${Number(getRateLimitPercentage())}%`,
+                    backgroundColor: getRateLimitColor(),
+                  }}
                 />
-              </Card>
+              </View>
 
-              <Paragraph size="$2" color="$gray11">
+              <Paragraph size="sm" color="$gray11">
                 Resets {format(new Date(data.rateLimitInfo.resetAt), 'h:mm a')}
               </Paragraph>
-            </YStack>
-          </XStack>
-        </YStack>
+            </Stack>
+          </Row>
+        </Stack>
       </Card>
 
       {/* Requests Timeline (Simple visualization) */}
-      <Card bordered padding="$4">
-        <YStack gap="$4">
-          <XStack jc="space-between" ai="center">
+      <Card variant="outlined" padding="md">
+        <Stack gap={16}>
+          <Row justify="space-between" align="center">
             <H4>Request Volume</H4>
-            <BarChart3 size={20} color="$blue10" />
-          </XStack>
+            <BarChart3 size="lg" color="$blue10" />
+          </Row>
 
           {/* Simple bar chart */}
-          <YStack gap="$2">
+          <Stack gap={8}>
             {data.timeSeriesData.slice(-7).map((day, index) => {
               const maxRequests = Math.max(...data.timeSeriesData.map((d) => d.requests))
               const percentage = (day.requests / maxRequests) * 100
 
               return (
-                <YStack key={index} gap="$1">
-                  <XStack jc="space-between" ai="center">
-                    <Paragraph size="$2" color="$gray11" minWidth={60}>
+                <Stack key={index} gap={4}>
+                  <Row justify="space-between" align="center">
+                    <Paragraph size="sm" color="$gray11" style={{ minWidth: 60 }}>
                       {day.date}
                     </Paragraph>
-                    <Card
-                      f={1}
-                      height={24}
-                      backgroundColor="$gray3"
-                      borderRadius="$2"
-                      overflow="hidden"
-                      mx="$2"
+                    <View
+                      style={{
+                        flex: 1,
+                        height: 24,
+                        backgroundColor: '#d4d4d8',
+                        borderRadius: 8,
+                        overflow: 'hidden',
+                        marginHorizontal: 8,
+                      }}
                     >
-                      <Card height="100%" width={`${percentage}%`} backgroundColor="$blue8" />
-                    </Card>
-                    <Paragraph size="$2" fontWeight="600" minWidth={50} textAlign="right">
+                      <View
+                        style={{
+                          height: '100%',
+                          width: `${percentage}%`,
+                          backgroundColor: '#3b82f6',
+                        }}
+                      />
+                    </View>
+                    <Paragraph size="sm" style={{ minWidth: 50 }} align="right">
                       {day.requests}
                     </Paragraph>
-                  </XStack>
-                </YStack>
+                  </Row>
+                </Stack>
               )
             })}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       </Card>
 
       {/* Endpoint Breakdown */}
-      <Card bordered padding="$4">
-        <YStack gap="$4">
+      <Card variant="outlined" padding="md">
+        <Stack gap={16}>
           <H4>Top Endpoints</H4>
 
-          <YStack gap="$2">
+          <Stack gap={8}>
             {data.endpointBreakdown.map((endpoint, index) => (
-              <Card key={index} backgroundColor="$gray2" padding="$3" borderRadius="$3">
-                <YStack gap="$2">
-                  <XStack jc="space-between" ai="center">
-                    <YStack f={1}>
-                      <XStack ai="center" gap="$2">
+              <Card
+              key={index}
+              style={{ backgroundColor: '#e4e4e7' }}
+              padding="sm"
+              variant="outlined"
+            >
+                <Stack gap={8}>
+                  <Row justify="space-between" align="center">
+                    <Stack flex={1}>
+                      <Row align="center" gap={8}>
                         <Card
-                          backgroundColor={
-                            endpoint.method === 'GET'
-                              ? '$blue3'
-                              : endpoint.method === 'POST'
-                                ? '$green3'
-                                : '$orange3'
-                          }
-                          paddingHorizontal="$2"
-                          paddingVertical="$1"
-                          borderRadius="$2"
+                          style={{
+                            backgroundColor:
+                              endpoint.method === 'GET'
+                                ? '#93c5fd'
+                                : endpoint.method === 'POST'
+                                  ? '#86efac'
+                                  : '#fdba74',
+                            paddingHorizontal: 8,
+                            paddingVertical: 4,
+                            borderRadius: 8,
+                          }}
                         >
                           <Paragraph
-                            size="$1"
-                            fontWeight="600"
+                            size="sm"
                             color={
                               endpoint.method === 'GET'
                                 ? '$blue11'
@@ -505,35 +523,35 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
                             {endpoint.method}
                           </Paragraph>
                         </Card>
-                        <Paragraph fontFamily="$mono" size="$3">
+                        <Paragraph style={{ fontFamily: 'monospace' }} size="sm">
                           {endpoint.endpoint}
                         </Paragraph>
-                      </XStack>
-                    </YStack>
-                    <Paragraph fontWeight="600">{endpoint.count.toLocaleString()}</Paragraph>
-                  </XStack>
+                      </Row>
+                    </Stack>
+                    <Paragraph>{endpoint.count.toLocaleString()}</Paragraph>
+                  </Row>
 
-                  <XStack gap="$4">
-                    <Paragraph size="$2" color="$gray11">
+                  <Row gap={16}>
+                    <Paragraph size="sm" color="$gray11">
                       Avg: {endpoint.avgResponseTime}ms
                     </Paragraph>
-                    <Paragraph size="$2" color={endpoint.errorRate > 1 ? '$red11' : '$gray11'}>
+                    <Paragraph size="sm" color={endpoint.errorRate > 1 ? '$red11' : '$gray11'}>
                       Error: {endpoint.errorRate}%
                     </Paragraph>
-                  </XStack>
-                </YStack>
+                  </Row>
+                </Stack>
               </Card>
             ))}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       </Card>
 
       {/* Status Code Breakdown */}
-      <Card bordered padding="$4">
-        <YStack gap="$4">
+      <Card variant="outlined" padding="md">
+        <Stack gap={16}>
           <H4>Status Codes</H4>
 
-          <XStack gap="$2" flexWrap="wrap">
+          <Row gap={8} wrap>
             {Object.entries(data.statusCodeBreakdown).map(([code, count]) => {
               const isSuccess = code.startsWith('2')
               const isClientError = code.startsWith('4')
@@ -542,29 +560,31 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
               return (
                 <Card
                   key={code}
-                  backgroundColor={isSuccess ? '$green2' : isClientError ? '$orange2' : '$red2'}
-                  borderColor={isSuccess ? '$green6' : isClientError ? '$orange6' : '$red6'}
-                  borderWidth={1}
-                  padding="$3"
-                  borderRadius="$3"
-                  minWidth={100}
+                  style={{
+                    backgroundColor: isSuccess ? '#dcfce7' : isClientError ? '#ffedd5' : '#fee2e2',
+                    borderColor: isSuccess ? '#22c55e' : isClientError ? '#f97316' : '#ef4444',
+                    borderWidth: 1,
+                    borderRadius: 12,
+                    minWidth: 100,
+                  }}
+                  padding="sm"
+                  variant="outlined"
                 >
-                  <YStack gap="$1" ai="center">
+                  <Stack gap={4} align="center">
                     <Paragraph
-                      size="$2"
-                      fontWeight="600"
+                      size="sm"
                       color={isSuccess ? '$green11' : isClientError ? '$orange11' : '$red11'}
                     >
                       {code}
                     </Paragraph>
-                    <Paragraph fontWeight="600">{count.toLocaleString()}</Paragraph>
-                  </YStack>
+                    <Paragraph>{count.toLocaleString()}</Paragraph>
+                  </Stack>
                 </Card>
               )
             })}
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   )
 }

@@ -1,7 +1,7 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { OfficeUniversitiesForm } from '@scf/core/features/office/office-universities-form'
-import { api } from '@scf/core/utils/api'
-import { Spinner, YStack } from '@unicornlove/ui'
+import { useOfficeUniversity } from '@scf/core/utils/office-universities-sdk-hooks'
+import { Spinner, Stack } from '@scaffald/ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 
 export default function EditUniversityPage() {
@@ -10,30 +10,27 @@ export default function EditUniversityPage() {
 
   if (!id) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center">
-        <YStack>Invalid university ID</YStack>
-      </YStack>
+      <Stack align="center" justify="center">
+        <Stack>Invalid university ID</Stack>
+      </Stack>
     )
   }
 
-  const { data, isLoading } = api.office.universities.getUniversity.useQuery(
-    { id },
-    { enabled: !!id }
-  )
+  const { data, isLoading } = useOfficeUniversity(id || undefined, { enabled: !!id })
 
   if (isLoading) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center">
-        <Spinner size="large" />
-      </YStack>
+      <Stack align="center" justify="center">
+        <Spinner size="lg" />
+      </Stack>
     )
   }
 
   if (!data?.university) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center">
-        <YStack>University not found</YStack>
-      </YStack>
+      <Stack align="center" justify="center">
+        <Stack>University not found</Stack>
+      </Stack>
     )
   }
 

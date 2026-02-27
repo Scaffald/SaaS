@@ -1137,62 +1137,13 @@ All components must use light theme only. Dark theme elements are prohibited.
 
 *Source: `.cursor/rules/frameworks/ui/tailwind-css.mdc`*
 
-#### Tamagui property mappings, debugging, and component development guidelines
+#### Beyond UI – components and styling
 
-### Component Library Philosophy
-- **ALWAYS prefer vanilla Tamagui components** when creating/updating UI
-- **ALWAYS prefer Bento components** for complex UI patterns
-- **TREAT packages/ui as a cross-platform, portable package**
-- **MAKE components reusable, well-documented, and refactored**
-### Tamagui Component Usage
-- Use Tamagui primitives (`Button`, `Text`, `View`, `Stack`, `XStack`, `YStack`, etc.)
-- Prefer Tamagui styling over custom CSS/styling
-- Use Tamagui themes and design tokens
-- Leverage Tamagui's responsive design capabilities
-### Property Mappings
-### Core Style Properties
-- `borderColor` → `bc`
-- `backgroundColor` → `bg` (use `$color1` to `$color12` or `$blue1` to `$blue12`)
-- `borderRadius` → `rounded` (use `$1` to `$12` for consistent spacing)
-- `alignItems` → `items`
-- `justifyContent` → `justify`
-### Spacing Properties
-- `paddingHorizontal` → `px`
-- `paddingVertical` → `py`
-- `padding` → `p`
-- `marginHorizontal` → `mx`
-- `marginVertical` → `my`
-- `margin` → `m`
-### Size Properties
-- `width` → `w`
-- `height` → `h`
-- `minWidth` → `minW`
-- `maxWidth` → `maxW`
-### Typography Properties
-- `fontSize` → `fos`
-- `fontWeight` → `fow`
-- `color` → `col`
-- `textAlign` → `text`
-### Shadow Properties
-- **DO NOT use** `shadowColor`, `shadowOffset`, `shadowOpacity`, `shadowRadius`
-- **USE** `boxShadow` property instead
-### Color Variables
-- **Theme colors**: `$color1` to `$color12`
-- **Semantic colors**: `$blue1` to `$blue12`, `$green1` to `$green12`, etc.
-- **Surface colors**: `$background`, `$backgroundHover`, `$backgroundPress`
-- **Text colors**: `$color`, `$colorHover`, `$colorPress`
-### Examples
-### ❌ Avoid - Standard React Native Properties
-### ✅ Prefer - Tamagui Shorthand Properties
-### Debugging
-### Build-Time Debugging
-- Add `// debug` to the top of any file for build-time analysis
-- Add `// debug-verbose` for even more detailed information
-### Runtime Debugging
+- **Use Beyond UI components** from `@unicornlove/beyond-ui` when creating/updating UI.
+- **Theme and tokens**: See `packages/beyond-ui` and `.cursor/rules/beyond-ui-properties.mdc`.
+- **API conventions**: See `packages/beyond-ui/docs/API_CONVENTIONS.md` and `packages/beyond-ui/STYLING_GUIDE.md`.
 
-*[Content truncated - see source rule file for full details]*
-
-*Source: `.cursor/rules/frameworks/ui/tamagui.mdc`*
+*Source: `.cursor/rules/beyond-ui-properties.mdc`*
 
 ## Cross-Cutting Topics
 
@@ -1400,7 +1351,7 @@ These topics apply across different parts of the codebase:
 ### Framework-Specific Rules
 - **Database**: See `frameworks/database/` for Prisma, Supabase, SQLAlchemy, Alembic
 - **Testing**: See `frameworks/testing/` for testing standards, organization, and tools
-- **UI**: See `frameworks/ui/` for Tailwind CSS and Tamagui
+- **UI**: See `frameworks/ui/` for Tailwind CSS and Beyond UI
 ### Cross-Cutting Topics
 - **Accessibility**: See `topics/accessibility/standards.mdc`
 - **API Design**: See `topics/api/design-standards.mdc`

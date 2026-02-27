@@ -1,158 +1,183 @@
-import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
-import { api } from '@scf/core/utils/api'
+import { ROUTES, buildPath } from "@scf/core/constants/routes";
+import { formatDate } from "@scf/core/features/profile/utils/date-formatting";
+import {
+  useWorkLogs,
+  useUpdateWorkLogProfileVisibilityMutation,
+} from "@scf/core/utils/work-logs-sdk-hooks";
+import { useQueryClient } from "@tanstack/react-query";
 
-import { DashboardWidget, ToggleSwitch } from '@unicornlove/ui'
-import { useToastController } from '@tamagui/toast'
-import { useRouter } from 'expo-router'
-import { Button, Paragraph, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-import type { WorkLogListItem } from '@scf/schemas'
-import { getStatusColor, getStatusLabel } from '../utils/status-formatting'
+import { DashboardWidget, ToggleSwitch } from "@scaffald/ui";
+import { useToast } from "@scaffald/ui";
+import { useRouter } from "expo-router";
+import {
+  Button,
+  Paragraph,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+  useThemeContext,
+} from "@scaffald/ui";
+import type { WorkLogListItem } from "@scaffald/sdk";
+import { getStatusColor, getStatusLabel } from "../utils/status-formatting";
 
 export function WorkLogVisibilitySettingsCard() {
-  const router = useRouter()
-  const toast = useToastController()
-  const trpcUtils = api.useContext()
+  const router = useRouter();
+  const toast = useToast();
+  const queryClient = useQueryClient();
+  const { theme } = useThemeContext();
 
-  const listQuery = api.workLogs.list.useQuery(
+  const listQuery = useWorkLogs(
     {
       pageSize: 10,
-      sortField: 'updated_at',
-      sortDirection: 'desc',
+      sortField: "updated_at",
+      sortDirection: "desc",
     },
     { staleTime: 30_000 }
-  )
+  );
 
-  const updateProfileVisibilityMutation = api.workLogs.updateProfileVisibility.useMutation({
-    onSuccess: async () => {
-      toast.show('Visibility updated')
-      await trpcUtils.workLogs.list.invalidate()
-    },
-    onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : undefined
-      toast.show('Unable to update visibility', {
-        message: message ?? 'Please try again.',
-      })
-    },
-  })
+  const updateProfileVisibilityMutation =
+    useUpdateWorkLogProfileVisibilityMutation({
+      onSuccess: async () => {
+        toast.show({ title: "Visibility updated", message: "" });
+        await queryClient.invalidateQueries({ queryKey: ["workLogs", "list"] });
+      },
+      onError: (error: unknown) => {
+        const message = error instanceof Error ? error.message : undefined;
+        toast.show({
+          title: "Unable to update visibility",
+          message: message ?? "Please try again.",
+          variant: "error",
+        });
+      },
+    });
 
-  const items: WorkLogListItem[] = listQuery.data?.items ?? []
+  const items: WorkLogListItem[] = listQuery.data?.workLogs ?? [];
 
   return (
     <DashboardWidget>
-      <YStack gap="$3">
-        <Text fontSize="$6" fontWeight="700">
-          Work log profile visibility
-        </Text>
-        <Paragraph color="$color10">
-          Choose which verified work logs appear on your public profile. Manage individual entries
-          and jump directly to the detailed view for more options.
+      <Stack gap={12}>
+        <Text>Work log profile visibility</Text>
+        <Paragraph color="$gray11">
+          Choose which verified work logs appear on your public profile. Manage
+          individual entries and jump directly to the detailed view for more
+          options.
         </Paragraph>
 
         {listQuery.isLoading ? (
-          <XStack gap="$2" alignItems="center">
-            <Spinner size="small" />
-            <Text color="$color10">Loading work logs…</Text>
-          </XStack>
+          <Row gap={8} align="center">
+            <Spinner size="sm" />
+            <Text color="$gray11">Loading work logs…</Text>
+          </Row>
         ) : items.length === 0 ? (
-          <Paragraph color="$color10">
+          <Paragraph color="$gray11">
             Create and verify a work log to manage its public visibility.
           </Paragraph>
         ) : (
-          <YStack gap="$3">
+          <Stack gap={12}>
             {items.map((item) => {
-              const isVerified = item.status === 'verified'
-              const statusColor = getStatusColor(item.status)
+              const isVerified = item.status === "verified";
+              const statusColor = getStatusColor(item.status, theme);
               return (
-                <YStack
+                <Stack
                   key={item.id}
                   borderWidth={1}
                   borderColor="$color6"
-                  borderRadius="$4"
-                  paddingHorizontal="$3"
-                  paddingVertical="$3"
-                  gap="$3"
+                  borderRadius={16}
+                  paddingHorizontal={12}
+                  paddingVertical={12}
+                  gap={12}
                   backgroundColor="$color2"
                 >
-                  <XStack justifyContent="space-between" alignItems="center">
-                    <YStack gap="$1" flex={1}>
-                      <Text fontWeight="700">{item.project?.name ?? 'Work Log'}</Text>
-                      <Text color="$color10">
-                        {item.logDate ? formatDate(item.logDate) : 'Date not recorded'}
+                  <Row justify="space-between" align="center">
+                    <Stack gap={4} flex={1}>
+                      <Text>{"Work Log"}</Text>
+                      <Text color="$gray11">
+                        {item.log_date
+                          ? formatDate(item.log_date)
+                          : "Date not recorded"}
                       </Text>
-                    </YStack>
-                    <Text color={statusColor as never} fontWeight="600">
+                    </Stack>
+                    <Text color={statusColor as never}>
                       {getStatusLabel(item.status)}
                     </Text>
-                  </XStack>
+                  </Row>
 
-                  <XStack justifyContent="space-between" alignItems="center" gap="$4">
-                    <YStack gap="$1" flex={1}>
-                      <Text fontWeight="600">Show on public profile</Text>
-                      <Paragraph color="$color10">
-                        Only verified logs can be shown publicly. Disable to hide this entry.
+                  <Row justify="space-between" align="center" gap={16}>
+                    <Stack gap={4} flex={1}>
+                      <Text>Show on public profile</Text>
+                      <Paragraph color="$gray11">
+                        Only verified logs can be shown publicly. Disable to
+                        hide this entry.
                       </Paragraph>
-                    </YStack>
+                    </Stack>
                     <ToggleSwitch
-                      checked={item.showOnProfile}
-                      disabled={!isVerified || updateProfileVisibilityMutation.isPending}
-                      onCheckedChange={(checked) => {
+                      checked={item.show_on_profile}
+                      disabled={
+                        !isVerified || updateProfileVisibilityMutation.isPending
+                      }
+                      onChange={(checked) => {
                         if (!isVerified && checked) {
-                          toast.show('Pending verification', {
+                          toast.show({
+                            title: "Pending verification",
                             message:
-                              'Work logs must be verified before they can appear on your profile.',
-                          })
-                          return
+                              "Work logs must be verified before they can appear on your profile.",
+                          });
+                          return;
                         }
                         updateProfileVisibilityMutation.mutate({
                           workLogId: item.id,
                           showOnProfile: checked,
-                          visibility: checked ? 'public' : 'private',
-                        })
+                        });
                       }}
-                      testID={`profile-visibility-toggle-${item.id}`}
                     />
-                  </XStack>
+                  </Row>
 
-                  <XStack justifyContent="space-between" alignItems="center" gap="$4">
-                    <YStack gap="$1" flex={1}>
-                      <Text fontWeight="600">Show date on profile</Text>
-                      <Paragraph color="$color10">
-                        Display the logged date alongside this entry on your public profile.
+                  <Row justify="space-between" align="center" gap={16}>
+                    <Stack gap={4} flex={1}>
+                      <Text>Show date on profile</Text>
+                      <Paragraph color="$gray11">
+                        Display the logged date alongside this entry on your
+                        public profile.
                       </Paragraph>
-                    </YStack>
+                    </Stack>
                     <ToggleSwitch
-                      checked={item.showDateRangeOnProfile}
-                      disabled={!item.showOnProfile || updateProfileVisibilityMutation.isPending}
-                      onCheckedChange={(checked) => {
+                      checked={Boolean(item.show_date_range_on_profile)}
+                      disabled={
+                        !item.show_on_profile ||
+                        updateProfileVisibilityMutation.isPending
+                      }
+                      onChange={(checked) => {
                         updateProfileVisibilityMutation.mutate({
                           workLogId: item.id,
+                          showOnProfile: item.show_on_profile,
                           showDateRangeOnProfile: checked,
-                        })
+                        });
                       }}
-                      testID={`date-range-toggle-${item.id}`}
                     />
-                  </XStack>
+                  </Row>
 
-                  <XStack justifyContent="flex-end">
+                  <Row justify="flex-end">
                     <Button
-                      size="$3"
-                      variant="outlined"
+                      size="sm"
+                      variant="outline"
                       onPress={() =>
                         router.push(
-                          buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId: item.id })
+                          buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, {
+                            workLogId: item.id,
+                          })
                         )
                       }
                     >
                       View details
                     </Button>
-                  </XStack>
-                </YStack>
-              )
+                  </Row>
+                </Stack>
+              );
             })}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     </DashboardWidget>
-  )
+  );
 }

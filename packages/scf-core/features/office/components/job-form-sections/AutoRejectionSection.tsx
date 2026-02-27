@@ -1,7 +1,8 @@
-import { Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
-import { HelpCircle } from '@tamagui/lucide-icons'
+import { Text, ToggleSwitch, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { HelpCircle } from 'lucide-react-native'
 import { useState } from 'react'
-import { Label } from '@unicornlove/ui'
+import { Label } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface AutoRejectCriteria {
   score_minimum?: number
@@ -20,6 +21,7 @@ interface AutoRejectionSectionProps {
 }
 
 export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoRejectionSectionProps) {
+  const { theme } = useThemeContext()
   const [localState, setLocalState] = useState({
     enabled,
     criteria: criteria || {},
@@ -45,93 +47,85 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
   }
 
   return (
-    <YStack gap="$4" padding="$4">
-      <YStack gap="$2">
-        <Text fontSize="$6" fontWeight="600">
-          Auto-Rejection
-        </Text>
-        <Text fontSize="$2">Automatically reject applicants who don't meet minimum criteria</Text>
-      </YStack>
+    <Stack gap={16} padding="md">
+      <Stack gap={8}>
+        <Text>Auto-Rejection</Text>
+        <Text>Automatically reject applicants who don't meet minimum criteria</Text>
+      </Stack>
 
       {/* Enable Auto-Rejection */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <XStack gap="$2" alignItems="center" flex={1}>
-          <Label fontWeight="600">Reject automatically</Label>
-          <HelpCircle size={16} color="$color10" />
-        </XStack>
+      <Row gap={12} align="center" justify="space-between">
+        <Row gap={8} align="center" flex={1}>
+          <Label>Reject automatically</Label>
+          <HelpCircle size={20} color={colors.text[theme].secondary} />
+        </Row>
         <ToggleSwitch
           checked={localState.enabled}
-          onCheckedChange={handleToggle}
+          onChange={handleToggle}
           aria-label="Enable auto-rejection"
         />
-      </XStack>
-      <Text fontSize="$2" color="$color10">
+      </Row>
+      <Text style={{ color: colors.text[theme].secondary }}>
         Based on Elevate score, work authorization and required skills
       </Text>
 
       {/* Criteria (only show when enabled) */}
       {localState.enabled && (
-        <YStack gap="$3" padding="$3">
-          <Text fontSize="$3" fontWeight="600">
-            Rejection Criteria
-          </Text>
+        <Stack gap={12} padding="sm">
+          <Text>Rejection Criteria</Text>
 
           {/* Work Authorization */}
-          <XStack gap="$3">
-            <YStack gap="$1" flex={1}>
+          <Row gap={12}>
+            <Stack gap={4} flex={1}>
               <Label>Work authorization required</Label>
-              <Text fontSize="$1">Reject if not authorized to work</Text>
-            </YStack>
+              <Text>Reject if not authorized to work</Text>
+            </Stack>
             <ToggleSwitch
               checked={localState.criteria.require_work_authorization || false}
-              onCheckedChange={(checked: boolean) =>
+              onChange={(checked: boolean) =>
                 handleCriteriaChange('require_work_authorization', checked)
               }
               aria-label="Work authorization required"
             />
-          </XStack>
+          </Row>
 
           {/* All Skills Required */}
-          <XStack gap="$3">
-            <YStack gap="$1" flex={1}>
+          <Row gap={12}>
+            <Stack gap={4} flex={1}>
               <Label>All skills required</Label>
-              <Text fontSize="$1">Reject if missing any required skills</Text>
-            </YStack>
+              <Text>Reject if missing any required skills</Text>
+            </Stack>
             <ToggleSwitch
               checked={localState.criteria.require_all_skills || false}
-              onCheckedChange={(checked: boolean) =>
-                handleCriteriaChange('require_all_skills', checked)
-              }
+              onChange={(checked: boolean) => handleCriteriaChange('require_all_skills', checked)}
               aria-label="All skills required"
             />
-          </XStack>
+          </Row>
 
           {/* All Certifications Required */}
-          <XStack gap="$3">
-            <YStack gap="$1" flex={1}>
+          <Row gap={12}>
+            <Stack gap={4} flex={1}>
               <Label>All certifications required</Label>
-              <Text fontSize="$1">Reject if missing any required certifications</Text>
-            </YStack>
+              <Text>Reject if missing any required certifications</Text>
+            </Stack>
             <ToggleSwitch
               checked={localState.criteria.require_all_certifications || false}
-              onCheckedChange={(checked: boolean) =>
+              onChange={(checked: boolean) =>
                 handleCriteriaChange('require_all_certifications', checked)
               }
               aria-label="All certifications required"
             />
-          </XStack>
+          </Row>
 
-          <YStack gap="$2" padding="$3">
-            <Text fontSize="$2" fontWeight="600" color="$yellow11">
-              ⚠️ Important
-            </Text>
-            <Text fontSize="$1" color="$yellow11">
+          <Stack gap={8} padding="sm">
+            <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>⚠️ Important</Text>
+            <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
               Auto-rejected applicants will be notified and moved to a "Rejected" status. This
               action cannot be undone automatically. Review your criteria carefully.
             </Text>
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

@@ -1,5 +1,5 @@
 /**
- * REQ-129: Dashboard Mock Validation Tests
+ * Dashboard Mock Validation Tests
  * Validates that our mocks match the real system (CLAUDE.md requirement)
  */
 

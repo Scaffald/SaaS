@@ -1,10 +1,10 @@
 /**
- * ValidationFeedback Component (REQ-167)
+ * ValidationFeedback Component
  * Displays real-time validation feedback for OCR fields
  */
 
 import React from 'react';
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card } from '@scaffald/ui';
 import { ValidationResult } from '../../types/ocr.types';
 import { AlertCircle, AlertTriangle, CheckCircle } from 'lucide-react';
 

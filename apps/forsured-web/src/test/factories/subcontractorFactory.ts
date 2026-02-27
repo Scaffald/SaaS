@@ -2,11 +2,11 @@
  * Subcontractor Factory
  *
  * Creates real subcontractor records in the database for testing.
- * REQ-9: Testing Policy - No mocking of owned code
+ * No mocking of owned code
  */
 
-import { testSupabase, CreatedTestData } from '../testDb';
-import { testId, FactoryOptions } from './index';
+import { CreatedTestData, testSupabase } from "../testDb";
+import { FactoryOptions, testId } from "./index";
 
 export interface TestSubcontractor {
   id: string;
@@ -25,8 +25,8 @@ interface CreateSubcontractorOptions extends FactoryOptions {
   name?: string;
   company?: string;
   organizationId?: string;
-  status?: 'active' | 'inactive' | 'pending' | 'suspended';
-  riskLevel?: 'low' | 'medium' | 'high' | 'critical';
+  status?: "active" | "inactive" | "pending" | "suspended";
+  riskLevel?: "low" | "medium" | "high" | "critical";
   complianceScore?: number;
   tradeType?: string;
   email?: string;
@@ -37,42 +37,42 @@ interface CreateSubcontractorOptions extends FactoryOptions {
  * Create a test subcontractor with defaults
  */
 export async function createTestSubcontractor(
-  options: CreateSubcontractorOptions = {}
+  options: CreateSubcontractorOptions = {},
 ): Promise<TestSubcontractor> {
   // Get a valid organization ID if not provided
   let organizationId = options.organizationId;
   if (!organizationId) {
     const { data: org } = await testSupabase
-      .schema('core' as never)
-      .from('organizations')
-      .select('id')
+      .schema("core" as never)
+      .from("organizations")
+      .select("id")
       .limit(1)
       .single();
 
     if (!org) {
-      throw new Error('No organization found for test subcontractor');
+      throw new Error("No organization found for test subcontractor");
     }
     organizationId = org.id;
   }
 
-  const id = testId('sub');
+  const id = testId("sub");
   const subcontractorData = {
     name: options.name || `Test Contact ${id}`,
     company: options.company || `Test Company ${id}`,
     organization_id: organizationId,
-    status: options.status || 'active',
-    risk_level: options.riskLevel || 'low',
+    status: options.status || "active",
+    risk_level: options.riskLevel || "low",
     compliance_score: options.complianceScore,
     trade_type: options.tradeType,
     contact_info: {
       email: options.email || `test-${id}@example.com`,
-      phone: options.phone || '555-0100',
+      phone: options.phone || "555-0100",
     },
   };
 
   const { data: result, error } = await testSupabase
-    .schema('forsured' as never)
-    .from('subcontractors')
+    .schema("forsured" as never)
+    .from("subcontractors")
     .insert(subcontractorData)
     .select()
     .single();
@@ -95,18 +95,18 @@ export async function createTestSubcontractor(
 export async function createTestSubcontractorWithInvitation(
   projectId: string,
   options: CreateSubcontractorOptions & {
-    invitationStatus?: 'invited' | 'active' | 'declined' | 'removed';
-  } = {}
+    invitationStatus?: "invited" | "active" | "declined" | "removed";
+  } = {},
 ): Promise<{ subcontractor: TestSubcontractor; invitation: any }> {
   const subcontractor = await createTestSubcontractor(options);
 
   const { data: invitation, error } = await testSupabase
-    .schema('forsured' as never)
-    .from('project_subcontractors')
+    .schema("forsured" as never)
+    .from("project_subcontractors")
     .insert({
       project_id: projectId,
       subcontractor_id: subcontractor.id,
-      status: options.invitationStatus || 'invited',
+      status: options.invitationStatus || "invited",
     })
     .select()
     .single();
@@ -128,16 +128,16 @@ export async function createTestSubcontractorWithInvitation(
  */
 export async function createTestSubcontractorsByRiskLevel(
   organizationId: string,
-  options: FactoryOptions = {}
+  options: FactoryOptions = {},
 ): Promise<TestSubcontractor[]> {
   const riskLevels: Array<{
-    level: 'low' | 'medium' | 'high' | 'critical';
+    level: "low" | "medium" | "high" | "critical";
     score: number;
   }> = [
-    { level: 'low', score: 95 },
-    { level: 'medium', score: 75 },
-    { level: 'high', score: 55 },
-    { level: 'critical', score: 30 },
+    { level: "low", score: 95 },
+    { level: "medium", score: 75 },
+    { level: "high", score: 55 },
+    { level: "critical", score: 30 },
   ];
 
   const subcontractors: TestSubcontractor[] = [];
@@ -147,7 +147,9 @@ export async function createTestSubcontractorsByRiskLevel(
       organizationId,
       riskLevel: level,
       complianceScore: score,
-      company: `${level.charAt(0).toUpperCase() + level.slice(1)} Risk Contractors`,
+      company: `${
+        level.charAt(0).toUpperCase() + level.slice(1)
+      } Risk Contractors`,
       ...options,
     });
     subcontractors.push(sub);
@@ -160,16 +162,16 @@ export async function createTestSubcontractorsByRiskLevel(
  * Get an existing test subcontractor or create one
  */
 export async function getOrCreateTestSubcontractor(
-  options: CreateSubcontractorOptions = {}
+  options: CreateSubcontractorOptions = {},
 ): Promise<TestSubcontractor> {
   // Try to find existing subcontractor first
   let query = testSupabase
-    .schema('forsured' as never)
-    .from('subcontractors')
-    .select('*');
+    .schema("forsured" as never)
+    .from("subcontractors")
+    .select("*");
 
   if (options.organizationId) {
-    query = query.eq('organization_id', options.organizationId);
+    query = query.eq("organization_id", options.organizationId);
   }
 
   const { data: existing } = await query.limit(1).single();

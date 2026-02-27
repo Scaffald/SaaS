@@ -1,18 +1,18 @@
-import type { IconProps } from '@tamagui/helpers-icon'
 import {
   Award,
   Briefcase,
   ChevronRight,
   Clock,
   GraduationCap,
+  type LucideIcon,
   SlidersHorizontal,
   Sparkles,
   Upload,
   UserRound,
   Zap,
-} from '@tamagui/lucide-icons'
-import { type ComponentType, memo } from 'react'
-import { Button, Card, H3, Paragraph, Text, XStack, YStack } from '@unicornlove/ui'
+} from 'lucide-react-native'
+import { memo } from 'react'
+import { Button, Card, CardHeader, H3, Text, Row, Stack } from '@scaffald/ui'
 import { PROFILE_WIZARD_STEP_META, PROFILE_WIZARD_STEPS } from '../utils/wizardSteps'
 
 export interface WizardStartScreenProps {
@@ -39,7 +39,7 @@ export const WizardStartScreen = memo(function WizardStartScreen({
       0
     )
 
-  const STEP_ICONS: Record<string, ComponentType<IconProps>> = {
+  const STEP_ICONS: Record<string, LucideIcon> = {
     general: UserRound,
     skills: Sparkles,
     experience: Briefcase,
@@ -49,98 +49,84 @@ export const WizardStartScreen = memo(function WizardStartScreen({
   }
 
   return (
-    <YStack gap="$5" testID="profile-wizard-start-screen">
-      <YStack gap="$3">
+    <Stack gap={20} testID="profile-wizard-start-screen">
+      <Stack gap={12}>
         <H3>Complete Your Profile in Minutes</H3>
-        <Paragraph color="$color11">
+        <Text style={{ color: '#414e62' }}>
           Unlock better job matches and visibility by finishing six quick steps. We&apos;ll guide
           you through the essentials and save your progress automatically.
-        </Paragraph>
-      </YStack>
+        </Text>
+      </Stack>
 
-      <Card bordered elevate backgroundColor="$color2">
-        <Card.Header padded gap="$4">
-          <YStack gap="$3">
-            <XStack gap="$2" alignItems="center">
-              <Zap size={20} color="$yellow10" />
-              <Text fontSize="$3" fontWeight="600" color="$color12">
-                Fast-Track Your Profile
-              </Text>
-            </XStack>
-            <Paragraph color="$color11">
+      <Card variant="outlined">
+        <CardHeader style={{ gap: 16 }}>
+          <Stack gap={12}>
+            <Row gap={8} align="center">
+              <Zap size={20} color="#f59e0b" />
+              <Text style={{ color: '#414e62' }}>Fast-Track Your Profile</Text>
+            </Row>
+            <Text style={{ color: '#414e62' }}>
               You&apos;re {completionPercentage}% complete. Finish the wizard to unlock profile
               visibility, milestone badges, and curated job recommendations.
-            </Paragraph>
-          </YStack>
-
-          <YStack gap="$3">
-            <Text fontWeight="600" color="$color12">
-              What you&apos;ll cover
             </Text>
-            <YStack gap="$3">
+          </Stack>
+
+          <Stack gap={12}>
+            <Text style={{ color: '#414e62' }}>What you&apos;ll cover</Text>
+            <Stack gap={12}>
               {PROFILE_WIZARD_STEPS.map((stepId) => {
                 const meta = PROFILE_WIZARD_STEP_META[stepId]
                 const StepIcon = STEP_ICONS[stepId] ?? Sparkles
                 return (
-                  <XStack key={stepId} gap="$3" alignItems="center">
-                    <Card
-                      backgroundColor="$color3"
-                      borderColor="$color5"
-                      borderWidth={1}
+                  <Row key={stepId} gap={12} align="center">
+                    <Stack
                       width={44}
                       height={44}
-                      alignItems="center"
-                      justifyContent="center"
-                      borderRadius="$4"
+                      align="center"
+                      justify="center"
+                      borderRadius={16}
+                      borderWidth={1}
+                      borderColor="#e4e7ec"
+                      backgroundColor="#f2f4f7"
                     >
-                      <StepIcon size={20} color="$blue10" />
-                    </Card>
-                    <YStack flex={1}>
-                      <Text fontSize="$3" fontWeight="600" color="$color12">
-                        {meta.title}
-                      </Text>
-                      <Text fontSize="$2" color="$color11">
-                        {meta.description}
-                      </Text>
-                    </YStack>
-                    <Text fontSize="$2" color="$color10">
-                      {meta.estimatedTimeMinutes} min
-                    </Text>
-                  </XStack>
+                      <StepIcon size={20} color="#2563eb" />
+                    </Stack>
+                    <Stack flex={1}>
+                      <Text style={{ color: '#414e62' }}>{meta.title}</Text>
+                      <Text style={{ color: '#414e62' }}>{meta.description}</Text>
+                    </Stack>
+                    <Text style={{ color: '#414e62' }}>{meta.estimatedTimeMinutes} min</Text>
+                  </Row>
                 )
               })}
-            </YStack>
-          </YStack>
-        </Card.Header>
+            </Stack>
+          </Stack>
+        </CardHeader>
       </Card>
 
-      <YStack gap="$3">
-        <Button size="$5" themeInverse iconAfter={ChevronRight} onPress={onStartWizard}>
+      <Stack gap={12}>
+        <Button size="lg" variant="filled" color="primary" iconEnd={ChevronRight} onPress={onStartWizard}>
           Start Wizard
         </Button>
-        <Button size="$5" icon={Upload} onPress={onUploadResume}>
+        <Button size="lg" iconStart={Upload} onPress={onUploadResume}>
           Upload Resume
         </Button>
-        <Button size="$3" chromeless onPress={onSkip}>
+        <Button size="sm" variant="text" onPress={onSkip}>
           Skip and Edit Later
         </Button>
-      </YStack>
+      </Stack>
 
-      <Card bordered backgroundColor="$color2">
-        <Card.Header padded gap="$3">
-          <XStack gap="$3" flexWrap="wrap">
-            <XStack gap="$2" alignItems="center">
-              <Clock size={18} color="$blue10" />
-              <Text fontSize="$3" fontWeight="600" color="$color12">
-                {estimatedMinutes || ESTIMATED_MINUTES_FALLBACK} minutes
-              </Text>
-            </XStack>
-            <Text fontSize="$3" color="$color11">
-              6 guided steps • Auto-save enabled • Resume anytime
-            </Text>
-          </XStack>
-        </Card.Header>
+      <Card variant="outlined">
+        <CardHeader style={{ gap: 12 }}>
+          <Row gap={12} wrap>
+            <Row gap={8} align="center">
+              <Clock size={18} color="#2563eb" />
+              <Text style={{ color: '#414e62' }}>{estimatedMinutes || ESTIMATED_MINUTES_FALLBACK} minutes</Text>
+            </Row>
+            <Text style={{ color: '#414e62' }}>6 guided steps • Auto-save enabled • Resume anytime</Text>
+          </Row>
+        </CardHeader>
       </Card>
-    </YStack>
+    </Stack>
   )
 })

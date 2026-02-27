@@ -1,6 +1,6 @@
 /**
  * Data Export Service - CCPA Right to Know Implementation
- * REQ-131: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  *
  * Implements CCPA "Right to Know" by allowing users to export all their personal data.
  * Response time: 45 days (extendable to 90 days)

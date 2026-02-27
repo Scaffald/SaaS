@@ -1,6 +1,6 @@
 /**
  * AddTeamMemberModal - Modal wrapper for AddTeamMemberForm
- * REQ-283: Team Member Management UI
+ * Team Member Management UI
  * TASK-3: Implement Add Team Member Form with Email Invitation
  *
  * Modal that opens when "Invite Member" button is clicked.
@@ -10,7 +10,7 @@
 
 import React, { useEffect } from 'react';
 import { UserPlus, X } from 'lucide-react';
-import { Stack, Row, Text, Button, Card, H2 } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card, H2 } from '@scaffald/ui';
 import { AddTeamMemberForm } from './AddTeamMemberForm';
 import type { AccessLevel } from './AccessLevelSelector';
 

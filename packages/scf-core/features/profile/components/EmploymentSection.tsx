@@ -2,21 +2,29 @@ import {
   OpenToTravelCard,
   USPassportToggle,
   USResidentToggle,
-} from '@scf/core/features/profile/components/employment-fields'
-import { api } from '@scf/core/utils/api'
+} from "@scf/core/features/profile/components/employment-fields";
+import {
+  useOfficeUserEmployment,
+  useOfficeUpdateUserEmploymentMutation,
+} from "@scf/core/utils/office-users-sdk-hooks";
+import {
+  useEmployment,
+  useUpdateEmploymentMutation,
+} from "@scf/core/utils/profile-employment-sdk-hooks";
 import {
   Button,
-  CustomCheckbox,
+  Card,
+  Checkbox,
   DashboardWidget,
   LocationListInput,
-  ToggleCard,
-} from '@unicornlove/ui'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Calendar, Car, Shield } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-import { useEffect, useState } from 'react'
-import { Controller, useForm, useWatch } from 'react-hook-form'
-import { AnimatePresence, Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+  Toggle,
+} from "@scaffald/ui";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Calendar, Car, Shield } from "lucide-react-native";
+import { useToast } from "@scaffald/ui";
+import { useEffect, useState } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import { Input, Spinner, Text, Row, Stack } from "@scaffald/ui";
 import {
   AVAILABILITY_OPTIONS,
   DRIVERS_LICENSE_OPTIONS,
@@ -24,23 +32,23 @@ import {
   employmentProfileDefaults,
   employmentProfileSchema,
   MILITARY_STATUS_OPTIONS,
-} from '../config/employment-schema'
+} from "../config/employment-schema";
 
 interface EmploymentSectionProps {
   /**
    * User ID to edit. If not provided, edits the current user's profile.
    */
-  userId?: string
+  userId?: string;
   /**
    * Mode determines which tRPC endpoints to use
    * - 'user': Uses profile.* endpoints (current user)
    * - 'admin': Uses office.* endpoints (any user)
    */
-  mode?: 'user' | 'admin'
+  mode?: "user" | "admin";
   /**
    * Read-only mode (view only)
    */
-  readOnly?: boolean
+  readOnly?: boolean;
 }
 
 /**
@@ -49,58 +57,73 @@ interface EmploymentSectionProps {
  */
 export function EmploymentSection({
   userId,
-  mode = 'user',
+  mode = "user",
   readOnly = false,
 }: EmploymentSectionProps) {
-  const [isLoading, setIsLoading] = useState(false)
-  const toast = useToastController()
+  const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
 
-  // Determine which tRPC endpoints to use based on mode
-  const useQuery =
-    mode === 'admin' && userId
-      ? () => api.office.getUserEmployment.useQuery({ userId })
-      : () => api.profile.employment.getEmployment.useQuery()
+  // Determine which endpoints to use based on mode
+  const useQueryHook =
+    mode === "admin" && userId
+      ? () => useOfficeUserEmployment(userId)
+      : useEmployment;
 
-  const useMutation =
-    mode === 'admin' && userId
+  const useMutationHook =
+    mode === "admin" && userId
       ? () =>
-          api.office.updateUserEmployment.useMutation({
+          useOfficeUpdateUserEmploymentMutation({
             onSuccess: () => {
-              toast.show('Employment Updated', {
-                message: 'Employment preferences have been saved successfully!',
-              })
-              refetch()
+              toast.show({
+                title: "Employment Updated",
+                message: "Employment preferences have been saved successfully!",
+              });
+              refetch();
             },
             onError: (error: unknown) => {
-              console.error('Error saving employment:', error)
-              const message =
-                error instanceof Error ? error.message : 'Failed to save employment preferences.'
-              toast.show('Error', {
-                message,
-              })
+              console.error("Error saving employment:", error);
+              const _message =
+                error instanceof Error
+                  ? error.message
+                  : "Failed to save employment preferences.";
+              toast.show({
+                title: "Error",
+                message: "",
+                variant: "error",
+              });
             },
           })
       : () =>
-          api.profile.employment.updateEmployment.useMutation({
+          useUpdateEmploymentMutation({
             onSuccess: () => {
-              toast.show('Employment Updated', {
-                message: 'Your employment preferences have been saved successfully!',
-              })
-              refetch()
+              toast.show({
+                title: "Employment Updated",
+                message:
+                  "Your employment preferences have been saved successfully!",
+              });
+              refetch();
             },
             onError: (error: unknown) => {
-              console.error('Error saving employment:', error)
-              const message =
-                error instanceof Error ? error.message : 'Failed to save employment preferences.'
-              toast.show('Error', {
-                message,
-              })
+              console.error("Error saving employment:", error);
+              const _message =
+                error instanceof Error
+                  ? error.message
+                  : "Failed to save employment preferences.";
+              toast.show({
+                title: "Error",
+                message: "",
+                variant: "error",
+              });
             },
-          })
+          });
 
-  const { data: employmentData, isLoading: isLoadingEmployment, refetch } = useQuery()
+  const {
+    data: employmentData,
+    isLoading: isLoadingEmployment,
+    refetch,
+  } = useQueryHook();
 
-  const updateEmploymentMutation = useMutation()
+  const updateEmploymentMutation = useMutationHook();
 
   const {
     control,
@@ -111,97 +134,95 @@ export function EmploymentSection({
   } = useForm<EmploymentProfileFormData>({
     resolver: zodResolver(employmentProfileSchema),
     defaultValues: employmentProfileDefaults,
-    mode: 'onChange',
-  })
+    mode: "onChange",
+  });
 
   const travelDistanceMiles = useWatch({
     control,
-    name: 'travel_distance_miles',
-  })
+    name: "travel_distance_miles",
+  });
 
   // Reset form when employment data is loaded
   useEffect(() => {
     if (employmentData) {
-      reset(employmentData)
+      reset(employmentData as unknown as EmploymentProfileFormData);
     }
-  }, [employmentData, reset])
+  }, [employmentData, reset]);
 
   const onSubmit = async (data: EmploymentProfileFormData) => {
-    if (readOnly) return
+    if (readOnly) return;
 
     // Use the user's selection for open_to_travel (defaults to true if not set)
     const updatedData = {
       ...data,
       open_to_travel: data.open_to_travel ?? true,
-    }
+    };
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      if (mode === 'admin' && userId) {
-        // Form schema is compatible with API schema but has slightly different structure
-        await updateEmploymentMutation.mutateAsync({
-          userId,
-          data: updatedData as unknown as Parameters<
-            typeof updateEmploymentMutation.mutateAsync
-          >[0]['data'],
-        })
+      if (mode === "admin" && userId) {
+        await (
+          updateEmploymentMutation.mutateAsync as (arg: {
+            userId: string;
+            data: unknown;
+          }) => Promise<unknown>
+        )({ userId, data: updatedData });
       } else {
-        // Form schema is compatible with API schema but has slightly different structure
-        await updateEmploymentMutation.mutateAsync(
-          updatedData as unknown as Parameters<typeof updateEmploymentMutation.mutateAsync>[0]
-        )
+        await (
+          updateEmploymentMutation.mutateAsync as (
+            arg: unknown
+          ) => Promise<unknown>
+        )(updatedData);
       }
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   if (isLoadingEmployment) {
     return (
-      <YStack gap="$4" padding="$4" flex={1} justifyContent="center" alignItems="center">
-        <Spinner size="large" />
+      <Stack gap={16} padding="md" flex={1} justify="center" align="center">
+        <Spinner size="lg" />
         <Text>Loading employment preferences...</Text>
-      </YStack>
-    )
+      </Stack>
+    );
   }
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
+      <Stack gap={16}>
         {/* Hourly Rate */}
-        <YStack gap="$2">
-          <Text fontWeight="600">Hourly Rate ($)</Text>
+        <Stack gap={8}>
+          <Text>Hourly Rate ($)</Text>
           <Controller
             name="hourly_rate"
             control={control}
             render={({ field }) => (
-              <XStack gap="$3" alignItems="center">
+              <Row gap={12} align="center">
                 <Input
-                  flex={1}
+                  style={{ flex: 1, opacity: readOnly ? 0.7 : 1 }}
                   placeholder="Enter your hourly rate"
-                  value={field.value?.toString() || '0'}
+                  value={field.value?.toString() || "0"}
                   onChangeText={(text) => {
-                    const numValue = text ? Number.parseFloat(text) : 0
-                    field.onChange(Number.isNaN(numValue) ? 0 : numValue)
+                    const numValue = text ? Number.parseFloat(text) : 0;
+                    field.onChange(Number.isNaN(numValue) ? 0 : numValue);
                   }}
                   keyboardType="numeric"
-                  borderColor={errors.hourly_rate ? '$red8' : '$borderColor'}
                   editable={!readOnly}
-                  opacity={readOnly ? 0.7 : 1}
                 />
-              </XStack>
+              </Row>
             )}
           />
           {errors.hourly_rate && (
-            <Text color="$red10" fontSize="$2">
+            <Text style={{ color: "#ef4444" }}>
               {errors.hourly_rate.message}
             </Text>
           )}
-        </YStack>
+        </Stack>
 
         {/* Preferred Work Locations */}
-        <YStack gap="$3" paddingVertical="$3">
-          <Text fontWeight="600">Preferred Work Locations</Text>
+        <Stack gap={12} paddingVertical={12}>
+          <Text>Preferred Work Locations</Text>
           <Controller
             name="preferred_work_locations"
             control={control}
@@ -212,45 +233,49 @@ export function EmploymentSection({
                 maxLocations={3}
                 helpText="You can add up to three locations. This can be as broad as in a state or county, or specific to a city."
                 placeholder="Search for a work location..."
-                provider="mapbox"
-                apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
                 disabled={readOnly}
               />
             )}
           />
-        </YStack>
+        </Stack>
 
         {/* Travel Preferences */}
-        <YStack gap="$3">
-          <Text fontWeight="600">Travel Preferences</Text>
+        <Stack gap={12}>
+          <Text>Travel Preferences</Text>
           <Controller
             name="open_to_travel"
             control={control}
             render={({ field: openToTravelField }) => (
               <OpenToTravelCard
                 checked={openToTravelField.value ?? true}
-                onCheckedChange={openToTravelField.onChange}
+                onChange={openToTravelField.onChange}
                 travelDistanceValue={travelDistanceMiles ?? 25}
                 onTravelDistanceChange={(value) => {
-                  setValue('travel_distance_miles', value, { shouldValidate: true })
+                  setValue("travel_distance_miles", value, {
+                    shouldValidate: true,
+                  });
                 }}
                 disabled={readOnly}
               />
             )}
           />
-          <Controller name="travel_distance_miles" control={control} render={() => <></>} />
-        </YStack>
+          <Controller
+            name="travel_distance_miles"
+            control={control}
+            render={() => <></>}
+          />
+        </Stack>
 
         {/* Residency */}
-        <YStack gap="$3">
-          <Text fontWeight="600">Residency</Text>
+        <Stack gap={12}>
+          <Text>Residency</Text>
           <Controller
             name="us_resident"
             control={control}
             render={({ field }) => (
               <USResidentToggle
                 checked={field.value || false}
-                onCheckedChange={field.onChange}
+                onChange={field.onChange}
                 disabled={readOnly}
               />
             )}
@@ -261,226 +286,252 @@ export function EmploymentSection({
             render={({ field }) => (
               <USPassportToggle
                 checked={field.value || false}
-                onCheckedChange={field.onChange}
+                onChange={field.onChange}
                 disabled={readOnly}
               />
             )}
           />
-        </YStack>
+        </Stack>
 
         {/* Drivers License */}
-        <YStack gap="$3">
-          <Text fontWeight="600">Driver's License</Text>
+        <Stack gap={12}>
+          <Text>Driver's License</Text>
           <Controller
             name="drivers_license_classes"
             control={control}
             render={({ field }) => {
               const [isExpanded, setIsExpanded] = useState(
                 !!(field.value && field.value.length > 0)
-              )
+              );
 
               return (
-                <ToggleCard
-                  icon={<Car size="$2" color="$color11" />}
-                  title="I have a valid driver's license"
-                  description="Class D (standard license) is automatically selected. Add any additional classes below."
-                  checked={isExpanded}
-                  onCheckedChange={(checked: boolean) => {
-                    if (readOnly) return
-                    setIsExpanded(checked)
-                    if (checked) {
-                      // Auto-select Class D when toggle is checked
-                      field.onChange(['Class D'])
-                    } else {
-                      field.onChange([])
-                    }
-                  }}
-                  disabled={readOnly}
-                  expandedContent={
-                    <YStack gap="$2" paddingTop="$2">
+                <Card variant="outlined" padding="md">
+                  <Row gap={12} align="center">
+                    <Car size={20} color="#414e62" />
+                    <Stack gap={4} style={{ flex: 1 }}>
+                      <Text>I have a valid driver's license</Text>
+                      <Text style={{ color: "#414e62" }}>
+                        Class D (standard license) is automatically selected.
+                        Add any additional classes below.
+                      </Text>
+                    </Stack>
+                    <Toggle
+                      checked={isExpanded}
+                      onChange={(checked: boolean) => {
+                        if (readOnly) return;
+                        setIsExpanded(checked);
+                        if (checked) {
+                          field.onChange(["Class D"]);
+                        } else {
+                          field.onChange([]);
+                        }
+                      }}
+                      disabled={readOnly}
+                      size="sm"
+                      color="primary"
+                    />
+                  </Row>
+                  {isExpanded && (
+                    <Stack gap={8} style={{ paddingTop: 8 }}>
                       {DRIVERS_LICENSE_OPTIONS.map((license) => (
-                        <XStack key={license} gap="$3" alignItems="center">
-                          <CustomCheckbox
+                        <Row key={license} gap={12} align="center">
+                          <Checkbox
                             checked={field.value?.includes(license) || false}
-                            onCheckedChange={(checked: boolean) => {
-                              if (readOnly) return
-                              const current = field.value || []
+                            onChange={(checked: boolean) => {
+                              if (readOnly) return;
+                              const current = field.value || [];
                               if (checked) {
-                                field.onChange([...current, license])
+                                field.onChange([...current, license]);
                               } else {
-                                const filtered = current.filter((l) => l !== license)
-                                field.onChange(filtered)
+                                const filtered = current.filter(
+                                  (l) => l !== license
+                                );
+                                field.onChange(filtered);
                               }
                             }}
                             disabled={readOnly}
-                            aria-label={
-                              license === 'Class D'
-                                ? "Class D (standard driver's license)"
-                                : `Class ${license}`
-                            }
                           />
                           <Text
                             onPress={() => {
-                              if (readOnly) return
-                              const current = field.value || []
-                              const isChecked = current.includes(license)
+                              if (readOnly) return;
+                              const current = field.value || [];
+                              const isChecked = current.includes(license);
                               if (isChecked) {
-                                const filtered = current.filter((l) => l !== license)
-                                field.onChange(filtered)
+                                const filtered = current.filter(
+                                  (l) => l !== license
+                                );
+                                field.onChange(filtered);
                               } else {
-                                field.onChange([...current, license])
+                                field.onChange([...current, license]);
                               }
                             }}
                           >
-                            {license === 'Class D'
+                            {license === "Class D"
                               ? "Class D (standard driver's license)"
                               : `Class ${license}`}
                           </Text>
-                        </XStack>
+                        </Row>
                       ))}
-                    </YStack>
-                  }
-                />
-              )
+                    </Stack>
+                  )}
+                </Card>
+              );
             }}
           />
-        </YStack>
+        </Stack>
 
         {/* Military Status */}
-        <YStack gap="$3">
-          <Text fontWeight="600">Military Status</Text>
+        <Stack gap={12}>
+          <Text>Military Status</Text>
           <Controller
             name="military_status"
             control={control}
             render={({ field }) => {
               const [isExpanded, setIsExpanded] = useState(
                 !!(field.value && field.value.length > 0)
-              )
+              );
 
               return (
-                <ToggleCard
-                  icon={<Shield size="$2" color="$color11" />}
-                  title="Former/Current Military"
-                  description="Select all that apply"
-                  checked={isExpanded}
-                  onCheckedChange={(checked: boolean) => {
-                    if (readOnly) return
-                    setIsExpanded(checked)
-                    if (!checked) {
-                      field.onChange([])
-                    }
-                  }}
-                  disabled={readOnly}
-                  expandedContent={
-                    <YStack gap="$2" paddingTop="$2">
+                <Card variant="outlined" padding="md">
+                  <Row gap={12} align="center">
+                    <Shield size={20} color="#414e62" />
+                    <Stack gap={4} style={{ flex: 1 }}>
+                      <Text>Former/Current Military</Text>
+                      <Text style={{ color: "#414e62" }}>
+                        Select all that apply
+                      </Text>
+                    </Stack>
+                    <Toggle
+                      checked={isExpanded}
+                      onChange={(checked: boolean) => {
+                        if (readOnly) return;
+                        setIsExpanded(checked);
+                        if (!checked) {
+                          field.onChange([]);
+                        }
+                      }}
+                      disabled={readOnly}
+                      size="sm"
+                      color="primary"
+                    />
+                  </Row>
+                  {isExpanded && (
+                    <Stack gap={8} style={{ paddingTop: 8 }}>
                       {MILITARY_STATUS_OPTIONS.map((status) => (
-                        <XStack key={status} gap="$3" alignItems="center">
-                          <CustomCheckbox
+                        <Row key={status} gap={12} align="center">
+                          <Checkbox
                             checked={field.value?.includes(status) || false}
-                            onCheckedChange={(checked: boolean) => {
-                              if (readOnly) return
-                              const current = field.value || []
+                            onChange={(checked: boolean) => {
+                              if (readOnly) return;
+                              const current = field.value || [];
                               if (checked) {
-                                field.onChange([...current, status])
+                                field.onChange([...current, status]);
                               } else {
-                                field.onChange(current.filter((s) => s !== status))
+                                field.onChange(
+                                  current.filter((s) => s !== status)
+                                );
                               }
                             }}
                             disabled={readOnly}
-                            aria-label={status}
                           />
                           <Text>{status}</Text>
-                        </XStack>
+                        </Row>
                       ))}
-                    </YStack>
-                  }
-                />
-              )
+                    </Stack>
+                  )}
+                </Card>
+              );
             }}
           />
-        </YStack>
+        </Stack>
 
         {/* Availability */}
-        <YStack gap="$3">
-          <Text fontWeight="600">Availability</Text>
+        <Stack gap={12}>
+          <Text>Availability</Text>
           <Controller
             name="availability"
             control={control}
             render={({ field }) => {
               const [isExpanded, setIsExpanded] = useState(
                 !!(field.value && field.value.length > 0)
-              )
+              );
 
               return (
-                <ToggleCard
-                  icon={<Calendar size="$2" color="$color11" />}
-                  title="I'm available for work"
-                  description="Select all that apply"
-                  checked={isExpanded}
-                  onCheckedChange={(checked: boolean) => {
-                    if (readOnly) return
-                    setIsExpanded(checked)
-                    if (!checked) {
-                      field.onChange([])
-                    }
-                  }}
-                  disabled={readOnly}
-                  expandedContent={
-                    <YStack gap="$2" paddingTop="$2">
+                <Card variant="outlined" padding="md">
+                  <Row gap={12} align="center">
+                    <Calendar size={20} color="#414e62" />
+                    <Stack gap={4} style={{ flex: 1 }}>
+                      <Text>I'm available for work</Text>
+                      <Text style={{ color: "#414e62" }}>
+                        Select all that apply
+                      </Text>
+                    </Stack>
+                    <Toggle
+                      checked={isExpanded}
+                      onChange={(checked: boolean) => {
+                        if (readOnly) return;
+                        setIsExpanded(checked);
+                        if (!checked) {
+                          field.onChange([]);
+                        }
+                      }}
+                      disabled={readOnly}
+                      size="sm"
+                      color="primary"
+                    />
+                  </Row>
+                  {isExpanded && (
+                    <Stack gap={8} style={{ paddingTop: 8 }}>
                       {AVAILABILITY_OPTIONS.map((option) => (
-                        <XStack key={option} gap="$3" alignItems="center">
-                          <CustomCheckbox
+                        <Row key={option} gap={12} align="center">
+                          <Checkbox
                             checked={field.value?.includes(option) || false}
-                            onCheckedChange={(checked: boolean) => {
-                              if (readOnly) return
-                              const current = field.value || []
+                            onChange={(checked: boolean) => {
+                              if (readOnly) return;
+                              const current = field.value || [];
                               if (checked) {
-                                field.onChange([...current, option])
+                                field.onChange([...current, option]);
                               } else {
-                                field.onChange(current.filter((a) => a !== option))
+                                field.onChange(
+                                  current.filter((a) => a !== option)
+                                );
                               }
                             }}
                             disabled={readOnly}
-                            aria-label={option}
                           />
                           <Text>{option}</Text>
-                        </XStack>
+                        </Row>
                       ))}
-                    </YStack>
-                  }
-                />
-              )
+                    </Stack>
+                  )}
+                </Card>
+              );
             }}
           />
-        </YStack>
+        </Stack>
 
         {/* Save Button */}
         {!readOnly && (
-          <XStack justifyContent="flex-end" paddingTop="$4">
+          <Row justify="flex-end" paddingTop={16}>
             <Button
-              variant="primary"
+              variant="filled"
+              color="primary"
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
-              opacity={!isDirty || isLoading ? 0.5 : 1}
-              space={isLoading ? '$2' : 0}
-              $sm={{ height: 44 }}
+              style={{ opacity: !isDirty || isLoading ? 0.5 : 1 }}
             >
-              <AnimatePresence>
-                {isLoading && (
-                  <Button.Icon>
-                    <Spinner
-                      animation="bouncy"
-                      enterStyle={{ scale: 0 }}
-                      exitStyle={{ scale: 0 }}
-                    />
-                  </Button.Icon>
-                )}
-              </AnimatePresence>
-              <Button.Text>{isLoading ? 'Saving...' : 'Save Changes'}</Button.Text>
+              {isLoading ? (
+                <Row gap={8} align="center">
+                  <Spinner size="sm" />
+                  <Text>Saving...</Text>
+                </Row>
+              ) : (
+                "Save Changes"
+              )}
             </Button>
-          </XStack>
+          </Row>
         )}
-      </YStack>
+      </Stack>
     </DashboardWidget>
-  )
+  );
 }

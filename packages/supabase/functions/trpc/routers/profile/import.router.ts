@@ -26,7 +26,6 @@ let OpenAIClass: any | null = null
 // biome-ignore lint/suspicious/noExplicitAny: Dynamic import for optional dependency
 async function getJSZip(): Promise<any> {
   if (!JSZipClass) {
-    // @ts-expect-error: Dynamic import for optional dependency
     JSZipClass = await import('jszip')
   }
   return JSZipClass
@@ -35,7 +34,6 @@ async function getJSZip(): Promise<any> {
 // biome-ignore lint/suspicious/noExplicitAny: Dynamic import for optional dependency
 async function getOpenAI(): Promise<any> {
   if (!OpenAIClass) {
-    // @ts-expect-error: Dynamic import for optional dependency
     OpenAIClass = await import('openai')
   }
   return OpenAIClass

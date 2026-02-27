@@ -1,140 +1,154 @@
-import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
-import { TEAM_VISIBILITIES, teamRoleKeySchema } from '@scf/schemas'
-import type { AppRouter } from '@scf/supabase/client-types'
-import { useToastController } from '@tamagui/toast'
-import type { CellContext, ColumnDef } from '@tanstack/react-table'
-import type { inferRouterOutputs } from '@trpc/server'
-import { useRouter } from 'expo-router'
-import { useMemo, useState } from 'react'
-import { Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-import { OfficePageLayout } from '../components/OfficePageLayout'
-import { QuickActionsWidget } from '../components/QuickActionsWidget'
+import { ROUTES, buildPath } from "@scf/core/constants/routes";
+import { TEAM_VISIBILITIES, teamRoleKeySchema } from "@scf/schemas";
+import { useToast, useThemeContext } from "@scaffald/ui";
+import type { CellContext, ColumnDef } from "@tanstack/react-table";
+import { useRouter } from "expo-router";
+import { useMemo, useState } from "react";
+import { Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { OfficePageLayout } from "../components/OfficePageLayout";
+import { QuickActionsWidget } from "../components/QuickActionsWidget";
+import { useTeams, useArchiveTeam } from "@scaffald/sdk/react";
+import type { Team } from "@scaffald/sdk";
+import { colors } from "@scaffald/ui/tokens";
 
-type TeamVisibility = (typeof TEAM_VISIBILITIES)[number]
-type TeamRoleKey = ReturnType<(typeof teamRoleKeySchema)['parse']>
+type TeamVisibility = (typeof TEAM_VISIBILITIES)[number];
+type TeamRoleKey = ReturnType<(typeof teamRoleKeySchema)["parse"]>;
 
-type TeamsListOutput = inferRouterOutputs<AppRouter>['teams']['list']
-type TeamRecord = NonNullable<TeamsListOutput['teams']>[number]
+type TeamRecord = Team;
 
 type TeamRow = {
-  id: string
-  name: string
-  visibility: TeamVisibility
-  defaultRoleName?: string | null
-  defaultRoleKey?: TeamRoleKey | null
-  updatedAt?: string
-}
+  id: string;
+  name: string;
+  visibility: TeamVisibility;
+  defaultRoleName?: string | null;
+  defaultRoleKey?: TeamRoleKey | null;
+  updatedAt?: string;
+};
 
-const createColumns = (_router: ReturnType<typeof useRouter>): ColumnDef<TeamRow, unknown>[] => [
+const createColumns = (
+  _router: ReturnType<typeof useRouter>
+): ColumnDef<TeamRow, unknown>[] => [
   {
-    accessorKey: 'name',
-    header: 'Team Name',
+    accessorKey: "name",
+    header: "Team Name",
     cell: ({ row }: CellContext<TeamRow, unknown>) => row.original.name,
     meta: {
-      width: '$20',
+      width: "$20",
     },
   },
   {
-    accessorKey: 'visibility',
-    header: 'Visibility',
+    accessorKey: "visibility",
+    header: "Visibility",
     cell: ({ row }: CellContext<TeamRow, unknown>) => {
-      const value = row.original.visibility
-      return value.charAt(0).toUpperCase() + value.slice(1)
+      const value = row.original.visibility;
+      return value.charAt(0).toUpperCase() + value.slice(1);
     },
   },
   {
-    accessorKey: 'defaultRoleName',
-    header: 'Default Role',
+    accessorKey: "defaultRoleName",
+    header: "Default Role",
     cell: ({ row }: CellContext<TeamRow, unknown>) =>
-      row.original.defaultRoleName ?? row.original.defaultRoleKey ?? 'Member',
+      row.original.defaultRoleName ?? row.original.defaultRoleKey ?? "Member",
   },
   {
-    accessorKey: 'updatedAt',
-    header: 'Updated',
+    accessorKey: "updatedAt",
+    header: "Updated",
     cell: ({ row }: CellContext<TeamRow, unknown>) => {
-      const value = row.original.updatedAt
-      return value ? new Date(value).toLocaleDateString() : '—'
+      const value = row.original.updatedAt;
+      return value ? new Date(value).toLocaleDateString() : "—";
     },
   },
   // Actions column removed - using RowActionOverlay instead
-]
+];
 
 export function OfficeTeamsList() {
-  const router = useRouter()
-  const toast = useToastController()
-  const [search, setSearch] = useState('')
+  const { theme } = useThemeContext();
+  const router = useRouter();
+  const toast = useToast();
+  const [search, setSearch] = useState("");
 
-  const { data, isLoading, refetch } = api.teams.list.useQuery({
+  const { data, isLoading, refetch } = useTeams({
     includeArchived: false,
-  })
+  });
 
-  const archiveMutation = api.teams.archive.useMutation({
+  const archiveMutation = useArchiveTeam({
     onSuccess: () => {
-      toast.show('Team archived', { message: 'The team is no longer visible to members.' })
-      void refetch()
+      toast.show({
+        title: "Team archived",
+        message: "The team is no longer visible to members.",
+      });
+      void refetch();
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Please try again shortly.'
-      toast.show('Unable to archive team', {
-        message,
-      })
+      const _message =
+        error instanceof Error ? error.message : "Please try again shortly.";
+      toast.show({
+        title: "Unable to archive team",
+        message: _message,
+        variant: "error",
+      });
     },
-  })
+  });
 
   const teams: TeamRow[] = useMemo(() => {
     if (!data?.teams?.length) {
-      return []
+      return [];
     }
 
     return (data.teams as TeamRecord[]).map((team) => {
-      const parsedVisibility = TEAM_VISIBILITIES.includes(team.visibility as TeamVisibility)
+      const parsedVisibility = TEAM_VISIBILITIES.includes(
+        team.visibility as TeamVisibility
+      )
         ? (team.visibility as TeamVisibility)
-        : 'organization'
+        : "organization";
 
       return {
         id: team.id,
-        name: team.name ?? 'Untitled Team',
+        name: team.name ?? "Untitled Team",
         visibility: parsedVisibility,
         defaultRoleName: team.defaultRole?.name ?? null,
         defaultRoleKey: team.defaultRole?.key
           ? teamRoleKeySchema.parse(team.defaultRole.key)
           : null,
         updatedAt: team.updatedAt ?? undefined,
-      }
-    })
-  }, [data?.teams])
+      };
+    });
+  }, [data?.teams]);
 
   const filteredTeams = useMemo(() => {
     if (!search.trim()) {
-      return teams
+      return teams;
     }
 
-    const query = search.toLowerCase()
+    const query = search.toLowerCase();
     return teams.filter(
       (team) =>
         team.name.toLowerCase().includes(query) ||
-        (team.defaultRoleName ?? '').toLowerCase().includes(query) ||
-        (team.defaultRoleKey ?? '').toLowerCase().includes(query)
-    )
-  }, [teams, search])
+        (team.defaultRoleName ?? "").toLowerCase().includes(query) ||
+        (team.defaultRoleKey ?? "").toLowerCase().includes(query)
+    );
+  }, [teams, search]);
 
-  const archiveTeam = archiveMutation.mutateAsync
+  const archiveTeam = archiveMutation.mutateAsync;
 
-  const columns = useMemo(() => createColumns(router), [router])
+  const columns = useMemo(() => createColumns(router), [router]);
 
   const handleRowEdit = (team: TeamRow) => {
-    router.push(buildPath(ROUTES.OFFICE.CMS.TEAMS.DETAIL.EDIT, { id: team.id }))
-  }
+    router.push(
+      buildPath(ROUTES.OFFICE.CMS.TEAMS.DETAIL.EDIT, { id: team.id })
+    );
+  };
 
   const handleRowDelete = async (team: TeamRow) => {
     await archiveTeam({
-      teamId: team.id,
-      reason: 'Archived from office dashboard',
-    })
-  }
+      id: team.id,
+      params: {
+        reason: "Archived from office dashboard",
+      },
+    });
+  };
 
-  const getItemName = (team: TeamRow) => team.name
+  const getItemName = (team: TeamRow) => team.name;
 
   return (
     <OfficePageLayout
@@ -165,22 +179,24 @@ export function OfficeTeamsList() {
       }
       afterContent={
         archiveMutation.isPending ? (
-          <YStack
-            backgroundColor="$color2"
-            padding="$3"
-            borderRadius="$4"
-            shadowColor="$color10"
-            marginRight="$4"
-            marginBottom="$4"
-            style={{ alignSelf: 'flex-end' }}
+          <Stack
+            style={{
+              backgroundColor: colors.bg[theme].subtle,
+              alignSelf: "flex-end",
+              padding: 8,
+              borderRadius: 16,
+              shadowColor: colors.text[theme].tertiary,
+              marginRight: 16,
+              marginBottom: 16,
+            }}
           >
-            <XStack gap="$3" alignItems="center">
-              <Spinner size="small" />
+            <Row gap={12} align="center">
+              <Spinner size="sm" />
               <Text>Archiving team...</Text>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         ) : null
       }
     />
-  )
+  );
 }

@@ -2,7 +2,7 @@
 /**
  * Test Script: Send emails directly via SendGrid API
  *
- * REQ-130: Email Communication Auditability - Phase 2 Testing
+ * Email Communication Auditability - Phase 2 Testing
  *
  * Usage: pnpm tsx scripts/test-sendgrid-direct.ts
  *

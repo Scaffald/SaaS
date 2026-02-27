@@ -1,6 +1,6 @@
 // src/contexts/AuthContext.tsx
-// REQ-126: OAuth 2.0 + RBAC Authentication System
-// REQ-11: Authentication Flow Refinement - httpOnly cookie token storage
+// OAuth 2.0 + RBAC Authentication System
+// Authentication Flow Refinement - httpOnly cookie token storage
 //
 // Authentication context provider for managing user sessions
 // Uses httpOnly cookies for secure token storage (XSS protection)

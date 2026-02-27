@@ -1,9 +1,9 @@
-import auth from './auth.json';
-import common from './common.json';
-import errors from './errors.json';
-import navigation from './navigation.json';
-import routes from './routes.json';
-import validation from './validation.json';
+import auth from './auth.json'
+import common from './common.json'
+import errors from './errors.json'
+import navigation from './navigation.json'
+import routes from './routes.json'
+import validation from './validation.json'
 
 const en = {
   auth,
@@ -12,8 +12,8 @@ const en = {
   navigation,
   routes,
   validation,
-} as const;
+} as const
 
-export type EnTranslations = typeof en;
+export type EnTranslations = typeof en
 
-export default en;
+export default en

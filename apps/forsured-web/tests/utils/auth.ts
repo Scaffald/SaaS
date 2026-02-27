@@ -24,23 +24,23 @@
 //     await page.goto('/manager/dashboard');
 //   });
 //
-// REQ-9: Testing Policy - Always use real Supabase, no mocking internal services
+// Testing policy: use real Supabase, no mocking internal services
 // ============================================================================
 
-import { Page } from '@playwright/test';
+import { Page } from "@playwright/test";
 
 // Import from implementation modules
 import {
+  getTestUserProfile as supabaseGetTestUserProfile,
   loginAs as supabaseLoginAs,
   setupAuthAs as supabaseSetupAuthAs,
-  getTestUserProfile as supabaseGetTestUserProfile,
   TEST_USERS as SUPABASE_TEST_USERS,
-} from './supabaseAuth';
+} from "./supabaseAuth";
 
-import { setupHttpOnlyAuth } from './httpOnlyAuth';
+import { setupHttpOnlyAuth } from "./httpOnlyAuth";
 
 // Re-export shared constants (same for both modes)
-export { TEST_USERS, TEST_USER_IDS } from './supabaseAuth';
+export { TEST_USER_IDS, TEST_USERS } from "./supabaseAuth";
 
 /**
  * Wait for profile to be loaded in React state
@@ -52,36 +52,49 @@ export { TEST_USERS, TEST_USER_IDS } from './supabaseAuth';
  * @param userType - The user type ('gc', 'contractor', 'broker', 'admin')
  * @param timeout - Max time to wait in ms (default 15000)
  */
-export async function waitForProfileReady(page: Page, userType: string, timeout = 15000): Promise<void> {
+export async function waitForProfileReady(
+  page: Page,
+  userType: string,
+  timeout = 15000,
+): Promise<void> {
   console.log(`[Auth] Waiting for profile to be ready (${userType})...`);
 
   try {
-    // Wait for dashboard content - Tamagui uses Text components, not semantic headings
+    // Wait for dashboard content - UI uses Text components, not semantic headings
     // We wait for the sidebar navigation OR dashboard text to be visible
     // These only render when ProtectedRoute allows access (profile loaded)
     await page.waitForFunction(
       () => {
         // Check for sidebar navigation (all dashboard layouts have this)
-        const hasSidebar = document.querySelector('[data-testid="sidebar"], nav');
+        const hasSidebar = document.querySelector(
+          '[data-testid="sidebar"], nav',
+        );
         if (hasSidebar) return true;
 
         // Check for dashboard text content
-        const bodyText = document.body.textContent || '';
-        if (bodyText.includes('Dashboard') && !bodyText.includes('Welcome to ForSured')) {
+        const bodyText = document.body.textContent || "";
+        if (
+          bodyText.includes("Dashboard") &&
+          !bodyText.includes("Welcome to ForSured")
+        ) {
           return true;
         }
 
         // Check for common dashboard elements
-        const hasProjects = bodyText.includes('Projects') || bodyText.includes('Tasks');
-        const hasNavLinks = document.querySelectorAll('a[href*="/dashboard"], a[href*="/projects"]').length > 0;
+        const hasProjects = bodyText.includes("Projects") ||
+          bodyText.includes("Tasks");
+        const hasNavLinks =
+          document.querySelectorAll(
+            'a[href*="/dashboard"], a[href*="/projects"]',
+          ).length > 0;
         return hasProjects || hasNavLinks;
       },
-      { timeout }
+      { timeout },
     );
 
-    console.log('[Auth] Profile ready - dashboard content visible');
+    console.log("[Auth] Profile ready - dashboard content visible");
   } catch (error) {
-    console.warn('[Auth] Timeout waiting for profile - continuing anyway');
+    console.warn("[Auth] Timeout waiting for profile - continuing anyway");
   }
 }
 
@@ -90,7 +103,7 @@ export async function waitForProfileReady(page: Page, userType: string, timeout 
  * In Playwright tests, we read from process.env (Node.js context)
  */
 function useOAuthMode(): boolean {
-  return process.env.VITE_FORSURED_USE_OAUTH === 'true';
+  return process.env.VITE_FORSURED_USE_OAUTH === "true";
 }
 
 /**
@@ -107,10 +120,10 @@ function useOAuthMode(): boolean {
 export async function loginAs(
   page: Page,
   email: string,
-  options: { navigate?: boolean } = { navigate: true }
+  options: { navigate?: boolean } = { navigate: true },
 ): Promise<void> {
   if (useOAuthMode()) {
-    console.log('[Auth] Using OAuth mode (httpOnly cookies)');
+    console.log("[Auth] Using OAuth mode (httpOnly cookies)");
     // httpOnlyAuth doesn't have navigation option, so we handle it here
     await setupHttpOnlyAuth(page, email);
 
@@ -121,28 +134,28 @@ export async function loginAs(
       }
 
       const pathMap: Record<string, string> = {
-        gc: 'manager',
-        contractor: 'subcontractor',
-        broker: 'broker',
-        admin: 'admin',
+        gc: "manager",
+        contractor: "subcontractor",
+        broker: "broker",
+        admin: "admin",
       };
       const pathSegment = pathMap[user.user_type];
 
-      if (user.user_type === 'admin') {
-        await page.goto('/admin/dashboard');
+      if (user.user_type === "admin") {
+        await page.goto("/admin/dashboard");
       } else if (!user.onboarding_completed) {
         await page.goto(`/${pathSegment}/onboarding`);
       } else {
         await page.goto(`/${pathSegment}/dashboard`);
       }
 
-      await page.waitForLoadState('networkidle');
+      await page.waitForLoadState("networkidle");
 
       // CRITICAL: Wait for profile to be loaded in React state
       await waitForProfileReady(page, user.user_type);
     }
   } else {
-    console.log('[Auth] Using Supabase password auth mode');
+    console.log("[Auth] Using Supabase password auth mode");
     await supabaseLoginAs(page, email, options);
   }
 }
@@ -158,10 +171,10 @@ export async function loginAs(
  */
 export async function setupAuthAs(page: Page, email: string): Promise<void> {
   if (useOAuthMode()) {
-    console.log('[Auth] Using OAuth mode (httpOnly cookies)');
+    console.log("[Auth] Using OAuth mode (httpOnly cookies)");
     await setupHttpOnlyAuth(page, email);
   } else {
-    console.log('[Auth] Using Supabase password auth mode');
+    console.log("[Auth] Using Supabase password auth mode");
     await supabaseSetupAuthAs(page, email);
   }
 }
@@ -180,6 +193,6 @@ export function getTestUserProfile(email: string) {
  * Check which auth mode is active
  * Useful for debugging and conditional test logic
  */
-export function getAuthMode(): 'oauth' | 'supabase' {
-  return useOAuthMode() ? 'oauth' : 'supabase';
+export function getAuthMode(): "oauth" | "supabase" {
+  return useOAuthMode() ? "oauth" : "supabase";
 }

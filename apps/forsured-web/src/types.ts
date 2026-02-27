@@ -1,8 +1,8 @@
-export type UserRole = 'broker' | 'manager' | 'subcontractor' | 'admin';
-export type UserType = 'broker' | 'manager' | 'subcontractor' | 'admin';
+export type UserRole = "broker" | "manager" | "subcontractor" | "admin";
+export type UserType = "broker" | "manager" | "subcontractor" | "admin";
 
 // =============================================================================
-// User Profile Types (REQ-126: OAuth 2.0 + RBAC)
+// User Profile Types (OAuth 2.0 + RBAC)
 // =============================================================================
 
 /**
@@ -13,7 +13,7 @@ export interface UserProfile {
   id: string;
   scaffald_user_id: string;
   user_type: UserType;
-  /** REQ-4: User set type for industry-specific lexicon */
+  /** User set type for industry-specific lexicon */
   user_set_type_id?: string | null;
   onboarding_completed: boolean;
   company_connected: boolean;
@@ -24,7 +24,7 @@ export interface UserProfile {
 }
 
 // =============================================================================
-// RBAC Permission Types (REQ-126: OAuth 2.0 + RBAC)
+// RBAC Permission Types (OAuth 2.0 + RBAC)
 // =============================================================================
 
 /**
@@ -32,35 +32,35 @@ export interface UserProfile {
  */
 export enum Permission {
   // Projects
-  PROJECT_CREATE = 'project:create',
-  PROJECT_VIEW_ALL = 'project:view:all',
-  PROJECT_VIEW_ASSIGNED = 'project:view:assigned',
-  PROJECT_EDIT = 'project:edit',
-  PROJECT_DELETE = 'project:delete',
+  PROJECT_CREATE = "project:create",
+  PROJECT_VIEW_ALL = "project:view:all",
+  PROJECT_VIEW_ASSIGNED = "project:view:assigned",
+  PROJECT_EDIT = "project:edit",
+  PROJECT_DELETE = "project:delete",
 
   // Tasks
-  TASK_CREATE = 'task:create',
-  TASK_VIEW_ASSIGNED = 'task:view:assigned',
-  TASK_ASSIGN = 'task:assign',
-  TASK_COMPLETE = 'task:complete',
+  TASK_CREATE = "task:create",
+  TASK_VIEW_ASSIGNED = "task:view:assigned",
+  TASK_ASSIGN = "task:assign",
+  TASK_COMPLETE = "task:complete",
 
   // Documents
-  DOCUMENT_UPLOAD = 'document:upload',
-  DOCUMENT_VIEW = 'document:view',
-  DOCUMENT_DOWNLOAD = 'document:download',
-  DOCUMENT_DELETE = 'document:delete',
+  DOCUMENT_UPLOAD = "document:upload",
+  DOCUMENT_VIEW = "document:view",
+  DOCUMENT_DOWNLOAD = "document:download",
+  DOCUMENT_DELETE = "document:delete",
 
   // Policies
-  POLICY_CREATE = 'policy:create',
-  POLICY_VIEW = 'policy:view',
-  POLICY_EDIT = 'policy:edit',
-  POLICY_APPROVE = 'policy:approve',
+  POLICY_CREATE = "policy:create",
+  POLICY_VIEW = "policy:view",
+  POLICY_EDIT = "policy:edit",
+  POLICY_APPROVE = "policy:approve",
 
   // Users
-  USER_CREATE = 'user:create',
-  USER_VIEW = 'user:view',
-  USER_EDIT = 'user:edit',
-  USER_DELETE = 'user:delete',
+  USER_CREATE = "user:create",
+  USER_VIEW = "user:view",
+  USER_EDIT = "user:edit",
+  USER_DELETE = "user:delete",
 }
 
 /**
@@ -111,66 +111,69 @@ export const ROLE_PERMISSIONS: Record<UserType, Permission[]> = {
     Permission.USER_VIEW,
   ],
 };
-export type TaskStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled';
-export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
+export type TaskStatus = "pending" | "in_progress" | "completed" | "cancelled";
+export type TaskPriority = "low" | "medium" | "high" | "urgent";
 export type SubcontractorTaskStatus =
-  | 'pending'
-  | 'submitted'
-  | 'approved'
-  | 'rejected';
+  | "pending"
+  | "submitted"
+  | "approved"
+  | "rejected";
 
-// REQ-282: Extended task status for project task displays
+// Extended task status for project task displays
 export type ProjectTaskStatus =
-  | 'submitted'    // Sub submitted response/document
-  | 'in_review'    // Broker/GC reviewing submission
-  | 'approved'     // Submission accepted
-  | 'rejected'     // Submission rejected with reason
-  | 'needs_info';  // More information required
+  | "submitted" // Sub submitted response/document
+  | "in_review" // Broker/GC reviewing submission
+  | "approved" // Submission accepted
+  | "rejected" // Submission rejected with reason
+  | "needs_info"; // More information required
 export type SubcontractorTaskType =
-  | 'coi_upload'
-  | 'endorsement_correction'
-  | 'auto_symbol_compliance'
-  | 'limit_inadequacy'
-  | 'operations_language';
-export type TaskOriginRole = 'manager' | 'broker';
-export type TaskSourceType = 'org_requirement' | 'project_requirement' | 'manual';
-export type SeverityLevel = 'critical' | 'high' | 'medium' | 'low';
+  | "coi_upload"
+  | "endorsement_correction"
+  | "auto_symbol_compliance"
+  | "limit_inadequacy"
+  | "operations_language";
+export type TaskOriginRole = "manager" | "broker";
+export type TaskSourceType =
+  | "org_requirement"
+  | "project_requirement"
+  | "manual";
+export type SeverityLevel = "critical" | "high" | "medium" | "low";
 
 // =============================================================================
-// Due Date Source Types (REQ-267)
+// Due Date Source Types
 // =============================================================================
 
 /**
- * REQ-267: Due Date Inference & Management
+ * Due Date Inference & Management
  * Source of how a task's due date was determined
  */
 export type DueDateSource =
-  | 'inferred_policy'   // Auto-calculated from policy expiration (30 days before)
-  | 'inferred_project'  // Auto-calculated from project start date (7 days before)
-  | 'inferred_onboarding' // Auto-calculated from onboarding deadline
-  | 'manual'            // Manually set by task creator
-  | 'gc_set'            // Set by General Contractor
-  | 'broker_set';       // Set by Broker
+  | "inferred_policy" // Auto-calculated from policy expiration (30 days before)
+  | "inferred_project" // Auto-calculated from project start date (7 days before)
+  | "inferred_onboarding" // Auto-calculated from onboarding deadline
+  | "manual" // Manually set by task creator
+  | "gc_set" // Set by General Contractor
+  | "broker_set"; // Set by Broker
 
 // =============================================================================
-// Task Severity Types (REQ-266)
+// Task Severity Types
 // =============================================================================
 
 /**
  * Task severity levels for compliance correlation
  * Maps to business consequences and risk levels
  */
-export type TaskSeverity = 'critical' | 'high' | 'medium' | 'low' | 'info';
+export type TaskSeverity = "critical" | "high" | "medium" | "low" | "info";
 
 /**
  * Task severity enum for type-safe comparisons and iteration
  */
 export const TaskSeverityLevel = {
-  CRITICAL: 'critical',
-  HIGH: 'high',
-  MEDIUM: 'medium',
-  LOW: 'low',
-  INFO: 'info',
+  CRITICAL: "critical",
+  HIGH: "high",
+  MEDIUM: "medium",
+  LOW: "low",
+  INFO: "info",
 } as const;
 
 /**
@@ -178,40 +181,40 @@ export const TaskSeverityLevel = {
  * These represent the real-world impact of compliance issues
  */
 export type ConsequenceType =
-  | 'site_access_denied'      // Critical: Sub cannot work on site
-  | 'payment_hold'            // Critical: Payment withheld until resolved
-  | 'contract_termination'    // Critical: Risk of contract cancellation
-  | 'incomplete_bid'          // High: Bid cannot proceed
-  | 'project_delay'           // High: Project timeline at risk
-  | 'audit_failure'           // High: Failed compliance audit
-  | 'coverage_gap'            // Medium: Insurance gap identified
-  | 'endorsement_missing'     // Medium: Required endorsement not present
-  | 'expiring_soon'           // Low: Policy expiring within grace period
-  | 'documentation_needed'    // Low: Additional docs required
-  | 'review_recommended'      // Info: Suggested review, no immediate action
-  | 'notification';           // Info: Informational notification
+  | "site_access_denied" // Critical: Sub cannot work on site
+  | "payment_hold" // Critical: Payment withheld until resolved
+  | "contract_termination" // Critical: Risk of contract cancellation
+  | "incomplete_bid" // High: Bid cannot proceed
+  | "project_delay" // High: Project timeline at risk
+  | "audit_failure" // High: Failed compliance audit
+  | "coverage_gap" // Medium: Insurance gap identified
+  | "endorsement_missing" // Medium: Required endorsement not present
+  | "expiring_soon" // Low: Policy expiring within grace period
+  | "documentation_needed" // Low: Additional docs required
+  | "review_recommended" // Info: Suggested review, no immediate action
+  | "notification"; // Info: Informational notification
 
 /**
  * Maps consequence types to their corresponding task severity level
  */
 export const CONSEQUENCE_SEVERITY_MAP: Record<ConsequenceType, TaskSeverity> = {
   // Critical consequences - immediate action required
-  site_access_denied: 'critical',
-  payment_hold: 'critical',
-  contract_termination: 'critical',
+  site_access_denied: "critical",
+  payment_hold: "critical",
+  contract_termination: "critical",
   // High consequences - urgent but not blocking
-  incomplete_bid: 'high',
-  project_delay: 'high',
-  audit_failure: 'high',
+  incomplete_bid: "high",
+  project_delay: "high",
+  audit_failure: "high",
   // Medium consequences - attention needed
-  coverage_gap: 'medium',
-  endorsement_missing: 'medium',
+  coverage_gap: "medium",
+  endorsement_missing: "medium",
   // Low consequences - routine follow-up
-  expiring_soon: 'low',
-  documentation_needed: 'low',
+  expiring_soon: "low",
+  documentation_needed: "low",
   // Info consequences - awareness only
-  review_recommended: 'info',
-  notification: 'info',
+  review_recommended: "info",
+  notification: "info",
 };
 
 /**
@@ -225,75 +228,75 @@ export const TASK_SEVERITY_CONFIG: Record<TaskSeverity, {
   priority: number;
 }> = {
   critical: {
-    label: 'Critical',
-    color: 'text-red-700',
-    bgColor: 'bg-red-100',
-    borderColor: 'border-red-500',
+    label: "Critical",
+    color: "text-red-700",
+    bgColor: "bg-red-100",
+    borderColor: "border-red-500",
     priority: 5,
   },
   high: {
-    label: 'High',
-    color: 'text-orange-700',
-    bgColor: 'bg-orange-100',
-    borderColor: 'border-orange-500',
+    label: "High",
+    color: "text-orange-700",
+    bgColor: "bg-orange-100",
+    borderColor: "border-orange-500",
     priority: 4,
   },
   medium: {
-    label: 'Medium',
-    color: 'text-yellow-700',
-    bgColor: 'bg-yellow-100',
-    borderColor: 'border-yellow-500',
+    label: "Medium",
+    color: "text-yellow-700",
+    bgColor: "bg-yellow-100",
+    borderColor: "border-yellow-500",
     priority: 3,
   },
   low: {
-    label: 'Low',
-    color: 'text-blue-700',
-    bgColor: 'bg-blue-100',
-    borderColor: 'border-blue-500',
+    label: "Low",
+    color: "text-blue-700",
+    bgColor: "bg-blue-100",
+    borderColor: "border-blue-500",
     priority: 2,
   },
   info: {
-    label: 'Info',
-    color: 'text-gray-700',
-    bgColor: 'bg-gray-100',
-    borderColor: 'border-gray-500',
+    label: "Info",
+    color: "text-gray-700",
+    bgColor: "bg-gray-100",
+    borderColor: "border-gray-500",
     priority: 1,
   },
 };
 export type ComplianceStatus =
-  | 'compliant'
-  | 'warning'
-  | 'critical'
-  | 'non_compliant'
-  | 'partial';
+  | "compliant"
+  | "warning"
+  | "critical"
+  | "non_compliant"
+  | "partial";
 export type PolicyType =
-  | 'general_liability'
-  | 'workers_comp'
-  | 'commercial_auto'
-  | 'umbrella_excess'
-  | 'professional_liability'
-  | 'pollution_liability'
-  | 'builders_risk'
-  | 'equipment_floater';
-export type PolicyStatus = 'active' | 'expired' | 'cancelled' | 'pending';
+  | "general_liability"
+  | "workers_comp"
+  | "commercial_auto"
+  | "umbrella_excess"
+  | "professional_liability"
+  | "pollution_liability"
+  | "builders_risk"
+  | "equipment_floater";
+export type PolicyStatus = "active" | "expired" | "cancelled" | "pending";
 export type ClientType =
-  | 'general_contractor'
-  | 'subcontractor'
-  | 'owner'
-  | 'developer';
-export type RiskLevel = 'low' | 'medium' | 'high' | 'critical';
+  | "general_contractor"
+  | "subcontractor"
+  | "owner"
+  | "developer";
+export type RiskLevel = "low" | "medium" | "high" | "critical";
 export type AcknowledgementStatus =
-  | 'draft'
-  | 'pending'
-  | 'under_review'
-  | 'approved'
-  | 'rejected'
-  | 'revision_requested';
+  | "draft"
+  | "pending"
+  | "under_review"
+  | "approved"
+  | "rejected"
+  | "revision_requested";
 export type RelationshipStatus =
-  | 'active'
-  | 'inactive'
-  | 'pending'
-  | 'suspended';
+  | "active"
+  | "inactive"
+  | "pending"
+  | "suspended";
 
 export interface User {
   id: string;
@@ -316,7 +319,7 @@ export interface Task {
   status: TaskStatus | SubcontractorTaskStatus | ProjectTaskStatus;
   priority: TaskPriority;
   due_date?: string;
-  // REQ-267: Due Date Inference & Management
+  // Due Date Inference & Management
   due_date_source?: DueDateSource;
   created_by_user_id: string;
   assigned_to_user_id?: string;
@@ -328,16 +331,16 @@ export interface Task {
   metadata?: unknown | SubcontractorTaskMetadata;
   created_at: string;
   updated_at: string;
-  // REQ-272: Task Source Tracking
+  // Task Source Tracking
   source_type?: TaskSourceType;
   source_requirement_id?: string;
   // Subcontractor task specific fields
   origin_role?: TaskOriginRole;
   project_name?: string;
   gc_company_name?: string;
-  // REQ-282: Context fields for project task display
+  // Context fields for project task display
   sub_company_name?: string;
-  // REQ-282: Rejection reason for rejected tasks
+  // Rejection reason for rejected tasks
   rejection_reason?: string;
   created_by?: {
     id: string;
@@ -347,13 +350,13 @@ export interface Task {
   quick_actions?: string[];
   document_link?: string;
   target_role?: string;
-  // REQ-266: Task Severity for compliance correlation
+  // Task Severity for compliance correlation
   severity?: TaskSeverity;
   consequence_type?: ConsequenceType;
 }
 
 /**
- * REQ-267: Due Date Change History
+ * Due Date Change History
  * Tracks all changes to task due dates for audit trail
  */
 export interface TaskDueDateHistory {
@@ -420,15 +423,15 @@ export interface BrokerClient {
   updated_at: string;
   /** Primary contact name for display purposes (alias for contact_name) */
   primary_contact?: string;
-  /** REQ-4: User set type ID for lexicon-aware display (fetched from owner's profile) */
+  /** User set type ID for lexicon-aware display (fetched from owner's profile) */
   user_set_type_id?: string | null;
-  /** REQ-4: Manager/contractor label singular from user set type */
+  /** Manager/contractor label singular from user set type */
   manager_label_singular?: string;
-  /** REQ-4: Manager/contractor label plural from user set type */
+  /** Manager/contractor label plural from user set type */
   manager_label_plural?: string;
-  /** REQ-4: Contractor label singular from user set type */
+  /** Contractor label singular from user set type */
   contractor_label_singular?: string;
-  /** REQ-4: Contractor label plural from user set type */
+  /** Contractor label plural from user set type */
   contractor_label_plural?: string;
 }
 
@@ -582,7 +585,7 @@ export interface AcknowledgementSignature {
   signer_name: string;
   signer_title: string;
   signer_email: string;
-  signature_type: 'broker' | 'subcontractor' | 'manager';
+  signature_type: "broker" | "subcontractor" | "manager";
   signed_at: string;
   ip_address?: string;
   created_at: string;
@@ -632,28 +635,28 @@ export interface SubcontractorTaskMetadata {
   rejection_reason?: string;
 }
 
-// REQ-17: Workflow Activation Types
+// Workflow Activation Types
 
 export type ApprovalItemType =
-  | 'endorsement_review'
-  | 'waiver_request'
-  | 'policy_renewal'
-  | 'document_verification'
-  | 'bid_approval'
-  | 'coverage_gap'
-  | 'user_invite';
+  | "endorsement_review"
+  | "waiver_request"
+  | "policy_renewal"
+  | "document_verification"
+  | "bid_approval"
+  | "coverage_gap"
+  | "user_invite";
 export type ApprovalItemStatus =
-  | 'pending'
-  | 'approved'
-  | 'rejected'
-  | 'expired';
-export type ApprovalPriority = 'urgent' | 'high' | 'normal' | 'low';
-export type UserRoleRBAC = 'admin' | 'manager' | 'user';
-export type AuthMethod = 'api_key' | 'oauth' | 'username_password';
-export type SyncFrequency = 'realtime' | 'hourly' | 'daily' | 'manual';
-export type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'error';
-export type EntityType = 'task' | 'document' | 'project' | 'bid';
-export type DocumentViewMode = 'inline' | 'modal' | 'split-screen';
+  | "pending"
+  | "approved"
+  | "rejected"
+  | "expired";
+export type ApprovalPriority = "urgent" | "high" | "normal" | "low";
+export type UserRoleRBAC = "admin" | "manager" | "user";
+export type AuthMethod = "api_key" | "oauth" | "username_password";
+export type SyncFrequency = "realtime" | "hourly" | "daily" | "manual";
+export type ConnectionStatus = "idle" | "connecting" | "connected" | "error";
+export type EntityType = "task" | "document" | "project" | "bid";
+export type DocumentViewMode = "inline" | "modal" | "split-screen";
 
 export interface Comment {
   id: string;
@@ -708,7 +711,7 @@ export interface CoverageGap {
   type: string;
   required: number;
   actual: number;
-  status: 'insufficient' | 'sufficient' | 'exceeds';
+  status: "insufficient" | "sufficient" | "exceeds";
 }
 
 export interface BidProposal {
@@ -720,7 +723,7 @@ export interface BidProposal {
   proposed_timeline: { start: string; end: string };
   documents: { type: string; file_id: string }[];
   submitted_at: string;
-  status: 'draft' | 'submitted' | 'under_review' | 'awarded' | 'rejected';
+  status: "draft" | "submitted" | "under_review" | "awarded" | "rejected";
   compliance_score?: number;
   coverage_gaps?: CoverageGap[];
   risk_assessment?: string;
@@ -735,7 +738,7 @@ export interface UserInvitation {
   role: UserRoleRBAC;
   invited_by: string;
   invited_at?: string; // May not exist, use created_at instead
-  status: 'pending' | 'accepted' | 'expired';
+  status: "pending" | "accepted" | "expired";
   project_ids?: string[];
   client_ids?: string[];
   created_at: string;
@@ -753,7 +756,7 @@ export interface IntegrationConnection {
   auth_method: AuthMethod;
   credentials: Record<string, string>; // Mocked
   sync_settings: {
-    data_types: ('projects' | 'documents' | 'payments' | 'contacts')[];
+    data_types: ("projects" | "documents" | "payments" | "contacts")[];
     frequency: SyncFrequency;
     initial_sync: boolean;
   };
@@ -768,21 +771,21 @@ export interface ComplianceIssue {
   subcontractor_id: string;
   project_id?: string;
   type:
-    | 'coverage_gap'
-    | 'missing_document'
-    | 'expired_policy'
-    | 'failed_verification'
-    | 'missing_endorsement';
+    | "coverage_gap"
+    | "missing_document"
+    | "expired_policy"
+    | "failed_verification"
+    | "missing_endorsement";
   title: string;
   description: string;
   severity: SeverityLevel;
-  status: 'open' | 'in_progress' | 'resolved';
+  status: "open" | "in_progress" | "resolved";
   created_at: string;
   due_date?: string;
   resolved_at?: string;
   resolution_notes?: string;
   related_document_id?: string;
-  assigned_to?: string; // REQ-279: User ID responsible for resolving this issue
+  assigned_to?: string; // User ID responsible for resolving this issue
   updated_at: string;
 }
 
@@ -840,22 +843,32 @@ export interface AIAnalysisResult {
 }
 
 // =============================================================================
-// Insurance Policy Parent-Child Model (REQ-262)
+// Insurance Policy Parent-Child Model
 // =============================================================================
 
-export type InsurancePolicyType = 'GL' | 'WC' | 'Auto' | 'Umbrella' | 'Professional Liability' | 'Other';
-export type InsurancePolicyStatus = 'active' | 'expired' | 'cancelled' | 'pending';
+export type InsurancePolicyType =
+  | "GL"
+  | "WC"
+  | "Auto"
+  | "Umbrella"
+  | "Professional Liability"
+  | "Other";
+export type InsurancePolicyStatus =
+  | "active"
+  | "expired"
+  | "cancelled"
+  | "pending";
 
 export type ProvisionType =
-  | 'per_occurrence'
-  | 'general_aggregate'
-  | 'personal_advertising'
-  | 'products_completed'
-  | 'medical_payments'
-  | 'damage_to_premises'
-  | 'fire_damage'
-  | 'employee_benefits'
-  | 'other';
+  | "per_occurrence"
+  | "general_aggregate"
+  | "personal_advertising"
+  | "products_completed"
+  | "medical_payments"
+  | "damage_to_premises"
+  | "fire_damage"
+  | "employee_benefits"
+  | "other";
 
 /**
  * Insurance Policy (parent entity)
@@ -877,7 +890,7 @@ export interface InsurancePolicy {
   created_by?: string;
   created_at: string;
   updated_at: string;
-  // REQ-270: Umbrella policies track which underlying coverages they extend
+  // Umbrella policies track which underlying coverages they extend
   underlying_policy_ids?: string[];
   // Populated from underlying_policy_ids - full policy objects for display
   underlying_coverages?: InsurancePolicy[];
@@ -934,8 +947,14 @@ export interface CreateInsurancePolicyRequest {
   effective_date?: string;
   expiration_date?: string;
   status?: InsurancePolicyStatus;
-  provisions?: Omit<PolicyProvision, 'id' | 'policy_id' | 'organization_id' | 'created_at' | 'updated_at'>[];
-  endorsements?: Omit<PolicyEndorsement, 'id' | 'policy_id' | 'organization_id' | 'created_at' | 'updated_at'>[];
+  provisions?: Omit<
+    PolicyProvision,
+    "id" | "policy_id" | "organization_id" | "created_at" | "updated_at"
+  >[];
+  endorsements?: Omit<
+    PolicyEndorsement,
+    "id" | "policy_id" | "organization_id" | "created_at" | "updated_at"
+  >[];
 }
 
 /**
@@ -975,40 +994,40 @@ export interface CreateEndorsementRequest {
 }
 
 // =============================================================================
-// Compliance Flags Types (REQ-269)
+// Compliance Flags Types
 // =============================================================================
 
 /**
  * Entity types that can have compliance flags attached
  */
-export type FlaggableEntityType = 'policy' | 'provision' | 'endorsement';
+export type FlaggableEntityType = "policy" | "provision" | "endorsement";
 
 /**
  * Severity levels for compliance flags
  */
-export type FlagSeverity = 'info' | 'warning' | 'critical';
+export type FlagSeverity = "info" | "warning" | "critical";
 
 /**
  * Status of a compliance flag
  */
-export type FlagStatus = 'active' | 'acknowledged' | 'resolved' | 'dismissed';
+export type FlagStatus = "active" | "acknowledged" | "resolved" | "dismissed";
 
 /**
  * Predefined flag types for categorizing compliance issues
  */
 export type ComplianceFlagType =
-  | 'coverage_gap'           // Required coverage not present
-  | 'limit_insufficient'     // Coverage limit below requirement
-  | 'expired'                // Policy/endorsement has expired
-  | 'expiring_soon'          // Policy/endorsement expiring within threshold
-  | 'missing_endorsement'    // Required endorsement not present
-  | 'symbol_mismatch'        // Auto symbol doesn't match requirement
-  | 'deductible_exceeded'    // Deductible exceeds allowed amount
-  | 'named_insured_missing'  // Required named insured not present
-  | 'waiver_subrogation'     // Waiver of subrogation issue
-  | 'additional_insured'     // Additional insured issue
-  | 'primary_noncontributory' // Primary and non-contributory issue
-  | 'other';                 // Other/custom flag type
+  | "coverage_gap" // Required coverage not present
+  | "limit_insufficient" // Coverage limit below requirement
+  | "expired" // Policy/endorsement has expired
+  | "expiring_soon" // Policy/endorsement expiring within threshold
+  | "missing_endorsement" // Required endorsement not present
+  | "symbol_mismatch" // Auto symbol doesn't match requirement
+  | "deductible_exceeded" // Deductible exceeds allowed amount
+  | "named_insured_missing" // Required named insured not present
+  | "waiver_subrogation" // Waiver of subrogation issue
+  | "additional_insured" // Additional insured issue
+  | "primary_noncontributory" // Primary and non-contributory issue
+  | "other"; // Other/custom flag type
 
 /**
  * Compliance Flag entity
@@ -1084,39 +1103,43 @@ export const FLAG_SEVERITY_CONFIG: Record<FlagSeverity, {
   priority: number;
 }> = {
   critical: {
-    label: 'Critical',
-    color: 'text-danger-700',
-    bgColor: 'bg-danger-100',
-    borderColor: 'border-danger-300',
-    icon: 'AlertTriangle',
+    label: "Critical",
+    color: "text-danger-700",
+    bgColor: "bg-danger-100",
+    borderColor: "border-danger-300",
+    icon: "AlertTriangle",
     priority: 3,
   },
   warning: {
-    label: 'Warning',
-    color: 'text-warning-700',
-    bgColor: 'bg-warning-100',
-    borderColor: 'border-warning-300',
-    icon: 'AlertCircle',
+    label: "Warning",
+    color: "text-warning-700",
+    bgColor: "bg-warning-100",
+    borderColor: "border-warning-300",
+    icon: "AlertCircle",
     priority: 2,
   },
   info: {
-    label: 'Info',
-    color: 'text-info-700',
-    bgColor: 'bg-info-100',
-    borderColor: 'border-info-300',
-    icon: 'Info',
+    label: "Info",
+    color: "text-info-700",
+    bgColor: "bg-info-100",
+    borderColor: "border-info-300",
+    icon: "Info",
     priority: 1,
   },
 };
 
 // =============================================================================
-// Task Documents Types (REQ-265)
+// Task Documents Types
 // =============================================================================
 
 /**
  * Task document type enum
  */
-export type TaskDocumentType = 'uploaded' | 'linked_policy' | 'linked_certificate' | 'linked_endorsement';
+export type TaskDocumentType =
+  | "uploaded"
+  | "linked_policy"
+  | "linked_certificate"
+  | "linked_endorsement";
 
 /**
  * Task document - links tasks to uploaded documents or certificate references
@@ -1166,7 +1189,7 @@ export interface UploadTaskDocumentRequest {
 export interface LinkTaskDocumentRequest {
   task_id: string;
   organization_id: string;
-  document_type: 'linked_policy' | 'linked_certificate' | 'linked_endorsement';
+  document_type: "linked_policy" | "linked_certificate" | "linked_endorsement";
   linked_policy_id?: string;
   linked_certificate_id?: string;
   description?: string;
@@ -1182,18 +1205,27 @@ export interface UpdateTaskDocumentRequest {
 }
 
 // =============================================================================
-// Coverage Requirements Types (REQ-271)
+// Coverage Requirements Types
 // =============================================================================
 
 /**
  * Coverage type enum
  */
-export type CoverageType = 'general_liability' | 'auto' | 'workers_comp' | 'umbrella' | 'professional_liability';
+export type CoverageType =
+  | "general_liability"
+  | "auto"
+  | "workers_comp"
+  | "umbrella"
+  | "professional_liability";
 
 /**
  * Requirement type enum
  */
-export type RequirementType = 'additional_insured' | 'waiver_of_subrogation' | 'primary_non_contributory' | 'certificate_holder';
+export type RequirementType =
+  | "additional_insured"
+  | "waiver_of_subrogation"
+  | "primary_non_contributory"
+  | "certificate_holder";
 
 /**
  * Coverage requirement - defines required additional insured, waiver, etc. for coverage types
@@ -1234,13 +1266,18 @@ export interface UpdateCoverageRequirementRequest {
 }
 
 // =============================================================================
-// Coverage Request Types (REQ-273)
+// Coverage Request Types
 // =============================================================================
 
 /**
  * Coverage request status enum
  */
-export type CoverageRequestStatus = 'pending' | 'quoted' | 'approved' | 'rejected' | 'cancelled';
+export type CoverageRequestStatus =
+  | "pending"
+  | "quoted"
+  | "approved"
+  | "rejected"
+  | "cancelled";
 
 /**
  * Coverage request - workflow for subs to request coverage from brokers
@@ -1288,12 +1325,16 @@ export interface ProvideQuoteRequest {
 }
 
 /**
- * REQ-267: Notification type for in-app notifications
+ * Notification type for in-app notifications
  */
-export type NotificationType = 'due_date_change' | 'task_assigned' | 'task_completed' | 'general';
+export type NotificationType =
+  | "due_date_change"
+  | "task_assigned"
+  | "task_completed"
+  | "general";
 
 /**
- * REQ-267: In-app notification
+ * In-app notification
  */
 export interface Notification {
   id: string;
@@ -1308,23 +1349,23 @@ export interface Notification {
 }
 
 /**
- * REQ-261: Task Type Category
+ * Task Type Category
  * Categories for organizing task types
  */
 export type TaskTypeCategory =
-  | 'document_review'
-  | 'policy_management'
-  | 'compliance'
-  | 'onboarding'
-  | 'custom';
+  | "document_review"
+  | "policy_management"
+  | "compliance"
+  | "onboarding"
+  | "custom";
 
 /**
- * REQ-261: Default assignee role for task types
+ * Default assignee role for task types
  */
-export type TaskTypeAssigneeRole = 'broker' | 'manager' | 'contractor';
+export type TaskTypeAssigneeRole = "broker" | "manager" | "contractor";
 
 /**
- * REQ-261: Auto-assignment rules for task types
+ * Auto-assignment rules for task types
  */
 export interface TaskTypeAutoAssignmentRules {
   /** Assign to project manager */
@@ -1338,7 +1379,7 @@ export interface TaskTypeAutoAssignmentRules {
 }
 
 /**
- * REQ-261: Task Type Definition
+ * Task Type Definition
  * Defines a reusable task type with default settings
  */
 export interface TaskType {
@@ -1368,31 +1409,31 @@ export interface TaskType {
 }
 
 // =============================================================================
-// Coverage Limit Requirements (REQ-263)
+// Coverage Limit Requirements
 // =============================================================================
 
 /**
- * REQ-263: Coverage Requirement Level
+ * Coverage Requirement Level
  * Distinguishes between organization-wide and project-specific coverage requirements
  */
-export type CoverageRequirementLevel = 'org' | 'project';
+export type CoverageRequirementLevel = "org" | "project";
 
 /**
- * REQ-263: Coverage Type for Limit Requirements
+ * Coverage Type for Limit Requirements
  * Standard insurance coverage types for minimum limit tracking
  */
 export type CoverageLimitType =
-  | 'general_liability'
-  | 'workers_comp'
-  | 'commercial_auto'
-  | 'umbrella_excess'
-  | 'professional_liability'
-  | 'pollution_liability'
-  | 'builders_risk'
-  | 'equipment_floater';
+  | "general_liability"
+  | "workers_comp"
+  | "commercial_auto"
+  | "umbrella_excess"
+  | "professional_liability"
+  | "pollution_liability"
+  | "builders_risk"
+  | "equipment_floater";
 
 /**
- * REQ-263: Coverage Limit Requirement
+ * Coverage Limit Requirement
  * Defines minimum insurance coverage requirements at org or project level
  *
  * - org-level: applies to all projects in the organization (project_id = null)
@@ -1419,7 +1460,7 @@ export interface CoverageLimitRequirement {
 }
 
 /**
- * REQ-263: Request payload for creating a coverage limit requirement
+ * Request payload for creating a coverage limit requirement
  */
 export interface CreateCoverageLimitRequirementRequest {
   name: string;
@@ -1432,7 +1473,7 @@ export interface CreateCoverageLimitRequirementRequest {
 }
 
 /**
- * REQ-263: Request payload for updating a coverage limit requirement
+ * Request payload for updating a coverage limit requirement
  */
 export interface UpdateCoverageLimitRequirementRequest {
   name?: string;
@@ -1442,7 +1483,7 @@ export interface UpdateCoverageLimitRequirementRequest {
 }
 
 /**
- * REQ-263: Compliance check result for a single requirement
+ * Compliance check result for a single requirement
  */
 export interface CoverageLimitComplianceCheck {
   requirement_id: string;
@@ -1451,12 +1492,12 @@ export interface CoverageLimitComplianceCheck {
   coverage_type: CoverageLimitType;
   required_limit: number;
   actual_limit: number | null;
-  status: 'met' | 'unmet';
+  status: "met" | "unmet";
   gap_amount?: number;
 }
 
 /**
- * REQ-263: Overall compliance result for a subcontractor
+ * Overall compliance result for a subcontractor
  */
 export interface CoverageLimitComplianceResult {
   subcontractor_id: string;

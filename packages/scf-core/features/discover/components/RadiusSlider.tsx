@@ -1,4 +1,5 @@
-import { Slider, Text, XStack, YStack } from '@unicornlove/ui'
+import { Slider, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type RadiusSliderProps = {
   value: number
@@ -23,54 +24,41 @@ export const RadiusSlider = ({
   max = 100000, // 100km
   step = 1000,
 }: RadiusSliderProps) => {
+  const { theme } = useThemeContext()
   return (
-    <YStack gap="$2" flex={1}>
-      <XStack justifyContent="space-between" alignItems="center">
-        <Text fontSize="$3" fontWeight="600" color="$color11">
-          Search Radius
-        </Text>
-        <Text fontSize="$3" fontWeight="600" color="$blue10">
-          {formatRadius(value)}
-        </Text>
-      </XStack>
+    <Stack gap={8} flex={1}>
+      <Row justify="space-between" align="center">
+        <Text style={{ color: colors.text[theme].secondary }}>Search Radius</Text>
+        <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{formatRadius(value)}</Text>
+      </Row>
 
       <Slider
-        value={[value]}
-        onValueChange={(values) => {
-          const newValue = values[0]
-          onValueChange(newValue)
-        }}
+        value={value}
+        onValueChange={onValueChange}
         min={min}
         max={max}
         step={step}
-        flex={1}
-        height={20}
-        backgroundColor="$color3"
-        borderRadius="$2"
-      >
-        <Slider.Track>
-          <Slider.TrackActive backgroundColor="$blue9" />
-        </Slider.Track>
-        <Slider.Thumb
-          index={0}
-          backgroundColor="$blue10"
-          borderWidth={2}
-          borderColor="$blue11"
-          borderRadius="$10"
-          width={20}
-          height={20}
-          style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
-        />
-      </Slider>
+        style={{
+          flex: 1,
+          height: 20,
+          backgroundColor: 'var(--color-3)',
+          borderRadius: 8,
+        }}
+        trackStyle={{ backgroundColor: theme === 'light' ? colors.blue[50] : colors.blue[900] }}
+        handleStyle={{
+          backgroundColor: theme === 'light' ? colors.blue[50] : colors.blue[900],
+          borderWidth: 2,
+          borderColor: theme === 'light' ? colors.blue[300] : colors.blue[700],
+          borderRadius: 10,
+          width: 20,
+          height: 20,
+        }}
+      />
 
-      <XStack justifyContent="space-between" alignItems="center">
-        <Text fontSize="$2" color="$color10">
-          {formatRadius(min)}
-        </Text>
-        <Text fontSize="$2" color="$color10">
-          {formatRadius(max)}
-        </Text>
-      </XStack>
-    </YStack>
+      <Row justify="space-between" align="center">
+        <Text style={{ color: colors.text[theme].secondary }}>{formatRadius(min)}</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>{formatRadius(max)}</Text>
+      </Row>
+    </Stack>
   )
 }

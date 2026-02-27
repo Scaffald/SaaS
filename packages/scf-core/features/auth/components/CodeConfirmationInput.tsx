@@ -1,7 +1,7 @@
 import type { Control, UseFormRegister, UseFormSetValue } from 'react-hook-form'
 import { Controller } from 'react-hook-form'
-import type { SizeTokens } from '@unicornlove/ui'
-import { Input } from '@unicornlove/ui'
+import { Input, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface FormFields {
   [key: string]: string
@@ -9,7 +9,6 @@ interface FormFields {
 
 interface CodeConfirmationInputProps {
   id: number
-  size?: SizeTokens
   codeSize: number
   secureTextEntry?: boolean
   control: Control<FormFields>
@@ -29,6 +28,8 @@ export function CodeConfirmationInput({
   switchInputPlace,
   onSubmit,
 }: CodeConfirmationInputProps) {
+  const { theme } = useThemeContext()
+
   return (
     <Controller
       name={`code${id}`}
@@ -42,23 +43,15 @@ export function CodeConfirmationInput({
           maxLength={codeSize}
           selectTextOnFocus
           onChangeText={(code: string) => {
-            // Max length is disabled to enable multiple digit paste
             if (code.length === codeSize) {
-              // Paste logic
               const digits = code.split('')
               digits.forEach((digit, index) => {
-                // Set each digit to the corresponding input
                 setValue(`code${index}`, digit)
               })
               onSubmit()
             } else {
-              // Manual input logic
-              // Only take the first digit (disables multiple digits in one input)
               onChange(code.split('')[0])
-              // Focus next input
               switchInputPlace(id, code)
-
-              // Submit on last input
               if (id === codeSize - 1) {
                 onSubmit()
               }
@@ -67,14 +60,10 @@ export function CodeConfirmationInput({
           onKeyPress={(e) => {
             const event = e.nativeEvent
             if (event.key === 'Backspace') {
-              // Prevent the backspace key from navigating back
               e.preventDefault()
-
               if (value !== '') {
-                // Reset input field
                 onChange('')
               } else {
-                // Set focus to the previous input
                 switchInputPlace(id, value)
               }
             }
@@ -87,16 +76,19 @@ export function CodeConfirmationInput({
           textContentType="oneTimeCode"
           autoComplete="one-time-code"
           secureTextEntry={secureTextEntry}
-          textAlign="center"
-          fontSize="$8"
-          borderRadius="$5"
-          width={50}
-          aspectRatio={1}
-          backgroundColor={invalid ? '$red7' : value ? '$color1' : '$color5'}
-          hoverStyle={{ outlineWidth: 0 }}
-          focusStyle={{
-            backgroundColor: invalid ? '$red8' : '$color1',
-            outlineWidth: 0,
+          style={{
+            borderRadius: 12,
+            width: 50,
+            aspectRatio: 1,
+            backgroundColor: invalid
+              ? theme === "light" ? colors.error[50] : colors.error[900]
+              : value
+                ? colors.bg[theme].subtle
+                : colors.bg[theme].muted,
+          }}
+          contentStyle={{
+            textAlign: 'center',
+            fontSize: 24,
           }}
         />
       )}

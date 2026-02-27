@@ -39,7 +39,7 @@ Wrapper for right column results with built-in loading and empty states.
 
 ```tsx
 import { ProfileResultsPanel } from './components'
-import { Award } from '@tamagui/lucide-icons'
+import { Award } from 'lucide-react-native'
 
 <ProfileResultsPanel
   title="Your Items"
@@ -112,7 +112,7 @@ export function Profile[Section]Left() {
 ```tsx
 // profile-[section]-right.tsx
 import { ProfileResultsPanel, ProfileResultCard } from './components'
-import { [Icon] } from '@tamagui/lucide-icons'
+import { [Icon] } from 'lucide-react-native'
 
 export function Profile[Section]Right() {
   const { data, isLoading } = useQuery()
@@ -268,7 +268,7 @@ Right: Selected items with remove
 
 ## Notes
 
-- Always use Tamagui components for consistency
+- Use Beyond UI (or shared) components for consistency
 - Keep loading/empty states in ProfileResultsPanel
 - Use ProfileResultCard for consistent item styling
 - Refetch right column data after mutations

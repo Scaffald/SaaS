@@ -2,7 +2,9 @@
  * PolicyStatusBadge - Status indicator for insurance policies
  */
 
-import { styled, XStack, Text, type XStackProps } from 'tamagui'
+import { Row, Text } from '@scaffald/ui'
+import { colors, spacing, borderRadius } from '@scaffald/ui/tokens'
+import type { RowProps } from '@scaffald/ui'
 import {
   Shield,
   Clock,
@@ -11,7 +13,7 @@ import {
   CheckCircle,
   PauseCircle,
   RefreshCw,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import type { ComponentType } from 'react'
 
 export type PolicyStatus =
@@ -26,14 +28,10 @@ export type PolicyStatus =
   | 'non-renewed'
   | 'suspended'
 
-export interface PolicyStatusBadgeProps extends Omit<XStackProps, 'children'> {
-  /** Policy status */
+export interface PolicyStatusBadgeProps extends Omit<RowProps, 'children'> {
   status: PolicyStatus
-  /** Size variant */
   size?: 'sm' | 'md' | 'lg'
-  /** Whether to show icon */
   showIcon?: boolean
-  /** Custom label override */
   label?: string
 }
 
@@ -48,100 +46,71 @@ const statusConfig: Record<
 > = {
   active: {
     label: 'Active',
-    bgColor: '$green3',
-    textColor: '$green11',
+    bgColor: colors.success[100],
+    textColor: colors.success[700],
     icon: CheckCircle,
   },
   'in-force': {
     label: 'In Force',
-    bgColor: '$green3',
-    textColor: '$green11',
+    bgColor: colors.success[100],
+    textColor: colors.success[700],
     icon: Shield,
   },
   bound: {
     label: 'Bound',
-    bgColor: '$blue3',
-    textColor: '$blue11',
+    bgColor: colors.info[100],
+    textColor: colors.info[700],
     icon: CheckCircle,
   },
   pending: {
     label: 'Pending',
-    bgColor: '$yellow3',
-    textColor: '$yellow11',
+    bgColor: colors.warning[100],
+    textColor: colors.warning[700],
     icon: Clock,
   },
   quoted: {
     label: 'Quoted',
-    bgColor: '$purple3',
-    textColor: '$purple11',
+    bgColor: colors.violet[100],
+    textColor: colors.violet[700],
     icon: Clock,
   },
   renewed: {
     label: 'Renewed',
-    bgColor: '$teal3',
-    textColor: '$teal11',
+    bgColor: colors.success[100],
+    textColor: colors.success[700],
     icon: RefreshCw,
   },
   expired: {
     label: 'Expired',
-    bgColor: '$orange3',
-    textColor: '$orange11',
+    bgColor: colors.orange[100],
+    textColor: colors.orange[700],
     icon: AlertTriangle,
   },
   'non-renewed': {
     label: 'Non-Renewed',
-    bgColor: '$orange3',
-    textColor: '$orange11',
+    bgColor: colors.orange[100],
+    textColor: colors.orange[700],
     icon: AlertTriangle,
   },
   cancelled: {
     label: 'Cancelled',
-    bgColor: '$red3',
-    textColor: '$red11',
+    bgColor: colors.error[100],
+    textColor: colors.error[700],
     icon: XCircle,
   },
   suspended: {
     label: 'Suspended',
-    bgColor: '$gray3',
-    textColor: '$gray11',
+    bgColor: colors.gray[200],
+    textColor: colors.gray[700],
     icon: PauseCircle,
   },
 }
 
 const sizeConfig = {
-  sm: {
-    paddingHorizontal: '$1',
-    paddingVertical: 2,
-    fontSize: '$1',
-    iconSize: 10,
-    gap: '$1',
-  },
-  md: {
-    paddingHorizontal: '$2',
-    paddingVertical: '$1',
-    fontSize: '$2',
-    iconSize: 12,
-    gap: '$1',
-  },
-  lg: {
-    paddingHorizontal: '$3',
-    paddingVertical: '$2',
-    fontSize: '$3',
-    iconSize: 14,
-    gap: '$2',
-  },
-} as const
-
-const BadgeContainer = styled(XStack, {
-  name: 'PolicyStatusBadge',
-  borderRadius: '$full',
-  alignItems: 'center',
-})
-
-const BadgeText = styled(Text, {
-  name: 'PolicyStatusBadgeText',
-  fontWeight: '500',
-})
+  sm: { paddingHorizontal: spacing[4], paddingVertical: 2, fontSize: 'xs' as const, iconSize: 10, gap: spacing[4] },
+  md: { paddingHorizontal: spacing[8], paddingVertical: spacing[4], fontSize: 'sm' as const, iconSize: 12, gap: spacing[4] },
+  lg: { paddingHorizontal: spacing[12], paddingVertical: spacing[8], fontSize: 'md' as const, iconSize: 14, gap: spacing[8] },
+}
 
 export function PolicyStatusBadge({
   status,
@@ -155,17 +124,21 @@ export function PolicyStatusBadge({
   const IconComponent = config.icon
 
   return (
-    <BadgeContainer
-      backgroundColor={config.bgColor}
-      paddingHorizontal={sizeStyles.paddingHorizontal}
-      paddingVertical={sizeStyles.paddingVertical}
+    <Row
+      align="center"
       gap={sizeStyles.gap}
+      style={{
+        borderRadius: borderRadius.max,
+        backgroundColor: config.bgColor,
+        paddingHorizontal: sizeStyles.paddingHorizontal,
+        paddingVertical: sizeStyles.paddingVertical,
+      }}
       {...props}
     >
       {showIcon && <IconComponent size={sizeStyles.iconSize} color={config.textColor} />}
-      <BadgeText fontSize={sizeStyles.fontSize} color={config.textColor}>
+      <Text size={sizeStyles.fontSize} weight="medium" style={{ color: config.textColor }}>
         {label ?? config.label}
-      </BadgeText>
-    </BadgeContainer>
+      </Text>
+    </Row>
   )
 }

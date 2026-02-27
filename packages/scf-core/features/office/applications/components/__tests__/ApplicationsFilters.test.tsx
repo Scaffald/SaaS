@@ -6,9 +6,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const SelectChangeContext = createContext<(value: string) => void>(() => {})
 
-vi.mock('@unicornlove/ui', () => ({
-  XStack: ({ children }: { children: ReactNode }) => <div data-testid="xstack">{children}</div>,
-  YStack: ({ children }: { children: ReactNode }) => <div data-testid="ystack">{children}</div>,
+vi.mock('@scaffald/ui', () => ({
+  Row: ({ children }: { children: ReactNode }) => <div data-testid="xstack">{children}</div>,
+  Stack: ({ children }: { children: ReactNode }) => <div data-testid="ystack">{children}</div>,
   Text: ({ children }: { children: ReactNode }) => <span>{children}</span>,
   Button: ({
     children,
@@ -54,8 +54,8 @@ vi.mock('@unicornlove/ui', () => ({
   ),
 }))
 
-vi.mock('tamagui', async () => {
-  const actual = await vi.importActual<typeof import('tamagui')>('tamagui')
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual<typeof import('@scaffald/ui')>('@scaffald/ui')
 
   const SelectRoot = ({
     value,

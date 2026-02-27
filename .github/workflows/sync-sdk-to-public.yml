@@ -1,0 +1,80 @@
+name: Sync SDK to Public Repository
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/scaffald-sdk/**'
+      - '!packages/scaffald-sdk/node_modules/**'
+      - '!packages/scaffald-sdk/docs-site/node_modules/**'
+      - '!packages/scaffald-sdk/docs-site/.docusaurus/**'
+      - '!packages/scaffald-sdk/docs-site/build/**'
+
+  # Also sync on SDK version tags
+  push:
+    tags:
+      - 'sdk-v*'
+
+  # Manual trigger for testing
+  workflow_dispatch:
+
+jobs:
+  sync:
+    name: Sync to Scaffald/sdk
+    runs-on: ubuntu-latest
+    
+    # Skip if commit message contains [skip sync]
+    if: "!contains(github.event.head_commit.message, '[skip sync]')"
+    
+    steps:
+      - name: Checkout monorepo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history needed for subtree split
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'Scaffald CI'
+          git config --global user.email 'dev@scaffald.com'
+
+      - name: Add public repository remote
+        env:
+          SYNC_TOKEN: ${{ secrets.SCAFFALD_SDK_SYNC_TOKEN }}
+        run: |
+          if [ -z "$SYNC_TOKEN" ]; then
+            echo "⚠️  SCAFFALD_SDK_SYNC_TOKEN not set - skipping sync"
+            echo "To enable sync, add the GitHub token to repository secrets"
+            exit 0
+          fi
+          git remote add public https://x-access-token:${SYNC_TOKEN}@github.com/Scaffald/sdk.git || true
+          git fetch public || echo "Public repo not yet initialized"
+
+      - name: Sync SDK package using subtree
+        env:
+          SYNC_TOKEN: ${{ secrets.SCAFFALD_SDK_SYNC_TOKEN }}
+        run: |
+          if [ -z "$SYNC_TOKEN" ]; then
+            exit 0
+          fi
+          
+          echo "Splitting SDK subtree..."
+          git subtree split --prefix packages/scaffald-sdk -b sdk-sync
+          
+          echo "Pushing to public repository..."
+          git push public sdk-sync:main --force
+          
+          # Sync SDK version tags
+          if [[ "$GITHUB_REF" == refs/tags/sdk-v* ]]; then
+            echo "Syncing tag ${GITHUB_REF#refs/tags/}..."
+            git push public "${GITHUB_REF#refs/tags/}" --force
+          fi
+
+      - name: Clean up
+        run: |
+          git branch -D sdk-sync || true
+          
+      - name: Summary
+        run: |
+          echo "✅ SDK package synced to Scaffald/sdk"
+          echo "📦 Repository: https://github.com/Scaffald/sdk"
+          echo "🔗 Commit: ${{ github.sha }}"

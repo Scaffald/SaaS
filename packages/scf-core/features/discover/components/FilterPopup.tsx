@@ -1,7 +1,7 @@
-import { ToggleSwitch } from '@unicornlove/ui'
-import { ChevronDown, ChevronRight, X } from '@tamagui/lucide-icons'
+import { Switch } from '@scaffald/ui'
+import { ChevronDown, ChevronRight, X } from 'lucide-react-native'
 import { useState } from 'react'
-import { AnimatePresence, Button, Label, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Label, ScrollView, Text, Row, Stack } from '@scaffald/ui'
 
 type FilterPopupProps = {
   isOpen: boolean
@@ -87,172 +87,149 @@ export const FilterPopup = ({
     return `Display on Map (${activeFilters.join(', ')})`
   }
 
+  if (!isOpen) return null
+
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <XStack
-          position="absolute"
-          bottom={100}
-          left={0}
-          right={railVisible ? 440 : 0}
-          zIndex={60}
-          animation="quick"
-          enterStyle={{ opacity: 0, y: 20 }}
-          exitStyle={{ opacity: 0, y: 20 }}
-          opacity={1}
-          y={0}
-          justifyContent="center"
-          alignItems="center"
-          paddingHorizontal="$4"
-        >
-          <YStack
-            width={300}
-            height={250}
-            flex={1}
-            borderWidth={1}
-            borderColor="$borderColor"
-            backgroundColor="$background"
-            shadowColor="$shadowColor"
-            shadowOffset={{ width: 0, height: 4 }}
-            shadowOpacity={0.15}
-            shadowRadius={12}
-            borderRadius="$4"
-            overflow="hidden"
-          >
+    <Row
+      justify="center"
+      align="center"
+      paddingHorizontal={16}
+      style={{
+        position: 'absolute',
+        bottom: 100,
+        left: 0,
+        right: railVisible ? 440 : 0,
+        zIndex: 60,
+      }}
+    >
+      <Stack
+        width={300}
+        height={250}
+        flex={1}
+        borderWidth={1}
+        borderColor="$borderColor"
+        backgroundColor="$background"
+        borderRadius={16}
+        style={{
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.15,
+          shadowRadius: 12,
+          overflow: 'hidden',
+        }}
+      >
             {/* Header */}
-            <XStack
-              paddingHorizontal="$4"
-              paddingVertical="$3"
-              justifyContent="space-between"
-              alignItems="center"
-              borderBottomWidth={1}
-              borderBottomColor="$borderColor"
+            <Row
+              paddingHorizontal={16}
+              paddingVertical={12}
+              justify="space-between"
+              align="center"
+              style={{ borderBottomWidth: 1, borderBottomColor: '$borderColor' }}
             >
-              <Text fontSize="$5" fontWeight="700">
-                Filters
-              </Text>
-              <Button
-                size="$2"
-                circular
-                variant="outlined"
-                onPress={onClose}
-                icon={X}
-                scaleIcon={1.2}
-              />
-            </XStack>
+              <Text>Filters</Text>
+              <Button size="sm" variant="outline" onPress={onClose} iconStart={X} />
+            </Row>
 
             {/* Scrollable Content */}
-            <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-              <YStack padding="$3" gap="$2">
+            <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+              <Stack padding="sm" gap={8}>
                 {/* Show Section */}
-                <YStack>
+                <Stack>
                   <Button
-                    unstyled
+                    variant="text"
                     onPress={() => toggleSection('show')}
-                    paddingHorizontal="$3"
-                    paddingVertical="$2"
-                    hoverStyle={{ backgroundColor: '$color3' }}
-                    pressStyle={{ backgroundColor: '$color4' }}
-                    borderRadius="$3"
+                    style={{
+                      paddingHorizontal: 12,
+                      paddingVertical: 8,
+                      borderRadius: 12,
+                    }}
                   >
-                    <XStack justifyContent="space-between" alignItems="center" flex={1}>
-                      <Text fontSize="$4" fontWeight="600">
-                        {getSectionHeaderText()}
-                      </Text>
+                    <Row justify="space-between" align="center" flex={1}>
+                      <Text>{getSectionHeaderText()}</Text>
                       {openSections.has('show') ? (
-                        <ChevronDown size={16} />
+                        <ChevronDown size="md" />
                       ) : (
-                        <ChevronRight size={16} />
+                        <ChevronRight size="md" />
                       )}
-                    </XStack>
+                    </Row>
                   </Button>
 
                   {openSections.has('show') && (
-                    <YStack gap="$3" paddingHorizontal="$3" paddingVertical="$3">
+                    <Stack gap={12} paddingHorizontal={12} paddingVertical={12}>
                       {/* Workers Toggle */}
-                      <YStack gap="$1">
-                        <XStack justifyContent="space-between" alignItems="center">
-                          <Label fontSize="$3" onPress={() => onShowWorkersChange?.(!showWorkers)}>
-                            Workers
-                          </Label>
-                          <ToggleSwitch
+                      <Stack gap={4}>
+                        <Row justify="space-between" align="center">
+                          <Label onPress={() => onShowWorkersChange?.(!showWorkers)}>Workers</Label>
+                          <Switch
                             checked={showWorkers}
-                            onCheckedChange={(checked) => onShowWorkersChange?.(checked)}
-                            aria-label={
+                            onChange={(checked) => onShowWorkersChange?.(checked)}
+                            accessibilityLabel={
                               showWorkers ? 'Showing workers on map' : 'Hiding workers on map'
                             }
                           />
-                        </XStack>
-                        <Text fontSize="$1" color="$color10" paddingLeft="$1">
+                        </Row>
+                        <Text color="$gray11" style={{ paddingLeft: 4 }}>
                           Show worker profiles on the map
                         </Text>
-                      </YStack>
+                      </Stack>
 
                       {/* Employers Toggle */}
-                      <YStack gap="$1">
-                        <XStack justifyContent="space-between" alignItems="center">
-                          <Label
-                            fontSize="$3"
-                            onPress={() => onShowOrganizationsChange?.(!showOrganizations)}
-                          >
+                      <Stack gap={4}>
+                        <Row justify="space-between" align="center">
+                          <Label onPress={() => onShowOrganizationsChange?.(!showOrganizations)}>
                             Employers
                           </Label>
-                          <ToggleSwitch
+                          <Switch
                             checked={showOrganizations}
-                            onCheckedChange={(checked) => onShowOrganizationsChange?.(checked)}
-                            aria-label={
+                            onChange={(checked) => onShowOrganizationsChange?.(checked)}
+                            accessibilityLabel={
                               showOrganizations
                                 ? 'Showing employers on map'
                                 : 'Hiding employers on map'
                             }
                           />
-                        </XStack>
-                        <Text fontSize="$1" color="$color10" paddingLeft="$1">
+                        </Row>
+                        <Text color="$gray11" style={{ paddingLeft: 4 }}>
                           Show employer organizations on the map
                         </Text>
-                      </YStack>
+                      </Stack>
 
                       {/* Jobs Toggle */}
-                      <YStack gap="$1">
-                        <XStack justifyContent="space-between" alignItems="center">
-                          <Label fontSize="$3" onPress={() => onShowJobsChange?.(!showJobs)}>
-                            Jobs
-                          </Label>
-                          <ToggleSwitch
+                      <Stack gap={4}>
+                        <Row justify="space-between" align="center">
+                          <Label onPress={() => onShowJobsChange?.(!showJobs)}>Jobs</Label>
+                          <Switch
                             checked={showJobs}
-                            onCheckedChange={(checked) => onShowJobsChange?.(checked)}
-                            aria-label={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
+                            onChange={(checked) => onShowJobsChange?.(checked)}
+                            accessibilityLabel={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
                           />
-                        </XStack>
-                        <Text fontSize="$1" color="$color10" paddingLeft="$1">
+                        </Row>
+                        <Text color="$gray11" style={{ paddingLeft: 4 }}>
                           Show job openings on the map
                         </Text>
-                      </YStack>
-                    </YStack>
+                      </Stack>
+                    </Stack>
                   )}
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
             </ScrollView>
 
             {/* Footer */}
-            <XStack
-              paddingHorizontal="$4"
-              paddingVertical="$3"
-              gap="$2"
-              justifyContent="flex-end"
-              borderTopWidth={1}
-              borderTopColor="$borderColor"
+            <Row
+              paddingHorizontal={16}
+              paddingVertical={12}
+              gap={8}
+              justify="flex-end"
+              style={{ borderTopWidth: 1, borderTopColor: '$borderColor' }}
             >
-              <Button size="$3" variant="outlined" onPress={onClose}>
+              <Button size="sm" variant="outline" onPress={onClose}>
                 <Text>Close</Text>
               </Button>
-              <Button size="$3" onPress={onClose}>
+              <Button size="sm" onPress={onClose}>
                 <Text>Apply</Text>
               </Button>
-            </XStack>
-          </YStack>
-        </XStack>
-      )}
-    </AnimatePresence>
+            </Row>
+          </Stack>
+        </Row>
   )
 }

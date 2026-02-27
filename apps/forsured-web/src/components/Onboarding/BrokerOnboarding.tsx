@@ -1,6 +1,6 @@
 /**
  * BrokerOnboarding - Brokerage onboarding form
- * REQ-285: Broker Onboarding Form Improvements
+ * Broker Onboarding Form Improvements
  * TASK-1: Update Brokerage Details Form Section
  * TASK-2: Implement Administrator Setup Flow
  * TASK-3: Build Team Member Invitation Flow
@@ -14,7 +14,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Briefcase, ArrowRight, X, User, Building2, Phone, Mail, MapPin, FileText, Lock, Eye, EyeOff, Shield, Users, Plus, Trash2 } from 'lucide-react';
-import { Stack, Row, Text, H1, H2, Card, Input, Button } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H1, H2, Card, Input, Button } from '@scaffald/ui';
 import ForsuredLogo from '../Common/ForsuredLogo';
 import { useAuth } from '../../contexts/AuthContext';
 

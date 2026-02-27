@@ -1,5 +1,5 @@
 /**
- * REQ-2, TASK-4: Dependency Validation Types
+ * Dependency Validation Types
  * Type definitions for dependency validation, including umbrella insurance validation
  */
 

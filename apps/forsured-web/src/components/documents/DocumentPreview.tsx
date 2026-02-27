@@ -1,11 +1,11 @@
 /**
- * DocumentPreview Component (REQ-167)
+ * DocumentPreview Component
  * Side-by-side document viewer for OCR review
  */
 
 import React from 'react';
 import { FileText } from 'lucide-react';
-import { Stack, Row, Text, H3 } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H3 } from '@scaffald/ui';
 
 interface DocumentPreviewProps {
   documentUrl?: string;

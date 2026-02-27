@@ -1,212 +1,216 @@
-import { api } from '@scf/core/utils/api'
-import { Share2 } from '@tamagui/lucide-icons'
-import { useMemo, useState } from 'react'
-import { Alert } from 'react-native'
-import { Button, Separator, Switch, Text, XStack, YStack } from '@unicornlove/ui'
+import { useAdminUpdatePrivacyMutation } from "@scf/core/utils/background-checks-sdk-hooks";
+import { Share2 } from "lucide-react-native";
+import { useMemo, useState } from "react";
+import { Alert } from "react-native";
+import { Button, Separator, Switch, Text, Row, Stack } from "@scaffald/ui";
 
-import type { BackgroundCheckDetail } from './status.utils'
+import type { BackgroundCheckDetail } from "./status.utils";
 
 type PrivacySettings = {
-  share_publicly: boolean
-  shared_with_organization_ids: string[]
-}
+  share_publicly: boolean;
+  shared_with_organization_ids: string[];
+};
 
 interface PrivacyControlsProps {
-  checkId: string
-  metadata?: BackgroundCheckDetail['metadata']
+  checkId: string;
+  metadata?: BackgroundCheckDetail["metadata"];
 }
 
-function parsePrivacy(metadata?: BackgroundCheckDetail['metadata']): PrivacySettings {
-  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) {
+function parsePrivacy(
+  metadata?: BackgroundCheckDetail["metadata"]
+): PrivacySettings {
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
     return {
       share_publicly: false,
       shared_with_organization_ids: [],
-    }
+    };
   }
 
-  const record = metadata as Record<string, unknown>
-  if (!('privacy' in record)) {
+  const record = metadata as Record<string, unknown>;
+  if (!("privacy" in record)) {
     return {
       share_publicly: false,
       shared_with_organization_ids: [],
-    }
+    };
   }
 
-  const privacyRecord = record.privacy
-  if (!privacyRecord || typeof privacyRecord !== 'object' || Array.isArray(privacyRecord)) {
+  const privacyRecord = record.privacy;
+  if (
+    !privacyRecord ||
+    typeof privacyRecord !== "object" ||
+    Array.isArray(privacyRecord)
+  ) {
     return {
       share_publicly: false,
       shared_with_organization_ids: [],
-    }
+    };
   }
 
-  const privacy = privacyRecord as Record<string, unknown>
+  const privacy = privacyRecord as Record<string, unknown>;
   return {
     share_publicly: Boolean(privacy.share_publicly),
-    shared_with_organization_ids: Array.isArray(privacy.shared_with_organization_ids)
+    shared_with_organization_ids: Array.isArray(
+      privacy.shared_with_organization_ids
+    )
       ? (privacy.shared_with_organization_ids as string[])
       : [],
-  }
+  };
 }
 
 export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
-  const initialSettings = useMemo(() => parsePrivacy(metadata), [metadata])
-  const [sharePublicly, setSharePublicly] = useState(initialSettings.share_publicly)
+  const initialSettings = useMemo(() => parsePrivacy(metadata), [metadata]);
+  const [sharePublicly, setSharePublicly] = useState(
+    initialSettings.share_publicly
+  );
   const [organizationIds, setOrganizationIds] = useState(
     initialSettings.shared_with_organization_ids
-  )
+  );
 
-  const updatePrivacyMutation = api.backgroundChecks.updatePrivacy.useMutation()
+  const updatePrivacyMutation = useAdminUpdatePrivacyMutation();
 
-  const applyUpdate = (nextSharePublicly: boolean, nextOrganizationIds: string[]) => {
-    const previousShare = sharePublicly
-    const previousOrganizations = organizationIds
-    setSharePublicly(nextSharePublicly)
-    setOrganizationIds(nextOrganizationIds)
+  const applyUpdate = (
+    nextSharePublicly: boolean,
+    nextOrganizationIds: string[]
+  ) => {
+    const previousShare = sharePublicly;
+    const previousOrganizations = organizationIds;
+    setSharePublicly(nextSharePublicly);
+    setOrganizationIds(nextOrganizationIds);
 
     updatePrivacyMutation.mutate(
       {
-        background_check_id: checkId,
+        checkId,
         share_publicly: nextSharePublicly,
         shared_with_organization_ids: nextOrganizationIds,
       },
       {
         onError: (error: unknown) => {
-          setSharePublicly(previousShare)
-          setOrganizationIds(previousOrganizations)
+          setSharePublicly(previousShare);
+          setOrganizationIds(previousOrganizations);
           const message =
             error instanceof Error
               ? error.message
-              : 'Could not update privacy settings. Please try again.'
-          Alert.alert('Could not update privacy settings', message)
+              : "Could not update privacy settings. Please try again.";
+          Alert.alert("Could not update privacy settings", message);
         },
       }
-    )
-  }
+    );
+  };
 
   const handleToggleSharePublicly = (value: boolean) => {
-    applyUpdate(value, organizationIds)
-  }
+    applyUpdate(value, organizationIds);
+  };
 
   const handleRevokeAccess = (organizationId: string) => {
     applyUpdate(
       sharePublicly,
       organizationIds.filter((id) => id !== organizationId)
-    )
-  }
+    );
+  };
 
-  const isSaving = updatePrivacyMutation.isPending
+  const isSaving = updatePrivacyMutation.isPending;
 
   return (
-    <YStack gap="$4">
-      <YStack gap="$2">
-        <Text fontSize="$4" fontWeight="600" color="$color12">
-          Privacy controls
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Text color="$gray11">Privacy controls</Text>
+        <Text color="$gray11">
+          Manage who can see your background check results. These settings apply
+          across the platform.
         </Text>
-        <Text fontSize="$2" color="$color10">
-          Manage who can see your background check results. These settings apply across the
-          platform.
-        </Text>
-      </YStack>
+      </Stack>
 
-      <YStack
-        gap="$3"
-        padding="$3"
+      <Stack
+        gap={12}
+        padding="sm"
         backgroundColor="$color2"
-        borderRadius="$4"
+        borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <XStack justifyContent="space-between" alignItems="center">
-          <YStack flex={1} gap="$1" paddingRight="$3">
-            <Text fontSize="$3" fontWeight="500" color="$color12">
-              Show verified badge
+        <Row justify="space-between" align="center">
+          <Stack flex={1} gap={4} paddingRight={12}>
+            <Text color="$gray11">Show verified badge</Text>
+            <Text color="$gray11">
+              Allow organizations to see a verified badge that your background
+              check is current.
             </Text>
-            <Text fontSize="$2" color="$color10">
-              Allow organizations to see a verified badge that your background check is current.
-            </Text>
-          </YStack>
+          </Stack>
           <Switch
-            size="$3"
+            size="sm"
             checked={sharePublicly}
-            onCheckedChange={handleToggleSharePublicly}
+            onChange={handleToggleSharePublicly}
             disabled={isSaving}
-          >
-            <Switch.Thumb />
-          </Switch>
-        </XStack>
-      </YStack>
+          />
+        </Row>
+      </Stack>
 
-      <YStack gap="$3">
-        <XStack justifyContent="space-between" alignItems="center">
-          <Text fontSize="$3" fontWeight="500" color="$color12">
-            Shared with organizations
-          </Text>
+      <Stack gap={12}>
+        <Row justify="space-between" align="center">
+          <Text color="$gray11">Shared with organizations</Text>
           <Button
-            size="$3"
-            variant="outlined"
-            icon={Share2}
+            size="sm"
+            variant="outline"
+            iconStart={Share2}
             disabled
             onPress={() =>
               Alert.alert(
-                'Coming soon',
-                'Sharing with specific organizations will be available once invitations are enabled.'
+                "Coming soon",
+                "Sharing with specific organizations will be available once invitations are enabled."
               )
             }
           >
             Share
           </Button>
-        </XStack>
+        </Row>
 
-        <YStack gap="$2">
+        <Stack gap={8}>
           {organizationIds.length === 0 && (
-            <YStack
-              gap="$1"
-              padding="$3"
+            <Stack
+              gap={4}
+              padding="sm"
               backgroundColor="$color2"
-              borderRadius="$3"
+              borderRadius={12}
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <Text fontSize="$2" color="$color10">
+              <Text color="$gray11">
                 No organizations currently have access to view your results.
               </Text>
-            </YStack>
+            </Stack>
           )}
 
           {organizationIds.map((organizationId) => (
-            <XStack
+            <Row
               key={organizationId}
-              justifyContent="space-between"
-              alignItems="center"
-              padding="$3"
+              justify="space-between"
+              align="center"
+              padding="sm"
               backgroundColor="$color2"
-              borderRadius="$3"
+              borderRadius={12}
               borderWidth={1}
               borderColor="$borderColor"
             >
-              <Text fontSize="$2" color="$color12">
-                {organizationId}
-              </Text>
+              <Text color="$gray11">{organizationId}</Text>
               <Button
-                size="$2"
-                variant="outlined"
-                theme="error"
+                size="sm"
+                variant="outline"
                 onPress={() => handleRevokeAccess(organizationId)}
                 disabled={isSaving}
               >
                 Revoke
               </Button>
-            </XStack>
+            </Row>
           ))}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
 
       <Separator />
 
-      <Text fontSize="$2" color="$color9">
-        Tip: Only share your results with trusted organizations. You can revoke access at any time.
+      <Text color="$gray11">
+        Tip: Only share your results with trusted organizations. You can revoke
+        access at any time.
       </Text>
-    </YStack>
-  )
+    </Stack>
+  );
 }

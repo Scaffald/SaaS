@@ -1,0 +1,30 @@
+/**
+ * Format relative time (e.g. "2 minutes ago", "1 hour ago")
+ */
+
+export function formatRelativeTime(date: Date): string {
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  const diffSeconds = Math.floor(diffMs / 1000)
+  const diffMinutes = Math.floor(diffSeconds / 60)
+  const diffHours = Math.floor(diffMinutes / 60)
+  const diffDays = Math.floor(diffHours / 24)
+
+  if (diffSeconds < 60) return 'Just now'
+  if (diffMinutes < 60)
+    return `${diffMinutes} ${diffMinutes === 1 ? 'minute' : 'minutes'} ago`
+  if (diffHours < 24)
+    return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`
+  if (diffDays === 1) return 'Yesterday'
+  if (diffDays < 7) return `${diffDays} days ago`
+  if (diffDays < 30) {
+    const weeks = Math.floor(diffDays / 7)
+    return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`
+  }
+  if (diffDays < 365) {
+    const months = Math.floor(diffDays / 30)
+    return `${months} ${months === 1 ? 'month' : 'months'} ago`
+  }
+  const years = Math.floor(diffDays / 365)
+  return `${years} ${years === 1 ? 'year' : 'years'} ago`
+}

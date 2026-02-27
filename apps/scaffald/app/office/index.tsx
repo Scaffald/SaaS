@@ -1,17 +1,17 @@
 import { OfficeNotificationsConsole } from '@scf/core/features/office/office-notifications-console'
 import { OfficeStorageDashboard } from '@scf/core/features/office/office-storage-dashboard'
 import { OfficeLayout } from '@scf/core/components/layouts'
-import { Separator, YStack } from '@unicornlove/ui'
+import { Separator, Stack } from '@scaffald/ui'
 
 export default function OfficeIndex() {
   return (
     <OfficeLayout
       leftContent={
-        <YStack gap="$8" flex={1}>
+        <Stack gap={32}>
           <OfficeNotificationsConsole />
-          <Separator backgroundColor="$color4" />
+          <Separator />
           <OfficeStorageDashboard />
-        </YStack>
+        </Stack>
       }
     />
   )

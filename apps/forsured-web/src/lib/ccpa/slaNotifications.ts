@@ -1,6 +1,6 @@
 /**
  * CCPA SLA Notification Service
- * REQ-6, TASK-12: SLA Notification System for CCPA Deadlines
+ * SLA notification system for CCPA deadlines
  *
  * Handles SLA deadline monitoring and notification generation:
  * - Approaching deadline alerts (7 days, 3 days)

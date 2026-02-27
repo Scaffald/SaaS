@@ -1,6 +1,6 @@
 import React from 'react';
-import { Stack, Row, Box, Text, H1, H2, H3 } from '@unicornlove/beyond-ui';
-import { colors, spacing, fontSize, borderRadius, shadows, fontFamily } from '@unicornlove/beyond-ui';
+import { Stack, Row, Box, Text, H1, H2, H3 } from '@scaffald/ui';
+import { colors, spacing, fontSize, borderRadius, shadows, fontFamily } from '@scaffald/ui';
 import ComponentShowcase from '../../../components/DesignSystem/ComponentShowcase';
 import { Palette, Box as BoxIcon, Sun } from 'lucide-react';
 

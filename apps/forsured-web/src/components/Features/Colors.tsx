@@ -1,6 +1,6 @@
 import React from 'react';
 import { Palette } from 'lucide-react';
-import { Stack, Row, Text } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text } from '@scaffald/ui';
 
 interface ColorSwatchProps {
   name: string;
@@ -204,7 +204,7 @@ export default function Colors() {
         <Stack style={{ gap: '16px' }}>
           <Stack>
             <Text style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-11)', marginBottom: '8px' }}>
-              Tamagui Theme Tokens
+              Theme tokens
             </Text>
             <Stack
               style={{

@@ -1,32 +1,45 @@
-import type { ComponentType } from 'react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Button, Paragraph, ScrollView, Spinner, Text, YStack } from '@unicornlove/ui'
-import { useProfileWizard, type WizardStepPayloads } from '../hooks/useProfileWizard'
-import { useWizardAutoSave } from '../hooks/useWizardAutoSave'
-import type { ProfileWizardStepId } from '../utils/wizardSteps'
-import { PROFILE_WIZARD_STEPS } from '../utils/wizardSteps'
-import { ProgressIndicator } from './ProgressIndicator'
-import { CertificationsStep } from './steps/CertificationsStep'
-import { EducationStep } from './steps/EducationStep'
-import { EmploymentPrefsStep } from './steps/EmploymentPrefsStep'
-import { ExperienceStep } from './steps/ExperienceStep'
-import { GeneralInfoStep } from './steps/GeneralInfoStep'
-import { SkillsStep } from './steps/SkillsStep'
-import type { StepStateChangePayload, WizardStepComponentProps } from './steps/types'
-import { WizardStartScreen } from './WizardStartScreen'
-import { WizardSuccessModal } from './WizardSuccessModal'
+import type { ComponentType } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Button,
+  Paragraph,
+  ScrollView,
+  Spinner,
+  Text,
+  Stack,
+} from "@scaffald/ui";
+import {
+  useProfileWizard,
+  type WizardStepPayloads,
+} from "../hooks/useProfileWizard";
+import { useWizardAutoSave } from "../hooks/useWizardAutoSave";
+import type { ProfileWizardStepId } from "../utils/wizardSteps";
+import { PROFILE_WIZARD_STEPS } from "../utils/wizardSteps";
+import { ProgressIndicator } from "./ProgressIndicator";
+import { CertificationsStep } from "./steps/CertificationsStep";
+import { EducationStep } from "./steps/EducationStep";
+import { EmploymentPrefsStep } from "./steps/EmploymentPrefsStep";
+import { ExperienceStep } from "./steps/ExperienceStep";
+import { GeneralInfoStep } from "./steps/GeneralInfoStep";
+import { SkillsStep } from "./steps/SkillsStep";
+import type {
+  StepStateChangePayload,
+  WizardStepComponentProps,
+} from "./steps/types";
+import { WizardStartScreen } from "./WizardStartScreen";
+import { WizardSuccessModal } from "./WizardSuccessModal";
 
 interface ProfileWizardProps {
-  onSuccess?: () => void
-  onCancel?: () => void
-  initialStep?: ProfileWizardStepId
-  onViewProfile?: () => void
-  onUploadResume?: () => void
+  onSuccess?: () => void;
+  onCancel?: () => void;
+  initialStep?: ProfileWizardStepId;
+  onViewProfile?: () => void;
+  onUploadResume?: () => void;
 }
 
 type StepComponentMap = {
-  [Step in ProfileWizardStepId]: ComponentType<WizardStepComponentProps<Step>>
-}
+  [Step in ProfileWizardStepId]: ComponentType<WizardStepComponentProps<Step>>;
+};
 
 const STEP_COMPONENTS: StepComponentMap = {
   general: GeneralInfoStep,
@@ -35,62 +48,64 @@ const STEP_COMPONENTS: StepComponentMap = {
   certifications: CertificationsStep,
   preferences: EmploymentPrefsStep,
   education: EducationStep,
-}
+};
 
 interface StepSnapshot {
-  data: WizardStepPayloads[ProfileWizardStepId]
-  isValid: boolean
-  isDirty: boolean
+  data: WizardStepPayloads[ProfileWizardStepId];
+  isValid: boolean;
+  isDirty: boolean;
 }
 
-function getDefaultStepData(step: ProfileWizardStepId): WizardStepPayloads[ProfileWizardStepId] {
+function getDefaultStepData(
+  step: ProfileWizardStepId
+): WizardStepPayloads[ProfileWizardStepId] {
   switch (step) {
-    case 'general':
+    case "general":
       return {
-        firstName: '',
-        lastName: '',
-        headline: '',
-        bio: '',
-      }
-    case 'skills':
+        firstName: "",
+        lastName: "",
+        headline: "",
+        bio: "",
+      };
+    case "skills":
       return {
         skills: [],
-      }
-    case 'experience':
+      };
+    case "experience":
       return {
-        jobTitle: '',
-        companyName: '',
+        jobTitle: "",
+        companyName: "",
         startDate: null,
         endDate: null,
         isCurrent: true,
-        summary: '',
-      }
-    case 'certifications':
+        summary: "",
+      };
+    case "certifications":
       return {
         certifications: [],
-      }
-    case 'preferences':
+      };
+    case "preferences":
       return {
         locationPreference: null,
         hourlyRate: null,
         availability: null,
         remotePreference: null,
-      }
-    case 'education':
+      };
+    case "education":
       return {
-        degreeType: '',
-        institutionName: '',
+        degreeType: "",
+        institutionName: "",
         startDate: null,
         endDate: null,
         isCurrent: false,
-      }
+      };
     default:
       return {
-        firstName: '',
-        lastName: '',
-        headline: '',
-        bio: '',
-      } as WizardStepPayloads[ProfileWizardStepId]
+        firstName: "",
+        lastName: "",
+        headline: "",
+        bio: "",
+      } as WizardStepPayloads[ProfileWizardStepId];
   }
 }
 
@@ -101,50 +116,60 @@ export function ProfileWizard({
   onViewProfile,
   onUploadResume,
 }: ProfileWizardProps) {
-  const { state, orderedSteps, goBack, goNext, saveStep, completeWizard, isLoading, isError } =
-    useProfileWizard(initialStep)
+  const {
+    state,
+    orderedSteps,
+    goBack,
+    goNext,
+    saveStep,
+    completeWizard,
+    isLoading,
+    isError,
+  } = useProfileWizard(initialStep);
 
   const [stepSnapshots, setStepSnapshots] = useState<
     Partial<Record<ProfileWizardStepId, StepSnapshot>>
-  >({})
-  const [showSuccess, setShowSuccess] = useState(false)
-  const [showStartScreen, setShowStartScreen] = useState(false)
-  const [hasAcknowledgedStart, setHasAcknowledgedStart] = useState(false)
+  >({});
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showStartScreen, setShowStartScreen] = useState(false);
+  const [hasAcknowledgedStart, setHasAcknowledgedStart] = useState(false);
 
-  const currentStep = state.currentStep
+  const currentStep = state.currentStep;
   const StepComponent = STEP_COMPONENTS[currentStep] as ComponentType<
     WizardStepComponentProps<ProfileWizardStepId>
-  >
-  const isLastStep = currentStep === orderedSteps[orderedSteps.length - 1]
+  >;
+  const isLastStep = currentStep === orderedSteps[orderedSteps.length - 1];
 
   const initialDataForStep = useMemo(() => {
-    const existing = state.stepData[currentStep]
+    const existing = state.stepData[currentStep];
     if (existing) {
-      return existing as WizardStepPayloads[ProfileWizardStepId]
+      return existing as WizardStepPayloads[ProfileWizardStepId];
     }
-    return getDefaultStepData(currentStep)
-  }, [currentStep, state.stepData])
+    return getDefaultStepData(currentStep);
+  }, [currentStep, state.stepData]);
 
   useEffect(() => {
     if (isLoading || isError) {
-      return
+      return;
     }
 
     if (hasAcknowledgedStart) {
-      setShowStartScreen(false)
-      return
+      setShowStartScreen(false);
+      return;
     }
 
     if (initialStep) {
-      setShowStartScreen(false)
-      return
+      setShowStartScreen(false);
+      return;
     }
 
     const hasProgress =
       state.progress.completedSteps.length > 0 ||
-      Object.values(state.stepData).some((value) => value && Object.keys(value).length > 0)
+      Object.values(state.stepData).some(
+        (value) => value && Object.keys(value).length > 0
+      );
 
-    setShowStartScreen(!hasProgress)
+    setShowStartScreen(!hasProgress);
   }, [
     hasAcknowledgedStart,
     initialStep,
@@ -152,13 +177,13 @@ export function ProfileWizard({
     isLoading,
     state.progress.completedSteps,
     state.stepData,
-  ])
+  ]);
 
   const currentSnapshot = stepSnapshots[currentStep] ?? {
     data: initialDataForStep,
     isValid: false,
     isDirty: false,
-  }
+  };
 
   useWizardAutoSave({
     step: currentStep,
@@ -166,12 +191,15 @@ export function ProfileWizard({
     enabled: currentSnapshot.isValid && currentSnapshot.isDirty,
     isDirty: currentSnapshot.isDirty,
     onSave: async (input) => {
-      await saveStep(input)
+      await saveStep(input);
     },
-  })
+  });
 
   const handleStepStateChange = useCallback(
-    (step: ProfileWizardStepId, snapshot: StepStateChangePayload<ProfileWizardStepId>) => {
+    (
+      step: ProfileWizardStepId,
+      snapshot: StepStateChangePayload<ProfileWizardStepId>
+    ) => {
       setStepSnapshots((prev) => ({
         ...prev,
         [step]: {
@@ -179,32 +207,38 @@ export function ProfileWizard({
           isValid: snapshot.isValid,
           isDirty: snapshot.isDirty,
         },
-      }))
+      }));
     },
     []
-  )
+  );
 
   const handleContinue = useCallback(
-    async (step: ProfileWizardStepId, payload: WizardStepPayloads[ProfileWizardStepId]) => {
-      await saveStep({ step, data: payload })
+    async (
+      step: ProfileWizardStepId,
+      payload: WizardStepPayloads[ProfileWizardStepId]
+    ) => {
+      await saveStep({ step, data: payload });
 
       if (step === PROFILE_WIZARD_STEPS[PROFILE_WIZARD_STEPS.length - 1]) {
-        await completeWizard()
-        setShowSuccess(true)
-        onSuccess?.()
+        await completeWizard();
+        setShowSuccess(true);
+        onSuccess?.();
       } else {
-        goNext()
+        goNext();
       }
     },
     [saveStep, goNext, completeWizard, onSuccess]
-  )
+  );
 
   const handleSaveForLater = useCallback(
-    async (step: ProfileWizardStepId, payload: WizardStepPayloads[ProfileWizardStepId]) => {
-      await saveStep({ step, data: payload })
+    async (
+      step: ProfileWizardStepId,
+      payload: WizardStepPayloads[ProfileWizardStepId]
+    ) => {
+      await saveStep({ step, data: payload });
     },
     [saveStep]
-  )
+  );
 
   const handleSkip = useCallback(
     async (step: ProfileWizardStepId) => {
@@ -212,72 +246,70 @@ export function ProfileWizard({
         step,
         data: getDefaultStepData(step),
         skip: true,
-      })
-      goNext()
+      });
+      goNext();
     },
     [saveStep, goNext]
-  )
+  );
 
   const handleBack = useCallback(() => {
-    goBack()
-  }, [goBack])
+    goBack();
+  }, [goBack]);
 
   if (showStartScreen) {
     return (
       <ScrollView>
-        <YStack padding="$6">
+        <Stack padding="xl">
           <WizardStartScreen
             completionPercentage={state.progress.completionPercentage}
             onStartWizard={() => {
-              setHasAcknowledgedStart(true)
-              setShowStartScreen(false)
+              setHasAcknowledgedStart(true);
+              setShowStartScreen(false);
             }}
             onUploadResume={() => {
-              setHasAcknowledgedStart(true)
-              setShowStartScreen(false)
-              onUploadResume?.()
+              setHasAcknowledgedStart(true);
+              setShowStartScreen(false);
+              onUploadResume?.();
             }}
             onSkip={() => {
-              setHasAcknowledgedStart(true)
-              setShowStartScreen(false)
-              onCancel?.()
+              setHasAcknowledgedStart(true);
+              setShowStartScreen(false);
+              onCancel?.();
             }}
           />
-        </YStack>
+        </Stack>
       </ScrollView>
-    )
+    );
   }
 
   if (isLoading) {
     return (
-      <YStack gap="$4" alignItems="center" justifyContent="center" flex={1} padding="$6">
-        <Spinner size="large" />
-        <Text color="$color11">Loading your profile wizard...</Text>
-      </YStack>
-    )
+      <Stack gap={16} align="center" justify="center" flex={1} padding="xl">
+        <Spinner size="lg" />
+        <Text style={{ color: "#414e62" }}>Loading your profile wizard...</Text>
+      </Stack>
+    );
   }
 
   if (isError) {
     return (
-      <YStack gap="$3" alignItems="center" justifyContent="center" flex={1} padding="$6">
-        <Text fontSize="$4" fontWeight="600">
-          We couldn't load your wizard
-        </Text>
-        <Paragraph color="$color11" textAlign="center">
+      <Stack gap={12} align="center" justify="center" flex={1} padding="xl">
+        <Text>We couldn't load your wizard</Text>
+        <Paragraph style={{ color: "#414e62", textAlign: "center" }}>
           Please refresh and try again. If the issue persists, contact support.
         </Paragraph>
         <Button onPress={onCancel}>Close</Button>
-      </YStack>
-    )
+      </Stack>
+    );
   }
 
   if (state.isCompleting) {
     return (
-      <YStack gap="$4" alignItems="center" justifyContent="center" flex={1} padding="$6">
-        <Spinner size="large" />
-        <Text color="$color11">Wrapping up your profile...</Text>
-      </YStack>
-    )
+      <Stack gap={16} align="center" justify="center" flex={1} padding="xl">
+        <Spinner size="lg" />
+        <Text style={{ color: "#414e62" }}>Wrapping up your profile...</Text>
+      </Stack>
+    );
   }
 
   if (showSuccess) {
@@ -285,33 +317,33 @@ export function ProfileWizard({
       <WizardSuccessModal
         completionPercentage={state.progress.completionPercentage}
         unlockedBenefits={[
-          'Profile now visible in search results',
-          'Eligible for curated opportunities',
-          'Milestone badge earned',
+          "Profile now visible in search results",
+          "Eligible for curated opportunities",
+          "Milestone badge earned",
         ]}
         onViewProfile={() => {
-          onViewProfile?.()
-          onSuccess?.()
+          onViewProfile?.();
+          onSuccess?.();
         }}
         onContinueEditing={() => {
-          setShowSuccess(false)
-          goBack()
+          setShowSuccess(false);
+          goBack();
         }}
       />
-    )
+    );
   }
 
   if (orderedSteps.length === 0) {
     return (
-      <YStack alignItems="center" justifyContent="center" flex={1} padding="$4">
-        <Paragraph color="$color11">Loading wizard...</Paragraph>
-      </YStack>
-    )
+      <Stack align="center" justify="center" flex={1} padding="md">
+        <Paragraph style={{ color: "#414e62" }}>Loading wizard...</Paragraph>
+      </Stack>
+    );
   }
 
   return (
     <ScrollView>
-      <YStack gap="$5" padding="$6">
+      <Stack gap={20} padding="xl">
         <ProgressIndicator
           currentStep={state.progress.currentStep}
           completedSteps={state.progress.completedSteps}
@@ -324,11 +356,13 @@ export function ProfileWizard({
           isLastStep={isLastStep}
           onBack={handleBack}
           onContinue={async (data) => {
-            await handleContinue(currentStep, data)
+            await handleContinue(currentStep, data);
           }}
           onSaveForLater={(payload) => handleSaveForLater(currentStep, payload)}
           onSkip={
-            PROFILE_WIZARD_STEPS.includes(currentStep) ? () => handleSkip(currentStep) : undefined
+            PROFILE_WIZARD_STEPS.includes(currentStep)
+              ? () => handleSkip(currentStep)
+              : undefined
           }
           onStepStateChange={(snapshot) =>
             handleStepStateChange(
@@ -338,29 +372,29 @@ export function ProfileWizard({
           }
         />
 
-        <YStack gap="$2">
+        <Stack gap={8}>
           <ButtonRow onCancel={onCancel} />
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </ScrollView>
-  )
+  );
 }
 
 interface ButtonRowProps {
-  onCancel?: () => void
+  onCancel?: () => void;
 }
 
 function ButtonRow({ onCancel }: ButtonRowProps) {
-  if (!onCancel) return null
+  if (!onCancel) return null;
 
   return (
-    <YStack>
-      <Button size="$3" variant="outlined" onPress={onCancel}>
+    <Stack>
+      <Button size="sm" variant="outline" onPress={onCancel}>
         Save & exit wizard
       </Button>
-      <Text fontSize="$2" color="$color10" marginTop="$1">
+      <Text style={{ color: "#414e62", marginTop: 4 }}>
         You can resume anytime from your dashboard.
       </Text>
-    </YStack>
-  )
+    </Stack>
+  );
 }

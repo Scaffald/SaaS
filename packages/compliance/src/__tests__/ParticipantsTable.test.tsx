@@ -1,36 +1,28 @@
 /**
  * ParticipantsTable Component Tests
- * REQ-288: Tamagui UI Component Library
  */
 
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 
-// Mock Tamagui before importing component
-vi.mock('tamagui', async () => {
-  const React = await import('react')
+vi.mock('@scaffald/ui', () => {
+  const React = require('react')
+  const createEl = (tag: string) => ({ children, ...rest }: Record<string, unknown>) => React.createElement(tag, rest, children)
   return {
-    styled: (_component: unknown, config: Record<string, unknown>) => {
-      const StyledComponent = React.forwardRef<HTMLElement, Record<string, unknown>>(
-        ({ children, onPress, ...props }, ref) => {
-          const handleClick = (e: React.MouseEvent) => {
-            if (onPress) (onPress as (e: unknown) => void)(e)
-          }
-          return React.createElement('div', { ref, onClick: handleClick, 'data-name': config.name, ...props }, children)
-        }
-      )
-      StyledComponent.displayName = (config.name as string) || 'StyledComponent'
-      return StyledComponent
-    },
-    YStack: ({ children, ...props }: Record<string, unknown>) => React.createElement('div', { 'data-testid': 'ystack', ...props }, children as React.ReactNode),
-    XStack: ({ children, ...props }: Record<string, unknown>) => React.createElement('div', { 'data-testid': 'xstack', ...props }, children as React.ReactNode),
-    View: ({ children, ...props }: Record<string, unknown>) => React.createElement('div', props, children as React.ReactNode),
-    Text: ({ children, ...props }: Record<string, unknown>) => React.createElement('span', props, children as React.ReactNode),
+    Stack: createEl('div'),
+    Row: createEl('div'),
+    Text: createEl('span'),
+    Box: createEl('div'),
+    ThemeProvider: ({ children }: { children?: React.ReactNode }) => React.createElement(React.Fragment, null, children),
+    useThemeContext: () => ({ theme: 'light' }),
+    VisuallyHidden: createEl('span'),
+    Spinner: () => React.createElement('div', { 'data-testid': 'spinner' }),
+    useToast: () => ({ show: () => {}, dismiss: () => {}, success: () => {}, error: () => {} }),
   }
 })
 
 // Mock lucide icons
-vi.mock('@tamagui/lucide-icons', async () => {
+vi.mock('lucide-react-native', async () => {
   const React = await import('react')
   return {
     User: () => React.createElement('svg', { 'data-testid': 'icon-user' }),

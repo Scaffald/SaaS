@@ -1,12 +1,21 @@
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
-import { Button, Dialog } from '@unicornlove/ui'
-import { CheckCircle2, DownloadCloud, RefreshCcw } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-import type { inferRouterOutputs } from '@trpc/server'
+import {
+  useAdminCheck,
+  useAdminGetDocumentDownloadUrlMutation,
+  useAdminUpdatePrivacyMutation,
+  useAdminUpdateStatusMutation,
+} from '@scf/core/utils/background-checks-sdk-hooks'
+import type {
+  AdminCheckDocument,
+  AdminCheckDispute,
+  AdminCheckSummary,
+} from '@scaffald/sdk'
+import { DialogCompound as Dialog } from '@scf/core/components/ui/DialogCompound'
+import { Button } from '@scaffald/ui'
+import { CheckCircle2, DownloadCloud, RefreshCcw } from 'lucide-react-native'
+import { useToast } from '@scaffald/ui'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Linking } from 'react-native'
-import { ResponsiveSelect } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@scaffald/ui'
 import {
   Input,
   Label,
@@ -15,9 +24,9 @@ import {
   Switch,
   Text,
   TextArea,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@scaffald/ui'
 import { CheckProgressTracker } from '../components/CheckProgressTracker'
 import {
   BACKGROUND_CHECK_STATUSES,
@@ -25,12 +34,6 @@ import {
   getStatusMetadata,
   getStatusToneColors,
 } from '../components/status.utils'
-
-type RouterOutputs = inferRouterOutputs<AppRouter>
-type AdminCheckSummary = RouterOutputs['backgroundChecks']['adminListChecks'][number]
-type AdminCheckDetail = RouterOutputs['backgroundChecks']['adminGetCheck']
-type AdminCheckDocument = AdminCheckDetail['documents'][number]
-type AdminCheckDispute = AdminCheckDetail['disputes'][number]
 
 type StatusHistoryEntry = {
   status?: string | null
@@ -103,7 +106,7 @@ const parsePrivacySettings = (metadata: unknown): PrivacyState => {
   }
 }
 
-function safeJson(value: unknown) {
+function safeJson(value: unknown): string {
   if (!value) return ''
   if (typeof value === 'string') return value
   try {
@@ -119,17 +122,12 @@ export function AdminCheckReviewDialog({
   onOpenChange,
   onUpdated,
 }: AdminCheckReviewDialogProps) {
-  const toast = useToastController()
-  const utils = api.useUtils()
-  const checkId = check?.id ?? null
+  const toast = useToast()
+  const checkId = check?.id ?? undefined
 
-  const detailQuery = api.backgroundChecks.adminGetCheck.useQuery(
-    { background_check_id: checkId ?? '' },
-    {
-      enabled: open && Boolean(checkId),
-      refetchOnWindowFocus: false,
-    }
-  )
+  const detailQuery = useAdminCheck(checkId, {
+    enabled: open && Boolean(checkId),
+  })
 
   const detailedCheck = detailQuery.data?.check ?? null
   const documents: AdminCheckDocument[] = detailQuery.data?.documents ?? []
@@ -145,9 +143,15 @@ export function AdminCheckReviewDialog({
 
   useEffect(() => {
     if (detailedCheck && open) {
-      setStatus(detailedCheck.status)
-      setSummary(detailedCheck.summary ?? '')
-      setExpiresAt(dateToInputValue(detailedCheck.expires_at))
+      setStatus(
+        (typeof detailedCheck.status === 'string' ? detailedCheck.status : 'under_review') as BackgroundCheckStatus
+      )
+      setSummary(typeof detailedCheck.summary === 'string' ? detailedCheck.summary : '')
+      setExpiresAt(
+        dateToInputValue(
+          typeof detailedCheck.expires_at === 'string' ? detailedCheck.expires_at : null
+        )
+      )
       setNotes('')
       const privacy = parsePrivacySettings(detailedCheck.metadata)
       setSharePublicly(privacy.sharePublicly)
@@ -167,26 +171,19 @@ export function AdminCheckReviewDialog({
     return getStatusToneColors(statusMeta.tone)
   }, [statusMeta])
 
-  const mutation = api.backgroundChecks.adminUpdateStatus.useMutation({
-    onSuccess: async () => {
-      toast.show('Background check updated', {
+  const mutation = useAdminUpdateStatusMutation({
+    onSuccess: () => {
+      toast.show({
+        title: 'Background check updated',
         message: 'Status changes have been saved and notifications queued.',
       })
-      await Promise.all([
-        utils.backgroundChecks.adminListChecks.invalidate(),
-        utils.backgroundChecks.adminListDisputes.invalidate(),
-        checkId
-          ? utils.backgroundChecks.adminGetCheck.invalidate({
-              background_check_id: checkId,
-            })
-          : Promise.resolve(),
-      ])
       onUpdated()
     },
     onError: (error: unknown) => {
-      toast.show('Unable to update background check', {
+      toast.show({
+        title: 'Unable to update background check',
         message: error instanceof Error ? error.message : 'Please try again shortly.',
-        type: 'error',
+        variant: 'error',
       })
     },
     onSettled: () => {
@@ -198,7 +195,7 @@ export function AdminCheckReviewDialog({
     if (!detailedCheck || isSubmitting) return
     setIsSubmitting(true)
     mutation.mutate({
-      background_check_id: detailedCheck.id,
+      checkId: detailedCheck.id,
       status,
       summary: summary.trim() ? summary.trim() : null,
       notes: notes.trim() ? notes.trim() : null,
@@ -211,9 +208,9 @@ export function AdminCheckReviewDialog({
     return (detailedCheck?.status_history as StatusHistoryEntry[]) ?? []
   }, [detailedCheck?.status_history])
 
-  const privacyMutation = api.backgroundChecks.adminUpdatePrivacy.useMutation()
+  const privacyMutation = useAdminUpdatePrivacyMutation()
 
-  const documentDownloadMutation = api.backgroundChecks.adminGetDocumentDownloadUrl.useMutation()
+  const documentDownloadMutation = useAdminGetDocumentDownloadUrlMutation()
 
   const handlePrivacyUpdate = useCallback(
     (nextSharePublicly: boolean, nextOrgIds: string[]) => {
@@ -226,38 +223,30 @@ export function AdminCheckReviewDialog({
 
       privacyMutation.mutate(
         {
-          background_check_id: detailedCheck.id,
+          checkId: detailedCheck.id,
           share_publicly: nextSharePublicly,
           shared_with_organization_ids: nextOrgIds,
         },
         {
-          onSuccess: async () => {
-            toast.show('Privacy settings updated', {
+          onSuccess: () => {
+            toast.show({
+              title: 'Privacy settings updated',
               message: 'Visibility preferences have been saved.',
-            })
-            await utils.backgroundChecks.adminGetCheck.invalidate({
-              background_check_id: detailedCheck.id,
             })
           },
           onError: (error: unknown) => {
             setSharePublicly(previousShare)
             setSharedOrganizations(previousOrgIds)
-            toast.show('Unable to update privacy settings', {
+            toast.show({
+              title: 'Unable to update privacy settings',
               message: error instanceof Error ? error.message : 'Please try again shortly.',
-              type: 'error',
+              variant: 'error',
             })
           },
         }
       )
     },
-    [
-      detailedCheck,
-      privacyMutation,
-      sharePublicly,
-      sharedOrganizations,
-      toast,
-      utils.backgroundChecks.adminGetCheck,
-    ]
+    [detailedCheck, privacyMutation, sharePublicly, sharedOrganizations, toast]
   )
 
   const openSignedUrl = useCallback((url: string) => {
@@ -271,30 +260,29 @@ export function AdminCheckReviewDialog({
   const handleDownloadDocument = useCallback(
     (documentId: string) => {
       if (!detailedCheck) return
-      documentDownloadMutation.mutate(
-        { document_id: documentId },
-        {
-          onSuccess: ({ signedUrl }: { signedUrl: string }) => {
-            toast.show('Document ready', {
-              message: 'Opening the document in a new window.',
-            })
-            openSignedUrl(signedUrl)
-          },
-          onError: (error: unknown) => {
-            toast.show('Unable to open document', {
-              message: error instanceof Error ? error.message : 'Please try again shortly.',
-              type: 'error',
-            })
-          },
-        }
-      )
+      documentDownloadMutation.mutate(documentId, {
+        onSuccess: ({ url }) => {
+          toast.show({
+            title: 'Document ready',
+            message: 'Opening the document in a new window.',
+          })
+          openSignedUrl(url)
+        },
+        onError: (error: unknown) => {
+          toast.show({
+            title: 'Unable to open document',
+            message: error instanceof Error ? error.message : 'Please try again shortly.',
+            variant: 'error',
+          })
+        },
+      })
     },
     [documentDownloadMutation, detailedCheck, openSignedUrl, toast]
   )
 
   const isPrivacySaving = privacyMutation.isPending
   const isDownloadingDocument = documentDownloadMutation.isPending
-  const downloadingDocumentId = documentDownloadMutation.variables?.document_id
+  const downloadingDocumentId = documentDownloadMutation.variables
 
   const workerName = useMemo(() => {
     if (!detailedCheck?.worker) return 'Worker'
@@ -323,106 +311,76 @@ export function AdminCheckReviewDialog({
       <Dialog.Portal>
         <Dialog.Overlay
           key="overlay"
-          animation="quick"
-          opacity={0.4}
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
+          style={{ opacity: 0.4 }}
         />
 
         <Dialog.Content
           key="content"
-          bordered
-          elevate
-          animation="quick"
-          enterStyle={{ opacity: 0, scale: 0.95 }}
-          exitStyle={{ opacity: 0, scale: 0.95 }}
           style={{ width: '96%', maxWidth: 780, maxHeight: '85%' }}
         >
-          <YStack gap="$4">
-            <XStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
-              <Dialog.Title fontSize="$6" fontWeight="700">
-                Review background check
-              </Dialog.Title>
+          <Stack gap={16}>
+            <Row justify="space-between" align="center" wrap gap={12}>
+              <Dialog.Title>Review background check</Dialog.Title>
               <Dialog.Close asChild>
-                <Button size="$2" variant="outlined" disabled={isSubmitting}>
+                <Button size="sm" variant="outline" disabled={isSubmitting}>
                   Close
                 </Button>
               </Dialog.Close>
-            </XStack>
+            </Row>
 
             {!checkId ? (
-              <YStack gap="$3" alignItems="center" justifyContent="center" paddingVertical="$6">
-                <Text fontSize="$3" color="$color10">
-                  Select a background check to review the full details.
-                </Text>
-              </YStack>
+              <Stack gap={12} align="center" justify="center" style={{ paddingVertical: 24 }}>
+                <Text style={{ color: '#414e62' }}>Select a background check to review the full details.</Text>
+              </Stack>
             ) : detailQuery.isLoading || detailQuery.isFetching ? (
-              <YStack gap="$3" alignItems="center" justifyContent="center" paddingVertical="$6">
-                <Spinner size="large" />
-                <Text fontSize="$3" color="$color10">
-                  Loading background check…
-                </Text>
-              </YStack>
+              <Stack gap={12} align="center" justify="center" style={{ paddingVertical: 24 }}>
+                <Spinner size="lg" />
+                <Text style={{ color: '#414e62' }}>Loading background check…</Text>
+              </Stack>
             ) : detailQuery.isError ? (
-              <YStack
-                gap="$3"
-                padding="$4"
-                backgroundColor="$color2"
-                borderRadius="$4"
-                borderWidth={1}
-                borderColor="$borderColor"
+              <Stack
+                gap={12}
+                style={{ padding: 16, borderRadius: 16, borderWidth: 1, borderColor: '#e2e8f0' }}
               >
-                <Text fontSize="$3" color="$color11">
+                <Text style={{ color: '#414e62' }}>
                   We couldn't load this background check. Please try again.
                 </Text>
-                <Button size="$3" variant="outlined" onPress={() => detailQuery.refetch()}>
-                  <XStack gap="$2" alignItems="center">
-                    <RefreshCcw size={16} />
-                    <Text fontSize="$2">Retry</Text>
-                  </XStack>
+                <Button size="sm" variant="outline" onPress={() => detailQuery.refetch()}>
+                  <Row gap={8} align="center">
+                    <RefreshCcw size="md" />
+                    <Text>Retry</Text>
+                  </Row>
                 </Button>
-              </YStack>
+              </Stack>
             ) : !detailedCheck ? (
-              <YStack gap="$3" alignItems="center" justifyContent="center" paddingVertical="$6">
-                <Spinner size="large" />
-                <Text fontSize="$3" color="$color10">
-                  Preparing detailed background check information…
-                </Text>
-              </YStack>
+              <Stack gap={12} align="center" justify="center" style={{ paddingVertical: 24 }}>
+                <Spinner size="lg" />
+                <Text style={{ color: '#414e62' }}>Preparing detailed background check information…</Text>
+              </Stack>
             ) : (
-              <YStack gap="$4">
-                <YStack
-                  gap="$3"
-                  padding="$3"
-                  backgroundColor="$color2"
-                  borderRadius="$4"
-                  borderWidth={1}
-                  borderColor="$borderColor"
+              <Stack gap={16}>
+                <Stack
+                  gap={12}
+                  style={{ padding: 8, borderRadius: 16, borderWidth: 1, borderColor: '#e2e8f0' }}
                 >
-                  <YStack gap="$1">
-                    <Text fontSize="$4" fontWeight="600" color="$color12">
-                      {workerName}
-                    </Text>
-                    {workerEmail ? (
-                      <Text fontSize="$2" color="$color10">
-                        {workerEmail}
-                      </Text>
-                    ) : null}
+                  <Stack gap={4}>
+                    <Text style={{ color: '#414e62' }}>{workerName}</Text>
+                    {workerEmail ? <Text style={{ color: '#414e62' }}>{workerEmail}</Text> : null}
                     {organizationName ? (
-                      <Text fontSize="$2" color="$color10">
-                        Organization: {organizationName}
-                      </Text>
+                      <Text style={{ color: '#414e62' }}>Organization: {organizationName}</Text>
                     ) : null}
-                  </YStack>
-                  <XStack gap="$3" flexWrap="wrap">
-                    <Text fontSize="$2" color="$color10">
-                      Package:{' '}
-                      <Text fontWeight="600" color="$color12">
-                        {packageLabel}
-                      </Text>
+                  </Stack>
+                  <Row gap={12} wrap>
+                    <Text style={{ color: '#414e62' }}>
+                      Package: <Text style={{ color: '#414e62' }}>{packageLabel}</Text>
                     </Text>
-                    <Text fontSize="$2" color="$color10">
-                      Created: {formatDateTime(detailedCheck.created_at)}
+                    <Text style={{ color: '#414e62' }}>
+                      Created:{' '}
+                      {formatDateTime(
+                        typeof detailedCheck.created_at === 'string'
+                          ? detailedCheck.created_at
+                          : null
+                      )}
                     </Text>
                     {(() => {
                       const checkWithCompletedAt = detailedCheck as typeof detailedCheck & {
@@ -430,55 +388,66 @@ export function AdminCheckReviewDialog({
                       }
                       const completedAt = checkWithCompletedAt.completed_at
                       if (!completedAt) return null
-                      return (
-                        <Text fontSize="$2" color="$color10">
-                          Completed: {formatDateTime(completedAt)}
-                        </Text>
-                      )
+                      return <Text style={{ color: '#414e62' }}>Completed: {formatDateTime(completedAt)}</Text>
                     })()}
-                    {detailedCheck.expires_at ? (
-                      <Text fontSize="$2" color="$color10">
+                    {typeof detailedCheck.expires_at === 'string' ? (
+                      <Text style={{ color: '#414e62' }}>
                         Expires: {formatDateTime(detailedCheck.expires_at)}
                       </Text>
                     ) : null}
-                  </XStack>
+                  </Row>
                   {statusMeta && statusColors ? (
-                    <XStack
-                      paddingHorizontal="$3"
-                      paddingVertical="$1"
-                      backgroundColor={statusColors.background}
-                      borderWidth={1}
-                      borderColor={statusColors.border}
-                      borderRadius="$3"
-                      alignItems="center"
-                      gap="$2"
-                      style={{ alignSelf: 'flex-start' }}
+                    <Row
+                      style={{
+                        paddingHorizontal: 12,
+                        paddingVertical: 4,
+                        backgroundColor: statusColors.background,
+                        borderWidth: 1,
+                        borderColor: statusColors.border,
+                        borderRadius: 12,
+                        alignSelf: 'flex-start',
+                      }}
+                      align="center"
+                      gap={8}
                     >
-                      <CheckCircle2 size={16} color={statusColors.text} />
-                      <Text fontSize="$2" fontWeight="600" color={statusColors.text}>
-                        {statusMeta.label}
-                      </Text>
-                    </XStack>
+                      <CheckCircle2 size="md" color={statusColors.text} />
+                      <Text style={{ color: statusColors.text }}>{statusMeta.label}</Text>
+                    </Row>
                   ) : null}
-                </YStack>
+                </Stack>
 
                 <CheckProgressTracker
-                  status={detailedCheck.status}
-                  createdAt={detailedCheck.created_at}
+                  status={
+                    typeof detailedCheck.status === 'string'
+                      ? (detailedCheck.status as BackgroundCheckStatus)
+                      : 'under_review'
+                  }
+                  createdAt={
+                    typeof detailedCheck.created_at === 'string'
+                      ? detailedCheck.created_at
+                      : undefined
+                  }
                   componentStatuses={detailedCheck.component_statuses}
                   statusHistory={detailedCheck.status_history}
-                  estimatedCompletionDate={detailedCheck.estimated_completion_date}
-                  completedAt={
-                    (detailedCheck as typeof detailedCheck & { completed_at?: string | null })
-                      .completed_at ?? null
+                  estimatedCompletionDate={
+                    typeof detailedCheck.estimated_completion_date === 'string'
+                      ? detailedCheck.estimated_completion_date
+                      : undefined
                   }
-                  expiresAt={detailedCheck.expires_at ?? null}
+                  completedAt={
+                    (detailedCheck as { completed_at?: string | null }).completed_at ?? null
+                  }
+                  expiresAt={
+                    typeof detailedCheck.expires_at === 'string'
+                      ? detailedCheck.expires_at
+                      : null
+                  }
                 />
 
                 <Separator />
 
-                <YStack gap="$3">
-                  <YStack gap="$1">
+                <Stack gap={12}>
+                  <Stack gap={4}>
                     <Label>Status</Label>
                     <ResponsiveSelect
                       value={status}
@@ -493,9 +462,9 @@ export function AdminCheckReviewDialog({
                         }
                       })}
                     />
-                  </YStack>
+                  </Stack>
 
-                  <YStack gap="$1">
+                  <Stack gap={4}>
                     <Label htmlFor="admin-check-summary">Summary</Label>
                     <TextArea
                       id="admin-check-summary"
@@ -504,9 +473,9 @@ export function AdminCheckReviewDialog({
                       onChangeText={setSummary}
                       placeholder="Provide a concise summary of the findings and decision."
                     />
-                  </YStack>
+                  </Stack>
 
-                  <YStack gap="$1">
+                  <Stack gap={4}>
                     <Label htmlFor="admin-check-notes">Internal notes</Label>
                     <TextArea
                       id="admin-check-notes"
@@ -515,9 +484,9 @@ export function AdminCheckReviewDialog({
                       onChangeText={setNotes}
                       placeholder="Optional internal notes. These are stored with the status history."
                     />
-                  </YStack>
+                  </Stack>
 
-                  <YStack gap="$1">
+                  <Stack gap={4}>
                     <Label htmlFor="admin-check-expires">Expiration (UTC)</Label>
                     <Input
                       id="admin-check-expires"
@@ -525,172 +494,134 @@ export function AdminCheckReviewDialog({
                       value={expiresAt}
                       onChangeText={setExpiresAt}
                     />
-                    <Text fontSize="$1" color="$color9">
-                      Leave blank to clear expiration.
-                    </Text>
-                  </YStack>
-                </YStack>
+                    <Text style={{ color: '#414e62' }}>Leave blank to clear expiration.</Text>
+                  </Stack>
+                </Stack>
 
                 <Separator />
 
-                <YStack gap="$3">
-                  <Text fontSize="$3" fontWeight="600" color="$color12">
-                    Provider summary
-                  </Text>
+                <Stack gap={12}>
+                  <Text style={{ color: '#414e62' }}>Provider summary</Text>
                   <TextArea
                     rows={6}
                     value={safeJson(detailedCheck.summary)}
                     editable={false}
-                    backgroundColor="$color2"
+                    style={{ backgroundColor: '#f2f4f7' }}
                   />
-                  <Text fontSize="$3" fontWeight="600" color="$color12">
-                    Provider findings
-                  </Text>
+                  <Text style={{ color: '#414e62' }}>Provider findings</Text>
                   <TextArea
                     rows={6}
                     value={safeJson(detailedCheck.findings)}
                     editable={false}
-                    backgroundColor="$color2"
+                    style={{ backgroundColor: '#f2f4f7' }}
                   />
-                </YStack>
+                </Stack>
 
                 <Separator />
 
-                <YStack gap="$3">
-                  <XStack justifyContent="space-between" alignItems="center">
-                    <Text fontSize="$3" fontWeight="600" color="$color12">
-                      Supporting documents
-                    </Text>
-                    <Text fontSize="$2" color="$color10">
+                <Stack gap={12}>
+                  <Row justify="space-between" align="center">
+                    <Text style={{ color: '#414e62' }}>Supporting documents</Text>
+                    <Text style={{ color: '#414e62' }}>
                       {documents.length} {documents.length === 1 ? 'document' : 'documents'}
                     </Text>
-                  </XStack>
+                  </Row>
 
                   {documents.length === 0 ? (
-                    <Text fontSize="$2" color="$color10">
-                      No documents uploaded for this background check.
-                    </Text>
+                    <Text style={{ color: '#414e62' }}>No documents uploaded for this background check.</Text>
                   ) : (
-                    <YStack gap="$2">
+                    <Stack gap={8}>
                       {documents.map((document) => {
                         const isDocumentLoading =
                           isDownloadingDocument && downloadingDocumentId === document.id
                         return (
-                          <XStack
+                          <Row
                             key={document.id}
-                            justifyContent="space-between"
-                            alignItems="center"
-                            padding="$3"
-                            backgroundColor="$color2"
-                            borderRadius="$3"
-                            borderWidth={1}
-                            borderColor="$borderColor"
-                            gap="$3"
+                            justify="space-between"
+                            align="center"
+                            style={{ padding: 8, borderRadius: 12, borderWidth: 1, borderColor: '#e2e8f0' }}
+                            gap={12}
                           >
-                            <YStack gap="$1" flex={1}>
-                              <Text fontSize="$3" fontWeight="500" color="$color12">
+                            <Stack gap={4} flex={1}>
+                              <Text style={{ color: '#414e62' }}>
                                 {document.file_name ?? document.document_type ?? 'Document'}
                               </Text>
-                              <Text fontSize="$2" color="$color10">
+                              <Text style={{ color: '#414e62' }}>
                                 Uploaded {formatDateTime(document.uploaded_at)}
                               </Text>
-                            </YStack>
+                            </Stack>
                             <Button
-                              size="$2"
-                              variant="outlined"
+                              size="sm"
+                              variant="outline"
                               disabled={isDocumentLoading}
                               onPress={() => handleDownloadDocument(document.id)}
                             >
-                              <XStack gap="$2" alignItems="center">
+                              <Row gap={8} align="center">
                                 {isDocumentLoading ? (
-                                  <Spinner size="small" />
+                                  <Spinner size="sm" />
                                 ) : (
-                                  <DownloadCloud size={16} />
+                                  <DownloadCloud size="md" />
                                 )}
-                                <Text fontSize="$2">
-                                  {isDocumentLoading ? 'Preparing…' : 'View'}
-                                </Text>
-                              </XStack>
+                                <Text>{isDocumentLoading ? 'Preparing…' : 'View'}</Text>
+                              </Row>
                             </Button>
-                          </XStack>
+                          </Row>
                         )
                       })}
-                    </YStack>
+                    </Stack>
                   )}
-                </YStack>
+                </Stack>
 
                 <Separator />
 
-                <YStack gap="$3">
-                  <Text fontSize="$3" fontWeight="600" color="$color12">
-                    Privacy controls
-                  </Text>
+                <Stack gap={12}>
+                  <Text style={{ color: '#414e62' }}>Privacy controls</Text>
 
-                  <YStack
-                    gap="$3"
-                    padding="$3"
-                    backgroundColor="$color2"
-                    borderRadius="$4"
-                    borderWidth={1}
-                    borderColor="$borderColor"
+                  <Stack
+                    gap={12}
+                    style={{ padding: 8, borderRadius: 16, borderWidth: 1, borderColor: '#e2e8f0' }}
                   >
-                    <XStack justifyContent="space-between" alignItems="center">
-                      <YStack gap="$1" flex={1} paddingRight="$3">
-                        <Text fontSize="$3" fontWeight="500" color="$color12">
-                          Show verified badge
-                        </Text>
-                        <Text fontSize="$2" color="$color10">
+                    <Row justify="space-between" align="center">
+                      <Stack gap={4} flex={1} style={{ paddingRight: 12 }}>
+                        <Text style={{ color: '#414e62' }}>Show verified badge</Text>
+                        <Text style={{ color: '#414e62' }}>
                           Allow organizations to see that this worker's background check is current.
                         </Text>
-                      </YStack>
+                      </Stack>
                       <Switch
-                        size="$3"
+                        size="sm"
                         checked={sharePublicly}
-                        onCheckedChange={(value) =>
+                        onChange={(value) =>
                           handlePrivacyUpdate(Boolean(value), sharedOrganizations)
                         }
                         disabled={isPrivacySaving}
-                      >
-                        <Switch.Thumb />
-                      </Switch>
-                    </XStack>
-                  </YStack>
+                      />
+                    </Row>
+                  </Stack>
 
-                  <YStack gap="$2">
-                    <Text fontSize="$3" fontWeight="500" color="$color12">
-                      Shared with organizations
-                    </Text>
+                  <Stack gap={8}>
+                    <Text style={{ color: '#414e62' }}>Shared with organizations</Text>
                     {sharedOrganizations.length === 0 ? (
-                      <YStack
-                        padding="$3"
-                        backgroundColor="$color2"
-                        borderRadius="$3"
-                        borderWidth={1}
-                        borderColor="$borderColor"
+                      <Stack
+                        style={{ padding: 8, borderRadius: 12, borderWidth: 1, borderColor: '#e2e8f0' }}
                       >
-                        <Text fontSize="$2" color="$color10">
+                        <Text style={{ color: '#414e62' }}>
                           No organizations currently have access to this background check.
                         </Text>
-                      </YStack>
+                      </Stack>
                     ) : (
-                      <YStack gap="$2">
+                      <Stack gap={8}>
                         {sharedOrganizations.map((organizationId) => (
-                          <XStack
+                          <Row
                             key={organizationId}
-                            justifyContent="space-between"
-                            alignItems="center"
-                            padding="$3"
-                            backgroundColor="$color2"
-                            borderRadius="$3"
-                            borderWidth={1}
-                            borderColor="$borderColor"
+                            justify="space-between"
+                            align="center"
+                            style={{ padding: 8, borderRadius: 12, borderWidth: 1, borderColor: '#e2e8f0' }}
                           >
-                            <Text fontSize="$2" color="$color12">
-                              {organizationId}
-                            </Text>
+                            <Text style={{ color: '#414e62' }}>{organizationId}</Text>
                             <Button
-                              size="$2"
-                              variant="outlined"
+                              size="sm"
+                              variant="outline"
                               disabled={isPrivacySaving}
                               onPress={() =>
                                 handlePrivacyUpdate(
@@ -701,67 +632,53 @@ export function AdminCheckReviewDialog({
                             >
                               Revoke
                             </Button>
-                          </XStack>
+                          </Row>
                         ))}
-                      </YStack>
+                      </Stack>
                     )}
-                  </YStack>
-                </YStack>
+                  </Stack>
+                </Stack>
 
                 {disputes.length > 0 ? (
                   <>
                     <Separator />
-                    <YStack gap="$2">
-                      <Text fontSize="$3" fontWeight="600" color="$color12">
-                        Disputes
-                      </Text>
-                      <YStack gap="$2">
+                    <Stack gap={8}>
+                      <Text style={{ color: '#414e62' }}>Disputes</Text>
+                      <Stack gap={8}>
                         {disputes.map((dispute) => (
-                          <YStack
+                          <Stack
                             key={dispute.id}
-                            gap="$1"
-                            padding="$3"
-                            backgroundColor="$color2"
-                            borderRadius="$3"
-                            borderWidth={1}
-                            borderColor="$borderColor"
+                            gap={4}
+                            style={{ padding: 8, borderRadius: 12, borderWidth: 1, borderColor: '#e2e8f0' }}
                           >
-                            <Text fontSize="$2" fontWeight="600" color="$color12">
-                              {dispute.status}
-                            </Text>
-                            <Text fontSize="$2" color="$color10">
+                            <Text style={{ color: '#414e62' }}>{dispute.status}</Text>
+                            <Text style={{ color: '#414e62' }}>
                               Submitted {formatDateTime(dispute.created_at)}
                             </Text>
                             {dispute.resolved_at ? (
-                              <Text fontSize="$2" color="$color10">
+                              <Text style={{ color: '#414e62' }}>
                                 Resolved {formatDateTime(dispute.resolved_at)}
                               </Text>
                             ) : null}
                             {dispute.dispute_reason ? (
-                              <Text fontSize="$2" color="$color10">
-                                Reason: {dispute.dispute_reason}
-                              </Text>
+                              <Text style={{ color: '#414e62' }}>Reason: {dispute.dispute_reason}</Text>
                             ) : null}
                             {dispute.dispute_details ? (
-                              <Text fontSize="$2" color="$color10">
-                                Details: {dispute.dispute_details}
-                              </Text>
+                              <Text style={{ color: '#414e62' }}>Details: {dispute.dispute_details}</Text>
                             ) : null}
-                          </YStack>
+                          </Stack>
                         ))}
-                      </YStack>
-                    </YStack>
+                      </Stack>
+                    </Stack>
                   </>
                 ) : null}
 
                 {statusHistory.length > 0 ? (
                   <>
                     <Separator />
-                    <YStack gap="$2">
-                      <Text fontSize="$3" fontWeight="600" color="$color12">
-                        Status history
-                      </Text>
-                      <YStack gap="$2" overflow="scroll" style={{ maxHeight: 200 }}>
+                    <Stack gap={8}>
+                      <Text style={{ color: '#414e62' }}>Status history</Text>
+                      <Stack gap={8} style={{ maxHeight: 200, overflow: 'scroll' }}>
                         {statusHistory
                           .slice()
                           .reverse()
@@ -770,58 +687,52 @@ export function AdminCheckReviewDialog({
                               ? getStatusMetadata(entry.status as BackgroundCheckStatus)
                               : null
                             return (
-                              <YStack
+                              <Stack
                                 key={`${entry?.occurred_at ?? index}`}
-                                borderWidth={1}
-                                borderColor="$borderColor"
-                                borderRadius="$4"
-                                padding="$3"
-                                gap="$1"
-                                backgroundColor="$color2"
+                                style={{ borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 16, padding: 8 }}
+                                gap={4}
                               >
-                                <Text fontSize="$2" fontWeight="600" color="$color12">
+                                <Text style={{ color: '#414e62' }}>
                                   {meta?.label ?? entry?.status ?? 'Status update'}
                                 </Text>
-                                <Text fontSize="$1" color="$color10">
+                                <Text style={{ color: '#414e62' }}>
                                   {entry?.occurred_at
                                     ? new Date(entry.occurred_at).toLocaleString()
                                     : '—'}
                                 </Text>
                                 {entry?.notes ? (
-                                  <Text fontSize="$2" color="$color10">
-                                    Notes: {entry.notes}
-                                  </Text>
+                                  <Text style={{ color: '#414e62' }}>Notes: {entry.notes}</Text>
                                 ) : null}
-                              </YStack>
+                              </Stack>
                             )
                           })}
-                      </YStack>
-                    </YStack>
+                      </Stack>
+                    </Stack>
                   </>
                 ) : null}
-              </YStack>
+              </Stack>
             )}
 
             <Separator />
 
-            <XStack gap="$2" justifyContent="flex-end">
+            <Row gap={8} justify="flex-end">
               <Dialog.Close asChild>
-                <Button size="$3" variant="outlined" disabled={isSubmitting}>
+                <Button size="sm" variant="outline" disabled={isSubmitting}>
                   Cancel
                 </Button>
               </Dialog.Close>
-              <Button size="$3" onPress={handleSubmit} disabled={!detailedCheck || isSubmitting}>
+              <Button size="sm" onPress={handleSubmit} disabled={!detailedCheck || isSubmitting}>
                 {isSubmitting ? (
-                  <XStack gap="$2" alignItems="center">
-                    <Spinner size="small" color="$color1" />
-                    <Text color="$color1">Saving…</Text>
-                  </XStack>
+                  <Row gap={8} align="center">
+                    <Spinner size="sm" color="gray" />
+                    <Text style={{ color: '#414e62' }}>Saving…</Text>
+                  </Row>
                 ) : (
                   'Save changes'
                 )}
               </Button>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog>

@@ -1,6 +1,6 @@
 /**
  * BulkOperationsModal Component
- * REQ-2: Bulk Import/Export UI
+ * Bulk Import/Export UI
  *
  * Modal for bulk operations with:
  * - Import: File upload, format selection, preview, execute
@@ -25,7 +25,7 @@ import {
   Input,
   Button,
   H2,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { trpc } from '../../../lib/trpc'
 import { LoadingSpinner } from '../../Common/LoadingSpinner'
 

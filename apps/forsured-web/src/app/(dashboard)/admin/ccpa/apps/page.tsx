@@ -1,5 +1,5 @@
 /**
- * REQ-6: CCPA Admin OAuth Apps List Page
+ * CCPA Admin OAuth Apps List Page
  * TASK-5: Build OAuth App CCPA Configuration Management Pages
  *
  * Lists all OAuth apps with their CCPA integration status:
@@ -11,7 +11,7 @@
 'use client'
 
 import { useCallback } from 'react'
-import { Stack, Row, Text, Button, Card, Heading, Spinner, colors, spacing } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Card, Heading, Spinner, colors, spacing } from '@scaffald/ui'
 import { useRouter } from 'next/navigation'
 import { trpc } from '../../../../../lib/trpc'
 

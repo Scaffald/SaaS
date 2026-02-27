@@ -1,4 +1,7 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useRegisterDeviceMutation,
+  useRemoveDeviceMutation,
+} from '@scf/core/utils/notifications-sdk-hooks'
 import Constants from 'expo-constants'
 import { useEffect, useState } from 'react'
 import { Platform } from 'react-native'
@@ -39,8 +42,8 @@ function getPlatform(): 'ios' | 'android' | 'web' {
 }
 
 export function useNotificationDeviceRegistration(enabled = true) {
-  const registerMutation = api.notifications.devices.register.useMutation()
-  const removeMutation = api.notifications.devices.remove.useMutation()
+  const registerMutation = useRegisterDeviceMutation()
+  const removeMutation = useRemoveDeviceMutation()
   const [registeredToken, setRegisteredToken] = useState<string | null>(null)
 
   useEffect(() => {

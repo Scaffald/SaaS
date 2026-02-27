@@ -9,7 +9,7 @@
  *   - History (15%): Trend over time
  */
 import React from 'react'
-import { Row, Stack, Text, Grid } from '@unicornlove/beyond-ui'
+import { Row, Stack, Text, Grid } from '@scaffald/ui'
 import { CheckCircle, FileText, AlertTriangle, TrendingUp, AlertCircle } from 'lucide-react'
 import {
   RiskBreakdown as RiskBreakdownType,

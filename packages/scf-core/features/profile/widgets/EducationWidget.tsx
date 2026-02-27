@@ -1,30 +1,20 @@
-import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { ROUTES } from "@scf/core/constants/routes";
+import { useEducationWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
 import {
   Button,
   DashboardWidget,
   EmptyState,
-  Heading,
+  H4,
   LoadingState,
-  spacing,
-} from '@unicornlove/ui'
-import { GraduationCap } from '@tamagui/lucide-icons'
-import { useRouter } from 'expo-router'
-import { Separator, Text, XStack, YStack } from '@unicornlove/ui'
-import { formatDate } from '../utils/date-formatting'
-import type { ProfileWidgetProps } from './types'
+} from "@scaffald/ui";
+import { GraduationCap } from "lucide-react-native";
+import { useRouter } from "expo-router";
+import { Separator, Text, Row, Stack } from "@scaffald/ui";
+import { formatDate } from "../utils/date-formatting";
+import type { ProfileWidgetProps } from "./types";
+import type { EducationWidgetEntry } from "@scaffald/sdk";
 
-interface UserEducation {
-  id: string
-  degree_type: string | null
-  field_of_study: string | null
-  institution_name: string | null
-  start_date: string | null
-  end_date: string | null
-  is_current: boolean | null
-  description: string | null
-  location: string | null
-}
+type UserEducation = EducationWidgetEntry;
 
 /**
  * EducationWidget
@@ -37,163 +27,158 @@ interface UserEducation {
 export function EducationWidget({
   userId,
   showEdit = false,
-  variant = 'full',
+  variant = "full",
 }: ProfileWidgetProps) {
-  const router = useRouter()
-  const { data, isLoading, error, refetch, isFetching } = api.profile.widgets.getEducation.useQuery(
+  const router = useRouter();
+  const { data, isLoading, error, refetch, isFetching } = useEducationWidget(
     { userId },
     {
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     }
-  )
+  );
 
   if (isLoading) {
     return (
       <DashboardWidget>
         <LoadingState message="Loading education..." />
       </DashboardWidget>
-    )
+    );
   }
 
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingVertical="$8">
-          <Text color="$red10">Failed to load education</Text>
-          <Text color="$color11" fontSize="$2">
-            {error.message}
-          </Text>
+        <Stack gap={16} align="center" paddingVertical={32}>
+          <Text style={{ color: "#ef4444" }}>Failed to load education</Text>
+          <Text style={{ color: "#414e62" }}>{error.message}</Text>
           <Button
-            variant="primary"
-            size="$2"
+            variant="filled"
+            color="primary"
+            size="sm"
             onPress={() => {
-              void refetch()
+              void refetch();
             }}
             disabled={isFetching}
           >
             Retry
           </Button>
-        </YStack>
+        </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
-  const education = data || []
-  const showCompact = variant === 'compact'
+  const education = data || [];
+  const showCompact = variant === "compact";
 
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
+      <Stack gap={12}>
         {/* Header */}
-        <XStack justifyContent="space-between" alignItems="center">
-          <Heading variant="h4">Education</Heading>
+        <Row justify="space-between" align="center">
+          <H4>Education</H4>
           {showEdit && (
             <Button
-              variant="outlined"
-              size="$2"
-              onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)}
+              variant="outline"
+              size="sm"
+              onPress={() =>
+                router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)
+              }
             >
               Edit
             </Button>
           )}
-        </XStack>
+        </Row>
 
         {education.length === 0 ? (
           <EmptyState
-            icon={<GraduationCap />}
+            icon={GraduationCap}
             title="No education added yet"
             description="Add your education history to complete your profile"
             action={
-              showEdit ? (
-                <Button
-                  variant="primary"
-                  onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)}
-                >
-                  Add Education
-                </Button>
-              ) : undefined
+              showEdit
+                ? {
+                    label: "Add Education",
+                    onPress: () =>
+                      router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path),
+                  }
+                : undefined
             }
           />
         ) : (
-          <YStack gap="$4">
+          <Stack gap={16}>
             {education
               .slice(0, showCompact ? 2 : undefined)
               .map((edu: UserEducation, index: number) => (
-                <YStack key={edu.id} gap="$2">
+                <Stack key={edu.id} gap={8}>
                   {/* Degree & Field */}
-                  <YStack gap="$1">
-                    <Text fontSize="$4" fontWeight="600">
-                      {edu.degree_type || 'Degree'}
+                  <Stack gap={4}>
+                    <Text>
+                      {edu.degree_type || "Degree"}
                       {edu.field_of_study && ` in ${edu.field_of_study}`}
                     </Text>
-                    <Text fontSize="$3" color="$color11">
-                      {edu.institution_name || 'Institution'}
+                    <Text style={{ color: "#414e62" }}>
+                      {edu.institution_name || "Institution"}
                     </Text>
-                  </YStack>
+                  </Stack>
 
                   {/* Duration */}
-                  <XStack gap="$2" alignItems="center">
-                    <Text fontSize="$2" color="$color10">
+                  <Row gap={8} align="center">
+                    <Text style={{ color: "#414e62" }}>
                       {formatDate(edu.start_date)}
                     </Text>
-                    <Text fontSize="$2" color="$color10">
-                      -
-                    </Text>
-                    <Text fontSize="$2" color="$color10">
-                      {edu.is_current ? 'Present' : formatDate(edu.end_date)}
+                    <Text style={{ color: "#414e62" }}>-</Text>
+                    <Text style={{ color: "#414e62" }}>
+                      {edu.is_current ? "Present" : formatDate(edu.end_date)}
                     </Text>
                     {edu.is_current && (
-                      <XStack
-                        backgroundColor="$blue2"
-                        paddingHorizontal="$2"
-                        paddingVertical="$0.5"
-                        borderRadius="$2"
+                      <Row
+                        paddingHorizontal={8}
+                        paddingVertical={2}
+                        borderRadius={8}
                         borderWidth={1}
-                        borderColor="$blue7"
+                        style={{
+                          backgroundColor: "#bfdbfe",
+                          borderColor: "#1d4ed8",
+                        }}
                       >
-                        <Text color="$blue11" fontSize="$1" fontWeight="600">
-                          Current
-                        </Text>
-                      </XStack>
+                        <Text style={{ color: "#1d4ed8" }}>Current</Text>
+                      </Row>
                     )}
-                  </XStack>
+                  </Row>
 
                   {/* Location */}
                   {edu.location && (
-                    <Text fontSize="$2" color="$color10">
-                      📍 {edu.location}
-                    </Text>
+                    <Text style={{ color: "#414e62" }}>📍 {edu.location}</Text>
                   )}
 
                   {/* Description */}
                   {edu.description && !showCompact && (
-                    <Text fontSize="$3" color="$color11" lineHeight="$3">
+                    <Text style={{ color: "#414e62", lineHeight: 12 }}>
                       {edu.description}
                     </Text>
                   )}
 
                   {/* Separator between items */}
-                  {index < education.length - 1 && <Separator marginVertical="$2" />}
-                </YStack>
+                  {index < education.length - 1 && (
+                    <Separator marginVertical={8} />
+                  )}
+                </Stack>
               ))}
 
             {/* Show More link for compact view */}
             {showCompact && education.length > 2 && (
               <Text
-                color="$blue7"
-                fontSize="$3"
-                fontWeight="600"
-                cursor="pointer"
-                hoverStyle={{ color: '$blue8' }}
-                pressStyle={{ color: '$blue9' }}
-                onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)}
+                style={{ color: "#1d4ed8", cursor: "pointer" }}
+                onPress={() =>
+                  router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)
+                }
               >
                 View all {education.length} entries →
               </Text>
             )}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     </DashboardWidget>
-  )
+  );
 }

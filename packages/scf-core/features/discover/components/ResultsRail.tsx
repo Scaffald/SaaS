@@ -1,6 +1,6 @@
 import type { RefObject } from 'react'
 import { memo } from 'react'
-import { YStack } from '@unicornlove/ui'
+import { Stack } from '@scaffald/ui'
 import type { JobMapPin } from '../hooks/useJobs'
 import type { OrganizationMapPin } from '../hooks/useOrganizations'
 import type { TalentProfile } from '../types'
@@ -28,31 +28,24 @@ export const ResultsRail = memo(function ResultsRail({
   resultListRef,
 }: ResultsRailProps) {
   return (
-    <YStack
-      position="absolute"
-      top={0}
-      right={0}
-      height="100%"
-      width={320}
-      minWidth={320}
-      maxWidth={320}
-      gap="$3"
-      paddingHorizontal="$3"
-      overflow="hidden"
-      animation="quick"
-      // Hide on mobile ($sm and below), show on desktop ($md)
-      $sm={{ display: 'none' }}
-      $md={{ display: 'flex' }}
-      x={isVisible ? 0 : 320}
-      opacity={isVisible ? 1 : 0}
+    <Stack
+      gap={12}
+      paddingHorizontal={12}
       backgroundColor="$color2"
-      borderLeftWidth={1}
-      borderColor="$borderColor"
-      shadowColor="$shadowColor"
-      shadowOffset={{ width: -4, height: 0 }}
-      shadowOpacity={0.1}
-      shadowRadius={12}
-      zIndex={10}
+      style={{
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        height: '100%',
+        width: 320,
+        minWidth: 320,
+        maxWidth: 320,
+        overflow: 'hidden',
+        borderLeftWidth: 1,
+        borderColor: 'var(--color-border)',
+        zIndex: 10,
+        opacity: isVisible ? 1 : 0,
+      }}
     >
       <ResultList
         ref={resultListRef}
@@ -63,6 +56,6 @@ export const ResultsRail = memo(function ResultsRail({
         onSelect={onSelect}
         isLoading={isLoading}
       />
-    </YStack>
+    </Stack>
   )
 })

@@ -1,6 +1,6 @@
 /**
  * CORS Middleware for tRPC
- * REQ-292: Configure tRPC for production deployment
+ * Configure tRPC for production deployment
  *
  * Implements environment-aware CORS policy:
  * - Development: Allow localhost and local network

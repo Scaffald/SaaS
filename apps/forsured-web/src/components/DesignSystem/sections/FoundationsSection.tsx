@@ -1,5 +1,5 @@
 import React from 'react';
-import { Stack, Row, Text, H1, H2, H3 } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H1, H2, H3 } from '@scaffald/ui';
 import ComponentShowcase from '../ComponentShowcase';
 import { Palette, Box as BoxIcon, Sun } from 'lucide-react';
 

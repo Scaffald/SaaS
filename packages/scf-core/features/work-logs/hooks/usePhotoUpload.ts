@@ -1,14 +1,20 @@
-import { api } from '@scf/core/utils/api';
-import { supabase } from '@scf/core/utils/supabase/client';
-import { useToastController } from '@tamagui/toast';
-import { Buffer } from 'buffer';
-import type * as ImageManipulator from 'expo-image-manipulator';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { UploadWorkLogPhotoInput } from '@scf/schemas';
-import { deleteWorkLogPhotoSchema, updateWorkLogPhotoSchema } from '@scf/schemas';
-import type { ResolvedWorkLogPhoto, WorkLogPhoto } from '../types/photos';
+import {
+  useWorkLog,
+  useUploadWorkLogPhotoMutation,
+  useUpdateWorkLogPhotoMetadataMutation,
+  useUpdateWorkLogPhotoVisibilityMutation,
+  useDeleteWorkLogPhotoMutation,
+} from "@scf/core/utils/work-logs-sdk-hooks";
+import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@scf/core/utils/supabase/client";
+import { useToast } from "@scaffald/ui";
+import { Buffer } from "buffer";
+import type * as ImageManipulator from "expo-image-manipulator";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { UploadWorkLogPhotoInput } from "@scf/schemas";
+import type { ResolvedWorkLogPhoto, WorkLogPhoto } from "../types/photos";
 
-const WORK_LOG_PHOTO_BUCKET = 'work-log-photos';
+const WORK_LOG_PHOTO_BUCKET = "work-log-photos";
 const DEFAULT_MAX_PHOTOS = 10;
 const STORAGE_LIMIT_BYTES = 100 * 1024 * 1024; // 100MB default from requirements
 const SIGNED_URL_TTL_SECONDS = 60 * 5;
@@ -26,12 +32,12 @@ interface BaseUploadCandidate {
 }
 
 export interface WebUploadCandidate extends BaseUploadCandidate {
-  platform: 'web';
+  platform: "web";
   file: File;
 }
 
 export interface NativeUploadCandidate extends BaseUploadCandidate {
-  platform: 'native';
+  platform: "native";
   uri: string;
   width?: number | null;
   height?: number | null;
@@ -71,7 +77,7 @@ export interface UsePhotoUploadReturn {
   updatePhoto: (photoId: string, updates: UpdatePhotoOptions) => Promise<void>;
   togglePhotoVisibility: (
     photoId: string,
-    showOnProfile: boolean,
+    showOnProfile: boolean
   ) => Promise<void>;
   deletePhoto: (photoId: string) => Promise<void>;
   refresh: () => Promise<void>;
@@ -122,7 +128,7 @@ const clampQuality = (quality: number) => {
 };
 
 const compressWebImage = async (
-  file: File,
+  file: File
 ): Promise<{
   data: Uint8Array;
   mimeType: UploadWorkLogPhotoInput["contentType"];
@@ -138,9 +144,10 @@ const compressWebImage = async (
     });
 
     const maxDimension = Math.max(image.width, image.height);
-    const scale = maxDimension > MAX_IMAGE_DIMENSION
-      ? MAX_IMAGE_DIMENSION / maxDimension
-      : 1;
+    const scale =
+      maxDimension > MAX_IMAGE_DIMENSION
+        ? MAX_IMAGE_DIMENSION / maxDimension
+        : 1;
 
     const targetWidth = Math.round(image.width * scale);
     const targetHeight = Math.round(image.height * scale);
@@ -151,9 +158,9 @@ const compressWebImage = async (
     let currentMime: UploadWorkLogPhotoInput["contentType"] =
       file.type === "image/png" || file.type === "image/webp"
         ? (file.type as UploadWorkLogPhotoInput["contentType"])
-        : 'image/jpeg';
+        : "image/jpeg";
     let quality = clampQuality(
-      file.type === "image/png" || file.type === "image/webp" ? 0.92 : 0.85,
+      file.type === "image/png" || file.type === "image/webp" ? 0.92 : 0.85
     );
 
     const toBlob = (): Promise<Blob> =>
@@ -167,14 +174,14 @@ const compressWebImage = async (
             resolve(blob);
           },
           currentMime,
-          quality,
+          quality
         );
       });
 
     let blob = await toBlob();
 
     if (blob.size > MAX_FILE_BYTES && currentMime !== "image/jpeg") {
-      currentMime = 'image/jpeg';
+      currentMime = "image/jpeg";
       quality = 0.85;
       blob = await toBlob();
     }
@@ -200,7 +207,7 @@ const compressWebImage = async (
 };
 
 const compressNativeImage = async (
-  candidate: NativeUploadCandidate,
+  candidate: NativeUploadCandidate
 ): Promise<{
   data: Uint8Array;
   mimeType: UploadWorkLogPhotoInput["contentType"];
@@ -230,16 +237,19 @@ const compressNativeImage = async (
 
   let format: UploadWorkLogPhotoInput["contentType"] = candidate.mimeType;
   if (
-    format !== "image/jpeg" && format !== "image/png" && format !== "image/webp"
+    format !== "image/jpeg" &&
+    format !== "image/png" &&
+    format !== "image/webp"
   ) {
-    format = 'image/jpeg';
+    format = "image/jpeg";
   }
 
-  const saveFormat = format === "image/png"
-    ? manipulator.SaveFormat.PNG
-    : format === "image/webp"
-    ? manipulator.SaveFormat.WEBP
-    : manipulator.SaveFormat.JPEG;
+  const saveFormat =
+    format === "image/png"
+      ? manipulator.SaveFormat.PNG
+      : format === "image/webp"
+      ? manipulator.SaveFormat.WEBP
+      : manipulator.SaveFormat.JPEG;
 
   let compress = saveFormat === manipulator.SaveFormat.PNG ? 1 : 0.85;
   let result = await manipulator.manipulateAsync(candidate.uri, actions, {
@@ -261,7 +271,7 @@ const compressNativeImage = async (
       base64: true,
     });
     size = estimateSize(result.base64);
-    format = 'image/jpeg';
+    format = "image/jpeg";
   }
 
   while (size > MAX_FILE_BYTES && compress > 0.4) {
@@ -272,15 +282,15 @@ const compressNativeImage = async (
       base64: true,
     });
     size = estimateSize(result.base64);
-    format = 'image/jpeg';
+    format = "image/jpeg";
   }
 
   if (size > MAX_FILE_BYTES) {
     throw new Error("Unable to reduce photo below 2MB limit.");
   }
 
-  const base64Payload = result.base64 ?? '';
-  const byteArray = Uint8Array.from(Buffer.from(base64Payload, 'base64'));
+  const base64Payload = result.base64 ?? "";
+  const byteArray = Uint8Array.from(Buffer.from(base64Payload, "base64"));
   return {
     data: byteArray,
     mimeType: format,
@@ -290,7 +300,7 @@ const compressNativeImage = async (
 
 const mergePhoto = (
   photo: WorkLogPhoto,
-  cache: SignedUrlCache,
+  cache: SignedUrlCache
 ): ResolvedWorkLogPhoto => {
   const cached = cache[photo.id];
   return {
@@ -304,25 +314,23 @@ export const usePhotoUpload = ({
   workLogId,
   maxPhotos = DEFAULT_MAX_PHOTOS,
 }: UsePhotoUploadOptions = {}): UsePhotoUploadReturn => {
-  const toast = useToastController();
-  const utils = api.useUtils();
+  const toast = useToast();
+  const queryClient = useQueryClient();
 
   const isReady = Boolean(workLogId);
 
-  const { data: workLogData, isLoading: isLoadingPhotos } = api.workLogs.getById
-    .useQuery(
-      { workLogId: workLogId ?? "" },
-      {
-        enabled: isReady,
-        staleTime: 30_000,
-      },
-    );
+  const { data: workLogData, isLoading: isLoadingPhotos } = useWorkLog(
+    workLogId ?? undefined,
+    {
+      enabled: isReady,
+      staleTime: 30_000,
+    }
+  );
 
-  const uploadMutation = api.workLogs.uploadPhoto.useMutation();
-  const updateMetadataMutation = api.workLogs.updatePhotoMetadata.useMutation();
-  const updateVisibilityMutation = api.workLogs.updatePhotoVisibility
-    .useMutation();
-  const deletePhotoMutation = api.workLogs.deletePhoto.useMutation();
+  const uploadMutation = useUploadWorkLogPhotoMutation();
+  const updateMetadataMutation = useUpdateWorkLogPhotoMetadataMutation();
+  const updateVisibilityMutation = useUpdateWorkLogPhotoVisibilityMutation();
+  const deletePhotoMutation = useDeleteWorkLogPhotoMutation();
 
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
@@ -330,11 +338,14 @@ export const usePhotoUpload = ({
   const [signedUrlCache, setSignedUrlCache] = useState<SignedUrlCache>({});
 
   const photos: WorkLogPhoto[] = useMemo(() => {
-    if (!workLogData?.photos || !Array.isArray(workLogData.photos)) {
+    const rawPhotos = (
+      workLogData as (typeof workLogData & { photos?: unknown }) | undefined
+    )?.photos;
+    if (!rawPhotos || !Array.isArray(rawPhotos)) {
       return [];
     }
 
-    return (workLogData.photos as Record<string, unknown>[])
+    return (rawPhotos as Record<string, unknown>[])
       .map((record) => toWorkLogPhoto(record))
       .sort((a, b) => {
         if (a.displayOrder === b.displayOrder) {
@@ -342,12 +353,13 @@ export const usePhotoUpload = ({
         }
         return a.displayOrder - b.displayOrder;
       });
-  }, [workLogData?.photos]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workLogData]);
 
   const storageUsage = useMemo(() => {
     const used = photos.reduce(
       (total, photo) => total + Number(photo.fileSizeBytes ?? 0),
-      0,
+      0
     );
     return {
       usedBytes: used,
@@ -361,8 +373,10 @@ export const usePhotoUpload = ({
     if (!workLogId) {
       return;
     }
-    await utils.workLogs.getById.invalidate({ workLogId });
-  }, [utils.workLogs.getById, workLogId]);
+    await queryClient.invalidateQueries({
+      queryKey: ["workLogs", "detail", workLogId],
+    });
+  }, [queryClient, workLogId]);
 
   const ensureSignedUrls = useCallback(
     async (currentPhotos: WorkLogPhoto[]) => {
@@ -377,7 +391,9 @@ export const usePhotoUpload = ({
         currentPhotos.map(async (photo) => {
           const cached = signedUrlCache[photo.id];
           if (
-            cached && cached.expiresAt - now > 30_000 && cached.url &&
+            cached &&
+            cached.expiresAt - now > 30_000 &&
+            cached.url &&
             !cached.isRefreshing
           ) {
             return;
@@ -417,14 +433,14 @@ export const usePhotoUpload = ({
               isRefreshing: false,
             };
           }
-        }),
+        })
       );
 
       if (Object.keys(updates).length > 0) {
         setSignedUrlCache((previous) => ({ ...previous, ...updates }));
       }
     },
-    [signedUrlCache],
+    [signedUrlCache]
   );
 
   useEffect(() => {
@@ -436,14 +452,14 @@ export const usePhotoUpload = ({
 
   const resolvedPhotos: ResolvedWorkLogPhoto[] = useMemo(
     () => photos.map((photo) => mergePhoto(photo, signedUrlCache)),
-    [photos, signedUrlCache],
+    [photos, signedUrlCache]
   );
 
   const runUpload = useCallback(
     async ({ candidate }: UploadPhotoOptions) => {
       if (!workLogId) {
         throw new Error(
-          "Work log must be saved before uploading photos. Please wait for the auto-save to complete.",
+          "Work log must be saved before uploading photos. Please wait for the auto-save to complete."
         );
       }
 
@@ -474,44 +490,43 @@ export const usePhotoUpload = ({
           workLogId,
           fileName: candidate.fileName,
           fileSizeBytes: payload.size,
-          contentType: payload.mimeType,
-          caption: candidate.caption ?? undefined,
-          photoType: candidate.photoType ?? undefined,
-          showOnProfile: candidate.showOnProfile ?? undefined,
+          mimeType: payload.mimeType,
         });
 
         setUploadProgress(55);
 
-        const uploadPath = uploadResponse.filePath ??
-          uploadResponse.photo?.file_path ??
-          `${workLogId}/${candidate.fileName}`;
-
         const { error: storageError } = await supabase.storage
           .from(WORK_LOG_PHOTO_BUCKET)
-          .uploadToSignedUrl(uploadPath, uploadResponse.token, payload.data, {
-            contentType: payload.mimeType,
-            upsert: false,
-          });
+          .uploadToSignedUrl(
+            uploadResponse.uploadUrl,
+            uploadResponse.photoId,
+            payload.data,
+            {
+              contentType: payload.mimeType,
+              upsert: false,
+            }
+          );
 
         if (storageError) {
           throw new Error(
-            storageError.message ?? "Failed to upload photo to storage.",
+            storageError.message ?? "Failed to upload photo to storage."
           );
         }
 
         setUploadProgress(85);
         await refresh();
         setUploadProgress(100);
-        toast.show("Photo Uploaded", {
+        toast.show({
+          title: "Photo Uploaded",
           message: "Your work log photo has been uploaded successfully.",
-          type: "success",
+          variant: "success",
         });
       } finally {
         setTimeout(() => setUploadProgress(0), 400);
         setIsUploading(false);
       }
     },
-    [canUploadMore, refresh, toast, uploadMutation, workLogId],
+    [canUploadMore, refresh, toast, uploadMutation, workLogId]
   );
 
   const uploadPhoto = useCallback(
@@ -520,17 +535,19 @@ export const usePhotoUpload = ({
         await runUpload(options);
       } catch (error) {
         console.error("[usePhotoUpload] Upload failed", error);
-        const message = error instanceof Error
-          ? error.message
-          : 'Unable to upload photo. Please try again.';
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Unable to upload photo. Please try again.";
         setUploadError(message);
-        toast.show("Upload Failed", {
-          message,
-          type: "error",
+        toast.show({
+          title: "Upload Failed",
+          message: message,
+          variant: "error",
         });
       }
     },
-    [runUpload, toast],
+    [runUpload, toast]
   );
 
   const updatePhoto = useCallback(
@@ -539,39 +556,28 @@ export const usePhotoUpload = ({
         return;
       }
 
-      const payload = {
+      await updateMetadataMutation.mutateAsync({
         photoId,
-        workLogId,
-        caption: typeof updates.caption === "string"
-          ? updates.caption
-          : (updates.caption ?? undefined),
-        photoType: typeof updates.photoType === "string"
-          ? updates.photoType
-          : undefined,
+        caption:
+          typeof updates.caption === "string"
+            ? updates.caption
+            : updates.caption ?? undefined,
         displayOrder: updates.displayOrder,
-      };
-
-      const validation = updateWorkLogPhotoSchema.safeParse(payload);
-
-      if (!validation.success) {
-        throw validation.error;
-      }
-
-      await updateMetadataMutation.mutateAsync(validation.data);
+      });
       await refresh();
     },
-    [refresh, updateMetadataMutation, workLogId],
+    [refresh, updateMetadataMutation, workLogId]
   );
 
   const togglePhotoVisibility = useCallback(
     async (photoId: string, showOnProfile: boolean) => {
       await updateVisibilityMutation.mutateAsync({
         photoId,
-        showOnProfile,
+        visibility: showOnProfile ? "public" : "private",
       });
       await refresh();
     },
-    [refresh, updateVisibilityMutation],
+    [refresh, updateVisibilityMutation]
   );
 
   const deletePhoto = useCallback(
@@ -580,28 +586,20 @@ export const usePhotoUpload = ({
         return;
       }
 
-      const validation = deleteWorkLogPhotoSchema.safeParse({
-        photoId,
-        workLogId,
-      });
-
-      if (!validation.success) {
-        throw validation.error;
-      }
-
-      await deletePhotoMutation.mutateAsync(validation.data);
+      await deletePhotoMutation.mutateAsync(photoId);
       setSignedUrlCache((previous) => {
         const next = { ...previous };
         delete next[photoId];
         return next;
       });
       await refresh();
-      toast.show("Photo Deleted", {
+      toast.show({
+        title: "Photo Deleted",
         message: "The photo has been removed from this work log.",
-        type: "info",
+        variant: "info",
       });
     },
-    [deletePhotoMutation, refresh, toast, workLogId],
+    [deletePhotoMutation, refresh, toast, workLogId]
   );
 
   return {

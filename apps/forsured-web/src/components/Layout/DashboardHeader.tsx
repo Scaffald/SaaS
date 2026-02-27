@@ -3,8 +3,8 @@
  * Matches Figma design system comps
  * Includes page title, action buttons, and user avatar
  */
-import { Row, Text } from '@unicornlove/beyond-ui'
-import { NavIconButton } from '@unicornlove/beyond-ui'
+import { Row, Text } from '@scaffald/ui'
+import { NavIconButton } from '@scaffald/ui'
 import { Bell } from 'lucide-react'
 
 interface DashboardHeaderProps {

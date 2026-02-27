@@ -1,46 +1,43 @@
-import { api } from '@scf/core/utils/api'
-import { TEAM_INVITATION_STATUSES } from '@scf/schemas'
-import type { AppRouter } from '@scf/supabase/client-types'
-import { Clock, RefreshCw, XCircle } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-import type { inferRouterOutputs } from '@trpc/server'
-import type { ReactNode } from 'react'
-import { useEffect, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@unicornlove/ui'
 import {
-  Button,
-  Card,
-  type GetThemeValueForKey,
-  Spinner,
-  Text,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  useTeamInvitations,
+  useResendTeamInvitation,
+  useCancelTeamInvitation,
+} from "@scaffald/sdk/react";
+import type { TeamInvitation } from "@scaffald/sdk";
+import { TEAM_INVITATION_STATUSES } from "@scf/schemas";
+import { Clock, RefreshCw, XCircle } from "lucide-react-native";
+import { useToast, useThemeContext } from "@scaffald/ui";
+import type { ReactNode } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { ResponsiveSelect } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
+import { Button, Card, Spinner, Text, Row, Stack } from "@scaffald/ui";
 
-type InvitationsListOutput = inferRouterOutputs<AppRouter>['teams']['invitations']['list']
-type InvitationRecord = NonNullable<InvitationsListOutput['invitations']>[number]
-type InvitationStatus = (typeof TEAM_INVITATION_STATUSES)[number]
+type InvitationRecord = TeamInvitation;
+type InvitationStatus = (typeof TEAM_INVITATION_STATUSES)[number];
 
 const STATUS_LABELS: Record<InvitationStatus, string> = {
-  pending: 'Pending',
-  accepted: 'Accepted',
-  declined: 'Declined',
-  expired: 'Expired',
-  revoked: 'Revoked',
-}
+  pending: "Pending",
+  accepted: "Accepted",
+  declined: "Declined",
+  expired: "Expired",
+  revoked: "Revoked",
+};
 
-const STATUS_COLORS: Record<InvitationStatus, GetThemeValueForKey<'color'>> = {
-  pending: '$orange10',
-  accepted: '$green10',
-  declined: '$red10',
-  expired: '$color11',
-  revoked: '$color11',
-}
+const getStatusColors = (
+  theme: "light" | "dark"
+): Record<InvitationStatus, string> => ({
+  pending: theme === "light" ? colors.yellow[700] : colors.yellow[300],
+  accepted: theme === "light" ? colors.green[700] : colors.green[300],
+  declined: theme === "light" ? colors.error[700] : colors.error[300],
+  expired: colors.text[theme].secondary,
+  revoked: colors.text[theme].secondary,
+});
 
 interface TeamInvitationsListProps {
-  teamId: string
-  refreshKey?: number
-  headerAction?: ReactNode
+  teamId: string;
+  refreshKey?: number;
+  headerAction?: ReactNode;
 }
 
 export function TeamInvitationsList({
@@ -48,310 +45,336 @@ export function TeamInvitationsList({
   refreshKey,
   headerAction,
 }: TeamInvitationsListProps) {
-  const toast = useToastController()
-  const [statusFilter, setStatusFilter] = useState<InvitationStatus | 'all'>('pending')
+  const { theme } = useThemeContext();
+  const toast = useToast();
+  const [statusFilter, setStatusFilter] = useState<InvitationStatus | "all">(
+    "pending"
+  );
+  const STATUS_COLORS = getStatusColors(theme);
 
-  const invitationsQuery = api.teams.invitations.list.useQuery(
-    {
-      teamId,
-      status: statusFilter === 'all' ? undefined : statusFilter,
-    },
-    {
-      enabled: Boolean(teamId),
-    }
-  )
+  const invitationsQuery = useTeamInvitations(teamId, {
+    enabled: Boolean(teamId),
+  });
 
-  const resendMutation = api.teams.invitations.resend.useMutation({
+  const resendMutation = useResendTeamInvitation({
     onSuccess: () => {
-      toast.show('Invitation resent', { message: 'The invitation email has been resent.' })
-      void invitationsQuery.refetch()
+      toast.show({
+        title: "Invitation resent",
+        message: "The invitation email has been resent.",
+        variant: "success",
+      });
+      void invitationsQuery.refetch();
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show('Unable to resend invitation', { message })
+      const message =
+        error instanceof Error ? error.message : "An error occurred";
+      toast.show({
+        title: "Unable to resend invitation",
+        message,
+        variant: "error",
+      });
     },
-  })
+  });
 
-  const cancelMutation = api.teams.invitations.cancel.useMutation({
+  const cancelMutation = useCancelTeamInvitation({
     onSuccess: () => {
-      toast.show('Invitation cancelled', { message: 'The invitation can no longer be accepted.' })
-      void invitationsQuery.refetch()
+      toast.show({
+        title: "Invitation cancelled",
+        message: "The invitation can no longer be accepted.",
+        variant: "success",
+      });
+      void invitationsQuery.refetch();
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show('Unable to cancel invitation', { message })
+      const message =
+        error instanceof Error ? error.message : "An error occurred";
+      toast.show({
+        title: "Unable to cancel invitation",
+        message,
+        variant: "error",
+      });
     },
-  })
+  });
 
   useEffect(() => {
     if (!invitationsQuery.isFetched || !refreshKey) {
-      return
+      return;
     }
-    void invitationsQuery.refetch()
-  }, [refreshKey, invitationsQuery.isFetched, invitationsQuery.refetch])
+    void invitationsQuery.refetch();
+  }, [
+    refreshKey,
+    invitationsQuery.isFetched,
+    invitationsQuery.refetch,
+    invitationsQuery,
+  ]);
 
   const invitations = useMemo<InvitationRecord[]>(() => {
-    return (invitationsQuery.data?.invitations ?? []) as InvitationRecord[]
-  }, [invitationsQuery.data?.invitations])
+    const allInvitations = invitationsQuery.data?.invitations ?? [];
+    if (statusFilter === "all") {
+      return allInvitations;
+    }
+    return allInvitations.filter((inv) => inv.status === statusFilter);
+  }, [invitationsQuery.data?.invitations, statusFilter]);
 
   const isLoading =
     invitationsQuery.isLoading ||
     invitationsQuery.isFetching ||
     resendMutation.isPending ||
-    cancelMutation.isPending
+    cancelMutation.isPending;
 
   const handleResend = async (invitationId: string) => {
-    await resendMutation.mutateAsync({ invitationId, teamId })
-  }
+    await resendMutation.mutateAsync({ teamId, invitationId });
+  };
 
   const handleCancel = async (invitationId: string) => {
-    await cancelMutation.mutateAsync({ invitationId, teamId })
-  }
+    await cancelMutation.mutateAsync({ teamId, invitationId });
+  };
 
   return (
-    <YStack gap="$4" paddingHorizontal="$3" $md={{ paddingHorizontal: undefined }}>
-      <XStack
-        justifyContent="space-between"
-        alignItems="flex-start"
-        flexWrap="wrap"
-        gap="$3"
-        flexDirection="column"
-        width="100%"
-        $md={{
-          alignItems: 'center',
-          flexDirection: 'row',
-        }}
+    <Stack gap={16} paddingHorizontal={12}>
+      <Row
+        justify="space-between"
+        align="flex-start"
+        wrap
+        gap={12}
+        style={{ flexDirection: "column" as const, width: "100%" }}
       >
-        <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
-          Invitations
-        </Text>
-        <XStack
-          gap="$2"
-          alignItems="flex-start"
-          flexDirection="column"
-          width="100%"
-          $md={{
-            alignItems: 'center',
-            flexDirection: 'row',
-            width: undefined,
-          }}
+        <Text accessibilityRole="header">Invitations</Text>
+        <Row
+          gap={8}
+          align="flex-start"
+          style={{ flexDirection: "column" as const, width: "100%" }}
         >
           {headerAction}
-          <YStack width="100%" $md={{ width: undefined }}>
+          <Stack width="100%">
             <ResponsiveSelect
               value={statusFilter}
-              onValueChange={(value) => setStatusFilter(value as InvitationStatus | 'all')}
+              onValueChange={(value) =>
+                setStatusFilter(value as InvitationStatus | "all")
+              }
               placeholder={
-                statusFilter === 'all'
-                  ? 'All statuses'
+                statusFilter === "all"
+                  ? "All statuses"
                   : STATUS_LABELS[statusFilter as InvitationStatus]
               }
               options={[
-                { value: 'all', label: 'All statuses' },
+                { value: "all", label: "All statuses" },
                 ...TEAM_INVITATION_STATUSES.map((status) => ({
                   value: status,
                   label: STATUS_LABELS[status],
                 })),
               ]}
-              triggerProps={{
-                accessibilityLabel: 'Filter invitations by status',
-                accessibilityHint: 'Opens a menu of invitation statuses',
-                flex: 1,
-              }}
             />
-          </YStack>
-        </XStack>
-      </XStack>
+          </Stack>
+        </Row>
+      </Row>
 
       {invitationsQuery.isLoading ? (
-        <YStack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$6">
-          <Spinner size="large" />
-          <Text color="$color11">Loading invitations…</Text>
-        </YStack>
-      ) : invitations.length === 0 ? (
-        <YStack
-          gap="$2"
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius="$4"
-          padding="$4"
-          backgroundColor="$color2"
-        >
-          <Text fontWeight="600">No invitations yet</Text>
-          <Text color="$color11">
-            Invite teammates to collaborate on hiring. Invitations will appear here with their
-            status.
+        <Stack align="center" justify="center" gap={8} paddingVertical={24}>
+          <Spinner size="lg" />
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Loading invitations…
           </Text>
-        </YStack>
+        </Stack>
+      ) : invitations.length === 0 ? (
+        <Stack
+          gap={8}
+          borderWidth={1}
+          borderColor={colors.border[theme].default}
+          borderRadius={16}
+          padding="md"
+          style={{ backgroundColor: colors.bg[theme].subtle }}
+        >
+          <Text>No invitations yet</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Invite teammates to collaborate on hiring. Invitations will appear
+            here with their status.
+          </Text>
+        </Stack>
       ) : (
-        <YStack gap="$3">
+        <Stack gap={12}>
           {invitations.map((invitation) => {
             const statusLabel =
-              STATUS_LABELS[invitation.status as InvitationStatus] ?? invitation.status
-            const statusColor = STATUS_COLORS[invitation.status as InvitationStatus] ?? '$color11'
+              STATUS_LABELS[invitation.status as InvitationStatus] ??
+              invitation.status;
+            const statusColor =
+              STATUS_COLORS[invitation.status as InvitationStatus] ??
+              colors.text[theme].secondary;
 
-            const sentAt = invitation.sentAt ? new Date(invitation.sentAt).toLocaleString() : null
+            const sentAt = invitation.sentAt
+              ? new Date(invitation.sentAt).toLocaleString()
+              : null;
             const expiresAt = invitation.expiresAt
               ? new Date(invitation.expiresAt).toLocaleDateString()
-              : null
+              : null;
 
             const lastDeliveryMetadata =
-              (invitation.metadata as Record<string, unknown> | null)?.lastDelivery ?? null
+              (invitation.metadata as Record<string, unknown> | null)
+                ?.lastDelivery ?? null;
             const lastDelivery =
-              lastDeliveryMetadata && typeof lastDeliveryMetadata === 'object'
+              lastDeliveryMetadata && typeof lastDeliveryMetadata === "object"
                 ? (lastDeliveryMetadata as Record<string, unknown>)
-                : null
+                : null;
 
             const lastDeliveryStatus =
               invitation.lastDeliveryStatus ??
-              (typeof lastDelivery?.status === 'string' ? (lastDelivery.status as string) : null)
+              (typeof lastDelivery?.status === "string"
+                ? (lastDelivery.status as string)
+                : null);
             const lastDeliveryAt = invitation.sentAt
               ? new Date(invitation.sentAt).toLocaleString()
-              : typeof lastDelivery?.updatedAt === 'string'
-                ? new Date(lastDelivery.updatedAt as string).toLocaleString()
-                : null
+              : typeof lastDelivery?.updatedAt === "string"
+              ? new Date(lastDelivery.updatedAt as string).toLocaleString()
+              : null;
             const deliveryChannels =
               invitation.lastDeliveryChannels ??
-              (Array.isArray(lastDelivery?.channels) ? (lastDelivery.channels as string[]) : null)
+              (Array.isArray(lastDelivery?.channels)
+                ? (lastDelivery.channels as string[])
+                : null);
             const lastDeliveryError =
               invitation.lastDeliveryError ??
-              (typeof lastDelivery?.error === 'string' ? (lastDelivery.error as string) : null)
+              (typeof lastDelivery?.error === "string"
+                ? (lastDelivery.error as string)
+                : null);
 
-            const isPending = invitation.status === 'pending'
+            const isPending = invitation.status === "pending";
 
             return (
               <Card
                 key={invitation.id}
-                padding="$4"
+                padding="md"
                 borderWidth={1}
-                borderColor="$borderColor"
-                gap="$3"
-                backgroundColor="$color1"
-                accessible
-                accessibilityRole="summary"
-                accessibilityLabel={`Invitation for ${invitation.email ?? invitation.invitedUserId ?? 'team member'} · Status ${statusLabel}${invitation.role?.name ? ` · Role ${invitation.role.name}` : ''}`}
+                borderColor={colors.border[theme].default}
+                style={{ backgroundColor: colors.bg[theme].default }}
+                accessibilityLabel={`Invitation for ${
+                  invitation.email ?? invitation.invitedUserId ?? "team member"
+                } · Status ${statusLabel}${
+                  invitation.role?.name ? ` · Role ${invitation.role.name}` : ""
+                }`}
               >
-                <XStack justifyContent="space-between" alignItems="center">
-                  <YStack gap="$1">
-                    <Text fontWeight="600">
-                      {invitation.email
-                        ? invitation.email
-                        : invitation.invitedUserId
+                <Stack gap={12}>
+                  <Row justify="space-between" align="center">
+                    <Stack gap={4}>
+                      <Text>
+                        {invitation.email
+                          ? invitation.email
+                          : invitation.invitedUserId
                           ? `Existing member (${invitation.invitedUserId})`
-                          : 'Invitation'}
+                          : "Invitation"}
+                      </Text>
+                      <Row gap={8} align="center">
+                        <Clock size={18} color={colors.text[theme].secondary} />
+                        <Text style={{ color: colors.text[theme].secondary }}>
+                          Sent {sentAt ?? "recently"}
+                          {expiresAt ? ` · Expires ${expiresAt}` : null}
+                        </Text>
+                      </Row>
+                    </Stack>
+                    <Text style={{ color: statusColor as string }}>
+                      {statusLabel}
                     </Text>
-                    <XStack gap="$2" alignItems="center">
-                      <Clock size={16} color="$color11" />
-                      <Text fontSize="$3" color="$color11">
-                        Sent {sentAt ?? 'recently'}
-                        {expiresAt ? ` · Expires ${expiresAt}` : null}
-                      </Text>
-                    </XStack>
-                  </YStack>
-                  <Text fontSize="$3" fontWeight="600" color={statusColor}>
-                    {statusLabel}
-                  </Text>
-                </XStack>
+                  </Row>
 
-                <XStack
-                  gap="$2"
-                  flexDirection="column"
-                  alignItems="stretch"
-                  $md={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Text fontSize="$3" color="$color11">
-                    Role:
-                  </Text>
-                  <Text fontSize="$3" fontWeight="500">
-                    {invitation.role?.name ?? 'Member'}
-                  </Text>
-                </XStack>
-
-                {lastDeliveryStatus ? (
-                  <YStack gap="$1">
-                    <Text fontSize="$3" color="$color11">
-                      Delivery status:{' '}
-                      <Text fontWeight="600" color="$color12">
-                        {lastDeliveryStatus}
-                      </Text>
-                      {lastDeliveryAt ? ` · ${lastDeliveryAt}` : null}
+                  <Row
+                    gap={8}
+                    align="stretch"
+                    style={{ flexDirection: "column" }}
+                  >
+                    <Text style={{ color: colors.text[theme].secondary }}>
+                      Role:
                     </Text>
-                    {deliveryChannels && deliveryChannels.length > 0 ? (
-                      <Text fontSize="$2" color="$color10">
-                        Channels: {deliveryChannels.join(', ')}
-                      </Text>
-                    ) : null}
-                    {lastDeliveryError ? (
-                      <Text fontSize="$2" color="$red10">
-                        Last error: {lastDeliveryError}
-                      </Text>
-                    ) : null}
-                  </YStack>
-                ) : null}
+                    <Text>{invitation.role?.name ?? "Member"}</Text>
+                  </Row>
 
-                <XStack
-                  gap="$2"
-                  flexDirection="column"
-                  alignItems="stretch"
-                  $md={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Text fontSize="$3" color="$color11">
-                    Type:
-                  </Text>
-                  <Text fontSize="$3">
-                    {invitation.email ? 'Email invitation' : 'Existing member'}
-                  </Text>
-                </XStack>
+                  {lastDeliveryStatus ? (
+                    <Stack gap={4}>
+                      <Text style={{ color: colors.text[theme].secondary }}>
+                        Delivery status:{" "}
+                        <Text style={{ color: colors.text[theme].secondary }}>
+                          {lastDeliveryStatus}
+                        </Text>
+                        {lastDeliveryAt ? ` · ${lastDeliveryAt}` : null}
+                      </Text>
+                      {deliveryChannels && deliveryChannels.length > 0 ? (
+                        <Text style={{ color: colors.text[theme].secondary }}>
+                          Channels: {deliveryChannels.join(", ")}
+                        </Text>
+                      ) : null}
+                      {lastDeliveryError ? (
+                        <Text
+                          style={{
+                            color:
+                              theme === "light"
+                                ? colors.error[700]
+                                : colors.error[300],
+                          }}
+                        >
+                          Last error: {lastDeliveryError}
+                        </Text>
+                      ) : null}
+                    </Stack>
+                  ) : null}
 
-                <XStack
-                  gap="$2"
-                  justifyContent="flex-start"
-                  flexWrap="wrap"
-                  flexDirection="column"
-                  alignItems="stretch"
-                  $md={{
-                    justify: 'flex-end',
-                    flexDirection: 'row',
-                    items: 'center',
-                  }}
-                >
-                  <Button
-                    size="$2"
-                    variant="outlined"
-                    icon={RefreshCw}
-                    disabled={!isPending || isLoading}
-                    onPress={() => void handleResend(invitation.id)}
-                    accessibilityLabel={`Resend invitation to ${invitation.email ?? invitation.invitedUserId ?? 'team member'}`}
-                    width="100%"
-                    $md={{ width: undefined }}
+                  <Row
+                    gap={8}
+                    align="stretch"
+                    style={{ flexDirection: "column" }}
                   >
-                    Resend
-                  </Button>
-                  <Button
-                    size="$2"
-                    variant="outlined"
-                    color="$red10"
-                    icon={XCircle}
-                    disabled={!isPending || isLoading}
-                    onPress={() => void handleCancel(invitation.id)}
-                    accessibilityLabel={`Cancel invitation for ${invitation.email ?? invitation.invitedUserId ?? 'team member'}`}
-                    width="100%"
-                    $md={{ width: undefined }}
+                    <Text style={{ color: colors.text[theme].secondary }}>
+                      Type:
+                    </Text>
+                    <Text>
+                      {invitation.email
+                        ? "Email invitation"
+                        : "Existing member"}
+                    </Text>
+                  </Row>
+
+                  <Row
+                    gap={8}
+                    justify="flex-start"
+                    wrap
+                    align="stretch"
+                    style={{ flexDirection: "column" }}
                   >
-                    Cancel
-                  </Button>
-                </XStack>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      iconStart={RefreshCw}
+                      disabled={!isPending || isLoading}
+                      onPress={() => void handleResend(invitation.id)}
+                      accessibilityLabel={`Resend invitation to ${
+                        invitation.email ??
+                        invitation.invitedUserId ??
+                        "team member"
+                      }`}
+                      style={{ width: "100%" }}
+                    >
+                      Resend
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      color="error"
+                      iconStart={XCircle}
+                      disabled={!isPending || isLoading}
+                      onPress={() => void handleCancel(invitation.id)}
+                      accessibilityLabel={`Cancel invitation for ${
+                        invitation.email ??
+                        invitation.invitedUserId ??
+                        "team member"
+                      }`}
+                      style={{ width: "100%" }}
+                    >
+                      Cancel
+                    </Button>
+                  </Row>
+                </Stack>
               </Card>
-            )
+            );
           })}
-        </YStack>
+        </Stack>
       )}
-    </YStack>
-  )
+    </Stack>
+  );
 }

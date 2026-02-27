@@ -1,6 +1,6 @@
 /**
  * Bulk Import Service Tests
- * REQ-2, TASK-10: Bulk Import System with Validation and Preview
+ * Bulk Import System with Validation and Preview
  */
 
 import { describe, it, expect } from 'vitest';

@@ -1,6 +1,6 @@
 /**
  * ACORD 25 Parser Tests
- * REQ-125: Mock OCR & Document Parsing Engine for ACORD 25 Forms
+ * Mock OCR & Document Parsing Engine for ACORD 25 Forms
  *
  * Tests for parsing accuracy across different carriers and edge cases
  */

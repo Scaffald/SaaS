@@ -1,24 +1,25 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
-import { Button, DashboardWidget, spacing } from '@unicornlove/ui'
+import { useOccupationStatus } from '@scf/core/utils/onet-sdk-hooks'
+import { Button, DashboardWidget, useThemeContext } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
-import { Spinner, Text, YStack } from '@unicornlove/ui'
+import { Spinner, Text, Stack } from '@scaffald/ui'
 
 /**
  * OccupationAssessmentWidget - Dashboard widget CTA for Occupation Preferences
  */
 export function OccupationAssessmentWidget() {
+  useThemeContext()
   const router = useRouter()
 
-  const { data: status, isLoading } = api.onet.getOccupationStatus.useQuery()
+  const { data: status, isLoading } = useOccupationStatus()
 
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
-          <Spinner size="large" color="$blue7" />
-          <Text color="$color11">Loading...</Text>
-        </YStack>
+        <Stack gap={8} align="center" paddingVertical={40}>
+          <Spinner size="lg" color="primary" />
+          <Text color="$gray11">Loading...</Text>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -33,25 +34,21 @@ export function OccupationAssessmentWidget() {
 
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
-        <YStack gap={spacing.xs}>
-          <Text fontSize="$6" fontWeight="bold" color="$color12">
-            Occupation Preferences
-          </Text>
-          <Text fontSize="$3" color="$color11">
+      <Stack gap={12}>
+        <Stack gap={4}>
+          <Text color="$gray11">Occupation Preferences</Text>
+          <Text color="$gray11">
             Tell us about your current occupation and target occupations to help us recommend
             relevant opportunities.
           </Text>
-        </YStack>
+        </Stack>
 
-        <Button variant="primary" onPress={handleStart} size="$5">
-          <Button.Text>Add Occupations</Button.Text>
+        <Button variant="filled" color="primary" onPress={handleStart} size="lg">
+          Add Occupations
         </Button>
 
-        <Text fontSize="$2" color="$color11">
-          Takes about 1-2 minutes (optional)
-        </Text>
-      </YStack>
+        <Text color="$gray11">Takes about 1-2 minutes (optional)</Text>
+      </Stack>
     </DashboardWidget>
   )
 }

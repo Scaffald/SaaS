@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Button, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Text, Row, Stack } from '@scaffald/ui'
 
 export interface StepNavigationProps {
   canGoBack: boolean
@@ -33,43 +33,43 @@ export function StepNavigation({
   footerSlot,
 }: StepNavigationProps) {
   return (
-    <YStack gap="$3">
-      <XStack gap="$3" flexWrap="wrap">
-        <Button size="$4" flex={1} onPress={onNext} disabled={!canGoNext || isSaving} themeInverse>
+    <Stack gap={12}>
+      <Row gap={12} wrap>
+        <Button size="md" style={{ flex: 1 }} onPress={onNext} disabled={!canGoNext || isSaving} variant="filled" color="primary">
           {isLastStep ? 'Finish' : nextLabel}
         </Button>
         <Button
-          size="$4"
-          flex={1}
+          size="md"
+          style={{ flex: 1 }}
           onPress={onBack}
           disabled={!canGoBack || isSaving}
-          variant="outlined"
+          variant="outline"
         >
           {backLabel}
         </Button>
-      </XStack>
+      </Row>
 
-      <XStack justifyContent="space-between" flexWrap="wrap" gap="$2">
+      <Row justify="space-between" wrap gap={8}>
         {onSkip && (
-          <Button size="$3" variant="outlined" chromeless onPress={onSkip} disabled={isSaving}>
+          <Button size="sm" variant="text" onPress={onSkip} disabled={isSaving}>
             {skipLabel}
           </Button>
         )}
 
         {onSaveForLater && (
-          <Button size="$3" chromeless onPress={onSaveForLater} disabled={isSaving}>
+          <Button size="sm" variant="text" onPress={onSaveForLater} disabled={isSaving}>
             {saveLabel}
           </Button>
         )}
-      </XStack>
+      </Row>
 
       {isSaving && (
-        <Text fontSize="$2" color="$color10" aria-live="polite">
+        <Text style={{ color: '#414e62' }} aria-live="polite">
           Saving your progress...
         </Text>
       )}
 
       {footerSlot}
-    </YStack>
+    </Stack>
   )
 }

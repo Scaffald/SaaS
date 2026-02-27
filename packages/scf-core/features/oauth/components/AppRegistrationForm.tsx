@@ -1,13 +1,24 @@
 /**
  * OAuth App Registration Form
- * REQ-10 Task 10: Self-service app registration form
+ * Self-service app registration form
  */
 
-import { Button, Card, Input, Paragraph, SizableText, XStack, YStack } from '@unicornlove/ui'
+import {
+  Button,
+  Card,
+  Input,
+  Paragraph,
+  Text,
+  Row,
+  Stack,
+  useThemeContext,
+} from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useState } from 'react'
-import { api } from '@scf/core/utils/api'
+import { useRegisterAppMutation } from '@scf/core/utils/oauth-sdk-hooks'
 
 export function AppRegistrationForm() {
+  const { theme } = useThemeContext()
   const [appName, setAppName] = useState('')
   const [description, setDescription] = useState('')
   const [homepageUrl, setHomepageUrl] = useState('')
@@ -17,9 +28,12 @@ export function AppRegistrationForm() {
   const [termsUrl, setTermsUrl] = useState('')
   const [developerEmail, setDeveloperEmail] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [credentials, setCredentials] = useState<{ client_id: string; client_secret: string } | null>(null)
+  const [credentials, setCredentials] = useState<{
+    client_id: string
+    client_secret: string
+  } | null>(null)
 
-  const registerApp = api.oauth.registerApp.useMutation()
+  const registerApp = useRegisterAppMutation()
 
   function addRedirectUri() {
     setRedirectUris([...redirectUris, ''])
@@ -62,172 +76,167 @@ export function AppRegistrationForm() {
 
   if (credentials) {
     return (
-      <YStack flex={1} padding="$4" maxWidth={800} alignSelf="center" gap="$4">
-        <Card padding="$4" gap="$4">
-          <YStack gap="$3">
-            <SizableText size="$6" fontWeight="600">
-              App Registration Successful!
-            </SizableText>
-            <Paragraph size="$3">
+      <Stack flex={1} padding="md" maxWidth={800} alignSelf="center" gap={16}>
+        <Card padding="md">
+          <Stack gap={12}>
+            <Text size="2xl">App Registration Successful!</Text>
+            <Paragraph size="sm">
               Save your client credentials now. You won't be able to see the client_secret again.
             </Paragraph>
 
-            <YStack gap="$2" padding="$4" backgroundColor="$blue2" borderRadius="$2">
-              <YStack gap="$1">
-                <SizableText size="$2" fontWeight="600">
-                  Client ID
-                </SizableText>
-                <SizableText size="$3" fontFamily="$mono">
+            <Stack
+              gap={8}
+              padding="md"
+              style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
+              borderRadius={8}
+            >
+              <Stack gap={4}>
+                <Text size="sm">Client ID</Text>
+                <Text size="sm" style={{ fontFamily: 'monospace' }}>
                   {credentials.client_id}
-                </SizableText>
-              </YStack>
-              <YStack gap="$1">
-                <SizableText size="$2" fontWeight="600">
-                  Client Secret
-                </SizableText>
-                <SizableText size="$3" fontFamily="$mono" color="$red10">
+                </Text>
+              </Stack>
+              <Stack gap={4}>
+                <Text size="sm">Client Secret</Text>
+                <Text
+                  size="sm"
+                  style={{ fontFamily: 'monospace', color: theme === "light" ? colors.error[700] : colors.error[300] }}
+                >
                   {credentials.client_secret}
-                </SizableText>
-              </YStack>
-            </YStack>
+                </Text>
+              </Stack>
+            </Stack>
 
-            <Paragraph size="$2" color="$yellow10">
+            <Paragraph size="sm" style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
               ⚠️ Important: Copy your client_secret now. It will not be shown again.
             </Paragraph>
 
-            <YStack gap="$2">
-              <SizableText size="$4" fontWeight="600">
-                Next Steps
-              </SizableText>
-              <Paragraph size="$2">
+            <Stack gap={8}>
+              <Text size="md">Next Steps</Text>
+              <Paragraph size="sm">
                 1. Test your app with the limited scopes (openid, profile, email)
               </Paragraph>
-              <Paragraph size="$2">
+              <Paragraph size="sm">
                 2. Request additional scopes via the developer dashboard
               </Paragraph>
-              <Paragraph size="$2">
-                3. Wait for admin approval for elevated permissions
-              </Paragraph>
-            </YStack>
-          </YStack>
+              <Paragraph size="sm">3. Wait for admin approval for elevated permissions</Paragraph>
+            </Stack>
+          </Stack>
         </Card>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack flex={1} padding="$4" maxWidth={800} alignSelf="center" gap="$4">
-      <Card padding="$4" gap="$4">
-        <YStack gap="$4">
-          <YStack gap="$2">
-            <SizableText size="$6" fontWeight="600">
-              Register OAuth Application
-            </SizableText>
-            <Paragraph size="$2" color="$color11">
+    <Stack flex={1} padding="md" maxWidth={800} alignSelf="center" gap={16}>
+      <Card padding="md">
+        <Stack gap={16}>
+          <Stack gap={8}>
+            <Text size="2xl">Register OAuth Application</Text>
+            <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
               Register your application to use Scaffald OAuth 2.0 for Single Sign-On
             </Paragraph>
-          </YStack>
+          </Stack>
 
-          <YStack gap="$3">
-            <YStack gap="$1">
-              <SizableText size="$3">App Name *</SizableText>
+          <Stack gap={12}>
+            <Stack gap={4}>
+              <Text size="sm">App Name *</Text>
               <Input
                 value={appName}
                 onChangeText={setAppName}
                 placeholder="My Awesome App"
                 maxLength={100}
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$1">
-              <SizableText size="$3">Description *</SizableText>
+            <Stack gap={4}>
+              <Text size="sm">Description *</Text>
               <Input
                 value={description}
                 onChangeText={setDescription}
                 placeholder="Brief description of your application"
                 multiline
-                numberOfLines={3}
                 maxLength={500}
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$1">
-              <SizableText size="$3">Homepage URL *</SizableText>
+            <Stack gap={4}>
+              <Text size="sm">Homepage URL *</Text>
               <Input
                 value={homepageUrl}
                 onChangeText={setHomepageUrl}
                 placeholder="https://example.com"
                 keyboardType="url"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
-              <SizableText size="$3">Redirect URIs *</SizableText>
+            <Stack gap={8}>
+              <Text size="sm">Redirect URIs *</Text>
               {redirectUris.map((uri, index) => (
-                <XStack key={index} gap="$2">
+                <Row key={index} gap={8}>
                   <Input
-                    flex={1}
+                    style={{ flex: 1 }}
                     value={uri}
                     onChangeText={(value) => updateRedirectUri(index, value)}
                     placeholder="https://example.com/auth/callback"
                     keyboardType="url"
                   />
                   {redirectUris.length > 1 && (
-                    <Button onPress={() => removeRedirectUri(index)} variant="outlined">
+                    <Button onPress={() => removeRedirectUri(index)} variant="outline">
                       Remove
                     </Button>
                   )}
-                </XStack>
+                </Row>
               ))}
               {redirectUris.length < 10 && (
-                <Button onPress={addRedirectUri} variant="outlined" size="$2">
+                <Button onPress={addRedirectUri} variant="outline" size="sm">
                   Add Redirect URI
                 </Button>
               )}
-            </YStack>
+            </Stack>
 
-            <YStack gap="$1">
-              <SizableText size="$3">Logo URL (optional)</SizableText>
+            <Stack gap={4}>
+              <Text size="sm">Logo URL (optional)</Text>
               <Input
                 value={logoUrl}
                 onChangeText={setLogoUrl}
                 placeholder="https://example.com/logo.png"
                 keyboardType="url"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$1">
-              <SizableText size="$3">Privacy Policy URL (optional)</SizableText>
+            <Stack gap={4}>
+              <Text size="sm">Privacy Policy URL (optional)</Text>
               <Input
                 value={privacyPolicyUrl}
                 onChangeText={setPrivacyPolicyUrl}
                 placeholder="https://example.com/privacy"
                 keyboardType="url"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$1">
-              <SizableText size="$3">Terms of Service URL (optional)</SizableText>
+            <Stack gap={4}>
+              <Text size="sm">Terms of Service URL (optional)</Text>
               <Input
                 value={termsUrl}
                 onChangeText={setTermsUrl}
                 placeholder="https://example.com/terms"
                 keyboardType="url"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$1">
-              <SizableText size="$3">Developer Email *</SizableText>
+            <Stack gap={4}>
+              <Text size="sm">Developer Email *</Text>
               <Input
                 value={developerEmail}
                 onChangeText={setDeveloperEmail}
                 placeholder="developer@example.com"
-                keyboardType="email"
+                keyboardType="email-address"
               />
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
 
-          <XStack gap="$3" justifyContent="flex-end">
+          <Row gap={12} justify="flex-end">
             <Button
               onPress={handleSubmit}
               disabled={isSubmitting || !appName || !description || !homepageUrl || !developerEmail}
@@ -235,10 +244,9 @@ export function AppRegistrationForm() {
             >
               Register Application
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   )
 }
-

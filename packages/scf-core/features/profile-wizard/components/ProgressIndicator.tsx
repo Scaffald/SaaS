@@ -1,13 +1,16 @@
-import { memo, useMemo } from 'react'
-import { Progress, Separator, Text, XStack, YStack } from '@unicornlove/ui'
-import type { ProfileWizardStepId } from '../utils/wizardSteps'
-import { PROFILE_WIZARD_STEP_META, PROFILE_WIZARD_STEPS } from '../utils/wizardSteps'
+import { memo, useMemo } from "react";
+import { ProgressBar, Separator, Text, Row, Stack } from "@scaffald/ui";
+import type { ProfileWizardStepId } from "../utils/wizardSteps";
+import {
+  PROFILE_WIZARD_STEP_META,
+  PROFILE_WIZARD_STEPS,
+} from "../utils/wizardSteps";
 
 export interface WizardProgressIndicatorProps {
-  currentStep: ProfileWizardStepId
-  completedSteps: ProfileWizardStepId[]
-  completionPercentage: number
-  showStepLabels?: boolean
+  currentStep: ProfileWizardStepId;
+  completedSteps: ProfileWizardStepId[];
+  completionPercentage: number;
+  showStepLabels?: boolean;
 }
 
 export const ProgressIndicator = memo(function ProgressIndicator({
@@ -16,61 +19,68 @@ export const ProgressIndicator = memo(function ProgressIndicator({
   completionPercentage,
   showStepLabels = true,
 }: WizardProgressIndicatorProps) {
-  const orderedSteps = useMemo(() => PROFILE_WIZARD_STEPS, [])
+  const orderedSteps = useMemo(() => PROFILE_WIZARD_STEPS, []);
 
   return (
-    <YStack gap="$3" aria-live="polite">
-      <XStack justifyContent="space-between" alignItems="center">
-        <Text fontSize="$4" fontWeight="700">
+    <Stack gap={12} aria-live="polite">
+      <Row justify="space-between" align="center">
+        <Text>
           Step {orderedSteps.indexOf(currentStep) + 1} of {orderedSteps.length}
         </Text>
-        <Text fontSize="$3" color="$color11">
-          {completionPercentage}%
-        </Text>
-      </XStack>
+        <Text style={{ color: "#414e62" }}>{completionPercentage}%</Text>
+      </Row>
 
-      <Progress size="$2" value={completionPercentage} max={100} backgroundColor="$color3">
-        <Progress.Indicator animation="bouncy" backgroundColor="$blue10" />
-      </Progress>
+      <ProgressBar
+        value={completionPercentage}
+        showLabel={false}
+        showIndicator={false}
+        showHintMessage={false}
+      />
 
       {showStepLabels && (
-        <XStack gap="$3" alignItems="flex-start" marginTop="$2" flexWrap="wrap">
+        <Row gap={12} align="flex-start" style={{ marginTop: 8 }} wrap>
           {orderedSteps.map((stepId, index) => {
-            const meta = PROFILE_WIZARD_STEP_META[stepId]
-            const isCompleted = completedSteps.includes(stepId)
-            const isCurrent = currentStep === stepId
+            const meta = PROFILE_WIZARD_STEP_META[stepId];
+            const isCompleted = completedSteps.includes(stepId);
+            const isCurrent = currentStep === stepId;
 
             return (
-              <XStack key={stepId} gap="$2" alignItems="center">
-                <YStack
+              <Row key={stepId} gap={8} align="center">
+                <Stack
                   width={32}
                   height={32}
-                  backgroundColor={isCurrent ? '$blue10' : isCompleted ? '$green9' : '$color5'}
-                  alignItems="center"
-                  justifyContent="center"
-                  borderRadius="$3"
+                  backgroundColor={
+                    isCurrent ? "#2563eb" : isCompleted ? "#16a34a" : "#ced2da"
+                  }
+                  align="center"
+                  justify="center"
+                  borderRadius={12}
                   role="img"
-                  aria-label={`${meta.title} ${isCurrent ? '(current step)' : isCompleted ? '(completed)' : '(not completed)'}`}
-                  aria-current={isCurrent ? 'step' : undefined}
+                  aria-label={`${meta.title} ${
+                    isCurrent
+                      ? "(current step)"
+                      : isCompleted
+                      ? "(completed)"
+                      : "(not completed)"
+                  }`}
+                  aria-current={isCurrent ? "step" : undefined}
                 >
-                  <Text fontWeight="600" color="$color1">
-                    {index + 1}
-                  </Text>
-                </YStack>
-                <YStack style={{ maxWidth: 160 }}>
-                  <Text fontSize="$3" fontWeight={isCurrent ? '700' : '600'} color="$color12">
-                    {meta.title}
-                  </Text>
-                  <Text fontSize="$2" color="$color10">
+                  <Text style={{ color: "#414e62" }}>{index + 1}</Text>
+                </Stack>
+                <Stack style={{ maxWidth: 160 }}>
+                  <Text style={{ color: "#414e62" }}>{meta.title}</Text>
+                  <Text style={{ color: "#414e62" }}>
                     {meta.estimatedTimeMinutes} min
                   </Text>
-                </YStack>
-                {index < orderedSteps.length - 1 && <Separator vertical aria-hidden={true} />}
-              </XStack>
-            )
+                </Stack>
+                {index < orderedSteps.length - 1 && (
+                  <Separator orientation="vertical" />
+                )}
+              </Row>
+            );
           })}
-        </XStack>
+        </Row>
       )}
-    </YStack>
-  )
-})
+    </Stack>
+  );
+});

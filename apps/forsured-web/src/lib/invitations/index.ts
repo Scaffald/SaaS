@@ -1,10 +1,10 @@
 /**
  * Generic Invitation System
  *
- * REQ-128: Flexible Invitation System
+ * Invitations module
  *
  * Exports all types and services for the rule-based invitation system.
  */
 
-export * from './types'
-export { invitationService, default as default } from './invitationService'
+export * from "./types";
+export { default as default, invitationService } from "./invitationService";

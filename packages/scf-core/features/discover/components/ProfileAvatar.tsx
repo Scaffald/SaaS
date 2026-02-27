@@ -1,5 +1,6 @@
-import { Building } from '@tamagui/lucide-icons'
-import { type GetThemeValueForKey, Image, Text, XStack, YStack } from '@unicornlove/ui'
+import { Image } from 'react-native'
+import { Building } from 'lucide-react-native'
+import { Text, Row, Stack } from '@scaffald/ui'
 import { getInitials } from '../utils/getInitials'
 
 type ProfileAvatarProps = {
@@ -43,43 +44,41 @@ export const ProfileAvatar = ({
     '$yellow10',
     '$color10',
   ]
-  const bgColor = bgColors[colorIndex] as GetThemeValueForKey<'backgroundColor'>
+  const bgColor = bgColors[colorIndex]
 
   // If avatar URL exists and is not empty, show image
   if (avatarUrl && avatarUrl.trim() !== '') {
     return (
-      <XStack
+      <Row
         width={size}
         height={size}
-        borderRadius="$12"
-        overflow="hidden"
+        borderRadius={12}
         borderWidth={1}
         borderColor="$borderColor"
+        style={{ overflow: 'hidden' }}
       >
-        <Image source={{ uri: avatarUrl }} width={size} height={size} resizeMode="cover" />
-      </XStack>
+        <Image source={{ uri: avatarUrl }} style={{ width: size, height: size }} resizeMode="cover" />
+      </Row>
     )
   }
 
   // Fallback: show initials or organization icon
   return (
-    <YStack
+    <Stack
       width={size}
       height={size}
-      borderRadius="$12"
+      borderRadius={12}
       backgroundColor={bgColor}
-      alignItems="center"
-      justifyContent="center"
+      align="center"
+      justify="center"
       borderWidth={1}
       borderColor="$borderColor"
     >
       {isOrganization ? (
-        <Building size={Math.round(size * 0.5)} color="white" />
+        <Building size={Math.round(size * 0.5) as 16 | 20 | 24} color="white" />
       ) : (
-        <Text color="white" fontSize={Math.round(size * 0.4)} fontWeight="700">
-          {initials}
-        </Text>
+        <Text color="white">{initials}</Text>
       )}
-    </YStack>
+    </Stack>
   )
 }

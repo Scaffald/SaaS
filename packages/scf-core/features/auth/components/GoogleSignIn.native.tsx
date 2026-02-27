@@ -1,15 +1,16 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { captureEvent } from '@scf/core/utils/analytics/client'
 import { supabase } from '@scf/core/utils/supabase/client'
+import { useTranslation } from '@scf/core/utils/useTranslation'
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin'
 import { useRouter } from 'expo-router'
-import { Button } from '@unicornlove/ui'
+import { Button } from '@scaffald/ui'
 
 import { IconGoogle } from './IconGoogle'
 
 export function GoogleSignIn() {
-  // Using supabase directly from import
   const router = useRouter()
+  const { t } = useTranslation()
 
   async function signInWithGoogle() {
     try {
@@ -67,18 +68,12 @@ export function GoogleSignIn() {
 
   return (
     <Button
+      variant="outline"
       onPress={() => signInWithGoogle()}
-      icon={IconGoogle}
-      // styles to make it look like the native Apple button on AppleSignIn.native.tsx
-      scaleIcon={1}
-      backgroundColor="white"
-      fontSize="$5"
-      pressStyle={{ backgroundColor: 'transparent', opacity: 0.6, borderWidth: '$0' }}
-      animation="200ms"
-      chromeless
-      fontWeight="500"
+      iconStart={IconGoogle}
+      style={{ flex: 1, borderRadius: 20 }}
     >
-      Sign in with Google
+      {t('auth.login.googleButton')}
     </Button>
   )
 }

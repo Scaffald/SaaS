@@ -8,7 +8,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Building, Save } from 'lucide-react'
-import { Stack, Row, Text, H1, Card, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H1, Card, Grid } from '@scaffald/ui'
 import Button from '../Common/Button'
 import { useProjects } from '../../hooks/useProjects'
 import type { Project } from '../../types'

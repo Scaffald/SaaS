@@ -1,6 +1,6 @@
 /**
  * Incident Severity Level Definitions
- * REQ-164: Incident Response Plan & Procedures
+ * Incident Response Plan & Procedures
  */
 
 import { SeverityLevel } from './types';

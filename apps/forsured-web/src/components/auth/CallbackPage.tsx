@@ -1,11 +1,11 @@
 /**
  * OAuth Callback Page - Using Beyond UI
- * REQ-126: OAuth 2.0 + RBAC Authentication System
+ * OAuth 2.0 + RBAC Authentication System
  */
 import type React from 'react'
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Stack, Row, Text, Button } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button } from '@scaffald/ui'
 import { CheckCircle, AlertTriangle } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import type { AuthError } from '../../lib/auth/types'

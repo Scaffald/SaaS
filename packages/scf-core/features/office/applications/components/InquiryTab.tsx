@@ -1,19 +1,14 @@
 import { InquiryHistoryTimeline } from '@scf/core/features/inquiries/components/InquiryHistoryTimeline'
 import { InquiryViewOrganization } from '@scf/core/features/inquiries/components/InquiryViewOrganization'
 
-import type { AppRouter } from '@scf/supabase/client-types'
-import { Button, YStack } from '@unicornlove/ui'
-import type { inferRouterOutputs } from '@trpc/server'
-
-type InquiryQueryOutput = NonNullable<
-  inferRouterOutputs<AppRouter>['inquiries']['getByApplication']
->
+import type { InquiryDetails } from '@scf/core/utils/inquiry-capability-types'
+import { Button, Stack } from '@scaffald/ui'
 
 interface InquiryTabProps {
   applicationId: string
   candidateName: string
   jobTitle: string
-  data: InquiryQueryOutput
+  data: InquiryDetails
   onEditInquiry?: () => void
   editLabel?: string
 }
@@ -29,23 +24,23 @@ export function InquiryTab({
   const { inquiry } = data
 
   return (
-    <YStack gap="$4">
+    <Stack gap={16}>
       {onEditInquiry && (
-        <YStack alignItems="flex-end">
-          <Button size="$3" variant="outlined" onPress={onEditInquiry}>
+        <Stack align="flex-end">
+          <Button size="sm" variant="outline" onPress={onEditInquiry}>
             {editLabel}
           </Button>
-        </YStack>
+        </Stack>
       )}
 
       <InquiryViewOrganization
         applicationId={applicationId}
-        inquiryId={inquiry.id}
+        inquiryId={inquiry.id as string}
         candidateName={candidateName}
         jobTitle={jobTitle}
       />
 
-      <InquiryHistoryTimeline inquiryId={inquiry.id} />
-    </YStack>
+      <InquiryHistoryTimeline inquiryId={inquiry.id as string} />
+    </Stack>
   )
 }

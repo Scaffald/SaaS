@@ -1,6 +1,6 @@
 /**
  * ParticipantsComplianceView Component Tests
- * REQ-281: Participants Tab Compliance View - TASK-4
+ * Participants Tab Compliance View - TASK-4
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';

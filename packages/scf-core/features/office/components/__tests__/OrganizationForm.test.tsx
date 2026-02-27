@@ -44,7 +44,7 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@tamagui/toast', () => ({ useToastController: () => toastMock }))
+vi.mock('@scaffald/ui', () => ({ useToast: () => toastMock }))
 
 vi.mock('expo-router', () => ({ useRouter: () => routerMock }))
 
@@ -124,7 +124,7 @@ vi.mock('react-hook-form', () => {
   }
 })
 
-vi.mock('@unicornlove/ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   Button: ({
     children,
     onPress,
@@ -196,8 +196,8 @@ vi.mock('@unicornlove/ui', () => ({
 
 const selectState = { onChange: (_value: string) => {} }
 
-vi.mock('tamagui', async () => {
-  const actual = await vi.importActual<typeof import('tamagui')>('tamagui')
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual<typeof import('@scaffald/ui')>('@scaffald/ui')
 
   const Select = ({
     value,
@@ -265,8 +265,8 @@ vi.mock('tamagui', async () => {
     <label htmlFor={htmlFor}>{children}</label>
   )
 
-  const YStack = ({ children }: { children: ReactNode }) => <div>{children}</div>
-  const XStack = ({ children }: { children: ReactNode }) => <div>{children}</div>
+  const Stack = ({ children }: { children: ReactNode }) => <div>{children}</div>
+  const Row = ({ children }: { children: ReactNode }) => <div>{children}</div>
   const ButtonBase = ({
     children,
     onPress,
@@ -293,8 +293,8 @@ vi.mock('tamagui', async () => {
     Select,
     Input,
     Label,
-    YStack,
-    XStack,
+    Stack,
+    Row,
     Button: ButtonBase,
     Text,
     Spinner,
@@ -306,7 +306,7 @@ vi.mock('tamagui', async () => {
   }
 })
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   // Icons used by OrganizationForm
   Check: () => <span data-testid="check-icon" />,
   ChevronDown: () => <span data-testid="chevron-icon" />,

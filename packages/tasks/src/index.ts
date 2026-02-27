@@ -16,12 +16,12 @@ export type { TasksInboxProps, Task } from './TasksInbox'
 export { CommentThread } from './CommentThread'
 export type { CommentThreadProps, Comment } from './CommentThread'
 
-// TaskStatusDropdown (REQ-288)
+// TaskStatusDropdown
 export { TaskStatusDropdown } from './TaskStatusDropdown'
 export type { TaskStatusDropdownProps } from './TaskStatusDropdown'
 export type { TaskStatus as DropdownTaskStatus } from './TaskStatusDropdown'
 
-// TaskHistoryTimeline (REQ-288)
+// TaskHistoryTimeline
 export { TaskHistoryTimeline } from './TaskHistoryTimeline'
 export type {
   TaskHistoryTimelineProps,

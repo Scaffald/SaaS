@@ -3,7 +3,7 @@ import type {
   IPIPResultFacets,
 } from '@scf/core/features/personality-assessment/lib/ipip'
 import { memo } from 'react'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 export interface FacetListProps {
   facets: Record<string, IPIPFacetScore>
@@ -17,7 +17,7 @@ export const FacetList = memo(function FacetList({ facets, facetNarratives }: Fa
   const facetKeys = Object.keys(facets).sort()
 
   return (
-    <YStack gap="$3" marginTop="$3">
+    <Stack gap={12} marginTop={12}>
       {facetKeys.map((facetKey) => {
         const facetScore = facets[facetKey]
         const facetNarrative = facetNarratives[facetKey as keyof IPIPResultFacets]
@@ -28,22 +28,18 @@ export const FacetList = memo(function FacetList({ facets, facetNarratives }: Fa
         // The text is a general description, not specific to low/neutral/high
 
         return (
-          <YStack
+          <Stack
             key={facetKey}
-            gap="$2"
-            padding="$3"
+            gap={8}
+            padding="sm"
             backgroundColor="$color2"
-            borderRadius="$3"
+            borderRadius={12}
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <XStack justifyContent="space-between" alignItems="center">
-              <Text fontSize="$4" fontWeight="600" color="$color12">
-                {facetNarrative.title || facetKey}
-              </Text>
+            <Row justify="space-between" align="center">
+              <Text color="$gray11">{facetNarrative.title || facetKey}</Text>
               <Text
-                fontSize="$3"
-                fontWeight="600"
                 color={
                   facetScore.result === 'high'
                     ? '$green10'
@@ -54,15 +50,11 @@ export const FacetList = memo(function FacetList({ facets, facetNarratives }: Fa
               >
                 {facetScore.result.toUpperCase()}
               </Text>
-            </XStack>
-            {facetNarrative.text && (
-              <Text fontSize="$3" color="$color12">
-                {facetNarrative.text}
-              </Text>
-            )}
-          </YStack>
+            </Row>
+            {facetNarrative.text && <Text color="$gray11">{facetNarrative.text}</Text>}
+          </Stack>
         )
       })}
-    </YStack>
+    </Stack>
   )
 })

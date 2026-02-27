@@ -1,6 +1,6 @@
 /**
- * REQ-129: Manager Dashboard Service
- * REQ-266: Task Severity Correlation with Compliance Risk
+ * Manager Dashboard Service
+ * Task Severity Correlation with Compliance Risk
  * Service layer for dashboard API endpoints and data aggregation
  */
 
@@ -698,7 +698,7 @@ class DashboardService {
   }
 
   // ==========================================================================
-  // REQ-266: Task Severity and Risk Distribution Methods
+  // Task Severity and Risk Distribution Methods
   // ==========================================================================
 
   /**

@@ -1,11 +1,11 @@
 /**
  * OAuth Consent Page
- * REQ-10 Task 9: Consent screen page
+ * OAuth consent screen page
  */
 
 import { ConsentScreen } from '@scf/core/features/oauth/components/ConsentScreen'
-import { api } from '@scf/core/utils/api'
-import { useSearchParams } from 'expo-router'
+import { useOAuthAppDetails } from '@scf/core/utils/oauth-sdk-hooks'
+import { useLocalSearchParams } from 'expo-router'
 import { useEffect, useState } from 'react'
 
 interface AppDetails {
@@ -19,21 +19,25 @@ interface AppDetails {
 }
 
 export default function OAuthConsentPage() {
-  const params = useSearchParams()
+  const params = useLocalSearchParams<{
+    client_id: string
+    redirect_uri: string
+    state: string
+    scope: string
+    code_challenge?: string
+    code_challenge_method?: string
+  }>()
   const [appDetails, setAppDetails] = useState<AppDetails | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  const clientId = params.client_id as string
-  const redirectUri = params.redirect_uri as string
-  const state = params.state as string
-  const scope = params.scope as string
+  const clientId = params.client_id
+  const redirectUri = params.redirect_uri
+  const state = params.state
+  const scope = params.scope
   const codeChallenge = params.code_challenge as string
   const codeChallengeMethod = (params.code_challenge_method as string) || 'S256'
 
-  const getAppDetails = api.oauth.getAppDetails.useQuery(
-    { client_id: clientId },
-    { enabled: !!clientId }
-  )
+  const getAppDetails = useOAuthAppDetails(clientId || undefined, { enabled: !!clientId })
 
   useEffect(() => {
     if (getAppDetails.data) {
@@ -71,4 +75,3 @@ export default function OAuthConsentPage() {
     />
   )
 }
-

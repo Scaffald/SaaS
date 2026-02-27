@@ -9,8 +9,8 @@ global.confirm = mockConfirm
 
 // Mock toast
 const mockShow = vi.fn()
-vi.mock('@tamagui/toast', () => ({
-  useToastController: () => ({
+vi.mock('@scaffald/ui', () => ({
+  useToast: () => ({
     show: mockShow,
   }),
 }))
@@ -115,7 +115,7 @@ vi.mock('@scf/core/utils/supabase/storage', () => ({
 }))
 
 // Mock UI components
-vi.mock('@unicornlove/ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   Button: ({
     children,
     onPress,
@@ -227,8 +227,8 @@ vi.mock('../components', () => ({
   ),
 }))
 
-// Mock Tamagui components
-vi.mock('tamagui', () => {
+// Beyond UI mock
+vi.mock('@scaffald/ui', () => {
   const Stack = ({
     children,
     testID,
@@ -291,8 +291,8 @@ vi.mock('tamagui', () => {
   } & Record<string, unknown>) => <h4 {...rest}>{children}</h4>
 
   return {
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Text,
     Input,
     Image,
@@ -301,7 +301,7 @@ vi.mock('tamagui', () => {
 })
 
 // Mock lucide icons
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   // Icons used by PortfolioManager
   Plus: () => <span data-testid="plus-icon">Plus</span>,
   Edit3: () => <span data-testid="edit-icon">Edit3</span>,

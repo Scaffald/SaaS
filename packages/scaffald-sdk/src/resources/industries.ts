@@ -29,11 +29,7 @@ export class Industries extends Resource {
    * ```
    */
   async list(): Promise<IndustryListResponse> {
-    const data = await this.get<Industry[]>('/v1/industries')
-    return {
-      data,
-      total: data.length,
-    }
+    return this.get<IndustryListResponse>('/v1/industries')
   }
 
   /**
@@ -52,6 +48,11 @@ export class Industries extends Resource {
    * ```
    */
   async retrieve(slug: string): Promise<Industry | null> {
-    return this.get<Industry | null>(`/v1/industries/${slug}`)
+    try {
+      const res = await this.get<{ data: Industry }>(`/v1/industries/${slug}`)
+      return res?.data ?? null
+    } catch {
+      return null
+    }
   }
 }

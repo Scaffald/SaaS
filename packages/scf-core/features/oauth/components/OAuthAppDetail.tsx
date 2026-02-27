@@ -1,23 +1,32 @@
 /**
  * OAuth App Detail Component
- * REQ-10 Task 11: Admin OAuth app detail and approval
+ * Admin OAuth app detail and approval
  */
 
 import {
-  Badge,
   Button,
   Card,
+  Chip,
   Paragraph,
-  SizableText,
-  XStack,
-  YStack,
+  Text,
+  Row,
+  Stack,
   Separator,
   Checkbox,
-  AlertDialog,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalActions,
   Input,
-} from '@unicornlove/ui'
+} from '@scaffald/ui'
 import { useState } from 'react'
-import { api } from '@scf/core/utils/api'
+import {
+  useAdminOAuthAppDetail,
+  useAdminOAuthScopes,
+  useAdminApproveAppMutation,
+  useAdminRejectAppMutation,
+  useAdminSuspendAppMutation,
+} from '@scf/core/utils/oauth-sdk-hooks'
 import { useRouter } from 'expo-router'
 import { ROUTES } from '@scf/core/constants/routes'
 
@@ -35,18 +44,18 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
   const [showSuspendDialog, setShowSuspendDialog] = useState(false)
 
   // Queries
-  const appQuery = api.oauth.admin.getAppDetail.useQuery({ app_id: appId })
-  const scopesQuery = api.oauth.admin.listScopes.useQuery()
+  const appQuery = useAdminOAuthAppDetail(appId)
+  const scopesQuery = useAdminOAuthScopes()
 
   // Mutations
-  const approveApp = api.oauth.admin.approveApp.useMutation({
+  const approveApp = useAdminApproveAppMutation({
     onSuccess: () => {
       appQuery.refetch()
       setShowApproveDialog(false)
     },
   })
 
-  const rejectApp = api.oauth.admin.rejectApp.useMutation({
+  const rejectApp = useAdminRejectAppMutation({
     onSuccess: () => {
       appQuery.refetch()
       setShowRejectDialog(false)
@@ -54,7 +63,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
     },
   })
 
-  const suspendApp = api.oauth.admin.suspendApp.useMutation({
+  const suspendApp = useAdminSuspendAppMutation({
     onSuccess: () => {
       appQuery.refetch()
       setShowSuspendDialog(false)
@@ -66,17 +75,17 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
 
   if (appQuery.isLoading) {
     return (
-      <YStack flex={1} padding="$4" gap="$4">
-        <SizableText>Loading...</SizableText>
-      </YStack>
+      <Stack flex={1} padding="md" gap={16}>
+        <Text>Loading...</Text>
+      </Stack>
     )
   }
 
   if (!app) {
     return (
-      <YStack flex={1} padding="$4" gap="$4">
-        <SizableText>App not found</SizableText>
-      </YStack>
+      <Stack flex={1} padding="md" gap={16}>
+        <Text>App not found</Text>
+      </Stack>
     )
   }
 
@@ -86,12 +95,12 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
 
   const statusColor =
     app.status === 'active' || app.status === 'trusted'
-      ? '$green10'
+      ? '#22c55e'
       : app.status === 'pending'
-        ? '$yellow10'
+        ? '#eab308'
         : app.status === 'suspended'
-          ? '$orange10'
-          : '$red10'
+          ? '#f97316'
+          : '#ef4444'
 
   function handleApprove() {
     approveApp.mutate({
@@ -115,194 +124,215 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
   }
 
   return (
-    <YStack flex={1} gap="$4" data-testid="oauth-app-detail">
+    <Stack flex={1} gap={16} data-testid="oauth-app-detail">
       {/* Header */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$2" flex={1}>
-          <SizableText size="$6" fontWeight="600" data-testid="oauth-app-detail-name">
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={8} flex={1}>
+          <Text size="2xl" data-testid="oauth-app-detail-name">
             {app.display_name}
-          </SizableText>
-          <XStack gap="$2" alignItems="center">
-            <Badge backgroundColor={statusColor} color="white" data-testid="oauth-app-detail-status">
+          </Text>
+          <Row gap={8} align="center">
+            <Chip
+              style={{ backgroundColor: statusColor }}
+              textStyle={{ color: 'white' }}
+              data-testid="oauth-app-detail-status"
+            >
               {app.status.toUpperCase()}
-            </Badge>
+            </Chip>
             {app.requires_approval && isPending && (
-              <Badge backgroundColor="$blue10" color="white" data-testid="oauth-app-requires-approval">
+              <Chip
+                style={{ backgroundColor: '#3b82f6' }}
+                textStyle={{ color: 'white' }}
+                data-testid="oauth-app-requires-approval"
+              >
                 REQUIRES APPROVAL
-              </Badge>
+              </Chip>
             )}
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
 
         {/* Action Buttons */}
-        <XStack gap="$2" data-testid="oauth-app-actions">
+        <Row gap={8} data-testid="oauth-app-actions">
           {isPending && (
             <>
-              <Button variant="outlined" onPress={() => setShowRejectDialog(true)} data-testid="oauth-app-reject-button">
+              <Button
+                variant="outline"
+                onPress={() => setShowRejectDialog(true)}
+                data-testid="oauth-app-reject-button"
+              >
                 Reject
               </Button>
-              <Button onPress={() => setShowApproveDialog(true)} data-testid="oauth-app-approve-button">Approve</Button>
+              <Button
+                onPress={() => setShowApproveDialog(true)}
+                data-testid="oauth-app-approve-button"
+              >
+                Approve
+              </Button>
             </>
           )}
           {isActive && (
-            <Button variant="outlined" onPress={() => setShowSuspendDialog(true)} data-testid="oauth-app-suspend-button">
+            <Button
+              variant="outline"
+              onPress={() => setShowSuspendDialog(true)}
+              data-testid="oauth-app-suspend-button"
+            >
               Suspend
             </Button>
           )}
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* App Details */}
-      <Card padding="$4" gap="$4">
-        <YStack gap="$3">
-          <SizableText size="$5" fontWeight="600">
-            Application Details
-          </SizableText>
+      <Card padding="md">
+        <Stack gap={16}>
+        <Stack gap={12}>
+          <Text size="lg">Application Details</Text>
 
-          <YStack gap="$2">
-            <SizableText size="$3" color="$color11">
+          <Stack gap={8}>
+            <Text size="sm" color="$gray11">
               Description
-            </SizableText>
-            <Paragraph size="$3">{app.description || 'No description provided'}</Paragraph>
-          </YStack>
+            </Text>
+            <Paragraph size="sm">{app.description || 'No description provided'}</Paragraph>
+          </Stack>
 
           <Separator />
 
-          <YStack gap="$2">
-            <SizableText size="$3" color="$color11">
+          <Stack gap={8}>
+            <Text size="sm" color="$gray11">
               Client ID
-            </SizableText>
-            <SizableText size="$3" fontFamily="$mono" data-testid="oauth-app-client-id">
+            </Text>
+            <Text size="sm" mono data-testid="oauth-app-client-id">
               {app.client_id}
-            </SizableText>
-          </YStack>
+            </Text>
+          </Stack>
 
-          <YStack gap="$2">
-            <SizableText size="$3" color="$color11">
+          <Stack gap={8}>
+            <Text size="sm" color="$gray11">
               Homepage URL
-            </SizableText>
-            <SizableText size="$3" color="$blue10">
+            </Text>
+            <Text size="sm" color="$blue10">
               {app.homepage_url || 'Not provided'}
-            </SizableText>
-          </YStack>
+            </Text>
+          </Stack>
 
           {app.privacy_policy_url && (
-            <YStack gap="$2">
-              <SizableText size="$3" color="$color11">
+            <Stack gap={8}>
+              <Text size="sm" color="$gray11">
                 Privacy Policy URL
-              </SizableText>
-              <SizableText size="$3" color="$blue10">
+              </Text>
+              <Text size="sm" color="$blue10">
                 {app.privacy_policy_url}
-              </SizableText>
-            </YStack>
+              </Text>
+            </Stack>
           )}
 
           {app.terms_of_service_url && (
-            <YStack gap="$2">
-              <SizableText size="$3" color="$color11">
+            <Stack gap={8}>
+              <Text size="sm" color="$gray11">
                 Terms of Service URL
-              </SizableText>
-              <SizableText size="$3" color="$blue10">
+              </Text>
+              <Text size="sm" color="$blue10">
                 {app.terms_of_service_url}
-              </SizableText>
-            </YStack>
+              </Text>
+            </Stack>
           )}
 
           <Separator />
 
-          <YStack gap="$2">
-            <SizableText size="$3" color="$color11">
+          <Stack gap={8}>
+            <Text size="sm" color="$gray11">
               Owner Email
-            </SizableText>
-            <SizableText size="$3">{app.owner_email || 'Not provided'}</SizableText>
-          </YStack>
+            </Text>
+            <Text size="sm">{app.owner_email || 'Not provided'}</Text>
+          </Stack>
 
-          <YStack gap="$2">
-            <SizableText size="$3" color="$color11">
+          <Stack gap={8}>
+            <Text size="sm" color="$gray11">
               Created
-            </SizableText>
-            <SizableText size="$3">
-              {new Date(app.created_at).toLocaleString()}
-            </SizableText>
-          </YStack>
+            </Text>
+            <Text size="sm">{new Date(app.created_at).toLocaleString()}</Text>
+          </Stack>
 
           {app.approved_at && (
-            <YStack gap="$2">
-              <SizableText size="$3" color="$color11">
+            <Stack gap={8}>
+              <Text size="sm" color="$gray11">
                 Approved
-              </SizableText>
-              <SizableText size="$3">
-                {new Date(app.approved_at).toLocaleString()}
-              </SizableText>
-            </YStack>
+              </Text>
+              <Text size="sm">{new Date(app.approved_at).toLocaleString()}</Text>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
+        </Stack>
       </Card>
 
       {/* Redirect URIs */}
-      <Card padding="$4" gap="$4" data-testid="oauth-app-redirect-uris">
-        <YStack gap="$3">
-          <SizableText size="$5" fontWeight="600">
-            Redirect URIs
-          </SizableText>
-          <YStack gap="$2">
+      <Card padding="md" data-testid="oauth-app-redirect-uris">
+        <Stack gap={16}>
+        <Stack gap={12}>
+          <Text size="lg">Redirect URIs</Text>
+          <Stack gap={8}>
             {app.redirect_uris.map((uri, index) => (
-              <YStack key={index} gap="$1">
-                <SizableText size="$3" fontFamily="$mono" color="$blue10" data-testid={`oauth-app-redirect-uri-${index}`}>
+              <Stack key={index} gap={4}>
+                <Text
+                  size="sm"
+                  mono
+                  color="$blue10"
+                  data-testid={`oauth-app-redirect-uri-${index}`}
+                >
                   {uri}
-                </SizableText>
-              </YStack>
+                </Text>
+              </Stack>
             ))}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
+        </Stack>
       </Card>
 
       {/* Allowed Scopes */}
-      <Card padding="$4" gap="$4" data-testid="oauth-app-scopes">
-        <YStack gap="$3">
-          <SizableText size="$5" fontWeight="600">
-            Allowed Scopes
-          </SizableText>
+      <Card padding="md" data-testid="oauth-app-scopes">
+        <Stack gap={16}>
+        <Stack gap={12}>
+          <Text size="lg">Allowed Scopes</Text>
           {app.allowed_scopes.length > 0 ? (
-            <XStack gap="$2" flexWrap="wrap">
+            <Row gap={8} wrap>
               {app.allowed_scopes.map((scope) => (
-                <Badge key={scope} backgroundColor="$blue2" color="$blue10" data-testid={`oauth-app-scope-${scope}`}>
+                <Chip
+                  key={scope}
+                  style={{ backgroundColor: '#dbeafe', paddingHorizontal: 8, paddingVertical: 4 }}
+                  textStyle={{ color: '#1d4ed8' }}
+                  data-testid={`oauth-app-scope-${scope}`}
+                >
                   {scope}
-                </Badge>
+                </Chip>
               ))}
-            </XStack>
+            </Row>
           ) : (
-            <Paragraph size="$3" color="$color11" data-testid="oauth-app-no-scopes">
+            <Paragraph size="sm" color="$gray11" data-testid="oauth-app-no-scopes">
               No scopes approved yet
             </Paragraph>
           )}
-        </YStack>
+        </Stack>
+        </Stack>
       </Card>
 
       {/* Approve App Dialog */}
-      <AlertDialog open={showApproveDialog} onOpenChange={setShowApproveDialog}>
-        <AlertDialog.Portal>
-          <AlertDialog.Overlay />
-          <AlertDialog.Content maxWidth={600}>
-            <YStack gap="$4">
-              <YStack gap="$2">
-                <AlertDialog.Title>Approve OAuth Application</AlertDialog.Title>
-                <AlertDialog.Description>
-                  Select the scopes to grant and the trust level for {app.display_name}.
-                </AlertDialog.Description>
-              </YStack>
-
+      <Modal visible={showApproveDialog} onClose={() => setShowApproveDialog(false)} width={600}>
+        <ModalContent>
+          <ModalHeader
+            title="Approve OAuth Application"
+            description={`Select the scopes to grant and the trust level for ${app.display_name}.`}
+            onClose={() => setShowApproveDialog(false)}
+          />
+          <Stack gap={16}>
               {/* Scope Selection */}
-              <YStack gap="$3">
-                <SizableText size="$4" fontWeight="600">
-                  Select Scopes
-                </SizableText>
-                <YStack gap="$2" maxHeight={300} overflow="scroll">
+              <Stack gap={12}>
+                <Text size="md">Select Scopes</Text>
+                <Stack gap={8} style={{ maxHeight: 300, overflow: 'scroll' }}>
                   {scopes.map((scope) => (
-                    <XStack key={scope.id} gap="$2" alignItems="center">
+                    <Row key={scope.id} gap={8} align="center">
                       <Checkbox
                         checked={selectedScopes.includes(scope.scope)}
-                        onCheckedChange={(checked) => {
+                        onChange={(checked) => {
                           if (checked) {
                             setSelectedScopes([...selectedScopes, scope.scope])
                           } else {
@@ -310,139 +340,123 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
                           }
                         }}
                       />
-                      <YStack flex={1}>
-                        <SizableText size="$3" fontWeight="600">
-                          {scope.display_name}
-                        </SizableText>
-                        <SizableText size="$2" color="$color11">
+                      <Stack flex={1}>
+                        <Text size="sm">{scope.display_name}</Text>
+                        <Text size="sm" color="$gray11">
                           {scope.description}
-                        </SizableText>
-                      </YStack>
-                    </XStack>
+                        </Text>
+                      </Stack>
+                    </Row>
                   ))}
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
 
               {/* Trust Level */}
-              <YStack gap="$3">
-                <SizableText size="$4" fontWeight="600">
-                  Trust Level
-                </SizableText>
-                <XStack gap="$2">
+              <Stack gap={12}>
+                <Text size="md">Trust Level</Text>
+                <Row gap={8}>
                   <Button
-                    variant={trustLevel === 'active' ? 'default' : 'outlined'}
+                    variant={trustLevel === 'active' ? 'filled' : 'outline'}
                     onPress={() => setTrustLevel('active')}
-                    flex={1}
+                    style={{ flex: 1 }}
                   >
                     Active
                   </Button>
                   <Button
-                    variant={trustLevel === 'trusted' ? 'default' : 'outlined'}
+                    variant={trustLevel === 'trusted' ? 'filled' : 'outline'}
                     onPress={() => setTrustLevel('trusted')}
-                    flex={1}
+                    style={{ flex: 1 }}
                   >
                     Trusted
                   </Button>
-                </XStack>
-                <Paragraph size="$2" color="$color11">
+                </Row>
+                <Paragraph size="sm" color="$gray11">
                   {trustLevel === 'active'
                     ? 'Active apps require user consent for each authorization'
                     : 'Trusted apps can skip the consent screen'}
                 </Paragraph>
-              </YStack>
+              </Stack>
 
-              {/* Actions */}
-              <XStack gap="$3" justifyContent="flex-end">
-                <AlertDialog.Cancel asChild>
-                  <Button variant="outlined">Cancel</Button>
-                </AlertDialog.Cancel>
-                <Button
-                  onPress={handleApprove}
-                  disabled={selectedScopes.length === 0 || approveApp.isPending}
-                  loading={approveApp.isPending}
-                >
-                  Approve Application
-                </Button>
-              </XStack>
-            </YStack>
-          </AlertDialog.Content>
-        </AlertDialog.Portal>
-      </AlertDialog>
+              <ModalActions
+                primaryAction={{
+                  label: 'Approve Application',
+                  onPress: handleApprove,
+                  disabled: selectedScopes.length === 0 || approveApp.isPending,
+                  loading: approveApp.isPending,
+                }}
+                secondaryAction={{
+                  label: 'Cancel',
+                  onPress: () => setShowApproveDialog(false),
+                  variant: 'outline',
+                }}
+              />
+            </Stack>
+        </ModalContent>
+      </Modal>
 
       {/* Reject App Dialog */}
-      <AlertDialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
-        <AlertDialog.Portal>
-          <AlertDialog.Overlay />
-          <AlertDialog.Content>
-            <YStack gap="$4">
-              <YStack gap="$2">
-                <AlertDialog.Title>Reject Application</AlertDialog.Title>
-                <AlertDialog.Description>
-                  Are you sure you want to reject {app.display_name}? This will set the status to
-                  revoked.
-                </AlertDialog.Description>
-              </YStack>
-
-              <YStack gap="$2">
-                <SizableText size="$3">Rejection Reason (Optional)</SizableText>
+      <Modal visible={showRejectDialog} onClose={() => setShowRejectDialog(false)}>
+        <ModalContent>
+          <ModalHeader
+            title="Reject Application"
+            description={`Are you sure you want to reject ${app.display_name}? This will set the status to revoked.`}
+            onClose={() => setShowRejectDialog(false)}
+          />
+          <Stack gap={16}>
+              <Stack gap={8}>
+                <Text size="sm">Rejection Reason (Optional)</Text>
                 <Input
                   value={rejectReason}
                   onChangeText={setRejectReason}
                   placeholder="e.g., Does not meet security requirements"
                   multiline
-                  numberOfLines={3}
                 />
-              </YStack>
+              </Stack>
 
-              <XStack gap="$3" justifyContent="flex-end">
-                <AlertDialog.Cancel asChild>
-                  <Button variant="outlined">Cancel</Button>
-                </AlertDialog.Cancel>
-                <Button
-                  onPress={handleReject}
-                  disabled={rejectApp.isPending}
-                  loading={rejectApp.isPending}
-                  backgroundColor="$red10"
-                >
-                  Reject Application
-                </Button>
-              </XStack>
-            </YStack>
-          </AlertDialog.Content>
-        </AlertDialog.Portal>
-      </AlertDialog>
+              <ModalActions
+                primaryAction={{
+                  label: 'Reject Application',
+                  onPress: handleReject,
+                  disabled: rejectApp.isPending,
+                  loading: rejectApp.isPending,
+                  color: 'error',
+                }}
+                secondaryAction={{
+                  label: 'Cancel',
+                  onPress: () => setShowRejectDialog(false),
+                  variant: 'outline',
+                }}
+              />
+            </Stack>
+        </ModalContent>
+      </Modal>
 
       {/* Suspend App Dialog */}
-      <AlertDialog open={showSuspendDialog} onOpenChange={setShowSuspendDialog}>
-        <AlertDialog.Portal>
-          <AlertDialog.Overlay />
-          <AlertDialog.Content>
-            <YStack gap="$4">
-              <YStack gap="$2">
-                <AlertDialog.Title>Suspend Application</AlertDialog.Title>
-                <AlertDialog.Description>
-                  Are you sure you want to suspend {app.display_name}? This will revoke all active
-                  tokens and prevent new authorizations.
-                </AlertDialog.Description>
-              </YStack>
-
-              <XStack gap="$3" justifyContent="flex-end">
-                <AlertDialog.Cancel asChild>
-                  <Button variant="outlined">Cancel</Button>
-                </AlertDialog.Cancel>
-                <Button
-                  onPress={handleSuspend}
-                  disabled={suspendApp.isPending}
-                  loading={suspendApp.isPending}
-                  backgroundColor="$orange10"
-                >
-                  Suspend Application
-                </Button>
-              </XStack>
-            </YStack>
-          </AlertDialog.Content>
-        </AlertDialog.Portal>
-      </AlertDialog>
-    </YStack>
+      <Modal visible={showSuspendDialog} onClose={() => setShowSuspendDialog(false)}>
+        <ModalContent>
+          <ModalHeader
+            title="Suspend Application"
+            description={`Are you sure you want to suspend ${app.display_name}? This will revoke all active tokens and prevent new authorizations.`}
+            onClose={() => setShowSuspendDialog(false)}
+          />
+          <Stack gap={16}>
+              <ModalActions
+                primaryAction={{
+                  label: 'Suspend Application',
+                  onPress: handleSuspend,
+                  disabled: suspendApp.isPending,
+                  loading: suspendApp.isPending,
+                  color: 'error',
+                }}
+                secondaryAction={{
+                  label: 'Cancel',
+                  onPress: () => setShowSuspendDialog(false),
+                  variant: 'outline',
+                }}
+              />
+            </Stack>
+        </ModalContent>
+      </Modal>
+    </Stack>
   )
 }

@@ -1,8 +1,10 @@
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import { Check, ChevronRight, Clock } from '@tamagui/lucide-icons'
+import { Check, ChevronRight, Clock } from 'lucide-react-native'
 import { Link } from 'expo-router'
 import { useCallback, useMemo } from 'react'
-import { Paragraph, XStack, YStack } from '@unicornlove/ui'
+import { Pressable } from 'react-native'
+import { Paragraph, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import type { DrawerLinkProps } from './types'
 import { isActivePath } from './utils'
 
@@ -24,6 +26,7 @@ export const DrawerLink = ({
   const isManualExpandable = item.isExpandable && !item.expandOnActive
   const isAutoExpandable = item.isExpandable && item.expandOnActive
   const { t } = useTranslation()
+  const { theme } = useThemeContext()
 
   const resolveTitle = useCallback(() => {
     if (item.titleKey) {
@@ -37,21 +40,29 @@ export const DrawerLink = ({
 
   const renderIcon = useCallback(() => {
     if (!Icon) return null
-    return <Icon size={20} color={active ? '$color1' : '$color12'} />
-  }, [Icon, active])
+    return (
+      <Icon size="lg" color={active ? colors.icon[theme].active : colors.icon[theme].default} />
+    )
+  }, [Icon, active, theme])
 
   const renderContent = useCallback(() => {
     const iconWrapper = (
-      <XStack
-        alignItems="center"
-        justifyContent="center"
+      <Row
+        align="center"
+        justify="center"
         width={collapsed ? 48 : 32}
         height={collapsed ? 48 : 32}
-        borderRadius="$8"
-        backgroundColor={collapsed ? (active ? '$blue9' : '$color5') : 'transparent'}
+        borderRadius={32}
+        style={{
+          backgroundColor: collapsed
+            ? active
+              ? colors.bg[theme].selected
+              : colors.bg[theme].subtle
+            : 'transparent',
+        }}
       >
         {renderIcon()}
-      </XStack>
+      </Row>
     )
 
     if (collapsed) {
@@ -59,14 +70,19 @@ export const DrawerLink = ({
     }
 
     return (
-      <XStack alignItems="center" gap="$3">
+      <Row align="center" gap={12}>
         {iconWrapper}
-        <Paragraph size="$4" fontWeight="600" color={active ? '$color1' : '$color12'}>
+        <Paragraph
+          size="md"
+          style={{
+            color: active ? colors.info[500] : colors.text[theme].primary,
+          }}
+        >
           {title}
         </Paragraph>
-      </XStack>
+      </Row>
     )
-  }, [active, collapsed, renderIcon, title])
+  }, [active, collapsed, renderIcon, title, theme])
 
   const renderRightSide = useCallback(() => {
     if (collapsed) {
@@ -74,25 +90,32 @@ export const DrawerLink = ({
     }
 
     return (
-      <XStack alignItems="center" gap="$2">
+      <Row align="center" gap={8}>
         {item.badge && (
-          <XStack
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$10"
-            backgroundColor="$red9"
+          <Row
+            paddingHorizontal={8}
+            paddingVertical={4}
+            borderRadius={8}
+            style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
             minWidth={20}
-            alignItems="center"
+            align="center"
           >
-            <Paragraph size="$1" color={active ? '$color1' : '$color12'} fontWeight="600">
+            <Paragraph
+              size="sm"
+              style={{
+                color: active ? colors.info[500] : colors.text[theme].primary,
+              }}
+            >
               {item.badge}
             </Paragraph>
-          </XStack>
+          </Row>
         )}
-        {!item.isExpandable && item.hasChevron && <ChevronRight size={16} color="$color10" />}
-      </XStack>
+        {!item.isExpandable && item.hasChevron && (
+          <ChevronRight size="md" color={colors.icon[theme].subtle} />
+        )}
+      </Row>
     )
-  }, [active, collapsed, item.badge, item.hasChevron, item.isExpandable])
+  }, [active, collapsed, item.badge, item.hasChevron, item.isExpandable, theme])
 
   if (collapsed && depth > 0) {
     return null
@@ -101,55 +124,54 @@ export const DrawerLink = ({
   if (item.disabled) {
     if (collapsed) {
       return (
-        <XStack
-          alignItems="center"
-          justifyContent="center"
+        <Row
+          align="center"
+          justify="center"
           width={56}
           height={56}
-          borderRadius="$8"
-          opacity={0.4}
-          backgroundColor="$color4"
-          cursor="not-allowed"
+          borderRadius={32}
+          style={{ opacity: 0.4, backgroundColor: colors.gray[100] }}
         >
           {renderIcon()}
-        </XStack>
+        </Row>
       )
     }
 
     return (
-      <XStack
-        alignItems="center"
-        gap="$3"
-        paddingHorizontal="$3"
-        paddingVertical="$2"
-        opacity={0.5}
-        cursor="not-allowed"
-        flex={1}
+      <Row
+        align="center"
+        gap={12}
+        paddingHorizontal={12}
+        paddingVertical={8}
+        style={{ opacity: 0.5, flex: 1 }}
       >
-        {Icon && <Icon size={18} color="$color12" />}
-        <Paragraph size="$3" fontWeight="500" color="$color12">
+        {Icon && <Icon size={18} color={colors.gray[500]} />}
+        <Paragraph size="sm" style={{ color: colors.gray[500] }}>
           {title}
         </Paragraph>
-      </XStack>
+      </Row>
     )
   }
 
   if (collapsed && depth === 0) {
     return (
       <Link href={item.href} asChild>
-        <XStack
-          width={56}
-          height={56}
-          borderRadius="$8"
-          alignItems="center"
-          justifyContent="center"
-          backgroundColor={active ? '$blue9' : 'transparent'}
-          hoverStyle={{ backgroundColor: active ? '$blue9' : '$blue4' }}
-          pressStyle={{ backgroundColor: active ? '$blue9' : '$blue4' }}
-          cursor="pointer"
+        <Pressable
+          style={({ pressed }) => ({
+            width: 56,
+            height: 56,
+            borderRadius: 32,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: active
+              ? colors.info[900]
+              : pressed
+                ? colors.info[100]
+                : 'transparent',
+          })}
         >
           {renderIcon()}
-        </XStack>
+        </Pressable>
       </Link>
     )
   }
@@ -157,53 +179,61 @@ export const DrawerLink = ({
   if (depth > 0) {
     return (
       <Link href={item.href} asChild>
-        <XStack
-          alignItems="center"
-          borderRadius="$4"
-          gap="$3"
-          paddingHorizontal="$3"
-          paddingVertical="$2"
-          paddingLeft="$9"
-          pressStyle={{ backgroundColor: '$color1' }}
-          hoverStyle={{ backgroundColor: '$blue4' }}
-          cursor="pointer"
-          flex={1}
+        <Pressable
+          style={({ pressed }: { pressed: boolean }) => ({
+            flexDirection: 'row',
+            alignItems: 'center',
+            borderRadius: 16,
+            columnGap: 12,
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+            paddingLeft: 36,
+            backgroundColor: pressed ? colors.gray[50] : undefined,
+            flex: 1,
+          })}
         >
-          <Paragraph size="$4" fontWeight="500" color={active ? '$blue9' : '$color12'}>
+          <Paragraph
+            size="md"
+            style={{ color: active ? colors.info[900] : colors.gray[900], flex: 1 }}
+          >
             {title}
           </Paragraph>
           {item.isOnCooldown ? (
-            <Clock size={16} color="$blue9" />
+            <Clock size="md" color={colors.info[900]} />
           ) : item.isCompleted ? (
-            <Check size={16} color="$green9" />
+            <Check size="md" color={colors.success[600]} />
           ) : null}
-        </XStack>
+        </Pressable>
       </Link>
     )
   }
 
   if (isManualExpandable) {
     return (
-      <YStack flex={1}>
+      <Stack flex={1}>
         <Link href={item.href} asChild>
-          <XStack
-            alignItems="center"
-            justifyContent="space-between"
-            paddingHorizontal="$3"
-            paddingVertical="$2"
-            borderRadius="$4"
-            marginVertical="$1"
-            backgroundColor={active ? '$blue9' : 'transparent'}
-            hoverStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
-            pressStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
-            cursor="pointer"
+          <Pressable
+            style={({ pressed }: { pressed: boolean }) => ({
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              borderRadius: 16,
+              marginVertical: 4,
+              backgroundColor: active
+                ? colors.info[900]
+                : pressed
+                  ? colors.gray[200]
+                  : 'transparent',
+            })}
           >
             {renderContent()}
             {renderRightSide()}
-          </XStack>
+          </Pressable>
         </Link>
         {shouldShowSubItems && item.subItems && (
-          <YStack borderRadius="$4" marginVertical="$2" gap="$2" flex={1}>
+          <Stack borderRadius={16} marginVertical={8} gap={8} flex={1}>
             {item.subItems.map((subItem) => (
               <DrawerLink
                 key={subItem.key}
@@ -216,34 +246,38 @@ export const DrawerLink = ({
                 isCollapsed={collapsed}
               />
             ))}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     )
   }
 
   if (isAutoExpandable) {
     return (
-      <YStack flex={1}>
+      <Stack flex={1}>
         <Link href={item.href} asChild>
-          <XStack
-            alignItems="center"
-            justifyContent="space-between"
-            paddingHorizontal="$3"
-            paddingVertical="$2"
-            borderRadius="$4"
-            marginVertical="$1"
-            backgroundColor={active ? '$blue9' : 'transparent'}
-            hoverStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
-            pressStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
-            cursor="pointer"
+          <Pressable
+            style={({ pressed }: { pressed: boolean }) => ({
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              borderRadius: 16,
+              marginVertical: 4,
+              backgroundColor: active
+                ? colors.info[900]
+                : pressed
+                  ? colors.gray[200]
+                  : 'transparent',
+            })}
           >
             {renderContent()}
             {renderRightSide()}
-          </XStack>
+          </Pressable>
         </Link>
         {shouldShowSubItems && item.subItems && (
-          <YStack borderRadius="$4" marginVertical="$2" gap="$2" flex={1}>
+          <Stack borderRadius={16} marginVertical={8} gap={8} flex={1}>
             {item.subItems.map((subItem) => (
               <DrawerLink
                 key={subItem.key}
@@ -256,33 +290,37 @@ export const DrawerLink = ({
                 isCollapsed={collapsed}
               />
             ))}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     )
   }
 
   if (item.subItems && item.subItems.length > 0) {
     return (
-      <YStack flex={1}>
+      <Stack flex={1}>
         <Link href={item.href} asChild>
-          <XStack
-            alignItems="center"
-            justifyContent="space-between"
-            paddingHorizontal="$3"
-            paddingVertical="$2"
-            borderRadius="$4"
-            marginVertical="$1"
-            backgroundColor={active ? '$blue9' : 'transparent'}
-            hoverStyle={{ backgroundColor: active ? '$blue9' : '$color3' }}
-            pressStyle={{ backgroundColor: active ? '$blue9' : '$color3' }}
-            cursor="pointer"
+          <Pressable
+            style={({ pressed }: { pressed: boolean }) => ({
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              borderRadius: 16,
+              marginVertical: 4,
+              backgroundColor: active
+                ? colors.info[900]
+                : pressed
+                  ? colors.gray[200]
+                  : 'transparent',
+            })}
           >
             {renderContent()}
             {renderRightSide()}
-          </XStack>
+          </Pressable>
         </Link>
-        <YStack borderRadius="$4" marginVertical="$2" gap="$2" flex={1}>
+        <Stack borderRadius={16} marginVertical={8} gap={8} flex={1}>
           {item.subItems.map((subItem) => (
             <DrawerLink
               key={subItem.key}
@@ -295,28 +333,32 @@ export const DrawerLink = ({
               isCollapsed={collapsed}
             />
           ))}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
   return (
     <Link href={item.href} asChild>
-      <XStack
-        alignItems="center"
-        justifyContent="space-between"
-        paddingHorizontal="$3"
-        paddingVertical="$3"
-        borderRadius="$2"
-        marginVertical="$1"
-        backgroundColor={active ? '$blue9' : 'transparent'}
-        hoverStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
-        pressStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
-        cursor="pointer"
+      <Pressable
+        style={({ pressed }: { pressed: boolean }) => ({
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingHorizontal: 12,
+          paddingVertical: 12,
+          borderRadius: 8,
+          marginVertical: 4,
+          backgroundColor: active
+            ? colors.info[900]
+            : pressed
+              ? colors.gray[200]
+              : 'transparent',
+        })}
       >
         {renderContent()}
         {renderRightSide()}
-      </XStack>
+      </Pressable>
     </Link>
   )
 }

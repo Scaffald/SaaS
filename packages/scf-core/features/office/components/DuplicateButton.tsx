@@ -1,30 +1,14 @@
-import { Copy } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { Copy } from 'lucide-react-native'
+import { useToast } from '@scaffald/ui'
 import { useState } from 'react'
-import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-import { Dialog } from '@unicornlove/ui'
+import { Button, Row, Stack, Modal, ModalContent, ModalHeader } from '@scaffald/ui'
 
 interface DuplicateButtonProps {
-  /**
-   * Name of the item being duplicated (displayed in confirmation)
-   */
   itemName: string
-  /**
-   * Type of item (e.g., "job", "user", "university")
-   */
   itemType: string
-  /**
-   * Async function to execute the duplicate operation
-   */
   onDuplicate: () => Promise<void>
-  /**
-   * Optional size for the button
-   */
-  size?: '$2' | '$3' | '$4'
-  /**
-   * Optional variant for the button
-   */
-  variant?: 'outlined'
+  size?: 'sm' | 'md' | 'lg'
+  variant?: 'outline'
 }
 
 /**
@@ -48,24 +32,28 @@ export function DuplicateButton({
   itemName,
   itemType,
   onDuplicate,
-  size = '$2',
-  variant = 'outlined',
+  size = 'md',
+  variant = 'outline',
 }: DuplicateButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isDuplicating, setIsDuplicating] = useState(false)
-  const toast = useToastController()
+  const toast = useToast()
 
   const handleDuplicate = async () => {
     setIsDuplicating(true)
     try {
       await onDuplicate()
-      toast.show('Success', {
+      toast.show({
+        title: 'Success',
         message: `${itemType.charAt(0).toUpperCase() + itemType.slice(1)} duplicated successfully`,
+        variant: 'success',
       })
       setIsOpen(false)
-    } catch (error) {
-      toast.show('Error', {
-        message: error instanceof Error ? error.message : `Failed to duplicate ${itemType}`,
+    } catch (err) {
+      toast.show({
+        title: 'Error',
+        message: err instanceof Error ? err.message : `Failed to duplicate ${itemType}`,
+        variant: 'error',
       })
     } finally {
       setIsDuplicating(false)
@@ -77,49 +65,37 @@ export function DuplicateButton({
       <Button
         size={size}
         variant={variant}
-        icon={Copy}
+        iconStart={Copy}
         onPress={() => setIsOpen(true)}
         disabled={isDuplicating}
       >
         Duplicate
       </Button>
 
-      <Dialog modal open={isOpen} onOpenChange={setIsOpen}>
-        <Dialog.Portal>
-          <Dialog.Overlay key="overlay" />
-          <Dialog.Content key="content" width={500}>
-            <Dialog.Title>
-              Duplicate {itemType.charAt(0).toUpperCase() + itemType.slice(1)}
-            </Dialog.Title>
-            <Dialog.Description>
-              Create a copy of <Text fontWeight="600">"{itemName}"</Text>?
-            </Dialog.Description>
-
-            <YStack gap="$2">
-              <Text color="$color11" fontSize="$3">
-                A new {itemType} will be created as a draft with "(Copy)" appended to the title. All
-                settings, requirements, and team assignments will be copied.
-              </Text>
-            </YStack>
-
-            <XStack gap="$3" alignItems="center" justifyContent="flex-end">
-              <Dialog.Close asChild>
-                <Button variant="outlined" disabled={isDuplicating}>
-                  Cancel
-                </Button>
-              </Dialog.Close>
-
+      <Modal visible={isOpen} onClose={() => setIsOpen(false)} width={500}>
+        <ModalContent>
+          <ModalHeader
+            title={`Duplicate ${itemType.charAt(0).toUpperCase() + itemType.slice(1)}`}
+            description={`Create a copy of "${itemName}"? A new ${itemType} will be created as a draft with "(Copy)" appended to the title. All settings, requirements, and team assignments will be copied.`}
+            onClose={() => setIsOpen(false)}
+          />
+          <Stack gap={16}>
+            <Row gap={12} align="center" justify="flex-end">
+              <Button variant="outline" onPress={() => setIsOpen(false)} disabled={isDuplicating}>
+                Cancel
+              </Button>
               <Button
                 onPress={handleDuplicate}
                 disabled={isDuplicating}
-                icon={isDuplicating ? <Spinner /> : Copy}
+                loading={isDuplicating}
+                iconStart={Copy}
               >
                 {isDuplicating ? 'Duplicating...' : 'Duplicate'}
               </Button>
-            </XStack>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog>
+            </Row>
+          </Stack>
+        </ModalContent>
+      </Modal>
     </>
   )
 }

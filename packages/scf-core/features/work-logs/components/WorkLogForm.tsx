@@ -1,7 +1,7 @@
-import { MapPin, Plus, Save } from '@tamagui/lucide-icons'
-import { useMemo, useState } from 'react'
-import { Controller, FormProvider } from 'react-hook-form'
-import { Platform } from 'react-native'
+import { MapPin, Plus, Save } from "lucide-react-native";
+import { useMemo, useState } from "react";
+import { Controller, FormProvider } from "react-hook-form";
+import { Platform } from "react-native";
 import {
   Button,
   Checkbox,
@@ -10,33 +10,45 @@ import {
   Separator,
   Spinner,
   Text,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
-import { type UseWorkLogFormOptions, useWorkLogForm } from '../hooks/useWorkLogForm'
-import { PhotoUpload } from './PhotoUpload'
-import { ProjectSelector } from './ProjectSelector'
-import { TimeEntryInput } from './TimeEntryInput'
-import { mapExplicitSkillsToOptions, normalizeProjectOptions } from '../utils/data-normalizers'
+  Row,
+  Stack,
+  useThemeContext,
+} from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
+import {
+  type UseWorkLogFormOptions,
+  useWorkLogForm,
+} from "../hooks/useWorkLogForm";
+import { PhotoUpload } from "./PhotoUpload";
+import { ProjectSelector } from "./ProjectSelector";
+import { TimeEntryInput } from "./TimeEntryInput";
+import {
+  mapExplicitSkillsToOptions,
+  normalizeProjectOptions,
+} from "../utils/data-normalizers";
 
-const getDateInputProps = () => {
-  if (Platform.OS === 'web') {
-    return { type: 'date' as const }
+const getDateInputProps = (): Record<string, unknown> => {
+  if (Platform.OS === "web") {
+    return { type: "date" };
   }
   return {
-    inputMode: 'numeric' as const,
-    keyboardType: 'numbers-and-punctuation' as const,
-  }
-}
+    inputMode: "numeric" as const,
+    keyboardType: "numbers-and-punctuation" as const,
+  };
+};
 
 export interface WorkLogFormProps extends UseWorkLogFormOptions {
   /**
    * Label for the primary submit button.
    */
-  submitLabel?: string
+  submitLabel?: string;
 }
 
-export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkLogFormProps) {
+export function WorkLogForm({
+  submitLabel = "Save Work Log",
+  ...options
+}: WorkLogFormProps) {
+  const { theme } = useThemeContext();
   const {
     form,
     timeEntryFields,
@@ -55,92 +67,93 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
     skillsQuery,
     pendingOfflineDraft,
     workLogId,
-  } = useWorkLogForm(options)
+  } = useWorkLogForm(options);
 
   const {
     control,
     watch,
     setValue,
     formState: { errors },
-  } = form
+  } = form;
 
-  const tasksCompleted = watch('tasksCompleted') ?? []
-  const selectedSkills = watch('skillsUsed') ?? []
+  const tasksCompleted = watch("tasksCompleted") ?? [];
+  const selectedSkills = watch("skillsUsed") ?? [];
 
-  const [taskDraft, setTaskDraft] = useState('')
+  const [taskDraft, setTaskDraft] = useState("");
 
-  const projectData = normalizeProjectOptions(projectOptionsQuery.data)
+  const projectData = normalizeProjectOptions(projectOptionsQuery.data);
 
   const projectError = projectOptionsQuery.error
-    ? (projectOptionsQuery.error.message ?? 'Unable to load project options.')
-    : null
+    ? projectOptionsQuery.error.message ?? "Unable to load project options."
+    : null;
 
   const tasksWithKeys = useMemo(() => {
-    const counts = new Map<string, number>()
+    const counts = new Map<string, number>();
     return tasksCompleted.map((task, index) => {
-      const current = counts.get(task) ?? 0
-      counts.set(task, current + 1)
+      const current = counts.get(task) ?? 0;
+      counts.set(task, current + 1);
       return {
         task,
         key: `${task}-${current}`,
         index,
-      }
-    })
-  }, [tasksCompleted])
+      };
+    });
+  }, [tasksCompleted]);
 
   const skillOptions = useMemo(
     () => mapExplicitSkillsToOptions(skillsQuery.data),
     [skillsQuery.data]
-  )
+  );
 
   const addTask = () => {
-    const trimmed = taskDraft.trim()
+    const trimmed = taskDraft.trim();
     if (!trimmed) {
-      return
+      return;
     }
-    setValue('tasksCompleted', [...tasksCompleted, trimmed])
-    setTaskDraft('')
-  }
+    setValue("tasksCompleted", [...tasksCompleted, trimmed]);
+    setTaskDraft("");
+  };
 
   const removeTask = (index: number) => {
-    const nextTasks = tasksCompleted.filter((_, taskIndex) => taskIndex !== index)
-    setValue('tasksCompleted', nextTasks)
-  }
+    const nextTasks = tasksCompleted.filter(
+      (_, taskIndex) => taskIndex !== index
+    );
+    setValue("tasksCompleted", nextTasks);
+  };
 
   const toggleSkill = (skillId: string, checked: boolean) => {
     if (checked) {
       if (selectedSkills.includes(skillId)) {
-        return
+        return;
       }
-      setValue('skillsUsed', [...selectedSkills, skillId])
+      setValue("skillsUsed", [...selectedSkills, skillId]);
     } else {
       setValue(
-        'skillsUsed',
+        "skillsUsed",
         selectedSkills.filter((id) => id !== skillId)
-      )
+      );
     }
-  }
+  };
 
   return (
     <FormProvider {...form}>
       <ScrollView>
-        <YStack gap="$5" padding="$4" paddingBottom="$8">
-          <YStack gap="$2">
-            <Text fontSize="$6" fontWeight="700">
-              Work Log Details
+        <Stack gap={20} padding="md" paddingBottom={32}>
+          <Stack gap={8}>
+            <Text>Work Log Details</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              Provide information about the work performed, including project,
+              schedule, and skills.
             </Text>
-            <Text fontSize="$3" color="$color10">
-              Provide information about the work performed, including project, schedule, and skills.
-            </Text>
-          </YStack>
+          </Stack>
 
-          <YStack gap="$3">
+          <Stack gap={12}>
             <Controller
               control={control}
               name="projectId"
               render={({ field }) => (
                 <ProjectSelector
-                  value={field.value}
+                  value={field.value ?? ""}
                   onChange={field.onChange}
                   organizations={projectData.organizations}
                   projects={projectData.projects}
@@ -152,42 +165,52 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                   disabled={projectOptionsQuery.isLoading}
                   helperText={
                     errors.projectId?.message ??
-                    'Projects are filtered to the organizations you belong to.'
+                    "Projects are filtered to the organizations you belong to."
                   }
                 />
               )}
             />
-          </YStack>
+          </Stack>
 
-          <YStack gap="$3">
-            <Text fontWeight="600" fontSize="$4">
-              Log Date
-            </Text>
+          <Stack gap={12}>
+            <Text>Log Date</Text>
             <Controller
               control={control}
               name="logDate"
               render={({ field }) => (
-                <Input {...field} {...getDateInputProps()} placeholder="YYYY-MM-DD" />
+                <Input
+                  {...field}
+                  {...getDateInputProps()}
+                  placeholder="YYYY-MM-DD"
+                />
               )}
             />
             {errors.logDate?.message && (
-              <Text fontSize="$2" color="$red10">
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.error[700] : colors.error[300],
+                }}
+              >
                 {errors.logDate.message}
               </Text>
             )}
-          </YStack>
+          </Stack>
 
-          <YStack gap="$3">
-            <XStack justifyContent="space-between" alignItems="center">
-              <Text fontWeight="600" fontSize="$4">
-                Time Entries
-              </Text>
-              <Button size="$3" icon={Plus} onPress={addTimeEntry} variant="outlined">
+          <Stack gap={12}>
+            <Row justify="space-between" align="center">
+              <Text>Time Entries</Text>
+              <Button
+                size="sm"
+                iconStart={Plus}
+                onPress={addTimeEntry}
+                variant="outline"
+              >
                 Add Entry
               </Button>
-            </XStack>
+            </Row>
 
-            <YStack gap="$3">
+            <Stack gap={12}>
               {timeEntryFields.map((field, index) => (
                 <TimeEntryInput
                   key={field.id}
@@ -196,24 +219,25 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                   disableRemove={timeEntryFields.length <= 1}
                 />
               ))}
-            </YStack>
+            </Stack>
 
-            <XStack gap="$2" alignItems="center">
-              <Text fontWeight="600" fontSize="$3">
-                Total Hours: {totalHours.toFixed(2)}
-              </Text>
+            <Row gap={8} align="center">
+              <Text>Total Hours: {totalHours.toFixed(2)}</Text>
               {overlapDetected && (
-                <Text fontSize="$2" color="$red10">
+                <Text
+                  style={{
+                    color:
+                      theme === "light" ? colors.error[700] : colors.error[300],
+                  }}
+                >
                   Overlapping time entries detected.
                 </Text>
               )}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
 
-          <YStack gap="$3">
-            <Text fontWeight="600" fontSize="$4">
-              Work Description
-            </Text>
+          <Stack gap={12}>
+            <Text>Work Description</Text>
             <Controller
               control={control}
               name="workDescription"
@@ -222,149 +246,157 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
                   {...field}
                   placeholder="Describe the work that was completed during this period"
                   multiline
-                  numberOfLines={4}
                   textAlignVertical="top"
                 />
               )}
             />
             {errors.workDescription?.message && (
-              <Text fontSize="$2" color="$red10">
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.error[700] : colors.error[300],
+                }}
+              >
                 {errors.workDescription.message}
               </Text>
             )}
-          </YStack>
+          </Stack>
 
-          <YStack gap="$3">
-            <Text fontWeight="600" fontSize="$4">
-              Tasks Completed
-            </Text>
-            <XStack gap="$2" alignItems="center">
+          <Stack gap={12}>
+            <Text>Tasks Completed</Text>
+            <Row gap={8} align="center">
               <Input
                 value={taskDraft}
                 onChangeText={setTaskDraft}
                 placeholder="Add a task and press the plus icon"
-                flex={1}
+                style={{ flex: 1 }}
               />
-              <Button size="$3" icon={Plus} onPress={addTask}>
+              <Button size="sm" iconStart={Plus} onPress={addTask}>
                 Add
               </Button>
-            </XStack>
+            </Row>
 
-            <YStack gap="$2">
+            <Stack gap={8}>
               {tasksWithKeys.length === 0 && (
-                <Text fontSize="$3" color="$color10">
+                <Text style={{ color: colors.text[theme].secondary }}>
                   No tasks added yet.
                 </Text>
               )}
 
               {tasksWithKeys.map(({ task, key, index }) => (
-                <XStack
+                <Row
                   key={key}
-                  alignItems="center"
-                  justifyContent="space-between"
+                  align="center"
+                  justify="space-between"
                   borderWidth={1}
-                  borderColor="$borderColor"
-                  borderRadius="$3"
-                  paddingHorizontal="$3"
-                  paddingVertical="$2"
-                  gap="$3"
+                  style={{ borderColor: colors.border[theme].default }}
+                  borderRadius={12}
+                  paddingHorizontal={12}
+                  paddingVertical={8}
+                  gap={12}
                 >
-                  <Text flex={1} fontSize="$3">
-                    {task}
-                  </Text>
-                  <Button size="$2" variant="outlined" onPress={() => removeTask(index)}>
+                  <Text style={{ flex: 1 }}>{task}</Text>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onPress={() => removeTask(index)}
+                  >
                     Remove
                   </Button>
-                </XStack>
+                </Row>
               ))}
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
 
           <Separator />
 
-          <YStack gap="$3">
-            <Text fontWeight="600" fontSize="$4">
-              Skills Used
-            </Text>
+          <Stack gap={12}>
+            <Text>Skills Used</Text>
             {skillsQuery.isLoading && (
-              <XStack gap="$2" alignItems="center">
-                <Spinner size="small" />
-                <Text fontSize="$3">Loading your skills…</Text>
-              </XStack>
+              <Row gap={8} align="center">
+                <Spinner size="sm" />
+                <Text>Loading your skills…</Text>
+              </Row>
             )}
 
             {skillsQuery.error && (
-              <Text fontSize="$3" color="$red10">
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.error[700] : colors.error[300],
+                }}
+              >
                 Unable to load skills at this time.
               </Text>
             )}
 
             {skillOptions.length === 0 && !skillsQuery.isLoading && (
-              <Text fontSize="$3" color="$color10">
+              <Text style={{ color: colors.text[theme].secondary }}>
                 You do not have any skills associated with your profile yet.
               </Text>
             )}
 
-            <YStack gap="$2">
+            <Stack gap={8}>
               {skillOptions.map((skill) => (
-                <XStack key={skill.id} gap="$2" alignItems="center">
+                <Row key={skill.id} gap={8} align="center">
                   <Checkbox
                     checked={selectedSkills.includes(skill.id)}
-                    onCheckedChange={(next) => toggleSkill(skill.id, next === true)}
+                    onChange={(next) => toggleSkill(skill.id, next === true)}
                   />
-                  <Text fontSize="$3">{skill.name}</Text>
-                </XStack>
+                  <Text>{skill.name}</Text>
+                </Row>
               ))}
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
 
           <Separator />
 
-          <YStack gap="$3">
-            <Text fontWeight="600" fontSize="$4">
-              Location Capture
-            </Text>
-            <XStack gap="$2" alignItems="center">
+          <Stack gap={12}>
+            <Text>Location Capture</Text>
+            <Row gap={8} align="center">
               <Button
-                icon={MapPin}
+                iconStart={MapPin}
                 onPress={captureLocation}
-                size="$3"
-                variant="outlined"
+                size="sm"
+                variant="outline"
                 disabled={location.isLoading}
               >
-                {location.isLoading ? 'Capturing…' : 'Capture Location'}
+                {location.isLoading ? "Capturing…" : "Capture Location"}
               </Button>
               {location.error && (
-                <Text fontSize="$3" color="$red10">
+                <Text
+                  style={{
+                    color:
+                      theme === "light" ? colors.error[700] : colors.error[300],
+                  }}
+                >
                   {location.error}
                 </Text>
               )}
-            </XStack>
+            </Row>
 
-            {form.watch('gpsCapture') && (
-              <YStack
+            {form.watch("gpsCapture") && (
+              <Stack
                 borderWidth={1}
-                borderColor="$borderColor"
-                borderRadius="$3"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
-                gap="$1"
+                style={{ borderColor: colors.border[theme].default }}
+                borderRadius={12}
+                paddingHorizontal={12}
+                paddingVertical={8}
+                gap={4}
               >
-                <Text fontSize="$3" fontWeight="600">
-                  Captured Location
+                <Text>Captured Location</Text>
+                <Text>
+                  Latitude: {form.watch("gpsCapture")?.latitude}, Longitude:{" "}
+                  {form.watch("gpsCapture")?.longitude}
                 </Text>
-                <Text fontSize="$3">
-                  Latitude: {form.watch('gpsCapture')?.latitude}, Longitude:{' '}
-                  {form.watch('gpsCapture')?.longitude}
-                </Text>
-                {form.watch('gpsCapture')?.accuracyMeters && (
-                  <Text fontSize="$3">
-                    Accuracy: {form.watch('gpsCapture')?.accuracyMeters} meters
+                {form.watch("gpsCapture")?.accuracyMeters && (
+                  <Text>
+                    Accuracy: {form.watch("gpsCapture")?.accuracyMeters} meters
                   </Text>
                 )}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
 
           <Separator />
 
@@ -372,46 +404,70 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
 
           <Separator />
 
-          <YStack gap="$2">
-            <Text fontWeight="600" fontSize="$4">
-              Draft Status
-            </Text>
-            {autoSaveStatus.state === 'saving' && (
-              <Text fontSize="$3" color="$color10">
+          <Stack gap={8}>
+            <Text>Draft Status</Text>
+            {autoSaveStatus.state === "saving" && (
+              <Text style={{ color: colors.text[theme].secondary }}>
                 Saving draft…
               </Text>
             )}
-            {autoSaveStatus.state === 'saved' && (
-              <Text fontSize="$3" color="$green10">
-                {autoSaveStatus.message ?? 'Draft saved'}{' '}
+            {autoSaveStatus.state === "saved" && (
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.green[700] : colors.green[300],
+                }}
+              >
+                {autoSaveStatus.message ?? "Draft saved"}{" "}
                 {autoSaveStatus.savedAt
                   ? new Date(autoSaveStatus.savedAt).toLocaleTimeString()
-                  : ''}
+                  : ""}
               </Text>
             )}
-            {autoSaveStatus.state === 'error' && (
-              <Text fontSize="$3" color="$red10">
-                {autoSaveStatus.message ?? 'Auto-save encountered an error.'}
+            {autoSaveStatus.state === "error" && (
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.error[700] : colors.error[300],
+                }}
+              >
+                {autoSaveStatus.message ?? "Auto-save encountered an error."}
               </Text>
             )}
-            {autoSaveStatus.state === 'invalid' && (
-              <Text fontSize="$3" color="$orange10">
+            {autoSaveStatus.state === "invalid" && (
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.yellow[700] : colors.yellow[300],
+                }}
+              >
                 {autoSaveStatus.message ??
-                  'Form is incomplete. Fill in required fields to auto-save.'}
+                  "Form is incomplete. Fill in required fields to auto-save."}
               </Text>
             )}
             {pendingOfflineDraft && (
-              <Text fontSize="$3" color="$orange10">
-                Offline draft queued. It will sync automatically when you are online.
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.yellow[700] : colors.yellow[300],
+                }}
+              >
+                Offline draft queued. It will sync automatically when you are
+                online.
               </Text>
             )}
-          </YStack>
+          </Stack>
 
-          <Button icon={Save} size="$5" onPress={() => submit()} disabled={isSubmitting}>
-            {isSubmitting ? 'Saving…' : submitLabel}
+          <Button
+            iconStart={Save}
+            size="lg"
+            onPress={() => submit()}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Saving…" : submitLabel}
           </Button>
-        </YStack>
+        </Stack>
       </ScrollView>
     </FormProvider>
-  )
+  );
 }

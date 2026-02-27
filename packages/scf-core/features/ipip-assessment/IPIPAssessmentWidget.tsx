@@ -1,10 +1,13 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import type { IPIPAnswer } from '@scf/core/features/personality-assessment/lib/ipip'
-import { api } from '@scf/core/utils/api'
-import { Button, DashboardWidget, spacing } from '@unicornlove/ui'
-import { ArrowRight, CheckCircle2 } from '@tamagui/lucide-icons'
+import {
+  useAssessmentStatus,
+  useIPIPStatus,
+} from '@scf/core/utils/personality-assessment-sdk-hooks'
+import { Button, DashboardWidget, useThemeContext } from '@scaffald/ui'
+import { ArrowRight, CheckCircle2 } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Progress, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { ProgressBar, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { useIPIPResults } from './hooks/useIPIPResults'
 import { DOMAIN_NAMES, DOMAIN_ORDER, getCompletedDomainsCount } from './utils/domainGrouping'
 
@@ -12,19 +15,23 @@ import { DOMAIN_NAMES, DOMAIN_ORDER, getCompletedDomainsCount } from './utils/do
  * IPIPAssessmentWidget - Dashboard widget with CTA and results preview
  */
 export function IPIPAssessmentWidget() {
+  useThemeContext()
   const router = useRouter()
 
-  const { data: status, isLoading } = api.personalityAssessment.getIPIPStatus.useQuery()
-  const { data: assessment } = api.personalityAssessment.getAssessmentStatus.useQuery()
+  const { data: statusData, isLoading } = useIPIPStatus()
+  const { data: assessmentData } = useAssessmentStatus()
   const results = useIPIPResults()
+
+  const status = (statusData as { data?: { isCompleted?: boolean; progress?: number } } | undefined)?.data
+  const assessment = (assessmentData as { data?: { ipip_answers?: unknown } } | undefined)?.data
 
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
-          <Spinner size="large" color="$blue7" />
-          <Text color="$color11">Loading...</Text>
-        </YStack>
+        <Stack gap={8} align="center" paddingVertical={40}>
+          <Spinner size="lg" color="primary" />
+          <Text color="$gray11">Loading...</Text>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -48,52 +55,40 @@ export function IPIPAssessmentWidget() {
   if (isCompleted && results.isComplete && results.archetype) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.md}>
-          <XStack justifyContent="space-between" alignItems="center">
-            <YStack gap={spacing.xs} flex={1}>
-              <XStack alignItems="center" gap="$2">
-                <CheckCircle2 size="$1" color="$green10" />
-                <Text fontSize="$6" fontWeight="bold" color="$color12">
-                  Personality Assessment
-                </Text>
-              </XStack>
-              <Text fontSize="$3" color="$color11">
-                Your Big Five personality profile is complete
-              </Text>
-            </YStack>
-          </XStack>
+        <Stack gap={12}>
+          <Row justify="space-between" align="center">
+            <Stack gap={4} flex={1}>
+              <Row align="center" gap={8}>
+                <CheckCircle2 size={16} color="$green10" />
+                <Text color="$gray11">Personality Assessment</Text>
+              </Row>
+              <Text color="$gray11" style={{ flex: 1 }}>Your Big Five personality profile is complete</Text>
+            </Stack>
+          </Row>
 
           {/* Results Preview */}
-          <YStack
-            gap={spacing.sm}
-            padding="$3"
+          <Stack
+            gap={8}
+            padding="sm"
             backgroundColor="$color2"
-            borderRadius="$3"
+            borderRadius={12}
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <XStack justifyContent="space-between" alignItems="center">
-              <YStack gap="$1" flex={1}>
-                <Text fontSize="$4" fontWeight="600" color="$color12">
-                  Your Archetype
-                </Text>
-                <Text fontSize="$5" fontWeight="bold" color="$blue11">
-                  {results.archetype.name}
-                </Text>
+            <Row justify="space-between" align="center">
+              <Stack gap={4} flex={1}>
+                <Text color="$gray11">Your Archetype</Text>
+                <Text color="$blue11">{results.archetype.name}</Text>
                 {results.archetype.confidence > 0 && (
-                  <Text fontSize="$2" color="$color10">
-                    {results.archetype.confidence}% confidence
-                  </Text>
+                  <Text color="$gray11">{results.archetype.confidence}% confidence</Text>
                 )}
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
 
             {/* Top 3 Domain Scores Preview */}
             {results.normalizedScores && (
-              <YStack gap="$2" marginTop="$2">
-                <Text fontSize="$3" fontWeight="600" color="$color11">
-                  Top Traits
-                </Text>
+              <Stack gap={8} marginTop={8}>
+                <Text color="$gray11">Top Traits</Text>
                 {DOMAIN_ORDER.slice(0, 3).map((domain) => {
                   const normalized = results.normalizedScores?.[domain]
                   if (!normalized) return null
@@ -103,29 +98,15 @@ export function IPIPAssessmentWidget() {
                   const result = normalized.result
 
                   return (
-                    <XStack
-                      key={domain}
-                      justifyContent="space-between"
-                      alignItems="center"
-                      gap="$2"
-                    >
-                      <Text fontSize="$3" color="$color11" flex={1}>
+                    <Row key={domain} justify="space-between" align="center" gap={8}>
+                      <Text color="$gray11" style={{ flex: 1 }}>
                         {domainName}
                       </Text>
-                      <Progress value={percentage} max={100} size="$1" width={100}>
-                        <Progress.Indicator animation="bouncy" />
-                      </Progress>
-                      <Text
-                        fontSize="$2"
-                        fontWeight="600"
-                        color="$color10"
-                        style={{ minWidth: 45 }}
-                      >
+                      <ProgressBar value={percentage} />
+                      <Text color="$gray11" style={{ minWidth: 45 }}>
                         {percentage}%
                       </Text>
                       <Text
-                        fontSize="$2"
-                        fontWeight="600"
                         color={
                           result === 'high' ? '$green10' : result === 'low' ? '$blue10' : '$gray10'
                         }
@@ -133,18 +114,17 @@ export function IPIPAssessmentWidget() {
                       >
                         {result.toUpperCase()}
                       </Text>
-                    </XStack>
+                    </Row>
                   )
                 })}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
 
-          <Button variant="primary" onPress={handleViewResults} size="$5">
-            <Button.Text>View Full Results</Button.Text>
-            <ArrowRight size="$1" />
+          <Button variant="filled" color="primary" onPress={handleViewResults} size="lg" iconEnd={ArrowRight}>
+            View Full Results
           </Button>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -152,56 +132,39 @@ export function IPIPAssessmentWidget() {
   // Show progress/CTA when in progress or not started
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
-        <YStack gap={spacing.xs}>
-          <Text fontSize="$6" fontWeight="bold" color="$color12">
-            Personality Assessment
-          </Text>
-          <Text fontSize="$3" color="$color11">
+      <Stack gap={12}>
+        <Stack gap={4}>
+          <Text color="$gray11">Personality Assessment</Text>
+          <Text color="$gray11">
             Answer 120 questions to discover your personality traits using the Big Five personality
             model.
           </Text>
-        </YStack>
+        </Stack>
 
         {/* Progress Bar */}
         {hasStarted && (
-          <YStack gap="$2">
-            <XStack justifyContent="space-between" alignItems="center">
-              <Text fontSize="$3" fontWeight="500" color="$color11">
-                Progress
-              </Text>
-              <Text fontSize="$3" color="$color10">
+          <Stack gap={8}>
+            <Row justify="space-between" align="center">
+              <Text color="$gray11">Progress</Text>
+              <Text color="$gray11">
                 {progress}/120 ({progressPercentage}%)
               </Text>
-            </XStack>
-            <Progress
-              value={progressPercentage}
-              max={100}
-              aria-label="Overall personality assessment progress"
-              aria-valuenow={progressPercentage}
-              aria-valuemin={0}
-              aria-valuemax={100}
-            >
-              <Progress.Indicator animation="bouncy" />
-            </Progress>
+            </Row>
+            <ProgressBar value={progressPercentage} />
             {completedDomains > 0 && (
-              <Text fontSize="$2" color="$color10">
-                {completedDomains} of 5 domains completed
-              </Text>
+              <Text color="$gray11">{completedDomains} of 5 domains completed</Text>
             )}
-          </YStack>
+          </Stack>
         )}
 
-        <Button variant="primary" onPress={handleStart} size="$5">
-          <Button.Text>
-            {hasStarted ? 'Continue Questions' : 'Start Questions'}
-          </Button.Text>
+        <Button variant="filled" color="primary" onPress={handleStart} size="lg">
+          {hasStarted ? 'Continue Questions' : 'Start Questions'}
         </Button>
 
-        <Text fontSize="$2" color="$color11">
+        <Text color="$gray11">
           {hasStarted ? `${progress}/120 questions answered` : 'Takes about 10-15 minutes'}
         </Text>
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

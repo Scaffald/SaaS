@@ -12,13 +12,13 @@ import {
   Paragraph,
   Separator,
   Spinner,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
-import { Copy, Key, MoreVertical, Plus, Trash2 } from '@tamagui/lucide-icons'
+  Row,
+  Stack,
+} from '@scaffald/ui'
+import { Copy, Key, MoreVertical, Plus, Trash2 } from 'lucide-react-native'
 import { format } from 'date-fns'
 
-interface APIKey {
+export interface APIKey {
   id: string
   name: string
   key_prefix: string
@@ -30,7 +30,7 @@ interface APIKey {
   expires_at: string | null
 }
 
-interface APIKeysListProps {
+export interface APIKeysListProps {
   keys: APIKey[]
   isLoading?: boolean
   onCreateKey: () => void
@@ -83,203 +83,211 @@ export function APIKeysList({
 
   if (isLoading) {
     return (
-      <YStack f={1} jc="center" ai="center" padding="$6">
-        <Spinner size="large" color="$blue10" />
-        <Paragraph mt="$4" color="$gray11">
+      <Stack flex={1} justify="center" align="center" padding="xl">
+        <Spinner size="lg" color="primary" />
+        <Paragraph style={{ marginTop: 16 }} color="$gray11">
           Loading API keys...
         </Paragraph>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack f={1} gap="$4">
+    <Stack flex={1} gap={16}>
       {/* Header */}
-      <XStack jc="space-between" ai="center">
-        <YStack gap="$2">
+      <Row justify="space-between" align="center">
+        <Stack gap={8}>
           <H2>API Keys</H2>
           <Paragraph color="$gray11">
             Manage API keys for third-party integrations and SDK access
           </Paragraph>
-        </YStack>
-        <Button icon={Plus} onPress={onCreateKey} theme="blue">
+        </Stack>
+        <Button iconStart={Plus} onPress={onCreateKey} color="primary">
           Create API Key
         </Button>
-      </XStack>
+      </Row>
 
       <Separator />
 
       {/* Keys List */}
       {keys.length === 0 ? (
-        <Card padded bordered>
-          <YStack ai="center" gap="$4" padding="$6">
+        <Card padding="lg" variant="outlined">
+          <Stack align="center" gap={16} padding="xl">
             <Key size={48} color="$gray9" />
-            <YStack ai="center" gap="$2">
+            <Stack align="center" gap={8}>
               <H4>No API Keys</H4>
-              <Paragraph color="$gray11" textAlign="center">
+              <Paragraph color="$gray11" align="center">
                 Create your first API key to start using the Scaffald SDK
               </Paragraph>
-            </YStack>
-            <Button icon={Plus} onPress={onCreateKey} theme="blue">
+            </Stack>
+            <Button iconStart={Plus} onPress={onCreateKey} color="primary">
               Create Your First API Key
             </Button>
-          </YStack>
+          </Stack>
         </Card>
       ) : (
-        <YStack gap="$3">
+        <Stack gap={12}>
           {keys.map((key) => (
-            <Card key={key.id} padded bordered hoverStyle={{ borderColor: '$blue8' }}>
-              <YStack gap="$4">
+            <Card key={key.id} padding="lg" variant="outlined">
+              <Stack gap={16}>
                 {/* Key Header */}
-                <XStack jc="space-between" ai="flex-start">
-                  <YStack gap="$2" f={1}>
-                    <XStack ai="center" gap="$2">
+                <Row justify="space-between" align="flex-start">
+                  <Stack gap={8} flex={1}>
+                    <Row align="center" gap={8}>
                       <H4>{key.name}</H4>
                       {!key.is_active && (
                         <Card
-                          backgroundColor="$red3"
-                          paddingHorizontal="$2"
-                          paddingVertical="$1"
-                          borderRadius="$2"
+                          style={{
+                            backgroundColor: '$red3',
+                            paddingHorizontal: 8,
+                            paddingVertical: 4,
+                            borderRadius: 8,
+                          }}
                         >
-                          <Paragraph size="$2" color="$red11" fontWeight="600">
+                          <Paragraph size="sm" color="$red11">
                             REVOKED
                           </Paragraph>
                         </Card>
                       )}
-                    </XStack>
+                    </Row>
 
                     {/* Key Prefix */}
-                    <XStack ai="center" gap="$2">
+                    <Row align="center" gap={8}>
                       <Card
-                        backgroundColor="$gray3"
-                        paddingHorizontal="$3"
-                        paddingVertical="$2"
-                        borderRadius="$3"
+                        style={{
+                          backgroundColor: '$gray3',
+                          paddingHorizontal: 12,
+                          paddingVertical: 8,
+                          borderRadius: 12,
+                        }}
                       >
-                        <Paragraph fontFamily="$mono" size="$3">
+                        <Paragraph size="sm" style={{ fontFamily: '$mono' }}>
                           {key.key_prefix}
                         </Paragraph>
                       </Card>
                       <Button
-                        size="$2"
-                        chromeless
-                        icon={Copy}
+                        size="sm"
+                        variant="text"
+                        iconStart={Copy}
                         onPress={() => copyToClipboard(key.key_prefix, key.id)}
                       >
                         {copiedKeyId === key.id ? 'Copied!' : ''}
                       </Button>
-                    </XStack>
-                  </YStack>
+                    </Row>
+                  </Stack>
 
                   {/* Actions Menu */}
-                  <Button size="$3" chromeless circular icon={MoreVertical} />
-                </XStack>
+                  <Button size="sm" variant="text" iconStart={MoreVertical} />
+                </Row>
 
                 {/* Key Metadata */}
-                <XStack gap="$4" flexWrap="wrap">
+                <Row gap={16} wrap>
                   {/* Rate Limit Tier */}
-                  <YStack gap="$1">
-                    <Paragraph size="$2" color="$gray11">
+                  <Stack gap={4}>
+                    <Paragraph size="sm" color="$gray11">
                       Rate Limit
                     </Paragraph>
                     <Card
-                      backgroundColor={getRateLimitBadgeColor(key.rate_limit_tier)}
-                      paddingHorizontal="$2"
-                      paddingVertical="$1"
-                      borderRadius="$2"
+                      style={{
+                        backgroundColor: getRateLimitBadgeColor(key.rate_limit_tier),
+                        paddingHorizontal: 8,
+                        paddingVertical: 4,
+                        borderRadius: 8,
+                      }}
                     >
-                      <Paragraph size="$2" color="$gray12" fontWeight="600">
+                      <Paragraph size="sm" color="$gray12">
                         {key.rate_limit_tier.toUpperCase()} -{' '}
                         {getRateLimitDescription(key.rate_limit_tier)}
                       </Paragraph>
                     </Card>
-                  </YStack>
+                  </Stack>
 
                   {/* Scopes */}
-                  <YStack gap="$1" f={1}>
-                    <Paragraph size="$2" color="$gray11">
+                  <Stack gap={4} flex={1}>
+                    <Paragraph size="sm" color="$gray11">
                       Scopes
                     </Paragraph>
-                    <XStack gap="$2" flexWrap="wrap">
+                    <Row gap={8} wrap>
                       {key.scopes.map((scope) => (
                         <Card
                           key={scope}
-                          backgroundColor="$blue3"
-                          paddingHorizontal="$2"
-                          paddingVertical="$1"
-                          borderRadius="$2"
+                          style={{
+                            backgroundColor: '$blue3',
+                            paddingHorizontal: 8,
+                            paddingVertical: 4,
+                            borderRadius: 8,
+                          }}
                         >
-                          <Paragraph size="$2" color="$blue11">
+                          <Paragraph size="sm" color="$blue11">
                             {scope}
                           </Paragraph>
                         </Card>
                       ))}
-                    </XStack>
-                  </YStack>
+                    </Row>
+                  </Stack>
 
                   {/* Last Used */}
-                  <YStack gap="$1">
-                    <Paragraph size="$2" color="$gray11">
+                  <Stack gap={4}>
+                    <Paragraph size="sm" color="$gray11">
                       Last Used
                     </Paragraph>
-                    <Paragraph size="$3">
+                    <Paragraph size="sm">
                       {key.last_used_at
                         ? format(new Date(key.last_used_at), 'MMM d, yyyy HH:mm')
                         : 'Never'}
                     </Paragraph>
-                  </YStack>
+                  </Stack>
 
                   {/* Created */}
-                  <YStack gap="$1">
-                    <Paragraph size="$2" color="$gray11">
+                  <Stack gap={4}>
+                    <Paragraph size="sm" color="$gray11">
                       Created
                     </Paragraph>
-                    <Paragraph size="$3">
+                    <Paragraph size="sm">
                       {format(new Date(key.created_at), 'MMM d, yyyy')}
                     </Paragraph>
-                  </YStack>
+                  </Stack>
 
                   {/* Expires */}
                   {key.expires_at && (
-                    <YStack gap="$1">
-                      <Paragraph size="$2" color="$gray11">
+                    <Stack gap={4}>
+                      <Paragraph size="sm" color="$gray11">
                         Expires
                       </Paragraph>
-                      <Paragraph size="$3" color="$orange11">
+                      <Paragraph size="sm" color="$orange11">
                         {format(new Date(key.expires_at), 'MMM d, yyyy')}
                       </Paragraph>
-                    </YStack>
+                    </Stack>
                   )}
-                </XStack>
+                </Row>
 
                 {/* Actions */}
-                <XStack gap="$2">
-                  <Button size="$3" variant="outlined" onPress={() => onViewUsage(key.id)}>
+                <Row gap={8}>
+                  <Button size="sm" variant="outline" onPress={() => onViewUsage(key.id)}>
                     View Usage
                   </Button>
                   {onManageScopes && key.is_active && (
-                    <Button size="$3" variant="outlined" onPress={() => onManageScopes(key.id)}>
+                    <Button size="sm" variant="outline" onPress={() => onManageScopes(key.id)}>
                       Manage Scopes
                     </Button>
                   )}
                   {key.is_active && (
                     <Button
-                      size="$3"
-                      variant="outlined"
-                      theme="red"
-                      icon={Trash2}
+                      size="sm"
+                      variant="outline"
+                      color="error"
+                      iconStart={Trash2}
                       onPress={() => onRevokeKey(key.id)}
                     >
                       Revoke
                     </Button>
                   )}
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
             </Card>
           ))}
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

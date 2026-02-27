@@ -1,5 +1,6 @@
-import { Card, Text, XStack, YStack } from '@unicornlove/ui'
+import { Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
+import { colors } from '@scaffald/ui/tokens'
 
 interface CandidateProfileTabProps {
   candidate: MockApplication['candidate']
@@ -21,6 +22,7 @@ export const CandidateProfileTab = ({
   isContactLocked = false,
   lockReason,
 }: CandidateProfileTabProps) => {
+  const { theme } = useThemeContext()
   const resolvedEmail = contactInfo?.email ?? candidate.email
   const resolvedPhone = contactInfo?.phone ?? candidate.phone
   const contactLocationFromProfile = [contactInfo?.employment_city, contactInfo?.employment_state]
@@ -33,139 +35,114 @@ export const CandidateProfileTab = ({
     lockReason ?? 'Pay the upfront success fee to unlock email and phone details.'
 
   return (
-    <YStack gap="$4">
+    <Stack gap={16}>
       {/* Contact Info */}
-      <Card padding="$4" backgroundColor="$color2">
-        <Text fontSize="$5" fontWeight="600" marginBottom="$3">
-          Contact Information
-        </Text>
+      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+        <Text style={{ marginBottom: 12 }}>Contact Information</Text>
         {isContactLocked ? (
-          <YStack gap="$2">
-            <Text color="$orange11" fontWeight="600">
-              Contact details locked
-            </Text>
-            <Text color="$color11">{lockedMessage}</Text>
-          </YStack>
+          <Stack gap={8}>
+            <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>Contact details locked</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>{lockedMessage}</Text>
+          </Stack>
         ) : (
-          <YStack gap="$2">
-            <XStack justifyContent="space-between">
-              <Text opacity={0.7}>Email</Text>
-              <Text fontWeight="600">{resolvedEmail}</Text>
-            </XStack>
-            <XStack justifyContent="space-between">
-              <Text opacity={0.7}>Phone</Text>
-              <Text fontWeight="600">{resolvedPhone}</Text>
-            </XStack>
-            <XStack justifyContent="space-between">
-              <Text opacity={0.7}>Location</Text>
-              <Text fontWeight="600">{resolvedLocation}</Text>
-            </XStack>
-          </YStack>
+          <Stack gap={8}>
+            <Row justify="space-between">
+              <Text style={{ opacity: 0.7 }}>Email</Text>
+              <Text>{resolvedEmail}</Text>
+            </Row>
+            <Row justify="space-between">
+              <Text style={{ opacity: 0.7 }}>Phone</Text>
+              <Text>{resolvedPhone}</Text>
+            </Row>
+            <Row justify="space-between">
+              <Text style={{ opacity: 0.7 }}>Location</Text>
+              <Text>{resolvedLocation}</Text>
+            </Row>
+          </Stack>
         )}
       </Card>
 
       {/* Skills */}
-      <Card padding="$4" backgroundColor="$color2">
-        <Text fontSize="$5" fontWeight="600" marginBottom="$3">
-          Skills
-        </Text>
-        <YStack gap="$3">
+      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+        <Text style={{ marginBottom: 12 }}>Skills</Text>
+        <Stack gap={12}>
           {candidate.skills.map((skill, index) => (
-            <XStack
-              key={`skill-${skill.name}-${index}`}
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Text fontWeight="600">{skill.name}</Text>
-              <YStack
-                backgroundColor={
-                  skill.proficiency === 'expert'
-                    ? '$green3'
-                    : skill.proficiency === 'advanced'
-                      ? '$blue3'
-                      : skill.proficiency === 'intermediate'
-                        ? '$yellow3'
-                        : '$color3'
-                }
-                paddingHorizontal="$3"
-                paddingVertical="$1"
-                borderRadius="$2"
+            <Row key={`skill-${skill.name}-${index}`} justify="space-between" align="center">
+              <Text>{skill.name}</Text>
+              <Stack
+                style={{
+                  backgroundColor:
+                    skill.proficiency === 'expert'
+                      ? theme === "light" ? colors.green[50] : colors.green[900]
+                      : skill.proficiency === 'advanced'
+                        ? theme === "light" ? colors.blue[50] : colors.blue[900]
+                        : skill.proficiency === 'intermediate'
+                          ? theme === "light" ? colors.yellow[50] : colors.yellow[900]
+                          : colors.bg[theme].muted,
+                }}
+                paddingHorizontal={12}
+                paddingVertical={4}
+                borderRadius={8}
               >
                 <Text
-                  fontSize="$2"
-                  fontWeight="600"
-                  color={
-                    skill.proficiency === 'expert'
-                      ? '$green10'
-                      : skill.proficiency === 'advanced'
-                        ? '$blue10'
-                        : skill.proficiency === 'intermediate'
-                          ? '$yellow10'
-                          : '$color10'
-                  }
-                  textTransform="capitalize"
+                  style={{
+                    color:
+                      skill.proficiency === 'expert'
+                        ? theme === "light" ? colors.green[700] : colors.green[300]
+                        : skill.proficiency === 'advanced'
+                          ? theme === "light" ? colors.blue[700] : colors.blue[300]
+                          : skill.proficiency === 'intermediate'
+                            ? theme === "light" ? colors.yellow[700] : colors.yellow[300]
+                            : colors.text[theme].tertiary,
+                    textTransform: 'capitalize',
+                  }}
                 >
                   {skill.proficiency}
                 </Text>
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
           ))}
-        </YStack>
+        </Stack>
       </Card>
 
       {/* Certifications */}
-      <Card padding="$4" backgroundColor="$color2">
-        <Text fontSize="$5" fontWeight="600" marginBottom="$3">
-          Certifications
-        </Text>
-        <YStack gap="$3">
+      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+        <Text style={{ marginBottom: 12 }}>Certifications</Text>
+        <Stack gap={12}>
           {candidate.certifications.map((cert, index) => (
-            <YStack key={`cert-${cert.name}-${index}`} gap="$1">
-              <Text fontWeight="600">{cert.name}</Text>
-              <XStack gap="$2">
-                {cert.state && (
-                  <Text fontSize="$2" opacity={0.7}>
-                    State: {cert.state}
-                  </Text>
-                )}
+            <Stack key={`cert-${cert.name}-${index}`} gap={4}>
+              <Text>{cert.name}</Text>
+              <Row gap={8}>
+                {cert.state && <Text style={{ opacity: 0.7 }}>State: {cert.state}</Text>}
                 {cert.issueDate && (
-                  <Text fontSize="$2" opacity={0.7}>
-                    Issued: {new Date(cert.issueDate).toLocaleDateString()}
-                  </Text>
+                  <Text style={{ opacity: 0.7 }}>Issued: {new Date(cert.issueDate).toLocaleDateString()}</Text>
                 )}
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           ))}
-        </YStack>
+        </Stack>
       </Card>
 
       {/* Experience */}
-      <Card padding="$4" backgroundColor="$color2">
-        <Text fontSize="$5" fontWeight="600" marginBottom="$3">
-          Work Experience
-        </Text>
-        <YStack gap="$4">
+      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+        <Text style={{ marginBottom: 12 }}>Work Experience</Text>
+        <Stack gap={16}>
           {candidate.experience.map((exp, index) => (
-            <YStack key={`exp-${exp.company}-${exp.title}-${index}`} gap="$2">
-              <Text fontSize="$4" fontWeight="600">
-                {exp.title}
-              </Text>
-              <Text fontSize="$3" opacity={0.8}>
-                {exp.company}
-              </Text>
-              <Text fontSize="$2" opacity={0.6}>
-                {exp.duration}
-              </Text>
-              <Text fontSize="$3" marginTop="$1">
-                {exp.description}
-              </Text>
+            <Stack key={`exp-${exp.company}-${exp.title}-${index}`} gap={8}>
+              <Text>{exp.title}</Text>
+              <Text style={{ opacity: 0.8 }}>{exp.company}</Text>
+              <Text style={{ opacity: 0.6 }}>{exp.duration}</Text>
+              <Text style={{ marginTop: 4 }}>{exp.description}</Text>
               {index < candidate.experience.length - 1 && (
-                <YStack height={1} backgroundColor="$color5" marginTop="$2" />
+                <Stack
+                  height={1}
+                  style={{ backgroundColor: colors.bg[theme].muted, marginTop: 8 }}
+                />
               )}
-            </YStack>
+            </Stack>
           ))}
-        </YStack>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   )
 }

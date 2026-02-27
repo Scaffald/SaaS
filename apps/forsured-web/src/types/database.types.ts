@@ -1,5 +1,5 @@
 /**
- * REQ-106: Database Schema Type Definitions
+ * Database Schema Type Definitions
  *
  * This file defines TypeScript interfaces for all 9 database tables
  * in the ForSured MVP database schema.
@@ -30,7 +30,7 @@ export interface DBProject {
   id: string; // UUID
   name: string;
   manager_id: string; // FK to users
-  organization_id?: string; // FK to organizations (scaffald schema) - REQ-214
+  organization_id?: string; // FK to organizations (scaffald schema) -
   created_at: string; // ISO 8601 timestamp
   updated_at: string; // ISO 8601 timestamp
 }
@@ -62,7 +62,7 @@ export interface DBDocument {
   file_url: string;
   upload_date: string; // ISO 8601 timestamp
   status: DocumentStatus;
-  uploaded_by_scaffald_user_id?: string; // FK to users (scaffald schema) - REQ-214
+  uploaded_by_scaffald_user_id?: string; // FK to users (scaffald schema) -
 }
 
 /**
@@ -148,7 +148,7 @@ export interface DBUser {
 
 /**
  * Organizations Table (scaffald schema)
- * REQ-214: Cross-schema FK support for dual-schema architecture
+ * Cross-schema FK support for dual-schema architecture
  * Stores organization information - simulates scaffald.organizations
  */
 export interface DBOrganization {
@@ -193,7 +193,7 @@ export type TableName =
   | 'compliance_scores'
   | 'tasks'
   | 'users'
-  | 'organizations'; // REQ-214: Cross-schema FK support
+  | 'organizations'; // Cross-schema FK support
 
 /**
  * Map table names to their corresponding interfaces
@@ -208,7 +208,7 @@ export interface TableTypeMap {
   compliance_scores: DBComplianceScore;
   tasks: DBTask;
   users: DBUser;
-  organizations: DBOrganization; // REQ-214: Cross-schema FK support
+  organizations: DBOrganization; // Cross-schema FK support
 }
 
 /**

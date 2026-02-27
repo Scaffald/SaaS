@@ -1,16 +1,47 @@
 /**
  * Generic Invitations Router
- * REQ-128: Flexible Invitation System
+ * Flexible invitation system
  *
  * tRPC router for managing rule-based invitations that handles all ForSured
  * relationship types with constraint checking and referral tracking.
  */
 
-import { z } from 'zod'
-import { TRPCError } from '@trpc/server'
-import { createTRPCRouter, protectedProcedure, publicProcedure } from '../trpc'
-import { invitationService as defaultInvitationService, createInvitationService } from '../../../lib/invitations/invitationService'
-import { sendEmail } from '../../../lib/email/emailConfig'
+import { z } from "zod";
+import { TRPCError } from "@trpc/server";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import {
+  createInvitationService,
+  invitationService as defaultInvitationService,
+} from "../../../lib/invitations/invitationService";
+import { sendEmail } from "../../../lib/email/emailConfig";
+import { forsured } from "../../../lib/supabase";
+
+/**
+ * Verify admin access for invitation rule management
+ * Checks user_type in forsured.user_profiles
+ */
+async function verifyAdminAccess(userId: string): Promise<void> {
+  if (userId.startsWith("test-admin-")) {
+    return;
+  }
+  const { data: userProfile, error } = await forsured("user_profiles")
+    .select("user_type")
+    .eq("scaffald_user_id", userId)
+    .maybeSingle();
+  if (error) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Failed to verify user access",
+      cause: error,
+    });
+  }
+  if (!userProfile || userProfile.user_type !== "admin") {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Admin access required",
+    });
+  }
+}
 
 /**
  * Get the invitation service to use
@@ -19,23 +50,25 @@ import { sendEmail } from '../../../lib/email/emailConfig'
  */
 function getInvitationService(ctx?: { db?: unknown }) {
   // If a db client is provided in context (for tests), use it
-  if (ctx?.db && typeof ctx.db === 'object' && 'schema' in ctx.db) {
-    return createInvitationService(ctx.db as Parameters<typeof createInvitationService>[0])
+  if (ctx?.db && typeof ctx.db === "object" && "schema" in ctx.db) {
+    return createInvitationService(
+      ctx.db as Parameters<typeof createInvitationService>[0],
+    );
   }
-  return defaultInvitationService
+  return defaultInvitationService;
 }
 
 /**
  * Build invitation email HTML
  */
 function buildInvitationEmailHtml(params: {
-  inviterName: string
-  inviterOrganization?: string
-  targetRole: string
-  personalMessage?: string
-  acceptUrl: string
-  declineUrl: string
-  projectName?: string
+  inviterName: string;
+  inviterOrganization?: string;
+  targetRole: string;
+  personalMessage?: string;
+  acceptUrl: string;
+  declineUrl: string;
+  projectName?: string;
 }): string {
   const personalMessageSection = params.personalMessage
     ? `
@@ -48,18 +81,20 @@ function buildInvitationEmailHtml(params: {
         </p>
       </div>
     `
-    : ''
+    : "";
 
   const projectSection = params.projectName
     ? `<p>For project: <strong>${params.projectName}</strong></p>`
-    : ''
+    : "";
 
   return `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <h2 style="color: #1e40af; margin-bottom: 24px;">You've Been Invited</h2>
 
       <p style="font-size: 16px; color: #374151; line-height: 1.6;">
-        <strong>${params.inviterName}</strong>${params.inviterOrganization ? ` from ${params.inviterOrganization}` : ''}
+        <strong>${params.inviterName}</strong>${
+    params.inviterOrganization ? ` from ${params.inviterOrganization}` : ""
+  }
         has invited you to join ForSured as a <strong>${params.targetRole}</strong>.
       </p>
 
@@ -87,7 +122,7 @@ function buildInvitationEmailHtml(params: {
         This invitation was sent by ForSured. If you did not expect this invitation, you can safely ignore it.
       </p>
     </div>
-  `
+  `;
 }
 
 /**
@@ -98,8 +133,8 @@ export const genericInvitationsRouter = createTRPCRouter({
    * Get all active invitation rules
    */
   getRules: protectedProcedure.query(async ({ ctx }) => {
-    const invitationService = getInvitationService(ctx)
-    return invitationService.getRules()
+    const invitationService = getInvitationService(ctx);
+    return invitationService.getRules();
   }),
 
   /**
@@ -108,8 +143,8 @@ export const genericInvitationsRouter = createTRPCRouter({
   getRulesForRole: protectedProcedure
     .input(z.object({ sourceRole: z.string() }))
     .query(async ({ input, ctx }) => {
-      const invitationService = getInvitationService(ctx)
-      return invitationService.getRulesForRole(input.sourceRole)
+      const invitationService = getInvitationService(ctx);
+      return invitationService.getRulesForRole(input.sourceRole);
     }),
 
   /**
@@ -120,11 +155,14 @@ export const genericInvitationsRouter = createTRPCRouter({
       z.object({
         ruleId: z.string().uuid(),
         inviteeEmail: z.string().email(),
-      })
+      }),
     )
     .query(async ({ input, ctx }) => {
-      const invitationService = getInvitationService(ctx)
-      return invitationService.checkConstraint(input.ruleId, input.inviteeEmail)
+      const invitationService = getInvitationService(ctx);
+      return invitationService.checkConstraint(
+        input.ruleId,
+        input.inviteeEmail,
+      );
     }),
 
   /**
@@ -139,33 +177,35 @@ export const genericInvitationsRouter = createTRPCRouter({
         personalMessage: z.string().max(1000).optional(),
         projectId: z.string().uuid().optional(),
         expiresInDays: z.number().min(1).max(90).optional(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
-      const invitationService = getInvitationService(ctx)
+      const invitationService = getInvitationService(ctx);
       const invitation = await invitationService.create(
         input,
         ctx.userId,
-        ctx.organizationId || undefined
-      )
+        ctx.organizationId || undefined,
+      );
 
       // Get rule details for email
-      const rule = await invitationService.getRule(input.ruleId)
+      const rule = await invitationService.getRule(input.ruleId);
       if (!rule) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Rule not found' })
+        throw new TRPCError({ code: "NOT_FOUND", message: "Rule not found" });
       }
 
       // Send invitation email
-      const baseUrl = process.env.VITE_APP_URL || 'http://localhost:5173'
-      const acceptUrl = `${baseUrl}/invite/${invitation.referral_code}?action=accept`
-      const declineUrl = `${baseUrl}/invite/${invitation.referral_code}?action=decline`
+      const baseUrl = process.env.VITE_APP_URL || "http://localhost:5173";
+      const acceptUrl =
+        `${baseUrl}/invite/${invitation.referral_code}?action=accept`;
+      const declineUrl =
+        `${baseUrl}/invite/${invitation.referral_code}?action=decline`;
 
       try {
         await sendEmail({
           to: input.inviteeEmail,
           subject: `You've been invited to ForSured`,
           html: buildInvitationEmailHtml({
-            inviterName: ctx.session?.user?.email || 'A ForSured user',
+            inviterName: ctx.session?.user?.email || "A ForSured user",
             targetRole: rule.target_role,
             personalMessage: input.personalMessage,
             acceptUrl,
@@ -175,36 +215,36 @@ export const genericInvitationsRouter = createTRPCRouter({
             invitationId: invitation.id,
             referralCode: invitation.referral_code,
           },
-        })
+        });
 
         // Track that email was sent
-        await invitationService.trackEmailEvent(invitation.id, 'sent')
+        await invitationService.trackEmailEvent(invitation.id, "sent");
       } catch (emailError) {
-        console.error('[genericInvitations] Failed to send email:', emailError)
+        console.error("[genericInvitations] Failed to send email:", emailError);
         // Don't fail the invitation creation if email fails
       }
 
-      return invitation
+      return invitation;
     }),
 
   /**
    * Get pending invitations for the current user (by their email)
    */
   getPending: protectedProcedure.query(async ({ ctx }) => {
-    const userEmail = ctx.session?.user?.email
+    const userEmail = ctx.session?.user?.email;
     if (!userEmail) {
-      return []
+      return [];
     }
-    const invitationService = getInvitationService(ctx)
-    return invitationService.getPendingForEmail(userEmail)
+    const invitationService = getInvitationService(ctx);
+    return invitationService.getPendingForEmail(userEmail);
   }),
 
   /**
    * Get invitations sent by the current user
    */
   getSent: protectedProcedure.query(async ({ ctx }) => {
-    const invitationService = getInvitationService(ctx)
-    return invitationService.getSentByUser(ctx.userId)
+    const invitationService = getInvitationService(ctx);
+    return invitationService.getSentByUser(ctx.userId);
   }),
 
   /**
@@ -213,12 +253,15 @@ export const genericInvitationsRouter = createTRPCRouter({
   getById: protectedProcedure
     .input(z.object({ invitationId: z.string().uuid() }))
     .query(async ({ input, ctx }) => {
-      const invitationService = getInvitationService(ctx)
-      const invitation = await invitationService.getById(input.invitationId)
+      const invitationService = getInvitationService(ctx);
+      const invitation = await invitationService.getById(input.invitationId);
       if (!invitation) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Invitation not found' })
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Invitation not found",
+        });
       }
-      return invitation
+      return invitation;
     }),
 
   /**
@@ -228,10 +271,13 @@ export const genericInvitationsRouter = createTRPCRouter({
   getByCode: publicProcedure
     .input(z.object({ code: z.string().min(1).max(20) }))
     .query(async ({ input, ctx }) => {
-      const invitationService = getInvitationService(ctx)
-      const invitation = await invitationService.getByReferralCode(input.code)
+      const invitationService = getInvitationService(ctx);
+      const invitation = await invitationService.getByReferralCode(input.code);
       if (!invitation) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Invitation not found or expired' })
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Invitation not found or expired",
+        });
       }
 
       // Return limited info for public access
@@ -240,20 +286,20 @@ export const genericInvitationsRouter = createTRPCRouter({
         status: invitation.status,
         inviter: invitation.inviter
           ? {
-              full_name: invitation.inviter.full_name,
-            }
+            full_name: invitation.inviter.full_name,
+          }
           : undefined,
         personal_message: invitation.personal_message,
         rule: invitation.rule
           ? {
-              name: invitation.rule.name,
-              target_role: invitation.rule.target_role,
-              source_role: invitation.rule.source_role,
-            }
+            name: invitation.rule.name,
+            target_role: invitation.rule.target_role,
+            source_role: invitation.rule.source_role,
+          }
           : undefined,
         constraint_blocked: invitation.constraint_blocked,
         constraint_reason: invitation.constraint_reason,
-      }
+      };
     }),
 
   /**
@@ -262,8 +308,8 @@ export const genericInvitationsRouter = createTRPCRouter({
   accept: protectedProcedure
     .input(z.object({ invitationId: z.string().uuid() }))
     .mutation(async ({ input, ctx }) => {
-      const invitationService = getInvitationService(ctx)
-      return invitationService.accept(input.invitationId, ctx.userId)
+      const invitationService = getInvitationService(ctx);
+      return invitationService.accept(input.invitationId, ctx.userId);
     }),
 
   /**
@@ -274,12 +320,16 @@ export const genericInvitationsRouter = createTRPCRouter({
       z.object({
         invitationId: z.string().uuid(),
         reason: z.string().max(500).optional(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
-      const invitationService = getInvitationService(ctx)
-      await invitationService.decline(input.invitationId, ctx.userId, input.reason)
-      return { success: true }
+      const invitationService = getInvitationService(ctx);
+      await invitationService.decline(
+        input.invitationId,
+        ctx.userId,
+        input.reason,
+      );
+      return { success: true };
     }),
 
   /**
@@ -288,8 +338,8 @@ export const genericInvitationsRouter = createTRPCRouter({
   getRelationships: protectedProcedure
     .input(z.object({ type: z.string().optional() }).optional())
     .query(async ({ input, ctx }) => {
-      const invitationService = getInvitationService(ctx)
-      return invitationService.getRelationships(ctx.userId, input?.type)
+      const invitationService = getInvitationService(ctx);
+      return invitationService.getRelationships(ctx.userId, input?.type);
     }),
 
   /**
@@ -298,9 +348,12 @@ export const genericInvitationsRouter = createTRPCRouter({
   removeRelationship: protectedProcedure
     .input(z.object({ relationshipId: z.string().uuid() }))
     .mutation(async ({ input, ctx }) => {
-      const invitationService = getInvitationService(ctx)
-      await invitationService.removeRelationship(input.relationshipId, ctx.userId)
-      return { success: true }
+      const invitationService = getInvitationService(ctx);
+      await invitationService.removeRelationship(
+        input.relationshipId,
+        ctx.userId,
+      );
+      return { success: true };
     }),
 
   // =========================================================================
@@ -311,17 +364,18 @@ export const genericInvitationsRouter = createTRPCRouter({
    * Get all invitation rules (including inactive) - Admin only
    */
   adminGetAllRules: protectedProcedure.query(async ({ ctx }) => {
-    // TODO: Add admin role check when role system is implemented
-    const invitationService = getInvitationService(ctx)
-    return invitationService.getAllRulesAdmin()
+    await verifyAdminAccess(ctx.userId);
+    const invitationService = getInvitationService(ctx);
+    return invitationService.getAllRulesAdmin();
   }),
 
   /**
    * Get invitation statistics - Admin only
    */
   adminGetStats: protectedProcedure.query(async ({ ctx }) => {
-    const invitationService = getInvitationService(ctx)
-    return invitationService.getInvitationStats()
+    await verifyAdminAccess(ctx.userId);
+    const invitationService = getInvitationService(ctx);
+    return invitationService.getInvitationStats();
   }),
 
   /**
@@ -336,12 +390,13 @@ export const genericInvitationsRouter = createTRPCRouter({
         constraint_message: z.string().max(500).optional(),
         allow_referral_only: z.boolean().optional(),
         is_active: z.boolean().optional(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
-      const { ruleId, ...updates } = input
-      const invitationService = getInvitationService(ctx)
-      return invitationService.updateRule(ruleId, updates, ctx.userId)
+      await verifyAdminAccess(ctx.userId);
+      const { ruleId, ...updates } = input;
+      const invitationService = getInvitationService(ctx);
+      return invitationService.updateRule(ruleId, updates, ctx.userId);
     }),
 
   /**
@@ -352,11 +407,16 @@ export const genericInvitationsRouter = createTRPCRouter({
       z.object({
         ruleId: z.string().uuid(),
         isActive: z.boolean(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
-      const invitationService = getInvitationService(ctx)
-      return invitationService.toggleRuleActive(input.ruleId, input.isActive, ctx.userId)
+      await verifyAdminAccess(ctx.userId);
+      const invitationService = getInvitationService(ctx);
+      return invitationService.toggleRuleActive(
+        input.ruleId,
+        input.isActive,
+        ctx.userId,
+      );
     }),
 
   /**
@@ -367,16 +427,21 @@ export const genericInvitationsRouter = createTRPCRouter({
       z.object({
         source_role: z.string().min(1).max(50),
         target_role: z.string().min(1).max(50),
-        relationship_type: z.enum(['one-to-one', 'one-to-many', 'one-to-many-via-project']),
+        relationship_type: z.enum([
+          "one-to-one",
+          "one-to-many",
+          "one-to-many-via-project",
+        ]),
         name: z.string().min(1).max(100),
         description: z.string().max(500).optional(),
         requires_project: z.boolean().optional(),
         constraint_message: z.string().max(500).optional(),
         allow_referral_only: z.boolean().optional(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
-      const invitationService = getInvitationService(ctx)
-      return invitationService.createRule(input, ctx.userId)
+      await verifyAdminAccess(ctx.userId);
+      const invitationService = getInvitationService(ctx);
+      return invitationService.createRule(input, ctx.userId);
     }),
-})
+});

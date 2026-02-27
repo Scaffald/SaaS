@@ -1,25 +1,22 @@
 /**
- * Progress wrapper - migrated from Tamagui to Beyond UI ProgressBar
+ * Progress wrapper ProgressBar
  * Provides backwards-compatible API for existing code
  */
-import React from 'react';
-import {
-  ProgressBar as BeyondProgressBar,
-  type ProgressBarColor,
-} from '@unicornlove/beyond-ui';
-import { View, Text, StyleSheet } from 'react-native';
+import React from 'react'
+import { ProgressBar as BeyondProgressBar, type ProgressBarColor } from '@scaffald/ui'
+import { View, Text, StyleSheet } from 'react-native'
 
-export type ProgressVariant = 'primary' | 'success' | 'warning' | 'error';
-export type ProgressSize = 'sm' | 'md' | 'lg';
+export type ProgressVariant = 'primary' | 'success' | 'warning' | 'error'
+export type ProgressSize = 'sm' | 'md' | 'lg'
 
 export interface ProgressProps {
-  value: number;
-  max?: number;
-  variant?: ProgressVariant;
-  size?: ProgressSize;
-  showLabel?: boolean;
-  label?: string;
-  className?: string;
+  value: number
+  max?: number
+  variant?: ProgressVariant
+  size?: ProgressSize
+  showLabel?: boolean
+  label?: string
+  className?: string
 }
 
 // Map our variant to Beyond UI color
@@ -28,7 +25,7 @@ const variantToColor: Record<ProgressVariant, ProgressBarColor> = {
   success: 'success',
   warning: 'primary', // Beyond UI doesn't have warning, map to primary
   error: 'error',
-};
+}
 
 export default function Progress({
   value,
@@ -39,7 +36,7 @@ export default function Progress({
   label,
   className = '',
 }: ProgressProps) {
-  const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
+  const percentage = Math.min(Math.max((value / max) * 100, 0), 100)
 
   return (
     <BeyondProgressBar
@@ -50,7 +47,7 @@ export default function Progress({
       showIndicator={showLabel}
       indicatorIconType="none"
     />
-  );
+  )
 }
 
 // CircularProgress - Beyond UI doesn't have a direct equivalent,
@@ -64,17 +61,17 @@ export function CircularProgress({
   showLabel = true,
   className = '',
 }: Omit<ProgressProps, 'size'> & { size?: number; strokeWidth?: number }) {
-  const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
-  const radius = (size - strokeWidth) / 2;
-  const circumference = radius * 2 * Math.PI;
-  const offset = circumference - (percentage / 100) * circumference;
+  const percentage = Math.min(Math.max((value / max) * 100, 0), 100)
+  const radius = (size - strokeWidth) / 2
+  const circumference = radius * 2 * Math.PI
+  const offset = circumference - (percentage / 100) * circumference
 
   const variantColors: Record<ProgressVariant, string> = {
     primary: '#6366f1',
     success: '#22c55e',
     warning: '#f59e0b',
     error: '#ef4444',
-  };
+  }
 
   const styles = StyleSheet.create({
     container: {
@@ -90,7 +87,7 @@ export function CircularProgress({
       fontWeight: '600',
       color: variantColors[variant],
     },
-  });
+  })
 
   return (
     <View style={styles.container}>
@@ -116,11 +113,7 @@ export function CircularProgress({
           style={{ transition: 'stroke-dashoffset 0.3s ease-out' }}
         />
       </svg>
-      {showLabel && (
-        <Text style={styles.label}>
-          {Math.round(percentage)}%
-        </Text>
-      )}
+      {showLabel && <Text style={styles.label}>{Math.round(percentage)}%</Text>}
     </View>
-  );
+  )
 }

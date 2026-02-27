@@ -51,7 +51,7 @@ vi.mock('../StepNavigation', () => ({
   ),
 }))
 
-vi.mock('@unicornlove/ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   MonthYearPicker: ({
     label,
     value,
@@ -90,7 +90,7 @@ vi.mock('expo-crypto', () => ({
   randomUUID: () => 'test-uuid-123',
 }))
 
-vi.mock('tamagui', () => {
+vi.mock('@scaffald/ui', () => {
   const Stack = ({
     children,
     ...rest
@@ -187,8 +187,8 @@ vi.mock('tamagui', () => {
   ;(Card as any).Header = CardHeader
 
   return {
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Input,
     Button,
     Text,

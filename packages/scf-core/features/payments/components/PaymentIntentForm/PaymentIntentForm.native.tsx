@@ -1,5 +1,6 @@
-import { Text, YStack } from '@unicornlove/ui'
-import { Card } from '@unicornlove/ui'
+import { Text, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
+import { Card } from '@scaffald/ui'
 
 type PaymentIntentFormProps = {
   clientSecret?: string
@@ -11,22 +12,28 @@ type PaymentIntentFormProps = {
 }
 
 export function PaymentIntentForm({ amountCents }: PaymentIntentFormProps) {
+  const { theme } = useThemeContext()
   const amount = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
   }).format(amountCents / 100)
 
   return (
-    <Card padding="$4" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
-      <YStack gap="$2">
-        <Text fontSize="$4" fontWeight="600" color="$yellow12">
-          Web payment required
-        </Text>
-        <Text color="$yellow11" fontSize="$3">
+    <Card
+      padding="md"
+      style={{
+        backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900],
+        borderColor: theme === "light" ? colors.yellow[300] : colors.yellow[700],
+      }}
+      borderWidth={1}
+    >
+      <Stack gap={8}>
+        <Text style={{ color: colors.text[theme].primary }}>Web payment required</Text>
+        <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
           Payments must currently be completed in the web experience. Please switch to the browser
           to pay {amount}.
         </Text>
-      </YStack>
+      </Stack>
     </Card>
   )
 }

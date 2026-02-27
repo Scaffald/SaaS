@@ -1,5 +1,5 @@
 /**
- * REQ-259: Task Status Auto-Save with Compliance Score Updates
+ * Task Status Auto-Save with Compliance Score Updates
  * TASK-4: Update Compliance Score on Status Changes
  *
  * Service to trigger compliance score recalculation when task status changes

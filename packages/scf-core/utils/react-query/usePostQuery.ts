@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query'
 
-import { supabase } from '../supabase/client';
+import { supabase } from '../supabase/client'
 
 function usePostQuery() {
   // Using supabase directly from import
@@ -12,29 +12,32 @@ function usePostQuery() {
         schema: (schema: string) => {
           from: (table: string) => {
             select: (columns: string) => {
-              order: (column: string, options: { ascending: boolean }) => {
-                limit: (count: number) => Promise<{ data: unknown[] | null }>;
-              };
-            };
-          };
-        };
+              order: (
+                column: string,
+                options: { ascending: boolean }
+              ) => {
+                limit: (count: number) => Promise<{ data: unknown[] | null }>
+              }
+            }
+          }
+        }
       }
     )
-      .schema("core")
-      .from("posts")
-      .select("*")
-      .order("created_at", {
+      .schema('core')
+      .from('posts')
+      .select('*')
+      .order('created_at', {
         ascending: false,
       })
-      .limit(4);
+      .limit(4)
 
-    return result.data || [];
-  };
+    return result.data || []
+  }
 
   return useQuery({
-    queryKey: ["posts"],
+    queryKey: ['posts'],
     queryFn,
-  });
+  })
 }
 
-export default usePostQuery;
+export default usePostQuery

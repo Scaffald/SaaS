@@ -2,7 +2,7 @@
  * Lighthouse Performance Testing
  *
  * Tests for Lighthouse CI integration and performance score validation.
- * Validates that performance scores meet REQ-198 targets:
+ * Validates that performance scores meet targets:
  * - Performance: ≥90
  * - Accessibility: ≥95
  * - Best Practices: ≥90
@@ -15,7 +15,7 @@ import { expect, test } from '@playwright/test'
 
 /**
  * Lighthouse configuration
- * These thresholds align with REQ-198 performance targets
+ * These thresholds align with performance targets
  * Note: Actual thresholds are configured in .github/workflows/lighthouse-ci.yml
  */
 

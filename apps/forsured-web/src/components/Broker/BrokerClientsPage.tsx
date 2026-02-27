@@ -11,7 +11,7 @@ import {
   UserPlus,
   Clock,
 } from 'lucide-react'
-import { Stack, Row, Text, H1, Button, Grid, Card, CardContent, Avatar } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H1, Button, Grid, Card, CardContent, Avatar } from '@scaffald/ui'
 import { EmptyState } from '../../ui'
 import { useClients } from '../../hooks/useClients'
 import { usePolicies } from '../../hooks/usePolicies'

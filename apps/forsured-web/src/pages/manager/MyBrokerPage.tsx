@@ -8,7 +8,7 @@ import {
   UserPlus,
   Users,
 } from 'lucide-react';
-import { Stack, Row, Text, H1, H3, Card, Input, Button, Spinner } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H1, H3, Card, Input, Button, Spinner } from '@scaffald/ui';
 import { useAuth } from '../../contexts/AuthContext';
 import { useDatabase } from '../../contexts/DatabaseContext';
 import { toast } from 'sonner';

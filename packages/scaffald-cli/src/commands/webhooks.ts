@@ -6,6 +6,7 @@
 import { Command } from 'commander'
 import ora from 'ora'
 import chalk from 'chalk'
+import type { Webhook, WebhookDelivery } from '@scaffald/sdk'
 import { createClient } from '../utils/client.js'
 import { formatTable, formatJson, formatCompact } from '../utils/output.js'
 import { getOrganizationId } from '../config.js'
@@ -30,7 +31,7 @@ export const webhooksCommand = new Command('webhooks')
 
         try {
           const client = createClient()
-          const response = await client.webhooks.list({ organizationId })
+          const response = await client.webhooks.list()
 
           spinner.succeed(`Found ${response.data.length} webhook(s)`)
 
@@ -43,7 +44,7 @@ export const webhooksCommand = new Command('webhooks')
             formatJson(response.data)
           } else {
             const headers = ['ID', 'URL', 'Status', 'Events', 'Created']
-            const rows = response.data.map((webhook: any) => [
+            const rows = response.data.map((webhook: Webhook) => [
               webhook.id.slice(0, 8),
               webhook.url.slice(0, 40) + (webhook.url.length > 40 ? '...' : ''),
               webhook.is_active ? chalk.green('Active') : chalk.gray('Inactive'),
@@ -66,7 +67,7 @@ export const webhooksCommand = new Command('webhooks')
       .description('View webhook details')
       .argument('<id>', 'Webhook ID')
       .option('--format <format>', 'Output format (compact, json)', 'compact')
-      .action(async (id: string, options: any) => {
+      .action(async (id: string, options: Record<string, string>) => {
         const spinner = ora('Fetching webhook...').start()
 
         try {
@@ -95,14 +96,6 @@ export const webhooksCommand = new Command('webhooks')
               { label: 'Max Retries:', value: webhook.retry_max_attempts.toString() },
               { label: 'Timeout:', value: `${webhook.timeout_ms}ms` },
               { label: 'Created:', value: new Date(webhook.created_at).toLocaleDateString() },
-              ...(webhook.last_delivery_at
-                ? [
-                    {
-                      label: 'Last Delivery:',
-                      value: new Date(webhook.last_delivery_at).toLocaleString(),
-                    },
-                  ]
-                : []),
             ])
           }
         } catch (error) {
@@ -165,12 +158,12 @@ export const webhooksCommand = new Command('webhooks')
       .argument('<id>', 'Webhook ID')
       .option('-l, --limit <number>', 'Number of deliveries to fetch', '20')
       .option('--format <format>', 'Output format (table, json)', 'table')
-      .action(async (id: string, options: any) => {
+      .action(async (id: string, options: Record<string, string>) => {
         const spinner = ora('Fetching deliveries...').start()
 
         try {
           const client = createClient()
-          const response = await client.webhooks.deliveries(id, {
+          const response = await client.webhooks.listDeliveries(id, {
             limit: Number.parseInt(options.limit, 10),
           })
 
@@ -184,8 +177,8 @@ export const webhooksCommand = new Command('webhooks')
           if (options.format === 'json') {
             formatJson(response.data)
           } else {
-            const headers = ['ID', 'Event', 'Status', 'Response', 'Attempts', 'Delivered']
-            const rows = response.data.map((delivery: any) => [
+            const headers = ['ID', 'Event', 'Status', 'Response', 'Attempts', 'Completed']
+            const rows = response.data.map((delivery: WebhookDelivery) => [
               delivery.id.slice(0, 8),
               delivery.event_type,
               delivery.status === 'success'
@@ -193,10 +186,10 @@ export const webhooksCommand = new Command('webhooks')
                 : delivery.status === 'failed'
                   ? chalk.red('Failed')
                   : chalk.yellow('Pending'),
-              delivery.response_code?.toString() || 'N/A',
-              delivery.attempt_count.toString(),
-              delivery.delivered_at
-                ? new Date(delivery.delivered_at).toLocaleString()
+              delivery.response_status_code?.toString() || 'N/A',
+              delivery.retry_count.toString(),
+              delivery.completed_at
+                ? new Date(delivery.completed_at).toLocaleString()
                 : chalk.gray('Pending'),
             ])
             formatTable(headers, rows, { title: 'Webhook Deliveries' })

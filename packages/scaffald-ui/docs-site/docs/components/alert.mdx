@@ -1,0 +1,76 @@
+---
+sidebar_position: 22
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Alert
+
+Inline notification component for contextual messages. Supports different severity levels and actions.
+
+## Import
+
+```tsx
+import { Alert } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Alert>Content</Alert>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Alert/Alert.tsx) for the complete props API.
+
+### Common Props
+
+All Alert components accept standard React Native [View props](https://reactnative.dev/docs/view#props).
+
+## Variants
+
+### Severity Levels
+
+- `info` - Informational messages
+- `success` - Success confirmations
+- `warning` - Warning notices
+- `error` - Error messages
+
+## Examples
+
+### Advanced Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={12}>
+    <Alert variant="info">Informational message</Alert>
+    <Alert variant="success">Success message</Alert>
+    <Alert variant="warning">Warning message</Alert>
+    <Alert variant="error">Error message</Alert>
+  </Stack>
+</ThemeProvider>`} />
+
+## Accessibility
+
+- ✅ Keyboard navigation support
+- ✅ Screen reader compatible
+- ✅ ARIA attributes included
+- ✅ Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+No related components.
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

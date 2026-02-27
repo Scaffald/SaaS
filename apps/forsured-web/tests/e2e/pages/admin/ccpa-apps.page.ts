@@ -1,6 +1,6 @@
 /**
  * CCPA Apps Configuration Page Object
- * REQ-6, TASK-11: E2E Tests for CCPA Admin Pages
+ * CCPA apps page object
  *
  * Page object for the CCPA OAuth App Configuration at /admin/ccpa/apps
  */

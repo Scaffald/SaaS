@@ -1,10 +1,10 @@
 /**
  * Scaffald Company Card Component
- * REQ-126: User Signup with Scaffald Integration
+ * User Signup with Scaffald Integration
  *
  * Displays the user's Scaffald company and allows connection toggle
  */
-import { Stack, Row, Text, Checkbox } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Checkbox } from '@scaffald/ui'
 import { Building2, Loader2 } from 'lucide-react'
 
 export interface Address {

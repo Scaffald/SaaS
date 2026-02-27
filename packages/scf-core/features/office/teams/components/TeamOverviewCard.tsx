@@ -1,170 +1,217 @@
-import type { AppRouter } from '@scf/supabase/client-types'
-import { Briefcase, Mail, Shield, Users } from '@tamagui/lucide-icons'
-import type { inferRouterOutputs } from '@trpc/server'
-import type { ReactNode } from 'react'
-import { Card, Text, XStack, YStack } from '@unicornlove/ui'
+import type { AppRouter } from "@scf/supabase/client-types";
+import { Briefcase, Mail, Shield, Users } from "lucide-react-native";
+import type { inferRouterOutputs } from "@trpc/server";
+import type { ReactNode } from "react";
+import { Card, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
-type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
-type TeamRecord = TeamDetailOutput['team']
+type TeamDetailOutput = inferRouterOutputs<AppRouter>["teams"]["byId"];
+type TeamRecord = TeamDetailOutput["team"];
 
 interface TeamOverviewStats {
-  memberCount?: number
-  jobCount?: number
-  pendingInvitations?: number
+  memberCount?: number;
+  jobCount?: number;
+  pendingInvitations?: number;
 }
 
 interface TeamOverviewCardProps {
-  team: TeamRecord
-  stats?: TeamOverviewStats
-  actions?: ReactNode
+  team: TeamRecord;
+  stats?: TeamOverviewStats;
+  actions?: ReactNode;
 }
 
 const PURPOSE_LABELS: Record<string, string> = {
-  department: 'Department',
-  project: 'Project',
-  location: 'Location',
-  custom: 'Custom',
-}
+  department: "Department",
+  project: "Project",
+  location: "Location",
+  custom: "Custom",
+};
 
 const VISIBILITY_LABELS: Record<string, string> = {
-  organization: 'Org-wide',
-  private: 'Private',
-}
+  organization: "Org-wide",
+  private: "Private",
+};
 
 const INVITATION_POLICY_LABELS: Record<string, string> = {
-  open: 'Open',
-  request: 'Request access',
-  invite_only: 'Invite only',
-}
+  open: "Open",
+  request: "Request access",
+  invite_only: "Invite only",
+};
 
-export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps) {
-  const purposeLabel = PURPOSE_LABELS[team.purpose ?? ''] ?? 'General'
-  const visibilityLabel = VISIBILITY_LABELS[team.visibility ?? ''] ?? 'Org-wide'
+export function TeamOverviewCard({
+  team,
+  stats,
+  actions,
+}: TeamOverviewCardProps) {
+  const { theme } = useThemeContext();
+  const purposeLabel = PURPOSE_LABELS[team.purpose ?? ""] ?? "General";
+  const visibilityLabel =
+    VISIBILITY_LABELS[team.visibility ?? ""] ?? "Org-wide";
   const invitationPolicyLabel =
-    INVITATION_POLICY_LABELS[team.invitationPolicy ?? ''] ?? 'Invite only'
+    INVITATION_POLICY_LABELS[team.invitationPolicy ?? ""] ?? "Invite only";
 
-  const memberCount = typeof stats?.memberCount === 'number' ? stats.memberCount : undefined
-  const jobCount = typeof stats?.jobCount === 'number' ? stats.jobCount : undefined
+  const memberCount =
+    typeof stats?.memberCount === "number" ? stats.memberCount : undefined;
+  const jobCount =
+    typeof stats?.jobCount === "number" ? stats.jobCount : undefined;
   const pendingInvitations =
-    typeof stats?.pendingInvitations === 'number' ? stats.pendingInvitations : undefined
+    typeof stats?.pendingInvitations === "number"
+      ? stats.pendingInvitations
+      : undefined;
 
   return (
     <Card
-      padding="$4"
+      padding="md"
       borderWidth={1}
-      borderColor="$borderColor"
-      gap="$4"
-      backgroundColor="$color2"
+      borderColor={colors.border[theme].default}
+      style={{ backgroundColor: colors.bg[theme].subtle }}
     >
-      <XStack gap="$4" justifyContent="space-between" flexWrap="wrap">
-        <YStack gap="$2" flex={1} style={{ minWidth: 240 }}>
-          <XStack gap="$2" alignItems="center" flexWrap="wrap">
-            <Text fontSize="$8" fontWeight="700">
-              {team.name || 'Untitled team'}
+      <Stack gap={16}>
+        <Row gap={16} justify="space-between" wrap>
+          <Stack gap={8} flex={1} style={{ minWidth: 240 }}>
+            <Row gap={8} align="center" wrap>
+              <Text>{team.name || "Untitled team"}</Text>
+              {team.isArchived ? <Chip tone="warning">Archived</Chip> : null}
+            </Row>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              {team.description?.trim() ||
+                "No description provided. Add context to help team members understand the focus of this team."}
             </Text>
-            {team.isArchived ? <Chip tone="warning">Archived</Chip> : null}
-          </XStack>
-          <Text color="$color11">
-            {team.description?.trim() ||
-              'No description provided. Add context to help team members understand the focus of this team.'}
-          </Text>
-        </YStack>
-        {actions ? (
-          <XStack gap="$2" alignItems="flex-start" flexShrink={0} flexWrap="wrap">
-            {actions}
-          </XStack>
-        ) : null}
-      </XStack>
+          </Stack>
+          {actions ? (
+            <Row gap={8} align="flex-start" flexShrink={0} wrap>
+              {actions}
+            </Row>
+          ) : null}
+        </Row>
 
-      <XStack gap="$2" flexWrap="wrap">
-        <Chip>{purposeLabel}</Chip>
-        <Chip>{visibilityLabel}</Chip>
-        <Chip>{invitationPolicyLabel}</Chip>
-      </XStack>
+        <Row gap={8} wrap>
+          <Chip>{purposeLabel}</Chip>
+          <Chip>{visibilityLabel}</Chip>
+          <Chip>{invitationPolicyLabel}</Chip>
+        </Row>
 
-      <XStack gap="$4" flexWrap="wrap">
-        <StatItem
-          icon={<Users size={16} />}
-          label="Members"
-          value={memberCount !== undefined ? memberCount.toString() : '—'}
-        />
-        <StatItem
-          icon={<Briefcase size={16} />}
-          label="Active jobs"
-          value={jobCount !== undefined ? jobCount.toString() : '—'}
-        />
-        <StatItem
-          icon={<Mail size={16} />}
-          label="Pending invites"
-          value={pendingInvitations !== undefined ? pendingInvitations.toString() : '—'}
-        />
-        {team.defaultRole?.name ? (
+        <Row gap={16} wrap>
           <StatItem
-            icon={<Shield size={16} />}
-            label="Default role"
-            value={team.defaultRole.name}
+            icon={<Users size={20} />}
+            label="Members"
+            value={memberCount !== undefined ? memberCount.toString() : "—"}
           />
-        ) : null}
-      </XStack>
+          <StatItem
+            icon={<Briefcase size={20} />}
+            label="Active jobs"
+            value={jobCount !== undefined ? jobCount.toString() : "—"}
+          />
+          <StatItem
+            icon={<Mail size={20} />}
+            label="Pending invites"
+            value={
+              pendingInvitations !== undefined
+                ? pendingInvitations.toString()
+                : "—"
+            }
+          />
+          {team.defaultRole?.name ? (
+            <StatItem
+              icon={<Shield size={20} />}
+              label="Default role"
+              value={team.defaultRole.name}
+            />
+          ) : null}
+        </Row>
 
-      <YStack gap="$1">
-        <Text fontSize="$2" color="$color10" textTransform="uppercase">
-          Team slug
-        </Text>
-        <Text fontWeight="600" color="$color12">
-          {team.slug || 'Not configured'}
-        </Text>
-      </YStack>
+        <Stack gap={4}>
+          <Text
+            style={{
+              color: colors.text[theme].secondary,
+              textTransform: "uppercase",
+            }}
+          >
+            Team slug
+          </Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            {team.slug || "Not configured"}
+          </Text>
+        </Stack>
+      </Stack>
     </Card>
-  )
+  );
 }
 
-function StatItem({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
+function StatItem({
+  icon,
+  label,
+  value,
+}: {
+  icon: ReactNode;
+  label: string;
+  value: string;
+}) {
+  const { theme } = useThemeContext();
   return (
-    <XStack
-      gap="$2"
-      alignItems="center"
+    <Row
+      gap={8}
+      align="center"
       borderWidth={1}
-      borderColor="$borderColor"
-      borderRadius="$4"
-      paddingHorizontal="$3"
-      paddingVertical="$2"
-      backgroundColor="$color3"
+      borderColor={colors.border[theme].default}
+      borderRadius={16}
+      paddingHorizontal={12}
+      paddingVertical={8}
+      style={{ backgroundColor: colors.bg[theme].muted }}
     >
       {icon}
-      <YStack>
-        <Text fontSize="$2" color="$color10" textTransform="uppercase">
+      <Stack>
+        <Text
+          style={{
+            color: colors.text[theme].secondary,
+            textTransform: "uppercase",
+          }}
+        >
           {label}
         </Text>
-        <Text fontWeight="600">{value}</Text>
-      </YStack>
-    </XStack>
-  )
+        <Text>{value}</Text>
+      </Stack>
+    </Row>
+  );
 }
 
 function Chip({
   children,
-  tone = 'surface',
+  tone = "surface",
 }: {
-  children: ReactNode
-  tone?: 'surface' | 'warning'
+  children: ReactNode;
+  tone?: "surface" | "warning";
 }) {
-  const background = tone === 'warning' ? '$yellow4' : '$color3'
-  const border = tone === 'warning' ? '$yellow8' : '$borderColor'
-  const textColor = tone === 'warning' ? '$yellow11' : '$color11'
+  const { theme } = useThemeContext();
+  const background =
+    tone === "warning"
+      ? theme === "light"
+        ? colors.yellow[50]
+        : colors.yellow[900]
+      : colors.bg[theme].muted;
+  const border =
+    tone === "warning"
+      ? theme === "light"
+        ? colors.yellow[300]
+        : colors.yellow[700]
+      : colors.border[theme].default;
+  const textColor =
+    tone === "warning"
+      ? theme === "light"
+        ? colors.yellow[700]
+        : colors.yellow[300]
+      : colors.text[theme].secondary;
   return (
-    <XStack
-      gap="$2"
-      paddingHorizontal="$2"
-      paddingVertical="$1"
+    <Row
+      gap={8}
+      paddingHorizontal={8}
+      paddingVertical={4}
       borderWidth={1}
       borderColor={border}
       backgroundColor={background}
-      borderRadius="$4"
+      borderRadius={16}
     >
-      <Text fontSize="$2" color={textColor}>
-        {children}
-      </Text>
-    </XStack>
-  )
+      <Text color={textColor}>{children}</Text>
+    </Row>
+  );
 }

@@ -1,5 +1,5 @@
-import { api } from '@scf/core/utils/api'
-import { Button, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
+import { useMultipleInquiries } from '@scf/core/utils/inquiries-sdk-hooks'
+import { Button, ScrollView, Text, Row, Stack } from '@scaffald/ui'
 import { useMemo } from 'react'
 import { ComparisonColumn, type InquiryComparisonRecord } from './ComparisonColumn'
 
@@ -14,9 +14,7 @@ export function InquiryComparisonView({
   onClose,
   onRemoveInquiry,
 }: InquiryComparisonViewProps) {
-  const { data, isLoading, error } = api.inquiries.getMultiple.useQuery({
-    inquiryIds,
-  })
+  const { data, isLoading, error } = useMultipleInquiries(inquiryIds)
   const inquiries = data as InquiryComparisonRecord[] | undefined
 
   const differences = useMemo(() => {
@@ -93,52 +91,50 @@ export function InquiryComparisonView({
 
   if (isLoading) {
     return (
-      <YStack padding="$4" alignItems="center" gap="$4">
+      <Stack padding="md" align="center" gap={16}>
         <Text>Loading inquiries for comparison...</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (error || !inquiries || inquiries.length === 0) {
     return (
-      <YStack padding="$4" alignItems="center" gap="$4">
+      <Stack padding="md" align="center" gap={16}>
         <Text color="$red10">Failed to load inquiries for comparison</Text>
         {onClose && (
-          <Button variant="outlined" onPress={onClose}>
+          <Button variant="outline" onPress={onClose}>
             Close
           </Button>
         )}
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$4" padding="$4" flex={1}>
+    <Stack gap={16} padding="md" flex={1}>
       {/* Header */}
-      <XStack justifyContent="space-between" alignItems="center">
-        <YStack gap="$1">
-          <Text fontSize="$8" fontWeight="600">
-            Compare Inquiries
-          </Text>
-          <Text fontSize="$3" color="$color11">
+      <Row justify="space-between" align="center">
+        <Stack gap={4}>
+          <Text>Compare Inquiries</Text>
+          <Text color="$gray11">
             Comparing {inquiries.length} candidate{inquiries.length !== 1 ? 's' : ''}
           </Text>
           {summary && summary.uniqueStatuses.size > 1 && (
-            <Text fontSize="$2" color="$color10">
+            <Text color="$gray11">
               Highlighted rows indicate differing terms between candidates.
             </Text>
           )}
-        </YStack>
+        </Stack>
         {onClose && (
-          <Button variant="outlined" onPress={onClose}>
+          <Button variant="outline" onPress={onClose}>
             Close
           </Button>
         )}
-      </XStack>
+      </Row>
 
       {/* Comparison Grid */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <XStack gap="$4" paddingBottom="$4" style={{ minWidth: '100%' }}>
+        <Row gap={16} paddingBottom={16} style={{ minWidth: '100%' }}>
           {inquiries.map((inquiryData) => (
             <ComparisonColumn
               key={inquiryData.inquiry.id}
@@ -149,9 +145,9 @@ export function InquiryComparisonView({
               onRemove={onRemoveInquiry}
             />
           ))}
-        </XStack>
+        </Row>
       </ScrollView>
-    </YStack>
+    </Stack>
   )
 }
 

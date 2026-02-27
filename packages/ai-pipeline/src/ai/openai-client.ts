@@ -47,7 +47,7 @@ export class AIExtractionService {
       },
     }));
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Zod v3 compat layer types don't match zod-to-json-schema's expected Zod v3 types
+    // biome-ignore lint/suspicious/noExplicitAny: Zod v3 compat layer types don't match zod-to-json-schema's expected Zod v3 types
     const jsonSchema = zodToJsonSchema(ExtractedCertificateSchema as any, { target: 'openAi' }) as Record<string, unknown>;
 
     const completion = await this.client.chat.completions.create({

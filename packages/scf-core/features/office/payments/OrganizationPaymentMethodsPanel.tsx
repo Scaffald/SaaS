@@ -1,163 +1,200 @@
-import { api } from '@scf/core/utils/api'
-import { CreditCard, Plus, Trash2 } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-import { useState } from 'react'
-import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-import { SetupIntentForm } from './SetupIntentForm'
+import {
+  usePaymentMethod,
+  useDeletePaymentMethodMutation,
+} from "@scf/core/utils/payments-sdk-hooks";
+import { CreditCard, Plus, Trash2 } from "lucide-react-native";
+import { useToast, useThemeContext } from "@scaffald/ui";
+import { useState } from "react";
+import { Button, Card, Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { SetupIntentForm } from "./SetupIntentForm";
+import { colors } from "@scaffald/ui/tokens";
 
 type OrganizationPaymentMethodsPanelProps = {
-  organizationId: string
-}
+  organizationId: string;
+};
 
 const formatCardBrand = (brand: string | null | undefined): string => {
-  if (!brand) return 'Card'
-  return brand.charAt(0).toUpperCase() + brand.slice(1)
-}
+  if (!brand) return "Card";
+  return brand.charAt(0).toUpperCase() + brand.slice(1);
+};
 
 const formatExpiry = (month: number | null, year: number | null): string => {
-  if (!month || !year) return ''
-  return `${String(month).padStart(2, '0')}/${String(year).slice(-2)}`
-}
+  if (!month || !year) return "";
+  return `${String(month).padStart(2, "0")}/${String(year).slice(-2)}`;
+};
 
 export function OrganizationPaymentMethodsPanel({
   organizationId,
 }: OrganizationPaymentMethodsPanelProps) {
-  const toast = useToastController()
-  const [showAddForm, setShowAddForm] = useState(false)
+  const { theme } = useThemeContext();
+  const toast = useToast();
+  const [showAddForm, setShowAddForm] = useState(false);
 
-  const paymentMethodQuery = api.payments.getPaymentMethod.useQuery(
-    { organizationId },
-    {
-      enabled: Boolean(organizationId),
-      staleTime: 60_000,
-    }
-  )
+  const paymentMethodQuery = usePaymentMethod(organizationId);
 
-  const deleteMutation = api.payments.deletePaymentMethod.useMutation({
+  const deleteMutation = useDeletePaymentMethodMutation({
     onSuccess: () => {
-      toast.show('Payment method removed', {
-        message: 'The payment method has been removed successfully.',
-      })
-      paymentMethodQuery.refetch()
-      setShowAddForm(false)
+      toast.show({
+        title: "Payment method removed",
+        message: "The payment method has been removed successfully.",
+      });
+      paymentMethodQuery.refetch();
+      setShowAddForm(false);
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show('Failed to remove payment method', {
-        message,
-        type: 'error',
-      })
+      const _message =
+        error instanceof Error ? error.message : "An error occurred";
+      toast.show({
+        title: "Failed to remove payment method",
+        message: _message,
+        variant: "error",
+      });
     },
-  })
+  });
 
-  const paymentMethod = paymentMethodQuery.data
+  const paymentMethod = paymentMethodQuery.data;
 
   const handleDelete = () => {
-    if (!paymentMethod?.id) return
+    if (!paymentMethod?.id) return;
 
     if (
-      !confirm('Are you sure you want to remove this payment method? This action cannot be undone.')
+      !confirm(
+        "Are you sure you want to remove this payment method? This action cannot be undone."
+      )
     ) {
-      return
+      return;
     }
 
-    deleteMutation.mutate({ organizationPaymentMethodId: paymentMethod.id })
-  }
+    deleteMutation.mutate(paymentMethod.id);
+  };
 
   const handleAddSuccess = () => {
-    toast.show('Payment method added', {
-      message: 'The payment method has been saved successfully.',
-    })
-    paymentMethodQuery.refetch()
-    setShowAddForm(false)
-  }
+    toast.show({
+      title: "Payment method added",
+      message: "The payment method has been saved successfully.",
+    });
+    paymentMethodQuery.refetch();
+    setShowAddForm(false);
+  };
 
   if (paymentMethodQuery.isLoading) {
     return (
-      <Card bordered padding="$4">
-        <YStack gap="$3" alignItems="center" paddingVertical="$4">
-          <Spinner size="large" />
-          <Text color="$color11">Loading payment method…</Text>
-        </YStack>
+      <Card bordered padding="md">
+        <Stack gap={12} align="center" paddingVertical={16}>
+          <Spinner size="lg" />
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Loading payment method…
+          </Text>
+        </Stack>
       </Card>
-    )
+    );
   }
 
   return (
-    <Card bordered padding="$4" gap="$3">
-      <XStack justifyContent="space-between" alignItems="center">
-        <Text fontSize="$5" fontWeight="600">
-          Payment Method
-        </Text>
-        {!showAddForm && !paymentMethod && (
-          <Button size="$3" theme="blue" icon={Plus} onPress={() => setShowAddForm(true)}>
-            Add Payment Method
-          </Button>
-        )}
-      </XStack>
-
-      {showAddForm ? (
-        <YStack gap="$3">
-          <SetupIntentForm
-            organizationId={organizationId}
-            onSuccess={handleAddSuccess}
-            onCancel={() => setShowAddForm(false)}
-          />
-        </YStack>
-      ) : paymentMethod ? (
-        <YStack gap="$3">
-          <XStack
-            gap="$3"
-            alignItems="center"
-            padding="$3"
-            backgroundColor="$color2"
-            borderRadius="$4"
-            borderWidth={1}
-            borderColor="$borderColor"
-          >
-            <CreditCard size={24} color="$color11" />
-            <YStack flex={1} gap="$1">
-              <XStack gap="$2" alignItems="center">
-                <Text fontWeight="600" fontSize="$4">
-                  {formatCardBrand(paymentMethod.brand)} •••• {paymentMethod.last4}
-                </Text>
-                {paymentMethod.isDefault && (
-                  <Text fontSize="$2" color="$blue11" fontWeight="600">
-                    Default
-                  </Text>
-                )}
-              </XStack>
-              <Text fontSize="$2" color="$color10">
-                Expires {formatExpiry(paymentMethod.expMonth, paymentMethod.expYear)}
-                {paymentMethod.billingName ? ` • ${paymentMethod.billingName}` : ''}
-              </Text>
-            </YStack>
+    <Card bordered padding="md">
+      <Stack gap={12}>
+        <Row justify="space-between" align="center">
+          <Text>Payment Method</Text>
+          {!showAddForm && !paymentMethod && (
             <Button
-              size="$2"
-              variant="outlined"
-              icon={Trash2}
-              onPress={handleDelete}
-              disabled={deleteMutation.isPending}
-              borderColor="$red8"
-              color="$red11"
+              size="sm"
+              color="primary"
+              iconStart={Plus}
+              onPress={() => setShowAddForm(true)}
             >
-              Remove
+              Add Payment Method
             </Button>
-          </XStack>
-          <Button size="$3" variant="outlined" icon={Plus} onPress={() => setShowAddForm(true)}>
-            Replace Payment Method
-          </Button>
-        </YStack>
-      ) : (
-        <YStack gap="$2" padding="$3" backgroundColor="$color2" borderRadius="$4">
-          <Text color="$color11" fontSize="$3">
-            No payment method on file
-          </Text>
-          <Text color="$color10" fontSize="$2">
-            Add a payment method to enable automatic billing for this organization.
-          </Text>
-        </YStack>
-      )}
+          )}
+        </Row>
+
+        {showAddForm ? (
+          <Stack gap={12}>
+            <SetupIntentForm
+              organizationId={organizationId}
+              onSuccess={handleAddSuccess}
+              onCancel={() => setShowAddForm(false)}
+            />
+          </Stack>
+        ) : paymentMethod ? (
+          <Stack gap={12}>
+            <Row
+              gap={12}
+              align="center"
+              padding="sm"
+              style={{ backgroundColor: colors.bg[theme].subtle }}
+              borderRadius={16}
+              borderWidth={1}
+              borderColor={colors.border[theme].default}
+            >
+              <CreditCard size={24} color={colors.text[theme].secondary} />
+              <Stack flex={1} gap={4}>
+                <Row gap={8} align="center">
+                  <Text>
+                    {formatCardBrand(paymentMethod.brand)} ••••{" "}
+                    {paymentMethod.last4}
+                  </Text>
+                  {paymentMethod.isDefault && (
+                    <Text
+                      style={{
+                        color:
+                          theme === "light"
+                            ? colors.blue[700]
+                            : colors.blue[300],
+                      }}
+                    >
+                      Default
+                    </Text>
+                  )}
+                </Row>
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  Expires{" "}
+                  {formatExpiry(paymentMethod.expMonth, paymentMethod.expYear)}
+                  {paymentMethod.billingName
+                    ? ` • ${paymentMethod.billingName}`
+                    : ""}
+                </Text>
+              </Stack>
+              <Button
+                size="sm"
+                variant="outline"
+                iconStart={Trash2}
+                onPress={handleDelete}
+                disabled={deleteMutation.isPending}
+                style={{
+                  borderColor:
+                    theme === "light" ? colors.error[300] : colors.error[700],
+                }}
+                color="error"
+              >
+                Remove
+              </Button>
+            </Row>
+            <Button
+              size="sm"
+              variant="outline"
+              iconStart={Plus}
+              onPress={() => setShowAddForm(true)}
+            >
+              Replace Payment Method
+            </Button>
+          </Stack>
+        ) : (
+          <Stack
+            gap={8}
+            padding="sm"
+            style={{ backgroundColor: colors.bg[theme].subtle }}
+            borderRadius={16}
+          >
+            <Text style={{ color: colors.text[theme].secondary }}>
+              No payment method on file
+            </Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              Add a payment method to enable automatic billing for this
+              organization.
+            </Text>
+          </Stack>
+        )}
+      </Stack>
     </Card>
-  )
+  );
 }

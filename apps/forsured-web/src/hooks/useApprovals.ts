@@ -1,6 +1,6 @@
 /**
  * Approvals Hook
- * REQ-212: Code Updates for Shared Database Architecture
+ * Code Updates for Shared Database Architecture
  *
  * Uses `approvals` table in forsured schema:
  * - id (uuid, primary key)

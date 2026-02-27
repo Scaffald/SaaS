@@ -1,7 +1,7 @@
-import { Popover, ToggleSwitch } from '@unicornlove/ui'
-import { ChevronDown, SlidersHorizontal } from '@tamagui/lucide-icons'
+import { Popover, Switch } from '@scaffald/ui'
+import { ChevronDown, SlidersHorizontal } from 'lucide-react-native'
 import { useMemo, useState } from 'react'
-import { Button, Label, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Label, Text, Row, Stack } from '@scaffald/ui'
 
 type FilterDropdownProps = {
   showWorkers?: boolean
@@ -49,98 +49,77 @@ export const FilterDropdown = ({
     return `Filters (${activeFilterCount})`
   }
 
-  return (
-    <Popover open={isOpen} onOpenChange={setIsOpen} placement="bottom-start">
-      <Popover.Trigger asChild>
-        <Button
-          size="$4"
-          variant="outlined"
-          backgroundColor={activeFilterCount < 3 ? '$blue9' : '$background'}
-          color={activeFilterCount < 3 ? 'white' : '$color'}
-          hoverStyle={{ backgroundColor: activeFilterCount < 3 ? '$blue10' : '$backgroundHover' }}
-          pressStyle={{ backgroundColor: activeFilterCount < 3 ? '$blue11' : '$backgroundPress' }}
-          icon={SlidersHorizontal}
-          iconAfter={ChevronDown}
-          scaleIcon={1.2}
-        >
-          {getButtonLabel()}
-        </Button>
-      </Popover.Trigger>
+  const popoverContent = (
+    <Stack gap={12} style={{ minWidth: 280, maxWidth: 320, padding: 12 }}>
+      <Text style={{ marginBottom: 4 }}>Display on Map</Text>
 
-      <Popover.Content
-        borderRadius="$4"
-        padding="$3"
-        borderWidth={1}
-        borderColor="$borderColor"
-        backgroundColor="$background"
-        shadowColor="$shadowColor"
-        shadowOffset={{ width: 0, height: 4 }}
-        shadowOpacity={0.15}
-        shadowRadius={12}
-        style={{ minWidth: 280, maxWidth: 320 }}
-        animation="quick"
-        enterStyle={{ opacity: 0, scale: 0.95, y: -10 }}
-        exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
-      >
-        <YStack gap="$3">
-          <Text fontSize="$5" fontWeight="700" marginBottom="$1">
-            Display on Map
+        {/* Workers Toggle */}
+        <Stack gap={4}>
+          <Row justify="space-between" align="center">
+            <Label onPress={() => onShowWorkersChange?.(!showWorkers)}>Workers</Label>
+            <Switch
+              checked={showWorkers}
+              onChange={(checked) => onShowWorkersChange?.(checked)}
+              accessibilityLabel={showWorkers ? 'Showing workers on map' : 'Hiding workers on map'}
+            />
+          </Row>
+          <Text color="$gray11" style={{ paddingLeft: 4 }}>
+            Show worker profiles on the map
           </Text>
+        </Stack>
 
-          {/* Workers Toggle */}
-          <YStack gap="$1">
-            <XStack justifyContent="space-between" alignItems="center">
-              <Label fontSize="$4" onPress={() => onShowWorkersChange?.(!showWorkers)}>
-                Workers
-              </Label>
-              <ToggleSwitch
-                checked={showWorkers}
-                onCheckedChange={(checked) => onShowWorkersChange?.(checked)}
-                aria-label={showWorkers ? 'Showing workers on map' : 'Hiding workers on map'}
-              />
-            </XStack>
-            <Text fontSize="$2" color="$color10" paddingLeft="$1">
-              Show worker profiles on the map
-            </Text>
-          </YStack>
+        {/* Employers Toggle */}
+        <Stack gap={4}>
+          <Row justify="space-between" align="center">
+            <Label onPress={() => onShowOrganizationsChange?.(!showOrganizations)}>
+              Employers
+            </Label>
+            <Switch
+              checked={showOrganizations}
+              onChange={(checked) => onShowOrganizationsChange?.(checked)}
+              accessibilityLabel={
+                showOrganizations ? 'Showing employers on map' : 'Hiding employers on map'
+              }
+            />
+          </Row>
+          <Text color="$gray11" style={{ paddingLeft: 4 }}>
+            Show employer organizations on the map
+          </Text>
+        </Stack>
 
-          {/* Employers Toggle */}
-          <YStack gap="$1">
-            <XStack justifyContent="space-between" alignItems="center">
-              <Label fontSize="$4" onPress={() => onShowOrganizationsChange?.(!showOrganizations)}>
-                Employers
-              </Label>
-              <ToggleSwitch
-                checked={showOrganizations}
-                onCheckedChange={(checked) => onShowOrganizationsChange?.(checked)}
-                aria-label={
-                  showOrganizations ? 'Showing employers on map' : 'Hiding employers on map'
-                }
-              />
-            </XStack>
-            <Text fontSize="$2" color="$color10" paddingLeft="$1">
-              Show employer organizations on the map
-            </Text>
-          </YStack>
+        {/* Jobs Toggle */}
+        <Stack gap={4}>
+          <Row justify="space-between" align="center">
+            <Label onPress={() => onShowJobsChange?.(!showJobs)}>Jobs</Label>
+            <Switch
+              checked={showJobs}
+              onChange={(checked) => onShowJobsChange?.(checked)}
+              accessibilityLabel={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
+            />
+          </Row>
+          <Text color="$gray11" style={{ paddingLeft: 4 }}>
+            Show job openings on the map
+          </Text>
+        </Stack>
+      </Stack>
+  )
 
-          {/* Jobs Toggle */}
-          <YStack gap="$1">
-            <XStack justifyContent="space-between" alignItems="center">
-              <Label fontSize="$4" onPress={() => onShowJobsChange?.(!showJobs)}>
-                Jobs
-              </Label>
-              <ToggleSwitch
-                checked={showJobs}
-                onCheckedChange={(checked) => onShowJobsChange?.(checked)}
-                aria-label={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
-              />
-            </XStack>
-            <Text fontSize="$2" color="$color10" paddingLeft="$1">
-              Show job openings on the map
-            </Text>
-          </YStack>
-        </YStack>
-      </Popover.Content>
+  return (
+    <Popover
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      placement="bottom-start"
+      content={popoverContent}
+    >
+      <Button
+        size="md"
+        variant="outline"
+        color={activeFilterCount < 3 ? 'primary' : 'gray'}
+        iconStart={SlidersHorizontal}
+        iconEnd={ChevronDown}
+      >
+        {getButtonLabel()}
+      </Button>
     </Popover>
   )
 }

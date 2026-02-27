@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import type { Context, Next } from 'hono'
-import { hashApiKey, validateApiKeyFormat } from '../_shared/utils/api-key.ts'
+import { hashApiKey, validateApiKeyFormat } from '../../_shared/utils/api-key.ts'
 
 /**
  * Authentication middleware - verifies JWT tokens OR API keys and adds context
@@ -21,6 +21,13 @@ import { hashApiKey, validateApiKeyFormat } from '../_shared/utils/api-key.ts'
  * - Enforces rate limits by tier
  */
 export async function authMiddleware(c: Context, next: Next) {
+  // Skip auth for health checks (monitoring/liveness probes)
+  const path = new URL(c.req.url).pathname
+  if (path.endsWith('/health')) {
+    await next()
+    return
+  }
+
   const authHeader = c.req.header('Authorization')
   const token = authHeader?.replace('Bearer ', '')?.trim()
 
@@ -114,7 +121,7 @@ export async function authMiddleware(c: Context, next: Next) {
     }
 
     // Update last_used_at timestamp (fire and forget)
-    serviceClient
+    void serviceClient
       .schema('core')
       .from('api_keys')
       .update({ last_used_at: new Date().toISOString() })
@@ -122,7 +129,7 @@ export async function authMiddleware(c: Context, next: Next) {
       .then(() => {
         // Success - no action needed
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         console.error('Failed to update API key last_used_at:', error)
       })
 
@@ -206,12 +213,33 @@ export async function requireAuth(c: Context, next: Next) {
 }
 
 /**
+ * Add supabaseAdmin to context for JWT-authenticated users.
+ * Used by protected endpoints that need service-role client (e.g. id-verification, Stripe).
+ * Does nothing for API key auth (user is undefined).
+ */
+export async function addSupabaseAdminForUser(c: Context, next: Next) {
+  const user = c.get('user')
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')
+  const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+
+  if (user && supabaseUrl && supabaseServiceKey) {
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+    c.set('supabaseAdmin', supabaseAdmin)
+  }
+
+  await next()
+}
+
+/**
  * Require specific role - throws 403 if user doesn't have required role
+ * When scope is provided and user has the role, adds supabaseAdmin to context for office operations
  */
 export async function requireRole(roleName: string, scope?: string) {
   return async (c: Context, next: Next) => {
     const user = c.get('user')
     const supabase = c.get('supabase')
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
 
     if (!user) {
       return c.json({ error: 'Unauthorized' }, 401)
@@ -243,6 +271,12 @@ export async function requireRole(roleName: string, scope?: string) {
         },
         403
       )
+    }
+
+    // Add supabaseAdmin for office operations (bypasses RLS)
+    if (supabaseUrl && supabaseServiceKey) {
+      const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+      c.set('supabaseAdmin', supabaseAdmin)
     }
 
     await next()

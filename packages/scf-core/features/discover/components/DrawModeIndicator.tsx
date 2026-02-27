@@ -1,4 +1,4 @@
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack } from '@scaffald/ui'
 
 interface DrawModeIndicatorProps {
   isActive: boolean
@@ -8,20 +8,14 @@ export function DrawModeIndicator({ isActive }: DrawModeIndicatorProps) {
   if (!isActive) return null
 
   return (
-    <YStack
-      position="absolute"
-      top="$4"
-      left="$4"
-      right="$4"
-      zIndex={100}
+    <Stack
       backgroundColor="$blue9"
-      padding="$3"
-      borderRadius="$4"
-      alignItems="center"
+      padding="sm"
+      borderRadius={16}
+      align="center"
+      style={{ position: 'absolute', top: 16, left: 16, right: 16, zIndex: 100 }}
     >
-      <Text color="white" fontSize="$4" fontWeight="600">
-        🖊️ Draw Mode Active - Draw on the map to select an area
-      </Text>
-    </YStack>
+      <Text color="white">🖊️ Draw Mode Active - Draw on the map to select an area</Text>
+    </Stack>
   )
 }

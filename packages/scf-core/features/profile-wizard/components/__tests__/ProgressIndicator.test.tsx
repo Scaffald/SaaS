@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { ProgressIndicator } from '../ProgressIndicator'
 
-vi.mock('tamagui', () => {
+vi.mock('@scaffald/ui', () => {
   const Stack = ({
     children,
     ...rest
@@ -51,8 +51,8 @@ vi.mock('tamagui', () => {
   } & Record<string, unknown>) => <div data-testid="separator" data-vertical={vertical} {...rest} />
 
   return {
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Text,
     Progress,
     Separator,

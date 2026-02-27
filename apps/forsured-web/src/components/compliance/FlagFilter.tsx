@@ -1,10 +1,10 @@
 /**
  * FlagFilter - Flag filter component using Beyond UI
- * REQ-269: Policy & Endorsement Level Flags
+ * Policy & Endorsement Level Flags
  */
 import React, { useState, useCallback, useMemo } from 'react';
-import { Stack, Row, Text, Button } from '@unicornlove/beyond-ui';
-import { Chip as Badge } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button } from '@scaffald/ui';
+import { Chip as Badge } from '@scaffald/ui';
 import { FileText, Layers, ScrollText, Filter, CheckCircle } from 'lucide-react';
 import { FlaggableEntityType } from '../../types';
 import { FlagComplianceIssue, FlagComplianceReport } from '../../lib/compliance/evaluator';

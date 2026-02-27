@@ -1,6 +1,6 @@
 /**
  * Compliance Authorization System
- * REQ-2, TASK-18: Extensible Authorization System with Permission Matrix
+ * Extensible Authorization System with Permission Matrix
  *
  * Implements role-based access control (RBAC) for compliance requirements
  * with support for custom permissions and hierarchical roles.

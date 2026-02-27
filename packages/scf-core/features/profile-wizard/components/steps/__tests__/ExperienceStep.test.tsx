@@ -50,7 +50,7 @@ vi.mock('../StepNavigation', () => ({
   ),
 }))
 
-vi.mock('@unicornlove/ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   MonthYearPicker: ({
     label,
     value,
@@ -108,7 +108,7 @@ vi.mock('@unicornlove/ui', () => ({
   ),
 }))
 
-vi.mock('tamagui', () => {
+vi.mock('@scaffald/ui', () => {
   const Stack = ({
     children,
     ...rest
@@ -164,8 +164,8 @@ vi.mock('tamagui', () => {
   )
 
   return {
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Input,
     Text,
     Paragraph,

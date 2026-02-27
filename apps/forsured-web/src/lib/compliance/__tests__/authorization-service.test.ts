@@ -1,6 +1,6 @@
 /**
  * Compliance Database Authorization Service Tests
- * REQ-2, TASK-18: Tests for database-driven authorization system
+ * Tests for database-driven authorization system
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'

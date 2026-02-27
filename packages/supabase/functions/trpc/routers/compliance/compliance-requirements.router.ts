@@ -1,6 +1,6 @@
 /**
  * Compliance Requirements Router
- * REQ-2, TASK-19: Integrate Authorization Checks into tRPC Routers
+ * Compliance requirements router with authorization checks
  *
  * tRPC router for compliance requirements CRUD operations with
  * database-driven authorization.

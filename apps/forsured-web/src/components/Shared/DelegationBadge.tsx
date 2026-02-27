@@ -2,8 +2,8 @@
  * DelegationBadge - Delegation badge using Beyond UI
  */
 import React from 'react';
-import { Row, Text } from '@unicornlove/beyond-ui';
-import { Chip as Badge } from '@unicornlove/beyond-ui';
+import { Row, Text } from '@scaffald/ui';
+import { Chip as Badge } from '@scaffald/ui';
 import { Shield, Eye, Edit } from 'lucide-react';
 
 interface DelegationBadgeProps {

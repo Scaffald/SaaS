@@ -8,4 +8,3 @@ export interface InitAnalyticsOptions {
 export type SuperProperties = Record<string, string | number | boolean | undefined>
 
 export type EventProperties = Record<string, unknown>
-

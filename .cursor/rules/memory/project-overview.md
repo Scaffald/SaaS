@@ -13,8 +13,8 @@
 - **Turbo** - Monorepo build system and task runner
 
 ### UI & Styling
-- **Tamagui** - Cross-platform UI components and styling
-- **Bento** - Complex UI patterns and components
+- **Beyond UI** - Cross-platform UI components and styling
+- **Bento** - Complex UI patterns where used
 - **React Navigation** - Navigation for mobile
 
 ### Backend & Data
@@ -36,7 +36,7 @@ SCF-Scaffald/
 │   └── expo/           # React Native app (iOS, Android, Web via Expo)
 ├── packages/
 │   ├── core/           # Shared business logic and features
-│   ├── ui/             # Cross-platform UI components
+│   ├── beyond-ui/      # Cross-platform UI components
 │   ├── fonts/          # Font and icon management
 │   └── supabase/       # Database, functions, and API layer
 ├── .cursor/rules/      # Cursor AI development rules
@@ -58,17 +58,11 @@ SCF-Scaffald/
 - React Query for data fetching
 - Authentication and user management
 
-### `packages/ui` (Hybrid Maintenance)
-- **Status**: Cross-platform UI component library with hybrid maintenance
-- **Development**: Primary development in `packages/ui/` (monorepo, source of truth)
-- **Publishing**: Standalone repository for npm publishing (`@unicornlove/ui`)
-- **Consumption**: Monorepo uses published npm package `@unicornlove/ui@^1.0.1`
-- **Workflow**: Develop → Sync → Publish → Consume
-- **NOTE**: NOT in workspace, but serves as source of truth for development
-- **See**: `.cursor/rules/ui-package-hybrid.mdc` for complete workflow details
-- Built with Tamagui for styling
+### `packages/beyond-ui`
+- **Status**: Cross-platform UI component library
+- **Package**: `@unicornlove/beyond-ui`
 - Reusable components for both web and mobile
-- Design system and themes
+- Design system, tokens, and themes; see `packages/beyond-ui/docs/`
 
 ### `packages/supabase`
 - Database schema and migrations
@@ -97,7 +91,7 @@ SCF-Scaffald/
 ### Cross-Platform Strategy
 - Shared business logic in `packages/core`
 - Platform-specific implementations when needed
-- Tamagui for consistent UI across platforms
+- Beyond UI for consistent UI across platforms
 
 ### Data Layer
 - Supabase for backend services
@@ -108,7 +102,7 @@ SCF-Scaffald/
 ### Code Organization
 - Feature-based organization in `packages/core/features/`
 - Route naming convention: `<parent>-<child>-{left|right|screen}.tsx`
-- Shared UI components in `packages/ui/`
+- Shared UI components in `packages/beyond-ui/`
 
 ## Current Status
 - **Primary Platform**: React Native (Expo) with Expo Web

@@ -1,10 +1,10 @@
 /**
- * Input - Re-export Input from @unicornlove/beyond-ui
- * Migrated from Tamagui to Beyond UI
+ * Input - Re-export Input from @scaffald/ui
+
  */
-export { Input } from '@unicornlove/beyond-ui';
-export type { InputProps } from '@unicornlove/beyond-ui';
+export { Input } from '@scaffald/ui'
+export type { InputProps } from '@scaffald/ui'
 
 // Default export for backward compatibility
-import { Input } from '@unicornlove/beyond-ui';
-export default Input;
+import { Input } from '@scaffald/ui'
+export default Input

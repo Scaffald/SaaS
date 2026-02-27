@@ -17,7 +17,7 @@ vi.mock('../../hooks/useResumeWizard', () => ({
   useResumeWizard: vi.fn(),
 }))
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   // Icons used by ResumeImportWidget
   FileText: () => <span data-testid="icon-file-text" />,
   ShieldCheck: () => <span data-testid="icon-shield-check" />,
@@ -35,7 +35,7 @@ vi.mock('@tamagui/lucide-icons', () => ({
   Users: () => <span data-testid="users" />,
 }))
 
-vi.mock('tamagui', () => {
+vi.mock('@scaffald/ui', () => {
   interface StackProps {
     children?: ReactNode
     [key: string]: unknown
@@ -47,21 +47,21 @@ vi.mock('tamagui', () => {
   }
 
   const Stack = ({ children, ...rest }: StackProps) => (
-    <div data-testid="tamagui-stack" {...rest}>
+    <div data-testid="beyond-ui-stack" {...rest}>
       {children}
     </div>
   )
 
   const Text = ({ children, ...rest }: TextProps) => (
-    <span data-testid="tamagui-text" {...rest}>
+    <span data-testid="beyond-ui-text" {...rest}>
       {children}
     </span>
   )
 
   return {
     Text,
-    XStack: Stack,
-    YStack: Stack,
+    Row: Stack,
+    Stack: Stack,
   }
 })
 
@@ -102,7 +102,7 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@unicornlove/ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   DashboardWidget: ({ children }: { children?: ReactNode }) => (
     <div data-testid="dashboard-widget">{children}</div>
   ),

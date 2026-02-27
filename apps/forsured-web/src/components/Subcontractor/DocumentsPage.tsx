@@ -19,7 +19,7 @@ import {
   Eye,
   RefreshCw,
 } from 'lucide-react'
-import { Stack, Row, Text, Card, Button, H1, Spinner, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Card, Button, H1, Spinner, Grid } from '@scaffald/ui'
 import CommonButton from '../Common/Button'
 import DocumentDetailModal from '../Document/DocumentDetailModal'
 // Modal import removed - using simple overlay to avoid ResponsiveModal freeze issue

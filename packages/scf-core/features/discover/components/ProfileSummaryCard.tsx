@@ -1,4 +1,4 @@
-import { Card, Paragraph, Text, XStack } from '@unicornlove/ui'
+import { Card, Paragraph, Text, Row, Stack } from '@scaffald/ui'
 import type { TalentProfile } from '../types'
 
 interface ProfileSummaryCardProps {
@@ -9,60 +9,48 @@ interface ProfileSummaryCardProps {
 export function ProfileSummaryCard({ profile, onPress }: ProfileSummaryCardProps) {
   return (
     <Card
-      alignSelf="center"
       elevate
-      size="$2"
-      backgroundColor="$background"
-      padding="$3"
-      gap="$2"
-      pressStyle={{ scale: 0.98, opacity: 0.9 }}
+      padding="sm"
+      pressable
       onPress={onPress}
-      cursor="pointer"
-      animation="quick"
-      borderWidth={1}
-      borderColor="$borderColor"
-      shadowColor="$shadowColor"
-      shadowOffset={{ width: 0, height: 4 }}
-      shadowOpacity={0.15}
-      shadowRadius={12}
-      maxWidth={320}
+      style={{
+        alignSelf: 'center',
+        maxWidth: 320,
+        borderWidth: 1,
+        borderColor: 'var(--color-border)',
+      }}
     >
-      <Text fontSize="$5" fontWeight="700" color="$color12">
-        {profile.name}
-      </Text>
+      <Stack gap={8}>
+        <Text color="secondary">{profile.name}</Text>
 
-      <XStack gap="$2" alignItems="center" flexWrap="wrap">
-        <Paragraph fontSize="$2" color="$color11">
-          {profile.experienceYears} years
-        </Paragraph>
-        <Text color="$color8">•</Text>
-        <Paragraph fontSize="$2" color="$color11" fontWeight="600">
-          ${profile.hourlyRate}/hr
-        </Paragraph>
-      </XStack>
+        <Row gap={8} align="center" wrap>
+          <Paragraph color="secondary">{profile.experienceYears} years</Paragraph>
+          <Text color="secondary">•</Text>
+          <Paragraph color="secondary">${profile.hourlyRate}/hr</Paragraph>
+        </Row>
 
-      {profile.skills && profile.skills.length > 0 && (
-        <XStack gap="$1" flexWrap="wrap">
-          {profile.skills.slice(0, 3).map((skill) => (
-            <Text
-              key={skill}
-              fontSize="$1"
-              color="$color10"
-              backgroundColor="$color4"
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-              borderRadius="$2"
-            >
-              {skill}
-            </Text>
-          ))}
-          {profile.skills.length > 3 && (
-            <Text fontSize="$1" color="$color10">
-              +{profile.skills.length - 3} more
-            </Text>
-          )}
-        </XStack>
-      )}
+        {profile.skills && profile.skills.length > 0 && (
+          <Row gap={4} wrap>
+            {profile.skills.slice(0, 3).map((skill) => (
+              <Text
+                key={skill}
+                color="secondary"
+                style={{
+                  backgroundColor: 'var(--color-4)',
+                  paddingHorizontal: 8,
+                  paddingVertical: 4,
+                  borderRadius: 8,
+                }}
+              >
+                {skill}
+              </Text>
+            ))}
+            {profile.skills.length > 3 && (
+              <Text color="secondary">+{profile.skills.length - 3} more</Text>
+            )}
+          </Row>
+        )}
+      </Stack>
     </Card>
   )
 }

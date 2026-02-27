@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
-import { ScrollView, XStack, YStack } from '@unicornlove/ui'
+import { ScrollView, StyleSheet } from 'react-native'
+import { Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 import { AssessmentsTabs } from '../navigation/AssessmentsTabs'
 
@@ -16,51 +18,29 @@ export const AssessmentsLayout = ({
 }: AssessmentsLayoutProps) => {
   const hasLeftContent = Boolean(leftContent)
   const hasRightContent = Boolean(rightContent)
-  const hasBothColumns = hasLeftContent && hasRightContent
+  const _hasBothColumns = hasLeftContent && hasRightContent
 
   return (
-    <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
-      <YStack gap="$3" paddingTop="$3" paddingBottom="$5">
-        {showTabs && <AssessmentsTabs marginHorizontal="$7" marginTop="$3" />}
+    <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+      <Stack gap={12} paddingTop="sm" paddingBottom="lg">
+        {showTabs && (
+          <Stack marginHorizontal={28} marginTop={12}>
+            <AssessmentsTabs />
+          </Stack>
+        )}
 
-        <XStack
-          gap="$3"
-          paddingHorizontal="$3"
-          paddingTop="$3"
-          flexDirection="column"
-          $md={{
-            gap: '$8',
-            paddingHorizontal: '$7',
-            paddingTop: '$3',
-            flexDirection: 'row',
-          }}
-        >
-          {hasLeftContent && (
-            <YStack
-              width="100%"
-              $md={{
-                width: hasBothColumns ? undefined : '100%',
-                flex: hasBothColumns ? 13 : 1,
-                minWidth: hasBothColumns ? 300 : undefined,
-              }}
-            >
-              {leftContent}
-            </YStack>
-          )}
-          {hasRightContent && (
-            <YStack
-              width="100%"
-              $md={{
-                width: hasBothColumns ? undefined : '100%',
-                flex: hasBothColumns ? 7 : 1,
-                minWidth: hasBothColumns ? 300 : undefined,
-              }}
-            >
-              {rightContent}
-            </YStack>
-          )}
-        </XStack>
-      </YStack>
+        <Row gap={12} paddingHorizontal="sm" paddingTop="sm">
+          {hasLeftContent && <Stack width="100%">{leftContent}</Stack>}
+          {hasRightContent && <Stack width="100%">{rightContent}</Stack>}
+        </Row>
+      </Stack>
     </ScrollView>
   )
 }
+
+const styles = StyleSheet.create({
+  scroll: {
+    flex: 1,
+    backgroundColor: colors.gray[50],
+  },
+})

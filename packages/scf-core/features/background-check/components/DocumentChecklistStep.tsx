@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react'
-import { Button, Card, Checkbox, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Checkbox, Text, Row, Stack } from '@scaffald/ui'
 
 import type { DocumentDraft } from '../hooks/useBackgroundCheckForm'
 
@@ -26,18 +26,16 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
       : true
 
   return (
-    <YStack gap="$4" flex={1}>
-      <YStack gap="$2">
-        <Text fontSize="$6" fontWeight="bold" color="$color12">
-          Upload required documents
-        </Text>
-        <Text fontSize="$3" color="$color11">
+    <Stack gap={16} flex={1}>
+      <Stack gap={8}>
+        <Text color="$gray11">Upload required documents</Text>
+        <Text color="$gray11">
           Provide clear copies of each requested document. Depending on your package, this might
           include government ID, SSN card, or driving history.
         </Text>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$3" flex={1}>
+      <Stack gap={12} flex={1}>
         {requiredDocuments?.length ? (
           requiredDocuments.map((docType) => {
             const isChecked = fulfilledDocuments.has(docType)
@@ -45,42 +43,38 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
               <Card
                 key={docType}
                 bordered
-                borderRadius="$4"
-                padding="$3"
+                radius="lg"
+                padding="sm"
                 backgroundColor={isChecked ? '$green3' : '$color2'}
               >
-                <XStack alignItems="center" gap="$3">
+                <Row align="center" gap={12}>
                   <Checkbox
-                    size="$4"
+                    size="md"
                     checked={isChecked}
-                    onCheckedChange={(checked) => onToggleDocument(docType, Boolean(checked))}
-                  >
-                    <Checkbox.Indicator />
-                  </Checkbox>
-                  <YStack gap="$1" flex={1}>
-                    <Text fontSize="$4" fontWeight="bold" color="$color12">
-                      {docType.replace(/_/g, ' ')}
-                    </Text>
-                    <Text fontSize="$2" color="$color10">
-                      Upload a clear photo or PDF of your {docType.replace(/_/g, ' ')}.
-                    </Text>
-                  </YStack>
-                </XStack>
+                    onChange={(checked) => onToggleDocument(docType, Boolean(checked))}
+                    labelElement={
+                      <Stack gap={4} flex={1}>
+                        <Text color="$gray11">{docType.replace(/_/g, ' ')}</Text>
+                        <Text color="$gray11">
+                          Upload a clear photo or PDF of your {docType.replace(/_/g, ' ')}.
+                        </Text>
+                      </Stack>
+                    }
+                  />
+                </Row>
               </Card>
             )
           })
         ) : (
-          <Card bordered borderRadius="$4" padding="$3" backgroundColor="$color2">
-            <Text fontSize="$3" color="$color11">
-              No documents are required for this package.
-            </Text>
+          <Card bordered radius="lg" padding="sm" backgroundColor="$color2">
+            <Text color="$gray11">No documents are required for this package.</Text>
           </Card>
         )}
-      </YStack>
+      </Stack>
 
-      <Button size="$4" theme="blue" disabled={!allDocumentsProvided} onPress={onContinue}>
+      <Button size="md" color="primary" disabled={!allDocumentsProvided} onPress={onContinue}>
         Continue
       </Button>
-    </YStack>
+    </Stack>
   )
 })

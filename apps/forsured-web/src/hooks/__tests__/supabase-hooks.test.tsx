@@ -1,6 +1,6 @@
 /**
  * Integration Tests for Supabase-converted Hooks
- * REQ-212: Code Updates for Shared Database Architecture
+ * Code Updates for Shared Database Architecture
  *
  * These tests validate that hooks correctly query forsured.* schema tables
  * using the service role client for RLS bypass during testing.

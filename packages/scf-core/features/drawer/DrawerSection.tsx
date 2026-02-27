@@ -1,4 +1,4 @@
-import { YStack } from '@unicornlove/ui'
+import { Stack } from '@scaffald/ui'
 import { DrawerLink } from './DrawerLink'
 import type { DrawerSectionProps } from './types'
 
@@ -22,7 +22,7 @@ export const DrawerSection = ({
     ])
 
     return (
-      <YStack gap="$2">
+      <Stack gap={8}>
         {items.map(({ item, depth }) => (
           <DrawerLink
             key={`${section.key}-${item.key}-${depth}`}
@@ -35,13 +35,13 @@ export const DrawerSection = ({
             isCollapsed={collapsed}
           />
         ))}
-      </YStack>
+      </Stack>
     )
   }
 
   // For expanded mode, show items with expandable functionality
   return (
-    <YStack gap="$1" flex={1}>
+    <Stack gap={4} flex={1}>
       {section.items.map((item) => (
         <DrawerLink
           key={`${section.key}-${item.key}`}
@@ -53,6 +53,6 @@ export const DrawerSection = ({
           isCollapsed={collapsed}
         />
       ))}
-    </YStack>
+    </Stack>
   )
 }

@@ -1,6 +1,6 @@
 /**
  * Database Context Provider
- * REQ-212: Code Updates for Shared Database Architecture
+ * Code Updates for Shared Database Architecture
  *
  * Provides database access through Supabase client with forsured.* schema support.
  * Always uses real Supabase - MockDatabase has been removed per testing policy.

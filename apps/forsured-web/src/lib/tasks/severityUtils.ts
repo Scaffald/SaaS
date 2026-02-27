@@ -1,5 +1,5 @@
 /**
- * REQ-266: Task Correlation with Compliance Score
+ * Task Correlation with Compliance Score
  * Utility functions for calculating and managing task severity
  */
 

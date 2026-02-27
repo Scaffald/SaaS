@@ -1,6 +1,15 @@
-import { Input, ResponsiveSelect, Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
+import {
+  Input,
+  ResponsiveSelect,
+  Text,
+  ToggleSwitch,
+  Row,
+  Stack,
+  useThemeContext,
+} from '@scaffald/ui'
 import { useState } from 'react'
-import { Label, TextArea } from '@unicornlove/ui'
+import { Label, TextArea } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface CompensationBenefitsSectionProps {
   benefitsSummary?: string
@@ -48,6 +57,7 @@ export function CompensationBenefitsSection({
   payFrequency,
   onUpdate,
 }: CompensationBenefitsSectionProps) {
+  const { theme } = useThemeContext()
   const [localState, setLocalState] = useState({
     benefits_summary: benefitsSummary,
     has_bonus_structure: hasBonusStructure,
@@ -71,88 +81,86 @@ export function CompensationBenefitsSection({
   }
 
   return (
-    <YStack
-      gap="$4"
-      padding="$4"
-      backgroundColor="$background"
-      borderRadius="$4"
+    <Stack
+      gap={16}
+      padding="md"
+      style={{ backgroundColor: colors.bg[theme].default }}
+      borderRadius={16}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
     >
-      <Text fontSize="$6" fontWeight="600">
-        Compensation & Benefits
-      </Text>
-      <Text fontSize="$2" color="$color10">
+      <Text>Compensation & Benefits</Text>
+      <Text style={{ color: colors.text[theme].secondary }}>
         Detailed compensation information and benefits package
       </Text>
 
       {/* Benefits Summary */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Benefits summary</Label>
         <TextArea
           placeholder="Describe health insurance, PTO, retirement plans, etc."
           value={localState.benefits_summary || ''}
           onChangeText={(text) => handleChange('benefits_summary', text || undefined)}
-          height={100}
+          style={{ minHeight: 100 }}
         />
-      </YStack>
+      </Stack>
 
       {/* Bonus Structure */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Has bonus structure</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Performance or other bonus opportunities
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.has_bonus_structure || false}
-          onCheckedChange={(checked) => handleChange('has_bonus_structure', checked)}
+          onChange={(checked) => handleChange('has_bonus_structure', checked)}
           aria-label="Has bonus structure"
         />
-      </XStack>
+      </Row>
 
       {localState.has_bonus_structure && (
-        <YStack gap="$2">
+        <Stack gap={8}>
           <Label>Bonus details</Label>
           <TextArea
             placeholder="Describe bonus structure, eligibility, and potential amounts"
             value={localState.bonus_details || ''}
             onChangeText={(text) => handleChange('bonus_details', text || undefined)}
-            height={80}
+            style={{ minHeight: 80 }}
           />
-        </YStack>
+        </Stack>
       )}
 
       {/* Equity */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Has equity compensation</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Stock options, RSUs, or other equity
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.has_equity || false}
-          onCheckedChange={(checked) => handleChange('has_equity', checked)}
+          onChange={(checked) => handleChange('has_equity', checked)}
           aria-label="Has equity compensation"
         />
-      </XStack>
+      </Row>
 
       {localState.has_equity && (
-        <YStack gap="$2">
+        <Stack gap={8}>
           <Label>Equity details</Label>
           <TextArea
             placeholder="Describe equity compensation structure"
             value={localState.equity_details || ''}
             onChangeText={(text) => handleChange('equity_details', text || undefined)}
-            height={80}
+            style={{ minHeight: 80 }}
           />
-        </YStack>
+        </Stack>
       )}
 
       {/* Sign-on Bonus */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Sign-on bonus ($)</Label>
         <Input
           placeholder="0.00"
@@ -165,52 +173,52 @@ export function CompensationBenefitsSection({
             handleChange('sign_on_bonus_cents', value > 0 ? Math.round(value * 100) : undefined)
           }}
         />
-      </YStack>
+      </Stack>
 
       {/* Relocation Package */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Has relocation package</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Relocation assistance available
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.has_relocation_package || false}
-          onCheckedChange={(checked) => handleChange('has_relocation_package', checked)}
+          onChange={(checked) => handleChange('has_relocation_package', checked)}
           aria-label="Has relocation package"
         />
-      </XStack>
+      </Row>
 
       {localState.has_relocation_package && (
-        <YStack gap="$2">
+        <Stack gap={8}>
           <Label>Relocation package details</Label>
           <TextArea
             placeholder="Describe relocation assistance offered"
             value={localState.relocation_package_details || ''}
             onChangeText={(text) => handleChange('relocation_package_details', text || undefined)}
-            height={80}
+            style={{ minHeight: 80 }}
           />
-        </YStack>
+        </Stack>
       )}
 
       {/* Overtime Eligible */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Overtime eligible</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Position eligible for overtime pay
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.overtime_eligible || false}
-          onCheckedChange={(checked) => handleChange('overtime_eligible', checked)}
+          onChange={(checked) => handleChange('overtime_eligible', checked)}
           aria-label="Overtime eligible"
         />
-      </XStack>
+      </Row>
 
       {/* Pay Frequency */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Pay frequency</Label>
         <ResponsiveSelect
           value={localState.pay_frequency || ''}
@@ -221,7 +229,7 @@ export function CompensationBenefitsSection({
             label: freq.label,
           }))}
         />
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

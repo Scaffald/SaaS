@@ -1,11 +1,11 @@
 /**
- * REQ-273: Coverage Request Workflow - UI Components
+ * Coverage Request Workflow - UI Components
  * CoverageRequestList component displays all coverage requests for an organization
  */
 
 import { useState, useEffect } from 'react';
 import { FileQuestion } from 'lucide-react';
-import { Stack, Row, Text, H2, H3, Button, Card, CardContent, Spinner } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H2, H3, Button, Card, CardContent, Spinner } from '@scaffald/ui';
 import { CoverageRequest } from '../../types';
 import { getAllCoverageRequests } from '../../lib/api/coverageRequestService';
 import CoverageRequestCard from './CoverageRequestCard';

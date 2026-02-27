@@ -1,7 +1,7 @@
-import { DashboardWidget, Text } from '@unicornlove/ui'
-import { ArrowRightCircle, Eye, Pencil, RefreshCw, Save, Trash2, X } from '@tamagui/lucide-icons'
+import { DashboardWidget, Text } from '@scaffald/ui'
+import { ArrowRightCircle, Eye, Pencil, RefreshCw, Save, Trash2, X } from 'lucide-react-native'
 import type { ReactNode } from 'react'
-import { Button, YStack } from '@unicornlove/ui'
+import { Button, Stack } from '@scaffald/ui'
 
 export interface QuickActionsWidgetProps {
   /** Context of the page (determines which actions to show) */
@@ -58,77 +58,77 @@ export function QuickActionsWidget({
   additionalActions,
 }: QuickActionsWidgetProps) {
   const renderListActions = () => (
-    <YStack gap="$2">
+    <Stack gap={8}>
       {onCreate && (
-        <Button theme="info" icon={ArrowRightCircle} onPress={onCreate}>
+        <Button color="primary" variant="filled" iconStart={ArrowRightCircle} onPress={onCreate}>
           Create {resourceName}
         </Button>
       )}
       {onRefresh && (
-        <Button variant="outlined" icon={RefreshCw} onPress={onRefresh} disabled={isLoading}>
+        <Button variant="outline" iconStart={RefreshCw} onPress={onRefresh} disabled={isLoading}>
           Refresh
         </Button>
       )}
       {additionalActions}
-    </YStack>
+    </Stack>
   )
 
   const renderCreateActions = () => (
-    <YStack gap="$2">
+    <Stack gap={8}>
       {onSave && (
-        <Button theme="info" icon={Save} onPress={onSave} disabled={isLoading}>
+        <Button color="primary" variant="filled" iconStart={Save} onPress={onSave} disabled={isLoading}>
           Save
         </Button>
       )}
       {onCancel && (
-        <Button variant="outlined" icon={X} onPress={onCancel} disabled={isLoading}>
+        <Button variant="outline" iconStart={X} onPress={onCancel} disabled={isLoading}>
           Cancel
         </Button>
       )}
       {additionalActions}
-    </YStack>
+    </Stack>
   )
 
   const renderEditActions = () => (
-    <YStack gap="$2">
+    <Stack gap={8}>
       {onSave && (
-        <Button theme="info" icon={Save} onPress={onSave} disabled={isLoading}>
+        <Button color="primary" variant="filled" iconStart={Save} onPress={onSave} disabled={isLoading}>
           Save Changes
         </Button>
       )}
       {onCancel && (
-        <Button variant="outlined" icon={X} onPress={onCancel} disabled={isLoading}>
+        <Button variant="outline" iconStart={X} onPress={onCancel} disabled={isLoading}>
           Cancel
         </Button>
       )}
       {onDelete && (
-        <Button theme="error" icon={Trash2} onPress={onDelete} disabled={isLoading}>
+        <Button color="error" variant="filled" iconStart={Trash2} onPress={onDelete} disabled={isLoading}>
           Delete {resourceName}
         </Button>
       )}
       {additionalActions}
-    </YStack>
+    </Stack>
   )
 
   const renderDetailActions = () => (
-    <YStack gap="$2">
+    <Stack gap={8}>
       {onEdit && (
-        <Button theme="info" icon={Pencil} onPress={onEdit}>
+        <Button color="primary" variant="filled" iconStart={Pencil} onPress={onEdit}>
           Edit
         </Button>
       )}
       {onView && (
-        <Button variant="outlined" icon={Eye} onPress={onView}>
+        <Button variant="outline" iconStart={Eye} onPress={onView}>
           View
         </Button>
       )}
       {onDelete && (
-        <Button theme="error" icon={Trash2} onPress={onDelete} disabled={isLoading}>
+        <Button color="error" variant="filled" iconStart={Trash2} onPress={onDelete} disabled={isLoading}>
           Delete {resourceName}
         </Button>
       )}
       {additionalActions}
-    </YStack>
+    </Stack>
   )
 
   const renderActions = () => {
@@ -147,10 +147,8 @@ export function QuickActionsWidget({
   }
 
   return (
-    <DashboardWidget gap="$3" elevated>
-      <Text fontSize="$5" fontWeight="700">
-        Quick Actions
-      </Text>
+    <DashboardWidget gap={12} elevated>
+      <Text>Quick Actions</Text>
       {renderActions()}
     </DashboardWidget>
   )

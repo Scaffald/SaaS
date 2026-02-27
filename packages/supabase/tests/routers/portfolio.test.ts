@@ -1,12 +1,12 @@
 /**
  * Portfolio router baseline coverage.
- * Expanded for REQ-74 test coverage.
+ * Portfolio router test coverage.
  */
 
-import { assertEquals, assertExists } from '../shared/assert';
+import { assertEquals, assertExists } from "../shared/assert";
 
-import { callTRPCEndpoint, loadCachedTokens } from '../shared/setup';
-import { requireAuthSetup } from '../shared/test-context';
+import { callTRPCEndpoint, loadCachedTokens } from "../shared/setup";
+import { requireAuthSetup } from "../shared/test-context";
 
 Deno.test({
   name: "Portfolio router - list requires authentication",
@@ -39,7 +39,11 @@ Deno.test({
 
     const result = response[0]?.result?.data;
     assertExists(result, "Expected data payload");
-    assertEquals(Array.isArray(result), true, "Portfolio items should be array");
+    assertEquals(
+      Array.isArray(result),
+      true,
+      "Portfolio items should be array",
+    );
   },
 });
 
@@ -107,7 +111,10 @@ Deno.test({
     const result = response[0]?.result?.data;
     // If successful, verify file_path is stored
     if (result && !response[0]?.error) {
-      assertExists(result.file_path || result.id, "Portfolio item should be created");
+      assertExists(
+        result.file_path || result.id,
+        "Portfolio item should be created",
+      );
     }
   },
 });
@@ -161,7 +168,11 @@ Deno.test({
 
     const result = response[0]?.result?.data;
     assertExists(result, "Expected data payload");
-    assertEquals(Array.isArray(result), true, "Portfolio items should be array");
+    assertEquals(
+      Array.isArray(result),
+      true,
+      "Portfolio items should be array",
+    );
 
     // Verify items are ordered by display_order
     if (result.length > 1) {

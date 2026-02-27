@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react'
 import {
   X,
   AlertCircle,
@@ -9,80 +9,89 @@ import {
   Clock,
   CheckCircle,
   MessageSquare,
-} from 'lucide-react';
-import { Stack, Row, Text, H2, H3, Card } from '@unicornlove/beyond-ui';
-import Button from '../Common/Button';
+} from 'lucide-react'
+import { Stack, Row, Text, H2, H3, Card } from '@scaffald/ui'
+import Button from '../Common/Button'
 // Modal import removed - using simple overlay to avoid ResponsiveModal freeze issue
-import { useDatabase } from '../../contexts/DatabaseContext';
-import { toast } from 'sonner';
-import { ManualUserBadge } from '../ManualUsers';
+import { useDatabase } from '../../contexts/DatabaseContext'
+import { toast } from 'sonner'
+import { ManualUserBadge } from '../ManualUsers'
 
 // New database schema types
-type TaskStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled' | 'submitted' | 'in_review' | 'approved' | 'rejected' | 'needs_info';
-type TaskPriority = 'urgent' | 'high' | 'medium' | 'low';
+type TaskStatus =
+  | 'pending'
+  | 'in_progress'
+  | 'completed'
+  | 'cancelled'
+  | 'submitted'
+  | 'in_review'
+  | 'approved'
+  | 'rejected'
+  | 'needs_info'
+type TaskPriority = 'urgent' | 'high' | 'medium' | 'low'
 
 interface Task {
-  id: string;
-  project_id: string;
-  subcontractor_id: string | null;
-  assigned_to_user_id: string | null;
-  created_by_user_id: string;
-  title: string;
-  description: string;
-  status: TaskStatus;
-  priority: TaskPriority;
-  due_date: string;
-  task_type: string;
-  origin_role: string;
-  target_role: string;
+  id: string
+  project_id: string
+  subcontractor_id: string | null
+  assigned_to_user_id: string | null
+  created_by_user_id: string
+  title: string
+  description: string
+  status: TaskStatus
+  priority: TaskPriority
+  due_date: string
+  task_type: string
+  origin_role: string
+  target_role: string
   metadata?: {
-    blockers?: string[];
-    quick_actions?: string[];
-    tags?: string[];
-    project_name?: string;
-    related?: Record<string, unknown>;
-    legacy_assignees?: string[];
-    [key: string]: unknown;
-  };
-  created_at: string;
-  updated_at: string;
+    blockers?: string[]
+    quick_actions?: string[]
+    tags?: string[]
+    project_name?: string
+    related?: Record<string, unknown>
+    legacy_assignees?: string[]
+    [key: string]: unknown
+  }
+  created_at: string
+  updated_at: string
 }
 
 interface UserRecord {
-  id: string;
-  name: string;
-  email: string;
-  organization_id: string;
-  /** REQ-12: Flag for manually-added users */
-  is_manually_created?: boolean;
+  id: string
+  name: string
+  email: string
+  organization_id: string
+  /**  Flag for manually-added users */
+  is_manually_created?: boolean
 }
 
 interface Project {
-  id: string;
-  name: string;
+  id: string
+  name: string
 }
 
 interface Subcontractor {
-  id: string;
-  company_name: string;
+  id: string
+  company_name: string
 }
 
 interface EnhancedTaskDetailModalProps {
-  task: Task | null;
-  isOpen: boolean;
-  onClose: () => void;
-  onUpdateTask?: (taskId: string, updates: Partial<Task>) => void;
+  task: Task | null
+  isOpen: boolean
+  onClose: () => void
+  onUpdateTask?: (taskId: string, updates: Partial<Task>) => void
 }
 
 // Simple overlay component to avoid ResponsiveModal freeze issue
 const ModalOverlay = ({
   children,
   onClose,
-  width = 900
+  width = 900,
 }: {
-  children: React.ReactNode;
-  onClose: () => void;
-  width?: number | string;
+  children: React.ReactNode
+  onClose: () => void
+  width?: number | string
 }) => (
   <div
     style={{
@@ -111,7 +120,7 @@ const ModalOverlay = ({
       {children}
     </Card>
   </div>
-);
+)
 
 export default function EnhancedTaskDetailModal({
   task,
@@ -119,175 +128,208 @@ export default function EnhancedTaskDetailModal({
   onClose,
   onUpdateTask,
 }: EnhancedTaskDetailModalProps) {
-  const { forsured } = useDatabase();
-  const [showReassignModal, setShowReassignModal] = useState(false);
-  const [showAddNoteModal, setShowAddNoteModal] = useState(false);
-  const [selectedAssignee, setSelectedAssignee] = useState('');
-  const [note, setNote] = useState('');
+  const { forsured } = useDatabase()
+  const [showReassignModal, setShowReassignModal] = useState(false)
+  const [showAddNoteModal, setShowAddNoteModal] = useState(false)
+  const [selectedAssignee, setSelectedAssignee] = useState('')
+  const [note, setNote] = useState('')
 
   // Related data from database
-  const [users, setUsers] = useState<UserRecord[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [subcontractors, setSubcontractors] = useState<Subcontractor[]>([]);
-  const [loadingRelated, setLoadingRelated] = useState(true);
+  const [users, setUsers] = useState<UserRecord[]>([])
+  const [projects, setProjects] = useState<Project[]>([])
+  const [subcontractors, setSubcontractors] = useState<Subcontractor[]>([])
+  const [loadingRelated, setLoadingRelated] = useState(true)
 
   // Fetch related data for lookups
   useEffect(() => {
     async function fetchRelatedData() {
-      if (!isOpen) return;
-      setLoadingRelated(true);
+      if (!isOpen) return
+      setLoadingRelated(true)
 
       try {
         // Don't fail on users query - table might not exist in forsured schema
         const [projectsResult, subsResult] = await Promise.all([
           forsured('projects').select('*'),
           forsured('subcontractors').select('*'),
-        ]);
+        ])
 
         if (projectsResult.error) {
-          console.warn('[EnhancedTaskDetailModal] Projects query error:', projectsResult.error);
+          console.warn('[EnhancedTaskDetailModal] Projects query error:', projectsResult.error)
         }
         if (subsResult.error) {
-          console.warn('[EnhancedTaskDetailModal] Subcontractors query error:', subsResult.error);
+          console.warn('[EnhancedTaskDetailModal] Subcontractors query error:', subsResult.error)
         }
 
-        setUsers([]); // Users are in core schema, not forsured
-        setProjects(projectsResult.data || []);
-        setSubcontractors(subsResult.data || []);
+        setUsers([]) // Users are in core schema, not forsured
+        setProjects(projectsResult.data || [])
+        setSubcontractors(subsResult.data || [])
       } catch (err) {
-        const error = err as Error;
-        console.warn('[EnhancedTaskDetailModal] Error loading related data:', error.message);
+        const error = err as Error
+        console.warn('[EnhancedTaskDetailModal] Error loading related data:', error.message)
       } finally {
-        setLoadingRelated(false);
+        setLoadingRelated(false)
       }
     }
 
-    fetchRelatedData();
-  }, [forsured, isOpen]);
+    fetchRelatedData()
+  }, [forsured, isOpen])
 
   // Get assignee details from users data - MUST be before any early returns
-  // REQ-12: Include is_manually_created flag for manual user indicators
+  //  Include is_manually_created flag for manual user indicators
   const assigneeDetails = useMemo(() => {
-    if (!task?.assigned_to_user_id) return [];
-    const user = users.find(u => u.id === task.assigned_to_user_id);
-    return user ? [{ id: user.id, name: user.name, email: user.email, is_manually_created: user.is_manually_created }] : [];
-  }, [task?.assigned_to_user_id, users]);
+    if (!task?.assigned_to_user_id) return []
+    const user = users.find((u) => u.id === task.assigned_to_user_id)
+    return user
+      ? [
+          {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            is_manually_created: user.is_manually_created,
+          },
+        ]
+      : []
+  }, [task?.assigned_to_user_id, users])
 
-  // REQ-12: Check if any assignee is a manual user
-  const hasManualAssignee = assigneeDetails.some(a => a.is_manually_created);
+  //  Check if any assignee is a manual user
+  const hasManualAssignee = assigneeDetails.some((a) => a.is_manually_created)
 
   // Early return if not open or no task
-  if (!isOpen || !task) return null;
+  if (!isOpen || !task) return null
 
   // Get related project and subcontractor
-  const relatedProject = projects.find(p => p.id === task.project_id);
-  const relatedSubcontractor = subcontractors.find(s => s.id === task.subcontractor_id);
+  const relatedProject = projects.find((p) => p.id === task.project_id)
+  const relatedSubcontractor = subcontractors.find((s) => s.id === task.subcontractor_id)
 
   // Get project name from metadata or lookup
-  const projectName = task.metadata?.project_name || relatedProject?.name || 'Unknown Project';
+  const projectName = task.metadata?.project_name || relatedProject?.name || 'Unknown Project'
 
   // Get blockers, tags from metadata
-  const blockers = task.metadata?.blockers || [];
-  const tags = task.metadata?.tags || [];
-  const related = task.metadata?.related;
+  const blockers = task.metadata?.blockers || []
+  const tags = task.metadata?.tags || []
+  const related = task.metadata?.related
 
   const getPriorityColorProps = (priority: string): React.CSSProperties => {
     switch (priority) {
       case 'urgent':
-        return { color: 'var(--color-red-10)', backgroundColor: 'var(--color-red-2)', borderColor: 'var(--color-red-8)' };
+        return {
+          color: 'var(--color-red-10)',
+          backgroundColor: 'var(--color-red-2)',
+          borderColor: 'var(--color-red-8)',
+        }
       case 'high':
-        return { color: 'var(--color-orange-10)', backgroundColor: 'var(--color-orange-2)', borderColor: 'var(--color-orange-8)' };
+        return {
+          color: 'var(--color-orange-10)',
+          backgroundColor: 'var(--color-orange-2)',
+          borderColor: 'var(--color-orange-8)',
+        }
       case 'medium':
-        return { color: 'var(--color-blue-10)', backgroundColor: 'var(--color-blue-2)', borderColor: 'var(--color-blue-8)' };
+        return {
+          color: 'var(--color-blue-10)',
+          backgroundColor: 'var(--color-blue-2)',
+          borderColor: 'var(--color-blue-8)',
+        }
       case 'low':
-        return { color: 'var(--color-text-muted)', backgroundColor: 'var(--color-gray-2)', borderColor: 'var(--color-gray-8)' };
+        return {
+          color: 'var(--color-text-muted)',
+          backgroundColor: 'var(--color-gray-2)',
+          borderColor: 'var(--color-gray-8)',
+        }
       default:
-        return { color: 'var(--color-text-muted)', backgroundColor: 'var(--color-gray-2)', borderColor: 'var(--color-gray-8)' };
+        return {
+          color: 'var(--color-text-muted)',
+          backgroundColor: 'var(--color-gray-2)',
+          borderColor: 'var(--color-gray-8)',
+        }
     }
-  };
+  }
 
   const getStatusColorProps = (status: string): React.CSSProperties => {
     switch (status) {
       case 'pending':
-        return { backgroundColor: 'var(--color-blue-2)', color: 'var(--color-blue-10)' };
+        return { backgroundColor: 'var(--color-blue-2)', color: 'var(--color-blue-10)' }
       case 'in_progress':
-        return { backgroundColor: 'var(--color-blue-2)', color: 'var(--color-blue-10)' };
+        return { backgroundColor: 'var(--color-blue-2)', color: 'var(--color-blue-10)' }
       case 'completed':
-        return { backgroundColor: 'var(--color-green-2)', color: 'var(--color-green-10)' };
+        return { backgroundColor: 'var(--color-green-2)', color: 'var(--color-green-10)' }
       case 'cancelled':
-        return { backgroundColor: 'var(--color-gray-2)', color: 'var(--color-gray-10)' };
+        return { backgroundColor: 'var(--color-gray-2)', color: 'var(--color-gray-10)' }
       default:
-        return { backgroundColor: 'var(--color-blue-2)', color: 'var(--color-blue-10)' };
+        return { backgroundColor: 'var(--color-blue-2)', color: 'var(--color-blue-10)' }
     }
-  };
+  }
 
   // Format status for display
   const formatStatus = (status: string) => {
-    return status.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-  };
+    return status
+      .split('_')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ')
+  }
 
   const formatDueDate = (dueDate: string) => {
-    const date = new Date(dueDate);
-    const now = new Date();
-    const diffTime = date.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const date = new Date(dueDate)
+    const now = new Date()
+    const diffTime = date.getTime() - now.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
     if (diffDays < 0)
       return {
         text: `${Math.abs(diffDays)} days overdue`,
         color: 'var(--color-red-10)',
         isOverdue: true,
-      };
+      }
     if (diffDays === 0)
-      return { text: 'Due today', color: 'var(--color-orange-10)', isOverdue: false };
+      return { text: 'Due today', color: 'var(--color-orange-10)', isOverdue: false }
     if (diffDays === 1)
       return {
         text: 'Due tomorrow',
         color: 'var(--color-orange-10)',
         isOverdue: false,
-      };
+      }
     return {
       text: `Due in ${diffDays} days`,
       color: 'var(--color-text-muted)',
       isOverdue: false,
-    };
-  };
+    }
+  }
 
-  const dueDate = formatDueDate(task.due_date);
+  const dueDate = formatDueDate(task.due_date)
 
   const handleStatusChange = (newStatus: TaskStatus) => {
-    onUpdateTask?.(task.id, { status: newStatus });
-  };
+    onUpdateTask?.(task.id, { status: newStatus })
+  }
 
   const handleReassign = () => {
     if (selectedAssignee) {
-      onUpdateTask?.(task.id, { assigned_to_user_id: selectedAssignee });
-      setShowReassignModal(false);
-      setSelectedAssignee('');
+      onUpdateTask?.(task.id, { assigned_to_user_id: selectedAssignee })
+      setShowReassignModal(false)
+      setSelectedAssignee('')
     }
-  };
+  }
 
   const handleAddNote = () => {
     if (note.trim()) {
       // Add note to task metadata
-      const existingNotes = (task.metadata?.notes as Array<{ text: string; timestamp: string }>) || [];
+      const existingNotes =
+        (task.metadata?.notes as Array<{ text: string; timestamp: string }>) || []
       const newNote = {
         text: note.trim(),
         timestamp: new Date().toISOString(),
-      };
+      }
       onUpdateTask?.(task.id, {
         metadata: {
           ...task.metadata,
           notes: [...existingNotes, newNote],
         },
-      });
-      setShowAddNoteModal(false);
-      setNote('');
+      })
+      setShowAddNoteModal(false)
+      setNote('')
     }
-  };
+  }
 
   // Available users for reassignment
-  const availablePeople = users;
+  const availablePeople = users
 
   return (
     <>
@@ -297,9 +339,7 @@ export default function EnhancedTaskDetailModal({
           <Row alignItems="flex-start" justifyContent="space-between" gap={16}>
             <Stack style={{ flex: 1 }} gap={8}>
               <Row alignItems="center" gap={12} style={{ flexWrap: 'wrap' }}>
-                <H2 style={{ fontSize: 28, fontWeight: 700 }}>
-                  {task.title}
-                </H2>
+                <H2 style={{ fontSize: 28, fontWeight: 700 }}>{task.title}</H2>
                 <Row gap={8}>
                   <span
                     style={{
@@ -338,10 +378,7 @@ export default function EnhancedTaskDetailModal({
                 </Text>
               )}
             </Stack>
-            <div
-              onClick={onClose}
-              style={{ cursor: 'pointer', padding: 8, borderRadius: 8 }}
-            >
+            <div onClick={onClose} style={{ cursor: 'pointer', padding: 8, borderRadius: 8 }}>
               <X size={24} color="var(--color-text-muted)" />
             </div>
           </Row>
@@ -362,7 +399,9 @@ export default function EnhancedTaskDetailModal({
             >
               <Calendar color="var(--color-text-muted)" size={20} />
               <Stack>
-                <Text size="xs" muted>Due Date</Text>
+                <Text size="xs" muted>
+                  Due Date
+                </Text>
                 <Row alignItems="center" gap={8}>
                   <Text size="sm" weight="medium" style={{ color: dueDate.color }}>
                     {dueDate.text}
@@ -386,7 +425,9 @@ export default function EnhancedTaskDetailModal({
             >
               <Building color="var(--color-text-muted)" size={20} />
               <Stack>
-                <Text size="xs" muted>Project</Text>
+                <Text size="xs" muted>
+                  Project
+                </Text>
                 <Text size="sm" weight="medium">
                   {projectName}
                 </Text>
@@ -400,17 +441,14 @@ export default function EnhancedTaskDetailModal({
               <Text size="sm" weight="semibold" muted>
                 Assigned To
               </Text>
-              <div
-                onClick={() => setShowReassignModal(true)}
-                style={{ cursor: 'pointer' }}
-              >
+              <div onClick={() => setShowReassignModal(true)} style={{ cursor: 'pointer' }}>
                 <Text size="sm" weight="medium" style={{ color: 'var(--color-blue-10)' }}>
                   {assigneeDetails.length > 0 ? 'Reassign' : 'Assign'}
                 </Text>
               </div>
             </Row>
 
-            {/* REQ-12: Warning banner for manual user assignees */}
+            {/*  Warning banner for manual user assignees */}
             {hasManualAssignee && (
               <Card
                 style={{
@@ -480,7 +518,7 @@ export default function EnhancedTaskDetailModal({
                         <Text size="sm" weight="medium">
                           {person?.name}
                         </Text>
-                        {/* REQ-12: Show badge for manual users */}
+                        {/*  Show badge for manual users */}
                         {person?.is_manually_created && (
                           <ManualUserBadge size="sm" showTooltip={false} />
                         )}
@@ -535,8 +573,18 @@ export default function EnhancedTaskDetailModal({
                       borderRadius: 12,
                     }}
                   >
-                    <div style={{ width: 6, height: 6, backgroundColor: 'var(--color-red-10)', borderRadius: 9999, marginTop: 6 }} />
-                    <Text size="sm" style={{ color: 'var(--color-red-12)' }}>{blocker}</Text>
+                    <div
+                      style={{
+                        width: 6,
+                        height: 6,
+                        backgroundColor: 'var(--color-red-10)',
+                        borderRadius: 9999,
+                        marginTop: 6,
+                      }}
+                    />
+                    <Text size="sm" style={{ color: 'var(--color-red-12)' }}>
+                      {blocker}
+                    </Text>
                   </Row>
                 ))}
               </Stack>
@@ -546,7 +594,9 @@ export default function EnhancedTaskDetailModal({
           {/* Tags section */}
           {tags.length > 0 && (
             <Stack gap={8}>
-              <Text size="sm" weight="semibold" muted>Tags</Text>
+              <Text size="sm" weight="semibold" muted>
+                Tags
+              </Text>
               <Row style={{ flexWrap: 'wrap', gap: 8 }}>
                 {tags.map((tag) => (
                   <span
@@ -663,7 +713,15 @@ export default function EnhancedTaskDetailModal({
               </div>
             </Row>
             <Stack>
-              <label style={{ display: 'block', fontSize: 14, fontWeight: 500, color: 'var(--color-text-muted)', marginBottom: 8 }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: 'var(--color-text-muted)',
+                  marginBottom: 8,
+                }}
+              >
                 Select Assignee
               </label>
               <select
@@ -696,11 +754,7 @@ export default function EnhancedTaskDetailModal({
               >
                 Cancel
               </Button>
-              <Button
-                variant="primary"
-                onPress={handleReassign}
-                style={{ flex: 1 }}
-              >
+              <Button variant="primary" onPress={handleReassign} style={{ flex: 1 }}>
                 Reassign
               </Button>
             </Row>
@@ -722,7 +776,15 @@ export default function EnhancedTaskDetailModal({
               </div>
             </Row>
             <Stack>
-              <label style={{ display: 'block', fontSize: 14, fontWeight: 500, color: 'var(--color-text-muted)', marginBottom: 8 }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: 'var(--color-text-muted)',
+                  marginBottom: 8,
+                }}
+              >
                 Note
               </label>
               <textarea
@@ -750,11 +812,7 @@ export default function EnhancedTaskDetailModal({
               >
                 Cancel
               </Button>
-              <Button
-                variant="primary"
-                onPress={handleAddNote}
-                style={{ flex: 1 }}
-              >
+              <Button variant="primary" onPress={handleAddNote} style={{ flex: 1 }}>
                 Add Note
               </Button>
             </Row>
@@ -762,5 +820,5 @@ export default function EnhancedTaskDetailModal({
         </ModalOverlay>
       )}
     </>
-  );
+  )
 }

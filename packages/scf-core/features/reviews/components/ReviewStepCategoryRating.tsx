@@ -1,4 +1,4 @@
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack } from '@scaffald/ui'
 import { StarRating } from './StarRating'
 
 interface ReviewStepCategoryRatingProps {
@@ -17,23 +17,19 @@ export function ReviewStepCategoryRating({
   onChange,
 }: ReviewStepCategoryRatingProps) {
   return (
-    <YStack gap="$4">
-      <YStack gap="$2">
-        <Text fontSize="$7" fontWeight="700" color="$color12">
-          {title}
-        </Text>
-        <Text fontSize="$5" color="$color11">
-          {description}
-        </Text>
-      </YStack>
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Text color="$gray11">{title}</Text>
+        <Text color="$gray11">{description}</Text>
+      </Stack>
 
       {/* Category Rating */}
       <StarRating label={`Overall ${category}`} value={rating} onChange={onChange} />
 
       {/* Helper Text */}
-      <Text fontSize="$3" color="$color10" fontStyle="italic">
+      <Text style={{ color: '#414e62', fontStyle: 'italic' }}>
         Rate from 1-5 stars based on your overall assessment
       </Text>
-    </YStack>
+    </Stack>
   )
 }

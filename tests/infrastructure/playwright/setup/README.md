@@ -197,7 +197,7 @@ The session data stored in localStorage:
 
 Run unit tests for auth setup utilities:
 ```bash
-pnpm test:vitest tests/infrastructure/playwright/setup/auth.setup.test.ts
+pnpm test:unit tests/infrastructure/playwright/setup/auth.setup.test.ts
 ```
 
 ### Integration Tests
@@ -228,7 +228,7 @@ pnpm test:playwright tests/infrastructure/playwright/setup/auth.setup.performanc
 
 ## History
 
-### REQ-72: Fix CDN Timeout Issue
+### Fix CDN Timeout Issue
 
 Previously, the auth setup used dynamic CDN imports (`import('https://esm.sh/@supabase/supabase-js@2')`) which would consistently timeout after 30 seconds. This was fixed by:
 

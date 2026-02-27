@@ -2,19 +2,21 @@ import {
   Button,
   H2,
   Input,
+  Spinner,
+  Table,
   TableActionBar,
   type TableActionBarProps,
   TableAddRecordModal,
   type TableAddRecordModalProps,
   TableColumnVisibilityModal,
   type TableColumnVisibilityModalProps,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
-import { DataTable } from '@scf/core/components/ui/DataTable'
+  Row,
+  Stack,
+  type BreadcrumbItemData,
+} from '@scaffald/ui'
+import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import { OfficeLayout } from '@scf/core/components/layouts/OfficeLayout'
-import type { BreadcrumbItem } from '@unicornlove/ui'
-import { Plus } from '@tamagui/lucide-icons'
+import { Plus } from 'lucide-react-native'
 import type { ColumnDef, Updater, VisibilityState } from '@tanstack/react-table'
 import type { Dispatch, ReactNode, SetStateAction } from 'react'
 
@@ -60,7 +62,7 @@ interface OfficePageLayoutProps<TData> {
   /** Breadcrumb visibility override for wrapped layout */
   showBreadcrumb?: boolean
   /** Custom breadcrumb items when wrapped */
-  breadcrumbItems?: BreadcrumbItem[]
+  breadcrumbItems?: BreadcrumbItemData[]
   /** Override auto breadcrumb generation when wrapped */
   autoGenerateBreadcrumbs?: boolean
   /** Optional content rendered before the built-in header block */
@@ -83,16 +85,16 @@ export function OfficePageLayout<TData>({
   isLoading = false,
   onRowView,
   onRowEdit,
-  onRowDelete,
-  onRowDuplicate,
-  getItemName,
-  itemType = 'item',
+  onRowDelete: _onRowDelete,
+  onRowDuplicate: _onRowDuplicate,
+  getItemName: _getItemName,
+  itemType: _itemType = 'item',
   pageSize = 50,
   emptyMessage = 'No data found',
   hideCreateButton = false,
   actionBarConfig,
   columnVisibility,
-  onColumnVisibilityChange,
+  onColumnVisibilityChange: _onColumnVisibilityChange,
   hideHeader = false,
   wrapWithOfficeLayout = false,
   rightContent,
@@ -104,17 +106,17 @@ export function OfficePageLayout<TData>({
   children,
 }: OfficePageLayoutProps<TData>) {
   const content = (
-    <YStack flex={1} padding="$4" gap="$4">
+    <Stack flex={1} padding="md" gap={16}>
       {beforeContent}
       {!hideHeader && (
-        <XStack justifyContent="space-between" alignItems="center">
+        <Row justify="space-between" align="center">
           <H2>{title}</H2>
           {!actionBarConfig && !hideCreateButton && (
-            <Button icon={Plus} onPress={onCreateClick}>
+            <Button iconStart={Plus} onPress={onCreateClick}>
               {createButtonLabel}
             </Button>
           )}
-        </XStack>
+        </Row>
       )}
 
       {actionBarConfig ? (
@@ -133,24 +135,32 @@ export function OfficePageLayout<TData>({
 
       {children}
 
-      <DataTable
-        columns={columns}
-        data={data}
-        isLoading={isLoading}
-        onRowView={onRowView}
-        onRowEdit={onRowEdit}
-        onRowDelete={onRowDelete}
-        onRowDuplicate={onRowDuplicate}
-        getItemName={getItemName}
-        itemType={itemType}
+      <Table
+        columns={columnsFromTanStack(columns as ColumnDef<Record<string, unknown>, unknown>[])}
+        data={data as Array<Record<string, unknown> & { id?: string }>}
+        loading={isLoading}
+        renderLoading={() => (
+          <Stack align="center" justify="center" paddingVertical={24} gap={8}>
+            <Spinner size="lg" />
+            <Stack>Loading…</Stack>
+          </Stack>
+        )}
         pageSize={pageSize}
         emptyMessage={emptyMessage}
-        columnVisibility={columnVisibility}
-        onColumnVisibilityChange={onColumnVisibilityChange}
+        columnVisibility={
+          columnVisibility as Record<string, boolean> | undefined
+        }
+        onRowPress={
+          onRowView || onRowEdit || _onRowDelete || _onRowDuplicate
+            ? (row) => {
+                onRowView?.(row as TData)
+              }
+            : undefined
+        }
       />
 
       {afterContent}
-    </YStack>
+    </Stack>
   )
 
   if (wrapWithOfficeLayout) {

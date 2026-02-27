@@ -1,32 +1,32 @@
 /**
  * Sidebar - Navigation sidebar component using Beyond UI
- * REQ-4: Multi-Industry User Set Type System with Configurable Lexicon
+ * Sidebar with lexicon-aware labels
  * Fully migrated to Beyond UI Sidebar components with enhanced features
  */
 
-import { useMemo } from 'react';
+import { useMemo } from 'react'
 import {
   Sidebar as BeyondSidebar,
   SidebarHeader,
   SidebarMenuItem,
   SidebarFooter,
   useSidebarState,
-} from '@unicornlove/beyond-ui';
-import type { User as UserType } from '../../types';
-import ForsuredLogo from '../Common/ForsuredLogo';
-import { SidebarUserProfile } from './SidebarUserProfile';
-import { useSidebar } from '../../hooks/useSidebar';
-import type { UserRole } from '../../config/sidebarMenus';
+} from '@scaffald/ui'
+import type { User as UserType } from '../../types'
+import ForsuredLogo from '../Common/ForsuredLogo'
+import { SidebarUserProfile } from './SidebarUserProfile'
+import { useSidebar } from '../../hooks/useSidebar'
+import type { UserRole } from '../../config/sidebarMenus'
 
 interface SidebarProps {
-  userRole: UserRole;
-  user: UserType;
-  onNotificationsClick?: () => void;
-  onSettingsClick?: () => void;
-  alertCount?: number;
-  collapsed?: boolean;
-  onCollapseChange?: (collapsed: boolean) => void;
-  badges?: Partial<Record<string, number>>;
+  userRole: UserRole
+  user: UserType
+  onNotificationsClick?: () => void
+  onSettingsClick?: () => void
+  alertCount?: number
+  collapsed?: boolean
+  onCollapseChange?: (collapsed: boolean) => void
+  badges?: Partial<Record<string, number>>
 }
 
 export default function Sidebar({
@@ -43,29 +43,23 @@ export default function Sidebar({
   const [persistedCollapsed, setPersistedCollapsed] = useSidebarState({
     storageKey: 'forsured-sidebar-collapsed',
     defaultCollapsed: false,
-  });
+  })
 
   // Support both controlled and uncontrolled mode
-  const isControlled = controlledCollapsed !== undefined;
-  const isCollapsed = isControlled ? controlledCollapsed : persistedCollapsed;
+  const isControlled = controlledCollapsed !== undefined
+  const isCollapsed = isControlled ? controlledCollapsed : persistedCollapsed
 
   const handleCollapseChange = (newCollapsed: boolean) => {
     if (isControlled && onCollapseChange) {
-      onCollapseChange(newCollapsed);
+      onCollapseChange(newCollapsed)
     } else {
-      setPersistedCollapsed(newCollapsed);
+      setPersistedCollapsed(newCollapsed)
     }
-  };
+  }
 
   // Get sidebar data from custom hook
-  const {
-    menuItems,
-    footerActions,
-    isActive,
-    userInitials,
-    userDisplayName,
-    userSupportingText,
-  } = useSidebar({ userRole, user, badges, onSettingsClick });
+  const { menuItems, footerActions, isActive, userInitials, userDisplayName, userSupportingText } =
+    useSidebar({ userRole, user, badges, onSettingsClick })
 
   // Memoized menu items to prevent re-renders
   const renderedMenuItems = useMemo(
@@ -77,11 +71,11 @@ export default function Sidebar({
           label={item.label}
           state={isActive(item.path, item.exact) ? 'active' : 'default'}
           badge={item.badge}
-          onPress={() => window.location.href = item.path}
+          onPress={() => (window.location.href = item.path)}
         />
       )),
     [menuItems, isActive]
-  );
+  )
 
   return (
     <BeyondSidebar
@@ -121,5 +115,5 @@ export default function Sidebar({
       {/* Navigation Menu Items */}
       {renderedMenuItems}
     </BeyondSidebar>
-  );
+  )
 }

@@ -1,5 +1,5 @@
 /**
- * Validation utilities for OCR field validation (REQ-167)
+ * Validation utilities for OCR field validation
  */
 
 import { ValidationError, ValidationResult, OCRField, CoverageLimit } from '../types/ocr.types';

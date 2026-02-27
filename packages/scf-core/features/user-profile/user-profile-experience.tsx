@@ -1,85 +1,79 @@
-import { Briefcase, Calendar, MapPin } from '@tamagui/lucide-icons'
-import { Card, Text, XStack, YStack } from '@unicornlove/ui'
+import { Briefcase, Calendar, MapPin } from "lucide-react-native";
+import { Card, Text, Row, Stack } from "@scaffald/ui";
 
 interface Experience {
-  id: string
-  job_title: string | null
-  company_name: string | null
-  location: string | null
-  start_date: string | null
-  end_date: string | null
-  is_current: boolean | null
-  description: string | null
+  id: string;
+  job_title: string | null;
+  company_name: string | null;
+  location: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  is_current: boolean | null;
+  description: string | null;
 }
 
 interface UserProfileExperienceProps {
-  experience: Experience[]
+  experience: Experience[];
 }
 
-export function UserProfileExperience({ experience }: UserProfileExperienceProps) {
+export function UserProfileExperience({
+  experience,
+}: UserProfileExperienceProps) {
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return null
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-    })
-  }
+    if (!dateString) return null;
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+    });
+  };
 
   return (
     <Card elevate bordered>
-      <YStack gap="$4" padding="$5">
-        <XStack gap="$2" alignItems="center">
+      <Stack gap={16} padding="lg">
+        <Row gap={8} align="center">
           <Briefcase size={24} color="$blue10" />
-          <Text fontSize="$7" fontWeight="700" color="$color12">
-            Work Experience
-          </Text>
-        </XStack>
+          <Text color="$gray11">Work Experience</Text>
+        </Row>
 
-        <YStack gap="$3">
+        <Stack gap={12}>
           {experience.map((exp) => (
             <Card key={exp.id} bordered backgroundColor="$color2">
-              <YStack gap="$3" padding="$4">
-                <YStack gap="$1">
-                  <Text fontSize="$6" fontWeight="700" color="$color12">
-                    {exp.job_title}
-                  </Text>
+              <Stack gap={12} padding="md">
+                <Stack gap={4}>
+                  <Text color="$gray11">{exp.job_title}</Text>
                   {exp.company_name && (
-                    <Text fontSize="$5" color="$color11" fontWeight="600">
-                      {exp.company_name}
-                    </Text>
+                    <Text color="$gray11">{exp.company_name}</Text>
                   )}
-                </YStack>
+                </Stack>
 
-                <XStack gap="$3" flexWrap="wrap">
+                <Row gap={12} wrap>
                   {(exp.start_date || exp.end_date) && (
-                    <XStack gap="$2" alignItems="center">
-                      <Calendar size={16} color="$color10" />
-                      <Text fontSize="$3" color="$color10">
-                        {formatDate(exp.start_date)} -{' '}
-                        {exp.is_current ? 'Present' : formatDate(exp.end_date)}
+                    <Row gap={8} align="center">
+                      <Calendar size="md" color="$gray11" />
+                      <Text color="$gray11">
+                        {formatDate(exp.start_date)} -{" "}
+                        {exp.is_current ? "Present" : formatDate(exp.end_date)}
                       </Text>
-                    </XStack>
+                    </Row>
                   )}
                   {exp.location && (
-                    <XStack gap="$2" alignItems="center">
-                      <MapPin size={16} color="$color10" />
-                      <Text fontSize="$3" color="$color10">
-                        {exp.location}
-                      </Text>
-                    </XStack>
+                    <Row gap={8} align="center">
+                      <MapPin size="md" color="$gray11" />
+                      <Text color="$gray11">{exp.location}</Text>
+                    </Row>
                   )}
-                </XStack>
+                </Row>
 
                 {exp.description && (
-                  <Text fontSize="$4" color="$color11" lineHeight={20}>
+                  <Text color="$gray11" style={{ lineHeight: 20 }}>
                     {exp.description}
                   </Text>
                 )}
-              </YStack>
+              </Stack>
             </Card>
           ))}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </Card>
-  )
+  );
 }

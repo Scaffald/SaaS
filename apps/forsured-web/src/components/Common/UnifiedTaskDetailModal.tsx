@@ -1,9 +1,9 @@
 /**
  * UnifiedTaskDetailModal - Task detail modal using Beyond UI
- * Migrated from Tamagui to Beyond UI
+
  */
-import type React from 'react';
-import { useState, useEffect } from 'react';
+import type React from 'react'
+import { useState, useEffect } from 'react'
 import {
   X,
   Clock,
@@ -16,28 +16,28 @@ import {
   Edit,
   History,
   Ban,
-} from 'lucide-react';
-import { Stack, Row, Text, H2 } from '@unicornlove/beyond-ui';
-import type { Task, User as UserType, EntityType } from '../../types';
-import Modal from './Modal';
-import Button from './Button';
-import Input from './Input';
-import Textarea from './Textarea';
-import Select from './Select';
-import { useComments } from '../../hooks/useComments';
-import { useAttachments } from '../../hooks/useAttachments';
-import { useStatusHistory } from '../../hooks/useStatusHistory';
-import { useUsers } from '../../hooks/useUsers';
-import COIComparisonViewer from '../Document/COIComparisonViewer';
-import { trpc } from '../../lib/trpc';
+} from 'lucide-react'
+import { Stack, Row, Text, H2 } from '@scaffald/ui'
+import type { Task, User as UserType, EntityType } from '../../types'
+import Modal from './Modal'
+import Button from './Button'
+import Input from './Input'
+import Textarea from './Textarea'
+import Select from './Select'
+import { useComments } from '../../hooks/useComments'
+import { useAttachments } from '../../hooks/useAttachments'
+import { useStatusHistory } from '../../hooks/useStatusHistory'
+import { useUsers } from '../../hooks/useUsers'
+import COIComparisonViewer from '../Document/COIComparisonViewer'
+import { trpc } from '../../lib/trpc'
 
 interface UnifiedTaskDetailModalProps {
-  task: Task;
-  isOpen: boolean;
-  onClose: () => void;
-  onUpdateTask: (taskId: string, updates: Partial<Task>) => Promise<void>;
-  currentUser: UserType;
-  availableUsers?: UserType[];
+  task: Task
+  isOpen: boolean
+  onClose: () => void
+  onUpdateTask: (taskId: string, updates: Partial<Task>) => Promise<void>
+  currentUser: UserType
+  availableUsers?: UserType[]
 }
 
 export default function UnifiedTaskDetailModal({
@@ -50,18 +50,18 @@ export default function UnifiedTaskDetailModal({
 }: UnifiedTaskDetailModalProps) {
   const [activeTab, setActiveTab] = useState<
     'details' | 'comments' | 'attachments' | 'history' | 'conversations'
-  >('details');
-  const [showReassignModal, setShowReassignModal] = useState(false);
-  const [showBlockModal, setShowBlockModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [commentText, setCommentText] = useState('');
-  const [blockReason, setBlockReason] = useState('');
-  const [selectedAssignee, setSelectedAssignee] = useState(task.assigned_to_user_id || '');
-  const [newDueDate, setNewDueDate] = useState(task.due_date || '');
-  const [newPriority, setNewPriority] = useState(task.priority || 'medium');
-  const [mentionQuery, setMentionQuery] = useState('');
-  const [showMentions, setShowMentions] = useState(false);
-  const [showCOIComparison, setShowCOIComparison] = useState(false);
+  >('details')
+  const [showReassignModal, setShowReassignModal] = useState(false)
+  const [showBlockModal, setShowBlockModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [commentText, setCommentText] = useState('')
+  const [blockReason, setBlockReason] = useState('')
+  const [selectedAssignee, setSelectedAssignee] = useState(task.assigned_to_user_id || '')
+  const [newDueDate, setNewDueDate] = useState(task.due_date || '')
+  const [newPriority, setNewPriority] = useState(task.priority || 'medium')
+  const [mentionQuery, setMentionQuery] = useState('')
+  const [showMentions, setShowMentions] = useState(false)
+  const [showCOIComparison, setShowCOIComparison] = useState(false)
 
   // Hooks for data fetching
   const {
@@ -71,7 +71,7 @@ export default function UnifiedTaskDetailModal({
   } = useComments({
     entityType: 'task' as EntityType,
     entityId: task.id,
-  });
+  })
 
   const {
     attachments,
@@ -81,7 +81,7 @@ export default function UnifiedTaskDetailModal({
   } = useAttachments({
     entityType: 'task' as EntityType,
     entityId: task.id,
-  });
+  })
 
   const {
     history,
@@ -90,10 +90,10 @@ export default function UnifiedTaskDetailModal({
   } = useStatusHistory({
     entityType: 'task' as EntityType,
     entityId: task.id,
-  });
+  })
 
-  const { users } = useUsers();
-  const allUsers = availableUsers.length > 0 ? availableUsers : users;
+  const { users } = useUsers()
+  const allUsers = availableUsers.length > 0 ? availableUsers : users
 
   // Conversation state (Task 12)
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
@@ -117,43 +117,63 @@ export default function UnifiedTaskDetailModal({
 
   useEffect(() => {
     if (isOpen) {
-      setSelectedAssignee(task.assigned_to_user_id || '');
-      setNewDueDate(task.due_date || '');
-      setNewPriority(task.priority || 'medium');
+      setSelectedAssignee(task.assigned_to_user_id || '')
+      setNewDueDate(task.due_date || '')
+      setNewPriority(task.priority || 'medium')
     }
-  }, [isOpen, task]);
+  }, [isOpen, task])
 
   const getPriorityStyles = (priority: string) => {
     switch (priority) {
       case 'urgent':
-        return { color: 'var(--color-red-11)', backgroundColor: 'var(--color-red-3)', borderColor: 'var(--color-red-6)' };
+        return {
+          color: 'var(--color-red-11)',
+          backgroundColor: 'var(--color-red-3)',
+          borderColor: 'var(--color-red-6)',
+        }
       case 'high':
-        return { color: 'var(--color-orange-11)', backgroundColor: 'var(--color-orange-3)', borderColor: 'var(--color-orange-6)' };
+        return {
+          color: 'var(--color-orange-11)',
+          backgroundColor: 'var(--color-orange-3)',
+          borderColor: 'var(--color-orange-6)',
+        }
       case 'medium':
-        return { color: 'var(--color-blue-11)', backgroundColor: 'var(--color-blue-3)', borderColor: 'var(--color-blue-6)' };
+        return {
+          color: 'var(--color-blue-11)',
+          backgroundColor: 'var(--color-blue-3)',
+          borderColor: 'var(--color-blue-6)',
+        }
       case 'low':
-        return { color: 'var(--color-gray-11)', backgroundColor: 'var(--color-gray-3)', borderColor: 'var(--color-gray-6)' };
+        return {
+          color: 'var(--color-gray-11)',
+          backgroundColor: 'var(--color-gray-3)',
+          borderColor: 'var(--color-gray-6)',
+        }
       default:
-        return { color: 'var(--color-gray-11)', backgroundColor: 'var(--color-gray-3)', borderColor: 'var(--color-gray-6)' };
+        return {
+          color: 'var(--color-gray-11)',
+          backgroundColor: 'var(--color-gray-3)',
+          borderColor: 'var(--color-gray-6)',
+        }
     }
-  };
+  }
 
   const getStatusStyles = (status: string) => {
     switch (status) {
       case 'pending':
-        return { backgroundColor: 'var(--color-blue-3)', color: 'var(--color-blue-11)' };
+        return { backgroundColor: 'var(--color-blue-3)', color: 'var(--color-blue-11)' }
       case 'in_progress':
-        return { backgroundColor: 'var(--color-blue-3)', color: 'var(--color-blue-11)' };
+        return { backgroundColor: 'var(--color-blue-3)', color: 'var(--color-blue-11)' }
       case 'blocked':
-        return { backgroundColor: 'var(--color-red-3)', color: 'var(--color-red-11)' };
+        return { backgroundColor: 'var(--color-red-3)', color: 'var(--color-red-11)' }
       case 'completed':
-        return { backgroundColor: 'var(--color-green-3)', color: 'var(--color-green-11)' };
+        return { backgroundColor: 'var(--color-green-3)', color: 'var(--color-green-11)' }
       case 'cancelled':
-        return { backgroundColor: 'var(--color-gray-3)', color: 'var(--color-gray-11)' };
+        return { backgroundColor: 'var(--color-gray-3)', color: 'var(--color-gray-11)' }
       default:
-        return { backgroundColor: 'var(--color-gray-3)', color: 'var(--color-gray-11)' };
+        return { backgroundColor: 'var(--color-gray-3)', color: 'var(--color-gray-11)' }
     }
-  };
+  }
 
   const formatDueDate = (dueDate?: string) => {
     if (!dueDate)
@@ -161,39 +181,40 @@ export default function UnifiedTaskDetailModal({
         text: 'No due date',
         color: 'var(--color-gray-11)',
         isOverdue: false,
-      };
-    const date = new Date(dueDate);
-    const now = new Date();
-    const diffTime = date.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      }
+    const date = new Date(dueDate)
+    const now = new Date()
+    const diffTime = date.getTime() - now.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
     if (diffDays < 0)
       return {
         text: `${Math.abs(diffDays)} days overdue`,
         color: 'var(--color-red-11)',
         isOverdue: true,
-      };
-    if (diffDays === 0) return { text: 'Due today', color: 'var(--color-orange-11)', isOverdue: false };
+      }
+    if (diffDays === 0)
+      return { text: 'Due today', color: 'var(--color-orange-11)', isOverdue: false }
     if (diffDays === 1)
       return {
         text: 'Due tomorrow',
         color: 'var(--color-orange-11)',
         isOverdue: false,
-      };
+      }
     return {
       text: `Due in ${diffDays} days`,
       color: 'var(--color-gray-11)',
       isOverdue: false,
-    };
-  };
+    }
+  }
 
-  const dueDate = formatDueDate(task.due_date);
+  const dueDate = formatDueDate(task.due_date)
 
   const handleStatusChange = async (newStatus: Task['status'], reason?: string) => {
-    const oldStatus = task.status;
+    const oldStatus = task.status
 
     try {
-      await onUpdateTask(task.id, { status: newStatus });
+      await onUpdateTask(task.id, { status: newStatus })
 
       // Record status change in history
       await createHistoryEntry({
@@ -203,55 +224,55 @@ export default function UnifiedTaskDetailModal({
         new_status: newStatus as string,
         changed_by: currentUser.id,
         reason: reason,
-      });
+      })
 
       if (newStatus === 'blocked') {
-        setShowBlockModal(false);
-        setBlockReason('');
+        setShowBlockModal(false)
+        setBlockReason('')
       }
     } catch (error) {
-      console.error('Failed to update task status:', error);
+      console.error('Failed to update task status:', error)
     }
-  };
+  }
 
   const handleReassign = async () => {
     if (selectedAssignee && selectedAssignee !== task.assigned_to_user_id) {
       try {
-        await onUpdateTask(task.id, { assigned_to_user_id: selectedAssignee });
-        setShowReassignModal(false);
-        setSelectedAssignee('');
+        await onUpdateTask(task.id, { assigned_to_user_id: selectedAssignee })
+        setShowReassignModal(false)
+        setSelectedAssignee('')
       } catch (error) {
-        console.error('Failed to reassign task:', error);
+        console.error('Failed to reassign task:', error)
       }
     }
-  };
+  }
 
   const handleEditTask = async () => {
     try {
       await onUpdateTask(task.id, {
         due_date: newDueDate || undefined,
         priority: newPriority as Task['priority'],
-      });
-      setShowEditModal(false);
+      })
+      setShowEditModal(false)
     } catch (error) {
-      console.error('Failed to update task:', error);
+      console.error('Failed to update task:', error)
     }
-  };
+  }
 
   const handleAddComment = async () => {
-    if (!commentText.trim()) return;
+    if (!commentText.trim()) return
 
     // Extract mentions from comment text
-    const mentionMatches = commentText.match(/@(\w+)/g);
+    const mentionMatches = commentText.match(/@(\w+)/g)
     const mentions = mentionMatches
       ? (mentionMatches
           .map((m) => m.substring(1))
           .map((username) => {
-            const user = allUsers.find((u) => u.name.toLowerCase().includes(username.toLowerCase()));
-            return user?.id;
+            const user = allUsers.find((u) => u.name.toLowerCase().includes(username.toLowerCase()))
+            return user?.id
           })
           .filter(Boolean) as string[])
-      : [];
+      : []
 
     try {
       await createComment({
@@ -260,18 +281,18 @@ export default function UnifiedTaskDetailModal({
         user_id: currentUser.id,
         content: commentText,
         mentions: mentions.length > 0 ? mentions : undefined,
-      });
-      setCommentText('');
-      setMentionQuery('');
-      setShowMentions(false);
+      })
+      setCommentText('')
+      setMentionQuery('')
+      setShowMentions(false)
     } catch (error) {
-      console.error('Failed to add comment:', error);
+      console.error('Failed to add comment:', error)
     }
-  };
+  }
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const file = event.target.files?.[0]
+    if (!file) return
 
     try {
       await createAttachment({
@@ -282,47 +303,47 @@ export default function UnifiedTaskDetailModal({
         file_type: file.type,
         file_url: URL.createObjectURL(file), // Mock URL
         uploaded_by: currentUser.id,
-      });
+      })
     } catch (error) {
-      console.error('Failed to upload attachment:', error);
+      console.error('Failed to upload attachment:', error)
     }
 
     // Reset input
-    event.target.value = '';
-  };
+    event.target.value = ''
+  }
 
   const handleDeleteAttachment = async (attachmentId: string) => {
     try {
-      await deleteAttachment(attachmentId);
+      await deleteAttachment(attachmentId)
     } catch (error) {
-      console.error('Failed to delete attachment:', error);
+      console.error('Failed to delete attachment:', error)
     }
-  };
+  }
 
   const handleCommentInputChange = (value: string) => {
-    setCommentText(value);
+    setCommentText(value)
 
     // Check for @ mentions
-    const lastAt = value.lastIndexOf('@');
+    const lastAt = value.lastIndexOf('@')
     if (lastAt !== -1 && (value.length === lastAt + 1 || value[lastAt + 1] === ' ')) {
-      setShowMentions(true);
-      setMentionQuery(value.substring(lastAt + 1));
+      setShowMentions(true)
+      setMentionQuery(value.substring(lastAt + 1))
     } else {
-      setShowMentions(false);
-      setMentionQuery('');
+      setShowMentions(false)
+      setMentionQuery('')
     }
-  };
+  }
 
   const insertMention = (user: UserType) => {
-    const lastAt = commentText.lastIndexOf('@');
+    const lastAt = commentText.lastIndexOf('@')
     if (lastAt !== -1) {
-      const before = commentText.substring(0, lastAt);
-      const after = commentText.substring(lastAt + 1);
-      setCommentText(`${before}@${user.name} ${after}`);
-      setShowMentions(false);
-      setMentionQuery('');
+      const before = commentText.substring(0, lastAt)
+      const after = commentText.substring(lastAt + 1)
+      setCommentText(`${before}@${user.name} ${after}`)
+      setShowMentions(false)
+      setMentionQuery('')
     }
-  };
+  }
 
   const filteredUsers = mentionQuery
     ? allUsers.filter(
@@ -330,30 +351,30 @@ export default function UnifiedTaskDetailModal({
           u.name.toLowerCase().includes(mentionQuery.toLowerCase()) ||
           u.email.toLowerCase().includes(mentionQuery.toLowerCase())
       )
-    : allUsers.slice(0, 5);
+    : allUsers.slice(0, 5)
 
   const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  };
+    if (bytes < 1024) return `${bytes} B`
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+  }
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+    const date = new Date(dateString)
     return date.toLocaleString('en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
-    });
-  };
+    })
+  }
 
   const getUserName = (userId: string) => {
-    return allUsers.find((u) => u.id === userId)?.name || 'Unknown User';
-  };
+    return allUsers.find((u) => u.id === userId)?.name || 'Unknown User'
+  }
 
-  if (!task) return null;
+  if (!task) return null
 
   return (
     <>
@@ -363,9 +384,7 @@ export default function UnifiedTaskDetailModal({
           <Row alignItems="flex-start" justifyContent="space-between">
             <Stack flex={1}>
               <Row alignItems="center" gap={12} style={{ marginBottom: 8 }}>
-                <H2 style={{ fontWeight: 'bold' }}>
-                  {task.title}
-                </H2>
+                <H2 style={{ fontWeight: 'bold' }}>{task.title}</H2>
                 <Text
                   size="xs"
                   weight="medium"
@@ -562,7 +581,11 @@ export default function UnifiedTaskDetailModal({
                       <Button
                         variant="secondary"
                         onPress={() => setShowBlockModal(true)}
-                        style={{ flex: 1, color: 'var(--color-red-9)', borderColor: 'var(--color-red-9)' }}
+                        style={{
+                          flex: 1,
+                          color: 'var(--color-red-9)',
+                          borderColor: 'var(--color-red-9)',
+                        }}
                       >
                         <Ban size={16} style={{ marginRight: 8 }} />
                         Block Task
@@ -602,9 +625,9 @@ export default function UnifiedTaskDetailModal({
                                 <FileText size={16} style={{ marginRight: 8 }} />
                                 {action === 'open_coi' ? 'Open COI' : 'Compare To Req'}
                               </Button>
-                            );
+                            )
                           }
-                          return null;
+                          return null
                         })}
                       </Row>
                     </Stack>
@@ -1127,7 +1150,11 @@ export default function UnifiedTaskDetailModal({
             fullWidth
           />
           <Row gap={12}>
-            <Button variant="secondary" onPress={() => setShowReassignModal(false)} style={{ flex: 1 }}>
+            <Button
+              variant="secondary"
+              onPress={() => setShowReassignModal(false)}
+              style={{ flex: 1 }}
+            >
               Cancel
             </Button>
             <Button variant="primary" onPress={handleReassign} style={{ flex: 1 }}>
@@ -1141,8 +1168,8 @@ export default function UnifiedTaskDetailModal({
       <Modal
         isOpen={showBlockModal}
         onClose={() => {
-          setShowBlockModal(false);
-          setBlockReason('');
+          setShowBlockModal(false)
+          setBlockReason('')
         }}
         title="Block Task"
         size="small"
@@ -1161,8 +1188,8 @@ export default function UnifiedTaskDetailModal({
             <Button
               variant="secondary"
               onPress={() => {
-                setShowBlockModal(false);
-                setBlockReason('');
+                setShowBlockModal(false)
+                setBlockReason('')
               }}
               style={{ flex: 1 }}
             >
@@ -1193,8 +1220,8 @@ export default function UnifiedTaskDetailModal({
             type="datetime-local"
             value={newDueDate ? new Date(newDueDate).toISOString().slice(0, 16) : ''}
             onChange={(e) => {
-              const value = e.target.value;
-              setNewDueDate(value ? new Date(value).toISOString() : '');
+              const value = e.target.value
+              setNewDueDate(value ? new Date(value).toISOString() : '')
             }}
             fullWidth
           />
@@ -1231,16 +1258,16 @@ export default function UnifiedTaskDetailModal({
           isOpen={showCOIComparison}
           onClose={() => setShowCOIComparison(false)}
           onApprove={() => {
-            console.log('Document approved');
+            console.log('Document approved')
           }}
           onRequestChanges={(comments) => {
-            console.log('Request changes:', comments);
+            console.log('Request changes:', comments)
           }}
           onOverride={(reason) => {
-            console.log('Override with reason:', reason);
+            console.log('Override with reason:', reason)
           }}
         />
       )}
     </>
-  );
+  )
 }

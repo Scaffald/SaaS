@@ -1,9 +1,8 @@
-import type { IconProps } from '@tamagui/helpers-icon'
-import type { ComponentType } from 'react'
-import { Text, YStack } from '@unicornlove/ui'
+import type { LucideIcon } from 'lucide-react-native'
+import { Text, Stack } from '@scaffald/ui'
 
 interface ProfileEmptyStateProps {
-  icon: ComponentType<IconProps>
+  icon: LucideIcon
   message: string
 }
 
@@ -13,17 +12,17 @@ interface ProfileEmptyStateProps {
  */
 export function ProfileEmptyState({ icon: Icon, message }: ProfileEmptyStateProps) {
   return (
-    <YStack
-      padding="$4"
-      alignItems="center"
-      gap="$2"
+    <Stack
+      padding="md"
+      align="center"
+      gap={8}
       backgroundColor="$background"
-      borderRadius="$4"
+      borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <Icon size={48} color="$color11" />
-      <Text color="$color11">{message}</Text>
-    </YStack>
+      <Icon size={48} color="$gray11" />
+      <Text color="$gray11">{message}</Text>
+    </Stack>
   )
 }

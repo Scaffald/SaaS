@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { WizardSuccessModal } from '../WizardSuccessModal'
 
-vi.mock('tamagui', () => {
+vi.mock('@scaffald/ui', () => {
   const Stack = ({
     children,
     testID,
@@ -88,8 +88,8 @@ vi.mock('tamagui', () => {
   } & Record<string, unknown>) => <h3 {...rest}>{children}</h3>
 
   return {
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Button,
     Text,
     Paragraph,
@@ -99,7 +99,7 @@ vi.mock('tamagui', () => {
   }
 })
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Trophy: ({ size, color }: { size?: number; color?: string }) => (
     <span data-testid="trophy-icon" data-size={size} data-color={color}>
       Trophy

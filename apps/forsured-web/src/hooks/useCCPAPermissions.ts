@@ -1,6 +1,6 @@
 /**
  * CCPA Permissions Hook
- * REQ-6, TASK-8: Role-Based Access Control for CCPA Admin
+ * Role-based access control for CCPA admin
  *
  * React hook for checking CCPA-specific permissions in components.
  * Provides easy access to permission checks for UI gating.

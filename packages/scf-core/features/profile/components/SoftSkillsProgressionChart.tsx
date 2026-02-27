@@ -1,7 +1,7 @@
-import { api } from '@scf/core/utils/api'
-import { ArrowDown, ArrowRight, ArrowUp } from '@tamagui/lucide-icons'
+import { useSoftSkillsHistory, useSoftSkills } from '@scf/core/utils/profile-skills-sdk-hooks'
+import { ArrowDown, ArrowRight, ArrowUp } from 'lucide-react-native'
 import { useMemo, type FC } from 'react'
-import { ScrollView, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { ScrollView, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import type { SoftSkillCategory } from './SoftSkillsCategoryTabs'
 
 interface SoftSkillsProgressionChartProps {
@@ -28,21 +28,18 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
   // Fetch version history
   const {
     data: historyData,
-    isLoading,
+    isPending: isLoading,
     error,
-  } = api.profile.skills.getSoftSkillsHistory.useQuery(undefined, {
+  } = useSoftSkillsHistory({
     enabled: true,
     staleTime: 5 * 60 * 1000,
   })
 
   // Fetch current version for comparison
-  const { data: currentData } = api.profile.skills.getSoftSkills.useQuery(
-    userId ? { userId } : undefined,
-    {
-      enabled: !!userId || !userId,
-      staleTime: 5 * 60 * 1000,
-    }
-  )
+  const { data: currentData } = useSoftSkills(userId ? { userId } : undefined, {
+    enabled: !!userId || !userId,
+    staleTime: 5 * 60 * 1000,
+  })
 
   const versions = historyData?.versions || []
   const currentSkills = currentData?.skills || []
@@ -112,36 +109,30 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
 
   if (isLoading) {
     return (
-      <YStack gap="$4" alignItems="center" justifyContent="center" padding="$4">
-        <Spinner size="large" color="$blue10" />
-        <Text color="$color11">Loading progression data...</Text>
-      </YStack>
+      <Stack gap={16} align="center" justify="center" padding="md">
+        <Spinner size="lg" color="primary" />
+        <Text color="$gray11">Loading progression data...</Text>
+      </Stack>
     )
   }
 
   if (error) {
     return (
-      <YStack gap="$2" padding="$4">
-        <Text fontSize="$5" fontWeight="600" color="$red11">
-          Error loading progression
-        </Text>
-        <Text fontSize="$3" color="$color11">
-          {error.message || 'Failed to load progression data'}
-        </Text>
-      </YStack>
+      <Stack gap={8} padding="md">
+        <Text color="$red11">Error loading progression</Text>
+        <Text color="$gray11">{error.message || 'Failed to load progression data'}</Text>
+      </Stack>
     )
   }
 
   if (versions.length < 2) {
     return (
-      <YStack gap="$2" padding="$4" alignItems="center">
-        <Text fontSize="$5" fontWeight="600" color="$color12">
-          Progression Tracking
-        </Text>
-        <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
+      <Stack gap={8} padding="md" align="center">
+        <Text color="$gray11">Progression Tracking</Text>
+        <Text color="$gray11" style={{ textAlign: 'center' }}>
           Complete at least two assessments to see skill progression trends.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -164,11 +155,11 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
   const getTrendIcon = (trend: SkillProgression['trend']) => {
     switch (trend) {
       case 'improved':
-        return <ArrowUp size={16} color="$green10" />
+        return <ArrowUp size="md" color="$green10" />
       case 'declined':
-        return <ArrowDown size={16} color="$red10" />
+        return <ArrowDown size="md" color="$red10" />
       case 'stable':
-        return <ArrowRight size={16} color="$color10" />
+        return <ArrowRight size="md" color="$gray11" />
       default:
         return null
     }
@@ -192,130 +183,103 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
   const stableSkills = skillProgression.filter((s) => s.trend === 'stable').length
 
   return (
-    <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <YStack gap="$4" padding="$4">
-        <YStack gap="$2">
-          <Text fontSize="$6" fontWeight="600" color="$color12">
-            Skill Progression
-          </Text>
-          <Text fontSize="$3" color="$color11">
-            Track how your soft skills have changed over time.
-          </Text>
-        </YStack>
+    <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+      <Stack gap={16} padding="md">
+        <Stack gap={8}>
+          <Text color="$gray11">Skill Progression</Text>
+          <Text color="$gray11">Track how your soft skills have changed over time.</Text>
+        </Stack>
 
         {/* Summary Stats */}
-        <XStack gap="$3" flexWrap="wrap">
-          <YStack
-            gap="$1"
-            padding="$3"
+        <Row gap={12} wrap>
+          <Stack
+            gap={4}
+            padding="sm"
             backgroundColor="$green2"
-            borderRadius="$3"
+            borderRadius={12}
             borderWidth={1}
             borderColor="$green7"
             style={{ flex: 1, minWidth: 100 }}
           >
-            <Text fontSize="$2" color="$green10" fontWeight="600">
-              Improved
-            </Text>
-            <Text fontSize="$5" fontWeight="700" color="$green11">
-              {improvedSkills}
-            </Text>
-          </YStack>
-          <YStack
-            gap="$1"
-            padding="$3"
+            <Text color="$green10">Improved</Text>
+            <Text color="$green11">{improvedSkills}</Text>
+          </Stack>
+          <Stack
+            gap={4}
+            padding="sm"
             backgroundColor="$red2"
-            borderRadius="$3"
+            borderRadius={12}
             borderWidth={1}
             borderColor="$red7"
             style={{ flex: 1, minWidth: 100 }}
           >
-            <Text fontSize="$2" color="$red10" fontWeight="600">
-              Declined
-            </Text>
-            <Text fontSize="$5" fontWeight="700" color="$red11">
-              {declinedSkills}
-            </Text>
-          </YStack>
-          <YStack
-            gap="$1"
-            padding="$3"
+            <Text color="$red10">Declined</Text>
+            <Text color="$red11">{declinedSkills}</Text>
+          </Stack>
+          <Stack
+            gap={4}
+            padding="sm"
             backgroundColor="$color2"
-            borderRadius="$3"
+            borderRadius={12}
             borderWidth={1}
             borderColor="$borderColor"
             style={{ flex: 1, minWidth: 100 }}
           >
-            <Text fontSize="$2" color="$color10" fontWeight="600">
-              Stable
-            </Text>
-            <Text fontSize="$5" fontWeight="700" color="$color11">
-              {stableSkills}
-            </Text>
-          </YStack>
-        </XStack>
+            <Text color="$gray11">Stable</Text>
+            <Text color="$gray11">{stableSkills}</Text>
+          </Stack>
+        </Row>
 
         {/* Skills by Category */}
         {Object.entries(skillsByCategory).map(([category, skills]) => {
           if (skills.length === 0) return null
 
           return (
-            <YStack key={category} gap="$3">
-              <Text fontSize="$4" fontWeight="600" color="$color12">
-                {categoryLabels[category as SoftSkillCategory]}
-              </Text>
-              <YStack gap="$2">
+            <Stack key={category} gap={12}>
+              <Text color="$gray11">{categoryLabels[category as SoftSkillCategory]}</Text>
+              <Stack gap={8}>
                 {skills.map((skill) => (
-                  <YStack
+                  <Stack
                     key={skill.skillId}
-                    gap="$2"
-                    padding="$3"
+                    gap={8}
+                    padding="sm"
                     backgroundColor="$color2"
-                    borderRadius="$3"
+                    borderRadius={12}
                     borderWidth={1}
                     borderColor="$borderColor"
                   >
-                    <XStack
-                      alignItems="center"
-                      justifyContent="space-between"
-                      flexWrap="wrap"
-                      gap="$2"
-                    >
-                      <YStack gap="$1" flex={1}>
-                        <Text fontSize="$4" fontWeight="600" color="$color12">
-                          {skill.skillName}
-                        </Text>
-                        <XStack gap="$3" alignItems="center">
+                    <Row align="center" justify="space-between" wrap gap={8}>
+                      <Stack gap={4} flex={1}>
+                        <Text color="$gray11">{skill.skillName}</Text>
+                        <Row gap={12} align="center">
                           {skill.previousRating !== null && (
-                            <Text fontSize="$2" color="$color10">
+                            <Text color="$gray11">
                               Previous: {skill.previousRating.toFixed(1)}/5
                             </Text>
                           )}
                           {skill.currentRating !== null && (
-                            <Text fontSize="$2" color="$color11" fontWeight="600">
-                              Current: {skill.currentRating.toFixed(1)}/5
-                            </Text>
+                            <Text color="$gray11">Current: {skill.currentRating.toFixed(1)}/5</Text>
                           )}
-                        </XStack>
-                      </YStack>
-                      <XStack gap="$2" alignItems="center">
+                        </Row>
+                      </Stack>
+                      <Row gap={8} align="center">
                         {getTrendIcon(skill.trend)}
                         {skill.change !== null && (
-                          <Text fontSize="$3" fontWeight="600" color={getTrendColor(skill.trend)}>
+                          <Text color={getTrendColor(skill.trend)}>
                             {skill.change > 0 ? '+' : ''}
                             {skill.change.toFixed(1)}
                           </Text>
                         )}
-                      </XStack>
-                    </XStack>
-                  </YStack>
+                      </Row>
+                    </Row>
+                  </Stack>
                 ))}
-              </YStack>
+              </Stack>
               {category !== 'technical' && <Separator />}
-            </YStack>
+            </Stack>
           )
         })}
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }

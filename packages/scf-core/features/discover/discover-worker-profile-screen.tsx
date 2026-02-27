@@ -8,13 +8,14 @@ import {
   ReviewsWidget,
 } from '@scf/core/features/profile/widgets'
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
-import { api } from '@scf/core/utils/api'
-import { type BreadcrumbItem, DashboardWidget } from '@unicornlove/ui'
-import { LinearGradient } from '@tamagui/linear-gradient'
+import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
+import { type BreadcrumbItemData, DashboardWidget } from '@scaffald/ui'
+import { LinearGradient } from 'expo-linear-gradient'
 import type { ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
+import type { DimensionValue } from 'react-native'
 import { Animated, Easing } from 'react-native'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 const SHIMMER_WIDTH = 220
 
@@ -25,7 +26,7 @@ interface DiscoverWorkerProfileScreenOptions {
 interface DiscoverWorkerProfileScreenResult {
   left: ReactNode
   right: ReactNode
-  breadcrumbItems: BreadcrumbItem[]
+  breadcrumbItems: BreadcrumbItemData[]
 }
 
 function SkeletonBlock({
@@ -62,15 +63,14 @@ function SkeletonBlock({
   })
 
   return (
-    <YStack
-      position="relative"
-      overflow="hidden"
-      backgroundColor="$color4"
-      height={height}
-      width={typeof width === 'number' ? width : undefined}
+    <Stack
       style={{
+        position: 'relative',
+        overflow: 'hidden',
+        backgroundColor: '#e4e7ec',
+        height,
+        width: (width ?? '100%') as DimensionValue,
         borderRadius: radius,
-        width: typeof width === 'string' ? width : undefined,
       }}
     >
       <Animated.View
@@ -91,7 +91,7 @@ function SkeletonBlock({
           style={{ flex: 1 }}
         />
       </Animated.View>
-    </YStack>
+    </Stack>
   )
 }
 
@@ -102,89 +102,89 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
     const headlineWidths = [110, 90, 120] as const
     const overviewSections = ['overview-primary', 'overview-secondary'] as const
     return (
-      <YStack gap="$4">
+      <Stack gap={16}>
         {wrapWidget(
-          <YStack gap="$3" alignItems="center">
+          <Stack gap={12} align="center">
             <SkeletonBlock height={96} width={96} radius={48} />
             <SkeletonBlock height={24} width="60%" />
             <SkeletonBlock height={18} width="40%" />
-            <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+            <Row gap={8} wrap justify="center">
               {headlineWidths.map((width) => (
                 <SkeletonBlock key={`headline-${width}`} height={16} width={width} radius={8} />
               ))}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         )}
 
         {wrapWidget(
-          <YStack gap="$3">
+          <Stack gap={12}>
             {overviewSections.map((sectionId) => (
-              <YStack key={sectionId} gap="$2">
+              <Stack key={sectionId} gap={8}>
                 <SkeletonBlock height={20} width="70%" />
                 <SkeletonBlock height={14} width="50%" />
                 <SkeletonBlock height={12} width="40%" />
                 <SkeletonBlock height={12} width="60%" />
-              </YStack>
+              </Stack>
             ))}
-          </YStack>
+          </Stack>
         )}
 
         {wrapWidget(
-          <YStack gap="$2">
+          <Stack gap={8}>
             <SkeletonBlock height={20} width="55%" />
             <SkeletonBlock height={14} width="65%" />
             <SkeletonBlock height={12} width="40%" />
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$4">
+    <Stack gap={16}>
       {wrapWidget(
-        <YStack gap="$3">
+        <Stack gap={12}>
           <SkeletonBlock height={20} width="60%" />
           {['review-1', 'review-2'].map((reviewId) => (
-            <YStack key={reviewId} gap="$1">
+            <Stack key={reviewId} gap={4}>
               <SkeletonBlock height={16} width="80%" />
               <SkeletonBlock height={12} width="55%" />
-            </YStack>
+            </Stack>
           ))}
-        </YStack>
+        </Stack>
       )}
 
       {wrapWidget(
-        <YStack gap="$3">
+        <Stack gap={12}>
           <SkeletonBlock height={20} width="45%" />
-          <XStack gap="$2" flexWrap="wrap">
+          <Row gap={8} wrap>
             {['skill-1', 'skill-2', 'skill-3', 'skill-4', 'skill-5', 'skill-6'].map((skillId) => (
               <SkeletonBlock key={skillId} height={28} width={100} radius={14} />
             ))}
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       )}
 
       {wrapWidget(
-        <YStack gap="$3">
+        <Stack gap={12}>
           <SkeletonBlock height={20} width="55%" />
           {['stat-1', 'stat-2', 'stat-3'].map((statId) => (
-            <YStack key={statId} gap="$1">
+            <Stack key={statId} gap={4}>
               <SkeletonBlock height={16} width="70%" />
               <SkeletonBlock height={12} width="40%" />
-            </YStack>
+            </Stack>
           ))}
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }
 
 function createSkeletonLayout(): DiscoverWorkerProfileScreenResult {
-  const skeletonBreadcrumbs: BreadcrumbItem[] = [
+  const skeletonBreadcrumbs: BreadcrumbItemData[] = [
     { label: 'Dashboard', href: '/dashboard' },
     { label: 'Workers', href: ROUTES.DASHBOARD.DISCOVER.WORKERS.path },
-    { label: 'Loading…', isActive: true },
+    { label: 'Loading…' },
   ]
 
   return {
@@ -201,7 +201,7 @@ export function DiscoverWorkerProfileScreen({
   const { session } = useSessionContext()
   const currentUserId = session?.user?.id
 
-  const generalInfoQuery = api.profile.widgets.getGeneralInfo.useQuery(
+  const generalInfoQuery = useGeneralInfoWidget(
     { userId: safeUserId || '' },
     {
       enabled: Boolean(safeUserId),
@@ -209,7 +209,7 @@ export function DiscoverWorkerProfileScreen({
     }
   )
 
-  const baseBreadcrumbs: BreadcrumbItem[] = [
+  const baseBreadcrumbs: BreadcrumbItemData[] = [
     { label: 'Dashboard', href: '/dashboard' },
     { label: 'Workers', href: ROUTES.DASHBOARD.DISCOVER.WORKERS.path },
   ]
@@ -217,19 +217,17 @@ export function DiscoverWorkerProfileScreen({
   if (!safeUserId) {
     const errorWidget = (
       <DashboardWidget>
-        <YStack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$8">
-          <Text fontSize="$6" fontWeight="700" color="$red10">
-            Worker not found
-          </Text>
-          <Text color="$color11">Select a worker from the list to view their profile.</Text>
-        </YStack>
+        <Stack align="center" justify="center" gap={8} paddingVertical={32}>
+          <Text color="$red10">Worker not found</Text>
+          <Text color="$gray11">Select a worker from the list to view their profile.</Text>
+        </Stack>
       </DashboardWidget>
     )
 
     return {
       left: errorWidget,
       right: errorWidget,
-      breadcrumbItems: [...baseBreadcrumbs, { label: 'Worker not found', isActive: true }],
+      breadcrumbItems: [...baseBreadcrumbs, { label: 'Worker not found' }],
     }
   }
 
@@ -242,21 +240,19 @@ export function DiscoverWorkerProfileScreen({
   if (!generalInfo) {
     const unavailableWidget = (
       <DashboardWidget>
-        <YStack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$8">
-          <Text fontSize="$6" fontWeight="700" color="$red10">
-            Profile unavailable
-          </Text>
-          <Text color="$color11" style={{ textAlign: 'center' }}>
+        <Stack align="center" justify="center" gap={8} paddingVertical={32}>
+          <Text color="$red10">Profile unavailable</Text>
+          <Text color="$gray11" style={{ textAlign: 'center' }}>
             We couldn&apos;t load this worker profile. Please try another worker.
           </Text>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
 
     return {
       left: unavailableWidget,
       right: unavailableWidget,
-      breadcrumbItems: [...baseBreadcrumbs, { label: 'Profile unavailable', isActive: true }],
+      breadcrumbItems: [...baseBreadcrumbs, { label: 'Profile unavailable' }],
     }
   }
 
@@ -278,7 +274,7 @@ export function DiscoverWorkerProfileScreen({
   ]
 
   const leftColumn = (
-    <YStack gap="$4">
+    <Stack gap={16}>
       <GeneralInfoWidget
         userId={safeUserId}
         showEdit={false}
@@ -287,15 +283,15 @@ export function DiscoverWorkerProfileScreen({
       />
       <ExperienceWidget userId={safeUserId} showEdit={false} />
       <EducationWidget userId={safeUserId} showEdit={false} />
-    </YStack>
+    </Stack>
   )
 
   const rightColumn = (
-    <YStack gap="$4">
+    <Stack gap={16}>
       <ReviewsWidget userId={safeUserId} showEdit />
       <ProfileSkillsSection userId={safeUserId} showEdit={false} />
       <CertificationsWidget userId={safeUserId} showEdit={false} />
-    </YStack>
+    </Stack>
   )
 
   return {

@@ -1,2 +1,2 @@
 export * from './phone.ts';
-export * from './pdf-extract.ts';
+// pdf-extract.ts is excluded from tsconfig (Deno/edge-only). Import from edge _shared/pdf/extract-text if needed.

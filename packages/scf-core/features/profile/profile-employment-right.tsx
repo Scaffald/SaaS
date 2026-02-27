@@ -1,4 +1,4 @@
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack } from '@scaffald/ui'
 
 /**
  * Profile Employment Right Component
@@ -6,13 +6,13 @@ import { Text, YStack } from '@unicornlove/ui'
  */
 export function ProfileEmploymentRight() {
   return (
-    <YStack>
-      <YStack gap="$4" padding="$4">
-        <Text color="$color11" fontSize="$3">
+    <Stack>
+      <Stack style={{ gap: 16, padding: 16 }}>
+        <Text style={{ color: '#414e62' }}>
           Update your employment preferences including location, travel willingness, availability,
           and compensation.
         </Text>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

@@ -1,23 +1,32 @@
+import { ScaffaldLogo } from '@scf/core/assets'
 import { useProtectedRoute } from '@scf/core/utils/auth/useProtectedRoute'
+import { Box, Text, ThemeProvider, ToastContainer, ToastProvider } from '@scaffald/ui'
 import { Stack } from 'expo-router'
-import { Text, View } from '@unicornlove/ui'
 
 export default function Layout() {
   const { isLoading } = useProtectedRoute()
 
-  // Show loading state while checking authentication
   if (isLoading) {
     return (
-      <View flex={1} justifyContent="center" alignItems="center">
-        <Text>Loading...</Text>
-      </View>
+      <ThemeProvider>
+        <Box align="center" justify="center">
+          <Text>Loading...</Text>
+        </Box>
+      </ThemeProvider>
     )
   }
 
   return (
-    <>
-      <Stack.Screen options={{ headerShown: false }} />
-      <Stack />
-    </>
+    <ThemeProvider>
+      <ToastProvider>
+        <Stack
+          screenOptions={{
+            headerTitle: () => <ScaffaldLogo width={140} height={23} />,
+            headerTitleAlign: 'center',
+          }}
+        />
+        <ToastContainer />
+      </ToastProvider>
+    </ThemeProvider>
   )
 }

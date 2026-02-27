@@ -59,9 +59,7 @@
         "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
         "EXPO_PUBLIC_URL": "TODO",
         "NODE_ENV": "staging"
-      },
-      "output": "static",
-      "platform": "web"
+      }
     },
     "production": {
       "android": {
@@ -110,9 +108,7 @@
         "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
         "EXPO_PUBLIC_URL": "TODO",
         "NODE_ENV": "production"
-      },
-      "output": "static",
-      "platform": "web"
+      }
     },
     "staging": {
       "android": {

@@ -1,6 +1,6 @@
 /**
  * Session management utilities for httpOnly cookie token storage
- * REQ-11: Authentication Flow Refinement - TASK-3
+ * Authentication flow - session helpers
  *
  * Uses Supabase database functions with Vault encryption for secure token storage.
  */
@@ -49,11 +49,12 @@ export function createServiceClient(): SupabaseClient {
     throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY')
   }
 
-  return createClient(supabaseUrl, serviceKey, {
+  const client = createClient(supabaseUrl, serviceKey, {
     global: { headers: { 'X-Client-Info': 'auth-edge-functions' } },
     auth: { persistSession: false },
     db: { schema: 'forsured' }, // Use forsured schema for auth session functions
   })
+  return client as unknown as SupabaseClient
 }
 
 /**

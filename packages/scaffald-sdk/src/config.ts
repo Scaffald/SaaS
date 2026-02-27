@@ -15,6 +15,12 @@ export interface ScaffaldConfig {
   accessToken?: string
 
   /**
+   * Supabase JWT token for authenticated users
+   * This is automatically extracted from the Supabase session
+   */
+  supabaseToken?: string
+
+  /**
    * Base URL for the Scaffald API
    * @default 'https://api.scaffald.com'
    */
@@ -45,9 +51,10 @@ export interface ScaffaldConfig {
 }
 
 export interface ScaffaldConfigInternal
-  extends Required<Omit<ScaffaldConfig, 'apiKey' | 'accessToken'>> {
+  extends Required<Omit<ScaffaldConfig, 'apiKey' | 'accessToken' | 'supabaseToken'>> {
   apiKey?: string
   accessToken?: string
+  supabaseToken?: string
 }
 
 export const DEFAULT_CONFIG: Omit<ScaffaldConfigInternal, 'apiKey' | 'accessToken'> = {

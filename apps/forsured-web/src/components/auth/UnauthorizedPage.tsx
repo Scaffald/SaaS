@@ -1,11 +1,11 @@
 /**
  * Unauthorized Page - Using Beyond UI
- * REQ-126: OAuth 2.0 + RBAC Authentication System
+ * OAuth 2.0 + RBAC Authentication System
  */
 import type React from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Stack, Row, Text, Button, H2 } from '@unicornlove/beyond-ui'
-import { colors, spacing, fontSize, borderRadius, shadows } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, H2 } from '@scaffald/ui'
+import { colors, spacing, fontSize, borderRadius, shadows } from '@scaffald/ui'
 import { Lock } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { usePermissions } from '../../hooks/usePermissions'

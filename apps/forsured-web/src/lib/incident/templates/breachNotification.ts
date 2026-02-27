@@ -1,6 +1,6 @@
 /**
  * Breach Notification Template
- * REQ-164: Incident Response Plan & Procedures
+ * Incident Response Plan & Procedures
  * CCPA/GDPR compliant customer breach notification
  */
 

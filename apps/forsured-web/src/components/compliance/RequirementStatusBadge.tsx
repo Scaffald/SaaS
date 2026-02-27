@@ -1,9 +1,9 @@
 /**
  * Requirement Status Badge
- * REQ-2, TASK-13: Visual status indicator for compliance requirements
+ * Visual status indicator for compliance requirements
  */
 
-import { Row, Text } from '@unicornlove/beyond-ui';
+import { Row, Text } from '@scaffald/ui';
 import type { RequirementStatus } from '../../server/schemas/forsured/compliance-requirements.schema';
 
 interface RequirementStatusBadgeProps {

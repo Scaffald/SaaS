@@ -1,6 +1,6 @@
 /**
  * CA Attorney General Annual Reporting System
- * REQ-3: CCPA Compliance Implementation - TASK-15
+ * CCPA Compliance Implementation - TASK-15
  *
  * Generates annual compliance reports for CA AG submission
  * per CCPA Section 1798.185(a)(7) requirements.

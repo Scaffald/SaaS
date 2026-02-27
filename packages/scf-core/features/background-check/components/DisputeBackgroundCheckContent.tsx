@@ -1,10 +1,10 @@
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { AlertTriangle } from '@tamagui/lucide-icons'
+import { AlertTriangle } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo } from 'react'
-import { Button, Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Separator, Text, Row, Stack } from '@scaffald/ui'
 import { useDispute } from '../hooks/useDispute'
 import { DisputeForm } from './DisputeForm'
 import { DisputeStatusTracker } from './DisputeStatusTracker'
@@ -72,53 +72,42 @@ export function DisputeBackgroundCheckContent({
     check?.package?.display_name ?? check?.package?.slug ?? 'Background check package'
 
   return (
-    <YStack gap="$4">
-      <XStack justifyContent="space-between" alignItems="center">
-        <YStack gap="$1">
-          <Text fontSize="$6" fontWeight="700">
-            Dispute background check
-          </Text>
-          <Text fontSize="$2" color="$color10">
+    <Stack gap={16}>
+      <Row justify="space-between" align="center">
+        <Stack gap={4}>
+          <Text>Dispute background check</Text>
+          <Text color="$gray11">
             Flag inaccurate information so our compliance team can investigate.
           </Text>
-        </YStack>
+        </Stack>
         {(renderHeaderAction?.({ isSubmitting, isUploading }) as ReactNode) ?? (
           <Button
-            size="$2"
-            variant="outlined"
+            size="sm"
+            variant="outline"
             disabled={isSubmitting || isUploading}
             onPress={onClose}
           >
             Close
           </Button>
         )}
-      </XStack>
+      </Row>
 
       {check ? (
         <>
-          <YStack gap="$2" backgroundColor="$color3" padding="$3" borderRadius="$4">
-            <XStack gap="$2" alignItems="center">
+          <Stack gap={8} backgroundColor="$color3" padding="sm" borderRadius={16}>
+            <Row gap={8} align="center">
               <AlertTriangle size={18} color="$yellow10" />
-              <Text fontSize="$3" fontWeight="600" color="$color12">
-                {statusMeta?.label ?? 'Background check'}
-              </Text>
-            </XStack>
-            <Text fontSize="$2" color="$color10">
-              Package:{' '}
-              <Text fontWeight="600" color="$color12">
-                {summaryPackage}
-              </Text>
+              <Text color="$gray11">{statusMeta?.label ?? 'Background check'}</Text>
+            </Row>
+            <Text color="$gray11">
+              Package: <Text color="$gray11">{summaryPackage}</Text>
             </Text>
-            <Text fontSize="$2" color="$color10">
-              Completed: {formatDate(check.completed_at)}
-            </Text>
-            <Text fontSize="$2" color="$color10">
-              Expires: {formatDate(check.expires_at)}
-            </Text>
-            <Text fontSize="$2" color="$color10">
+            <Text color="$gray11">Completed: {formatDate(check.completed_at)}</Text>
+            <Text color="$gray11">Expires: {formatDate(check.expires_at)}</Text>
+            <Text color="$gray11">
               Disputes should focus on factual inaccuracies, missing context, or mismatched records.
             </Text>
-          </YStack>
+          </Stack>
 
           <DisputeStatusTracker
             disputes={disputes}
@@ -143,12 +132,10 @@ export function DisputeBackgroundCheckContent({
           />
         </>
       ) : (
-        <YStack gap="$3" alignItems="center" paddingVertical="$6">
-          <Text fontSize="$3" color="$color10">
-            Select a background check to review dispute information.
-          </Text>
-        </YStack>
+        <Stack gap={12} align="center" paddingVertical={24}>
+          <Text color="$gray11">Select a background check to review dispute information.</Text>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

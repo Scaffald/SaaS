@@ -1,6 +1,6 @@
-import { ShieldAlert, ShieldCheck, ShieldQuestion } from '@tamagui/lucide-icons'
+import { ShieldAlert, ShieldCheck, ShieldQuestion } from 'lucide-react-native'
 import { memo } from 'react'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 import { CONFIDENCE_BADGES, type ConfidenceLevel } from '../utils/importConfidence'
 
 interface ConfidenceBadgeProps {
@@ -22,18 +22,12 @@ export const ConfidenceBadge = memo(function ConfidenceBadge({
   const Icon = ICON_MAP[level]
 
   return (
-    <XStack gap="$2" alignItems="center">
-      <Icon size={16} color={config.colorToken} />
-      <YStack>
-        <Text color={config.colorToken} fontSize="$2" fontWeight="600">
-          {config.label}
-        </Text>
-        {showDescription && (
-          <Text color="$color10" fontSize="$1">
-            {config.description}
-          </Text>
-        )}
-      </YStack>
-    </XStack>
+    <Row gap={8} align="center">
+      <Icon size="md" color={config.colorToken} />
+      <Stack>
+        <Text color={config.colorToken}>{config.label}</Text>
+        {showDescription && <Text color="$gray11">{config.description}</Text>}
+      </Stack>
+    </Row>
   )
 })

@@ -1,4 +1,3 @@
-import { api, createTrpcClient } from '@scf/core/utils/api'
 import { QueryClient, QueryClientProvider as QueryClientProviderOG } from '@tanstack/react-query'
 import { type ReactNode, useState } from 'react'
 import { setGlobalQueryClient } from './queryClient'
@@ -25,11 +24,8 @@ export const QueryClientProvider = ({ children }: { children: ReactNode }) => {
     setGlobalQueryClient(client)
     return client
   })
-  const [trpcClient] = useState(() => createTrpcClient())
 
   return (
-    <api.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProviderOG client={queryClient}>{children}</QueryClientProviderOG>
-    </api.Provider>
+    <QueryClientProviderOG client={queryClient}>{children}</QueryClientProviderOG>
   )
 }

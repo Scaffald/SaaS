@@ -1,6 +1,6 @@
 /**
  * Mock OCR Service for ACORD 25 Certificate of Insurance extraction
- * REQ-125: Mock OCR & Document Parsing Engine for ACORD 25 Forms
+ * Mock OCR & Document Parsing Engine for ACORD 25 Forms
  *
  * This is a pattern-based mock service for MVP. In Phase 2, this will be
  * replaced with AWS Textract or similar OCR service.

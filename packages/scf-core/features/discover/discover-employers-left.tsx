@@ -1,6 +1,6 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useRouter } from 'expo-router'
-import { ScrollView, Spinner, Text, YStack } from '@unicornlove/ui'
+import { ScrollView, Spinner, Text, Stack } from '@scaffald/ui'
 import { type Employer, EmployerCard } from './components/EmployerCard'
 
 interface DiscoverEmployersLeftProps {
@@ -21,39 +21,35 @@ export function DiscoverEmployersLeft({ employers, isLoading }: DiscoverEmployer
 
   if (isLoading) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4">
-        <Spinner size="large" color="$blue10" />
-        <Text marginTop="$2" color="$color11">
+      <Stack flex={1} align="center" justify="center" padding="md">
+        <Spinner size="lg" color="primary" />
+        <Text style={{ marginTop: 8 }} color="secondary">
           Loading employers...
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (employers.length === 0) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
-        <Text fontSize="$6" fontWeight="600" color="$color12">
-          No employers found
-        </Text>
-        <Text fontSize="$4" color="$color11">
-          Try adjusting your filters or search query
-        </Text>
-      </YStack>
+      <Stack flex={1} align="center" justify="center" padding="md" gap={8}>
+        <Text color="secondary">No employers found</Text>
+        <Text color="secondary">Try adjusting your filters or search query</Text>
+      </Stack>
     )
   }
 
   return (
-    <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <YStack gap="$3" padding="$4">
-        <Text fontSize="$5" fontWeight="600" color="$color12">
+    <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+      <Stack gap={12} padding="md">
+        <Text color="secondary">
           {employers.length} {employers.length === 1 ? 'Employer' : 'Employers'}
         </Text>
 
         {employers.map((employer: Employer) => (
           <EmployerCard key={employer.id} employer={employer} onViewDetails={handleViewDetails} />
         ))}
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }

@@ -1,16 +1,16 @@
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
-import { RefreshCcw } from '@tamagui/lucide-icons'
+import { RefreshCcw } from 'lucide-react-native'
 import { useMemo } from 'react'
 import {
   Button,
   Card,
-  type ColorTokens,
   Separator,
   Spinner,
   Text,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+  colors,
+} from '@scaffald/ui'
 
 import type { BackgroundCheckDispute } from '../hooks/useDispute'
 
@@ -41,27 +41,22 @@ const STATUS_METADATA: Record<
     description: 'The dispute has been resolved and any updates are reflected in your results.',
     tone: 'success',
   },
-  upheld: {
-    label: 'Upheld',
+  rejected: {
+    label: 'Rejected',
     description: 'The original findings were confirmed after review.',
-    tone: 'neutral',
-  },
-  cancelled: {
-    label: 'Cancelled',
-    description: 'This dispute was cancelled. You can file a new one if needed.',
     tone: 'neutral',
   },
 }
 
 const TONE_COLORS: Record<
   DisputeStatusTone,
-  { background: ColorTokens; border: ColorTokens; text: ColorTokens }
+  { background: string; border: string; text: string }
 > = {
-  info: { background: '$blue3', border: '$blue7', text: '$blue11' },
-  warning: { background: '$yellow3', border: '$yellow8', text: '$yellow11' },
-  success: { background: '$green3', border: '$green8', text: '$green11' },
-  danger: { background: '$red3', border: '$red8', text: '$red11' },
-  neutral: { background: '$color3', border: '$color6', text: '$color11' },
+  info: { background: colors.info[50], border: colors.info[400], text: colors.info[700] },
+  warning: { background: colors.warning[50], border: colors.warning[400], text: colors.warning[700] },
+  success: { background: colors.success[50], border: colors.success[400], text: colors.success[700] },
+  danger: { background: colors.error[50], border: colors.error[400], text: colors.error[700] },
+  neutral: { background: colors.gray[100], border: colors.gray[300], text: colors.gray[700] },
 }
 
 function getStatusMetadata(status: BackgroundCheckDispute['status']) {
@@ -98,12 +93,10 @@ export function DisputeStatusTracker({
 
   if (isLoading) {
     return (
-      <YStack gap="$2" alignItems="center" paddingVertical="$4">
-        <Spinner size="small" color="$color10" />
-        <Text fontSize="$2" color="$color10">
-          Loading dispute history…
-        </Text>
-      </YStack>
+      <Stack gap={8} align="center" paddingVertical={16}>
+        <Spinner size="sm" color="gray" />
+        <Text color="$gray11">Loading dispute history…</Text>
+      </Stack>
     )
   }
 
@@ -113,14 +106,12 @@ export function DisputeStatusTracker({
         backgroundColor="$color2"
         borderColor="$borderColor"
         borderWidth={1}
-        borderRadius="$4"
-        padding="$3"
-        gap="$2"
+        radius="lg"
+        padding="sm"
+        style={{ gap: 8 }}
       >
-        <Text fontSize="$3" fontWeight="600" color="$color12">
-          No disputes filed yet
-        </Text>
-        <Text fontSize="$2" color="$color10">
+        <Text color="$gray11">No disputes filed yet</Text>
+        <Text color="$gray11">
           If you notice any inaccuracies in your results, you can submit a dispute for review.
         </Text>
       </Card>
@@ -131,106 +122,90 @@ export function DisputeStatusTracker({
   const toneColors = TONE_COLORS[statusMeta.tone]
 
   return (
-    <YStack gap="$3">
-      <XStack justifyContent="space-between" alignItems="center">
-        <Text fontSize="$4" fontWeight="600" color="$color12">
-          Dispute status
-        </Text>
+    <Stack gap={12}>
+      <Row justify="space-between" align="center">
+        <Text color="$gray11">Dispute status</Text>
         <Button
-          size="$2"
-          variant="outlined"
-          icon={RefreshCcw}
+          size="sm"
+          variant="outline"
+          iconStart={RefreshCcw}
           onPress={onRefresh}
           disabled={!onRefresh}
         >
           Refresh
         </Button>
-      </XStack>
+      </Row>
 
-      <YStack
-        gap="$2"
-        padding="$3"
+      <Stack
+        gap={8}
+        padding="sm"
         backgroundColor={toneColors.background}
         borderColor={toneColors.border}
         borderWidth={1}
-        borderRadius="$4"
+        borderRadius={16}
       >
-        <Text fontSize="$3" fontWeight="600" color={toneColors.text}>
-          {statusMeta.label}
-        </Text>
-        <Text fontSize="$2" color={toneColors.text}>
-          {statusMeta.description}
-        </Text>
-        <Text fontSize="$2" color={toneColors.text}>
+        <Text color={toneColors.text}>{statusMeta.label}</Text>
+        <Text color={toneColors.text}>{statusMeta.description}</Text>
+        <Text color={toneColors.text}>
           Filed {formatDate(latestDispute.created_at)}
           {latestDispute.resolved_at ? ` • Resolved ${formatDate(latestDispute.resolved_at)}` : ''}
         </Text>
-        <Text fontSize="$2" color={toneColors.text}>
-          Reason: {latestDispute.dispute_reason}
-        </Text>
-      </YStack>
+        <Text color={toneColors.text}>Reason: {latestDispute.dispute_reason}</Text>
+      </Stack>
 
       <Card
         backgroundColor="$color2"
         borderColor="$borderColor"
         borderWidth={1}
-        borderRadius="$4"
-        padding="$3"
-        gap="$3"
+        radius="lg"
+        padding="sm"
+        style={{ gap: 12 }}
       >
-        <Text fontSize="$3" fontWeight="600" color="$color12">
-          Dispute history
-        </Text>
+        <Text color="$gray11">Dispute history</Text>
 
         {pendingCount > 0 ? (
-          <Text fontSize="$2" color="$color10">
+          <Text color="$gray11">
             {pendingCount} dispute{pendingCount === 1 ? '' : 's'} currently awaiting review.
           </Text>
         ) : null}
 
         <Separator />
 
-        <YStack gap="$2">
+        <Stack gap={8}>
           {disputes.map((dispute) => {
             const meta = getStatusMetadata(dispute.status)
-            const colors = TONE_COLORS[meta.tone]
+            const toneColors = TONE_COLORS[meta.tone]
             return (
-              <YStack
+              <Stack
                 key={dispute.id}
                 backgroundColor="$background"
                 borderColor="$borderColor"
                 borderWidth={1}
-                borderRadius="$3"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
-                gap="$1"
+                borderRadius={12}
+                paddingHorizontal={12}
+                paddingVertical={8}
+                gap={4}
               >
-                <XStack gap="$2" alignItems="center" flexWrap="wrap">
-                  <Text fontSize="$3" fontWeight="600" color="$color12">
-                    {meta.label}
-                  </Text>
-                  <Text fontSize="$2" color={colors.text}>
+                <Row gap={8} align="center" wrap>
+                  <Text color="$gray11">{meta.label}</Text>
+                  <Text color={toneColors.text}>
                     {formatDate(dispute.created_at)}
                     {dispute.resolved_at ? ` • ${formatDate(dispute.resolved_at)}` : ''}
                   </Text>
-                </XStack>
-                <Text fontSize="$2" color="$color10">
-                  Reason: {dispute.dispute_reason}
-                </Text>
-                <Text fontSize="$2" color="$color10">
-                  {dispute.dispute_details}
-                </Text>
+                </Row>
+                <Text color="$gray11">Reason: {dispute.dispute_reason}</Text>
+                <Text color="$gray11">{dispute.dispute_details}</Text>
                 {dispute.resolution ? (
-                  <Text fontSize="$2" color="$color10">
+                  <Text color="$gray11">
                     Resolution: {dispute.resolution}
                     {dispute.resolution_notes ? ` — ${dispute.resolution_notes}` : ''}
                   </Text>
                 ) : null}
-              </YStack>
+              </Stack>
             )
           })}
-        </YStack>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   )
 }

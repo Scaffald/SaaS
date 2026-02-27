@@ -6,7 +6,7 @@ import {
   type DashboardBreadcrumbSegment,
 } from '@scf/core/utils/navigation/buildDashboardBreadcrumbs'
 import { DashboardLayout } from '@scf/core/components/layouts'
-import type { BreadcrumbItem } from '@unicornlove/ui'
+import type { BreadcrumbItemData } from '@scaffald/ui'
 import { usePathname } from 'expo-router'
 import type { ComponentProps } from 'react'
 import { useMemo } from 'react'
@@ -17,7 +17,7 @@ type DashboardPageProps = Omit<DashboardLayoutProps, 'breadcrumbItems'> & {
   /** Custom breadcrumb segments to build Dashboard hierarchy */
   breadcrumbs?: DashboardBreadcrumbSegment[]
   /** Provide fully computed breadcrumb items (takes precedence over breadcrumbs) */
-  breadcrumbItems?: BreadcrumbItem[]
+  breadcrumbItems?: BreadcrumbItemData[]
   /** Static string or callback for page title (falls back to route title) */
   pageTitle?: string | (() => string | null)
   /** Dependency list for re-computing dynamic page titles */
@@ -78,8 +78,7 @@ export function DashboardPage({
       // Fallback to breadcrumb trail, then matched route, then Dashboard
       const trail = computedBreadcrumbItems
       if (trail && trail.length > 0) {
-        const activeItem =
-          [...trail].reverse().find((item) => item.isActive) ?? trail[trail.length - 1]
+        const activeItem = trail[trail.length - 1]
         if (activeItem?.label) {
           return activeItem.label
         }

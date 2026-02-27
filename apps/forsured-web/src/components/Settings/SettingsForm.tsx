@@ -1,6 +1,6 @@
 // src/components/settings/SettingsForm.tsx
 import React from 'react';
-import { Stack, Row, Button } from '@unicornlove/beyond-ui';
+import { Stack, Row, Button } from '@scaffald/ui';
 
 interface SettingsFormProps {
   children: React.ReactNode;

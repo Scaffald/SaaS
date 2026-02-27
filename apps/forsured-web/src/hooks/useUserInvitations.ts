@@ -1,22 +1,22 @@
 /**
  * User Invitations Hook
- * REQ-212: Code Updates for Shared Database Architecture
+ * Shared database architecture
  *
  * Uses `user_invitations` table in forsured schema
  */
 
-import { useState, useEffect } from 'react';
-import { UserInvitation } from '../types';
-import { useDatabase } from '../contexts/DatabaseContext';
-import { formatSupabaseError } from '../lib/database/formatSupabaseError';
-import { sendBrokerInvitation } from '../services/emailService';
+import { useEffect, useState } from "react";
+import { UserInvitation } from "../types";
+import { useDatabase } from "../contexts/DatabaseContext";
+import { formatSupabaseError } from "../lib/database/formatSupabaseError";
+import { sendBrokerInvitation } from "../services/emailService";
 
 /**
  * Generate an invitation code (8 characters, alphanumeric uppercase)
  */
 function generateInvitationCode(): string {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Removed confusing chars like 0/O, 1/I
-  let code = '';
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // Removed confusing chars like 0/O, 1/I
+  let code = "";
   for (let i = 0; i < 8; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -24,7 +24,7 @@ function generateInvitationCode(): string {
 }
 
 interface UseUserInvitationsOptions {
-  status?: UserInvitation['status'];
+  status?: UserInvitation["status"];
   invitedBy?: string;
   organizationId?: string | null;
 }
@@ -44,36 +44,42 @@ export function useUserInvitations(options: UseUserInvitationsOptions = {}) {
       setLoading(true);
 
       let query = supabase
-        .schema('forsured')
-        .from('user_invitations')
-        .select('*');
+        .schema("forsured")
+        .from("user_invitations")
+        .select("*");
 
       if (options.status) {
-        query = query.eq('status', options.status);
+        query = query.eq("status", options.status);
       }
 
       if (options.invitedBy) {
-        query = query.eq('invited_by', options.invitedBy);
+        query = query.eq("invited_by", options.invitedBy);
       }
 
       // Also filter by organization_id if provided and not empty
       // This ensures we only see invitations for the same broker organization/team
       // Invited users join the same organization as the inviter
-      if (options.organizationId && options.organizationId.trim() !== '') {
-        query = query.eq('organization_id', options.organizationId);
+      if (options.organizationId && options.organizationId.trim() !== "") {
+        query = query.eq("organization_id", options.organizationId);
       }
 
-      query = query.order('created_at', { ascending: false });
+      query = query.order("created_at", { ascending: false });
 
-      console.log('[useUserInvitations] Fetching invitations with options:', options);
+      console.log(
+        "[useUserInvitations] Fetching invitations with options:",
+        options,
+      );
       const { data, error: supabaseError } = await query;
 
       if (supabaseError) {
-        console.error('[useUserInvitations] Error fetching invitations:', supabaseError);
-        throw formatSupabaseError(supabaseError, 'fetching invitations');
+        console.error(
+          "[useUserInvitations] Error fetching invitations:",
+          supabaseError,
+        );
+        throw formatSupabaseError(supabaseError, "fetching invitations");
       }
 
-      console.log('[useUserInvitations] Raw invitation data:', data);
+      console.log("[useUserInvitations] Raw invitation data:", data);
 
       // Transform database records to match UserInvitation interface
       // Handle missing fields and ensure compatibility
@@ -83,10 +89,13 @@ export function useUserInvitations(options: UseUserInvitationsOptions = {}) {
         invited_at: inv.created_at, // Use created_at as invited_at if not present
       })) as UserInvitation[];
 
-      console.log('[useUserInvitations] Transformed invitations:', transformedInvitations);
+      console.log(
+        "[useUserInvitations] Transformed invitations:",
+        transformedInvitations,
+      );
       setInvitations(transformedInvitations);
     } catch (err) {
-      console.error('[useUserInvitations] Error in fetchInvitations:', err);
+      console.error("[useUserInvitations] Error in fetchInvitations:", err);
       setError(err as Error);
     } finally {
       setLoading(false);
@@ -94,11 +103,14 @@ export function useUserInvitations(options: UseUserInvitationsOptions = {}) {
   };
 
   const createInvitation = async (
-    invitation: Omit<UserInvitation, 'id' | 'created_at' | 'updated_at' | 'token' | 'expires_at'>
+    invitation: Omit<
+      UserInvitation,
+      "id" | "created_at" | "updated_at" | "token" | "expires_at"
+    >,
   ) => {
     // Generate invitation code/token
     const invitationCode = generateInvitationCode();
-    
+
     // Calculate expiration (30 days from now)
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 30);
@@ -110,10 +122,10 @@ export function useUserInvitations(options: UseUserInvitationsOptions = {}) {
       email: invitation.email,
       role: invitation.role,
       invited_by: invitation.invited_by,
-      status: invitation.status || 'pending',
+      status: invitation.status || "pending",
       token: invitationCode,
       expires_at: expiresAt.toISOString(),
-      organization_id: invitation.organization_id || '',
+      organization_id: invitation.organization_id || "",
     };
 
     // Try to include name if it exists (Supabase will ignore if column doesn't exist)
@@ -122,14 +134,14 @@ export function useUserInvitations(options: UseUserInvitationsOptions = {}) {
     }
 
     const { data, error: supabaseError } = await supabase
-      .schema('forsured')
-      .from('user_invitations')
+      .schema("forsured")
+      .from("user_invitations")
       .insert(insertData)
       .select()
       .single();
 
     if (supabaseError) {
-      throw formatSupabaseError(supabaseError, 'creating invitation');
+      throw formatSupabaseError(supabaseError, "creating invitation");
     }
 
     await fetchInvitations();
@@ -138,18 +150,18 @@ export function useUserInvitations(options: UseUserInvitationsOptions = {}) {
 
   const updateInvitation = async (
     id: string,
-    updates: Partial<UserInvitation>
+    updates: Partial<UserInvitation>,
   ) => {
     const { data, error: supabaseError } = await supabase
-      .schema('forsured')
-      .from('user_invitations')
+      .schema("forsured")
+      .from("user_invitations")
       .update(updates)
-      .eq('id', id)
+      .eq("id", id)
       .select()
       .single();
 
     if (supabaseError) {
-      throw formatSupabaseError(supabaseError, 'updating invitation');
+      throw formatSupabaseError(supabaseError, "updating invitation");
     }
 
     await fetchInvitations();
@@ -158,13 +170,13 @@ export function useUserInvitations(options: UseUserInvitationsOptions = {}) {
 
   const deleteInvitation = async (id: string) => {
     const { error: supabaseError } = await supabase
-      .schema('forsured')
-      .from('user_invitations')
+      .schema("forsured")
+      .from("user_invitations")
       .delete()
-      .eq('id', id);
+      .eq("id", id);
 
     if (supabaseError) {
-      throw formatSupabaseError(supabaseError, 'deleting invitation');
+      throw formatSupabaseError(supabaseError, "deleting invitation");
     }
 
     await fetchInvitations();
@@ -173,38 +185,41 @@ export function useUserInvitations(options: UseUserInvitationsOptions = {}) {
   const resendInvitation = async (id: string) => {
     // Fetch the invitation to get email and other details
     const { data: invitation, error: fetchError } = await supabase
-      .schema('forsured')
-      .from('user_invitations')
-      .select('*')
-      .eq('id', id)
+      .schema("forsured")
+      .from("user_invitations")
+      .select("*")
+      .eq("id", id)
       .single();
 
     if (fetchError || !invitation) {
-      throw formatSupabaseError(fetchError || new Error('Invitation not found'), 'fetching invitation');
+      throw formatSupabaseError(
+        fetchError || new Error("Invitation not found"),
+        "fetching invitation",
+      );
     }
 
     // Generate new invitation code
     const invitationCode = generateInvitationCode();
-    
+
     // Calculate expiration (30 days from now)
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 30);
 
     // Update invitation with new token and expiration
     const { data: updatedInvitation, error: updateError } = await supabase
-      .schema('forsured')
-      .from('user_invitations')
+      .schema("forsured")
+      .from("user_invitations")
       .update({
         token: invitationCode, // Store code as token
         expires_at: expiresAt.toISOString(),
         updated_at: new Date().toISOString(),
       })
-      .eq('id', id)
+      .eq("id", id)
       .select()
       .single();
 
     if (updateError) {
-      throw formatSupabaseError(updateError, 'updating invitation');
+      throw formatSupabaseError(updateError, "updating invitation");
     }
 
     // Send invitation email
@@ -212,8 +227,9 @@ export function useUserInvitations(options: UseUserInvitationsOptions = {}) {
       // Try to get name from invitation (may not exist in DB)
       // The database schema doesn't have name, but the TypeScript interface does
       // So we check both the typed field and the raw data
-      const invitationName = invitation.name || (invitation as unknown as { name?: string })?.name;
-      
+      const invitationName = invitation.name ||
+        (invitation as unknown as { name?: string })?.name;
+
       await sendBrokerInvitation({
         email: invitation.email,
         name: invitationName || undefined,
@@ -222,7 +238,10 @@ export function useUserInvitations(options: UseUserInvitationsOptions = {}) {
       });
     } catch (emailError) {
       // Log but don't fail - invitation was updated
-      console.error('[useUserInvitations] Failed to send resend email:', emailError);
+      console.error(
+        "[useUserInvitations] Failed to send resend email:",
+        emailError,
+      );
       throw emailError;
     }
 

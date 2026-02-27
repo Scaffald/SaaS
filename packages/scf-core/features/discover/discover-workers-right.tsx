@@ -1,6 +1,15 @@
-import { Award, BadgeCheck, Search, X } from '@tamagui/lucide-icons'
+import { Award, BadgeCheck, Search, X } from 'lucide-react-native'
 import { useState } from 'react'
-import { Button, Input, ScrollView, Separator, Slider, Text, XStack, YStack } from '@unicornlove/ui'
+import {
+  Button,
+  Input,
+  RangeSlider,
+  Row,
+  ScrollView,
+  Separator,
+  Stack,
+  Text,
+} from '@scaffald/ui'
 import { SearchFilterWidget } from './components/SearchFilterWidget'
 
 interface DiscoverWorkersRightProps {
@@ -78,63 +87,47 @@ export function DiscoverWorkersRight({
 
   // Custom active filters content
   const activeFiltersContent = (
-    <YStack gap="$2">
+    <Stack gap={8}>
       {searchQuery && (
-        <XStack gap="$2" alignItems="center">
-          <Text fontSize="$3" color="$color11">
-            Search:
-          </Text>
-          <Text fontSize="$3" fontWeight="600" color="$blue10">
-            {searchQuery}
-          </Text>
-        </XStack>
+        <Row gap={8} align="center">
+          <Text color="$gray11">Search:</Text>
+          <Text color="$blue10">{searchQuery}</Text>
+        </Row>
       )}
       {minScore > 0 && (
-        <XStack gap="$2" alignItems="center">
-          <Text fontSize="$3" color="$color11">
-            Min Score:
-          </Text>
-          <Text fontSize="$3" fontWeight="600" color="$blue10">
-            {minScore}
-          </Text>
-        </XStack>
+        <Row gap={8} align="center">
+          <Text color="$gray11">Min Score:</Text>
+          <Text color="$blue10">{minScore}</Text>
+        </Row>
       )}
       {selectedSkills.length > 0 && (
-        <XStack gap="$2" alignItems="center" flexWrap="wrap">
-          <Text fontSize="$3" color="$color11">
-            Skills:
-          </Text>
-          <Text fontSize="$3" fontWeight="600" color="$blue10">
-            {selectedSkills.length}
-          </Text>
-        </XStack>
+        <Row gap={8} align="center" wrap>
+          <Text color="$gray11">Skills:</Text>
+          <Text color="$blue10">{selectedSkills.length}</Text>
+        </Row>
       )}
       {selectedCertifications.length > 0 && (
-        <XStack gap="$2" alignItems="center" flexWrap="wrap">
-          <Text fontSize="$3" color="$color11">
-            Certs:
-          </Text>
-          <Text fontSize="$3" fontWeight="600" color="$green10">
-            {selectedCertifications.length}
-          </Text>
-        </XStack>
+        <Row gap={8} align="center" wrap>
+          <Text color="$gray11">Certs:</Text>
+          <Text color="$green10">{selectedCertifications.length}</Text>
+        </Row>
       )}
-    </YStack>
+    </Stack>
   )
 
   return (
-    <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <YStack gap="$4" padding="$4">
+    <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+      <Stack gap={16} padding="md">
         <SearchFilterWidget
           title="Search & Filter"
           subtitle="Find skilled workers for your projects"
           searchQuery={searchQuery}
           onSearchChange={handleSearchChange}
           searchLabel={
-            <XStack alignItems="center" gap="$2">
-              <Search size={16} />
+            <Row align="center" gap={8}>
+              <Search size="md" />
               <Text>Search</Text>
-            </XStack>
+            </Row>
           }
           searchPlaceholder="Search by name, title, or location..."
           hasActiveFilters={hasActiveFilters}
@@ -145,138 +138,113 @@ export function DiscoverWorkersRight({
           <Separator />
 
           {/* Scaffald Score Filter */}
-          <YStack gap="$3">
-            <XStack justifyContent="space-between" alignItems="center">
-              <Text fontSize="$4" fontWeight="600" color="$color12">
-                Scaffald Score
-              </Text>
-              <Text fontSize="$5" fontWeight="700" color="$blue10">
-                {minScore}
-              </Text>
-            </XStack>
-            <Slider
-              value={[minScore]}
-              onValueChange={([val]) => onMinScoreChange(val)}
+          <Stack gap={12}>
+            <Row justify="space-between" align="center">
+              <Text color="secondary">Scaffald Score</Text>
+              <Text color="primary">{minScore}</Text>
+            </Row>
+            <RangeSlider
+              value={minScore}
+              onValueChange={onMinScoreChange}
               min={0}
               max={100}
               step={5}
-              width="100%"
-            >
-              <Slider.Track>
-                <Slider.TrackActive />
-              </Slider.Track>
-              <Slider.Thumb circular index={0} size="$0.75" />
-            </Slider>
-          </YStack>
+            />
+          </Stack>
 
           <Separator />
 
           {/* Skills Filter */}
-          <YStack gap="$3">
-            <XStack alignItems="center" gap="$2">
-              <Award size={16} color="$color12" />
-              <Text fontSize="$4" fontWeight="600" color="$color12">
-                Skills
-              </Text>
-            </XStack>
+          <Stack gap={12}>
+            <Row align="center" gap={8}>
+              <Award size="md" color="$gray11" />
+              <Text color="$gray11">Skills</Text>
+            </Row>
 
-            <XStack gap="$2">
+            <Row gap={8}>
               <Input
-                flex={1}
+                style={{ flex: 1 }}
                 placeholder="Add skill..."
                 value={skillInput}
                 onChangeText={setSkillInput}
                 onSubmitEditing={handleAddSkill}
-                size="$3"
               />
-              <Button size="$3" onPress={handleAddSkill} disabled={!skillInput.trim()}>
+              <Button size="sm" onPress={handleAddSkill} disabled={!skillInput.trim()}>
                 Add
               </Button>
-            </XStack>
+            </Row>
 
             {selectedSkills.length > 0 && (
-              <XStack gap="$2" flexWrap="wrap">
+              <Row gap={8} wrap>
                 {selectedSkills.map((skill) => (
-                  <XStack
+                  <Row
                     key={skill}
                     backgroundColor="$blue3"
-                    paddingHorizontal="$2"
-                    paddingVertical="$1"
-                    borderRadius="$3"
-                    gap="$1"
-                    alignItems="center"
+                    paddingHorizontal={8}
+                    paddingVertical={4}
+                    borderRadius={12}
+                    gap={4}
+                    align="center"
                   >
-                    <Text fontSize="$2" color="$blue11">
-                      {skill}
-                    </Text>
-                    <Button size="$1" circular unstyled onPress={() => handleRemoveSkill(skill)}>
-                      <X size={12} color="$blue11" />
+                    <Text color="$blue11">{skill}</Text>
+                    <Button size="sm" variant="text" onPress={() => handleRemoveSkill(skill)}>
+                      <X size={16} color="#1d4ed8" />
                     </Button>
-                  </XStack>
+                  </Row>
                 ))}
-              </XStack>
+              </Row>
             )}
-          </YStack>
+          </Stack>
 
           <Separator />
 
           {/* Certifications Filter */}
-          <YStack gap="$3">
-            <XStack alignItems="center" gap="$2">
-              <BadgeCheck size={16} color="$color12" />
-              <Text fontSize="$4" fontWeight="600" color="$color12">
-                Certifications
-              </Text>
-            </XStack>
+          <Stack gap={12}>
+            <Row align="center" gap={8}>
+              <BadgeCheck size="md" color="$gray11" />
+              <Text color="$gray11">Certifications</Text>
+            </Row>
 
-            <XStack gap="$2">
+            <Row gap={8}>
               <Input
-                flex={1}
+                style={{ flex: 1 }}
                 placeholder="Add certification..."
                 value={certificationInput}
                 onChangeText={setCertificationInput}
                 onSubmitEditing={handleAddCertification}
-                size="$3"
               />
               <Button
-                size="$3"
+                size="sm"
                 onPress={handleAddCertification}
                 disabled={!certificationInput.trim()}
               >
                 Add
               </Button>
-            </XStack>
+            </Row>
 
             {selectedCertifications.length > 0 && (
-              <XStack gap="$2" flexWrap="wrap">
+              <Row gap={8} wrap>
                 {selectedCertifications.map((cert) => (
-                  <XStack
+                  <Row
                     key={cert}
                     backgroundColor="$green3"
-                    paddingHorizontal="$2"
-                    paddingVertical="$1"
-                    borderRadius="$3"
-                    gap="$1"
-                    alignItems="center"
+                    paddingHorizontal={8}
+                    paddingVertical={4}
+                    borderRadius={12}
+                    gap={4}
+                    align="center"
                   >
-                    <Text fontSize="$2" color="$green11">
-                      {cert}
-                    </Text>
-                    <Button
-                      size="$1"
-                      circular
-                      unstyled
-                      onPress={() => handleRemoveCertification(cert)}
-                    >
-                      <X size={12} color="$green11" />
+                    <Text color="$green11">{cert}</Text>
+                    <Button size="sm" variant="text" onPress={() => handleRemoveCertification(cert)}>
+                      <X size={16} color="#22c55e" />
                     </Button>
-                  </XStack>
+                  </Row>
                 ))}
-              </XStack>
+              </Row>
             )}
-          </YStack>
+          </Stack>
         </SearchFilterWidget>
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }

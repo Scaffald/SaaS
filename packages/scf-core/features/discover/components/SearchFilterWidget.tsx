@@ -1,6 +1,6 @@
-import { DashboardWidget } from '@unicornlove/ui'
-import { X } from '@tamagui/lucide-icons'
-import { Button, Input, Label, Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { DashboardWidget } from '@scaffald/ui'
+import { X } from 'lucide-react-native'
+import { Button, Input, Label, Separator, Text, Row, Stack } from '@scaffald/ui'
 
 export interface SearchFilterWidgetProps {
   /** Title displayed in the header */
@@ -52,29 +52,23 @@ export function SearchFilterWidget({
   activeFiltersContent,
 }: SearchFilterWidgetProps) {
   const headerSection = (
-    <YStack gap={subtitle ? '$2' : '$1'}>
-      <XStack justifyContent="space-between" alignItems="center">
-        <Text fontSize="$6" fontWeight="700" color="$color12">
-          {title}
-        </Text>
+    <Stack gap={subtitle ? 8 : 4}>
+      <Row justify="space-between" align="center">
+        <Text color="secondary">{title}</Text>
         {hasActiveFilters && (
-          <Button size="$2" chromeless color="$red10" icon={X} onPress={onClearFilters}>
+          <Button size="sm" variant="outline" color="error" iconStart={X} onPress={onClearFilters}>
             Clear
           </Button>
         )}
-      </XStack>
-      {subtitle && (
-        <Text fontSize="$3" color="$color11">
-          {subtitle}
-        </Text>
-      )}
-    </YStack>
+      </Row>
+      {subtitle && <Text color="secondary">{subtitle}</Text>}
+    </Stack>
   )
 
   const searchSection = (
-    <YStack gap={searchLabel ? '$2' : '$2'}>
+    <Stack gap={8}>
       {searchLabel && (
-        <Label htmlFor="search" fontSize="$4" fontWeight="600" color="$color12">
+        <Label htmlFor="search" color="secondary">
           {searchLabel}
         </Label>
       )}
@@ -83,20 +77,15 @@ export function SearchFilterWidget({
         placeholder={searchPlaceholder}
         value={searchQuery}
         onChangeText={onSearchChange}
-        size="$4"
       />
-    </YStack>
+    </Stack>
   )
 
   const defaultActiveFiltersContent = searchQuery && (
-    <XStack gap="$2" alignItems="center">
-      <Text fontSize="$3" color="$color11">
-        Search:
-      </Text>
-      <Text fontSize="$3" fontWeight="600" color="$blue10">
-        {searchQuery}
-      </Text>
-    </XStack>
+    <Row gap={8} align="center">
+      <Text color="secondary">Search:</Text>
+      <Text color="primary">{searchQuery}</Text>
+    </Row>
   )
 
   const shouldShowActiveFilters =
@@ -106,12 +95,10 @@ export function SearchFilterWidget({
   const activeFiltersSection = shouldShowActiveFilters && (
     <>
       <Separator />
-      <YStack gap="$2">
-        <Text fontSize="$4" fontWeight="600" color="$color12">
-          Active Filters
-        </Text>
+      <Stack gap={8}>
+        <Text color="secondary">Active Filters</Text>
         {activeFiltersContent !== undefined ? activeFiltersContent : defaultActiveFiltersContent}
-      </YStack>
+      </Stack>
     </>
   )
 

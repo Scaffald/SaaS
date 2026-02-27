@@ -1,5 +1,5 @@
 /**
- * REQ-271: Coverage Requirement Service Layer
+ * Coverage Requirement Service Layer
  * API functions for managing coverage-specific additional requirements
  */
 

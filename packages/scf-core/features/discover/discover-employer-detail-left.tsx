@@ -1,10 +1,10 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
-import { DashboardWidget, extractPlainText } from '@unicornlove/ui'
-import { ArrowLeft, Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
+import { useEmployer } from '@scf/core/utils/employers-sdk-hooks'
+import { DashboardWidget, extractPlainText } from '@scaffald/ui'
+import { ArrowLeft, Building2, ExternalLink, MapPin, Users } from 'lucide-react-native'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
-import { Button, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 type DiscoverEmployerDetailLeftProps = {
   employerId: string
@@ -21,15 +21,13 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
     data: employer,
     isLoading,
     isFetching,
-  } = api.employers.getEmployerById.useQuery({ id: employerId }, { enabled: Boolean(employerId) })
+  } = useEmployer({ id: employerId }, { enabled: Boolean(employerId) })
 
   if (!employerId) {
     return (
       <DashboardWidget>
-        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$3">
-          <Text fontSize="$5" fontWeight="600" color="$color12">
-            Employer not specified
-          </Text>
+        <Stack align="center" justify="center" padding={32} gap={12}>
+          <Text color="secondary">Employer not specified</Text>
           <Button
             onPress={() => {
               // Try to go back, fallback to employers list if no history
@@ -42,7 +40,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
           >
             Go Back
           </Button>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -50,10 +48,10 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
   if (isLoading || isFetching) {
     return (
       <DashboardWidget>
-        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$3">
-          <Spinner size="large" color="$blue10" />
-          <Text color="$color11">Loading employer details...</Text>
-        </YStack>
+        <Stack align="center" justify="center" padding={32} gap={12}>
+          <Spinner size="lg" color="primary" />
+          <Text color="secondary">Loading employer details...</Text>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -61,10 +59,8 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
   if (!employer) {
     return (
       <DashboardWidget>
-        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$3">
-          <Text color="$red10" fontSize="$5" fontWeight="600">
-            Employer not found
-          </Text>
+        <Stack align="center" justify="center" padding={32} gap={12}>
+          <Text color="$red10">Employer not found</Text>
           <Button
             onPress={() => {
               // Try to go back, fallback to employers list if no history
@@ -77,7 +73,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
           >
             Go Back
           </Button>
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -89,13 +85,13 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
     : null
 
   return (
-    <DashboardWidget gap="$4">
+    <DashboardWidget gap={16}>
       {/* Header with Back Button */}
-      <XStack alignItems="center" gap="$3">
+      <Row align="center" gap={12}>
         <Button
-          size="$3"
-          variant="outlined"
-          icon={ArrowLeft}
+          size="sm"
+          variant="outline"
+          iconStart={ArrowLeft}
           onPress={() => {
             // Try to go back, fallback to employers list if no history
             try {
@@ -107,67 +103,55 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
         >
           Back
         </Button>
-        <XStack alignItems="center" gap="$2" flex={1}>
+        <Row align="center" gap={8} flex={1}>
           <Building2 size={24} color="$blue10" />
-          <Text fontSize="$8" fontWeight="700">
-            {employer.name}
-          </Text>
-        </XStack>
-      </XStack>
+          <Text>{employer.name}</Text>
+        </Row>
+      </Row>
 
       <Separator />
 
       {/* Industry */}
-      {employer.industries && (
-        <YStack gap="$2">
-          <Text fontSize="$5" fontWeight="600">
-            Industry
-          </Text>
-          <XStack alignItems="center" gap="$2">
-            <Users size={16} color="$color11" />
-            <Text fontSize="$4" color="$color11">
-              {employer.industries.name}
-            </Text>
-          </XStack>
-        </YStack>
+      {employer.industry && (
+        <Stack gap={8}>
+          <Text>Industry</Text>
+          <Row align="center" gap={8}>
+            <Users size={20} color="#737373" />
+            <Text color="secondary">{employer.industry}</Text>
+          </Row>
+        </Stack>
       )}
 
       {/* Description */}
       {employer.description && (
-        <YStack gap="$2">
-          <Text fontSize="$5" fontWeight="600">
-            About
-          </Text>
-          <Text fontSize="$4" color="$color11">
+        <Stack gap={8}>
+          <Text>About</Text>
+          <Text color="$gray11">
             {typeof employer.description === 'string'
               ? employer.description
               : extractPlainText(employer.description as JSONContent)}
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {/* Location */}
-      {employer.address && (
-        <YStack gap="$2">
-          <XStack alignItems="center" gap="$2">
-            <MapPin size={18} color="$color10" />
-            <Text fontSize="$5" fontWeight="600">
-              Location
-            </Text>
-          </XStack>
-          <Text fontSize="$4" color="$color11">
-            {employer.address.street || employer.address.zipCode || 'Not specified'}
-          </Text>
-        </YStack>
+      {employer.location && (
+        <Stack gap={8}>
+          <Row align="center" gap={8}>
+            <MapPin size={18} color="#737373" />
+            <Text>Location</Text>
+          </Row>
+          <Text color="secondary">{employer.location}</Text>
+        </Stack>
       )}
 
       {/* Website */}
       {websiteUrl && (
-        <YStack gap="$2">
+        <Stack gap={8}>
           <Button
-            size="$4"
-            variant="outlined"
-            icon={ExternalLink}
+            size="md"
+            variant="outline"
+            iconStart={ExternalLink}
             onPress={() => {
               if (typeof window !== 'undefined') {
                 window.open(websiteUrl, '_blank')
@@ -176,15 +160,13 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
           >
             Visit Website
           </Button>
-        </YStack>
+        </Stack>
       )}
 
       {/* Additional Info */}
-      <YStack gap="$2">
-        <Text fontSize="$3" color="$color10">
-          Created: {new Date(employer.created_at).toLocaleDateString()}
-        </Text>
-      </YStack>
+      <Stack gap={8}>
+        <Text color="$gray11">Created: {new Date(employer.created_at).toLocaleDateString()}</Text>
+      </Stack>
     </DashboardWidget>
   )
 }

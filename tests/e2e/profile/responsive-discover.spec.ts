@@ -4,7 +4,7 @@
  * Priority 1: Test job search and discovery on map across all viewport sizes
  * to ensure map interface works correctly on mobile, tablet, and desktop.
  *
- * REQ-11: Responsive Layout Improvements
+ * Responsive layout improvements
  */
 
 import { expect, type Page, test } from '@playwright/test'
@@ -16,7 +16,7 @@ import {
 } from '../../infrastructure/playwright/helpers/helpers/responsive'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
-// Define all Priority 1 viewports from REQ-11 spec
+// Define all Priority 1 viewports from spec
 const viewports = [
   { name: 'iPhone SE', width: 375, height: 667 },
   { name: 'iPhone 12', width: 390, height: 844 },

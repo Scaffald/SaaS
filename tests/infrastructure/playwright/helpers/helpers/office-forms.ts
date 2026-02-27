@@ -29,7 +29,7 @@ export async function fillTextField(
 
 /**
  * Select an option from a dropdown by label
- * Works with both native selects and Tamagui Select components
+ * Works with both native selects and custom Select components
  */
 export async function selectDropdown(
   page: Page,
@@ -49,7 +49,7 @@ export async function selectDropdown(
     // Native select
     await trigger.selectOption(value, { timeout })
   } else {
-    // Custom select (Tamagui/React)
+    // Custom select (React)
     await trigger.click({ timeout })
     await page.waitForTimeout(300) // Wait for dropdown to open
 
@@ -129,7 +129,7 @@ export async function acceptCheckbox(
 
 /**
  * Toggle a switch by label
- * Works with Tamagui Switch components
+ * Works with custom Switch components
  */
 export async function toggleSwitch(
   page: Page,

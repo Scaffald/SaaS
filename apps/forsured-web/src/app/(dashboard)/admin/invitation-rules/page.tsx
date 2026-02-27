@@ -1,5 +1,5 @@
 /**
- * REQ-128: Invitation Rules Admin Dashboard
+ * Invitation rules admin dashboard
  *
  * Administrative interface for managing invitation rules:
  * - View all invitation rules (active and inactive)
@@ -9,7 +9,17 @@
  */
 
 import { useState } from 'react'
-import { Stack, Row, Text, Button, Card, Heading, Input, colors, spacing } from '@unicornlove/beyond-ui'
+import {
+  Stack,
+  Row,
+  Text,
+  Button,
+  Card,
+  Heading,
+  Input,
+  colors,
+  spacing,
+} from '@scaffald/ui'
 import Switch from '../../../../ui/Switch'
 import Textarea from '../../../../components/Common/Textarea'
 import { trpc } from '../../../../lib/trpc'
@@ -94,10 +104,27 @@ export default function InvitationRulesAdminPage() {
     return (
       <Stack style={{ padding: spacing[24], maxWidth: 1120, marginHorizontal: 'auto' }}>
         <Stack style={{ opacity: 0.5 }}>
-          <Stack style={{ height: 32, backgroundColor: colors.gray[200], borderRadius: 8, width: '40%', marginBottom: spacing[16] }} />
+          <Stack
+            style={{
+              height: 32,
+              backgroundColor: colors.gray[200],
+              borderRadius: 8,
+              width: '40%',
+              marginBottom: spacing[16],
+            }}
+          />
           <Row style={{ flexWrap: 'wrap', gap: spacing[16], marginBottom: spacing[32] }}>
             {[1, 2, 3, 4].map((i) => (
-              <Stack key={i} style={{ height: 96, backgroundColor: colors.gray[200], borderRadius: 8, flex: 1, minWidth: 200 }} />
+              <Stack
+                key={i}
+                style={{
+                  height: 96,
+                  backgroundColor: colors.gray[200],
+                  borderRadius: 8,
+                  flex: 1,
+                  minWidth: 200,
+                }}
+              />
             ))}
           </Row>
         </Stack>
@@ -108,7 +135,15 @@ export default function InvitationRulesAdminPage() {
   if (rulesError) {
     return (
       <Stack style={{ padding: spacing[24], maxWidth: 1120, marginHorizontal: 'auto' }}>
-        <Stack style={{ padding: spacing[16], backgroundColor: colors.error[200], borderWidth: 1, borderColor: colors.error[400], borderRadius: spacing[16] }}>
+        <Stack
+          style={{
+            padding: spacing[16],
+            backgroundColor: colors.error[200],
+            borderWidth: 1,
+            borderColor: colors.error[400],
+            borderRadius: spacing[16],
+          }}
+        >
           <Text weight="semibold" color={colors.error[600]}>
             Error loading invitation rules
           </Text>
@@ -133,7 +168,9 @@ export default function InvitationRulesAdminPage() {
     <Stack style={{ padding: spacing[24], maxWidth: 1120, marginHorizontal: 'auto' }}>
       {/* Header */}
       <Stack style={{ marginBottom: spacing[32] }}>
-        <Heading level={2} style={{ marginBottom: spacing[8] }}>Invitation Rules</Heading>
+        <Heading level={2} style={{ marginBottom: spacing[8] }}>
+          Invitation Rules
+        </Heading>
         <Text color={colors.text.light.secondary}>
           Configure which user types can invite others and how relationships are established.
         </Text>
@@ -141,10 +178,16 @@ export default function InvitationRulesAdminPage() {
 
       {/* Statistics */}
       <Stack style={{ marginBottom: spacing[32] }}>
-        <Heading level={3} style={{ marginBottom: spacing[16] }}>Statistics</Heading>
+        <Heading level={3} style={{ marginBottom: spacing[16] }}>
+          Statistics
+        </Heading>
         <Row style={{ flexWrap: 'wrap', gap: spacing[16] }}>
           <Card style={{ padding: spacing[16], flex: 1, minWidth: 180 }}>
-            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
+            <Text
+              size="xs"
+              color={colors.text.light.secondary}
+              style={{ marginBottom: spacing[4] }}
+            >
               Total Invitations
             </Text>
             <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.text.light.primary}>
@@ -152,7 +195,11 @@ export default function InvitationRulesAdminPage() {
             </Text>
           </Card>
           <Card style={{ padding: spacing[16], flex: 1, minWidth: 180 }}>
-            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
+            <Text
+              size="xs"
+              color={colors.text.light.secondary}
+              style={{ marginBottom: spacing[4] }}
+            >
               Pending
             </Text>
             <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.warning[600]}>
@@ -160,7 +207,11 @@ export default function InvitationRulesAdminPage() {
             </Text>
           </Card>
           <Card style={{ padding: spacing[16], flex: 1, minWidth: 180 }}>
-            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
+            <Text
+              size="xs"
+              color={colors.text.light.secondary}
+              style={{ marginBottom: spacing[4] }}
+            >
               Accepted
             </Text>
             <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.success[600]}>
@@ -168,7 +219,11 @@ export default function InvitationRulesAdminPage() {
             </Text>
           </Card>
           <Card style={{ padding: spacing[16], flex: 1, minWidth: 180 }}>
-            <Text size="xs" color={colors.text.light.secondary} style={{ marginBottom: spacing[4] }}>
+            <Text
+              size="xs"
+              color={colors.text.light.secondary}
+              style={{ marginBottom: spacing[4] }}
+            >
               Active Relationships
             </Text>
             <Text style={{ fontSize: 32, fontWeight: '700' }} color={colors.primary[600]}>
@@ -180,13 +235,13 @@ export default function InvitationRulesAdminPage() {
 
       {/* Rules Management */}
       <Stack style={{ marginBottom: spacing[32] }}>
-        <Row alignItems="center" justifyContent="space-between" style={{ marginBottom: spacing[16] }}>
+        <Row
+          alignItems="center"
+          justifyContent="space-between"
+          style={{ marginBottom: spacing[16] }}
+        >
           <Heading level={3}>Invitation Rules</Heading>
-          <Button
-            color="primary"
-            variant="filled"
-            onPress={() => setShowCreateForm(true)}
-          >
+          <Button color="primary" variant="filled" onPress={() => setShowCreateForm(true)}>
             Add New Rule
           </Button>
         </Row>
@@ -195,29 +250,67 @@ export default function InvitationRulesAdminPage() {
         <Card style={{ overflow: 'hidden' }}>
           <Stack>
             {/* Table Header */}
-            <Row style={{ backgroundColor: colors.gray[100], paddingHorizontal: spacing[16], paddingVertical: spacing[12] }}>
-              <Text style={{ flex: 2 }} size="xs" weight="medium" color={colors.text.light.secondary}>
+            <Row
+              style={{
+                backgroundColor: colors.gray[100],
+                paddingHorizontal: spacing[16],
+                paddingVertical: spacing[12],
+              }}
+            >
+              <Text
+                style={{ flex: 2 }}
+                size="xs"
+                weight="medium"
+                color={colors.text.light.secondary}
+              >
                 Rule Name
               </Text>
-              <Text style={{ flex: 1 }} size="xs" weight="medium" color={colors.text.light.secondary}>
+              <Text
+                style={{ flex: 1 }}
+                size="xs"
+                weight="medium"
+                color={colors.text.light.secondary}
+              >
                 Source Role
               </Text>
-              <Text style={{ flex: 1 }} size="xs" weight="medium" color={colors.text.light.secondary}>
+              <Text
+                style={{ flex: 1 }}
+                size="xs"
+                weight="medium"
+                color={colors.text.light.secondary}
+              >
                 Target Role
               </Text>
-              <Text style={{ flex: 1 }} size="xs" weight="medium" color={colors.text.light.secondary}>
+              <Text
+                style={{ flex: 1 }}
+                size="xs"
+                weight="medium"
+                color={colors.text.light.secondary}
+              >
                 Type
               </Text>
-              <Text style={{ flex: 1 }} size="xs" weight="medium" color={colors.text.light.secondary} style={{ textAlign: 'center' }}>
+              <Text
+                style={{ flex: 1 }}
+                size="xs"
+                weight="medium"
+                color={colors.text.light.secondary}
+                style={{ textAlign: 'center' }}
+              >
                 Active
               </Text>
-              <Text style={{ flex: 1 }} size="xs" weight="medium" color={colors.text.light.secondary} style={{ textAlign: 'center' }}>
+              <Text
+                style={{ flex: 1 }}
+                size="xs"
+                weight="medium"
+                color={colors.text.light.secondary}
+                style={{ textAlign: 'center' }}
+              >
                 Actions
               </Text>
             </Row>
 
             {/* Table Body */}
-            {(!rules || rules.length === 0) ? (
+            {!rules || rules.length === 0 ? (
               <Stack style={{ padding: spacing[32], alignItems: 'center' }}>
                 <Text color={colors.text.light.secondary}>No invitation rules configured.</Text>
               </Stack>
@@ -242,7 +335,11 @@ export default function InvitationRulesAdminPage() {
                         {rule.name}
                       </Text>
                       {rule.description && (
-                        <Text size="xs" color={colors.text.light.secondary} style={{ marginTop: spacing[4] }}>
+                        <Text
+                          size="xs"
+                          color={colors.text.light.secondary}
+                          style={{ marginTop: spacing[4] }}
+                        >
                           {rule.description}
                         </Text>
                       )}
@@ -259,7 +356,10 @@ export default function InvitationRulesAdminPage() {
                           alignSelf: 'flex-start',
                         }}
                       >
-                        <Text size="xs" color={ROLE_COLORS[rule.source_role]?.text ?? colors.text.light.secondary}>
+                        <Text
+                          size="xs"
+                          color={ROLE_COLORS[rule.source_role]?.text ?? colors.text.light.secondary}
+                        >
                           {rule.source_role}
                         </Text>
                       </Row>
@@ -276,7 +376,10 @@ export default function InvitationRulesAdminPage() {
                           alignSelf: 'flex-start',
                         }}
                       >
-                        <Text size="xs" color={ROLE_COLORS[rule.target_role]?.text ?? colors.text.light.secondary}>
+                        <Text
+                          size="xs"
+                          color={ROLE_COLORS[rule.target_role]?.text ?? colors.text.light.secondary}
+                        >
                           {rule.target_role}
                         </Text>
                       </Row>
@@ -288,7 +391,11 @@ export default function InvitationRulesAdminPage() {
                         {RELATIONSHIP_TYPE_LABELS[rule.relationship_type]}
                       </Text>
                       {rule.requires_project && (
-                        <Text size="xs" color={colors.text.light.tertiary} style={{ marginTop: spacing[4] }}>
+                        <Text
+                          size="xs"
+                          color={colors.text.light.tertiary}
+                          style={{ marginTop: spacing[4] }}
+                        >
                           Requires project
                         </Text>
                       )}
@@ -337,16 +444,16 @@ export default function InvitationRulesAdminPage() {
         </Text>
         <Stack gap={spacing[8]}>
           <Text size="xs" color={colors.info[600]}>
-            <Text weight="semibold">One-to-One:</Text> Target can only have one relationship of this type
-            (e.g., one broker per client)
+            <Text weight="semibold">One-to-One:</Text> Target can only have one relationship of this
+            type (e.g., one broker per client)
           </Text>
           <Text size="xs" color={colors.info[600]}>
             <Text weight="semibold">One-to-Many:</Text> Target can have multiple relationships
             (e.g., broker works with many managers)
           </Text>
           <Text size="xs" color={colors.info[600]}>
-            <Text weight="semibold">One-to-Many (Project):</Text> Relationship tied to a specific project
-            (e.g., subcontractor assigned to project)
+            <Text weight="semibold">One-to-Many (Project):</Text> Relationship tied to a specific
+            project (e.g., subcontractor assigned to project)
           </Text>
         </Stack>
       </Stack>
@@ -421,18 +528,16 @@ function EditRuleModal({
       }}
     >
       <Card style={{ padding: spacing[24], width: 500, maxWidth: '90%' }}>
-        <Heading level={3} style={{ marginBottom: spacing[16] }}>Edit Rule: {rule.name}</Heading>
+        <Heading level={3} style={{ marginBottom: spacing[16] }}>
+          Edit Rule: {rule.name}
+        </Heading>
 
         <Stack gap={spacing[16]}>
           <Stack gap={spacing[8]}>
             <Text size="xs" weight="medium">
               Rule Name
             </Text>
-            <Input
-              value={name}
-              onChangeText={setName}
-              placeholder="Enter rule name"
-            />
+            <Input value={name} onChangeText={setName} placeholder="Enter rule name" />
           </Stack>
 
           <Stack gap={spacing[8]}>
@@ -460,10 +565,7 @@ function EditRuleModal({
           </Stack>
 
           <Row alignItems="center" gap={spacing[12]}>
-            <Switch
-              checked={allowReferralOnly}
-              onCheckedChange={setAllowReferralOnly}
-            />
+            <Switch checked={allowReferralOnly} onCheckedChange={setAllowReferralOnly} />
             <Stack>
               <Text size="xs" weight="medium">
                 Allow Referral-Only
@@ -476,11 +578,7 @@ function EditRuleModal({
         </Stack>
 
         <Row justifyContent="flex-end" gap={spacing[12]} style={{ marginTop: spacing[24] }}>
-          <Button
-            variant="outline"
-            onPress={onClose}
-            disabled={isSaving}
-          >
+          <Button variant="outline" onPress={onClose} disabled={isSaving}>
             Cancel
           </Button>
           <Button
@@ -556,7 +654,9 @@ function CreateRuleModal({
       }}
     >
       <Card style={{ padding: spacing[24], width: 500, maxWidth: '90%' }}>
-        <Heading level={3} style={{ marginBottom: spacing[16] }}>Create New Rule</Heading>
+        <Heading level={3} style={{ marginBottom: spacing[16] }}>
+          Create New Rule
+        </Heading>
 
         <Stack gap={spacing[16]}>
           <Row gap={spacing[16]}>
@@ -564,21 +664,13 @@ function CreateRuleModal({
               <Text size="xs" weight="medium">
                 Source Role
               </Text>
-              <Input
-                value={sourceRole}
-                onChangeText={setSourceRole}
-                placeholder="e.g., broker"
-              />
+              <Input value={sourceRole} onChangeText={setSourceRole} placeholder="e.g., broker" />
             </Stack>
             <Stack style={{ flex: 1 }} gap={spacing[8]}>
               <Text size="xs" weight="medium">
                 Target Role
               </Text>
-              <Input
-                value={targetRole}
-                onChangeText={setTargetRole}
-                placeholder="e.g., client"
-              />
+              <Input value={targetRole} onChangeText={setTargetRole} placeholder="e.g., client" />
             </Stack>
           </Row>
 
@@ -586,11 +678,7 @@ function CreateRuleModal({
             <Text size="xs" weight="medium">
               Rule Name
             </Text>
-            <Input
-              value={name}
-              onChangeText={setName}
-              placeholder="e.g., Invite Client"
-            />
+            <Input value={name} onChangeText={setName} placeholder="e.g., Invite Client" />
           </Stack>
 
           <Stack gap={spacing[8]}>
@@ -642,11 +730,7 @@ function CreateRuleModal({
         </Stack>
 
         <Row justifyContent="flex-end" gap={spacing[12]} style={{ marginTop: spacing[24] }}>
-          <Button
-            variant="outline"
-            onPress={onClose}
-            disabled={isCreating}
-          >
+          <Button variant="outline" onPress={onClose} disabled={isCreating}>
             Cancel
           </Button>
           <Button

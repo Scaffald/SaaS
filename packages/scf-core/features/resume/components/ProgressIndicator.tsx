@@ -1,12 +1,12 @@
-import { Button, Circle, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Text, Row, Stack } from "@scaffald/ui";
 
-import type { ResumeWizardStep } from '../hooks/useResumeWizard'
+import type { ResumeWizardStep } from "../hooks/useResumeWizard";
 
 interface ProgressIndicatorProps {
-  steps: ResumeWizardStep[]
-  currentIndex: number
-  completedSteps: number[]
-  onStepChange?: (index: number) => void
+  steps: ResumeWizardStep[];
+  currentIndex: number;
+  completedSteps: number[];
+  onStepChange?: (index: number) => void;
 }
 
 export function ProgressIndicator({
@@ -16,41 +16,47 @@ export function ProgressIndicator({
   onStepChange,
 }: ProgressIndicatorProps) {
   return (
-    <XStack flexWrap="wrap" gap="$3">
+    <Row wrap gap={12}>
       {steps.map((step, index) => {
-        const isActive = index === currentIndex
-        const isCompleted = completedSteps.includes(index) || index < currentIndex
+        const isActive = index === currentIndex;
+        const isCompleted =
+          completedSteps.includes(index) || index < currentIndex;
 
         return (
           <Button
             key={step.id}
-            size="$3"
-            variant="outlined"
-            theme={isActive ? 'blue' : undefined}
+            size="sm"
+            variant="outline"
+            accessibilityState={{ selected: isActive }}
             onPress={() => onStepChange?.(index)}
-            aria-pressed={isActive}
           >
-            <XStack gap="$2" alignItems="center">
-              <Circle
-                size={18}
-                backgroundColor={isCompleted ? '$green4' : isActive ? '$blue4' : '$color4'}
+            <Row gap={8} align="center">
+              <Stack
+                width={18}
+                height={18}
+                borderRadius={9}
+                backgroundColor={
+                  isCompleted ? "$green4" : isActive ? "$blue4" : "$color4"
+                }
+                align="center"
+                justify="center"
               >
-                <Text color="$color12" fontSize="$1" fontWeight="700">
-                  {index + 1}
+                <Text color="$gray11">{index + 1}</Text>
+              </Stack>
+              <Stack>
+                <Text>{step.label}</Text>
+                <Text color="$gray11">
+                  {isCompleted
+                    ? "Completed"
+                    : isActive
+                    ? "In Progress"
+                    : "Pending"}
                 </Text>
-              </Circle>
-              <YStack>
-                <Text fontSize="$2" fontWeight="600">
-                  {step.label}
-                </Text>
-                <Text fontSize="$1" color="$color11">
-                  {isCompleted ? 'Completed' : isActive ? 'In Progress' : 'Pending'}
-                </Text>
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
           </Button>
-        )
+        );
       })}
-    </XStack>
-  )
+    </Row>
+  );
 }

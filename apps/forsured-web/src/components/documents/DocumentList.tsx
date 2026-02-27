@@ -1,6 +1,6 @@
 /**
  * DocumentList - Document list with filtering and search
- * REQ-284: Document Organization by Client/Project/GC
+ * Document Organization by Client/Project/GC
  * TASK-2: Build Document List with Filtering and Search
  *
  * Displays documents in a list/table format with:
@@ -13,7 +13,7 @@
 
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { Search, FileText, AlertCircle, RefreshCw, Loader2 } from 'lucide-react';
-import { Stack, Row, Text, Card, Button } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card, Button } from '@scaffald/ui';
 import Input from '../Common/Input';
 import { DocumentFilterPanel } from './DocumentFilterPanel';
 import type {

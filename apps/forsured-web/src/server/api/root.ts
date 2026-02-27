@@ -1,7 +1,5 @@
 /**
  * Root tRPC Router
- * REQ-286: Create tRPC Router Structure for Forsured
- * TASK-4: Create Root Router and API Handler Integration
  *
  * Combines all individual tRPC routers into a unified root router.
  * Exports AppRouter type for client-side type inference.

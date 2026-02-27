@@ -1,15 +1,26 @@
 import { useConnectionStatus } from '@scf/core/features/user-profile/hooks/useConnectionStatus'
 import { useFollowStatus } from '@scf/core/features/user-profile/hooks/useFollowStatus'
-import { api } from '@scf/core/utils/api'
-import { CheckCircle2, Loader2, UserCheck, UserMinus, UserPlus, X } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import {
+  useSendConnectionMutation,
+  useAcceptConnectionMutation,
+  useDeclineConnectionMutation,
+  useRemoveConnectionMutation,
+  useFollowUserMutation,
+  useUnfollowUserMutation,
+} from '@scf/core/utils/engagement-sdk-hooks'
+import { CheckCircle2, Loader2, UserCheck, UserMinus, UserPlus, X } from 'lucide-react-native'
+import { useToast } from '@scaffald/ui'
 import { useMemo } from 'react'
-import { Button, Text, XStack } from '@unicornlove/ui'
+import { Button, Text, Row } from '@scaffald/ui'
+import { useQueryClient } from '@tanstack/react-query'
+
+type SizeToken = '$3' | '$4' | '$5'
+const SIZE_TO_BUTTON: Record<SizeToken, 'sm' | 'md' | 'lg'> = { $3: 'sm', $4: 'md', $5: 'lg' }
 
 interface ConnectionFollowButtonsInlineProps {
   targetUserId: string
   isOwnProfile?: boolean
-  size?: '$3' | '$4' | '$5'
+  size?: SizeToken
 }
 
 /**
@@ -22,8 +33,9 @@ export function ConnectionFollowButtonsInline({
   isOwnProfile = false,
   size = '$4',
 }: ConnectionFollowButtonsInlineProps) {
-  const toast = useToastController()
-  const utils = api.useUtils()
+  const toast = useToast()
+  const queryClient = useQueryClient()
+  const buttonSize = SIZE_TO_BUTTON[size ?? '$4']
 
   // Don't show buttons for own profile
   if (isOwnProfile || !targetUserId) {
@@ -35,113 +47,131 @@ export function ConnectionFollowButtonsInline({
   const followStatus = useFollowStatus(targetUserId)
 
   // Connection mutations
-  const sendRequestMutation = api.connections.sendRequest.useMutation({
+  const sendRequestMutation = useSendConnectionMutation({
     onMutate: async () => {
-      await utils.connections.getConnections.cancel()
-      await utils.connections.getPendingRequests.cancel()
+      await queryClient.cancelQueries({ queryKey: ['connections', 'list'] })
+      await queryClient.cancelQueries({ queryKey: ['connections', 'pending'] })
     },
     onSuccess: () => {
-      utils.connections.getConnections.invalidate()
-      utils.connections.getPendingRequests.invalidate()
-      toast.show('Connection request sent', {
+      queryClient.invalidateQueries({ queryKey: ['connections', 'list'] })
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
+      toast.show({
+        title: 'Connection request sent',
         message: 'Your connection request has been sent.',
       })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to send request', {
+      toast.show({
+        title: 'Unable to send request',
         message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
       })
     },
   })
 
-  const acceptRequestMutation = api.connections.acceptRequest.useMutation({
+  const acceptRequestMutation = useAcceptConnectionMutation({
     onMutate: async () => {
-      await utils.connections.getConnections.cancel()
-      await utils.connections.getPendingRequests.cancel()
+      await queryClient.cancelQueries({ queryKey: ['connections', 'list'] })
+      await queryClient.cancelQueries({ queryKey: ['connections', 'pending'] })
     },
     onSuccess: () => {
-      utils.connections.getConnections.invalidate()
-      utils.connections.getPendingRequests.invalidate()
-      toast.show('Connection accepted', {
+      queryClient.invalidateQueries({ queryKey: ['connections', 'list'] })
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
+      toast.show({
+        title: 'Connection accepted',
         message: 'You are now connected.',
       })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to accept request', {
+      toast.show({
+        title: 'Unable to accept request',
         message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
       })
     },
   })
 
-  const declineRequestMutation = api.connections.declineRequest.useMutation({
+  const declineRequestMutation = useDeclineConnectionMutation({
     onMutate: async () => {
-      await utils.connections.getPendingRequests.cancel()
+      await queryClient.cancelQueries({ queryKey: ['connections', 'pending'] })
     },
     onSuccess: () => {
-      utils.connections.getPendingRequests.invalidate()
-      toast.show('Connection request declined', {
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
+      toast.show({
+        title: 'Connection request declined',
         message: 'The connection request has been declined.',
       })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to decline request', {
+      toast.show({
+        title: 'Unable to decline request',
         message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
       })
     },
   })
 
-  const removeConnectionMutation = api.connections.removeConnection.useMutation({
+  const removeConnectionMutation = useRemoveConnectionMutation({
     onMutate: async () => {
-      await utils.connections.getConnections.cancel()
+      await queryClient.cancelQueries({ queryKey: ['connections', 'list'] })
     },
     onSuccess: () => {
-      utils.connections.getConnections.invalidate()
-      toast.show('Connection removed', {
+      queryClient.invalidateQueries({ queryKey: ['connections', 'list'] })
+      toast.show({
+        title: 'Connection removed',
         message: 'The connection has been removed.',
       })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to remove connection', {
+      toast.show({
+        title: 'Unable to remove connection',
         message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
       })
     },
   })
 
   // Follow mutations
-  const followMutation = api.follows.followUser.useMutation({
+  const followMutation = useFollowUserMutation({
     onMutate: async () => {
-      await utils.follows.getFollowing.cancel()
-      await utils.follows.getFollowers.cancel()
+      await queryClient.cancelQueries({ queryKey: ['follows', 'following'] })
+      await queryClient.cancelQueries({ queryKey: ['follows', 'followers'] })
     },
     onSuccess: () => {
-      utils.follows.getFollowing.invalidate()
-      utils.follows.getFollowers.invalidate()
-      toast.show('Following', {
+      queryClient.invalidateQueries({ queryKey: ['follows', 'following'] })
+      queryClient.invalidateQueries({ queryKey: ['follows', 'followers'] })
+      toast.show({
+        title: 'Following',
         message: 'You are now following this user.',
       })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to follow user', {
+      toast.show({
+        title: 'Unable to follow user',
         message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
       })
     },
   })
 
-  const unfollowMutation = api.follows.unfollowUser.useMutation({
+  const unfollowMutation = useUnfollowUserMutation({
     onMutate: async () => {
-      await utils.follows.getFollowing.cancel()
-      await utils.follows.getFollowers.cancel()
+      await queryClient.cancelQueries({ queryKey: ['follows', 'following'] })
+      await queryClient.cancelQueries({ queryKey: ['follows', 'followers'] })
     },
     onSuccess: () => {
-      utils.follows.getFollowing.invalidate()
-      utils.follows.getFollowers.invalidate()
-      toast.show('Unfollowed', {
+      queryClient.invalidateQueries({ queryKey: ['follows', 'following'] })
+      queryClient.invalidateQueries({ queryKey: ['follows', 'followers'] })
+      toast.show({
+        title: 'Unfollowed',
         message: 'You are no longer following this user.',
       })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to unfollow user', {
+      toast.show({
+        title: 'Unable to unfollow user',
         message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
       })
     },
   })
@@ -153,19 +183,19 @@ export function ConnectionFollowButtonsInline({
 
   const handleAcceptRequest = () => {
     if (connectionStatus.connectionId) {
-      acceptRequestMutation.mutate({ connectionId: connectionStatus.connectionId })
+      acceptRequestMutation.mutate(connectionStatus.connectionId)
     }
   }
 
   const handleDeclineRequest = () => {
     if (connectionStatus.connectionId) {
-      declineRequestMutation.mutate({ connectionId: connectionStatus.connectionId })
+      declineRequestMutation.mutate(connectionStatus.connectionId)
     }
   }
 
   const handleRemoveConnection = () => {
     if (connectionStatus.connectionId) {
-      removeConnectionMutation.mutate({ connectionId: connectionStatus.connectionId })
+      removeConnectionMutation.mutate(connectionStatus.connectionId)
     }
   }
 
@@ -175,7 +205,7 @@ export function ConnectionFollowButtonsInline({
   }
 
   const handleUnfollow = () => {
-    unfollowMutation.mutate({ targetUserId })
+    unfollowMutation.mutate(targetUserId)
   }
 
   // Determine connection button state
@@ -211,34 +241,30 @@ export function ConnectionFollowButtonsInline({
 
   if (isLoading) {
     return (
-      <XStack gap="$2" alignItems="center">
-        <Loader2 size={16} color="$color10" />
-        <Text fontSize="$2" color="$color10">
-          Loading...
-        </Text>
-      </XStack>
+      <Row gap={8} align="center">
+        <Loader2 size="md" color="$gray11" />
+        <Text color="$gray11">Loading...</Text>
+      </Row>
     )
   }
 
   return (
-    <XStack gap="$2" flexWrap="wrap">
+    <Row gap={8} wrap>
       {/* Connection Button */}
       {connectionButtonState.type === 'connected' && (
         <>
           <Button
-            size={size}
-            icon={UserCheck}
-            theme="success"
-            variant="outlined"
+            size={buttonSize}
+            iconStart={UserCheck}
+            variant="outline"
             disabled={isConnectionMutating}
           >
             <Text>Connected</Text>
           </Button>
           <Button
-            size={size}
-            icon={UserMinus}
-            variant="outlined"
-            theme="error"
+            size={buttonSize}
+            iconStart={UserMinus}
+            variant="outline"
             onPress={handleRemoveConnection}
             disabled={isConnectionMutating}
           >
@@ -248,7 +274,7 @@ export function ConnectionFollowButtonsInline({
       )}
 
       {connectionButtonState.type === 'pending_sent' && (
-        <Button size={size} icon={Loader2} variant="outlined" disabled={isConnectionMutating}>
+        <Button size={buttonSize} iconStart={Loader2} variant="outline" disabled={isConnectionMutating}>
           <Text>Pending</Text>
         </Button>
       )}
@@ -256,19 +282,17 @@ export function ConnectionFollowButtonsInline({
       {connectionButtonState.type === 'pending_received' && (
         <>
           <Button
-            size={size}
-            icon={CheckCircle2}
-            theme="success"
+            size={buttonSize}
+            iconStart={CheckCircle2}
             onPress={handleAcceptRequest}
             disabled={isConnectionMutating}
           >
             <Text>Accept</Text>
           </Button>
           <Button
-            size={size}
-            icon={X}
-            variant="outlined"
-            theme="error"
+            size={buttonSize}
+            iconStart={X}
+            variant="outline"
             onPress={handleDeclineRequest}
             disabled={isConnectionMutating}
           >
@@ -279,9 +303,9 @@ export function ConnectionFollowButtonsInline({
 
       {connectionButtonState.type === 'none' && (
         <Button
-          size={size}
-          icon={isConnectionMutating ? Loader2 : UserPlus}
-          theme="blue"
+          size={buttonSize}
+          iconStart={isConnectionMutating ? Loader2 : UserPlus}
+          color="primary"
           onPress={handleConnect}
           disabled={isConnectionMutating}
         >
@@ -292,10 +316,9 @@ export function ConnectionFollowButtonsInline({
       {/* Follow Button */}
       {!connectionStatus.isConnected && (
         <Button
-          size={size}
-          icon={isFollowMutating ? Loader2 : followStatus.isFollowing ? UserMinus : UserPlus}
-          variant="outlined"
-          theme={followStatus.isFollowing ? 'error' : 'blue'}
+          size={buttonSize}
+          iconStart={isFollowMutating ? Loader2 : followStatus.isFollowing ? UserMinus : UserPlus}
+          variant="outline"
           onPress={followStatus.isFollowing ? handleUnfollow : handleFollow}
           disabled={isFollowMutating || followStatus.isLoading}
         >
@@ -310,6 +333,6 @@ export function ConnectionFollowButtonsInline({
           </Text>
         </Button>
       )}
-    </XStack>
+    </Row>
   )
 }

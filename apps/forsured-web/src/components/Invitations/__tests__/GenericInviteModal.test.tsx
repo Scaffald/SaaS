@@ -1,6 +1,6 @@
 /**
  * GenericInviteModal Component Tests
- * REQ-128: Flexible Invitation System - Task 6
+ * Flexible Invitation System - Task 6
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'

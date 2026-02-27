@@ -1,11 +1,11 @@
 /**
- * REQ-165: Compliance Requirements Management System
+ * Compliance requirements management
  * List view for compliance requirements with filtering and actions
  */
 
 import { useState, useEffect, useCallback } from 'react'
 import { Loader2 } from 'lucide-react'
-import { Stack, Row, Text, Button, Card, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Card, Grid } from '@scaffald/ui'
 import {
   ComplianceRequirement,
   CoverageType,

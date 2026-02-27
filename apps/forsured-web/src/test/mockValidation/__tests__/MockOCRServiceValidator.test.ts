@@ -1,5 +1,5 @@
 /**
- * REQ-306 TASK-3: MockOCRServiceValidator Tests
+  * TASK-3: MockOCRServiceValidator Tests
  *
  * Tests that the MockOCRServiceValidator correctly validates MockOCRService
  * against the OCR service interface contract.

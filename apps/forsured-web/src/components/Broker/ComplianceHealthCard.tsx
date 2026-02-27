@@ -1,5 +1,5 @@
 import { Shield, TrendingUp, TrendingDown, ChevronRight } from 'lucide-react';
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card } from '@scaffald/ui';
 
 interface ComplianceHealthCardProps {
   score: number;

@@ -1,9 +1,9 @@
 /**
  * OnboardingNavigation - Navigation component using Beyond UI
- * REQ-126: Onboarding Navigation Component
+ * Onboarding Navigation Component
  */
 import React from 'react';
-import { Row, Button } from '@unicornlove/beyond-ui';
+import { Row, Button } from '@scaffald/ui';
 
 interface OnboardingNavigationProps {
   currentStep: number;

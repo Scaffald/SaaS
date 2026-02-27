@@ -1,19 +1,25 @@
-import { api } from '@scf/core/utils/api';
-import { useWorkLogLocation } from '@scf/core/utils/location/useWorkLogLocation';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useNetInfo } from '@react-native-community/netinfo';
-import { useToastController } from '@tamagui/toast';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useFieldArray, useForm, useWatch } from 'react-hook-form';
+import {
+  useWorkLogProjectOptions,
+  useCreateWorkLogMutation,
+  useUpdateWorkLogMutation,
+} from "@scf/core/utils/work-logs-sdk-hooks";
+import type { CreateWorkLogParams, UpdateWorkLogParams } from "@scaffald/sdk";
+import { useUserSkills } from "@scf/core/utils/profile-skills-sdk-hooks";
+import { useWorkLogLocation } from "@scf/core/utils/location/useWorkLogLocation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useNetInfo } from "@react-native-community/netinfo";
+import { useToast } from "@scaffald/ui";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 
 import {
   type CreateWorkLogInput,
   createWorkLogSchema,
   hasTimeEntriesOverlap,
   type UpdateWorkLogInput,
-} from '@scf/schemas';
-import type { OfflineWorkLog } from '../types/offline';
-import { useOfflineWorkLogs } from './useOfflineWorkLogs';
+} from "@scf/schemas";
+import type { OfflineWorkLog } from "../types/offline";
+import { useOfflineWorkLogs } from "./useOfflineWorkLogs";
 
 const DEFAULT_TIME_ENTRY = {
   start: "",
@@ -28,7 +34,7 @@ const formatDateToISO = (date: Date): string => {
 };
 
 const calculateTotalHours = (
-  entries: Array<{ start: string; end: string }>,
+  entries: Array<{ start: string; end: string }>
 ): number => {
   return entries.reduce((total, entry) => {
     const [startHour, startMinute] = entry.start.split(":").map(Number);
@@ -55,7 +61,7 @@ const calculateTotalHours = (
 };
 
 const buildUpdatePayloadFromCreate = (
-  input: CreateWorkLogInput,
+  input: CreateWorkLogInput
 ): UpdateWorkLogInput["payload"] => {
   return {
     entryType: input.entryType,
@@ -70,6 +76,59 @@ const buildUpdatePayloadFromCreate = (
     gpsCapture: input.gpsCapture,
   };
 };
+
+/** Convert schema CreateWorkLogInput to SDK CreateWorkLogParams for API calls. */
+const toSdkCreateParams = (input: CreateWorkLogInput): CreateWorkLogParams => ({
+  projectId: input.projectId || undefined,
+  entryType: "single_day",
+  logDate: input.logDate,
+  timeEntries: input.timeEntries.map((e) => ({
+    start_time: e.start,
+    end_time: e.end,
+  })),
+  workDescription: input.workDescription,
+  tasksCompleted: input.tasksCompleted,
+  skillsUsed: input.skillsUsed,
+  visibility: input.visibility as CreateWorkLogParams["visibility"],
+  showOnProfile: input.showOnProfile,
+  showDateRangeOnProfile: input.showDateRangeOnProfile,
+  gpsLatitude: input.gpsCapture?.latitude ?? undefined,
+  gpsLongitude: input.gpsCapture?.longitude ?? undefined,
+  gpsAccuracyMeters: input.gpsCapture?.accuracyMeters ?? undefined,
+  gpsCapturedAt: input.gpsCapture?.capturedAt ?? undefined,
+  deviceType: (input.gpsCapture?.deviceType ??
+    undefined) as CreateWorkLogParams["deviceType"],
+  locationPermissionStatus: (input.gpsCapture?.permissionStatus ??
+    undefined) as CreateWorkLogParams["locationPermissionStatus"],
+});
+
+/** Convert schema types to SDK UpdateWorkLogParams for API calls. */
+const toSdkUpdateParams = (
+  workLogId: string,
+  input: CreateWorkLogInput
+): UpdateWorkLogParams => ({
+  workLogId,
+  entryType: "single_day",
+  logDate: input.logDate,
+  timeEntries: input.timeEntries.map((e) => ({
+    start_time: e.start,
+    end_time: e.end,
+  })),
+  workDescription: input.workDescription,
+  tasksCompleted: input.tasksCompleted,
+  skillsUsed: input.skillsUsed,
+  visibility: input.visibility as UpdateWorkLogParams["visibility"],
+  showOnProfile: input.showOnProfile,
+  showDateRangeOnProfile: input.showDateRangeOnProfile,
+  gpsLatitude: input.gpsCapture?.latitude ?? undefined,
+  gpsLongitude: input.gpsCapture?.longitude ?? undefined,
+  gpsAccuracyMeters: input.gpsCapture?.accuracyMeters ?? undefined,
+  gpsCapturedAt: input.gpsCapture?.capturedAt ?? undefined,
+  deviceType: (input.gpsCapture?.deviceType ??
+    undefined) as UpdateWorkLogParams["deviceType"],
+  locationPermissionStatus: (input.gpsCapture?.permissionStatus ??
+    undefined) as UpdateWorkLogParams["locationPermissionStatus"],
+});
 
 export interface UseWorkLogFormOptions {
   /**
@@ -112,12 +171,10 @@ export interface UseWorkLogFormReturn {
   workLogId: string | null;
   location: ReturnType<typeof useWorkLogLocation>;
   captureLocation: () => Promise<void>;
-  projectOptionsQuery: ReturnType<
-    typeof api.workLogs.getProjectOptions.useQuery
-  >;
+  projectOptionsQuery: ReturnType<typeof useWorkLogProjectOptions>;
   organizationFilter: string | null;
   setOrganizationFilter: (organizationId: string | null) => void;
-  skillsQuery: ReturnType<typeof api.profile.skills.getUserSkills.useQuery>;
+  skillsQuery: ReturnType<typeof useUserSkills>;
   pendingOfflineDraft: OfflineWorkLog | null;
 }
 
@@ -127,10 +184,10 @@ export const useWorkLogForm = ({
   autoSaveEnabled = true,
   onSubmitSuccess,
 }: UseWorkLogFormOptions = {}): UseWorkLogFormReturn => {
-  const toast = useToastController();
+  const toast = useToast();
   const netInfo = useNetInfo();
-  const isOnline = netInfo.isConnected !== false &&
-    netInfo.isInternetReachable !== false;
+  const isOnline =
+    netInfo.isConnected !== false && netInfo.isInternetReachable !== false;
 
   const [workLogId, setWorkLogId] = useState<string | null>(initialWorkLogId);
   const [offlineDraftId, setOfflineDraftId] = useState<string | null>(null);
@@ -138,7 +195,7 @@ export const useWorkLogForm = ({
     state: "idle",
   });
   const [organizationFilter, setOrganizationFilter] = useState<string | null>(
-    null,
+    null
   );
 
   const lastSavedPayloadRef = useRef<CreateWorkLogInput | null>(null);
@@ -187,14 +244,14 @@ export const useWorkLogForm = ({
     () =>
       (watchedValues.timeEntries ?? []).filter(
         (entry): entry is { start: string; end: string } =>
-          typeof entry?.start === "string" && typeof entry?.end === "string",
+          typeof entry?.start === "string" && typeof entry?.end === "string"
       ),
-    [watchedValues.timeEntries],
+    [watchedValues.timeEntries]
   );
 
   const totalHours = useMemo(
     () => calculateTotalHours(sanitizedTimeEntries),
-    [sanitizedTimeEntries],
+    [sanitizedTimeEntries]
   );
 
   const overlapDetected = useMemo(() => {
@@ -204,14 +261,14 @@ export const useWorkLogForm = ({
     return hasTimeEntriesOverlap(sanitizedTimeEntries);
   }, [sanitizedTimeEntries]);
 
-  const projectOptionsQuery = api.workLogs.getProjectOptions.useQuery(
+  const projectOptionsQuery = useWorkLogProjectOptions(
     organizationFilter ? { organizationId: organizationFilter } : undefined,
     {
       staleTime: 30_000,
-    },
+    }
   );
 
-  const skillsQuery = api.profile.skills.getUserSkills.useQuery(undefined, {
+  const skillsQuery = useUserSkills({
     staleTime: 60 * 1000,
   });
 
@@ -237,7 +294,8 @@ export const useWorkLogForm = ({
     if (!parseResult.success) {
       setAutoSaveStatus({
         state: "invalid",
-        message: parseResult.error.issues[0]?.message ??
+        message:
+          parseResult.error.issues[0]?.message ??
           "Please complete the required fields.",
       });
       return null;
@@ -245,11 +303,12 @@ export const useWorkLogForm = ({
     return parseResult.data;
   }, [form]);
 
-  const createWorkLogMutation = api.workLogs.create.useMutation({
+  const createWorkLogMutation = useCreateWorkLogMutation({
     onError: (error) => {
-      const message = error instanceof Error
-        ? error.message
-        : 'Failed to save work log draft.';
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to save work log draft.";
       setAutoSaveStatus({
         state: "error",
         message,
@@ -257,11 +316,12 @@ export const useWorkLogForm = ({
     },
   });
 
-  const updateWorkLogMutation = api.workLogs.update.useMutation({
+  const updateWorkLogMutation = useUpdateWorkLogMutation({
     onError: (error) => {
-      const message = error instanceof Error
-        ? error.message
-        : 'Failed to update work log draft.';
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to update work log draft.";
       setAutoSaveStatus({
         state: "error",
         message,
@@ -290,16 +350,16 @@ export const useWorkLogForm = ({
         if (!isOnline) {
           const offlinePayload = workLogId
             ? {
-              kind: "update" as const,
-              input: {
-                workLogId,
-                payload: buildUpdatePayloadFromCreate(payload),
-              },
-            }
+                kind: "update" as const,
+                input: {
+                  workLogId,
+                  payload: buildUpdatePayloadFromCreate(payload),
+                },
+              }
             : {
-              kind: "create" as const,
-              input: payload,
-            };
+                kind: "create" as const,
+                input: payload,
+              };
 
           if (offlineDraftId) {
             await mutateOfflineWorkLog(offlineDraftId, (current) => ({
@@ -328,15 +388,16 @@ export const useWorkLogForm = ({
         }
 
         if (!workLogId) {
-          const created = await createWorkLogMutation.mutateAsync(payload);
+          const created = await createWorkLogMutation.mutateAsync(
+            toSdkCreateParams(payload)
+          );
           if (created?.id) {
             setWorkLogId(created.id);
           }
         } else {
-          await updateWorkLogMutation.mutateAsync({
-            workLogId,
-            payload: buildUpdatePayloadFromCreate(payload),
-          });
+          await updateWorkLogMutation.mutateAsync(
+            toSdkUpdateParams(workLogId, payload)
+          );
         }
 
         const savedAt = new Date().toISOString();
@@ -347,9 +408,10 @@ export const useWorkLogForm = ({
         });
         lastSavedPayloadRef.current = payload;
       } catch (error) {
-        const message = error instanceof Error
-          ? error.message
-          : 'Failed to auto-save work log.';
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Failed to auto-save work log.";
         setAutoSaveStatus({ state: "error", message });
 
         if (!isOnline && payload) {
@@ -357,16 +419,16 @@ export const useWorkLogForm = ({
           try {
             const offlinePayload = workLogId
               ? {
-                kind: "update" as const,
-                input: {
-                  workLogId,
-                  payload: buildUpdatePayloadFromCreate(payload),
-                },
-              }
+                  kind: "update" as const,
+                  input: {
+                    workLogId,
+                    payload: buildUpdatePayloadFromCreate(payload),
+                  },
+                }
               : {
-                kind: "create" as const,
-                input: payload,
-              };
+                  kind: "create" as const,
+                  input: payload,
+                };
 
             const draft = await queueWorkLog({
               payload: offlinePayload,
@@ -376,7 +438,7 @@ export const useWorkLogForm = ({
           } catch (queueError) {
             console.error(
               "[useWorkLogForm] Unable to queue offline draft",
-              queueError,
+              queueError
             );
           }
         }
@@ -393,7 +455,7 @@ export const useWorkLogForm = ({
       queueWorkLog,
       mutateOfflineWorkLog,
       markWorkLogForSync,
-    ],
+    ]
   );
 
   useEffect(() => {
@@ -440,20 +502,23 @@ export const useWorkLogForm = ({
       }
       timeEntriesArray.remove(index);
     },
-    [timeEntriesArray],
+    [timeEntriesArray]
   );
 
   const submitHandler = handleSubmit(async (values) => {
     const payload = createWorkLogSchema.safeParse(values);
     if (!payload.success) {
-      toast.show("Unable to submit", {
-        message: payload.error.issues[0]?.message ??
+      toast.show({
+        title: "Unable to submit",
+        message:
+          payload.error.issues[0]?.message ??
           "Please resolve validation errors and try again.",
-        type: "error",
+        variant: "error",
       });
       setAutoSaveStatus({
         state: "invalid",
-        message: payload.error.issues[0]?.message ??
+        message:
+          payload.error.issues[0]?.message ??
           "Please resolve validation errors and try again.",
       });
       return;
@@ -463,16 +528,16 @@ export const useWorkLogForm = ({
       if (!isOnline) {
         const offlinePayload = workLogId
           ? {
-            kind: "update" as const,
-            input: {
-              workLogId,
-              payload: buildUpdatePayloadFromCreate(payload.data),
-            },
-          }
+              kind: "update" as const,
+              input: {
+                workLogId,
+                payload: buildUpdatePayloadFromCreate(payload.data),
+              },
+            }
           : {
-            kind: "create" as const,
-            input: payload.data,
-          };
+              kind: "create" as const,
+              input: payload.data,
+            };
 
         const draft = await queueWorkLog({
           payload: offlinePayload,
@@ -480,43 +545,46 @@ export const useWorkLogForm = ({
         });
         setOfflineDraftId(draft.id);
 
-        toast.show('Saved offline', {
+        toast.show({
+          title: "Saved offline",
           message:
             "You're offline. We'll sync the work log when you're back online.",
-          type: 'info',
+          variant: "info",
         });
         return;
       }
 
       let currentId = workLogId;
       if (!currentId) {
-        const created = await createWorkLogMutation.mutateAsync(payload.data);
+        const created = await createWorkLogMutation.mutateAsync(
+          toSdkCreateParams(payload.data)
+        );
         currentId = created?.id ?? null;
         if (created?.id) {
           setWorkLogId(created.id);
         }
       } else {
-        await updateWorkLogMutation.mutateAsync({
-          workLogId: currentId,
-          payload: buildUpdatePayloadFromCreate(payload.data),
-        });
+        await updateWorkLogMutation.mutateAsync(
+          toSdkUpdateParams(currentId, payload.data)
+        );
       }
 
       if (currentId) {
         onSubmitSuccess?.(currentId);
       }
 
-      toast.show("Work Log Saved", {
+      toast.show({
+        title: "Work Log Saved",
         message: "Your work log draft has been saved successfully.",
-        type: "success",
+        variant: "success",
       });
     } catch (error) {
-      const message = error instanceof Error
-        ? error.message
-        : 'Failed to save work log.';
-      toast.show("Save Failed", {
+      const message =
+        error instanceof Error ? error.message : "Failed to save work log.";
+      toast.show({
+        title: "Save Failed",
         message,
-        type: "error",
+        variant: "error",
       });
       setAutoSaveStatus({
         state: "error",
@@ -530,9 +598,10 @@ export const useWorkLogForm = ({
   const captureLocation = useCallback(async () => {
     const result = await location.requestLocation();
     if (!result) {
-      toast.show("Location", {
+      toast.show({
+        title: "Location",
         message: "Unable to capture location. Check permissions and try again.",
-        type: "error",
+        variant: "error",
       });
       return;
     }

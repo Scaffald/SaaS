@@ -1,13 +1,13 @@
 /**
  * Header - Application header component using Beyond UI
- * Migrated from Tamagui to Beyond UI
+
  */
-import React from 'react';
-import { Row, Button } from '@unicornlove/beyond-ui';
-import { useAuth } from '../../contexts/AuthContext';
+import React from 'react'
+import { Row, Button } from '@scaffald/ui'
+import { useAuth } from '../../contexts/AuthContext'
 
 export default function Header() {
-  const { logout } = useAuth();
+  const { logout } = useAuth()
 
   return (
     <Row
@@ -29,5 +29,5 @@ export default function Header() {
         Logout
       </Button>
     </Row>
-  );
+  )
 }

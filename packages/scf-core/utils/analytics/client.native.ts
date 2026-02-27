@@ -1,22 +1,23 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import PostHog, {
   type PostHogCustomStorage,
   type PostHogOptions,
-} from 'posthog-react-native';
+} from "posthog-react-native";
+import type { PostHogEventProperties } from "@posthog/core";
 import {
   APP_ENV,
   CHANNEL,
   isAllowedEnvironment,
   POSTHOG_HOST,
   POSTHOG_KEY,
-} from './config';
+} from "./config";
 import {
   type AnalyticsEventName,
   type AnalyticsEventProperties,
   validateEventProperties,
-} from './events';
-import type { EventProperties, InitAnalyticsOptions } from './types';
-import { buildSuperProperties, isAnalyticsAvailable } from './utils';
+} from "./events";
+import type { EventProperties, InitAnalyticsOptions } from "./types";
+import { buildSuperProperties, isAnalyticsAvailable } from "./utils";
 
 const CUSTOM_STORAGE: PostHogCustomStorage = {
   getItem: AsyncStorage.getItem,
@@ -28,11 +29,22 @@ let lastDebugFlag = false;
 
 export { isAnalyticsAvailable };
 export const analyticsEnv = APP_ENV;
-export const getAnalyticsClient = () => client;
+
+// Type for the client with guaranteed getDistinctId method
+type WrappedPostHogClient = PostHog & {
+  getDistinctId: () => string;
+};
+
+export const getAnalyticsClient = (): WrappedPostHogClient | null => {
+  if (!client) return null;
+
+  // Ensure getDistinctId is available (it should already be on the native client)
+  return client as WrappedPostHogClient;
+};
+
 export const isAnalyticsInitialized = () => Boolean(client);
 
 type RegisterProperties = Parameters<PostHog["register"]>[0];
-type ResetKeepKeys = Parameters<PostHog["reset"]>[0];
 
 const applyDebugFlag = (instance: PostHog, debug: boolean) => {
   if (debug !== lastDebugFlag) {
@@ -49,9 +61,10 @@ const toggleConsentState = async (instance: PostHog, shouldOptIn: boolean) => {
   }
 };
 
-export async function initAnalytics(
-  { hasConsent, debug = __DEV__ }: InitAnalyticsOptions,
-) {
+export async function initAnalytics({
+  hasConsent,
+  debug = __DEV__,
+}: InitAnalyticsOptions) {
   if (client) {
     applyDebugFlag(client, debug);
     await toggleConsentState(client, hasConsent);
@@ -71,7 +84,7 @@ export async function initAnalytics(
       isAllowedEnvironment,
     });
     console.warn(
-      "[analytics] PostHog key or host not configured; analytics disabled.",
+      "[analytics] PostHog key or host not configured; analytics disabled."
     );
     return;
   }
@@ -84,7 +97,7 @@ export async function initAnalytics(
     });
     if (debug) {
       console.info(
-        `[analytics] Skipping PostHog init for env=${APP_ENV}, channel=${CHANNEL}, dev=${__DEV__} (environment not allowed)`,
+        `[analytics] Skipping PostHog init for env=${APP_ENV}, channel=${CHANNEL}, dev=${__DEV__} (environment not allowed)`
       );
     }
     return;
@@ -95,7 +108,7 @@ export async function initAnalytics(
     flushAt: 20,
     flushInterval: 30_000,
     disableGeoip: true,
-    captureNativeAppLifecycleEvents: true,
+    captureAppLifecycleEvents: true,
     defaultOptIn: false,
     customStorage: CUSTOM_STORAGE,
   };
@@ -119,7 +132,7 @@ const hasActiveClient = () => Boolean(client && !client.optedOut);
 
 export const identify = (userId: string, properties?: EventProperties) => {
   if (!hasActiveClient() || !client) return;
-  client.identify(userId, properties);
+  client.identify(userId, properties as PostHogEventProperties | undefined);
 };
 
 export const alias = (aliasId: string) => {
@@ -129,12 +142,12 @@ export const alias = (aliasId: string) => {
 
 export const capture = (event: string, properties?: EventProperties) => {
   if (!hasActiveClient() || !client) return;
-  client.capture(event, properties);
+  client.capture(event, properties as PostHogEventProperties | undefined);
 };
 
 export const captureEvent = <TName extends AnalyticsEventName>(
   event: TName,
-  properties: AnalyticsEventProperties<TName>,
+  properties: AnalyticsEventProperties<TName>
 ) => {
   if (!hasActiveClient() || !client) {
     console.log("[analytics debug] capture aborted", {
@@ -152,7 +165,7 @@ export const captureEvent = <TName extends AnalyticsEventName>(
     console.warn(
       "[analytics] Invalid event payload",
       event,
-      validation.error.flatten(),
+      validation.error.flatten()
     );
     return false;
   }
@@ -167,12 +180,12 @@ export const captureEvent = <TName extends AnalyticsEventName>(
 
 export const screen = (name: string, properties?: EventProperties) => {
   if (!hasActiveClient() || !client) return;
-  client.screen(name, properties);
+  client.screen(name, properties as PostHogEventProperties | undefined);
 };
 
-export const reset = (propertiesToKeep?: ResetKeepKeys) => {
+export const reset = () => {
   if (!client) return;
-  client.reset(propertiesToKeep);
+  client.reset();
 };
 
 export const flush = async () => {

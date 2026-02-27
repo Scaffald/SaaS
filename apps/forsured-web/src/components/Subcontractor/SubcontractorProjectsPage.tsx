@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Building, Briefcase, CheckCircle, Clock, AlertCircle, Loader2 } from 'lucide-react'
-import { Stack, Row, Text, Card, H1, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Card, H1, Grid } from '@scaffald/ui'
 import ProjectCard from '../Shared/ProjectCard'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase, getUserOrganizationId } from '../../lib/supabase'

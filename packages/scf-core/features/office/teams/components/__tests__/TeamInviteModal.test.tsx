@@ -21,11 +21,11 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@tamagui/toast', () => ({
-  useToastController: () => ({ show: mockShow }),
+vi.mock('@scaffald/ui', () => ({
+  useToast: () => ({ show: mockShow }),
 }))
 
-vi.mock('@unicornlove/ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   ResponsiveModal: ({
     open,
     children,
@@ -79,7 +79,7 @@ vi.mock('@scf/core/components/user', () => ({
   ),
 }))
 
-vi.mock('tamagui', () => {
+vi.mock('@scaffald/ui', () => {
   const Stack = ({ children, testID }: { children?: ReactNode; testID?: string }) => (
     <div data-testid={testID}>{children}</div>
   )
@@ -176,8 +176,8 @@ vi.mock('tamagui', () => {
 
   return {
     Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Text,
     Button,
     Input,
@@ -189,7 +189,7 @@ vi.mock('tamagui', () => {
   }
 })
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Check: () => <span data-testid="check-icon">Check</span>,
   ChevronDown: () => <span data-testid="chevron-down-icon">ChevronDown</span>,
   Mail: () => <span data-testid="mail-icon">Mail</span>,

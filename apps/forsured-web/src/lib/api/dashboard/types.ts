@@ -1,5 +1,5 @@
 /**
- * REQ-129: Manager Dashboard - Type Definitions
+ * Manager Dashboard - Type Definitions
  * Dashboard-specific types for real-time compliance metrics
  */
 
@@ -202,7 +202,7 @@ export interface DashboardUpdate {
 }
 
 // =============================================================================
-// REQ-266: Task Severity and Risk Distribution Types
+// Task Severity and Risk Distribution Types
 // =============================================================================
 
 import { TaskSeverity } from '../../../types';
@@ -212,7 +212,7 @@ import { TaskSeverity } from '../../../types';
  * Extends TaskSummary with severity-based metrics
  */
 export interface TaskSeveritySummary extends TaskSummary {
-  // REQ-266: Severity breakdown
+  // Severity breakdown
   severity_counts: Record<TaskSeverity, number>;
   severity_summary: string;
   urgent_severity_count: number; // critical + high

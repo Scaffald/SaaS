@@ -3,9 +3,23 @@ import { formatDateRange } from '@scf/core/features/profile/utils/date-formattin
 import { useConnectionStatus } from '@scf/core/features/user-profile/hooks/useConnectionStatus'
 import { useFollowStatus } from '@scf/core/features/user-profile/hooks/useFollowStatus'
 import { useAuth } from '@scf/core/provider/auth/useAuth'
-import { api } from '@scf/core/utils/api'
+import {
+  useSendConnectionMutation,
+  useAcceptConnectionMutation,
+  useDeclineConnectionMutation,
+  useFollowUserMutation,
+  useUnfollowUserMutation,
+} from '@scf/core/utils/engagement-sdk-hooks'
+import {
+  useUserProfile,
+  useUserSkills,
+  useUserCertifications,
+  useUserExperience,
+  useUserEducation,
+} from '@scf/core/utils/user-profiles-sdk-hooks'
 import { useAdaptiveLoading } from '@scf/core/utils/useAdaptiveLoading'
-import { ResponsiveModal } from '@unicornlove/ui'
+import { useQueryClient } from '@tanstack/react-query'
+import { ResponsiveModal } from '@scaffald/ui'
 import {
   Award,
   BadgeCheck,
@@ -22,11 +36,12 @@ import {
   UserMinus,
   UserPlus,
   X,
-} from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+} from 'lucide-react-native'
+import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Button, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Image as RNImage } from 'react-native'
+import { Button, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 interface WorkerPreviewModalProps {
   userId: string | null
@@ -38,6 +53,7 @@ interface WorkerPreviewModalProps {
  * Enriched skill from API response
  * Based on EnrichedUserSkill from skill-enrichment
  */
+// biome-ignore lint/correctness/noUnusedVariables: type documentation
 type EnrichedSkill = {
   id: string
   name: string
@@ -50,6 +66,7 @@ type EnrichedSkill = {
 /**
  * Certification from API response
  */
+// biome-ignore lint/correctness/noUnusedVariables: type documentation
 type Certification = {
   id: string
   name: string
@@ -61,6 +78,7 @@ type Certification = {
 /**
  * Experience entry from API response
  */
+// biome-ignore lint/correctness/noUnusedVariables: type documentation
 type ExperienceEntry = {
   id: string
   job_title: string
@@ -74,6 +92,7 @@ type ExperienceEntry = {
 /**
  * Education entry from API response
  */
+// biome-ignore lint/correctness/noUnusedVariables: type documentation
 type EducationEntry = {
   id: string
   degree_type?: string | null
@@ -88,10 +107,10 @@ type EducationEntry = {
  */
 export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreviewModalProps) {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
   const { session } = useAuth()
   const currentUserId = session?.user?.id
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   // Check if viewing own profile
   const isOwnProfile = currentUserId === userId
@@ -101,89 +120,103 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
   const followStatus = useFollowStatus(isOwnProfile || !open ? null : userId)
 
   // Connection mutations
-  const sendRequestMutation = api.connections.sendRequest.useMutation({
+  const sendRequestMutation = useSendConnectionMutation({
     onMutate: async () => {
-      await utils.connections.getConnections.cancel()
-      await utils.connections.getPendingRequests.cancel()
+      await queryClient.cancelQueries({ queryKey: ['connections', 'list'] })
+      await queryClient.cancelQueries({ queryKey: ['connections', 'pending'] })
     },
     onSuccess: () => {
-      utils.connections.getConnections.invalidate()
-      utils.connections.getPendingRequests.invalidate()
-      toast.show('Connection request sent', {
+      queryClient.invalidateQueries({ queryKey: ['connections', 'list'] })
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
+      toast.show({
+        title: 'Connection request sent',
         message: 'Your connection request has been sent.',
       })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to send request', {
+      toast.show({
+        title: 'Unable to send request',
         message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
       })
     },
   })
 
-  const acceptRequestMutation = api.connections.acceptRequest.useMutation({
+  const acceptRequestMutation = useAcceptConnectionMutation({
     onMutate: async () => {
-      await utils.connections.getConnections.cancel()
-      await utils.connections.getPendingRequests.cancel()
+      await queryClient.cancelQueries({ queryKey: ['connections', 'list'] })
+      await queryClient.cancelQueries({ queryKey: ['connections', 'pending'] })
     },
     onSuccess: () => {
-      utils.connections.getConnections.invalidate()
-      utils.connections.getPendingRequests.invalidate()
-      toast.show('Connection accepted', {
+      queryClient.invalidateQueries({ queryKey: ['connections', 'list'] })
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
+      toast.show({
+        title: 'Connection accepted',
         message: 'You are now connected.',
       })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to accept request', {
+      toast.show({
+        title: 'Unable to accept request',
         message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
       })
     },
   })
 
-  const declineRequestMutation = api.connections.declineRequest.useMutation({
+  const declineRequestMutation = useDeclineConnectionMutation({
     onMutate: async () => {
-      await utils.connections.getPendingRequests.cancel()
+      await queryClient.cancelQueries({ queryKey: ['connections', 'pending'] })
     },
     onSuccess: () => {
-      utils.connections.getPendingRequests.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to decline request', {
+      toast.show({
+        title: 'Unable to decline request',
         message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
       })
     },
   })
 
   // Follow mutations
-  const followMutation = api.follows.followUser.useMutation({
+  const followMutation = useFollowUserMutation({
     onMutate: async () => {
-      await utils.follows.getFollowing.cancel()
+      await queryClient.cancelQueries({ queryKey: ['follows', 'following'] })
     },
     onSuccess: () => {
-      utils.follows.getFollowing.invalidate()
-      toast.show('Following', {
+      queryClient.invalidateQueries({ queryKey: ['follows', 'following'] })
+      toast.show({
+        title: 'Following',
         message: 'You are now following this user.',
       })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to follow', {
+      toast.show({
+        title: 'Unable to follow',
         message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
       })
     },
   })
 
-  const unfollowMutation = api.follows.unfollowUser.useMutation({
+  const unfollowMutation = useUnfollowUserMutation({
     onMutate: async () => {
-      await utils.follows.getFollowing.cancel()
+      await queryClient.cancelQueries({ queryKey: ['follows', 'following'] })
     },
     onSuccess: () => {
-      utils.follows.getFollowing.invalidate()
-      toast.show('Unfollowed', {
+      queryClient.invalidateQueries({ queryKey: ['follows', 'following'] })
+      toast.show({
+        title: 'Unfollowed',
         message: 'You are no longer following this user.',
       })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Unable to unfollow', {
+      toast.show({
+        title: 'Unable to unfollow',
         message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
       })
     },
   })
@@ -197,13 +230,13 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
 
   const handleAccept = () => {
     if (connectionStatus.connectionId) {
-      acceptRequestMutation.mutate({ connectionId: connectionStatus.connectionId })
+      acceptRequestMutation.mutate(connectionStatus.connectionId)
     }
   }
 
   const handleDecline = () => {
     if (connectionStatus.connectionId) {
-      declineRequestMutation.mutate({ connectionId: connectionStatus.connectionId })
+      declineRequestMutation.mutate(connectionStatus.connectionId)
     }
   }
 
@@ -216,7 +249,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
 
   const handleUnfollow = () => {
     if (userId) {
-      unfollowMutation.mutate({ targetUserId: userId })
+      unfollowMutation.mutate(userId)
     }
   }
 
@@ -249,38 +282,32 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
 
   const isFollowMutating = followMutation.isPending || unfollowMutation.isPending
 
+  const uid = userId ?? undefined
+
   // Fetch worker profile data
-  const { data: profile, isLoading: profileLoading } = api.userProfile.getUserProfile.useQuery(
-    { userId: userId || '' },
-    { enabled: !!userId && open }
-  )
+  const { data: profile, isLoading: profileLoading } = useUserProfile(uid, {
+    enabled: open,
+  })
 
   // Fetch top skills
-  const { data: skills = [], isLoading: skillsLoading } = api.userProfile.getUserSkills.useQuery(
-    { userId: userId || '' },
-    { enabled: !!userId && open }
-  )
+  const { data: skills = [], isLoading: skillsLoading } = useUserSkills(uid, {
+    enabled: open,
+  })
 
   // Fetch certifications
-  const { data: certifications = [], isLoading: certsLoading } =
-    api.userProfile.getUserCertifications.useQuery(
-      { userId: userId || '' },
-      { enabled: !!userId && open }
-    )
+  const { data: certifications = [], isLoading: certsLoading } = useUserCertifications(uid, {
+    enabled: open,
+  })
 
   // Fetch work experience
-  const { data: experience = [], isLoading: experienceLoading } =
-    api.userProfile.getUserExperience.useQuery(
-      { userId: userId || '' },
-      { enabled: !!userId && open }
-    )
+  const { data: experience = [], isLoading: experienceLoading } = useUserExperience(uid, {
+    enabled: open,
+  })
 
   // Fetch education
-  const { data: education = [], isLoading: educationLoading } =
-    api.userProfile.getUserEducation.useQuery(
-      { userId: userId || '' },
-      { enabled: !!userId && open }
-    )
+  const { data: education = [], isLoading: educationLoading } = useUserEducation(uid, {
+    enabled: open,
+  })
 
   const isLoading =
     profileLoading || skillsLoading || certsLoading || experienceLoading || educationLoading
@@ -294,8 +321,10 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
       onOpenChange(false)
     } catch (navigationError) {
       console.error('Failed to navigate to worker profile', navigationError)
-      toast.show('Unable to load profile', {
+      toast.show({
+        title: 'Unable to load profile',
         message: 'Please try again.',
+        variant: 'error',
       })
     }
   }
@@ -330,152 +359,132 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
       open={open}
       onOpenChange={onOpenChange}
       title={profile?.name || 'Worker Profile'}
-      size="medium"
+      size="md"
     >
       {showLoading ? (
-        <YStack paddingVertical="$8" alignItems="center" justifyContent="center">
-          <Spinner size="large" color="$blue10" />
-          <Text marginTop="$4" color="$color11">
+        <Stack paddingVertical={32} align="center" justify="center">
+          <Spinner size="lg" color="primary" />
+          <Text style={{ marginTop: 16 }} color="secondary">
             Loading profile...
           </Text>
-        </YStack>
+        </Stack>
       ) : isLoading ? null : !profile ? (
-        <YStack paddingVertical="$8" alignItems="center">
-          <Text color="$red10" fontSize="$5" fontWeight="600">
-            Profile not found
-          </Text>
-        </YStack>
+        <Stack paddingVertical={32} align="center">
+          <Text color="error">Profile not found</Text>
+        </Stack>
       ) : (
         <>
           {/* Profile Header */}
-          <YStack gap="$2" alignItems="center">
+          <Stack gap={8} align="center">
             {profile.avatar_url ? (
-              <YStack
+              <Stack
                 width={96}
                 height={96}
-                borderRadius="$10"
-                overflow="hidden"
+                borderRadius={10}
                 backgroundColor="$color3"
+                style={{ overflow: 'hidden' }}
               >
-                <img
-                  src={profile.avatar_url}
-                  alt={profile.name || 'Worker'}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                <RNImage
+                  source={{ uri: profile.avatar_url }}
+                  style={{ width: 96, height: 96 }}
+                  resizeMode="cover"
+                  accessibilityLabel={profile.name || 'Worker'}
                 />
-              </YStack>
+              </Stack>
             ) : (
-              <YStack
+              <Stack
                 width={96}
                 height={96}
-                borderRadius="$10"
+                borderRadius={10}
                 backgroundColor="$blue4"
-                alignItems="center"
-                justifyContent="center"
+                align="center"
+                justify="center"
               >
-                <User size={48} color="$blue10" />
-              </YStack>
+                <User size={48} color="#0ea5e9" />
+              </Stack>
             )}
 
-            <YStack gap="$2" alignItems="center">
-              <Text fontSize="$8" fontWeight="700" color="$color12">
-                {profile.name}
-              </Text>
-              {profile.headline && (
-                <Text fontSize="$5" color="$color11">
-                  {profile.headline}
-                </Text>
-              )}
-            </YStack>
+            <Stack gap={8} align="center">
+              <Text color="secondary">{profile.name}</Text>
+              {profile.headline && <Text color="secondary">{profile.headline}</Text>}
+            </Stack>
 
             {/* Scaffald Score Badge */}
             {profile.gamified_score !== null && (
-              <XStack
-                backgroundColor="$blue2"
-                paddingHorizontal="$4"
-                paddingVertical="$2"
-                borderRadius="$10"
-                gap="$2"
-                alignItems="center"
+              <Row
+                paddingHorizontal={16}
+                paddingVertical={8}
+                borderRadius={10}
+                gap={8}
+                align="center"
                 borderWidth={1}
-                borderColor="$blue5"
+                style={{ backgroundColor: 'var(--color-blue-2)', borderColor: 'var(--color-blue-5)' }}
               >
-                <Star size={20} color="$blue10" fill="$blue10" />
-                <Text fontSize="$6" fontWeight="700" color="$blue11">
-                  {profile.gamified_score}
-                </Text>
-                <Text fontSize="$3" color="$blue10">
-                  Scaffald Score
-                </Text>
-              </XStack>
+                <Star size={24} color="#0ea5e9" fill="#0ea5e9" />
+                <Text style={{ color: 'var(--color-blue-11)' }}>{profile.gamified_score}</Text>
+                <Text color="primary">Scaffald Score</Text>
+              </Row>
             )}
-          </YStack>
+          </Stack>
 
           <Separator />
 
           {/* Quick Info */}
-          <YStack gap="$2">
+          <Stack gap={8}>
             {profile.location && (
-              <XStack gap="$2" alignItems="center">
-                <MapPin size={18} color="$color10" />
-                <Text fontSize="$4" color="$color11">
-                  {profile.location}
-                </Text>
-              </XStack>
+              <Row gap={8} align="center">
+                <MapPin size={18} color="secondary" />
+                <Text color="secondary">{profile.location}</Text>
+              </Row>
             )}
 
             {profile.hourly_rate_cents && (
-              <XStack gap="$2" alignItems="center">
-                <DollarSign size={18} color="$color10" />
-                <Text fontSize="$4" color="$color11">
-                  {formatHourlyRate(profile.hourly_rate_cents)}
-                </Text>
-              </XStack>
+              <Row gap={8} align="center">
+                <DollarSign size={18} color="secondary" />
+                <Text color="secondary">{formatHourlyRate(profile.hourly_rate_cents)}</Text>
+              </Row>
             )}
 
             {resolveYearsOfExperience(
-              typeof profile?.calculatedYearsOfExperience === 'number'
-                ? profile.calculatedYearsOfExperience
-                : (profile.years_of_experience ?? null)
+              (profile as { calculatedYearsOfExperience?: number }).calculatedYearsOfExperience ??
+                profile.years_of_experience ??
+                null
             ) !== null && (
-              <XStack gap="$2" alignItems="center">
-                <Award size={18} color="$color10" />
-                <Text fontSize="$4" color="$color11">
+              <Row gap={8} align="center">
+                <Award size={18} color="#737373" />
+                <Text color="secondary">
                   {resolveYearsOfExperience(
-                    typeof profile?.calculatedYearsOfExperience === 'number'
-                      ? profile.calculatedYearsOfExperience
-                      : (profile.years_of_experience ?? null)
+                    (profile as { calculatedYearsOfExperience?: number }).calculatedYearsOfExperience ??
+                      profile.years_of_experience ??
+                      null
                   )}{' '}
                   years experience
                 </Text>
-              </XStack>
+              </Row>
             )}
 
             {profile.open_to_work && (
-              <XStack
-                backgroundColor="$green3"
-                paddingHorizontal="$3"
-                paddingVertical="$1.5"
-                borderRadius="$3"
+              <Row
+                paddingHorizontal={12}
+                paddingVertical={6}
+                borderRadius={12}
+                style={{ backgroundColor: 'var(--color-green-3)' }}
               >
-                <Text fontSize="$3" fontWeight="600" color="$green11">
-                  Available for Work
-                </Text>
-              </XStack>
+                <Text style={{ color: 'var(--color-green-11)' }}>Available for Work</Text>
+              </Row>
             )}
-          </YStack>
+          </Stack>
 
           {/* Bio */}
           {profile.bio && (
             <>
               <Separator />
-              <YStack gap="$2">
-                <Text fontSize="$5" fontWeight="600" color="$color12">
-                  About
-                </Text>
-                <Text fontSize="$4" color="$color11" lineHeight="$1" numberOfLines={4}>
+              <Stack gap={8}>
+                <Text color="secondary">About</Text>
+                <Text color="secondary" style={{ lineHeight: 24 }}>
                   {profile.bio}
                 </Text>
-              </YStack>
+              </Stack>
             </>
           )}
 
@@ -483,58 +492,54 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
           {topSkills.length > 0 && (
             <>
               <Separator />
-              <YStack gap="$2">
-                <XStack alignItems="center" gap="$2" justifyContent="space-between">
-                  <XStack alignItems="center" gap="$2">
-                    <Award size={18} color="$color12" />
-                    <Text fontSize="$5" fontWeight="600" color="$color12">
-                      Top Skills
-                    </Text>
-                  </XStack>
+              <Stack gap={8}>
+                <Row align="center" gap={8} justify="space-between">
+                  <Row align="center" gap={8}>
+                    <Award size={18} color="secondary" />
+                    <Text color="secondary">Top Skills</Text>
+                  </Row>
                   {skills.length > 10 && (
-                    <Button size="$2" variant="outlined" onPress={handleViewFullProfile}>
+                    <Button size="sm" variant="outline" onPress={handleViewFullProfile}>
                       View All ({skills.length})
                     </Button>
                   )}
-                </XStack>
-                <YStack gap="$2">
-                  {topSkills.map((skill: EnrichedSkill) => {
+                </Row>
+                <Stack gap={8}>
+                  {topSkills.map((skill) => {
                     const label =
-                      typeof skill.label === 'string'
-                        ? skill.label
-                        : skill.displayCode
-                          ? `${skill.displayCode} · ${skill.name}`
-                          : skill.name
+                      skill.skill_details?.name ??
+                      skill.skill_taxonomy
+                    const pct = skill.proficiency_level ?? 0
                     return (
-                      <XStack key={skill.id} justifyContent="space-between" alignItems="center">
-                        <Text fontSize="$4" color="$color11">
-                          {label}
-                        </Text>
-                        <XStack gap="$2" alignItems="center">
-                          <YStack
+                      <Row key={skill.id} justify="space-between" align="center">
+                        <Text color="secondary">{label}</Text>
+                        <Row gap={8} align="center">
+                          <Stack
                             width={100}
                             height={8}
                             backgroundColor="$color4"
-                            borderRadius="$2"
-                            overflow="hidden"
+                            borderRadius={8}
+                            style={{ overflow: 'hidden' }}
                           >
-                            <YStack
-                              width={`${skill.proficiency}%`}
-                              height="100%"
-                              backgroundColor="$blue10"
+                            <Stack
+                              flex={1}
+                              align="flex-start"
+                              style={{
+                                width: `${pct}%`,
+                                backgroundColor: 'var(--color-blue-10)',
+                                minHeight: 8,
+                              }}
                             />
-                          </YStack>
-                          <YStack minWidth={30}>
-                            <Text fontSize="$3" color="$color10">
-                              {skill.proficiency}%
-                            </Text>
-                          </YStack>
-                        </XStack>
-                      </XStack>
+                          </Stack>
+                          <Stack minWidth={30}>
+                            <Text color="secondary">{pct}%</Text>
+                          </Stack>
+                        </Row>
+                      </Row>
                     )
                   })}
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
             </>
           )}
 
@@ -542,35 +547,32 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
           {topCertifications.length > 0 && (
             <>
               <Separator />
-              <YStack gap="$2">
-                <XStack alignItems="center" gap="$2" justifyContent="space-between">
-                  <XStack alignItems="center" gap="$2">
-                    <BadgeCheck size={18} color="$color12" />
-                    <Text fontSize="$5" fontWeight="600" color="$color12">
-                      Certifications
-                    </Text>
-                  </XStack>
+              <Stack gap={8}>
+                <Row align="center" gap={8} justify="space-between">
+                  <Row align="center" gap={8}>
+                    <BadgeCheck size={18} color="secondary" />
+                    <Text color="secondary">Certifications</Text>
+                  </Row>
                   {certifications.length > 5 && (
-                    <Button size="$2" variant="outlined" onPress={handleViewFullProfile}>
+                    <Button size="sm" variant="outline" onPress={handleViewFullProfile}>
                       View All ({certifications.length})
                     </Button>
                   )}
-                </XStack>
-                <YStack gap="$2">
-                  {topCertifications.map((cert: Certification) => (
-                    <YStack key={cert.id} gap="$1">
-                      <Text fontSize="$4" fontWeight="600" color="$color12">
-                        {cert.name}
+                </Row>
+                <Stack gap={8}>
+                  {topCertifications.map((cert) => (
+                    <Stack key={cert.id} gap={4}>
+                      <Text color="secondary">{cert.certification?.name ?? 'Certification'}</Text>
+                      <Text color="secondary">
+                        {cert.certification?.issuing_organization ?? ''}
+                        {cert.issue_date
+                          ? ` • ${new Date(cert.issue_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}`
+                          : ''}
                       </Text>
-                      <Text fontSize="$3" color="$color10">
-                        {cert.issuing_organization}
-                        {cert.issue_date &&
-                          ` • ${new Date(cert.issue_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}`}
-                      </Text>
-                    </YStack>
+                    </Stack>
                   ))}
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
             </>
           )}
 
@@ -578,33 +580,31 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
           {recentExperience.length > 0 && (
             <>
               <Separator />
-              <YStack gap="$2">
-                <XStack alignItems="center" gap="$2" justifyContent="space-between">
-                  <XStack alignItems="center" gap="$2">
-                    <Briefcase size={18} color="$color12" />
-                    <Text fontSize="$5" fontWeight="600" color="$color12">
-                      Recent Experience
-                    </Text>
-                  </XStack>
+              <Stack gap={8}>
+                <Row align="center" gap={8} justify="space-between">
+                  <Row align="center" gap={8}>
+                    <Briefcase size={18} color="secondary" />
+                    <Text color="secondary">Recent Experience</Text>
+                  </Row>
                   {experience.length > 3 && (
-                    <Button size="$2" variant="outlined" onPress={handleViewFullProfile}>
+                    <Button size="sm" variant="outline" onPress={handleViewFullProfile}>
                       View All ({experience.length})
                     </Button>
                   )}
-                </XStack>
-                <YStack gap="$2">
-                  {recentExperience.map((exp: ExperienceEntry) => (
-                    <YStack key={exp.id} gap="$1">
-                      <Text fontSize="$4" fontWeight="600" color="$color12">
+                </Row>
+                <Stack gap={8}>
+                  {recentExperience.map((exp) => (
+                    <Stack key={exp.id} gap={4}>
+                      <Text color="secondary">
                         {exp.job_title} at {exp.company_name}
                       </Text>
-                      <Text fontSize="$3" color="$color10">
-                        {formatDateRange(exp.start_date, exp.end_date, exp.is_current ?? false)}
+                      <Text color="secondary">
+                        {formatDateRange(exp.start_date, exp.end_date ?? null, exp.is_current ?? false)}
                       </Text>
-                    </YStack>
+                    </Stack>
                   ))}
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
             </>
           )}
 
@@ -612,27 +612,27 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
           {topEducation.length > 0 && (
             <>
               <Separator />
-              <YStack gap="$2">
-                <XStack alignItems="center" gap="$2">
-                  <GraduationCap size={18} color="$color12" />
-                  <Text fontSize="$5" fontWeight="600" color="$color12">
-                    Education
-                  </Text>
-                </XStack>
-                <YStack gap="$2">
-                  {topEducation.map((edu: EducationEntry) => (
-                    <YStack key={edu.id} gap="$1">
-                      <Text fontSize="$4" fontWeight="600" color="$color12">
-                        {edu.degree_type} {edu.degree_name}
+              <Stack gap={8}>
+                <Row align="center" gap={8}>
+                  <GraduationCap size={18} color="#737373" />
+                  <Text color="secondary">Education</Text>
+                </Row>
+                <Stack gap={8}>
+                  {topEducation.map((edu) => (
+                    <Stack key={edu.id} gap={4}>
+                      <Text color="secondary">
+                        {[edu.degree, edu.field_of_study].filter(Boolean).join(' ') || 'Education'}
                       </Text>
-                      <Text fontSize="$3" color="$color10">
-                        {edu.university_name}
-                        {edu.graduation_year && ` • ${edu.graduation_year}`}
+                      <Text color="secondary">
+                        {edu.school_name}
+                        {edu.end_date
+                          ? ` • ${new Date(edu.end_date).toLocaleDateString('en-US', { year: 'numeric' })}`
+                          : ''}
                       </Text>
-                    </YStack>
+                    </Stack>
                   ))}
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
             </>
           )}
 
@@ -641,15 +641,15 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
           {/* Connect and Follow Buttons (only for other users' profiles) */}
           {!isOwnProfile && userId && (
             <>
-              <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+              <Row gap={8} wrap justify="center">
                 {/* Connect Button */}
                 {connectionButtonState && (
                   <>
                     {connectionButtonState.type === 'none' && (
                       <Button
-                        size="$4"
-                        theme="info"
-                        icon={isConnectionMutating ? Loader2 : UserPlus}
+                        size="md"
+                        color="primary"
+                        iconStart={isConnectionMutating ? Loader2 : UserPlus}
                         onPress={handleConnect}
                         disabled={isConnectionMutating}
                       >
@@ -658,7 +658,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                     )}
 
                     {connectionButtonState.type === 'pending_sent' && (
-                      <Button size="$4" variant="outlined" icon={Loader2} disabled>
+                      <Button size="md" variant="outline" iconStart={Loader2} disabled>
                         Pending
                       </Button>
                     )}
@@ -666,18 +666,18 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                     {connectionButtonState.type === 'pending_received' && (
                       <>
                         <Button
-                          size="$4"
-                          theme="info"
-                          icon={CheckCircle2}
+                          size="md"
+                          color="primary"
+                          iconStart={CheckCircle2}
                           onPress={handleAccept}
                           disabled={isConnectionMutating}
                         >
                           {isConnectionMutating ? 'Accepting...' : 'Accept'}
                         </Button>
                         <Button
-                          size="$4"
-                          variant="outlined"
-                          icon={X}
+                          size="md"
+                          variant="outline"
+                          iconStart={X}
                           onPress={handleDecline}
                           disabled={isConnectionMutating}
                         >
@@ -687,7 +687,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                     )}
 
                     {connectionButtonState.type === 'connected' && (
-                      <Button size="$4" variant="outlined" icon={UserCheck} disabled>
+                      <Button size="md" variant="outline" iconStart={UserCheck} disabled>
                         Connected
                       </Button>
                     )}
@@ -698,9 +698,9 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 {!followStatus.isLoading &&
                   (!followStatus.isFollowing ? (
                     <Button
-                      size="$4"
-                      variant="outlined"
-                      icon={isFollowMutating ? Loader2 : UserPlus}
+                      size="md"
+                      variant="outline"
+                      iconStart={isFollowMutating ? Loader2 : UserPlus}
                       onPress={handleFollow}
                       disabled={isFollowMutating}
                     >
@@ -708,42 +708,42 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                     </Button>
                   ) : (
                     <Button
-                      size="$4"
-                      variant="outlined"
-                      icon={isFollowMutating ? Loader2 : UserMinus}
+                      size="md"
+                      variant="outline"
+                      iconStart={isFollowMutating ? Loader2 : UserMinus}
                       onPress={handleUnfollow}
                       disabled={isFollowMutating}
                     >
                       {isFollowMutating ? 'Unfollowing...' : 'Following'}
                     </Button>
                   ))}
-              </XStack>
+              </Row>
               <Separator />
             </>
           )}
 
           {/* CTA Buttons */}
-          <YStack gap="$3">
+          <Stack gap={12}>
             {typeof window !== 'undefined' && (
               <Button
-                size="$5"
-                theme="blue"
-                variant="outlined"
-                iconAfter={<ExternalLink size={18} />}
+                size="lg"
+                color="primary"
+                variant="outline"
+                iconEnd={ExternalLink}
                 onPress={handleOpenInNewTab}
               >
                 Open in New Tab
               </Button>
             )}
             <Button
-              size="$5"
-              theme="info"
-              iconAfter={<ExternalLink size={18} />}
+              size="lg"
+              color="primary"
+              iconEnd={ExternalLink}
               onPress={handleViewFullProfile}
             >
               View Full Profile
             </Button>
-          </YStack>
+          </Stack>
         </>
       )}
     </ResponsiveModal>

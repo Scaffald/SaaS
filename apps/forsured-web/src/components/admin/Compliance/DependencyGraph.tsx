@@ -1,6 +1,6 @@
 /**
  * DependencyGraph Component
- * REQ-2, TASK-15: Dependency Visualizer with Interactive Tree
+ * Dependency Visualizer with Interactive Tree
  *
  * Displays requirement dependencies as an expandable tree with:
  * - Hierarchical tree view
@@ -18,7 +18,7 @@ import {
   Input,
   Button,
   H3,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import {
   useComplianceRequirements,
   type ComplianceRequirement,

@@ -1,4 +1,4 @@
-import { api } from '@scf/core/utils/api'
+import { useFindNearestResults as useSDKFindNearestResults } from '@scf/core/utils/map-sdk-hooks'
 import { useCallback, useState } from 'react'
 
 interface NearestResult {
@@ -30,16 +30,11 @@ export function useFindNearestResults({
   const [currentRadius, setCurrentRadius] = useState(initialRadius)
   const [attempts, setAttempts] = useState(0)
 
-  // Query for nearest results
-  const query = api.map.findNearestResults.useQuery(
-    {
-      coordinates: coordinates || { lat: 0, lng: 0 },
-      radius: currentRadius,
-    },
-    {
-      enabled: !!coordinates && attempts < maxAttempts,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-    }
+  const query = useSDKFindNearestResults(
+    coordinates
+      ? { lat: coordinates.lat, lng: coordinates.lng, radius: currentRadius }
+      : null,
+    { enabled: !!coordinates && attempts < maxAttempts }
   )
 
   // Expand radius by 50 miles

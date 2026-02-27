@@ -1,31 +1,20 @@
-import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { ROUTES } from "@scf/core/constants/routes";
+import { useExperienceWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
 import {
   Button,
   DashboardWidget,
   EmptyState,
-  Heading,
+  H4,
   LoadingState,
-  spacing,
-} from '@unicornlove/ui'
-import { Briefcase } from '@tamagui/lucide-icons'
-import { useRouter } from 'expo-router'
-import { Separator, Text, XStack, YStack } from '@unicornlove/ui'
-import { formatDate } from '../utils/date-formatting'
-import type { ProfileWidgetProps } from './types'
+} from "@scaffald/ui";
+import { Briefcase } from "lucide-react-native";
+import { useRouter } from "expo-router";
+import { Separator, Text, Row, Stack } from "@scaffald/ui";
+import { formatDate } from "../utils/date-formatting";
+import type { ProfileWidgetProps } from "./types";
+import type { ExperienceWidgetEntry } from "@scaffald/sdk";
 
-interface UserExperience {
-  id: string
-  job_title: string
-  company_name: string
-  start_date: string | null
-  end_date: string | null
-  is_current: boolean | null
-  location: string | null
-  employment_type: string | null
-  is_remote: boolean | null
-  description: string | null
-}
+type UserExperience = ExperienceWidgetEntry;
 
 /**
  * ExperienceWidget
@@ -38,177 +27,167 @@ interface UserExperience {
 export function ExperienceWidget({
   userId,
   showEdit = false,
-  variant = 'full',
+  variant = "full",
 }: ProfileWidgetProps) {
-  const router = useRouter()
-  const { data, isLoading, error, refetch, isFetching } =
-    api.profile.widgets.getExperience.useQuery(
-      { userId },
-      {
-        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-      }
-    )
+  const router = useRouter();
+  const { data, isLoading, error, refetch, isFetching } = useExperienceWidget(
+    { userId },
+    {
+      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    }
+  );
 
   if (isLoading) {
     return (
       <DashboardWidget>
         <LoadingState message="Loading experience..." />
       </DashboardWidget>
-    )
+    );
   }
 
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingVertical="$8">
-          <Text color="$red10">Failed to load experience</Text>
-          <Text color="$color11" fontSize="$2">
-            {error.message}
-          </Text>
+        <Stack gap={16} align="center" paddingVertical={32}>
+          <Text style={{ color: "#ef4444" }}>Failed to load experience</Text>
+          <Text style={{ color: "#414e62" }}>{error.message}</Text>
           <Button
-            variant="primary"
-            size="$2"
+            variant="filled"
+            color="primary"
+            size="sm"
             onPress={() => {
-              void refetch()
+              void refetch();
             }}
             disabled={isFetching}
           >
             Retry
           </Button>
-        </YStack>
+        </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
-  const experiences = data || []
-  const showCompact = variant === 'compact'
+  const experiences = data || [];
+  const showCompact = variant === "compact";
 
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
+      <Stack gap={12}>
         {/* Header */}
-        <XStack justifyContent="space-between" alignItems="center">
-          <Heading variant="h4">Work Experience</Heading>
+        <Row justify="space-between" align="center">
+          <H4>Work Experience</H4>
           {showEdit && (
             <Button
-              variant="outlined"
-              size="$2"
-              onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EXPERIENCE.path)}
+              variant="outline"
+              size="sm"
+              onPress={() =>
+                router.push(ROUTES.DASHBOARD.PROFILE.EXPERIENCE.path)
+              }
             >
               Edit
             </Button>
           )}
-        </XStack>
+        </Row>
 
         {experiences.length === 0 ? (
           <EmptyState
-            icon={<Briefcase />}
+            icon={Briefcase}
             title="No work experience added yet"
             description="Add your work experience to showcase your career history"
             action={
-              showEdit ? (
-                <Button
-                  variant="primary"
-                  onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EXPERIENCE.path)}
-                >
-                  Add Experience
-                </Button>
-              ) : undefined
+              showEdit
+                ? {
+                    label: "Add Experience",
+                    onPress: () =>
+                      router.push(ROUTES.DASHBOARD.PROFILE.EXPERIENCE.path),
+                  }
+                : undefined
             }
           />
         ) : (
-          <YStack gap="$4">
+          <Stack gap={16}>
             {experiences
               .slice(0, showCompact ? 3 : undefined)
               .map((exp: UserExperience, index: number) => (
-                <YStack key={exp.id} gap="$2">
+                <Stack key={exp.id} gap={8}>
                   {/* Job Title & Company */}
-                  <YStack gap="$1">
-                    <Text fontSize="$4" fontWeight="600">
-                      {exp.job_title}
-                    </Text>
-                    <Text fontSize="$3" color="$color11">
-                      {exp.company_name}
-                    </Text>
-                  </YStack>
+                  <Stack gap={4}>
+                    <Text>{exp.job_title}</Text>
+                    <Text style={{ color: "#414e62" }}>{exp.company_name}</Text>
+                  </Stack>
 
                   {/* Duration */}
-                  <XStack gap="$2" alignItems="center">
-                    <Text fontSize="$2" color="$color10">
+                  <Row gap={8} align="center">
+                    <Text style={{ color: "#414e62" }}>
                       {formatDate(exp.start_date)}
                     </Text>
-                    <Text fontSize="$2" color="$color10">
-                      -
-                    </Text>
-                    <Text fontSize="$2" color="$color10">
-                      {exp.is_current ? 'Present' : formatDate(exp.end_date)}
+                    <Text style={{ color: "#414e62" }}>-</Text>
+                    <Text style={{ color: "#414e62" }}>
+                      {exp.is_current ? "Present" : formatDate(exp.end_date)}
                     </Text>
                     {exp.is_current && (
-                      <XStack
-                        backgroundColor="$blue2"
-                        paddingHorizontal="$2"
-                        paddingVertical="$0.5"
-                        borderRadius="$2"
-                        borderWidth={1}
-                        borderColor="$blue7"
+                      <Row
+                        paddingHorizontal={8}
+                        paddingVertical={2}
+                        borderRadius={8}
+                        style={{
+                          backgroundColor: "#eff6ff",
+                          borderWidth: 1,
+                          borderColor: "#3b82f6",
+                        }}
                       >
-                        <Text color="$blue11" fontSize="$1" fontWeight="600">
-                          Current
-                        </Text>
-                      </XStack>
+                        <Text style={{ color: "#1d4ed8" }}>Current</Text>
+                      </Row>
                     )}
-                  </XStack>
+                  </Row>
 
                   {/* Location & Employment Type */}
                   {(exp.location || exp.employment_type || exp.is_remote) && (
-                    <XStack gap="$2" flexWrap="wrap">
+                    <Row gap={8} wrap>
                       {exp.location && (
-                        <Text fontSize="$2" color="$color10">
+                        <Text style={{ color: "#414e62" }}>
                           📍 {exp.location}
                         </Text>
                       )}
                       {exp.employment_type && (
-                        <Text fontSize="$2" color="$color10">
+                        <Text style={{ color: "#414e62" }}>
                           • {exp.employment_type}
                         </Text>
                       )}
                       {exp.is_remote && (
-                        <Text fontSize="$2" color="$color10">
-                          • Remote
-                        </Text>
+                        <Text style={{ color: "#414e62" }}>• Remote</Text>
                       )}
-                    </XStack>
+                    </Row>
                   )}
 
                   {/* Description */}
                   {exp.description && !showCompact && (
-                    <Text fontSize="$3" color="$color11" lineHeight="$3">
+                    <Text style={{ color: "#414e62", lineHeight: 20 }}>
                       {exp.description}
                     </Text>
                   )}
 
                   {/* Separator between items */}
-                  {index < experiences.length - 1 && <Separator marginVertical="$2" />}
-                </YStack>
+                  {index < experiences.length - 1 && (
+                    <Separator style={{ marginVertical: 8 }} />
+                  )}
+                </Stack>
               ))}
 
             {/* Show More link for compact view */}
             {showCompact && experiences.length > 3 && (
               <Text
-                color="$blue7"
-                fontSize="$3"
-                fontWeight="600"
-                cursor="pointer"
-                hoverStyle={{ color: '$blue8' }}
-                pressStyle={{ color: '$blue9' }}
-                onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EXPERIENCE.path)}
+                style={{ color: "#3b82f6" }}
+                onPress={() =>
+                  router.push(ROUTES.DASHBOARD.PROFILE.EXPERIENCE.path)
+                }
               >
                 View all {experiences.length} positions →
               </Text>
             )}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     </DashboardWidget>
-  )
+  );
 }

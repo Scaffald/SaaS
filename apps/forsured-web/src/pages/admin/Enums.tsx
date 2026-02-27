@@ -10,7 +10,7 @@ import {
   X,
   RotateCcw,
 } from 'lucide-react';
-import { Stack, Row, Text, Button, Heading, Card, Input, Label, Spinner, colors, spacing } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Heading, Card, Input, Label, Spinner, colors, spacing } from '@scaffald/ui';
 import { EmptyState } from '../../ui/EmptyState'
 import Tooltip from '../../ui/Tooltip';
 import { useAuth } from '../../contexts/AuthContext';

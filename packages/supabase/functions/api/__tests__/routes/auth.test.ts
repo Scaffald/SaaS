@@ -50,8 +50,10 @@ Deno.test('POST /v1/auth/magic-link - sends magic link for new user (signup mode
 
   // Verify email was sent (if Mailpit is available)
   const emailMessage = await getLatestEmail(email)
-  if (emailMessage) {
-    assert(emailMessage.Content.Body.includes('magic link') || emailMessage.Content.Body.includes('sign'))
+  if (emailMessage?.body?.html) {
+    assert(
+      emailMessage.body.html.includes('magic link') || emailMessage.body.html.includes('sign')
+    )
   }
 
   await cleanupCurrentTestData()

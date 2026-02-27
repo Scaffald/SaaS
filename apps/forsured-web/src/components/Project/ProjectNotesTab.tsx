@@ -18,7 +18,7 @@ import {
   Loader2,
   User,
 } from 'lucide-react';
-import { Stack, Row, Text, Card, H2 } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card, H2 } from '@scaffald/ui';
 import Button from '../Common/Button';
 import type { Comment } from '../../types';
 import { formatDate } from '../../utils/dateHelpers';

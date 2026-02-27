@@ -1,7 +1,7 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useUserApplications } from '@scf/core/utils/jobs-sdk-hooks'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { Button, SkeletonCard, Text, YStack } from '@unicornlove/ui'
+import { Button, SkeletonCard, Text, Stack } from '@scaffald/ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 
@@ -11,49 +11,45 @@ type ApplicationRecord = NonNullable<
 
 export function InquiryOverviewWidget() {
   const router = useRouter()
-  const { data, isLoading } = api.applications.getUserApplications.useQuery(
-    { status: 'inquired', limit: 5, offset: 0 },
-    { refetchOnMount: true }
-  )
+  const { data: response, isLoading } = useUserApplications({
+    status: 'inquired',
+    limit: 5,
+    offset: 0,
+  })
 
   if (isLoading) {
-    return <SkeletonCard variant="profile" />
+    return <SkeletonCard hasAvatar textLines={2} />
   }
 
-  if (!data || data.length === 0) {
+  const data = response?.data ?? []
+  if (data.length === 0) {
     return null
   }
 
   const entries = data.slice(0, 3)
 
   return (
-    <YStack padding="$4" backgroundColor="$color2" borderRadius="$4" gap="$3">
-      <Text fontWeight="600" fontSize="$5">
-        Negotiations
-      </Text>
-      <Text color="$color11">
+    <Stack padding="md" backgroundColor="$color2" borderRadius={16} gap={12}>
+      <Text>Negotiations</Text>
+      <Text color="$gray11">
         {data.length === 1
           ? 'You have 1 active inquiry.'
           : `You have ${data.length} active inquiries.`}
       </Text>
       {entries.map((application: ApplicationRecord) => (
-        <YStack
+        <Stack
           key={application.id}
-          padding="$3"
-          gap="$2"
+          padding="sm"
+          gap={8}
           backgroundColor="$background"
-          borderRadius="$3"
+          borderRadius={12}
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <Text fontWeight="600" fontSize="$4">
-            {application.job?.title ?? 'Role'}
-          </Text>
-          <Text fontSize="$2" color="$color11">
-            {application.job?.location ?? 'Location TBD'}
-          </Text>
+          <Text>{application.job?.title ?? 'Role'}</Text>
+          <Text color="$gray11">{application.job?.location ?? 'Location TBD'}</Text>
           <Button
-            size="$3"
+            size="sm"
             onPress={() =>
               router.push(
                 buildPath(ROUTES.DASHBOARD.APPLICATIONS.INQUIRY, { applicationId: application.id })
@@ -62,13 +58,11 @@ export function InquiryOverviewWidget() {
           >
             View Inquiry
           </Button>
-        </YStack>
+        </Stack>
       ))}
       {data.length > entries.length && (
-        <Text fontSize="$2" color="$color11">
-          {data.length - entries.length} more in progress
-        </Text>
+        <Text color="$gray11">{data.length - entries.length} more in progress</Text>
       )}
-    </YStack>
+    </Stack>
   )
 }

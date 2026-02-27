@@ -2,10 +2,13 @@
  * ComplianceScore - Visual indicator of compliance status
  */
 
-import { styled, YStack, XStack, Text, View, type YStackProps } from 'tamagui'
-import { CheckCircle, AlertTriangle, XCircle, TrendingUp, TrendingDown } from '@tamagui/lucide-icons'
+import { CheckCircle, AlertTriangle, XCircle, TrendingUp, TrendingDown } from 'lucide-react-native'
+import { View, StyleSheet } from 'react-native'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors, spacing } from '@scaffald/ui/tokens'
+import type { ViewStyle } from 'react-native'
 
-export interface ComplianceScoreProps extends Omit<YStackProps, 'children'> {
+export interface ComplianceScoreProps {
   /** Current score (0-100) */
   score: number
   /** Previous score for comparison */
@@ -20,83 +23,35 @@ export interface ComplianceScoreProps extends Omit<YStackProps, 'children'> {
   warningThreshold?: number
   /** Threshold for danger (default 50) */
   dangerThreshold?: number
+  /** Additional styles */
+  style?: ViewStyle
 }
 
 const sizeConfig = {
   sm: {
     circleSize: 80,
-    fontSize: '$5',
-    labelSize: '$2',
+    fontSize: 18,
+    labelSize: 12,
     strokeWidth: 6,
   },
   md: {
     circleSize: 120,
-    fontSize: '$7',
-    labelSize: '$3',
+    fontSize: 28,
+    labelSize: 14,
     strokeWidth: 8,
   },
   lg: {
     circleSize: 160,
-    fontSize: '$9',
-    labelSize: '$4',
+    fontSize: 36,
+    labelSize: 16,
     strokeWidth: 10,
   },
 } as const
 
-const ScoreContainer = styled(YStack, {
-  name: 'ComplianceScore',
-  alignItems: 'center',
-  gap: '$2',
-})
-
-const CircleContainer = styled(View, {
-  name: 'ComplianceScoreCircle',
-  alignItems: 'center',
-  justifyContent: 'center',
-  position: 'relative',
-})
-
-const ScoreText = styled(Text, {
-  name: 'ComplianceScoreText',
-  fontWeight: '700',
-  color: '$color12',
-})
-
-const LabelText = styled(Text, {
-  name: 'ComplianceScoreLabel',
-  color: '$color9',
-  textAlign: 'center',
-})
-
-const TrendContainer = styled(XStack, {
-  name: 'ComplianceScoreTrend',
-  alignItems: 'center',
-  gap: '$1',
-  paddingHorizontal: '$2',
-  paddingVertical: '$1',
-  borderRadius: '$full',
-})
-
-const TrendText = styled(Text, {
-  name: 'ComplianceScoreTrendText',
-  fontSize: '$2',
-  fontWeight: '500',
-})
-
-const StatusIcon = styled(View, {
-  name: 'ComplianceScoreStatusIcon',
-  position: 'absolute',
-  bottom: 0,
-  right: 0,
-  borderRadius: '$full',
-  backgroundColor: '$background',
-  padding: 2,
-})
-
-function getScoreColor(score: number, warningThreshold: number, dangerThreshold: number): string {
-  if (score >= warningThreshold) return '$green9'
-  if (score >= dangerThreshold) return '$yellow9'
-  return '$red9'
+function getScoreColor(score: number, warningThreshold: number, dangerThreshold: number, theme: 'light' | 'dark'): string {
+  if (score >= warningThreshold) return colors.fg[theme].success
+  if (score >= dangerThreshold) return colors.fg[theme].warning
+  return colors.fg[theme].error
 }
 
 export function ComplianceScore({
@@ -107,10 +62,11 @@ export function ComplianceScore({
   showTrend = true,
   warningThreshold = 70,
   dangerThreshold = 50,
-  ...props
+  style,
 }: ComplianceScoreProps) {
+  const { theme } = useThemeContext()
   const config = sizeConfig[size]
-  const scoreColor = getScoreColor(score, warningThreshold, dangerThreshold)
+  const scoreColor = getScoreColor(score, warningThreshold, dangerThreshold, theme)
   const normalizedScore = Math.min(100, Math.max(0, score))
 
   // Calculate trend
@@ -122,60 +78,139 @@ export function ComplianceScore({
     score >= warningThreshold ? CheckCircle : score >= dangerThreshold ? AlertTriangle : XCircle
 
   return (
-    <ScoreContainer {...props}>
-      <CircleContainer width={config.circleSize} height={config.circleSize}>
+    <Stack gap={spacing[2]} style={{...styles.container, ...style}}>
+      <View
+        style={{
+          ...styles.circleContainer,
+          width: config.circleSize,
+          height: config.circleSize,
+        }}
+      >
         {/* Background circle */}
         <View
-          position="absolute"
-          width={config.circleSize}
-          height={config.circleSize}
-          borderRadius={config.circleSize / 2}
-          borderWidth={config.strokeWidth}
-          borderColor="$color4"
+          style={{
+            ...styles.absoluteCircle,
+            width: config.circleSize,
+            height: config.circleSize,
+            borderRadius: (config.circleSize / 2),
+            borderWidth: config.strokeWidth,
+            borderColor: colors.border[theme].subtle,
+          }}
         />
 
-        {/* SVG would be ideal here, but using a simple View approach */}
+        {/* Progress circle - simplified approach */}
         <View
-          position="absolute"
-          width={config.circleSize}
-          height={config.circleSize}
-          borderRadius={config.circleSize / 2}
-          borderWidth={config.strokeWidth}
-          borderColor={scoreColor}
-          borderTopColor={normalizedScore < 25 ? 'transparent' : scoreColor}
-          borderRightColor={normalizedScore < 50 ? 'transparent' : scoreColor}
-          borderBottomColor={normalizedScore < 75 ? 'transparent' : scoreColor}
-          transform={[{ rotate: '-90deg' }]}
+          style={{
+            ...styles.absoluteCircle,
+            width: config.circleSize,
+            height: config.circleSize,
+            borderRadius: (config.circleSize / 2),
+            borderWidth: config.strokeWidth,
+            borderColor: scoreColor,
+            borderTopColor: normalizedScore < 25 ? 'transparent' : scoreColor,
+            borderRightColor: normalizedScore < 50 ? 'transparent' : scoreColor,
+            borderBottomColor: normalizedScore < 75 ? 'transparent' : scoreColor,
+            transform: [{ rotate: '-90deg' }],
+          }}
         />
 
-        <YStack alignItems="center">
-          <ScoreText fontSize={config.fontSize}>{Math.round(score)}</ScoreText>
-          <Text fontSize="$2" color="$color9">
+        <Stack gap={0} style={styles.scoreTextContainer}>
+          <Text
+            size="xl"
+            weight="bold"
+            style={{ fontSize: config.fontSize, color: colors.text[theme].primary }}
+          >
+            {Math.round(score)}
+          </Text>
+          <Text size="sm" style={{ color: colors.text[theme].secondary }}>
             / 100
           </Text>
-        </YStack>
+        </Stack>
 
-        <StatusIcon>
-          <StatusIconComponent size={size === 'sm' ? 16 : size === 'md' ? 20 : 24} color={scoreColor} />
-        </StatusIcon>
-      </CircleContainer>
+        <View
+          style={{
+            ...styles.statusIcon,
+            backgroundColor: colors.bg[theme].default,
+            borderRadius: 20,
+          }}
+        >
+          <StatusIconComponent
+            size={size === 'sm' ? 16 : size === 'md' ? 20 : 24}
+            color={scoreColor}
+          />
+        </View>
+      </View>
 
-      <LabelText fontSize={config.labelSize}>{label}</LabelText>
+      <Text
+        size={size === 'sm' ? 'sm' : size === 'md' ? 'md' : 'lg'}
+        style={{...styles.labelText, color: colors.text[theme].secondary}}
+      >
+        {label}
+      </Text>
 
       {showTrend && previousScore !== undefined && trend !== 0 && (
-        <TrendContainer
-          backgroundColor={trendDirection === 'up' ? '$green3' : '$red3'}
+        <Row
+          gap={spacing[2]}
+          paddingHorizontal={spacing[2]}
+          paddingVertical={spacing[2]}
+          style={{
+            ...styles.trendContainer,
+            backgroundColor:
+              trendDirection === 'up'
+                ? '#dcfce7'
+                : '#fee2e2',
+          }}
         >
           {trendDirection === 'up' ? (
-            <TrendingUp size={12} color="$green11" />
+            <TrendingUp size={12} color={colors.fg[theme].success} />
           ) : (
-            <TrendingDown size={12} color="$red11" />
+            <TrendingDown size={12} color={colors.fg[theme].error} />
           )}
-          <TrendText color={trendDirection === 'up' ? '$green11' : '$red11'}>
-            {trend > 0 ? '+' : ''}{trend.toFixed(1)}%
-          </TrendText>
-        </TrendContainer>
+          <Text
+            size="xs"
+            weight="medium"
+            style={{
+              color:
+                trendDirection === 'up'
+                  ? colors.fg[theme].success
+                  : colors.fg[theme].error,
+            }}
+          >
+            {trend > 0 ? '+' : ''}
+            {trend.toFixed(1)}%
+          </Text>
+        </Row>
       )}
-    </ScoreContainer>
+    </Stack>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+  },
+  circleContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  absoluteCircle: {
+    position: 'absolute',
+  },
+  scoreTextContainer: {
+    alignItems: 'center',
+  },
+  statusIcon: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    padding: 2,
+  },
+  labelText: {
+    textAlign: 'center',
+  },
+  trendContainer: {
+    borderRadius: 9999,
+    alignItems: 'center',
+  },
+})

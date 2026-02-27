@@ -1,3 +1,4 @@
+import type { TeamInvitation } from '@scaffald/sdk'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
@@ -11,7 +12,7 @@ vi.mock('expo-router', () => ({
   }),
 }))
 
-const invitation = {
+const invitation: TeamInvitation = {
   id: 'inv-1',
   teamId: 'team-1',
   email: 'teammate@example.com',
@@ -47,7 +48,7 @@ const invitation = {
     organizationId: 'org-1',
     organizationName: 'Acme Construction',
   },
-} as const
+}
 
 describe('TeamInvitationList', () => {
   it('renders empty state when there are no invitations', () => {
@@ -71,7 +72,7 @@ describe('TeamInvitationList', () => {
   })
 
   it('displays invitation status correctly', () => {
-    const acceptedInvitation = {
+    const acceptedInvitation: TeamInvitation = {
       ...invitation,
       id: 'inv-2',
       status: 'accepted',
@@ -84,7 +85,7 @@ describe('TeamInvitationList', () => {
   })
 
   it('handles expired invitations', () => {
-    const expiredInvitation = {
+    const expiredInvitation: TeamInvitation = {
       ...invitation,
       id: 'inv-3',
       status: 'expired',

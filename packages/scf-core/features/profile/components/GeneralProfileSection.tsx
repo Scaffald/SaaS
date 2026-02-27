@@ -1,38 +1,47 @@
-import { api } from '@scf/core/utils/api'
-import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
+import {
+  useOfficeUserGeneral,
+  useOfficeUpdateUserGeneralMutation,
+} from "@scf/core/utils/office-users-sdk-hooks";
+import {
+  useGeneralInfo,
+  useUpdateGeneralInfoMutation,
+  useUploadAvatarMutation,
+} from "@scf/core/utils/profile-general-sdk-hooks";
+import { createMapboxGeocodingProvider } from "@scf/core/utils/mapbox-geocoding-provider";
+import { getAvatarUrl } from "@scf/core/utils/supabase/storage";
 import {
   AddressForm,
   AvatarImagePicker,
   Button,
   DashboardWidget,
   PhoneNumberInput,
-} from '@unicornlove/ui'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useToastController } from '@tamagui/toast'
-import { useEffect, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { AnimatePresence, Input, Spinner, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
+} from "@scaffald/ui";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useToast } from "@scaffald/ui";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { Input, Spinner, Text, TextArea, Row, Stack } from "@scaffald/ui";
 import {
   type GeneralProfileFormData,
   generalProfileDefaults,
   generalProfileSchema,
-} from '../config/general-schema'
+} from "../config/general-schema";
 
 interface GeneralProfileSectionProps {
   /**
    * User ID to edit. If not provided, edits the current user's profile.
    */
-  userId?: string
+  userId?: string;
   /**
    * Mode determines which tRPC endpoints to use
    * - 'user': Uses profile.* endpoints (current user)
    * - 'admin': Uses office.* endpoints (any user)
    */
-  mode?: 'user' | 'admin'
+  mode?: "user" | "admin";
   /**
    * Read-only mode (view only)
    */
-  readOnly?: boolean
+  readOnly?: boolean;
 }
 
 /**
@@ -41,87 +50,107 @@ interface GeneralProfileSectionProps {
  */
 export function GeneralProfileSection({
   userId,
-  mode = 'user',
+  mode = "user",
   readOnly = false,
 }: GeneralProfileSectionProps) {
-  const [isLoading, setIsLoading] = useState(false)
-  const toast = useToastController()
+  const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
 
   const getErrorMessage = (value: unknown): string | undefined => {
-    if (typeof value === 'string') {
-      return value
+    if (typeof value === "string") {
+      return value;
     }
-    if (value && typeof value === 'object' && 'message' in value) {
-      const message = (value as { message?: unknown }).message
-      return typeof message === 'string' ? message : undefined
+    if (value && typeof value === "object" && "message" in value) {
+      const message = (value as { message?: unknown }).message;
+      return typeof message === "string" ? message : undefined;
     }
-    return undefined
-  }
+    return undefined;
+  };
 
-  // Determine which tRPC endpoints to use based on mode
+  // Determine which endpoints to use based on mode
+  // Admin mode uses SDK office-users hooks, user mode uses profile SDK
   const useQuery =
-    mode === 'admin' && userId
-      ? () => api.office.getUserGeneral.useQuery({ userId })
-      : () => api.profile.general.getGeneral.useQuery()
+    mode === "admin" && userId
+      ? () => useOfficeUserGeneral(userId)
+      : () => useGeneralInfo();
 
   const useMutation =
-    mode === 'admin' && userId
+    mode === "admin" && userId
       ? () =>
-          api.office.updateUserGeneral.useMutation({
+          useOfficeUpdateUserGeneralMutation({
             onSuccess: () => {
-              toast.show('Profile Updated', {
-                message: 'Profile has been saved successfully!',
-              })
-              refetch()
+              toast.show({
+                title: "Profile Updated",
+                message: "Profile has been saved successfully!",
+              });
+              refetch();
             },
             onError: (error: unknown) => {
-              console.error('Error saving profile:', error)
-              const message =
-                error instanceof Error ? error.message : 'Failed to save profile. Please try again.'
-              toast.show('Error', {
-                message,
-              })
+              console.error("Error saving profile:", error);
+              const _message =
+                error instanceof Error
+                  ? error.message
+                  : "Failed to save profile. Please try again.";
+              toast.show({
+                title: "Error",
+                message: "",
+                variant: "error",
+              });
             },
           })
       : () =>
-          api.profile.general.updateGeneral.useMutation({
+          useUpdateGeneralInfoMutation({
             onSuccess: () => {
-              toast.show('Profile Updated', {
-                message: 'Your profile has been saved successfully!',
-              })
-              refetch()
+              toast.show({
+                title: "Profile Updated",
+                message: "Your profile has been saved successfully!",
+              });
+              refetch();
             },
             onError: (error: unknown) => {
-              console.error('Error saving profile:', error)
-              const message =
-                error instanceof Error ? error.message : 'Failed to save profile. Please try again.'
-              toast.show('Error', {
-                message,
-              })
+              console.error("Error saving profile:", error);
+              const _message =
+                error instanceof Error
+                  ? error.message
+                  : "Failed to save profile. Please try again.";
+              toast.show({
+                title: "Error",
+                message: "",
+                variant: "error",
+              });
             },
-          })
+          });
 
-  const { data: profileData, isLoading: isLoadingProfile, refetch } = useQuery()
+  const {
+    data: profileData,
+    isLoading: isLoadingProfile,
+    refetch,
+  } = useQuery();
 
-  const updateProfileMutation = useMutation()
+  const updateProfileMutation = useMutation();
 
-  const uploadAvatarMutation = api.profile.avatar.uploadAvatar.useMutation({
+  const uploadAvatarMutation = useUploadAvatarMutation({
     onSuccess: (data: { avatarPath: string }) => {
-      toast.show('Avatar Uploaded', {
-        message: 'Avatar has been uploaded successfully!',
-      })
-      setValue('avatar_path', data.avatarPath)
-      refetch()
+      toast.show({
+        title: "Avatar Uploaded",
+        message: "Avatar has been uploaded successfully!",
+      });
+      setValue("avatar_path", data.avatarPath);
+      refetch();
     },
     onError: (error: unknown) => {
-      console.error('Error uploading avatar:', error)
-      const message =
-        error instanceof Error ? error.message : 'Failed to upload avatar. Please try again.'
-      toast.show('Upload Error', {
-        message,
-      })
+      console.error("Error uploading avatar:", error);
+      const _message =
+        error instanceof Error
+          ? error.message
+          : "Failed to upload avatar. Please try again.";
+      toast.show({
+        title: "Upload Error",
+        message: "",
+        variant: "error",
+      });
     },
-  })
+  });
 
   const {
     control,
@@ -134,82 +163,86 @@ export function GeneralProfileSection({
   } = useForm<GeneralProfileFormData>({
     resolver: zodResolver(generalProfileSchema),
     defaultValues: generalProfileDefaults,
-    mode: 'onChange',
-  })
+    mode: "onChange",
+  });
 
-  const avatarPath = watch('avatar_path')
+  const avatarPath = watch("avatar_path");
 
   // Reset form when profile data is loaded
   useEffect(() => {
     if (profileData) {
-      reset(profileData)
+      reset(profileData as unknown as GeneralProfileFormData);
     }
-  }, [profileData, reset])
+  }, [profileData, reset]);
 
   const onSubmit = async (data: GeneralProfileFormData) => {
-    if (readOnly) return
+    if (readOnly) return;
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      if (mode === 'admin' && userId) {
-        // Form data is compatible with API schema but has slightly different structure
-        await updateProfileMutation.mutateAsync({
-          userId,
-          data: data as unknown as Parameters<typeof updateProfileMutation.mutateAsync>[0]['data'],
-        })
+      if (mode === "admin" && userId) {
+        await (
+          updateProfileMutation.mutateAsync as (arg: {
+            userId: string;
+            data: unknown;
+          }) => Promise<unknown>
+        )({ userId, data });
       } else {
-        // Form data is compatible with API schema but has slightly different structure
-        await updateProfileMutation.mutateAsync(
-          data as unknown as Parameters<typeof updateProfileMutation.mutateAsync>[0]
-        )
+        await (
+          updateProfileMutation.mutateAsync as (
+            arg: unknown
+          ) => Promise<unknown>
+        )(data);
       }
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   if (isLoadingProfile) {
     return (
-      <YStack gap="$4" padding="$4" flex={1} justifyContent="center" alignItems="center">
-        <Spinner size="large" />
+      <Stack gap={16} padding="md" flex={1} justify="center" align="center">
+        <Spinner size="lg" />
         <Text>Loading profile...</Text>
-      </YStack>
-    )
+      </Stack>
+    );
   }
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
+      <Stack gap={16}>
         {/* Avatar Section */}
-        <YStack gap="$3" alignItems="center">
-          <Text fontWeight="600">Profile Photo</Text>
+        <Stack gap={12} align="center">
+          <Text>Profile Photo</Text>
           <AvatarImagePicker
-            value={getAvatarUrl(avatarPath) || ''}
+            value={getAvatarUrl(avatarPath) || ""}
             onImageSelect={async (imageUri) => {
-              if (readOnly) return
+              if (readOnly) return;
 
               if (imageUri) {
                 try {
-                  const response = await fetch(imageUri)
-                  const blob = await response.blob()
-                  const reader = new FileReader()
+                  const response = await fetch(imageUri);
+                  const blob = await response.blob();
+                  const reader = new FileReader();
                   reader.onloadend = () => {
-                    const base64data = reader.result as string
+                    const base64data = reader.result as string;
                     uploadAvatarMutation.mutate({
                       file: base64data,
                       fileName: `avatar-${Date.now()}.jpg`,
-                      contentType: blob.type || 'image/jpeg',
-                    })
-                  }
-                  reader.readAsDataURL(blob)
+                      contentType: blob.type || "image/jpeg",
+                    });
+                  };
+                  reader.readAsDataURL(blob);
                 } catch (error) {
-                  console.error('Error processing image:', error)
-                  toast.show('Error', {
-                    message: 'Failed to process image. Please try again.',
-                  })
+                  console.error("Error processing image:", error);
+                  toast.show({
+                    title: "Error",
+                    message: "Failed to process image. Please try again.",
+                    variant: "error",
+                  });
                 }
               } else {
-                setValue('avatar_path', '')
+                setValue("avatar_path", "");
               }
             }}
             size={120}
@@ -217,16 +250,14 @@ export function GeneralProfileSection({
             placeholder="Upload Avatar"
           />
           {uploadAvatarMutation.isPending && (
-            <Text fontSize="$2" color="$color10">
-              Uploading avatar...
-            </Text>
+            <Text style={{ color: "#414e62" }}>Uploading avatar...</Text>
           )}
-        </YStack>
+        </Stack>
 
         {/* Name Fields */}
-        <XStack gap="$3" $sm={{ flexDirection: 'column' }} $md={{ flexDirection: 'row' }}>
-          <YStack gap="$2" flex={1}>
-            <Text fontWeight="600">First Name *</Text>
+        <Row gap={12}>
+          <Stack gap={8} flex={1}>
+            <Text>First Name *</Text>
             <Controller
               name="first_name"
               control={control}
@@ -235,21 +266,21 @@ export function GeneralProfileSection({
                   placeholder="First name"
                   value={field.value}
                   onChangeText={field.onChange}
-                  borderColor={errors.first_name ? '$red8' : '$borderColor'}
                   editable={!readOnly}
-                  opacity={readOnly ? 0.7 : 1}
+                  style={{ opacity: readOnly ? 0.7 : 1 }}
                 />
               )}
             />
             {errors.first_name && (
-              <Text color="$red10" fontSize="$2">
-                {getErrorMessage(errors.first_name.message) ?? 'First name is required'}
+              <Text style={{ color: "#ef4444" }}>
+                {getErrorMessage(errors.first_name.message) ??
+                  "First name is required"}
               </Text>
             )}
-          </YStack>
+          </Stack>
 
-          <YStack gap="$2" flex={1}>
-            <Text fontWeight="600">Last Name *</Text>
+          <Stack gap={8} flex={1}>
+            <Text>Last Name *</Text>
             <Controller
               name="last_name"
               control={control}
@@ -258,66 +289,64 @@ export function GeneralProfileSection({
                   placeholder="Last name"
                   value={field.value}
                   onChangeText={field.onChange}
-                  borderColor={errors.last_name ? '$red8' : '$borderColor'}
                   editable={!readOnly}
-                  opacity={readOnly ? 0.7 : 1}
+                  style={{ opacity: readOnly ? 0.7 : 1 }}
                 />
               )}
             />
             {errors.last_name && (
-              <Text color="$red10" fontSize="$2">
-                {getErrorMessage(errors.last_name.message) ?? 'Last name is required'}
+              <Text style={{ color: "#ef4444" }}>
+                {getErrorMessage(errors.last_name.message) ??
+                  "Last name is required"}
               </Text>
             )}
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
 
         {/* About Section */}
-        <YStack gap="$2">
-          <Text fontWeight="600">About</Text>
+        <Stack gap={8}>
+          <Text>About</Text>
           <Controller
             name="about"
             control={control}
             render={({ field }) => (
               <TextArea
                 placeholder="Tell us about yourself..."
-                value={typeof field.value === 'string' ? field.value : ''}
+                value={typeof field.value === "string" ? field.value : ""}
                 onChangeText={field.onChange}
-                minHeight={100}
-                borderColor={errors.about ? '$red8' : '$borderColor'}
                 editable={!readOnly}
-                opacity={readOnly ? 0.7 : 1}
+                style={{ minHeight: 100, opacity: readOnly ? 0.7 : 1 }}
               />
             )}
           />
           {errors.about && (
-            <Text color="$red10" fontSize="$2">
-              {getErrorMessage(errors.about.message) ?? 'Please provide a short bio'}
+            <Text style={{ color: "#ef4444" }}>
+              {getErrorMessage(errors.about.message) ??
+                "Please provide a short bio"}
             </Text>
           )}
-        </YStack>
+        </Stack>
 
         {/* Contact Information */}
-        <YStack gap="$2">
-          <Text fontWeight="600">Phone</Text>
+        <Stack gap={8}>
+          <Text>Phone</Text>
           <Controller
             name="phone"
             control={control}
             render={({ field }) => (
               <PhoneNumberInput
-                value={field.value || ''}
+                value={field.value || ""}
                 onChange={field.onChange}
                 error={getErrorMessage(errors.phone?.message)}
                 defaultCountry="US"
-                storeFormatted={true}
                 disabled={readOnly}
               />
             )}
           />
-        </YStack>
+        </Stack>
 
-        <YStack gap="$2">
-          <Text fontWeight="600">Email {mode === 'user' ? '(Read-only)' : ''}</Text>
+        <Stack gap={8}>
+          <Text>Email {mode === "user" ? "(Read-only)" : ""}</Text>
           <Controller
             name="email"
             control={control}
@@ -329,22 +358,20 @@ export function GeneralProfileSection({
                 keyboardType="email-address"
                 autoCapitalize="none"
                 editable={false}
-                opacity={0.7}
-                backgroundColor="$color2"
-                borderColor="$color6"
+                style={{ opacity: 0.7 }}
               />
             )}
           />
-          {mode === 'user' && (
-            <Text color="$color10" fontSize="$2">
+          {mode === "user" && (
+            <Text style={{ color: "#414e62" }}>
               Email changes must be made through account settings
             </Text>
           )}
-        </YStack>
+        </Stack>
 
         {/* Home Address */}
-        <YStack gap="$3">
-          <Text fontWeight="600">Home Address</Text>
+        <Stack gap={12}>
+          <Text>Home Address</Text>
           <AddressForm
             mode="hybrid"
             placeholder="Search for home address..."
@@ -352,78 +379,76 @@ export function GeneralProfileSection({
               getErrorMessage(errors.address?.street?.message) ??
               getErrorMessage(errors.address?.city?.message)
             }
-            provider="mapbox"
-            apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
+            provider={createMapboxGeocodingProvider(
+              process.env.EXPO_PUBLIC_MAPBOX_TOKEN ?? ""
+            )}
             addressValue={{
-              streetAddress: watch('address.street') || '',
-              locality: watch('address.city') || '',
-              stateAbbreviation: watch('address.state') || '',
-              postalCode: watch('address.zip') || '',
-              country: watch('address.country') || '',
+              streetAddress: watch("address.street") || "",
+              locality: watch("address.city") || "",
+              stateAbbreviation: watch("address.state") || "",
+              postalCode: watch("address.zip") || "",
+              country: watch("address.country") || "",
               formattedAddress: [
-                watch('address.street'),
-                watch('address.city'),
-                watch('address.state'),
-                watch('address.zip'),
+                watch("address.street"),
+                watch("address.city"),
+                watch("address.state"),
+                watch("address.zip"),
               ]
                 .filter(Boolean)
-                .join(', '),
+                .join(", "),
             }}
             onAddressSelect={(address) => {
-              if (readOnly) return
+              if (readOnly) return;
 
-              setValue('address.street', address.streetAddress || '')
-              setValue('address.city', address.locality || '')
+              setValue("address.street", address.streetAddress || "");
+              setValue("address.city", address.locality || "");
               setValue(
-                'address.state',
-                address.stateAbbreviation || address.administrativeAreaLevel1 || ''
-              )
-              setValue('address.zip', address.postalCode || '')
-              setValue('address.country', address.country || 'United States')
+                "address.state",
+                address.stateAbbreviation ||
+                  address.administrativeAreaLevel1 ||
+                  ""
+              );
+              setValue("address.zip", address.postalCode || "");
+              setValue("address.country", address.country || "United States");
 
               if (address.coordinates?.lat !== undefined) {
-                setValue('address.latitude', address.coordinates.lat)
+                setValue("address.latitude", address.coordinates.lat);
               }
               if (address.coordinates?.lng !== undefined) {
-                setValue('address.longitude', address.coordinates.lng)
+                setValue("address.longitude", address.coordinates.lng);
               }
 
-              trigger('address.street')
-              trigger('address.city')
-              trigger('address.state')
-              trigger('address.zip')
+              trigger("address.street");
+              trigger("address.city");
+              trigger("address.state");
+              trigger("address.zip");
             }}
             disabled={readOnly}
           />
-        </YStack>
+        </Stack>
 
         {/* Save Button */}
         {!readOnly && (
-          <XStack justifyContent="flex-end" paddingTop="$4">
+          <Row justify="flex-end" paddingTop={16}>
             <Button
-              variant="primary"
+              variant="filled"
+              color="primary"
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
-              opacity={!isDirty || isLoading ? 0.5 : 1}
-              space={isLoading ? '$2' : 0}
-              $sm={{ height: 44 }}
+              style={{ opacity: !isDirty || isLoading ? 0.5 : 1 }}
             >
-              <AnimatePresence>
-                {isLoading && (
-                  <Button.Icon>
-                    <Spinner
-                      animation="bouncy"
-                      enterStyle={{ scale: 0 }}
-                      exitStyle={{ scale: 0 }}
-                    />
-                  </Button.Icon>
-                )}
-              </AnimatePresence>
-              <Button.Text>{isLoading ? 'Saving...' : 'Save Changes'}</Button.Text>
+              {isLoading ? (
+                <Row gap={8} align="center">
+                  <Spinner size="sm" />
+                  <Text>Saving...</Text>
+                </Row>
+              ) : (
+                "Save Changes"
+              )}
             </Button>
-          </XStack>
+          </Row>
         )}
-      </YStack>
+      </Stack>
     </DashboardWidget>
-  )
+  );
 }

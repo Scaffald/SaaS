@@ -111,7 +111,7 @@ describe('RiskBreakdown Component', () => {
           complianceScore={83}
         />
       );
-      // Text is split across elements in Tamagui, check for key parts
+      // Text is split across elements, check for key parts
       expect(screen.getByText('Coverage')).toBeInTheDocument();
       expect(screen.getByText(/85%/)).toBeInTheDocument();
     });
@@ -127,7 +127,7 @@ describe('RiskBreakdown Component', () => {
           complianceScore={83}
         />
       );
-      // Text is split across elements in Tamagui, check for key parts
+      // Text is split across elements, check for key parts
       expect(screen.getByText('Policy Status')).toBeInTheDocument();
       expect(screen.getByText(/75%/)).toBeInTheDocument();
     });

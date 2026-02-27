@@ -8,7 +8,7 @@ import { expect, test } from '@playwright/test'
 import { getSession } from '../../playwright-helpers/playwright-helpers/auth'
 
 const authFile = 'tests/.auth/admin.json'
-const REQUIRED_SETUP_TIME_MS = 10000 // 10 seconds as per REQ-72 requirement
+const REQUIRED_SETUP_TIME_MS = 10000 // 10 seconds as per requirement
 const REQUIRED_FILE_LOAD_TIME_MS = 1000 // 1 second for file loading
 
 test.describe('Auth Setup Performance', () => {

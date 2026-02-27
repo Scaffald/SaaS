@@ -1,5 +1,8 @@
-import { api } from '@scf/core/utils/api'
-import { useToastController } from '@tamagui/toast'
+import {
+  useOrganizationReminderSettings,
+  useUpdateOrganizationReminderSettingsMutation,
+} from '@scf/core/utils/organizations-sdk-hooks'
+import { useToast } from '@scaffald/ui'
 import { useState } from 'react'
 import {
   Button,
@@ -10,30 +13,33 @@ import {
   Spinner,
   Switch,
   Text,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@scaffald/ui'
 
 type InquiryReminderSettingsProps = {
   organizationId: string
 }
 
 export function InquiryReminderSettings({ organizationId }: InquiryReminderSettingsProps) {
-  const toast = useToastController()
-  const { data: settings, isLoading } = api.organizations.getReminderSettings.useQuery(
-    { organizationId },
-    { enabled: !!organizationId }
-  )
-  const updateMutation = api.organizations.updateReminderSettings.useMutation({
+  const toast = useToast()
+  const { data: settings, isLoading } = useOrganizationReminderSettings(organizationId, {
+    enabled: !!organizationId,
+  })
+  const updateMutation = useUpdateOrganizationReminderSettingsMutation({
     onSuccess: () => {
-      toast.show('Settings saved', {
+      toast.show({
+        title: 'Settings saved',
         message: 'Inquiry reminder settings updated successfully',
+        variant: 'success',
       })
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'Failed to save settings'
-      toast.show('Failed to save settings', {
+      toast.show({
+        title: 'Failed to save settings',
         message,
+        variant: 'error',
       })
     },
   })
@@ -59,65 +65,63 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
   }
 
   return (
-    <Card bordered padding="$4" gap="$3">
-      <H4>Inquiry Reminders</H4>
-      <Separator />
-      {isLoading ? (
-        <Spinner />
-      ) : (
-        <YStack gap="$4">
-          <XStack alignItems="center" justifyContent="space-between" gap="$3">
-            <YStack flex={1} gap="$1">
-              <Text fontSize="$4" fontWeight="600">
-                Send automatic reminders
-              </Text>
-              <Text fontSize="$3" color="$color11">
-                Automatically remind candidates to respond to pending inquiries
-              </Text>
-            </YStack>
-            <Switch
-              checked={reminderEnabled}
-              onCheckedChange={setReminderEnabled}
-              disabled={updateMutation.isPending}
-            />
-          </XStack>
-
-          {reminderEnabled && (
-            <YStack gap="$2">
-              <Text fontSize="$4" fontWeight="600">
-                Remind after (days)
-              </Text>
-              <Input
-                keyboardType="numeric"
-                value={String(reminderDays)}
-                onChangeText={(value) => {
-                  const num = Number.parseInt(value, 10)
-                  if (!Number.isNaN(num) && num >= 1 && num <= 14) {
-                    setReminderDays(num)
-                  }
-                }}
-                placeholder="3"
-                maxLength={2}
+    <Card bordered padding="md">
+      <Stack gap={12}>
+        <H4>Inquiry Reminders</H4>
+        <Separator />
+        {isLoading ? (
+          <Spinner />
+        ) : (
+          <Stack gap={16}>
+            <Row align="center" justify="space-between" gap={12}>
+              <Stack style={{ flex: 1 }} gap={4}>
+                <Text>Send automatic reminders</Text>
+                <Text color="$gray11">
+                  Automatically remind candidates to respond to pending inquiries
+                </Text>
+              </Stack>
+              <Switch
+                checked={reminderEnabled}
+                onChange={setReminderEnabled}
+                disabled={updateMutation.isPending}
               />
-              <Text fontSize="$2" color="$color11">
-                Candidates will receive a reminder {reminderDays} day{reminderDays !== 1 ? 's' : ''}{' '}
-                after an inquiry is sent if they haven't responded. Reminders are limited to once
-                every 3 days.
-              </Text>
-            </YStack>
-          )}
+            </Row>
 
-          <Button
-            onPress={handleSave}
-            disabled={
-              updateMutation.isPending || !reminderEnabled || reminderDays < 1 || reminderDays > 14
-            }
-            theme="blue"
-          >
-            {updateMutation.isPending ? 'Saving…' : 'Save Settings'}
-          </Button>
-        </YStack>
-      )}
+            {reminderEnabled && (
+              <Stack gap={8}>
+                <Text>Remind after (days)</Text>
+                <Input
+                  keyboardType="numeric"
+                  value={String(reminderDays)}
+                  onChangeText={(value) => {
+                    const num = Number.parseInt(value, 10)
+                    if (!Number.isNaN(num) && num >= 1 && num <= 14) {
+                      setReminderDays(num)
+                    }
+                  }}
+                  placeholder="3"
+                  maxLength={2}
+                />
+                <Text color="$gray11">
+                  Candidates will receive a reminder {reminderDays} day{reminderDays !== 1 ? 's' : ''}{' '}
+                  after an inquiry is sent if they haven't responded. Reminders are limited to once
+                  every 3 days.
+                </Text>
+              </Stack>
+            )}
+
+            <Button
+              onPress={handleSave}
+              disabled={
+                updateMutation.isPending || !reminderEnabled || reminderDays < 1 || reminderDays > 14
+              }
+              color="primary"
+            >
+              {updateMutation.isPending ? 'Saving…' : 'Save Settings'}
+            </Button>
+          </Stack>
+        )}
+      </Stack>
     </Card>
   )
 }

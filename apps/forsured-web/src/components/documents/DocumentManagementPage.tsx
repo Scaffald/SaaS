@@ -1,127 +1,127 @@
 /**
- * REQ-124: Document Upload & Storage - DocumentManagementPage
+ * DocumentManagementPage - document upload and storage
  * Complete document management page with upload, table, and RBAC
  */
 
-import React, { useState, useEffect } from 'react';
-import { X, Loader2 } from 'lucide-react';
-import { Stack, Row, Text, H1, Card } from '@unicornlove/beyond-ui';
-import { FileUploadZone } from './FileUploadZone';
-import { DocumentTable } from './DocumentTable';
-import { DocumentService } from '../../lib/documents/documentService';
-import type { Document, DocumentFilter } from '../../types/document';
+import React, { useState, useEffect } from 'react'
+import { X, Loader2 } from 'lucide-react'
+import { Stack, Row, Text, H1, Card } from '@scaffald/ui'
+import { FileUploadZone } from './FileUploadZone'
+import { DocumentTable } from './DocumentTable'
+import { DocumentService } from '../../lib/documents/documentService'
+import type { Document, DocumentFilter } from '../../types/document'
 
 interface User {
-  id: string;
-  role: 'manager' | 'subcontractor' | 'broker';
-  managed_projects?: string[];
-  assigned_projects?: string[];
+  id: string
+  role: 'manager' | 'subcontractor' | 'broker'
+  managed_projects?: string[]
+  assigned_projects?: string[]
 }
 
 interface DocumentManagementPageProps {
-  projectId: string;
-  currentUser: User;
+  projectId: string
+  currentUser: User
 }
 
 export const DocumentManagementPage: React.FC<DocumentManagementPageProps> = ({
   projectId,
-  currentUser
+  currentUser,
 }) => {
-  const [documents, setDocuments] = useState<Document[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const documentService = new DocumentService();
+  const [documents, setDocuments] = useState<Document[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const documentService = new DocumentService()
 
   const loadDocuments = async () => {
     try {
-      setLoading(true);
-      setError(null);
+      setLoading(true)
+      setError(null)
 
       // Apply RBAC filtering
       const filters: DocumentFilter = {
-        project_id: projectId
-      };
+        project_id: projectId,
+      }
 
       // Subcontractors can only see their own documents
       if (currentUser.role === 'subcontractor') {
-        filters.uploader_id = currentUser.id;
+        filters.uploader_id = currentUser.id
       }
 
-      const docs = await documentService.getDocuments(filters);
-      setDocuments(docs);
+      const docs = await documentService.getDocuments(filters)
+      setDocuments(docs)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load documents');
+      setError(err instanceof Error ? err.message : 'Failed to load documents')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    loadDocuments();
+    loadDocuments()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectId]);
+  }, [projectId])
 
   const handleUpload = async (document: Document) => {
     // Add the new document to the list
-    setDocuments(prev => [document, ...prev]);
-  };
+    setDocuments((prev) => [document, ...prev])
+  }
 
   const handleUploadError = (errorMessage: string) => {
-    setError(errorMessage);
+    setError(errorMessage)
     // Clear error after 5 seconds
-    setTimeout(() => setError(null), 5000);
-  };
+    setTimeout(() => setError(null), 5000)
+  }
 
   const handleDelete = async (documentId: string) => {
     try {
-      await documentService.deleteDocument(documentId);
-      setDocuments(prev => prev.filter(doc => doc.id !== documentId));
+      await documentService.deleteDocument(documentId)
+      setDocuments((prev) => prev.filter((doc) => doc.id !== documentId))
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete document');
+      setError(err instanceof Error ? err.message : 'Failed to delete document')
     }
-  };
+  }
 
   const handleReprocess = async (documentId: string) => {
     try {
-      await documentService.updateDocumentStatus(documentId, 'pending');
+      await documentService.updateDocumentStatus(documentId, 'pending')
       // Reload documents to show updated status
-      await loadDocuments();
+      await loadDocuments()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to re-process document');
+      setError(err instanceof Error ? err.message : 'Failed to re-process document')
     }
-  };
+  }
 
   // RBAC: Determine permissions
   const canUpload = () => {
     if (currentUser.role === 'manager') {
-      return currentUser.managed_projects?.includes(projectId) ?? false;
+      return currentUser.managed_projects?.includes(projectId) ?? false
     }
     if (currentUser.role === 'subcontractor') {
-      return currentUser.assigned_projects?.includes(projectId) ?? false;
+      return currentUser.assigned_projects?.includes(projectId) ?? false
     }
     if (currentUser.role === 'broker') {
-      return true; // Brokers can upload for their clients
+      return true // Brokers can upload for their clients
     }
-    return false;
-  };
+    return false
+  }
 
   const canDelete = (document: Document) => {
     if (currentUser.role === 'manager') {
-      return currentUser.managed_projects?.includes(document.project_id) ?? false;
+      return currentUser.managed_projects?.includes(document.project_id) ?? false
     }
     if (currentUser.role === 'subcontractor') {
-      return document.uploader_id === currentUser.id;
+      return document.uploader_id === currentUser.id
     }
     if (currentUser.role === 'broker') {
-      return document.uploader_id === currentUser.id;
+      return document.uploader_id === currentUser.id
     }
-    return false;
-  };
+    return false
+  }
 
   const canReprocess = (document: Document) => {
     // Same logic as delete for MVP
-    return canDelete(document);
-  };
+    return canDelete(document)
+  }
 
   return (
     <Stack
@@ -187,7 +187,14 @@ export const DocumentManagementPage: React.FC<DocumentManagementPageProps> = ({
       )}
 
       {loading ? (
-        <Stack style={{ alignItems: 'center', justifyContent: 'center', paddingTop: '48px', paddingBottom: '48px' }}>
+        <Stack
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingTop: '48px',
+            paddingBottom: '48px',
+          }}
+        >
           <Loader2 size={32} color="var(--color-teal-9)" className="animate-spin" />
         </Stack>
       ) : (
@@ -200,5 +207,5 @@ export const DocumentManagementPage: React.FC<DocumentManagementPageProps> = ({
         />
       )}
     </Stack>
-  );
-};
+  )
+}

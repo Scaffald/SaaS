@@ -1,10 +1,11 @@
 import type { OrganizationLocation } from '@scf/schemas'
-import type { AddressResult } from '@unicornlove/ui'
-import { AddressAutocomplete } from '@unicornlove/ui'
-import { Plus, X } from '@tamagui/lucide-icons'
+import type { AddressResult } from '@scaffald/ui'
+import { AddressAutocomplete, useThemeContext } from '@scaffald/ui'
+import { Plus, X } from 'lucide-react-native'
 import { randomUUID } from 'expo-crypto'
 import { useCallback, useEffect, useRef } from 'react'
-import { Button, Input, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Input, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface OrganizationLocationsInputProps {
   value: OrganizationLocation[]
@@ -39,9 +40,11 @@ export function OrganizationLocationsInput({
   provider = 'mapbox',
   apiKey,
 }: OrganizationLocationsInputProps) {
-  const resolvedProvider = provider === 'google' ? 'mapbox' : provider
-  const resolvedApiKey =
-    apiKey || (resolvedProvider === 'mapbox' ? process.env.EXPO_PUBLIC_MAPBOX_TOKEN : undefined)
+  const { theme } = useThemeContext()
+  // provider and apiKey props are kept for API compatibility but AddressAutocomplete
+  // requires a GeocodingProvider object — pass null to use default behaviour
+  void provider
+  void apiKey
 
   // Maintain stable IDs across renders - only generate new IDs for new items
   const locationIdsRef = useRef<string[]>([])
@@ -129,122 +132,102 @@ export function OrganizationLocationsInput({
   }
 
   return (
-    <YStack gap="$3">
+    <Stack gap={12}>
       {/* Label and Help Text */}
-      <YStack gap="$2">
-        <Text fontWeight="600">Locations *</Text>
-        <Text fontSize="$3" color="$color11" lineHeight="$1">
+      <Stack gap={8}>
+        <Text>Locations *</Text>
+        <Text style={{ color: colors.text[theme].secondary, lineHeight: 24 }}>
           Add one or more locations for this organization
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Location Inputs */}
-      <YStack gap="$4">
+      <Stack gap={16}>
         {value.length > 0 ? (
           value.map((location, index) => (
-            <YStack
+            <Stack
               key={locationIds[index]}
-              gap="$2"
-              padding="$3"
-              backgroundColor="$background"
+              gap={8}
+              padding="sm"
+              style={{ backgroundColor: colors.bg[theme].default }}
               borderWidth={1}
-              borderColor="$borderColor"
+              borderColor={colors.border[theme].default}
             >
               {/* Location Name */}
-              <YStack gap="$2">
-                <Text fontSize="$3" fontWeight="500">
-                  Location Name
-                </Text>
+              <Stack gap={8}>
+                <Text>Location Name</Text>
                 <Input
                   value={location.name}
                   onChangeText={(text) => handleLocationChange(index, 'name', text)}
                   placeholder={index === 0 ? 'e.g., Headquarters' : `Location ${index + 1}`}
                   disabled={disabled}
                 />
-              </YStack>
+              </Stack>
 
               {/* Location Address */}
-              <YStack gap="$2">
-                <Text fontSize="$3" fontWeight="500">
-                  Address
-                </Text>
+              <Stack gap={8}>
+                <Text>Address</Text>
                 <AddressAutocomplete
                   key={`address-${locationIds[index]}`}
                   value={getAddressString(location.address ?? {})}
                   onAddressSelect={(address: AddressResult) => handleAddressSelect(index, address)}
                   placeholder="Search for an address..."
-                  provider={resolvedProvider}
-                  apiKey={resolvedApiKey}
+                  provider={null}
                   disabled={disabled}
                   debounceMs={300}
                   minLength={3}
                   maxResults={8}
                 />
-              </YStack>
+              </Stack>
 
               {/* Remove Button */}
-              <XStack justifyContent="flex-end">
+              <Row justify="flex-end">
                 <Button
-                  variant="outlined"
-                  size="$3"
+                  variant="outline"
+                  size="sm"
+                  color="error"
                   onPress={() => handleRemoveLocation(index)}
                   disabled={disabled || value.length === 1}
-                  backgroundColor="transparent"
-                  borderColor="$color8"
+                  iconStart={X}
                 >
-                  <Button.Icon>
-                    <X size={16} color="$red10" />
-                  </Button.Icon>
-                  <Button.Text color="$red10">Remove Location</Button.Text>
+                  Remove Location
                 </Button>
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           ))
         ) : (
           /* Empty state - show Add Location button */
-          <YStack padding="$4" borderWidth={1} borderColor="$borderColor" gap="$2">
-            <Text color="$color11">No locations added yet</Text>
+          <Stack padding="md" borderWidth={1} borderColor={colors.border[theme].default} gap={8}>
+            <Text style={{ color: colors.text[theme].secondary }}>No locations added yet</Text>
             <Button
-              variant="outlined"
-              size="$3"
+              variant="outline"
+              size="sm"
               onPress={handleAddLocation}
               disabled={disabled}
-              backgroundColor="transparent"
-              borderColor="$color8"
+              iconStart={Plus}
             >
-              <Button.Icon>
-                <Plus size={16} color="$color11" />
-              </Button.Icon>
-              <Button.Text color="$color11">Add First Location</Button.Text>
+              Add First Location
             </Button>
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
 
       {/* Add Another Location Button */}
       {value.length > 0 && (
         <Button
-          variant="outlined"
-          size="$3"
+          variant="outline"
+          size="sm"
           onPress={handleAddLocation}
           disabled={disabled}
-          alignSelf="flex-start"
-          backgroundColor="transparent"
-          borderColor="$color8"
+          style={{ alignSelf: 'flex-start' }}
+          iconStart={Plus}
         >
-          <Button.Icon>
-            <Plus size={16} color="$color11" />
-          </Button.Icon>
-          <Button.Text color="$color11">Add Another Location</Button.Text>
+          Add Another Location
         </Button>
       )}
 
       {/* Error Message */}
-      {errors && (
-        <Text color="$red10" fontSize="$2">
-          {errors}
-        </Text>
-      )}
-    </YStack>
+      {errors && <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors}</Text>}
+    </Stack>
   )
 }

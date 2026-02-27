@@ -40,18 +40,11 @@ This directory contains streamlined Cursor rules that establish guard rails and 
 - Assume Expo dev server running on localhost:8081
 - Test on actual devices when possible
 
-### 6. `ui-development.mdc`
-**UI component standards** - Auto-attached to UI files:
-- Prefer Tamagui vanilla components and Bento components
-- Create reusable, cross-platform components in `packages/ui/`
+### 6. `beyond-ui-properties.mdc`
+**UI component and styling standards** - Auto-attached to UI files:
+- Prefer Beyond UI components from `@unicornlove/beyond-ui`
+- Create reusable, cross-platform components; use tokens from the Beyond UI package
 - Document components thoroughly with JSDoc
-
-### 7. `ui-package-hybrid.mdc`
-**UI Package Hybrid Maintenance** - Auto-attached to UI package files:
-- Understand dual repository structure (monorepo + standalone)
-- Development in `packages/ui/` (source of truth), publishing from standalone repo
-- Monorepo consumes published npm package `@unicornlove/ui@^1.0.1`
-- Use sync workflow for publishing changes
 - See detailed workflow and rules in this file
 
 ### 8. `avoid-barrel-files.mdc`

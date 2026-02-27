@@ -2,284 +2,35 @@
  * CommentThread - Threaded comments component
  */
 
-import { styled, YStack, XStack, Text, View, type YStackProps, TextArea } from 'tamagui'
-import { Send, MoreHorizontal, Reply, Heart } from '@tamagui/lucide-icons'
+import { Stack, Row, Box, Text } from '@scaffald/ui'
+import { colors, spacing, borderRadius } from '@scaffald/ui/tokens'
+import type { StackProps } from '@scaffald/ui'
+import { Send, MoreHorizontal, Reply, Heart } from 'lucide-react-native'
 import { useState } from 'react'
+import { Pressable, TextInput } from 'react-native'
 
 export interface Comment {
   id: string
-  /** Author name */
   author: string
-  /** Author avatar URL */
   authorAvatar?: string
-  /** Comment content */
   content: string
-  /** Creation timestamp */
   createdAt: string
-  /** Whether the comment is edited */
   edited?: boolean
-  /** Number of likes */
   likes?: number
-  /** Whether current user liked this comment */
   liked?: boolean
-  /** Nested replies */
   replies?: Comment[]
 }
 
-export interface CommentThreadProps extends Omit<YStackProps, 'children'> {
-  /** Array of comments */
+export interface CommentThreadProps extends Omit<StackProps, 'children'> {
   comments: Comment[]
-  /** Title for the thread */
   title?: string
-  /** Placeholder for new comment input */
   placeholder?: string
-  /** Current user name */
   currentUser?: string
-  /** Callback when a new comment is submitted */
   onSubmit?: (content: string, parentId?: string) => void
-  /** Callback when a comment is liked */
   onLike?: (commentId: string) => void
-  /** Whether to show the input field */
   showInput?: boolean
-  /** Maximum nesting level for replies */
   maxNestingLevel?: number
 }
-
-const ThreadContainer = styled(YStack, {
-  name: 'CommentThread',
-  backgroundColor: '$background',
-  borderRadius: '$lg',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  overflow: 'hidden',
-})
-
-const ThreadHeader = styled(XStack, {
-  name: 'CommentThreadHeader',
-  padding: '$3',
-  backgroundColor: '$color2',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-})
-
-const ThreadTitle = styled(Text, {
-  name: 'CommentThreadTitle',
-  fontSize: '$4',
-  fontWeight: '600',
-  color: '$color12',
-})
-
-const CommentCount = styled(Text, {
-  name: 'CommentCount',
-  fontSize: '$2',
-  color: '$color9',
-  backgroundColor: '$color4',
-  paddingHorizontal: '$2',
-  paddingVertical: '$1',
-  borderRadius: '$full',
-})
-
-const CommentsList = styled(YStack, {
-  name: 'CommentsList',
-  padding: '$3',
-  gap: '$3',
-})
-
-const CommentContainer = styled(YStack, {
-  name: 'CommentContainer',
-  gap: '$2',
-})
-
-const CommentRow = styled(XStack, {
-  name: 'CommentRow',
-  gap: '$3',
-  alignItems: 'flex-start',
-})
-
-const Avatar = styled(View, {
-  name: 'CommentAvatar',
-  width: 36,
-  height: 36,
-  borderRadius: '$full',
-  backgroundColor: '$color4',
-  alignItems: 'center',
-  justifyContent: 'center',
-  overflow: 'hidden',
-})
-
-const AvatarImage = styled(View, {
-  name: 'CommentAvatarImage',
-  width: '100%',
-  height: '100%',
-})
-
-const AvatarFallback = styled(Text, {
-  name: 'CommentAvatarFallback',
-  fontSize: '$3',
-  fontWeight: '600',
-  color: '$color11',
-})
-
-const CommentContent = styled(YStack, {
-  name: 'CommentContent',
-  flex: 1,
-  gap: '$1',
-})
-
-const CommentHeader = styled(XStack, {
-  name: 'CommentHeader',
-  alignItems: 'center',
-  gap: '$2',
-})
-
-const AuthorName = styled(Text, {
-  name: 'CommentAuthorName',
-  fontSize: '$3',
-  fontWeight: '600',
-  color: '$color12',
-})
-
-const CommentTime = styled(Text, {
-  name: 'CommentTime',
-  fontSize: '$2',
-  color: '$color9',
-})
-
-const EditedBadge = styled(Text, {
-  name: 'CommentEditedBadge',
-  fontSize: '$1',
-  color: '$color8',
-  fontStyle: 'italic',
-})
-
-const CommentText = styled(Text, {
-  name: 'CommentText',
-  fontSize: '$3',
-  color: '$color11',
-  lineHeight: 22,
-})
-
-const CommentActions = styled(XStack, {
-  name: 'CommentActions',
-  gap: '$3',
-  marginTop: '$1',
-})
-
-const ActionButton = styled(XStack, {
-  name: 'CommentActionButton',
-  alignItems: 'center',
-  gap: '$1',
-  cursor: 'pointer',
-
-  hoverStyle: {
-    opacity: 0.7,
-  },
-})
-
-const ActionText = styled(Text, {
-  name: 'CommentActionText',
-  fontSize: '$2',
-  color: '$color9',
-})
-
-const LikeText = styled(Text, {
-  name: 'CommentLikeText',
-  fontSize: '$2',
-
-  variants: {
-    liked: {
-      true: {
-        color: '$red10',
-      },
-      false: {
-        color: '$color9',
-      },
-    },
-  } as const,
-})
-
-const RepliesContainer = styled(YStack, {
-  name: 'CommentRepliesContainer',
-  marginLeft: '$6',
-  paddingLeft: '$3',
-  borderLeftWidth: 2,
-  borderLeftColor: '$borderColor',
-  gap: '$3',
-})
-
-const InputContainer = styled(XStack, {
-  name: 'CommentInputContainer',
-  padding: '$3',
-  borderTopWidth: 1,
-  borderTopColor: '$borderColor',
-  gap: '$3',
-  alignItems: 'flex-start',
-})
-
-const InputWrapper = styled(YStack, {
-  name: 'CommentInputWrapper',
-  flex: 1,
-  gap: '$2',
-})
-
-const StyledTextArea = styled(TextArea, {
-  name: 'CommentTextArea',
-  backgroundColor: '$color2',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  borderRadius: '$md',
-  padding: '$3',
-  fontSize: '$3',
-  minHeight: 80,
-
-  focusStyle: {
-    borderColor: '$blue7',
-  },
-})
-
-const SubmitButton = styled(XStack, {
-  name: 'CommentSubmitButton',
-  width: 36,
-  height: 36,
-  borderRadius: '$full',
-  backgroundColor: '$blue7',
-  alignItems: 'center',
-  justifyContent: 'center',
-  cursor: 'pointer',
-
-  variants: {
-    disabled: {
-      true: {
-        opacity: 0.5,
-        cursor: 'not-allowed',
-      },
-    },
-  } as const,
-
-  hoverStyle: {
-    backgroundColor: '$blue8',
-  },
-
-  pressStyle: {
-    scale: 0.95,
-    backgroundColor: '$blue9',
-  },
-})
-
-const EmptyState = styled(YStack, {
-  name: 'CommentEmptyState',
-  padding: '$6',
-  alignItems: 'center',
-  gap: '$2',
-})
-
-const EmptyText = styled(Text, {
-  name: 'CommentEmptyText',
-  fontSize: '$3',
-  color: '$color9',
-})
 
 function formatTimeAgo(dateString: string): string {
   const date = new Date(dateString)
@@ -325,51 +76,86 @@ function CommentItem({
   onReply?: (commentId: string) => void
 }) {
   return (
-    <CommentContainer>
-      <CommentRow>
-        <Avatar>
-          {comment.authorAvatar ? (
-            <AvatarImage />
-          ) : (
-            <AvatarFallback>{getInitials(comment.author)}</AvatarFallback>
-          )}
-        </Avatar>
+    <Stack gap={spacing[8]}>
+      <Row gap={spacing[12]} align="flex-start">
+        <Box
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: borderRadius.max,
+            backgroundColor: colors.gray[200],
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+          }}
+        >
+          <Text size="md" weight="semibold" style={{ color: colors.gray[700] }}>
+            {comment.authorAvatar ? '' : getInitials(comment.author)}
+          </Text>
+        </Box>
 
-        <CommentContent>
-          <CommentHeader>
-            <AuthorName>{comment.author}</AuthorName>
-            <CommentTime>{formatTimeAgo(comment.createdAt)}</CommentTime>
-            {comment.edited && <EditedBadge>(edited)</EditedBadge>}
-          </CommentHeader>
-
-          <CommentText>{comment.content}</CommentText>
-
-          <CommentActions>
-            <ActionButton onPress={() => onLike?.(comment.id)}>
-              <Heart
-                size={14}
-                color={comment.liked ? '$red10' : '$color9'}
-                fill={comment.liked ? '$red10' : 'transparent'}
-              />
-              <LikeText liked={comment.liked}>
-                {comment.likes || 0} {comment.likes === 1 ? 'like' : 'likes'}
-              </LikeText>
-            </ActionButton>
-            {nestingLevel < maxNestingLevel && (
-              <ActionButton onPress={() => onReply?.(comment.id)}>
-                <Reply size={14} color="$color9" />
-                <ActionText>Reply</ActionText>
-              </ActionButton>
+        <Stack flex={1} gap={spacing[4]}>
+          <Row align="center" gap={spacing[8]}>
+            <Text size="md" weight="semibold" style={{ color: colors.gray[800] }}>
+              {comment.author}
+            </Text>
+            <Text size="sm" style={{ color: colors.gray[500] }}>
+              {formatTimeAgo(comment.createdAt)}
+            </Text>
+            {comment.edited && (
+              <Text size="xs" style={{ color: colors.gray[400], fontStyle: 'italic' }}>
+                (edited)
+              </Text>
             )}
-            <ActionButton>
-              <MoreHorizontal size={14} color="$color9" />
-            </ActionButton>
-          </CommentActions>
-        </CommentContent>
-      </CommentRow>
+          </Row>
+
+          <Text size="md" style={{ color: colors.gray[700], lineHeight: 22 }}>
+            {comment.content}
+          </Text>
+
+          <Row gap={spacing[12]} style={{ marginTop: spacing[4] }}>
+            <Pressable onPress={() => onLike?.(comment.id)}>
+              <Row align="center" gap={spacing[4]}>
+                <Heart
+                  size={14}
+                  color={comment.liked ? colors.error[600] : colors.gray[500]}
+                  fill={comment.liked ? colors.error[600] : 'transparent'}
+                />
+                <Text
+                  size="sm"
+                  style={{ color: comment.liked ? colors.error[600] : colors.gray[500] }}
+                >
+                  {comment.likes || 0} {comment.likes === 1 ? 'like' : 'likes'}
+                </Text>
+              </Row>
+            </Pressable>
+            {nestingLevel < maxNestingLevel && (
+              <Pressable onPress={() => onReply?.(comment.id)}>
+                <Row align="center" gap={spacing[4]}>
+                  <Reply size={14} color={colors.gray[500]} />
+                  <Text size="sm" style={{ color: colors.gray[500] }}>
+                    Reply
+                  </Text>
+                </Row>
+              </Pressable>
+            )}
+            <Pressable>
+              <MoreHorizontal size={14} color={colors.gray[500]} />
+            </Pressable>
+          </Row>
+        </Stack>
+      </Row>
 
       {comment.replies && comment.replies.length > 0 && (
-        <RepliesContainer>
+        <Stack
+          gap={spacing[12]}
+          style={{
+            marginLeft: spacing[24],
+            paddingLeft: spacing[12],
+            borderLeftWidth: 2,
+            borderLeftColor: colors.border?.default ?? colors.gray[200],
+          }}
+        >
           {comment.replies.map((reply) => (
             <CommentItem
               key={reply.id}
@@ -380,9 +166,9 @@ function CommentItem({
               onReply={onReply}
             />
           ))}
-        </RepliesContainer>
+        </Stack>
       )}
-    </CommentContainer>
+    </Stack>
   )
 }
 
@@ -415,18 +201,51 @@ export function CommentThread({
   }
 
   return (
-    <ThreadContainer {...props}>
-      <ThreadHeader>
-        <ThreadTitle>{title}</ThreadTitle>
-        <CommentCount>{totalComments}</CommentCount>
-      </ThreadHeader>
+    <Stack
+      style={{
+        backgroundColor: colors.bg?.primary ?? colors.gray[50],
+        borderRadius: borderRadius.l,
+        borderWidth: 1,
+        borderColor: colors.border?.default ?? colors.gray[200],
+        overflow: 'hidden',
+      }}
+      {...props}
+    >
+      <Row
+        align="center"
+        justify="space-between"
+        style={{
+          padding: spacing[12],
+          backgroundColor: colors.gray[100],
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border?.default ?? colors.gray[200],
+        }}
+      >
+        <Text size="lg" weight="semibold" style={{ color: colors.gray[800] }}>
+          {title}
+        </Text>
+        <Box
+          style={{
+            backgroundColor: colors.gray[200],
+            paddingHorizontal: spacing[8],
+            paddingVertical: spacing[4],
+            borderRadius: borderRadius.max,
+          }}
+        >
+          <Text size="sm" style={{ color: colors.gray[500] }}>
+            {totalComments}
+          </Text>
+        </Box>
+      </Row>
 
       {comments.length === 0 ? (
-        <EmptyState>
-          <EmptyText>No comments yet. Be the first to comment!</EmptyText>
-        </EmptyState>
+        <Stack align="center" gap={spacing[8]} style={{ padding: spacing[24] }}>
+          <Text size="md" style={{ color: colors.gray[500] }}>
+            No comments yet. Be the first to comment!
+          </Text>
+        </Stack>
       ) : (
-        <CommentsList>
+        <Stack gap={spacing[12]} style={{ padding: spacing[12] }}>
           {comments.map((comment) => (
             <CommentItem
               key={comment.id}
@@ -436,39 +255,81 @@ export function CommentThread({
               onReply={handleReply}
             />
           ))}
-        </CommentsList>
+        </Stack>
       )}
 
       {showInput && (
-        <InputContainer>
-          <Avatar>
-            <AvatarFallback>{getInitials(currentUser)}</AvatarFallback>
-          </Avatar>
-          <InputWrapper>
+        <Row
+          align="flex-start"
+          gap={spacing[12]}
+          style={{
+            padding: spacing[12],
+            borderTopWidth: 1,
+            borderTopColor: colors.border?.default ?? colors.gray[200],
+          }}
+        >
+          <Box
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: borderRadius.max,
+              backgroundColor: colors.gray[200],
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text size="md" weight="semibold" style={{ color: colors.gray[700] }}>
+              {getInitials(currentUser)}
+            </Text>
+          </Box>
+          <Stack flex={1} gap={spacing[8]}>
             {replyingTo && (
-              <XStack alignItems="center" gap="$2">
-                <Reply size={12} color="$color9" />
-                <Text fontSize="$2" color="$color9">
+              <Row align="center" gap={spacing[8]}>
+                <Reply size={12} color={colors.gray[500]} />
+                <Text size="sm" style={{ color: colors.gray[500] }}>
                   Replying to comment
                 </Text>
-                <ActionButton onPress={() => setReplyingTo(null)}>
-                  <Text fontSize="$2" color="$blue10">
+                <Pressable onPress={() => setReplyingTo(null)}>
+                  <Text size="sm" style={{ color: colors.info[600] }}>
                     Cancel
                   </Text>
-                </ActionButton>
-              </XStack>
+                </Pressable>
+              </Row>
             )}
-            <StyledTextArea
+            <TextInput
               placeholder={placeholder}
               value={newComment}
               onChangeText={setNewComment}
+              multiline
+              style={{
+                backgroundColor: colors.gray[100],
+                borderWidth: 1,
+                borderColor: colors.border?.default ?? colors.gray[200],
+                borderRadius: borderRadius.m,
+                padding: spacing[12],
+                fontSize: 14,
+                minHeight: 80,
+                color: colors.gray[800],
+              }}
             />
-          </InputWrapper>
-          <SubmitButton disabled={!newComment.trim()} onPress={handleSubmit}>
+          </Stack>
+          <Pressable
+            onPress={handleSubmit}
+            disabled={!newComment.trim()}
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: borderRadius.max,
+              backgroundColor: colors.info[600],
+              alignItems: 'center',
+              justifyContent: 'center',
+              opacity: !newComment.trim() ? 0.5 : 1,
+            }}
+          >
             <Send size={16} color="white" />
-          </SubmitButton>
-        </InputContainer>
+          </Pressable>
+        </Row>
       )}
-    </ThreadContainer>
+    </Stack>
   )
 }

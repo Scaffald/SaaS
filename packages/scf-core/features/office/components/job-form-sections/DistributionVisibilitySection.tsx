@@ -1,6 +1,7 @@
-import { Input, Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
+import { Input, Text, ToggleSwitch, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { useState } from 'react'
-import { Label } from '@unicornlove/ui'
+import { Label } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface DistributionVisibilitySectionProps {
   isFeatured?: boolean
@@ -22,6 +23,7 @@ export function DistributionVisibilitySection({
   externalApplicationUrl,
   onUpdate,
 }: DistributionVisibilitySectionProps) {
+  const { theme } = useThemeContext()
   const [localState, setLocalState] = useState({
     is_featured: isFeatured,
     featured_until: featuredUntil,
@@ -39,52 +41,50 @@ export function DistributionVisibilitySection({
   }
 
   return (
-    <YStack
-      gap="$4"
-      padding="$4"
-      backgroundColor="$background"
-      borderRadius="$4"
+    <Stack
+      gap={16}
+      padding="md"
+      style={{ backgroundColor: colors.bg[theme].default }}
+      borderRadius={16}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
     >
-      <Text fontSize="$6" fontWeight="600">
-        Distribution & Visibility
-      </Text>
-      <Text fontSize="$2" color="$color10">
+      <Text>Distribution & Visibility</Text>
+      <Text style={{ color: colors.text[theme].secondary }}>
         Control job posting visibility and distribution
       </Text>
 
       {/* Is Featured */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Featured job</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Highlight this job in listings
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.is_featured || false}
-          onCheckedChange={(checked) => handleChange('is_featured', checked)}
+          onChange={(checked) => handleChange('is_featured', checked)}
           aria-label="Featured job"
         />
-      </XStack>
+      </Row>
 
       {localState.is_featured && (
-        <YStack gap="$2">
+        <Stack gap={8}>
           <Label>Featured until</Label>
           <Input
             placeholder="YYYY-MM-DD"
             value={localState.featured_until || ''}
             onChangeText={(text) => handleChange('featured_until', text || undefined)}
           />
-          <Text fontSize="$2" color="$color10">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Date when featured status expires
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {/* SEO Keywords */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>SEO keywords</Label>
         <Input
           placeholder="e.g. construction, foreman, supervisor"
@@ -97,23 +97,23 @@ export function DistributionVisibilitySection({
             handleChange('seo_keywords', keywords.length > 0 ? keywords : undefined)
           }}
         />
-        <Text fontSize="$2" color="$color10">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Comma-separated keywords for search optimization
         </Text>
-      </YStack>
+      </Stack>
 
       {/* External Application URL */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>External application URL</Label>
         <Input
           placeholder="https://example.com/apply"
           value={localState.external_application_url || ''}
           onChangeText={(text) => handleChange('external_application_url', text || undefined)}
         />
-        <Text fontSize="$2" color="$color10">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Redirect to external ATS for applications
         </Text>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

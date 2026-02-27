@@ -1,14 +1,10 @@
 import { OfficePageLayout } from '@scf/core/features/office/components/OfficePageLayout'
-import type { AppRouter } from '@scf/supabase/client-types'
+import type { AdminAccessLogEntry } from '@scaffald/sdk'
 import type { ColumnDef } from '@tanstack/react-table'
-import type { inferRouterOutputs } from '@trpc/server'
 import { type Dispatch, type SetStateAction, useMemo } from 'react'
 
-type RouterOutputs = inferRouterOutputs<AppRouter>
-type AuditLogEntry = RouterOutputs['backgroundChecks']['adminGetAccessLog'][number]
-
 interface AdminAuditLogPanelProps {
-  entries: AuditLogEntry[]
+  entries: AdminAccessLogEntry[]
   isLoading: boolean
   searchValue: string
   onSearchChange: Dispatch<SetStateAction<string>>

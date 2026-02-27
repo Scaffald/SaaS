@@ -31,7 +31,7 @@ export function initSentry() {
       dsn: SENTRY_DSN_WEB,
       environment: APP_ENV,
       release: `web@${APP_VERSION}`,
-      dist: RUNTIME_VERSION,
+      dist: typeof RUNTIME_VERSION === 'string' ? RUNTIME_VERSION : undefined,
 
       // Performance Monitoring
       tracesSampleRate: getTraceSampleRate(),
@@ -138,4 +138,3 @@ export function setContext(name: string, context: Record<string, unknown>) {
 
 // Export Sentry for advanced usage
 export { Sentry }
-

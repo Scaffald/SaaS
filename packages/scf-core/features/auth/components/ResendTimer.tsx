@@ -1,8 +1,7 @@
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import { RefreshCcw } from '@tamagui/lucide-icons'
+import { RefreshCcw } from 'lucide-react-native'
 import { useEffect, useRef, useState } from 'react'
-import { Button, Paragraph } from '@unicornlove/ui'
-
+import { Button } from '@scaffald/ui'
 interface ResendTimerProps {
   onComplete: () => void
   onResendClick: () => void
@@ -11,8 +10,8 @@ interface ResendTimerProps {
 export function ResendTimer({ onComplete, onResendClick }: ResendTimerProps) {
   const [isTimerActive, setIsTimerActive] = useState(false)
   const [seconds, setSeconds] = useState(30)
-  const startTimeRef = useRef<number>(null)
-  const rafIdRef = useRef<number>(null)
+  const startTimeRef = useRef<number | null>(null)
+  const rafIdRef = useRef<number | null>(null)
   const { t } = useTranslation()
 
   const handleResendClick = () => {
@@ -58,26 +57,24 @@ export function ResendTimer({ onComplete, onResendClick }: ResendTimerProps) {
   if (!isTimerActive) {
     return (
       <Button
-        alignItems="center"
-        alignSelf="center"
-        gap="$2"
-        cursor="pointer"
+        variant="text"
         onPress={handleResendClick}
-        chromeless
-        width={200}
+        style={{ alignSelf: 'center', width: 200 }}
+        iconStart={RefreshCcw}
       >
-        <RefreshCcw size={12} color="$blue10" />
-        <Paragraph color="$blue10">{t('auth.verify.resendButtonLabel')}</Paragraph>
+        {t('auth.verify.resendButtonLabel')}
       </Button>
     )
   }
 
   return (
-    <Button alignItems="center" alignSelf="center" gap="$2" cursor="pointer" chromeless width={200}>
-      <RefreshCcw size={12} color="$color10" />
-      <Paragraph color="$color10" textAlign="right" fontSize="$1">
-        {seconds === 1 ? t('auth.verify.resendInOne') : t('auth.verify.resendIn', { seconds })}
-      </Paragraph>
+    <Button
+      variant="text"
+      disabled
+      style={{ alignSelf: 'center', width: 200 }}
+      iconStart={RefreshCcw}
+    >
+      {seconds === 1 ? t('auth.verify.resendInOne') : t('auth.verify.resendIn', { seconds })}
     </Button>
   )
 }

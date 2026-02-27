@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Circle, Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 import type { BackgroundCheckWizardStep } from '../hooks/useBackgroundCheckForm'
 
@@ -23,32 +23,30 @@ export const ProgressIndicator = memo(function ProgressIndicator({
   const currentIndex = steps.indexOf(currentStep)
 
   return (
-    <XStack gap="$3" alignItems="center">
+    <Row gap={12} align="center">
       {steps.map((step, index) => {
         const isCompleted = index < currentIndex
         const isActive = index === currentIndex
         const variant = isActive ? '$color10' : isCompleted ? '$green9' : '$color6'
 
         return (
-          <YStack key={step} alignItems="center" gap="$1">
-            <Circle
-              size={36}
+          <Stack key={step} align="center" gap={4}>
+            <Stack
+              width={36}
+              height={36}
               backgroundColor={variant}
               borderWidth={2}
               borderColor={isActive ? '$color12' : '$color7'}
-              alignItems="center"
-              justifyContent="center"
+              borderRadius={18}
+              align="center"
+              justify="center"
             >
-              <Text color="$color1" fontWeight="bold">
-                {index + 1}
-              </Text>
-            </Circle>
-            <Text fontSize="$2" color={isActive ? '$color12' : '$color10'}>
-              {STEP_LABELS[step]}
-            </Text>
-          </YStack>
+              <Text color="$gray11">{index + 1}</Text>
+            </Stack>
+            <Text color={isActive ? '$color12' : '$color10'}>{STEP_LABELS[step]}</Text>
+          </Stack>
         )
       })}
-    </XStack>
+    </Row>
   )
 })

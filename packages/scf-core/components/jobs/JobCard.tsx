@@ -1,7 +1,7 @@
-import { Briefcase, Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
+import { Briefcase, Building2, Clock, DollarSign, MapPin } from 'lucide-react-native'
+import type { ComponentRef } from 'react'
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from '@unicornlove/ui'
-import { Paragraph, Text, XStack } from '@unicornlove/ui'
+import { Paragraph, Text, Row } from '@scaffald/ui'
 import {
   CardActions,
   CardBadges,
@@ -10,7 +10,7 @@ import {
   SelectableCard,
   type BadgeConfig,
   type MetadataItem,
-} from '@unicornlove/ui'
+} from '@scaffald/ui'
 
 /**
  * Job card organization data
@@ -126,7 +126,7 @@ function formatRelativeTime(dateString?: string): string {
  * ```
  */
 export const JobCard = memo(
-  forwardRef<TamaguiElement, JobCardProps>(
+  forwardRef<ComponentRef<typeof SelectableCard>, JobCardProps>(
     (
       {
         id,
@@ -159,7 +159,7 @@ export const JobCard = memo(
       if (location) {
         metadataItems.push({
           key: 'location',
-          icon: <MapPin size={14} color={isSelected ? '$color1' : '$color10'} />,
+          icon: <MapPin size="md" color={isSelected ? '$color1' : '$color10'} />,
           label: location,
         })
       }
@@ -167,7 +167,7 @@ export const JobCard = memo(
       if (employment) {
         metadataItems.push({
           key: 'employment',
-          icon: <Briefcase size={14} color={isSelected ? '$color1' : '$color10'} />,
+          icon: <Briefcase size="md" color={isSelected ? '$color1' : '$color10'} />,
           label: employment,
         })
       }
@@ -175,7 +175,7 @@ export const JobCard = memo(
       if (postedTime) {
         metadataItems.push({
           key: 'posted',
-          icon: <Clock size={14} color={isSelected ? '$color1' : '$color9'} />,
+          icon: <Clock size="md" color={isSelected ? '$color1' : '$color9'} />,
           label: postedTime,
         })
       }
@@ -214,64 +214,57 @@ export const JobCard = memo(
           }
         >
           {/* Header */}
-          <XStack justifyContent="space-between" alignItems="center">
+          <Row justify="space-between" align="center">
             <CardHeader
               title={title}
-              subtitle={
-                organization ? (
-                  <XStack gap="$2" alignItems="center">
-                    <Building2 size={16} color={isSelected ? '$color1' : '$color11'} />
-                    <Text
-                      fontSize="$3"
-                      color={isSelected ? '$color1' : '$color11'}
-                      fontWeight="600"
+              subtitle={organization?.name}
+              children={undefined}
+              action={
+                <>
+                  {hasApplied && (
+                    <Row
+                      backgroundColor="$green9"
+                      paddingHorizontal={8}
+                      paddingVertical={4}
+                      borderRadius={8}
                     >
-                      {organization.name}
-                    </Text>
-                  </XStack>
-                ) : undefined
-              }
-              isSelected={isSelected}
-              badge={
-                hasApplied ? (
-                  <XStack
-                    backgroundColor="$green9"
-                    paddingHorizontal="$2"
-                    paddingVertical="$1"
-                    borderRadius="$2"
-                  >
-                    <Text color="$green1" fontSize="$2" fontWeight="600">
-                      Applied
-                    </Text>
-                  </XStack>
-                ) : undefined
+                      <Text color="$green1">Applied</Text>
+                    </Row>
+                  )}
+                  {organization && (
+                    <Row gap={8} align="center">
+                      <Building2 size="lg" color={isSelected ? '$color1' : '$color11'} />
+                      <Text color={isSelected ? '$color1' : '$color11'}>{organization.name}</Text>
+                    </Row>
+                  )}
+                </>
               }
             />
-          </XStack>
+          </Row>
 
           {/* Remote option chip */}
           {remoteOption && (
-            <XStack gap="$2">
-              <XStack
+            <Row gap={8}>
+              <Row
                 backgroundColor="$blue8"
-                paddingHorizontal="$2"
-                paddingVertical="$1"
-                borderRadius="$2"
+                paddingHorizontal={8}
+                paddingVertical={4}
+                borderRadius={8}
               >
-                <Text color="white" fontSize="$2" fontWeight="600">
+                <Text color="white">
                   {remoteOption === 'on_site'
                     ? 'On-site'
                     : remoteOption === 'hybrid'
                       ? 'Hybrid'
                       : 'Remote'}
                 </Text>
-              </XStack>
-            </XStack>
+              </Row>
+            </Row>
           )}
 
           {/* Description */}
           {description && (
-            <Paragraph size="$3" color={isSelected ? '$color1' : '$color11'} numberOfLines={2}>
+            <Paragraph size="sm" color={isSelected ? '$color1' : '$color11'}>
               {description}
             </Paragraph>
           )}
@@ -283,30 +276,27 @@ export const JobCard = memo(
 
           {/* Pay range */}
           {payRange && (
-            <XStack gap="$1.5" alignItems="center">
-              <DollarSign size={16} color="$green10" />
-              <Text fontSize="$3" color="$green10" fontWeight="600">
-                {payRange}
-              </Text>
-            </XStack>
+            <Row gap={6} align="center">
+              <DollarSign size="lg" color="$green10" />
+              <Text color="$green10">{payRange}</Text>
+            </Row>
           )}
 
           {/* Certifications and Skills */}
-          {badges.length > 0 && (
-            <CardBadges badges={badges} isSelected={isSelected} maxVisible={5} />
-          )}
+          {badges.length > 0 && <CardBadges badges={badges} maxBadges={5} />}
 
           {/* Actions - Only show when card is used for selection, not navigation */}
           {onSelect && (
             <CardActions
               actions={[
                 {
+                  key: 'view',
                   label: hasApplied ? 'View Application' : 'View Details',
                   onPress: onViewDetails,
-                  variant: 'primary',
+                  color: 'primary',
+                  variant: 'filled',
                 },
               ]}
-              isSelected={isSelected}
             />
           )}
         </SelectableCard>

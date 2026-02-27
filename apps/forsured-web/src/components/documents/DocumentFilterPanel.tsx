@@ -1,7 +1,6 @@
 /**
  * DocumentFilterPanel - Filter panel for document library
- * REQ-284: Document Organization by Client/Project/GC
- * TASK-1: Create Document Filter Panel Component
+ * Document filter panel - organize by client/project/GC
  *
  * Allows filtering documents by:
  * - Client (GC or Sub)
@@ -14,7 +13,7 @@
 
 import React, { useCallback, useMemo } from 'react'
 import { Loader2 } from 'lucide-react'
-import { Stack, Row, Text, Card, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Card, Grid } from '@scaffald/ui'
 import {
   DocumentFilterPanelProps,
   DocumentFilterState,

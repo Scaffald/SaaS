@@ -1,6 +1,6 @@
 /**
  * SentInvitationsCard Component Tests
- * REQ-128: Flexible Invitation System - Task 8
+ * Flexible Invitation System - Task 8
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'

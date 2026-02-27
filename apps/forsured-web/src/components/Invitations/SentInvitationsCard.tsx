@@ -1,12 +1,12 @@
 /**
  * Sent Invitations Card
- * REQ-128: Flexible Invitation System - Task 8
+ * Flexible Invitation System - Task 8
  *
  * Dashboard component that displays invitations sent by the current user.
  * Shows invitee info, status, and when the invitation was sent.
  */
 
-import { Stack, Row, Text, Button, Card, H3, Spinner } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Card, H3, Spinner } from '@scaffald/ui'
 import { Mail, Send, ChevronRight, Check, X, Clock } from 'lucide-react'
 import type React from 'react'
 import { useNavigate } from 'react-router-dom'

@@ -2,8 +2,8 @@
  * RelationshipHealthBadge - Relationship health badge using Beyond UI
  */
 import React from 'react';
-import { Row, Text } from '@unicornlove/beyond-ui';
-import { Chip as Badge } from '@unicornlove/beyond-ui';
+import { Row, Text } from '@scaffald/ui';
+import { Chip as Badge } from '@scaffald/ui';
 import { TrendingUp, TrendingDown, Minus, CheckCircle } from 'lucide-react';
 
 interface RelationshipHealthBadgeProps {

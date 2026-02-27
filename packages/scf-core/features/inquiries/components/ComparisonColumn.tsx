@@ -1,10 +1,11 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { Button, Text, XStack, YStack } from '@unicornlove/ui'
-import { Check, MessageSquare } from '@tamagui/lucide-icons'
+import { Button, Text, Row, Stack } from '@scaffald/ui'
+import { Check, MessageSquare } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
-import { Avatar, Card, type GetThemeValueForKey, Separator } from '@unicornlove/ui'
+import { Avatar, Card, Separator } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { ComparisonField } from './ComparisonField'
 import { InquiryHistoryTimeline } from './InquiryHistoryTimeline'
 
@@ -124,105 +125,83 @@ export function ComparisonColumn({
   const jobTitle = application?.job?.title ?? application?.jobTitle ?? null
 
   return (
-    <YStack
+    <Stack
       width={width}
-      gap="$3"
+      gap={12}
       backgroundColor="$background"
-      padding="$4"
-      borderRadius="$4"
+      padding="md"
+      borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
-      $sm={{ width: '100%' }}
     >
       {/* Candidate Header */}
-      <YStack gap="$2">
-        <XStack gap="$2" alignItems="center">
-          <Avatar circular size="$4">
-            <Avatar.Image src={candidateAvatar || undefined} />
-            <Avatar.Fallback backgroundColor="$blue9">
-              <Text color="white" fontWeight="600">
-                {candidateName.charAt(0).toUpperCase()}
-              </Text>
-            </Avatar.Fallback>
-          </Avatar>
-          <YStack flex={1}>
-            <Text fontSize="$5" fontWeight="600">
-              {candidateName}
-            </Text>
-            {jobTitle && (
-              <Text fontSize="$2" color="$color11">
-                {jobTitle}
-              </Text>
-            )}
-          </YStack>
+      <Stack gap={8}>
+        <Row gap={8} align="center">
+          <Avatar
+            size={40}
+            src={candidateAvatar ? { uri: candidateAvatar } : undefined}
+            initials={candidateName.charAt(0).toUpperCase()}
+          />
+          <Stack flex={1}>
+            <Text>{candidateName}</Text>
+            {jobTitle && <Text color="$gray11">{jobTitle}</Text>}
+          </Stack>
           {canRemove && onRemove && (
             <Button
-              size="$2"
-              variant="outlined"
-              color="$red11"
-              borderColor="$red8"
+              size="sm"
+              variant="outline"
+              color="error"
               onPress={() => onRemove(inquiry.id)}
             >
               Remove
             </Button>
           )}
-        </XStack>
+        </Row>
 
-        <XStack flexWrap="wrap" gap="$2">
+        <Row wrap gap={8}>
           <StatusBadge label={inquiryStatus} />
           <SubtleBadge label={`Updated ${inquiryUpdatedAt}`} />
-        </XStack>
+        </Row>
 
         {/* Section Status Badges */}
-        <XStack gap="$2" flexWrap="wrap">
+        <Row gap={8} wrap>
           {['employment', 'compensation', 'capabilities', 'other'].map((sectionName) => {
             const status = getSectionStatus(sectionName)
             const commentCount = getCommentCount(sectionName)
             return (
-              <XStack
+              <Row
                 key={sectionName}
                 backgroundColor={status.accepted ? '$green3' : '$gray3'}
-                paddingHorizontal="$2"
-                paddingVertical="$1"
-                borderRadius="$2"
-                alignItems="center"
-                gap="$1"
+                paddingHorizontal={8}
+                paddingVertical={4}
+                borderRadius={8}
+                align="center"
+                gap={4}
               >
                 {status.accepted ? (
-                  <Check size={12} color="$green11" />
+                  <Check size="sm" color="$green11" />
                 ) : (
-                  <Text fontSize="$1" color="$gray11">
-                    ○
-                  </Text>
+                  <Text color="$gray11">○</Text>
                 )}
-                <Text
-                  fontSize="$1"
-                  color={status.accepted ? '$green11' : '$gray11'}
-                  fontWeight="600"
-                >
-                  {sectionName}
-                </Text>
+                <Text color={status.accepted ? '$green11' : '$gray11'}>{sectionName}</Text>
                 {commentCount > 0 && (
-                  <XStack alignItems="center" gap="$1">
+                  <Row align="center" gap={4}>
                     <MessageSquare size={10} color="$blue11" />
-                    <Text fontSize="$1" color="$blue11">
-                      {commentCount}
-                    </Text>
-                  </XStack>
+                    <Text color="$blue11">{commentCount}</Text>
+                  </Row>
                 )}
-              </XStack>
+              </Row>
             )
           })}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       <Separator />
 
       {/* Employment Section */}
-      <Card padding="$3" gap="$2">
-        <Text fontSize="$4" fontWeight="600">
-          Employment
-        </Text>
+      <Card padding="sm">
+        <Stack gap={8}>
+          <Text>Employment</Text>
         <ComparisonField
           label="Type"
           value={formatEmploymentType()}
@@ -271,29 +250,27 @@ export function ComparisonColumn({
           isDifferent={highlightDifferences.has('employmentDatesNegotiable')}
         />
         {getSectionStatus('employment').accepted && (
-          <XStack alignItems="center" gap="$1" marginTop="$1">
-            <Check size={14} color="$green11" />
-            <Text fontSize="$2" color="$green11" fontWeight="600">
-              Accepted
-            </Text>
-          </XStack>
+          <Row align="center" gap={4} marginTop={4}>
+            <Check size="md" color="$green11" />
+            <Text color="$green11">Accepted</Text>
+          </Row>
         )}
         {getCommentCount('employment') > 0 && (
-          <XStack alignItems="center" gap="$1" marginTop="$1">
-            <MessageSquare size={14} color="$blue11" />
-            <Text fontSize="$2" color="$blue11">
+          <Row align="center" gap={4} marginTop={4}>
+            <MessageSquare size="md" color="$blue11" />
+            <Text color="$blue11">
               {getCommentCount('employment')} comment
               {getCommentCount('employment') !== 1 ? 's' : ''}
             </Text>
-          </XStack>
+          </Row>
         )}
+        </Stack>
       </Card>
 
       {/* Compensation Section */}
-      <Card padding="$3" gap="$2">
-        <Text fontSize="$4" fontWeight="600">
-          Compensation
-        </Text>
+      <Card padding="sm">
+        <Stack gap={8}>
+          <Text>Compensation</Text>
         <ComparisonField
           label="Rate"
           value={formatRate()}
@@ -305,30 +282,28 @@ export function ComparisonColumn({
           isDifferent={highlightDifferences.has('rateNegotiable')}
         />
         {getSectionStatus('compensation').accepted && (
-          <XStack alignItems="center" gap="$1" marginTop="$1">
-            <Check size={14} color="$green11" />
-            <Text fontSize="$2" color="$green11" fontWeight="600">
-              Accepted
-            </Text>
-          </XStack>
+          <Row align="center" gap={4} marginTop={4}>
+            <Check size="md" color="$green11" />
+            <Text color="$green11">Accepted</Text>
+          </Row>
         )}
         {getCommentCount('compensation') > 0 && (
-          <XStack alignItems="center" gap="$1" marginTop="$1">
-            <MessageSquare size={14} color="$blue11" />
-            <Text fontSize="$2" color="$blue11">
+          <Row align="center" gap={4} marginTop={4}>
+            <MessageSquare size="md" color="$blue11" />
+            <Text color="$blue11">
               {getCommentCount('compensation')} comment
               {getCommentCount('compensation') !== 1 ? 's' : ''}
             </Text>
-          </XStack>
+          </Row>
         )}
+        </Stack>
       </Card>
 
       {/* Capabilities Section */}
       {capabilityResponses.length > 0 && (
-        <Card padding="$3" gap="$2">
-          <Text fontSize="$4" fontWeight="600">
-            Capabilities
-          </Text>
+        <Card padding="sm">
+          <Stack gap={8}>
+          <Text>Capabilities</Text>
           {capabilityResponses.map((response: CapabilityResponseRecord) => (
             <ComparisonField
               key={response.capability_name}
@@ -342,29 +317,27 @@ export function ComparisonColumn({
             />
           ))}
           {getSectionStatus('capabilities').accepted && (
-            <XStack alignItems="center" gap="$1" marginTop="$1">
-              <Check size={14} color="$green11" />
-              <Text fontSize="$2" color="$green11" fontWeight="600">
-                Accepted
-              </Text>
-            </XStack>
+            <Row align="center" gap={4} marginTop={4}>
+              <Check size="md" color="$green11" />
+              <Text color="$green11">Accepted</Text>
+            </Row>
           )}
           {getCommentCount('capabilities') > 0 && (
-            <XStack alignItems="center" gap="$1" marginTop="$1">
-              <MessageSquare size={14} color="$blue11" />
-              <Text fontSize="$2" color="$blue11">
+            <Row align="center" gap={4} marginTop={4}>
+              <MessageSquare size="md" color="$blue11" />
+              <Text color="$blue11">
                 {getCommentCount('capabilities')} comment
                 {getCommentCount('capabilities') !== 1 ? 's' : ''}
               </Text>
-            </XStack>
+            </Row>
           )}
+          </Stack>
         </Card>
       )}
 
-      <Card padding="$3" gap="$2">
-        <Text fontSize="$4" fontWeight="600">
-          Other Terms
-        </Text>
+      <Card padding="sm">
+        <Stack gap={8}>
+        <Text>Other Terms</Text>
         <ComparisonField
           label="Travel"
           value={
@@ -402,12 +375,13 @@ export function ComparisonColumn({
           }
           isDifferent={highlightDifferences.has('hasDriversLicense')}
         />
+        </Stack>
       </Card>
 
       {/* View Full Inquiry Button */}
       <Button
-        size="$3"
-        variant="outlined"
+        size="sm"
+        variant="outline"
         onPress={() =>
           router.push(
             ROUTES.OFFICE.APPLICATIONS.INQUIRY.path.replace(
@@ -421,43 +395,39 @@ export function ComparisonColumn({
       </Button>
 
       <InquiryHistoryTimeline inquiryId={inquiry.id} />
-    </YStack>
+    </Stack>
   )
 }
 
-const statusColors: Record<string, GetThemeValueForKey<'color'>> = {
-  draft: '$gray10',
-  sent: '$blue10',
-  candidate_responded: '$purple10',
-  organization_responded: '$yellow10',
-  accepted: '$green10',
-  rejected: '$red10',
-  withdrawn: '$gray10',
+const statusColors: Record<string, string> = {
+  draft: colors.gray[500],
+  sent: colors.info[600],
+  candidate_responded: colors.primary[600],
+  organization_responded: colors.warning[600],
+  accepted: colors.success[600],
+  rejected: colors.error[600],
+  withdrawn: colors.gray[500],
 }
 
 function StatusBadge({ label }: { label: string }) {
   return (
-    <XStack
-      paddingHorizontal="$2"
-      paddingVertical="$1"
+    <Row
+      paddingHorizontal={8}
+      paddingVertical={4}
       backgroundColor="$color3"
-      borderRadius="$3"
-      alignItems="center"
-      gap="$1"
+      borderRadius={12}
+      align="center"
+      gap={4}
     >
-      <Text fontSize="$2" color={statusColors[label] ?? '$color11'} fontWeight="600">
-        {label.replace(/_/g, ' ')}
-      </Text>
-    </XStack>
+      <Text color={statusColors[label] ?? '$color11'}>{label.replace(/_/g, ' ')}</Text>
+    </Row>
   )
 }
 
 function SubtleBadge({ label }: { label: string }) {
   return (
-    <XStack paddingHorizontal="$2" paddingVertical="$1" backgroundColor="$color2" borderRadius="$3">
-      <Text fontSize="$2" color="$color10">
-        {label}
-      </Text>
-    </XStack>
+    <Row paddingHorizontal={8} paddingVertical={4} backgroundColor="$color2" borderRadius={12}>
+      <Text color="$gray11">{label}</Text>
+    </Row>
   )
 }

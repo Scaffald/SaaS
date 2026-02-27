@@ -1,8 +1,8 @@
-import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
-import { Button, DashboardWidget, Heading, LoadingState, spacing } from '@unicornlove/ui'
-import { useRouter } from 'expo-router'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { ROUTES } from "@scf/core/constants/routes";
+import { usePreferencesWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
+import { Button, DashboardWidget, H4, LoadingState } from "@scaffald/ui";
+import { useRouter } from "expo-router";
+import { Text, Row, Stack } from "@scaffald/ui";
 
 /**
  * PreferencesWidget
@@ -11,154 +11,148 @@ import { Text, XStack, YStack } from '@unicornlove/ui'
  *
  * @param showEdit - Show edit button for own profile
  */
-export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) {
-  const router = useRouter()
-  const { data, isLoading, error } = api.profile.widgets.getPreferences.useQuery(undefined, {
+export function PreferencesWidget({
+  showEdit = false,
+}: {
+  showEdit?: boolean;
+}) {
+  const router = useRouter();
+  const { data, isLoading, error } = usePreferencesWidget({
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-  })
+  });
 
   if (isLoading) {
     return (
       <DashboardWidget>
         <LoadingState message="Loading preferences..." />
       </DashboardWidget>
-    )
+    );
   }
 
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingVertical="$8">
+        <Stack gap={16} align="center" paddingVertical={32}>
           <Text color="$red10">Failed to load preferences</Text>
-          <Text color="$color11" fontSize="$2">
-            {error.message}
-          </Text>
-        </YStack>
+          <Text color="$gray11">{error.message}</Text>
+        </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
   if (!data) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingVertical="$8">
-          <Text color="$color11">No preferences data available</Text>
-        </YStack>
+        <Stack gap={16} align="center" paddingVertical={32}>
+          <Text color="$gray11">No preferences data available</Text>
+        </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
   // Helper to format arrays
   const formatArray = (arr: string[] | null | undefined): string => {
-    if (!arr || arr.length === 0) return 'Not specified'
-    return arr.join(', ')
-  }
+    if (!arr || arr.length === 0) return "Not specified";
+    return arr.join(", ");
+  };
 
   // Helper to format currency
   const formatCurrency = (cents: number | null | undefined): string => {
-    if (!cents) return 'Not specified'
-    return `$${(cents / 100).toFixed(2)}/hr`
-  }
+    if (!cents) return "Not specified";
+    return `$${(cents / 100).toFixed(2)}/hr`;
+  };
 
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
+      <Stack gap={12}>
         {/* Header */}
-        <XStack justifyContent="space-between" alignItems="center">
-          <Heading variant="h4">Work Preferences</Heading>
+        <Row justify="space-between" align="center">
+          <H4>Work Preferences</H4>
           {showEdit && (
             <Button
-              variant="outlined"
-              size="$2"
-              onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EMPLOYMENT.path)}
+              variant="outline"
+              size="sm"
+              onPress={() =>
+                router.push(ROUTES.DASHBOARD.PROFILE.EMPLOYMENT.path)
+              }
             >
               Edit
             </Button>
           )}
-        </XStack>
+        </Row>
 
-        <YStack gap="$4">
+        <Stack gap={16}>
           {/* Availability */}
-          {data.availability && typeof data.availability === 'string' && (
-            <YStack gap="$2">
-              <Text fontWeight="600" fontSize="$3">
-                Availability
+          {data.availability && typeof data.availability === "string" && (
+            <Stack gap={8}>
+              <Text>Availability</Text>
+              <Text color="$gray11" style={{ textTransform: "capitalize" }}>
+                {data.availability.replace("_", " ")}
               </Text>
-              <Text fontSize="$3" color="$color11" textTransform="capitalize">
-                {data.availability.replace('_', ' ')}
-              </Text>
-            </YStack>
+            </Stack>
           )}
 
           {/* Career Level */}
-          {data.career_level && typeof data.career_level === 'string' && (
-            <YStack gap="$2">
-              <Text fontWeight="600" fontSize="$3">
-                Career Level
+          {data.career_level && typeof data.career_level === "string" && (
+            <Stack gap={8}>
+              <Text>Career Level</Text>
+              <Text color="$gray11" style={{ textTransform: "capitalize" }}>
+                {data.career_level.replace("_", " ")}
               </Text>
-              <Text fontSize="$3" color="$color11" textTransform="capitalize">
-                {data.career_level.replace('_', ' ')}
-              </Text>
-            </YStack>
+            </Stack>
           )}
 
           {/* Compensation */}
           {data.hourly_rate_cents && (
-            <YStack gap="$2">
-              <Text fontWeight="600" fontSize="$3">
-                Hourly Rate
-              </Text>
-              <Text fontSize="$3" color="$color11">
+            <Stack gap={8}>
+              <Text>Hourly Rate</Text>
+              <Text color="$gray11">
                 {formatCurrency(data.hourly_rate_cents)}
               </Text>
-            </YStack>
+            </Stack>
           )}
 
           {/* Work Locations */}
           {data.preferred_work_locations &&
             Array.isArray(data.preferred_work_locations) &&
             data.preferred_work_locations.length > 0 && (
-              <YStack gap="$2">
-                <Text fontWeight="600" fontSize="$3">
-                  Preferred Locations
-                </Text>
-                <XStack gap="$2" flexWrap="wrap">
+              <Stack gap={8}>
+                <Text>Preferred Locations</Text>
+                <Row gap={8} wrap>
                   {data.preferred_work_locations.map((location: string) => (
-                    <XStack
+                    <Row
                       key={location}
                       backgroundColor="$blue2"
-                      paddingHorizontal="$3"
-                      paddingVertical="$1.5"
-                      borderRadius="$3"
+                      paddingHorizontal={12}
+                      paddingVertical={6}
+                      borderRadius={12}
                       borderWidth={1}
                       borderColor="$blue7"
                     >
-                      <Text fontSize="$2" color="$blue11">
-                        {location}
-                      </Text>
-                    </XStack>
+                      <Text color="$blue11">{location}</Text>
+                    </Row>
                   ))}
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
             )}
 
           {/* Travel Preferences */}
           {(data.open_to_travel || data.travel_distance_miles) && (
-            <YStack gap="$2">
-              <Text fontWeight="600" fontSize="$3">
-                Travel
-              </Text>
-              <XStack gap="$2" alignItems="center">
-                <Text fontSize="$3" color="$color11">
-                  {data.open_to_travel ? 'Willing to travel' : 'Not willing to travel'}
+            <Stack gap={8}>
+              <Text>Travel</Text>
+              <Row gap={8} align="center">
+                <Text color="$gray11">
+                  {data.open_to_travel
+                    ? "Willing to travel"
+                    : "Not willing to travel"}
                 </Text>
                 {data.travel_distance_miles && (
-                  <Text fontSize="$3" color="$color10">
+                  <Text color="$gray11">
                     • Up to {data.travel_distance_miles} miles
                   </Text>
                 )}
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           )}
 
           {/* Work Authorization */}
@@ -167,82 +161,78 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
             (data.authorized_countries &&
               Array.isArray(data.authorized_countries) &&
               data.authorized_countries.length > 0)) && (
-            <YStack gap="$2">
-              <Text fontWeight="600" fontSize="$3">
-                Work Authorization
-              </Text>
-              <YStack gap="$1">
+            <Stack gap={8}>
+              <Text>Work Authorization</Text>
+              <Stack gap={4}>
                 {data.us_resident !== null && (
-                  <Text fontSize="$3" color="$color11">
-                    {data.us_resident ? '✓' : '✗'} US Resident
+                  <Text color="$gray11">
+                    {data.us_resident ? "✓" : "✗"} US Resident
                   </Text>
                 )}
                 {data.us_passport !== null && (
-                  <Text fontSize="$3" color="$color11">
-                    {data.us_passport ? '✓' : '✗'} US Passport
+                  <Text color="$gray11">
+                    {data.us_passport ? "✓" : "✗"} US Passport
                   </Text>
                 )}
                 {data.authorized_countries &&
                   Array.isArray(data.authorized_countries) &&
                   data.authorized_countries.length > 0 && (
-                    <Text fontSize="$3" color="$color11">
+                    <Text color="$gray11">
                       Authorized: {formatArray(data.authorized_countries)}
                     </Text>
                   )}
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           )}
 
           {/* Driver's Licenses */}
           {data.drivers_license_classes &&
             Array.isArray(data.drivers_license_classes) &&
             data.drivers_license_classes.length > 0 && (
-              <YStack gap="$2">
-                <Text fontWeight="600" fontSize="$3">
-                  Driver's Licenses
-                </Text>
-                <XStack gap="$2" flexWrap="wrap">
+              <Stack gap={8}>
+                <Text>Driver's Licenses</Text>
+                <Row gap={8} wrap>
                   {data.drivers_license_classes.map((license: string) => (
-                    <XStack
+                    <Row
                       key={license}
                       backgroundColor="$blue2"
-                      paddingHorizontal="$3"
-                      paddingVertical="$1.5"
-                      borderRadius="$3"
+                      paddingHorizontal={12}
+                      paddingVertical={6}
+                      borderRadius={12}
                       borderWidth={1}
                       borderColor="$blue7"
                     >
-                      <Text fontSize="$2" color="$blue11" fontWeight="600">
-                        Class {license}
-                      </Text>
-                    </XStack>
+                      <Text color="$blue11">Class {license}</Text>
+                    </Row>
                   ))}
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
             )}
 
           {/* Veteran Status */}
           {(data.veteran !== null || data.military_status) && (
-            <YStack gap="$2">
-              <Text fontWeight="600" fontSize="$3">
-                Military Service
-              </Text>
-              <YStack gap="$1">
+            <Stack gap={8}>
+              <Text>Military Service</Text>
+              <Stack gap={4}>
                 {data.veteran !== null && (
-                  <Text fontSize="$3" color="$color11">
-                    {data.veteran ? 'Veteran' : 'Not a veteran'}
+                  <Text color="$gray11">
+                    {data.veteran ? "Veteran" : "Not a veteran"}
                   </Text>
                 )}
-                {data.military_status && typeof data.military_status === 'string' && (
-                  <Text fontSize="$3" color="$color11" textTransform="capitalize">
-                    Status: {data.military_status.replace('_', ' ')}
-                  </Text>
-                )}
-              </YStack>
-            </YStack>
+                {data.military_status &&
+                  typeof data.military_status === "string" && (
+                    <Text
+                      color="$gray11"
+                      style={{ textTransform: "capitalize" }}
+                    >
+                      Status: {data.military_status.replace("_", " ")}
+                    </Text>
+                  )}
+              </Stack>
+            </Stack>
           )}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </DashboardWidget>
-  )
+  );
 }

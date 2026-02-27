@@ -1,6 +1,6 @@
 /**
  * CCPA Breach Notifications Page Object
- * REQ-6, TASK-11: E2E Tests for CCPA Admin Pages
+ * CCPA breach page object
  *
  * Page object for the CCPA Breach Notifications at /admin/ccpa/breach
  */

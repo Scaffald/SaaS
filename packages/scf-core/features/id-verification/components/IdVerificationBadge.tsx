@@ -1,5 +1,6 @@
-import { ShieldAlert, ShieldCheck, ShieldQuestion, ShieldX } from '@tamagui/lucide-icons'
-import { type GetThemeValueForKey, Text, XStack } from '@unicornlove/ui'
+import { ShieldAlert, ShieldCheck, ShieldQuestion, ShieldX } from 'lucide-react-native'
+import { Text, Row } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type BadgeStatus = 'active' | 'expired' | 'revoked' | null | undefined
 
@@ -13,39 +14,39 @@ type IdVerificationBadgeProps = {
 type BadgeVisual = {
   label: string
   icon: typeof ShieldCheck
-  color: GetThemeValueForKey<'color'>
-  background: GetThemeValueForKey<'backgroundColor'>
-  border: GetThemeValueForKey<'borderColor'>
+  color: string
+  background: string
+  border: string
 }
 
 const STATUS_COPY: Record<'active' | 'expired' | 'revoked' | 'unknown', BadgeVisual> = {
   active: {
     label: 'ID Verified',
     icon: ShieldCheck,
-    color: '$green11',
-    background: '$green3',
-    border: '$green6',
+    color: colors.success[700],
+    background: colors.success[100],
+    border: colors.success[300],
   },
   expired: {
     label: 'ID badge expired',
     icon: ShieldAlert,
-    color: '$orange11',
-    background: '$orange3',
-    border: '$orange6',
+    color: colors.warning[700],
+    background: colors.warning[100],
+    border: colors.warning[300],
   },
   revoked: {
     label: 'ID badge revoked',
     icon: ShieldX,
-    color: '$red11',
-    background: '$red3',
-    border: '$red6',
+    color: colors.error[600],
+    background: colors.error[100],
+    border: colors.error[300],
   },
   unknown: {
     label: 'ID badge unavailable',
     icon: ShieldQuestion,
-    color: '$color11',
-    background: '$color3',
-    border: '$borderColor',
+    color: colors.gray[600],
+    background: colors.gray[100],
+    border: colors.gray[200],
   },
 }
 
@@ -70,31 +71,25 @@ export function IdVerificationBadge({
   const copy = STATUS_COPY[normalizedStatus]
   const Icon = copy.icon
   const expiresText = normalizedStatus === 'active' ? formatDate(badgeExpiresAt) : null
-  const mutedBackground = '$color2' as GetThemeValueForKey<'backgroundColor'>
-  const mutedBorder = '$borderColor' as GetThemeValueForKey<'borderColor'>
-  const mutedColor = '$color11' as GetThemeValueForKey<'color'>
-  const mutedSubtext = '$color10' as GetThemeValueForKey<'color'>
+  const mutedBackground = colors.gray[50]
+  const mutedBorder = colors.gray[200]
+  const mutedColor = colors.gray[600]
+  const mutedSubtext = colors.gray[500]
 
   return (
-    <XStack
-      alignItems="center"
-      gap="$1.5"
-      paddingHorizontal={size === 'sm' ? '$2' : '$3'}
-      paddingVertical={size === 'sm' ? '$1' : '$2'}
-      borderRadius="$10"
+    <Row
+      align="center"
+      gap={6}
+      paddingHorizontal={size === 'sm' ? 8 : 12}
+      paddingVertical={size === 'sm' ? 4 : 8}
+      style={{ borderRadius: 10 }}
       backgroundColor={muted ? mutedBackground : copy.background}
       borderWidth={1}
       borderColor={muted ? mutedBorder : copy.border}
     >
       <Icon size={size === 'sm' ? 14 : 16} color={muted ? mutedColor : copy.color} />
-      <Text fontSize={size === 'sm' ? '$2' : '$3'} color={muted ? mutedColor : copy.color}>
-        {copy.label}
-      </Text>
-      {expiresText && (
-        <Text fontSize="$2" color={muted ? mutedSubtext : copy.color}>
-          · exp {expiresText}
-        </Text>
-      )}
-    </XStack>
+      <Text style={{ color: muted ? mutedColor : copy.color }}>{copy.label}</Text>
+      {expiresText && <Text style={{ color: muted ? mutedSubtext : copy.color }}>· exp {expiresText}</Text>}
+    </Row>
   )
 }

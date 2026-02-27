@@ -1,6 +1,6 @@
 // src/pages/gc/settings/InsuranceSettings.tsx
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Stack, Text, Button, H2, H3, Input, Separator } from '@unicornlove/beyond-ui';
+import { Stack, Text, Button, H2, H3, Input, Separator } from '@scaffald/ui';
 import Checkbox from '../../../ui/Checkbox';
 import { useSettings } from '../../../hooks/useSettings';
 import { toast } from 'sonner';

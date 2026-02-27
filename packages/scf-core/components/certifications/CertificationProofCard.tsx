@@ -1,6 +1,6 @@
-import { ExternalLink, Link as LinkIcon, Upload, X } from '@tamagui/lucide-icons'
+import { ExternalLink, Link as LinkIcon, Upload, X } from 'lucide-react-native'
 import { type ChangeEvent, useState } from 'react'
-import { Button, Card, Input, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Input, Text, Row, Stack } from '@scaffald/ui'
 
 interface CertificationProofCardProps {
   certificationTitle: string
@@ -59,61 +59,60 @@ export function CertificationProofCard({
   }
 
   return (
-    <Card padding="$4" bordered>
-      <YStack gap="$4">
-        <XStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text fontWeight="600" fontSize="$5">
-            Add Proof
-          </Text>
-          <Button size="$2" circular chromeless icon={X} onPress={onClose} />
-        </XStack>
+    <Card padding="md" elevation="sm" style={{ borderWidth: 1, borderColor: '$gray6' }}>
+      <Stack gap={16}>
+        <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text>Add Proof</Text>
+          <Button size="sm" variant="text" onPress={onClose}>
+            <X size="lg" />
+          </Button>
+        </Row>
 
-        <Text fontSize="$3" color="$color11">
-          {certificationTitle}
-        </Text>
+        <Text color="$gray11">{certificationTitle}</Text>
 
-        <XStack gap="$2">
+        <Row gap={8}>
           <Button
-            flex={1}
-            variant="outlined"
+            style={{ flex: 1 }}
+            variant="outline"
             onPress={() => setMode('url')}
-            theme={mode === 'url' ? 'blue' : undefined}
+            color={mode === 'url' ? 'primary' : undefined}
           >
             Link URL
           </Button>
           <Button
-            flex={1}
-            variant="outlined"
+            style={{ flex: 1 }}
+            variant="outline"
             onPress={() => setMode('file')}
-            theme={mode === 'file' ? 'blue' : undefined}
+            color={mode === 'file' ? 'primary' : undefined}
           >
             Upload File
           </Button>
-        </XStack>
+        </Row>
 
         {mode === 'url' ? (
-          <YStack gap="$3">
+          <Stack gap={12}>
             <Input
               placeholder="https://example.com/certificate.pdf"
               value={urlInput}
               onChangeText={setUrlInput}
             />
-            <Button
-              onPress={handleUrlSave}
-              disabled={!urlInput.trim() || uploading}
-              icon={LinkIcon}
-            >
-              {uploading ? 'Saving...' : 'Save Link'}
+            <Button onPress={handleUrlSave} disabled={!urlInput.trim() || uploading}>
+              <Row gap={8} align="center">
+                <LinkIcon size="lg" />
+                <Text>{uploading ? 'Saving...' : 'Save Link'}</Text>
+              </Row>
             </Button>
-          </YStack>
+          </Stack>
         ) : (
-          <YStack gap="$3">
+          <Stack gap={12}>
             <Button
               onPress={() => document.getElementById('cert-file-input')?.click()}
               disabled={uploading}
-              icon={Upload}
             >
-              {uploading ? 'Uploading...' : 'Choose File'}
+              <Row gap={8} align="center">
+                <Upload size="lg" />
+                <Text>{uploading ? 'Uploading...' : 'Choose File'}</Text>
+              </Row>
             </Button>
             <input
               id="cert-file-input"
@@ -122,42 +121,42 @@ export function CertificationProofCard({
               style={{ display: 'none' }}
               onChange={handleFileSelect}
             />
-            <Text fontSize="$2" color="$color11" style={{ textAlign: 'center' }}>
+            <Text color="$gray11" style={{ textAlign: 'center' }}>
               Accepted formats: PDF, JPG, PNG
             </Text>
-          </YStack>
+          </Stack>
         )}
 
         {proofValue && (
-          <YStack gap="$2" paddingTop="$3" borderTopWidth={1} borderColor="$borderColor">
-            <Text fontSize="$3" fontWeight="600">
-              Current Proof
-            </Text>
-            <XStack gap="$2" style={{ alignItems: 'center' }}>
+          <Stack gap={8} style={{ paddingTop: 12, borderTopWidth: 1, borderColor: '$gray6' }}>
+            <Text>Current Proof</Text>
+            <Row gap={8} style={{ alignItems: 'center' }}>
               <Button
-                size="$2"
-                flex={1}
-                variant="outlined"
-                icon={ExternalLink}
+                size="sm"
+                style={{ flex: 1 }}
+                variant="outline"
                 onPress={() => proofType === 'url' && window.open(proofValue, '_blank')}
               >
-                {proofType === 'url' ? 'View Link' : 'View File'}
+                <Row gap={8} align="center">
+                  <ExternalLink size="lg" />
+                  <Text size="sm">{proofType === 'url' ? 'View Link' : 'View File'}</Text>
+                </Row>
               </Button>
               {onRemoveProof && (
                 <Button
-                  size="$2"
-                  variant="outlined"
-                  theme="error"
+                  size="sm"
+                  variant="outline"
+                  color="error"
                   onPress={onRemoveProof}
                   disabled={uploading}
                 >
                   Remove
                 </Button>
               )}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     </Card>
   )
 }

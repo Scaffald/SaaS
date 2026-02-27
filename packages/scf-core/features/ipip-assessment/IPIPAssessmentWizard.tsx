@@ -2,50 +2,54 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { AssessmentWizard } from '@scf/core/features/assessments'
 import { IPIPTestStep } from '@scf/core/features/personality-assessment/components/IPIPTestStep'
 import type { IPIPAnswer, IPIPDomain } from '@scf/core/features/personality-assessment/lib/ipip'
-import { api } from '@scf/core/utils/api'
-import { useToastController } from '@tamagui/toast'
+import {
+  useAssessmentStatus,
+  useIPIPStatus,
+  useSaveIPIPProgressMutation,
+} from '@scf/core/utils/personality-assessment-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
+import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
-import { Button, Text, YStack } from '@unicornlove/ui'
+import { Button, Text, Stack } from '@scaffald/ui'
 import { DOMAIN_NAMES, getCompletedDomainsCount } from './utils/domainGrouping'
-
-interface SaveIPIPProgressResult {
-  success: boolean
-  isComplete: boolean
-}
 
 /**
  * IPIPAssessmentWizard - Standalone wizard for IPIP
  */
 export function IPIPAssessmentWizard() {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
   const [completedDomain, setCompletedDomain] = useState<IPIPDomain | null>(null)
 
-  const { data: status, isLoading, error } = api.personalityAssessment.getIPIPStatus.useQuery()
-  const { data: assessment } = api.personalityAssessment.getAssessmentStatus.useQuery()
-  const utils = api.useUtils()
+  const { data: statusData, isLoading, error } = useIPIPStatus()
+  const { data: assessmentData } = useAssessmentStatus()
+  const queryClient = useQueryClient()
 
-  const saveMutation = api.personalityAssessment.saveIPIPProgress.useMutation({
-    onSuccess: (result: SaveIPIPProgressResult) => {
+  const status = (statusData as { data?: { progress?: number } } | undefined)?.data
+  const assessment = (assessmentData as { data?: { ipip_answers?: unknown; ipip_language?: string; ipip_current_index?: number | null } } | undefined)?.data
+
+  const saveMutation = useSaveIPIPProgressMutation({
+    onSuccess: (_data, _variables, _context) => {
       // Invalidate status queries to update drawer checkmarks
-      utils.personalityAssessment.getIPIPStatus.invalidate()
-      utils.personalityAssessment.getAssessmentStatus.invalidate()
-      if (result.isComplete) {
-        toast.show('Questions Complete', {
-          message: 'Your personality assessment has been saved!',
-        })
-        router.push(ROUTES.DASHBOARD.path)
-      }
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'ipip', 'status'] })
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
+      toast.show({
+        title: 'Questions Complete',
+        message: 'Your personality assessment has been saved!',
+        variant: 'success',
+      })
+      router.push(ROUTES.DASHBOARD.path)
     },
     onError: (error: { message?: string }) => {
       // Enhanced error handling with retry option
       const errorMessage =
         error.message ||
         'Failed to save progress. Your answers are saved locally and will be synced when connection is restored.'
-      toast.show('Save Error', {
+      toast.show({
+        title: 'Save Error',
         message: errorMessage,
-        type: 'error',
+        variant: 'error',
         duration: 5000,
       })
       // Note: Answers are still in local state, user can retry by continuing
@@ -64,7 +68,8 @@ export function IPIPAssessmentWizard() {
     setCompletedDomain(domain)
 
     // Show XP toast
-    toast.show('Domain Complete!', {
+    toast.show({
+      title: 'Domain Complete!',
       message: `+5 XP - ${DOMAIN_NAMES[domain]} complete!`,
       duration: 3000,
     })
@@ -98,35 +103,33 @@ export function IPIPAssessmentWizard() {
         error={queryError}
         showNext={false}
       >
-        <YStack
-          gap="$6"
+        <Stack
+          gap={24}
           width="100%"
-          alignItems="center"
-          padding="$8"
+          align="center"
+          padding={32}
           style={{ maxWidth: 800, alignSelf: 'center' }}
         >
-          <YStack gap="$4" alignItems="center">
-            <Text fontSize="$9" fontWeight="bold" color="$green10">
-              ✓ {DOMAIN_NAMES[completedDomain]} Complete!
-            </Text>
-            <Text fontSize="$5" color="$color11" textAlign="center">
+          <Stack gap={16} align="center">
+            <Text color="$green10">✓ {DOMAIN_NAMES[completedDomain]} Complete!</Text>
+            <Text color="$gray11" align="center">
               You've completed {completedDomains} of 5 domains
             </Text>
-            <Text fontSize="$4" color="$color10" textAlign="center">
+            <Text color="$gray11" align="center">
               Great progress! You're {Math.round((completedDomains / 5) * 100)}% done with the
               assessment.
             </Text>
-          </YStack>
+          </Stack>
 
-          <YStack gap="$3" width="100%" maxWidth={400}>
-            <Button size="$5" theme="info" onPress={handleContinueToNextDomain}>
+          <Stack gap={12} width="100%" maxWidth={400}>
+            <Button size="lg" color="primary" onPress={handleContinueToNextDomain}>
               Continue to Next Domain
             </Button>
-            <Button size="$4" variant="outlined" onPress={handleTakeBreak}>
+            <Button size="md" variant="outline" onPress={handleTakeBreak}>
               Take a Break
             </Button>
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       </AssessmentWizard>
     )
   }

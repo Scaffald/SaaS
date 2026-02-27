@@ -1,6 +1,6 @@
 /**
  * Supabase Error Formatting Utility
- * REQ-212: Code Updates for Shared Database Architecture
+ * Code Updates for Shared Database Architecture
  *
  * Formats Supabase errors into user-friendly error messages
  */

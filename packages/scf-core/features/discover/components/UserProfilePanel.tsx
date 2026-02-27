@@ -1,10 +1,10 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useUserProfilePreview } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
-import { ExternalLink, MapPin, User, X } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { ExternalLink, MapPin, User, X } from 'lucide-react-native'
+import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
-import { Avatar, Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Avatar, Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 type PreviewSkill = {
   csiSkillId?: string | null
@@ -38,13 +38,12 @@ export function UserProfilePanel({
   position = { top: 16, right: 16 },
 }: UserProfilePanelProps) {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
 
   // Fetch lightweight preview data
-  const { data: preview, isLoading } = api.userProfile.getPreview.useQuery(
-    { userId: userId || '' },
-    { enabled: !!userId && open }
-  )
+  const { data: preview, isLoading } = useUserProfilePreview(userId ?? undefined, {
+    enabled: open,
+  })
 
   if (!open || !userId) {
     return null
@@ -58,8 +57,10 @@ export function UserProfilePanel({
       onOpenChange(false)
     } catch (navigationError) {
       console.error('Failed to navigate to worker profile', navigationError)
-      toast.show('Unable to load profile', {
+      toast.show({
+        title: 'Unable to load profile',
         message: 'Please try again.',
+        variant: 'error',
       })
     }
   }
@@ -76,133 +77,108 @@ export function UserProfilePanel({
 
   return (
     <Card
-      position="absolute"
-      {...position}
-      zIndex={1000}
       elevate
       bordered
-      padding="$4"
-      gap="$3"
-      minWidth={280}
-      maxWidth={320}
-      backgroundColor="$background"
-      animation="quick"
-      enterStyle={{ opacity: 0, scale: 0.95, y: -10 }}
-      exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
+      padding="md"
+      style={{
+        position: 'absolute',
+        ...position,
+        zIndex: 1000,
+        minWidth: 280,
+        maxWidth: 320,
+      }}
     >
       {/* Close button */}
-      <XStack justifyContent="flex-end">
-        <Button
-          size="$2"
-          circular
-          chromeless
-          icon={X}
-          onPress={handleClose}
-          opacity={0.7}
-          hoverStyle={{ opacity: 1 }}
-        />
-      </XStack>
+      <Stack gap={12}>
+      <Row justify="flex-end">
+        <Button size="sm" variant="outline" iconStart={X} onPress={handleClose} />
+      </Row>
 
       {isLoading ? (
-        <YStack paddingVertical="$4" alignItems="center" gap="$3">
-          <Spinner size="small" color="$blue10" />
-          <Text fontSize="$3" color="$color11">
-            Loading...
-          </Text>
-        </YStack>
+        <Stack paddingVertical={16} align="center" gap={12}>
+          <Spinner size="sm" color="primary" />
+          <Text color="secondary">Loading...</Text>
+        </Stack>
       ) : !preview ? (
-        <YStack paddingVertical="$4" alignItems="center">
-          <Text fontSize="$3" color="$red10">
-            Profile not found
-          </Text>
-        </YStack>
+        <Stack paddingVertical={16} align="center">
+          <Text color="error">Profile not found</Text>
+        </Stack>
       ) : (
         <>
           {/* Profile Header */}
-          <XStack gap="$3" alignItems="flex-start">
+          <Row gap={12} align="flex-start">
             {/* Avatar */}
             {avatarUrl ? (
-              <Avatar circular size="$4">
-                <Avatar.Image source={{ uri: avatarUrl }} />
-                <Avatar.Fallback backgroundColor="$color3">
-                  <User size={24} color="$color10" />
-                </Avatar.Fallback>
-              </Avatar>
+              <Avatar size={40} src={{ uri: avatarUrl }} alt={preview.displayName} />
             ) : (
-              <Avatar circular size="$4" backgroundColor="$color3">
-                <User size={24} color="$color10" />
-              </Avatar>
+              <Avatar size={40} icon={<User size={24} color="#737373" />} />
             )}
 
             {/* Name and Title */}
-            <YStack flex={1} gap="$1">
-              <Text fontSize="$5" fontWeight="600" color="$color12" numberOfLines={1}>
-                {preview.displayName}
-              </Text>
-              {preview.headline && (
-                <Text fontSize="$3" color="$color11" numberOfLines={2}>
-                  {preview.headline}
-                </Text>
-              )}
+            <Stack flex={1} gap={4}>
+              <Text color="$gray11">{preview.displayName}</Text>
+              {preview.headline && <Text color="$gray11">{preview.headline}</Text>}
               {preview.location && (
-                <XStack gap="$1" alignItems="center" marginTop="$1">
-                  <MapPin size={14} color="$color10" />
-                  <Text fontSize="$2" color="$color10" numberOfLines={1}>
-                    {preview.location}
-                  </Text>
-                </XStack>
+                <Row gap={4} align="center" marginTop={4}>
+                  <MapPin size="md" color="$gray11" />
+                  <Text color="$gray11">{preview.location}</Text>
+                </Row>
               )}
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
 
           {/* Top Skills */}
           {topSkills.length > 0 && (
-            <YStack gap="$2">
-              <Text fontSize="$2" fontWeight="600" color="$color11" textTransform="uppercase">
+            <Stack gap={8}>
+              <Text color="secondary" style={{ textTransform: 'uppercase' }}>
                 Top Skills
               </Text>
-              <XStack gap="$2" flexWrap="wrap">
+              <Row gap={8} wrap>
                 {topSkills.slice(0, 3).map((skill) => (
-                  <YStack
+                  <Stack
                     key={skill.csiSkillId || skill.onetOccupationId || skill.taxonomy}
                     backgroundColor="$color3"
-                    paddingHorizontal="$2"
-                    paddingVertical="$1"
-                    borderRadius="$3"
+                    paddingHorizontal={8}
+                    paddingVertical={4}
+                    borderRadius={12}
                     borderWidth={1}
                     borderColor="$borderColor"
                   >
-                    <Text fontSize="$2" color="$color11">
+                    <Text color="secondary">
                       Skill {skill.proficiency > 0 ? `(${skill.proficiency})` : ''}
                     </Text>
-                  </YStack>
+                  </Stack>
                 ))}
                 {topSkills.length > 3 && (
-                  <YStack
+                  <Stack
                     backgroundColor="$color3"
-                    paddingHorizontal="$2"
-                    paddingVertical="$1"
-                    borderRadius="$3"
+                    paddingHorizontal={8}
+                    paddingVertical={4}
+                    borderRadius={12}
                     borderWidth={1}
                     borderColor="$borderColor"
                   >
-                    <Text fontSize="$2" color="$color11">
-                      +{topSkills.length - 3} more
-                    </Text>
-                  </YStack>
+                    <Text color="secondary">+{topSkills.length - 3} more</Text>
+                  </Stack>
                 )}
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           )}
 
           {/* Action Button */}
-          <XStack gap="$2" paddingTop="$2">
-            <Button flex={1} theme="info" onPress={handleViewProfile} icon={ExternalLink}>
+          <Row gap={8} paddingTop={8}>
+            <Button
+              color="primary"
+              onPress={handleViewProfile}
+              iconStart={ExternalLink}
+              style={{ flex: 1 }}
+            >
               View Profile
             </Button>
-          </XStack>
+          </Row>
         </>
       )}
+      </Stack>
     </Card>
   )
 }

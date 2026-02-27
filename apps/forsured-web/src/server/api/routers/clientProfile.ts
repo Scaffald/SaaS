@@ -1,6 +1,6 @@
 /**
  * Client Profile Router
- * REQ-274: Clickable Client Navigation
+ * Clickable Client Navigation
  * TASK-2: Implement Client Profile Data Fetching
  *
  * Provides client profile data including:

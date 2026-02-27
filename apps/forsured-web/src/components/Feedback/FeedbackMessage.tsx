@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { Stack, Row, Text } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text } from '@scaffald/ui';
 import { FeedbackAttachment } from './FeedbackAttachment';
 
 interface Attachment {

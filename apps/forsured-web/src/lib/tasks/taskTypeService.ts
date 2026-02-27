@@ -1,32 +1,37 @@
 /**
- * REQ-261: Task Type Definitions & Settings Page
- * TASK-2: Build Task Type CRUD API Endpoints
+ * Task type definitions and settings
+ * Task type CRUD API
  *
  * Service for managing task type CRUD operations with validation and authorization.
  */
 
-import { TaskType, TaskTypeCategory, TaskPriority } from '../../types';
+import { TaskPriority, TaskType, TaskTypeCategory } from "../../types";
 
 /**
  * Valid task type categories
  */
 export const VALID_CATEGORIES: TaskTypeCategory[] = [
-  'document_review',
-  'policy_management',
-  'compliance',
-  'onboarding',
-  'custom',
+  "document_review",
+  "policy_management",
+  "compliance",
+  "onboarding",
+  "custom",
 ];
 
 /**
  * Valid priority values
  */
-export const VALID_PRIORITIES: TaskPriority[] = ['low', 'medium', 'high', 'urgent'];
+export const VALID_PRIORITIES: TaskPriority[] = [
+  "low",
+  "medium",
+  "high",
+  "urgent",
+];
 
 /**
  * User role for authorization
  */
-export type UserRole = 'admin' | 'broker' | 'gc' | 'subcontractor';
+export type UserRole = "admin" | "broker" | "gc" | "subcontractor";
 
 /**
  * User context for authorization
@@ -57,10 +62,10 @@ export interface CreateTaskTypeInput {
   category: TaskTypeCategory;
   icon?: string;
   color?: string;
-  default_assignee_role?: 'broker' | 'gc' | 'subcontractor';
+  default_assignee_role?: "broker" | "gc" | "subcontractor";
   auto_assignment_rules?: {
     assign_to_project_manager?: boolean;
-    assign_to_role?: 'broker' | 'gc' | 'subcontractor';
+    assign_to_role?: "broker" | "gc" | "subcontractor";
   };
   is_active?: boolean;
 }
@@ -76,10 +81,10 @@ export interface UpdateTaskTypeInput {
   category?: TaskTypeCategory;
   icon?: string;
   color?: string;
-  default_assignee_role?: 'broker' | 'gc' | 'subcontractor';
+  default_assignee_role?: "broker" | "gc" | "subcontractor";
   auto_assignment_rules?: {
     assign_to_project_manager?: boolean;
-    assign_to_role?: 'broker' | 'gc' | 'subcontractor';
+    assign_to_role?: "broker" | "gc" | "subcontractor";
   };
   is_active?: boolean;
 }
@@ -104,7 +109,7 @@ const HEX_COLOR_PATTERN = /^#[0-9A-Fa-f]{6}$/;
  * @returns True if user is admin
  */
 export function isAdmin(user: UserContext): boolean {
-  return user.role === 'admin';
+  return user.role === "admin";
 }
 
 /**
@@ -113,11 +118,15 @@ export function isAdmin(user: UserContext): boolean {
  * @param category - Category to validate
  * @returns Validation error if invalid, undefined if valid
  */
-export function validateCategory(category: string): ValidationError | undefined {
+export function validateCategory(
+  category: string,
+): ValidationError | undefined {
   if (!VALID_CATEGORIES.includes(category as TaskTypeCategory)) {
     return {
-      field: 'category',
-      message: `Invalid category. Must be one of: ${VALID_CATEGORIES.join(', ')}`,
+      field: "category",
+      message: `Invalid category. Must be one of: ${
+        VALID_CATEGORIES.join(", ")
+      }`,
     };
   }
   return undefined;
@@ -129,11 +138,15 @@ export function validateCategory(category: string): ValidationError | undefined 
  * @param priority - Priority to validate
  * @returns Validation error if invalid, undefined if valid
  */
-export function validatePriority(priority: string): ValidationError | undefined {
+export function validatePriority(
+  priority: string,
+): ValidationError | undefined {
   if (!VALID_PRIORITIES.includes(priority as TaskPriority)) {
     return {
-      field: 'default_priority',
-      message: `Invalid priority. Must be one of: ${VALID_PRIORITIES.join(', ')}`,
+      field: "default_priority",
+      message: `Invalid priority. Must be one of: ${
+        VALID_PRIORITIES.join(", ")
+      }`,
     };
   }
   return undefined;
@@ -145,11 +158,13 @@ export function validatePriority(priority: string): ValidationError | undefined 
  * @param offset - Offset to validate
  * @returns Validation error if invalid, undefined if valid
  */
-export function validateDueDateOffset(offset: number): ValidationError | undefined {
+export function validateDueDateOffset(
+  offset: number,
+): ValidationError | undefined {
   if (!Number.isInteger(offset) || offset < 0) {
     return {
-      field: 'default_due_date_offset',
-      message: 'Due date offset must be a non-negative integer',
+      field: "default_due_date_offset",
+      message: "Due date offset must be a non-negative integer",
     };
   }
   return undefined;
@@ -164,8 +179,8 @@ export function validateDueDateOffset(offset: number): ValidationError | undefin
 export function validateColor(color: string): ValidationError | undefined {
   if (!HEX_COLOR_PATTERN.test(color)) {
     return {
-      field: 'color',
-      message: 'Color must be a valid hex code (e.g., #3B82F6)',
+      field: "color",
+      message: "Color must be a valid hex code (e.g., #3B82F6)",
     };
   }
   return undefined;
@@ -180,9 +195,9 @@ export function validateColor(color: string): ValidationError | undefined {
  */
 export async function validateUniqueName(
   name: string,
-  excludeId?: string
+  excludeId?: string,
 ): Promise<ValidationError | undefined> {
-  throw new Error('validateUniqueName not implemented with Supabase');
+  throw new Error("validateUniqueName not implemented with Supabase");
 }
 
 /**
@@ -191,21 +206,26 @@ export async function validateUniqueName(
  * @param input - Input to validate
  * @returns Array of validation errors
  */
-export async function validateCreateInput(input: CreateTaskTypeInput): Promise<ValidationError[]> {
+export async function validateCreateInput(
+  input: CreateTaskTypeInput,
+): Promise<ValidationError[]> {
   const errors: ValidationError[] = [];
 
   // Required fields
-  if (!input.name || input.name.trim() === '') {
-    errors.push({ field: 'name', message: 'Name is required' });
+  if (!input.name || input.name.trim() === "") {
+    errors.push({ field: "name", message: "Name is required" });
   } else if (input.name.length > 100) {
-    errors.push({ field: 'name', message: 'Name must be 100 characters or less' });
+    errors.push({
+      field: "name",
+      message: "Name must be 100 characters or less",
+    });
   } else {
     const uniqueError = await validateUniqueName(input.name);
     if (uniqueError) errors.push(uniqueError);
   }
 
   if (!input.category) {
-    errors.push({ field: 'category', message: 'Category is required' });
+    errors.push({ field: "category", message: "Category is required" });
   } else {
     const categoryError = validateCategory(input.category);
     if (categoryError) errors.push(categoryError);
@@ -239,15 +259,18 @@ export async function validateCreateInput(input: CreateTaskTypeInput): Promise<V
  */
 export async function validateUpdateInput(
   input: UpdateTaskTypeInput,
-  taskTypeId: string
+  taskTypeId: string,
 ): Promise<ValidationError[]> {
   const errors: ValidationError[] = [];
 
   if (input.name !== undefined) {
-    if (input.name.trim() === '') {
-      errors.push({ field: 'name', message: 'Name cannot be empty' });
+    if (input.name.trim() === "") {
+      errors.push({ field: "name", message: "Name cannot be empty" });
     } else if (input.name.length > 100) {
-      errors.push({ field: 'name', message: 'Name must be 100 characters or less' });
+      errors.push({
+        field: "name",
+        message: "Name must be 100 characters or less",
+      });
     } else {
       const uniqueError = await validateUniqueName(input.name, taskTypeId);
       if (uniqueError) errors.push(uniqueError);
@@ -283,8 +306,10 @@ export async function validateUpdateInput(
  * @param category - Optional category filter
  * @returns API response with task types
  */
-export async function getAllTaskTypes(category?: TaskTypeCategory): Promise<ApiResponse<TaskType[]>> {
-  throw new Error('getAllTaskTypes not implemented with Supabase');
+export async function getAllTaskTypes(
+  category?: TaskTypeCategory,
+): Promise<ApiResponse<TaskType[]>> {
+  throw new Error("getAllTaskTypes not implemented with Supabase");
 }
 
 /**
@@ -293,8 +318,10 @@ export async function getAllTaskTypes(category?: TaskTypeCategory): Promise<ApiR
  * @param id - Task type ID
  * @returns API response with task type
  */
-export async function getTaskTypeById(id: string): Promise<ApiResponse<TaskType>> {
-  throw new Error('getTaskTypeById not implemented with Supabase');
+export async function getTaskTypeById(
+  id: string,
+): Promise<ApiResponse<TaskType>> {
+  throw new Error("getTaskTypeById not implemented with Supabase");
 }
 
 /**
@@ -306,9 +333,9 @@ export async function getTaskTypeById(id: string): Promise<ApiResponse<TaskType>
  */
 export async function createTaskType(
   input: CreateTaskTypeInput,
-  user: UserContext
+  user: UserContext,
 ): Promise<ApiResponse<TaskType>> {
-  throw new Error('createTaskType not implemented with Supabase');
+  throw new Error("createTaskType not implemented with Supabase");
 }
 
 /**
@@ -322,9 +349,9 @@ export async function createTaskType(
 export async function updateTaskType(
   id: string,
   input: UpdateTaskTypeInput,
-  user: UserContext
+  user: UserContext,
 ): Promise<ApiResponse<TaskType>> {
-  throw new Error('updateTaskType not implemented with Supabase');
+  throw new Error("updateTaskType not implemented with Supabase");
 }
 
 /**
@@ -336,9 +363,9 @@ export async function updateTaskType(
  */
 export async function deleteTaskType(
   id: string,
-  user: UserContext
+  user: UserContext,
 ): Promise<ApiResponse<void>> {
-  throw new Error('deleteTaskType not implemented with Supabase');
+  throw new Error("deleteTaskType not implemented with Supabase");
 }
 
 /**
@@ -348,7 +375,7 @@ export async function deleteTaskType(
  * @returns API response with active task types
  */
 export async function getActiveTaskTypes(
-  category?: TaskTypeCategory
+  category?: TaskTypeCategory,
 ): Promise<ApiResponse<TaskType[]>> {
   try {
     // TODO: Implement when task_types table is created
@@ -362,7 +389,9 @@ export async function getActiveTaskTypes(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to fetch task types',
+      error: error instanceof Error
+        ? error.message
+        : "Failed to fetch task types",
       statusCode: 500,
     };
   }

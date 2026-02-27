@@ -1,13 +1,13 @@
 /**
  * CCPA Protected Action Component
- * REQ-6, TASK-8: Role-Based Access Control for CCPA Admin
+ * Role-based access control for CCPA admin
  *
  * Wrapper component that conditionally renders children based on CCPA permissions.
  * Provides UI gating for actions and elements based on user role.
  */
 
 import type { ReactNode } from 'react'
-import { Stack, Text, Tooltip } from '@unicornlove/beyond-ui'
+import { Stack, Text, Tooltip } from '@scaffald/ui'
 import { useCCPAPermissions } from '../../../hooks/useCCPAPermissions'
 import type { CCPAPermission } from '../../../lib/auth/ccpaPermissions'
 

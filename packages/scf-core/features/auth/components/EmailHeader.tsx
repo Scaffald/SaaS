@@ -1,6 +1,7 @@
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import { Mail } from '@tamagui/lucide-icons'
-import { H1, Paragraph, View } from '@unicornlove/ui'
+import { Mail } from 'lucide-react-native'
+import { Box, H1, Paragraph, Row, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface EmailHeaderProps {
   email: string
@@ -8,30 +9,35 @@ interface EmailHeaderProps {
 
 export function EmailHeader({ email }: EmailHeaderProps) {
   const { t } = useTranslation()
+  const { theme } = useThemeContext()
+  const resolvedTheme = theme === 'dark' ? 'dark' : 'light'
+  const textColor = colors.text[resolvedTheme].primary
+  const iconColor = colors.icon[resolvedTheme].default
 
   return (
-    <View alignItems="center" gap="$3" width="100%">
-      <H1 fontWeight="700" fontSize="$7" color="$color12">
+    <Box align="center" gap={12} style={{ width: '100%' }}>
+      <H1 style={{ fontWeight: '700', fontSize: 24, color: textColor }}>
         {t('auth.verify.title')}
       </H1>
 
-      <View flexDirection="row" alignItems="center" justifyContent="center" gap="$2">
-        <Mail size="$1" color="$color12" />
+      <Row align="center" justify="center" gap={8}>
+        <Mail size="lg" color={iconColor} />
         <Paragraph
-          size="$3"
-          $md={{ size: '$4' }}
-          fontWeight="500"
-          color="$color12"
-          numberOfLines={1}
+          style={{
+            fontSize: 16,
+            fontWeight: '500',
+            color: textColor,
+            maxWidth: '100%',
+          }}
           ellipsizeMode="middle"
         >
           {email}
         </Paragraph>
-      </View>
+      </Row>
 
-      <Paragraph textAlign="center" size="$2" $md={{ size: '$3' }}>
+      <Paragraph style={{ textAlign: 'center', fontSize: 14 }}>
         {t('auth.verify.instructions')}
       </Paragraph>
-    </View>
+    </Box>
   )
 }

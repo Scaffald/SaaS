@@ -12,7 +12,7 @@ import {
   Card,
   Accordion,
   Paragraph,
-} from '@unicornlove/beyond-ui';
+} from '@scaffald/ui';
 import {
   Users,
   FileText,

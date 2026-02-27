@@ -1,0 +1,22 @@
+---
+description: "Beyond UI components, tokens, and styling guidelines"
+globs: ["**/*.tsx", "**/*.ts"]
+alwaysApply: true
+---
+
+# Beyond UI – Components and Styling
+
+- **ALWAYS use Beyond UI components** from `@unicornlove/beyond-ui` when creating or updating UI.
+- **SOURCE design tokens** from the Beyond UI package (see `packages/beyond-ui` themes/tokens); do not invent new colors or spacing values.
+- **Use theme variables** instead of hardcoded colors; prefer semantic tokens for consistency.
+
+## References
+
+- [API conventions](packages/beyond-ui/docs/API_CONVENTIONS.md) – Prop naming and style factories.
+- [STYLING_GUIDE](packages/beyond-ui/STYLING_GUIDE.md) – Tokens and styling patterns.
+
+## Best practices
+
+1. Use theme/token variables instead of hardcoded colors.
+2. Prefer Beyond UI layout primitives (Stack, Row, Grid, Box) and components.
+3. Keep styles consistent with the design system defined in the Beyond UI package.

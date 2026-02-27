@@ -1,12 +1,14 @@
 import type { RouteConfig } from '@scf/core/constants/routes'
+import { ScrollView, StyleSheet } from 'react-native'
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { getChildRoutes } from '@scf/core/utils/navigation/routeHierarchy'
 import { usePathname } from '@scf/core/utils/usePathname'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
-import { ScrollView, useWindowDimensions, XStack, YStack } from '@unicornlove/ui'
-import type { StackProps } from '@unicornlove/ui'
-import { Breadcrumb, type BreadcrumbItem, Tab, TabGroup } from '@unicornlove/ui'
+import { useWindowDimensions, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
+import type { StackProps } from '@scaffald/ui'
+import { Breadcrumb, type BreadcrumbItemData, Tabs } from '@scaffald/ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 
 type OfficeLayoutProps = {
@@ -15,7 +17,7 @@ type OfficeLayoutProps = {
   /** Whether to show breadcrumb navigation (default: true) */
   showBreadcrumb?: boolean
   /** Manual breadcrumb items to override auto-generation */
-  breadcrumbItems?: BreadcrumbItem[]
+  breadcrumbItems?: BreadcrumbItemData[]
   /** Whether to auto-generate breadcrumbs from route (default: true) */
   autoGenerateBreadcrumbs?: boolean
   /** Optional props for the main content wrapper */
@@ -76,7 +78,7 @@ export const OfficeLayout = ({
   const pathname = usePathname()
   const currentPath = pathname ?? ''
   const { width } = useWindowDimensions()
-  const isSmallScreen = width <= 800
+  const _isSmallScreen = width <= 800
   const { t } = useTranslation()
 
   // Auto-generate breadcrumbs if enabled and no manual override
@@ -87,6 +89,9 @@ export const OfficeLayout = ({
 
   // Determine which breadcrumbs to display
   const displayBreadcrumbs = breadcrumbItems || breadcrumbs
+
+  // Calculate current index (last item is always active)
+  const currentIndex = displayBreadcrumbs.length - 1
 
   // Get top-level office routes (direct children of /office)
   const childRoutes = useMemo(() => getChildRoutes('/office'), [])
@@ -182,113 +187,80 @@ export const OfficeLayout = ({
 
   const hasLeftContent = Boolean(leftContent)
   const hasRightContent = Boolean(rightContent)
-  const hasBothColumns = hasLeftContent && hasRightContent
+  const _hasBothColumns = hasLeftContent && hasRightContent
 
-  const { $md: contentMdProps, ...restContentProps } = contentProps ?? {}
-  const { $md: leftMdProps, ...restLeftContainerProps } = leftContainerProps ?? {}
-  const { $md: rightMdProps, ...restRightContainerProps } = rightContainerProps ?? {}
+  const restContentProps = contentProps ?? {}
+  const restLeftContainerProps = leftContainerProps ?? {}
+  const restRightContainerProps = rightContainerProps ?? {}
 
   const handleTabChange = () => {
     // Navigation is handled by Link components in Tab
   }
 
   return (
-    <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
-      <YStack gap="$3" paddingTop="$3" paddingBottom="$5">
+    <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+      <Stack gap={12} paddingTop="sm" paddingBottom="lg">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
-          <XStack paddingHorizontal="$3" paddingTop="$3" $md={{ paddingHorizontal: '$7' }}>
-            <Breadcrumb items={displayBreadcrumbs} />
-          </XStack>
+          <Row paddingHorizontal="sm" paddingTop="sm">
+            <Breadcrumb items={displayBreadcrumbs} currentIndex={currentIndex} />
+          </Row>
         )}
 
-        {/* TabGroup Navigation - Top-level office routes */}
+        {/* Tabs Navigation - Top-level office routes */}
         {tabItems.length > 0 && (
           <>
-            <XStack paddingHorizontal="$3" $md={{ paddingHorizontal: '$7' }}>
-              <TabGroup
+            <Row paddingHorizontal="sm">
+              <Tabs
                 value={activeTabValue}
                 onValueChange={handleTabChange}
-                ariaLabel="Office navigation"
-                scrollable={isSmallScreen}
-                bordered={true}
+                type="line"
+                orientation="horizontal"
               >
                 {tabItems.map((item: TabItem) => (
-                  <Tab key={item.key} value={item.key} label={item.label} href={item.href} />
+                  <Tabs.Item key={item.key} value={item.key}>
+                    <Tabs.Trigger>{item.label}</Tabs.Trigger>
+                  </Tabs.Item>
                 ))}
-              </TabGroup>
-            </XStack>
+              </Tabs>
+            </Row>
             {secondaryTabItems.length > 0 && (
-              <XStack paddingHorizontal="$3" $md={{ paddingHorizontal: '$7' }}>
-                <TabGroup
+              <Row paddingHorizontal="sm">
+                <Tabs
                   value={activeSecondaryValue}
                   onValueChange={handleTabChange}
-                  ariaLabel="Office subsection navigation"
-                  scrollable={isSmallScreen}
-                  bordered={false}
+                  type="default"
+                  orientation="horizontal"
                 >
                   {secondaryTabItems.map((item: TabItem) => (
-                    <Tab key={item.key} value={item.key} label={item.label} href={item.href} />
+                    <Tabs.Item key={item.key} value={item.key}>
+                      <Tabs.Trigger>{item.label}</Tabs.Trigger>
+                    </Tabs.Item>
                   ))}
-                </TabGroup>
-              </XStack>
+                </Tabs>
+              </Row>
             )}
           </>
         )}
 
         {/* Content Area - Use programmatic responsive flexDirection */}
-        <XStack
-          gap="$3"
-          padding="$3"
-          flexDirection="column"
-          {...restContentProps}
-          $md={{
-            gap: '$8',
-            padding: '$7',
-            flexDirection: 'row',
-            ...(contentMdProps ?? {}),
-          }}
-        >
+        <Row gap={12} padding="sm" {...restContentProps}>
           {hasLeftContent && (
-            <YStack
-              minWidth="100%"
-              width="100%"
-              maxWidth="100%"
-              flexBasis="auto"
-              {...restLeftContainerProps}
-              $md={{
-                minWidth: hasBothColumns ? 300 : 'auto',
-                width: hasBothColumns ? undefined : '100%',
-                maxWidth: hasBothColumns ? undefined : '100%',
-                flexBasis: hasBothColumns ? undefined : 'auto',
-                flex: hasBothColumns ? 3 : undefined,
-                ...(leftMdProps ?? {}),
-              }}
-            >
+            <Stack minWidth="100%" width="100%" maxWidth="100%" {...restLeftContainerProps}>
               {leftContent}
-            </YStack>
+            </Stack>
           )}
           {hasRightContent && (
-            <YStack
-              minWidth="100%"
-              width="100%"
-              maxWidth="100%"
-              flexBasis="auto"
-              {...restRightContainerProps}
-              $md={{
-                minWidth: hasBothColumns ? 300 : 'auto',
-                width: hasBothColumns ? undefined : '100%',
-                maxWidth: hasBothColumns ? undefined : '100%',
-                flexBasis: hasBothColumns ? undefined : 'auto',
-                flex: hasBothColumns ? 2 : undefined,
-                ...(rightMdProps ?? {}),
-              }}
-            >
+            <Stack minWidth="100%" width="100%" maxWidth="100%" {...restRightContainerProps}>
               {rightContent}
-            </YStack>
+            </Stack>
           )}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </ScrollView>
   )
 }
+
+const styles = StyleSheet.create({
+  scroll: { flex: 1, backgroundColor: colors.gray[50] },
+})

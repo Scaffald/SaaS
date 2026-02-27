@@ -1,5 +1,5 @@
 /**
- * REQ-306: Mock Validation Framework
+ * Mock Validation Framework
  *
  * Core framework for validating all testing mocks against their real implementations
  * before any tests execute. Implements singleton pattern for global access.

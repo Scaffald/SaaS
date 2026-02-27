@@ -1,47 +1,35 @@
-import { api } from '@scf/core/utils/api'
-import { DataTable } from '@scf/core/components/ui'
+import { useFollowing, useUnfollowUserMutation } from '@scf/core/utils/engagement-sdk-hooks'
+import { columnsFromTanStack } from '@scf/core/utils/table-columns'
+import type { Follow } from '@scaffald/sdk/resources/follows'
 import type { ColumnDef } from '@tanstack/react-table'
-import { useToastController } from '@tamagui/toast'
-import { UserMinus } from '@tamagui/lucide-icons'
+import { useToast } from '@scaffald/ui'
+import { UserMinus } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
-import { Avatar, Button, Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-
-interface FollowingData {
-  user?: {
-    display_name?: string | null
-    username?: string | null
-    avatar_url?: string | null
-    industry?: {
-      name?: string | null
-    } | null
-  } | null
-  created_at?: string
-  id?: string
-  followee_id?: string
-}
-
-type FollowingQueryResult = ReturnType<typeof api.follows.getFollowing.useQuery>
-type Following = NonNullable<FollowingQueryResult['data']> extends Array<infer T>
-  ? T
-  : FollowingData
+import { Avatar, Button, Input, Spinner, Table, Text, Row, Stack } from '@scaffald/ui'
+import { useQueryClient } from '@tanstack/react-query'
 
 export function FollowingList() {
   const [searchTerm, setSearchTerm] = useState('')
-  const utils = api.useUtils()
-  const toast = useToastController()
+  const queryClient = useQueryClient()
+  const toast = useToast()
 
-  const { data: following, isLoading } = api.follows.getFollowing.useQuery()
+  const { data: followingResponse, isLoading } = useFollowing()
+  const following = followingResponse?.data
 
-  const unfollowMutation = api.follows.unfollowUser.useMutation({
+  const unfollowMutation = useUnfollowUserMutation({
     onSuccess: () => {
-      utils.follows.getFollowing.invalidate()
-      toast.show('Success', {
+      queryClient.invalidateQueries({ queryKey: ['follows', 'following'] })
+      toast.show({
+        title: 'Success',
         message: 'Unfollowed successfully',
+        variant: 'success',
       })
     },
-    onError: (error) => {
-      toast.show('Error', {
+    onError: (error: { message?: string }) => {
+      toast.show({
+        title: 'Error',
         message: error.message || 'Failed to unfollow user',
+        variant: 'error',
       })
     },
   })
@@ -51,8 +39,9 @@ export function FollowingList() {
     if (!searchTerm.trim()) return following
 
     const search = searchTerm.toLowerCase()
-    return following.filter((follow: Following) => {
-      const name = follow.user?.display_name || follow.user?.username || ''
+    return following.filter((follow: Follow) => {
+      const f = follow.followee
+      const name = f?.name || ''
       return name.toLowerCase().includes(search)
     })
   }, [following, searchTerm])
@@ -60,49 +49,34 @@ export function FollowingList() {
   const handleUnfollow = useCallback(
     async (_followId: string, userId: string) => {
       if (confirm('Are you sure you want to unfollow this user?')) {
-        await unfollowMutation.mutateAsync({ targetUserId: userId })
+        await unfollowMutation.mutateAsync(userId)
       }
     },
-    [unfollowMutation.mutateAsync]
+    [unfollowMutation]
   )
 
-  const columns = useMemo<ColumnDef<Following>[]>(
+  const columnDefs = useMemo<ColumnDef<Follow & Record<string, unknown>>[]>(
     () => [
       {
-        accessorKey: 'user',
+        accessorKey: 'followee',
         header: 'User',
         cell: ({ row }) => {
           const follow = row.original
-          const user = follow.user
-          const name = user?.display_name || user?.username || 'Unknown'
-          const avatar = user?.avatar_url
+          const followee = follow.followee
+          const name = followee?.name || 'Unknown'
+          const avatar = followee?.avatar_url
 
           return (
-            <XStack alignItems="center" gap="$2">
-              <Avatar circular size={32}>
-                {avatar ? (
-                  <Avatar.Image source={{ uri: avatar }} />
-                ) : (
-                  <Avatar.Fallback backgroundColor="$purple4">
-                    <Text fontSize="$3" fontWeight="600" color="$purple10">
-                      {name.charAt(0).toUpperCase()}
-                    </Text>
-                  </Avatar.Fallback>
-                )}
-              </Avatar>
-              <Text fontSize="$3" fontWeight="500">
-                {name}
-              </Text>
-            </XStack>
+            <Row align="center" gap={8}>
+              <Avatar
+                size={32}
+                src={avatar ? { uri: avatar } : undefined}
+                initials={!avatar ? name.charAt(0).toUpperCase() : undefined}
+                color="primary"
+              />
+              <Text>{name}</Text>
+            </Row>
           )
-        },
-      },
-      {
-        accessorKey: 'industry',
-        header: 'Industry',
-        cell: ({ row }) => {
-          const user = row.original.user
-          return <Text fontSize="$3">{user?.industry?.name || '-'}</Text>
         },
       },
       {
@@ -110,11 +84,7 @@ export function FollowingList() {
         header: 'Following Since',
         cell: ({ row }) => {
           const date = row.original.created_at
-          return (
-            <Text fontSize="$3" color="$color10">
-              {date ? new Date(date).toLocaleDateString() : '-'}
-            </Text>
-          )
+          return <Text color="$gray11">{date ? new Date(date).toLocaleDateString() : '-'}</Text>
         },
       },
       {
@@ -124,10 +94,10 @@ export function FollowingList() {
           const follow = row.original
           return (
             <Button
-              size="$2"
-              variant="outlined"
-              icon={UserMinus}
-              onPress={() => handleUnfollow(follow.id || '', follow.followee_id || '')}
+              size="sm"
+              variant="outline"
+              iconStart={UserMinus}
+              onPress={() => handleUnfollow(follow.id, follow.followee_id)}
               disabled={unfollowMutation.isPending}
             >
               Unfollow
@@ -139,51 +109,55 @@ export function FollowingList() {
     [unfollowMutation.isPending, handleUnfollow]
   )
 
+  const tableColumns = useMemo(
+    () => columnsFromTanStack<Follow & Record<string, unknown>>(columnDefs),
+    [columnDefs]
+  )
+
   if (isLoading) {
     return (
-      <YStack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
-        <Spinner size="large" />
-        <Text color="$color11">Loading following…</Text>
-      </YStack>
+      <Stack align="center" justify="center" paddingVertical={24} gap={8}>
+        <Spinner size="lg" />
+        <Text color="$gray11">Loading following…</Text>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$4">
+    <Stack gap={16}>
       <Input
         placeholder="Search following..."
         value={searchTerm}
         onChangeText={setSearchTerm}
-        size="$4"
       />
 
       {filteredFollowing.length === 0 ? (
-        <YStack
-          gap="$3"
+        <Stack
+          gap={12}
           borderWidth={1}
           borderColor="$borderColor"
-          borderRadius="$4"
-          padding="$4"
+          borderRadius={16}
+          padding="md"
           backgroundColor="$color2"
-          alignItems="center"
-          justifyContent="center"
+          align="center"
+          justify="center"
           style={{ minHeight: 300 }}
         >
-          <Text fontWeight="600">Not following anyone yet</Text>
-          <Text color="$color11" style={{ textAlign: 'center' }}>
+          <Text>Not following anyone yet</Text>
+          <Text color="$gray11" style={{ textAlign: 'center' }}>
             {searchTerm
               ? 'No users match your search.'
               : "You're not following anyone yet. Discover workers and start following them."}
           </Text>
-        </YStack>
+        </Stack>
       ) : (
-        <DataTable
-          columns={columns}
-          data={filteredFollowing}
+        <Table
+          columns={tableColumns}
+          data={filteredFollowing as (Follow & Record<string, unknown>)[]}
           pageSize={20}
           emptyMessage="No users found"
         />
       )}
-    </YStack>
+    </Stack>
   )
 }

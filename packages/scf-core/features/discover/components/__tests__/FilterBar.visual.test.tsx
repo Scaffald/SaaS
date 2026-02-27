@@ -10,8 +10,8 @@ interface ExtendedCSSProperties extends CSSProperties {
   WebkitBackdropFilter?: string
 }
 
-// Mock Tamagui components before import
-vi.mock('tamagui', () => {
+// Beyond UI mock before import
+vi.mock('@scaffald/ui', () => {
   const mapStyleProps = (props: Record<string, unknown>) => {
     const styleProps: Record<string, unknown> = {
       ...(props.style as Record<string, unknown> | undefined),
@@ -95,12 +95,12 @@ vi.mock('tamagui', () => {
   }
 
   return {
-    XStack: MockXStack,
+    Row: MockXStack,
     Button: MockButton,
   }
 })
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Search: () => <span data-testid="icon-search" />,
   SlidersHorizontal: () => <span data-testid="icon-filters" />,
   RotateCcw: () => <span data-testid="icon-reset" />,

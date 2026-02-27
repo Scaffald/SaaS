@@ -234,7 +234,7 @@ export const profileViewsRouter = t.router({
           offset: z.number().min(0).default(0),
         })
         .optional()
-        .default({})
+        .default({ limit: 50, offset: 0 })
     )
     .query(async ({ ctx, input }) => {
       if (!ctx.user) {

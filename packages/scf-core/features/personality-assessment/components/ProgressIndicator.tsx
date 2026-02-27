@@ -1,123 +1,165 @@
-import { Circle, Text, XStack, YStack } from '@unicornlove/ui'
-import type { AssessmentStep } from '../utils/assessment-steps'
-import { STEP_INFO } from '../utils/assessment-steps'
+import { Text, Row, Stack, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
+import type { AssessmentStep } from "../utils/assessment-steps";
+import { STEP_INFO } from "../utils/assessment-steps";
 
 export interface ProgressIndicatorProps {
   /**
    * Current active step
    */
-  currentStep: AssessmentStep
+  currentStep: AssessmentStep;
 
   /**
    * Completion percentage (0-100)
    */
-  completionScore: number
+  completionScore: number;
 }
 
 /**
  * ProgressIndicator - Visual progress tracker for personality assessment wizard
  */
-export function ProgressIndicator({ currentStep, completionScore }: ProgressIndicatorProps) {
-  const steps: AssessmentStep[] = ['luscher1', 'ipip', 'luscher2', 'acute']
+export function ProgressIndicator({
+  currentStep,
+  completionScore,
+}: ProgressIndicatorProps) {
+  const { theme } = useThemeContext();
+  const steps: AssessmentStep[] = ["luscher1", "ipip", "luscher2", "acute"];
 
-  const getStepStatus = (stepId: AssessmentStep): 'completed' | 'current' | 'upcoming' => {
-    const currentOrder = STEP_INFO[currentStep].order
-    const stepOrder = STEP_INFO[stepId].order
+  const getStepStatus = (
+    stepId: AssessmentStep
+  ): "completed" | "current" | "upcoming" => {
+    const currentOrder = STEP_INFO[currentStep].order;
+    const stepOrder = STEP_INFO[stepId].order;
 
-    if (stepOrder < currentOrder) return 'completed'
-    if (stepId === currentStep) return 'current'
-    return 'upcoming'
-  }
+    if (stepOrder < currentOrder) return "completed";
+    if (stepId === currentStep) return "current";
+    return "upcoming";
+  };
 
   return (
-    <YStack gap="$3" width="100%">
+    <Stack gap={12} width="100%">
       {/* Completion Percentage */}
-      <YStack gap="$1">
-        <XStack justifyContent="space-between" alignItems="center">
-          <Text fontSize="$4" fontWeight="600" color="$color12">
-            Progress
-          </Text>
-          <Text fontSize="$5" fontWeight="bold" color="$blue10">
+      <Stack gap={4}>
+        <Row justify="space-between" align="center">
+          <Text style={{ color: colors.text[theme].secondary }}>Progress</Text>
+          <Text
+            style={{
+              color: theme === "light" ? colors.blue[700] : colors.blue[300],
+            }}
+          >
             {completionScore}%
           </Text>
-        </XStack>
-        <YStack height={8} backgroundColor="$color5" borderRadius="$10" overflow="hidden">
-          <YStack
-            height="100%"
-            backgroundColor="$blue9"
-            width={`${completionScore}%`}
-            transition="width 0.3s ease"
+        </Row>
+        <Stack
+          style={{
+            height: 8,
+            backgroundColor: colors.bg[theme].muted,
+            borderRadius: 10,
+            overflow: "hidden",
+          }}
+        >
+          <Stack
+            style={{
+              height: "100%",
+              backgroundColor: colors.bg[theme].default,
+              width: `${completionScore}%`,
+            }}
           />
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
 
       {/* Step Indicators */}
-      <XStack gap="$2" alignItems="center" flexWrap="wrap">
+      <Row gap={8} align="center" wrap>
         {steps.map((step, index) => {
-          const status = getStepStatus(step)
-          const isLast = index === steps.length - 1
-          const stepInfo = STEP_INFO[step]
+          const status = getStepStatus(step);
+          const isLast = index === steps.length - 1;
+          const stepInfo = STEP_INFO[step];
 
           return (
-            <XStack key={step} gap="$2" alignItems="center">
+            <Row key={step} gap={8} align="center">
               {/* Step Circle */}
-              <YStack gap="$1" alignItems="center">
-                <Circle
-                  size={40}
-                  backgroundColor={
-                    status === 'completed' ? '$green9' : status === 'current' ? '$blue9' : '$color5'
-                  }
-                  borderWidth={2}
-                  borderColor={
-                    status === 'completed'
-                      ? '$green10'
-                      : status === 'current'
-                        ? '$blue10'
-                        : '$color7'
-                  }
-                  justifyContent="center"
-                  alignItems="center"
+              <Stack gap={4} align="center">
+                <Stack
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    backgroundColor:
+                      status === "completed"
+                        ? theme === "light"
+                          ? colors.green[50]
+                          : colors.green[900]
+                        : status === "current"
+                        ? colors.bg[theme].default
+                        : colors.bg[theme].muted,
+                    borderWidth: 2,
+                    borderColor:
+                      status === "completed"
+                        ? theme === "light"
+                          ? colors.green[300]
+                          : colors.green[700]
+                        : status === "current"
+                        ? theme === "light"
+                          ? colors.blue[300]
+                          : colors.blue[700]
+                        : colors.border[theme].subtle,
+                  }}
+                  justify="center"
+                  align="center"
                 >
-                  {status === 'completed' ? (
-                    <Text fontSize="$6" fontWeight="bold" color="$color12">
+                  {status === "completed" ? (
+                    <Text style={{ color: colors.text[theme].secondary }}>
                       ✓
                     </Text>
                   ) : (
                     <Text
-                      fontSize="$4"
-                      fontWeight="bold"
-                      color={status === 'current' ? '$color12' : '$color10'}
+                      style={{
+                        color:
+                          status === "current"
+                            ? colors.text[theme].primary
+                            : colors.text[theme].tertiary,
+                      }}
                     >
                       {index + 1}
                     </Text>
                   )}
-                </Circle>
+                </Stack>
 
                 {/* Step Label */}
                 <Text
-                  fontSize="$2"
-                  fontWeight={status === 'current' ? 'bold' : 'normal'}
-                  color={status === 'completed' || status === 'current' ? '$color12' : '$color10'}
-                  textAlign="center"
-                  maxWidth={80}
+                  style={{
+                    color:
+                      status === "completed" || status === "current"
+                        ? colors.text[theme].primary
+                        : colors.text[theme].tertiary,
+                    textAlign: "center",
+                    maxWidth: 80,
+                  }}
                 >
                   {stepInfo.label}
                 </Text>
-              </YStack>
+              </Stack>
 
               {/* Connector Line */}
               {!isLast && (
-                <YStack
-                  width={40}
-                  height={2}
-                  backgroundColor={status === 'completed' ? '$green9' : '$color5'}
-                  marginBottom={24}
+                <Stack
+                  style={{
+                    width: 40,
+                    height: 2,
+                    backgroundColor:
+                      status === "completed"
+                        ? theme === "light"
+                          ? colors.green[50]
+                          : colors.green[900]
+                        : colors.bg[theme].muted,
+                    marginBottom: 24,
+                  }}
                 />
               )}
-            </XStack>
-          )
+            </Row>
+          );
         })}
-      </XStack>
-    </YStack>
-  )
+      </Row>
+    </Stack>
+  );
 }

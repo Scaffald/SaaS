@@ -1,36 +1,45 @@
 /**
  * TaskCard Component Tests
- * REQ-288: Tamagui UI Component Library
  */
 
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 
-// Mock Tamagui before importing component
-vi.mock('tamagui', async () => {
+// Mock beyond-ui layout and typography
+vi.mock('@scaffald/ui', async () => {
   const React = await import('react')
   return {
-    styled: (_component: unknown, config: Record<string, unknown>) => {
-      const StyledComponent = React.forwardRef<HTMLElement, Record<string, unknown>>(
-        ({ children, onPress, ...props }, ref) => {
-          const handleClick = (e: React.MouseEvent) => {
-            if (onPress) (onPress as (e: unknown) => void)(e)
-          }
-          return React.createElement('div', { ref, onClick: handleClick, 'data-name': config.name, ...props }, children)
-        }
-      )
-      StyledComponent.displayName = (config.name as string) || 'StyledComponent'
-      return StyledComponent
-    },
-    YStack: ({ children, ...props }: Record<string, unknown>) => React.createElement('div', { 'data-testid': 'ystack', ...props }, children as React.ReactNode),
-    XStack: ({ children, ...props }: Record<string, unknown>) => React.createElement('div', { 'data-testid': 'xstack', ...props }, children as React.ReactNode),
+    Stack: ({ children, style, ...props }: Record<string, unknown>) =>
+      React.createElement('div', { 'data-testid': 'stack', style, ...props }, children),
+    Row: ({ children, style, ...props }: Record<string, unknown>) =>
+      React.createElement('div', { 'data-testid': 'row', style, ...props }, children),
+    Box: ({ children, style, ...props }: Record<string, unknown>) =>
+      React.createElement('div', { style, ...props }, children),
+    Text: ({ children, ...props }: Record<string, unknown>) =>
+      React.createElement('span', props, children as React.ReactNode),
+  }
+})
+
+vi.mock('@scaffald/ui/tokens', () => ({
+  colors: { gray: {}, bg: { primary: '#fff' }, border: { default: '#eee' }, info: {}, success: {}, error: {}, violet: {}, orange: {} },
+  spacing: { 2: 2, 4: 4, 8: 8, 12: 12, 16: 16, 24: 24, 32: 32 },
+  borderRadius: { l: 12, max: 999, m: 10, xs: 6 },
+}))
+
+// Mock react-native for Pressable
+vi.mock('react-native', async () => {
+  const React = await import('react')
+  return {
+    Pressable: ({ children, onPress }: { children: React.ReactNode; onPress?: () => void }) =>
+      React.createElement('div', { onClick: onPress }, children),
     View: ({ children, ...props }: Record<string, unknown>) => React.createElement('div', props, children as React.ReactNode),
-    Text: ({ children, ...props }: Record<string, unknown>) => React.createElement('span', props, children as React.ReactNode),
+    ScrollView: ({ children }: { children: React.ReactNode }) => React.createElement('div', {}, children),
+    TextInput: (props: Record<string, unknown>) => React.createElement('input', props),
   }
 })
 
 // Mock lucide icons
-vi.mock('@tamagui/lucide-icons', async () => {
+vi.mock('lucide-react-native', async () => {
   const React = await import('react')
   return {
     CheckCircle: () => React.createElement('svg', { 'data-testid': 'icon-check' }),

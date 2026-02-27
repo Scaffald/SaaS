@@ -3,7 +3,7 @@ import React from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock MonthYearPicker component
-vi.mock('@unicornlove/ui', () => {
+vi.mock('@scaffald/ui', () => {
   const React = require('react') as typeof import('react')
   const MonthYearPicker = ({
     value,

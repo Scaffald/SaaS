@@ -1,5 +1,5 @@
 /**
- * REQ-2, TASK-10: Bulk Import System for Compliance Requirements
+ * Bulk Import System for Compliance Requirements
  * Provides validation, preview, and import functionality for bulk requirement data
  */
 

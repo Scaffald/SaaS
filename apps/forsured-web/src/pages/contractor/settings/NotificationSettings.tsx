@@ -1,6 +1,6 @@
 // src/pages/contractor/settings/NotificationSettings.tsx
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Stack, Text, Button, H2, Input, Checkbox } from '@unicornlove/beyond-ui';
+import { Stack, Text, Button, H2, Input, Checkbox } from '@scaffald/ui';
 import { useSettings } from '../../../hooks/useSettings';
 import { toast } from 'sonner';
 

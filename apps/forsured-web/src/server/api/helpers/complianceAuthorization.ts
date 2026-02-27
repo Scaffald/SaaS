@@ -1,6 +1,6 @@
 /**
  * Server-Side Compliance Authorization Helper
- * REQ-2, TASK-19: Integrate Authorization Checks into tRPC Routers
+ * Integrate Authorization Checks into tRPC Routers
  *
  * Provides server-side authorization for compliance operations in tRPC routers.
  * Uses the compliance permission matrix from the client-side authorization system.

@@ -6,8 +6,16 @@
 import { Command } from 'commander'
 import ora from 'ora'
 import chalk from 'chalk'
+import type { Job } from '@scaffald/sdk'
 import { createClient } from '../utils/client.js'
 import { formatTable, formatJson, formatCompact } from '../utils/output.js'
+
+type JobLocation = Job['location']
+const formatLocation = (location: JobLocation): string => {
+  if (!location) return 'Remote'
+  if (typeof location === 'string') return location || 'Remote'
+  return [location.city, location.state, location.country].filter(Boolean).join(', ') || 'Remote'
+}
 
 export const jobsCommand = new Command('jobs')
   .description('Manage jobs')
@@ -37,14 +45,14 @@ export const jobsCommand = new Command('jobs')
           if (options.format === 'json') {
             formatJson(response.data)
           } else {
-            const headers = ['ID', 'Title', 'Company', 'Status', 'Type', 'Location']
-            const rows = response.data.map((job: any) => [
+            const headers = ['ID', 'Title', 'Organization', 'Status', 'Type', 'Location']
+            const rows = response.data.map((job: Job) => [
               job.id.slice(0, 8),
               job.title,
-              job.organization?.name || 'N/A',
+              job.organization_id || 'N/A',
               job.status,
               job.employment_type || 'N/A',
-              job.location || 'Remote',
+              formatLocation(job.location),
             ])
             formatTable(headers, rows, { title: 'Jobs' })
           }
@@ -62,13 +70,12 @@ export const jobsCommand = new Command('jobs')
       .description('View job details')
       .argument('<id>', 'Job ID')
       .option('--format <format>', 'Output format (compact, json)', 'compact')
-      .action(async (id: string, options: any) => {
+      .action(async (id: string, options: Record<string, string>) => {
         const spinner = ora('Fetching job...').start()
 
         try {
           const client = createClient()
-          const response = await client.jobs.retrieve(id)
-          const job = response.data
+          const job = await client.jobs.retrieve(id)
 
           spinner.succeed('Job fetched')
 
@@ -82,15 +89,14 @@ export const jobsCommand = new Command('jobs')
             formatCompact([
               { label: 'ID:', value: job.id },
               { label: 'Status:', value: job.status },
-              { label: 'Company:', value: job.organization?.name || 'N/A' },
+              { label: 'Organization:', value: job.organization_id || 'N/A' },
               { label: 'Employment Type:', value: job.employment_type || 'N/A' },
-              { label: 'Location:', value: job.location || 'Remote' },
-              { label: 'Remote Option:', value: job.remote_option || 'N/A' },
-              ...(job.pay_min && job.pay_max
+              { label: 'Location:', value: formatLocation(job.location) },
+              ...(job.salary_min && job.salary_max
                 ? [
                     {
-                      label: 'Pay Range:',
-                      value: `$${job.pay_min} - $${job.pay_max} ${job.pay_type || 'hourly'}`,
+                      label: 'Salary Range:',
+                      value: `$${job.salary_min} - $${job.salary_max}`,
                     },
                   ]
                 : []),
@@ -121,14 +127,12 @@ export const jobsCommand = new Command('jobs')
       .argument('<id>', 'Job ID')
       .option('-l, --limit <number>', 'Number of similar jobs to fetch', '10')
       .option('--format <format>', 'Output format (table, json)', 'table')
-      .action(async (id: string, options: any) => {
+      .action(async (id: string, options: Record<string, string>) => {
         const spinner = ora('Finding similar jobs...').start()
 
         try {
           const client = createClient()
-          const response = await client.jobs.similar(id, {
-            limit: Number.parseInt(options.limit, 10),
-          })
+          const response = await client.jobs.similar(id, Number.parseInt(options.limit, 10))
 
           spinner.succeed(`Found ${response.data.length} similar job(s)`)
 
@@ -140,13 +144,13 @@ export const jobsCommand = new Command('jobs')
           if (options.format === 'json') {
             formatJson(response.data)
           } else {
-            const headers = ['ID', 'Title', 'Company', 'Similarity', 'Location']
-            const rows = response.data.map((job: any) => [
+            const headers = ['ID', 'Title', 'Organization', 'Type', 'Location']
+            const rows = response.data.map((job: Job) => [
               job.id.slice(0, 8),
               job.title,
-              job.organization?.name || 'N/A',
-              job.similarity_score ? `${Math.round(job.similarity_score * 100)}%` : 'N/A',
-              job.location || 'Remote',
+              job.organization_id || 'N/A',
+              job.employment_type || 'N/A',
+              formatLocation(job.location),
             ])
             formatTable(headers, rows, { title: 'Similar Jobs' })
           }
@@ -168,8 +172,7 @@ export const jobsCommand = new Command('jobs')
 
         try {
           const client = createClient()
-          const response = await client.jobs.filterOptions()
-          const filters = response.data
+          const filters = await client.jobs.filterOptions()
 
           spinner.succeed('Filter options fetched')
 
@@ -180,15 +183,15 @@ export const jobsCommand = new Command('jobs')
             console.log(chalk.gray('─'.repeat(60)))
             console.log()
 
-            if (filters.employment_types?.length) {
+            if (filters.employmentTypes?.length) {
               console.log(chalk.cyan('Employment Types:'))
-              console.log(filters.employment_types.join(', '))
+              console.log(filters.employmentTypes.join(', '))
               console.log()
             }
 
-            if (filters.remote_options?.length) {
+            if (filters.remoteOptions?.length) {
               console.log(chalk.cyan('Remote Options:'))
-              console.log(filters.remote_options.join(', '))
+              console.log(filters.remoteOptions.join(', '))
               console.log()
             }
 

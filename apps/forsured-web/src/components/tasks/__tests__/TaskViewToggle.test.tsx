@@ -1,6 +1,6 @@
 /**
  * Unit Tests for TaskViewToggle Component
- * REQ-268: Inbox vs Assigned by Me View
+ * Inbox vs Assigned by Me view
  */
 
 import { describe, it, expect, vi } from 'vitest';
@@ -218,7 +218,7 @@ describe('TaskViewToggle Component', () => {
       );
 
       const tablist = screen.getByRole('tablist');
-      // Tamagui uses atomic CSS classes, verify the component renders correctly
+      // Theme uses atomic CSS classes, verify the component renders correctly
       expect(tablist).toBeInTheDocument();
     });
   });

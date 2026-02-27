@@ -1,7 +1,7 @@
 /**
  * SendGrid Webhook Handler
  *
- * REQ-130: Email communication auditability
+ * Email communication auditability
  *
  * Receives email delivery events from SendGrid and:
  * 1. Validates the webhook signature
@@ -23,7 +23,6 @@
  */
 
 import { trackEmailEvent } from '../../lib/email/emailConfig'
-import { auditService } from '../../lib/audit/AuditService'
 
 // SendGrid event types
 type SendGridEventType =
@@ -162,8 +161,8 @@ export async function handleSendGridWebhook(req: Request): Promise<Response> {
         continue
       }
 
-      // Track via email manager (for analytics)
-      trackEmailEvent(eventType, event.sg_message_id, event.email, {
+      // Track and log to audit trail (trackEmailEvent writes to forsured.audit_log)
+      await trackEmailEvent(eventType, event.sg_message_id, event.email, {
         url: event.url,
         reason: event.reason,
         bounceClassification: event.bounce_classification,
@@ -173,34 +172,10 @@ export async function handleSendGridWebhook(req: Request): Promise<Response> {
         taskId: event.taskId,
         subcontractorId: event.subcontractorId,
         invitationId: event.invitationId,
-      })
-
-      // Log to audit system for compliance
-      await auditService.log({
-        action: `email_${eventType}`,
-        category: 'data_access',
-        severity: eventType === 'bounced' || eventType === 'spam_report' ? 'warning' : 'info',
-        description: `Email ${eventType}: ${event.email}`,
-        resource_type: 'email',
-        resource_id: event.sg_message_id,
-        metadata: {
-          recipient: event.email,
-          eventType: event.event,
-          messageId: event.sg_message_id,
-          eventId: event.sg_event_id,
-          timestamp: event.timestamp,
-          category: event.category,
-          url: event.url,
-          reason: event.reason,
-          bounceClassification: event.bounce_classification,
-          ip: event.ip,
-          userAgent: event.useragent,
-          // Business context
-          projectId: event.projectId,
-          taskId: event.taskId,
-          subcontractorId: event.subcontractorId,
-          invitationId: event.invitationId,
-        },
+        eventType: event.event,
+        eventId: event.sg_event_id,
+        timestamp: event.timestamp,
+        category: event.category,
       })
 
       processed++

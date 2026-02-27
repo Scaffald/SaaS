@@ -1,20 +1,18 @@
-import { Card, Text, YStack } from '@unicornlove/ui'
+import { Card, Text, Stack } from "@scaffald/ui";
 
 interface UserProfileAboutProps {
-  bio: string
+  bio: string;
 }
 
 export function UserProfileAbout({ bio }: UserProfileAboutProps) {
   return (
     <Card elevate bordered>
-      <YStack gap="$3" padding="$5">
-        <Text fontSize="$7" fontWeight="700" color="$color12">
-          About
-        </Text>
-        <Text fontSize="$5" color="$color11" lineHeight={24}>
+      <Stack gap={12} padding="lg">
+        <Text color="$gray11">About</Text>
+        <Text color="$gray11" style={{ lineHeight: 24 }}>
           {bio}
         </Text>
-      </YStack>
+      </Stack>
     </Card>
-  )
+  );
 }

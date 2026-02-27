@@ -1,6 +1,5 @@
 # CCPA Compliance Implementation Guide
 
-**REQ-3: CCPA Compliance Implementation**
 **Last Updated:** December 2025
 
 ## Table of Contents

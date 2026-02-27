@@ -1,11 +1,11 @@
-import { api } from '@scf/core/utils/api'
+import { useCalculateSoftSkillsMatch } from '@scf/core/utils/jobs-sdk-hooks'
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { Chip, DiscoverCard, extractPlainText } from '@unicornlove/ui'
-import { Briefcase, Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
+import { Chip, DiscoverCard, extractPlainText } from '@scaffald/ui'
+import { Briefcase, Building2, Clock, DollarSign, MapPin } from 'lucide-react-native'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 /**
  * Internal job type definition with all enhanced fields
@@ -83,7 +83,7 @@ export interface InternalJob {
     }
   >
 
-  // Soft Skills Requirements (Migration REQ-255)
+  // Soft Skills Requirements
   required_soft_skills?: Array<{
     skill_id: string
     importance: number
@@ -202,14 +202,10 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
     return Array.isArray(requirements) && requirements.length > 0
   }, [job.required_soft_skills])
 
-  // Fetch soft skills match if job has requirements
-  const { data: matchData } = api.jobs.calculateSoftSkillsMatch.useQuery(
-    { jobId: job.id },
-    {
-      enabled: hasSoftSkillsRequirements,
-      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    }
-  )
+  // Fetch soft skills match if job has requirements (SDK)
+  const { data: matchData } = useCalculateSoftSkillsMatch(job.id, {
+    enabled: hasSoftSkillsRequirements,
+  })
 
   // Extract plain text from description (handles both string and rich text JSON)
   const descriptionText =
@@ -228,129 +224,98 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
   }
 
   return (
-    <DiscoverCard onPress={handleCardPress} padding="$4">
-      <YStack gap="$3">
+    <DiscoverCard onPress={handleCardPress} padding="md">
+      <Stack gap={12}>
         {/* Header */}
-        <YStack gap="$2">
-          <XStack justifyContent="space-between" alignItems="center">
-            <YStack flex={1} gap="$1">
-              <Text fontSize="$6" fontWeight="700" color="$color12">
-                {job.title}
-              </Text>
+        <Stack gap={8}>
+          <Row justify="space-between" align="center">
+            <Stack flex={1} gap={4}>
+              <Text color="$gray11">{job.title}</Text>
               {job.organization && (
-                <XStack gap="$2" alignItems="center">
-                  <Building2 size={16} color="$color11" />
-                  <Text fontSize="$3" color="$color11" fontWeight="600">
-                    {job.organization.name}
-                  </Text>
-                </XStack>
+                <Row gap={8} align="center">
+                  <Building2 size="md" color="$gray11" />
+                  <Text color="$gray11">{job.organization.name}</Text>
+                </Row>
               )}
-            </YStack>
-            <XStack gap="$2" alignItems="center">
+            </Stack>
+            <Row gap={8} align="center">
               {hasApplied && (
-                <Chip backgroundColor="$green9" color="$green1">
+                <Chip selected style={{ backgroundColor: '$green9' }}>
                   Applied
                 </Chip>
               )}
               {matchData?.score !== null && matchData?.score !== undefined && (
                 <Chip
-                  backgroundColor={
-                    matchData.score >= 80 ? '$green9' : matchData.score >= 60 ? '$yellow9' : '$red9'
-                  }
-                  color="$color1"
+                  selected
+                  style={{
+                    backgroundColor:
+                      matchData.score >= 80 ? '$green9' : matchData.score >= 60 ? '$yellow9' : '$red9',
+                  }}
                 >
                   {Math.round(matchData.score)}% Match
                 </Chip>
               )}
-            </XStack>
-          </XStack>
+            </Row>
+          </Row>
 
           {/* Job metadata */}
-          <XStack gap="$3" flexWrap="wrap">
+          <Row gap={12} wrap>
             {job.location && (
-              <XStack gap="$1.5" alignItems="center">
-                <MapPin size={14} color="$color10" />
-                <Text fontSize="$2" color="$color10">
-                  {job.location}
-                </Text>
-              </XStack>
+              <Row gap={6} align="center">
+                <MapPin size="md" color="$gray11" />
+                <Text color="$gray11">{job.location}</Text>
+              </Row>
             )}
             {employmentType && (
-              <XStack gap="$1.5" alignItems="center">
-                <Briefcase size={14} color="$color10" />
-                <Text fontSize="$2" color="$color10">
-                  {employmentType}
-                </Text>
-              </XStack>
+              <Row gap={6} align="center">
+                <Briefcase size="md" color="$gray11" />
+                <Text color="$gray11">{employmentType}</Text>
+              </Row>
             )}
             {remoteOption && (
-              <Chip
-                backgroundColor="$blue9"
-                color="$blue1"
-                fontSize="$2"
-                paddingHorizontal="$2"
-                paddingVertical="$1"
-              >
+              <Chip selected style={{ backgroundColor: '$blue9', paddingHorizontal: 8, paddingVertical: 4 }}>
                 {remoteOption}
               </Chip>
             )}
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
 
         {/* Description preview */}
-        {descriptionText && (
-          <Text fontSize="$3" color="$color11" numberOfLines={2}>
-            {descriptionText}
-          </Text>
-        )}
+        {descriptionText && <Text color="$gray11">{descriptionText}</Text>}
 
         {/* Pay range and certifications */}
-        <XStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$2">
-          <XStack gap="$3" alignItems="center">
+        <Row justify="space-between" align="center" wrap gap={8}>
+          <Row gap={12} align="center">
             {payRange && (
-              <XStack gap="$1.5" alignItems="center">
-                <DollarSign size={16} color="$green10" />
-                <Text fontSize="$3" color="$green10" fontWeight="600">
-                  {payRange}
-                </Text>
-              </XStack>
+              <Row gap={6} align="center">
+                <DollarSign size="md" color="$green10" />
+                <Text color="$green10">{payRange}</Text>
+              </Row>
             )}
-          </XStack>
+          </Row>
 
           {postedTime && (
-            <XStack gap="$1.5" alignItems="center">
-              <Clock size={14} color="$color9" />
-              <Text fontSize="$2" color="$color9">
-                {postedTime}
-              </Text>
-            </XStack>
+            <Row gap={6} align="center">
+              <Clock size="md" color="$gray11" />
+              <Text color="$gray11">{postedTime}</Text>
+            </Row>
           )}
-        </XStack>
+        </Row>
 
         {/* Certifications and Skills */}
         {(job.certifications && job.certifications.length > 0) ||
         (job.skills && job.skills.length > 0) ? (
-          <XStack gap="$2" flexWrap="wrap">
+          <Row gap={8} wrap>
             {job.certifications?.slice(0, 3).map((cert) => (
               <Chip
                 key={cert.id}
-                backgroundColor="$red10"
-                color="$color1"
-                fontSize="$2"
-                paddingHorizontal="$2"
-                paddingVertical="$1"
+                style={{ backgroundColor: '$red10', paddingHorizontal: 8, paddingVertical: 4 }}
               >
                 {cert.name}
               </Chip>
             ))}
             {job.certifications && job.certifications.length > 3 && (
-              <Chip
-                backgroundColor="$color3"
-                color="$color11"
-                fontSize="$2"
-                paddingHorizontal="$2"
-                paddingVertical="$1"
-              >
+              <Chip style={{ backgroundColor: '$color3', paddingHorizontal: 8, paddingVertical: 4 }}>
                 +{job.certifications.length - 3} more
               </Chip>
             )}
@@ -364,30 +329,20 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
               return (
                 <Chip
                   key={skill.id}
-                  backgroundColor="$blue10"
-                  color="$color1"
-                  fontSize="$2"
-                  paddingHorizontal="$2"
-                  paddingVertical="$1"
+                  style={{ backgroundColor: '$blue10', paddingHorizontal: 8, paddingVertical: 4 }}
                 >
                   {label}
                 </Chip>
               )
             })}
             {job.skills && job.skills.length > 2 && (
-              <Chip
-                backgroundColor="$color3"
-                color="$color11"
-                fontSize="$2"
-                paddingHorizontal="$2"
-                paddingVertical="$1"
-              >
+              <Chip style={{ backgroundColor: '$color3', paddingHorizontal: 8, paddingVertical: 4 }}>
                 +{job.skills.length - 2} more
               </Chip>
             )}
-          </XStack>
+          </Row>
         ) : null}
-      </YStack>
+      </Stack>
     </DiscoverCard>
   )
 }

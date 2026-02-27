@@ -1,8 +1,13 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
-import { DashboardWidget, Dialog } from '@unicornlove/ui'
-import { Check, Loader2, RefreshCw, X as XIcon } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import {
+  useOfficeOrganizationsList,
+  useOfficeOrganizationRequests,
+  useDeleteOfficeOrganizationMutation,
+  useReviewOrganizationRequestMutation,
+} from '@scf/core/utils/office-organizations-sdk-hooks'
+import { DashboardWidget, Modal, ModalHeader, ModalContent, ModalActions, useThemeContext } from '@scaffald/ui'
+import { Check, Loader2, RefreshCw, X as XIcon } from 'lucide-react-native'
+import { useToast } from '@scaffald/ui'
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
@@ -14,11 +19,12 @@ import {
   Spinner,
   Text,
   TextArea,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@scaffald/ui'
 import { OfficePageLayout } from './components/OfficePageLayout'
 import { QuickActionsWidget } from './components/QuickActionsWidget'
+import { colors } from '@scaffald/ui/tokens'
 
 type Organization = {
   id: string
@@ -82,6 +88,7 @@ const createColumns = (_router: ReturnType<typeof useRouter>) => [
 ]
 
 export function OfficeOrganizationsList() {
+  const { theme } = useThemeContext()
   const router = useRouter()
   const [search, setSearch] = useState('')
   const [processingId, setProcessingId] = useState<string | null>(null)
@@ -97,42 +104,38 @@ export function OfficeOrganizationsList() {
     reason: '',
   })
   const [rejectError, setRejectError] = useState<string | null>(null)
-  const toast = useToastController()
+  const toast = useToast()
 
-  const { data, isLoading, refetch } = api.office.listOrganizations.useQuery({
-    limit: 50,
-    offset: 0,
-  })
+  const { data, isLoading, refetch } = useOfficeOrganizationsList({ limit: 50, offset: 0 })
   const {
     data: requestData,
     isLoading: isRequestsLoading,
     isRefetching: isRequestsRefetching,
     refetch: refetchRequests,
-  } = api.office.listOrganizationRequests.useQuery({
-    status: 'pending',
-    limit: 25,
-  })
+  } = useOfficeOrganizationRequests({ status: 'pending', limit: 25 })
 
-  const deleteMutation = api.office.deleteOrganization.useMutation({
+  const deleteMutation = useDeleteOfficeOrganizationMutation({
     onSuccess: () => {
       refetch()
     },
   })
 
-  const reviewMutation = api.office.reviewOrganizationRequest.useMutation({
+  const reviewMutation = useReviewOrganizationRequestMutation({
     onSuccess: async () => {
       await Promise.all([refetch(), refetchRequests()])
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Please try again shortly.'
-      toast.show('Unable to review request', {
-        message,
+      const _message = error instanceof Error ? error.message : 'Please try again shortly.'
+      toast.show({
+        title: 'Unable to review request',
+        message: 'Please try again shortly.',
+        variant: 'error',
       })
     },
   })
 
   const handleDelete = async (id: string) => {
-    await deleteMutation.mutateAsync({ id })
+    await deleteMutation.mutateAsync(id)
   }
 
   const resetRejectDialog = () => {
@@ -148,9 +151,11 @@ export function OfficeOrganizationsList() {
   const handleApprove = async (request: OrganizationRequestRow) => {
     setProcessingId(request.id)
     try {
-      await reviewMutation.mutateAsync({ id: request.id, action: 'approve' })
-      toast.show('Organization approved', {
+      await reviewMutation.mutateAsync({ id: request.id, params: { action: 'approve' } })
+      toast.show({
+        title: 'Organization approved',
         message: `${request.name} is now available for office management.`,
+        variant: 'success',
       })
     } catch (error) {
       // onError handler already surfaces toast feedback
@@ -186,11 +191,12 @@ export function OfficeOrganizationsList() {
     try {
       await reviewMutation.mutateAsync({
         id: rejectDialog.requestId,
-        action: 'reject',
-        rejectionReason: rejectDialog.reason.trim(),
+        params: { action: 'reject', rejectionReason: rejectDialog.reason.trim() },
       })
-      toast.show('Request rejected', {
+      toast.show({
+        title: 'Request rejected',
         message: `${rejectDialog.name} has been rejected.`,
+        variant: 'success',
       })
       resetRejectDialog()
     } catch (error) {
@@ -203,7 +209,7 @@ export function OfficeOrganizationsList() {
   const pendingRequests = (requestData?.requests as OrganizationRequestRow[]) ?? []
   const moderationCounts = requestData?.counts ?? { pending: 0, approved: 0, rejected: 0 }
 
-  const organizations = data?.organizations ?? []
+  const organizations = (data?.organizations ?? []) as unknown as Organization[]
   const filteredOrganizations = organizations.filter(
     (org: Organization) =>
       org.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -231,93 +237,51 @@ export function OfficeOrganizationsList() {
 
   return (
     <>
-      <Dialog
-        modal
-        open={rejectDialog.open}
-        onOpenChange={(open) => {
-          if (!open) {
-            resetRejectDialog()
-          } else {
-            setRejectDialog((prev) => ({
-              ...prev,
-              open: true,
-            }))
-          }
-        }}
-      >
-        <Dialog.Portal>
-          <Dialog.Overlay
-            key="overlay"
-            animation="quick"
-            opacity={0.5}
-            enterStyle={{ opacity: 0 }}
-            exitStyle={{ opacity: 0 }}
-          />
-          <Dialog.Content
-            key="content"
-            bordered
-            elevate
-            gap="$4"
-            width={520}
-            animateOnly={['transform', 'opacity']}
-            animation={[
-              'quick',
-              {
-                opacity: {
-                  overshootClamping: true,
-                },
-              },
-            ]}
-            enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.92 }}
-            exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
-          >
-            <Dialog.Title>Reject Request</Dialog.Title>
-            <Dialog.Description>
-              Provide a short reason for rejecting <Text fontWeight="600">{rejectDialog.name}</Text>
-              . This helps the requester understand what to do next.
-            </Dialog.Description>
-            <YStack gap="$2">
-              <Label htmlFor="organization-reject-reason">Rejection Reason</Label>
-              <TextArea
-                id="organization-reject-reason"
-                value={rejectDialog.reason}
-                onChangeText={(value) => {
-                  setRejectDialog((prev) => ({
-                    ...prev,
-                    reason: value,
-                  }))
-                  if (rejectError) {
-                    setRejectError(null)
-                  }
-                }}
-                placeholder="Share why this request cannot be approved right now..."
-                style={{ minHeight: 120 }}
-                autoFocus
-              />
-              {rejectError ? (
-                <Text fontSize="$2" color="$red10">
-                  {rejectError}
-                </Text>
-              ) : null}
-            </YStack>
-            <XStack gap="$3" justifyContent="flex-end">
-              <Dialog.Close asChild>
-                <Button variant="outlined" disabled={reviewMutation.isPending}>
-                  Cancel
-                </Button>
-              </Dialog.Close>
-              <Button
-                theme="error"
-                icon={isProcessingAction(rejectDialog.requestId) ? Loader2 : XIcon}
-                disabled={reviewMutation.isPending}
-                onPress={handleRejectConfirm}
-              >
-                Reject Request
-              </Button>
-            </XStack>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog>
+      <Modal visible={rejectDialog.open} onClose={resetRejectDialog}>
+        <ModalHeader title="Reject Request" onClose={resetRejectDialog} />
+        <ModalContent>
+          <Stack gap={8}>
+            <Text>
+              Provide a short reason for rejecting <Text>{rejectDialog.name}</Text>. This helps the
+              requester understand what to do next.
+            </Text>
+            <Label htmlFor="organization-reject-reason">Rejection Reason</Label>
+            <TextArea
+              id="organization-reject-reason"
+              value={rejectDialog.reason}
+              onChangeText={(value) => {
+                setRejectDialog((prev) => ({
+                  ...prev,
+                  reason: value,
+                }))
+                if (rejectError) {
+                  setRejectError(null)
+                }
+              }}
+              placeholder="Share why this request cannot be approved right now..."
+              style={{ minHeight: 120 }}
+              autoFocus
+            />
+            {rejectError ? (
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{rejectError}</Text>
+            ) : null}
+          </Stack>
+        </ModalContent>
+        <ModalActions
+          primaryAction={{
+            label: 'Reject Request',
+            onPress: handleRejectConfirm,
+            color: 'error',
+            disabled: reviewMutation.isPending,
+            loading: isProcessingAction(rejectDialog.requestId),
+          }}
+          secondaryAction={{
+            label: 'Cancel',
+            onPress: resetRejectDialog,
+            disabled: reviewMutation.isPending,
+          }}
+        />
+      </Modal>
 
       <OfficePageLayout
         wrapWithOfficeLayout
@@ -339,122 +303,106 @@ export function OfficeOrganizationsList() {
         getItemName={getItemName}
         itemType="organization"
         rightContent={
-          <YStack gap="$4">
-            <DashboardWidget gap="$4">
-              <XStack justifyContent="space-between" alignItems="center">
-                <Text fontSize="$5" fontWeight="700">
-                  Moderation Summary
-                </Text>
+          <Stack gap={16}>
+            <DashboardWidget gap={16}>
+              <Row justify="space-between" align="center">
+                <Text>Moderation Summary</Text>
                 <Button
-                  size="$2"
-                  variant="outlined"
-                  icon={RefreshCw}
+                  size="sm"
+                  variant="outline"
+                  iconStart={RefreshCw}
                   disabled={isRequestsLoading || isRequestsRefetching}
                   onPress={refreshRequests}
                 >
                   Refresh
                 </Button>
-              </XStack>
-              <XStack gap="$4" $sm={{ flexDirection: 'column', gap: '$3' }}>
-                <YStack gap="$1">
-                  <Text fontSize="$2" color="$color11">
-                    Pending
-                  </Text>
-                  <Text fontSize="$7" fontWeight="700">
-                    {moderationCounts.pending}
-                  </Text>
-                </YStack>
-                <YStack gap="$1">
-                  <Text fontSize="$2" color="$color11">
-                    Approved
-                  </Text>
-                  <Text fontSize="$7" fontWeight="700" color="$green10">
+              </Row>
+              <Row gap={16}>
+                <Stack gap={4}>
+                  <Text style={{ color: colors.text[theme].secondary }}>Pending</Text>
+                  <Text>{moderationCounts.pending}</Text>
+                </Stack>
+                <Stack gap={4}>
+                  <Text style={{ color: colors.text[theme].secondary }}>Approved</Text>
+                  <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
                     {moderationCounts.approved}
                   </Text>
-                </YStack>
-                <YStack gap="$1">
-                  <Text fontSize="$2" color="$color11">
-                    Rejected
-                  </Text>
-                  <Text fontSize="$7" fontWeight="700" color="$red10">
+                </Stack>
+                <Stack gap={4}>
+                  <Text style={{ color: colors.text[theme].secondary }}>Rejected</Text>
+                  <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                     {moderationCounts.rejected}
                   </Text>
-                </YStack>
-              </XStack>
+                </Stack>
+              </Row>
             </DashboardWidget>
 
-            <DashboardWidget gap="$4">
-              <Text fontSize="$5" fontWeight="700">
-                Pending Approvals
-              </Text>
+            <DashboardWidget gap={16}>
+              <Text>Pending Approvals</Text>
               {isRequestsLoading ? (
-                <XStack justifyContent="center" paddingVertical="$4">
-                  <Spinner size="large" />
-                </XStack>
+                <Row justify="center" paddingVertical={16}>
+                  <Spinner size="lg" />
+                </Row>
               ) : pendingRequests.length === 0 ? (
-                <Text fontSize="$3" color="$color11">
+                <Text style={{ color: colors.text[theme].secondary }}>
                   No pending organization requests. Check back soon!
                 </Text>
               ) : (
-                <YStack gap="$4">
+                <Stack gap={16}>
                   {pendingRequests.map((request, index) => (
-                    <YStack key={request.id} gap="$3">
-                      <YStack gap="$1.5">
-                        <Text fontSize="$4" fontWeight="600">
-                          {request.name}
-                        </Text>
-                        <Text fontSize="$2" color="$color11">
+                    <Stack key={request.id} gap={12}>
+                      <Stack gap={6}>
+                        <Text>{request.name}</Text>
+                        <Text style={{ color: colors.text[theme].secondary }}>
                           Vanity URL: {request.slug}
                         </Text>
                         {request.website ? (
-                          <Text fontSize="$2" color="$blue10">
-                            {request.website}
-                          </Text>
+                          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{request.website}</Text>
                         ) : null}
-                        <Text fontSize="$2" color="$color11">
+                        <Text style={{ color: colors.text[theme].secondary }}>
                           Submitted {new Date(request.created_at).toLocaleString()}
                         </Text>
                         {request.notes ? (
-                          <Paragraph fontSize="$2" color="$color11">
+                          <Paragraph style={{ color: colors.text[theme].secondary }}>
                             Notes: {request.notes}
                           </Paragraph>
                         ) : null}
                         {request.message ? (
-                          <Paragraph fontSize="$2" color="$color11">
+                          <Paragraph style={{ color: colors.text[theme].secondary }}>
                             Message: {request.message}
                           </Paragraph>
                         ) : null}
                         {typeof request.resent_count === 'number' && request.resent_count > 0 ? (
-                          <Text fontSize="$2" color="$color11">
+                          <Text style={{ color: colors.text[theme].secondary }}>
                             Resent {request.resent_count} time(s)
                           </Text>
                         ) : null}
-                      </YStack>
-                      <XStack gap="$2">
+                      </Stack>
+                      <Row gap={8}>
                         <Button
-                          size="$2"
-                          theme="success"
-                          icon={isProcessingAction(request.id) ? Loader2 : Check}
+                          size="sm"
+                          color="success"
+                          iconStart={isProcessingAction(request.id) ? Loader2 : Check}
                           disabled={reviewMutation.isPending}
                           onPress={() => handleApprove(request)}
                         >
                           Approve
                         </Button>
                         <Button
-                          size="$2"
-                          variant="outlined"
-                          theme="error"
-                          icon={XIcon}
+                          size="sm"
+                          variant="outline"
+                          color="error"
+                          iconStart={XIcon}
                           disabled={reviewMutation.isPending}
                           onPress={() => openRejectDialog(request)}
                         >
                           Reject
                         </Button>
-                      </XStack>
+                      </Row>
                       {index < pendingRequests.length - 1 ? <Separator /> : null}
-                    </YStack>
+                    </Stack>
                   ))}
-                </YStack>
+                </Stack>
               )}
             </DashboardWidget>
 
@@ -465,7 +413,7 @@ export function OfficeOrganizationsList() {
               onRefresh={refreshRequests}
               isLoading={isRequestsLoading || isRequestsRefetching}
             />
-          </YStack>
+          </Stack>
         }
       />
     </>

@@ -1,19 +1,13 @@
 /**
- * GLSubLimitsTable - Display GL sub-limits with validation status
- * REQ-280: Insurance Coverage Detail Requirements
- * TASK-3: Create GL Sub-Limits Display Component with Validation Indicators
- *
- * Displays all General Liability sub-limits in a table format with visual
- * indicators for provisions that don't meet requirements.
+ * GLSubLimitsTable - Display GL sub-limits with validation status.
  */
 
-import { styled, YStack, XStack, Text, View, type YStackProps, Spinner } from 'tamagui'
-import { Check, X, AlertCircle, AlertTriangle } from '@tamagui/lucide-icons'
+import { Stack, Row, Text, Spinner } from '@scaffald/ui'
+import { colors, spacing, borderRadius } from '@scaffald/ui/tokens'
+import type { StackProps } from '@scaffald/ui'
+import { Check, X, AlertCircle, AlertTriangle } from 'lucide-react-native'
+import { Pressable, View } from 'react-native'
 
-/**
- * GL Sub-limit display item
- * Matches the structure from the getGLSubLimitsDisplay API endpoint
- */
 export interface GLSubLimitItem {
   id: string
   name: string
@@ -26,237 +20,34 @@ export interface GLSubLimitItem {
   message?: string
 }
 
-export interface GLSubLimitsTableProps extends Omit<YStackProps, 'children'> {
-  /** Array of GL sub-limit items to display */
+export interface GLSubLimitsTableProps extends Omit<StackProps, 'children'> {
   items: GLSubLimitItem[]
-  /** Title for the table */
   title?: string
-  /** Whether the table is in loading state */
   isLoading?: boolean
-  /** Error message to display */
   error?: string | null
-  /** Callback when a row is pressed */
   onItemPress?: (item: GLSubLimitItem) => void
 }
 
-// =============================================================================
-// Styled Components
-// =============================================================================
+const severityBg = {
+  success: colors.success[100],
+  warning: colors.warning[100],
+  error: colors.error[100],
+} as const
 
-const TableContainer = styled(YStack, {
-  name: 'GLSubLimitsTable',
-  backgroundColor: '$background',
-  borderRadius: '$lg',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  overflow: 'hidden',
-})
-
-const TableHeader = styled(XStack, {
-  name: 'GLSubLimitsTableHeader',
-  padding: '$3',
-  backgroundColor: '$color2',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-})
-
-const TableTitle = styled(Text, {
-  name: 'GLSubLimitsTableTitle',
-  fontSize: '$4',
-  fontWeight: '600',
-  color: '$color12',
-})
-
-const HeaderRow = styled(XStack, {
-  name: 'GLSubLimitsHeaderRow',
-  padding: '$3',
-  backgroundColor: '$color3',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-  gap: '$2',
-})
-
-const HeaderCell = styled(Text, {
-  name: 'GLSubLimitsHeaderCell',
-  fontSize: '$2',
-  fontWeight: '600',
-  color: '$color11',
-  textTransform: 'uppercase',
-})
-
-const TableRow = styled(XStack, {
-  name: 'GLSubLimitsTableRow',
-  padding: '$3',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-  gap: '$2',
-  alignItems: 'center',
-
-  variants: {
-    isLast: {
-      true: {
-        borderBottomWidth: 0,
-      },
-    },
-    hasError: {
-      true: {
-        backgroundColor: '$red2',
-      },
-    },
-    hasWarning: {
-      true: {
-        backgroundColor: '$yellow2',
-      },
-    },
-  } as const,
-
-  hoverStyle: {
-    backgroundColor: '$color2',
-  },
-
-  pressStyle: {
-    backgroundColor: '$color3',
-    scale: 0.995,
-  },
-})
-
-const Cell = styled(View, {
-  name: 'GLSubLimitsCell',
-})
-
-const ProvisionName = styled(Text, {
-  name: 'GLSubLimitsProvisionName',
-  fontSize: '$3',
-  fontWeight: '500',
-  color: '$color12',
-})
-
-const RequirementText = styled(Text, {
-  name: 'GLSubLimitsRequirement',
-  fontSize: '$2',
-  color: '$color9',
-})
-
-const ValueText = styled(Text, {
-  name: 'GLSubLimitsValue',
-  fontSize: '$3',
-  fontWeight: '500',
-  variants: {
-    status: {
-      success: {
-        color: '$green11',
-      },
-      warning: {
-        color: '$yellow11',
-      },
-      error: {
-        color: '$red11',
-      },
-    },
-  } as const,
-})
-
-const StatusBadge = styled(XStack, {
-  name: 'GLSubLimitsStatusBadge',
-  paddingHorizontal: '$2',
-  paddingVertical: '$1',
-  borderRadius: '$full',
-  alignItems: 'center',
-  gap: '$1',
-
-  variants: {
-    status: {
-      success: {
-        backgroundColor: '$green3',
-      },
-      warning: {
-        backgroundColor: '$yellow3',
-      },
-      error: {
-        backgroundColor: '$red3',
-      },
-    },
-  } as const,
-})
-
-const StatusText = styled(Text, {
-  name: 'GLSubLimitsStatusText',
-  fontSize: '$2',
-  fontWeight: '500',
-  variants: {
-    status: {
-      success: {
-        color: '$green11',
-      },
-      warning: {
-        color: '$yellow11',
-      },
-      error: {
-        color: '$red11',
-      },
-    },
-  } as const,
-})
-
-const MessageText = styled(Text, {
-  name: 'GLSubLimitsMessage',
-  fontSize: '$1',
-  color: '$color9',
-  marginTop: '$1',
-})
-
-const LoadingContainer = styled(YStack, {
-  name: 'GLSubLimitsLoading',
-  padding: '$6',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '$2',
-})
-
-const ErrorContainer = styled(YStack, {
-  name: 'GLSubLimitsError',
-  padding: '$4',
-  backgroundColor: '$red2',
-  borderRadius: '$md',
-  margin: '$3',
-  gap: '$2',
-})
-
-const ErrorText = styled(Text, {
-  name: 'GLSubLimitsErrorText',
-  fontSize: '$3',
-  color: '$red11',
-})
-
-const RedFlagBanner = styled(XStack, {
-  name: 'GLSubLimitsRedFlagBanner',
-  padding: '$2',
-  backgroundColor: '$red3',
-  alignItems: 'center',
-  gap: '$2',
-})
-
-const RedFlagText = styled(Text, {
-  name: 'GLSubLimitsRedFlagText',
-  fontSize: '$2',
-  fontWeight: '500',
-  color: '$red11',
-})
-
-// =============================================================================
-// Helper Functions
-// =============================================================================
+const severityText = {
+  success: colors.success[700],
+  warning: colors.warning[700],
+  error: colors.error[700],
+} as const
 
 function getStatusIcon(severity: 'success' | 'warning' | 'error') {
   switch (severity) {
     case 'success':
-      return <Check size={12} color="$green11" />
+      return <Check size={12} color={colors.success[700]} />
     case 'warning':
-      return <AlertTriangle size={12} color="$yellow11" />
+      return <AlertTriangle size={12} color={colors.warning[700]} />
     case 'error':
-      return <X size={12} color="$red11" />
+      return <X size={12} color={colors.error[700]} />
   }
 }
 
@@ -271,10 +62,6 @@ function getStatusLabel(severity: 'success' | 'warning' | 'error') {
   }
 }
 
-// =============================================================================
-// Component
-// =============================================================================
-
 export function GLSubLimitsTable({
   items,
   title = 'General Liability Coverage Details',
@@ -283,143 +70,288 @@ export function GLSubLimitsTable({
   onItemPress,
   ...props
 }: GLSubLimitsTableProps) {
-  // Count items with errors for red flag banner
   const errorCount = items.filter((item) => item.severity === 'error').length
   const hasRedFlags = errorCount > 0
 
-  // Loading state
   if (isLoading) {
     return (
-      <TableContainer {...props}>
+      <Stack
+        style={{
+          backgroundColor: colors.bg?.primary ?? colors.gray[50],
+          borderRadius: borderRadius.l,
+          borderWidth: 1,
+          borderColor: colors.border?.default ?? colors.gray[200],
+          overflow: 'hidden',
+        }}
+        {...props}
+      >
         {title && (
-          <TableHeader>
-            <TableTitle>{title}</TableTitle>
-          </TableHeader>
+          <Row
+            style={{
+              padding: spacing[12],
+              backgroundColor: colors.gray[100],
+              borderBottomWidth: 1,
+              borderBottomColor: colors.border?.default ?? colors.gray[200],
+            }}
+          >
+            <Text size="lg" weight="semibold" style={{ color: colors.gray[800] }}>
+              {title}
+            </Text>
+          </Row>
         )}
-        <LoadingContainer>
-          <Spinner size="large" color="$color11" />
-          <Text color="$color9">Loading coverage details...</Text>
-        </LoadingContainer>
-      </TableContainer>
+        <Stack align="center" justify="center" gap={spacing[8]} style={{ padding: spacing[24] }}>
+          <Spinner size="lg" />
+          <Text size="md" style={{ color: colors.gray?.[500] || '#6b7280' }}>
+            Loading coverage details...
+          </Text>
+        </Stack>
+      </Stack>
     )
   }
 
-  // Error state
   if (error) {
     return (
-      <TableContainer {...props}>
+      <Stack
+        style={{
+          backgroundColor: colors.bg?.primary ?? colors.gray[50],
+          borderRadius: borderRadius.l,
+          borderWidth: 1,
+          borderColor: colors.border?.default ?? colors.gray[200],
+          overflow: 'hidden',
+        }}
+        {...props}
+      >
         {title && (
-          <TableHeader>
-            <TableTitle>{title}</TableTitle>
-          </TableHeader>
+          <Row
+            style={{
+              padding: spacing[12],
+              backgroundColor: colors.gray[100],
+              borderBottomWidth: 1,
+              borderBottomColor: colors.border?.default ?? colors.gray[200],
+            }}
+          >
+            <Text size="lg" weight="semibold" style={{ color: colors.gray[800] }}>
+              {title}
+            </Text>
+          </Row>
         )}
-        <ErrorContainer>
-          <XStack alignItems="center" gap="$2">
-            <AlertCircle size={16} color="$red11" />
-            <ErrorText>Failed to load coverage details</ErrorText>
-          </XStack>
-          <Text fontSize="$2" color="$red9">
+        <Stack
+          gap={spacing[8]}
+          style={{
+            padding: spacing[16],
+            backgroundColor: colors.error[50],
+            borderRadius: borderRadius.m,
+            margin: spacing[12],
+          }}
+        >
+          <Row align="center" gap={spacing[8]}>
+            <AlertCircle size={16} color={colors.error[700]} />
+            <Text size="md" style={{ color: colors.error[700] }}>
+              Failed to load coverage details
+            </Text>
+          </Row>
+          <Text size="sm" style={{ color: colors.error[600] }}>
             {error}
           </Text>
-        </ErrorContainer>
-      </TableContainer>
+        </Stack>
+      </Stack>
     )
   }
 
-  // Empty state
   if (items.length === 0) {
     return (
-      <TableContainer {...props}>
+      <Stack
+        style={{
+          backgroundColor: colors.bg?.primary ?? colors.gray[50],
+          borderRadius: borderRadius.l,
+          borderWidth: 1,
+          borderColor: colors.border?.default ?? colors.gray[200],
+          overflow: 'hidden',
+        }}
+        {...props}
+      >
         {title && (
-          <TableHeader>
-            <TableTitle>{title}</TableTitle>
-          </TableHeader>
+          <Row
+            style={{
+              padding: spacing[12],
+              backgroundColor: colors.gray[100],
+              borderBottomWidth: 1,
+              borderBottomColor: colors.border?.default ?? colors.gray[200],
+            }}
+          >
+            <Text size="lg" weight="semibold" style={{ color: colors.gray[800] }}>
+              {title}
+            </Text>
+          </Row>
         )}
-        <YStack padding="$4" alignItems="center">
-          <Text color="$color9">No coverage provisions found</Text>
-        </YStack>
-      </TableContainer>
+        <Stack align="center" style={{ padding: spacing[16] }}>
+          <Text size="md" style={{ color: colors.gray[500] }}>
+            No coverage provisions found
+          </Text>
+        </Stack>
+      </Stack>
     )
   }
 
   return (
-    <TableContainer {...props}>
+    <Stack
+      style={{
+        backgroundColor: colors.bg?.primary ?? colors.gray[50],
+        borderRadius: borderRadius.l,
+        borderWidth: 1,
+        borderColor: colors.border?.default ?? colors.gray[200],
+        overflow: 'hidden',
+      }}
+      {...props}
+    >
       {title && (
-        <TableHeader>
-          <TableTitle>{title}</TableTitle>
+        <Row
+          align="center"
+          justify="space-between"
+          style={{
+            padding: spacing[12],
+            backgroundColor: colors.gray[100],
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border?.default ?? colors.gray[200],
+          }}
+        >
+          <Text size="lg" weight="semibold" style={{ color: colors.gray[800] }}>
+            {title}
+          </Text>
           {hasRedFlags && (
-            <XStack
-              backgroundColor="$red3"
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-              borderRadius="$full"
-              alignItems="center"
-              gap="$1"
+            <Row
+              align="center"
+              gap={spacing[4]}
+              style={{
+                backgroundColor: colors.error[100],
+                paddingHorizontal: spacing[8],
+                paddingVertical: spacing[4],
+                borderRadius: borderRadius.max,
+              }}
             >
-              <AlertCircle size={12} color="$red11" />
-              <Text fontSize="$2" fontWeight="600" color="$red11">
+              <AlertCircle size={12} color={colors.error[700]} />
+              <Text size="sm" weight="semibold" style={{ color: colors.error[700] }}>
                 {errorCount} Issue{errorCount > 1 ? 's' : ''}
               </Text>
-            </XStack>
+            </Row>
           )}
-        </TableHeader>
+        </Row>
       )}
 
       {hasRedFlags && (
-        <RedFlagBanner>
-          <AlertTriangle size={14} color="$red11" />
-          <RedFlagText>
+        <Row
+          align="center"
+          gap={spacing[8]}
+          style={{
+            padding: spacing[8],
+            backgroundColor: colors.error[100],
+          }}
+        >
+          <AlertTriangle size={14} color={colors.error[700]} />
+          <Text size="sm" weight="medium" style={{ color: colors.error[700] }}>
             {errorCount} provision{errorCount > 1 ? 's do' : ' does'} not meet minimum requirements
-          </RedFlagText>
-        </RedFlagBanner>
+          </Text>
+        </Row>
       )}
 
-      <HeaderRow>
-        <Cell flex={2.5}>
-          <HeaderCell>Coverage Type</HeaderCell>
-        </Cell>
-        <Cell flex={1.5}>
-          <HeaderCell>Requirement</HeaderCell>
-        </Cell>
-        <Cell flex={1.5}>
-          <HeaderCell>Current Value</HeaderCell>
-        </Cell>
-        <Cell width={90} alignItems="center">
-          <HeaderCell>Status</HeaderCell>
-        </Cell>
-      </HeaderRow>
+      <Row
+        style={{
+          padding: spacing[12],
+          backgroundColor: colors.gray[200],
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border?.default ?? colors.gray[200],
+          gap: spacing[8],
+          alignItems: 'center',
+        }}
+      >
+        <View style={{ flex: 2.5 }}>
+          <Text size="sm" weight="semibold" style={{ color: colors.gray[700], textTransform: 'uppercase' }}>
+            Coverage Type
+          </Text>
+        </View>
+        <View style={{ flex: 1.5 }}>
+          <Text size="sm" weight="semibold" style={{ color: colors.gray[700], textTransform: 'uppercase' }}>
+            Requirement
+          </Text>
+        </View>
+        <View style={{ flex: 1.5 }}>
+          <Text size="sm" weight="semibold" style={{ color: colors.gray[700], textTransform: 'uppercase' }}>
+            Current Value
+          </Text>
+        </View>
+        <View style={{ width: 90, alignItems: 'center' }}>
+          <Text size="sm" weight="semibold" style={{ color: colors.gray[700], textTransform: 'uppercase' }}>
+            Status
+          </Text>
+        </View>
+      </Row>
 
       {items.map((item, index) => (
-        <TableRow
+        <Pressable
           key={item.id}
-          isLast={index === items.length - 1}
-          hasError={item.severity === 'error'}
-          hasWarning={item.severity === 'warning'}
           onPress={onItemPress ? () => onItemPress(item) : undefined}
-          cursor={onItemPress ? 'pointer' : undefined}
         >
-          <Cell flex={2.5}>
-            <YStack>
-              <ProvisionName>{item.name}</ProvisionName>
-              {item.message && item.severity !== 'success' && (
-                <MessageText>{item.message}</MessageText>
-              )}
-            </YStack>
-          </Cell>
-          <Cell flex={1.5}>
-            <RequirementText>{item.requirement}</RequirementText>
-          </Cell>
-          <Cell flex={1.5}>
-            <ValueText status={item.severity}>{item.formatted_value}</ValueText>
-          </Cell>
-          <Cell width={90} alignItems="center">
-            <StatusBadge status={item.severity}>
-              {getStatusIcon(item.severity)}
-              <StatusText status={item.severity}>{getStatusLabel(item.severity)}</StatusText>
-            </StatusBadge>
-          </Cell>
-        </TableRow>
+          <Row
+            align="center"
+            gap={spacing[8]}
+            style={{
+              padding: spacing[12],
+              borderBottomWidth: index === items.length - 1 ? 0 : 1,
+              borderBottomColor: colors.border?.default ?? colors.gray[200],
+              backgroundColor:
+                item.severity === 'error'
+                  ? colors.error[50]
+                  : item.severity === 'warning'
+                    ? colors.warning[50]
+                    : undefined,
+            }}
+          >
+            <View style={{ flex: 2.5 }}>
+              <Stack gap={spacing[4]}>
+                <Text size="md" weight="medium" style={{ color: colors.gray[800] }}>
+                  {item.name}
+                </Text>
+                {item.message && item.severity !== 'success' && (
+                  <Text size="xs" style={{ color: colors.gray[500], marginTop: spacing[4] }}>
+                    {item.message}
+                  </Text>
+                )}
+              </Stack>
+            </View>
+            <View style={{ flex: 1.5 }}>
+              <Text size="sm" style={{ color: colors.gray[500] }}>
+                {item.requirement}
+              </Text>
+            </View>
+            <View style={{ flex: 1.5 }}>
+              <Text
+                size="md"
+                weight="medium"
+                style={{ color: severityText[item.severity] }}
+              >
+                {item.formatted_value}
+              </Text>
+            </View>
+            <View style={{ width: 90, alignItems: 'center' }}>
+              <Row
+                align="center"
+                gap={spacing[4]}
+                style={{
+                  paddingHorizontal: spacing[8],
+                  paddingVertical: spacing[4],
+                  borderRadius: borderRadius.max,
+                  backgroundColor: severityBg[item.severity],
+                }}
+              >
+                {getStatusIcon(item.severity)}
+                <Text size="sm" weight="medium" style={{ color: severityText[item.severity] }}>
+                  {getStatusLabel(item.severity)}
+                </Text>
+              </Row>
+            </View>
+          </Row>
+        </Pressable>
       ))}
-    </TableContainer>
+    </Stack>
   )
 }

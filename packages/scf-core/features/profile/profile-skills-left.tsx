@@ -4,10 +4,10 @@ import {
   SaveStatusIndicator,
   SavingModal,
   SkeletonForm,
-} from '@unicornlove/ui'
-import { Check } from '@tamagui/lucide-icons'
+} from '@scaffald/ui'
+import { Check } from 'lucide-react-native'
 import { useMemo } from 'react'
-import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, ScrollView, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { InlineSkillSearch } from './components'
 import { SoftSkillsRatingForm } from './components/SoftSkillsRatingForm'
 import { useSaveStatus } from './hooks/useSaveStatus'
@@ -60,39 +60,39 @@ export function ProfileSkillsLeft() {
   if (isLoadingIndustries) {
     return (
       <ScrollView showsVerticalScrollIndicator={false}>
-        <YStack gap="$4">
+        <Stack gap={16}>
           <DashboardWidget>
-            <YStack gap="$4" padding="$4">
+            <Stack gap={16} padding="md">
               <SkeletonForm fields={4} />
-            </YStack>
+            </Stack>
           </DashboardWidget>
           <DashboardWidget>
-            <YStack gap="$4" padding="$4">
+            <Stack gap={16} padding="md">
               <SkeletonForm fields={6} />
-            </YStack>
+            </Stack>
           </DashboardWidget>
-        </YStack>
+        </Stack>
       </ScrollView>
     )
   }
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <YStack gap="$4">
+      <Stack gap={16}>
         <DashboardWidget>
-          <YStack gap="$4">
+          <Stack gap={16}>
             {/* Header with Save Status Indicator */}
-            <XStack justifyContent="space-between" alignItems="center" marginBottom="$2">
-              <YStack flex={1} />
+            <Row justify="space-between" align="center" style={{ marginBottom: 8 }}>
+              <Stack flex={1} />
               <SaveStatusIndicator
                 status={saveStatus}
                 lastSavedAt={lastSavedAt}
                 error={saveError}
               />
-            </XStack>
+            </Row>
 
             {/* Industry Selector */}
-            <YStack gap="$2">
+            <Stack gap={8}>
               <ResponsiveSelect
                 value={selectedIndustryId || ''}
                 onValueChange={handleIndustryChange}
@@ -103,26 +103,23 @@ export function ProfileSkillsLeft() {
                 testID="primary-industry-select-trigger"
                 sheetTitle="Select Industry"
               />
-              <Text fontSize="$2" color="$color11">
-                Select your industry to search for relevant skills
-              </Text>
-            </YStack>
+              <Text style={{ color: '#414e62' }}>Select your industry to search for relevant skills</Text>
+            </Stack>
 
             <Separator />
 
             {/* Inline Skill Search */}
             {!selectedIndustryId ? (
-              <YStack
-                padding="$4"
-                alignItems="center"
-                gap="$2"
-                backgroundColor="$color3"
-                borderRadius="$4"
+              <Stack
+                padding="md"
+                align="center"
+                gap={8}
+                borderRadius={16}
               >
-                <Text fontSize="$3" color="$color11" textAlign="center">
+                <Text style={{ color: '#414e62', textAlign: 'center' }}>
                   Please select an industry above to search for skills
                 </Text>
-              </YStack>
+              </Stack>
             ) : (
               <InlineSkillSearch
                 onSearchSkills={searchSkills}
@@ -139,26 +136,25 @@ export function ProfileSkillsLeft() {
             <Separator />
 
             {/* Save Button */}
-            <XStack justifyContent="flex-end" paddingTop="$2">
+            <Row justify="flex-end" paddingTop={8}>
               <Button
-                size="$4"
-                themeInverse
+                size="md"
                 onPress={handleForceSave}
                 disabled={saveButtonState === 'saving' || saveButtonState === 'saved'}
-                icon={saveButtonState === 'saved' ? Check : undefined}
+                iconStart={saveButtonState === 'saved' ? Check : undefined}
               >
                 {saveButtonState === 'saving' ? (
-                  <XStack gap="$2" alignItems="center">
-                    <Spinner size="small" />
+                  <Row gap={8} align="center">
+                    <Spinner size="sm" />
                     <Text>Saving...</Text>
-                  </XStack>
+                  </Row>
                 ) : saveButtonState === 'saved' ? (
                   'Saved ✓'
                 ) : (
                   'Save'
                 )}
               </Button>
-            </XStack>
+            </Row>
 
             {/* Saving Modal for Navigation Safety */}
             <SavingModal
@@ -171,13 +167,13 @@ export function ProfileSkillsLeft() {
               errorMessage={saveModalError}
               onRetry={handleRetrySave}
             />
-          </YStack>
+          </Stack>
         </DashboardWidget>
 
         <DashboardWidget>
           <SoftSkillsRatingForm />
         </DashboardWidget>
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }

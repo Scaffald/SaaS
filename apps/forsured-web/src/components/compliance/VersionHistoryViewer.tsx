@@ -1,6 +1,6 @@
 /**
  * Version History Viewer
- * REQ-2, TASK-16: Version history with side-by-side diff view
+ * Version history with side-by-side diff view
  *
  * Features:
  * - List of version history entries with metadata
@@ -25,7 +25,7 @@ import {
   Edit3,
   Loader2,
 } from 'lucide-react';
-import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card } from '@scaffald/ui';
 import { trpc } from '../../lib/trpc';
 
 // =============================================================================

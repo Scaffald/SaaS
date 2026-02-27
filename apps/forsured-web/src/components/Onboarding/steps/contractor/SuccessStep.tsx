@@ -1,7 +1,7 @@
 // src/components/onboarding/steps/contractor/SuccessStep.tsx
-// REQ-126: Contractor Onboarding - Success/Completion Step
+// Contractor Onboarding - Success/Completion Step
 import { CheckCircle } from 'lucide-react';
-import { Stack, Text, H2, Button } from '@unicornlove/beyond-ui';
+import { Stack, Text, H2, Button } from '@scaffald/ui';
 
 interface SuccessStepProps {
   onComplete: () => Promise<void>;

@@ -1,5 +1,5 @@
-import { Check, Link } from '@tamagui/lucide-icons'
-import { Button, Checkbox, Text, XStack, YStack } from '@unicornlove/ui'
+import { Link } from 'lucide-react-native'
+import { Button, Checkbox, Text, Row, Stack } from '@scaffald/ui'
 
 interface Certification {
   id: string
@@ -29,31 +29,24 @@ export function CertificationCheckbox({
   disabled = false,
 }: CertificationCheckboxProps) {
   return (
-    <YStack gap="$2">
-      <XStack gap="$3" style={{ alignItems: 'flex-start' }}>
-        <Checkbox checked={checked} onCheckedChange={onCheckedChange} disabled={disabled} size="$4">
-          <Checkbox.Indicator>
-            <Check />
-          </Checkbox.Indicator>
-        </Checkbox>
+    <Stack gap={8}>
+      <Row gap={12} style={{ alignItems: 'flex-start' }}>
+        <Checkbox checked={checked} onChange={onCheckedChange} disabled={disabled} size="md" />
 
-        <YStack flex={1} gap="$1">
-          <Text fontWeight={checked ? '600' : '400'} fontSize="$3">
-            {certification.title}
-          </Text>
-          {certification.description && (
-            <Text fontSize="$2" color="$color11">
-              {certification.description}
-            </Text>
-          )}
-        </YStack>
+        <Stack style={{ flex: 1 }} gap={4}>
+          <Text>{certification.title}</Text>
+          {certification.description && <Text color="$gray11">{certification.description}</Text>}
+        </Stack>
 
         {checked && onAddProof && (
-          <Button size="$2" variant="outlined" icon={Link} onPress={onAddProof} disabled={disabled}>
-            {hasProof ? 'View Proof' : 'Add Proof'}
+          <Button size="sm" variant="outline" onPress={onAddProof} disabled={disabled}>
+            <Row gap={4} align="center">
+              <Link size="md" />
+              <Text size="sm">{hasProof ? 'View Proof' : 'Add Proof'}</Text>
+            </Row>
           </Button>
         )}
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

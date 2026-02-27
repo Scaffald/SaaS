@@ -20,8 +20,8 @@ const storageMocks = vi.hoisted(() => {
   };
 });
 
-vi.mock("@tamagui/toast", () => ({
-  useToastController: () => ({
+vi.mock("@scaffald/ui", () => ({
+  useToast: () => ({
     show: toastShow,
   }),
 }));
@@ -84,7 +84,7 @@ describe("useFeedbackSubmit", () => {
       attempts: 1,
     };
 
-    getPendingFeedbackQueueMock.mockResolvedValueOnce([pendingSubmission]);
+    storageMocks.getPendingFeedbackQueue.mockResolvedValueOnce([pendingSubmission]);
 
     submitMutation.mutateAsync.mockResolvedValue({ id: "feedback-id" });
 

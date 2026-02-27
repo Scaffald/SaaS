@@ -11,7 +11,7 @@ import {
   TrendingUp,
   Loader2,
 } from 'lucide-react';
-import { Stack, Row, Text, H2, H3, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H2, H3, Card } from '@scaffald/ui';
 // Modal import removed - using simple overlay to avoid ResponsiveModal freeze issue
 import Button from '../Common/Button';
 import StatusBadge from '../Common/StatusBadge';

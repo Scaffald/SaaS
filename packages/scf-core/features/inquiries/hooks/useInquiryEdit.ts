@@ -1,7 +1,7 @@
-import { api } from '@scf/core/utils/api'
 import { type InquiryCreateInput, type InquiryUpdateInput, inquiryCreateSchema } from '@scf/schemas'
+import { useUpdateInquiryMutation } from '@scf/core/utils/inquiries-sdk-hooks'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
@@ -14,7 +14,7 @@ export interface UseInquiryEditOptions {
 
 export interface UseInquiryEditReturn {
   form: ReturnType<typeof useForm<InquiryCreateInput>>
-  updateMutation: ReturnType<typeof api.inquiries.update.useMutation>
+  updateMutation: ReturnType<typeof useUpdateInquiryMutation>
   isSubmitting: boolean
   handleSubmit: (data: InquiryCreateInput) => Promise<void>
 }
@@ -24,7 +24,7 @@ export function useInquiryEdit({
   initialData,
   onSuccess,
 }: UseInquiryEditOptions): UseInquiryEditReturn {
-  const toast = useToastController()
+  const toast = useToast()
   const queryClient = useQueryClient()
 
   const form = useForm<InquiryCreateInput>({
@@ -70,18 +70,21 @@ export function useInquiryEdit({
     }
   }, [initialData, form])
 
-  const updateMutation = api.inquiries.update.useMutation({
+  const updateMutation = useUpdateInquiryMutation({
     onSuccess: () => {
-      toast.show('Inquiry updated', {
+      toast.show({
+        title: 'Inquiry updated',
         message: 'The inquiry has been updated. The candidate will be notified if terms changed.',
       })
       // Invalidate queries to refresh data
-      queryClient.invalidateQueries({ queryKey: [['inquiries', 'getByApplication']] })
+      queryClient.invalidateQueries({ queryKey: ['inquiries'] })
       onSuccess?.()
     },
-    onError: (error: { message?: string }) => {
-      toast.show('Failed to update inquiry', {
+    onError: (error) => {
+      toast.show({
+        title: 'Failed to update inquiry',
         message: error.message ?? 'Please try again.',
+        variant: 'error',
       })
     },
   })

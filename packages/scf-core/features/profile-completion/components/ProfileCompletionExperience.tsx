@@ -1,10 +1,10 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { ProfileWizard } from '@scf/core/features/profile-wizard/components/ProfileWizard'
-import { api } from '@scf/core/utils/api'
-import { Sheet } from '@unicornlove/ui'
+import { useDismissNudgeMutation } from '@scf/core/utils/profile-completion-sdk-hooks'
+import { Sheet, SheetContent, SheetHeader } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Button, Text, YStack } from '@unicornlove/ui'
+import { Button, Text, Stack } from '@scaffald/ui'
 import type { PersonalizedBenefit } from '../hooks/useCompletionNudges'
 import { useCompletionNudges } from '../hooks/useCompletionNudges'
 import type { CompletionStatus } from '../hooks/useCompletionStatus'
@@ -26,7 +26,7 @@ export function ProfileCompletionExperience() {
     hasMultiple,
     isLoading: isBenefitLoading,
   } = useCompletionNudges()
-  const dismissNudgeMutation = api.profile.completion.dismissNudge.useMutation()
+  const dismissNudgeMutation = useDismissNudgeMutation()
   const [isWizardOpen, setIsWizardOpen] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<'first-login' | 'progress-reminder'>(
@@ -125,7 +125,7 @@ export function ProfileCompletionExperience() {
   }, [router])
 
   return (
-    <YStack gap="$4">
+    <Stack gap={16}>
       <ProfileCompletionExperienceWidgetSection
         status={status}
         isStatusLoading={isLoading}
@@ -158,7 +158,7 @@ export function ProfileCompletionExperience() {
         onUploadResume={handleUploadResume}
         onViewProfile={handleViewProfile}
       />
-    </YStack>
+    </Stack>
   )
 }
 
@@ -259,17 +259,27 @@ const ProfileCompletionWizardSheet = memo(function ProfileCompletionWizardSheet(
   onViewProfile,
 }: ProfileCompletionWizardSheetProps) {
   return (
-    <Sheet open={open} onOpenChange={onOpenChange} snapPoints={[90]} modal dismissOnSnapToBottom>
-      <Sheet.Overlay />
-      <Sheet.Frame backgroundColor="$background" aria-label="Profile completion wizard">
-        <Sheet.Handle />
-        <YStack padding="$4" gap="$4" flex={1}>
-          <YStack gap="$2">
-            <Text fontSize="$6" fontWeight="700">
-              Complete Your Profile
-            </Text>
-            <Text color="$color11">We’ll auto-save as you go. You can exit anytime.</Text>
-          </YStack>
+    <Sheet
+      visible={open}
+      onClose={() => {
+        onOpenChange?.(false)
+        onClose?.()
+      }}
+      height="three-quarters"
+    >
+      <SheetHeader
+        title="Complete Your Profile"
+        onClose={() => {
+          onOpenChange?.(false)
+          onClose?.()
+        }}
+        showCloseButton
+      />
+      <SheetContent>
+        <Stack padding="md" gap={16} flex={1}>
+          <Stack gap={8}>
+            <Text color="$gray11">We'll auto-save as you go. You can exit anytime.</Text>
+          </Stack>
           {open ? (
             <ProfileWizard
               onSuccess={onClose}
@@ -278,11 +288,11 @@ const ProfileCompletionWizardSheet = memo(function ProfileCompletionWizardSheet(
               onViewProfile={onViewProfile}
             />
           ) : null}
-          <Button size="$4" variant="outlined" onPress={onClose}>
+          <Button size="md" variant="outline" onPress={onClose}>
             Close
           </Button>
-        </YStack>
-      </Sheet.Frame>
+        </Stack>
+      </SheetContent>
     </Sheet>
   )
 })

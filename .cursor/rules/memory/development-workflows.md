@@ -75,7 +75,7 @@ touch packages/core/features/new-feature/new-feature-overview-screen.tsx
 ### 3. Component Development
 ```typescript
 // Follow established patterns
-// 1. Use Tamagui components
+// 1. Use Beyond UI components
 // 2. Implement proper TypeScript types
 // 3. Add JSDoc documentation
 // 4. Use direct imports (avoid barrel files)

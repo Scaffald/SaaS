@@ -5,6 +5,8 @@
     "jsx": "react-jsx",
     "noEmit": true,
     "paths": {
+      "@test-helpers": ["tests/infrastructure/vitest/helpers"],
+      "@test-helpers/*": ["tests/infrastructure/vitest/helpers/*"],
       "@scf/core": ["packages/scf-core"],
       "@scf/core/*": ["packages/scf-core/*"],
       "@scf/schemas": ["packages/scf-schemas/src"],
@@ -13,8 +15,10 @@
       "@scf/supabase/*": ["packages/supabase/*"],
       "@scf/trpc": ["packages/scf-trpc/src"],
       "@scf/trpc/*": ["packages/scf-trpc/src/*"],
-      "@unicornlove/ui": ["packages/ui/src/index.tsx"],
-      "@unicornlove/ui/*": ["packages/ui/src/*"],
+      "@unicornlove/beyond-ui": ["packages/beyond-ui/src/index.ts"],
+      "@unicornlove/beyond-ui/*": ["packages/beyond-ui/src/*"],
+      "@scaffald/sdk": ["packages/scaffald-sdk/src/index.ts"],
+      "@scaffald/sdk/*": ["packages/scaffald-sdk/src/*"],
       "expo-clipboard": ["types/expo-clipboard.d.ts"]
     },
     "skipDefaultLibCheck": true,
@@ -24,8 +28,11 @@
     "../../packages/supabase/functions/**/*",
     "../../packages/supabase/scripts/**/*",
     "../../packages/supabase/types-trpc.ts",
-    "../../packages/ui/src/**/*.stories.ts",
-    "../../packages/ui/src/**/*.stories.tsx"
+    "../../packages/beyond-ui/src/**/*.stories.ts",
+    "../../packages/beyond-ui/src/**/*.stories.tsx",
+    "../../packages/scf-core/**/*.test.ts",
+    "../../packages/scf-core/**/*.test.tsx",
+    "../../packages/scaffald-sdk/src/**/__tests__/**/*"
   ],
   "extends": "../../tsconfig.base",
   "include": [
@@ -36,17 +43,16 @@
     "../../types/flow-remove-types.d.ts",
     "../../packages/api",
     "../../packages/scf-core",
-    "../../packages/ui/src",
+    "../../packages/beyond-ui/src",
+    "../../packages/scaffald-sdk/src",
     "../../packages/scf-schemas/src/**/*.ts",
     "../../packages/scf-schemas/src/**/*.tsx",
     "../../packages/scf-trpc/src/**/*.ts",
     "../../packages/supabase/types.ts",
     "../../packages/supabase/client-types.ts",
-    "../../packages/supabase/app-router-type.ts",
-    "../../packages/supabase/app-router-type-only.ts",
+    "../../packages/supabase/app-router-fallback.ts",
     "../../packages/supabase/helpers.ts",
     "../../vitest.config.ts",
-    "../../tests/infrastructure/vitest/helpers/database.ts",
     "../../tests/infrastructure/vitest/plugins/flow-remove.ts"
   ],
   "references": []

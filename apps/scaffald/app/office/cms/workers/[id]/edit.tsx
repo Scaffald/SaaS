@@ -4,9 +4,9 @@ import { ProfileCertificationsHighlightProvider } from '@scf/core/features/profi
 import { ProfileCertificationsLeft } from '@scf/core/features/profile/profile-certifications-left'
 import { ProfileEducationLeft } from '@scf/core/features/profile/profile-education-left'
 import { ProfileExperienceLeft } from '@scf/core/features/profile/profile-experience-left'
-import { Button, H2, ScrollView, Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, H2, Separator, Text, Row, Stack, Card } from '@scaffald/ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Card } from '@unicornlove/ui'
+import { ScrollView } from 'react-native'
 
 export default function EditUserPage() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -14,52 +14,44 @@ export default function EditUserPage() {
 
   if (!id) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center">
+      <Stack align="center" justify="center">
         <Text>Invalid user ID</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <ScrollView flex={1} backgroundColor="$background">
-      <YStack padding="$4" gap="$4">
+    <ScrollView>
+      <Stack padding={16} gap={16}>
         {/* Header */}
-        <YStack gap="$3">
-          <XStack alignItems="center" justifyContent="space-between">
+        <Stack gap={12}>
+          <Row align="center" justify="space-between">
             <H2>Edit User Profile</H2>
-            <Button onPress={() => router.back()} variant="outlined">
+            <Button onPress={() => router.back()} variant="outline">
               Back to Users
             </Button>
-          </XStack>
-          <Text color="$color11" fontSize="$3">
-            Comprehensive user profile management with all profile sections.
-          </Text>
+          </Row>
+          <Text color="gray">Comprehensive user profile management with all profile sections.</Text>
           <Separator />
-        </YStack>
+        </Stack>
 
         {/* General Profile Section */}
-        <YStack gap="$2">
-          <Text fontSize="$6" fontWeight="600">
-            General Information
-          </Text>
+        <Stack gap={8}>
+          <Text>General Information</Text>
           <GeneralProfileSection userId={id} mode="admin" />
-        </YStack>
+        </Stack>
 
         {/* Employment Section */}
-        <YStack gap="$2">
-          <Text fontSize="$6" fontWeight="600">
-            Employment Preferences
-          </Text>
+        <Stack gap={8}>
+          <Text>Employment Preferences</Text>
           <EmploymentSection userId={id} mode="admin" />
-        </YStack>
+        </Stack>
 
         {/* Skills Section - Note: Currently operates on current admin user */}
-        <YStack gap="$2">
-          <Text fontSize="$6" fontWeight="600">
-            Skills & Expertise
-          </Text>
-          <Card bordered backgroundColor="$yellow2" padding="$3" marginBottom="$2">
-            <Text fontSize="$2" color="$yellow11">
+        <Stack gap={8}>
+          <Text>Skills & Expertise</Text>
+          <Card bordered padding="sm">
+            <Text color="$yellow11">
               ⚠️ Note: Skills section currently shows/edits the logged-in admin's skills. Full
               multi-user support coming soon.
             </Text>
@@ -67,43 +59,37 @@ export default function EditUserPage() {
           <ProfileSkillsProvider>
             <ProfileSkillsLeft />
           </ProfileSkillsProvider>
-        </YStack>
+        </Stack>
 
         {/* Experience Section - Note: Currently operates on current admin user */}
-        <YStack gap="$2">
-          <Text fontSize="$6" fontWeight="600">
-            Work Experience
-          </Text>
-          <Card bordered backgroundColor="$yellow2" padding="$3" marginBottom="$2">
-            <Text fontSize="$2" color="$yellow11">
+        <Stack gap={8}>
+          <Text>Work Experience</Text>
+          <Card bordered padding="sm">
+            <Text color="$yellow11">
               ⚠️ Note: Experience section currently shows/edits the logged-in admin's experience.
               Full multi-user support coming soon.
             </Text>
           </Card>
           <ProfileExperienceLeft />
-        </YStack>
+        </Stack>
 
         {/* Education Section - Note: Currently operates on current admin user */}
-        <YStack gap="$2">
-          <Text fontSize="$6" fontWeight="600">
-            Education
-          </Text>
-          <Card bordered backgroundColor="$yellow2" padding="$3" marginBottom="$2">
-            <Text fontSize="$2" color="$yellow11">
+        <Stack gap={8}>
+          <Text>Education</Text>
+          <Card bordered padding="sm">
+            <Text color="$yellow11">
               ⚠️ Note: Education section currently shows/edits the logged-in admin's education. Full
               multi-user support coming soon.
             </Text>
           </Card>
           <ProfileEducationLeft />
-        </YStack>
+        </Stack>
 
         {/* Certifications Section - Note: Currently operates on current admin user */}
-        <YStack gap="$2">
-          <Text fontSize="$6" fontWeight="600">
-            Certifications
-          </Text>
-          <Card bordered backgroundColor="$yellow2" padding="$3" marginBottom="$2">
-            <Text fontSize="$2" color="$yellow11">
+        <Stack gap={8}>
+          <Text>Certifications</Text>
+          <Card bordered padding="sm">
+            <Text color="$yellow11">
               ⚠️ Note: Certifications section currently shows/edits the logged-in admin's
               certifications. Full multi-user support coming soon.
             </Text>
@@ -111,8 +97,8 @@ export default function EditUserPage() {
           <ProfileCertificationsHighlightProvider>
             <ProfileCertificationsLeft />
           </ProfileCertificationsHighlightProvider>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </ScrollView>
   )
 }

@@ -1,5 +1,5 @@
 import type { AppRouter } from '@scf/supabase/client-types'
-import { DiscoverCard } from '@unicornlove/ui'
+import { DiscoverCard, useThemeContext } from '@scaffald/ui'
 import {
   Briefcase,
   Building2,
@@ -8,10 +8,11 @@ import {
   MapPin,
   User,
   Users,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
-import { type GetThemeValueForKey, Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type JobListOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
 type Job = JobListOutput['jobs'][number]
@@ -23,12 +24,35 @@ export interface JobCardProps {
   isSelected?: boolean
 }
 
-const STATUS_COLORS: Record<string, { backgroundColor: string; text: string; border: string }> = {
-  draft: { backgroundColor: '$gray3', text: '$gray11', border: '$gray6' },
-  open: { backgroundColor: '$green3', text: '$green11', border: '$green6' },
-  paused: { backgroundColor: '$yellow3', text: '$yellow11', border: '$yellow6' },
-  closed: { backgroundColor: '$red3', text: '$red11', border: '$red6' },
-  reviewing: { backgroundColor: '$blue3', text: '$blue11', border: '$blue6' },
+const getStatusColors = (status: string, theme: 'light' | 'dark') => {
+  const STATUS_COLORS: Record<string, { backgroundColor: string; text: string; border: string }> = {
+    draft: {
+      backgroundColor: colors.bg[theme].muted,
+      text: colors.text[theme].secondary,
+      border: colors.border[theme].subtle,
+    },
+    open: {
+      backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
+      text: theme === "light" ? colors.green[700] : colors.green[300],
+      border: theme === "light" ? colors.green[300] : colors.green[700],
+    },
+    paused: {
+      backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900],
+      text: theme === "light" ? colors.yellow[700] : colors.yellow[300],
+      border: theme === "light" ? colors.yellow[300] : colors.yellow[700],
+    },
+    closed: {
+      backgroundColor: theme === "light" ? colors.error[50] : colors.error[900],
+      text: theme === "light" ? colors.error[700] : colors.error[300],
+      border: theme === "light" ? colors.error[300] : colors.error[700],
+    },
+    reviewing: {
+      backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
+      text: theme === "light" ? colors.blue[700] : colors.blue[300],
+      border: theme === "light" ? colors.blue[300] : colors.blue[700],
+    },
+  }
+  return STATUS_COLORS[status] || STATUS_COLORS.draft
 }
 
 const formatPayRange = (job: Job) => {
@@ -52,7 +76,8 @@ const getStatusLabel = (status: string) => {
 }
 
 export function JobCard({ job, applicationCount, onPress, isSelected = false }: JobCardProps) {
-  const statusColors = STATUS_COLORS[job.status] || STATUS_COLORS.draft
+  const { theme } = useThemeContext()
+  const statusColors = getStatusColors(job.status, theme)
   const payRange = formatPayRange(job)
   const postedDate = formatDate(job.posted_at)
   const createdDate = formatDate(job.created_at)
@@ -64,151 +89,146 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
   const teamName = primaryTeam?.name || job.team?.name || null
 
   return (
-    <DiscoverCard variant="warning" isSelected={isSelected} onPress={onPress} padding="$4" gap="$3">
+    <DiscoverCard variant="warning" isSelected={isSelected} onPress={onPress} padding="md" gap={12}>
       {/* Header: Title and Status */}
-      <XStack justifyContent="space-between" alignItems="flex-start" gap="$3">
-        <YStack gap="$2" flex={1}>
-          <XStack alignItems="center" gap="$2" flexWrap="wrap">
-            <Briefcase size={18} color={isSelected ? '$yellow10' : '$color10'} />
+      <Row justify="space-between" align="flex-start" gap={12}>
+        <Stack gap={8} flex={1}>
+          <Row align="center" gap={8} wrap>
+            <Briefcase
+              size={18}
+              color={isSelected ? theme === "light" ? colors.yellow[700] : colors.yellow[300] : colors.text[theme].tertiary}
+            />
             <Text
-              fontSize="$5"
-              fontWeight="600"
-              color={isSelected ? '$yellow11' : '$color12'}
-              numberOfLines={2}
-              flex={1}
+              style={{
+                flex: 1,
+                color: isSelected ? theme === "light" ? colors.yellow[700] : colors.yellow[300] : colors.text[theme].primary,
+              }}
             >
               {job.title}
             </Text>
-          </XStack>
+          </Row>
           {job.organization && (
-            <XStack alignItems="center" gap="$1.5" marginLeft="$7">
-              <Building2 size={14} color="$color10" />
-              <Text fontSize="$3" color="$color11" numberOfLines={1}>
-                {job.organization.name}
-              </Text>
-            </XStack>
+            <Row align="center" gap={6} style={{ marginLeft: 28 }}>
+              <Building2 size={20} color={colors.text[theme].secondary} />
+              <Text style={{ color: colors.text[theme].secondary }}>{job.organization.name}</Text>
+            </Row>
           )}
-        </YStack>
-        <XStack
-          paddingHorizontal="$2"
-          paddingVertical="$1"
-          borderRadius="$3"
-          backgroundColor={statusColors.backgroundColor as GetThemeValueForKey<'backgroundColor'>}
-          borderWidth={1}
-          borderColor={statusColors.border as GetThemeValueForKey<'borderColor'>}
+        </Stack>
+        <Row
+          style={{
+            paddingHorizontal: 8,
+            paddingVertical: 4,
+            borderRadius: 12,
+            backgroundColor: statusColors.backgroundColor,
+            borderWidth: 1,
+            borderColor: statusColors.border,
+          }}
         >
-          <Text
-            fontSize="$2"
-            fontWeight="600"
-            color={statusColors.text as GetThemeValueForKey<'color'>}
-          >
+          <Text style={{ color: statusColors.text }}>
             {getStatusLabel(job.status)}
           </Text>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* Metrics Row */}
-      <XStack gap="$3" flexWrap="wrap">
+      <Row gap={12} wrap>
         {applicationCount !== undefined && (
           <MetricItem
-            icon={<Users size={14} />}
+            icon={<Users size={20} />}
             label="Applications"
             value={applicationCount.toString()}
           />
         )}
-        {teamName && <MetricItem icon={<Briefcase size={14} />} label="Team" value={teamName} />}
+        {teamName && (
+          <MetricItem icon={<Briefcase size={20} />} label="Team" value={teamName} />
+        )}
         {postedDate && (
-          <MetricItem icon={<Calendar size={14} />} label="Posted" value={postedDate} />
+          <MetricItem icon={<Calendar size={20} />} label="Posted" value={postedDate} />
         )}
         {job.created_by && (
           <MetricItem
-            icon={<User size={14} />}
+            icon={<User size={20} />}
             label="Created by"
             value={job.created_by.display_name || job.created_by.username || 'Unknown'}
           />
         )}
-      </XStack>
+      </Row>
 
       {/* Details Row */}
-      <XStack gap="$3" flexWrap="wrap">
+      <Row gap={12} wrap>
         {job.location && (
-          <XStack alignItems="center" gap="$1.5">
-            <MapPin size={14} color="$color10" />
-            <Text fontSize="$3" color="$color11" numberOfLines={1}>
-              {job.location}
-            </Text>
-          </XStack>
+          <Row align="center" gap={6}>
+            <MapPin size={20} color={colors.text[theme].secondary} />
+            <Text style={{ color: colors.text[theme].secondary }}>{job.location}</Text>
+          </Row>
         )}
         {job.remote_option && (
           <Text
-            fontSize="$2"
-            color="$color10"
-            backgroundColor="$color3"
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
+            style={{
+              color: colors.text[theme].secondary,
+              backgroundColor: colors.bg[theme].muted,
+              paddingHorizontal: 8,
+              paddingVertical: 4,
+              borderRadius: 8,
+            }}
           >
             {job.remote_option.replace('_', ' ').toUpperCase()}
           </Text>
         )}
         {job.employment_type && (
           <Text
-            fontSize="$2"
-            color="$color10"
-            backgroundColor="$color3"
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
+            style={{
+              color: colors.text[theme].secondary,
+              backgroundColor: colors.bg[theme].muted,
+              paddingHorizontal: 8,
+              paddingVertical: 4,
+              borderRadius: 8,
+            }}
           >
             {job.employment_type.replace('_', ' ').toUpperCase()}
           </Text>
         )}
-      </XStack>
+      </Row>
 
       {/* Pay Range */}
       {payRange && (
-        <XStack alignItems="center" gap="$1.5">
-          <DollarSign size={14} color="$green10" />
-          <Text fontSize="$3" fontWeight="600" color="$green10">
-            {payRange}
-          </Text>
-        </XStack>
+        <Row align="center" gap={6}>
+          <DollarSign size={20} color={theme === "light" ? colors.green[700] : colors.green[300]} />
+          <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>{payRange}</Text>
+        </Row>
       )}
 
       {/* Footer: Created date if not posted */}
       {!postedDate && createdDate && (
-        <XStack alignItems="center" gap="$1.5">
-          <Calendar size={12} color="$color9" />
-          <Text fontSize="$2" color="$color10">
-            Created {createdDate}
-          </Text>
-        </XStack>
+        <Row align="center" gap={6}>
+          <Calendar size={16} color={colors.text[theme].secondary} />
+          <Text style={{ color: colors.text[theme].secondary }}>Created {createdDate}</Text>
+        </Row>
       )}
     </DiscoverCard>
   )
 }
 
 function MetricItem({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
+  const { theme } = useThemeContext()
   return (
-    <XStack
-      gap="$2"
-      alignItems="center"
+    <Row
+      gap={8}
+      align="center"
       borderWidth={1}
-      borderColor="$borderColor"
-      borderRadius="$3"
-      paddingHorizontal="$2"
-      paddingVertical="$1"
-      backgroundColor="$color3"
+      borderColor={colors.border[theme].default}
+      borderRadius={12}
+      paddingHorizontal={8}
+      paddingVertical={4}
+      style={{ backgroundColor: colors.bg[theme].muted }}
     >
       {icon}
-      <YStack gap={0}>
-        <Text fontSize="$1" color="$color10" textTransform="uppercase">
+      <Stack gap={0}>
+        <Text style={{ color: colors.text[theme].secondary, textTransform: 'uppercase' }}>
           {label}
         </Text>
-        <Text fontSize="$2" fontWeight="600" color="$color12">
-          {value}
-        </Text>
-      </YStack>
-    </XStack>
+        <Text style={{ color: colors.text[theme].secondary }}>{value}</Text>
+      </Stack>
+    </Row>
   )
 }

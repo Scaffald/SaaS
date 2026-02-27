@@ -1,307 +1,374 @@
-import { SiteOverlapNotification } from '@scf/core/features/notifications/components/SiteOverlapNotification'
-import { AccountDeletionPanel } from '@scf/core/features/profile/components/AccountDeletionPanel'
-import { api } from '@scf/core/utils/api'
-import { AlertCircle, ExternalLink, Info, ShieldAlert } from '@tamagui/lucide-icons'
-import { Button, NotificationTag, ToggleSwitch } from '@unicornlove/ui'
-import type { Href } from 'expo-router'
-import { useRouter } from 'expo-router'
-import type { ComponentType } from 'react'
-import { useEffect, useMemo, useState } from 'react'
-import { Input, Label, ScrollView, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { SiteOverlapNotification } from "@scf/core/features/notifications/components/SiteOverlapNotification";
+import { AccountDeletionPanel } from "@scf/core/features/profile/components/AccountDeletionPanel";
+import {
+  useNotificationPreferences,
+  useSavePreferencesMutation,
+  useInfiniteNotifications,
+  useUnreadCount,
+  useNotificationDevices,
+  useMarkManyReadMutation,
+  useMarkManyUnreadMutation,
+  useArchiveManyMutation,
+  useRestoreManyMutation,
+} from "@scf/core/utils/notifications-sdk-hooks";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  AlertCircle,
+  ExternalLink,
+  Info,
+  ShieldAlert,
+} from "lucide-react-native";
+import {
+  Button,
+  NotificationTag,
+  Toggle,
+  Input,
+  Label,
+  Separator,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+} from "@scaffald/ui";
+import type { Href } from "expo-router";
+import { useRouter } from "expo-router";
+import type { ComponentType } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { ScrollView } from "react-native";
 
 type NotificationItem = {
-  id: string
-  type: string
-  severity: 'critical' | 'important' | 'info'
-  title: string
-  preview: string
-  createdAt: string
-  read: boolean
-  ctaUrl?: string
-  ctaLabel?: string
-  channels: string[]
+  id: string;
+  type: string;
+  severity: "critical" | "important" | "info";
+  title: string;
+  preview: string;
+  createdAt: string;
+  read: boolean;
+  ctaUrl?: string;
+  ctaLabel?: string;
+  channels: string[];
   metadata?: {
-    notification_type?: string
-    site_id?: string
-    overlapping_site_id?: string
-    overlap_percent?: number
-    threshold?: number
-  } | null
-}
+    notification_type?: string;
+    site_id?: string;
+    overlapping_site_id?: string;
+    overlap_percent?: number;
+    threshold?: number;
+  } | null;
+};
 
 interface ApiNotification {
-  id: string
-  type: string
-  severity?: NotificationItem['severity'] | null
-  title: string
-  body?: { preview?: string | null } | null
-  preview?: string | null
-  message?: string | null
+  id: string;
+  type: string;
+  severity?: NotificationItem["severity"] | null;
+  title: string;
+  body?: { preview?: string | null } | null;
+  preview?: string | null;
+  message?: string | null;
   metadata?: {
-    notification_type?: string
-    site_id?: string
-    overlapping_site_id?: string
-    overlap_percent?: number
-    threshold?: number
-  } | null
-  created_at: string
-  read?: boolean | null
-  cta_url?: string | null
-  cta_label?: string | null
-  routed_channels?: string[] | null
+    notification_type?: string;
+    site_id?: string;
+    overlapping_site_id?: string;
+    overlap_percent?: number;
+    threshold?: number;
+  } | null;
+  created_at: string;
+  read?: boolean | null;
+  cta_url?: string | null;
+  cta_label?: string | null;
+  routed_channels?: string[] | null;
 }
 
-const FILTERS: Array<{ label: string; value: 'all' | 'unread' | 'archived' }> = [
-  { label: 'All', value: 'all' },
-  { label: 'Unread', value: 'unread' },
-  { label: 'Archived', value: 'archived' },
-]
+const FILTERS: Array<{ label: string; value: "all" | "unread" | "archived" }> =
+  [
+    { label: "All", value: "all" },
+    { label: "Unread", value: "unread" },
+    { label: "Archived", value: "archived" },
+  ];
 
-const severityIconTokens: Record<NotificationItem['severity'], string> = {
-  critical: '$red10',
-  important: '$yellow10',
-  info: '$blue10',
-}
+const severityIconTokens: Record<NotificationItem["severity"], string> = {
+  critical: "$red10",
+  important: "$yellow10",
+  info: "$blue10",
+};
 
 type SeverityIconProps = {
-  IconComponent: ComponentType<{ size?: number; color?: string }>
-  severity: NotificationItem['severity']
-}
+  IconComponent: ComponentType<{ size?: number; color?: string }>;
+  severity: NotificationItem["severity"];
+};
 
 const SeverityIcon = ({ IconComponent, severity }: SeverityIconProps) => {
-  const colorToken = severityIconTokens[severity] ?? '$blue10'
-  return <IconComponent size={22} color={colorToken} />
-}
+  const colorToken = severityIconTokens[severity] ?? "$blue10";
+  return <IconComponent size={22} color={colorToken} />;
+};
 
-function getSeverityIcon(severity: NotificationItem['severity']) {
+function getSeverityIcon(severity: NotificationItem["severity"]) {
   switch (severity) {
-    case 'critical':
-      return ShieldAlert
-    case 'important':
-      return AlertCircle
+    case "critical":
+      return ShieldAlert;
+    case "important":
+      return AlertCircle;
     default:
-      return Info
+      return Info;
   }
 }
 
-function getSeverityTheme(severity: NotificationItem['severity']) {
+function getSeverityTheme(severity: NotificationItem["severity"]) {
   switch (severity) {
-    case 'critical':
-      return 'error'
-    case 'important':
-      return 'warning'
+    case "critical":
+      return "error";
+    case "important":
+      return "warning";
     default:
-      return 'info'
+      return "info";
   }
 }
 
 function formatRelativeTime(dateString: string): string {
-  if (!dateString) return ''
+  if (!dateString) return "";
 
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
-  const diffMinutes = Math.floor(diffSeconds / 60)
-  const diffHours = Math.floor(diffMinutes / 60)
-  const diffDays = Math.floor(diffHours / 24)
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
 
-  if (diffSeconds < 60) return 'Just now'
-  if (diffMinutes < 60) return `${diffMinutes} ${diffMinutes === 1 ? 'minute' : 'minutes'} ago`
-  if (diffHours < 24) return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`
-  if (diffDays === 1) return 'Yesterday'
-  if (diffDays < 7) return `${diffDays} days ago`
+  if (diffSeconds < 60) return "Just now";
+  if (diffMinutes < 60)
+    return `${diffMinutes} ${diffMinutes === 1 ? "minute" : "minutes"} ago`;
+  if (diffHours < 24)
+    return `${diffHours} ${diffHours === 1 ? "hour" : "hours"} ago`;
+  if (diffDays === 1) return "Yesterday";
+  if (diffDays < 7) return `${diffDays} days ago`;
   if (diffDays < 30) {
-    const weeks = Math.floor(diffDays / 7)
-    return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`
+    const weeks = Math.floor(diffDays / 7);
+    return `${weeks} ${weeks === 1 ? "week" : "weeks"} ago`;
   }
   if (diffDays < 365) {
-    const months = Math.floor(diffDays / 30)
-    return `${months} ${months === 1 ? 'month' : 'months'} ago`
+    const months = Math.floor(diffDays / 30);
+    return `${months} ${months === 1 ? "month" : "months"} ago`;
   }
-  const years = Math.floor(diffDays / 365)
-  return `${years} ${years === 1 ? 'year' : 'years'} ago`
+  const years = Math.floor(diffDays / 365);
+  return `${years} ${years === 1 ? "year" : "years"} ago`;
 }
 
 function formatDate(value: string | null | undefined) {
-  if (!value) return '—'
-  return new Date(value).toLocaleString()
+  if (!value) return "—";
+  return new Date(value).toLocaleString();
 }
 
 function mapNotification(apiNotification: ApiNotification): NotificationItem {
   return {
-    channels: Array.isArray(apiNotification.routed_channels) ? apiNotification.routed_channels : [],
+    channels: Array.isArray(apiNotification.routed_channels)
+      ? apiNotification.routed_channels
+      : [],
     createdAt: apiNotification.created_at,
     ctaLabel: apiNotification.cta_label ?? undefined,
     ctaUrl: apiNotification.cta_url ?? undefined,
     id: apiNotification.id,
     preview:
-      typeof apiNotification.body?.preview === 'string'
+      typeof apiNotification.body?.preview === "string"
         ? apiNotification.body.preview
-        : (apiNotification.preview ?? apiNotification.message ?? ''),
+        : apiNotification.preview ?? apiNotification.message ?? "",
     read: apiNotification.read ?? false,
-    severity: apiNotification.severity ?? 'info',
+    severity: apiNotification.severity ?? "info",
     title: apiNotification.title,
     type: apiNotification.type,
-  }
+  };
 }
 
 export default function NotificationsCenterScreen() {
-  const router = useRouter()
-  const utils = api.useUtils()
-  const [filter, setFilter] = useState<'all' | 'unread' | 'archived'>('all')
-  const preferencesQuery = api.notifications.preferences.get.useQuery()
-  const savePreferencesMutation = api.notifications.preferences.save.useMutation({
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [filter, setFilter] = useState<"all" | "unread" | "archived">("all");
+  const preferencesQuery = useNotificationPreferences();
+  const savePreferencesMutation = useSavePreferencesMutation({
     onSuccess: () => {
-      utils.notifications.preferences.get.invalidate()
+      queryClient.invalidateQueries({
+        queryKey: ["scaffald", "notifications", "preferences"],
+      });
     },
-  })
+  });
 
-  const notificationsQuery = api.notifications.list.useInfiniteQuery(
-    { limit: 25, status: filter },
+  const notificationsQuery = useInfiniteNotifications(
     {
-      getNextPageParam: (lastPage: { nextCursor?: string | null }) =>
-        lastPage?.nextCursor ?? undefined,
+      limit: 25,
+      ...(filter === "unread" ? { read: false } : filter === "all" ? {} : {}),
+    },
+    {
       placeholderData: (previousData) => previousData,
     }
-  )
+  );
 
-  const unreadCountQuery = api.notifications.getUnreadCount.useQuery(undefined, {
+  const unreadCountQuery = useUnreadCount({
     refetchOnMount: false,
-  })
-  const devicesQuery = api.notifications.devices.list.useQuery(undefined, {
+  });
+  const devicesQuery = useNotificationDevices({
     refetchOnMount: false,
-  })
+  });
 
   type DeviceRow = {
-    id: number
-    token: string
-    platform: string
-    last_seen_at?: string | null
-    updated_at?: string | null
-    created_at?: string | null
-  }
+    id: string;
+    token: string;
+    platform: string;
+    last_seen_at?: string | null;
+    updated_at?: string | null;
+    created_at?: string | null;
+    metadata?: Record<string, unknown>;
+  };
 
-  const deviceRows: DeviceRow[] = devicesQuery.data ?? []
+  const deviceRows: DeviceRow[] = (devicesQuery.data ?? []) as DeviceRow[];
 
-  const markReadMutation = api.notifications.markManyRead.useMutation({
+  const markReadMutation = useMarkManyReadMutation({
     onSuccess: () => {
-      utils.notifications.list.invalidate()
-      utils.notifications.getUnreadCount.invalidate()
+      queryClient.invalidateQueries({
+        queryKey: ["scaffald", "notifications", "list"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["scaffald", "notifications", "list-infinite"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["scaffald", "notifications", "unread-count"],
+      });
     },
-  })
+  });
 
-  const markUnreadMutation = api.notifications.markManyUnread.useMutation({
+  const markUnreadMutation = useMarkManyUnreadMutation({
     onSuccess: () => {
-      utils.notifications.list.invalidate()
-      utils.notifications.getUnreadCount.invalidate()
+      queryClient.invalidateQueries({
+        queryKey: ["scaffald", "notifications", "list"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["scaffald", "notifications", "list-infinite"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["scaffald", "notifications", "unread-count"],
+      });
     },
-  })
+  });
 
-  const archiveMutation = api.notifications.archiveMany.useMutation({
-    onSuccess: () => utils.notifications.list.invalidate(),
-  })
+  const archiveMutation = useArchiveManyMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["scaffald", "notifications", "list"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["scaffald", "notifications", "list-infinite"],
+      });
+    },
+  });
 
-  const restoreMutation = api.notifications.restoreMany.useMutation({
-    onSuccess: () => utils.notifications.list.invalidate(),
-  })
+  const restoreMutation = useRestoreManyMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["scaffald", "notifications", "list"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["scaffald", "notifications", "list-infinite"],
+      });
+    },
+  });
 
   const notifications: NotificationItem[] = useMemo(
     () =>
-      (notificationsQuery.data?.pages ?? [])
-        .flatMap(
-          (page: { items?: ApiNotification[] | null } | null | undefined) => page?.items ?? []
-        )
+      (
+        (notificationsQuery.data as { pages?: unknown[] } | undefined)?.pages ??
+        []
+      )
+        .flatMap((page) => {
+          const p = page as { items?: ApiNotification[] | null } | null | undefined
+          return p?.items ?? []
+        })
         .map(mapNotification),
     [notificationsQuery.data]
-  )
+  );
 
-  const unreadCount = unreadCountQuery.data?.count ?? 0
-  const isEmpty = notifications.length === 0 && !notificationsQuery.isLoading
+  const unreadCount = unreadCountQuery.data?.data?.unread_count ?? 0;
+  const isEmpty = notifications.length === 0 && !notificationsQuery.isLoading;
 
   const [preferences, setPreferences] = useState({
     channelEnabled: { email: true, in_app: true, push: true, sms: false },
-    digestFrequency: 'immediate' as 'immediate' | 'digest_daily' | 'digest_weekly' | 'mute',
+    digestFrequency: "immediate" as
+      | "immediate"
+      | "digest_daily"
+      | "digest_weekly"
+      | "mute",
     globalEnabled: true,
     quietHours: null as { start: string; end: string } | null,
-  })
+  });
 
   useEffect(() => {
-    if (preferencesQuery.data) {
+    if (preferencesQuery.data?.data) {
+      const prefs = preferencesQuery.data.data;
       setPreferences({
         channelEnabled: {
-          email: preferencesQuery.data.channelEnabled.email,
-          in_app: preferencesQuery.data.channelEnabled.in_app,
-          push: preferencesQuery.data.channelEnabled.push,
-          sms: preferencesQuery.data.channelEnabled.sms,
+          email: prefs.email_notifications,
+          in_app: true, // Always enabled for in-app
+          push: prefs.push_notifications,
+          sms: false, // Not supported yet
         },
-        digestFrequency: preferencesQuery.data.digestFrequency,
-        globalEnabled: preferencesQuery.data.globalEnabled,
-        quietHours: preferencesQuery.data.quietHours ?? null,
-      })
+        digestFrequency: "immediate", // Default value, not in SDK yet
+        globalEnabled: prefs.email_notifications || prefs.push_notifications,
+        quietHours: prefs.quiet_hours?.enabled
+          ? { start: prefs.quiet_hours.start, end: prefs.quiet_hours.end }
+          : null,
+      });
     }
-  }, [preferencesQuery.data])
+  }, [preferencesQuery.data]);
 
   const handleSavePreferences = () => {
     savePreferencesMutation.mutate({
-      channelEnabled: preferences.channelEnabled,
-      digestFrequency: preferences.digestFrequency,
-      globalEnabled: preferences.globalEnabled,
-      quietHours: preferences.quietHours ?? undefined,
-    })
-  }
+      email_notifications: preferences.channelEnabled.email,
+      push_notifications: preferences.channelEnabled.push,
+      quiet_hours: preferences.quietHours
+        ? {
+            enabled: true,
+            start: preferences.quietHours.start,
+            end: preferences.quietHours.end,
+          }
+        : { enabled: false, start: "22:00", end: "08:00" },
+    });
+  };
 
   const handleNavigate = (notification: NotificationItem) => {
     if (notification.ctaUrl) {
-      router.push(notification.ctaUrl as Href)
+      router.push(notification.ctaUrl as Href);
     }
-  }
+  };
 
   return (
-    <ScrollView paddingHorizontal="$6" paddingVertical="$6">
-      <YStack gap="$6">
-        <YStack gap="$2">
-          <Text fontSize="$9" fontWeight="700">
-            Notifications
+    <ScrollView>
+      <Stack gap={24}>
+        <Stack gap={8}>
+          <Text>Notifications</Text>
+          <Text color="gray">
+            Stay up to date with applications, opportunities, and platform
+            updates.
           </Text>
-          <Text fontSize="$3" color="$color10">
-            Stay up to date with applications, opportunities, and platform updates.
-          </Text>
-        </YStack>
+        </Stack>
 
-        <YStack
-          gap="$4"
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius="$4"
-          padding="$4"
-          backgroundColor="$color1"
-        >
-          <XStack justifyContent="space-between" alignItems="center">
-            <YStack gap="$1">
-              <Text fontSize="$6" fontWeight="600">
-                Preferences
-              </Text>
-              <Text fontSize="$3" color="$color10">
-                Control how and when we reach you.
-              </Text>
-            </YStack>
+        <Stack gap={16} padding={16}>
+          <Row justify="space-between" align="center">
+            <Stack gap={4}>
+              <Text>Preferences</Text>
+              <Text color="gray">Control how and when we reach you.</Text>
+            </Stack>
             <Button
-              variant="primary"
-              size="$2"
+              variant="filled"
+              size="md"
               disabled={savePreferencesMutation.isPending}
               onPress={handleSavePreferences}
             >
-              {savePreferencesMutation.isPending ? 'Saving…' : 'Save changes'}
+              {savePreferencesMutation.isPending ? "Saving…" : "Save changes"}
             </Button>
-          </XStack>
+          </Row>
 
-          <Separator backgroundColor="$color3" />
+          <Separator />
 
-          <YStack gap="$3">
-            <XStack alignItems="center" justifyContent="space-between">
+          <Stack gap={12}>
+            <Row align="center" justify="space-between">
               <Label
-                color="$color12"
-                fontWeight="600"
+                color="gray"
                 onPress={() =>
                   setPreferences((prev) => ({
                     ...prev,
@@ -311,27 +378,27 @@ export default function NotificationsCenterScreen() {
               >
                 Enable notifications
               </Label>
-              <ToggleSwitch
+              <Toggle
                 checked={preferences.globalEnabled}
-                onCheckedChange={(value) =>
+                onChange={(value) =>
                   setPreferences((prev) => ({ ...prev, globalEnabled: value }))
                 }
                 aria-label="Enable notifications"
               />
-            </XStack>
+            </Row>
 
-            <YStack gap="$2" paddingLeft="$2">
+            <Stack gap={8} paddingLeft={8}>
               {(
                 [
-                  { key: 'in_app', label: 'In-app' },
-                  { key: 'email', label: 'Email' },
-                  { key: 'push', label: 'Mobile push' },
-                  { key: 'sms', label: 'SMS' },
+                  { key: "in_app", label: "In-app" },
+                  { key: "email", label: "Email" },
+                  { key: "push", label: "Mobile push" },
+                  { key: "sms", label: "SMS" },
                 ] as const
               ).map(({ key, label }) => (
-                <XStack key={key} alignItems="center" justifyContent="space-between">
+                <Row key={key} align="center" justify="space-between">
                   <Label
-                    color="$color11"
+                    color="gray"
                     onPress={() =>
                       setPreferences((prev) => ({
                         ...prev,
@@ -344,346 +411,336 @@ export default function NotificationsCenterScreen() {
                   >
                     {label}
                   </Label>
-                  <ToggleSwitch
+                  <Toggle
                     checked={preferences.channelEnabled[key]}
-                    onCheckedChange={(value) =>
+                    onChange={(value) =>
                       setPreferences((prev) => ({
                         ...prev,
-                        channelEnabled: { ...prev.channelEnabled, [key]: value },
+                        channelEnabled: {
+                          ...prev.channelEnabled,
+                          [key]: value,
+                        },
                       }))
                     }
                     aria-label={`Enable ${label} notifications`}
                   />
-                </XStack>
+                </Row>
               ))}
-            </YStack>
+            </Stack>
 
-            <Separator backgroundColor="$color3" />
+            <Separator />
 
-            <YStack gap="$2">
-              <Text fontWeight="600" color="$color12">
-                Quiet hours
-              </Text>
-              <Text fontSize="$2" color="$color10">
+            <Stack gap={8}>
+              <Text color="gray">Quiet hours</Text>
+              <Text color="gray">
                 We’ll queue non-critical alerts during these hours.
               </Text>
-              <XStack gap="$2" alignItems="center">
+              <Row gap={8} align="center">
                 <Input
                   placeholder="22:00"
-                  value={preferences.quietHours?.start ?? ''}
+                  value={preferences.quietHours?.start ?? ""}
                   onChangeText={(text) =>
                     setPreferences((prev) => ({
                       ...prev,
-                      quietHours: { end: prev.quietHours?.end ?? '', start: text },
+                      quietHours: {
+                        end: prev.quietHours?.end ?? "",
+                        start: text,
+                      },
                     }))
                   }
-                  width={100}
                 />
-                <Text color="$color11">to</Text>
+                <Text color="gray">to</Text>
                 <Input
                   placeholder="07:00"
-                  value={preferences.quietHours?.end ?? ''}
+                  value={preferences.quietHours?.end ?? ""}
                   onChangeText={(text) =>
                     setPreferences((prev) => ({
                       ...prev,
-                      quietHours: { end: text, start: prev.quietHours?.start ?? '' },
+                      quietHours: {
+                        end: text,
+                        start: prev.quietHours?.start ?? "",
+                      },
                     }))
                   }
-                  width={100}
                 />
                 <Button
-                  size="$2"
-                  onPress={() => setPreferences((prev) => ({ ...prev, quietHours: null }))}
+                  size="md"
+                  onPress={() =>
+                    setPreferences((prev) => ({ ...prev, quietHours: null }))
+                  }
                 >
                   Clear
                 </Button>
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
 
-            <Separator backgroundColor="$color3" />
+            <Separator />
 
-            <YStack gap="$2">
-              <Text fontWeight="600" color="$color12">
-                Digest frequency
-              </Text>
-              <XStack gap="$2" flexWrap="wrap">
+            <Stack gap={8}>
+              <Text color="gray">Digest frequency</Text>
+              <Row gap={8}>
                 {(
                   [
-                    { label: 'Immediate', value: 'immediate' },
-                    { label: 'Daily summary', value: 'digest_daily' },
-                    { label: 'Weekly summary', value: 'digest_weekly' },
-                    { label: 'Mute', value: 'mute' },
+                    { label: "Immediate", value: "immediate" },
+                    { label: "Daily summary", value: "digest_daily" },
+                    { label: "Weekly summary", value: "digest_weekly" },
+                    { label: "Mute", value: "mute" },
                   ] as const
                 ).map((option) => {
-                  const isSelected = preferences.digestFrequency === option.value
+                  const isSelected =
+                    preferences.digestFrequency === option.value;
 
                   return (
                     <Button
                       key={option.value}
-                      size="$2"
-                      theme={isSelected ? 'blue' : 'gray'}
-                      {...(!isSelected ? { variant: 'outlined' as const } : {})}
+                      size="md"
+                      color={isSelected ? "primary" : "gray"}
+                      {...(!isSelected ? { variant: "outline" as const } : {})}
                       onPress={() =>
                         setPreferences((prev) => ({
                           ...prev,
-                          digestFrequency: option.value as typeof prev.digestFrequency,
+                          digestFrequency:
+                            option.value as typeof prev.digestFrequency,
                         }))
                       }
                     >
                       {option.label}
                     </Button>
-                  )
+                  );
                 })}
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
 
             {savePreferencesMutation.isSuccess && (
-              <Text fontSize="$2" color="$green10">
-                Preferences saved.
-              </Text>
+              <Text color="green">Preferences saved.</Text>
             )}
             {savePreferencesMutation.isError && (
-              <Text fontSize="$2" color="$red10">
-                Failed to save preferences.
-              </Text>
+              <Text color="red">Failed to save preferences.</Text>
             )}
-          </YStack>
+          </Stack>
 
-          <Separator backgroundColor="$color3" />
+          <Separator />
 
-          <YStack gap="$2">
-            <Text fontWeight="600" color="$color12">
-              Registered devices
-            </Text>
+          <Stack gap={8}>
+            <Text color="gray">Registered devices</Text>
             {devicesQuery.isLoading ? (
-              <XStack gap="$2" alignItems="center">
-                <Spinner size="small" color="$color10" />
-                <Text fontSize="$2" color="$color10">
-                  Checking devices…
-                </Text>
-              </XStack>
+              <Row gap={8} align="center">
+                <Spinner size="sm" color="gray" />
+                <Text color="gray">Checking devices…</Text>
+              </Row>
             ) : deviceRows.length === 0 ? (
-              <Text fontSize="$2" color="$color10">
-                No devices registered yet.
-              </Text>
+              <Text color="gray">No devices registered yet.</Text>
             ) : (
-              <YStack
-                borderWidth={1}
-                borderColor="$borderColor"
-                borderRadius="$3"
-                overflow="hidden"
-              >
-                <XStack backgroundColor="$color2" padding="$2">
-                  <Text flex={2} fontSize="$2" fontWeight="600">
-                    Token
-                  </Text>
-                  <Text flex={1} fontSize="$2" fontWeight="600">
-                    Platform
-                  </Text>
-                  <Text flex={1} fontSize="$2" fontWeight="600">
-                    Last seen
-                  </Text>
-                </XStack>
-                {deviceRows.map((device, index) => (
-                  <XStack
-                    key={device.id}
-                    padding="$2"
-                    backgroundColor={index % 2 === 0 ? '$color1' : '$color2'}
-                    gap="$2"
-                  >
-                    <Text flex={2} fontSize="$2" color="$color11" numberOfLines={1}>
-                      {device.token}
-                    </Text>
-                    <Text flex={1} fontSize="$2" color="$color11">
-                      {device.platform}
-                    </Text>
-                    <Text flex={1} fontSize="$2" color="$color10">
+              <Stack>
+                <Row padding={8}>
+                  <Text>Token</Text>
+                  <Text>Platform</Text>
+                  <Text>Last seen</Text>
+                </Row>
+                {deviceRows.map((device, _index) => (
+                  <Row key={device.id} padding={8} gap={8}>
+                    <Text color="gray">{device.token}</Text>
+                    <Text color="gray">{device.platform}</Text>
+                    <Text color="gray">
                       {formatDate(
-                        device.last_seen_at ?? device.updated_at ?? device.created_at ?? null
+                        device.last_seen_at ??
+                          device.updated_at ??
+                          device.created_at ??
+                          null
                       )}
                     </Text>
-                  </XStack>
+                  </Row>
                 ))}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
 
-        <XStack gap="$3" flexWrap="wrap">
+        <Row gap={12}>
           {FILTERS.map((item) => {
-            const isActive = filter === item.value
+            const isActive = filter === item.value;
 
             return (
               <Button
                 key={item.value}
-                theme={isActive ? 'blue' : 'gray'}
-                {...(!isActive ? { variant: 'outlined' as const } : {})}
+                color={isActive ? "primary" : "gray"}
+                {...(!isActive ? { variant: "outline" as const } : {})}
                 onPress={() => {
-                  setFilter(item.value)
-                  notificationsQuery.refetch()
+                  setFilter(item.value);
+                  notificationsQuery.refetch();
                 }}
               >
                 {item.label}
-                {item.value === 'unread' && unreadCount > 0 && (
-                  <NotificationTag marginLeft="$2" themeName="error">
-                    {unreadCount > 99 ? '99+' : unreadCount}
+                {item.value === "unread" && unreadCount > 0 && (
+                  <NotificationTag>
+                    {unreadCount > 99 ? "99+" : unreadCount}
                   </NotificationTag>
                 )}
               </Button>
-            )
+            );
           })}
-        </XStack>
+        </Row>
 
         {notificationsQuery.isLoading ? (
-          <YStack gap="$3" alignItems="center" marginTop="$4">
-            <Spinner size="large" color="$color10" />
-            <Text color="$color11">Loading notifications…</Text>
-          </YStack>
+          <Stack gap={12} align="center">
+            <Spinner size="lg" color="gray" />
+            <Text color="gray">Loading notifications…</Text>
+          </Stack>
         ) : isEmpty ? (
-          <YStack gap="$3" alignItems="center" marginTop="$5">
+          <Stack gap={12} align="center">
             <Info size={48} color="$color8" />
-            <Text fontSize="$5" fontWeight="600" color="$color12">
-              You're all caught up!
+            <Text color="gray">You're all caught up!</Text>
+            <Text color="gray">
+              New alerts will show up here when there's something you need to
+              review.
             </Text>
-            <Text fontSize="$3" color="$color10" textAlign="center">
-              New alerts will show up here when there's something you need to review.
-            </Text>
-          </YStack>
+          </Stack>
         ) : (
-          <YStack gap="$2">
+          <Stack gap={8}>
             {notifications.map((notification, _index) => {
-              const IconComponent = getSeverityIcon(notification.severity) as ComponentType<{
-                size?: number
-                color?: string
-              }>
-              const severityTheme = getSeverityTheme(notification.severity)
+              const IconComponent = getSeverityIcon(
+                notification.severity
+              ) as ComponentType<{
+                size?: number;
+                color?: string;
+              }>;
+              const _severityTheme = getSeverityTheme(notification.severity);
 
               return (
-                <YStack
-                  key={notification.id}
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  borderRadius="$4"
-                  backgroundColor="$color1"
-                >
-                  <XStack padding="$4" gap="$3" alignItems="flex-start">
-                    <SeverityIcon IconComponent={IconComponent} severity={notification.severity} />
-                    <YStack flex={1} gap="$2">
-                      <XStack justifyContent="space-between" alignItems="center">
-                        <Text fontSize="$4" fontWeight="700" color="$color12">
-                          {notification.title}
-                        </Text>
-                        <NotificationTag
-                          themeName={severityTheme}
-                          size="md"
-                          textColorToken="$color12"
-                        >
+                <Stack key={notification.id}>
+                  <Row padding={16} gap={12} align="flex-start">
+                    <SeverityIcon
+                      IconComponent={IconComponent}
+                      severity={notification.severity}
+                    />
+                    <Stack gap={8}>
+                      <Row justify="space-between" align="center">
+                        <Text color="gray">{notification.title}</Text>
+                        <NotificationTag size="md">
                           {notification.severity.toUpperCase()}
                         </NotificationTag>
-                      </XStack>
-                      <Text fontSize="$3" color="$color11">
-                        {notification.preview}
-                      </Text>
-                      <XStack gap="$3" alignItems="center">
-                        <Text fontSize="$2" color="$color10">
+                      </Row>
+                      <Text color="gray">{notification.preview}</Text>
+                      <Row gap={12} align="center">
+                        <Text color="gray">
                           {formatRelativeTime(notification.createdAt)}
                         </Text>
                         {notification.channels.length > 0 && (
-                          <NotificationTag themeName="gray">
-                            {notification.channels.join(', ')}
+                          <NotificationTag>
+                            {notification.channels.join(", ")}
                           </NotificationTag>
                         )}
-                      </XStack>
-                    </YStack>
-                  </XStack>
+                      </Row>
+                    </Stack>
+                  </Row>
 
-                  <Separator backgroundColor="$color3" />
+                  <Separator />
 
                   {/* Render site overlap notification with actions if type matches */}
-                  {notification.metadata?.notification_type === 'site_overlap' &&
+                  {notification.metadata?.notification_type ===
+                    "site_overlap" &&
                   notification.metadata?.site_id &&
                   notification.metadata?.overlapping_site_id ? (
-                    <XStack padding="$3">
+                    <Row padding="sm">
                       <SiteOverlapNotification
                         notificationId={notification.id}
                         siteId={notification.metadata.site_id}
-                        overlappingSiteId={notification.metadata.overlapping_site_id}
-                        overlapPercent={notification.metadata.overlap_percent || 0}
+                        overlappingSiteId={
+                          notification.metadata.overlapping_site_id
+                        }
+                        overlapPercent={
+                          notification.metadata.overlap_percent || 0
+                        }
                         threshold={notification.metadata.threshold || 2.0}
                         onDismiss={(id) => {
-                          archiveMutation.mutate({ ids: [id] })
+                          archiveMutation.mutate({ ids: [id] });
                         }}
                       />
-                    </XStack>
+                    </Row>
                   ) : (
-                    <XStack padding="$3" gap="$3" justifyContent="flex-end" flexWrap="wrap">
+                    <Row padding="sm" gap={12} justify="flex-end">
                       {!notification.read ? (
                         <Button
-                          size="$2"
-                          theme="info"
-                          onPress={() => markReadMutation.mutate({ ids: [notification.id] })}
+                          size="md"
+                          color="primary"
+                          onPress={() =>
+                            markReadMutation.mutate({ ids: [notification.id] })
+                          }
                         >
                           Mark as read
                         </Button>
                       ) : (
                         <Button
-                          size="$2"
-                          theme="gray"
-                          onPress={() => markUnreadMutation.mutate({ ids: [notification.id] })}
+                          size="md"
+                          color="gray"
+                          onPress={() =>
+                            markUnreadMutation.mutate({
+                              ids: [notification.id],
+                            })
+                          }
                         >
                           Mark unread
                         </Button>
                       )}
 
-                      {filter === 'archived' ? (
+                      {filter === "archived" ? (
                         <Button
-                          size="$2"
-                          theme="success"
-                          onPress={() => restoreMutation.mutate({ ids: [notification.id] })}
+                          size="md"
+                          color="success"
+                          onPress={() =>
+                            restoreMutation.mutate({ ids: [notification.id] })
+                          }
                         >
                           Restore
                         </Button>
                       ) : (
                         <Button
-                          size="$2"
-                          theme="gray"
-                          onPress={() => archiveMutation.mutate({ ids: [notification.id] })}
+                          size="md"
+                          color="gray"
+                          onPress={() =>
+                            archiveMutation.mutate({ ids: [notification.id] })
+                          }
                         >
                           Archive
                         </Button>
                       )}
 
                       {notification.ctaUrl && (
-                        <Button size="$2" theme="info" onPress={() => handleNavigate(notification)}>
-                          <XStack gap="$2" alignItems="center">
-                            <Text fontSize="$2" fontWeight="600" color="$color12">
-                              {notification.ctaLabel ?? 'Open'}
+                        <Button
+                          size="md"
+                          color="primary"
+                          onPress={() => handleNavigate(notification)}
+                        >
+                          <Row gap={8} align="center">
+                            <Text color="gray">
+                              {notification.ctaLabel ?? "Open"}
                             </Text>
-                            <ExternalLink size={16} color="#ffffff" />
-                          </XStack>
+                            <ExternalLink size="lg" color="#ffffff" />
+                          </Row>
                         </Button>
                       )}
-                    </XStack>
+                    </Row>
                   )}
-                </YStack>
-              )
+                </Stack>
+              );
             })}
 
             {notificationsQuery.hasNextPage && (
               <Button
-                marginTop="$4"
-                theme="info"
+                color="primary"
                 disabled={notificationsQuery.isFetchingNextPage}
                 onPress={() => notificationsQuery.fetchNextPage()}
               >
-                {notificationsQuery.isFetchingNextPage ? 'Loading…' : 'Load more'}
+                {notificationsQuery.isFetchingNextPage
+                  ? "Loading…"
+                  : "Load more"}
               </Button>
             )}
-          </YStack>
+          </Stack>
         )}
 
         <AccountDeletionPanel />
-      </YStack>
+      </Stack>
     </ScrollView>
-  )
+  );
 }

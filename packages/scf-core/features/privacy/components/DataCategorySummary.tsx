@@ -1,12 +1,12 @@
 /**
  * Data Category Summary Component
- * REQ-3: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  *
  * Displays the 6 CCPA data categories with indicators
  * showing what types of personal information are collected
  */
 
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 /**
  * CCPA data category type
@@ -82,58 +82,36 @@ const CATEGORY_METADATA: Record<CCPACategory, Omit<CategoryInfo, 'hasData' | 're
  */
 function CategoryCard({ info }: { info: CategoryInfo }) {
   return (
-    <YStack
-      padding="$4"
+    <Stack
+      padding="md"
       backgroundColor="$color2"
-      borderRadius="$3"
+      borderRadius={12}
       borderWidth={1}
       borderColor={info.hasData ? '$green6' : '$borderColor'}
-      gap="$2"
+      gap={8}
       flex={1}
       minWidth={280}
     >
-      <XStack justifyContent="space-between" alignItems="center">
-        <Text fontSize="$4" fontWeight="600">
-          {info.name}
-        </Text>
+      <Row justify="space-between" align="center">
+        <Text>{info.name}</Text>
         {info.hasData ? (
-          <XStack
-            backgroundColor="$green3"
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
-          >
-            <Text fontSize="$2" color="$green11" fontWeight="500">
-              {info.recordCount || 0} records
-            </Text>
-          </XStack>
+          <Row backgroundColor="$green3" paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
+            <Text color="$green11">{info.recordCount || 0} records</Text>
+          </Row>
         ) : (
-          <XStack
-            backgroundColor="$color4"
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
-          >
-            <Text fontSize="$2" color="$color11" fontWeight="500">
-              No data
-            </Text>
-          </XStack>
+          <Row backgroundColor="$color4" paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
+            <Text color="$gray11">No data</Text>
+          </Row>
         )}
-      </XStack>
+      </Row>
 
-      <Text fontSize="$3" color="$color11">
-        {info.description}
-      </Text>
+      <Text color="$gray11">{info.description}</Text>
 
-      <YStack gap="$1" marginTop="$1">
-        <Text fontSize="$2" color="$color10" fontWeight="500">
-          Examples:
-        </Text>
-        <Text fontSize="$2" color="$color10">
-          {info.examples.join(' • ')}
-        </Text>
-      </YStack>
-    </YStack>
+      <Stack gap={4} marginTop={4}>
+        <Text color="$gray11">Examples:</Text>
+        <Text color="$gray11">{info.examples.join(' • ')}</Text>
+      </Stack>
+    </Stack>
   )
 }
 
@@ -162,27 +140,21 @@ export function DataCategorySummary({ categories }: DataCategorySummaryProps) {
   const categoriesWithData = categoryInfos.filter((c) => c.hasData).length
 
   return (
-    <YStack gap="$4">
+    <Stack gap={16}>
       {/* Summary banner */}
-      <XStack
-        padding="$3"
-        backgroundColor="$blue2"
-        borderRadius="$3"
-        gap="$2"
-        alignItems="center"
-      >
-        <Text fontSize="$3" color="$blue11">
+      <Row padding="sm" backgroundColor="$blue2" borderRadius={12} gap={8} align="center">
+        <Text color="$blue11">
           We collect data in {categoriesWithData} of 6 CCPA categories. View details below.
         </Text>
-      </XStack>
+      </Row>
 
       {/* Category cards grid */}
-      <XStack flexWrap="wrap" gap="$3">
+      <Row wrap gap={12}>
         {categoryInfos.map((info) => (
           <CategoryCard key={info.name} info={info} />
         ))}
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }
 

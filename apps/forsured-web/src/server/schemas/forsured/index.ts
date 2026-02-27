@@ -1,6 +1,6 @@
 /**
  * Forsured Schemas Export Index
- * REQ-287: Create Zod Schemas for Forsured Entities
+ * Create Zod Schemas for Forsured Entities
  * TASK-1: Create shared schema definitions
  *
  * Central export point for all Forsured Zod schemas and types.

@@ -1,5 +1,5 @@
 /**
- * REQ-128: Compliance Rule Evaluation Engine
+ * Compliance Rule Evaluation Engine
  * Unit tests for endorsement verification logic
  */
 

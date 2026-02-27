@@ -1,12 +1,12 @@
 /**
- * REQ-166: Task Management Workflow & UI
+ * Task Management Workflow & UI
  * Main task management page with filtering, search, and real-time updates
  */
 
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Stack, Row, Text, Button, Card, H1, Input } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card, H1, Input } from '@scaffald/ui';
 import { Search } from 'lucide-react';
 import { Task, TaskStatus, TaskPriority, User } from '../../../types';
 import { TaskList } from '../../../components/tasks/TaskList';

@@ -1,6 +1,6 @@
 /* c8 ignore file */
 
-import { api } from './api';
+import { useOfficeOrganizations } from './office-organizations-sdk-hooks'
 
 /**
  * Hook for fetching all organizations (admin view)
@@ -13,5 +13,5 @@ import { api } from './api';
  * use `useOrganizations()` instead.
  */
 export const useAllOrganizations = () => {
-  return api.office.getOrganizations.useQuery();
-};
+  return useOfficeOrganizations()
+}

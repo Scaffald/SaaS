@@ -82,34 +82,14 @@ import { Component } from './Component.android'  # Android specific
 
 ## Component Patterns
 
-### Tamagui Component Usage
-```typescript
-import { Button, Text, View, XStack, YStack } from '@tamagui/core'
-
-export function ExampleComponent() {
-  return (
-    <YStack space="$4" padding="$4">
-      <Text fontSize="$6" fontWeight="bold">
-        Title
-      </Text>
-      <XStack space="$2" alignItems="center">
-        <Button theme="blue" onPress={handlePress}>
-          Action
-        </Button>
-        <Button variant="outlined" onPress={handleCancel}>
-          Cancel
-        </Button>
-      </XStack>
-    </YStack>
-  )
-}
-```
+### Beyond UI Component Usage
+Use components from `@unicornlove/beyond-ui`. See `packages/beyond-ui/docs/API_CONVENTIONS.md` and `.cursor/rules/beyond-ui-properties.mdc` for patterns, tokens, and style factories.
 
 ### Cross-Platform Component Pattern
 ```typescript
-// packages/ui/src/components/ExampleComponent.tsx
+// packages/beyond-ui or app components
 import { ComponentProps } from 'react'
-import { Button, Text, YStack } from '@tamagui/core'
+import { Button, Text, Stack } from '@unicornlove/beyond-ui'
 
 export interface ExampleComponentProps {
   title: string

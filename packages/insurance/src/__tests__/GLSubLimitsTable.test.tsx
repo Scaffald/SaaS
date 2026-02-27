@@ -1,54 +1,29 @@
 /**
  * GLSubLimitsTable Component Tests - @frs/insurance
- * REQ-280: Insurance Coverage Detail Requirements
- * TASK-3: Create GL Sub-Limits Display Component with Validation Indicators
  */
 
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { GLSubLimitsTable, type GLSubLimitItem } from '../GLSubLimitsTable'
 
-// Mock Tamagui's styled components for testing
-vi.mock('tamagui', async () => {
-  const React = await import('react')
+vi.mock('@scaffald/ui', () => {
+  const React = require('react')
+  const createEl = (tag: string) => ({ children, ...rest }: Record<string, unknown>) => React.createElement(tag, rest, children)
   return {
-    styled: (_component: unknown, config: Record<string, unknown>) => {
-      const StyledComponent = React.forwardRef<HTMLElement, Record<string, unknown>>(
-        ({ children, onPress, ...props }, ref) => {
-          const handleClick = (e: React.MouseEvent) => {
-            if (onPress) {
-              ;(onPress as (e: unknown) => void)(e)
-            }
-          }
-          return React.createElement(
-            'div',
-            {
-              ref,
-              onClick: handleClick,
-              'data-name': config.name,
-              ...props,
-            },
-            children
-          )
-        }
-      )
-      StyledComponent.displayName = (config.name as string) || 'StyledComponent'
-      return StyledComponent
-    },
-    YStack: ({ children, ...props }: Record<string, unknown>) =>
-      React.createElement('div', { 'data-testid': 'ystack', ...props }, children as React.ReactNode),
-    XStack: ({ children, ...props }: Record<string, unknown>) =>
-      React.createElement('div', { 'data-testid': 'xstack', ...props }, children as React.ReactNode),
-    View: ({ children, ...props }: Record<string, unknown>) =>
-      React.createElement('div', props, children as React.ReactNode),
-    Text: ({ children, ...props }: Record<string, unknown>) =>
-      React.createElement('span', props, children as React.ReactNode),
+    Stack: createEl('div'),
+    Row: createEl('div'),
+    Text: createEl('span'),
+    Box: createEl('div'),
+    ThemeProvider: ({ children }: { children?: React.ReactNode }) => React.createElement(React.Fragment, null, children),
+    useThemeContext: () => ({ theme: 'light' }),
+    VisuallyHidden: createEl('span'),
     Spinner: () => React.createElement('div', { 'data-testid': 'spinner' }),
+    useToast: () => ({ show: () => {}, dismiss: () => {}, success: () => {}, error: () => {} }),
   }
 })
 
 // Mock Lucide icons
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Check: () => <span data-testid="icon-check">✓</span>,
   X: () => <span data-testid="icon-x">✗</span>,
   AlertCircle: () => <span data-testid="icon-alert-circle">⚠</span>,

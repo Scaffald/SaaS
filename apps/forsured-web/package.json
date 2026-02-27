@@ -30,13 +30,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@scaffald/ui": "workspace:*",
     "@scf/supabase": "workspace:*",
     "@supabase/supabase-js": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@trpc/client": "catalog:",
     "@trpc/react-query": "catalog:",
     "@trpc/server": "catalog:",
-    "@unicornlove/beyond-ui": "workspace:*",
     "@unicornlove/compliance": "workspace:*",
     "@unicornlove/forsured": "workspace:*",
     "@unicornlove/insurance": "workspace:*",
@@ -53,18 +53,18 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@playwright/test": "^1.56.1",
+    "@playwright/test": "^1.58.1",
     "@testing-library/jest-dom": "^6.4.2",
-    "@testing-library/react": "^14.2.1",
+    "@testing-library/react": "^14.3.1",
     "@testing-library/user-event": "^14.5.2",
     "@types/react": "catalog:",
     "@types/react-dom": "^18.3.0",
     "@types/uuid": "^10.0.0",
-    "@vitejs/plugin-react": "^4.3.1",
+    "@vitejs/plugin-react": "^4.7.0",
     "dotenv": "^16.6.1",
     "jsdom": "^24.0.0",
     "typescript": "catalog:",
     "vite": "^5.4.21",
-    "vitest": "^2.0.0"
+    "vitest": "^2.1.9"
   }
 }

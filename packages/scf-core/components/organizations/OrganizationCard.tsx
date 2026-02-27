@@ -1,14 +1,14 @@
-import { Building, MapPin, Users } from '@tamagui/lucide-icons'
+import { Building, MapPin, Users } from 'lucide-react-native'
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from '@unicornlove/ui'
-import { Text, XStack } from '@unicornlove/ui'
+import type { ComponentRef } from 'react'
+import { Text, Row } from '@scaffald/ui'
 import {
   CardActions,
   CardHeader,
   CardMetadata,
   SelectableCard,
   type MetadataItem,
-} from '@unicornlove/ui'
+} from '@scaffald/ui'
 
 /**
  * Organization address data
@@ -48,14 +48,14 @@ export interface OrganizationCardProps {
  *   industry="Technology"
  *   address={{ city: "San Francisco", state: "CA" }}
  *   employeeCount={500}
- *   isSelected={selected === "org-1"}
+ *   isSelected={selected === "org-1"
  *   onSelect={setSelected}
  *   onViewDetails={() => router.push(ROUTES.DASHBOARD.ORGANIZATIONS.path)}
  * />
  * ```
  */
 export const OrganizationCard = memo(
-  forwardRef<TamaguiElement, OrganizationCardProps>(
+  forwardRef<ComponentRef<typeof SelectableCard>, OrganizationCardProps>(
     (
       { id, name, industry, address, employeeCount, isSelected = false, onSelect, onViewDetails },
       forwardedRef
@@ -67,7 +67,7 @@ export const OrganizationCard = memo(
         const location = [address.city, address.state].filter(Boolean).join(', ')
         metadataItems.push({
           key: 'location',
-          icon: <MapPin size={14} color={isSelected ? '$color1' : '$color10'} />,
+          icon: <MapPin size="md" color={isSelected ? '$color1' : '$color10'} />,
           label: location,
         })
       }
@@ -75,7 +75,7 @@ export const OrganizationCard = memo(
       if (employeeCount) {
         metadataItems.push({
           key: 'employees',
-          icon: <Users size={14} color={isSelected ? '$color1' : '$color10'} />,
+          icon: <Users size="md" color={isSelected ? '$color1' : '$color10'} />,
           label: `${employeeCount} employees`,
         })
       }
@@ -96,26 +96,24 @@ export const OrganizationCard = memo(
           {/* Header with building icon */}
           <CardHeader
             title={name}
-            isSelected={isSelected}
-            icon={<Building size={20} color={isSelected ? '$color1' : '$blue11'} />}
+            action={<Building size={20} color={isSelected ? '$color1' : '$blue11'} />}
+            children={undefined}
           />
 
           {/* Industry badge */}
           {industry && (
-            <XStack alignItems="center" gap="$2">
-              <XStack
-                alignItems="center"
-                gap="$1"
+            <Row align="center" gap={8}>
+              <Row
+                align="center"
+                gap={4}
                 backgroundColor={isSelected ? '$blue3' : '$blue3'}
-                borderRadius="$4"
-                paddingHorizontal="$2"
-                paddingVertical="$1"
+                borderRadius={16}
+                paddingHorizontal={8}
+                paddingVertical={4}
               >
-                <Text color={isSelected ? '$color1' : '$blue11'} fontWeight="600" fontSize="$2">
-                  {industry}
-                </Text>
-              </XStack>
-            </XStack>
+                <Text color={isSelected ? '$color1' : '$blue11'}>{industry}</Text>
+              </Row>
+            </Row>
           )}
 
           {/* Metadata */}
@@ -128,12 +126,13 @@ export const OrganizationCard = memo(
             <CardActions
               actions={[
                 {
+                  key: 'view',
                   label: 'View Organization',
                   onPress: onViewDetails,
-                  variant: 'primary',
+                  color: 'primary',
+                  variant: 'filled',
                 },
               ]}
-              isSelected={isSelected}
             />
           )}
         </SelectableCard>

@@ -1,15 +1,8 @@
-import { ToastViewport as ToastViewportOg } from '@tamagui/toast'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { ToastContainer } from '@scaffald/ui'
 import type { ToastViewportProps } from './ToastViewport'
 
-export const ToastViewport = ({ noSafeArea }: ToastViewportProps) => {
-  const { top, right, left } = useSafeAreaInsets()
-  return (
-    <ToastViewportOg
-      top={noSafeArea ? 0 : top + 5}
-      left={noSafeArea ? 0 : left + 5}
-      right={noSafeArea ? 0 : right + 5}
-      style={{ pointerEvents: 'none' }}
-    />
-  )
+export const ToastViewport = ({ noSafeArea: _noSafeArea }: ToastViewportProps) => {
+  // beyond-ui's ToastContainer handles safe area insets internally
+  // _noSafeArea prop is maintained for API compatibility but not used
+  return <ToastContainer />
 }

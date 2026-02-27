@@ -1,6 +1,6 @@
 /**
  * Pending Invitations Card
- * REQ-128: Flexible Invitation System - Task 8
+ * Flexible Invitation System - Task 8
  *
  * Dashboard component that displays pending invitations for the current user.
  * Shows inviter info, personal messages, and accept/decline actions.
@@ -8,7 +8,7 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Stack, Row, Text, Button, Card, H3, Spinner } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Card, H3, Spinner } from '@scaffald/ui'
 import { Mail, UserPlus, Check, X, ChevronRight, AlertTriangle } from 'lucide-react'
 import { trpc } from '../../lib/trpc'
 

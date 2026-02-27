@@ -1,5 +1,5 @@
 /**
- * Office Jobs Kanban Board E2E Tests - REQ-216
+ * Office Jobs Kanban Board E2E Tests -
  *
  * Tests for the jobs Kanban board including:
  * - Board structure (columns, cards, counts)

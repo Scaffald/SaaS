@@ -1,7 +1,7 @@
 /**
  * CCPA Compliance Module - Main Entry Point
- * REQ-131: CCPA Compliance Implementation (USA-Only Scope)
- * REQ-3: CCPA Compliance with Scaffald Integration
+ * CCPA Compliance Implementation (USA-Only Scope)
+ * CCPA Compliance with Scaffald Integration
  *
  * This module implements CCPA compliance features including:
  * - Data export (Right to Know)
@@ -13,31 +13,31 @@
  */
 
 // Export types
-export * from './types';
+export * from "./types";
 
 // Export services
-export * from './dataExport';
-export * from './dataDeletion';
-export * from './consent';
-export * from './breachNotification';
+export * from "./dataExport";
+export * from "./dataDeletion";
+export * from "./consent";
+export * from "./breachNotification";
 
-// Export Forsured-specific CCPA integration (REQ-3)
-export * from './forsured-data-collector';
-export * from './forsured-deletion-handler';
+// Export Forsured-specific CCPA integration
+export * from "./forsured-data-collector";
+export * from "./forsured-deletion-handler";
 
 // Export CA Attorney General reporting (TASK-15)
-export * from './ca-ag-reporting';
+export * from "./ca-ag-reporting";
 
 // Export CCPA Cookie Consent integration (TASK-21)
-export * from './useCCPACookieConsent';
+export * from "./useCCPACookieConsent";
 
 // Re-export initialization functions
-export { initializeDataExportService } from './dataExport';
-export { initializeDataDeletionService } from './dataDeletion';
-export { initializeConsentService } from './consent';
-export { initializeBreachNotificationService } from './breachNotification';
-export { initializeForsuredDataCollector } from './forsured-data-collector';
-export { initializeForsuredDeletionHandler } from './forsured-deletion-handler';
+export { initializeDataExportService } from "./dataExport";
+export { initializeDataDeletionService } from "./dataDeletion";
+export { initializeConsentService } from "./consent";
+export { initializeBreachNotificationService } from "./breachNotification";
+export { initializeForsuredDataCollector } from "./forsured-data-collector";
+export { initializeForsuredDeletionHandler } from "./forsured-deletion-handler";
 
 /**
  * Initialize all CCPA services with Supabase client
@@ -46,12 +46,18 @@ export { initializeForsuredDeletionHandler } from './forsured-deletion-handler';
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function initializeCCPAServices(supabaseClient: any) {
-  const { initializeDataExportService } = require('./dataExport');
-  const { initializeDataDeletionService } = require('./dataDeletion');
-  const { initializeConsentService } = require('./consent');
-  const { initializeBreachNotificationService } = require('./breachNotification');
-  const { initializeForsuredDataCollector } = require('./forsured-data-collector');
-  const { initializeForsuredDeletionHandler } = require('./forsured-deletion-handler');
+  const { initializeDataExportService } = require("./dataExport");
+  const { initializeDataDeletionService } = require("./dataDeletion");
+  const { initializeConsentService } = require("./consent");
+  const { initializeBreachNotificationService } = require(
+    "./breachNotification",
+  );
+  const { initializeForsuredDataCollector } = require(
+    "./forsured-data-collector",
+  );
+  const { initializeForsuredDeletionHandler } = require(
+    "./forsured-deletion-handler",
+  );
 
   initializeDataExportService(supabaseClient);
   initializeDataDeletionService(supabaseClient);

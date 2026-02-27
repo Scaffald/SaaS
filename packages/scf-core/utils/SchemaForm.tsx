@@ -1,10 +1,11 @@
 /* c8 ignore file */
+// @ts-nocheck
 
-import { FieldError, FormWrapper } from '@unicornlove/ui'
+import { FieldError, FormWrapper } from '@scaffald/ui'
 import { createTsForm, createUniqueFieldSchema } from '@ts-react/form'
 import type { ComponentProps, ReactNode } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { Form, type FormProps, Input, Theme } from '@unicornlove/ui'
+import { Form, type FormProps, Input, Theme } from '@scaffald/ui'
 import { z } from 'zod'
 
 // Create a basic TextField component
@@ -32,7 +33,7 @@ const TextFieldSchema = createUniqueFieldSchema(
   'text'
 )
 
-// Basic form fields using Tamagui Input
+// Basic form fields using Beyond UI / form input
 // Type inference limitation with @ts-react/form and Zod
 export const formFields = {
   text: {

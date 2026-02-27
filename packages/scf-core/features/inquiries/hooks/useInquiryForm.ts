@@ -1,7 +1,10 @@
-import { api } from '@scf/core/utils/api'
 import { type InquiryCreateInput, inquiryCreateSchema } from '@scf/schemas'
+import {
+  useCreateInquiryMutation,
+  useSendInquiryMutation,
+} from '@scf/core/utils/inquiries-sdk-hooks'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@scaffald/ui'
 import { useCallback, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 
@@ -12,8 +15,8 @@ export interface UseInquiryFormOptions {
 
 export interface UseInquiryFormReturn {
   form: ReturnType<typeof useForm<InquiryCreateInput>>
-  createMutation: ReturnType<typeof api.inquiries.create.useMutation>
-  sendMutation: ReturnType<typeof api.inquiries.send.useMutation>
+  createMutation: ReturnType<typeof useCreateInquiryMutation>
+  sendMutation: ReturnType<typeof useSendInquiryMutation>
   isSubmitting: boolean
   handleSubmit: (data: InquiryCreateInput) => Promise<void>
   handleSaveDraft: (data: InquiryCreateInput) => Promise<void>
@@ -24,7 +27,7 @@ export function useInquiryForm({
   applicationId,
   onSuccess,
 }: UseInquiryFormOptions): UseInquiryFormReturn {
-  const toast = useToastController()
+  const toast = useToast()
 
   const form = useForm<InquiryCreateInput>({
     resolver: zodResolver(inquiryCreateSchema),
@@ -61,28 +64,34 @@ export function useInquiryForm({
     ),
   })
 
-  const createMutation = api.inquiries.create.useMutation({
+  const createMutation = useCreateInquiryMutation({
     onSuccess: () => {
-      toast.show('Inquiry created', {
+      toast.show({
+        title: 'Inquiry created',
         message: 'Your inquiry has been saved as a draft.',
       })
     },
-    onError: (error: { message?: string }) => {
-      toast.show('Failed to create inquiry', {
+    onError: (error) => {
+      toast.show({
+        title: 'Failed to create inquiry',
         message: error.message ?? 'Please try again.',
+        variant: 'error',
       })
     },
   })
 
-  const sendMutation = api.inquiries.send.useMutation({
+  const sendMutation = useSendInquiryMutation({
     onSuccess: () => {
-      toast.show('Inquiry sent', {
+      toast.show({
+        title: 'Inquiry sent',
         message: 'The inquiry has been sent to the candidate.',
       })
     },
-    onError: (error: { message?: string }) => {
-      toast.show('Failed to send inquiry', {
+    onError: (error) => {
+      toast.show({
+        title: 'Failed to send inquiry',
         message: error.message ?? 'Please try again.',
+        variant: 'error',
       })
     },
   })
@@ -90,7 +99,7 @@ export function useInquiryForm({
   const handleSend = useCallback(
     async (inquiryId: string) => {
       try {
-        await sendMutation.mutateAsync({ inquiryId })
+        await sendMutation.mutateAsync(inquiryId)
         onSuccess?.(inquiryId)
       } catch (error) {
         console.error('Failed to send inquiry:', error)

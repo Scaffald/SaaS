@@ -1,30 +1,26 @@
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
-import { AlertTriangle } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-import type { inferRouterOutputs } from '@trpc/server'
+import { useAdminResolveDisputeMutation } from '@scf/core/utils/background-checks-sdk-hooks'
+import type { AdminDisputeSummary } from '@scaffald/sdk'
+import { AlertTriangle } from 'lucide-react-native'
+import { useToast } from '@scaffald/ui'
 import { useEffect, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@scaffald/ui'
+import { DialogCompound as Dialog } from '@scf/core/components/ui/DialogCompound'
 import {
   Button,
-  Dialog,
   Label,
   Separator,
   Spinner,
   Text,
   TextArea,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@scaffald/ui'
 
 const RESOLUTION_STATUSES = [
   { value: 'resolved', label: 'Resolved' },
   { value: 'upheld', label: 'Upheld' },
   { value: 'cancelled', label: 'Cancelled' },
 ] as const
-
-type RouterOutputs = inferRouterOutputs<AppRouter>
-type AdminDisputeSummary = RouterOutputs['backgroundChecks']['adminListDisputes'][number]
 
 interface AdminDisputeResolutionDialogProps {
   dispute: AdminDisputeSummary | null
@@ -46,8 +42,7 @@ export function AdminDisputeResolutionDialog({
   onOpenChange,
   onResolved,
 }: AdminDisputeResolutionDialogProps) {
-  const toast = useToastController()
-  const utils = api.useUtils()
+  const toast = useToast()
 
   const [resolutionStatus, setResolutionStatus] =
     useState<(typeof RESOLUTION_STATUSES)[number]['value']>('resolved')
@@ -61,21 +56,19 @@ export function AdminDisputeResolutionDialog({
     }
   }, [dispute, open])
 
-  const mutation = api.backgroundChecks.adminResolveDispute.useMutation({
-    onSuccess: async () => {
-      toast.show('Dispute resolved', {
+  const mutation = useAdminResolveDisputeMutation({
+    onSuccess: () => {
+      toast.show({
+        title: 'Dispute resolved',
         message: 'The worker and requester will receive notifications shortly.',
       })
-      await Promise.all([
-        utils.backgroundChecks.adminListDisputes.invalidate(),
-        utils.backgroundChecks.adminListChecks.invalidate(),
-      ])
       onResolved()
     },
     onError: (error: unknown) => {
-      toast.show('Unable to resolve dispute', {
+      toast.show({
+        title: 'Unable to resolve dispute',
         message: error instanceof Error ? error.message : 'Please try again shortly.',
-        type: 'error',
+        variant: 'error',
       })
     },
     onSettled: () => {
@@ -87,7 +80,7 @@ export function AdminDisputeResolutionDialog({
     if (!dispute || isSubmitting) return
     setIsSubmitting(true)
     mutation.mutate({
-      dispute_id: dispute.id,
+      disputeId: dispute.id,
       status: resolutionStatus,
       resolution: resolutionNotes.trim() ? resolutionNotes.trim() : null,
       resolution_notes: resolutionNotes.trim() ? resolutionNotes.trim() : null,
@@ -105,85 +98,61 @@ export function AdminDisputeResolutionDialog({
       <Dialog.Portal>
         <Dialog.Overlay
           key="overlay"
-          animation="quick"
-          opacity={0.4}
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
+          style={{ opacity: 0.4 }}
         />
 
         <Dialog.Content
           key="content"
-          bordered
-          elevate
-          animation="quick"
-          enterStyle={{ opacity: 0, scale: 0.95 }}
-          exitStyle={{ opacity: 0, scale: 0.95 }}
           style={{ width: '90%', maxWidth: 640, maxHeight: '85%' }}
         >
-          <YStack gap="$4">
-            <XStack justifyContent="space-between" alignItems="center">
-              <Dialog.Title fontSize="$6" fontWeight="700">
-                Resolve dispute
-              </Dialog.Title>
+          <Stack gap={16}>
+            <Row justify="space-between" align="center">
+              <Dialog.Title>Resolve dispute</Dialog.Title>
               <Dialog.Close asChild>
-                <Button size="$2" variant="outlined" disabled={isSubmitting}>
+                <Button size="sm" variant="outline" disabled={isSubmitting}>
                   Close
                 </Button>
               </Dialog.Close>
-            </XStack>
+            </Row>
 
             {dispute ? (
-              <YStack gap="$3">
-                <YStack
-                  gap="$2"
-                  padding="$3"
-                  backgroundColor="$color2"
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  borderRadius="$4"
+              <Stack gap={12}>
+                <Stack
+                  gap={8}
+                  style={{ padding: 8, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 16 }}
                 >
-                  <XStack gap="$2" alignItems="center">
-                    <AlertTriangle size={18} color="$yellow10" />
-                    <Text fontSize="$3" fontWeight="600" color="$color12">
-                      {workerName}
-                    </Text>
-                  </XStack>
-                  <Text fontSize="$2" color="$color10">
-                    Submitted {formatDateTime(dispute.created_at)}
-                  </Text>
-                  <Text fontSize="$2" color="$color10">
-                    Current status: {dispute.status}
-                  </Text>
-                </YStack>
+                  <Row gap={8} align="center">
+                    <AlertTriangle size={18} color="#b45309" />
+                    <Text style={{ color: '#414e62' }}>{workerName}</Text>
+                  </Row>
+                  <Text style={{ color: '#414e62' }}>Submitted {formatDateTime(dispute.created_at)}</Text>
+                  <Text style={{ color: '#414e62' }}>Current status: {dispute.status}</Text>
+                </Stack>
 
-                <YStack gap="$2">
-                  <Text fontSize="$3" fontWeight="600" color="$color12">
-                    Dispute reason
-                  </Text>
+                <Stack gap={8}>
+                  <Text style={{ color: '#414e62' }}>Dispute reason</Text>
                   <TextArea
                     value={dispute.dispute_reason ?? ''}
                     editable={false}
                     rows={3}
-                    backgroundColor="$color2"
+                    style={{ backgroundColor: '#f2f4f7' }}
                   />
-                </YStack>
+                </Stack>
 
-                <YStack gap="$2">
-                  <Text fontSize="$3" fontWeight="600" color="$color12">
-                    Dispute details
-                  </Text>
+                <Stack gap={8}>
+                  <Text style={{ color: '#414e62' }}>Dispute details</Text>
                   <TextArea
                     value={dispute.dispute_details ?? ''}
                     editable={false}
                     rows={5}
-                    backgroundColor="$color2"
+                    style={{ backgroundColor: '#f2f4f7' }}
                   />
-                </YStack>
+                </Stack>
 
                 <Separator />
 
-                <YStack gap="$3">
-                  <YStack gap="$1">
+                <Stack gap={12}>
+                  <Stack gap={4}>
                     <Label htmlFor="dispute-resolution-status">Resolution</Label>
                     <ResponsiveSelect
                       value={resolutionStatus}
@@ -197,9 +166,9 @@ export function AdminDisputeResolutionDialog({
                         label: option.label,
                       }))}
                     />
-                  </YStack>
+                  </Stack>
 
-                  <YStack gap="$1">
+                  <Stack gap={4}>
                     <Label htmlFor="dispute-resolution-notes">Resolution notes</Label>
                     <TextArea
                       id="dispute-resolution-notes"
@@ -208,43 +177,41 @@ export function AdminDisputeResolutionDialog({
                       value={resolutionNotes}
                       onChangeText={setResolutionNotes}
                     />
-                  </YStack>
-                </YStack>
-              </YStack>
+                  </Stack>
+                </Stack>
+              </Stack>
             ) : (
-              <YStack gap="$3" alignItems="center" justifyContent="center" paddingVertical="$6">
-                <Spinner size="large" />
-                <Text fontSize="$3" color="$color10">
-                  Loading dispute…
-                </Text>
-              </YStack>
+              <Stack gap={12} align="center" justify="center" style={{ paddingVertical: 24 }}>
+                <Spinner size="lg" />
+                <Text style={{ color: '#414e62' }}>Loading dispute…</Text>
+              </Stack>
             )}
 
             <Separator />
 
-            <XStack gap="$2" justifyContent="flex-end">
+            <Row gap={8} justify="flex-end">
               <Dialog.Close asChild>
-                <Button size="$3" variant="outlined" disabled={isSubmitting}>
+                <Button size="sm" variant="outline" disabled={isSubmitting}>
                   Cancel
                 </Button>
               </Dialog.Close>
               <Button
-                size="$3"
-                theme="blue"
+                size="sm"
+                color="primary"
                 onPress={handleResolve}
                 disabled={!dispute || isSubmitting}
               >
                 {isSubmitting ? (
-                  <XStack gap="$2" alignItems="center">
-                    <Spinner size="small" color="$color1" />
-                    <Text color="$color1">Resolving…</Text>
-                  </XStack>
+                  <Row gap={8} align="center">
+                    <Spinner size="sm" color="gray" />
+                    <Text style={{ color: '#414e62' }}>Resolving…</Text>
+                  </Row>
                 ) : (
                   'Resolve dispute'
                 )}
               </Button>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog>

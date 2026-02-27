@@ -1,5 +1,5 @@
-import { Button, Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
-import { Check, X } from '@tamagui/lucide-icons'
+import { Button, Text, ToggleSwitch, Row, Stack } from '@scaffald/ui'
+import { Check, X } from 'lucide-react-native'
 import { useState } from 'react'
 
 interface CapabilityQuestionInputProps {
@@ -21,37 +21,33 @@ export function CapabilityQuestionInput({
   }
 
   return (
-    <YStack gap="$2">
-      <Text fontSize="$3" fontWeight="600">
-        {question}
-      </Text>
-      <XStack gap="$2" alignItems="center">
+    <Stack gap={8}>
+      <Text>{question}</Text>
+      <Row gap={8} align="center">
         <Button
-          flex={1}
-          theme={localValue === true ? 'success' : undefined}
-          variant={localValue === true ? undefined : 'outlined'}
+          style={{ flex: 1 }}
+          color={localValue === true ? 'primary' : undefined}
+          variant={localValue === true ? undefined : 'outline'}
           onPress={() => handleValueChange(true)}
-          icon={localValue === true ? Check : undefined}
+          iconStart={localValue === true ? Check : undefined}
         >
           Yes
         </Button>
         <Button
-          flex={1}
-          theme={localValue === false ? 'error' : undefined}
-          variant={localValue === false ? undefined : 'outlined'}
+          style={{ flex: 1 }}
+          color={localValue === false ? 'error' : undefined}
+          variant={localValue === false ? undefined : 'outline'}
           onPress={() => handleValueChange(false)}
-          icon={localValue === false ? X : undefined}
+          iconStart={localValue === false ? X : undefined}
         >
           No
         </Button>
-      </XStack>
+      </Row>
       {/* Alternative: Toggle Switch */}
-      <XStack justifyContent="space-between" alignItems="center" marginTop="$2">
-        <Text fontSize="$3" color="$color11">
-          Toggle answer
-        </Text>
-        <ToggleSwitch checked={localValue ?? false} onCheckedChange={handleValueChange} />
-      </XStack>
-    </YStack>
+      <Row justify="space-between" align="center" marginTop={8}>
+        <Text color="$gray11">Toggle answer</Text>
+        <ToggleSwitch checked={localValue ?? false} onChange={handleValueChange} />
+      </Row>
+    </Stack>
   )
 }

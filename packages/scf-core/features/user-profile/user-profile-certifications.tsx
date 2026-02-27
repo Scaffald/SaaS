@@ -1,7 +1,7 @@
-import { BadgeCheck, Calendar } from '@tamagui/lucide-icons'
-import { Card, Text, XStack, YStack } from '@unicornlove/ui'
+import { BadgeCheck, Calendar } from 'lucide-react-native'
+import { Card, Text, Row, Stack } from '@scaffald/ui'
 
-interface Certification {
+export interface UserProfileCertification {
   id: string
   name: string
   issuing_organization: string | null
@@ -10,7 +10,7 @@ interface Certification {
 }
 
 interface UserProfileCertificationsProps {
-  certifications: Certification[]
+  certifications: UserProfileCertification[]
 }
 
 export function UserProfileCertifications({ certifications }: UserProfileCertificationsProps) {
@@ -24,41 +24,35 @@ export function UserProfileCertifications({ certifications }: UserProfileCertifi
 
   return (
     <Card elevate bordered>
-      <YStack gap="$4" padding="$5">
-        <XStack gap="$2" alignItems="center">
+      <Stack gap={16} padding="lg">
+        <Row gap={8} align="center">
           <BadgeCheck size={24} color="$blue10" />
-          <Text fontSize="$7" fontWeight="700" color="$color12">
-            Certifications
-          </Text>
-        </XStack>
+          <Text color="$gray11">Certifications</Text>
+        </Row>
 
-        <YStack gap="$3">
+        <Stack gap={12}>
           {certifications.map((cert) => (
             <Card key={cert.id} bordered backgroundColor="$color2">
-              <YStack gap="$2" padding="$4">
-                <Text fontSize="$6" fontWeight="700" color="$color12">
-                  {cert.name}
-                </Text>
+              <Stack gap={8} padding="md">
+                <Text color="$gray11">{cert.name}</Text>
                 {cert.issuing_organization && (
-                  <Text fontSize="$4" color="$color11" fontWeight="600">
-                    {cert.issuing_organization}
-                  </Text>
+                  <Text color="$gray11">{cert.issuing_organization}</Text>
                 )}
                 {(cert.issue_date || cert.expiration_date) && (
-                  <XStack gap="$2" alignItems="center">
-                    <Calendar size={16} color="$color10" />
-                    <Text fontSize="$3" color="$color10">
+                  <Row gap={8} align="center">
+                    <Calendar size="md" color="$gray11" />
+                    <Text color="$gray11">
                       {cert.issue_date && `Issued ${formatDate(cert.issue_date)}`}
                       {cert.issue_date && cert.expiration_date && ' • '}
                       {cert.expiration_date && `Expires ${formatDate(cert.expiration_date)}`}
                     </Text>
-                  </XStack>
+                  </Row>
                 )}
-              </YStack>
+              </Stack>
             </Card>
           ))}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </Card>
   )
 }

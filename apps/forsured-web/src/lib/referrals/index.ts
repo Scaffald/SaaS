@@ -1,18 +1,18 @@
 /**
  * Referral Tracking Utilities
  *
- * REQ-128: Flexible Invitation System
+ * Referrals module
  *
  * Exports referral tracking functions and React hooks.
  */
 
 export {
-  captureReferral,
-  getStoredReferral,
-  getReferralFromCookie,
-  clearReferral,
   attributeReferralOnSignup,
+  captureReferral,
+  clearReferral,
+  getReferralFromCookie,
   getReferralStats,
-} from './referralTracking'
+  getStoredReferral,
+} from "./referralTracking";
 
-export { useReferral, useReferralCapture, useHasReferral } from './useReferral'
+export { useHasReferral, useReferral, useReferralCapture } from "./useReferral";

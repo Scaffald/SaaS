@@ -1,6 +1,6 @@
 /**
  * Vitest configuration for forsured-web
- * Standalone config - uses mocks for @unicornlove/ui to avoid react-native deps
+ * Standalone config - uses mocks for @scaffald/ui to avoid react-native deps
  */
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -48,16 +48,14 @@ export default defineConfig({
   ],
   // Disable SSR for tests - tests run in jsdom, not SSR environment
   ssr: {
-    noExternal: ['@unicornlove/beyond-ui'],
+    noExternal: ['@scaffald/ui'],
   },
   resolve: {
     alias: {
       // Local app alias
       '@': resolve(packageRoot, 'src'),
-      // Use mock for @unicornlove/ui to avoid react-native dependency chain
-      '@unicornlove/ui': resolve(packageRoot, 'src/test/__mocks__/@unicornlove/ui.tsx'),
-      // Use mock for @unicornlove/beyond-ui to avoid react-native dependency chain
-      '@unicornlove/beyond-ui': resolve(packageRoot, 'src/test/__mocks__/@unicornlove/beyond-ui.tsx'),
+      // Use mock for @scaffald/ui to avoid react-native dependency chain
+      '@scaffald/ui': resolve(packageRoot, 'src/test/__mocks__/@scaffald/ui.tsx'),
       // Shim expo-router (forsured-web uses react-router-dom)
       'expo-router': resolve(packageRoot, 'src/shims/expo-router-shim.ts'),
       // Point to source for forsured packages (not yet built)
@@ -81,7 +79,7 @@ export default defineConfig({
     // Configure dependency handling for tests
     server: {
       deps: {
-        inline: ['@unicornlove/beyond-ui'],
+        inline: ['@scaffald/ui'],
       },
     },
     setupFiles: [resolve(packageRoot, 'src/test/setup.ts')],

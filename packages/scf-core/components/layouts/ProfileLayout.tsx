@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react'
-import { ScrollView, XStack, YStack } from '@unicornlove/ui'
-import { Breadcrumb, type BreadcrumbItem } from '@unicornlove/ui'
+import { ScrollView, StyleSheet } from 'react-native'
+import { Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
+import { Breadcrumb, type BreadcrumbItemData } from '@scaffald/ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 import { ProfileTabs } from '../navigation/ProfileTabs'
 
@@ -12,7 +14,7 @@ type ProfileLayoutProps = {
   /** Whether to show breadcrumb navigation (default: true) */
   showBreadcrumb?: boolean
   /** Manual breadcrumb items to override auto-generation */
-  breadcrumbItems?: BreadcrumbItem[]
+  breadcrumbItems?: BreadcrumbItemData[]
   /** Whether to auto-generate breadcrumbs from route (default: true) */
   autoGenerateBreadcrumbs?: boolean
 }
@@ -34,54 +36,36 @@ export const ProfileLayout = ({
   // Determine which breadcrumbs to display
   const displayBreadcrumbs = breadcrumbItems || breadcrumbs
 
+  // Calculate current index (last item is always active)
+  const currentIndex = displayBreadcrumbs.length - 1
+
   return (
-    <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
-      <YStack gap="$3" paddingTop="$3" paddingBottom="$5">
+    <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+      <Stack gap={12} paddingTop="sm" paddingBottom="lg">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
-          <XStack paddingHorizontal="$2" paddingTop="$3" $md={{ paddingHorizontal: '$7' }}>
-            <Breadcrumb items={displayBreadcrumbs} />
-          </XStack>
+          <Row paddingHorizontal="xs" paddingTop="sm">
+            <Breadcrumb items={displayBreadcrumbs} currentIndex={currentIndex} />
+          </Row>
         )}
 
         {/* Tab Navigation - positioned at top */}
-        {showTabs && <ProfileTabs marginHorizontal="$7" marginTop="$3" />}
+        {showTabs && (
+          <Stack marginHorizontal={28} marginTop={12}>
+            <ProfileTabs />
+          </Stack>
+        )}
 
         {/* Content Area - Responsive two-column layout */}
-        <XStack
-          gap="$3"
-          paddingHorizontal="$3"
-          paddingTop="$3"
-          flexDirection="column"
-          $md={{
-            gap: '$8',
-            paddingHorizontal: '$7',
-            paddingTop: '$3',
-            flexDirection: 'row',
-          }}
-        >
-          <YStack
-            width="100%"
-            $md={{
-              width: undefined,
-              flex: 3,
-              minWidth: 300,
-            }}
-          >
-            {leftContent}
-          </YStack>
-          <YStack
-            width="100%"
-            $md={{
-              width: undefined,
-              flex: 2,
-              minWidth: 300,
-            }}
-          >
-            {rightContent}
-          </YStack>
-        </XStack>
-      </YStack>
+        <Row gap={12} paddingHorizontal="sm" paddingTop="sm">
+          <Stack width="100%">{leftContent}</Stack>
+          <Stack width="100%">{rightContent}</Stack>
+        </Row>
+      </Stack>
     </ScrollView>
   )
 }
+
+const styles = StyleSheet.create({
+  scroll: { flex: 1, backgroundColor: colors.gray[50] },
+})

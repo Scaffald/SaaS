@@ -1,7 +1,7 @@
 /**
  * Audit Logging System
  *
- * REQ-130: Comprehensive Audit Logging with 7-Year Retention
+ * Comprehensive Audit Logging with 7-Year Retention
  *
  * This module provides a complete audit logging system for ForSured with:
  * - WORM (Write Once Read Many) implementation

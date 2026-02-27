@@ -1,21 +1,27 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
-import type { WelcomeSlideCreate, WelcomeSlideUpdate } from '@scf/schemas'
+import {
+  useWelcomeSlide,
+  useUpdateWelcomeSlideMutation,
+} from '@scf/core/utils/cms-sdk-hooks'
+import type { UpdateWelcomeSlideParams } from '@scaffald/sdk'
 import { OfficeLayout } from '@scf/core/components/layouts'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Spinner, Text, YStack } from '@unicornlove/ui'
+import { Spinner, Text, Stack } from '@scaffald/ui'
 import { CMSSlideForm } from './cms-slide-form'
 
 export function OfficeCMSEdit() {
   const router = useRouter()
   const { id } = useLocalSearchParams<{ id: string }>()
 
-  const { data, isLoading } = api.cms.getWelcomeSlide.useQuery({ id: id || '' })
-  const updateSlide = api.cms.updateWelcomeSlide.useMutation()
+  const { data, isLoading } = useWelcomeSlide(id || undefined)
+  const updateSlide = useUpdateWelcomeSlideMutation()
 
-  const handleSubmit = async (formData: WelcomeSlideCreate | WelcomeSlideUpdate) => {
-    // In edit mode, we always have an id, so this is always WelcomeSlideUpdate
-    await updateSlide.mutateAsync(formData as WelcomeSlideUpdate)
+  const handleSubmit = async (formData: UpdateWelcomeSlideParams | Omit<UpdateWelcomeSlideParams, 'id'>) => {
+    const payload: UpdateWelcomeSlideParams =
+      'id' in formData
+        ? formData
+        : { ...formData, id: id as string }
+    await updateSlide.mutateAsync(payload)
     router.push(ROUTES.OFFICE.CMS.WELCOME.path)
   }
 
@@ -24,9 +30,9 @@ export function OfficeCMSEdit() {
       <OfficeLayout
         showBreadcrumb
         leftContent={
-          <YStack alignItems="center" justifyContent="center" flex={1}>
-            <Spinner size="large" />
-          </YStack>
+          <Stack align="center" justify="center" flex={1}>
+            <Spinner size="lg" />
+          </Stack>
         }
         rightContent={null}
       />
@@ -38,9 +44,9 @@ export function OfficeCMSEdit() {
       <OfficeLayout
         showBreadcrumb
         leftContent={
-          <YStack gap="$4">
+          <Stack gap={16}>
             <Text>Slide not found</Text>
-          </YStack>
+          </Stack>
         }
         rightContent={null}
       />
@@ -51,24 +57,22 @@ export function OfficeCMSEdit() {
     <OfficeLayout
       showBreadcrumb
       leftContent={
-        <YStack gap="$4">
+        <Stack gap={16}>
           <CMSSlideForm
             initialData={data.slide}
             onSubmit={handleSubmit}
             isLoading={updateSlide.isPending}
           />
-        </YStack>
+        </Stack>
       }
       rightContent={
-        <YStack gap="$4">
-          <Text fontSize="$5" fontWeight="bold">
-            Edit Slide
-          </Text>
+        <Stack gap={16}>
+          <Text>Edit Slide</Text>
           <Text>
             Update the slide information. Changes will be visible to users immediately if the slide
             is active.
           </Text>
-        </YStack>
+        </Stack>
       }
     />
   )

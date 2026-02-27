@@ -1,4 +1,4 @@
-import { ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
+import { ScrollView, Text, Row, Stack } from '@scaffald/ui'
 
 import type { ResolvedWorkLogPhoto, WorkLogPhotoType } from '../types/photos'
 import { PhotoCard } from './PhotoCard'
@@ -22,32 +22,28 @@ export function PhotoGallery({
 }: PhotoGalleryProps) {
   if (!photos.length) {
     return (
-      <YStack
+      <Stack
         borderWidth={1}
         borderColor="$borderColor"
-        borderRadius="$4"
-        paddingHorizontal="$4"
-        paddingVertical="$5"
+        borderRadius={16}
+        paddingHorizontal={16}
+        paddingVertical={20}
         backgroundColor="$color2"
-        gap="$2"
+        gap={8}
       >
-        <Text fontWeight="600" fontSize="$4">
-          Photo Gallery
-        </Text>
-        <Text color="$color11">No photos have been uploaded yet.</Text>
-      </YStack>
+        <Text>Photo Gallery</Text>
+        <Text color="$gray11">No photos have been uploaded yet.</Text>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$3">
-      <Text fontWeight="600" fontSize="$4">
-        Photo Gallery
-      </Text>
+    <Stack gap={12}>
+      <Text>Photo Gallery</Text>
       <ScrollView horizontal={false} showsVerticalScrollIndicator>
-        <XStack gap="$3" flexWrap="wrap">
+        <Row gap={12} wrap>
           {photos.map((photo) => (
-            <YStack key={photo.id} width="100%">
+            <Stack key={photo.id} width="100%">
               <PhotoCard
                 photo={photo}
                 disabled={disabled}
@@ -56,10 +52,10 @@ export function PhotoGallery({
                 onToggleVisibility={onToggleVisibility}
                 onDelete={onDelete}
               />
-            </YStack>
+            </Stack>
           ))}
-        </XStack>
+        </Row>
       </ScrollView>
-    </YStack>
+    </Stack>
   )
 }

@@ -2,7 +2,7 @@
  * ContractorDashboard - Contractor dashboard page using Beyond UI
  */
 import React from 'react';
-import { Stack, Row, Text, Card, Chip } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card, Chip } from '@scaffald/ui';
 import { LayoutDashboard, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import { EmptyState } from '../../ui/EmptyState';
 import PageTransition from '../../components/Common/PageTransition';

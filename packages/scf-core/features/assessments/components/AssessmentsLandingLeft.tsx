@@ -1,6 +1,6 @@
 import type { RouteConfig } from '@scf/core/constants/routes'
 import { ROUTES } from '@scf/core/constants/routes'
-import { Button, DashboardWidget, spacing, Text, YStack } from '@unicornlove/ui'
+import { Button, DashboardWidget, gap, Text, Stack } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 
 type AssessmentLandingCard = {
@@ -55,40 +55,31 @@ export const AssessmentsLandingLeft = () => {
   const router = useRouter()
 
   return (
-    <YStack gap={spacing.lg}>
+    <Stack gap={gap.lg}>
       {ASSESSMENT_LANDING_CARDS.map(
         ({ key, title, description, ctaLabel, route, estimatedTime }) => (
-          <DashboardWidget key={key} gap={spacing.md}>
-            <YStack gap={spacing.sm}>
-              <YStack gap={spacing.xs}>
-                <Text fontSize="$6" fontWeight="700" color="$color12">
-                  {title}
-                </Text>
-                <Text fontSize="$3" color="$color11">
-                  {description}
-                </Text>
-              </YStack>
+          <DashboardWidget key={key} gap={gap.md}>
+            <Stack gap={gap.sm}>
+              <Stack gap={gap.xs}>
+                <Text color="$gray11">{title}</Text>
+                <Text color="$gray11">{description}</Text>
+              </Stack>
 
               <Button
-                variant="primary"
-                size="$5"
-                onPress={() => {
-                  router.push(route.path)
-                }}
+                variant="filled"
+                color="primary"
+                size="lg"
+                onPress={() => router.push(route.path)}
                 accessibilityLabel={ctaLabel}
               >
-                <Button.Text>{ctaLabel}</Button.Text>
+                {ctaLabel}
               </Button>
 
-              {estimatedTime ? (
-                <Text fontSize="$2" color="$color11">
-                  {estimatedTime}
-                </Text>
-              ) : null}
-            </YStack>
+              {estimatedTime ? <Text color="$gray11">{estimatedTime}</Text> : null}
+            </Stack>
           </DashboardWidget>
         )
       )}
-    </YStack>
+    </Stack>
   )
 }

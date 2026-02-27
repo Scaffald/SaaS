@@ -1,6 +1,6 @@
 /**
  * Participants Router
- * REQ-281: Participants Tab Compliance View
+ * Participants Tab Compliance View
  * TASK-1, TASK-2: Create participants tRPC router with compliance data endpoints
  *
  * Handles project participant (subcontractor) data access with compliance scoring.

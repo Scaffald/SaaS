@@ -1,14 +1,7 @@
 {
   "name": "@scaffald/sdk",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Official JavaScript/TypeScript SDK for the Scaffald API",
-  "author": "Scaffald <dev@scaffald.com>",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Unicorn/UNI-Construct.git",
-    "directory": "packages/scaffald-sdk"
-  },
   "keywords": [
     "scaffald",
     "api",
@@ -18,9 +11,17 @@
     "oauth",
     "typescript"
   ],
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "homepage": "https://scaffald.github.io/sdk/",
+  "bugs": {
+    "url": "https://github.com/Scaffald/sdk/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Scaffald/sdk.git"
+  },
+  "license": "MIT",
+  "author": "Scaffald <dev@scaffald.com>",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -31,8 +32,19 @@
       "types": "./dist/react/index.d.ts",
       "import": "./dist/react/index.mjs",
       "require": "./dist/react/index.js"
+    },
+    "./resources/*": {
+      "types": "./src/resources/*.ts",
+      "import": "./src/resources/*.ts"
+    },
+    "./types/*": {
+      "types": "./src/types/*.ts",
+      "import": "./src/types/*.ts"
     }
   },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "README.md",
@@ -41,50 +53,61 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "lint": "biome lint .",
-    "lint:fix": "biome lint --write .",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "typecheck": "tsc --noEmit",
+    "docs:build": "cd docs-site && npm run build",
+    "docs:dev": "cd docs-site && npm start",
+    "docs:serve": "cd docs-site && npm run serve",
     "generate:types": "tsx scripts/generate-types.ts",
+    "lint": "biome lint src scripts",
+    "lint:fix": "biome lint --write src scripts",
     "prepublishOnly": "pnpm build && pnpm test",
     "prerelease": "pnpm typecheck && pnpm lint && pnpm test && pnpm build",
     "release:dry": "npm publish --dry-run",
-    "size": "size-limit"
+    "size": "size-limit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "zod": "^3.22.4"
+    "zod": "catalog:"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^11.1.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^9.2.6",
+    "@semantic-release/npm": "^11.0.2",
+    "@semantic-release/release-notes-generator": "^12.1.0",
     "@tanstack/react-query": "^5.17.9",
-    "@testing-library/react": "^14.1.2",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^20.10.6",
-    "@types/react": "^18.2.46",
+    "@types/react": "~19.2.0",
+    "@vitest/coverage-v8": "^4.0.18",
     "jsdom": "^23.0.1",
-    "msw": "^2.0.11",
+    "msw": "^2.12.8",
     "openapi-typescript": "^6.7.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "semantic-release": "^23.0.0",
     "tsup": "^8.5.1",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3",
-    "vitest": "^1.1.0"
+    "undici": ">=7.18.2",
+    "vitest": "^4.0.18"
   },
   "peerDependencies": {
-    "react": "^18.0.0",
-    "@tanstack/react-query": "^5.0.0"
+    "@tanstack/react-query": "^5.0.0",
+    "react": "^18.0.0 || ^19.0.0"
   },
   "peerDependenciesMeta": {
-    "react": {
+    "@tanstack/react-query": {
       "optional": true
     },
-    "@tanstack/react-query": {
+    "react": {
       "optional": true
     }
   },
   "engines": {
     "node": ">=18.0.0"
-  },
-  "sideEffects": false
+  }
 }

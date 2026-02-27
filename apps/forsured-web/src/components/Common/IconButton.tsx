@@ -1,24 +1,23 @@
 /**
  * IconButton - Icon button component using Beyond UI
- * Migrated from Tamagui to Beyond UI
+
  */
-import React, { forwardRef } from 'react';
-import { LucideIcon } from 'lucide-react';
-import { Button, Row, Text } from '@unicornlove/beyond-ui';
+import React, { forwardRef } from 'react'
+import { LucideIcon } from 'lucide-react'
+import { Button, Row, Text } from '@scaffald/ui'
 
-export type IconButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
-export type IconButtonSize = 'sm' | 'md' | 'lg';
-export type IconButtonShape = 'square' | 'round';
+export type IconButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger'
+export type IconButtonSize = 'sm' | 'md' | 'lg'
+export type IconButtonShape = 'square' | 'round'
 
-export interface IconButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  icon: LucideIcon;
-  variant?: IconButtonVariant;
-  size?: IconButtonSize;
-  shape?: IconButtonShape;
-  badge?: boolean;
-  badgeContent?: string | number;
-  tooltip?: string;
+export interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  icon: LucideIcon
+  variant?: IconButtonVariant
+  size?: IconButtonSize
+  shape?: IconButtonShape
+  badge?: boolean
+  badgeContent?: string | number
+  tooltip?: string
 }
 
 const variantStyles: Record<IconButtonVariant, React.CSSProperties> = {
@@ -26,13 +25,13 @@ const variantStyles: Record<IconButtonVariant, React.CSSProperties> = {
   secondary: { color: 'var(--color-orange-9)' },
   ghost: { color: 'var(--color-text)' },
   danger: { color: 'var(--color-red-9)' },
-};
+}
 
 const sizeStyles: Record<IconButtonSize, { padding: number; minSize: number }> = {
   sm: { padding: 4, minSize: 24 },
   md: { padding: 8, minSize: 32 },
   lg: { padding: 12, minSize: 40 },
-};
+}
 
 const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
   (
@@ -49,8 +48,8 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
     },
     ref
   ) => {
-    const iconSize = size === 'sm' ? 16 : size === 'md' ? 20 : 24;
-    const { padding, minSize } = sizeStyles[size];
+    const iconSize = size === 'sm' ? 16 : size === 'md' ? 20 : 24
+    const { padding, minSize } = sizeStyles[size]
 
     return (
       <Row style={{ position: 'relative' }} alignItems="center" justifyContent="center">
@@ -94,10 +93,10 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
           </Row>
         )}
       </Row>
-    );
+    )
   }
-);
+)
 
-IconButton.displayName = 'IconButton';
+IconButton.displayName = 'IconButton'
 
-export default IconButton;
+export default IconButton

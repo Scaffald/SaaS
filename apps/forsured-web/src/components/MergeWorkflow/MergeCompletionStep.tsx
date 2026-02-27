@@ -1,30 +1,27 @@
 /**
  * MergeCompletionStep - Success screen with merge summary
- * REQ-12: Add Manual Broker and Contractor Registration
- * TASK-10: Build merge workflow UI - conflict resolution and data verification
+ * Merge completion step
+ * Merge completion step
  *
  * Shows success message with checkmark, summary of transferred data,
  * and "Go to Dashboard" button.
  */
-import { Stack, Row, Text, H1, Card } from '@unicornlove/beyond-ui';
-import { CheckCircle, ClipboardList, Building, FileText, ArrowRight } from 'lucide-react';
-import Button from '../Common/Button';
+import { Stack, Row, Text, H1, Card } from '@scaffald/ui'
+import { CheckCircle, ClipboardList, Building, FileText, ArrowRight } from 'lucide-react'
+import Button from '../Common/Button'
 
 interface MergeStats {
-  tasksTransferred: number;
-  projectsConfirmed: number;
-  documentsTransferred: number;
+  tasksTransferred: number
+  projectsConfirmed: number
+  documentsTransferred: number
 }
 
 interface MergeCompletionStepProps {
-  stats: MergeStats | null;
-  onGoToDashboard: () => void;
+  stats: MergeStats | null
+  onGoToDashboard: () => void
 }
 
-export function MergeCompletionStep({
-  stats,
-  onGoToDashboard,
-}: MergeCompletionStepProps) {
+export function MergeCompletionStep({ stats, onGoToDashboard }: MergeCompletionStepProps) {
   return (
     <Stack alignItems="center" gap={32} style={{ paddingTop: 32, paddingBottom: 32 }}>
       {/* Success icon */}
@@ -48,13 +45,9 @@ export function MergeCompletionStep({
         <H1 style={{ fontSize: 32, fontWeight: 700, textAlign: 'center' }}>
           Account Merge Complete!
         </H1>
-        <Text
-          size="lg"
-          muted
-          style={{ textAlign: 'center', maxWidth: 480 }}
-        >
-          Your account has been successfully linked with your existing records.
-          You will now receive notifications for all future activity.
+        <Text size="lg" muted style={{ textAlign: 'center', maxWidth: 480 }}>
+          Your account has been successfully linked with your existing records. You will now receive
+          notifications for all future activity.
         </Text>
       </Stack>
 
@@ -70,7 +63,15 @@ export function MergeCompletionStep({
           }}
         >
           <Stack gap={16}>
-            <Text size="sm" weight="semibold" style={{ textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-muted)' }}>
+            <Text
+              size="sm"
+              weight="semibold"
+              style={{
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                color: 'var(--color-text-muted)',
+              }}
+            >
               Transfer Summary
             </Text>
 
@@ -160,13 +161,9 @@ export function MergeCompletionStep({
       </Button>
 
       {/* Additional info */}
-      <Text
-        size="sm"
-        muted
-        style={{ textAlign: 'center', maxWidth: 400 }}
-      >
-        A notification has been sent to the person who added you, letting them know
-        you've registered. You can now collaborate with them directly.
+      <Text size="sm" muted style={{ textAlign: 'center', maxWidth: 400 }}>
+        A notification has been sent to the person who added you, letting them know you've
+        registered. You can now collaborate with them directly.
       </Text>
 
       {/* Animation styles */}
@@ -183,7 +180,7 @@ export function MergeCompletionStep({
         }
       `}</style>
     </Stack>
-  );
+  )
 }
 
-export default MergeCompletionStep;
+export default MergeCompletionStep

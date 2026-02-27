@@ -64,7 +64,7 @@ You may need to run `pnpm ios` once to have it generate the env file, and then r
 
 ## Included packages
 
-- [Tamagui](https://tamagui.dev)
+- [Beyond UI](packages/beyond-ui/) (custom UI library)
 - [solito](https://solito.dev)
 - [Expo SDK](https://expo.dev)
 - [Expo Router](https://docs.expo.dev/router/introduction/)
@@ -335,7 +335,7 @@ For complete SDK documentation, see [`packages/scaffald-sdk/README.md`](packages
 
 ## First-time Configuration
 
-Note that you don't need to do this if you've already cloned this using `create tamagui`.
+Note that you don't need to do this if you've already cloned this from the starter.
 
 To configure the project, `cd` into the root of the project and run `pnpm setup`.
 
@@ -600,7 +600,7 @@ The main apps are:
 - `apps`
   - `expo` (Native and Web)
 - `packages` Shared packages across apps
-  - `ui` Includes your custom UI kit that will be optimized by Tamagui
+  - `beyond-ui` Shared UI component library (Beyond UI)
   - `app` You'll be importing most files from `app/`
     - `features` Where most of your code lives.
     - `provider` All providers that wrap the app, sometimes forked by platform.
@@ -791,12 +791,12 @@ More documentation on adding your own native code can be found here in Expo's do
 To run a [native build](https://docs.expo.dev/develop/development-builds/introduction) of your application, which we recommend:
 
 - `npx expo install expo-dev-client`
-- in `apps/expo/package.json` update script `"start": "TAMAGUI_ENV=dev expo start --dev-client"`
+- in `apps/scaffald/package.json` update script `"start": "expo start --dev-client"` if using dev client
 - `pnpm ios` or `pnpm android`
 
 ## Expo Go
 
-Expo Go works, but you may need to replace the imports from `@tamagui/animations-moti` to `@tamagui/animations-react-native`.
+Expo Go works with the standard Expo and Beyond UI setup.
 
 ## Expo EAS Update
 
@@ -810,7 +810,7 @@ We use `expo-router` for the native side, so simply create `_layout.tsx` files i
 
 - ensure that the `projectId`, `slug`, and `owner` values in `apps/expo/app.config.js` all have the same value as the name of your project, ie the name in `apps/expo/package.json`
 
-![expo project id](https://github.com/tamagui/unistack/assets/2502947/8a4d3663-9eb2-4cb1-926f-0476a00ab078)
+Add your Expo project id in `apps/scaffald/app.config.ts` where indicated.
 
 ## How Authentication is Handled
 
@@ -959,9 +959,7 @@ We actively maintain the starter and add new features and updates to it.
 
 ## UI Kit
 
-Note we're following the [design systems guide](https://tamagui.dev/docs/guides/design-systems) and creating our own package for components.
-
-See `packages/ui` named `@unicornlove/ui` for how this works.
+The monorepo uses a custom UI library (Beyond UI). See `packages/beyond-ui` for components and theming.
 
 ### Layout Components
 
@@ -975,7 +973,7 @@ The UI package includes several layout components:
 
 When creating new UI components:
 
-1. **Use Tamagui primitives** (`Button`, `Text`, `View`, `Stack`, etc.)
+1. **Use Beyond UI components** (`Button`, `Text`, `View`, `Stack`, etc. from `@unicornlove/beyond-ui`)
 2. **Follow the design system** patterns established in the UI package
 3. **Make components cross-platform** (web, iOS, Android)
 4. **Document components** with JSDoc comments

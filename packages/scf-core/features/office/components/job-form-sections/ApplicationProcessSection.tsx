@@ -1,16 +1,22 @@
+import { colors } from '@scaffald/ui/tokens'
 import {
   Button,
+  Card,
   Input,
+  Label,
   ResponsiveSelect,
   Sheet,
+  SheetHeader,
+  SheetContent,
+  Switch,
   Text,
   ToggleSwitch,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
-import { Plus, X } from '@tamagui/lucide-icons'
+  Row,
+  Stack,
+  useThemeContext,
+} from '@scaffald/ui'
+import { Plus, X } from 'lucide-react-native'
 import { useState } from 'react'
-import { Card, Label, Switch } from '@unicornlove/ui'
 
 interface CapabilityQuestion {
   name: string
@@ -46,6 +52,7 @@ export function ApplicationProcessSection({
   inquiryCapabilityQuestions,
   onUpdate,
 }: ApplicationProcessSectionProps) {
+  const { theme } = useThemeContext()
   const [localState, setLocalState] = useState({
     requires_assessment: requiresAssessment,
     assessment_details: assessmentDetails,
@@ -117,64 +124,62 @@ export function ApplicationProcessSection({
   }
 
   return (
-    <YStack
-      gap="$4"
-      padding="$4"
-      backgroundColor="$background"
-      borderRadius="$4"
+    <Stack
+      gap={16}
+      padding="md"
+      style={{ backgroundColor: colors.bg[theme].default }}
+      borderRadius={16}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
     >
-      <Text fontSize="$6" fontWeight="600">
-        Application Process
-      </Text>
-      <Text fontSize="$2" color="$color10">
+      <Text>Application Process</Text>
+      <Text style={{ color: colors.text[theme].secondary }}>
         Configure the application process and requirements
       </Text>
 
       {/* Requires Assessment */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Requires assessment</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Skills or aptitude test required
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.requires_assessment || false}
-          onCheckedChange={(checked) => handleChange('requires_assessment', checked)}
+          onChange={(checked) => handleChange('requires_assessment', checked)}
           aria-label="Requires assessment"
         />
-      </XStack>
+      </Row>
 
       {localState.requires_assessment && (
-        <YStack gap="$2">
+        <Stack gap={8}>
           <Label>Assessment details</Label>
           <Input
             placeholder="Describe the assessment or test"
             value={localState.assessment_details || ''}
             onChangeText={(text) => handleChange('assessment_details', text || undefined)}
           />
-        </YStack>
+        </Stack>
       )}
 
       {/* Requires Video Interview */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Requires video interview</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Pre-recorded video interview required
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.requires_video_interview || false}
-          onCheckedChange={(checked) => handleChange('requires_video_interview', checked)}
+          onChange={(checked) => handleChange('requires_video_interview', checked)}
           aria-label="Requires video interview"
         />
-      </XStack>
+      </Row>
 
       {/* Estimated Application Time */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Estimated application time (minutes)</Label>
         <Input
           placeholder="e.g. 15"
@@ -185,13 +190,13 @@ export function ApplicationProcessSection({
             handleChange('estimated_application_time_minutes', Number.isNaN(num) ? undefined : num)
           }}
         />
-        <Text fontSize="$2" color="$color10">
+        <Text style={{ color: colors.text[theme].secondary }}>
           How long it takes to complete the application
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Application Expiry */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Application expiry (days)</Label>
         <Input
           placeholder="e.g. 30"
@@ -202,92 +207,95 @@ export function ApplicationProcessSection({
             handleChange('application_expiry_days', Number.isNaN(num) ? undefined : num)
           }}
         />
-        <Text fontSize="$2" color="$color10">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Days after which started applications expire
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Inquiry Capability Questions */}
-      <YStack
-        gap="$3"
-        marginTop="$4"
-        paddingTop="$4"
-        borderTopWidth={1}
-        borderTopColor="$borderColor"
+      <Stack
+        gap={12}
+        style={{
+          marginTop: 16,
+          paddingTop: 16,
+          borderTopWidth: 1,
+          borderTopColor: colors.border[theme].default,
+        }}
       >
-        <YStack gap="$1">
-          <Text fontSize="$5" fontWeight="600">
-            Inquiry Capability Questions
-          </Text>
-          <Text fontSize="$2" color="$color10">
+        <Stack gap={4}>
+          <Text>Inquiry Capability Questions</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
             Define capability questions that will be asked during the inquiry phase
           </Text>
-        </YStack>
+        </Stack>
 
         {/* Existing Questions */}
         {localState.inquiry_capability_questions &&
           localState.inquiry_capability_questions.length > 0 && (
-            <YStack gap="$2">
+            <Stack gap={8}>
               {localState.inquiry_capability_questions.map((question, index) => (
-                <Card key={question.name} padding="$3" gap="$2" backgroundColor="$color2">
-                  <XStack justifyContent="space-between" alignItems="center">
-                    <YStack flex={1} gap="$1">
-                      <Text fontSize="$4" fontWeight="500">
-                        {question.label}
-                      </Text>
-                      <XStack gap="$2">
-                        <Text fontSize="$2" color="$color11">
+                <Card
+                  key={question.name}
+                  padding="sm"
+                  style={{ backgroundColor: colors.bg[theme].subtle }}
+                >
+                  <Stack gap={8}>
+                  <Row justify="space-between" align="center">
+                    <Stack flex={1} gap={4}>
+                      <Text>{question.label}</Text>
+                      <Row gap={8}>
+                        <Text style={{ color: colors.text[theme].secondary }}>
                           Type: {question.type}
                         </Text>
                         {question.unit && (
-                          <Text fontSize="$2" color="$color11">
+                          <Text style={{ color: colors.text[theme].secondary }}>
                             Unit: {question.unit}
                           </Text>
                         )}
                         {question.required && (
-                          <Text fontSize="$2" color="$blue10" fontWeight="600">
-                            Required
-                          </Text>
+                          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Required</Text>
                         )}
-                      </XStack>
-                    </YStack>
+                      </Row>
+                    </Stack>
                     <Button
-                      size="$2"
-                      variant="outlined"
-                      icon={X}
+                      size="sm"
+                      variant="outline"
+                      iconStart={X}
                       onPress={() => handleRemoveQuestion(index)}
                       aria-label="Remove question"
                     />
-                  </XStack>
+                  </Row>
+                  </Stack>
                 </Card>
               ))}
-            </YStack>
+            </Stack>
           )}
 
         {/* Add Question Button */}
-        <Button variant="outlined" icon={Plus} onPress={() => setShowAddQuestionModal(true)}>
+        <Button variant="outline" iconStart={Plus} onPress={() => setShowAddQuestionModal(true)}>
           Add Capability Question
         </Button>
 
         {/* Add Question Modal */}
         <Sheet
-          modal
-          open={showAddQuestionModal}
-          onOpenChange={(nextOpen: boolean) => {
-            setShowAddQuestionModal(nextOpen)
-            if (!nextOpen) {
-              setNewQuestion({ name: '', label: '', type: 'boolean', unit: '', required: false })
-            }
+          visible={showAddQuestionModal}
+          onClose={() => {
+            setShowAddQuestionModal(false)
+            setNewQuestion({ name: '', label: '', type: 'boolean', unit: '', required: false })
           }}
+          height="half"
         >
-          <Sheet.Frame padding="$4" gap="$4">
-            <YStack gap="$3">
-              <Text fontSize="$6" fontWeight="600">
-                Add Capability Question
-              </Text>
-
+          <SheetHeader
+            title="Add Capability Question"
+            onClose={() => {
+              setShowAddQuestionModal(false)
+              setNewQuestion({ name: '', label: '', type: 'boolean', unit: '', required: false })
+            }}
+          />
+          <SheetContent>
+            <Stack gap={16} style={{ padding: 16 }}>
               {/* Question Label */}
-              <YStack gap="$2">
+              <Stack gap={8}>
                 <Label>Question Label *</Label>
                 <Input
                   placeholder="e.g., Are you able to lift heavy objects?"
@@ -303,10 +311,10 @@ export function ApplicationProcessSection({
                     })
                   }
                 />
-              </YStack>
+              </Stack>
 
               {/* Question Type */}
-              <YStack gap="$2">
+              <Stack gap={8}>
                 <Label>Question Type *</Label>
                 <ResponsiveSelect
                   value={newQuestion.type || 'boolean'}
@@ -323,35 +331,33 @@ export function ApplicationProcessSection({
                     { value: 'text', label: 'Text' },
                   ]}
                 />
-              </YStack>
+              </Stack>
 
               {/* Unit (for number type) */}
               {newQuestion.type === 'number' && (
-                <YStack gap="$2">
+                <Stack gap={8}>
                   <Label>Unit (optional)</Label>
                   <Input
                     placeholder="e.g., Pounds, Hours, Miles"
                     value={newQuestion.unit || ''}
                     onChangeText={(text) => setNewQuestion({ ...newQuestion, unit: text })}
                   />
-                </YStack>
+                </Stack>
               )}
 
               {/* Required */}
-              <XStack gap="$2" alignItems="center">
+              <Row gap={8} align="center">
                 <Switch
                   checked={newQuestion.required || false}
-                  onCheckedChange={(checked) =>
-                    setNewQuestion({ ...newQuestion, required: checked })
-                  }
+                  onChange={(checked) => setNewQuestion({ ...newQuestion, required: checked })}
                 />
-                <Text fontSize="$3">Required</Text>
-              </XStack>
+                <Text>Required</Text>
+              </Row>
 
               {/* Actions */}
-              <XStack gap="$3" justifyContent="flex-end" marginTop="$2">
+              <Row gap={12} justify="flex-end" style={{ marginTop: 8 }}>
                 <Button
-                  variant="outlined"
+                  variant="outline"
                   onPress={() => {
                     setShowAddQuestionModal(false)
                     setNewQuestion({
@@ -366,18 +372,17 @@ export function ApplicationProcessSection({
                   Cancel
                 </Button>
                 <Button
-                  theme="blue"
+                  color="primary"
                   onPress={handleAddQuestion}
                   disabled={!newQuestion.label || !newQuestion.type}
                 >
                   Add Question
                 </Button>
-              </XStack>
-            </YStack>
-          </Sheet.Frame>
-          <Sheet.Overlay />
+              </Row>
+            </Stack>
+          </SheetContent>
         </Sheet>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react'
 import { Platform } from 'react-native'
-import { Button, ScrollView, Switch, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
+import { Button, ScrollView, Switch, Text, TextArea, Row, Stack } from '@scaffald/ui'
 
 import type { ConsentDetails } from '../hooks/useBackgroundCheckForm'
 
@@ -35,61 +35,44 @@ export const ConsentStep = memo(function ConsentStep({
   }, [])
 
   return (
-    <YStack gap="$4" flex={1}>
-      <YStack gap="$2">
-        <Text fontSize="$6" fontWeight="bold" color="$color12">
-          Consent & Disclosures
-        </Text>
-        <Text fontSize="$3" color="$color11">
+    <Stack gap={16} flex={1}>
+      <Stack gap={8}>
+        <Text color="$gray11">Consent & Disclosures</Text>
+        <Text color="$gray11">
           Please review the disclosure and confirm your consent to continue with the background
           check.
         </Text>
-      </YStack>
+      </Stack>
 
-      <ScrollView flex={1}>
-        <YStack gap="$4" paddingBottom="$6">
-          <YStack gap="$2" backgroundColor="$color2" padding="$4" borderRadius="$4">
-            <Text fontSize="$4" fontWeight="bold" color="$color12">
-              FCRA Disclosure
-            </Text>
-            <Text fontSize="$3" color="$color11">
-              {FCRA_DISCLOSURE.trim()}
-            </Text>
-          </YStack>
+      <ScrollView style={{ flex: 1 }}>
+        <Stack gap={16} paddingBottom={24}>
+          <Stack gap={8} backgroundColor="$color2" padding="md" borderRadius={16}>
+            <Text color="$gray11">FCRA Disclosure</Text>
+            <Text color="$gray11">{FCRA_DISCLOSURE.trim()}</Text>
+          </Stack>
 
-          <YStack gap="$2" backgroundColor="$color2" padding="$4" borderRadius="$4">
-            <Text fontSize="$4" fontWeight="bold" color="$color12">
-              Summary of Rights
-            </Text>
-            <Text fontSize="$3" color="$color11">
-              {SUMMARY_OF_RIGHTS.trim()}
-            </Text>
-          </YStack>
+          <Stack gap={8} backgroundColor="$color2" padding="md" borderRadius={16}>
+            <Text color="$gray11">Summary of Rights</Text>
+            <Text color="$gray11">{SUMMARY_OF_RIGHTS.trim()}</Text>
+          </Stack>
 
-          <YStack gap="$3">
-            <XStack gap="$3" alignItems="center">
+          <Stack gap={12}>
+            <Row gap={12} align="center">
               <Switch
-                size="$3"
+                size="sm"
                 checked={consent.acceptsDisclosure}
-                onCheckedChange={(checked) => {
+                onChange={(checked) => {
                   onChange({
                     acceptsDisclosure: checked,
                   })
                 }}
-              >
-                <Switch.Thumb />
-              </Switch>
-              <Text fontSize="$3" color="$color12">
-                I have read and authorize the background check.
-              </Text>
-            </XStack>
+              />
+              <Text color="$gray11">I have read and authorize the background check.</Text>
+            </Row>
 
-            <YStack gap="$2">
-              <Text fontSize="$2" color="$color11">
-                Electronic Signature
-              </Text>
+            <Stack gap={8}>
+              <Text color="$gray11">Electronic Signature</Text>
               <TextArea
-                size="$4"
                 value={consent.signature}
                 onChangeText={(value) =>
                   onChange({
@@ -106,17 +89,17 @@ export const ConsentStep = memo(function ConsentStep({
                 placeholder={signaturePlaceholder}
                 autoCapitalize="words"
               />
-              <Text fontSize="$2" color="$color9">
+              <Text color="$gray11">
                 Type your full name as it appears on government-issued identification.
               </Text>
-            </YStack>
-          </YStack>
-        </YStack>
+            </Stack>
+          </Stack>
+        </Stack>
       </ScrollView>
 
-      <Button size="$4" theme="blue" disabled={!canContinue} onPress={onContinue}>
+      <Button size="md" color="primary" disabled={!canContinue} onPress={onContinue}>
         Continue
       </Button>
-    </YStack>
+    </Stack>
   )
 })

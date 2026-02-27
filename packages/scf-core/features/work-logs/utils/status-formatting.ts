@@ -1,25 +1,31 @@
-const STATUS_LABELS: Record<string, string> = {
-  draft: 'Draft',
-  pending_verification: 'Awaiting Verification',
-  verified: 'Verified',
-  disputed: 'Disputed',
-}
+import { colors } from "@scaffald/ui/tokens";
 
-const STATUS_COLORS: Record<string, string> = {
-  draft: '$color10',
-  pending_verification: '$orange10',
-  verified: '$green10',
-  disputed: '$red10',
-}
+const STATUS_LABELS: Record<string, string> = {
+  draft: "Draft",
+  pending_verification: "Awaiting Verification",
+  verified: "Verified",
+  disputed: "Disputed",
+};
 
 export const getStatusLabel = (status: string | null | undefined): string => {
-  if (!status) return 'Unknown'
-  return STATUS_LABELS[status] ?? status.replace(/_/g, ' ')
-}
+  if (!status) return "Unknown";
+  return STATUS_LABELS[status] ?? status.replace(/_/g, " ");
+};
 
-export const getStatusColor = (status: string | null | undefined): string => {
+export const getStatusColor = (
+  status: string | null | undefined,
+  theme: "light" | "dark"
+): string => {
   if (!status) {
-    return '$gray10'
+    return colors.text[theme].secondary;
   }
-  return STATUS_COLORS[status] ?? '$color10'
-}
+
+  const STATUS_COLORS: Record<string, string> = {
+    draft: colors.text[theme].tertiary,
+    pending_verification: colors.fg[theme].warning,
+    verified: colors.fg[theme].success,
+    disputed: colors.fg[theme].error,
+  };
+
+  return STATUS_COLORS[status] ?? colors.text[theme].tertiary;
+};

@@ -1,12 +1,10 @@
 /**
- * REQ-263: Org-Level vs Project-Level Coverage Distinction
- * TASK-3: Build Org Coverage Requirements Settings UI
- *
+ * Org-level coverage requirements settings UI.
  * Admin interface for managing organization-level coverage limit requirements.
  * Displays requirements with "ORG" badge and provides CRUD operations.
  */
 
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import {
   Plus,
   Search,
@@ -16,19 +14,19 @@ import {
   Building2,
   DollarSign,
   AlertCircle,
-} from 'lucide-react';
-import { Stack, Row, Text, H1, Card, Button } from '@unicornlove/beyond-ui';
-import ButtonCommon from '../Common/Button';
-import CardCommon from '../Common/Card';
-import Modal from '../Common/Modal';
-import Select from '../Common/Select';
-import CoverageRequirementForm, { CoverageRequirementFormData } from './CoverageRequirementForm';
+} from 'lucide-react'
+import { Stack, Row, Text, H1, Card, Button } from '@scaffald/ui'
+import ButtonCommon from '../Common/Button'
+import CardCommon from '../Common/Card'
+import Modal from '../Common/Modal'
+import Select from '../Common/Select'
+import CoverageRequirementForm, { CoverageRequirementFormData } from './CoverageRequirementForm'
 import {
   CoverageLimitRequirement,
   CoverageLimitType,
   CreateCoverageLimitRequirementRequest,
   UpdateCoverageLimitRequirementRequest,
-} from '../../types';
+} from '../../types'
 import {
   getOrgLevelRequirements,
   createCoverageLimitRequirement,
@@ -36,7 +34,7 @@ import {
   deleteCoverageLimitRequirement,
   VALID_COVERAGE_TYPES,
   UserContext,
-} from '../../lib/coverageRequirements/coverageLimitRequirementService';
+} from '../../lib/coverageRequirements/coverageLimitRequirementService'
 
 // Coverage type display config
 const COVERAGE_TYPE_CONFIG: Record<CoverageLimitType, { label: string; shortLabel: string }> = {
@@ -48,86 +46,84 @@ const COVERAGE_TYPE_CONFIG: Record<CoverageLimitType, { label: string; shortLabe
   pollution_liability: { label: 'Pollution Liability', shortLabel: 'Pollution' },
   builders_risk: { label: "Builder's Risk", shortLabel: 'BR' },
   equipment_floater: { label: 'Equipment Floater', shortLabel: 'Equip' },
-};
+}
 
 // Toast notification type
 interface Toast {
-  id: string;
-  type: 'success' | 'error';
-  message: string;
+  id: string
+  type: 'success' | 'error'
+  message: string
 }
 
 interface OrgCoverageRequirementsPageProps {
-  organizationId?: string;
-  currentUser?: UserContext;
+  organizationId?: string
+  currentUser?: UserContext
 }
 
 export default function OrgCoverageRequirementsPage({
   organizationId = 'org-1',
   currentUser = { id: 'admin-1', role: 'admin', organization_id: 'org-1' },
 }: OrgCoverageRequirementsPageProps) {
-  const [requirements, setRequirements] = useState<CoverageLimitRequirement[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCoverageType, setSelectedCoverageType] = useState<CoverageLimitType | 'all'>(
-    'all'
-  );
-  const [showForm, setShowForm] = useState(false);
+  const [requirements, setRequirements] = useState<CoverageLimitRequirement[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedCoverageType, setSelectedCoverageType] = useState<CoverageLimitType | 'all'>('all')
+  const [showForm, setShowForm] = useState(false)
   const [editingRequirement, setEditingRequirement] = useState<CoverageLimitRequirement | null>(
     null
-  );
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState<CoverageLimitRequirement | null>(null);
-  const [toasts, setToasts] = useState<Toast[]>([]);
+  )
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [deleteConfirm, setDeleteConfirm] = useState<CoverageLimitRequirement | null>(null)
+  const [toasts, setToasts] = useState<Toast[]>([])
 
   // Check if user is admin
-  const isAdmin = currentUser.role === 'admin';
+  const isAdmin = currentUser.role === 'admin'
 
   // Add toast notification
   const addToast = useCallback((type: 'success' | 'error', message: string) => {
-    const id = crypto.randomUUID();
-    setToasts((prev) => [...prev, { id, type, message }]);
+    const id = crypto.randomUUID()
+    setToasts((prev) => [...prev, { id, type, message }])
     // Auto-remove after 5 seconds
     setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 5000);
-  }, []);
+      setToasts((prev) => prev.filter((t) => t.id !== id))
+    }, 5000)
+  }, [])
 
   // Fetch org-level requirements
   const fetchRequirements = useCallback(async () => {
-    setIsLoading(true);
-    const response = await getOrgLevelRequirements(organizationId);
+    setIsLoading(true)
+    const response = await getOrgLevelRequirements(organizationId)
     if (response.success && response.data) {
-      let filtered = response.data;
+      let filtered = response.data
       if (selectedCoverageType !== 'all') {
-        filtered = filtered.filter((r) => r.coverage_type === selectedCoverageType);
+        filtered = filtered.filter((r) => r.coverage_type === selectedCoverageType)
       }
-      setRequirements(filtered);
+      setRequirements(filtered)
     } else {
-      addToast('error', response.error || 'Failed to load coverage requirements');
+      addToast('error', response.error || 'Failed to load coverage requirements')
     }
-    setIsLoading(false);
-  }, [organizationId, selectedCoverageType, addToast]);
+    setIsLoading(false)
+  }, [organizationId, selectedCoverageType, addToast])
 
   useEffect(() => {
-    fetchRequirements();
-  }, [fetchRequirements]);
+    fetchRequirements()
+  }, [fetchRequirements])
 
   // Filter requirements by search
   const filteredRequirements = useMemo(() => {
-    if (!searchQuery) return requirements;
-    const query = searchQuery.toLowerCase();
+    if (!searchQuery) return requirements
+    const query = searchQuery.toLowerCase()
     return requirements.filter(
       (req) =>
         req.name.toLowerCase().includes(query) ||
         COVERAGE_TYPE_CONFIG[req.coverage_type].label.toLowerCase().includes(query)
-    );
-  }, [requirements, searchQuery]);
+    )
+  }, [requirements, searchQuery])
 
   // Handle create requirement
   const handleCreate = useCallback(
     async (data: CoverageRequirementFormData) => {
-      setIsSubmitting(true);
+      setIsSubmitting(true)
       const input: CreateCoverageLimitRequirementRequest = {
         name: data.name,
         level: 'org',
@@ -135,69 +131,69 @@ export default function OrgCoverageRequirementsPage({
         coverage_type: data.coverage_type,
         minimum_limit: data.minimum_limit,
         required: data.required,
-      };
+      }
 
-      const response = await createCoverageLimitRequirement(input, currentUser);
-      setIsSubmitting(false);
+      const response = await createCoverageLimitRequirement(input, currentUser)
+      setIsSubmitting(false)
 
       if (response.success) {
-        addToast('success', 'Coverage requirement created successfully');
-        setShowForm(false);
-        fetchRequirements();
+        addToast('success', 'Coverage requirement created successfully')
+        setShowForm(false)
+        fetchRequirements()
       } else {
-        addToast('error', response.error || 'Failed to create coverage requirement');
+        addToast('error', response.error || 'Failed to create coverage requirement')
       }
     },
     [organizationId, currentUser, addToast, fetchRequirements]
-  );
+  )
 
   // Handle update requirement
   const handleUpdate = useCallback(
     async (data: CoverageRequirementFormData) => {
-      if (!editingRequirement) return;
+      if (!editingRequirement) return
 
-      setIsSubmitting(true);
+      setIsSubmitting(true)
       const input: UpdateCoverageLimitRequirementRequest = {
         name: data.name,
         coverage_type: data.coverage_type,
         minimum_limit: data.minimum_limit,
         required: data.required,
-      };
+      }
 
       const response = await updateCoverageLimitRequirement(
         editingRequirement.id,
         input,
         currentUser
-      );
-      setIsSubmitting(false);
+      )
+      setIsSubmitting(false)
 
       if (response.success) {
-        addToast('success', 'Coverage requirement updated successfully');
-        setEditingRequirement(null);
-        fetchRequirements();
+        addToast('success', 'Coverage requirement updated successfully')
+        setEditingRequirement(null)
+        fetchRequirements()
       } else {
-        addToast('error', response.error || 'Failed to update coverage requirement');
+        addToast('error', response.error || 'Failed to update coverage requirement')
       }
     },
     [editingRequirement, currentUser, addToast, fetchRequirements]
-  );
+  )
 
   // Handle delete requirement
   const handleDelete = useCallback(async () => {
-    if (!deleteConfirm) return;
+    if (!deleteConfirm) return
 
-    setIsSubmitting(true);
-    const response = await deleteCoverageLimitRequirement(deleteConfirm.id, currentUser);
-    setIsSubmitting(false);
+    setIsSubmitting(true)
+    const response = await deleteCoverageLimitRequirement(deleteConfirm.id, currentUser)
+    setIsSubmitting(false)
 
     if (response.success) {
-      addToast('success', 'Coverage requirement deleted successfully');
-      setDeleteConfirm(null);
-      fetchRequirements();
+      addToast('success', 'Coverage requirement deleted successfully')
+      setDeleteConfirm(null)
+      fetchRequirements()
     } else {
-      addToast('error', response.error || 'Failed to delete coverage requirement');
+      addToast('error', response.error || 'Failed to delete coverage requirement')
     }
-  }, [deleteConfirm, currentUser, addToast, fetchRequirements]);
+  }, [deleteConfirm, currentUser, addToast, fetchRequirements])
 
   // Coverage type filter options
   const coverageTypeOptions = [
@@ -206,7 +202,7 @@ export default function OrgCoverageRequirementsPage({
       value: type,
       label: COVERAGE_TYPE_CONFIG[type].label,
     })),
-  ];
+  ]
 
   // Format currency
   const formatCurrency = (value: number): string => {
@@ -215,20 +211,26 @@ export default function OrgCoverageRequirementsPage({
       currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(value);
-  };
+    }).format(value)
+  }
 
   // Non-admin warning
   if (!isAdmin) {
     return (
-      <Stack style={{ alignItems: 'center', justifyContent: 'center', padding: 32, textAlign: 'center' }}>
+      <Stack
+        style={{ alignItems: 'center', justifyContent: 'center', padding: 32, textAlign: 'center' }}
+      >
         <AlertCircle size={48} color="var(--color-yellow10)" style={{ marginBottom: 16 }} />
-        <Text style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-color12)', marginBottom: 8 }}>Admin Access Required</Text>
+        <Text
+          style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-color12)', marginBottom: 8 }}
+        >
+          Admin Access Required
+        </Text>
         <Text style={{ color: 'var(--color-color11)' }}>
           Only administrators can manage organization-level coverage requirements.
         </Text>
       </Stack>
-    );
+    )
   }
 
   return (
@@ -244,7 +246,8 @@ export default function OrgCoverageRequirementsPage({
               boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
               fontSize: 14,
               fontWeight: 500,
-              backgroundColor: toast.type === 'success' ? 'var(--color-green2)' : 'var(--color-red2)',
+              backgroundColor:
+                toast.type === 'success' ? 'var(--color-green2)' : 'var(--color-red2)',
               color: toast.type === 'success' ? 'var(--color-green11)' : 'var(--color-red11)',
               borderColor: toast.type === 'success' ? 'var(--color-green6)' : 'var(--color-red6)',
               borderWidth: 1,
@@ -264,11 +267,19 @@ export default function OrgCoverageRequirementsPage({
       </Row>
 
       {/* Info Banner */}
-      <CardCommon style={{ padding: 16, backgroundColor: 'var(--color-blue2)', borderColor: 'var(--color-blue6)' }}>
+      <CardCommon
+        style={{
+          padding: 16,
+          backgroundColor: 'var(--color-blue2)',
+          borderColor: 'var(--color-blue6)',
+        }}
+      >
         <Row style={{ alignItems: 'flex-start', gap: 12 }}>
           <Shield color="var(--color-blue10)" style={{ marginTop: 2 }} size={20} />
           <Stack>
-            <Text style={{ color: 'var(--color-blue11)', fontWeight: 500 }}>Organization-Level Requirements</Text>
+            <Text style={{ color: 'var(--color-blue11)', fontWeight: 500 }}>
+              Organization-Level Requirements
+            </Text>
             <Text style={{ color: 'var(--color-blue10)', fontSize: 14, marginTop: 4 }}>
               These requirements apply to all projects in your organization. Subcontractors must
               meet both org-level and any project-specific requirements for full compliance.
@@ -281,7 +292,16 @@ export default function OrgCoverageRequirementsPage({
       <CardCommon style={{ padding: 16 }}>
         <Row style={{ flexDirection: 'column', gap: 16 }}>
           <Row style={{ flex: 1, position: 'relative' }}>
-            <Stack style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', zIndex: 1, pointerEvents: 'none' }}>
+            <Stack
+              style={{
+                position: 'absolute',
+                left: 12,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 1,
+                pointerEvents: 'none',
+              }}
+            >
               <Search size={20} color="var(--color-color10)" />
             </Stack>
             <input
@@ -308,9 +328,7 @@ export default function OrgCoverageRequirementsPage({
             <Select
               options={coverageTypeOptions}
               value={selectedCoverageType}
-              onChange={(e) =>
-                setSelectedCoverageType(e.target.value as CoverageLimitType | 'all')
-              }
+              onChange={(e) => setSelectedCoverageType(e.target.value as CoverageLimitType | 'all')}
               style={{ width: 224 }}
             />
           </Row>
@@ -321,21 +339,118 @@ export default function OrgCoverageRequirementsPage({
       <CardCommon>
         <Stack style={{ overflowX: 'auto' }}>
           <Stack>
-            <Row style={{ padding: 16, paddingTop: 12, paddingBottom: 12, borderBottom: '1px solid var(--color-border)' }}>
-              <Text style={{ flex: 1, textAlign: 'left', paddingLeft: 16, paddingRight: 16, fontSize: 14, fontWeight: 600, color: 'var(--color-color11)' }}>Name</Text>
-              <Text style={{ flex: 1, textAlign: 'left', paddingLeft: 16, paddingRight: 16, fontSize: 14, fontWeight: 600, color: 'var(--color-color11)' }}>Coverage Type</Text>
-              <Text style={{ flex: 1, textAlign: 'left', paddingLeft: 16, paddingRight: 16, fontSize: 14, fontWeight: 600, color: 'var(--color-color11)' }}>Minimum Limit</Text>
-              <Text style={{ flex: 1, textAlign: 'left', paddingLeft: 16, paddingRight: 16, fontSize: 14, fontWeight: 600, color: 'var(--color-color11)' }}>Level</Text>
-              <Text style={{ flex: 1, textAlign: 'left', paddingLeft: 16, paddingRight: 16, fontSize: 14, fontWeight: 600, color: 'var(--color-color11)' }}>Status</Text>
-              <Text style={{ flex: 1, textAlign: 'right', paddingLeft: 16, paddingRight: 16, fontSize: 14, fontWeight: 600, color: 'var(--color-color11)' }}>Actions</Text>
+            <Row
+              style={{
+                padding: 16,
+                paddingTop: 12,
+                paddingBottom: 12,
+                borderBottom: '1px solid var(--color-border)',
+              }}
+            >
+              <Text
+                style={{
+                  flex: 1,
+                  textAlign: 'left',
+                  paddingLeft: 16,
+                  paddingRight: 16,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: 'var(--color-color11)',
+                }}
+              >
+                Name
+              </Text>
+              <Text
+                style={{
+                  flex: 1,
+                  textAlign: 'left',
+                  paddingLeft: 16,
+                  paddingRight: 16,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: 'var(--color-color11)',
+                }}
+              >
+                Coverage Type
+              </Text>
+              <Text
+                style={{
+                  flex: 1,
+                  textAlign: 'left',
+                  paddingLeft: 16,
+                  paddingRight: 16,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: 'var(--color-color11)',
+                }}
+              >
+                Minimum Limit
+              </Text>
+              <Text
+                style={{
+                  flex: 1,
+                  textAlign: 'left',
+                  paddingLeft: 16,
+                  paddingRight: 16,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: 'var(--color-color11)',
+                }}
+              >
+                Level
+              </Text>
+              <Text
+                style={{
+                  flex: 1,
+                  textAlign: 'left',
+                  paddingLeft: 16,
+                  paddingRight: 16,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: 'var(--color-color11)',
+                }}
+              >
+                Status
+              </Text>
+              <Text
+                style={{
+                  flex: 1,
+                  textAlign: 'right',
+                  paddingLeft: 16,
+                  paddingRight: 16,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: 'var(--color-color11)',
+                }}
+              >
+                Actions
+              </Text>
             </Row>
             <Stack>
               {isLoading ? (
-                <Row style={{ padding: 16, paddingTop: 32, paddingBottom: 32, justifyContent: 'center', alignItems: 'center' }}>
-                  <Text style={{ color: 'var(--color-color10)' }}>Loading coverage requirements...</Text>
+                <Row
+                  style={{
+                    padding: 16,
+                    paddingTop: 32,
+                    paddingBottom: 32,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Text style={{ color: 'var(--color-color10)' }}>
+                    Loading coverage requirements...
+                  </Text>
                 </Row>
               ) : filteredRequirements.length === 0 ? (
-                <Row style={{ padding: 16, paddingTop: 32, paddingBottom: 32, justifyContent: 'center', alignItems: 'center' }}>
+                <Row
+                  style={{
+                    padding: 16,
+                    paddingTop: 32,
+                    paddingBottom: 32,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
                   <Text style={{ color: 'var(--color-color10)' }}>
                     {searchQuery
                       ? 'No requirements match your search'
@@ -352,8 +467,26 @@ export default function OrgCoverageRequirementsPage({
                       alignItems: 'center',
                     }}
                   >
-                    <Text style={{ flex: 1, paddingLeft: 16, paddingRight: 16, fontWeight: 500, color: 'var(--color-color12)' }}>{requirement.name}</Text>
-                    <Row style={{ flex: 1, paddingLeft: 16, paddingRight: 16, alignItems: 'center', gap: 8 }}>
+                    <Text
+                      style={{
+                        flex: 1,
+                        paddingLeft: 16,
+                        paddingRight: 16,
+                        fontWeight: 500,
+                        color: 'var(--color-color12)',
+                      }}
+                    >
+                      {requirement.name}
+                    </Text>
+                    <Row
+                      style={{
+                        flex: 1,
+                        paddingLeft: 16,
+                        paddingRight: 16,
+                        alignItems: 'center',
+                        gap: 8,
+                      }}
+                    >
                       <Text
                         style={{
                           paddingLeft: 8,
@@ -373,7 +506,15 @@ export default function OrgCoverageRequirementsPage({
                         {COVERAGE_TYPE_CONFIG[requirement.coverage_type].label}
                       </Text>
                     </Row>
-                    <Text style={{ flex: 1, paddingLeft: 16, paddingRight: 16, fontFamily: 'monospace', color: 'var(--color-color12)' }}>
+                    <Text
+                      style={{
+                        flex: 1,
+                        paddingLeft: 16,
+                        paddingRight: 16,
+                        fontFamily: 'monospace',
+                        color: 'var(--color-color12)',
+                      }}
+                    >
                       {formatCurrency(requirement.minimum_limit)}
                     </Text>
                     <Row style={{ flex: 1, paddingLeft: 16, paddingRight: 16 }}>
@@ -403,14 +544,27 @@ export default function OrgCoverageRequirementsPage({
                           borderRadius: 9999,
                           fontSize: 12,
                           fontWeight: 500,
-                          backgroundColor: requirement.required ? 'var(--color-green2)' : 'var(--color-gray2)',
-                          color: requirement.required ? 'var(--color-green11)' : 'var(--color-gray11)',
+                          backgroundColor: requirement.required
+                            ? 'var(--color-green2)'
+                            : 'var(--color-gray2)',
+                          color: requirement.required
+                            ? 'var(--color-green11)'
+                            : 'var(--color-gray11)',
                         }}
                       >
                         {requirement.required ? 'Required' : 'Optional'}
                       </Text>
                     </Row>
-                    <Row style={{ flex: 1, paddingLeft: 16, paddingRight: 16, alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
+                    <Row
+                      style={{
+                        flex: 1,
+                        paddingLeft: 16,
+                        paddingRight: 16,
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        gap: 8,
+                      }}
+                    >
                       <Button
                         variant="ghost"
                         onPress={() => setEditingRequirement(requirement)}
@@ -513,8 +667,10 @@ export default function OrgCoverageRequirementsPage({
         <Stack style={{ gap: 16 }}>
           <Text style={{ color: 'var(--color-color11)' }}>
             Are you sure you want to delete{' '}
-            <Text style={{ fontWeight: 600, color: 'var(--color-color12)' }}>{deleteConfirm?.name}</Text>? This
-            action cannot be undone and may affect compliance calculations for all projects.
+            <Text style={{ fontWeight: 600, color: 'var(--color-color12)' }}>
+              {deleteConfirm?.name}
+            </Text>
+            ? This action cannot be undone and may affect compliance calculations for all projects.
           </Text>
           <Row style={{ justifyContent: 'flex-end', gap: 12 }}>
             <ButtonCommon
@@ -531,5 +687,5 @@ export default function OrgCoverageRequirementsPage({
         </Stack>
       </Modal>
     </Stack>
-  );
+  )
 }

@@ -1,6 +1,6 @@
 /**
  * tRPC Provider Component
- * REQ-286: tRPC Client Setup
+ * tRPC Client Setup
  *
  * Wraps the app with tRPC and React Query providers.
  * Enables type-safe API calls throughout the application.

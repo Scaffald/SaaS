@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { X, Info } from 'lucide-react';
-import { Stack, Row, Text, H2, Input, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H2, Input, Card } from '@scaffald/ui';
 import Textarea from '../Common/Textarea';
 import { Task, BrokerClient, PolicyData, Project, User, TaskType, TaskTypeCategory } from '../../types';
 import Button from '../Common/Button';
@@ -50,7 +50,7 @@ export default function TaskModal({
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // REQ-261: Task Type integration state
+  // Task Type integration state
   const [taskTypes, setTaskTypes] = useState<TaskType[]>([]);
   const [taskTypesLoading, setTaskTypesLoading] = useState(true);
   const [selectedTaskType, setSelectedTaskType] = useState<TaskType | null>(null);
@@ -64,7 +64,7 @@ export default function TaskModal({
     custom: 'Custom',
   };
 
-  // REQ-261: Fetch task types on mount
+  // Fetch task types on mount
   const fetchTaskTypes = useCallback(async () => {
     setTaskTypesLoading(true);
     const response = await getActiveTaskTypes();
@@ -78,7 +78,7 @@ export default function TaskModal({
     fetchTaskTypes();
   }, [fetchTaskTypes]);
 
-  // REQ-261: Group task types by category
+  // Group task types by category
   const taskTypesByCategory = taskTypes.reduce<Record<TaskTypeCategory, TaskType[]>>(
     (acc, tt) => {
       if (!acc[tt.category]) {
@@ -90,7 +90,7 @@ export default function TaskModal({
     {} as Record<TaskTypeCategory, TaskType[]>
   );
 
-  // REQ-261: Handle task type selection and auto-populate defaults
+  // Handle task type selection and auto-populate defaults
   const handleTaskTypeChange = (taskTypeId: string) => {
     const selectedType = taskTypes.find((tt) => tt.id === taskTypeId);
     setSelectedTaskType(selectedType || null);
@@ -328,7 +328,7 @@ export default function TaskModal({
               />
             </Stack>
 
-            {/* REQ-261: Task Type selection with descriptions */}
+            {/* Task Type selection with descriptions */}
             <Stack gap={8}>
               <label style={labelStyle}>Task Type</label>
               <select

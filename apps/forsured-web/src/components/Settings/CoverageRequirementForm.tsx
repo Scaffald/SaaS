@@ -1,12 +1,9 @@
 /**
- * REQ-263: Org-Level vs Project-Level Coverage Distinction
- * TASK-3: Build Org Coverage Requirements Settings UI
- *
  * Form component for creating and editing coverage limit requirements.
  */
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { Stack, Row, Text, H3, Button, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H3, Button, Grid } from '@scaffald/ui'
 import ButtonCommon from '../Common/Button'
 import Input from '../Common/Input'
 import Select from '../Common/Select'

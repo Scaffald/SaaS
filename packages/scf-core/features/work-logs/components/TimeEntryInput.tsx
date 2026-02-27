@@ -1,30 +1,30 @@
-import { MinusCircle } from '@tamagui/lucide-icons'
-import { memo } from 'react'
-import { Controller, useFormContext } from 'react-hook-form'
-import { Platform } from 'react-native'
-import { Button, Input, Text, XStack, YStack } from '@unicornlove/ui'
+import { MinusCircle } from "lucide-react-native";
+import { memo } from "react";
+import { Controller, useFormContext } from "react-hook-form";
+import { Platform } from "react-native";
+import { Button, Input, Text, Row, Stack } from "@scaffald/ui";
 
-import type { CreateWorkLogInput } from '@scf/schemas'
+import type { CreateWorkLogInput } from "@scf/schemas";
 
 export interface TimeEntryInputProps {
-  index: number
-  onRemove?: () => void
-  disableRemove?: boolean
+  index: number;
+  onRemove?: () => void;
+  disableRemove?: boolean;
 }
 
-const getInputPropsForPlatform = () => {
-  if (Platform.OS === 'web') {
+const getInputPropsForPlatform = (): Record<string, unknown> => {
+  if (Platform.OS === "web") {
     return {
-      type: 'time' as const,
+      type: "time",
       step: 300,
-    }
+    };
   }
 
   return {
-    inputMode: 'numeric' as const,
-    keyboardType: 'numbers-and-punctuation' as const,
-  }
-}
+    inputMode: "numeric" as const,
+    keyboardType: "numbers-and-punctuation" as const,
+  };
+};
 
 export const TimeEntryInput = memo(function TimeEntryInput({
   index,
@@ -34,24 +34,19 @@ export const TimeEntryInput = memo(function TimeEntryInput({
   const {
     control,
     formState: { errors },
-  } = useFormContext<CreateWorkLogInput>()
+  } = useFormContext<CreateWorkLogInput>();
 
-  const rowError = errors.timeEntries?.[index]
+  const rowError = errors.timeEntries?.[index];
 
   return (
-    <YStack
+    <Stack
       borderWidth={1}
-      borderColor="$borderColor"
-      borderRadius="$4"
-      padding="$3"
-      gap="$2"
-      backgroundColor="$background"
+      style={{ borderColor: "#e2e8f0", borderRadius: 16, padding: 8 }}
+      gap={8}
     >
-      <XStack gap="$3" alignItems="center">
-        <YStack flex={1} gap="$1">
-          <Text fontWeight="600" fontSize="$3">
-            Start Time
-          </Text>
+      <Row gap={12} align="center">
+        <Stack flex={1} gap={4}>
+          <Text>Start Time</Text>
           <Controller
             control={control}
             name={`timeEntries.${index}.start`}
@@ -66,16 +61,12 @@ export const TimeEntryInput = memo(function TimeEntryInput({
             )}
           />
           {rowError?.start?.message && (
-            <Text fontSize="$2" color="$red10">
-              {rowError.start.message}
-            </Text>
+            <Text style={{ color: "#ef4444" }}>{rowError.start.message}</Text>
           )}
-        </YStack>
+        </Stack>
 
-        <YStack flex={1} gap="$1">
-          <Text fontWeight="600" fontSize="$3">
-            End Time
-          </Text>
+        <Stack flex={1} gap={4}>
+          <Text>End Time</Text>
           <Controller
             control={control}
             name={`timeEntries.${index}.end`}
@@ -90,28 +81,24 @@ export const TimeEntryInput = memo(function TimeEntryInput({
             )}
           />
           {rowError?.end?.message && (
-            <Text fontSize="$2" color="$red10">
-              {rowError.end.message}
-            </Text>
+            <Text style={{ color: "#ef4444" }}>{rowError.end.message}</Text>
           )}
-        </YStack>
+        </Stack>
 
         <Button
-          size="$3"
-          chromeless
+          size="sm"
+          variant="outline"
           onPress={onRemove}
           disabled={disableRemove}
-          icon={MinusCircle}
+          iconStart={MinusCircle}
           accessibilityLabel="Remove time entry"
-          style={{ alignSelf: 'flex-end' }}
+          style={{ alignSelf: "flex-end" }}
         />
-      </XStack>
+      </Row>
 
-      {typeof rowError?.message === 'string' && (
-        <Text fontSize="$2" color="$red10">
-          {rowError.message}
-        </Text>
+      {typeof rowError?.message === "string" && (
+        <Text style={{ color: "#ef4444" }}>{rowError.message}</Text>
       )}
-    </YStack>
-  )
-})
+    </Stack>
+  );
+});

@@ -1,7 +1,7 @@
 /**
  * Audit Middleware Tests
  *
- * REQ-130: Comprehensive Audit Logging with 7-Year Retention
+ * Comprehensive Audit Logging with 7-Year Retention
  *
  * Tests for tRPC audit middleware that automatically logs all procedure calls.
  * Follows the testing pyramid with thorough unit tests for all functions.

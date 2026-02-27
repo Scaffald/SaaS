@@ -1,8 +1,10 @@
 import type { ScreeningAnswers } from '@scf/schemas'
-import type { AddressResult } from '@unicornlove/ui'
-import { AddressAutocomplete, ResponsiveSelect } from '@unicornlove/ui'
-import { useState } from 'react'
-import { Button, Input, Label, Text, XStack, YStack } from '@unicornlove/ui'
+import type { AddressResult } from '@scaffald/ui'
+import { createMapboxGeocodingProvider } from '@scf/core/utils/mapbox-geocoding-provider'
+import { AddressAutocomplete, ResponsiveSelect, useThemeContext } from '@scaffald/ui'
+import { useMemo, useState } from 'react'
+import { Button, Input, Label, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 const EARLIEST_START_DATE_OPTIONS = [
   { label: 'Immediately', value: 'Immediately' },
@@ -70,7 +72,12 @@ export function ScreeningStep({
   optionalSkills = [],
 }: ScreeningStepProps) {
   const [errors, setErrors] = useState<Partial<Record<keyof ScreeningAnswers, string>>>({})
+  const { theme } = useThemeContext()
   const mapboxToken = process.env.EXPO_PUBLIC_MAPBOX_TOKEN
+  const mapboxProvider = useMemo(
+    () => (mapboxToken ? createMapboxGeocodingProvider(mapboxToken) : null),
+    [mapboxToken]
+  )
 
   /**
    * Validate all fields before continuing
@@ -111,23 +118,21 @@ export function ScreeningStep({
   }
 
   return (
-    <YStack gap="$6" width="100%" maxWidth={600} padding="$4">
+    <Stack gap={24} width="100%" maxWidth={600} padding="md">
       {/* Header */}
-      <YStack gap="$2">
-        <Text fontSize="$8" fontWeight="bold" color="$color12">
-          Basic Information
-        </Text>
-        <Text fontSize="$4" color="$color11">
+      <Stack gap={8}>
+        <Text style={{ color: colors.text[theme].secondary }}>Basic Information</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
           Please provide some basic information to help us match you with this position.
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Current Location */}
-      <YStack gap="$2">
-        <Label htmlFor="current_location" fontSize="$4" fontWeight="600">
-          Your current location <Text color="$red10">*</Text>
+      <Stack gap={8}>
+        <Label htmlFor="current_location">
+          Your current location <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
         </Label>
-        {mapboxToken ? (
+        {mapboxProvider ? (
           <AddressAutocomplete
             value={answers.current_location || ''}
             onChange={(text) => {
@@ -143,9 +148,8 @@ export function ScreeningStep({
               }
             }}
             placeholder="Search locations"
-            provider="mapbox"
-            apiKey={mapboxToken}
-            zoomLevel="city"
+            provider={mapboxProvider}
+            searchOptions={{ zoomLevel: 'city' }}
             error={errors.current_location}
             disabled={isSubmitting}
           />
@@ -160,28 +164,30 @@ export function ScreeningStep({
                 setErrors({ ...errors, current_location: undefined })
               }
             }}
-            borderColor={errors.current_location ? '$red9' : '$borderColor'}
+            style={{
+              borderColor: errors.current_location
+                ? theme === "light" ? colors.error[300] : colors.error[700]
+                : colors.border[theme].default,
+            }}
             disabled={isSubmitting}
           />
         )}
         {errors.current_location && (
-          <Text fontSize="$2" color="$red10">
-            {errors.current_location}
-          </Text>
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors.current_location}</Text>
         )}
-      </YStack>
+      </Stack>
 
       {/* Willing to Relocate */}
-      <YStack gap="$2">
-        <Label fontSize="$4" fontWeight="600">
-          Are you willing to relocate? <Text color="$red10">*</Text>
+      <Stack gap={8}>
+        <Label>
+          Are you willing to relocate? <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
         </Label>
-        <XStack gap="$3">
+        <Row gap={12}>
           <Button
-            flex={1}
-            size="$4"
-            theme={answers.willing_to_relocate ? 'info' : undefined}
-            variant={answers.willing_to_relocate ? undefined : 'outlined'}
+            size="md"
+            color={answers.willing_to_relocate ? 'primary' : undefined}
+            variant={answers.willing_to_relocate ? undefined : 'outline'}
+            style={{ flex: 1 }}
             onPress={() => {
               onAnswersChange({ ...answers, willing_to_relocate: true })
             }}
@@ -190,10 +196,10 @@ export function ScreeningStep({
             Yes
           </Button>
           <Button
-            flex={1}
-            size="$4"
-            theme={!answers.willing_to_relocate ? 'info' : undefined}
-            variant={!answers.willing_to_relocate ? undefined : 'outlined'}
+            size="md"
+            color={!answers.willing_to_relocate ? 'primary' : undefined}
+            variant={!answers.willing_to_relocate ? undefined : 'outline'}
+            style={{ flex: 1 }}
             onPress={() => {
               onAnswersChange({ ...answers, willing_to_relocate: false })
             }}
@@ -201,13 +207,13 @@ export function ScreeningStep({
           >
             No
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       {/* Years of Experience */}
-      <YStack gap="$2">
-        <Label htmlFor="years_experience" fontSize="$4" fontWeight="600">
-          Years of experience <Text color="$red10">*</Text>
+      <Stack gap={8}>
+        <Label htmlFor="years_experience">
+          Years of experience <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
         </Label>
         <ResponsiveSelect
           value={getYearsExperienceValue()}
@@ -218,72 +224,64 @@ export function ScreeningStep({
             value: option.value,
             label: option.label,
           }))}
-          triggerProps={{
-            id: 'years_experience',
-            borderColor: errors.years_experience ? '$red9' : '$borderColor',
-          }}
+          testID="years_experience"
         />
         {errors.years_experience && (
-          <Text fontSize="$2" color="$red10">
-            {errors.years_experience}
-          </Text>
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors.years_experience}</Text>
         )}
-        <Text fontSize="$2" color="$color10">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Include all relevant work experience, including internships and part-time roles
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Required Skills (Display Only) */}
       {requiredSkills.length > 0 && (
-        <YStack gap="$2">
-          <Label fontSize="$4" fontWeight="600">
-            Required skills
-          </Label>
-          <YStack
-            padding="$3"
-            backgroundColor="$gray3"
-            borderRadius="$3"
-            borderWidth={1}
-            borderColor="$borderColor"
+        <Stack gap={8}>
+          <Label>Required skills</Label>
+          <Stack
+            padding="sm"
+            borderRadius={12}
+            style={{
+              backgroundColor: colors.bg[theme].muted,
+              borderColor: colors.border[theme].default,
+              borderWidth: 1,
+            }}
           >
-            <Text fontSize="$3" color="$color11">
-              {requiredSkills.join(', ')}
-            </Text>
-          </YStack>
-        </YStack>
+            <Text style={{ color: colors.text[theme].secondary }}>{requiredSkills.join(', ')}</Text>
+          </Stack>
+        </Stack>
       )}
 
       {/* Optional Skills (Display Only) */}
       {optionalSkills.length > 0 && (
-        <YStack gap="$2">
-          <Label fontSize="$4" fontWeight="600">
-            Optional skills
-          </Label>
-          <YStack
-            padding="$3"
-            backgroundColor="$gray3"
-            borderRadius="$3"
-            borderWidth={1}
-            borderColor="$borderColor"
+        <Stack gap={8}>
+          <Label>Optional skills</Label>
+          <Stack
+            padding="sm"
+            borderRadius={12}
+            style={{
+              backgroundColor: colors.bg[theme].muted,
+              borderColor: colors.border[theme].default,
+              borderWidth: 1,
+            }}
           >
-            <Text fontSize="$3" color="$color11">
-              {optionalSkills.join(', ')}
-            </Text>
-          </YStack>
-        </YStack>
+            <Text style={{ color: colors.text[theme].secondary }}>{optionalSkills.join(', ')}</Text>
+          </Stack>
+        </Stack>
       )}
 
       {/* Work Authorization */}
-      <YStack gap="$2">
-        <Label fontSize="$4" fontWeight="600">
-          Are you authorized to work legally in the US? <Text color="$red10">*</Text>
+      <Stack gap={8}>
+        <Label>
+          Are you authorized to work legally in the US?{' '}
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
         </Label>
-        <XStack gap="$3">
+        <Row gap={12}>
           <Button
-            flex={1}
-            size="$4"
-            theme={answers.is_authorized_to_work ? 'info' : undefined}
-            variant={answers.is_authorized_to_work ? undefined : 'outlined'}
+            size="md"
+            color={answers.is_authorized_to_work ? 'primary' : undefined}
+            variant={answers.is_authorized_to_work ? undefined : 'outline'}
+            style={{ flex: 1 }}
             onPress={() => {
               onAnswersChange({ ...answers, is_authorized_to_work: true })
               if (errors.is_authorized_to_work) {
@@ -295,10 +293,10 @@ export function ScreeningStep({
             Yes
           </Button>
           <Button
-            flex={1}
-            size="$4"
-            theme={!answers.is_authorized_to_work ? 'info' : undefined}
-            variant={!answers.is_authorized_to_work ? undefined : 'outlined'}
+            size="md"
+            color={!answers.is_authorized_to_work ? 'primary' : undefined}
+            variant={!answers.is_authorized_to_work ? undefined : 'outline'}
+            style={{ flex: 1 }}
             onPress={() => {
               onAnswersChange({ ...answers, is_authorized_to_work: false })
               if (errors.is_authorized_to_work) {
@@ -309,18 +307,16 @@ export function ScreeningStep({
           >
             No
           </Button>
-        </XStack>
+        </Row>
         {errors.is_authorized_to_work && (
-          <Text fontSize="$2" color="$red10">
-            {errors.is_authorized_to_work}
-          </Text>
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors.is_authorized_to_work}</Text>
         )}
-      </YStack>
+      </Stack>
 
       {/* Earliest Start Date */}
-      <YStack gap="$2">
-        <Label htmlFor="earliest_start_date" fontSize="$4" fontWeight="600">
-          Earliest start date <Text color="$red10">*</Text>
+      <Stack gap={8}>
+        <Label htmlFor="earliest_start_date">
+          Earliest start date <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
         </Label>
         <ResponsiveSelect
           value={answers.earliest_start_date || ''}
@@ -337,19 +333,19 @@ export function ScreeningStep({
             label: option.label,
           }))}
         />
-      </YStack>
+      </Stack>
 
       {/* Continue Button */}
       <Button
-        size="$5"
-        theme="info"
+        size="lg"
+        color="primary"
         onPress={validateAndContinue}
         disabled={isSubmitting}
-        marginTop="$4"
+        style={{ marginTop: 16 }}
       >
         {isSubmitting ? 'Saving...' : 'Continue'}
       </Button>
-    </YStack>
+    </Stack>
   )
 
   /**

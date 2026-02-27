@@ -1,8 +1,8 @@
 import { useThemeSetting } from '@scf/core/provider/theme/UniversalThemeProvider'
 import { supabase } from '@scf/core/utils/supabase/client'
-import { LogOut, Moon, Sun } from '@tamagui/lucide-icons'
+import { LogOut, Moon, Sun } from 'lucide-react-native'
 import type { GestureResponderEvent } from 'react-native'
-import { Button, XStack } from '@unicornlove/ui'
+import { Button, Row } from '@scaffald/ui'
 
 /**
  * DrawerFooter component renders fixed action buttons at the bottom of the drawer
@@ -29,55 +29,37 @@ export const DrawerFooter = () => {
   const isDark = resolvedTheme === 'dark'
 
   return (
-    <XStack
-      paddingHorizontal="$4"
-      paddingVertical="$3"
-      borderTopWidth={1}
-      borderTopColor="$color4"
-      justifyContent="space-between"
-      alignItems="center"
+    <Row
+      style={{
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        borderTopWidth: 1,
+        borderTopColor: '#e2e8f0',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}
     >
       {/* Theme Toggle Button */}
       <Button
-        size="$3"
-        circular
-        backgroundColor="$color3"
-        borderColor="$color4"
-        borderWidth={1}
-        hoverStyle={{
-          backgroundColor: '$color4',
-          borderColor: '$color5',
-        }}
-        pressStyle={{
-          backgroundColor: '$color5',
-          borderColor: '$color6',
-        }}
+        size="sm"
+        variant="outline"
+        color="gray"
         onPress={handleThemeToggle}
         aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
       >
-        {isDark ? <Sun size={20} color="$blue5" /> : <Moon size={20} color="$blue5" />}
+        {isDark ? <Sun size={20} color="#3b82f6" /> : <Moon size={20} color="#3b82f6" />}
       </Button>
 
       {/* Logout Button */}
       <Button
-        size="$3"
-        circular
-        backgroundColor="$color3"
-        borderColor="$color4"
-        borderWidth={1}
-        hoverStyle={{
-          backgroundColor: '$color4',
-          borderColor: '$color5',
-        }}
-        pressStyle={{
-          backgroundColor: '$color5',
-          borderColor: '$color6',
-        }}
+        size="sm"
+        variant="outline"
+        color="gray"
         onPress={handleLogout}
         aria-label="Sign out"
       >
-        <LogOut size={20} color="$blue5" />
+        <LogOut size={20} color="#3b82f6" />
       </Button>
-    </XStack>
+    </Row>
   )
 }

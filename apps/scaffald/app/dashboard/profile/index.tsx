@@ -11,7 +11,7 @@ import {
   PreferencesWidget,
 } from '@scf/core/features/profile/widgets'
 import { useUser } from '@scf/core/utils/useUser'
-import { YStack } from '@unicornlove/ui'
+import { Stack } from '@scaffald/ui'
 
 /**
  * Profile Index - Own profile view
@@ -29,19 +29,19 @@ export default function ProfileIndexScreen() {
       <ProfilePage
         breadcrumbs={[{ route: ROUTES.DASHBOARD.PROFILE }]}
         leftContent={
-          <YStack gap="$4">
+          <Stack gap={16}>
             <GeneralInfoWidget userId={user.id} showEdit />
             <ExperienceWidget userId={user.id} showEdit />
             <EducationWidget userId={user.id} showEdit />
-          </YStack>
+          </Stack>
         }
         rightContent={
-          <YStack gap="$4">
+          <Stack gap={16}>
             <ProfileSkillsSection userId={user.id} showEdit />
             <IdVerificationWidget />
             <ProfileCertificationsRight />
             <PreferencesWidget showEdit />
-          </YStack>
+          </Stack>
         }
       />
     </ProfileCertificationsHighlightProvider>

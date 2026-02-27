@@ -1,7 +1,7 @@
-import { api } from '@scf/core/utils/api'
-import { Dialog } from '@unicornlove/ui'
-import { Download, X } from '@tamagui/lucide-icons'
-import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { useTransactionReceipt } from '@scf/core/utils/payments-sdk-hooks'
+import { Modal, ModalHeader, ModalContent, ModalActions, useThemeContext } from '@scaffald/ui'
+import { Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type TransactionReceiptModalProps = {
   transactionId: string
@@ -14,12 +14,10 @@ export function TransactionReceiptModal({
   open,
   onOpenChange,
 }: TransactionReceiptModalProps) {
-  const receiptQuery = api.payments.generateReceipt.useQuery(
-    { transactionId },
-    {
-      enabled: open && Boolean(transactionId),
-    }
-  )
+  const { theme } = useThemeContext()
+  const receiptQuery = useTransactionReceipt(transactionId, {
+    enabled: open && Boolean(transactionId),
+  })
 
   const handleDownloadReceipt = () => {
     // TODO: Generate PDF receipt
@@ -49,107 +47,76 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} modal>
-      <Dialog.Portal>
-        <Dialog.Overlay
-          key="overlay"
-          animation="quick"
-          opacity={0.5}
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
-        />
-        <Dialog.Content
-          bordered
-          elevate
-          key="content"
-          animateOnly={['transform', 'opacity']}
-          animation={[
-            'quick',
-            {
-              opacity: {
-                overshootClamping: true,
-              },
-            },
-          ]}
-          enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
-          exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
-          gap="$4"
-          width="90%"
-          style={{ maxWidth: 600 }}
-        >
-          <Dialog.Title>Transaction Receipt</Dialog.Title>
-          <Dialog.Description>View and download receipt for this transaction.</Dialog.Description>
-
-          {receiptQuery.isLoading ? (
-            <YStack alignItems="center" paddingVertical="$6" gap="$3">
-              <Spinner size="large" />
-              <Text color="$color10">Loading receipt…</Text>
-            </YStack>
-          ) : receiptQuery.error ? (
-            <Card padding="$4" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
-              <Text color="$red11">Failed to load receipt: {receiptQuery.error.message}</Text>
+    <Modal visible={open} onClose={() => onOpenChange(false)} width="90%" style={{ maxWidth: 600 }}>
+      <ModalHeader title="Transaction Receipt" description="View and download receipt for this transaction." />
+      <ModalContent>
+        {receiptQuery.isLoading ? (
+          <Stack align="center" style={{ paddingVertical: 24 }} gap={12}>
+            <Spinner size="lg" />
+            <Text style={{ color: colors.text[theme].secondary }}>Loading receipt…</Text>
+          </Stack>
+        ) : receiptQuery.error ? (
+          <Card
+            padding="md"
+            style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
+            borderColor={theme === "light" ? colors.error[300] : colors.error[700]}
+            borderWidth={1}
+          >
+            <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
+              Failed to load receipt: {receiptQuery.error.message}
+            </Text>
+          </Card>
+        ) : receiptQuery.data ? (
+          <Stack gap={16}>
+            <Card
+              padding="md"
+              style={{ backgroundColor: colors.bg[theme].subtle }}
+              borderColor={colors.border[theme].default}
+              borderWidth={1}
+            >
+              <Stack gap={12}>
+                <Row justify="space-between" align="center">
+                  <Text>{receiptQuery.data.receiptNumber}</Text>
+                  <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
+                    {receiptQuery.data.amount}
+                  </Text>
+                </Row>
+                <Stack gap={8}>
+                  <Row justify="space-between">
+                    <Text style={{ color: colors.text[theme].secondary }}>Date:</Text>
+                    <Text>{new Date(receiptQuery.data.date).toLocaleString()}</Text>
+                  </Row>
+                  <Row justify="space-between">
+                    <Text style={{ color: colors.text[theme].secondary }}>Organization:</Text>
+                    <Text>{receiptQuery.data.organizationName}</Text>
+                  </Row>
+                  <Row justify="space-between">
+                    <Text style={{ color: colors.text[theme].secondary }}>Type:</Text>
+                    <Text>{receiptQuery.data.transactionType}</Text>
+                  </Row>
+                  <Row justify="space-between">
+                    <Text style={{ color: colors.text[theme].secondary }}>Status:</Text>
+                    <Text>{receiptQuery.data.status}</Text>
+                  </Row>
+                  <Row justify="space-between">
+                    <Text style={{ color: colors.text[theme].secondary }}>Payment Intent:</Text>
+                    <Text style={{ fontFamily: 'monospace' }}>
+                      {receiptQuery.data.stripePaymentIntentId}
+                    </Text>
+                  </Row>
+                </Stack>
+              </Stack>
             </Card>
-          ) : receiptQuery.data ? (
-            <YStack gap="$4">
-              <Card
-                padding="$4"
-                backgroundColor="$color2"
-                borderColor="$borderColor"
-                borderWidth={1}
-              >
-                <YStack gap="$3">
-                  <XStack justifyContent="space-between" alignItems="center">
-                    <Text fontSize="$5" fontWeight="700">
-                      {receiptQuery.data.receiptNumber}
-                    </Text>
-                    <Text fontSize="$4" fontWeight="600" color="$green11">
-                      {receiptQuery.data.amount}
-                    </Text>
-                  </XStack>
-                  <YStack gap="$2">
-                    <XStack justifyContent="space-between">
-                      <Text color="$color10">Date:</Text>
-                      <Text>{new Date(receiptQuery.data.date).toLocaleString()}</Text>
-                    </XStack>
-                    <XStack justifyContent="space-between">
-                      <Text color="$color10">Organization:</Text>
-                      <Text>{receiptQuery.data.organizationName}</Text>
-                    </XStack>
-                    <XStack justifyContent="space-between">
-                      <Text color="$color10">Type:</Text>
-                      <Text>{receiptQuery.data.transactionType}</Text>
-                    </XStack>
-                    <XStack justifyContent="space-between">
-                      <Text color="$color10">Status:</Text>
-                      <Text fontWeight="600">{receiptQuery.data.status}</Text>
-                    </XStack>
-                    <XStack justifyContent="space-between">
-                      <Text color="$color10">Payment Intent:</Text>
-                      <Text fontSize="$2" style={{ fontFamily: 'monospace' }}>
-                        {receiptQuery.data.stripePaymentIntentId}
-                      </Text>
-                    </XStack>
-                  </YStack>
-                </YStack>
-              </Card>
-
-              <XStack gap="$2" justifyContent="flex-end">
-                <Button
-                  size="$4"
-                  variant="outlined"
-                  icon={Download}
-                  onPress={handleDownloadReceipt}
-                >
-                  Download Receipt
-                </Button>
-                <Button size="$4" variant="outlined" icon={X} onPress={() => onOpenChange(false)}>
-                  Close
-                </Button>
-              </XStack>
-            </YStack>
-          ) : null}
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog>
+          </Stack>
+        ) : null}
+      </ModalContent>
+      <ModalActions
+        secondaryAction={{ label: 'Close', onPress: () => onOpenChange(false) }}
+        primaryAction={receiptQuery.data ? {
+          label: 'Download Receipt',
+          onPress: handleDownloadReceipt,
+        } : undefined}
+      />
+    </Modal>
   )
 }

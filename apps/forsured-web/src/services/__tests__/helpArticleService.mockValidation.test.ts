@@ -1,7 +1,7 @@
 /**
  * Help Article Service - Mock Validation Tests
  *
- * REQ-306: Mock Validation
+ * Mock Validation
  *
  * These tests validate that the mocks used in helpArticleService.test.ts
  * match the real Supabase PostgREST API behavior.

@@ -1,13 +1,16 @@
-import type { Boundary, Coordinate } from '@unicornlove/ui'
-import { Edit3, Plus, Trash2 } from '@tamagui/lucide-icons'
+import type { MapCoordinate } from '@scaffald/ui'
+import { Edit3, Plus, Trash2 } from 'lucide-react-native'
 import { useEffect, useRef, useState } from 'react'
-import { Button, Card, Input, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Input, Text, Row, Stack } from '@scaffald/ui'
+
+/** Polygon boundary as array of [lng, lat] coordinates */
+export type Boundary = MapCoordinate[]
 
 export interface SiteBoundaryDrawerProps {
   boundary?: Boundary
   onBoundaryChange?: (boundary: Boundary) => void
   onAreaChange?: (areaSqft: number) => void
-  center?: [number, number]
+  center?: MapCoordinate
   zoom?: number
 }
 
@@ -61,7 +64,7 @@ export function SiteBoundaryDrawer({
 
   const handleAddPoint = () => {
     // Add a new point at the center of the current boundary or at map center
-    const newPoint: Coordinate = center
+    const newPoint: MapCoordinate = center
     const newCoords = [...coordinates, newPoint]
     setCoordinates(newCoords)
     onBoundaryChange?.(newCoords)
@@ -72,12 +75,12 @@ export function SiteBoundaryDrawer({
       // Need at least 3 points for a polygon
       return
     }
-    const newCoords = coordinates.filter((_, i) => i !== index)
+    const newCoords = coordinates.filter((_: MapCoordinate, i: number) => i !== index)
     setCoordinates(newCoords)
     onBoundaryChange?.(newCoords)
   }
 
-  const handleCoordinateChange = (index: number, coord: Coordinate) => {
+  const handleCoordinateChange = (index: number, coord: MapCoordinate) => {
     const newCoords = [...coordinates]
     newCoords[index] = coord
     setCoordinates(newCoords)
@@ -87,20 +90,21 @@ export function SiteBoundaryDrawer({
   const areaSqft = calculateArea(coordinates)
 
   return (
-    <YStack gap="$4">
-      <Card padding="$4">
-        <YStack gap="$4">
-          <XStack justifyContent="space-between" alignItems="center">
-            <Text fontSize="$6" fontWeight="600">
-              Site Boundary
-            </Text>
-            <Button size="$2" icon={Plus} onPress={handleAddPoint}>
+    <Stack gap={16}>
+      <Card padding="md">
+        <Stack gap={16}>
+          <Row justify="space-between" align="center">
+            <Text>Site Boundary</Text>
+            <Button size="sm" iconStart={Plus} onPress={handleAddPoint}>
               Add Point
             </Button>
-          </XStack>
+          </Row>
 
           {/* Map Container - TODO: Integrate Mapbox GL Draw */}
-          <Card padding="$4" backgroundColor="$gray2" minHeight={400} borderRadius="$4">
+          <Card
+            padding="md"
+            style={{ backgroundColor: '$gray2', minHeight: 400, borderRadius: 16 }}
+          >
             <Text color="$gray10" style={{ textAlign: 'center' }}>
               Map display with interactive polygon drawing coming soon.
               {'\n'}
@@ -119,8 +123,11 @@ export function SiteBoundaryDrawer({
 
           {/* Area Display */}
           {areaSqft > 0 && (
-            <Card padding="$3" backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
-              <Text fontWeight="600" color="$blue11">
+            <Card
+              padding="md"
+              style={{ backgroundColor: '$blue2', borderColor: '$blue8', borderWidth: 1 }}
+            >
+              <Text color="$blue11">
                 Calculated Area: {areaSqft.toLocaleString(undefined, { maximumFractionDigits: 2 })}{' '}
                 sq ft
               </Text>
@@ -128,27 +135,24 @@ export function SiteBoundaryDrawer({
           )}
 
           {/* Coordinate List */}
-          <YStack gap="$2">
-            <Text fontWeight="600">Boundary Coordinates</Text>
+          <Stack gap={8}>
+            <Text>Boundary Coordinates</Text>
             {coordinates.length === 0 ? (
               <Text color="$gray10">No points added yet. Click "Add Point" to start drawing.</Text>
             ) : (
-              <YStack gap="$2">
-                {coordinates.map((coord, index) => (
+              <Stack gap={8}>
+                {coordinates.map((coord: MapCoordinate, index: number) => (
                   <Card
                     key={`${coord[0]}-${coord[1]}-${index}`}
-                    padding="$2"
-                    backgroundColor="$gray2"
+                    padding="sm"
+                    style={{ backgroundColor: '$gray2' }}
                   >
-                    <XStack gap="$2" alignItems="center" justifyContent="space-between">
-                      <XStack gap="$2" flex={1}>
-                        <Text fontSize="$2" color="$gray10">
-                          Point {index + 1}:
-                        </Text>
+                    <Row gap={8} align="center" justify="space-between">
+                      <Row gap={8} style={{ flex: 1 }}>
+                        <Text color="$gray10">Point {index + 1}:</Text>
                         {editingIndex === index ? (
-                          <XStack gap="$2" flex={1}>
+                          <Row gap={8} style={{ flex: 1 }}>
                             <Input
-                              size="$2"
                               value={coord[0].toString()}
                               onChangeText={(value) => {
                                 const lng = Number.parseFloat(value) || 0
@@ -158,7 +162,6 @@ export function SiteBoundaryDrawer({
                               keyboardType="numeric"
                             />
                             <Input
-                              size="$2"
                               value={coord[1].toString()}
                               onChangeText={(value) => {
                                 const lat = Number.parseFloat(value) || 0
@@ -167,43 +170,43 @@ export function SiteBoundaryDrawer({
                               placeholder="Latitude"
                               keyboardType="numeric"
                             />
-                            <Button size="$2" onPress={() => setEditingIndex(null)}>
+                            <Button size="sm" onPress={() => setEditingIndex(null)}>
                               Save
                             </Button>
-                          </XStack>
+                          </Row>
                         ) : (
-                          <Text flex={1}>
+                          <Text style={{ flex: 1 }}>
                             [{coord[0].toFixed(6)}, {coord[1].toFixed(6)}]
                           </Text>
                         )}
-                      </XStack>
-                      <XStack gap="$2">
+                      </Row>
+                      <Row gap={8}>
                         <Button
-                          size="$2"
-                          variant="outlined"
-                          icon={Edit3}
+                          size="sm"
+                          variant="outline"
+                          iconStart={Edit3}
                           onPress={() => setEditingIndex(index)}
                           disabled={editingIndex !== null}
                         />
                         <Button
-                          size="$2"
-                          variant="outlined"
-                          icon={Trash2}
+                          size="sm"
+                          variant="outline"
+                          iconStart={Trash2}
                           onPress={() => handleRemovePoint(index)}
                           disabled={coordinates.length <= 3 || editingIndex !== null}
                         />
-                      </XStack>
-                    </XStack>
+                      </Row>
+                    </Row>
                   </Card>
                 ))}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
 
           {coordinates.length > 0 && (
             <Button
-              backgroundColor="$red9"
-              color="$red12"
+              color="error"
+              style={{ backgroundColor: '$red9' }}
               onPress={() => {
                 setCoordinates([])
                 onBoundaryChange?.([])
@@ -212,8 +215,8 @@ export function SiteBoundaryDrawer({
               Clear All Points
             </Button>
           )}
-        </YStack>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   )
 }

@@ -2,233 +2,48 @@
  * EndorsementList - Display policy endorsements/riders
  */
 
-import { styled, YStack, XStack, Text, type YStackProps } from 'tamagui'
-import { FileText, Calendar, ChevronRight } from '@tamagui/lucide-icons'
+import { Stack, Row, Box, Text } from '@scaffald/ui'
+import { colors, spacing, borderRadius } from '@scaffald/ui/tokens'
+import type { StackProps } from '@scaffald/ui'
+import { FileText, Calendar, ChevronRight } from 'lucide-react-native'
+import { Pressable } from 'react-native'
 
 export interface Endorsement {
   id: string
-  /** Endorsement number/code */
   number: string
-  /** Endorsement name */
   name: string
-  /** Description of what the endorsement does */
   description?: string
-  /** Effective date of the endorsement */
   effectiveDate: string
-  /** Additional premium (can be negative for credits) */
   premiumChange?: number
-  /** Status of the endorsement */
   status: 'active' | 'pending' | 'expired' | 'removed'
 }
 
-export interface EndorsementListProps extends Omit<YStackProps, 'children'> {
-  /** Array of endorsements */
+export interface EndorsementListProps extends Omit<StackProps, 'children'> {
   endorsements: Endorsement[]
-  /** Title for the list */
   title?: string
-  /** Callback when an endorsement is clicked */
   onEndorsementPress?: (endorsement: Endorsement) => void
 }
 
-const ListContainer = styled(YStack, {
-  name: 'EndorsementList',
-  backgroundColor: '$background',
-  borderRadius: '$lg',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  overflow: 'hidden',
-})
+const statusBgColors = {
+  active: colors.success[100],
+  pending: colors.warning[100],
+  expired: colors.gray[200],
+  removed: colors.error[100],
+} as const
 
-const ListHeader = styled(XStack, {
-  name: 'EndorsementListHeader',
-  padding: '$3',
-  backgroundColor: '$color2',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-})
+const statusTextColors = {
+  active: colors.success[700],
+  pending: colors.warning[700],
+  expired: colors.gray[700],
+  removed: colors.error[700],
+} as const
 
-const ListTitle = styled(Text, {
-  name: 'EndorsementListTitle',
-  fontSize: '$4',
-  fontWeight: '600',
-  color: '$color12',
-})
-
-const EndorsementCount = styled(Text, {
-  name: 'EndorsementCount',
-  fontSize: '$2',
-  color: '$color9',
-  backgroundColor: '$color4',
-  paddingHorizontal: '$2',
-  paddingVertical: '$1',
-  borderRadius: '$full',
-})
-
-const EndorsementItem = styled(XStack, {
-  name: 'EndorsementItem',
-  padding: '$3',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-  gap: '$3',
-  alignItems: 'center',
-  cursor: 'pointer',
-
-  variants: {
-    isLast: {
-      true: {
-        borderBottomWidth: 0,
-      },
-    },
-  } as const,
-
-  hoverStyle: {
-    backgroundColor: '$color2',
-  },
-
-  pressStyle: {
-    backgroundColor: '$color3',
-  },
-})
-
-const EndorsementIcon = styled(XStack, {
-  name: 'EndorsementIcon',
-  width: 40,
-  height: 40,
-  borderRadius: '$md',
-  backgroundColor: '$blue3',
-  alignItems: 'center',
-  justifyContent: 'center',
-})
-
-const EndorsementContent = styled(YStack, {
-  name: 'EndorsementContent',
-  flex: 1,
-  gap: '$1',
-})
-
-const EndorsementHeader = styled(XStack, {
-  name: 'EndorsementHeader',
-  alignItems: 'center',
-  gap: '$2',
-})
-
-const EndorsementNumber = styled(Text, {
-  name: 'EndorsementNumber',
-  fontSize: '$2',
-  color: '$color9',
-  fontFamily: '$mono',
-})
-
-const EndorsementName = styled(Text, {
-  name: 'EndorsementName',
-  fontSize: '$3',
-  fontWeight: '500',
-  color: '$color12',
-})
-
-const EndorsementDescription = styled(Text, {
-  name: 'EndorsementDescription',
-  fontSize: '$2',
-  color: '$color9',
-  numberOfLines: 2,
-})
-
-const EndorsementMeta = styled(XStack, {
-  name: 'EndorsementMeta',
-  gap: '$3',
-  marginTop: '$1',
-})
-
-const MetaItem = styled(XStack, {
-  name: 'EndorsementMetaItem',
-  alignItems: 'center',
-  gap: '$1',
-})
-
-const MetaText = styled(Text, {
-  name: 'EndorsementMetaText',
-  fontSize: '$2',
-  color: '$color9',
-})
-
-const StatusBadge = styled(XStack, {
-  name: 'EndorsementStatusBadge',
-  paddingHorizontal: '$2',
-  paddingVertical: '$1',
-  borderRadius: '$full',
-
-  variants: {
-    status: {
-      active: {
-        backgroundColor: '$green3',
-      },
-      pending: {
-        backgroundColor: '$yellow3',
-      },
-      expired: {
-        backgroundColor: '$gray3',
-      },
-      removed: {
-        backgroundColor: '$red3',
-      },
-    },
-  } as const,
-})
-
-const StatusText = styled(Text, {
-  name: 'EndorsementStatusText',
-  fontSize: '$1',
-  fontWeight: '500',
-
-  variants: {
-    status: {
-      active: {
-        color: '$green11',
-      },
-      pending: {
-        color: '$yellow11',
-      },
-      expired: {
-        color: '$gray11',
-      },
-      removed: {
-        color: '$red11',
-      },
-    },
-  } as const,
-})
-
-const PremiumChange = styled(Text, {
-  name: 'EndorsementPremiumChange',
-  fontSize: '$3',
-  fontWeight: '500',
-
-  variants: {
-    positive: {
-      true: {
-        color: '$red11',
-      },
-      false: {
-        color: '$green11',
-      },
-    },
-  } as const,
-})
-
-const EmptyState = styled(YStack, {
-  name: 'EndorsementEmptyState',
-  padding: '$6',
-  alignItems: 'center',
-  gap: '$2',
-})
-
-const EmptyText = styled(Text, {
-  name: 'EndorsementEmptyText',
-  fontSize: '$3',
-  color: '$color9',
-})
+const statusLabels = {
+  active: 'Active',
+  pending: 'Pending',
+  expired: 'Expired',
+  removed: 'Removed',
+} as const
 
 function formatCurrency(amount: number): string {
   const formatted = new Intl.NumberFormat('en-US', {
@@ -249,13 +64,6 @@ function formatDate(dateString: string): string {
   })
 }
 
-const statusLabels = {
-  active: 'Active',
-  pending: 'Pending',
-  expired: 'Expired',
-  removed: 'Removed',
-} as const
-
 export function EndorsementList({
   endorsements,
   title = 'Endorsements',
@@ -263,59 +71,129 @@ export function EndorsementList({
   ...props
 }: EndorsementListProps) {
   return (
-    <ListContainer {...props}>
-      <ListHeader>
-        <ListTitle>{title}</ListTitle>
-        <EndorsementCount>{endorsements.length}</EndorsementCount>
-      </ListHeader>
+    <Stack
+      style={{
+        backgroundColor: colors.bg?.primary ?? colors.gray[50],
+        borderRadius: borderRadius.l,
+        borderWidth: 1,
+        borderColor: colors.border?.default ?? colors.gray[200],
+        overflow: 'hidden',
+      }}
+      {...props}
+    >
+      <Row
+        align="center"
+        justify="space-between"
+        style={{
+          padding: spacing[12],
+          backgroundColor: colors.gray[100],
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border?.default ?? colors.gray[200],
+        }}
+      >
+        <Text size="lg" weight="semibold" style={{ color: colors.gray[800] }}>
+          {title}
+        </Text>
+        <Box
+          style={{
+            backgroundColor: colors.gray[200],
+            paddingHorizontal: spacing[8],
+            paddingVertical: spacing[4],
+            borderRadius: borderRadius.max,
+          }}
+        >
+          <Text size="sm" style={{ color: colors.gray[500] }}>
+            {endorsements.length}
+          </Text>
+        </Box>
+      </Row>
 
       {endorsements.length === 0 ? (
-        <EmptyState>
-          <FileText size={32} color="$color7" />
-          <EmptyText>No endorsements</EmptyText>
-        </EmptyState>
+        <Stack align="center" gap={spacing[8]} style={{ padding: spacing[24] }}>
+          <FileText size={32} color={colors.gray[400]} />
+          <Text size="md" style={{ color: colors.gray[500] }}>
+            No endorsements
+          </Text>
+        </Stack>
       ) : (
         endorsements.map((endorsement, index) => (
-          <EndorsementItem
+          <Pressable
             key={endorsement.id}
-            isLast={index === endorsements.length - 1}
             onPress={() => onEndorsementPress?.(endorsement)}
           >
-            <EndorsementIcon>
-              <FileText size={20} color="$blue10" />
-            </EndorsementIcon>
+            <Row
+              align="center"
+              gap={spacing[12]}
+              style={{
+                padding: spacing[12],
+                borderBottomWidth: index === endorsements.length - 1 ? 0 : 1,
+                borderBottomColor: colors.border?.default ?? colors.gray[200],
+              }}
+            >
+              <Box
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: borderRadius.m,
+                  backgroundColor: colors.info[100],
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <FileText size={20} color={colors.info[600]} />
+              </Box>
 
-            <EndorsementContent>
-              <EndorsementHeader>
-                <EndorsementNumber>{endorsement.number}</EndorsementNumber>
-                <StatusBadge status={endorsement.status}>
-                  <StatusText status={endorsement.status}>
-                    {statusLabels[endorsement.status]}
-                  </StatusText>
-                </StatusBadge>
-              </EndorsementHeader>
-              <EndorsementName>{endorsement.name}</EndorsementName>
-              {endorsement.description && (
-                <EndorsementDescription>{endorsement.description}</EndorsementDescription>
+              <Stack flex={1} gap={spacing[4]}>
+                <Row align="center" gap={spacing[8]}>
+                  <Text size="sm" style={{ color: colors.gray[500] }}>
+                    {endorsement.number}
+                  </Text>
+                  <Box
+                    style={{
+                      paddingHorizontal: spacing[8],
+                      paddingVertical: spacing[4],
+                      borderRadius: borderRadius.max,
+                      backgroundColor: statusBgColors[endorsement.status],
+                    }}
+                  >
+                    <Text size="xs" weight="medium" style={{ color: statusTextColors[endorsement.status] }}>
+                      {statusLabels[endorsement.status]}
+                    </Text>
+                  </Box>
+                </Row>
+                <Text size="md" weight="medium" style={{ color: colors.gray[800] }}>
+                  {endorsement.name}
+                </Text>
+                {endorsement.description && (
+                  <Text size="sm" style={{ color: colors.gray[500] }} numberOfLines={2}>
+                    {endorsement.description}
+                  </Text>
+                )}
+                <Row align="center" gap={spacing[4]} style={{ marginTop: spacing[4] }}>
+                  <Calendar size={12} color={colors.gray[500]} />
+                  <Text size="sm" style={{ color: colors.gray[500] }}>
+                    {formatDate(endorsement.effectiveDate)}
+                  </Text>
+                </Row>
+              </Stack>
+
+              {endorsement.premiumChange !== undefined && endorsement.premiumChange !== 0 && (
+                <Text
+                  size="md"
+                  weight="medium"
+                  style={{
+                    color: endorsement.premiumChange > 0 ? colors.error[700] : colors.success[700],
+                  }}
+                >
+                  {formatCurrency(endorsement.premiumChange)}
+                </Text>
               )}
-              <EndorsementMeta>
-                <MetaItem>
-                  <Calendar size={12} color="$color9" />
-                  <MetaText>{formatDate(endorsement.effectiveDate)}</MetaText>
-                </MetaItem>
-              </EndorsementMeta>
-            </EndorsementContent>
 
-            {endorsement.premiumChange !== undefined && endorsement.premiumChange !== 0 && (
-              <PremiumChange positive={endorsement.premiumChange > 0}>
-                {formatCurrency(endorsement.premiumChange)}
-              </PremiumChange>
-            )}
-
-            <ChevronRight size={16} color="$color7" />
-          </EndorsementItem>
+              <ChevronRight size={16} color={colors.gray[400]} />
+            </Row>
+          </Pressable>
         ))
       )}
-    </ListContainer>
+    </Stack>
   )
 }

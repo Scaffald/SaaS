@@ -1,15 +1,19 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { OfficePageLayout } from '@scf/core/features/office/components/OfficePageLayout'
-import { api } from '@scf/core/utils/api'
+import {
+  useAdminAccessLog,
+  useAdminChecks,
+  useAdminDisputes,
+  useAdminMetrics,
+} from '@scf/core/utils/background-checks-sdk-hooks'
 import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
-import type { AppRouter } from '@scf/supabase/client-types'
-import { AlertTriangle, ClipboardList, RefreshCcw } from '@tamagui/lucide-icons'
+import type { AdminCheckSummary, AdminDisputeSummary } from '@scaffald/sdk'
+import { AlertTriangle, ClipboardList, RefreshCcw } from 'lucide-react-native'
 import type { ColumnDef } from '@tanstack/react-table'
-import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@unicornlove/ui'
-import { Button, Card, Spinner, Tabs, Text, XStack, YStack } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@scaffald/ui'
+import { Button, Card, Spinner, Tabs, Text, Row, Stack } from '@scaffald/ui'
 
 import {
   BACKGROUND_CHECK_STATUSES,
@@ -21,11 +25,6 @@ import { AdminCatalogManager } from './AdminCatalogManager'
 import { AdminCheckReviewDialog } from './AdminCheckReviewDialog'
 import { AdminDisputeResolutionDialog } from './AdminDisputeResolutionDialog'
 import { AdminMetricsPanel } from './AdminMetricsPanel'
-
-type RouterOutputs = inferRouterOutputs<AppRouter>
-
-type AdminCheckSummary = RouterOutputs['backgroundChecks']['adminListChecks'][number]
-type AdminDisputeSummary = RouterOutputs['backgroundChecks']['adminListDisputes'][number]
 
 type AdminTab = 'checks' | 'disputes' | 'metrics' | 'audit' | 'catalog'
 
@@ -90,41 +89,38 @@ export function AdminBackgroundChecksPage() {
   const [selectedCheck, setSelectedCheck] = useState<AdminCheckSummary | null>(null)
   const [selectedDispute, setSelectedDispute] = useState<AdminDisputeSummary | null>(null)
 
-  const checksQuery = api.backgroundChecks.adminListChecks.useQuery(
-    {
-      status: statusFilter === 'all' ? undefined : statusFilter,
-    },
-    {
-      refetchOnWindowFocus: true,
-      staleTime: 30_000,
-      enabled: isAdmin,
-    }
+  const checksQuery = useAdminChecks(
+    { status: statusFilter === 'all' ? undefined : statusFilter },
+    { enabled: isAdmin, staleTime: 30_000 }
   )
 
-  const disputesQuery = api.backgroundChecks.adminListDisputes.useQuery(undefined, {
+  const disputesQuery = useAdminDisputes(undefined, {
     enabled: isAdmin && activeTab === 'disputes',
-    refetchOnWindowFocus: true,
     staleTime: 30_000,
   })
 
-  const metricsQuery = api.backgroundChecks.adminGetMetrics.useQuery(undefined, {
+  const metricsQuery = useAdminMetrics({
     enabled: isAdmin && activeTab === 'metrics',
     staleTime: 60_000,
   })
 
-  const accessLogQuery = api.backgroundChecks.adminGetAccessLog.useQuery(
+  const accessLogQuery = useAdminAccessLog(
     { limit: 200 },
-    {
-      enabled: isAdmin && activeTab === 'audit',
-      refetchOnWindowFocus: true,
-      staleTime: 30_000,
-    }
+    { enabled: isAdmin && activeTab === 'audit', staleTime: 30_000 }
   )
+
+  type WorkerRecord = {
+    display_name?: string | null
+    username?: string | null
+    email?: string | null
+    id?: string | null
+  }
+  type OrgRecord = { name?: string | null }
 
   const checkRows = useMemo<CheckRow[]>(() => {
     return (checksQuery.data ?? []).map((check: AdminCheckSummary) => {
-      const worker = check.worker ?? {}
-      const organization = check.organization ?? {}
+      const worker = (check.worker ?? {}) as WorkerRecord
+      const organization = (check.organization ?? {}) as OrgRecord
       const statusMeta = getStatusMetadata(check.status as BackgroundCheckStatus)
       return {
         id: check.id,
@@ -158,14 +154,14 @@ export function AdminBackgroundChecksPage() {
 
   const disputeRows = useMemo<DisputeRow[]>(() => {
     return (disputesQuery.data ?? []).map((dispute: AdminDisputeSummary) => {
-      const worker = dispute.background_check?.worker ?? {}
-      const organization = dispute.background_check?.organization ?? {}
+      const worker = (dispute.background_check?.worker ?? {}) as WorkerRecord
+      const organization = (dispute.background_check?.organization ?? {}) as OrgRecord
       return {
         id: dispute.id,
         workerName: deriveWorkerName(worker),
         workerEmail: worker.email ?? null,
         organizationName: organization?.name ?? null,
-        status: dispute.status,
+        status: dispute.status ?? 'unknown',
         filedAt: dispute.created_at ?? null,
         raw: dispute,
       }
@@ -191,16 +187,12 @@ export function AdminBackgroundChecksPage() {
         accessorKey: 'workerName',
         header: 'Worker',
         cell: ({ row }) => (
-          <YStack>
-            <Text fontSize="$3" fontWeight="600" color="$color12">
-              {row.original.workerName}
-            </Text>
+          <Stack>
+            <Text color="$gray11">{row.original.workerName}</Text>
             {row.original.workerEmail ? (
-              <Text fontSize="$2" color="$color10">
-                {row.original.workerEmail}
-              </Text>
+              <Text color="$gray11">{row.original.workerEmail}</Text>
             ) : null}
-          </YStack>
+          </Stack>
         ),
       },
       {
@@ -233,9 +225,9 @@ export function AdminBackgroundChecksPage() {
         header: 'Actions',
         cell: ({ row }) => (
           <Button
-            size="$2"
-            variant="outlined"
-            icon={ClipboardList}
+            size="sm"
+            variant="outline"
+            iconStart={ClipboardList}
             onPress={() => setSelectedCheck(row.original.raw)}
           >
             Review
@@ -252,16 +244,12 @@ export function AdminBackgroundChecksPage() {
         accessorKey: 'workerName',
         header: 'Worker',
         cell: ({ row }) => (
-          <YStack>
-            <Text fontSize="$3" fontWeight="600" color="$color12">
-              {row.original.workerName}
-            </Text>
+          <Stack>
+            <Text color="$gray11">{row.original.workerName}</Text>
             {row.original.workerEmail ? (
-              <Text fontSize="$2" color="$color10">
-                {row.original.workerEmail}
-              </Text>
+              <Text color="$gray11">{row.original.workerEmail}</Text>
             ) : null}
-          </YStack>
+          </Stack>
         ),
       },
       {
@@ -284,9 +272,9 @@ export function AdminBackgroundChecksPage() {
         header: 'Actions',
         cell: ({ row }) => (
           <Button
-            size="$2"
-            variant="outlined"
-            icon={AlertTriangle}
+            size="sm"
+            variant="outline"
+            iconStart={AlertTriangle}
             onPress={() => setSelectedDispute(row.original.raw)}
           >
             Resolve
@@ -315,161 +303,153 @@ export function AdminBackgroundChecksPage() {
 
   if (isLoadingRoles) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$2">
-        <Spinner size="large" />
-        <Text fontSize="$3" color="$color11">
-          Verifying admin access…
-        </Text>
-      </YStack>
+      <Stack flex={1} align="center" justify="center" gap={8}>
+        <Spinner size="lg" />
+        <Text color="$gray11">Verifying admin access…</Text>
+      </Stack>
     )
   }
 
   if (!isAdmin) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
-        <Text fontSize="$6" fontWeight="700" color="$color12">
-          Admin access required
-        </Text>
-        <Text fontSize="$3" color="$color10" style={{ textAlign: 'center' }}>
+      <Stack flex={1} align="center" justify="center" gap={12} paddingHorizontal={16}>
+        <Text color="$gray11">Admin access required</Text>
+        <Text color="$gray11" style={{ textAlign: 'center' }}>
           Background check review tools are restricted to compliance administrators. Contact an
           administrator if you believe this is an error.
         </Text>
         <Button
-          size="$3"
-          variant="outlined"
+          size="sm"
+          variant="outline"
           onPress={() => router.push(ROUTES.OFFICE.ATS.CHECKS.path)}
         >
           Go to organization background checks
         </Button>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack flex={1} backgroundColor="$background">
-      <YStack padding="$4" gap="$4">
-        <YStack gap="$2">
-          <Text fontSize="$6" fontWeight="700" color="$color12">
-            Background check administration
-          </Text>
-          <Text fontSize="$3" color="$color10">
+    <Stack flex={1} backgroundColor="$background">
+      <Stack padding="md" gap={16}>
+        <Stack gap={8}>
+          <Text color="$gray11">Background check administration</Text>
+          <Text color="$gray11">
             Review in-progress screenings, resolve disputes, and keep results compliant.
           </Text>
-        </YStack>
+        </Stack>
 
-        <XStack gap="$3" flexWrap="wrap">
+        <Row gap={12} wrap>
           <Card
-            padding="$3"
+            padding="sm"
             backgroundColor="$color2"
             borderWidth={1}
             borderColor="$borderColor"
-            flexGrow={1}
-            style={{ flexBasis: 160 }}
+            style={{ flexGrow: 1, flexBasis: 160 }}
           >
-            <Text fontSize="$2" color="$color10">
-              Active reviews
-            </Text>
-            <Text fontSize="$5" fontWeight="700" color="$color12">
-              {summaryStats.underReview}
-            </Text>
+            <Text color="$gray11">Active reviews</Text>
+            <Text color="$gray11">{summaryStats.underReview}</Text>
           </Card>
           <Card
-            padding="$3"
+            padding="sm"
             backgroundColor="$color2"
             borderWidth={1}
             borderColor="$borderColor"
-            flexGrow={1}
-            style={{ flexBasis: 160 }}
+            style={{ flexGrow: 1, flexBasis: 160 }}
           >
-            <Text fontSize="$2" color="$color10">
-              Pending disputes
-            </Text>
-            <Text fontSize="$5" fontWeight="700" color="$color12">
-              {summaryStats.pendingDisputes}
-            </Text>
+            <Text color="$gray11">Pending disputes</Text>
+            <Text color="$gray11">{summaryStats.pendingDisputes}</Text>
           </Card>
           <Card
-            padding="$3"
+            padding="sm"
             backgroundColor="$color2"
             borderWidth={1}
             borderColor="$borderColor"
-            flexGrow={1}
-            style={{ flexBasis: 160 }}
+            style={{ flexGrow: 1, flexBasis: 160 }}
           >
-            <Text fontSize="$2" color="$color10">
-              Total checks in view
-            </Text>
-            <Text fontSize="$5" fontWeight="700" color="$color12">
-              {summaryStats.total}
-            </Text>
+            <Text color="$gray11">Total checks in view</Text>
+            <Text color="$gray11">{summaryStats.total}</Text>
           </Card>
-        </XStack>
+        </Row>
 
-        <Tabs
-          value={activeTab}
-          onValueChange={(value) => setActiveTab(value as AdminTab)}
-          activationMode="manual"
+        <Row
+          gap={12}
+          paddingHorizontal={8}
+          backgroundColor="$background"
+          style={{ borderBottomWidth: 1, borderBottomColor: '#e4e7ec' }}
         >
-          <Tabs.List
-            orientation="horizontal"
-            borderBottomWidth={1}
-            borderBottomColor="$borderColor"
-            backgroundColor="$background"
-            scrollable
+          <Tabs
+            value={activeTab}
+            onValueChange={(value) => setActiveTab(value as AdminTab)}
+            type="line"
+            color="primary"
           >
-            <XStack gap="$3" paddingHorizontal="$2">
-              <Tabs.Tab
-                value="checks"
-                borderBottomWidth={activeTab === 'checks' ? 2 : 0}
-                borderBottomColor="$blue10"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
+            <Tabs.Item value="checks">
+              <Tabs.Trigger
+                containerStyle={{
+                  borderBottomWidth: activeTab === 'checks' ? 2 : 0,
+                  borderBottomColor: '#3b82f6',
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                }}
               >
                 Checks
-              </Tabs.Tab>
-              <Tabs.Tab
-                value="disputes"
-                borderBottomWidth={activeTab === 'disputes' ? 2 : 0}
-                borderBottomColor="$blue10"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
+              </Tabs.Trigger>
+            </Tabs.Item>
+            <Tabs.Item value="disputes">
+              <Tabs.Trigger
+                containerStyle={{
+                  borderBottomWidth: activeTab === 'disputes' ? 2 : 0,
+                  borderBottomColor: '#3b82f6',
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                }}
               >
                 Disputes
-              </Tabs.Tab>
-              <Tabs.Tab
-                value="metrics"
-                borderBottomWidth={activeTab === 'metrics' ? 2 : 0}
-                borderBottomColor="$blue10"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
+              </Tabs.Trigger>
+            </Tabs.Item>
+            <Tabs.Item value="metrics">
+              <Tabs.Trigger
+                containerStyle={{
+                  borderBottomWidth: activeTab === 'metrics' ? 2 : 0,
+                  borderBottomColor: '#3b82f6',
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                }}
               >
                 Metrics
-              </Tabs.Tab>
-              <Tabs.Tab
-                value="catalog"
-                borderBottomWidth={activeTab === 'catalog' ? 2 : 0}
-                borderBottomColor="$blue10"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
+              </Tabs.Trigger>
+            </Tabs.Item>
+            <Tabs.Item value="catalog">
+              <Tabs.Trigger
+                containerStyle={{
+                  borderBottomWidth: activeTab === 'catalog' ? 2 : 0,
+                  borderBottomColor: '#3b82f6',
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                }}
               >
                 Catalog
-              </Tabs.Tab>
-              <Tabs.Tab
-                value="audit"
-                borderBottomWidth={activeTab === 'audit' ? 2 : 0}
-                borderBottomColor="$blue10"
-                paddingHorizontal="$3"
-                paddingVertical="$2"
+              </Tabs.Trigger>
+            </Tabs.Item>
+            <Tabs.Item value="audit">
+              <Tabs.Trigger
+                containerStyle={{
+                  borderBottomWidth: activeTab === 'audit' ? 2 : 0,
+                  borderBottomColor: '#3b82f6',
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                }}
               >
                 Audit Log
-              </Tabs.Tab>
-            </XStack>
-          </Tabs.List>
-        </Tabs>
+              </Tabs.Trigger>
+            </Tabs.Item>
+          </Tabs>
+        </Row>
 
         {activeTab === 'checks' ? (
-          <XStack gap="$3" flexWrap="wrap" justifyContent="space-between" alignItems="center">
-            <XStack gap="$2" alignItems="center">
+          <Row gap={12} wrap justify="space-between" align="center">
+            <Row gap={8} align="center">
               <ResponsiveSelect
                 value={statusFilter}
                 onValueChange={(value) => setStatusFilter(value as 'all' | BackgroundCheckStatus)}
@@ -480,39 +460,39 @@ export function AdminBackgroundChecksPage() {
                 }))}
               />
               <Button
-                size="$3"
-                variant="outlined"
-                icon={RefreshCcw}
+                size="sm"
+                variant="outline"
+                iconStart={RefreshCcw}
                 onPress={() => checksQuery.refetch()}
                 disabled={checksQuery.isLoading}
               >
                 Refresh
               </Button>
-            </XStack>
+            </Row>
             <Button
-              size="$3"
-              variant="outlined"
+              size="sm"
+              variant="outline"
               onPress={() => router.push(ROUTES.OFFICE.ATS.CHECKS.path)}
             >
               Organization view
             </Button>
-          </XStack>
+          </Row>
         ) : null}
 
         {activeTab === 'disputes' ? (
-          <XStack gap="$2">
+          <Row gap={8}>
             <Button
-              size="$3"
-              variant="outlined"
-              icon={RefreshCcw}
+              size="sm"
+              variant="outline"
+              iconStart={RefreshCcw}
               onPress={() => disputesQuery.refetch()}
               disabled={disputesQuery.isLoading}
             >
               Refresh disputes
             </Button>
-          </XStack>
+          </Row>
         ) : null}
-      </YStack>
+      </Stack>
 
       {activeTab === 'checks' ? (
         <OfficePageLayout
@@ -557,19 +537,19 @@ export function AdminBackgroundChecksPage() {
       ) : null}
 
       {activeTab === 'metrics' ? (
-        <YStack paddingHorizontal="$4" paddingBottom="$4">
+        <Stack paddingHorizontal={16} paddingBottom={16}>
           <AdminMetricsPanel
             metrics={metricsQuery.data}
             isLoading={metricsQuery.isLoading}
             onRefresh={() => void metricsQuery.refetch()}
           />
-        </YStack>
+        </Stack>
       ) : null}
 
       {activeTab === 'catalog' ? (
-        <YStack paddingHorizontal="$4" paddingBottom="$4">
+        <Stack paddingHorizontal={16} paddingBottom={16}>
           <AdminCatalogManager />
-        </YStack>
+        </Stack>
       ) : null}
 
       {activeTab === 'audit' ? (
@@ -603,6 +583,6 @@ export function AdminBackgroundChecksPage() {
         }}
         onResolved={() => setSelectedDispute(null)}
       />
-    </YStack>
+    </Stack>
   )
 }

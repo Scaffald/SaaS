@@ -1,22 +1,28 @@
-import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import type { AppRouter } from '@scf/supabase/client-types'
-import { AlertTriangle, ArrowRight, RefreshCcw } from '@tamagui/lucide-icons'
-import type { inferRouterOutputs } from '@trpc/server'
-import { useRouter } from 'expo-router'
-import { useMemo } from 'react'
-import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { ROUTES, buildPath } from "@scf/core/constants/routes";
+import type { OfficeJob } from "@scaffald/sdk";
+import { AlertTriangle, ArrowRight, RefreshCcw } from "lucide-react-native";
+import { useRouter } from "expo-router";
+import { useMemo } from "react";
+import {
+  Button,
+  Card,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+  useThemeContext,
+} from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
-type OfficeJobsOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
-type TeamJobRecord = NonNullable<OfficeJobsOutput['jobs']>[number]
-type TeamAssignment = NonNullable<TeamJobRecord['teamAssignments']>[number]
+type TeamAssignment = NonNullable<OfficeJob["teamAssignments"]>[number];
 
 interface TeamJobsListProps {
-  teamId: string
-  jobs: TeamJobRecord[]
-  isLoading: boolean
-  error?: Error | null
-  onRefresh?: () => void
-  onCreateJob?: () => void
+  teamId: string;
+  jobs: OfficeJob[];
+  isLoading: boolean;
+  error?: Error | null;
+  onRefresh?: () => void;
+  onCreateJob?: () => void;
 }
 
 export function TeamJobsList({
@@ -27,256 +33,273 @@ export function TeamJobsList({
   onRefresh,
   onCreateJob,
 }: TeamJobsListProps) {
-  const router = useRouter()
+  const { theme } = useThemeContext();
+  const router = useRouter();
 
-  const derivedJobs = useMemo(() => jobs ?? [], [jobs])
-  const hasJobs = derivedJobs.length > 0
+  const derivedJobs = useMemo(() => jobs ?? [], [jobs]);
+  const hasJobs = derivedJobs.length > 0;
 
   return (
-    <YStack gap="$3" paddingHorizontal="$3" $md={{ paddingHorizontal: undefined }}>
-      <XStack
-        justifyContent="space-between"
-        alignItems="flex-start"
-        flexWrap="wrap"
-        gap="$3"
-        flexDirection="column"
-        $md={{
-          alignItems: 'center',
-          flexDirection: 'row',
-        }}
+    <Stack gap={12} paddingHorizontal={12}>
+      <Row
+        justify="space-between"
+        align="flex-start"
+        wrap
+        gap={12}
+        style={{ flexDirection: "column" }}
       >
-        <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
-          Team jobs
-        </Text>
-        <XStack
-          gap="$2"
-          alignItems="flex-start"
-          flexDirection="column"
-          width="100%"
-          $md={{
-            alignItems: 'center',
-            flexDirection: 'row',
-            width: undefined,
-          }}
+        <Text accessibilityRole="header">Team jobs</Text>
+        <Row
+          gap={8}
+          align="flex-start"
+          style={{ flexDirection: "column", width: "100%" }}
         >
           <Button
-            size="$2"
-            variant="outlined"
-            icon={RefreshCcw}
+            size="sm"
+            variant="outline"
+            iconStart={RefreshCcw}
             onPress={() => onRefresh?.()}
             disabled={isLoading}
             accessibilityLabel="Refresh assigned jobs list"
-            width="100%"
-            $md={{ width: undefined }}
+            style={{ width: "100%" }}
           >
             Refresh
           </Button>
           <Button
-            size="$2"
-            icon={ArrowRight}
+            size="sm"
+            iconStart={ArrowRight}
             onPress={() => {
               if (onCreateJob) {
-                onCreateJob()
-                return
+                onCreateJob();
+                return;
               }
               router.push({
                 pathname: ROUTES.OFFICE.CMS.JOBS.CREATE.path,
                 params: { teamId },
-              })
+              });
             }}
             accessibilityLabel="Assign a job to this team"
-            width="100%"
-            $md={{ width: undefined }}
+            style={{ width: "100%" }}
           >
             Assign job
           </Button>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {isLoading ? (
-        <YStack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
-          <Spinner size="large" />
-          <Text color="$color11">Loading assigned jobs…</Text>
-        </YStack>
+        <Stack align="center" justify="center" paddingVertical={24} gap={8}>
+          <Spinner size="lg" />
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Loading assigned jobs…
+          </Text>
+        </Stack>
       ) : error ? (
         <Card
           borderWidth={1}
-          borderColor="$borderColor"
-          backgroundColor="$color2"
-          padding="$4"
-          gap="$3"
+          borderColor={colors.border[theme].default}
+          style={{ backgroundColor: colors.bg[theme].subtle }}
+          padding="md"
         >
-          <XStack gap="$2" alignItems="center">
-            <AlertTriangle size={18} color="$yellow10" />
-            <Text fontSize="$5" fontWeight="700">
-              Unable to load jobs
+          <Stack gap={12}>
+            <Row gap={8} align="center">
+              <AlertTriangle
+                size={18}
+                color={
+                  theme === "light" ? colors.yellow[700] : colors.yellow[300]
+                }
+              />
+              <Text>Unable to load jobs</Text>
+            </Row>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              {error.message ||
+                "Something went wrong while fetching jobs for this team."}
             </Text>
-          </XStack>
-          <Text color="$color11">
-            {error.message || 'Something went wrong while fetching jobs for this team.'}
-          </Text>
-          <Button size="$3" onPress={() => onRefresh?.()}>
-            Try again
-          </Button>
+            <Button size="sm" onPress={() => onRefresh?.()}>
+              Try again
+            </Button>
+          </Stack>
         </Card>
       ) : hasJobs ? (
-        <YStack gap="$3">
+        <Stack gap={12}>
           {derivedJobs.map((job) => (
             <Card
               key={job.id}
-              padding="$4"
+              padding="md"
               borderWidth={1}
-              borderColor="$borderColor"
-              backgroundColor="$color2"
-              gap="$3"
-              accessible
-              accessibilityRole="summary"
-              accessibilityLabel={`Job ${job.title}. Status ${job.status ?? 'draft'}. Updated ${job.updated_at ? new Date(job.updated_at).toLocaleDateString() : 'recently'}`}
-              width="100%"
+              borderColor={colors.border[theme].default}
+              style={{
+                backgroundColor: colors.bg[theme].subtle,
+                width: "100%",
+              }}
+              accessibilityLabel={`Job ${job.title}. Status ${
+                job.status ?? "draft"
+              }. Updated ${
+                job.updated_at
+                  ? new Date(job.updated_at).toLocaleDateString()
+                  : "recently"
+              }`}
             >
-              <XStack
-                justifyContent="space-between"
-                alignItems="flex-start"
-                gap="$3"
-                flexWrap="wrap"
-                flexDirection="column"
-                $md={{ flexDirection: 'row' }}
-              >
-                <YStack gap="$1" flex={1} width="100%">
-                  <Text fontSize="$5" fontWeight="700">
-                    {job.title}
-                  </Text>
-                  <Text color="$color11">{job.organization?.name ?? 'No organization'}</Text>
-                </YStack>
-                <StatusChip status={job.status ?? 'draft'} />
-              </XStack>
-              {job.teamAssignments && job.teamAssignments.length > 0 ? (
-                <XStack gap="$2" flexWrap="wrap">
-                  {job.teamAssignments.map((assignment: TeamAssignment) => (
-                    <TeamBadge
-                      key={`${job.id}-${assignment.teamId}`}
-                      name={assignment.team?.name ?? 'Untitled team'}
-                      isPrimary={assignment.isPrimary}
-                    />
-                  ))}
-                </XStack>
-              ) : null}
-              <XStack
-                gap="$2"
-                flexDirection="column"
-                alignItems="stretch"
-                $md={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}
-              >
-                <Text fontSize="$3" color="$color10">
-                  Updated{' '}
-                  {job.updated_at ? new Date(job.updated_at).toLocaleDateString() : 'recently'}
-                </Text>
-              </XStack>
-              <XStack width="100%">
-                <Button
-                  size="$3"
-                  variant="outlined"
-                  onPress={() =>
-                    router.push(buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: job.id }))
-                  }
-                  accessibilityLabel={`View job ${job.title}`}
-                  width="100%"
-                  $md={{ width: undefined }}
+              <Stack gap={12}>
+                <Row
+                  justify="space-between"
+                  align="flex-start"
+                  gap={12}
+                  wrap
+                  style={{ flexDirection: "column" }}
                 >
-                  View job
-                </Button>
-              </XStack>
+                  <Stack gap={4} flex={1} width="100%">
+                    <Text>{job.title}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>
+                      {job.organization?.name ?? "No organization"}
+                    </Text>
+                  </Stack>
+                  <StatusChip status={job.status ?? "draft"} />
+                </Row>
+                {job.teamAssignments && job.teamAssignments.length > 0 ? (
+                  <Row gap={8} wrap>
+                    {job.teamAssignments.map((assignment: TeamAssignment) => (
+                      <TeamBadge
+                        key={`${job.id}-${assignment.teamId}`}
+                        name={assignment.team?.name ?? "Untitled team"}
+                        isPrimary={assignment.isPrimary}
+                      />
+                    ))}
+                  </Row>
+                ) : null}
+                <Row
+                  gap={8}
+                  align="stretch"
+                  style={{ flexDirection: "column" }}
+                >
+                  <Text style={{ color: colors.text[theme].secondary }}>
+                    Updated{" "}
+                    {job.updated_at
+                      ? new Date(job.updated_at).toLocaleDateString()
+                      : "recently"}
+                  </Text>
+                </Row>
+                <Row style={{ width: "100%" }}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onPress={() =>
+                      router.push(
+                        buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: job.id })
+                      )
+                    }
+                    accessibilityLabel={`View job ${job.title}`}
+                    style={{ width: "100%" }}
+                  >
+                    View job
+                  </Button>
+                </Row>
+              </Stack>
             </Card>
           ))}
-        </YStack>
+        </Stack>
       ) : (
         <Card
           borderWidth={1}
-          borderColor="$borderColor"
-          backgroundColor="$color2"
-          padding="$4"
-          gap="$2"
-          width="100%"
+          borderColor={colors.border[theme].default}
+          style={{ backgroundColor: colors.bg[theme].subtle, width: "100%" }}
+          padding="md"
         >
-          <Text fontWeight="600">No jobs assigned yet</Text>
-          <Text color="$color11">
-            Assign this team to a job to keep the hiring workflow organized. Jobs assigned to this
-            team will appear here.
-          </Text>
-          <Button
-            marginTop="$2"
-            size="$3"
-            onPress={() => {
-              if (onCreateJob) {
-                onCreateJob()
-                return
-              }
-              router.push({
-                pathname: ROUTES.OFFICE.CMS.JOBS.CREATE.path,
-                params: { teamId },
-              })
-            }}
-            width="100%"
-            $md={{ width: undefined }}
-          >
-            Create job
-          </Button>
+          <Stack gap={8}>
+            <Text>No jobs assigned yet</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              Assign this team to a job to keep the hiring workflow organized.
+              Jobs assigned to this team will appear here.
+            </Text>
+            <Button
+              style={{ marginTop: 8, width: "100%" }}
+              size="sm"
+              onPress={() => {
+                if (onCreateJob) {
+                  onCreateJob();
+                  return;
+                }
+                router.push({
+                  pathname: ROUTES.OFFICE.CMS.JOBS.CREATE.path,
+                  params: { teamId },
+                });
+              }}
+            >
+              Create job
+            </Button>
+          </Stack>
         </Card>
       )}
-    </YStack>
-  )
+    </Stack>
+  );
 }
 
 function StatusChip({ status }: { status: string }) {
-  const normalized = status.replace(/_/g, ' ')
-  const isOpen = status === 'open'
-  const background = isOpen ? '$green4' : '$color3'
-  const border = isOpen ? '$green8' : '$borderColor'
-  const textColor = isOpen ? '$green11' : '$color11'
+  const { theme } = useThemeContext();
+  const normalized = status.replace(/_/g, " ");
+  const isOpen = status === "open";
+  const background = isOpen
+    ? theme === "light"
+      ? colors.green[50]
+      : colors.green[900]
+    : colors.bg[theme].muted;
+  const border = isOpen
+    ? theme === "light"
+      ? colors.green[300]
+      : colors.green[700]
+    : colors.border[theme].default;
+  const textColor = isOpen
+    ? theme === "light"
+      ? colors.green[700]
+      : colors.green[300]
+    : colors.text[theme].secondary;
 
   return (
-    <XStack
-      paddingHorizontal="$2"
-      paddingVertical="$1"
+    <Row
+      paddingHorizontal={8}
+      paddingVertical={4}
       borderWidth={1}
       borderColor={border}
       backgroundColor={background}
-      borderRadius="$4"
+      borderRadius={16}
       accessible
       accessibilityRole="text"
       accessibilityLabel={`Job status ${normalized}`}
     >
-      <Text fontSize="$2" color={textColor}>
-        {normalized}
-      </Text>
-    </XStack>
-  )
+      <Text color={textColor}>{normalized}</Text>
+    </Row>
+  );
 }
 
 function TeamBadge({ name, isPrimary }: { name: string; isPrimary: boolean }) {
-  const background = isPrimary ? '$blue4' : '$color3'
-  const border = isPrimary ? '$blue8' : '$borderColor'
-  const textColor = isPrimary ? '$blue11' : '$color11'
+  const { theme } = useThemeContext();
+  const background = isPrimary
+    ? theme === "light"
+      ? colors.blue[50]
+      : colors.blue[900]
+    : colors.bg[theme].muted;
+  const border = isPrimary
+    ? theme === "light"
+      ? colors.blue[300]
+      : colors.blue[700]
+    : colors.border[theme].default;
+  const textColor = isPrimary ? "$blue11" : colors.text[theme].secondary;
 
   return (
-    <XStack
-      paddingHorizontal="$2"
-      paddingVertical="$1"
+    <Row
+      paddingHorizontal={8}
+      paddingVertical={4}
       borderWidth={1}
       borderColor={border}
       backgroundColor={background}
-      borderRadius="$4"
+      borderRadius={16}
       accessible
       accessibilityRole="text"
-      accessibilityLabel={`${name}${isPrimary ? ' primary team' : ''}`}
+      accessibilityLabel={`${name}${isPrimary ? " primary team" : ""}`}
     >
-      <Text fontSize="$2" color={textColor}>
+      <Text color={textColor}>
         {name}
-        {isPrimary ? ' • Primary' : ''}
+        {isPrimary ? " • Primary" : ""}
       </Text>
-    </XStack>
-  )
+    </Row>
+  );
 }

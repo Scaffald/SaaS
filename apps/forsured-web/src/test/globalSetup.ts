@@ -1,5 +1,5 @@
 /**
- * REQ-306: Vitest Global Setup
+ * Vitest Global Setup
  *
  * Runs mock validation BEFORE any tests execute.
  * If validation fails, tests are halted with clear error messages.

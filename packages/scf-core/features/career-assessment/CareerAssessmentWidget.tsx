@@ -1,10 +1,13 @@
-import { api } from '@scf/core/utils/api'
-import { Button, DashboardWidget, spacing } from '@unicornlove/ui'
+import {
+  useCareerAssessmentStatus,
+  useSaveCareerAssessmentMutation,
+} from '@scf/core/utils/onet-sdk-hooks'
+import { Button, DashboardWidget, gap, useThemeContext } from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@scaffald/ui'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { OccupationSearch } from './components/OccupationSearch'
 import { RiasecQuickAssessment } from './components/RiasecQuickAssessment'
 import {
@@ -24,28 +27,33 @@ import {
  * @returns JSX element
  */
 export function CareerAssessmentWidget() {
+  useThemeContext()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const toast = useToastController()
+  const toast = useToast()
 
   // Check assessment status
   const {
     data: statusData,
     isLoading: isCheckingStatus,
     refetch: refetchStatus,
-  } = api.onet.getCareerAssessmentStatus.useQuery()
+  } = useCareerAssessmentStatus()
 
   // Save assessment mutation
-  const saveMutation = api.onet.saveCareerAssessment.useMutation({
+  const saveMutation = useSaveCareerAssessmentMutation({
     onSuccess: () => {
-      toast.show('Career Assessment Complete', {
+      toast.show({
+        title: 'Career Assessment Complete',
         message: 'Your career interests have been saved successfully!',
+        variant: 'success',
       })
       refetchStatus()
     },
     onError: (error: { message?: string }) => {
       console.error('Error saving career assessment:', error)
-      toast.show('Error', {
+      toast.show({
+        title: 'Error',
         message: error.message || 'Failed to save assessment. Please try again.',
+        variant: 'error',
       })
     },
   })
@@ -77,10 +85,10 @@ export function CareerAssessmentWidget() {
   if (isCheckingStatus) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
-          <Spinner size="large" color="$blue7" />
-          <Text color="$color11">Loading...</Text>
-        </YStack>
+        <Stack gap={gap.sm} align="center" paddingVertical={40}>
+          <Spinner size="lg" color="gray" />
+          <Text color="$gray11">Loading...</Text>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -92,15 +100,13 @@ export function CareerAssessmentWidget() {
 
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
-        <YStack gap={spacing.xs}>
-          <Text fontSize="$6" fontWeight="bold" color="$color12">
-            Career Assessment
-          </Text>
-          <Text fontSize="$3" color="$color11">
+      <Stack gap={gap.md}>
+        <Stack gap={gap.xs}>
+          <Text color="$gray11">Career Assessment</Text>
+          <Text color="$gray11">
             Take a quick assessment to help us recommend jobs that match your interests and skills
           </Text>
-        </YStack>
+        </Stack>
 
         <Separator />
 
@@ -110,7 +116,7 @@ export function CareerAssessmentWidget() {
           control={control}
           render={({ field }) => (
             <RiasecQuickAssessment
-              value={field.value}
+              value={field.value ?? careerAssessmentDefaults.riasec_scores}
               onChange={field.onChange}
               disabled={isSubmitting}
             />
@@ -120,13 +126,11 @@ export function CareerAssessmentWidget() {
         <Separator />
 
         {/* Current Occupation (Optional) */}
-        <YStack gap="$3">
-          <YStack gap="$1">
-            <Text fontWeight="600">Current Occupation (Optional)</Text>
-            <Text fontSize="$2" color="$color11">
-              What is your current or most recent job?
-            </Text>
-          </YStack>
+        <Stack gap={12}>
+          <Stack gap={4}>
+            <Text>Current Occupation (Optional)</Text>
+            <Text color="$gray11">What is your current or most recent job?</Text>
+          </Stack>
           <Controller
             name="current_occupation_code"
             control={control}
@@ -140,36 +144,34 @@ export function CareerAssessmentWidget() {
             )}
           />
           {errors.current_occupation_code && (
-            <Text color="$red10" fontSize="$2">
-              {errors.current_occupation_code.message}
-            </Text>
+            <Text color="$red10">{errors.current_occupation_code.message}</Text>
           )}
-        </YStack>
+        </Stack>
 
         {/* Submit Button */}
         <Button
-          variant="primary"
+          variant="filled"
+          color="primary"
           onPress={handleSubmit(onSubmit)}
           disabled={isSubmitting}
-          opacity={isSubmitting ? 0.5 : 1}
-          size="$5"
-          marginTop={spacing.xs}
+          size="lg"
+          style={{ opacity: isSubmitting ? 0.5 : 1, marginTop: gap.xs }}
         >
           {isSubmitting ? (
-            <XStack gap={spacing.xs} alignItems="center">
-              <Spinner size="small" color="white" />
-              <Button.Text>Saving Assessment...</Button.Text>
-            </XStack>
+            <Row gap={gap.xs} align="center">
+              <Spinner size="sm" color="gray" />
+              Saving Assessment...
+            </Row>
           ) : (
-            <Button.Text>Complete Assessment</Button.Text>
+            'Complete Assessment'
           )}
         </Button>
 
-        <Text fontSize="$2" color="$color11">
+        <Text color="$gray11">
           This assessment takes about 2 minutes and helps us recommend careers that fit your
           interests
         </Text>
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

@@ -1,28 +1,14 @@
-import { RangeSliderCard } from '@unicornlove/ui'
-import type { RangeSliderCardProps } from '@unicornlove/ui'
-import { Plane } from '@tamagui/lucide-icons'
+import { Card, RangeSlider, Row, Stack, Text } from "@scaffald/ui";
+import { Plane } from "lucide-react-native";
 
-export interface MaximumTravelDistanceCardProps
-  extends Omit<
-    RangeSliderCardProps,
-    | 'icon'
-    | 'title'
-    | 'description'
-    | 'min'
-    | 'max'
-    | 'step'
-    | 'formatValue'
-    | 'formatMin'
-    | 'formatMax'
-  > {
-  /** Optional override for description */
-  description?: string
-  /** Optional override for minimum value (default: 10) */
-  min?: number
-  /** Optional override for maximum value (default: 250) */
-  max?: number
-  /** Optional override for step value (default: 5) */
-  step?: number
+export interface MaximumTravelDistanceCardProps {
+  description?: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  value?: number;
+  onValueChange?: (value: number) => void;
+  disabled?: boolean;
 }
 
 /**
@@ -30,26 +16,38 @@ export interface MaximumTravelDistanceCardProps
  * Used in profile employment sections
  */
 export function MaximumTravelDistanceCard({
-  description = 'Select your maximum travel distance to find opportunities that match your preferences',
+  description = "Select your maximum travel distance to find opportunities that match your preferences",
   min = 10,
   max = 250,
   step = 5,
   value = 25,
-  ...rangeSliderCardProps
+  onValueChange,
+  disabled = false,
 }: MaximumTravelDistanceCardProps) {
+  const formatValue = (v: number) => `${v} miles`;
   return (
-    <RangeSliderCard
-      icon={<Plane size="$2" color="$color11" />}
-      title="Maximum Travel Distance"
-      description={description}
-      value={value}
-      min={min}
-      max={max}
-      step={step}
-      formatValue={(v) => `${v} miles`}
-      formatMin={(v) => `${v} miles`}
-      formatMax={(v) => `${v}+ miles`}
-      {...rangeSliderCardProps}
-    />
-  )
+    <Card bordered padding="md">
+      <Stack gap={12}>
+        <Row gap={8} align="center">
+          <Plane size={20} color="#637083" />
+          <Text>Maximum Travel Distance</Text>
+        </Row>
+        {description && <Text style={{ color: "#637083" }}>{description}</Text>}
+        <Stack gap={8}>
+          <RangeSlider
+            value={value}
+            onValueChange={onValueChange ?? (() => {})}
+            min={min}
+            max={max}
+            step={step}
+            disabled={disabled}
+            size="medium"
+          />
+          <Text style={{ color: "#637083" }}>
+            {formatValue(min)} – {formatValue(max)}
+          </Text>
+        </Stack>
+      </Stack>
+    </Card>
+  );
 }

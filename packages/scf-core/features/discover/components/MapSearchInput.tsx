@@ -1,8 +1,9 @@
-import type { AddressResult } from '@unicornlove/ui'
-import { AddressAutocomplete } from '@unicornlove/ui'
-import { AlertCircle } from '@tamagui/lucide-icons'
+import { createMapboxGeocodingProvider } from '@scf/core/utils/mapbox-geocoding-provider'
+import type { AddressResult } from '@scaffald/ui'
+import { AddressAutocomplete } from '@scaffald/ui'
+import { AlertCircle } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
-import { AnimatePresence, Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 type MapSearchInputProps = {
   isVisible: boolean
@@ -48,7 +49,7 @@ export const MapSearchInput = ({
   isVisible,
   onClose,
   onLocationSelect,
-  railVisible = false,
+  railVisible: _railVisible = false,
 }: MapSearchInputProps) => {
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -69,76 +70,54 @@ export const MapSearchInput = ({
     [onLocationSelect, onClose]
   )
 
+  if (!isVisible) return null
+
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <XStack
-          position="absolute"
-          top={100}
-          left={0}
-          $sm={{ right: 0 }}
-          $md={{ right: railVisible ? 440 : 0 }}
-          zIndex={60}
-          animation="quick"
-          enterStyle={{ opacity: 0, y: 20 }}
-          exitStyle={{ opacity: 0, y: 20 }}
-          opacity={1}
-          y={0}
-          justifyContent="flex-start"
-          alignItems="center"
-          paddingHorizontal="$4"
-        >
-          {tokenValidation.valid ? (
+    <Row
+      justify="flex-start"
+      align="center"
+      paddingHorizontal={16}
+      style={{ position: 'absolute', top: 100, left: 0, zIndex: 60 }}
+    >
+          {tokenValidation.valid && mapboxToken ? (
             <AddressAutocomplete
               value={searchQuery}
               onChange={setSearchQuery}
               onAddressSelect={handleLocationSelect}
               placeholder="Search city, county, or region..."
-              provider="mapbox"
-              apiKey={mapboxToken}
-              zoomLevel="city"
+              provider={createMapboxGeocodingProvider(mapboxToken)}
               searchOptions={{
                 types: ['place', 'region', 'district', 'locality'],
+                zoomLevel: 'city',
               }}
               minLength={2}
               maxResults={5}
               debounceMs={300}
-              containerProps={{
-                style: { minWidth: 250, width: '100%' },
-                borderRadius: '$8',
-                shadowColor: '$shadowColor',
+            />
+          ) : (
+            <Stack
+              style={{
+                minWidth: 250,
+                width: '100%',
+                shadowColor: '#000',
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: 0.15,
                 shadowRadius: 12,
               }}
-            />
-          ) : (
-            <YStack
-              style={{ minWidth: 250, width: '100%' }}
               backgroundColor="$background"
-              padding="$4"
-              borderRadius="$8"
+              padding="md"
+              borderRadius={32}
               borderWidth={1}
               borderColor="$red8"
-              shadowColor="$shadowColor"
-              shadowOffset={{ width: 0, height: 4 }}
-              shadowOpacity={0.15}
-              shadowRadius={12}
-              gap="$2"
+              gap={8}
             >
-              <XStack alignItems="center" gap="$2">
+              <Row align="center" gap={8}>
                 <AlertCircle size={18} color="$red10" />
-                <Text fontSize="$3" color="$red10" fontWeight="600">
-                  Map Search Unavailable
-                </Text>
-              </XStack>
-              <Text fontSize="$2" color="$color10">
-                {tokenValidation.error}
-              </Text>
-            </YStack>
-          )}
-        </XStack>
+                <Text color="$red10">Map Search Unavailable</Text>
+              </Row>
+              <Text color="$gray11">{tokenValidation.error}</Text>
+        </Stack>
       )}
-    </AnimatePresence>
+    </Row>
   )
 }

@@ -4,21 +4,18 @@ This directory contains centralized test utilities for common testing patterns.
 
 ## Available Helpers
 
-### `tamagui-setup.tsx`
+### `theme-setup.tsx` (Beyond-UI)
 
-Utilities for setting up Tamagui in tests:
+Utilities for setting up theme (Beyond-UI) in tests:
 
 ```tsx
-import { TamaguiTestWrapper, withTamaguiProvider } from '@/tests/infrastructure/vitest/helpers/tamagui-setup';
+import { BeyondUIThemeWrapper } from '@/tests/infrastructure/vitest/helpers/theme-setup';
 
-// Option 1: Use the wrapper component
-<TamaguiTestWrapper>
+<BeyondUIThemeWrapper>
   <YourComponent />
-</TamaguiTestWrapper>
-
-// Option 2: Use the function
-const wrapped = withTamaguiProvider(<YourComponent />);
+</BeyondUIThemeWrapper>
 ```
+
 
 ### `form-setup.tsx`
 
@@ -48,42 +45,32 @@ import { render } from '@test-helpers/test-utils';
 // Or using relative path
 import { render } from '../../../../../tests/infrastructure/vitest/helpers/test-utils';
 
-// Render with Tamagui (default)
+// Render with default providers
 const { getByText } = renderWithProviders(<YourComponent />);
 
-// Render with both Tamagui and Form providers
+// Render with Form provider
 const { getByText } = renderWithProviders(<YourFormComponent />, {
-  withTamagui: true,
+  withTheme: true,
   withForm: true,
   formOptions: { defaultValues: { name: 'Test' } },
 });
 
-// Render without Tamagui
+// Render without theme provider
 const { getByText } = renderWithProviders(<YourComponent />, {
-  withTamagui: false,
+  withTheme: false,
 });
 ```
 
-## Tamagui Mocks
+## Beyond UI mocks
 
-### `mocks/tamagui-complete.tsx`
+### `mocks/beyond-ui-complete.tsx`
 
-Comprehensive Tamagui mock that includes all commonly used components. Use this when you need to mock Tamagui globally:
+Full Beyond UI mock for tests that cannot use theme-setup. Prefer theme-setup and real Beyond UI when possible:
 
 ```tsx
-import { setupTamaguiMocks } from '@/tests/infrastructure/vitest/mocks/tamagui-complete';
-
-// In your test file or setup
-setupTamaguiMocks();
+import { setupBeyondUIMocks } from '@/tests/infrastructure/vitest/mocks/beyond-ui-complete';
+setupBeyondUIMocks();
 ```
-
-This will mock:
-- All stack components (YStack, XStack, etc.)
-- Basic components (View, Text, Input, Button, Image, etc.)
-- Form components (Select, Switch, Checkbox, etc.)
-- Typography components (H1-H6, Paragraph)
-- Layout components (Card, Sheet, Dialog, etc.)
-- Lucide icons (Briefcase, Image, X, Check, etc.)
 
 ## Best Practices
 
@@ -99,20 +86,7 @@ This will mock:
 
 If you have existing tests with inline mocks, you can migrate them:
 
-### Before:
-```tsx
-vi.mock('tamagui', () => ({
-  YStack: ({ children }) => <div>{children}</div>,
-  Text: ({ children }) => <span>{children}</span>,
-  // ... many more
-}));
-```
-
-### After:
-```tsx
-import { setupTamaguiMocks } from '@/tests/infrastructure/vitest/mocks/tamagui-complete';
-setupTamaguiMocks();
-```
+For new tests, use Beyond UI and the app's theme/UI provider (theme-setup). Use `beyond-ui-complete` only when a full mock is required.
 
 ### Before:
 ```tsx

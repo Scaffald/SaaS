@@ -1,6 +1,6 @@
 /**
  * Requirement Editor Form
- * REQ-2, TASK-14: Form for creating and editing compliance requirements
+ * Form for creating and editing compliance requirements
  *
  * Features:
  * - Basic requirement information (code, name, type, status)
@@ -21,7 +21,7 @@ import {
   Trash2,
   AlertCircle,
 } from 'lucide-react';
-import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card } from '@scaffald/ui';
 import {
   useCreateComplianceRequirement,
   useUpdateComplianceRequirement,

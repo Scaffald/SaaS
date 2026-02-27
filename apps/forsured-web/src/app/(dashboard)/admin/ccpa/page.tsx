@@ -1,5 +1,5 @@
 /**
- * REQ-6: CCPA Admin Dashboard
+ * CCPA Admin Dashboard
  * TASK-1: Create CCPA Admin Dashboard Page with Metrics and Filters
  *
  * Administrative interface for managing CCPA compliance:
@@ -11,7 +11,7 @@
 
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Stack, Row, Text, Button, Card, Heading, colors, spacing } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Button, Card, Heading, colors, spacing } from '@scaffald/ui'
 import { trpc } from '../../../../lib/trpc'
 import { SLANotificationBanner } from '../../../../components/admin/CCPA/SLANotificationBanner'
 

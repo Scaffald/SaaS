@@ -4,7 +4,7 @@
 
 The Mock Validation Framework ensures all testing mocks accurately represent their real implementations **before any tests execute**. This prevents false test passes caused by broken or outdated mocks.
 
-**REQ-9 Testing Principle**: Only mock external services (Stripe, OpenAI, etc.), never mock internal systems (database, tRPC, Supabase).
+**Testing principle**: Only mock external services (Stripe, OpenAI, etc.), never mock internal systems (database, tRPC, Supabase).
 
 ## Why Mock Validation Matters
 

@@ -1,9 +1,16 @@
 /**
  * API Keys Hooks
- * React hooks for managing API keys using tRPC
+ * React hooks for managing API keys using Scaffald SDK
  */
 
-import { api } from '@scf/core/utils/api'
+import {
+  useApiKeys as useApiKeysSDK,
+  useApiKeyUsage as useApiKeyUsageSDK,
+  useCreateApiKeyMutation,
+  useUpdateApiKeyMutation,
+  useRevokeApiKeyMutation,
+} from '@scf/core/utils/api-keys-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
 
 /**
  * Hook to list all API keys for the current user's organization
@@ -14,7 +21,7 @@ import { api } from '@scf/core/utils/api'
  * ```
  */
 export const useAPIKeys = () => {
-  return api.apiKeys.list.useQuery()
+  return useApiKeysSDK()
 }
 
 /**
@@ -34,12 +41,12 @@ export const useAPIKeys = () => {
  * ```
  */
 export const useCreateAPIKey = () => {
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
-  return api.apiKeys.create.useMutation({
+  return useCreateApiKeyMutation({
     onSuccess: () => {
       // Invalidate the list query to refetch after creating a key
-      utils.apiKeys.list.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'apiKeys', 'list'] })
     },
   })
 }
@@ -53,17 +60,19 @@ export const useCreateAPIKey = () => {
  *
  * updateKey.mutate({
  *   id: 'key-id',
- *   scopes: ['read:jobs', 'write:jobs'],
+ *   params: {
+ *     scopes: ['read:jobs', 'write:jobs'],
+ *   }
  * })
  * ```
  */
 export const useUpdateAPIKey = () => {
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
-  return api.apiKeys.update.useMutation({
+  return useUpdateApiKeyMutation({
     onSuccess: () => {
       // Invalidate the list query to refetch after updating
-      utils.apiKeys.list.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'apiKeys', 'list'] })
     },
   })
 }
@@ -75,16 +84,16 @@ export const useUpdateAPIKey = () => {
  * ```tsx
  * const revokeKey = useRevokeAPIKey()
  *
- * revokeKey.mutate({ id: 'key-id' })
+ * revokeKey.mutate('key-id')
  * ```
  */
 export const useRevokeAPIKey = () => {
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
-  return api.apiKeys.revoke.useMutation({
+  return useRevokeApiKeyMutation({
     onSuccess: () => {
       // Invalidate the list query to refetch after revoking
-      utils.apiKeys.list.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'apiKeys', 'list'] })
     },
   })
 }
@@ -101,8 +110,5 @@ export const useRevokeAPIKey = () => {
  * ```
  */
 export const useAPIKeyUsage = (keyId: string, days: number = 30) => {
-  return api.apiKeys.getUsage.useQuery({
-    id: keyId,
-    days,
-  })
+  return useApiKeyUsageSDK(keyId, { days })
 }

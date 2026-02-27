@@ -1,5 +1,5 @@
 /**
- * REQ-266: Task Correlation with Compliance Score
+ * Task severity and compliance correlation
  * Tests for TaskSeverityBadge component
  */
 
@@ -69,42 +69,42 @@ describe('TaskSeverityBadge', () => {
     it('should apply critical severity colors', () => {
       render(<TaskSeverityBadge severity="critical" />);
 
-      // Tamagui uses different class naming - verify component renders with expected text
+      
       expect(screen.getByText('Critical')).toBeInTheDocument();
     });
 
     it('should apply high severity colors', () => {
       render(<TaskSeverityBadge severity="high" />);
 
-      // Tamagui uses different class naming - verify component renders with expected text
+      
       expect(screen.getByText('High')).toBeInTheDocument();
     });
 
     it('should apply medium severity colors', () => {
       render(<TaskSeverityBadge severity="medium" />);
 
-      // Tamagui uses different class naming - verify component renders with expected text
+      
       expect(screen.getByText('Medium')).toBeInTheDocument();
     });
 
     it('should apply low severity colors', () => {
       render(<TaskSeverityBadge severity="low" />);
 
-      // Tamagui uses different class naming - verify component renders with expected text
+      
       expect(screen.getByText('Low')).toBeInTheDocument();
     });
 
     it('should apply info severity colors', () => {
       render(<TaskSeverityBadge severity="info" />);
 
-      // Tamagui uses different class naming - verify component renders with expected text
+      
       expect(screen.getByText('Info')).toBeInTheDocument();
     });
 
     it('should render with custom className prop', () => {
       render(<TaskSeverityBadge severity="critical" className="custom-class" />);
 
-      // Tamagui may not directly apply className - verify component renders correctly
+      // Theme components may not apply className - verify component renders correctly
       expect(screen.getByText('Critical')).toBeInTheDocument();
     });
   });
@@ -208,7 +208,7 @@ describe('CompactSeverityIndicator', () => {
   it('should render with custom className prop', () => {
     render(<CompactSeverityIndicator severity="high" className="custom-class" />);
 
-    // Verify component renders - Tamagui may not apply className directly
+    // Verify component renders - theme components may not apply className directly
     expect(document.querySelector('svg')).toBeInTheDocument();
   });
 });

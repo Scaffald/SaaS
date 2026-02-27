@@ -1,16 +1,25 @@
-import { api } from '@scf/core/utils/api'
-import { DashboardWidget } from '@unicornlove/ui'
 import {
-  BellPlus,
-  Briefcase,
-  CheckCircle2,
-  Loader2,
-  Network,
-  UserPlus,
-} from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+  useEmployer,
+  useEmploymentStatus,
+  useFollowStatus,
+  useFollowOrganizationMutation,
+  useUnfollowOrganizationMutation,
+  useClaimEmploymentMutation,
+  useRemoveEmploymentMutation,
+} from '@scf/core/utils/employers-sdk-hooks'
+import type {
+  FollowOrganizationResponse,
+  UnfollowOrganizationResponse,
+  ClaimEmploymentResponse,
+  RemoveEmploymentResponse,
+} from '@scaffald/sdk'
+import { useOrganizationOpenJobsCount } from '@scf/core/utils/organizations-sdk-hooks'
+import { DashboardWidget } from '@scaffald/ui'
+import { BellPlus, Briefcase, CheckCircle2, Loader2, Network, UserPlus } from 'lucide-react-native'
+import { useToast } from '@scaffald/ui'
 import { useMemo } from 'react'
-import { Button, Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { useQueryClient } from '@tanstack/react-query'
+import { Button, Separator, Text, Row, Stack } from '@scaffald/ui'
 
 type OrganizationIdentifier = { organizationId: string }
 
@@ -18,11 +27,6 @@ type FollowStatusSnapshot = {
   isFollowing: boolean
   followId: string | null
   createdAt: string | null
-}
-
-type FollowMutationResult = {
-  alreadyFollowing: boolean
-  follow: { id: string; created_at: string | null }
 }
 
 type FollowMutationContext = { previous?: FollowStatusSnapshot }
@@ -34,17 +38,6 @@ type EmploymentStatusSnapshot = {
   isCurrent: boolean
   claimedAt: string | null
   createdAt: string | null
-}
-
-type ClaimMutationResult = {
-  alreadyLinked: boolean
-  experience: {
-    id: string
-    source: string | null
-    is_current: boolean | null
-    claimed_at: string | null
-    created_at: string | null
-  } | null
 }
 
 type EmploymentMutationContext = { previous?: EmploymentStatusSnapshot }
@@ -60,106 +53,103 @@ type DiscoverEmployerDetailRightProps = {
  * Renders engagement CTAs for an employer, including follow and employment claim actions.
  */
 export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDetailRightProps) {
-  const toast = useToastController()
-  const utils = api.useContext()
+  const toast = useToast()
+  const queryClient = useQueryClient()
 
-  const { data: employer, isLoading } = api.employers.getEmployerById.useQuery(
+  const { data: employer, isLoading } = useEmployer(
     { id: employerId },
     { enabled: Boolean(employerId) }
   )
 
-  const { data: openJobs, isLoading: jobsLoading } = api.organizations.getOpenJobsCount.useQuery(
+  const { data: openJobs, isLoading: jobsLoading } = useOrganizationOpenJobsCount(
+    employerId || undefined,
+    { enabled: Boolean(employerId) }
+  )
+
+  const { data: followStatus, isLoading: followStatusLoading } = useFollowStatus(
     { organizationId: employerId },
     { enabled: Boolean(employerId) }
   )
 
-  const { data: followStatus, isLoading: followStatusLoading } =
-    api.employers.getOrganizationFollowStatus.useQuery(
-      { organizationId: employerId },
-      { enabled: Boolean(employerId) }
-    )
+  const { data: employmentStatus, isLoading: employmentStatusLoading } = useEmploymentStatus(
+    { organizationId: employerId },
+    { enabled: Boolean(employerId) }
+  )
 
-  const { data: employmentStatus, isLoading: employmentStatusLoading } =
-    api.employers.getOrganizationEmploymentStatus.useQuery(
-      { organizationId: employerId },
-      { enabled: Boolean(employerId) }
-    )
-
-  const followMutation = api.employers.followOrganization.useMutation({
+  const followMutation = useFollowOrganizationMutation({
     onMutate: async (variables: OrganizationIdentifier) => {
-      await utils.employers.getOrganizationFollowStatus.cancel(variables)
-      const previous: FollowStatusSnapshot | undefined =
-        utils.employers.getOrganizationFollowStatus.getData(variables)
+      const queryKey = ['scaffald', 'employers', 'follow-status', variables.organizationId]
+      await queryClient.cancelQueries({ queryKey })
+      const previous: FollowStatusSnapshot | undefined = queryClient.getQueryData(queryKey)
 
-      utils.employers.getOrganizationFollowStatus.setData(variables, {
+      queryClient.setQueryData(queryKey, {
         isFollowing: true,
-        followId: previous?.followId ?? null,
-        createdAt: previous?.createdAt ?? new Date().toISOString(),
+        followedAt: previous?.createdAt ?? new Date().toISOString(),
       })
 
       return { previous } as FollowMutationContext
     },
-    onError: (
-      error: MutationError,
-      variables: OrganizationIdentifier,
-      context?: FollowMutationContext
-    ) => {
-      if (context?.previous) {
-        utils.employers.getOrganizationFollowStatus.setData(variables, context.previous)
+    onError: (error: MutationError, variables: OrganizationIdentifier, context?: unknown) => {
+      const ctx = context as FollowMutationContext | undefined
+      if (ctx?.previous) {
+        const queryKey = ['scaffald', 'employers', 'follow-status', variables.organizationId]
+        queryClient.setQueryData(queryKey, ctx.previous)
       }
-      toast.show('Unable to follow', {
+      toast.show({
+        title: 'Unable to follow',
         message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
       })
     },
-    onSuccess: (data: FollowMutationResult, variables: OrganizationIdentifier) => {
-      utils.employers.getOrganizationFollowStatus.setData(variables, {
+    onSuccess: (data: FollowOrganizationResponse, variables: OrganizationIdentifier) => {
+      const queryKey = ['scaffald', 'employers', 'follow-status', variables.organizationId]
+      queryClient.setQueryData(queryKey, {
         isFollowing: true,
-        followId: data.follow.id,
-        createdAt: data.follow.created_at ?? new Date().toISOString(),
+        followedAt: data.followedAt ?? new Date().toISOString(),
       })
 
-      toast.show(data.alreadyFollowing ? 'Already following' : 'Following organization', {
-        message: data.alreadyFollowing
-          ? 'You were already following this organization.'
-          : 'We will keep you updated as new activity rolls in.',
+      toast.show({
+        title: 'Following organization',
+        message: 'We will keep you updated as new activity rolls in.',
+        variant: 'success',
       })
     },
   })
 
-  const unfollowMutation = api.employers.unfollowOrganization.useMutation({
+  const unfollowMutation = useUnfollowOrganizationMutation({
     onMutate: async (variables: OrganizationIdentifier) => {
-      await utils.employers.getOrganizationFollowStatus.cancel(variables)
-      const previous: FollowStatusSnapshot | undefined =
-        utils.employers.getOrganizationFollowStatus.getData(variables)
+      const queryKey = ['scaffald', 'employers', 'follow-status', variables.organizationId]
+      await queryClient.cancelQueries({ queryKey })
+      const previous: FollowStatusSnapshot | undefined = queryClient.getQueryData(queryKey)
 
-      utils.employers.getOrganizationFollowStatus.setData(variables, {
+      queryClient.setQueryData(queryKey, {
         isFollowing: false,
-        followId: null,
-        createdAt: null,
+        followedAt: null,
       })
 
       return { previous } as FollowMutationContext
     },
-    onError: (
-      error: MutationError,
-      variables: OrganizationIdentifier,
-      context?: FollowMutationContext
-    ) => {
-      if (context?.previous) {
-        utils.employers.getOrganizationFollowStatus.setData(variables, context.previous)
+    onError: (error: MutationError, variables: OrganizationIdentifier, context?: unknown) => {
+      const ctx = context as FollowMutationContext | undefined
+      if (ctx?.previous) {
+        const queryKey = ['scaffald', 'employers', 'follow-status', variables.organizationId]
+        queryClient.setQueryData(queryKey, ctx.previous)
       }
-      toast.show('Unable to unfollow', {
+      toast.show({
+        title: 'Unable to unfollow',
         message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
       })
     },
-    onSuccess: (_data: { success: boolean }, variables: OrganizationIdentifier) => {
-      utils.employers.getOrganizationFollowStatus.setData(variables, {
+    onSuccess: (_data: UnfollowOrganizationResponse, variables: OrganizationIdentifier) => {
+      const queryKey = ['scaffald', 'employers', 'follow-status', variables.organizationId]
+      queryClient.setQueryData(queryKey, {
         isFollowing: false,
-        followId: null,
-        createdAt: null,
+        followedAt: null,
       })
 
-      toast.show('Unfollowed', {
+      toast.show({
+        title: 'Unfollowed',
         message: 'We removed this organization from your followed list.',
       })
     },
@@ -177,13 +167,13 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         ? 'Following'
         : 'Follow Organization'
 
-  const claimEmploymentMutation = api.employers.claimOrganizationEmployment.useMutation({
+  const claimEmploymentMutation = useClaimEmploymentMutation({
     onMutate: async (variables: OrganizationIdentifier) => {
-      await utils.employers.getOrganizationEmploymentStatus.cancel(variables)
-      const previous: EmploymentStatusSnapshot | undefined =
-        utils.employers.getOrganizationEmploymentStatus.getData(variables)
+      const queryKey = ['scaffald', 'employers', 'employment-status', variables.organizationId]
+      await queryClient.cancelQueries({ queryKey })
+      const previous: EmploymentStatusSnapshot | undefined = queryClient.getQueryData(queryKey)
 
-      utils.employers.getOrganizationEmploymentStatus.setData(variables, {
+      queryClient.setQueryData(queryKey, {
         isLinked: true,
         experienceId: previous?.experienceId ?? null,
         source: previous?.source ?? 'claim',
@@ -194,21 +184,22 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
 
       return { previous } as EmploymentMutationContext
     },
-    onError: (
-      error: MutationError,
-      variables: OrganizationIdentifier,
-      context?: EmploymentMutationContext
-    ) => {
-      if (context?.previous) {
-        utils.employers.getOrganizationEmploymentStatus.setData(variables, context.previous)
+    onError: (error: MutationError, variables: OrganizationIdentifier, context?: unknown) => {
+      const ctx = context as EmploymentMutationContext | undefined
+      if (ctx?.previous) {
+        const queryKey = ['scaffald', 'employers', 'employment-status', variables.organizationId]
+        queryClient.setQueryData(queryKey, ctx.previous)
       }
-      toast.show('Unable to link employment', {
+      toast.show({
+        title: 'Unable to link employment',
         message: error.message ?? 'Please try again shortly.',
+        variant: 'error',
       })
     },
-    onSuccess: (data: ClaimMutationResult, variables: OrganizationIdentifier) => {
+    onSuccess: (data: ClaimEmploymentResponse, variables: OrganizationIdentifier) => {
       const experience = data.experience ?? null
-      utils.employers.getOrganizationEmploymentStatus.setData(variables, {
+      const queryKey = ['scaffald', 'employers', 'employment-status', variables.organizationId]
+      queryClient.setQueryData(queryKey, {
         isLinked: true,
         experienceId: experience?.id ?? null,
         source: experience?.source ?? 'claim',
@@ -217,28 +208,31 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         createdAt: experience?.created_at ?? new Date().toISOString(),
       })
 
-      toast.show(data.alreadyLinked ? 'Already linked' : 'Employment linked', {
+      toast.show({
+        title: data.alreadyLinked ? 'Already linked' : 'Employment linked',
         message: data.alreadyLinked
           ? 'Your profile is already connected to this organization.'
           : 'We created a connection to this organization on your profile.',
+        variant: 'success',
       })
     },
     onSettled: async (
-      _data: ClaimMutationResult | undefined,
+      _data: ClaimEmploymentResponse | undefined,
       _error: MutationError | null,
       variables: OrganizationIdentifier
     ) => {
-      await utils.employers.getOrganizationEmploymentStatus.invalidate(variables)
+      const queryKey = ['scaffald', 'employers', 'employment-status', variables.organizationId]
+      await queryClient.invalidateQueries({ queryKey })
     },
   })
 
-  const removeEmploymentMutation = api.employers.removeOrganizationEmployment.useMutation({
+  const removeEmploymentMutation = useRemoveEmploymentMutation({
     onMutate: async (variables: OrganizationIdentifier) => {
-      await utils.employers.getOrganizationEmploymentStatus.cancel(variables)
-      const previous: EmploymentStatusSnapshot | undefined =
-        utils.employers.getOrganizationEmploymentStatus.getData(variables)
+      const queryKey = ['scaffald', 'employers', 'employment-status', variables.organizationId]
+      await queryClient.cancelQueries({ queryKey })
+      const previous: EmploymentStatusSnapshot | undefined = queryClient.getQueryData(queryKey)
 
-      utils.employers.getOrganizationEmploymentStatus.setData(variables, {
+      queryClient.setQueryData(queryKey, {
         isLinked: false,
         experienceId: null,
         source: null,
@@ -249,41 +243,41 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
 
       return { previous } as EmploymentMutationContext
     },
-    onError: (
-      error: MutationError,
-      variables: OrganizationIdentifier,
-      context?: EmploymentMutationContext
-    ) => {
-      if (context?.previous) {
-        utils.employers.getOrganizationEmploymentStatus.setData(variables, context.previous)
+    onError: (error: MutationError, variables: OrganizationIdentifier, context?: unknown) => {
+      const ctx = context as EmploymentMutationContext | undefined
+      if (ctx?.previous) {
+        const queryKey = ['scaffald', 'employers', 'employment-status', variables.organizationId]
+        queryClient.setQueryData(queryKey, ctx.previous)
       }
-      toast.show('Unable to remove link', {
+      toast.show({
+        title: 'Unable to remove link',
         message: error.message ?? 'Please try again shortly.',
+        variant: 'error',
       })
     },
-    onSuccess: (data: { removed: boolean }, variables: OrganizationIdentifier) => {
-      if (!data.removed) {
-        // Nothing to remove, restore to neutral state
-        utils.employers.getOrganizationEmploymentStatus.setData(variables, {
-          isLinked: false,
-          experienceId: null,
-          source: null,
-          isCurrent: false,
-          claimedAt: null,
-          createdAt: null,
-        })
-      }
+    onSuccess: (_data: RemoveEmploymentResponse, variables: OrganizationIdentifier) => {
+      const queryKey = ['scaffald', 'employers', 'employment-status', variables.organizationId]
+      queryClient.setQueryData(queryKey, {
+        isLinked: false,
+        experienceId: null,
+        source: null,
+        isCurrent: false,
+        claimedAt: null,
+        createdAt: null,
+      })
 
-      toast.show('Employment link removed', {
+      toast.show({
+        title: 'Employment link removed',
         message: 'You are no longer connected to this organization.',
       })
     },
     onSettled: async (
-      _data: { removed: boolean } | undefined,
+      _data: RemoveEmploymentResponse | undefined,
       _error: MutationError | null,
       variables: OrganizationIdentifier
     ) => {
-      await utils.employers.getOrganizationEmploymentStatus.invalidate(variables)
+      const queryKey = ['scaffald', 'employers', 'employment-status', variables.organizationId]
+      await queryClient.invalidateQueries({ queryKey })
     },
   })
 
@@ -327,29 +321,25 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
   }
 
   return (
-    <DashboardWidget gap="$4">
-      <YStack gap="$2">
-        <XStack gap="$2" alignItems="center">
+    <DashboardWidget gap={16}>
+      <Stack gap={8}>
+        <Row gap={8} align="center">
           <Network size={18} color="$blue10" />
-          <Text fontSize="$5" fontWeight="700" color="$color12">
-            Stay Connected
-          </Text>
-        </XStack>
-        <Text fontSize="$3" color="$color11">
+          <Text color="$gray11">Stay Connected</Text>
+        </Row>
+        <Text color="$gray11">
           Follow {organizationName} to get updates or claim your role to link your profile to the
           team.
         </Text>
-      </YStack>
+      </Stack>
 
       <Separator />
 
       {isLoading ? (
-        <XStack gap="$2" alignItems="center">
-          <Loader2 size={16} color="$blue10" />
-          <Text fontSize="$3" color="$color11">
-            Loading organization context...
-          </Text>
-        </XStack>
+        <Row gap={8} align="center">
+          <Loader2 size="md" color="$blue10" />
+          <Text color="$gray11">Loading organization context...</Text>
+        </Row>
       ) : (
         <OrganizationSnapshot
           name={organizationName}
@@ -361,41 +351,39 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
 
       <Separator />
 
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Button
-          size="$4"
-          icon={followButtonIcon}
+          size="md"
+          iconStart={followButtonIcon}
           onPress={handleFollow}
           disabled={isFollowButtonDisabled}
         >
           {followButtonLabel}
         </Button>
         <Button
-          size="$4"
-          theme="success"
-          icon={employmentButtonIcon}
+          size="md"
+          color="success"
+          iconStart={employmentButtonIcon}
           onPress={handleWorkHere}
           disabled={isEmploymentButtonDisabled}
         >
           {employmentButtonLabel}
         </Button>
-      </YStack>
+      </Stack>
 
       <Separator />
 
-      <YStack gap="$2">
-        <XStack gap="$2" alignItems="center">
-          <BellPlus size={16} color="$color10" />
-          <Text fontSize="$3" fontWeight="600" color="$color10">
-            What happens next?
-          </Text>
-        </XStack>
-        <Text fontSize="$2" color="$color10">
+      <Stack gap={8}>
+        <Row gap={8} align="center">
+          <BellPlus size={20} color="#737373" />
+          <Text color="secondary">What happens next?</Text>
+        </Row>
+        <Text color="secondary">
           Following keeps you updated as teams post new opportunities or updates. Linking your
           employment adds the organization to your profile immediately so recruiters can see your
           affiliation right away.
         </Text>
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }
@@ -414,25 +402,19 @@ function OrganizationSnapshot({
   jobsLoading,
 }: OrganizationSnapshotProps) {
   return (
-    <YStack gap="$2">
-      <XStack gap="$2" alignItems="center">
-        <CheckCircle2 size={16} color="$green10" />
-        <Text fontSize="$3" fontWeight="600" color="$green10">
-          {name}
-        </Text>
-      </XStack>
-      {createdAt && (
-        <Text fontSize="$2" color="$color10">
-          Onboarded {createdAt}
-        </Text>
-      )}
-      <Text fontSize="$3" color="$color11">
+    <Stack gap={8}>
+      <Row gap={8} align="center">
+        <CheckCircle2 size="md" color="$green10" />
+        <Text color="$green10">{name}</Text>
+      </Row>
+      {createdAt && <Text color="$gray11">Onboarded {createdAt}</Text>}
+      <Text color="$gray11">
         {jobsLoading
           ? 'Checking open roles...'
           : typeof openJobs === 'number'
             ? `${openJobs} active ${openJobs === 1 ? 'role' : 'roles'}`
             : 'Open roles data unavailable'}
       </Text>
-    </YStack>
+    </Stack>
   )
 }

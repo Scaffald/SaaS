@@ -1,5 +1,5 @@
 /**
- * REQ-2, TASK-6: Dependency Validation Tests
+ * Dependency Validation Tests
  * Tests for dependency validation integration with evaluation engine
  */
 

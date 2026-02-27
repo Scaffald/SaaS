@@ -3,25 +3,13 @@ import { describe, expect, it, vi } from 'vitest'
 import { DrawerLink } from '../DrawerLink'
 import type { DrawerItemConfig } from '../types'
 
-vi.mock('tamagui', () => ({
-  XStack: ({ children, ...props }: { children: React.ReactNode }) => (
-    <div {...props}>{children}</div>
-  ),
-  YStack: ({ children, ...props }: { children: React.ReactNode }) => (
-    <div {...props}>{children}</div>
-  ),
-  Paragraph: ({ children, ...props }: { children: React.ReactNode }) => (
-    <p {...props}>{children}</p>
-  ),
-}))
-
 vi.mock('expo-router', () => ({
   Link: ({ children, href }: { children: React.ReactNode; href: string }) => (
     <a href={href}>{children}</a>
   ),
 }))
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   ChevronRight: () => <span data-testid="chevron-right" />,
   ChevronDown: () => <span data-testid="chevron-down" />,
   Check: () => <span data-testid="check" />,

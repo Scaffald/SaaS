@@ -27,7 +27,7 @@ export interface ArchetypeResult {
 
 /**
  * 8 Industry-neutral archetypes with weighted conditions
- * Based on REQ-227 requirements
+ * Based on archetype requirements
  */
 const ARCHETYPES: ArchetypeDefinition[] = [
   {

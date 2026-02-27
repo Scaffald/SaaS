@@ -1,11 +1,21 @@
 /**
  * OAuth Consent Screen Component
- * REQ-10 Task 9: Build OAuth consent screen UI component
+ * OAuth consent screen UI component
  */
 
-import { api } from '@scf/core/utils/api'
+import { useGrantConsentMutation } from '@scf/core/utils/oauth-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
-import { Button, Card, Checkbox, Image, Paragraph, Separator, SizableText, XStack, YStack } from '@unicornlove/ui'
+import {
+  Button,
+  Card,
+  Checkbox,
+  Paragraph,
+  Separator,
+  Text,
+  Row,
+  Stack,
+} from '@scaffald/ui'
+import { Image } from 'react-native'
 import { useState } from 'react'
 
 interface ConsentScreenProps {
@@ -40,7 +50,7 @@ export function ConsentScreen({
   const { user } = useUser()
   const [rememberConsent, setRememberConsent] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const grantConsent = api.oauth.grantConsent.useMutation()
+  const grantConsent = useGrantConsentMutation()
 
   async function handleAuthorize() {
     setIsSubmitting(true)
@@ -89,80 +99,73 @@ export function ConsentScreen({
   }
 
   return (
-    <YStack flex={1} padding="$4" maxWidth={600} alignSelf="center" gap="$4">
-      <Card padding="$4" gap="$4">
-        <YStack gap="$3">
-          <XStack gap="$3" alignItems="center">
+    <Stack flex={1} padding="md" maxWidth={600} alignSelf="center" gap={16}>
+      <Card padding="md">
+        <Stack gap={16}>
+        <Stack gap={12}>
+          <Row gap={12} align="center">
             {app.logo_url && (
               <Image
                 source={{ uri: app.logo_url }}
-                width={64}
-                height={64}
-                borderRadius="$2"
-                backgroundColor="$color3"
+                style={{ width: 64, height: 64, borderRadius: 8, backgroundColor: '#f2f4f7' }}
               />
             )}
-            <YStack flex={1} gap="$1">
-              <SizableText size="$6" fontWeight="600">
-                {app.name} wants to access your Scaffald account
-              </SizableText>
+            <Stack flex={1} gap={4}>
+              <Text size="2xl">{app.name} wants to access your Scaffald account</Text>
               {app.description && (
-                <Paragraph size="$2" color="$color11">
+                <Paragraph size="sm" color="$gray11">
                   {app.description}
                 </Paragraph>
               )}
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
 
           {app.homepage_url && (
-            <Paragraph size="$2">
+            <Paragraph size="sm">
               <a href={app.homepage_url} target="_blank" rel="noopener noreferrer">
                 Visit {app.name}
               </a>
             </Paragraph>
           )}
-        </YStack>
-
+        </Stack>
         <Separator />
 
-        <YStack gap="$2">
-          <SizableText size="$4" fontWeight="600">
-            Permissions Requested
-          </SizableText>
-          <YStack gap="$2">
+        <Stack gap={8}>
+          <Text size="md">Permissions Requested</Text>
+          <Stack gap={8}>
             {requestedScopes.map((scope) => (
               <ScopePermissionItem key={scope} scope={scope} />
             ))}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
 
         <Separator />
 
-        <YStack gap="$2">
-          <SizableText size="$3" color="$color11">
+        <Stack gap={8}>
+          <Text size="sm" color="$gray11">
             Authorizing as {user?.email}
-          </SizableText>
+          </Text>
           <Checkbox
             checked={rememberConsent}
-            onCheckedChange={setRememberConsent}
+            onChange={setRememberConsent}
             label="Remember this authorization (skip consent screen in the future)"
           />
-        </YStack>
+        </Stack>
 
         <Separator />
 
-        <XStack gap="$3" justifyContent="flex-end">
-          <Button variant="outlined" onPress={handleDeny} disabled={isSubmitting}>
+        <Row gap={12} justify="flex-end">
+          <Button variant="outline" onPress={handleDeny} disabled={isSubmitting}>
             Deny
           </Button>
           <Button onPress={handleAuthorize} disabled={isSubmitting} loading={isSubmitting}>
             Authorize
           </Button>
-        </XStack>
+        </Row>
 
         {(app.privacy_policy_url || app.terms_of_service_url) && (
-          <YStack gap="$1">
-            <SizableText size="$1" color="$color11" textAlign="center">
+          <Stack gap={4}>
+            <Text size="sm" color="$gray11" style={{ textAlign: 'center' }}>
               <a
                 href={app.privacy_policy_url}
                 target="_blank"
@@ -176,11 +179,12 @@ export function ConsentScreen({
                   Terms of Service
                 </a>
               )}
-            </SizableText>
-          </YStack>
+            </Text>
+          </Stack>
         )}
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   )
 }
 
@@ -203,15 +207,14 @@ function ScopePermissionItem({ scope }: { scope: string }) {
   const description = scopeDescriptions[scope] || scope
 
   return (
-    <XStack gap="$2" alignItems="flex-start">
-      <SizableText size="$3">•</SizableText>
-      <YStack flex={1}>
-        <SizableText size="$3">{description}</SizableText>
-        <SizableText size="$1" color="$color11">
+    <Row gap={8} align="flex-start">
+      <Text size="sm">•</Text>
+      <Stack flex={1}>
+        <Text size="sm">{description}</Text>
+        <Text size="sm" color="$gray11">
           {scope}
-        </SizableText>
-      </YStack>
-    </XStack>
+        </Text>
+      </Stack>
+    </Row>
   )
 }
-

@@ -1,11 +1,11 @@
 /**
  * ACORD 25 Template Validation Tests
- * REQ-125: Mock OCR & Document Parsing Engine for ACORD 25 Forms
+ * Mock OCR & Document Parsing Engine for ACORD 25 Forms
  *
  * These tests verify that ACORD 25 templates match real certificate formats.
  * Used for testing the OCR parsing engine against known document structures.
  *
- * Note: Per REQ-9, database operations are tested against real Supabase.
+ * Note: Database operations are tested against real Supabase.
  * See tests/fixtures/supabase.ts for database test helpers.
  */
 

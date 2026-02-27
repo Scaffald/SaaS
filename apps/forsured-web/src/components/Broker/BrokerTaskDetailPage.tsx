@@ -12,7 +12,7 @@ import {
   Paperclip,
   MoreHorizontal,
 } from 'lucide-react';
-import { Stack, Row, Text, H1, H2, H3, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H1, H2, H3, Card } from '@scaffald/ui';
 import { useTasks } from '../../hooks/useTasks';
 import { useProjects } from '../../hooks/useProjects';
 import { useUsers } from '../../hooks/useUsers';

@@ -1,6 +1,6 @@
-import { X } from '@tamagui/lucide-icons'
+import { X } from 'lucide-react-native'
 import type { ReactNode } from 'react'
-import { Button, Card, type CardProps, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, CardHeader, type CardProps, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 interface ProfileResultCardProps extends CardProps {
   /** Child content for the card */
@@ -31,10 +31,10 @@ interface ProfileResultCardProps extends CardProps {
  *   onRemove={() => handleRemove(item.id)}
  *   removeDisabled={isRemoving}
  * >
- *   <YStack gap="$2">
- *     <Text fontWeight="600">{item.name}</Text>
- *     <Text color="$color11">{item.description}</Text>
- *   </YStack>
+ *   <Stack gap={8}>
+ *     <Text>{item.name}</Text>
+ *     <Text color="$gray11">{item.description}</Text>
+ *   </Stack>
  * </ProfileResultCard>
  * ```
  */
@@ -51,44 +51,40 @@ export function ProfileResultCard({
 }: ProfileResultCardProps) {
   return (
     <Card
-      bordered={bordered}
-      size="$4"
-      backgroundColor={isNew ? '$green2' : undefined}
-      borderColor={isNew ? '$green9' : undefined}
-      borderWidth={isNew ? 2 : undefined}
-      animation={isNew ? 'quick' : undefined}
+      variant={bordered ? 'outlined' : undefined}
+      style={isNew ? { backgroundColor: '#f0fdf4', borderColor: '#4ade80', borderWidth: 2 } : undefined}
       {...props}
     >
-      <Card.Header gap="$2">
-        <YStack gap="$3" flex={1}>
+      <CardHeader>
+        <Stack gap={12} flex={1}>
           {children}
-        </YStack>
+        </Stack>
 
         {/* Action buttons */}
         {(onRemove || actions) && (
-          <XStack gap="$2" justifyContent="flex-end" paddingTop="$2">
+          <Row gap={8} justify="flex-end" paddingTop={8}>
             {actions}
             {onRemove && (
               <Button
-                size="$2"
-                variant="outlined"
-                icon={isLoading ? undefined : X}
+                size="sm"
+                variant="outline"
+                iconStart={isLoading ? undefined : X}
                 onPress={onRemove}
                 disabled={removeDisabled || isRemoving || isLoading}
               >
                 {isLoading ? (
-                  <XStack gap="$2" alignItems="center">
-                    <Spinner size="small" />
+                  <Row gap={8} align="center">
+                    <Spinner size="sm" />
                     <Text>Removing...</Text>
-                  </XStack>
+                  </Row>
                 ) : (
                   'Remove'
                 )}
               </Button>
             )}
-          </XStack>
+          </Row>
         )}
-      </Card.Header>
+      </CardHeader>
     </Card>
   )
 }

@@ -30,7 +30,7 @@ import {
   Chip,
   Spinner,
   Grid,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import EnhancedTaskDetailModal from './EnhancedTaskDetailModal'
 import { useDatabase } from '../../contexts/DatabaseContext'
 import { useAuth } from '../../contexts/AuthContext'

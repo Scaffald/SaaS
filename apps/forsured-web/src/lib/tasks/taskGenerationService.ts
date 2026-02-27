@@ -1,5 +1,5 @@
 /**
- * REQ-127: Task Auto-Generation from Compliance Gaps
+ * Task Auto-Generation from Compliance Gaps
  * Main service orchestrating task generation from compliance gaps
  */
 

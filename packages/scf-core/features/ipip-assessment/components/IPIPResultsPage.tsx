@@ -1,9 +1,10 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
-import { AlertCircle, RefreshCcw } from '@tamagui/lucide-icons'
+import { useAwardResultsViewXPMutation } from '@scf/core/utils/personality-assessment-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
+import { AlertCircle, RefreshCcw } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Button, Tabs, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Tabs, Text, Row, Stack } from '@scaffald/ui'
 import { useIPIPResults } from '../hooks/useIPIPResults'
 import { ChartView } from './ChartView'
 import { NarrativeView } from './NarrativeView'
@@ -16,11 +17,11 @@ export function IPIPResultsPage() {
   const router = useRouter()
   const results = useIPIPResults()
   const [activeTab, setActiveTab] = useState<'narrative' | 'chart'>('narrative')
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
-  const awardXP = api.personalityAssessment.awardResultsViewXP.useMutation({
+  const awardXP = useAwardResultsViewXPMutation({
     onSuccess: () => {
-      utils.personalityAssessment.getAssessmentStatus.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
     },
     onError: (error: { message?: string }) => {
       // Don't show error toast for XP - it's not critical
@@ -37,56 +38,50 @@ export function IPIPResultsPage() {
 
   if (results.isLoading) {
     return (
-      <YStack gap="$4" padding="$8" alignItems="center" aria-live="polite">
-        <Text fontSize="$5" color="$color11">
-          Loading your results...
-        </Text>
-      </YStack>
+      <Stack gap={16} padding={32} align="center" aria-live="polite">
+        <Text color="$gray11">Loading your results...</Text>
+      </Stack>
     )
   }
 
   const handleRetry = () => {
-    utils.personalityAssessment.getAssessmentStatus.invalidate()
-    utils.personalityAssessment.getArchetype.invalidate()
+    queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
+    queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'archetype'] })
   }
 
   // Handle critical errors (network, API failures)
   if (results.error && !results.hasPartialResults) {
     return (
-      <YStack gap="$4" padding="$8" alignItems="center" aria-live="assertive">
-        <AlertCircle size="$3" color="$red10" />
-        <Text fontSize="$5" color="$red10" fontWeight="600">
-          Error Loading Results
-        </Text>
-        <Text fontSize="$4" color="$color11" textAlign="center">
+      <Stack gap={16} padding={32} align="center" accessibilityLiveRegion="assertive">
+        <AlertCircle size="sm" color="$red10" />
+        <Text color="$red10">Error Loading Results</Text>
+        <Text color="$gray11" align="center">
           {results.error.message || 'Unable to load your assessment results. Please try again.'}
         </Text>
-        <XStack gap="$3">
-          <Button icon={RefreshCcw} onPress={handleRetry} theme="blue">
+        <Row gap={12}>
+          <Button iconStart={RefreshCcw} onPress={handleRetry} color="primary">
             Retry
           </Button>
-          <Button variant="outlined" onPress={() => router.push(ROUTES.DASHBOARD.path)}>
+          <Button variant="outline" onPress={() => router.push(ROUTES.DASHBOARD.path)}>
             Return to Dashboard
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     )
   }
 
   // Handle case where no assessment has been started
   if (!results.scores && results.completedDomains === 0 && !results.isLoading) {
     return (
-      <YStack gap="$4" padding="$8" alignItems="center">
-        <Text fontSize="$5" color="$color11" fontWeight="600">
-          No Results Yet
-        </Text>
-        <Text fontSize="$4" color="$color10" textAlign="center">
+      <Stack gap={16} padding={32} align="center">
+        <Text color="$gray11">No Results Yet</Text>
+        <Text color="$gray11" align="center">
           Complete the IPIP assessment to see your personality results.
         </Text>
         <Button onPress={() => router.push(ROUTES.DASHBOARD.ASSESSMENTS.IPIP.path)}>
           Start Assessment
         </Button>
-      </YStack>
+      </Stack>
     )
   }
 
@@ -94,124 +89,108 @@ export function IPIPResultsPage() {
   const hasDataErrors = results.scoringError || results.normalizationError || results.narrativeError
 
   return (
-    <YStack gap="$6" width="100%" padding="$4" style={{ maxWidth: 1000, alignSelf: 'center' }}>
+    <Stack gap={24} width="100%" padding="md" style={{ maxWidth: 1000, alignSelf: 'center' }}>
       {/* Header */}
-      <YStack gap="$2">
-        <Text fontSize="$8" fontWeight="bold" color="$color12">
-          Your Personality Results
-        </Text>
-        <Text fontSize="$4" color="$color11">
+      <Stack gap={8}>
+        <Text color="$gray11">Your Personality Results</Text>
+        <Text color="$gray11">
           Discover your Big Five personality traits and how they shape your work style.
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Tab Navigation */}
       <Tabs
         value={activeTab}
         onValueChange={(value) => setActiveTab(value as 'narrative' | 'chart')}
-        orientation="horizontal"
-        flexDirection="column"
       >
-        <Tabs.List
-          separator={<YStack width="$1" />}
-          disablePassBorderRadius="bottom"
-          aria-label="Manage your personality results view"
-        >
-          <Tabs.Tab flex={1} value="narrative">
-            <Text fontSize="$4" fontWeight="600">
-              Narrative View
-            </Text>
-          </Tabs.Tab>
-          <Tabs.Tab flex={1} value="chart">
-            <Text fontSize="$4" fontWeight="600">
-              Chart View
-            </Text>
-          </Tabs.Tab>
-        </Tabs.List>
+        <Tabs.Item value="narrative">
+          <Tabs.Trigger containerStyle={{ flex: 1 }}>Narrative View</Tabs.Trigger>
+        </Tabs.Item>
+        <Tabs.Item value="chart">
+          <Tabs.Trigger containerStyle={{ flex: 1 }}>Chart View</Tabs.Trigger>
+        </Tabs.Item>
 
-        <Tabs.Content
-          value="narrative"
-          padding="$4"
-          backgroundColor="$color1"
-          borderBottomLeftRadius="$4"
-          borderBottomRightRadius="$4"
-          borderWidth={1}
-          borderColor="$borderColor"
-        >
-          <NarrativeView
-            scores={results.scores}
-            normalizedScores={results.normalizedScores}
-            narratives={results.narratives}
-            isComplete={results.isComplete}
-            completedDomains={results.completedDomains}
-          />
+        <Tabs.Content value="narrative">
+          <Stack
+            padding="md"
+            backgroundColor="$color1"
+            borderWidth={1}
+            borderColor="$borderColor"
+            style={{ borderBottomLeftRadius: 16, borderBottomRightRadius: 16 }}
+          >
+            <NarrativeView
+              scores={results.scores}
+              normalizedScores={results.normalizedScores}
+              narratives={results.narratives}
+              isComplete={results.isComplete}
+              completedDomains={results.completedDomains}
+            />
+          </Stack>
         </Tabs.Content>
 
-        <Tabs.Content
-          value="chart"
-          padding="$4"
-          backgroundColor="$color1"
-          borderBottomLeftRadius="$4"
-          borderBottomRightRadius="$4"
-          borderWidth={1}
-          borderColor="$borderColor"
-        >
-          <ChartView
-            scores={results.scores}
-            normalizedScores={results.normalizedScores}
-            archetype={
-              results.archetype
-                ? {
-                    archetype: results.archetype.name,
-                    name: results.archetype.name,
-                    confidence: results.archetype.confidence,
-                  }
-                : null
-            }
-            isComplete={results.isComplete}
-            completedDomains={results.completedDomains}
-          />
+        <Tabs.Content value="chart">
+          <Stack
+            padding="md"
+            backgroundColor="$color1"
+            borderWidth={1}
+            borderColor="$borderColor"
+            style={{ borderBottomLeftRadius: 16, borderBottomRightRadius: 16 }}
+          >
+            <ChartView
+              scores={results.scores}
+              normalizedScores={results.normalizedScores}
+              archetype={
+                results.archetype
+                  ? {
+                      archetype: results.archetype.name,
+                      name: results.archetype.name,
+                      confidence: results.archetype.confidence,
+                    }
+                  : null
+              }
+              isComplete={results.isComplete}
+              completedDomains={results.completedDomains}
+            />
+          </Stack>
         </Tabs.Content>
       </Tabs>
 
       {/* Data Quality Warnings */}
       {hasDataErrors && (
-        <YStack
-          gap="$2"
-          padding="$4"
+        <Stack
+          gap={8}
+          padding="md"
           backgroundColor="$yellow2"
-          borderRadius="$4"
+          borderRadius={16}
           borderWidth={1}
           borderColor="$yellow7"
         >
-          <XStack alignItems="center" gap="$2">
-            <AlertCircle size="$1" color="$yellow11" />
-            <Text fontSize="$4" fontWeight="600" color="$yellow11">
-              Partial Data Available
-            </Text>
-          </XStack>
-          <Text fontSize="$3" color="$yellow10">
+          <Row align="center" gap={8}>
+            <AlertCircle size="sm" color="$yellow11" />
+            <Text color="$yellow11">Partial Data Available</Text>
+          </Row>
+          <Text color="$yellow10">
             Some results may be incomplete. {results.scoringError && 'Scoring calculation failed. '}
             {results.normalizationError && 'Score normalization failed. '}
             {results.narrativeError && 'Narrative content unavailable. '}
             You can still view available results below.
           </Text>
           <Button
-            size="$3"
-            variant="outlined"
-            icon={RefreshCcw}
+            size="sm"
+            variant="outline"
+            iconStart={RefreshCcw}
             onPress={handleRetry}
-            marginTop="$2"
+            style={{ marginTop: 8 }}
           >
             Refresh Data
           </Button>
-        </YStack>
+        </Stack>
       )}
 
       {/* Share Results Section */}
       {results.isComplete && (
         <ShareResults isComplete={results.isComplete} nextAvailableAt={results.nextAvailableAt} />
       )}
-    </YStack>
+    </Stack>
   )
 }

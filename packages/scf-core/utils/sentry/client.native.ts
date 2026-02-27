@@ -32,11 +32,10 @@ export function initSentry() {
       dsn: SENTRY_DSN_NATIVE,
       environment: APP_ENV,
       release: `${IOS_BUNDLE_IDENTIFIER || ANDROID_PACKAGE}@${APP_VERSION}`,
-      dist: RUNTIME_VERSION,
+      dist: typeof RUNTIME_VERSION === 'string' ? RUNTIME_VERSION : undefined,
 
       // Performance Monitoring
       tracesSampleRate: getTraceSampleRate(),
-      enableTracing: true,
 
       // Session Replay - Native not fully supported yet, but prepare for it
       // replaysSessionSampleRate: 0.0, // Disable for now
@@ -51,11 +50,7 @@ export function initSentry() {
           maskAllText: false,
           maskAllImages: false,
         }),
-        Sentry.reactNativeTracingIntegration({
-          enableUserInteractionTracing: true,
-          enableNativeFramesTracking: true,
-          routingInstrumentation: undefined, // Will be set up with Expo Router
-        }),
+        Sentry.reactNativeTracingIntegration(),
       ],
 
       // Enable in development for testing
@@ -142,4 +137,3 @@ export function setContext(name: string, context: Record<string, unknown>) {
 
 // Export Sentry for advanced usage and routing integration
 export { Sentry }
-

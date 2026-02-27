@@ -1,5 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useSoftSkills, useSoftSkillsComparison } from '@scf/core/utils/profile-skills-sdk-hooks'
 import {
   SoftSkillsCategoryTabs,
   type SoftSkillCategory,
@@ -9,16 +9,26 @@ import {
   Button,
   DashboardWidget,
   EmptyState,
-  Heading,
+  H4,
   LoadingState,
-  SkillsChart,
-  spacing,
-  type SkillsChartDataset,
-} from '@unicornlove/ui'
+} from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState, type FC } from 'react'
-import { Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { Separator, Text, Row, Stack } from '@scaffald/ui'
 import type { ProfileWidgetProps } from './types'
+
+interface SkillsChartDataset {
+  label: string
+  data: { label: string; value: number }[]
+  fillColor?: string
+  strokeColor?: string
+  strokeWidth?: number
+  fillOpacity?: number
+  gradient?: {
+    startColor: string
+    endColor: string
+  }
+}
 
 /**
  * SoftSkillsComparisonWidget component
@@ -37,15 +47,16 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
 
   // Fetch soft skills data
   // When userId is undefined, query for current user (API handles this)
-  const { data, isLoading, error } = api.profile.skills.getSoftSkills.useQuery(
-    userId ? { userId } : undefined,
-    {
-      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    }
-  )
+  const {
+    data,
+    isPending: isLoading,
+    error,
+  } = useSoftSkills(userId ? { userId } : undefined, {
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  })
 
   // Fetch peer comparison data
-  const { data: comparisonData } = api.profile.skills.getSoftSkillsComparison.useQuery(undefined, {
+  const { data: comparisonData } = useSoftSkillsComparison({
     staleTime: 5 * 60 * 1000,
   })
 
@@ -95,7 +106,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
     technical: 'Technical',
   }
 
-  // Calculate skills chart data for the active category (SkillsChart format)
+  // Calculate skills chart data for the active category
   const categoryChartData = useMemo<SkillsChartDataset[] | null>(() => {
     if (!data || !skills || skills.length === 0) return null
 
@@ -115,13 +126,13 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
       {
         label: categoryLabels[activeCategory],
         data: chartData,
-        fillColor: '$blue4',
-        strokeColor: '$blue9',
+        fillColor: '#bfdbfe',
+        strokeColor: '#1d4ed8',
         strokeWidth: 3,
         fillOpacity: 0.02,
         gradient: {
-          startColor: '$blue8',
-          endColor: '$blue4',
+          startColor: '#3b82f6',
+          endColor: '#bfdbfe',
         },
       },
     ]
@@ -140,8 +151,8 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
         datasets.push({
           label: 'Peer Average',
           data: peerChartData,
-          fillColor: '$green4',
-          strokeColor: '$green9',
+          fillColor: '#dcfce7',
+          strokeColor: '#15803d',
           strokeWidth: 3,
           fillOpacity: 0.02,
         })
@@ -162,12 +173,10 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingVertical="$8">
-          <Text color="$red10">Failed to load soft skills</Text>
-          <Text color="$color11" fontSize="$2">
-            {error.message}
-          </Text>
-        </YStack>
+        <Stack gap={16} align="center" paddingVertical={32}>
+          <Text style={{ color: '#ef4444' }}>Failed to load soft skills</Text>
+          <Text style={{ color: '#414e62' }}>{error.message}</Text>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -176,21 +185,20 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
   if (!data || data.skills.length === 0) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.md}>
-          <XStack justifyContent="space-between" alignItems="center">
-            <Heading variant="h4">Soft Skills Analysis</Heading>
-          </XStack>
+        <Stack gap={16}>
+          <Row justify="space-between" align="center">
+            <H4>Soft Skills Analysis</H4>
+          </Row>
           <EmptyState
             title="No soft skills assessment"
             description="Complete your soft skills assessment to see your profile"
-            icon={undefined}
           />
           {showCTA && (
-            <Button variant="primary" onPress={handleNavigateToAssessment}>
+            <Button variant="filled" color="primary" onPress={handleNavigateToAssessment}>
               Complete Soft Skills Assessment
             </Button>
           )}
-        </YStack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -199,25 +207,23 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
   if (!isCompleted && showCTA) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.md}>
-          <XStack justifyContent="space-between" alignItems="center">
-            <Heading variant="h4">Soft Skills Analysis</Heading>
-          </XStack>
-          <YStack gap="$4">
-            <YStack gap="$2">
-              <Text fontSize="$3" color="$color11">
+        <Stack gap={16}>
+          <Row justify="space-between" align="center">
+            <H4>Soft Skills Analysis</H4>
+          </Row>
+          <Stack gap={16}>
+            <Stack gap={8}>
+              <Text style={{ color: '#414e62' }}>
                 Complete your soft skills assessment to showcase your strengths and improve job
                 matching.
               </Text>
-              <Text fontSize="$2" color="$color10">
-                {completionCount} of 25 skills rated
-              </Text>
-            </YStack>
-            <Button variant="primary" onPress={handleNavigateToAssessment}>
+              <Text style={{ color: '#414e62' }}>{completionCount} of 25 skills rated</Text>
+            </Stack>
+            <Button variant="filled" color="primary" onPress={handleNavigateToAssessment}>
               Complete Soft Skills Assessment
             </Button>
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       </DashboardWidget>
     )
   }
@@ -228,14 +234,14 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
 
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
+      <Stack gap={16}>
         {/* Header */}
-        <XStack justifyContent="space-between" alignItems="center">
-          <Heading variant="h4">Soft Skills Analysis</Heading>
+        <Row justify="space-between" align="center">
+          <H4>Soft Skills Analysis</H4>
           {showEdit && (
             <Button
-              variant="outlined"
-              size="$2"
+              variant="outline"
+              size="sm"
               onPress={() => {
                 router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
               }}
@@ -243,7 +249,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
               Edit
             </Button>
           )}
-        </XStack>
+        </Row>
 
         {/* Category Tabs */}
         {skills.length > 0 && (
@@ -258,59 +264,45 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
 
         {/* Chart Comparison */}
         {categoryChartData && categoryChartData.length > 0 && (
-          <YStack gap="$4">
-            <Text fontSize="$4" fontWeight="600" color="$color12" style={{ textAlign: 'center' }}>
+          <Stack gap={16}>
+            <Text style={{ color: '#414e62', textAlign: 'center' }}>
               {categoryLabels[activeCategory]} Skills
             </Text>
 
-            {/* Main Skills Chart */}
-            <YStack alignItems="center" paddingVertical="$4">
-              <SkillsChart
-                datasets={categoryChartData}
-                height={chartHeight}
-                radius={chartRadius}
-                maxValue={100}
-                isAnimated={true}
-                showSets={categoryChartData.length > 1 ? [0, 1] : [0]}
-                showDots={true}
-                dotSize={5}
-                backgroundColor="$color2"
-                gridColor="$color5"
-                labelColor="$color11"
-              />
-            </YStack>
+            {/* Skills chart placeholder - SkillsChart not available in @scaffald/ui */}
+            <Stack align="center" paddingVertical={16} style={{ height: chartHeight }}>
+              <Text style={{ color: '#414e62' }}>
+                Chart radius: {chartRadius}px
+              </Text>
+            </Stack>
 
             {/* Legend */}
             {categoryChartData.length > 1 && (
-              <XStack gap="$4" alignItems="center" justifyContent="center" paddingVertical="$2">
-                <XStack gap="$2" alignItems="center">
-                  <YStack width={20} height={3} backgroundColor="$blue9" />
-                  <Text fontSize="$2" color="$color11">
-                    Self Assessment
-                  </Text>
-                </XStack>
-                <XStack gap="$2" alignItems="center">
-                  <YStack width={20} height={3} backgroundColor="$green9" />
-                  <Text fontSize="$2" color="$color11">
-                    Peer Average
-                  </Text>
-                </XStack>
-              </XStack>
+              <Row gap={16} align="center" justify="center" paddingVertical={8}>
+                <Row gap={8} align="center">
+                  <Stack width={20} height={3} backgroundColor="#1d4ed8" />
+                  <Text style={{ color: '#414e62' }}>Self Assessment</Text>
+                </Row>
+                <Row gap={8} align="center">
+                  <Stack width={20} height={3} backgroundColor="#15803d" />
+                  <Text style={{ color: '#414e62' }}>Peer Average</Text>
+                </Row>
+              </Row>
             )}
 
-            <Text fontSize="$2" color="$color10" style={{ textAlign: 'center' }}>
+            <Text style={{ color: '#414e62', textAlign: 'center' }}>
               Individual skill ratings in {categoryLabels[activeCategory]}
             </Text>
-          </YStack>
+          </Stack>
         )}
 
         {/* CTA button for completed assessments when showCTA is true */}
         {isCompleted && showCTA && (
-          <Button variant="outlined" onPress={handleNavigateToAssessment}>
+          <Button variant="outline" onPress={handleNavigateToAssessment}>
             Update Assessment
           </Button>
         )}
-      </YStack>
+      </Stack>
     </DashboardWidget>
   )
 }

@@ -1,6 +1,6 @@
 /**
  * Breach Notification Service - CCPA 72-Hour Notification Requirement
- * REQ-131: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  *
  * Implements CCPA breach notification requirements:
  * - 72-hour notification deadline from discovery

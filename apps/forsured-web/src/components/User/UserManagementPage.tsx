@@ -11,7 +11,7 @@ import {
   Clock,
   Search,
 } from 'lucide-react';
-import { Stack, Row, Text, Button, Card, Input } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card, Input } from '@scaffald/ui';
 import { useUsers } from '../../hooks/useUsers';
 import { useUserInvitations } from '../../hooks/useUserInvitations';
 import { useProjects } from '../../hooks/useProjects';

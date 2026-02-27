@@ -1,4 +1,4 @@
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack } from '@scaffald/ui'
 import type { SkillSuggestion } from '../../constants/skill-guidance'
 
 interface SkillGuidanceWidgetProps {
@@ -25,14 +25,14 @@ export function SkillGuidanceWidget({ skillGuidance }: SkillGuidanceWidgetProps)
   }
 
   return (
-    <YStack gap="$3">
-      <YStack gap="$1">
+    <Stack gap={12}>
+      <Stack gap={4}>
         {skillGuidance.tips.map((tip) => (
-          <Text key={tip} fontSize="$2" color="$color11">
+          <Text key={tip} color="$gray11">
             • {tip}
           </Text>
         ))}
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

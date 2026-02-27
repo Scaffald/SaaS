@@ -1,6 +1,6 @@
 /**
  * InvitationLanding Page Tests
- * REQ-128: Flexible Invitation System - Task 7
+ * Invitation landing page tests
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'

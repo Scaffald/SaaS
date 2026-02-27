@@ -1,4 +1,4 @@
-# REQ-165: Compliance Requirements Management System
+# Compliance Requirements Management System
 
 ## Overview
 Complete CRUD system for defining and managing insurance compliance requirements that subcontractors must meet for construction projects.
@@ -86,7 +86,7 @@ Complete CRUD system for defining and managing insurance compliance requirements
 - 22 requirement service tests
 - 8 project requirement tests
 - TDD approach with full coverage
-- Uses MockDatabase from REQ-106
+- Uses MockDatabase for isolated tests
 
 ## Database Schema
 

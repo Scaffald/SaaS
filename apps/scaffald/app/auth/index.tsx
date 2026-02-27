@@ -1,24 +1,34 @@
 import { LoginScreen } from '@scf/core/features/auth/login-screen'
 import { WelcomeScreen } from '@scf/core/features/auth/welcome-screen'
-import { useTranslation } from '@scf/core/utils/useTranslation'
-import { Stack } from 'expo-router'
+import { Button, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
+import { Stack as RouterStack } from 'expo-router'
 import { useState } from 'react'
 import { useWindowDimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { XStack, YStack } from '@unicornlove/ui'
+
+function AuthHeaderThemeToggle() {
+  const { theme, toggleTheme } = useThemeContext()
+  return (
+    <Button variant="outline" size="sm" onPress={toggleTheme} color="gray">
+      {theme === 'light' ? 'Dark' : 'Light'}
+    </Button>
+  )
+}
 
 export default function Screen() {
   const [hasOnboarded, setHasOnboarded] = useState(false)
   const { width } = useWindowDimensions()
   const isSmallScreen = width < 640
-  const { t } = useTranslation()
+  const { theme } = useThemeContext()
+  const screenBg = { flex: 1, backgroundColor: colors.bg[theme].default }
 
   if (isSmallScreen && !hasOnboarded) {
     return (
-      <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
-        <Stack.Screen
+      <SafeAreaView style={screenBg} edges={['bottom', 'left', 'right']}>
+        <RouterStack.Screen
           options={{
-            title: t('auth.welcome.title'),
+            headerRight: () => <AuthHeaderThemeToggle />,
           }}
         />
         <WelcomeScreen onOnboarded={() => setHasOnboarded(true)} />
@@ -27,26 +37,23 @@ export default function Screen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
-      <Stack.Screen
+    <SafeAreaView style={screenBg} edges={['bottom', 'left', 'right']}>
+      <RouterStack.Screen
         options={{
-          title: t('auth.login.title'),
+          headerRight: () => <AuthHeaderThemeToggle />,
         }}
       />
-
-      <XStack flex={1}>
-        <YStack flex={2} flexBasis={0} justifyContent="center">
-          <YStack paddingHorizontal="$4">
-            <LoginScreen />
-          </YStack>
-        </YStack>
+      <Row flex={1}>
+        <Stack flex={2} justify="center" align="center" padding={24} style={{ minWidth: 0 }}>
+          <LoginScreen />
+        </Stack>
 
         {!isSmallScreen && (
-          <YStack flex={3} flexBasis={0}>
-            <WelcomeScreen />
-          </YStack>
+          <Stack flex={3} style={{ minWidth: 0 }}>
+            <WelcomeScreen brandedPanel />
+          </Stack>
         )}
-      </XStack>
+      </Row>
     </SafeAreaView>
   )
 }

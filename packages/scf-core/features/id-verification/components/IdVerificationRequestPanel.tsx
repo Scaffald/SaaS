@@ -1,18 +1,24 @@
 import { PaymentIntentForm } from '@scf/core/features/payments/components/PaymentIntentForm'
-import { api } from '@scf/core/utils/api'
+import {
+  useIdVerificationPricing,
+  useIdVerificationRequest,
+  useIdVerificationConfirm,
+} from '@scf/core/utils/id-verification-sdk-hooks'
+import type { IdVerificationPricingItem } from '@scf/core/utils/id-verification-sdk-hooks'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
+import { useWorkers } from '@scf/core/utils/workers-sdk-hooks'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { CreditCard, RefreshCcw, ShieldCheck } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import type { Worker } from '@scaffald/sdk'
+import { CreditCard, RefreshCcw, ShieldCheck } from 'lucide-react-native'
+import { useToast } from '@scaffald/ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@unicornlove/ui'
-import { Button, Input, Label, Text, XStack, YStack } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@scaffald/ui'
+import { Button, Input, Label, Text, Row, Stack } from '@scaffald/ui'
+import { useQueryClient } from '@tanstack/react-query'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type OrganizationOption = RouterOutputs['office']['getOrganizations']['organizations'][number]
-type WorkerSummary = RouterOutputs['workers']['getWorkers']['workers'][number]
-type PricingOption = RouterOutputs['idVerification']['getPricing'][number]
 
 interface IdVerificationRequestPanelProps {
   selectedOrganizationId: string | null
@@ -38,8 +44,8 @@ export function IdVerificationRequestPanel({
   selectedOrganizationId,
   onOrganizationChange,
 }: IdVerificationRequestPanelProps) {
-  const toast = useToastController()
-  const utils = api.useUtils()
+  const toast = useToast()
+  const queryClient = useQueryClient()
 
   const { data: organizationsData } = useAllOrganizations()
   const organizations = useMemo<OrganizationOption[]>(
@@ -59,19 +65,17 @@ export function IdVerificationRequestPanel({
   }
 
   const [workerSearch, setWorkerSearch] = useState('')
-  const workersQuery = api.workers.getWorkers.useQuery(
+  const workersQuery = useWorkers(
     { search: workerSearch || undefined, limit: 50 },
     { staleTime: 60_000 }
   )
-  const workers = useMemo<WorkerSummary[]>(
+  const workers = useMemo<Worker[]>(
     () => workersQuery.data?.workers ?? [],
     [workersQuery.data?.workers]
   )
 
-  const pricingQuery = api.idVerification.getPricing.useQuery(undefined, {
-    staleTime: 5 * 60_000,
-  })
-  const pricingOptions = (pricingQuery.data ?? []) as PricingOption[]
+  const pricingQuery = useIdVerificationPricing({ staleTime: 5 * 60_000 })
+  const pricingOptions = (pricingQuery.data ?? []) as IdVerificationPricingItem[]
 
   const [selectedWorkerId, setSelectedWorkerId] = useState<string | null>(null)
   const [selectedPricingId, setSelectedPricingId] = useState<string | null>(null)
@@ -81,33 +85,8 @@ export function IdVerificationRequestPanel({
     }
   }, [pricingOptions, selectedPricingId])
 
-  const requestVerification = api.idVerification.requestVerification.useMutation({
-    onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Unable to create payment'
-      toast.show('Unable to create payment', {
-        message,
-        type: 'error',
-      })
-    },
-  })
-
-  const confirmVerification = api.idVerification.confirmVerificationPayment.useMutation({
-    onSuccess: async () => {
-      toast.show('Verification requested', {
-        message: 'Worker receives a Persona link immediately.',
-        type: 'success',
-      })
-      await utils.idVerification.listVerifications.invalidate()
-      resetForm()
-    },
-    onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Payment confirmation failed'
-      toast.show('Payment confirmation failed', {
-        message,
-        type: 'error',
-      })
-    },
-  })
+  const requestVerification = useIdVerificationRequest()
+  const confirmVerification = useIdVerificationConfirm()
 
   const [paymentSession, setPaymentSession] = useState<PaymentSession | null>(null)
   const [paymentError, setPaymentError] = useState<string | null>(null)
@@ -120,17 +99,19 @@ export function IdVerificationRequestPanel({
 
   const createPaymentSession = async () => {
     if (!organizationId) {
-      toast.show('Select an organization', {
+      toast.show({
+        title: 'Select an organization',
         message: 'Choose which organization should be billed.',
-        type: 'error',
+        variant: 'error',
       })
       return
     }
 
     if (!selectedWorkerId || !selectedPricingId) {
-      toast.show('Missing details', {
+      toast.show({
+        title: 'Missing details',
         message: 'Select a worker and pricing plan to continue.',
-        type: 'error',
+        variant: 'error',
       })
       return
     }
@@ -144,14 +125,39 @@ export function IdVerificationRequestPanel({
       })
       setPaymentSession(session)
     } catch (error) {
-      setPaymentError(
-        error instanceof Error ? error.message : 'Unable to create Stripe payment session.'
-      )
+      const msg = error instanceof Error ? error.message : 'Unable to create Stripe payment session.'
+      setPaymentError(msg)
+      toast.show({
+        title: 'Unable to create payment',
+        message: msg,
+        variant: 'error',
+      })
     }
   }
 
   const handlePaymentSuccess = async (paymentIntentId: string) => {
-    await confirmVerification.mutateAsync({ paymentIntentId })
+    try {
+      await confirmVerification.mutateAsync(
+        { paymentIntentId },
+        {
+          onSuccess: () => {
+            toast.show({
+              title: 'Verification requested',
+              message: 'Worker receives a Persona link immediately.',
+              variant: 'success',
+            })
+            void queryClient.invalidateQueries({ queryKey: ['idVerification'] })
+            resetForm()
+          },
+        }
+      )
+    } catch {
+      toast.show({
+        title: 'Payment confirmation failed',
+        message: confirmVerification.error instanceof Error ? confirmVerification.error.message : 'Please try again.',
+        variant: 'error',
+      })
+    }
   }
 
   const resetForm = () => {
@@ -164,17 +170,15 @@ export function IdVerificationRequestPanel({
   const workerPlaceholder = workersQuery.isLoading ? 'Loading workers…' : 'Select worker'
 
   return (
-    <YStack gap="$4" padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4">
-      <YStack gap="$1">
-        <Text fontSize="$5" fontWeight="700" color="$color12">
-          Trigger Verification
-        </Text>
-        <Text fontSize="$3" color="$color11">
+    <Stack gap={16} padding="md" borderWidth={1} borderColor="$borderColor" borderRadius={16}>
+      <Stack gap={4}>
+        <Text color="$gray11">Trigger Verification</Text>
+        <Text color="$gray11">
           Collect payment and generate a Persona inquiry on behalf of an organization.
         </Text>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label htmlFor="idv-organization">Organization</Label>
         <ResponsiveSelect
           value={organizationId ?? '__none__'}
@@ -194,9 +198,9 @@ export function IdVerificationRequestPanel({
             })),
           ]}
         />
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label htmlFor="idv-worker">Worker</Label>
         <Input
           id="idv-worker-search"
@@ -214,18 +218,17 @@ export function IdVerificationRequestPanel({
             workers.length === 0
               ? [{ value: '__empty__', label: 'No workers found', disabled: true }]
               : workers.map((worker) => ({
-                  value: worker.id as string,
+                  value: worker.id,
                   label:
                     worker.display_name ??
-                    worker.email ??
                     worker.username ??
                     `Worker ${String(worker.id).slice(0, 8)}`,
                 }))
           }
         />
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label htmlFor="idv-pricing">Verification plan</Label>
         <ResponsiveSelect
           value={selectedPricingId ?? ''}
@@ -238,18 +241,18 @@ export function IdVerificationRequestPanel({
                 : 'Select pricing'
           }
           label="Verification plan"
-          options={pricingOptions.map((option: PricingOption) => ({
+          options={pricingOptions.map((option: IdVerificationPricingItem) => ({
             value: option.id,
             label: `${option.name} · ${formatCurrency(option.priceCents)}`,
           }))}
         />
-      </YStack>
+      </Stack>
 
       {!paymentSession ? (
         <Button
-          size="$4"
-          theme="blue"
-          icon={CreditCard}
+          size="md"
+          color="primary"
+          iconStart={CreditCard}
           disabled={!canSubmit || requestVerification.isPending}
           onPress={createPaymentSession}
         >
@@ -257,11 +260,7 @@ export function IdVerificationRequestPanel({
         </Button>
       ) : null}
 
-      {paymentError ? (
-        <Text color="$red11" fontSize="$3">
-          {paymentError}
-        </Text>
-      ) : null}
+      {paymentError ? <Text color="$red11">{paymentError}</Text> : null}
 
       {paymentSession?.clientSecret ? (
         <PaymentIntentForm
@@ -280,9 +279,9 @@ export function IdVerificationRequestPanel({
 
       {paymentSession ? (
         <Button
-          size="$3"
-          variant="outlined"
-          icon={RefreshCcw}
+          size="sm"
+          variant="outline"
+          iconStart={RefreshCcw}
           disabled={confirmVerification.isPending}
           onPress={resetForm}
         >
@@ -290,19 +289,17 @@ export function IdVerificationRequestPanel({
         </Button>
       ) : null}
 
-      <YStack gap="$2" backgroundColor="$color2" padding="$3" borderRadius="$4">
-        <XStack gap="$2" alignItems="center">
-          <ShieldCheck size={16} color="$color11" />
-          <Text fontWeight="600" color="$color12">
-            What happens next?
-          </Text>
-        </XStack>
-        <Text fontSize="$3" color="$color11">
+      <Stack gap={8} backgroundColor="$color2" padding="sm" borderRadius={16}>
+        <Row gap={8} align="center">
+          <ShieldCheck size="md" color="$gray11" />
+          <Text color="$gray11">What happens next?</Text>
+        </Row>
+        <Text color="$gray11">
           After payment succeeds we automatically create a Persona inquiry using the worker&apos;s
           profile details. They receive an email and in-app notification with a secure link to
           upload their government ID. Most verifications finish within minutes.
         </Text>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

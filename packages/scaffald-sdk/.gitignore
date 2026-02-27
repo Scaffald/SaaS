@@ -10,3 +10,9 @@ src/types/api.ts
 
 # OpenAPI spec cache
 openapi-spec.json
+
+# Docusaurus
+docs-site/node_modules
+docs-site/build
+docs-site/.docusaurus
+docs-site/.cache-loader

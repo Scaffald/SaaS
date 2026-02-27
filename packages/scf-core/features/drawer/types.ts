@@ -1,6 +1,6 @@
 import type { RouteKey } from '@scf/core/constants/routes'
 import type { TranslationKey } from '@scf/core/locales'
-import type { BarChart3 } from '@tamagui/lucide-icons'
+import type { BarChart3 } from 'lucide-react-native'
 import type { GestureResponderEvent } from 'react-native'
 
 /**

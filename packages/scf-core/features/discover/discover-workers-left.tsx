@@ -1,6 +1,6 @@
 import { useAuth } from '@scf/core/provider/auth/useAuth'
 import { type RefObject, useMemo } from 'react'
-import { YStack } from '@unicornlove/ui'
+import { Stack } from '@scaffald/ui'
 import type { ResultListRef } from './components/ResultList'
 import { ResultList } from './components/ResultList'
 import { useTalentProfiles } from './hooks/useTalentProfiles'
@@ -81,7 +81,7 @@ export function DiscoverWorkersLeft({
   }, [talentProfiles, searchQuery, minScore, selectedSkills, selectedCertifications, currentUserId])
 
   return (
-    <YStack flex={1} overflow="hidden">
+    <Stack style={{ flex: 1, overflow: 'hidden' }}>
       <ResultList
         ref={resultListRef}
         profiles={filteredProfiles}
@@ -91,6 +91,6 @@ export function DiscoverWorkersLeft({
         error={error ?? null}
         onRetry={() => void refetch()}
       />
-    </YStack>
+    </Stack>
   )
 }

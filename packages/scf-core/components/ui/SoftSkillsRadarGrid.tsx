@@ -1,10 +1,10 @@
 import { type FC, useMemo } from 'react'
-import { IndividualSkillRadarChart } from '@unicornlove/ui'
+import { View } from 'react-native'
 import type {
   SoftSkill,
   SoftSkillCategory,
 } from '@scf/core/features/profile/components/SoftSkillsCategoryTabs'
-import { Text, View, XStack, YStack } from '@unicornlove/ui'
+import { Card, Text, Row, Stack } from '@scaffald/ui'
 
 export interface SoftSkillsRadarGridProps {
   skills: SoftSkill[]
@@ -55,74 +55,62 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
   // Loading state
   if (isLoading) {
     return (
-      <YStack gap="$4" padding="$4">
-        <XStack flexWrap="wrap" gap="$3" $md={{ gap: '$4' }}>
+      <Stack gap={16} padding={16}>
+        <Row wrap gap={12}>
           {Array.from({ length: 6 }, (_, i) => `skeleton-${i}`).map((key) => (
             <View
               key={key}
-              width="100%"
-              $md={{ width: '48%' }}
-              $lg={{ width: '31%' }}
-              height={200}
-              backgroundColor="$color3"
-              borderRadius="$4"
-              borderWidth={1}
-              borderColor="$color5"
+              style={{
+                width: '100%',
+                height: 200,
+                backgroundColor: '#e4e4e7',
+                borderRadius: 16,
+                borderWidth: 1,
+                borderColor: '#a1a1aa',
+              }}
             >
               {/* Skeleton loader */}
             </View>
           ))}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     )
   }
 
   // Empty state
   if (filteredSkills.length === 0) {
     return (
-      <YStack gap="$4" padding="$4" alignItems="center" justifyContent="center" minHeight={300}>
-        <Text fontSize="$5" fontWeight="600" color="$color11">
-          No skills in this category
-        </Text>
-        <Text fontSize="$3" color="$color10">
-          Skills will appear here once they're added to this category.
-        </Text>
-      </YStack>
+      <Stack gap={16} padding={16} align="center" justify="center" minHeight={300}>
+        <Text color="gray">No skills in this category</Text>
+        <Text color="gray">Skills will appear here once they're added to this category.</Text>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$4" padding="$4">
-      <XStack
-        flexWrap="wrap"
-        gap="$3"
-        $md={{
-          gap: '$4',
-        }}
-      >
+    <Stack gap={16} padding={16}>
+      <Row wrap gap={12}>
         {filteredSkills.map((skill) => (
-          <View
+          <Card
             key={skill.id}
-            width="100%"
-            $md={{
-              width: '48%',
-            }}
-            $lg={{
-              width: '31%',
-            }}
+            style={{ flex: 1, minWidth: 200 }}
+            padding="md"
+            variant="outlined"
+            pressable={!!onSkillPress}
+            onPress={onSkillPress ? () => onSkillPress(skill.id) : undefined}
           >
-            <IndividualSkillRadarChart
-              skillName={skill.name}
-              selfRating={skill.selfRating}
-              peerRating={skill.peerRating}
-              versionHistory={skill.versionHistory}
-              showTrend={skill.versionHistory && skill.versionHistory.length > 1}
-              size="medium"
-              onPress={onSkillPress ? () => onSkillPress(skill.id) : undefined}
-            />
-          </View>
+            <Text weight="semibold">{skill.name}</Text>
+            <Row gap={8}>
+              <Text size="sm" color="secondary">
+                Self: {skill.selfRating}
+              </Text>
+              <Text size="sm" color="secondary">
+                Peer: {skill.peerRating}
+              </Text>
+            </Row>
+          </Card>
         ))}
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

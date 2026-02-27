@@ -22,8 +22,8 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-// Mock Tamagui components
-vi.mock('@unicornlove/ui', async () => {
+// Beyond UI mock
+vi.mock('@scaffald/ui', async () => {
   const React = await import('react')
   return {
     Button: ({ children, onPress, ...props }: { children: React.ReactNode; onPress?: () => void; [key: string]: unknown }) => (
@@ -36,7 +36,7 @@ vi.mock('@unicornlove/ui', async () => {
     Text: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
       <span {...props}>{children}</span>
     ),
-    YStack: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
+    Stack: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
       <div {...props}>{children}</div>
     ),
   }

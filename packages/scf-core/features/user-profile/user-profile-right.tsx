@@ -1,17 +1,33 @@
-import { api } from '@scf/core/utils/api'
-import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
-import { useUser } from '@scf/core/utils/useUser'
-import { DashboardWidget, ResponsiveModal } from '@unicornlove/ui'
-import { useState } from 'react'
-import { Avatar, H4, Progress, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-import { CertificationsWidget } from '../profile/widgets/CertificationsWidget'
-import { ExperienceWidget } from '../profile/widgets/ExperienceWidget'
-import { SkillsWidget } from '../profile/widgets/SkillsWidget'
-import { ReviewWizard } from '../reviews/components/ReviewWizard'
-import { UserProfileReviews } from './user-profile-reviews'
+import {
+  useGeneralInfoWidget,
+  useExperienceWidget,
+  useSkillsWidget,
+  useCertificationsWidget,
+  useEducationWidget,
+  type SkillWidgetEntry,
+} from "@scf/core/utils/profile-widgets-sdk-hooks";
+import { useUserProfile } from "@scf/core/utils/user-profiles-sdk-hooks";
+import { getAvatarUrl } from "@scf/core/utils/supabase/storage";
+import { useUser } from "@scf/core/utils/useUser";
+import { DashboardWidget, ResponsiveModal } from "@scaffald/ui";
+import { useState } from "react";
+import {
+  Avatar,
+  H4,
+  ProgressBar,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+} from "@scaffald/ui";
+import { CertificationsWidget } from "../profile/widgets/CertificationsWidget";
+import { ExperienceWidget } from "../profile/widgets/ExperienceWidget";
+import { SkillsWidget } from "../profile/widgets/SkillsWidget";
+import { ReviewWizard } from "../reviews/components/ReviewWizard";
+import { UserProfileReviews } from "./user-profile-reviews";
 
 interface UserProfileRightProps {
-  userId: string
+  userId: string;
 }
 
 /**
@@ -19,283 +35,275 @@ interface UserProfileRightProps {
  * Profile snapshot, widgets, and reviews
  */
 export function UserProfileRight({ userId }: UserProfileRightProps) {
-  const [showReviewModal, setShowReviewModal] = useState(false)
-  const { user: currentUser } = useUser()
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const { user: currentUser } = useUser();
 
-  const { data: profile } = api.userProfile.getUserProfile.useQuery({ userId })
+  const { data: profile } = useUserProfile(userId);
 
   // Fetch widget data for snapshot
-  const { data: generalInfo, isLoading: loadingGeneral } =
-    api.profile.widgets.getGeneralInfo.useQuery(
-      { userId },
-      { enabled: !!userId, staleTime: 5 * 60 * 1000 }
-    )
-
-  const { data: experience } = api.profile.widgets.getExperience.useQuery(
+  const { data: generalInfo, isLoading: loadingGeneral } = useGeneralInfoWidget(
     { userId },
     { enabled: !!userId, staleTime: 5 * 60 * 1000 }
-  )
+  );
 
-  const { data: skills } = api.profile.widgets.getSkills.useQuery(
+  const { data: experience } = useExperienceWidget(
     { userId },
     { enabled: !!userId, staleTime: 5 * 60 * 1000 }
-  )
+  );
 
-  const { data: certifications } = api.profile.widgets.getCertifications.useQuery(
+  const { data: skills } = useSkillsWidget(
     { userId },
     { enabled: !!userId, staleTime: 5 * 60 * 1000 }
-  )
+  );
 
-  const { data: education } = api.profile.widgets.getEducation.useQuery(
+  const { data: certifications } = useCertificationsWidget(
     { userId },
     { enabled: !!userId, staleTime: 5 * 60 * 1000 }
-  )
+  );
+
+  const { data: education } = useEducationWidget(
+    { userId },
+    { enabled: !!userId, staleTime: 5 * 60 * 1000 }
+  );
 
   // Check if current user can leave a review (not viewing their own profile)
-  const canLeaveReview = currentUser?.id !== userId
+  const canLeaveReview = currentUser?.id !== userId;
 
   const handleLeaveReview = () => {
-    setShowReviewModal(true)
-  }
+    setShowReviewModal(true);
+  };
 
   const handleCloseReview = () => {
-    setShowReviewModal(false)
-  }
+    setShowReviewModal(false);
+  };
 
   const handleReviewComplete = () => {
-    setShowReviewModal(false)
+    setShowReviewModal(false);
     // Reviews component will automatically refetch when modal closes
-  }
+  };
 
   // Calculate profile completion
   const calculateCompletion = (): number => {
-    if (!generalInfo) return 0
-    let completed = 0
-    const total = 7
+    if (!generalInfo) return 0;
+    let completed = 0;
+    const total = 7;
 
-    if (generalInfo?.about) completed++
-    if (generalInfo?.headline) completed++
-    if (generalInfo?.years_of_experience !== null) completed++
-    if (experience && experience.length > 0) completed++
-    if (education && education.length > 0) completed++
-    if (skills && skills.length > 0) completed++
-    if (certifications && certifications.length > 0) completed++
+    if (generalInfo?.about) completed++;
+    if (generalInfo?.headline) completed++;
+    if (generalInfo?.years_of_experience !== null) completed++;
+    if (experience && experience.length > 0) completed++;
+    if (education && education.length > 0) completed++;
+    if (skills && skills.length > 0) completed++;
+    if (certifications && certifications.length > 0) completed++;
 
-    return Math.round((completed / total) * 100)
-  }
+    return Math.round((completed / total) * 100);
+  };
 
-  const completion = calculateCompletion()
+  const completion = calculateCompletion();
 
   // Get current role from experience
-  const currentRole = experience?.find((exp: Record<string, unknown>) => exp.is_current)
+  const currentRole = experience?.find((exp) => exp.is_current);
 
   // Get top skills
-  const topSkills = skills?.slice(0, 5) || []
+  const topSkills = skills?.slice(0, 5) || [];
 
   const resolvedYearsOfExperience =
-    typeof generalInfo?.calculatedYearsOfExperience === 'number'
+    typeof generalInfo?.calculatedYearsOfExperience === "number"
       ? generalInfo.calculatedYearsOfExperience
-      : (generalInfo?.years_of_experience ?? 0)
+      : generalInfo?.years_of_experience ?? 0;
 
   const formattedYearsOfExperience =
-    Number.isFinite(resolvedYearsOfExperience) && resolvedYearsOfExperience % 1 !== 0
+    Number.isFinite(resolvedYearsOfExperience) &&
+    resolvedYearsOfExperience % 1 !== 0
       ? resolvedYearsOfExperience.toFixed(1)
-      : (resolvedYearsOfExperience ?? 0)
+      : resolvedYearsOfExperience ?? 0;
 
   const displayName =
     generalInfo?.display_name ||
     (generalInfo?.privateData?.first_name && generalInfo?.privateData?.last_name
       ? `${generalInfo.privateData.first_name} ${generalInfo.privateData.last_name}`
-      : generalInfo?.username)
+      : generalInfo?.username);
 
   return (
     <>
-      <YStack gap="$4">
+      <Stack gap={16}>
         {/* Profile Snapshot Widget */}
         <DashboardWidget>
           {loadingGeneral ? (
-            <YStack gap="$4" alignItems="center" paddingVertical="$8">
-              <Spinner size="large" />
-              <Text color="$color11">Loading profile...</Text>
-            </YStack>
+            <Stack gap={16} align="center" paddingVertical={32}>
+              <Spinner size="lg" />
+              <Text style={{ color: "#414e62" }}>Loading profile...</Text>
+            </Stack>
           ) : generalInfo ? (
-            <YStack gap="$4">
+            <Stack gap={16}>
               {/* Header */}
               <H4>Profile Overview</H4>
 
               {/* Avatar & Name Section */}
-              <YStack gap="$3" alignItems="center">
-                <Avatar circular size="$8">
-                  <Avatar.Image
-                    source={{
-                      uri: getAvatarUrl(generalInfo.avatar_path) || generalInfo.avatar_url || '',
-                    }}
-                  />
-                  <Avatar.Fallback backgroundColor="$color6" />
-                </Avatar>
+              <Stack gap={12} align="center">
+                <Avatar
+                  size={32}
+                  src={
+                    getAvatarUrl(generalInfo.avatar_path) ||
+                    generalInfo.avatar_url ||
+                    ""
+                  }
+                  initials={displayName?.charAt(0) || "?"}
+                />
 
-                <YStack gap="$1" alignItems="center">
-                  <Text fontSize="$5" fontWeight="600">
-                    {displayName}
-                  </Text>
+                <Stack gap={4} align="center">
+                  <Text>{displayName}</Text>
                   {generalInfo.headline && (
-                    <YStack alignItems="center">
-                      <Text color="$color11" fontSize="$2">
+                    <Stack align="center">
+                      <Text style={{ color: "#414e62" }}>
                         {generalInfo.headline}
                       </Text>
-                    </YStack>
+                    </Stack>
                   )}
-                </YStack>
+                </Stack>
 
                 {/* Open to Work Badge */}
                 {generalInfo.open_to_work && (
-                  <XStack
-                    backgroundColor="$green3"
-                    paddingHorizontal="$3"
-                    paddingVertical="$1.5"
-                    borderRadius="$10"
-                    borderWidth={1}
-                    borderColor="$green7"
+                  <Row
+                    style={{
+                      backgroundColor: "#f0fdf4",
+                      paddingHorizontal: 12,
+                      paddingVertical: 6,
+                      borderRadius: 20,
+                      borderWidth: 1,
+                      borderColor: "#bbf7d0",
+                    }}
                   >
-                    <Text color="$green11" fontSize="$2" fontWeight="600">
-                      Open to Work
-                    </Text>
-                  </XStack>
+                    <Text style={{ color: "#16a34a" }}>Open to Work</Text>
+                  </Row>
                 )}
-              </YStack>
+              </Stack>
 
               {/* Current Role */}
               {currentRole && (
-                <YStack gap="$1" backgroundColor="$color2" padding="$3" borderRadius="$3">
-                  <Text fontSize="$2" color="$color10">
-                    Current Role
+                <Stack
+                  gap={4}
+                  style={{
+                    backgroundColor: "#f8fafc",
+                    padding: 8,
+                    borderRadius: 12,
+                  }}
+                >
+                  <Text style={{ color: "#414e62" }}>Current Role</Text>
+                  <Text>{currentRole.job_title as string}</Text>
+                  <Text style={{ color: "#414e62" }}>
+                    {currentRole.company_name as string}
                   </Text>
-                  <Text fontSize="$3" fontWeight="600">
-                    {currentRole.job_title}
-                  </Text>
-                  <Text fontSize="$2" color="$color11">
-                    {currentRole.company_name}
-                  </Text>
-                </YStack>
+                </Stack>
               )}
 
               {/* Stats Grid */}
-              <YStack gap="$3">
-                <Text fontSize="$3" fontWeight="600">
-                  Profile Stats
-                </Text>
+              <Stack gap={12}>
+                <Text>Profile Stats</Text>
 
                 {/* Completion Bar */}
-                <YStack gap="$2">
-                  <XStack justifyContent="space-between">
-                    <Text fontSize="$2" color="$color11">
-                      Completion
-                    </Text>
-                    <Text fontSize="$2" fontWeight="600">
-                      {completion}%
-                    </Text>
-                  </XStack>
-                  <Progress value={completion} max={100}>
-                    <Progress.Indicator animation="bouncy" backgroundColor="$green9" />
-                  </Progress>
-                </YStack>
+                <Stack gap={8}>
+                  <Row justify="space-between">
+                    <Text style={{ color: "#414e62" }}>Completion</Text>
+                    <Text>{completion}%</Text>
+                  </Row>
+                  <ProgressBar value={completion} color="success" />
+                </Stack>
 
                 {/* Stats Row */}
-                <XStack gap="$3" flexWrap="wrap">
-                  <YStack
-                    gap="$1"
+                <Row gap={12} wrap>
+                  <Stack
+                    gap={4}
                     flex={1}
                     minWidth={80}
-                    backgroundColor="$color2"
-                    padding="$3"
-                    borderRadius="$3"
-                    alignItems="center"
+                    style={{
+                      backgroundColor: "#f8fafc",
+                      padding: 8,
+                      borderRadius: 12,
+                    }}
+                    align="center"
                   >
-                    <Text fontSize="$6" fontWeight="700" color="$blue10">
+                    <Text style={{ color: "#2563eb" }}>
                       {skills?.length || 0}
                     </Text>
-                    <Text fontSize="$1" color="$color11">
-                      Skills
-                    </Text>
-                  </YStack>
+                    <Text style={{ color: "#414e62" }}>Skills</Text>
+                  </Stack>
 
-                  <YStack
-                    gap="$1"
+                  <Stack
+                    gap={4}
                     flex={1}
                     minWidth={80}
-                    backgroundColor="$color2"
-                    padding="$3"
-                    borderRadius="$3"
-                    alignItems="center"
+                    style={{
+                      backgroundColor: "#f8fafc",
+                      padding: 8,
+                      borderRadius: 12,
+                    }}
+                    align="center"
                   >
-                    <Text fontSize="$6" fontWeight="700" color="$green10">
+                    <Text style={{ color: "#16a34a" }}>
                       {certifications?.length || 0}
                     </Text>
-                    <Text fontSize="$1" color="$color11">
-                      Certs
-                    </Text>
-                  </YStack>
+                    <Text style={{ color: "#414e62" }}>Certs</Text>
+                  </Stack>
 
-                  <YStack
-                    gap="$1"
+                  <Stack
+                    gap={4}
                     flex={1}
                     minWidth={80}
-                    backgroundColor="$color2"
-                    padding="$3"
-                    borderRadius="$3"
-                    alignItems="center"
+                    style={{
+                      backgroundColor: "#f8fafc",
+                      padding: 8,
+                      borderRadius: 12,
+                    }}
+                    align="center"
                   >
-                    <Text fontSize="$6" fontWeight="700" color="$color10">
+                    <Text style={{ color: "#414e62" }}>
                       {formattedYearsOfExperience}
                     </Text>
-                    <Text fontSize="$1" color="$color11">
-                      Years
-                    </Text>
-                  </YStack>
-                </XStack>
-              </YStack>
+                    <Text style={{ color: "#414e62" }}>Years</Text>
+                  </Stack>
+                </Row>
+              </Stack>
 
               {/* Top Skills Preview */}
               {topSkills.length > 0 && (
-                <YStack gap="$2">
-                  <Text fontSize="$3" fontWeight="600">
-                    Top Skills
-                  </Text>
-                  <XStack gap="$2" flexWrap="wrap">
-                    {topSkills.map((skill: Record<string, unknown>) => {
-                      const displayCode =
-                        typeof skill.displayCode === 'string' ? skill.displayCode : null
-                      const skillName = typeof skill.name === 'string' ? skill.name : 'Skill'
+                <Stack gap={8}>
+                  <Text>Top Skills</Text>
+                  <Row gap={8} wrap>
+                    {topSkills.map((skill: SkillWidgetEntry) => {
                       const chipLabel =
-                        typeof skill.label === 'string'
+                        typeof skill.label === "string" &&
+                        skill.label.length > 0
                           ? skill.label
-                          : displayCode
-                            ? `${displayCode} · ${skillName}`
-                            : skillName
+                          : skill.displayCode
+                          ? `${skill.displayCode} · ${skill.name}`
+                          : skill.name;
 
                       return (
-                        <XStack
-                          key={skill.id as string}
-                          backgroundColor="$color3"
-                          paddingHorizontal="$2.5"
-                          paddingVertical="$1.5"
-                          borderRadius="$2"
-                          borderWidth={1}
-                          borderColor={skill.verified ? '$green7' : '$color6'}
+                        <Row
+                          key={skill.id}
+                          style={{
+                            backgroundColor: "#f1f5f9",
+                            paddingHorizontal: 10,
+                            paddingVertical: 6,
+                            borderRadius: 8,
+                            borderWidth: 1,
+                            borderColor: skill.verified ? "#86efac" : "#e2e8f0",
+                          }}
                         >
                           {skill.verified && (
-                            <Text color="$green10" fontSize="$1" marginRight="$1">
+                            <Text style={{ color: "#16a34a", marginRight: 4 }}>
                               ✓
                             </Text>
                           )}
-                          <Text fontSize="$2">{chipLabel}</Text>
-                        </XStack>
-                      )
+                          <Text>{chipLabel}</Text>
+                        </Row>
+                      );
                     })}
-                  </XStack>
-                </YStack>
+                  </Row>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           ) : null}
         </DashboardWidget>
 
@@ -303,7 +311,11 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
         <SkillsWidget userId={userId} showEdit={false} variant="compact" />
 
         {/* Certifications Widget - Compact View */}
-        <CertificationsWidget userId={userId} showEdit={false} variant="compact" />
+        <CertificationsWidget
+          userId={userId}
+          showEdit={false}
+          variant="compact"
+        />
 
         {/* Experience Widget - Compact View */}
         <ExperienceWidget userId={userId} showEdit={false} variant="compact" />
@@ -315,22 +327,22 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
             onLeaveReview={canLeaveReview ? handleLeaveReview : undefined}
           />
         </DashboardWidget>
-      </YStack>
+      </Stack>
 
       {/* Review Modal */}
       <ResponsiveModal
         open={showReviewModal}
         onOpenChange={setShowReviewModal}
-        title={`Review ${profile?.name || 'User'}`}
-        size="large"
+        title={`Review ${profile?.name || "User"}`}
+        size="lg"
       >
         <ReviewWizard
           subjectId={userId}
-          subjectName={profile?.name || 'this user'}
+          subjectName={profile?.name || "this user"}
           onCancel={handleCloseReview}
           onComplete={handleReviewComplete}
         />
       </ResponsiveModal>
     </>
-  )
+  );
 }

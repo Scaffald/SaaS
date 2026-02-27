@@ -1,5 +1,11 @@
-import { ResponsiveSelect, type UploadSelection, UploadSurface } from '@unicornlove/ui'
-import { AlertCircle, Upload, X } from '@tamagui/lucide-icons'
+import {
+  ResponsiveSelect,
+  type UploadSelection,
+  UploadSurface,
+  useThemeContext,
+} from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
+import { AlertCircle, Upload, X } from 'lucide-react-native'
 import { useMemo } from 'react'
 import { Controller, FormProvider, type UseFormReturn } from 'react-hook-form'
 import {
@@ -11,9 +17,9 @@ import {
   Separator,
   Text,
   TextArea,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from '@scaffald/ui'
 
 import type { DisputeAttachment, DisputeFormValues, DisputeReasonOption } from '../hooks/useDispute'
 
@@ -57,6 +63,7 @@ export function DisputeForm({
   submissionError,
   hasActiveDispute,
 }: DisputeFormProps) {
+  const { theme } = useThemeContext()
   const reasonValue = form.watch('reason')
 
   const disableSubmit = useMemo(
@@ -66,42 +73,40 @@ export function DisputeForm({
 
   return (
     <FormProvider {...form}>
-      <YStack gap="$4">
-        <YStack gap="$2">
-          <Text fontSize="$5" fontWeight="700" color="$color12">
-            Submit a dispute
-          </Text>
-          <Text fontSize="$2" color="$color10">
+      <Stack gap={16}>
+        <Stack gap={8}>
+          <Text style={{ color: colors.text[theme].secondary }}>Submit a dispute</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
             Share what needs review and, if helpful, include supporting documents so our compliance
             team can investigate quickly.
           </Text>
-        </YStack>
+        </Stack>
 
         {hasActiveDispute ? (
           <Card
-            backgroundColor="$yellow3"
-            borderColor="$yellow8"
-            borderWidth={1}
-            paddingHorizontal="$3"
-            paddingVertical="$2"
-            gap="$2"
-            borderRadius="$4"
+            style={{
+              backgroundColor: theme === "light" ? colors.yellow[50] : colors.yellow[900],
+              borderColor: theme === "light" ? colors.yellow[300] : colors.yellow[700],
+              borderWidth: 1,
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              gap: 8,
+              borderRadius: 16,
+            }}
           >
-            <Text fontSize="$3" fontWeight="600" color="$yellow11">
-              Dispute already in review
-            </Text>
-            <Text fontSize="$2" color="$yellow11">
-              You have a dispute awaiting review. We’ll notify you when the team has an update.
+            <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>Dispute already in review</Text>
+            <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>
+              You have a dispute awaiting review. We'll notify you when the team has an update.
             </Text>
           </Card>
         ) : null}
 
-        <Fieldset gap="$3">
+        <Fieldset gap={12}>
           <Controller
             control={form.control}
             name="reason"
             render={({ field: { value, onChange }, fieldState: { error } }) => (
-              <YStack gap="$1">
+              <Stack gap={4}>
                 <Label htmlFor="dispute-reason">What needs review?</Label>
                 <ResponsiveSelect
                   value={value || ''}
@@ -114,7 +119,7 @@ export function DisputeForm({
                     label: option.label,
                   }))}
                 />
-              </YStack>
+              </Stack>
             )}
           />
 
@@ -123,21 +128,23 @@ export function DisputeForm({
               control={form.control}
               name="otherReason"
               render={({ field: { value, onChange }, fieldState: { error } }) => (
-                <YStack gap="$1">
+                <Stack gap={4}>
                   <Label htmlFor="dispute-other-reason">Describe the issue</Label>
                   <Input
                     id="dispute-other-reason"
                     value={value ?? ''}
                     onChangeText={onChange}
                     placeholder="Share a short summary…"
-                    borderColor={error ? '$red8' : '$borderColor'}
+                    style={{
+                      borderColor: error
+                        ? theme === "light" ? colors.error[300] : colors.error[700]
+                        : colors.border[theme].default,
+                    }}
                   />
                   {error ? (
-                    <Text fontSize="$2" color="$red10">
-                      {error.message}
-                    </Text>
+                    <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{error.message}</Text>
                   ) : null}
-                </YStack>
+                </Stack>
               )}
             />
           ) : null}
@@ -146,34 +153,34 @@ export function DisputeForm({
             control={form.control}
             name="details"
             render={({ field: { value, onChange }, fieldState: { error } }) => (
-              <YStack gap="$1">
-                <Label htmlFor="dispute-details">Explain what’s incorrect</Label>
+              <Stack gap={4}>
+                <Label htmlFor="dispute-details">Explain what's incorrect</Label>
                 <TextArea
                   id="dispute-details"
                   rows={5}
                   value={value}
                   onChangeText={onChange}
                   placeholder="Include dates, names, or any context that helps us verify your dispute."
-                  borderColor={error ? '$red8' : '$borderColor'}
+                  style={{
+                    borderColor: error ? theme === "light" ? colors.error[300] : colors.error[700] : colors.border[theme].default,
+                  }}
                 />
-                <Text fontSize="$1" color="$color9">
+                <Text style={{ color: colors.text[theme].secondary }}>
                   Minimum 20 characters. Max 2000 characters.
                 </Text>
                 {error ? (
-                  <Text fontSize="$2" color="$red10">
-                    {error.message}
-                  </Text>
+                  <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{error.message}</Text>
                 ) : null}
-              </YStack>
+              </Stack>
             )}
           />
         </Fieldset>
 
-        <YStack gap="$2">
-          <Text fontSize="$4" fontWeight="600" color="$color12">
+        <Stack gap={8}>
+          <Text style={{ color: colors.text[theme].secondary }}>
             Supporting documents (optional)
           </Text>
-          <Text fontSize="$2" color="$color10">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Upload up to five files (PDF, JPG, or PNG, 10MB each) to help us verify your dispute.
           </Text>
 
@@ -187,114 +194,110 @@ export function DisputeForm({
             }}
           >
             {({ getRootProps, getInputProps, open, isDragActive, isProcessing }) => (
-              <YStack
+              <Stack
                 {...getRootProps()}
                 borderWidth={1}
-                borderColor={isDragActive ? '$blue8' : '$borderColor'}
-                borderStyle="dashed"
-                borderRadius="$4"
-                paddingHorizontal="$4"
-                paddingVertical="$5"
-                gap="$2"
-                backgroundColor="$color2"
-                alignItems="center"
-                justifyContent="center"
+                borderRadius={16}
+                paddingHorizontal={16}
+                paddingVertical={20}
+                gap={8}
+                align="center"
+                justify="center"
+                style={{
+                  borderColor: isDragActive
+                    ? theme === "light" ? colors.blue[300] : colors.blue[700]
+                    : colors.border[theme].default,
+                  backgroundColor: colors.bg[theme].subtle,
+                }}
               >
                 <input {...getInputProps()} />
-                <Upload size={24} color="$blue10" />
-                <Text fontWeight="600" color="$color12">
+                <Upload size={24} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
+                <Text style={{ color: colors.text[theme].secondary }}>
                   {isProcessing ? 'Processing…' : 'Drag a file here'}
                 </Text>
-                <Text fontSize="$2" color="$color10">
-                  or{' '}
-                  <Text fontWeight="600" color="$blue11">
-                    browse your device
-                  </Text>
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  or <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>browse your device</Text>
                 </Text>
-                <Button size="$2" variant="outlined" onPress={open} icon={Upload}>
+                <Button size="sm" variant="outline" onPress={open} iconStart={Upload}>
                   Choose file
                 </Button>
-                <Text fontSize="$1" color="$color9">
+                <Text style={{ color: colors.text[theme].secondary }}>
                   Accepted: PDF, PNG, JPG • Max 10MB each
                 </Text>
-              </YStack>
+              </Stack>
             )}
           </UploadSurface>
 
           {attachmentError ? (
-            <XStack
-              gap="$2"
-              alignItems="center"
-              paddingHorizontal="$3"
-              paddingVertical="$2"
-              backgroundColor="$red3"
-              borderRadius="$3"
+            <Row
+              gap={8}
+              align="center"
+              paddingHorizontal={12}
+              paddingVertical={8}
+              style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
+              borderRadius={12}
             >
-              <AlertCircle size={16} color="$red10" />
-              <Text fontSize="$2" color="$red10">
-                {attachmentError}
-              </Text>
-            </XStack>
+              <AlertCircle size="md" color={theme === "light" ? colors.error[700] : colors.error[300]} />
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{attachmentError}</Text>
+            </Row>
           ) : null}
 
           {attachments.length > 0 ? (
-            <YStack gap="$2">
+            <Stack gap={8}>
               <Separator />
               {attachments.map((attachment) => (
-                <XStack
+                <Row
                   key={attachment.id}
-                  backgroundColor="$color2"
-                  borderColor="$borderColor"
+                  style={{
+                    backgroundColor: colors.bg[theme].subtle,
+                    borderColor: colors.border[theme].default,
+                  }}
                   borderWidth={1}
-                  borderRadius="$3"
-                  paddingHorizontal="$3"
-                  paddingVertical="$2"
-                  gap="$3"
-                  alignItems="center"
-                  justifyContent="space-between"
+                  borderRadius={12}
+                  paddingHorizontal={12}
+                  paddingVertical={8}
+                  gap={12}
+                  align="center"
+                  justify="space-between"
                 >
-                  <YStack flex={1} gap="$1">
-                    <Text fontSize="$3" fontWeight="600" color="$color12" numberOfLines={1}>
-                      {attachment.name}
-                    </Text>
-                    <Text fontSize="$2" color="$color10">
+                  <Stack flex={1} gap={4}>
+                    <Text style={{ color: colors.text[theme].secondary }}>{attachment.name}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>
                       {attachment.mimeType.toUpperCase()} • {formatFileSize(attachment.size)}
                     </Text>
-                  </YStack>
+                  </Stack>
                   <Button
-                    size="$2"
-                    variant="outlined"
-                    icon={X}
+                    size="sm"
+                    variant="outline"
+                    iconStart={X}
                     onPress={() => onRemoveAttachment(attachment.id)}
                   >
                     Remove
                   </Button>
-                </XStack>
+                </Row>
               ))}
-            </YStack>
+            </Stack>
           ) : null}
-        </YStack>
+        </Stack>
 
         {submissionError ? (
-          <XStack
-            gap="$2"
-            alignItems="center"
-            paddingHorizontal="$3"
-            paddingVertical="$2"
-            backgroundColor="$red3"
-            borderRadius="$3"
+          <Row
+            gap={8}
+            align="center"
+            paddingHorizontal={12}
+            paddingVertical={8}
+            style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
+            borderRadius={12}
           >
-            <AlertCircle size={16} color="$red10" />
-            <Text fontSize="$2" color="$red10">
-              {submissionError}
-            </Text>
-          </XStack>
+            <AlertCircle size="md" color={theme === "light" ? colors.error[700] : colors.error[300]} />
+            <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{submissionError}</Text>
+          </Row>
         ) : null}
 
-        <XStack gap="$2" justifyContent="flex-end">
+        <Row gap={8} justify="flex-end">
           <Button
-            size="$3"
-            theme="blue"
+            size="sm"
+            color="primary"
             disabled={disableSubmit}
             onPress={async () => {
               const successful = await onSubmit()
@@ -305,8 +308,8 @@ export function DisputeForm({
           >
             {isSubmitting || isUploading ? 'Submitting…' : 'Submit dispute'}
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </FormProvider>
   )
 }

@@ -1,154 +1,147 @@
-import { Download } from '@tamagui/lucide-icons'
-import { Button, Card, Text, XStack, YStack } from '@unicornlove/ui'
+import { Download } from 'lucide-react-native'
+import { Button, Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
+import { colors } from '@scaffald/ui/tokens'
 
 interface ApplicationDetailsTabProps {
   application: MockApplication
 }
 
 export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProps) => {
+  const { theme } = useThemeContext()
+
   return (
-    <YStack gap="$4">
+    <Stack gap={16}>
       {/* Screening Answers */}
-      <Card padding="$4" backgroundColor="$color2">
-        <Text fontSize="$5" fontWeight="600" marginBottom="$3">
-          Screening Questions
-        </Text>
-        <YStack gap="$3">
-          <XStack justifyContent="space-between">
-            <Text opacity={0.7}>Current Location</Text>
-            <Text fontWeight="600">{application.screeningAnswers.currentLocation}</Text>
-          </XStack>
-          <XStack justifyContent="space-between">
-            <Text opacity={0.7}>Willing to Relocate</Text>
-            <Text fontWeight="600">
-              {application.screeningAnswers.willingToRelocate ? 'Yes' : 'No'}
-            </Text>
-          </XStack>
-          <XStack justifyContent="space-between">
-            <Text opacity={0.7}>Years of Experience</Text>
-            <Text fontWeight="600">{application.screeningAnswers.yearsExperience}</Text>
-          </XStack>
-          <XStack justifyContent="space-between">
-            <Text opacity={0.7}>Authorized to Work</Text>
-            <Text fontWeight="600">
-              {application.screeningAnswers.isAuthorizedToWork ? 'Yes' : 'No'}
-            </Text>
-          </XStack>
-          <XStack justifyContent="space-between">
-            <Text opacity={0.7}>Earliest Start Date</Text>
-            <Text fontWeight="600">{application.screeningAnswers.earliestStartDate}</Text>
-          </XStack>
-        </YStack>
+      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+        <Text style={{ marginBottom: 12 }}>Screening Questions</Text>
+        <Stack gap={12}>
+          <Row justify="space-between">
+            <Text style={{ opacity: 0.7 }}>Current Location</Text>
+            <Text>{application.screeningAnswers.currentLocation}</Text>
+          </Row>
+          <Row justify="space-between">
+            <Text style={{ opacity: 0.7 }}>Willing to Relocate</Text>
+            <Text>{application.screeningAnswers.willingToRelocate ? 'Yes' : 'No'}</Text>
+          </Row>
+          <Row justify="space-between">
+            <Text style={{ opacity: 0.7 }}>Years of Experience</Text>
+            <Text>{application.screeningAnswers.yearsExperience}</Text>
+          </Row>
+          <Row justify="space-between">
+            <Text style={{ opacity: 0.7 }}>Authorized to Work</Text>
+            <Text>{application.screeningAnswers.isAuthorizedToWork ? 'Yes' : 'No'}</Text>
+          </Row>
+          <Row justify="space-between">
+            <Text style={{ opacity: 0.7 }}>Earliest Start Date</Text>
+            <Text>{application.screeningAnswers.earliestStartDate}</Text>
+          </Row>
+        </Stack>
       </Card>
 
       {/* Custom Questions */}
       {application.customAnswers.length > 0 && (
-        <Card padding="$4" backgroundColor="$color2">
-          <Text fontSize="$5" fontWeight="600" marginBottom="$3">
-            Custom Questions
-          </Text>
-          <YStack gap="$4">
+        <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+          <Text style={{ marginBottom: 12 }}>Custom Questions</Text>
+          <Stack gap={16}>
             {application.customAnswers.map((qa, index) => (
-              <YStack key={`qa-${qa.question}-${index}`} gap="$2">
-                <Text fontWeight="600" fontSize="$3">
-                  {qa.question}
-                </Text>
-                <Text fontSize="$3" opacity={0.8}>
-                  {qa.answer}
-                </Text>
+              <Stack key={`qa-${qa.question}-${index}`} gap={8}>
+                <Text>{qa.question}</Text>
+                <Text style={{ opacity: 0.8 }}>{qa.answer}</Text>
                 {index < application.customAnswers.length - 1 && (
-                  <YStack height={1} backgroundColor="$color5" marginTop="$2" />
+                  <Stack
+                    height={1}
+                    style={{ backgroundColor: colors.border[theme].subtle }}
+                    marginTop={8}
+                  />
                 )}
-              </YStack>
+              </Stack>
             ))}
-          </YStack>
+          </Stack>
         </Card>
       )}
 
       {/* Attachments */}
-      <Card padding="$4" backgroundColor="$color2">
-        <Text fontSize="$5" fontWeight="600" marginBottom="$3">
-          Attachments
-        </Text>
-        <YStack gap="$2">
+      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+        <Text style={{ marginBottom: 12 }}>Attachments</Text>
+        <Stack gap={8}>
           {application.attachments.resume && (
-            <XStack
-              justifyContent="space-between"
-              alignItems="center"
-              padding="$3"
-              backgroundColor="$color3"
-              borderRadius="$3"
+            <Row
+              justify="space-between"
+              align="center"
+              padding="sm"
+              style={{ backgroundColor: colors.bg[theme].muted }}
+              borderRadius={12}
             >
-              <YStack flex={1}>
-                <Text fontWeight="600">Resume</Text>
-                <Text fontSize="$2" opacity={0.7}>
+              <Stack flex={1}>
+                <Text>Resume</Text>
+                <Text style={{ opacity: 0.7 }}>
                   {application.attachments.resume.filename} •{' '}
                   {(application.attachments.resume.size / 1024).toFixed(0)} KB
                 </Text>
-              </YStack>
-              <Button size="$3" icon={Download} chromeless>
+              </Stack>
+              <Button size="sm" variant="outline" iconStart={Download}>
                 Download
               </Button>
-            </XStack>
+            </Row>
           )}
           {application.attachments.coverLetter && (
-            <XStack
-              justifyContent="space-between"
-              alignItems="center"
-              padding="$3"
-              backgroundColor="$color3"
-              borderRadius="$3"
+            <Row
+              justify="space-between"
+              align="center"
+              padding="sm"
+              style={{ backgroundColor: colors.bg[theme].muted }}
+              borderRadius={12}
             >
-              <YStack flex={1}>
-                <Text fontWeight="600">Cover Letter</Text>
-                <Text fontSize="$2" opacity={0.7}>
+              <Stack flex={1}>
+                <Text>Cover Letter</Text>
+                <Text style={{ opacity: 0.7 }}>
                   {application.attachments.coverLetter.filename} •{' '}
                   {(application.attachments.coverLetter.size / 1024).toFixed(0)} KB
                 </Text>
-              </YStack>
-              <Button size="$3" icon={Download} chromeless>
+              </Stack>
+              <Button size="sm" variant="outline" iconStart={Download}>
                 Download
               </Button>
-            </XStack>
+            </Row>
           )}
           {application.attachments.portfolio && (
-            <XStack
-              justifyContent="space-between"
-              alignItems="center"
-              padding="$3"
-              backgroundColor="$color3"
-              borderRadius="$3"
+            <Row
+              justify="space-between"
+              align="center"
+              padding="sm"
+              style={{ backgroundColor: colors.bg[theme].muted }}
+              borderRadius={12}
             >
-              <YStack flex={1}>
-                <Text fontWeight="600">Portfolio</Text>
-                <Text fontSize="$2" opacity={0.7}>
+              <Stack flex={1}>
+                <Text>Portfolio</Text>
+                <Text style={{ opacity: 0.7 }}>
                   {application.attachments.portfolio.filename} •{' '}
                   {(application.attachments.portfolio.size / 1024).toFixed(0)} KB
                 </Text>
-              </YStack>
-              <Button size="$3" icon={Download} chromeless>
+              </Stack>
+              <Button size="sm" variant="outline" iconStart={Download}>
                 Download
               </Button>
-            </XStack>
+            </Row>
           )}
-        </YStack>
+        </Stack>
       </Card>
 
       {/* Stage History */}
-      <Card padding="$4" backgroundColor="$color2">
-        <Text fontSize="$5" fontWeight="600" marginBottom="$3">
-          Application Timeline
-        </Text>
-        <YStack gap="$3">
+      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+        <Text style={{ marginBottom: 12 }}>Application Timeline</Text>
+        <Stack gap={12}>
           {application.stageHistory.map((history, index) => (
-            <XStack key={`history-${history.changedAt}-${index}`} gap="$3">
-              <YStack width={3} backgroundColor="$blue9" borderRadius="$2" />
-              <YStack flex={1} gap="$1">
-                <Text fontWeight="600" textTransform="capitalize">
-                  {history.toStage}
-                </Text>
-                <Text fontSize="$2" opacity={0.7}>
+            <Row key={`history-${history.changedAt}-${index}`} gap={12}>
+              <Stack
+                width={3}
+                style={{ backgroundColor: colors.fg[theme].active }}
+                borderRadius={8}
+              />
+              <Stack flex={1} gap={4}>
+                <Text style={{ textTransform: 'capitalize' }}>{history.toStage}</Text>
+                <Text style={{ opacity: 0.7 }}>
                   {history.changedBy} •{' '}
                   {new Date(history.changedAt).toLocaleDateString('en-US', {
                     month: 'short',
@@ -158,15 +151,15 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
                   })}
                 </Text>
                 {history.reason && (
-                  <Text fontSize="$2" opacity={0.8} marginTop="$1">
+                  <Text style={{ opacity: 0.8, marginTop: 4 }}>
                     {history.reason}
                   </Text>
                 )}
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
           ))}
-        </YStack>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   )
 }

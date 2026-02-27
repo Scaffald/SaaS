@@ -1,5 +1,5 @@
-import { X } from '@tamagui/lucide-icons'
-import { Button, Text, XStack } from '@unicornlove/ui'
+import { X } from 'lucide-react-native'
+import { Button, Text, Row } from '@scaffald/ui'
 
 interface CertificationChipProps {
   certification: {
@@ -20,7 +20,7 @@ export function CertificationChip({
   disabled = false,
 }: CertificationChipProps) {
   return (
-    <XStack
+    <Row
       style={{
         backgroundColor: '#dbeafe',
         borderColor: '#60a5fa',
@@ -32,18 +32,16 @@ export function CertificationChip({
         alignItems: 'center',
       }}
     >
-      <Text fontSize="$3" fontWeight="500" color="$blue11">
-        {certification.title}
-      </Text>
+      <Text color="$blue11">{certification.title}</Text>
       <Button
-        size="$2"
-        circular
-        chromeless
-        icon={X}
+        size="sm"
+        variant="text"
         onPress={() => !disabled && onRemove(certification.id)}
         disabled={disabled}
-        opacity={disabled ? 0.5 : 1}
-      />
-    </XStack>
+        style={{ opacity: disabled ? 0.5 : 1 }}
+      >
+        <X size="lg" />
+      </Button>
+    </Row>
   )
 }

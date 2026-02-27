@@ -1,6 +1,6 @@
 /**
  * Invitation Landing Page
- * REQ-128: Flexible Invitation System - Task 7
+ * Flexible invitation landing page
  *
  * Landing page for invitation links that handles:
  * - Anonymous users (show signup/signin options)
@@ -9,36 +9,27 @@
  * - Success/error states
  */
 
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { Stack, Row, Text, Button, Card, H1, H2, Spinner } from '@unicornlove/beyond-ui';
-import { colors, spacing, fontSize, borderRadius } from '@unicornlove/beyond-ui';
-import Textarea from '../components/Common/Textarea';
-import {
-  Mail,
-  UserPlus,
-  Check,
-  X,
-  AlertTriangle,
-  ArrowRight,
-  LogIn,
-  Quote,
-} from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { trpc } from '../lib/trpc';
+import { useState, useEffect } from 'react'
+import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom'
+import { Stack, Row, Text, Button, Card, H1, H2, Spinner } from '@scaffald/ui'
+import { colors, spacing, fontSize, borderRadius } from '@scaffald/ui'
+import Textarea from '../components/Common/Textarea'
+import { Mail, UserPlus, Check, X, AlertTriangle, ArrowRight, LogIn, Quote } from 'lucide-react'
+import { useAuth } from '../contexts/AuthContext'
+import { trpc } from '../lib/trpc'
 
 export default function InvitationLandingPage() {
-  const { code } = useParams<{ code: string }>();
-  const [searchParams] = useSearchParams();
-  const action = searchParams.get('action');
-  const navigate = useNavigate();
-  const { user, profile, isLoading: authLoading } = useAuth();
+  const { code } = useParams<{ code: string }>()
+  const [searchParams] = useSearchParams()
+  const action = searchParams.get('action')
+  const navigate = useNavigate()
+  const { user, profile, isLoading: authLoading } = useAuth()
 
   // State for decline reason
-  const [showDeclineReason, setShowDeclineReason] = useState(false);
-  const [declineReason, setDeclineReason] = useState('');
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showDeclineReason, setShowDeclineReason] = useState(false)
+  const [declineReason, setDeclineReason] = useState('')
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   // Fetch invitation by code (public procedure)
   const {
@@ -49,12 +40,12 @@ export default function InvitationLandingPage() {
   } = trpc.genericInvitations.getByCode.useQuery(
     { code: code || '' },
     { enabled: !!code, retry: false }
-  );
+  )
 
   // Accept mutation
   const acceptMutation = trpc.genericInvitations.accept.useMutation({
     onSuccess: () => {
-      setSuccessMessage('Invitation accepted! Redirecting to your dashboard...');
+      setSuccessMessage('Invitation accepted! Redirecting to your dashboard...')
       // Redirect to appropriate dashboard after short delay
       setTimeout(() => {
         if (profile?.user_type) {
@@ -63,57 +54,57 @@ export default function InvitationLandingPage() {
               ? '/manager/dashboard'
               : profile.user_type === 'contractor'
                 ? '/subcontractor/dashboard'
-                : `/${profile.user_type}/dashboard`;
-          navigate(dashboardPath);
+                : `/${profile.user_type}/dashboard`
+          navigate(dashboardPath)
         } else {
-          navigate('/');
+          navigate('/')
         }
-      }, 2000);
+      }, 2000)
     },
     onError: (err) => {
-      setErrorMessage(err.message || 'Failed to accept invitation');
+      setErrorMessage(err.message || 'Failed to accept invitation')
     },
-  });
+  })
 
   // Decline mutation
   const declineMutation = trpc.genericInvitations.decline.useMutation({
     onSuccess: () => {
-      setSuccessMessage('Invitation declined.');
+      setSuccessMessage('Invitation declined.')
       setTimeout(() => {
-        navigate('/');
-      }, 2000);
+        navigate('/')
+      }, 2000)
     },
     onError: (err) => {
-      setErrorMessage(err.message || 'Failed to decline invitation');
+      setErrorMessage(err.message || 'Failed to decline invitation')
     },
-  });
+  })
 
   // Handle auto-accept/decline if action is in URL
   useEffect(() => {
-    if (!invitation || !user || !profile) return;
+    if (!invitation || !user || !profile) return
 
     if (action === 'accept' && !acceptMutation.isPending && !successMessage) {
       // Auto-trigger accept (user can still cancel)
     } else if (action === 'decline' && !declineMutation.isPending && !successMessage) {
       // Auto-show decline form
-      setShowDeclineReason(true);
+      setShowDeclineReason(true)
     }
-  }, [action, invitation, user, profile]);
+  }, [action, invitation, user, profile])
 
   const handleAccept = () => {
-    if (!invitation?.id) return;
-    setErrorMessage(null);
-    acceptMutation.mutate({ invitationId: invitation.id });
-  };
+    if (!invitation?.id) return
+    setErrorMessage(null)
+    acceptMutation.mutate({ invitationId: invitation.id })
+  }
 
   const handleDecline = () => {
-    if (!invitation?.id) return;
-    setErrorMessage(null);
+    if (!invitation?.id) return
+    setErrorMessage(null)
     declineMutation.mutate({
       invitationId: invitation.id,
       reason: declineReason.trim() || undefined,
-    });
-  };
+    })
+  }
 
   // Loading states
   if (isLoading || authLoading) {
@@ -136,7 +127,7 @@ export default function InvitationLandingPage() {
           </Stack>
         </Card>
       </Stack>
-    );
+    )
   }
 
   // Invitation not found
@@ -184,7 +175,7 @@ export default function InvitationLandingPage() {
           </Stack>
         </Card>
       </Stack>
-    );
+    )
   }
 
   // Already processed invitation
@@ -193,7 +184,7 @@ export default function InvitationLandingPage() {
       accepted: 'This invitation has already been accepted.',
       declined: 'This invitation was declined.',
       expired: 'This invitation has expired.',
-    }[invitation.status as 'accepted' | 'declined' | 'expired'];
+    }[invitation.status as 'accepted' | 'declined' | 'expired']
 
     return (
       <Stack
@@ -238,7 +229,7 @@ export default function InvitationLandingPage() {
           </Stack>
         </Card>
       </Stack>
-    );
+    )
   }
 
   // Success message
@@ -281,7 +272,7 @@ export default function InvitationLandingPage() {
           </Stack>
         </Card>
       </Stack>
-    );
+    )
   }
 
   // Anonymous user - show signup/signin options
@@ -323,10 +314,7 @@ export default function InvitationLandingPage() {
                     textAlign: 'center',
                   }}
                 >
-                  <Text
-                    as="span"
-                    style={{ fontWeight: 600, color: 'var(--color-gray-12)' }}
-                  >
+                  <Text as="span" style={{ fontWeight: 600, color: 'var(--color-gray-12)' }}>
                     {invitation.inviter.full_name}
                   </Text>{' '}
                   has invited you to join ForSured
@@ -334,10 +322,7 @@ export default function InvitationLandingPage() {
                     <>
                       {' '}
                       as a{' '}
-                      <Text
-                        as="span"
-                        style={{ fontWeight: 600, color: 'var(--color-blue-10)' }}
-                      >
+                      <Text as="span" style={{ fontWeight: 600, color: 'var(--color-blue-10)' }}>
                         {invitation.rule.target_role}
                       </Text>
                     </>
@@ -388,10 +373,7 @@ export default function InvitationLandingPage() {
 
             {/* Action Buttons */}
             <Stack style={{ gap: 'var(--space-3)' }}>
-              <Link
-                to={`/signup?ref=${code}`}
-                style={{ textDecoration: 'none', width: '100%' }}
-              >
+              <Link to={`/signup?ref=${code}`} style={{ textDecoration: 'none', width: '100%' }}>
                 <Button style={{ width: '100%' }} size="lg">
                   <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                     <UserPlus size={18} />
@@ -406,7 +388,9 @@ export default function InvitationLandingPage() {
                 <Button variant="outline" style={{ width: '100%' }} size="lg">
                   <Row style={{ alignItems: 'center', gap: 'var(--space-2)' }}>
                     <LogIn size={18} />
-                    <Text style={{ fontSize: 'var(--font-size-4)' }}>I Already Have an Account</Text>
+                    <Text style={{ fontSize: 'var(--font-size-4)' }}>
+                      I Already Have an Account
+                    </Text>
                   </Row>
                 </Button>
               </Link>
@@ -420,13 +404,13 @@ export default function InvitationLandingPage() {
                 textAlign: 'center',
               }}
             >
-              By accepting, you'll be connected with {invitation.inviter?.full_name || 'the inviter'}{' '}
-              on ForSured.
+              By accepting, you'll be connected with{' '}
+              {invitation.inviter?.full_name || 'the inviter'} on ForSured.
             </Text>
           </Stack>
         </Card>
       </Stack>
-    );
+    )
   }
 
   // Authenticated user - show accept/decline options
@@ -456,9 +440,7 @@ export default function InvitationLandingPage() {
             >
               <Mail size={32} color="var(--color-blue-10)" />
             </Stack>
-            <H2 style={{ textAlign: 'center' }}>
-              {invitation.rule?.name || 'Invitation'}
-            </H2>
+            <H2 style={{ textAlign: 'center' }}>{invitation.rule?.name || 'Invitation'}</H2>
             {invitation.inviter?.full_name && (
               <Text
                 style={{
@@ -468,10 +450,7 @@ export default function InvitationLandingPage() {
                 }}
               >
                 From{' '}
-                <Text
-                  as="span"
-                  style={{ fontWeight: 600, color: 'var(--color-gray-12)' }}
-                >
+                <Text as="span" style={{ fontWeight: 600, color: 'var(--color-gray-12)' }}>
                   {invitation.inviter.full_name}
                 </Text>
               </Text>
@@ -647,5 +626,5 @@ export default function InvitationLandingPage() {
         </Stack>
       </Card>
     </Stack>
-  );
+  )
 }

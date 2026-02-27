@@ -1,176 +1,144 @@
-import { api } from '@scf/core/utils/api'
-import { DataTable } from '@scf/core/components/ui'
+import {
+  usePendingConnections,
+  useAcceptConnectionMutation,
+  useDeclineConnectionMutation,
+  useCancelConnectionMutation,
+} from '@scf/core/utils/engagement-sdk-hooks'
+import { columnsFromTanStack } from '@scf/core/utils/table-columns'
+import type { ConnectionRequest } from '@scaffald/sdk/resources/connections'
 import type { ColumnDef } from '@tanstack/react-table'
-import { useToastController } from '@tamagui/toast'
-import { CheckCircle2, X } from '@tamagui/lucide-icons'
+import { useToast } from '@scaffald/ui'
+import { CheckCircle2, X } from 'lucide-react-native'
 import { useCallback, useMemo } from 'react'
-import { Avatar, Button, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Avatar, Button, Separator, Spinner, Table, Text, Row, Stack } from '@scaffald/ui'
+import { useQueryClient } from '@tanstack/react-query'
 
-type PendingRequestsData = NonNullable<
-  ReturnType<typeof api.connections.getPendingRequests.useQuery>['data']
-> & {
-  sent: Array<{
-    id: string
-    status: string
-    created_at: string
-    user: {
-      id: string
-      display_name: string | null
-      username: string | null
-      avatar_url: string | null
-      headline: string | null
-      industry?: { name: string } | null
-    } | null
-  }>
-  received: Array<{
-    id: string
-    status: string
-    created_at: string
-    user: {
-      id: string
-      display_name: string | null
-      username: string | null
-      avatar_url: string | null
-      headline: string | null
-      industry?: { name: string } | null
-    } | null
-  }>
-}
-
-type PendingRequest = PendingRequestsData['sent'][number] & { type: 'sent' }
-
-type ReceivedRequest = PendingRequestsData['received'][number] & { type: 'received' }
-
+type PendingRequest = ConnectionRequest & { type: 'sent' }
+type ReceivedRequest = ConnectionRequest & { type: 'received' }
 type RequestRow = PendingRequest | ReceivedRequest
 
 export function PendingRequestsList() {
-  const utils = api.useUtils()
-  const toast = useToastController()
+  const queryClient = useQueryClient()
+  const toast = useToast()
 
-  const { data: pendingRequests, isLoading } = api.connections.getPendingRequests.useQuery()
+  const { data: pendingResponse, isLoading } = usePendingConnections()
+  const pendingRequests = pendingResponse || { sent: [], received: [] }
 
-  const acceptMutation = api.connections.acceptRequest.useMutation({
+  const acceptMutation = useAcceptConnectionMutation({
     onSuccess: () => {
-      utils.connections.getPendingRequests.invalidate()
-      utils.connections.getConnections.invalidate()
-      toast.show('Success', {
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
+      queryClient.invalidateQueries({ queryKey: ['connections', 'list'] })
+      toast.show({
+        title: 'Success',
         message: 'Connection request accepted',
+        variant: 'success',
       })
     },
-    onError: (error) => {
-      toast.show('Error', {
+    onError: (error: { message?: string }) => {
+      toast.show({
+        title: 'Error',
         message: error.message || 'Failed to accept request',
+        variant: 'error',
       })
     },
   })
 
-  const declineMutation = api.connections.declineRequest.useMutation({
+  const declineMutation = useDeclineConnectionMutation({
     onSuccess: () => {
-      utils.connections.getPendingRequests.invalidate()
-      toast.show('Success', {
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
+      toast.show({
+        title: 'Success',
         message: 'Connection request declined',
+        variant: 'success',
       })
     },
-    onError: (error) => {
-      toast.show('Error', {
+    onError: (error: { message?: string }) => {
+      toast.show({
+        title: 'Error',
         message: error.message || 'Failed to decline request',
+        variant: 'error',
       })
     },
   })
 
-  const cancelMutation = api.connections.declineRequest.useMutation({
+  const cancelMutation = useCancelConnectionMutation({
     onSuccess: () => {
-      utils.connections.getPendingRequests.invalidate()
-      toast.show('Success', {
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
+      toast.show({
+        title: 'Success',
         message: 'Connection request cancelled',
+        variant: 'success',
       })
     },
-    onError: (error) => {
-      toast.show('Error', {
+    onError: (error: { message?: string }) => {
+      toast.show({
+        title: 'Error',
         message: error.message || 'Failed to cancel request',
+        variant: 'error',
       })
     },
   })
 
   const combinedRequests: RequestRow[] = useMemo(() => {
-    if (!pendingRequests) return []
-    const sent: PendingRequest[] = (pendingRequests.sent || []).map(
-      (req: PendingRequestsData['sent'][number]) => ({ ...req, type: 'sent' })
-    )
-    const received: ReceivedRequest[] = (pendingRequests.received || []).map(
-      (req: PendingRequestsData['received'][number]) => ({
-        ...req,
-        type: 'received',
-      })
-    )
+    const sent: PendingRequest[] = (pendingRequests.sent || []).map((req) => ({
+      ...req,
+      type: 'sent' as const,
+    }))
+    const received: ReceivedRequest[] = (pendingRequests.received || []).map((req) => ({
+      ...req,
+      type: 'received' as const,
+    }))
     return [...received, ...sent]
   }, [pendingRequests])
 
   const handleAccept = useCallback(
     async (connectionId: string) => {
-      await acceptMutation.mutateAsync({ connectionId })
+      await acceptMutation.mutateAsync(connectionId)
     },
-    [acceptMutation.mutateAsync]
+    [acceptMutation]
   )
 
   const handleDecline = useCallback(
     async (connectionId: string) => {
-      await declineMutation.mutateAsync({ connectionId })
+      await declineMutation.mutateAsync(connectionId)
     },
-    [declineMutation.mutateAsync]
+    [declineMutation]
   )
 
   const handleCancel = useCallback(
     async (connectionId: string) => {
       if (confirm('Are you sure you want to cancel this connection request?')) {
-        await cancelMutation.mutateAsync({ connectionId })
+        await cancelMutation.mutateAsync(connectionId)
       }
     },
-    [cancelMutation.mutateAsync]
+    [cancelMutation]
   )
 
-  const columns = useMemo<ColumnDef<RequestRow>[]>(
+  const columnDefs = useMemo<ColumnDef<RequestRow & Record<string, unknown>>[]>(
     () => [
       {
-        accessorKey: 'user',
+        accessorKey: 'requester',
         header: 'User',
         cell: ({ row }) => {
           const request = row.original
-          const user = request.user
-          const name = user?.display_name || user?.username || 'Unknown'
-          const avatar = user?.avatar_url
+          const user = request.requester
+          const name = `${user.first_name} ${user.last_name}`.trim() || 'Unknown'
+          const avatar = user.avatar_url
 
           return (
-            <XStack alignItems="center" gap="$2">
-              <Avatar circular size={32}>
-                {avatar ? (
-                  <Avatar.Image source={{ uri: avatar }} />
-                ) : (
-                  <Avatar.Fallback backgroundColor="$orange4">
-                    <Text fontSize="$3" fontWeight="600" color="$orange10">
-                      {name.charAt(0).toUpperCase()}
-                    </Text>
-                  </Avatar.Fallback>
-                )}
-              </Avatar>
-              <YStack gap="$1">
-                <Text fontSize="$3" fontWeight="500">
-                  {name}
-                </Text>
-                <Text fontSize="$2" color="$color10">
-                  {request.type === 'sent' ? 'Sent' : 'Received'}
-                </Text>
-              </YStack>
-            </XStack>
+            <Row align="center" gap={8}>
+              <Avatar
+                size={32}
+                src={avatar ? { uri: avatar } : undefined}
+                initials={!avatar ? name.charAt(0).toUpperCase() : undefined}
+                color="warning"
+              />
+              <Stack gap={4}>
+                <Text>{name}</Text>
+                <Text color="$gray11">{request.type === 'sent' ? 'Sent' : 'Received'}</Text>
+              </Stack>
+            </Row>
           )
-        },
-      },
-      {
-        accessorKey: 'industry',
-        header: 'Industry',
-        cell: ({ row }) => {
-          const user = row.original.user
-          return <Text fontSize="$3">{user?.industry?.name || '-'}</Text>
         },
       },
       {
@@ -178,11 +146,7 @@ export function PendingRequestsList() {
         header: 'Date',
         cell: ({ row }) => {
           const date = row.original.created_at
-          return (
-            <Text fontSize="$3" color="$color10">
-              {date ? new Date(date).toLocaleDateString() : '-'}
-            </Text>
-          )
+          return <Text color="$gray11">{date ? new Date(date).toLocaleDateString() : '-'}</Text>
         },
       },
       {
@@ -196,9 +160,9 @@ export function PendingRequestsList() {
           if (request.type === 'sent') {
             return (
               <Button
-                size="$2"
-                variant="outlined"
-                icon={X}
+                size="sm"
+                variant="outline"
+                iconStart={X}
                 onPress={() => handleCancel(request.id)}
                 disabled={isLoading}
               >
@@ -208,24 +172,22 @@ export function PendingRequestsList() {
           }
 
           return (
-            <XStack gap="$1">
+            <Row gap={4}>
               <Button
-                size="$2"
-                circular
-                icon={CheckCircle2}
-                theme="success"
+                size="sm"
+                iconStart={CheckCircle2}
+                color="success"
                 onPress={() => handleAccept(request.id)}
                 disabled={isLoading}
               />
               <Button
-                size="$2"
-                circular
-                icon={X}
-                variant="outlined"
+                size="sm"
+                iconStart={X}
+                variant="outline"
                 onPress={() => handleDecline(request.id)}
                 disabled={isLoading}
               />
-            </XStack>
+            </Row>
           )
         },
       },
@@ -240,12 +202,17 @@ export function PendingRequestsList() {
     ]
   )
 
+  const tableColumns = useMemo(
+    () => columnsFromTanStack<RequestRow & Record<string, unknown>>(columnDefs),
+    [columnDefs]
+  )
+
   if (isLoading) {
     return (
-      <YStack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
-        <Spinner size="large" />
-        <Text color="$color11">Loading pending requests…</Text>
-      </YStack>
+      <Stack align="center" justify="center" paddingVertical={24} gap={8}>
+        <Spinner size="lg" />
+        <Text color="$gray11">Loading pending requests…</Text>
+      </Stack>
     )
   }
 
@@ -254,56 +221,52 @@ export function PendingRequestsList() {
 
   if (combinedRequests.length === 0) {
     return (
-      <YStack
-        gap="$3"
+      <Stack
+        gap={12}
         borderWidth={1}
         borderColor="$borderColor"
-        borderRadius="$4"
-        padding="$4"
+        borderRadius={16}
+        padding="md"
         backgroundColor="$color2"
-        alignItems="center"
-        justifyContent="center"
+        align="center"
+        justify="center"
         style={{ minHeight: 300 }}
       >
-        <Text fontWeight="600">No pending requests</Text>
-        <Text color="$color11" style={{ textAlign: 'center' }}>
+        <Text>No pending requests</Text>
+        <Text color="$gray11" style={{ textAlign: 'center' }}>
           You don't have any pending connection requests. Send connection requests to build your
           network.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$4">
+    <Stack gap={16}>
       {receivedRequests.length > 0 && (
-        <YStack gap="$2">
-          <Text fontSize="$5" fontWeight="600">
-            Received ({receivedRequests.length})
-          </Text>
-          <DataTable
-            columns={columns}
-            data={combinedRequests.filter((r) => r.type === 'received')}
+        <Stack gap={8}>
+          <Text>Received ({receivedRequests.length})</Text>
+          <Table
+            columns={tableColumns}
+            data={combinedRequests.filter((r) => r.type === 'received') as unknown as Record<string, unknown>[]}
             pageSize={10}
             emptyMessage="No received requests"
           />
-        </YStack>
+        </Stack>
       )}
 
       {sentRequests.length > 0 && (
-        <YStack gap="$2">
+        <Stack gap={8}>
           {receivedRequests.length > 0 && <Separator />}
-          <Text fontSize="$5" fontWeight="600">
-            Sent ({sentRequests.length})
-          </Text>
-          <DataTable
-            columns={columns}
-            data={combinedRequests.filter((r) => r.type === 'sent')}
+          <Text>Sent ({sentRequests.length})</Text>
+          <Table
+            columns={tableColumns}
+            data={combinedRequests.filter((r) => r.type === 'sent') as unknown as Record<string, unknown>[]}
             pageSize={10}
             emptyMessage="No sent requests"
           />
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

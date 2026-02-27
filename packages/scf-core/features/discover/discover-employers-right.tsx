@@ -1,4 +1,4 @@
-import { ScrollView, YStack } from '@unicornlove/ui'
+import { ScrollView, Stack } from '@scaffald/ui'
 import { AddOrganizationWidget } from './components/AddOrganizationWidget'
 import { SearchFilterWidget } from './components/SearchFilterWidget'
 
@@ -25,8 +25,8 @@ export function DiscoverEmployersRight({
   const hasActiveFilters = searchQuery.length > 0 || selectedIndustries.length > 0
 
   return (
-    <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <YStack gap="$4" padding="$4">
+    <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+      <Stack gap={16} padding="md">
         <SearchFilterWidget
           title="Search & Filter"
           searchQuery={searchQuery}
@@ -37,7 +37,7 @@ export function DiscoverEmployersRight({
           onClearFilters={onClearFilters}
         />
         <AddOrganizationWidget />
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }

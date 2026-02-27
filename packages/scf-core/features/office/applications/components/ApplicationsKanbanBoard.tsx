@@ -1,24 +1,35 @@
 import { BulkInquiryModal } from '@scf/core/features/inquiries/components/BulkInquiryModal'
 import { InquiryComparisonView } from '@scf/core/features/inquiries/components/InquiryComparisonView'
-import { api } from '@scf/core/utils/api'
-import { DraggableCard, DroppableColumn, KanbanCard } from '@unicornlove/ui'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
-import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useDraggable,
+  useDroppable,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import { useQueryClient } from '@tanstack/react-query'
+import type { Ref } from 'react'
 import { useEffect, useMemo, useState } from 'react'
-import { ScrollView } from 'react-native'
+import { Pressable, ScrollView, View } from 'react-native'
 import {
   Button,
-  type GetThemeValueForKey,
+  KanbanCard,
+  KanbanColumn,
   Tabs,
   Text,
   useWindowDimensions,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+  useThemeContext,
+} from '@scaffald/ui'
 import type { ApplicationStatus, MockApplication } from '../../mock-data/ats-mock-data'
 import { useApplicationStatusChange } from '../hooks/useApplicationStatusChange'
 import { ApplicationStatusChangeModal } from './ApplicationStatusChangeModal'
 import { CandidateDetailModal } from './CandidateDetailModal'
+import { colors } from '@scaffald/ui/tokens'
 
 const STATUSES: ApplicationStatus[] = [
   'new',
@@ -40,21 +51,23 @@ const STATUS_LABELS: Record<ApplicationStatus, string> = {
   rejected: 'Rejected',
 }
 
-const STATUS_COLORS: Record<ApplicationStatus, GetThemeValueForKey<'backgroundColor'>> = {
-  new: '$blue9',
-  screen: '$yellow9',
-  inquired: '$purple9',
-  interview: '$red9',
-  offer: '$green9',
-  hired: '$green11',
-  rejected: '$red9',
-}
+const getStatusColors = (theme: 'light' | 'dark'): Record<ApplicationStatus, string> => ({
+  new: colors.bg[theme].default,
+  screen: theme === "light" ? colors.yellow[50] : colors.yellow[900],
+  inquired: theme === "light" ? colors.purple[50] : colors.purple[900],
+  interview: theme === "light" ? colors.error[50] : colors.error[900],
+  offer: theme === "light" ? colors.green[50] : colors.green[900],
+  hired: theme === "light" ? colors.green[700] : colors.green[300],
+  rejected: theme === "light" ? colors.error[50] : colors.error[900],
+})
 
 interface ApplicationsKanbanBoardProps {
   applications: MockApplication[]
 }
 
 export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoardProps) => {
+  const { theme } = useThemeContext()
+  const STATUS_COLORS = getStatusColors(theme)
   const [selectedApplication, setSelectedApplication] = useState<MockApplication | null>(null)
   const [selectedApplicationIds, setSelectedApplicationIds] = useState<Set<string>>(new Set())
   const [showBulkInquiry, setShowBulkInquiry] = useState(false)
@@ -77,7 +90,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
     [selectedApplicationIds, applications]
   )
 
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
   // Fetch inquiry IDs when selection changes
   useEffect(() => {
@@ -87,9 +100,9 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
 
       for (const app of selectedApplications) {
         try {
-          const inquiryData = await utils.inquiries.getByApplication.fetch({
-            applicationId: app.id,
-          })
+          const inquiryData = (await queryClient.fetchQuery({
+            queryKey: ['inquiries', 'detail', app.id],
+          })) as { inquiry?: { id?: string } } | null
           if (inquiryData?.inquiry?.id) {
             ids.push(inquiryData.inquiry.id)
             map[inquiryData.inquiry.id] = app.id
@@ -109,7 +122,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
       setComparisonInquiryIds([])
       setInquiryToApplicationMap({})
     }
-  }, [selectedApplications, utils])
+  }, [selectedApplications, queryClient])
 
   const { changeStatus, isChanging, pendingChange, confirmChange, cancelChange } =
     useApplicationStatusChange()
@@ -213,52 +226,47 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
     <>
       {/* Bulk Action Bar */}
       {selectedApplicationIds.size > 0 && (
-        <XStack
-          gap="$3"
-          padding="$3"
-          backgroundColor="$blue2"
-          alignItems="center"
-          justifyContent="space-between"
-          borderBottomWidth={1}
-          borderBottomColor="$borderColor"
-          flexWrap="wrap"
-          $sm={{ flexDirection: 'column', alignItems: 'stretch' }}
+        <Row
+          gap={12}
+          padding="sm"
+          style={{
+            backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border[theme].default,
+          }}
+          align="center"
+          justify="space-between"
+          wrap
         >
-          <Text fontSize="$4" fontWeight="600">
+          <Text>
             {selectedApplicationIds.size} candidate{selectedApplicationIds.size !== 1 ? 's' : ''}{' '}
             selected
           </Text>
-          <XStack gap="$2" flexWrap="wrap" $sm={{ width: '100%', flexDirection: 'column' }}>
-            <Button size="$3" variant="outlined" onPress={clearSelection} $sm={{ width: '100%' }}>
+          <Row gap={8} wrap>
+            <Button size="sm" variant="outline" onPress={clearSelection}>
               Clear
             </Button>
             {selectedApplications.length >= 2 &&
               selectedApplications.length <= 5 &&
               comparisonInquiryIds.length >= 2 && (
                 <Button
-                  size="$3"
-                  theme="blue"
-                  variant="outlined"
+                  size="sm"
+                  color="primary"
+                  variant="outline"
                   onPress={() => {
                     if (comparisonInquiryIds.length >= 2 && comparisonInquiryIds.length <= 5) {
                       setShowComparison(true)
                     }
                   }}
-                  $sm={{ width: '100%' }}
                 >
                   Compare {comparisonInquiryIds.length}
                 </Button>
               )}
-            <Button
-              size="$3"
-              theme="blue"
-              onPress={() => setShowBulkInquiry(true)}
-              $sm={{ width: '100%' }}
-            >
+            <Button size="sm" color="primary" onPress={() => setShowBulkInquiry(true)}>
               Send Inquiry to {selectedApplicationIds.size}
             </Button>
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
       )}
 
       <DndContext
@@ -273,50 +281,47 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
             value={activeColumn}
             onValueChange={(value) => setActiveColumn(value as ApplicationStatus)}
           >
-            <Tabs.List
-              separator={<YStack width="$1" />}
-              disablePassBorderRadius="bottom"
-              aria-label="Kanban column navigation"
-              $sm={{ flexWrap: 'wrap' }}
-            >
-              {STATUSES.map((status) => (
-                <Tabs.Tab key={status} value={status} flex={1} minWidth={100}>
-                  <Text fontSize="$3" fontWeight="600" numberOfLines={1}>
-                    {STATUS_LABELS[status]}
-                  </Text>
-                  <YStack
-                    backgroundColor="$color5"
-                    paddingHorizontal="$2"
-                    paddingVertical="$1"
-                    borderRadius="$2"
-                    marginTop="$1"
-                  >
-                    <Text fontSize="$1" fontWeight="600" color="$color11">
-                      {groupedApplications[status].length}
-                    </Text>
-                  </YStack>
-                </Tabs.Tab>
-              ))}
-            </Tabs.List>
+            {STATUSES.map((status) => (
+              <Tabs.Item key={status} value={status}>
+                <Tabs.Trigger containerStyle={{ flex: 1, minWidth: 100 }}>
+                  <Stack align="center">
+                    <Text>{STATUS_LABELS[status]}</Text>
+                    <Stack
+                      style={{ backgroundColor: colors.bg[theme].muted }}
+                      paddingHorizontal={8}
+                      paddingVertical={4}
+                      borderRadius={8}
+                      marginTop={4}
+                    >
+                      <Text style={{ color: colors.text[theme].secondary }}>
+                        {groupedApplications[status].length}
+                      </Text>
+                    </Stack>
+                  </Stack>
+                </Tabs.Trigger>
+              </Tabs.Item>
+            ))}
 
             {STATUSES.map((status) => (
-              <Tabs.Content key={status} value={status} padding="$3">
-                <StatusColumn
-                  status={status}
-                  label={STATUS_LABELS[status]}
-                  color={STATUS_COLORS[status]}
-                  applications={groupedApplications[status]}
-                  selectedApplicationIds={selectedApplicationIds}
-                  onSelectApplication={setSelectedApplication}
-                  onToggleSelection={toggleApplicationSelection}
-                />
+              <Tabs.Content key={status} value={status}>
+                <Stack padding="sm">
+                  <StatusColumn
+                    status={status}
+                    label={STATUS_LABELS[status]}
+                    color={STATUS_COLORS[status]}
+                    applications={groupedApplications[status]}
+                    selectedApplicationIds={selectedApplicationIds}
+                    onSelectApplication={setSelectedApplication}
+                    onToggleSelection={toggleApplicationSelection}
+                  />
+                </Stack>
               </Tabs.Content>
             ))}
           </Tabs>
         ) : (
           // Desktop: Horizontal scrolling layout
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <XStack gap="$3" paddingBottom="$4">
+            <Row gap={12} paddingBottom={16}>
               {STATUSES.map((status) => (
                 <StatusColumn
                   key={status}
@@ -329,32 +334,41 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
                   onToggleSelection={toggleApplicationSelection}
                 />
               ))}
-            </XStack>
+            </Row>
           </ScrollView>
         )}
 
         <DragOverlay>
           {activeApplication ? (
-            <KanbanCard
-              id={activeApplication.id}
-              applicantName={activeApplication.candidate.name}
-              applicantAvatar={activeApplication.candidate.photo}
-              jobTitle={activeApplication.job.title}
-              applicationDate={new Date(activeApplication.appliedAt)}
-              score={activeApplication.score}
-              status={activeApplication.status}
-              attachmentCount={
-                (activeApplication.attachments.resume ? 1 : 0) +
-                (activeApplication.attachments.coverLetter ? 1 : 0) +
-                (activeApplication.attachments.portfolio ? 1 : 0)
-              }
-              commentCount={activeApplication.notes.length}
-              durationDays={Math.floor(
-                (Date.now() - new Date(activeApplication.appliedAt).getTime()) /
-                  (1000 * 60 * 60 * 24)
-              )}
-              isDragging
-            />
+            <KanbanCard id={activeApplication.id} isDragging>
+              <Stack gap={8} padding="sm">
+                <Text style={{ color: colors.text[theme].primary }}>
+                  {activeApplication.candidate.name}
+                </Text>
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  {activeApplication.job.title}
+                </Text>
+                <Row gap={8} justify="space-between">
+                  <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>
+                    {Math.floor(
+                      (Date.now() - new Date(activeApplication.appliedAt).getTime()) /
+                        (1000 * 60 * 60 * 24)
+                    )}
+                    d ago
+                  </Text>
+                  {((activeApplication.attachments.resume ? 1 : 0) +
+                    (activeApplication.attachments.coverLetter ? 1 : 0) +
+                    (activeApplication.attachments.portfolio ? 1 : 0)) > 0 && (
+                    <Text style={{ color: colors.text[theme].secondary, fontSize: 12 }}>
+                      {((activeApplication.attachments.resume ? 1 : 0) +
+                        (activeApplication.attachments.coverLetter ? 1 : 0) +
+                        (activeApplication.attachments.portfolio ? 1 : 0))}{' '}
+                      attachments
+                    </Text>
+                  )}
+                </Row>
+              </Stack>
+            </KanbanCard>
           ) : null}
         </DragOverlay>
       </DndContext>
@@ -414,28 +428,120 @@ function InquiryComparisonModal({
   onClose,
   onRemoveInquiry,
 }: InquiryComparisonModalProps) {
+  const { theme } = useThemeContext()
   if (!open || inquiryIds.length < 2) {
     return null
   }
 
   return (
-    <YStack
-      backgroundColor="$background"
-      style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000 }}
+    <Stack
+      style={{
+        backgroundColor: colors.bg[theme].default,
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 1000,
+      }}
     >
       <InquiryComparisonView
         inquiryIds={inquiryIds}
         onClose={onClose}
         onRemoveInquiry={onRemoveInquiry}
       />
-    </YStack>
+    </Stack>
+  )
+}
+
+/** Local droppable column using @dnd-kit (scaffald does not export DroppableColumn) */
+function DroppableColumn({
+  id,
+  title,
+  count,
+  color,
+  emptyMessage,
+  children,
+}: {
+  id: string
+  align?: string[]
+  title: string
+  count: number
+  color?: string
+  emptyMessage?: string
+  children?: React.ReactNode
+}) {
+  const { isOver, setNodeRef } = useDroppable({ id, data: { type: 'column' } })
+  return (
+    <View ref={setNodeRef as Ref<View>} style={isOver ? { opacity: 0.9 } : undefined}>
+      <KanbanColumn
+        id={id}
+        title={title}
+        count={count}
+        color={color}
+        emptyMessage={emptyMessage}
+      >
+        {children}
+      </KanbanColumn>
+    </View>
+  )
+}
+
+/** Local draggable card using @dnd-kit (scaffald does not export DraggableCard) */
+function DraggableCard({
+  id,
+  kanbanCardProps,
+}: {
+  id: string
+  kanbanCardProps: {
+    applicantName: string
+    applicantAvatar?: string
+    jobTitle: string
+    applicationDate: Date
+    score?: number
+    status: ApplicationStatus
+    attachmentCount: number
+    commentCount: number
+    durationDays: number
+    isSelected: boolean
+    onToggleSelection: () => void
+    onView: () => void
+  }
+}) {
+  const { attributes, listeners, setNodeRef } = useDraggable({ id, data: { type: 'card' } })
+  const { theme } = useThemeContext()
+  return (
+    <View
+      ref={setNodeRef as Ref<View>}
+      {...(attributes as unknown as Record<string, unknown>)}
+      {...(listeners as unknown as Record<string, unknown>)}
+    >
+      <KanbanCard id={id} isDragging={false}>
+        <Pressable onPress={kanbanCardProps.onView}>
+          <Stack gap={8} padding="sm">
+            <Text style={{ color: colors.text[theme].primary }}>{kanbanCardProps.applicantName}</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>{kanbanCardProps.jobTitle}</Text>
+            <Row gap={8} justify="space-between">
+              <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>
+                {kanbanCardProps.durationDays}d ago
+              </Text>
+              {kanbanCardProps.attachmentCount > 0 && (
+                <Text style={{ color: colors.text[theme].secondary, fontSize: 12 }}>
+                  {kanbanCardProps.attachmentCount} attachments
+                </Text>
+              )}
+            </Row>
+          </Stack>
+        </Pressable>
+      </KanbanCard>
+    </View>
   )
 }
 
 interface StatusColumnProps {
   status: ApplicationStatus
   label: string
-  color: GetThemeValueForKey<'backgroundColor'>
+  color: string
   applications: MockApplication[]
   selectedApplicationIds: Set<string>
   onSelectApplication: (application: MockApplication) => void
@@ -454,7 +560,7 @@ const StatusColumn = ({
   return (
     <DroppableColumn
       id={status}
-      alignItems={applications.map((app) => app.id)}
+      align={applications.map((app) => app.id)}
       title={label}
       count={applications.length}
       color={color}

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react'
 
 import {
   getCurrentLocale,
@@ -6,36 +6,31 @@ import {
   setLocale as setGlobalLocale,
   subscribeToLocaleChanges,
   type SupportedLocale,
-} from '../locales';
+} from '../locales'
 
 interface TranslationOptions {
-  t: (key: string, params?: Record<string, unknown>) => string;
-  locale: SupportedLocale;
-  setLocale: (locale: SupportedLocale) => void;
+  t: (key: string, params?: Record<string, unknown>) => string
+  locale: SupportedLocale
+  setLocale: (locale: SupportedLocale) => void
 }
 
 export function useTranslation(): TranslationOptions {
-  const [locale, setLocaleState] = useState<SupportedLocale>(
-    getCurrentLocale(),
-  );
+  const [locale, setLocaleState] = useState<SupportedLocale>(getCurrentLocale())
 
   useEffect(() => {
     const unsubscribe = subscribeToLocaleChanges(() => {
-      setLocaleState(getCurrentLocale());
-    });
+      setLocaleState(getCurrentLocale())
+    })
 
-    return unsubscribe;
-  }, []);
+    return unsubscribe
+  }, [])
 
-  const t = useCallback(
-    (key: string, params?: Record<string, unknown>) => i18n.t(key, params),
-    [],
-  );
+  const t = useCallback((key: string, params?: Record<string, unknown>) => i18n.t(key, params), [])
 
   const setLocale = useCallback((nextLocale: SupportedLocale) => {
-    setGlobalLocale(nextLocale);
-    setLocaleState(getCurrentLocale());
-  }, []);
+    setGlobalLocale(nextLocale)
+    setLocaleState(getCurrentLocale())
+  }, [])
 
-  return { t, locale, setLocale };
+  return { t, locale, setLocale }
 }

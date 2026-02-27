@@ -1,11 +1,14 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useAddInquiryCommentMutation,
+  useMarkCommentReadMutation,
+} from '@scf/core/utils/inquiries-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import type { InquirySectionName } from '@scf/schemas'
-import { Button, Input, Text, XStack, YStack } from '@unicornlove/ui'
-import { MessageSquare, Send } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { Button, Input, Text, Row, Stack } from '@scaffald/ui'
+import { MessageSquare, Send } from 'lucide-react-native'
+import { useToast } from '@scaffald/ui'
 import { useMemo, useState } from 'react'
-import { Avatar } from '@unicornlove/ui'
+import { Avatar } from '@scaffald/ui'
 
 interface InquiryCommentThreadProps {
   inquiryId: string
@@ -24,26 +27,29 @@ export function InquiryCommentThread({
   sectionName,
   comments,
 }: InquiryCommentThreadProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const { user: currentUser } = useUser()
   const [newComment, setNewComment] = useState('')
 
-  const addCommentMutation = api.inquiries.addComment.useMutation({
+  const addCommentMutation = useAddInquiryCommentMutation({
     onSuccess: () => {
       setNewComment('')
-      toast.show('Comment added', {
+      toast.show({
+        title: 'Comment added',
         message: 'Your comment has been added to this section.',
       })
     },
-    onError: (error: { message?: string }) => {
-      toast.show('Failed to add comment', {
+    onError: (error) => {
+      toast.show({
+        title: 'Failed to add comment',
         message: error.message ?? 'Please try again.',
+        variant: 'error',
       })
     },
   })
 
-  const markReadMutation = api.inquiries.markCommentRead.useMutation({
-    onError: (error: { message?: string }) => {
+  const markReadMutation = useMarkCommentReadMutation({
+    onError: (error) => {
       console.error('Failed to mark comment as read:', error)
     },
   })
@@ -63,7 +69,7 @@ export function InquiryCommentThread({
 
   const handleMarkRead = async (commentId: string) => {
     try {
-      await markReadMutation.mutateAsync({ commentId })
+      await markReadMutation.mutateAsync(commentId)
     } catch (error) {
       console.error('Failed to mark comment as read:', error)
     }
@@ -99,10 +105,10 @@ export function InquiryCommentThread({
   }
 
   return (
-    <YStack gap="$3">
+    <Stack gap={12}>
       {/* Comments List */}
       {comments.length > 0 && (
-        <YStack gap="$3">
+        <Stack gap={12}>
           {comments.map((comment) => {
             const isUnread =
               currentUser &&
@@ -111,89 +117,74 @@ export function InquiryCommentThread({
             const isFromCurrentUser = currentUser && comment.sender_id === currentUser.id
 
             return (
-              <XStack
+              <Row
                 key={comment.id}
-                gap="$3"
-                padding="$3"
+                gap={12}
+                padding="sm"
                 backgroundColor={isUnread ? '$blue2' : '$color2'}
-                borderRadius="$3"
+                borderRadius={12}
                 borderWidth={1}
                 borderColor={isUnread ? '$blue9' : '$borderColor'}
               >
-                <Avatar circular size="$3">
-                  <Avatar.Fallback backgroundColor="$blue9">
-                    <Text color="white" fontSize="$2">
-                      {comment.sender_id.charAt(0).toUpperCase()}
-                    </Text>
-                  </Avatar.Fallback>
-                </Avatar>
-                <YStack flex={1} gap="$1">
-                  <XStack justifyContent="space-between" alignItems="center">
-                    <Text fontSize="$2" fontWeight="600" color="$color11">
-                      {isFromCurrentUser ? 'You' : 'Organization'}
-                    </Text>
-                    <Text fontSize="$1" color="$color10">
-                      {formatTimestamp(comment.created_at)}
-                    </Text>
-                  </XStack>
-                  <Text fontSize="$3" color="$color12">
-                    {comment.content}
-                  </Text>
+                <Avatar
+                  size={32}
+                  initials={comment.sender_id.charAt(0).toUpperCase()}
+                />
+                <Stack flex={1} gap={4}>
+                  <Row justify="space-between" align="center">
+                    <Text color="$gray11">{isFromCurrentUser ? 'You' : 'Organization'}</Text>
+                    <Text color="$gray11">{formatTimestamp(comment.created_at)}</Text>
+                  </Row>
+                  <Text color="$gray11">{comment.content}</Text>
                   {isUnread && (
-                    <Button
-                      size="$2"
-                      variant="outlined"
-                      onPress={() => handleMarkRead(comment.id)}
-                      marginTop="$1"
-                    >
-                      Mark as read
-                    </Button>
+                    <Stack style={{ marginTop: 4 }}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onPress={() => handleMarkRead(comment.id)}
+                      >
+                        Mark as read
+                      </Button>
+                    </Stack>
                   )}
-                </YStack>
-              </XStack>
+                </Stack>
+              </Row>
             )
           })}
-        </YStack>
+        </Stack>
       )}
 
       {/* Unread Indicator */}
       {unreadComments.length > 0 && (
-        <XStack
-          alignItems="center"
-          gap="$2"
-          padding="$2"
-          backgroundColor="$blue2"
-          borderRadius="$3"
-        >
-          <MessageSquare size={16} color="$blue10" />
-          <Text fontSize="$2" color="$blue11" fontWeight="600">
+        <Row align="center" gap={8} padding="xs" backgroundColor="$blue2" borderRadius={12}>
+          <MessageSquare size="md" color="$blue10" />
+          <Text color="$blue11">
             {unreadComments.length} new comment{unreadComments.length > 1 ? 's' : ''}
           </Text>
-        </XStack>
+        </Row>
       )}
 
       {/* Add Comment Input */}
-      <YStack gap="$2">
-        <XStack gap="$2" alignItems="flex-end">
+      <Stack gap={8}>
+        <Row gap={8} align="flex-end">
           <Input
-            flex={1}
             placeholder="Add a comment..."
             value={newComment}
             onChangeText={setNewComment}
             multiline
-            height={60}
             maxLength={2000}
+            style={{ flex: 1, minHeight: 60 }}
           />
           <Button
-            icon={Send}
+            iconStart={Send}
             onPress={handleAddComment}
             disabled={!newComment.trim() || addCommentMutation.isPending}
-            theme="blue"
+            color="primary"
           >
             {addCommentMutation.isPending ? 'Sending...' : 'Send'}
           </Button>
-        </XStack>
-      </YStack>
-    </YStack>
+        </Row>
+      </Stack>
+    </Stack>
   )
 }

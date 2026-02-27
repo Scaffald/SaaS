@@ -1,6 +1,6 @@
 /**
  * Compliance Requirements Hook
- * REQ-2, TASK-13: Requirements List View with Filtering and Search
+ * Requirements List View with Filtering and Search
  *
  * Provides typed hooks for managing compliance requirements using tRPC.
  */

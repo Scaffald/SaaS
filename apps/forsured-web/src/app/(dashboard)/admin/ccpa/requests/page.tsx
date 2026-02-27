@@ -1,5 +1,5 @@
 /**
- * REQ-6: CCPA Admin Request List Page
+ * CCPA Admin Request List Page
  * TASK-2: Implement CCPA Request List Page with Filtering and Search
  *
  * Work queue for all CCPA data subject requests with:
@@ -25,7 +25,7 @@ import {
   Select,
   colors,
   spacing,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import Checkbox from '../../../../../ui/Checkbox'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { trpc } from '../../../../../lib/trpc'

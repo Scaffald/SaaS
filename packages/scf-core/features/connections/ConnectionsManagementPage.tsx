@@ -1,7 +1,6 @@
-import { api } from '@scf/core/utils/api'
-import { Tab, TabGroup } from '@unicornlove/ui'
+import { usePendingConnections } from '@scf/core/utils/engagement-sdk-hooks'
 import { useMemo, useState } from 'react'
-import { Tabs, Text, YStack } from '@unicornlove/ui'
+import { Tabs, Text, Stack } from '@scaffald/ui'
 import { ConnectionsList } from './components/ConnectionsList'
 import { FollowersList } from './components/FollowersList'
 import { FollowingList } from './components/FollowingList'
@@ -13,57 +12,58 @@ export function ConnectionsManagementPage() {
   const [activeTab, setActiveTab] = useState<TabValue>('connections')
 
   // Fetch pending requests count for badge
-  const { data: pendingRequests } = api.connections.getPendingRequests.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  })
+  const { data: pendingData } = usePendingConnections()
 
   const pendingReceivedCount = useMemo(
-    () => pendingRequests?.received.length || 0,
-    [pendingRequests?.received.length]
+    () => pendingData?.received.length || 0,
+    [pendingData?.received.length]
   )
 
   return (
-    <YStack gap="$4">
-      <YStack gap="$1">
-        <Text fontSize="$7" fontWeight="700">
-          Connections
-        </Text>
-        <Text color="$color11">
+    <Stack gap={16}>
+      <Stack gap={4}>
+        <Text>Connections</Text>
+        <Text color="$gray11">
           Manage your professional connections, followers, and pending requests.
         </Text>
-      </YStack>
+      </Stack>
 
-      <TabGroup value={activeTab} onValueChange={(value) => setActiveTab(value as TabValue)}>
-        <Tab value="connections" label="Connections" />
-        <Tab value="followers" label="Followers" />
-        <Tab value="following" label="Following" />
-        <Tab
-          value="pending"
-          label="Pending Requests"
-          badge={pendingReceivedCount > 0 ? pendingReceivedCount : undefined}
-        />
-
-        <Tabs.Content value="connections">
-          <YStack paddingTop="$4">
-            <ConnectionsList />
-          </YStack>
-        </Tabs.Content>
-        <Tabs.Content value="followers">
-          <YStack paddingTop="$4">
-            <FollowersList />
-          </YStack>
-        </Tabs.Content>
-        <Tabs.Content value="following">
-          <YStack paddingTop="$4">
-            <FollowingList />
-          </YStack>
-        </Tabs.Content>
-        <Tabs.Content value="pending">
-          <YStack paddingTop="$4">
-            <PendingRequestsList />
-          </YStack>
-        </Tabs.Content>
-      </TabGroup>
-    </YStack>
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as TabValue)} type="line">
+        <Tabs.Item value="connections">
+          <Tabs.Trigger>Connections</Tabs.Trigger>
+          <Tabs.Content>
+            <Stack paddingTop={16}>
+              <ConnectionsList />
+            </Stack>
+          </Tabs.Content>
+        </Tabs.Item>
+        <Tabs.Item value="followers">
+          <Tabs.Trigger>Followers</Tabs.Trigger>
+          <Tabs.Content>
+            <Stack paddingTop={16}>
+              <FollowersList />
+            </Stack>
+          </Tabs.Content>
+        </Tabs.Item>
+        <Tabs.Item value="following">
+          <Tabs.Trigger>Following</Tabs.Trigger>
+          <Tabs.Content>
+            <Stack paddingTop={16}>
+              <FollowingList />
+            </Stack>
+          </Tabs.Content>
+        </Tabs.Item>
+        <Tabs.Item value="pending">
+          <Tabs.Trigger>
+            Pending Requests{pendingReceivedCount > 0 ? ` (${pendingReceivedCount})` : ''}
+          </Tabs.Trigger>
+          <Tabs.Content>
+            <Stack paddingTop={16}>
+              <PendingRequestsList />
+            </Stack>
+          </Tabs.Content>
+        </Tabs.Item>
+      </Tabs>
+    </Stack>
   )
 }

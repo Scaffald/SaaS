@@ -2,8 +2,8 @@
  * Home Page - Landing page using Beyond UI
  */
 import React from "react";
-import { Stack, Text, H1 } from '@unicornlove/beyond-ui';
-import { colors, spacing, fontSize } from '@unicornlove/beyond-ui';
+import { Stack, Text, H1 } from '@scaffald/ui';
+import { colors, spacing, fontSize } from '@scaffald/ui';
 
 const Home: React.FC = () => {
   return (

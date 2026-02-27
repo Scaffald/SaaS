@@ -1,8 +1,8 @@
-import { DashboardWidget } from '@unicornlove/ui'
+import { DashboardWidget } from '@scaffald/ui'
 import type { ComponentType, ReactNode } from 'react'
-import { ScrollView, Spinner, Text, YStack, type YStackProps } from '@unicornlove/ui'
+import { ScrollView, Spinner, Text, Stack, type StackProps } from '@scaffald/ui'
 
-interface ProfileResultsPanelProps extends YStackProps {
+interface ProfileResultsPanelProps extends StackProps {
   /** Child content for results */
   children?: ReactNode
   /** Title for the results section */
@@ -49,29 +49,25 @@ export function ProfileResultsPanel({
   return (
     <ScrollView showsVerticalScrollIndicator={showScrollbar}>
       <DashboardWidget>
-        <YStack gap="$4" {...props}>
-          {title && (
-            <Text fontWeight="600" fontSize="$5">
-              {title}
-            </Text>
-          )}
+        <Stack gap={16} {...props}>
+          {title && <Text>{title}</Text>}
 
           {isLoading ? (
-            <YStack alignItems="center" justifyContent="center" padding="$8" gap="$3">
-              <Spinner size="large" />
-              <Text color="$color11">Loading...</Text>
-            </YStack>
+            <Stack align="center" justify="center" padding={32} gap={12}>
+              <Spinner size="lg" />
+              <Text style={{ color: '#414e62' }}>Loading...</Text>
+            </Stack>
           ) : isEmpty ? (
-            <YStack alignItems="center" justifyContent="center" padding="$8" gap="$3">
-              {EmptyIcon && <EmptyIcon size={48} color="$color11" />}
-              <Text color="$color11" textAlign="center">
+            <Stack align="center" justify="center" padding={32} gap={12}>
+              {EmptyIcon && <EmptyIcon size={48} color="$gray11" />}
+              <Text style={{ color: '#414e62', textAlign: 'center' }}>
                 {emptyMessage || 'No items added yet'}
               </Text>
-            </YStack>
+            </Stack>
           ) : (
             children
           )}
-        </YStack>
+        </Stack>
       </DashboardWidget>
     </ScrollView>
   )

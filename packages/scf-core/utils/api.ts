@@ -2,48 +2,48 @@
  * tRPC client initialization and configuration
  *
  * ## Type Safety Strategy
- * 
+ *
  * The AppRouter type is imported from @scf/supabase/client-types which uses a safe
  * type export strategy (app-router-safe-type.ts) to avoid issues with @ts-nocheck files.
- * 
+ *
  * The router structure includes these namespaces:
  * - profile: Profile management (general, employment, skills, etc.)
  * - auth: Authentication endpoints
  * - jobs: Job listings and applications
  * - applications: Application submissions
  * - And many more (see packages/supabase/functions/trpc/routers/_app-impl.ts)
- * 
+ *
  * ## Type Checking
- * 
+ *
  * - The AppRouter type is extracted directly from the actual router instance
  * - Type-only imports allow TypeScript to infer types even from @ts-nocheck files
  * - This ensures proper autocomplete and type safety in the client application
  */
 
-import { getGlobalQueryClient } from '@scf/core/provider/react-query/queryClient';
-import type { AppRouter } from '@scf/supabase/client-types';
-import { httpBatchLink, TRPCClientError, type TRPCLink } from '@trpc/client';
-import { createTRPCReact } from '@trpc/react-query';
-import { observable } from '@trpc/server/observable';
-import Constants from 'expo-constants';
-import { Platform } from 'react-native';
-import { clearAllAuthStorage } from './auth/clearAuthStorage';
-import { supabase } from './supabase/client';
+import { getGlobalQueryClient } from "@scf/core/provider/react-query/queryClient";
+import type { AppRouter } from "@scf/supabase/client-types";
+import { httpBatchLink, TRPCClientError, type TRPCLink } from "@trpc/client";
+import { createTRPCReact } from "@trpc/react-query";
+import { observable } from "@trpc/server/observable";
+import Constants from "expo-constants";
+import { Platform } from "react-native";
+import { clearAllAuthStorage } from "./auth/clearAuthStorage";
+import { supabase } from "./supabase/client";
 
 /**
  * tRPC React client instance
- * 
+ *
  * This client provides type-safe access to all backend procedures defined in the AppRouter.
  * The type is properly inferred from the actual router implementation, ensuring:
  * - Autocomplete for all available procedures
  * - Type checking for procedure inputs and outputs
  * - Runtime type validation via tRPC
- * 
+ *
  * @example
  * ```ts
  * // Query example
  * const { data } = api.profile.general.get.useQuery();
- * 
+ *
  * // Mutation example
  * const mutation = api.profile.skills.addSkill.useMutation();
  * ```
@@ -64,10 +64,11 @@ const sessionValidationLink: TRPCLink<AppRouter> = () => {
         error: async (err) => {
           // Check if this is an UNAUTHORIZED error indicating invalid session
           if (
-            err instanceof TRPCClientError && err.data?.code === "UNAUTHORIZED"
+            err instanceof TRPCClientError &&
+            err.data?.code === "UNAUTHORIZED"
           ) {
             console.log(
-              "[tRPC] UNAUTHORIZED error detected - invalid or expired session",
+              "[tRPC] UNAUTHORIZED error detected - invalid or expired session"
             );
 
             // Clear any existing timeout
@@ -79,7 +80,7 @@ const sessionValidationLink: TRPCLink<AppRouter> = () => {
             // If cleanup is already pending, wait for it
             if (pendingCleanup) {
               console.log(
-                "[tRPC] Cleanup already pending, waiting for existing cleanup",
+                "[tRPC] Cleanup already pending, waiting for existing cleanup"
               );
               try {
                 await pendingCleanup;
@@ -95,7 +96,7 @@ const sessionValidationLink: TRPCLink<AppRouter> = () => {
               cleanupTimeout = null;
               try {
                 console.log(
-                  "[tRPC] Triggering comprehensive auth cleanup and redirect",
+                  "[tRPC] Triggering comprehensive auth cleanup and redirect"
                 );
 
                 // Get query client for cache clearing
@@ -106,7 +107,7 @@ const sessionValidationLink: TRPCLink<AppRouter> = () => {
                 await pendingCleanup;
 
                 console.log(
-                  "[tRPC] Auth cleanup completed - user will be redirected to /auth",
+                  "[tRPC] Auth cleanup completed - user will be redirected to /auth"
                 );
               } catch (error) {
                 console.error("[tRPC] Error during auth cleanup:", error);
@@ -124,9 +125,11 @@ const sessionValidationLink: TRPCLink<AppRouter> = () => {
   };
 };
 
-const supabaseExtra = (Constants?.expoConfig?.extra as {
-  supabase?: { url?: string; anonKey?: string };
-})?.supabase;
+const supabaseExtra = (
+  Constants?.expoConfig?.extra as {
+    supabase?: { url?: string; anonKey?: string };
+  }
+)?.supabase;
 
 const resolvedSupabaseUrl =
   process.env.EXPO_PUBLIC_SUPABASE_URL ?? supabaseExtra?.url;
@@ -146,7 +149,11 @@ if (!resolvedSupabaseAnonKey) {
 }
 
 export const createTrpcClient = () =>
-  api.createClient({
+  (
+    api as unknown as {
+      createClient: (config: { links: TRPCLink<AppRouter>[] }) => unknown;
+    }
+  ).createClient({
     links: [
       // Error handling link - detects invalid sessions and signs out
       // This prevents stale sessions after DB resets from causing issues
@@ -159,7 +166,7 @@ export const createTrpcClient = () =>
           // Set platform-specific source header
           headers.set(
             "x-trpc-source",
-            Platform.OS === "web" ? "expo-web" : "expo-react",
+            Platform.OS === "web" ? "expo-web" : "expo-react"
           );
 
           // Always include apikey header for Supabase Edge Functions
@@ -197,7 +204,7 @@ export type {
   ProfileSkillsOutput,
   UploadAvatarInput,
   UploadAvatarOutput,
-} from '@scf/supabase/client-types';
+} from "@scf/supabase/client-types";
 
 // Export constants and schemas for form usage
 export {
@@ -206,4 +213,4 @@ export {
   MILITARY_STATUS_OPTIONS,
   profileEmploymentDefaults,
   profileEmploymentInputSchema,
-} from '@scf/supabase/client-types';
+} from "@scf/supabase/client-types";

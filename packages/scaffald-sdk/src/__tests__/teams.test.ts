@@ -337,6 +337,69 @@ describe('Teams', () => {
     })
   })
 
+  // ===== User-Facing Invitation Operations =====
+
+  describe('listMyInvitations()', () => {
+    it('should list invitations for the current user', async () => {
+      const result = await client.teams.listMyInvitations()
+
+      expect(result).toBeDefined()
+      expect(result.invitations).toBeInstanceOf(Array)
+      expect(result.invitations).toHaveLength(2)
+    })
+
+    it('should filter invitations by status', async () => {
+      const result = await client.teams.listMyInvitations({ status: 'pending' })
+
+      expect(result).toBeDefined()
+      expect(result.invitations).toBeInstanceOf(Array)
+      // All invitations should be pending
+      result.invitations.forEach((inv) => {
+        expect(inv.status).toBe('pending')
+      })
+    })
+
+    it('should include team and organization details', async () => {
+      const result = await client.teams.listMyInvitations()
+
+      const invitation = result.invitations[0]
+      expect(invitation.id).toBe('inv_1')
+      expect(invitation.teamId).toBe('team_1')
+      expect(invitation.status).toBe('pending')
+      expect(invitation.team).toEqual({
+        id: 'team_1',
+        name: 'Engineering Hiring Team',
+        organizationId: 'org_1',
+        organizationName: 'Acme Corp',
+      })
+      expect(invitation.role).toEqual({
+        id: 'role_1',
+        key: 'member',
+        name: 'Member',
+      })
+    })
+  })
+
+  describe('respondToInvitation()', () => {
+    it('should accept an invitation', async () => {
+      const result = await client.teams.respondToInvitation('inv_123', { action: 'accept' })
+
+      expect(result).toBeDefined()
+      expect(result.invitation).toBeDefined()
+      expect(result.invitation.id).toBe('inv_123')
+      expect(result.invitation.status).toBe('accepted')
+    })
+
+    it('should decline an invitation', async () => {
+      const result = await client.teams.respondToInvitation('inv_456', { action: 'decline' })
+
+      expect(result).toBeDefined()
+      expect(result.invitation).toBeDefined()
+      expect(result.invitation.id).toBe('inv_456')
+      expect(result.invitation.status).toBe('declined')
+    })
+  })
+
   // ===== Job Assignment Management =====
 
   describe('listJobAssignments()', () => {

@@ -1,57 +1,50 @@
 /**
  * TaskSeverityBreakdown - Task severity breakdown widget using Beyond UI
- * REQ-266: Task Correlation with Compliance Score
- * Migrated from Tamagui to Beyond UI
+ * Task severity and compliance correlation
+
  */
-import React from 'react';
-import { Stack, Row, Text, Chip } from '@unicornlove/beyond-ui';
-import { AlertTriangle, AlertCircle, Info, CheckCircle } from 'lucide-react';
-import {
-  Task,
-  TaskSeverity,
-  TASK_SEVERITY_CONFIG,
-} from '../../types';
-import {
-  countTasksBySeverity,
-  enrichTasksWithSeverity,
-} from '../../lib/tasks/severityUtils';
+import React from 'react'
+import { Stack, Row, Text, Chip } from '@scaffald/ui'
+import { AlertTriangle, AlertCircle, Info, CheckCircle } from 'lucide-react'
+import { Task, TaskSeverity, TASK_SEVERITY_CONFIG } from '../../types'
+import { countTasksBySeverity, enrichTasksWithSeverity } from '../../lib/tasks/severityUtils'
 
 export interface TaskSeverityBreakdownProps {
-  tasks: Task[];
-  includeInfo?: boolean;
-  showBreakdown?: boolean;
-  showIcon?: boolean;
-  className?: string;
-  onClick?: () => void;
-  loading?: boolean;
+  tasks: Task[]
+  includeInfo?: boolean
+  showBreakdown?: boolean
+  showIcon?: boolean
+  className?: string
+  onClick?: () => void
+  loading?: boolean
 }
 
 function getSeverityIcon(severity: TaskSeverity): React.ReactNode {
   switch (severity) {
     case 'critical':
-      return <AlertTriangle size={16} />;
+      return <AlertTriangle size={16} />
     case 'high':
-      return <AlertCircle size={16} />;
+      return <AlertCircle size={16} />
     case 'medium':
-      return <Info size={16} />;
+      return <Info size={16} />
     case 'low':
-      return <CheckCircle size={16} />;
+      return <CheckCircle size={16} />
     case 'info':
-      return <Info size={16} />;
+      return <Info size={16} />
     default:
-      return <Info size={16} />;
+      return <Info size={16} />
   }
 }
 
 interface SeverityBadgeProps {
-  severity: TaskSeverity;
-  count: number;
+  severity: TaskSeverity
+  count: number
 }
 
 const SeverityBadge: React.FC<SeverityBadgeProps> = ({ severity, count }) => {
-  const config = TASK_SEVERITY_CONFIG[severity];
+  const config = TASK_SEVERITY_CONFIG[severity]
 
-  if (count === 0) return null;
+  if (count === 0) return null
 
   const variantMap: Record<TaskSeverity, 'default' | 'success' | 'warning' | 'error' | 'info'> = {
     critical: 'error',
@@ -59,7 +52,7 @@ const SeverityBadge: React.FC<SeverityBadgeProps> = ({ severity, count }) => {
     medium: 'warning',
     low: 'info',
     info: 'default',
-  };
+  }
 
   return (
     <Chip variant={variantMap[severity]} size="sm">
@@ -69,8 +62,8 @@ const SeverityBadge: React.FC<SeverityBadgeProps> = ({ severity, count }) => {
         <span style={{ display: 'none' }}>{config.label.toLowerCase()}</span>
       </Row>
     </Chip>
-  );
-};
+  )
+}
 
 export const TaskSeverityBreakdown: React.FC<TaskSeverityBreakdownProps> = ({
   tasks,
@@ -81,37 +74,39 @@ export const TaskSeverityBreakdown: React.FC<TaskSeverityBreakdownProps> = ({
   onClick,
   loading = false,
 }) => {
-  const enrichedTasks = enrichTasksWithSeverity(tasks);
-  const counts = countTasksBySeverity(enrichedTasks, includeInfo);
+  const enrichedTasks = enrichTasksWithSeverity(tasks)
+  const counts = countTasksBySeverity(enrichedTasks, includeInfo)
 
-  const totalTasks = Object.values(counts).reduce((sum, count) => sum + count, 0);
+  const totalTasks = Object.values(counts).reduce((sum, count) => sum + count, 0)
 
   if (loading) {
     return (
       <Stack padding={16} gap={8}>
-        <Text size="sm" muted>Loading task breakdown...</Text>
+        <Text size="sm" muted>
+          Loading task breakdown...
+        </Text>
       </Stack>
-    );
+    )
   }
 
   if (totalTasks === 0) {
     return (
       <Stack padding={16} gap={8}>
-        <Text size="sm" muted>No tasks available</Text>
+        <Text size="sm" muted>
+          No tasks available
+        </Text>
       </Stack>
-    );
+    )
   }
 
-  const breakdownParts: string[] = [];
-  if (counts.critical > 0) breakdownParts.push(`${counts.critical} critical`);
-  if (counts.high > 0) breakdownParts.push(`${counts.high} high`);
-  if (counts.medium > 0) breakdownParts.push(`${counts.medium} medium`);
-  if (counts.low > 0) breakdownParts.push(`${counts.low} low`);
-  if (includeInfo && counts.info > 0) breakdownParts.push(`${counts.info} info`);
+  const breakdownParts: string[] = []
+  if (counts.critical > 0) breakdownParts.push(`${counts.critical} critical`)
+  if (counts.high > 0) breakdownParts.push(`${counts.high} high`)
+  if (counts.medium > 0) breakdownParts.push(`${counts.medium} medium`)
+  if (counts.low > 0) breakdownParts.push(`${counts.low} low`)
+  if (includeInfo && counts.info > 0) breakdownParts.push(`${counts.info} info`)
 
-  const breakdownText = breakdownParts.length > 0
-    ? `(${breakdownParts.join(', ')})`
-    : '';
+  const breakdownText = breakdownParts.length > 0 ? `(${breakdownParts.join(', ')})` : ''
 
   return (
     <Stack
@@ -122,9 +117,7 @@ export const TaskSeverityBreakdown: React.FC<TaskSeverityBreakdownProps> = ({
       className={className}
     >
       <Row alignItems="center" gap={8} style={{ flexWrap: 'wrap' }}>
-        {showIcon && (
-          <AlertTriangle size={20} />
-        )}
+        {showIcon && <AlertTriangle size={20} />}
         <Text size="lg" weight="semibold">
           {totalTasks} tasks
         </Text>
@@ -145,17 +138,17 @@ export const TaskSeverityBreakdown: React.FC<TaskSeverityBreakdownProps> = ({
         </Row>
       )}
     </Stack>
-  );
-};
+  )
+}
 
-export default TaskSeverityBreakdown;
+export default TaskSeverityBreakdown
 
 // Stub for CompactSeverityBreakdown
 export interface CompactSeverityBreakdownProps {
-  tasks: Task[];
-  includeInfo?: boolean;
-  className?: string;
-  onClick?: () => void;
+  tasks: Task[]
+  includeInfo?: boolean
+  className?: string
+  onClick?: () => void
 }
 
 export const CompactSeverityBreakdown: React.FC<CompactSeverityBreakdownProps> = ({
@@ -164,23 +157,27 @@ export const CompactSeverityBreakdown: React.FC<CompactSeverityBreakdownProps> =
   className = '',
   onClick,
 }) => {
-  const enrichedTasks = enrichTasksWithSeverity(tasks);
-  const counts = countTasksBySeverity(enrichedTasks, includeInfo);
-  const totalTasks = Object.values(counts).reduce((sum, count) => sum + count, 0);
+  const enrichedTasks = enrichTasksWithSeverity(tasks)
+  const counts = countTasksBySeverity(enrichedTasks, includeInfo)
+  const totalTasks = Object.values(counts).reduce((sum, count) => sum + count, 0)
 
   if (totalTasks === 0) {
-    return <Text size="sm" muted>No tasks</Text>;
+    return (
+      <Text size="sm" muted>
+        No tasks
+      </Text>
+    )
   }
 
-  const breakdownParts: string[] = [];
-  if (counts.critical > 0) breakdownParts.push(`${counts.critical} critical`);
-  if (counts.high > 0) breakdownParts.push(`${counts.high} high`);
-  if (counts.medium > 0) breakdownParts.push(`${counts.medium} medium`);
-  if (counts.low > 0) breakdownParts.push(`${counts.low} low`);
-  if (includeInfo && counts.info > 0) breakdownParts.push(`${counts.info} info`);
+  const breakdownParts: string[] = []
+  if (counts.critical > 0) breakdownParts.push(`${counts.critical} critical`)
+  if (counts.high > 0) breakdownParts.push(`${counts.high} high`)
+  if (counts.medium > 0) breakdownParts.push(`${counts.medium} medium`)
+  if (counts.low > 0) breakdownParts.push(`${counts.low} low`)
+  if (includeInfo && counts.info > 0) breakdownParts.push(`${counts.info} info`)
 
-  const taskWord = totalTasks === 1 ? 'task' : 'tasks';
-  const breakdownText = breakdownParts.length > 0 ? ` (${breakdownParts.join(', ')})` : '';
+  const taskWord = totalTasks === 1 ? 'task' : 'tasks'
+  const breakdownText = breakdownParts.length > 0 ? ` (${breakdownParts.join(', ')})` : ''
 
   return (
     <Row
@@ -191,8 +188,9 @@ export const CompactSeverityBreakdown: React.FC<CompactSeverityBreakdownProps> =
       className={className}
     >
       <Text size="md" weight="medium">
-        {totalTasks} {taskWord}{breakdownText}
+        {totalTasks} {taskWord}
+        {breakdownText}
       </Text>
     </Row>
-  );
-};
+  )
+}

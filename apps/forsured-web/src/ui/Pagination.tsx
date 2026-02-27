@@ -1,17 +1,17 @@
 /**
- * Pagination wrapper - migrated from Tamagui to Beyond UI
+ * Pagination wrapper
  * Provides backwards-compatible API for existing code
  */
-import React from 'react';
-import { Pagination as BeyondPagination } from '@unicornlove/beyond-ui';
+import React from 'react'
+import { Pagination as BeyondPagination } from '@scaffald/ui'
 
 export interface PaginationProps {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-  showFirstLast?: boolean;
-  siblingCount?: number;
-  className?: string;
+  currentPage: number
+  totalPages: number
+  onPageChange: (page: number) => void
+  showFirstLast?: boolean
+  siblingCount?: number
+  className?: string
 }
 
 export default function Pagination({
@@ -31,5 +31,5 @@ export default function Pagination({
       type="numbers"
       pageRadius="rounded"
     />
-  );
+  )
 }

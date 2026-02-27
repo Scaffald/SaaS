@@ -9,18 +9,15 @@ import {
   TeamMembersList,
   TeamOverviewCard,
 } from '@scf/core/features/office/teams'
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
-import { AlertTriangle, RefreshCw, UserPlus } from '@tamagui/lucide-icons'
-import type { inferRouterOutputs } from '@trpc/server'
+import { useTeam, useTeamMembers, useTeamAnalyticsOverview } from '@scf/core/utils/teams-sdk-hooks'
+import type { Team, TeamMember } from '@scaffald/sdk'
+import { AlertTriangle, RefreshCw, UserPlus } from 'lucide-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
-type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
-type TeamRecord = TeamDetailOutput['team']
-type TeamMembersOutput = inferRouterOutputs<AppRouter>['teams']['members']['list']
-type TeamMemberRecord = NonNullable<TeamMembersOutput['members']>[number]
+type TeamRecord = Team
+type TeamMemberRecord = TeamMember
 
 type MentionOption = {
   id: string
@@ -40,24 +37,21 @@ export default function DashboardTeamDetailPage() {
     isLoading: teamLoading,
     error: teamError,
     refetch: refetchTeam,
-  } = api.teams.byId.useQuery({ teamId }, { enabled: Boolean(teamId), retry: false })
+  } = useTeam(teamId || undefined, { enabled: Boolean(teamId) })
 
   const {
     data: membersData,
     isLoading: membersLoading,
     error: membersError,
     refetch: refetchMembers,
-  } = api.teams.members.list.useQuery({ teamId }, { enabled: Boolean(teamId), retry: false })
+  } = useTeamMembers(teamId || undefined, { enabled: Boolean(teamId) })
 
   const {
     data: analyticsData,
     isLoading: analyticsLoading,
     error: analyticsError,
     refetch: refetchAnalytics,
-  } = api.teams.analytics.overview.useQuery(
-    { limit: 30, teamId },
-    { enabled: Boolean(teamId), retry: false }
-  )
+  } = useTeamAnalyticsOverview(teamId || undefined, { limit: 30 }, { enabled: Boolean(teamId) })
 
   const team = teamData?.team as TeamRecord | undefined
   const members = useMemo<TeamMemberRecord[]>(
@@ -147,33 +141,32 @@ export default function DashboardTeamDetailPage() {
   }
 
   const overviewActions = (
-    <XStack gap="$2" flexWrap="wrap">
+    <Row gap={8}>
       <Button
-        size="$2"
-        variant="outlined"
-        icon={RefreshCw}
+        size="md"
+        variant="outline"
+        iconStart={RefreshCw}
         onPress={handleRefresh}
         disabled={isLoading}
       >
         Refresh
       </Button>
       <Button
-        size="$2"
-        backgroundColor="$color9"
-        color="$color1"
-        icon={UserPlus}
+        size="md"
+        color="primary"
+        iconStart={UserPlus}
         onPress={() => setIsInviteModalOpen(true)}
       >
         Invite member
       </Button>
-    </XStack>
+    </Row>
   )
 
   const mainContent = isLoading ? (
-    <YStack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
-      <Spinner size="large" />
-      <Text color="$color11">Loading team details…</Text>
-    </YStack>
+    <Stack align="center" justify="center" gap={8}>
+      <Spinner size="lg" />
+      <Text color="gray">Loading team details…</Text>
+    </Stack>
   ) : hasError ? (
     <ErrorCard
       title="Unable to load team"
@@ -182,26 +175,14 @@ export default function DashboardTeamDetailPage() {
       onAction={handleRefresh}
     />
   ) : team ? (
-    <YStack gap="$4">
+    <Stack gap={16}>
       <TeamOverviewCard team={team} stats={overviewStats} actions={overviewActions} />
 
-      <Card
-        padding="$4"
-        borderWidth={1}
-        borderColor="$borderColor"
-        backgroundColor="$color1"
-        gap="$4"
-      >
+      <Card padding="md">
         <TeamAnalyticsSummary teamId={teamId} />
       </Card>
 
-      <Card
-        padding="$4"
-        borderWidth={1}
-        borderColor="$borderColor"
-        backgroundColor="$color1"
-        gap="$4"
-      >
+      <Card padding="md">
         <TeamAutomationSettings
           teamId={teamId}
           allowSelfJoin={team.allowSelfJoin ?? false}
@@ -213,13 +194,7 @@ export default function DashboardTeamDetailPage() {
         />
       </Card>
 
-      <Card
-        padding="$4"
-        borderWidth={1}
-        borderColor="$borderColor"
-        backgroundColor="$color1"
-        gap="$4"
-      >
+      <Card padding="md">
         <TeamActivityFeed
           teamId={teamId}
           mentionOptions={mentionOptions}
@@ -227,32 +202,19 @@ export default function DashboardTeamDetailPage() {
         />
       </Card>
 
-      <Card
-        padding="$4"
-        borderWidth={1}
-        borderColor="$borderColor"
-        backgroundColor="$color1"
-        gap="$4"
-      >
+      <Card padding="md">
         <TeamMembersList teamId={teamId} organizationId={team.organizationId} />
       </Card>
 
-      <Card
-        padding="$4"
-        borderWidth={1}
-        borderColor="$borderColor"
-        backgroundColor="$color1"
-        gap="$4"
-      >
+      <Card padding="md">
         <TeamInvitationsList
           teamId={teamId}
           refreshKey={invitationRefreshKey}
           headerAction={
             <Button
-              size="$2"
-              backgroundColor="$color9"
-              color="$color1"
-              icon={UserPlus}
+              size="md"
+              color="primary"
+              iconStart={UserPlus}
               onPress={() => setIsInviteModalOpen(true)}
             >
               Invite
@@ -260,7 +222,7 @@ export default function DashboardTeamDetailPage() {
           }
         />
       </Card>
-    </YStack>
+    </Stack>
   ) : (
     <ErrorCard
       title="Team not found"
@@ -307,23 +269,17 @@ function ErrorCard({
   onAction: () => void
 }) {
   return (
-    <Card
-      padding="$4"
-      borderWidth={1}
-      borderColor="$borderColor"
-      gap="$3"
-      backgroundColor="$color2"
-    >
-      <XStack gap="$2" alignItems="center">
-        <AlertTriangle size={20} color="$yellow10" />
-        <Text fontSize="$6" fontWeight="700">
-          {title}
-        </Text>
-      </XStack>
-      <Text color="$color11">{message}</Text>
-      <Button size="$3" onPress={onAction}>
-        {actionLabel}
-      </Button>
+    <Card padding="md">
+      <Stack gap={12}>
+        <Row gap={8} align="center">
+          <AlertTriangle size={20} color="$yellow10" />
+          <Text>{title}</Text>
+        </Row>
+        <Text color="gray">{message}</Text>
+        <Button size="md" onPress={onAction}>
+          {actionLabel}
+        </Button>
+      </Stack>
     </Card>
   )
 }

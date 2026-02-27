@@ -1,6 +1,6 @@
-import { Table } from '@unicornlove/ui'
+import { Table, type TableColumn, type TableRowData } from '@scaffald/ui'
 import { useMemo } from 'react'
-import { Button, Card, H4, Paragraph, Separator, Spinner, Text, XStack } from '@unicornlove/ui'
+import { Button, Card, H4, Paragraph, Separator, Spinner, Text, Row } from '@scaffald/ui'
 import {
   useDocumentDownloadUrl,
   useDocumentUploadSession,
@@ -13,7 +13,7 @@ type OrganizationDocumentsPanelProps = {
 }
 
 export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocumentsPanelProps) {
-  const { data: documents, isLoading } = useOrganizationDocuments(organizationId)
+  const { data: documentsResponse, isLoading } = useOrganizationDocuments(organizationId)
   const { data: folders } = useOrganizationFolders(organizationId)
   const downloadMutation = useDocumentDownloadUrl()
   const uploadSession = useDocumentUploadSession()
@@ -25,6 +25,8 @@ export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocum
     [folders]
   )
 
+  const documents = documentsResponse?.data ?? []
+
   const handleDownload = async (documentId: string) => {
     const result = await downloadMutation.mutateAsync({ organizationId, documentId })
     if (result.downloadUrl) {
@@ -32,72 +34,89 @@ export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocum
     }
   }
 
+  const columns: TableColumn[] = [
+    {
+      id: 'name',
+      title: 'Name',
+      render: (_value, row) => (
+        <>
+          <Text>{String(row.name ?? '')}</Text>
+          <Paragraph color="$gray11">{String(row.category ?? '')}</Paragraph>
+        </>
+      ),
+    },
+    {
+      id: 'folder_id',
+      title: 'Folder',
+      render: (_value, row) => {
+        const folderId = row.folder_id as string | null
+        return <>{folderId ? (folderLookup.get(folderId) ?? '—') : '—'}</>
+      },
+    },
+    {
+      id: 'updated_at',
+      title: 'Last Updated',
+      render: (_value, row) => (
+        <>{new Date(String(row.updated_at ?? '')).toLocaleDateString()}</>
+      ),
+    },
+    {
+      id: 'actions',
+      title: 'Actions',
+      render: (_value, row) => (
+        <Button
+          size="sm"
+          onPress={() => void handleDownload(String(row.id ?? ''))}
+          disabled={downloadMutation.isPending}
+        >
+          Download
+        </Button>
+      ),
+    },
+  ]
+
+  const tableData: TableRowData[] = documents.map((document) => ({
+    id: document.id,
+    name: document.name,
+    category: document.category,
+    folder_id: document.folder_id,
+    updated_at: document.updated_at,
+  }))
+
   return (
-    <Card bordered padding="$4" gap="$3">
-      <XStack justifyContent="space-between" alignItems="center">
+    <Card variant="outlined" padding="md">
+      <Row justify="space-between" align="center">
         <H4>Documents</H4>
         <Button
-          size="$3"
+          size="sm"
           onPress={() => {
             uploadSession.mutate({
               organizationId,
-              name: 'New Document',
-              fileName: 'placeholder.pdf',
-              mimeType: 'application/pdf',
-              fileSize: 10,
+              params: {
+                name: 'New Document',
+                fileName: 'placeholder.pdf',
+                mimeType: 'application/pdf',
+                fileSize: 10,
+              },
             })
           }}
         >
           Upload Placeholder
         </Button>
-      </XStack>
+      </Row>
       <Separator />
       {isLoading ? (
         <Spinner />
-      ) : !documents || documents.length === 0 ? (
-        <Paragraph color="$color10">No documents uploaded yet.</Paragraph>
+      ) : documents.length === 0 ? (
+        <Paragraph color="$gray11">No documents uploaded yet.</Paragraph>
       ) : (
-        <Table>
-          <Table.Head>
-            <Table.Row>
-              <Table.HeaderCell>Name</Table.HeaderCell>
-              <Table.HeaderCell>Folder</Table.HeaderCell>
-              <Table.HeaderCell>Last Updated</Table.HeaderCell>
-              <Table.HeaderCell>Actions</Table.HeaderCell>
-            </Table.Row>
-          </Table.Head>
-          <Table.Body>
-            {documents.map(
-              (document: {
-                id: string
-                name: string
-                category: string
-                folder_id: string | null
-                updated_at: string
-              }) => (
-                <Table.Row key={document.id}>
-                  <Table.Cell>
-                    <Text fontWeight="600">{document.name}</Text>
-                    <Paragraph color="$color10">{document.category}</Paragraph>
-                  </Table.Cell>
-                  <Table.Cell>
-                    {document.folder_id ? (folderLookup.get(document.folder_id) ?? '—') : '—'}
-                  </Table.Cell>
-                  <Table.Cell>{new Date(document.updated_at).toLocaleDateString()}</Table.Cell>
-                  <Table.Cell>
-                    <Button
-                      size="$2"
-                      onPress={() => handleDownload(document.id)}
-                      disabled={downloadMutation.isPending}
-                    >
-                      Download
-                    </Button>
-                  </Table.Cell>
-                </Table.Row>
-              )
-            )}
-          </Table.Body>
-        </Table>
+        <Table
+          columns={columns}
+          data={tableData}
+          loading={isLoading}
+          emptyMessage="No documents uploaded yet."
+          showHeader={false}
+        />
       )}
     </Card>
   )

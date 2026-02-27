@@ -1,5 +1,5 @@
 /**
- * Document API Service (REQ-167)
+ * Document API Service
  * API layer for document extraction and compliance evaluation
  */
 

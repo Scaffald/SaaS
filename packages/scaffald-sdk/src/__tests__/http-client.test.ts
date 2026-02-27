@@ -33,8 +33,18 @@ describe('HTTP Client', () => {
       expect(jobs).toBeDefined()
     })
 
+    it('should support Supabase token', async () => {
+      const clientWithSupabaseToken = new Scaffald({
+        supabaseToken: 'supabase_jwt_token_123',
+      })
+      const jobs = await clientWithSupabaseToken.jobs.list()
+      expect(jobs).toBeDefined()
+    })
+
     it('should throw error when no auth is provided', () => {
-      expect(() => new Scaffald({})).toThrow('Either apiKey or accessToken must be provided')
+      expect(() => new Scaffald({})).toThrow(
+        'Either apiKey, accessToken, or supabaseToken must be provided'
+      )
     })
   })
 
@@ -264,6 +274,44 @@ describe('HTTP Client', () => {
 
       await expect(clientWithShortTimeout.jobs.list()).rejects.toThrow()
     }, 10000)
+  })
+
+  describe('URL construction with baseUrl path', () => {
+    it('should preserve baseUrl path when constructing request URLs', async () => {
+      const baseUrlWithPath = 'http://127.0.0.1:54321/functions/v1/api'
+
+      server.use(
+        http.get(`${baseUrlWithPath}/v1/prerequisites/check`, () =>
+          HttpResponse.json({
+            isComplete: false,
+            hasName: false,
+            hasAddress: false,
+            hasUserTypes: false,
+            hasIndustry: false,
+            hasAcceptedPrivacy: false,
+            hasAcceptedTerms: false,
+            completedAt: null,
+            data: {
+              first_name: '',
+              last_name: '',
+              address: null,
+              user_types: [],
+              industry_id: '',
+            },
+          })
+        )
+      )
+
+      const clientWithPathBase = new Scaffald({
+        apiKey: 'sk_test_123',
+        baseUrl: baseUrlWithPath,
+      })
+
+      const result = await clientWithPathBase.prerequisites.check()
+
+      expect(result).toBeDefined()
+      expect(result.isComplete).toBe(false)
+    })
   })
 
   describe('Custom Headers', () => {

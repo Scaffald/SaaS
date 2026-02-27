@@ -1,7 +1,8 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useEmployers } from '@scf/core/utils/employers-sdk-hooks'
+import { useCreateOrganizationRequestMutation } from '@scf/core/utils/organizations-sdk-hooks'
 import { useDebounce } from '@scf/core/utils/useDebounce'
-import { DashboardWidget } from '@unicornlove/ui'
+import { DashboardWidget } from '@scaffald/ui'
 import {
   AlertTriangle,
   ArrowRight,
@@ -9,11 +10,11 @@ import {
   CheckCircle2,
   Loader2,
   Pencil,
-} from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+} from 'lucide-react-native'
+import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Input, Label, Separator, Stack, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Input, Label, Separator, Stack, Text, Row } from '@scaffald/ui'
 import { normalizeOrganizationSlug } from '../utils/normalizeOrganizationSlug'
 
 const MIN_QUERY_LENGTH = 2
@@ -24,7 +25,7 @@ const MIN_QUERY_LENGTH = 2
  */
 export function AddOrganizationWidget() {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
   const [organizationName, setOrganizationName] = useState('')
   const debouncedQuery = useDebounce(organizationName, 300)
   const trimmedQuery = debouncedQuery.trim()
@@ -40,7 +41,7 @@ export function AddOrganizationWidget() {
     data: searchResults,
     isFetching,
     isLoading,
-  } = api.employers.getEmployers.useQuery(
+  } = useEmployers(
     { search: trimmedQuery, limit: 12 },
     {
       enabled: trimmedQuery.length >= MIN_QUERY_LENGTH,
@@ -75,22 +76,24 @@ export function AddOrganizationWidget() {
     candidateSlug.length === 0 ||
     Boolean(submittedRequest)
 
-  const createOrganizationRequestMutation = api.organizations.createOrganizationRequest.useMutation(
-    {
-      onSuccess: ({ request }: { request: SubmissionSummaryProps['request'] }) => {
-        setSubmittedRequest(request)
-        toast.show('Request submitted', {
-          message:
-            'Thanks for the submission! Our team will review your organization and follow up shortly.',
-        })
-      },
-      onError: (error: { message?: string }) => {
-        toast.show('Unable to submit organization', {
-          message: error.message ?? 'Please try again in a moment.',
-        })
-      },
-    }
-  )
+  const createOrganizationRequestMutation = useCreateOrganizationRequestMutation({
+    onSuccess: ({ request }: { request: SubmissionSummaryProps['request'] }) => {
+      setSubmittedRequest(request)
+      toast.show({
+        title: 'Request submitted',
+        message:
+          'Thanks for the submission! Our team will review your organization and follow up shortly.',
+        variant: 'success',
+      })
+    },
+    onError: (error: { message?: string }) => {
+      toast.show({
+        title: 'Unable to submit organization',
+        message: error.message ?? 'Please try again in a moment.',
+        variant: 'error',
+      })
+    },
+  })
 
   const handleCreatePress = () => {
     if (!isQueryReady || candidateSlug.length === 0) return
@@ -104,22 +107,20 @@ export function AddOrganizationWidget() {
   const isSubmitting = createOrganizationRequestMutation.isPending
 
   return (
-    <DashboardWidget gap="$4">
-      <YStack gap="$2">
-        <XStack gap="$2" alignItems="center">
-          <Building2 size={20} color="$blue10" />
-          <Text fontSize="$5" fontWeight="700" color="$color12">
-            Add an Organization
-          </Text>
-        </XStack>
-        <Text fontSize="$3" color="$color11">
+    <DashboardWidget gap={16}>
+      <Stack gap={8}>
+        <Row gap={8} align="center">
+          <Building2 size="lg" color="$blue10" />
+          <Text color="$gray11">Add an Organization</Text>
+        </Row>
+        <Text color="$gray11">
           Enter the organization name to check if we already have it. You can continue to the
           creation flow once we confirm it&apos;s new.
         </Text>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
-        <Label htmlFor="add-organization-name" fontSize="$3" fontWeight="600" color="$color12">
+      <Stack gap={8}>
+        <Label htmlFor="add-organization-name" color="$gray11">
           Organization Name
         </Label>
         <Input
@@ -129,7 +130,7 @@ export function AddOrganizationWidget() {
           placeholder="Start typing the organization name"
           autoCapitalize="words"
         />
-      </YStack>
+      </Stack>
 
       <Separator />
 
@@ -147,12 +148,10 @@ export function AddOrganizationWidget() {
           }
         />
       ) : isFetching || isLoading ? (
-        <XStack gap="$2" alignItems="center">
-          <Loader2 size={16} color="$blue10" />
-          <Text fontSize="$3" color="$color11">
-            Checking for existing organizations...
-          </Text>
-        </XStack>
+        <Row gap={8} align="center">
+          <Loader2 size="md" color="$blue10" />
+          <Text color="$gray11">Checking for existing organizations...</Text>
+        </Row>
       ) : (
         <StatusSummary
           hasDuplicate={hasDuplicate}
@@ -163,19 +162,17 @@ export function AddOrganizationWidget() {
       )}
 
       <Button
-        size="$4"
-        theme="info"
-        iconAfter={!isSubmitting ? ArrowRight : undefined}
+        size="md"
+        color="primary"
+        iconEnd={!isSubmitting ? ArrowRight : undefined}
         disabled={isSubmitDisabled || isSubmitting}
         onPress={handleCreatePress}
       >
         {isSubmitting ? (
-          <XStack gap="$2" alignItems="center">
-            <Loader2 size={16} color="$color1" />
-            <Text fontSize="$4" fontWeight="600" color="$color1">
-              Submitting...
-            </Text>
-          </XStack>
+          <Row gap={8} align="center">
+            <Loader2 size="md" color="$gray11" />
+            <Text color="$gray11">Submitting...</Text>
+          </Row>
         ) : submittedRequest ? (
           'Request Submitted'
         ) : (
@@ -201,7 +198,7 @@ function StatusSummary({
 }: StatusSummaryProps) {
   if (!isQueryReady) {
     return (
-      <Text fontSize="$3" color="$color10">
+      <Text color="$gray11">
         Enter at least {MIN_QUERY_LENGTH} characters to check for duplicates.
       </Text>
     )
@@ -209,38 +206,31 @@ function StatusSummary({
 
   if (hasDuplicate) {
     return (
-      <YStack gap="$3">
-        <XStack gap="$2" alignItems="center">
-          <AlertTriangle size={16} color="$yellow10" />
-          <Text fontSize="$3" fontWeight="600" color="$yellow10">
-            We found existing organizations that match your search.
-          </Text>
-        </XStack>
-        <YStack gap="$2">
+      <Stack gap={12}>
+        <Row gap={8} align="center">
+          <AlertTriangle size="md" color="$yellow10" />
+          <Text color="$yellow10">We found existing organizations that match your search.</Text>
+        </Row>
+        <Stack gap={8}>
           {matchingEmployers.map((employer) => (
             <DuplicateLink key={employer.id} id={employer.id} name={employer.name || 'Unknown'} />
           ))}
-        </YStack>
-        <Text fontSize="$2" color="$color10">
-          Review the existing organization before creating a new one.
-        </Text>
-      </YStack>
+        </Stack>
+        <Text color="$gray11">Review the existing organization before creating a new one.</Text>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$2">
-      <XStack gap="$2" alignItems="center">
-        <CheckCircle2 size={16} color="$green10" />
-        <Text fontSize="$3" fontWeight="600" color="$green10">
-          This name looks available.
-        </Text>
-      </XStack>
-      <Text fontSize="$2" color="$color10">
-        We&apos;ll use the slug <Text fontWeight="600">{candidateSlug}</Text> when you create the
-        organization.
+    <Stack gap={8}>
+      <Row gap={8} align="center">
+        <CheckCircle2 size="md" color="$green10" />
+        <Text color="$green10">This name looks available.</Text>
+      </Row>
+      <Text color="$gray11">
+        We&apos;ll use the slug <Text>{candidateSlug}</Text> when you create the organization.
       </Text>
-    </YStack>
+    </Stack>
   )
 }
 
@@ -254,16 +244,13 @@ function DuplicateLink({ id, name }: DuplicateLinkProps) {
 
   return (
     <Button
-      variant="outlined"
-      size="$3"
+      variant="outline"
+      size="sm"
       onPress={() => router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.DETAIL, { id }))}
-      iconAfter={ArrowRight}
-      justifyContent="space-between"
+      iconEnd={ArrowRight}
     >
       <Stack flex={1}>
-        <Text fontSize="$3" color="$color12" numberOfLines={1}>
-          {name}
-        </Text>
+        <Text color="$gray11">{name}</Text>
       </Stack>
     </Button>
   )
@@ -281,28 +268,26 @@ type SubmissionSummaryProps = {
 
 function SubmissionSummary({ request, onAddDetails }: SubmissionSummaryProps) {
   return (
-    <YStack gap="$2">
-      <XStack gap="$2" alignItems="center">
-        <CheckCircle2 size={16} color="$green10" />
-        <Text fontSize="$3" fontWeight="600" color="$green10">
-          Request submitted for {request.name}
-        </Text>
-      </XStack>
-      <Text fontSize="$2" color="$color10">
-        We&apos;ll review <Text fontWeight="600">{request.slug}</Text> and notify you once it&apos;s
-        approved. You can keep browsing employers while we take a look.
+    <Stack gap={8}>
+      <Row gap={8} align="center">
+        <CheckCircle2 size="md" color="$green10" />
+        <Text color="$green10">Request submitted for {request.name}</Text>
+      </Row>
+      <Text color="$gray11">
+        We&apos;ll review <Text>{request.slug}</Text> and notify you once it&apos;s approved. You
+        can keep browsing employers while we take a look.
       </Text>
       {onAddDetails ? (
         <Button
-          size="$3"
-          variant="outlined"
-          icon={Pencil}
+          size="sm"
+          variant="outline"
+          iconStart={Pencil}
           onPress={onAddDetails}
           style={{ alignSelf: 'flex-start' }}
         >
           Add more details
         </Button>
       ) : null}
-    </YStack>
+    </Stack>
   )
 }

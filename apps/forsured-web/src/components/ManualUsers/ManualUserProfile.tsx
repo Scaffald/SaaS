@@ -1,7 +1,7 @@
 /**
  * ManualUserProfile - Profile page for manually-added users
- * REQ-12: Add Manual Broker and Contractor Registration
- * TASK-8: Build manual user profile page with "Manually Added" indicators
+ * Manual user profile
+ * Manual user profile page with "Manually Added" indicators
  *
  * Shows:
  * - User details with "Manually Added" badge
@@ -10,10 +10,10 @@
  * - Warning about notification limitations
  */
 
-'use client';
+'use client'
 
-import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import {
   ArrowLeft,
   Edit2,
@@ -26,17 +26,17 @@ import {
   User,
   Building,
   Phone,
-} from 'lucide-react';
-import { Stack, Row, Text, Button, Card, Input, H1 } from '@unicornlove/beyond-ui';
-import { toast } from 'sonner';
-import { ManualUserBadge } from './ManualUserBadge';
-import { trpc } from '../../lib/trpc';
+} from 'lucide-react'
+import { Stack, Row, Text, Button, Card, Input, H1 } from '@scaffald/ui'
+import { toast } from 'sonner'
+import { ManualUserBadge } from './ManualUserBadge'
+import { trpc } from '../../lib/trpc'
 
 interface InvitationStatus {
-  status: 'not_invited' | 'pending' | 'accepted' | 'expired';
-  invitedAt?: string;
-  acceptedAt?: string;
-  expiresAt?: string;
+  status: 'not_invited' | 'pending' | 'accepted' | 'expired'
+  invitedAt?: string
+  acceptedAt?: string
+  expiresAt?: string
 }
 
 /**
@@ -53,7 +53,7 @@ function getInvitationStatusDisplay(status: InvitationStatus) {
         description: status.acceptedAt
           ? `Accepted on ${new Date(status.acceptedAt).toLocaleDateString()}`
           : 'User has completed registration',
-      };
+      }
     case 'pending':
       return {
         icon: Clock,
@@ -63,7 +63,7 @@ function getInvitationStatusDisplay(status: InvitationStatus) {
         description: status.invitedAt
           ? `Sent on ${new Date(status.invitedAt).toLocaleDateString()}`
           : 'Awaiting user registration',
-      };
+      }
     case 'expired':
       return {
         icon: AlertTriangle,
@@ -71,7 +71,7 @@ function getInvitationStatusDisplay(status: InvitationStatus) {
         bgColor: 'var(--color-orange-3)',
         text: 'Invitation Expired',
         description: 'Send a new invitation to allow registration',
-      };
+      }
     case 'not_invited':
     default:
       return {
@@ -80,24 +80,24 @@ function getInvitationStatusDisplay(status: InvitationStatus) {
         bgColor: 'var(--color-gray-3)',
         text: 'Not Invited',
         description: 'Add an email address to send an invitation',
-      };
+      }
   }
 }
 
 export function ManualUserProfile() {
-  const { userId } = useParams<{ userId: string }>();
-  const navigate = useNavigate();
+  const { userId } = useParams<{ userId: string }>()
+  const navigate = useNavigate()
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showEmailPrompt, setShowEmailPrompt] = useState(false);
-  const [newEmail, setNewEmail] = useState('');
+  const [isEditing, setIsEditing] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [showEmailPrompt, setShowEmailPrompt] = useState(false)
+  const [newEmail, setNewEmail] = useState('')
 
   // Form state for editing
-  const [editName, setEditName] = useState('');
-  const [editEmail, setEditEmail] = useState('');
-  const [editPhone, setEditPhone] = useState('');
-  const [editCompany, setEditCompany] = useState('');
+  const [editName, setEditName] = useState('')
+  const [editEmail, setEditEmail] = useState('')
+  const [editPhone, setEditPhone] = useState('')
+  const [editCompany, setEditCompany] = useState('')
 
   // Fetch user data
   const {
@@ -105,30 +105,27 @@ export function ManualUserProfile() {
     isLoading,
     error,
     refetch,
-  } = trpc.manualUsers.getById.useQuery(
-    { userId: userId! },
-    { enabled: !!userId }
-  );
+  } = trpc.manualUsers.getById.useQuery({ userId: userId! }, { enabled: !!userId })
 
   // Mutations
-  const updateMutation = trpc.manualUsers.update.useMutation();
-  const sendInvitationMutation = trpc.manualUsers.sendInvitation.useMutation();
-  const deleteMutation = trpc.manualUsers.delete.useMutation();
+  const updateMutation = trpc.manualUsers.update.useMutation()
+  const sendInvitationMutation = trpc.manualUsers.sendInvitation.useMutation()
+  const deleteMutation = trpc.manualUsers.delete.useMutation()
 
   // Handle starting edit mode
   const handleStartEdit = () => {
     if (userData) {
-      setEditName(userData.name || '');
-      setEditEmail(userData.email || '');
-      setEditPhone(userData.phone || '');
-      setEditCompany(userData.company || '');
+      setEditName(userData.name || '')
+      setEditEmail(userData.email || '')
+      setEditPhone(userData.phone || '')
+      setEditCompany(userData.company || '')
     }
-    setIsEditing(true);
-  };
+    setIsEditing(true)
+  }
 
   // Handle save edit
   const handleSaveEdit = async () => {
-    if (!userId) return;
+    if (!userId) return
 
     try {
       await updateMutation.mutateAsync({
@@ -137,77 +134,77 @@ export function ManualUserProfile() {
         email: editEmail || undefined,
         phone: editPhone || undefined,
         company: editCompany || undefined,
-      });
-      toast.success('Profile updated successfully');
-      setIsEditing(false);
-      refetch();
+      })
+      toast.success('Profile updated successfully')
+      setIsEditing(false)
+      refetch()
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to update profile';
-      toast.error(message);
+      const message = err instanceof Error ? err.message : 'Failed to update profile'
+      toast.error(message)
     }
-  };
+  }
 
   // Handle cancel edit
   const handleCancelEdit = () => {
-    setIsEditing(false);
-  };
+    setIsEditing(false)
+  }
 
   // Handle send invitation
   const handleSendInvitation = async () => {
-    if (!userId) return;
+    if (!userId) return
 
     // Check if user has email
     if (!userData?.email) {
-      setShowEmailPrompt(true);
-      return;
+      setShowEmailPrompt(true)
+      return
     }
 
     try {
-      await sendInvitationMutation.mutateAsync({ userId });
+      await sendInvitationMutation.mutateAsync({ userId })
       toast.success('Invitation sent successfully', {
         description: `An invitation email was sent to ${userData.email}`,
-      });
-      refetch();
+      })
+      refetch()
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to send invitation';
-      toast.error(message);
+      const message = err instanceof Error ? err.message : 'Failed to send invitation'
+      toast.error(message)
     }
-  };
+  }
 
   // Handle save email and send invitation
   const handleSaveEmailAndInvite = async () => {
-    if (!userId || !newEmail) return;
+    if (!userId || !newEmail) return
 
     try {
       // First update with email
-      await updateMutation.mutateAsync({ userId, email: newEmail });
+      await updateMutation.mutateAsync({ userId, email: newEmail })
       // Then send invitation
-      await sendInvitationMutation.mutateAsync({ userId });
+      await sendInvitationMutation.mutateAsync({ userId })
       toast.success('Profile updated and invitation sent', {
         description: `An invitation email was sent to ${newEmail}`,
-      });
-      setShowEmailPrompt(false);
-      setNewEmail('');
-      refetch();
+      })
+      setShowEmailPrompt(false)
+      setNewEmail('')
+      refetch()
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to send invitation';
-      toast.error(message);
+      const message = err instanceof Error ? err.message : 'Failed to send invitation'
+      toast.error(message)
     }
-  };
+  }
 
   // Handle delete
   const handleDelete = async () => {
-    if (!userId) return;
+    if (!userId) return
 
     try {
-      await deleteMutation.mutateAsync({ userId });
-      toast.success('User deleted successfully');
-      navigate(-1); // Go back
+      await deleteMutation.mutateAsync({ userId })
+      toast.success('User deleted successfully')
+      navigate(-1) // Go back
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to delete user';
-      toast.error(message);
+      const message = err instanceof Error ? err.message : 'Failed to delete user'
+      toast.error(message)
     }
-  };
+  }
 
   // Loading state
   if (isLoading) {
@@ -222,7 +219,7 @@ export function ManualUserProfile() {
         <Loader2 size={32} className="animate-spin" style={{ color: 'var(--color-blue-10)' }} />
         <Text muted>Loading profile...</Text>
       </Stack>
-    );
+    )
   }
 
   // Error state
@@ -245,7 +242,7 @@ export function ManualUserProfile() {
           Go Back
         </Button>
       </Stack>
-    );
+    )
   }
 
   const invitationStatus: InvitationStatus = {
@@ -253,13 +250,13 @@ export function ManualUserProfile() {
     invitedAt: userData.invitedAt,
     acceptedAt: userData.acceptedAt,
     expiresAt: userData.expiresAt,
-  };
+  }
 
-  const statusDisplay = getInvitationStatusDisplay(invitationStatus);
-  const StatusIcon = statusDisplay.icon;
+  const statusDisplay = getInvitationStatusDisplay(invitationStatus)
+  const StatusIcon = statusDisplay.icon
 
   const canSendInvitation =
-    invitationStatus.status === 'not_invited' || invitationStatus.status === 'expired';
+    invitationStatus.status === 'not_invited' || invitationStatus.status === 'expired'
 
   return (
     <Stack gap={24} style={{ maxWidth: 800, margin: '0 auto', padding: 24 }}>
@@ -373,7 +370,9 @@ export function ManualUserProfile() {
                       <Mail size={14} />
                     )}
                     <Text>
-                      {invitationStatus.status === 'expired' ? 'Resend Invitation' : 'Send Invitation'}
+                      {invitationStatus.status === 'expired'
+                        ? 'Resend Invitation'
+                        : 'Send Invitation'}
                     </Text>
                   </Row>
                 </Button>
@@ -708,7 +707,9 @@ export function ManualUserProfile() {
                 <Button
                   variant="primary"
                   onPress={handleSaveEmailAndInvite}
-                  disabled={!newEmail || updateMutation.isPending || sendInvitationMutation.isPending}
+                  disabled={
+                    !newEmail || updateMutation.isPending || sendInvitationMutation.isPending
+                  }
                 >
                   {updateMutation.isPending || sendInvitationMutation.isPending ? (
                     <Loader2 size={16} className="animate-spin" />
@@ -725,7 +726,7 @@ export function ManualUserProfile() {
         </div>
       )}
     </Stack>
-  );
+  )
 }
 
-export default ManualUserProfile;
+export default ManualUserProfile

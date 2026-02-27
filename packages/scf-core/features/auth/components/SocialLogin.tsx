@@ -1,37 +1,20 @@
+import { useSocialAuthHandlers } from '../hooks/useSocialAuthHandlers'
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import { isWeb, Separator, SizableText, XStack, YStack } from '@unicornlove/ui'
-
-import { AppleSignIn } from './AppleSignIn'
-import { GoogleSignIn } from './GoogleSignIn'
+import { SocialLoginGroup } from '@scaffald/ui'
+import { Platform } from 'react-native'
 
 export function SocialLogin() {
-  const Stack = isWeb ? XStack : YStack
   const { t } = useTranslation()
+  const { onGooglePress, onApplePress } = useSocialAuthHandlers()
 
   return (
-    <YStack gap="$5">
-      <OrSeparator label={t('common.or')} />
-      <Stack gap="$3">
-        <AppleSignIn />
-        <GoogleSignIn />
-      </Stack>
-    </YStack>
-  )
-}
-
-function OrSeparator({ label }: { label: string }) {
-  return (
-    <YStack>
-      <YStack position="absolute" fullscreen alignItems="center" justifyContent="center">
-        <Separator flex={1} />
-      </YStack>
-      <YStack alignItems="center" justifyContent="center">
-        <YStack borderColor={isWeb ? '$color1' : 'transparent'} paddingHorizontal="$3">
-          <SizableText size="$2" textTransform="uppercase" textAlign="center">
-            {label}
-          </SizableText>
-        </YStack>
-      </YStack>
-    </YStack>
+    <SocialLoginGroup
+      onGooglePress={onGooglePress}
+      onApplePress={onApplePress}
+      orLabel={t('common.or')}
+      googleText={t('auth.login.googleButton')}
+      appleText={t('auth.login.appleButton')}
+      showApple={Platform.OS === 'web' || Platform.OS === 'ios'}
+    />
   )
 }

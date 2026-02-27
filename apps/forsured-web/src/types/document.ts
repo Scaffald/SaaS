@@ -1,7 +1,7 @@
 /**
  * Document Types
- * REQ-284: Document Organization by Client/Project/GC
- * REQ-124: Document Upload & Storage
+ * Document Organization by Client/Project/GC
+ * Document Upload & Storage
  */
 
 import type { DocumentType, DocumentStatus } from './document-filters';

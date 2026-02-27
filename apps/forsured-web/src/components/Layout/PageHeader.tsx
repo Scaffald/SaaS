@@ -3,8 +3,8 @@
  * Integrates with lexicon system for dynamic labels
  */
 
-import { SaaSSectionHeader } from '@unicornlove/beyond-ui';
-import type { SaaSSectionHeaderProps, IconComponent } from '@unicornlove/beyond-ui';
+import { SaaSSectionHeader } from '@scaffald/ui';
+import type { SaaSSectionHeaderProps, IconComponent } from '@scaffald/ui';
 import { useLexicon } from '../../contexts/LexiconContext';
 
 export interface PageHeaderProps extends Omit<SaaSSectionHeaderProps, 'title'> {

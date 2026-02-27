@@ -1,5 +1,5 @@
 /**
- * REQ-267: Due Date Inference & Management
+ * Due Date Inference & Management
  * TASK-3: Build Due Date Management API with Manual Override
  *
  * API service for due date management with manual override capability

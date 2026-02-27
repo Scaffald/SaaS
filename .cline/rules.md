@@ -41,14 +41,14 @@ pnpm check-circular-deps # Circular import detection
 ## Project Structure
 - **pnpm workspace monorepo** with cross-platform React Native/Next.js application
 - **Primary platform**: React Native (Expo) for iOS, Android, and Web
-- **Tech stack**: TypeScript, Tamagui, Supabase, tRPC, Turbo
+- **Tech stack**: TypeScript, Beyond UI, Supabase, tRPC, Turbo
 - **Package manager**: Always use `pnpm` instead of `npm`
 
 ## Quick Reference
 - **Always run `pnpm check`** before committing changes
 - **Use direct imports** instead of barrel files for better performance
 - **Follow route naming convention**: `<parent>-<child>-{left|right|screen}.tsx`
-- **Prefer Tamagui components** for UI development
+- **Prefer Beyond UI components** for UI development
 - **Test in actual clients** rather than assuming functionality works
 - **Check git history** when debugging issues
 

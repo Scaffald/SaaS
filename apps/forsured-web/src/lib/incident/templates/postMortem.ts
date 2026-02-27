@@ -1,6 +1,6 @@
 /**
  * Post-Mortem Template
- * REQ-164: Incident Response Plan & Procedures
+ * Incident Response Plan & Procedures
  */
 
 import { CommunicationTemplate, PostMortem } from '../types';

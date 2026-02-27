@@ -1,10 +1,11 @@
-import { Button, H2, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, H2, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { useMemo, useState } from 'react'
 import type { ApplicationStatus, MockApplication } from '../mock-data/ats-mock-data'
 import { ApplicationsFilters } from './components/ApplicationsFilters'
 import { ApplicationsKanbanBoard } from './components/ApplicationsKanbanBoard'
-import type { Applications } from './hooks/useApplications'
+import type { ApplicationsListItem } from './hooks/useApplications'
 import { useApplications } from './hooks/useApplications'
+import { colors } from '@scaffald/ui/tokens'
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -32,6 +33,7 @@ function formatPayRange(minCents?: number | null, maxCents?: number | null, type
 }
 
 export const OfficeApplicationsScreen = () => {
+  const { theme } = useThemeContext()
   const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban')
   const [filters, setFilters] = useState<{
     jobId: string | null
@@ -60,28 +62,44 @@ export const OfficeApplicationsScreen = () => {
   // Transform real database records to MockApplication format for UI compatibility
   // Data comes from v_applications_with_user_profiles view with flattened fields
   const transformedApplications = useMemo(() => {
-    return applications.map((app: Applications[number]): MockApplication => {
-      const jobInfo = app.job as {
-        primary_team_id?: string | null
-        teamAssignments?: Array<{
-          teamId: string
-          isPrimary: boolean
-          team?: { name: string | null }
-        }>
-        pay_range_min_cents?: number | null
-        pay_range_max_cents?: number | null
-        pay_range_type?: string | null
-        employment_type?: string | null
-        organization_id?: string | null
-        // target_start_date?: string | null // Column doesn't exist in database yet
-      } | null
+    return applications.map((app: ApplicationsListItem): MockApplication => {
+      const a = app as ApplicationsListItem & {
+        applied_at?: string
+        job?: {
+          primary_team_id?: string | null
+          teamAssignments?: Array<{ teamId: string; isPrimary: boolean; team?: { name: string | null } }>
+          pay_range_min_cents?: number | null
+          pay_range_max_cents?: number | null
+          pay_range_type?: string | null
+          employment_type?: string | null
+          organization_id?: string | null
+        } | null
+        application_score?: number
+        auto_rejected?: boolean
+        custom_question_answers?: Array<{ question: string; answer: string | boolean | string[] }>
+        current_location?: string
+        willing_to_relocate?: boolean
+        years_experience?: number
+        is_authorized_to_work?: boolean
+        earliest_start_date?: string
+        attachments?: MockApplication['attachments']
+        candidate_id?: string
+        candidate_name?: string
+        profile_about?: string
+        profile_avatar_path?: string
+        job_id?: string
+        job_title?: string
+        job_location?: string
+        user_id?: string
+        assigned_to?: string | null
+      }
+      const jobInfo = a.job ?? null
       const assignments = jobInfo?.teamAssignments ?? []
       const primaryAssignment =
         assignments.find((assignment) => assignment.isPrimary) ?? assignments[0] ?? null
       const primaryTeamId = jobInfo?.primary_team_id ?? primaryAssignment?.teamId ?? null
       const primaryTeamName = primaryAssignment?.team?.name ?? null
 
-      // Map database status to UI status
       const statusMap: Record<string, ApplicationStatus> = {
         pending: 'new',
         reviewing: 'screen',
@@ -93,48 +111,49 @@ export const OfficeApplicationsScreen = () => {
         withdrawn: 'rejected',
       }
 
+      const formatAnswer = (v: string | boolean | string[]): string =>
+        typeof v === 'string' ? v : Array.isArray(v) ? v.join(', ') : String(v)
+
       return {
-        id: app.id,
-        status: statusMap[app.status] || 'new',
-        appliedAt: app.applied_at,
-        updatedAt: app.updated_at,
-        score: app.application_score || 0,
-        autoRejected: app.auto_rejected || false,
+        id: a.id,
+        status: statusMap[a.status] ?? 'new',
+        appliedAt: a.applied_at ?? a.updated_at,
+        updatedAt: a.updated_at,
+        score: a.application_score ?? 0,
+        autoRejected: a.auto_rejected ?? false,
         screeningAnswers: {
-          currentLocation: app.current_location || '',
-          willingToRelocate: app.willing_to_relocate || false,
-          yearsExperience: app.years_experience || 0,
-          isAuthorizedToWork: app.is_authorized_to_work || false,
-          earliestStartDate: app.earliest_start_date || '',
+          currentLocation: a.current_location ?? '',
+          willingToRelocate: a.willing_to_relocate ?? false,
+          yearsExperience: a.years_experience ?? 0,
+          isAuthorizedToWork: a.is_authorized_to_work ?? false,
+          earliestStartDate: a.earliest_start_date ?? '',
         },
-        customAnswers: (app.custom_question_answers || []).map(
-          (qa: { question: string; answer: string }) => ({
-            question: qa.question || '',
-            answer: qa.answer || '',
-          })
-        ),
-        attachments: app.attachments || {},
-        notes: [], // Notes not included in current query
-        messages: [], // Messages not included in current query
-        stageHistory: [], // Stage history not included in current query
+        customAnswers: (a.custom_question_answers ?? []).map((qa) => ({
+          question: qa.question ?? '',
+          answer: formatAnswer(qa.answer),
+        })),
+        attachments: a.attachments ?? {},
+        notes: [],
+        messages: [],
+        stageHistory: [],
         candidate: {
-          id: app.candidate_id || app.user_id,
-          name: app.candidate_name || 'Unknown',
-          email: '', // Not included in view
-          phone: '', // Not included in view
-          title: app.profile_about ? app.profile_about.substring(0, 50) : 'Applicant',
-          photo: app.profile_avatar_path || '',
-          location: app.current_location || '',
-          yearsExperience: app.years_experience || 0,
-          skills: [], // Not displayed in kanban view
-          certifications: [], // Not displayed in kanban view
-          experience: [], // Not displayed in kanban view
+          id: a.candidate_id ?? a.user_id,
+          name: a.candidate_name ?? 'Unknown',
+          email: '',
+          phone: '',
+          title: a.profile_about ? a.profile_about.substring(0, 50) : 'Applicant',
+          photo: a.profile_avatar_path ?? '',
+          location: a.current_location ?? '',
+          yearsExperience: a.years_experience ?? 0,
+          skills: [],
+          certifications: [],
+          experience: [],
         },
         job: {
-          id: app.job_id,
-          title: app.job_title || 'Position',
-          company: '', // Not in current schema
-          location: app.job_location || '',
+          id: a.job_id ?? '',
+          title: a.job_title ?? 'Position',
+          company: '',
+          location: a.job_location ?? '',
           payRange: formatPayRange(
             jobInfo?.pay_range_min_cents,
             jobInfo?.pay_range_max_cents,
@@ -145,14 +164,14 @@ export const OfficeApplicationsScreen = () => {
           payRangeMaxCents: jobInfo?.pay_range_max_cents ?? null,
           payRangeType: jobInfo?.pay_range_type ?? null,
           employmentType: jobInfo?.employment_type ?? null,
-          targetStartDate: null, // target_start_date column doesn't exist in database yet
+          targetStartDate: null,
         },
         organizationId: jobInfo?.organization_id ?? null,
-        workerUserId: app.user_id ?? null,
+        workerUserId: a.user_id ?? null,
         team: {
-          id: primaryTeamId,
-          name: primaryTeamName,
-          assignedUserId: (app as { assigned_to?: string | null }).assigned_to ?? null,
+          id: primaryTeamId ?? null,
+          name: primaryTeamName ?? null,
+          assignedUserId: a.assigned_to ?? null,
         },
       }
     })
@@ -169,59 +188,67 @@ export const OfficeApplicationsScreen = () => {
   // Loading state
   if (isLoading) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" backgroundColor="$background">
-        <Spinner size="large" />
-        <Text marginTop="$4" color="$color11">
+      <Stack
+        flex={1}
+        align="center"
+        justify="center"
+        style={{ backgroundColor: colors.bg[theme].default }}
+      >
+        <Spinner size="lg" />
+        <Text style={{ marginTop: 16, color: colors.text[theme].secondary }}>
           Loading applications...
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
-  // Error state
+  // Error state - error from useApplications may be unknown
+  const errorMessage =
+    error != null && typeof (error as { message?: string }).message === 'string'
+      ? (error as Error).message
+      : 'Failed to load applications. Please try again.'
+
   if (isError) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4">
-        <Text color="$red10" fontSize="$5" fontWeight="bold">
-          Error Loading Applications
-        </Text>
-        <YStack alignItems="center">
-          <Text color="$color11" marginTop="$2">
-            {error?.message || 'Failed to load applications. Please try again.'}
+      <Stack flex={1} align="center" justify="center" padding="md">
+        <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Error Loading Applications</Text>
+        <Stack align="center">
+          <Text style={{ color: colors.text[theme].secondary, marginTop: 8 }}>
+            {errorMessage}
           </Text>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
   return (
-    <YStack flex={1} padding="$4" backgroundColor="$background">
+    <Stack flex={1} padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
       {/* Header */}
-      <XStack justifyContent="space-between" alignItems="center" marginBottom="$4">
-        <YStack>
+      <Row justify="space-between" align="center" marginBottom={16}>
+        <Stack>
           <H2>Applications</H2>
-          <Text color="$color11" fontSize="$3">
+          <Text style={{ color: colors.text[theme].secondary }}>
             {filteredApplications.length} total applications
           </Text>
-        </YStack>
+        </Stack>
 
-        <XStack gap="$2">
+        <Row gap={8}>
           <Button
-            size="$3"
+            size="sm"
             onPress={() => setViewMode('kanban')}
-            variant={viewMode === 'kanban' ? 'outlined' : undefined}
+            variant={viewMode === 'kanban' ? 'outline' : undefined}
           >
             Kanban
           </Button>
           <Button
-            size="$3"
+            size="sm"
             onPress={() => setViewMode('list')}
-            variant={viewMode === 'list' ? 'outlined' : undefined}
+            variant={viewMode === 'list' ? 'outline' : undefined}
           >
             List
           </Button>
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* Filters - Note: needs jobs list from API */}
       <ApplicationsFilters filters={filters} onFiltersChange={setFilters} jobs={[]} />
@@ -230,10 +257,10 @@ export const OfficeApplicationsScreen = () => {
       {viewMode === 'kanban' ? (
         <ApplicationsKanbanBoard applications={filteredApplications} />
       ) : (
-        <YStack padding="$4">
+        <Stack padding="md">
           <Text>List view coming soon...</Text>
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

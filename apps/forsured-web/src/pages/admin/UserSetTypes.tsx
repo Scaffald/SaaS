@@ -1,7 +1,7 @@
 /**
  * Admin User Set Types Management Page
- * REQ-4: Multi-Industry User Set Type System with Configurable Lexicon
- * TASK-9: Build admin user set type management UI
+ * Multi-industry user set type system with configurable lexicon
+ * Admin user set type management UI
  *
  * Allows administrators to:
  * - View all user set types
@@ -10,7 +10,7 @@
  * - Toggle active/inactive status
  * - Delete user set types
  */
-import { useState } from 'react';
+import { useState } from 'react'
 import {
   PlusCircle,
   Edit,
@@ -22,20 +22,20 @@ import {
   Users,
   Check,
   AlertTriangle,
-} from 'lucide-react';
-import { Stack, Row, Text, Button, Card, H1, H3, Spinner, Input } from '@unicornlove/beyond-ui';
-import { EmptyState } from '../../ui/EmptyState';
-import Textarea from '../../components/Common/Textarea';
-import { trpc } from '../../lib/trpc';
+} from 'lucide-react'
+import { Stack, Row, Text, Button, Card, H1, H3, Spinner, Input } from '@scaffald/ui'
+import { EmptyState } from '../../ui/EmptyState'
+import Textarea from '../../components/Common/Textarea'
+import { trpc } from '../../lib/trpc'
 
 interface UserSetTypeFormData {
-  name: string;
-  slug: string;
-  managerLabelSingular: string;
-  managerLabelPlural: string;
-  contractorLabelSingular: string;
-  contractorLabelPlural: string;
-  description: string;
+  name: string
+  slug: string
+  managerLabelSingular: string
+  managerLabelPlural: string
+  contractorLabelSingular: string
+  contractorLabelPlural: string
+  description: string
 }
 
 const DEFAULT_FORM_DATA: UserSetTypeFormData = {
@@ -46,57 +46,50 @@ const DEFAULT_FORM_DATA: UserSetTypeFormData = {
   contractorLabelSingular: '',
   contractorLabelPlural: '',
   description: '',
-};
+}
 
 function AdminUserSetTypes() {
   // State
-  const [showInactive, setShowInactive] = useState(false);
-  const [actionInProgress, setActionInProgress] = useState<string | null>(null);
+  const [showInactive, setShowInactive] = useState(false)
+  const [actionInProgress, setActionInProgress] = useState<string | null>(null)
 
   // Modal state
-  const [showModal, setShowModal] = useState(false);
-  const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState<UserSetTypeFormData>(DEFAULT_FORM_DATA);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false)
+  const [modalMode, setModalMode] = useState<'add' | 'edit'>('add')
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [formData, setFormData] = useState<UserSetTypeFormData>(DEFAULT_FORM_DATA)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [formError, setFormError] = useState<string | null>(null)
 
   // tRPC queries and mutations
-  const {
-    data: userSetTypes,
-    isLoading,
-    error,
-    refetch,
-  } = trpc.userSetTypes.list.useQuery();
+  const { data: userSetTypes, isLoading, error, refetch } = trpc.userSetTypes.list.useQuery()
 
-  const createMutation = trpc.userSetTypes.create.useMutation();
-  const updateMutation = trpc.userSetTypes.update.useMutation();
-  const toggleActiveMutation = trpc.userSetTypes.toggleActive.useMutation();
+  const createMutation = trpc.userSetTypes.create.useMutation()
+  const updateMutation = trpc.userSetTypes.update.useMutation()
+  const toggleActiveMutation = trpc.userSetTypes.toggleActive.useMutation()
 
   // Filter by active status
-  const displayedTypes = userSetTypes?.filter(
-    (ust) => showInactive || ust.isActive
-  ) ?? [];
+  const displayedTypes = userSetTypes?.filter((ust) => showInactive || ust.isActive) ?? []
 
   // Count stats
-  const activeCount = userSetTypes?.filter((ust) => ust.isActive).length ?? 0;
-  const totalCount = userSetTypes?.length ?? 0;
+  const activeCount = userSetTypes?.filter((ust) => ust.isActive).length ?? 0
+  const totalCount = userSetTypes?.length ?? 0
 
   const handleRefresh = () => {
-    refetch();
-  };
+    refetch()
+  }
 
   const openAddModal = () => {
-    setModalMode('add');
-    setEditingId(null);
-    setFormData(DEFAULT_FORM_DATA);
-    setFormError(null);
-    setShowModal(true);
-  };
+    setModalMode('add')
+    setEditingId(null)
+    setFormData(DEFAULT_FORM_DATA)
+    setFormError(null)
+    setShowModal(true)
+  }
 
-  const openEditModal = (userSetType: typeof displayedTypes[0]) => {
-    setModalMode('edit');
-    setEditingId(userSetType.id);
+  const openEditModal = (userSetType: (typeof displayedTypes)[0]) => {
+    setModalMode('edit')
+    setEditingId(userSetType.id)
     setFormData({
       name: userSetType.name,
       slug: userSetType.slug,
@@ -105,24 +98,24 @@ function AdminUserSetTypes() {
       contractorLabelSingular: userSetType.contractorLabelSingular,
       contractorLabelPlural: userSetType.contractorLabelPlural,
       description: userSetType.description ?? '',
-    });
-    setFormError(null);
-    setShowModal(true);
-  };
+    })
+    setFormError(null)
+    setShowModal(true)
+  }
 
   const closeModal = () => {
-    setShowModal(false);
-    setEditingId(null);
-    setFormError(null);
-  };
+    setShowModal(false)
+    setEditingId(null)
+    setFormError(null)
+  }
 
   // Generate slug from name
   const generateSlug = (name: string): string => {
     return name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-  };
+      .replace(/^-+|-+$/g, '')
+  }
 
   const handleNameChange = (name: string) => {
     setFormData((prev) => ({
@@ -130,14 +123,14 @@ function AdminUserSetTypes() {
       name,
       // Auto-generate slug when adding new type
       ...(modalMode === 'add' ? { slug: generateSlug(name) } : {}),
-    }));
-  };
+    }))
+  }
 
   const handleSubmit = async (e?: React.FormEvent | any) => {
-    e?.preventDefault?.();
+    e?.preventDefault?.()
 
-    setIsSubmitting(true);
-    setFormError(null);
+    setIsSubmitting(true)
+    setFormError(null)
 
     try {
       if (modalMode === 'add') {
@@ -149,7 +142,7 @@ function AdminUserSetTypes() {
           contractorLabelSingular: formData.contractorLabelSingular,
           contractorLabelPlural: formData.contractorLabelPlural,
           description: formData.description || undefined,
-        });
+        })
       } else if (editingId) {
         await updateMutation.mutateAsync({
           id: editingId,
@@ -159,54 +152,74 @@ function AdminUserSetTypes() {
           contractorLabelSingular: formData.contractorLabelSingular,
           contractorLabelPlural: formData.contractorLabelPlural,
           description: formData.description || undefined,
-        });
+        })
       }
 
-      closeModal();
-      refetch();
+      closeModal()
+      refetch()
     } catch (err) {
-      console.error('Failed to save user set type:', err);
-      setFormError(err instanceof Error ? err.message : 'Failed to save');
+      console.error('Failed to save user set type:', err)
+      setFormError(err instanceof Error ? err.message : 'Failed to save')
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   const handleToggleActive = async (id: string, currentlyActive: boolean) => {
-    const action = currentlyActive ? 'deactivate' : 'activate';
-    if (!window.confirm(`Are you sure you want to ${action} this user set type?`)) return;
+    const action = currentlyActive ? 'deactivate' : 'activate'
+    if (!window.confirm(`Are you sure you want to ${action} this user set type?`)) return
 
-    setActionInProgress(id);
+    setActionInProgress(id)
     try {
       await toggleActiveMutation.mutateAsync({
         id,
         isActive: !currentlyActive,
-      });
-      refetch();
+      })
+      refetch()
     } catch (err) {
-      console.error('Failed to toggle active status:', err);
-      alert(err instanceof Error ? err.message : 'Failed to update');
+      console.error('Failed to toggle active status:', err)
+      alert(err instanceof Error ? err.message : 'Failed to update')
     } finally {
-      setActionInProgress(null);
+      setActionInProgress(null)
     }
-  };
+  }
 
   if (isLoading) {
     return (
-      <Stack style={{ alignItems: 'center', justifyContent: 'center', paddingTop: 'var(--space-6)', paddingBottom: 'var(--space-6)' }}>
+      <Stack
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingTop: 'var(--space-6)',
+          paddingBottom: 'var(--space-6)',
+        }}
+      >
         <Spinner size="large" />
         <Text style={{ marginLeft: 'var(--space-2)' }}>Loading user set types...</Text>
       </Stack>
-    );
+    )
   }
 
   return (
     <Stack>
-      <Row style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-6)' }}>
+      <Row
+        style={{
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: 'var(--space-6)',
+        }}
+      >
         <Stack>
           <H1 style={{ fontSize: 'var(--font-size-8)', fontWeight: 'bold' }}>Industry Verticals</H1>
-          <Text style={{ color: 'var(--color-gray-11)', fontSize: 'var(--font-size-3)', marginTop: 'var(--space-1)' }}>
-            Manage user set types for different industry verticals (Construction, Property Management, etc.)
+          <Text
+            style={{
+              color: 'var(--color-gray-11)',
+              fontSize: 'var(--font-size-3)',
+              marginTop: 'var(--space-1)',
+            }}
+          >
+            Manage user set types for different industry verticals (Construction, Property
+            Management, etc.)
           </Text>
         </Stack>
         <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
@@ -228,18 +241,23 @@ function AdminUserSetTypes() {
           >
             {isLoading ? 'Loading...' : 'Refresh'}
           </Button>
-          <Button
-            color="primary"
-            iconStart={PlusCircle}
-            onPress={openAddModal}
-          >
+          <Button color="primary" iconStart={PlusCircle} onPress={openAddModal}>
             Add Industry
           </Button>
         </Row>
       </Row>
 
       {error && (
-        <Stack style={{ padding: 'var(--space-4)', marginBottom: 'var(--space-4)', backgroundColor: 'var(--color-red-2)', borderWidth: 1, borderColor: 'var(--color-red-6)', borderRadius: 'var(--radius-4)' }}>
+        <Stack
+          style={{
+            padding: 'var(--space-4)',
+            marginBottom: 'var(--space-4)',
+            backgroundColor: 'var(--color-red-2)',
+            borderWidth: 1,
+            borderColor: 'var(--color-red-6)',
+            borderRadius: 'var(--radius-4)',
+          }}
+        >
           <Text style={{ color: 'var(--color-red-10)' }}>Error: {error.message}</Text>
         </Stack>
       )}
@@ -248,33 +266,61 @@ function AdminUserSetTypes() {
       <Row style={{ gap: 'var(--space-4)', marginBottom: 'var(--space-6)', flexWrap: 'wrap' }}>
         <Card style={{ flex: 1, minWidth: 200, padding: 'var(--space-4)' }}>
           <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
-            <Stack style={{ padding: 'var(--space-2)', backgroundColor: 'var(--color-blue-3)', borderRadius: 'var(--radius-4)' }}>
+            <Stack
+              style={{
+                padding: 'var(--space-2)',
+                backgroundColor: 'var(--color-blue-3)',
+                borderRadius: 'var(--radius-4)',
+              }}
+            >
               <Building2 size={20} color="var(--color-blue-9)" />
             </Stack>
             <Stack>
-              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)' }}>Total Industries</Text>
-              <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 'bold' }}>{totalCount}</Text>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)' }}>
+                Total Industries
+              </Text>
+              <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 'bold' }}>
+                {totalCount}
+              </Text>
             </Stack>
           </Row>
         </Card>
         <Card style={{ flex: 1, minWidth: 200, padding: 'var(--space-4)' }}>
           <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
-            <Stack style={{ padding: 'var(--space-2)', backgroundColor: 'var(--color-green-3)', borderRadius: 'var(--radius-4)' }}>
+            <Stack
+              style={{
+                padding: 'var(--space-2)',
+                backgroundColor: 'var(--color-green-3)',
+                borderRadius: 'var(--radius-4)',
+              }}
+            >
               <Check size={20} color="var(--color-green-9)" />
             </Stack>
             <Stack>
-              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)' }}>Active</Text>
-              <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 'bold' }}>{activeCount}</Text>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)' }}>
+                Active
+              </Text>
+              <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 'bold' }}>
+                {activeCount}
+              </Text>
             </Stack>
           </Row>
         </Card>
         <Card style={{ flex: 1, minWidth: 200, padding: 'var(--space-4)' }}>
           <Row style={{ alignItems: 'center', gap: 'var(--space-3)' }}>
-            <Stack style={{ padding: 'var(--space-2)', backgroundColor: 'var(--color-gray-3)', borderRadius: 'var(--radius-4)' }}>
+            <Stack
+              style={{
+                padding: 'var(--space-2)',
+                backgroundColor: 'var(--color-gray-3)',
+                borderRadius: 'var(--radius-4)',
+              }}
+            >
               <Users size={20} color="var(--color-gray-11)" />
             </Stack>
             <Stack>
-              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)' }}>Users Assigned</Text>
+              <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)' }}>
+                Users Assigned
+              </Text>
               <Text style={{ fontSize: 'var(--font-size-8)', fontWeight: 'bold' }}>
                 {userSetTypes?.reduce((sum, ust) => sum + (ust.userCount ?? 0), 0) ?? 0}
               </Text>
@@ -288,18 +334,33 @@ function AdminUserSetTypes() {
         {displayedTypes.length === 0 ? (
           <EmptyState
             icon={Building2}
-            title={showInactive ? "No inactive industries found" : "No industry verticals yet"}
-            description={showInactive
-              ? "All industry verticals are currently active. Deactivate one to see it here."
-              : "Create your first industry vertical to customize terminology and user roles for different business types."}
-            action={!showInactive ? {
-              label: "Create Industry",
-              onClick: openAddModal,
-            } : undefined}
+            title={showInactive ? 'No inactive industries found' : 'No industry verticals yet'}
+            description={
+              showInactive
+                ? 'All industry verticals are currently active. Deactivate one to see it here.'
+                : 'Create your first industry vertical to customize terminology and user roles for different business types.'
+            }
+            action={
+              !showInactive
+                ? {
+                    label: 'Create Industry',
+                    onClick: openAddModal,
+                  }
+                : undefined
+            }
           />
         ) : (
           <Stack>
-            <Row style={{ borderBottomWidth: 1, borderColor: 'var(--color-border)', paddingTop: 'var(--space-2)', paddingBottom: 'var(--space-2)', paddingLeft: 'var(--space-4)', paddingRight: 'var(--space-4)' }}>
+            <Row
+              style={{
+                borderBottomWidth: 1,
+                borderColor: 'var(--color-border)',
+                paddingTop: 'var(--space-2)',
+                paddingBottom: 'var(--space-2)',
+                paddingLeft: 'var(--space-4)',
+                paddingRight: 'var(--space-4)',
+              }}
+            >
               <Text style={{ flex: 2, fontWeight: 600 }}>Industry</Text>
               <Text style={{ flex: 1, fontWeight: 600 }}>Slug</Text>
               <Text style={{ flex: 1, fontWeight: 600 }}>Manager Label</Text>
@@ -319,25 +380,46 @@ function AdminUserSetTypes() {
                   paddingLeft: 'var(--space-4)',
                   paddingRight: 'var(--space-4)',
                   opacity: !ust.isActive ? 0.6 : 1,
-                  backgroundColor: !ust.isActive ? 'var(--color-gray-2)' : 'transparent'
+                  backgroundColor: !ust.isActive ? 'var(--color-gray-2)' : 'transparent',
                 }}
               >
                 <Stack style={{ flex: 2 }}>
                   <Text style={{ fontWeight: 500 }}>{ust.name}</Text>
                   {ust.description && (
-                    <Text style={{ fontSize: 'var(--font-size-1)', color: 'var(--color-gray-11)', marginTop: 'var(--space-1)' }}>{ust.description}</Text>
+                    <Text
+                      style={{
+                        fontSize: 'var(--font-size-1)',
+                        color: 'var(--color-gray-11)',
+                        marginTop: 'var(--space-1)',
+                      }}
+                    >
+                      {ust.description}
+                    </Text>
                   )}
                 </Stack>
-                <Text style={{ flex: 1, fontFamily: 'monospace', fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)' }}>
+                <Text
+                  style={{
+                    flex: 1,
+                    fontFamily: 'monospace',
+                    fontSize: 'var(--font-size-3)',
+                    color: 'var(--color-gray-11)',
+                  }}
+                >
                   {ust.slug}
                 </Text>
                 <Stack style={{ flex: 1 }}>
                   <Text style={{ fontSize: 'var(--font-size-3)' }}>{ust.managerLabelSingular}</Text>
-                  <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)' }}>({ust.managerLabelPlural})</Text>
+                  <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)' }}>
+                    ({ust.managerLabelPlural})
+                  </Text>
                 </Stack>
                 <Stack style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 'var(--font-size-3)' }}>{ust.contractorLabelSingular}</Text>
-                  <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)' }}>({ust.contractorLabelPlural})</Text>
+                  <Text style={{ fontSize: 'var(--font-size-3)' }}>
+                    {ust.contractorLabelSingular}
+                  </Text>
+                  <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)' }}>
+                    ({ust.contractorLabelPlural})
+                  </Text>
                 </Stack>
                 <Row style={{ flex: 0.5, justifyContent: 'center' }}>
                   <Text
@@ -348,7 +430,7 @@ function AdminUserSetTypes() {
                       paddingBottom: 'var(--space-1)',
                       backgroundColor: 'var(--color-gray-3)',
                       borderRadius: 'var(--radius-2)',
-                      fontSize: 'var(--font-size-3)'
+                      fontSize: 'var(--font-size-3)',
                     }}
                   >
                     {ust.userCount ?? 0}
@@ -363,8 +445,10 @@ function AdminUserSetTypes() {
                       paddingBottom: 'var(--space-1)',
                       borderRadius: 'var(--radius-2)',
                       fontSize: 'var(--font-size-1)',
-                      backgroundColor: ust.isActive ? 'var(--color-green-3)' : 'var(--color-gray-3)',
-                      color: ust.isActive ? 'var(--color-green-10)' : 'var(--color-gray-11)'
+                      backgroundColor: ust.isActive
+                        ? 'var(--color-green-3)'
+                        : 'var(--color-gray-3)',
+                      color: ust.isActive ? 'var(--color-green-10)' : 'var(--color-gray-11)',
                     }}
                   >
                     {ust.isActive ? 'Active' : 'Inactive'}
@@ -388,7 +472,10 @@ function AdminUserSetTypes() {
                       size="sm"
                       iconStart={actionInProgress === ust.id ? undefined : Trash2}
                       iconOnly
-                      style={{ opacity: actionInProgress === ust.id || (ust.userCount ?? 0) > 0 ? 0.5 : 1, color: 'var(--color-red-9)' }}
+                      style={{
+                        opacity: actionInProgress === ust.id || (ust.userCount ?? 0) > 0 ? 0.5 : 1,
+                        color: 'var(--color-red-9)',
+                      }}
                     />
                   ) : (
                     <Button
@@ -398,7 +485,10 @@ function AdminUserSetTypes() {
                       size="sm"
                       iconStart={actionInProgress === ust.id ? undefined : RotateCcw}
                       iconOnly
-                      style={{ opacity: actionInProgress === ust.id ? 0.5 : 1, color: 'var(--color-green-9)' }}
+                      style={{
+                        opacity: actionInProgress === ust.id ? 0.5 : 1,
+                        color: 'var(--color-green-9)',
+                      }}
                     />
                   )}
                 </Row>
@@ -420,7 +510,7 @@ function AdminUserSetTypes() {
             backgroundColor: 'rgba(0,0,0,0.5)',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 50
+            zIndex: 50,
           }}
         >
           <Card
@@ -432,7 +522,7 @@ function AdminUserSetTypes() {
               marginLeft: 'var(--space-4)',
               marginRight: 'var(--space-4)',
               maxHeight: '90vh',
-              overflow: 'auto'
+              overflow: 'auto',
             }}
           >
             <Row
@@ -444,7 +534,7 @@ function AdminUserSetTypes() {
                 borderColor: 'var(--color-border)',
                 position: 'sticky',
                 top: 0,
-                backgroundColor: 'white'
+                backgroundColor: 'white',
               }}
             >
               <H3 style={{ fontSize: 'var(--font-size-5)', fontWeight: 600 }}>
@@ -472,29 +562,51 @@ function AdminUserSetTypes() {
                     color: 'var(--color-red-10)',
                     fontSize: 'var(--font-size-3)',
                     alignItems: 'flex-start',
-                    gap: 'var(--space-2)'
+                    gap: 'var(--space-2)',
                   }}
                 >
                   <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: 2 }} />
-                  <Text style={{ color: 'var(--color-red-10)', fontSize: 'var(--font-size-3)' }}>{formError}</Text>
+                  <Text style={{ color: 'var(--color-red-10)', fontSize: 'var(--font-size-3)' }}>
+                    {formError}
+                  </Text>
                 </Row>
               )}
 
               <Stack style={{ gap: 'var(--space-4)' }}>
                 <Stack>
-                  <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-gray-12)', marginBottom: 'var(--space-1)' }}>
+                  <Text
+                    style={{
+                      fontSize: 'var(--font-size-3)',
+                      fontWeight: 500,
+                      color: 'var(--color-gray-12)',
+                      marginBottom: 'var(--space-1)',
+                    }}
+                  >
                     Industry Name *
                   </Text>
                   <Input
                     value={formData.name}
                     onChange={(e) => handleNameChange(e.target.value)}
                     placeholder="e.g., Construction, Property Management"
-                    style={{ borderWidth: 1, borderColor: 'var(--color-border)', borderRadius: 'var(--radius-2)', padding: 'var(--space-2)', width: '100%' }}
+                    style={{
+                      borderWidth: 1,
+                      borderColor: 'var(--color-border)',
+                      borderRadius: 'var(--radius-2)',
+                      padding: 'var(--space-2)',
+                      width: '100%',
+                    }}
                   />
                 </Stack>
 
                 <Stack>
-                  <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-gray-12)', marginBottom: 'var(--space-1)' }}>
+                  <Text
+                    style={{
+                      fontSize: 'var(--font-size-3)',
+                      fontWeight: 500,
+                      color: 'var(--color-gray-12)',
+                      marginBottom: 'var(--space-1)',
+                    }}
+                  >
                     Slug *
                   </Text>
                   <Input
@@ -509,105 +621,227 @@ function AdminUserSetTypes() {
                       padding: 'var(--space-2)',
                       width: '100%',
                       fontFamily: 'monospace',
-                      backgroundColor: modalMode === 'edit' ? 'var(--color-gray-3)' : 'white'
+                      backgroundColor: modalMode === 'edit' ? 'var(--color-gray-3)' : 'white',
                     }}
                   />
                   {modalMode === 'edit' && (
-                    <Text style={{ marginTop: 'var(--space-1)', fontSize: 'var(--font-size-1)', color: 'var(--color-gray-11)' }}>
+                    <Text
+                      style={{
+                        marginTop: 'var(--space-1)',
+                        fontSize: 'var(--font-size-1)',
+                        color: 'var(--color-gray-11)',
+                      }}
+                    >
                       Slug cannot be changed after creation
                     </Text>
                   )}
                 </Stack>
               </Stack>
 
-              <Stack style={{ borderTopWidth: 1, borderColor: 'var(--color-border)', paddingTop: 'var(--space-4)' }}>
-                <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-gray-12)', marginBottom: 'var(--space-3)' }}>
+              <Stack
+                style={{
+                  borderTopWidth: 1,
+                  borderColor: 'var(--color-border)',
+                  paddingTop: 'var(--space-4)',
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 'var(--font-size-3)',
+                    fontWeight: 500,
+                    color: 'var(--color-gray-12)',
+                    marginBottom: 'var(--space-3)',
+                  }}
+                >
                   Manager Role Labels
                 </Text>
                 <Row style={{ gap: 'var(--space-4)' }}>
                   <Stack style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)', marginBottom: 'var(--space-1)' }}>
+                    <Text
+                      style={{
+                        fontSize: 'var(--font-size-3)',
+                        color: 'var(--color-gray-11)',
+                        marginBottom: 'var(--space-1)',
+                      }}
+                    >
                       Singular *
                     </Text>
                     <Input
                       value={formData.managerLabelSingular}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, managerLabelSingular: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({ ...prev, managerLabelSingular: e.target.value }))
+                      }
                       placeholder="e.g., General Contractor"
-                      style={{ borderWidth: 1, borderColor: 'var(--color-border)', borderRadius: 'var(--radius-2)', padding: 'var(--space-2)', width: '100%' }}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: 'var(--color-border)',
+                        borderRadius: 'var(--radius-2)',
+                        padding: 'var(--space-2)',
+                        width: '100%',
+                      }}
                     />
                   </Stack>
                   <Stack style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)', marginBottom: 'var(--space-1)' }}>
+                    <Text
+                      style={{
+                        fontSize: 'var(--font-size-3)',
+                        color: 'var(--color-gray-11)',
+                        marginBottom: 'var(--space-1)',
+                      }}
+                    >
                       Plural *
                     </Text>
                     <Input
                       value={formData.managerLabelPlural}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, managerLabelPlural: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({ ...prev, managerLabelPlural: e.target.value }))
+                      }
                       placeholder="e.g., General Contractors"
-                      style={{ borderWidth: 1, borderColor: 'var(--color-border)', borderRadius: 'var(--radius-2)', padding: 'var(--space-2)', width: '100%' }}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: 'var(--color-border)',
+                        borderRadius: 'var(--radius-2)',
+                        padding: 'var(--space-2)',
+                        width: '100%',
+                      }}
                     />
                   </Stack>
                 </Row>
               </Stack>
 
-              <Stack style={{ borderTopWidth: 1, borderColor: 'var(--color-border)', paddingTop: 'var(--space-4)' }}>
-                <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-gray-12)', marginBottom: 'var(--space-3)' }}>
+              <Stack
+                style={{
+                  borderTopWidth: 1,
+                  borderColor: 'var(--color-border)',
+                  paddingTop: 'var(--space-4)',
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 'var(--font-size-3)',
+                    fontWeight: 500,
+                    color: 'var(--color-gray-12)',
+                    marginBottom: 'var(--space-3)',
+                  }}
+                >
                   Contractor Role Labels
                 </Text>
                 <Row style={{ gap: 'var(--space-4)' }}>
                   <Stack style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)', marginBottom: 'var(--space-1)' }}>
+                    <Text
+                      style={{
+                        fontSize: 'var(--font-size-3)',
+                        color: 'var(--color-gray-11)',
+                        marginBottom: 'var(--space-1)',
+                      }}
+                    >
                       Singular *
                     </Text>
                     <Input
                       value={formData.contractorLabelSingular}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, contractorLabelSingular: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          contractorLabelSingular: e.target.value,
+                        }))
+                      }
                       placeholder="e.g., Subcontractor"
-                      style={{ borderWidth: 1, borderColor: 'var(--color-border)', borderRadius: 'var(--radius-2)', padding: 'var(--space-2)', width: '100%' }}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: 'var(--color-border)',
+                        borderRadius: 'var(--radius-2)',
+                        padding: 'var(--space-2)',
+                        width: '100%',
+                      }}
                     />
                   </Stack>
                   <Stack style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 'var(--font-size-3)', color: 'var(--color-gray-11)', marginBottom: 'var(--space-1)' }}>
+                    <Text
+                      style={{
+                        fontSize: 'var(--font-size-3)',
+                        color: 'var(--color-gray-11)',
+                        marginBottom: 'var(--space-1)',
+                      }}
+                    >
                       Plural *
                     </Text>
                     <Input
                       value={formData.contractorLabelPlural}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, contractorLabelPlural: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({ ...prev, contractorLabelPlural: e.target.value }))
+                      }
                       placeholder="e.g., Subcontractors"
-                      style={{ borderWidth: 1, borderColor: 'var(--color-border)', borderRadius: 'var(--radius-2)', padding: 'var(--space-2)', width: '100%' }}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: 'var(--color-border)',
+                        borderRadius: 'var(--radius-2)',
+                        padding: 'var(--space-2)',
+                        width: '100%',
+                      }}
                     />
                   </Stack>
                 </Row>
               </Stack>
 
-              <Stack style={{ borderTopWidth: 1, borderColor: 'var(--color-border)', paddingTop: 'var(--space-4)' }}>
-                <Text style={{ fontSize: 'var(--font-size-3)', fontWeight: 500, color: 'var(--color-gray-12)', marginBottom: 'var(--space-1)' }}>
+              <Stack
+                style={{
+                  borderTopWidth: 1,
+                  borderColor: 'var(--color-border)',
+                  paddingTop: 'var(--space-4)',
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 'var(--font-size-3)',
+                    fontWeight: 500,
+                    color: 'var(--color-gray-12)',
+                    marginBottom: 'var(--space-1)',
+                  }}
+                >
                   Description (optional)
                 </Text>
                 <TextArea
                   value={formData.description}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, description: e.target.value }))
+                  }
                   placeholder="Brief description of this industry vertical"
-                  style={{ borderWidth: 1, borderColor: 'var(--color-border)', borderRadius: 'var(--radius-2)', padding: 'var(--space-2)', width: '100%', minHeight: 60 }}
+                  style={{
+                    borderWidth: 1,
+                    borderColor: 'var(--color-border)',
+                    borderRadius: 'var(--radius-2)',
+                    padding: 'var(--space-2)',
+                    width: '100%',
+                    minHeight: 60,
+                  }}
                 />
               </Stack>
 
-              <Row style={{ justifyContent: 'flex-end', gap: 'var(--space-3)', paddingTop: 'var(--space-4)', borderTopWidth: 1, borderColor: 'var(--color-border)' }}>
-                <Button
-                  onPress={closeModal}
-                  variant="outline"
-                >
+              <Row
+                style={{
+                  justifyContent: 'flex-end',
+                  gap: 'var(--space-3)',
+                  paddingTop: 'var(--space-4)',
+                  borderTopWidth: 1,
+                  borderColor: 'var(--color-border)',
+                }}
+              >
+                <Button onPress={closeModal} variant="outline">
                   Cancel
                 </Button>
                 <Button
                   onPress={(e) => {
-                    e?.preventDefault?.();
-                    handleSubmit(e as unknown as React.FormEvent);
+                    e?.preventDefault?.()
+                    handleSubmit(e as unknown as React.FormEvent)
                   }}
                   disabled={isSubmitting}
                   color="primary"
                 >
-                  {isSubmitting ? 'Saving...' : (modalMode === 'add' ? 'Create Industry' : 'Save Changes')}
+                  {isSubmitting
+                    ? 'Saving...'
+                    : modalMode === 'add'
+                      ? 'Create Industry'
+                      : 'Save Changes'}
                 </Button>
               </Row>
             </Stack>
@@ -615,7 +849,7 @@ function AdminUserSetTypes() {
         </Stack>
       )}
     </Stack>
-  );
+  )
 }
 
-export default AdminUserSetTypes;
+export default AdminUserSetTypes

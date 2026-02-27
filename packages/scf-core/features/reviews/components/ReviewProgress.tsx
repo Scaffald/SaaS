@@ -1,5 +1,5 @@
-import { Check } from '@tamagui/lucide-icons'
-import { Circle, Text, XStack, YStack } from '@unicornlove/ui'
+import { Check } from 'lucide-react-native'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 interface ReviewProgressProps {
   currentStep: number
@@ -8,57 +8,53 @@ interface ReviewProgressProps {
 
 export function ReviewProgress({ currentStep, totalSteps }: ReviewProgressProps) {
   return (
-    <YStack gap="$3">
+    <Stack gap={12}>
       {/* Step Counter */}
-      <XStack justifyContent="center">
-        <Text fontSize="$5" fontWeight="600" color="$color11">
+      <Row justify="center">
+        <Text style={{ color: '#414e62' }}>
           Step {currentStep} of {totalSteps}
         </Text>
-      </XStack>
+      </Row>
 
       {/* Progress Dots */}
-      <XStack gap="$2" justifyContent="center" alignItems="center">
+      <Row gap={8} justify="center" align="center">
         {Array.from({ length: totalSteps }).map((_, index) => {
           const stepNumber = index + 1
           const isCompleted = stepNumber < currentStep
           const isCurrent = stepNumber === currentStep
 
           return (
-            <XStack key={stepNumber} alignItems="center" gap="$2">
-              <Circle
-                size={32}
-                backgroundColor={isCompleted ? '$green10' : isCurrent ? '$blue10' : '$color5'}
-                alignItems="center"
-                justifyContent="center"
+            <Row key={stepNumber} align="center" gap={8}>
+              <Stack
+                width={32}
+                height={32}
+                borderRadius={16}
+                backgroundColor={isCompleted ? '#16a34a' : isCurrent ? '#2563eb' : '#6b7280'}
+                align="center"
+                justify="center"
               >
                 {isCompleted ? (
                   <Check size={16} color="white" />
                 ) : (
-                  <Text fontSize="$3" fontWeight="700" color={isCurrent ? 'white' : '$color11'}>
-                    {stepNumber}
-                  </Text>
+                  <Text style={{ color: isCurrent ? 'white' : '#414e62' }}>{stepNumber}</Text>
                 )}
-              </Circle>
+              </Stack>
               {index < totalSteps - 1 && (
-                <XStack
-                  width={24}
-                  height={2}
-                  backgroundColor={isCompleted ? '$green10' : '$color5'}
-                />
+                <Row width={24} height={2} backgroundColor={isCompleted ? '#16a34a' : '#6b7280'} />
               )}
-            </XStack>
+            </Row>
           )
         })}
-      </XStack>
+      </Row>
 
       {/* Progress Bar */}
-      <YStack width="100%" height={6} backgroundColor="$color3" borderRadius="$2" overflow="hidden">
-        <XStack
+      <Stack width="100%" height={6} backgroundColor="#e5e7eb" borderRadius={8} style={{ overflow: 'hidden' }}>
+        <Row
           width={`${(currentStep / totalSteps) * 100}%`}
           height="100%"
-          backgroundColor="$blue10"
+          backgroundColor="#2563eb"
         />
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

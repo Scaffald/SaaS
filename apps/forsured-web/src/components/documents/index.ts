@@ -1,7 +1,7 @@
 /**
  * Document Components Exports
- * REQ-167: Document verification components
- * REQ-284: Document Organization by Client/Project/GC
+ * Document verification components
+ * Document Organization by Client/Project/GC
  */
 
 export { DocumentMetadataEditor } from './DocumentMetadataEditor';

@@ -10,7 +10,7 @@ import {
   CheckCircle,
   FileText,
 } from 'lucide-react';
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card } from '@scaffald/ui';
 import { useBrokerAcknowledgements } from '../../hooks/useBrokerAcknowledgements';
 import Button from '../Common/Button';
 import StatusBadge from '../Common/StatusBadge';

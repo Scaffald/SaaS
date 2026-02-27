@@ -1,15 +1,15 @@
 /**
  * tRPC Client Configuration
- * REQ-286: tRPC Client Setup
+ * tRPC client setup
  *
  * Provides type-safe API client for React frontend.
  * Integrates with React Query for data fetching, caching, and state management.
  */
 
-import { createTRPCReact } from '@trpc/react-query';
-import { httpBatchLink } from '@trpc/client';
-import type { AppRouter } from '../server/api/root';
-import superjson from 'superjson';
+import { createTRPCReact } from "@trpc/react-query";
+import { httpBatchLink } from "@trpc/client";
+import type { AppRouter } from "../server/api/root";
+import superjson from "superjson";
 
 /**
  * tRPC React hooks
@@ -32,8 +32,8 @@ export const trpc = createTRPCReact<AppRouter>();
  */
 function getBaseUrl() {
   // Browser should use relative path
-  if (typeof window !== 'undefined') {
-    return '';
+  if (typeof window !== "undefined") {
+    return "";
   }
 
   // SSR should use absolute URL
@@ -42,7 +42,7 @@ function getBaseUrl() {
   }
 
   // Development default
-  return 'http://localhost:5173';
+  return "http://localhost:5173";
 }
 
 /**
@@ -66,21 +66,21 @@ export function createTRPCClient() {
         // Add authentication headers
         async headers() {
           const headers: Record<string, string> = {
-            'content-type': 'application/json',
+            "content-type": "application/json",
           };
 
           // Get Supabase session token if available
-          if (typeof window !== 'undefined') {
+          if (typeof window !== "undefined") {
             try {
               // Import dynamically to avoid SSR issues
-              const { supabase } = await import('./supabase');
+              const { supabase } = await import("./supabase");
               const { data: { session } } = await supabase.auth.getSession();
 
               if (session?.access_token) {
                 headers.authorization = `Bearer ${session.access_token}`;
               }
             } catch (error) {
-              console.error('Error getting auth headers:', error);
+              console.error("Error getting auth headers:", error);
             }
           }
 

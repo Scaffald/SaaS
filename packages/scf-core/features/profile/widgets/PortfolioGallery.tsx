@@ -1,19 +1,12 @@
-import { api } from '@scf/core/utils/api'
-import { getStorageUrl } from '@scf/core/utils/supabase/storage'
-import { DashboardWidget, ResponsiveModal } from '@unicornlove/ui'
-import { Eye } from '@tamagui/lucide-icons'
-import { useState } from 'react'
-import { Card, H4, Image, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-import type { ProfileWidgetProps } from './types'
-
-interface PortfolioItem {
-  id: string
-  title: string
-  description: unknown | null
-  image_url: string | null
-  file_path: string | null
-  display_order: number
-}
+import { usePortfolioItems } from "@scf/core/utils/portfolio-sdk-hooks";
+import { getStorageUrl } from "@scf/core/utils/supabase/storage";
+import { DashboardWidget, ResponsiveModal } from "@scaffald/ui";
+import { Eye } from "lucide-react-native";
+import { useState } from "react";
+import { Image } from "react-native";
+import { Card, H4, Spinner, Text, Row, Stack } from "@scaffald/ui";
+import type { PortfolioItem } from "@scaffald/sdk";
+import type { ProfileWidgetProps } from "./types";
 
 /**
  * PortfolioGallery Component
@@ -25,95 +18,96 @@ interface PortfolioItem {
  * @param showEdit - Whether to show edit actions (always false for gallery)
  * @param variant - Display variant (compact or full)
  */
-export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProps) {
-  const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null)
-  const [lightboxOpen, setLightboxOpen] = useState(false)
+export function PortfolioGallery({
+  userId,
+  variant = "full",
+}: ProfileWidgetProps) {
+  const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   // Fetch portfolio items
-  const { data: portfolioItems = [], isLoading } = api.portfolio.list.useQuery(
+  const { data: portfolioItems = [], isLoading } = usePortfolioItems(
     userId ? { userId } : undefined,
     { enabled: !!userId }
-  )
+  );
 
   const handleItemClick = (item: PortfolioItem) => {
-    setSelectedItem(item)
-    setLightboxOpen(true)
-  }
+    setSelectedItem(item);
+    setLightboxOpen(true);
+  };
 
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingVertical="$8">
-          <Spinner size="large" />
-          <Text color="$color11">Loading portfolio...</Text>
-        </YStack>
+        <Stack gap={16} align="center" paddingVertical={32}>
+          <Spinner size="lg" />
+          <Text style={{ color: "#414e62" }}>Loading portfolio...</Text>
+        </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
   if (portfolioItems.length === 0) {
-    return null // Don't show widget if no portfolio items
+    return null; // Don't show widget if no portfolio items
   }
 
   return (
     <>
       <DashboardWidget>
-        <YStack gap="$4">
+        <Stack gap={16}>
           <H4>Portfolio</H4>
 
           {/* Grid Layout */}
-          <YStack gap="$3">
-            {portfolioItems.map((item: PortfolioItem) => {
+          <Stack gap={12}>
+            {portfolioItems.map((item) => {
               const imageUrl = item.file_path
-                ? getStorageUrl('portfolio', item.file_path)
-                : item.image_url
+                ? getStorageUrl("portfolio", item.file_path)
+                : item.image_url;
 
               return (
                 <Card
                   key={item.id}
-                  bordered
-                  elevate
-                  pressStyle={{ scale: 0.98 }}
-                  cursor="pointer"
+                  variant="outlined"
+                  pressable
                   onPress={() => handleItemClick(item)}
                 >
-                  <YStack gap="$3">
+                  <Stack gap={12}>
                     {imageUrl && (
                       <Image
                         source={{ uri: imageUrl }}
-                        width="100%"
-                        height={variant === 'compact' ? 150 : 200}
-                        objectFit="cover"
-                        borderRadius="$3"
+                        style={{
+                          width: "100%",
+                          height: variant === "compact" ? 150 : 200,
+                          borderRadius: 12,
+                        }}
+                        resizeMode="cover"
                       />
                     )}
-                    <YStack gap="$2" padding="$3">
-                      <Text fontSize="$4" fontWeight="600" numberOfLines={2}>
-                        {item.title}
-                      </Text>
-                      {item.description && variant === 'full' && (
-                        <Text fontSize="$3" color="$color11" numberOfLines={3}>
+                    <Stack gap={8} padding="sm">
+                      <Text>{item.title}</Text>
+                      {Boolean(item.description) && variant === "full" && (
+                        <Text style={{ color: "#414e62" }}>
                           {/* Render rich text description - simplified for now */}
-                          {typeof item.description === 'string'
+                          {typeof item.description === "string"
                             ? item.description
-                            : 'Rich text description'}
+                            : "Rich text description"}
                         </Text>
                       )}
                       {imageUrl && (
-                        <XStack gap="$2" alignItems="center" marginTop="$2">
-                          <Eye size={14} color="$color10" />
-                          <Text fontSize="$2" color="$color10">
+                        <Row gap={8} align="center" style={{ marginTop: 8 }}>
+                          <Eye size={16} color="#414e62" />
+                          <Text style={{ color: "#414e62" }}>
                             Click to view
                           </Text>
-                        </XStack>
+                        </Row>
                       )}
-                    </YStack>
-                  </YStack>
+                    </Stack>
+                  </Stack>
                 </Card>
-              )
+              );
             })}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       </DashboardWidget>
 
       {/* Lightbox Modal */}
@@ -122,43 +116,39 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
           open={lightboxOpen}
           onOpenChange={setLightboxOpen}
           title={selectedItem.title}
-          size="large"
+          size="lg"
         >
-          <YStack gap="$4">
+          <Stack gap={16}>
             {(() => {
               const imageUrl = selectedItem.file_path
-                ? getStorageUrl('portfolio', selectedItem.file_path)
-                : selectedItem.image_url
+                ? getStorageUrl("portfolio", selectedItem.file_path)
+                : selectedItem.image_url;
 
               return (
                 <>
                   {imageUrl && (
                     <Image
                       source={{ uri: imageUrl }}
-                      width="100%"
-                      height={400}
-                      objectFit="contain"
-                      borderRadius="$3"
+                      style={{ width: "100%", height: 400, borderRadius: 12 }}
+                      resizeMode="contain"
                     />
                   )}
                   {selectedItem.description && (
-                    <YStack gap="$2">
-                      <Text fontSize="$3" fontWeight="600">
-                        Description
-                      </Text>
-                      <Text fontSize="$3" color="$color11" lineHeight="$4">
-                        {typeof selectedItem.description === 'string'
+                    <Stack gap={8}>
+                      <Text>Description</Text>
+                      <Text style={{ color: "#414e62", lineHeight: 16 }}>
+                        {typeof selectedItem.description === "string"
                           ? selectedItem.description
-                          : 'Rich text description'}
+                          : "Rich text description"}
                       </Text>
-                    </YStack>
+                    </Stack>
                   )}
                 </>
-              )
+              );
             })()}
-          </YStack>
+          </Stack>
         </ResponsiveModal>
       )}
     </>
-  )
+  );
 }

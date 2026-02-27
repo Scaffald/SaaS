@@ -1,13 +1,13 @@
 // src/pages/onboarding/BrokerOnboarding.tsx
-// REQ-126: Broker Onboarding Page
-import React from 'react';
-import { Stack } from '@unicornlove/beyond-ui';
-import { useOnboarding } from '../../hooks/useOnboarding';
-import OnboardingWizard from '../../components/Onboarding/OnboardingWizard';
-import BrokerInfoStep from '../../components/Onboarding/steps/broker/BrokerInfoStep';
-import AgencyStep from '../../components/Onboarding/steps/broker/AgencyStep';
-import ClientInviteStep from '../../components/Onboarding/steps/broker/ClientInviteStep';
-import SuccessStep from '../../components/Onboarding/steps/broker/SuccessStep';
+// Broker onboarding page
+import React from 'react'
+import { Stack } from '@scaffald/ui'
+import { useOnboarding } from '../../hooks/useOnboarding'
+import OnboardingWizard from '../../components/Onboarding/OnboardingWizard'
+import BrokerInfoStep from '../../components/Onboarding/steps/broker/BrokerInfoStep'
+import AgencyStep from '../../components/Onboarding/steps/broker/AgencyStep'
+import ClientInviteStep from '../../components/Onboarding/steps/broker/ClientInviteStep'
+import SuccessStep from '../../components/Onboarding/steps/broker/SuccessStep'
 
 function BrokerOnboarding() {
   const {
@@ -18,15 +18,15 @@ function BrokerOnboarding() {
     goToPreviousStep,
     completeOnboarding,
     isLoading,
-  } = useOnboarding('broker');
+  } = useOnboarding('broker')
 
   const handleStepComplete = async (stepData: any) => {
-    await goToNextStep(stepData);
-  };
+    await goToNextStep(stepData)
+  }
 
   const handleComplete = async () => {
-    await completeOnboarding({});
-  };
+    await completeOnboarding({})
+  }
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -37,15 +37,11 @@ function BrokerOnboarding() {
             initialData={data}
             isLoading={isLoading}
           />
-        );
+        )
       case 2:
         return (
-          <AgencyStep
-            onComplete={handleStepComplete}
-            initialData={data}
-            isLoading={isLoading}
-          />
-        );
+          <AgencyStep onComplete={handleStepComplete} initialData={data} isLoading={isLoading} />
+        )
       case 3:
         return (
           <ClientInviteStep
@@ -53,18 +49,13 @@ function BrokerOnboarding() {
             initialData={data}
             isLoading={isLoading}
           />
-        );
+        )
       case 4:
-        return (
-          <SuccessStep
-            onComplete={handleComplete}
-            isLoading={isLoading}
-          />
-        );
+        return <SuccessStep onComplete={handleComplete} isLoading={isLoading} />
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   return (
     <Stack style={{ flex: 1 }}>
@@ -81,7 +72,7 @@ function BrokerOnboarding() {
         {renderStepContent()}
       </OnboardingWizard>
     </Stack>
-  );
+  )
 }
 
-export default BrokerOnboarding;
+export default BrokerOnboarding

@@ -1,109 +1,109 @@
 /**
  * Request History Table Component
- * REQ-3: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  *
  * Displays a table of the user's CCPA request history
  * with status, dates, and download links
  */
 
-import { Text, XStack, YStack, Button } from '@unicornlove/ui'
+import { Text, Row, Stack, Button } from "@scaffald/ui";
 
 /**
  * Request status type
  */
 export type RequestStatus =
-  | 'pending'
-  | 'processing'
-  | 'completed'
-  | 'failed'
-  | 'cancelled'
+  | "pending"
+  | "processing"
+  | "completed"
+  | "failed"
+  | "cancelled";
 
 /**
  * Request type
  */
 export type RequestType =
-  | 'export'
-  | 'deletion'
-  | 'correction'
-  | 'opt_out'
-  | 'opt_in'
+  | "export"
+  | "deletion"
+  | "correction"
+  | "opt_out"
+  | "opt_in";
 
 /**
  * Privacy request structure
  */
 export interface PrivacyRequest {
-  id: string
-  type: RequestType
-  status: RequestStatus
-  created_at: string
-  completed_at?: string
-  expires_at?: string
-  download_url?: string
-  notes?: string
+  id: string;
+  type: RequestType;
+  status: RequestStatus;
+  created_at: string;
+  completed_at?: string;
+  expires_at?: string;
+  download_url?: string;
+  notes?: string;
 }
 
 /**
  * Props for RequestHistoryTable
  */
 interface RequestHistoryTableProps {
-  requests: PrivacyRequest[]
-  onDownload?: (requestId: string) => void
-  onCancel?: (requestId: string) => void
+  requests: PrivacyRequest[];
+  onDownload?: (requestId: string) => void;
+  onCancel?: (requestId: string) => void;
 }
 
 /**
  * Status badge colors
  */
 const STATUS_COLORS: Record<RequestStatus, { bg: string; text: string }> = {
-  pending: { bg: '$yellow3', text: '$yellow11' },
-  processing: { bg: '$blue3', text: '$blue11' },
-  completed: { bg: '$green3', text: '$green11' },
-  failed: { bg: '$red3', text: '$red11' },
-  cancelled: { bg: '$color4', text: '$color11' },
-}
+  pending: { bg: "#fef9c3", text: "#854d0e" },
+  processing: { bg: "#dbeafe", text: "#1d4ed8" },
+  completed: { bg: "#dcfce7", text: "#15803d" },
+  failed: { bg: "#fef2f2", text: "#ef4444" },
+  cancelled: { bg: "#f3f4f6", text: "#374151" },
+};
 
 /**
  * Request type labels
  */
 const TYPE_LABELS: Record<RequestType, string> = {
-  export: 'Data Export',
-  deletion: 'Data Deletion',
-  correction: 'Data Correction',
-  opt_out: 'Opt-Out',
-  opt_in: 'Opt-In',
-}
+  export: "Data Export",
+  deletion: "Data Deletion",
+  correction: "Data Correction",
+  opt_out: "Opt-Out",
+  opt_in: "Opt-In",
+};
 
 /**
  * Format date string
  */
 function formatDate(dateString: string): string {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 /**
  * Status badge component
  */
 function StatusBadge({ status }: { status: RequestStatus }) {
-  const colors = STATUS_COLORS[status]
+  const colors = STATUS_COLORS[status];
   return (
-    <XStack
+    <Row
       backgroundColor={colors.bg}
-      paddingHorizontal="$2"
-      paddingVertical="$1"
-      borderRadius="$2"
+      paddingHorizontal={8}
+      paddingVertical={4}
+      borderRadius={8}
     >
-      <Text fontSize="$2" color={colors.text} fontWeight="500" textTransform="capitalize">
+      <Text style={{ color: colors.text, textTransform: "capitalize" }}>
         {status}
       </Text>
-    </XStack>
-  )
+    </Row>
+  );
 }
 
 /**
@@ -114,84 +114,72 @@ function RequestRow({
   onDownload,
   onCancel,
 }: {
-  request: PrivacyRequest
-  onDownload?: (requestId: string) => void
-  onCancel?: (requestId: string) => void
+  request: PrivacyRequest;
+  onDownload?: (requestId: string) => void;
+  onCancel?: (requestId: string) => void;
 }) {
-  const canDownload = request.status === 'completed' && request.type === 'export' && request.download_url
-  const canCancel = request.status === 'pending'
+  const canDownload =
+    request.status === "completed" &&
+    request.type === "export" &&
+    request.download_url;
+  const canCancel = request.status === "pending";
 
   return (
-    <XStack
-      padding="$3"
+    <Row
+      padding="sm"
       backgroundColor="$color2"
-      borderRadius="$2"
+      borderRadius={8}
       borderWidth={1}
       borderColor="$borderColor"
-      alignItems="center"
-      gap="$4"
-      flexWrap="wrap"
+      align="center"
+      gap={16}
+      wrap
     >
       {/* Type */}
-      <YStack flex={1} minWidth={120}>
-        <Text fontSize="$2" color="$color10">
-          Type
-        </Text>
-        <Text fontSize="$3" fontWeight="500">
-          {TYPE_LABELS[request.type]}
-        </Text>
-      </YStack>
+      <Stack flex={1} minWidth={120}>
+        <Text style={{ color: "#414e62" }}>Type</Text>
+        <Text>{TYPE_LABELS[request.type]}</Text>
+      </Stack>
 
       {/* Status */}
-      <YStack minWidth={100}>
-        <Text fontSize="$2" color="$color10">
-          Status
-        </Text>
+      <Stack minWidth={100}>
+        <Text style={{ color: "#414e62" }}>Status</Text>
         <StatusBadge status={request.status} />
-      </YStack>
+      </Stack>
 
       {/* Submitted Date */}
-      <YStack flex={1} minWidth={140}>
-        <Text fontSize="$2" color="$color10">
-          Submitted
-        </Text>
-        <Text fontSize="$3">
-          {formatDate(request.created_at)}
-        </Text>
-      </YStack>
+      <Stack flex={1} minWidth={140}>
+        <Text style={{ color: "#414e62" }}>Submitted</Text>
+        <Text>{formatDate(request.created_at)}</Text>
+      </Stack>
 
       {/* Completed Date */}
-      <YStack flex={1} minWidth={140}>
-        <Text fontSize="$2" color="$color10">
-          Completed
+      <Stack flex={1} minWidth={140}>
+        <Text style={{ color: "#414e62" }}>Completed</Text>
+        <Text>
+          {request.completed_at ? formatDate(request.completed_at) : "—"}
         </Text>
-        <Text fontSize="$3">
-          {request.completed_at ? formatDate(request.completed_at) : '—'}
-        </Text>
-      </YStack>
+      </Stack>
 
       {/* Actions */}
-      <XStack gap="$2" minWidth={120} justifyContent="flex-end">
+      <Row gap={8} minWidth={120} justify="flex-end">
         {canDownload && (
-          <Button
-            size="$2"
-            onPress={() => onDownload?.(request.id)}
-          >
+          <Button size="sm" onPress={() => onDownload?.(request.id)}>
             Download
           </Button>
         )}
         {canCancel && (
           <Button
-            size="$2"
-            variant="outlined"
+            size="sm"
+            variant="outline"
             onPress={() => onCancel?.(request.id)}
           >
             Cancel
           </Button>
         )}
-      </XStack>
-    </XStack>
-  )
+      </Row>
+    </Row>
+  );
 }
 
 /**
@@ -199,24 +187,22 @@ function RequestRow({
  */
 function EmptyState() {
   return (
-    <YStack
-      padding="$6"
+    <Stack
+      padding="xl"
       backgroundColor="$color2"
-      borderRadius="$3"
+      borderRadius={12}
       borderWidth={1}
       borderColor="$borderColor"
-      alignItems="center"
-      gap="$2"
+      align="center"
+      gap={8}
     >
-      <Text fontSize="$4" color="$color11">
-        No privacy requests yet
+      <Text style={{ color: "#414e62" }}>No privacy requests yet</Text>
+      <Text style={{ color: "#414e62", textAlign: "center" }}>
+        When you submit a data export, deletion, or other privacy request, it
+        will appear here so you can track its status.
       </Text>
-      <Text fontSize="$3" color="$color10" textAlign="center">
-        When you submit a data export, deletion, or other privacy request,
-        it will appear here so you can track its status.
-      </Text>
-    </YStack>
-  )
+    </Stack>
+  );
 }
 
 /**
@@ -230,34 +216,25 @@ export function RequestHistoryTable({
   onCancel,
 }: RequestHistoryTableProps) {
   if (!requests || requests.length === 0) {
-    return <EmptyState />
+    return <EmptyState />;
   }
 
   return (
-    <YStack gap="$2">
-      {/* Header row - hidden on mobile */}
-      <XStack
-        padding="$3"
-        display="none"
-        $gtMd={{ display: 'flex' }}
-        gap="$4"
-      >
-        <Text flex={1} fontSize="$2" color="$color10" fontWeight="600" minWidth={120}>
-          Type
-        </Text>
-        <Text fontSize="$2" color="$color10" fontWeight="600" minWidth={100}>
-          Status
-        </Text>
-        <Text flex={1} fontSize="$2" color="$color10" fontWeight="600" minWidth={140}>
+    <Stack gap={8}>
+      {/* Header row */}
+      <Row padding="sm" gap={16}>
+        <Text style={{ flex: 1, color: "#414e62", minWidth: 120 }}>Type</Text>
+        <Text style={{ color: "#414e62", minWidth: 100 }}>Status</Text>
+        <Text style={{ flex: 1, color: "#414e62", minWidth: 140 }}>
           Submitted
         </Text>
-        <Text flex={1} fontSize="$2" color="$color10" fontWeight="600" minWidth={140}>
+        <Text style={{ flex: 1, color: "#414e62", minWidth: 140 }}>
           Completed
         </Text>
-        <Text fontSize="$2" color="$color10" fontWeight="600" minWidth={120} textAlign="right">
+        <Text style={{ color: "#414e62", minWidth: 120, textAlign: "right" }}>
           Actions
         </Text>
-      </XStack>
+      </Row>
 
       {/* Request rows */}
       {requests.map((request) => (
@@ -270,12 +247,12 @@ export function RequestHistoryTable({
       ))}
 
       {/* Info text */}
-      <Text fontSize="$2" color="$color10" marginTop="$2">
+      <Text style={{ color: "#414e62", marginTop: 8 }}>
         Data export requests are processed within 45 days as required by CCPA.
         Completed exports are available for download for 30 days.
       </Text>
-    </YStack>
-  )
+    </Stack>
+  );
 }
 
-export default RequestHistoryTable
+export default RequestHistoryTable;

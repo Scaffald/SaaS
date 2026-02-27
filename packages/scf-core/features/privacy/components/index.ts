@@ -1,6 +1,6 @@
 /**
  * Privacy Dashboard Components
- * REQ-3: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  */
 
 export { DataCategorySummary } from './DataCategorySummary'

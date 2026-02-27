@@ -1,10 +1,10 @@
 /**
- * REQ-262: Insurance Policy Parent-Child Model - UI Components
+ * Insurance Policy Parent-Child Model - UI Components
  * EndorsementItem component displays a single policy endorsement with indentation
  */
 
 import { FileCheck, DollarSign, Calendar } from 'lucide-react';
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card } from '@scaffald/ui';
 import { PolicyEndorsement } from '../../types';
 
 export interface EndorsementItemProps {

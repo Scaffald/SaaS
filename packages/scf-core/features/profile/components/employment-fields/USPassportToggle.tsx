@@ -1,11 +1,15 @@
-import { ToggleCard } from '@unicornlove/ui'
-import type { ToggleCardProps } from '@unicornlove/ui'
-import { MapPin } from '@tamagui/lucide-icons'
+import { SettingsToggleCard } from '@scaffald/ui'
+import type { SettingsToggleCardProps } from '@scaffald/ui'
+import { MapPin } from 'lucide-react-native'
 
 export interface USPassportToggleProps
-  extends Omit<ToggleCardProps, 'icon' | 'title' | 'description'> {
+  extends Omit<SettingsToggleCardProps, 'icon' | 'title' | 'description' | 'enabled' | 'onToggleChange'> {
   /** Optional override for description */
   description?: string
+  /** Whether the toggle is checked */
+  checked?: boolean
+  /** Callback when toggle state changes */
+  onChange?: (checked: boolean) => void
 }
 
 /**
@@ -14,14 +18,18 @@ export interface USPassportToggleProps
  */
 export function USPassportToggle({
   description = 'I have a valid United States passport',
-  ...toggleCardProps
+  checked,
+  onChange,
+  ...settingsToggleCardProps
 }: USPassportToggleProps) {
   return (
-    <ToggleCard
-      icon={<MapPin size="$2" color="$color11" />}
+    <SettingsToggleCard
+      icon={MapPin}
       title="US Passport"
       description={description}
-      {...toggleCardProps}
+      enabled={checked}
+      onToggleChange={onChange}
+      {...settingsToggleCardProps}
     />
   )
 }

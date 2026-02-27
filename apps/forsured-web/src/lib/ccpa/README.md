@@ -1,7 +1,5 @@
 # CCPA Compliance Module
 
-**REQ-131: CCPA Compliance Implementation (USA-Only Scope)**
-
 This module implements CCPA (California Consumer Privacy Act) compliance features for ForSured MVP, including data export, deletion, consent management, and breach notification workflows.
 
 ## Overview
@@ -147,7 +145,7 @@ const status = await getConsentStatus(userId);
 - Consent withdrawal with audit trail
 - "Do Not Sell" opt-out mechanism
 - Consent invalidation on privacy policy changes
-- Integration with REQ-130 audit logging
+- Integration with audit logging
 
 ### Breach Notification Service
 
@@ -196,7 +194,7 @@ initializeCCPAServices(supabase);
 
 ### Audit Logging Integration
 
-All CCPA operations are automatically logged to the audit trail (REQ-130):
+All CCPA operations are automatically logged to the audit trail:
 
 - Privacy request creation/status changes
 - Consent recording/withdrawal
@@ -266,7 +264,7 @@ npm test src/lib/ccpa/__tests__/dataExport.test.ts
 
 - **CCPA Compliance Plan**: `/Users/mattbernier/projects/FRS-Prototype/plans/50_SECURITY_PRIVACY.md` (Section: CCPA Compliance Plan)
 - **Incident Response**: `/Users/mattbernier/projects/FRS-Prototype/plans/53_INCIDENT_RESPONSE_PLAN.md` (Breach notification workflows)
-- **Audit Logging**: `/Users/mattbernier/projects/FRS-Prototype/src/lib/audit/AuditService.ts` (REQ-130 integration)
+- **Audit Logging**: `/Users/mattbernier/projects/FRS-Prototype/src/lib/audit/AuditService.ts` (audit integration)
 - **Database Migration**: `/Users/mattbernier/projects/FRS-Prototype/supabase/migrations/002_create_ccpa_tables.sql`
 
 ## Support

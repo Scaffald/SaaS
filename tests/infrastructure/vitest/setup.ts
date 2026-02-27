@@ -70,12 +70,12 @@ afterEach(() => {
   // This helps prevent "act" warnings and memory leaks
 });
 
-// Suppress known Tamagui and React DOM prop warnings in tests
-// These are custom component props that don't belong in DOM but are safe to suppress
+// Suppress known custom UI and React DOM prop warnings in tests
+// These are component props (e.g. Beyond UI / legacy) that don't belong in DOM but are safe to suppress
 const originalWarn = console.warn;
 const originalError = console.error;
 
-const TAMAGUI_PROPS = [
+const CUSTOM_UI_PROPS = [
   "flexWrap",
   "pressStyle",
   "borderColor",
@@ -95,15 +95,15 @@ const TAMAGUI_PROPS = [
   "borderRadius",
   "zIndex",
   "icon",
-  "textAlign", // Tamagui accepts textAlign but React warns when it reaches DOM
+  "textAlign", // custom UI accepts textAlign but React warns when it reaches DOM
 ];
 
 console.warn = (...args) => {
   const message = args[0]?.toString?.() ?? "";
 
-  // Suppress Tamagui prop warnings
+  // Suppress custom UI prop warnings
   if (message.includes("React does not recognize the")) {
-    if (TAMAGUI_PROPS.some((prop) => message.includes(`\`${prop}\``))) {
+    if (CUSTOM_UI_PROPS.some((prop) => message.includes(`\`${prop}\``))) {
       return; // suppress
     }
   }
@@ -111,7 +111,7 @@ console.warn = (...args) => {
   // Suppress non-boolean attribute warnings
   if (
     message.includes("Received `true` for a non-boolean attribute") &&
-    TAMAGUI_PROPS.some((prop) => message.includes(prop))
+    CUSTOM_UI_PROPS.some((prop) => message.includes(prop))
   ) {
     return; // suppress
   }
@@ -119,7 +119,7 @@ console.warn = (...args) => {
   // Suppress invalid value for prop warnings (icon, etc.)
   if (
     message.includes("Invalid value for prop") &&
-    TAMAGUI_PROPS.some((prop) => message.includes(prop))
+    CUSTOM_UI_PROPS.some((prop) => message.includes(prop))
   ) {
     return; // suppress
   }
@@ -136,7 +136,7 @@ console.error = (...args) => {
     return; // suppress
   }
 
-  // Suppress hydration errors from Tamagui prop mismatches
+  // Suppress hydration errors from custom UI prop mismatches
   if (
     message.includes("In HTML") &&
     message.includes("This will cause a hydration error")

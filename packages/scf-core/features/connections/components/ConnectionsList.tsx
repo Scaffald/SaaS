@@ -1,64 +1,35 @@
-import { api } from '@scf/core/utils/api'
-import { DataTable } from '@scf/core/components/ui'
+import { useConnections, useRemoveConnectionMutation } from '@scf/core/utils/engagement-sdk-hooks'
+import { columnsFromTanStack } from '@scf/core/utils/table-columns'
+import type { Connection } from '@scaffald/sdk/resources/connections'
 import type { ColumnDef } from '@tanstack/react-table'
-import { useToastController } from '@tamagui/toast'
-import { Download, Trash2 } from '@tamagui/lucide-icons'
+import { useToast } from '@scaffald/ui'
+import { Download, Trash2 } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
-import { Avatar, Button, Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-
-type ConnectionsData = NonNullable<
-  ReturnType<typeof api.connections.getConnections.useQuery>['data']
->
-
-interface ConnectionData {
-  id: string
-  status: string
-  created_at: string
-  decided_at?: string | null
-  user?: {
-    id?: string
-    display_name?: string | null
-    username?: string | null
-    avatar_url?: string | null
-    email?: string | null
-    industry?: {
-      name?: string | null
-    } | null
-    headline?: string | null
-  } | null
-  requester_user_id?: string
-  addressee_user?: {
-    id?: string
-    display_name?: string | null
-    username?: string | null
-    avatar_url?: string | null
-    email?: string | null
-    industry?: {
-      name?: string | null
-    } | null
-    headline?: string | null
-  } | null
-}
-
-type Connection = ConnectionsData extends Array<infer T> ? T : ConnectionData
+import { Avatar, Button, Input, Spinner, Table, Text, Row, Stack } from '@scaffald/ui'
+import { useQueryClient } from '@tanstack/react-query'
 
 export function ConnectionsList() {
   const [searchTerm, setSearchTerm] = useState('')
-  const utils = api.useUtils()
-  const toast = useToastController()
+  const queryClient = useQueryClient()
+  const toast = useToast()
 
-  const { data: connections, isLoading } = api.connections.getConnections.useQuery()
+  const { data: connectionsResponse, isLoading } = useConnections()
+  const connections = connectionsResponse?.data
 
-  const removeConnectionMutation = api.connections.removeConnection.useMutation({
+  const removeConnectionMutation = useRemoveConnectionMutation({
     onSuccess: () => {
-      utils.connections.getConnections.invalidate()
-      toast.show('Success', {
+      queryClient.invalidateQueries({ queryKey: ['connections', 'list'] })
+      toast.show({
+        title: 'Success',
         message: 'Connection removed',
+        variant: 'success',
       })
     },
-    onError: (error) => {
-      toast.show('Error', {
+    onError: (error: { message?: string }) => {
+      toast.show({
+        title: 'Error',
         message: error.message || 'Failed to remove connection',
+        variant: 'error',
       })
     },
   })
@@ -69,8 +40,11 @@ export function ConnectionsList() {
 
     const search = searchTerm.toLowerCase()
     return connections.filter((conn: Connection) => {
-      const user = conn.requester_user_id === conn.user?.id ? conn.addressee_user : conn.user
-      const name = user?.display_name || user?.username || ''
+      const requesterName =
+        `${conn.requester?.first_name || ''} ${conn.requester?.last_name || ''}`.trim()
+      const addresseeName =
+        `${conn.addressee?.first_name || ''} ${conn.addressee?.last_name || ''}`.trim()
+      const name = requesterName || addresseeName
       return name.toLowerCase().includes(search)
     })
   }, [connections, searchTerm])
@@ -78,29 +52,32 @@ export function ConnectionsList() {
   const handleRemove = useCallback(
     async (connectionId: string) => {
       if (confirm('Are you sure you want to remove this connection?')) {
-        await removeConnectionMutation.mutateAsync({ connectionId })
+        await removeConnectionMutation.mutateAsync(connectionId)
       }
     },
-    [removeConnectionMutation.mutateAsync]
+    [removeConnectionMutation]
   )
 
   const handleExportCSV = () => {
     if (!connections || connections.length === 0) {
-      toast.show('Error', {
+      toast.show({
+        title: 'Error',
         message: 'No connections to export',
+        variant: 'error',
       })
       return
     }
 
-    const headers = ['Name', 'Email', 'Industry', 'Connected Since']
+    const headers = ['Name', 'Connected Since']
     const rows = connections.map((conn: Connection) => {
-      const user = conn.requester_user_id === conn.user?.id ? conn.addressee_user : conn.user
-      const name = user?.display_name || user?.username || ''
-      const email = user?.email || ''
-      const industry = user?.industry?.name || ''
+      const requesterName =
+        `${conn.requester?.first_name || ''} ${conn.requester?.last_name || ''}`.trim()
+      const addresseeName =
+        `${conn.addressee?.first_name || ''} ${conn.addressee?.last_name || ''}`.trim()
+      const name = requesterName || addresseeName || 'Unknown'
       const date = conn.created_at ? new Date(conn.created_at).toLocaleDateString() : ''
 
-      return [name, email, industry, date]
+      return [name, date]
     })
 
     const csvContent = [headers, ...rows]
@@ -116,54 +93,45 @@ export function ConnectionsList() {
       link.download = `connections-${new Date().toISOString().split('T')[0]}.csv`
       link.click()
       URL.revokeObjectURL(url)
-      toast.show('Success', {
+      toast.show({
+        title: 'Success',
         message: 'Connections exported successfully',
+        variant: 'success',
       })
     } else {
-      toast.show('Error', {
+      toast.show({
+        title: 'Error',
         message: 'CSV export is only available on web',
+        variant: 'error',
       })
     }
   }
 
-  const columns = useMemo<ColumnDef<Connection>[]>(
+  const columnDefs = useMemo<ColumnDef<Connection>[]>(
     () => [
       {
         accessorKey: 'user',
         header: 'User',
         cell: ({ row }) => {
           const conn = row.original
-          const user = conn.requester_user_id === conn.user?.id ? conn.addressee_user : conn.user
-          const name = user?.display_name || user?.username || 'Unknown'
-          const avatar = user?.avatar_url
+          const requesterName =
+            `${conn.requester?.first_name || ''} ${conn.requester?.last_name || ''}`.trim()
+          const addresseeName =
+            `${conn.addressee?.first_name || ''} ${conn.addressee?.last_name || ''}`.trim()
+          const name = requesterName || addresseeName || 'Unknown'
+          const avatar = conn.requester?.avatar_url || conn.addressee?.avatar_url
 
           return (
-            <XStack alignItems="center" gap="$2">
-              <Avatar circular size={32}>
-                {avatar ? (
-                  <Avatar.Image source={{ uri: avatar }} />
-                ) : (
-                  <Avatar.Fallback backgroundColor="$blue4">
-                    <Text fontSize="$3" fontWeight="600" color="$blue10">
-                      {name.charAt(0).toUpperCase()}
-                    </Text>
-                  </Avatar.Fallback>
-                )}
-              </Avatar>
-              <Text fontSize="$3" fontWeight="500">
-                {name}
-              </Text>
-            </XStack>
+            <Row align="center" gap={8}>
+              <Avatar
+                size={32}
+                src={avatar ? { uri: avatar } : undefined}
+                initials={!avatar ? name.charAt(0).toUpperCase() : undefined}
+                color="info"
+              />
+              <Text>{name}</Text>
+            </Row>
           )
-        },
-      },
-      {
-        accessorKey: 'industry',
-        header: 'Industry',
-        cell: ({ row }) => {
-          const conn = row.original
-          const user = conn.requester_user_id === conn.user?.id ? conn.addressee_user : conn.user
-          return <Text fontSize="$3">{user?.industry?.name || '-'}</Text>
         },
       },
       {
@@ -171,11 +139,7 @@ export function ConnectionsList() {
         header: 'Connected Since',
         cell: ({ row }) => {
           const date = row.original.created_at
-          return (
-            <Text fontSize="$3" color="$color10">
-              {date ? new Date(date).toLocaleDateString() : '-'}
-            </Text>
-          )
+          return <Text color="$gray11">{date ? new Date(date).toLocaleDateString() : '-'}</Text>
         },
       },
       {
@@ -185,9 +149,9 @@ export function ConnectionsList() {
           const conn = row.original
           return (
             <Button
-              size="$2"
-              variant="outlined"
-              icon={Trash2}
+              size="sm"
+              variant="outline"
+              iconStart={Trash2}
               onPress={() => handleRemove(conn.id)}
               disabled={removeConnectionMutation.isPending}
             >
@@ -200,59 +164,66 @@ export function ConnectionsList() {
     [removeConnectionMutation.isPending, handleRemove]
   )
 
+  const tableColumns = useMemo(
+    () =>
+      columnsFromTanStack<Connection & Record<string, unknown>>(
+        columnDefs as ColumnDef<Connection & Record<string, unknown>>[]
+      ),
+    [columnDefs]
+  )
+
   if (isLoading) {
     return (
-      <YStack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
-        <Spinner size="large" />
-        <Text color="$color11">Loading connections…</Text>
-      </YStack>
+      <Stack align="center" justify="center" paddingVertical={24} gap={8}>
+        <Spinner size="lg" />
+        <Text color="$gray11">Loading connections…</Text>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$4">
-      <XStack justifyContent="space-between" alignItems="center" gap="$2">
+    <Stack gap={16}>
+      <Row justify="space-between" align="center" gap={8}>
         <Input
-          flex={1}
+          style={{ flex: 1 }}
           placeholder="Search connections..."
           value={searchTerm}
           onChangeText={setSearchTerm}
-          size="$4"
         />
         {filteredConnections.length > 0 && (
-          <Button size="$3" variant="outlined" icon={Download} onPress={handleExportCSV}>
+          <Button size="sm" variant="outline" iconStart={Download} onPress={handleExportCSV}>
             Export CSV
           </Button>
         )}
-      </XStack>
+      </Row>
 
       {filteredConnections.length === 0 ? (
-        <YStack
-          gap="$3"
+        <Stack
+          gap={12}
           borderWidth={1}
           borderColor="$borderColor"
-          borderRadius="$4"
-          padding="$4"
+          borderRadius={16}
+          padding="md"
           backgroundColor="$color2"
-          alignItems="center"
-          justifyContent="center"
+          align="center"
+          justify="center"
           style={{ minHeight: 300 }}
         >
-          <Text fontWeight="600">No connections yet</Text>
-          <Text color="$color11" style={{ textAlign: 'center' }}>
+          <Text>No connections yet</Text>
+          <Text color="$gray11" style={{ textAlign: 'center' }}>
             {searchTerm
               ? 'No connections match your search.'
               : "You haven't connected with anyone yet. Send connection requests to build your network."}
           </Text>
-        </YStack>
+        </Stack>
       ) : (
-        <DataTable
-          columns={columns}
-          data={filteredConnections}
+        <Table
+          columns={tableColumns}
+          data={filteredConnections as (Connection & Record<string, unknown>)[]}
           pageSize={20}
           emptyMessage="No connections found"
         />
       )}
-    </YStack>
+    </Stack>
   )
 }

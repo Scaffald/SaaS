@@ -1,6 +1,6 @@
 /**
  * Compliance Authorization Tests
- * REQ-2, TASK-18: Tests for extensible authorization system
+ * Tests for extensible authorization system
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';

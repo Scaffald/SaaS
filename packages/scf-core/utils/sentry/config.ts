@@ -4,10 +4,8 @@ import * as Updates from 'expo-updates'
 export type SentryEnvironment = 'development' | 'staging' | 'production'
 
 const EXTRA_CONFIG = (Constants.expoConfig?.extra ?? {}) as Record<string, unknown>
-const SENTRY_EXTRA = ((EXTRA_CONFIG as { sentry?: Record<string, unknown> }).sentry ?? {}) as Record<
-  string,
-  unknown
->
+const SENTRY_EXTRA = ((EXTRA_CONFIG as { sentry?: Record<string, unknown> }).sentry ??
+  {}) as Record<string, unknown>
 
 export const APP_ENV: SentryEnvironment =
   (SENTRY_EXTRA.env as SentryEnvironment) ??
@@ -18,9 +16,7 @@ export const APP_ENV: SentryEnvironment =
 // SECURITY: Only use EXPO_PUBLIC variables - non-public env vars should never be in client bundle
 // Separate DSNs for web and native platforms
 export const SENTRY_DSN_NATIVE =
-  process.env.EXPO_PUBLIC_SENTRY_DSN_NATIVE ??
-  (SENTRY_EXTRA.dsnNative as string | undefined) ??
-  ''
+  process.env.EXPO_PUBLIC_SENTRY_DSN_NATIVE ?? (SENTRY_EXTRA.dsnNative as string | undefined) ?? ''
 
 export const SENTRY_DSN_WEB =
   process.env.EXPO_PUBLIC_SENTRY_DSN_WEB ?? (SENTRY_EXTRA.dsnWeb as string | undefined) ?? ''
@@ -63,4 +59,3 @@ export const getReplaySampleRate = () => {
       return 1.0 // 100% in development
   }
 }
-

@@ -1,157 +1,160 @@
-import { api } from '@scf/core/utils/api'
-import { useMemo } from 'react'
+import { useImportData as useSDKImportData } from "@scf/core/utils/profile-import-sdk-hooks";
+import type {
+  GeneralImportEntry,
+  ExperienceImportEntry,
+  EducationImportEntry,
+  SkillImportEntry,
+  CertificationImportEntry,
+} from "@scaffald/sdk";
+import { useMemo } from "react";
 
 export interface ImportSection<TItem> {
-  id: string
-  title: string
-  items: TItem[]
+  id: string;
+  title: string;
+  items: TItem[];
 }
 
 export interface ImportExperienceItem {
-  id: string
-  jobTitle: string
-  companyName: string
-  startDate?: string | null
-  endDate?: string | null
-  isCurrent?: boolean
-  confidenceScore?: number | null
-  raw?: Record<string, unknown>
+  id: string;
+  jobTitle: string;
+  companyName: string;
+  startDate?: string | null;
+  endDate?: string | null;
+  isCurrent?: boolean;
+  confidenceScore?: number | null;
+  raw?: Record<string, unknown>;
 }
 
 export interface ImportEducationItem {
-  id: string
-  degree?: string
-  institution?: string
-  startDate?: string | null
-  endDate?: string | null
-  confidenceScore?: number | null
-  raw?: Record<string, unknown>
+  id: string;
+  degree?: string;
+  institution?: string;
+  startDate?: string | null;
+  endDate?: string | null;
+  confidenceScore?: number | null;
+  raw?: Record<string, unknown>;
 }
 
 export interface ImportSkillItem {
-  id: string
-  name: string
-  confidenceScore?: number | null
-  taxonomy?: string
-  raw?: Record<string, unknown>
+  id: string;
+  name: string;
+  confidenceScore?: number | null;
+  taxonomy?: string;
+  raw?: Record<string, unknown>;
 }
 
 export interface ImportCertificationItem {
-  id: string
-  name: string
-  issuer?: string
-  issueDate?: string | null
-  confidenceScore?: number | null
-  raw?: Record<string, unknown>
+  id: string;
+  name: string;
+  issuer?: string;
+  issueDate?: string | null;
+  confidenceScore?: number | null;
+  raw?: Record<string, unknown>;
 }
 
 export interface ImportGeneralItem {
-  id: string
-  firstName?: string
-  lastName?: string
-  headline?: string
-  summary?: string
-  confidenceScore?: number | null
-  raw?: Record<string, unknown>
+  id: string;
+  firstName?: string;
+  lastName?: string;
+  headline?: string;
+  summary?: string;
+  confidenceScore?: number | null;
+  raw?: Record<string, unknown>;
 }
 
 export interface ImportData {
-  general: ImportSection<ImportGeneralItem>
-  experience: ImportSection<ImportExperienceItem>
-  education: ImportSection<ImportEducationItem>
-  skills: ImportSection<ImportSkillItem>
-  certifications: ImportSection<ImportCertificationItem>
+  general: ImportSection<ImportGeneralItem>;
+  experience: ImportSection<ImportExperienceItem>;
+  education: ImportSection<ImportEducationItem>;
+  skills: ImportSection<ImportSkillItem>;
+  certifications: ImportSection<ImportCertificationItem>;
 }
 
 export function useImportData() {
-  const { data, isLoading, refetch, isError } = api.profile.import.getImportData.useQuery(
-    undefined,
-    {
-      staleTime: 0,
-    }
-  )
+  const { data, isPending: isLoading, refetch, isError } = useSDKImportData();
 
   const importData: ImportData | null = useMemo(() => {
-    const payload = data?.payload
-    if (!payload) return null
+    const payload = data?.payload;
+    if (!payload) return null;
 
     return {
       general: {
-        id: 'general',
-        title: 'General Info',
+        id: "general",
+        title: "General Info",
         items:
-          payload.general?.map((item: Record<string, unknown>, index: number) => ({
+          payload.general?.map((item: GeneralImportEntry, index: number) => ({
             id: `general-${index}`,
-            firstName: typeof item.first_name === 'string' ? item.first_name : undefined,
-            lastName: typeof item.last_name === 'string' ? item.last_name : undefined,
-            headline: typeof item.headline === 'string' ? item.headline : undefined,
-            summary: typeof item.summary === 'string' ? item.summary : undefined,
-            confidenceScore:
-              typeof item.confidence_score === 'number' ? item.confidence_score : undefined,
-            raw: item,
+            firstName: item.first_name,
+            lastName: item.last_name,
+            headline: item.headline,
+            summary: item.summary,
+            confidenceScore: item.confidence_score,
+            raw: item as unknown as Record<string, unknown>,
           })) ?? [],
       },
       experience: {
-        id: 'experience',
-        title: 'Experience',
+        id: "experience",
+        title: "Experience",
         items:
-          payload.experience?.map((item: Record<string, unknown>, index: number) => ({
-            id: String(item.id ?? `experience-${index}`),
-            jobTitle: typeof item.job_title === 'string' ? item.job_title : '',
-            companyName: typeof item.company_name === 'string' ? item.company_name : '',
-            startDate: typeof item.start_date === 'string' ? item.start_date : null,
-            endDate: typeof item.end_date === 'string' ? item.end_date : null,
-            isCurrent: typeof item.is_current === 'boolean' ? item.is_current : null,
-            confidenceScore:
-              typeof item.confidence_score === 'number' ? item.confidence_score : undefined,
-            raw: item,
-          })) ?? [],
+          payload.experience?.map(
+            (item: ExperienceImportEntry, index: number) => ({
+              id: `experience-${index}`,
+              jobTitle: item.job_title ?? "",
+              companyName: item.company_name ?? "",
+              startDate: item.start_date ?? null,
+              endDate: item.end_date ?? null,
+              isCurrent: item.is_current ?? undefined,
+              confidenceScore: item.confidence_score,
+              raw: item as unknown as Record<string, unknown>,
+            })
+          ) ?? [],
       },
       education: {
-        id: 'education',
-        title: 'Education',
+        id: "education",
+        title: "Education",
         items:
-          payload.education?.map((item: Record<string, unknown>, index: number) => ({
-            id: String(item.id ?? `education-${index}`),
-            degree: typeof item.degree === 'string' ? item.degree : undefined,
-            institution: typeof item.institution === 'string' ? item.institution : undefined,
-            startDate: typeof item.start_date === 'string' ? item.start_date : null,
-            endDate: typeof item.end_date === 'string' ? item.end_date : null,
-            confidenceScore:
-              typeof item.confidence_score === 'number' ? item.confidence_score : undefined,
-            raw: item,
-          })) ?? [],
+          payload.education?.map(
+            (item: EducationImportEntry, index: number) => ({
+              id: `education-${index}`,
+              degree: item.degree,
+              institution: item.institution,
+              startDate: item.start_date ?? null,
+              endDate: item.end_date ?? null,
+              confidenceScore: item.confidence_score,
+              raw: item as unknown as Record<string, unknown>,
+            })
+          ) ?? [],
       },
       skills: {
-        id: 'skills',
-        title: 'Skills',
+        id: "skills",
+        title: "Skills",
         items:
-          payload.skills?.map((item: Record<string, unknown>, index: number) => ({
-            id: String(item.id ?? item.name ?? `skill-${index}`),
-            name: typeof item.name === 'string' ? item.name : 'Unknown Skill',
-            confidenceScore:
-              typeof item.confidence_score === 'number' ? item.confidence_score : undefined,
-            taxonomy: typeof item.taxonomy === 'string' ? item.taxonomy : undefined,
-            raw: item,
+          payload.skills?.map((item: SkillImportEntry, index: number) => ({
+            id: String(item.name ?? `skill-${index}`),
+            name: item.name ?? "Unknown Skill",
+            confidenceScore: item.confidence_score,
+            taxonomy: item.taxonomy,
+            raw: item as unknown as Record<string, unknown>,
           })) ?? [],
       },
       certifications: {
-        id: 'certifications',
-        title: 'Certifications',
+        id: "certifications",
+        title: "Certifications",
         items:
-          payload.certifications?.map((item: Record<string, unknown>, index: number) => ({
-            id: String(item.id ?? `certification-${index}`),
-            name: typeof item.name === 'string' ? item.name : '',
-            issuer: typeof item.issuer === 'string' ? item.issuer : undefined,
-            issueDate: typeof item.issue_date === 'string' ? item.issue_date : null,
-            confidenceScore:
-              typeof item.confidence_score === 'number' ? item.confidence_score : undefined,
-            raw: item,
-          })) ?? [],
+          payload.certifications?.map(
+            (item: CertificationImportEntry, index: number) => ({
+              id: `certification-${index}`,
+              name: item.name ?? "",
+              issuer: item.issuer,
+              issueDate: item.issue_date ?? null,
+              confidenceScore: item.confidence_score,
+              raw: item as unknown as Record<string, unknown>,
+            })
+          ) ?? [],
       },
       // Import data transformation from API format to UI format
-    } as ImportData
-  }, [data])
+    } as ImportData;
+  }, [data]);
 
   return {
     importData,
@@ -159,5 +162,5 @@ export function useImportData() {
     isLoading,
     isError,
     refetch,
-  }
+  };
 }

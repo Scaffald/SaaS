@@ -1,15 +1,15 @@
-import { api } from '@scf/core/utils/api'
 import {
   TEAM_INVITATION_TTL_DEFAULT,
   TEAM_INVITATION_TTL_MAX,
   TEAM_INVITATION_TTL_MIN,
-} from '@scf/schemas'
-import { ResponsiveModal } from '@unicornlove/ui'
-import { ResponsiveSelect } from '@unicornlove/ui'
-import { UserSearch } from '@scf/core/components/user'
-import { Mail, UserPlus } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-import { useEffect, useMemo, useState } from 'react'
+} from "@scf/schemas";
+import { useInviteTeamMember } from "@scaffald/sdk/react";
+import { ResponsiveModal, useThemeContext } from "@scaffald/ui";
+import { ResponsiveSelect } from "@scaffald/ui";
+import { UserSearch } from "@scf/core/components/user";
+import { Mail, UserPlus } from "lucide-react-native";
+import { useToast } from "@scaffald/ui";
+import { useEffect, useMemo, useState } from "react";
 import {
   Button,
   Input,
@@ -18,21 +18,25 @@ import {
   Spinner,
   Text,
   TextArea,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+} from "@scaffald/ui";
 
-import { type TeamRoleOption, useTeamFormOptions } from '../hooks/useTeamFormOptions'
+import {
+  type TeamRoleOption,
+  useTeamFormOptions,
+} from "../hooks/useTeamFormOptions";
+import { colors } from "@scaffald/ui/tokens";
 
-type InviteType = 'email' | 'user'
+type InviteType = "email" | "user";
 
 interface TeamInviteModalProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  teamId: string
-  organizationId: string
-  defaultRoleId?: string | null
-  onInvited?: () => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  teamId: string;
+  organizationId: string;
+  defaultRoleId?: string | null;
+  onInvited?: () => void;
 }
 
 export function TeamInviteModal({
@@ -43,108 +47,125 @@ export function TeamInviteModal({
   defaultRoleId,
   onInvited,
 }: TeamInviteModalProps) {
-  const toast = useToastController()
-  const [inviteType, setInviteType] = useState<InviteType>('email')
-  const [email, setEmail] = useState('')
-  const [selectedUserId, setSelectedUserId] = useState<string>('')
-  const [selectedUserName, setSelectedUserName] = useState<string>('')
-  const [selectedRoleId, setSelectedRoleId] = useState<string>('')
-  const [expiresInDays, setExpiresInDays] = useState<number>(TEAM_INVITATION_TTL_DEFAULT)
-  const [message, setMessage] = useState('')
-  const [formError, setFormError] = useState<string | null>(null)
-  const [formErrorSource, setFormErrorSource] = useState<'email' | 'user' | 'general' | null>(null)
+  const { theme } = useThemeContext();
+  const toast = useToast();
+  const [inviteType, setInviteType] = useState<InviteType>("email");
+  const [email, setEmail] = useState("");
+  const [selectedUserId, setSelectedUserId] = useState<string>("");
+  const [selectedUserName, setSelectedUserName] = useState<string>("");
+  const [selectedRoleId, setSelectedRoleId] = useState<string>("");
+  const [expiresInDays, setExpiresInDays] = useState<number>(
+    TEAM_INVITATION_TTL_DEFAULT
+  );
+  const [message, setMessage] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+  const [formErrorSource, setFormErrorSource] = useState<
+    "email" | "user" | "general" | null
+  >(null);
 
-  const { roles, isLoading: isLoadingRoles } = useTeamFormOptions({ organizationId })
+  const { roles, isLoading: isLoadingRoles } = useTeamFormOptions({
+    organizationId,
+  });
 
-  const inviteMutation = api.teams.invitations.create.useMutation({
+  const inviteMutation = useInviteTeamMember({
     onSuccess: () => {
-      toast.show('Invitation sent', {
-        message: inviteType === 'email' ? email : `${selectedUserName || 'Member'} can now join.`,
-      })
-      onOpenChange(false)
-      onInvited?.()
+      toast.show({
+        title: "Invitation sent",
+        message:
+          inviteType === "email"
+            ? email
+            : `${selectedUserName || "Member"} can now join.`,
+        variant: "success",
+      });
+      onOpenChange(false);
+      onInvited?.();
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show('Unable to send invitation', { message })
+      const _message =
+        error instanceof Error ? error.message : "An error occurred";
+      toast.show({
+        title: "Unable to send invitation",
+        message: _message,
+        variant: "error",
+      });
     },
-  })
+  });
 
-  const roleOptions: TeamRoleOption[] = useMemo(() => roles, [roles])
-
-  useEffect(() => {
-    if (!open) {
-      return
-    }
-
-    setInviteType('email')
-    setEmail('')
-    setSelectedUserId('')
-    setSelectedUserName('')
-    setExpiresInDays(TEAM_INVITATION_TTL_DEFAULT)
-    setMessage('')
-    setFormError(null)
-    setFormErrorSource(null)
-  }, [open])
+  const roleOptions: TeamRoleOption[] = useMemo(() => roles, [roles]);
 
   useEffect(() => {
     if (!open) {
-      return
+      return;
     }
 
-    const fallbackRoleId = defaultRoleId ?? roleOptions[0]?.id ?? ''
-    setSelectedRoleId(fallbackRoleId)
-  }, [open, defaultRoleId, roleOptions])
+    setInviteType("email");
+    setEmail("");
+    setSelectedUserId("");
+    setSelectedUserName("");
+    setExpiresInDays(TEAM_INVITATION_TTL_DEFAULT);
+    setMessage("");
+    setFormError(null);
+    setFormErrorSource(null);
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const fallbackRoleId = defaultRoleId ?? roleOptions[0]?.id ?? "";
+    setSelectedRoleId(fallbackRoleId);
+  }, [open, defaultRoleId, roleOptions]);
 
   const handleSubmit = async () => {
     if (inviteMutation.isPending) {
-      return
+      return;
     }
 
-    if (inviteType === 'email' && !email.trim()) {
-      setFormError('Enter an email address to send the invitation.')
-      setFormErrorSource('email')
-      return
+    if (inviteType === "email" && !email.trim()) {
+      setFormError("Enter an email address to send the invitation.");
+      setFormErrorSource("email");
+      return;
     }
 
-    if (inviteType === 'user' && !selectedUserId) {
-      setFormError('Select an existing member to invite.')
-      setFormErrorSource('user')
-      return
+    if (inviteType === "user" && !selectedUserId) {
+      setFormError("Select an existing member to invite.");
+      setFormErrorSource("user");
+      return;
     }
 
-    const roleId = selectedRoleId || defaultRoleId || roleOptions[0]?.id
+    const roleId = selectedRoleId || defaultRoleId || roleOptions[0]?.id;
     if (!roleId) {
-      setFormError('No team roles are available for this organization.')
-      setFormErrorSource('general')
-      return
+      setFormError("No team roles are available for this organization.");
+      setFormErrorSource("general");
+      return;
     }
 
-    setFormError(null)
-    setFormErrorSource(null)
+    setFormError(null);
+    setFormErrorSource(null);
 
     const clampedDays = Math.min(
       Math.max(expiresInDays, TEAM_INVITATION_TTL_MIN),
       TEAM_INVITATION_TTL_MAX
-    )
+    );
 
-    const expiresAt = new Date()
-    expiresAt.setDate(expiresAt.getDate() + clampedDays)
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + clampedDays);
 
     await inviteMutation.mutateAsync({
       teamId,
-      roleId,
-      email: inviteType === 'email' ? email.trim().toLowerCase() : undefined,
-      userId: inviteType === 'user' ? selectedUserId : undefined,
-      expiresAt: expiresAt.toISOString(),
-      message: message.trim() ? message.trim() : undefined,
-    })
-  }
+      params: {
+        email: inviteType === "email" ? email.trim().toLowerCase() : "",
+        roleId,
+        message: message.trim() ? message.trim() : undefined,
+      },
+    });
+  };
 
   const inviteTypeDescription =
-    inviteType === 'email'
-      ? 'Send an email invitation to someone who is not yet part of the organization.'
-      : 'Invite an existing organization member without sending an email.'
+    inviteType === "email"
+      ? "Send an email invitation to someone who is not yet part of the organization."
+      : "Invite an existing organization member without sending an email.";
 
   return (
     <ResponsiveModal
@@ -153,37 +174,37 @@ export function TeamInviteModal({
       title="Invite team member"
       testID="modal"
     >
-      <YStack gap="$4">
-        <YStack gap="$2">
-          <Text color="$color11">{inviteTypeDescription}</Text>
+      <Stack gap={16}>
+        <Stack gap={8}>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            {inviteTypeDescription}
+          </Text>
           <RadioGroup
             value={inviteType}
-            onValueChange={(next) => setInviteType(next as InviteType)}
+            onChange={(next: string | number) =>
+              setInviteType(next as InviteType)
+            }
             orientation="horizontal"
-            gap="$3"
-          >
-            <XStack gap="$2" alignItems="center">
-              <RadioGroup.Item value="email" id="invite-email" size="$3" />
-              <Label htmlFor="invite-email">Email invite</Label>
-            </XStack>
-            <XStack gap="$2" alignItems="center">
-              <RadioGroup.Item value="user" id="invite-user" size="$3" />
-              <Label htmlFor="invite-user">Existing member</Label>
-            </XStack>
-          </RadioGroup>
-        </YStack>
+            gap={12}
+            size="sm"
+            options={[
+              { label: "Email invite", value: "email" },
+              { label: "Existing member", value: "user" },
+            ]}
+          />
+        </Stack>
 
-        {inviteType === 'email' ? (
-          <YStack gap="$2">
+        {inviteType === "email" ? (
+          <Stack gap={8}>
             <Label htmlFor="team-invite-email">Email</Label>
             <Input
               id="team-invite-email"
               value={email}
               onChangeText={(value) => {
-                setEmail(value)
-                if (formErrorSource === 'email') {
-                  setFormError(null)
-                  setFormErrorSource(null)
+                setEmail(value);
+                if (formErrorSource === "email") {
+                  setFormError(null);
+                  setFormErrorSource(null);
                 }
               }}
               keyboardType="email-address"
@@ -192,44 +213,55 @@ export function TeamInviteModal({
               autoFocus
               disabled={inviteMutation.isPending}
             />
-            {formErrorSource === 'email' && formError ? (
-              <Text color="$red10" fontSize="$3">
+            {formErrorSource === "email" && formError ? (
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.error[700] : colors.error[300],
+                }}
+              >
                 {formError}
               </Text>
             ) : null}
-          </YStack>
+          </Stack>
         ) : (
-          <YStack gap="$2">
+          <Stack gap={8}>
             <Label>Organization member</Label>
             <UserSearch
               value={selectedUserId}
               onUserSelect={(id, name) => {
-                setSelectedUserId(id)
-                setSelectedUserName(name)
-                if (formErrorSource === 'user') {
-                  setFormError(null)
-                  setFormErrorSource(null)
+                setSelectedUserId(id);
+                setSelectedUserName(name);
+                if (formErrorSource === "user") {
+                  setFormError(null);
+                  setFormErrorSource(null);
                 }
               }}
               placeholder="Search organization members…"
               disabled={inviteMutation.isPending}
               error={formError ?? undefined}
             />
-          </YStack>
+          </Stack>
         )}
 
-        <YStack gap="$2">
+        <Stack gap={8}>
           <Label>Team role</Label>
           {isLoadingRoles ? (
-            <XStack gap="$2" alignItems="center">
-              <Spinner size="small" />
-              <Text color="$color11">Loading roles…</Text>
-            </XStack>
+            <Row gap={8} align="center">
+              <Spinner size="sm" />
+              <Text style={{ color: colors.text[theme].secondary }}>
+                Loading roles…
+              </Text>
+            </Row>
           ) : roleOptions.length === 0 ? (
-            <Text color="$color11">No roles are configured for this organization.</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              No roles are configured for this organization.
+            </Text>
           ) : (
             <ResponsiveSelect
-              value={selectedRoleId || defaultRoleId || roleOptions[0]?.id || ''}
+              value={
+                selectedRoleId || defaultRoleId || roleOptions[0]?.id || ""
+              }
               onValueChange={setSelectedRoleId}
               placeholder="Select a team role"
               disabled={inviteMutation.isPending}
@@ -239,9 +271,9 @@ export function TeamInviteModal({
               }))}
             />
           )}
-        </YStack>
+        </Stack>
 
-        <YStack gap="$2">
+        <Stack gap={8}>
           <Label htmlFor="team-invite-message">Message (optional)</Label>
           <TextArea
             id="team-invite-message"
@@ -251,59 +283,71 @@ export function TeamInviteModal({
             rows={3}
             disabled={inviteMutation.isPending}
           />
-        </YStack>
+        </Stack>
 
-        <YStack gap="$2">
-          <Label htmlFor="team-invite-expiry">Invitation expires in (days)</Label>
+        <Stack gap={8}>
+          <Label htmlFor="team-invite-expiry">
+            Invitation expires in (days)
+          </Label>
           <Input
             id="team-invite-expiry"
             value={String(expiresInDays)}
             keyboardType="numeric"
             onChangeText={(value) => {
-              const next = Number.parseInt(value, 10)
+              const next = Number.parseInt(value, 10);
               setExpiresInDays(
                 Number.isNaN(next)
                   ? TEAM_INVITATION_TTL_DEFAULT
-                  : Math.max(TEAM_INVITATION_TTL_MIN, Math.min(next, TEAM_INVITATION_TTL_MAX))
-              )
+                  : Math.max(
+                      TEAM_INVITATION_TTL_MIN,
+                      Math.min(next, TEAM_INVITATION_TTL_MAX)
+                    )
+              );
             }}
             disabled={inviteMutation.isPending}
           />
-          <Text fontSize="$3" color="$color11">
-            Defaults to {TEAM_INVITATION_TTL_DEFAULT} days. Minimum {TEAM_INVITATION_TTL_MIN},
-            maximum {TEAM_INVITATION_TTL_MAX}.
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Defaults to {TEAM_INVITATION_TTL_DEFAULT} days. Minimum{" "}
+            {TEAM_INVITATION_TTL_MIN}, maximum {TEAM_INVITATION_TTL_MAX}.
           </Text>
-        </YStack>
+        </Stack>
 
-        {formErrorSource === 'general' && formError ? (
-          <Text color="$red10" fontSize="$3">
+        {formErrorSource === "general" && formError ? (
+          <Text
+            style={{
+              color: theme === "light" ? colors.error[700] : colors.error[300],
+            }}
+          >
             {formError}
           </Text>
         ) : null}
 
-        <XStack gap="$3" justifyContent="flex-end">
+        <Row gap={12} justify="flex-end">
           <Button
-            variant="outlined"
+            variant="outline"
             disabled={inviteMutation.isPending}
             onPress={() => onOpenChange(false)}
           >
             Cancel
           </Button>
           <Button
-            backgroundColor="$color9"
-            color="$color1"
-            icon={inviteType === 'email' ? Mail : UserPlus}
+            color="primary"
+            variant="filled"
+            iconStart={inviteType === "email" ? Mail : UserPlus}
             onPress={handleSubmit}
-            disabled={inviteMutation.isPending || (inviteType === 'email' && !email.trim())}
+            disabled={
+              inviteMutation.isPending ||
+              (inviteType === "email" && !email.trim())
+            }
           >
             {inviteMutation.isPending ? (
-              <Spinner size="small" color="$color1" />
+              <Spinner size="sm" color="gray" />
             ) : (
-              'Send Invitation'
+              "Send Invitation"
             )}
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </ResponsiveModal>
-  )
+  );
 }

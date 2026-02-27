@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { Clock, Mail, Send, Shield, Users } from 'lucide-react';
-import { Stack, Row, Text, Card, Button } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card, Button } from '@scaffald/ui';
 import { SimpleModal } from '../Common/SimpleModal';
 import { toast } from 'sonner';
 

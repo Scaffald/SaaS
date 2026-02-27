@@ -1,6 +1,6 @@
 /**
  * CCPA Concurrent Request Performance Tests
- * REQ-3: CCPA Compliance Implementation - TASK-19
+ * CCPA Compliance Implementation - TASK-19
  *
  * Load tests verifying system behavior under concurrent request load
  * and identifying performance bottlenecks.

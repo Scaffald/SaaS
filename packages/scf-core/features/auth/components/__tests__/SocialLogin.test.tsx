@@ -1,68 +1,85 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-async function renderSocialLogin(isWeb: boolean) {
-  vi.resetModules()
+vi.mock('@scaffald/ui', () => ({
+  SocialLoginGroup: ({
+    orLabel,
+    googleText,
+    appleText,
+    showApple,
+    onGooglePress,
+    onApplePress,
+  }: {
+    orLabel?: string
+    googleText?: string
+    appleText?: string
+    showApple?: boolean
+    onGooglePress?: () => void
+    onApplePress?: () => void
+  }) => (
+    <div data-testid="social-login-group">
+      <span data-testid="or-label">{orLabel}</span>
+      <span data-testid="google-text">{googleText}</span>
+      <span data-testid="apple-text">{appleText}</span>
+      <span data-testid="show-apple">{String(showApple)}</span>
+      <button
+        data-testid="google-button"
+        type="button"
+        onClick={onGooglePress}
+      >
+        Google
+      </button>
+      <button data-testid="apple-button" type="button" onClick={onApplePress}>
+        Apple
+      </button>
+    </div>
+  ),
+}))
 
-  vi.doMock('tamagui', async () => {
-    const actual = await vi.importActual<typeof import('tamagui')>('tamagui')
+vi.mock('@scf/core/utils/useTranslation', () => ({
+  useTranslation: () => ({ t: (key: string) => key }),
+}))
 
-    const MockYStack = ({ children }: { children: ReactNode }) => (
-      <div data-testid="y-stack">{children}</div>
-    )
-    const MockXStack = ({ children }: { children: ReactNode }) => (
-      <div data-testid="social-login-stack">{children}</div>
-    )
+vi.mock('react-native', () => ({
+  Platform: { OS: 'web' },
+}))
 
-    return {
-      ...actual,
-      isWeb,
-      YStack: MockYStack,
-      XStack: MockXStack,
-      Separator: ({ children }: { children?: ReactNode }) => (
-        <div data-testid="separator">{children}</div>
-      ),
-      SizableText: ({ children }: { children: ReactNode }) => (
-        <span data-testid="sizable-text">{children}</span>
-      ),
-    }
-  })
+const mockOnGooglePress = vi.fn()
+const mockOnApplePress = vi.fn()
 
-  vi.doMock('../AppleSignIn', () => ({
-    AppleSignIn: () => <div data-testid="apple-sign-in" />,
-  }))
-
-  vi.doMock('../GoogleSignIn', () => ({
-    GoogleSignIn: () => <div data-testid="google-sign-in" />,
-  }))
-
-  const { SocialLogin } = await import('../SocialLogin')
-  return render(<SocialLogin />)
-}
+vi.mock('../../hooks/useSocialAuthHandlers', () => ({
+  useSocialAuthHandlers: () => ({
+    onGooglePress: mockOnGooglePress,
+    onApplePress: mockOnApplePress,
+  }),
+}))
 
 describe('SocialLogin', () => {
   afterEach(() => {
-    vi.resetModules()
     vi.clearAllMocks()
   })
 
-  it('renders Apple and Google sign in options with OR separator on web', async () => {
-    await renderSocialLogin(true)
+  it('renders SocialLoginGroup with correct props', async () => {
+    const { SocialLogin } = await import('../SocialLogin')
+    const { getByTestId } = render(<SocialLogin />)
 
-    expect(screen.getByTestId('apple-sign-in')).toBeInTheDocument()
-    expect(screen.getByTestId('google-sign-in')).toBeInTheDocument()
-    expect(screen.getByText(/or/i)).toBeInTheDocument()
-    expect(screen.getByTestId('social-login-stack')).toBeInTheDocument()
+    expect(getByTestId('social-login-group')).toBeInTheDocument()
+    expect(getByTestId('or-label')).toHaveTextContent('common.or')
+    expect(getByTestId('google-text')).toHaveTextContent('auth.login.googleButton')
+    expect(getByTestId('apple-text')).toHaveTextContent('auth.login.appleButton')
+    expect(getByTestId('show-apple')).toHaveTextContent('true')
   })
 
-  it('falls back to vertical stack on native platforms', async () => {
-    await renderSocialLogin(false)
+  it('provides Google and Apple handlers to SocialLoginGroup', async () => {
+    const { SocialLogin } = await import('../SocialLogin')
+    const { getByTestId } = render(<SocialLogin />)
 
-    expect(screen.getByTestId('apple-sign-in')).toBeInTheDocument()
-    expect(screen.getByTestId('google-sign-in')).toBeInTheDocument()
-    expect(screen.queryByTestId('social-login-stack')).not.toBeInTheDocument()
-    expect(screen.getAllByTestId('y-stack').length).toBeGreaterThan(0)
+    getByTestId('google-button').click()
+    expect(mockOnGooglePress).toHaveBeenCalledTimes(1)
+
+    getByTestId('apple-button').click()
+    expect(mockOnApplePress).toHaveBeenCalledTimes(1)
   })
 })

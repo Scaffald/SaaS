@@ -1,4 +1,4 @@
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack } from '@scaffald/ui'
 import { StarRating } from './StarRating'
 
 // Mock skills data - will be replaced with real data from API
@@ -15,18 +15,14 @@ interface ReviewStep1SkillsProps {
 
 export function ReviewStep1Skills({ ratings, onChange }: ReviewStep1SkillsProps) {
   return (
-    <YStack gap="$4">
-      <YStack gap="$2">
-        <Text fontSize="$7" fontWeight="700" color="$color12">
-          Technical Skills
-        </Text>
-        <Text fontSize="$5" color="$color11">
-          How would you rate this person's technical skills?
-        </Text>
-      </YStack>
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Text color="$gray11">Technical Skills</Text>
+        <Text color="$gray11">How would you rate this person's technical skills?</Text>
+      </Stack>
 
       {/* Skills List */}
-      <YStack gap="$4">
+      <Stack gap={16}>
         {MOCK_SKILLS.map((skill) => (
           <StarRating
             key={skill.id}
@@ -35,12 +31,12 @@ export function ReviewStep1Skills({ ratings, onChange }: ReviewStep1SkillsProps)
             onChange={(rating) => onChange(skill.id, rating)}
           />
         ))}
-      </YStack>
+      </Stack>
 
       {/* Helper Text */}
-      <Text fontSize="$3" color="$color10" fontStyle="italic">
+      <Text style={{ color: '#414e62', fontStyle: 'italic' }}>
         Rate each skill from 1-5 stars based on their proficiency level
       </Text>
-    </YStack>
+    </Stack>
   )
 }

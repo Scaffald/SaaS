@@ -1,7 +1,7 @@
 // src/pages/docs/Changelog.tsx
 import React from 'react';
-import { Stack, Box, Text, H1, H2 } from '@unicornlove/beyond-ui';
-import { colors, spacing, fontSize } from '@unicornlove/beyond-ui';
+import { Stack, Box, Text, H1, H2 } from '@scaffald/ui';
+import { colors, spacing, fontSize } from '@scaffald/ui';
 
 function ChangelogDoc() {
   return (

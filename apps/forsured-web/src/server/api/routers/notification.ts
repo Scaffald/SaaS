@@ -1,6 +1,6 @@
 /**
  * Notification Router
- * REQ-264: Task History Tracking - TASK-2: Due Date Change Notifications
+ * Task History Tracking - TASK-2: Due Date Change Notifications
  *
  * Implements notification management procedures for user alerts about
  * task changes, assignments, and due date updates.

@@ -1,6 +1,6 @@
 /**
  * Contract Test Factory
- * REQ-305: Contract Tests for MockDatabase Parity
+ * Contract Tests for MockDatabase Parity
  *
  * This module provides utilities for running identical tests against both
  * MockDatabase and real Supabase to verify behavioral parity.

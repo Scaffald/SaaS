@@ -1,32 +1,33 @@
-import { MonthYearPicker, ToggleSwitch } from '@unicornlove/ui'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
-import { Controller, useForm, useWatch } from 'react-hook-form'
-import { Input, Paragraph, Text, XStack, YStack } from '@unicornlove/ui'
-import { z } from 'zod'
-import type { ExperienceStepData } from '../../hooks/useProfileWizard'
-import { StepNavigation } from '../StepNavigation'
-import type { WizardStepComponentProps } from './types'
+import { ToggleSwitch } from "@scaffald/ui";
+import { MonthYearPicker } from "../../../profile/components/MonthYearPicker";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import { Input, Paragraph, Text, Row, Stack } from "@scaffald/ui";
+import { z } from "zod";
+import type { ExperienceStepData } from "../../hooks/useProfileWizard";
+import { StepNavigation } from "../StepNavigation";
+import type { WizardStepComponentProps } from "./types";
 
 const experienceSchema = z.object({
-  jobTitle: z.string().min(1, 'Job title is required'),
-  companyName: z.string().min(1, 'Company is required'),
-  startDate: z.string().min(4, 'Start date is required'),
+  jobTitle: z.string().min(1, "Job title is required"),
+  companyName: z.string().min(1, "Company is required"),
+  startDate: z.string().min(4, "Start date is required"),
   endDate: z.string().optional(),
   isCurrent: z.boolean(),
   summary: z.string().optional(),
-})
+});
 
-type ExperienceFormValues = z.infer<typeof experienceSchema>
+type ExperienceFormValues = z.infer<typeof experienceSchema>;
 
 const DEFAULT_VALUES: ExperienceFormValues = {
-  jobTitle: '',
-  companyName: '',
-  startDate: '',
-  endDate: '',
+  jobTitle: "",
+  companyName: "",
+  startDate: "",
+  endDate: "",
   isCurrent: true,
-  summary: '',
-}
+  summary: "",
+};
 
 export function ExperienceStep({
   initialData,
@@ -37,7 +38,7 @@ export function ExperienceStep({
   onSaveForLater,
   onSkip,
   onStepStateChange,
-}: WizardStepComponentProps<'experience'>) {
+}: WizardStepComponentProps<"experience">) {
   const {
     control,
     handleSubmit,
@@ -46,86 +47,89 @@ export function ExperienceStep({
   } = useForm<ExperienceFormValues>({
     defaultValues: toExperienceFormValues(initialData),
     resolver: zodResolver(experienceSchema),
-    mode: 'onChange',
-  })
+    mode: "onChange",
+  });
 
-  const values = useWatch({ control })
+  const values = useWatch({ control });
 
   useEffect(() => {
     if (!initialData) {
-      return
+      return;
     }
 
-    reset(toExperienceFormValues(initialData), { keepDefaultValues: false })
-  }, [initialData, reset])
+    reset(toExperienceFormValues(initialData), { keepDefaultValues: false });
+  }, [initialData, reset]);
 
   useEffect(() => {
-    const payload = formatExperiencePayload(values)
+    const payload = formatExperiencePayload(values);
 
     onStepStateChange?.({
       data: payload,
       isValid,
       isDirty,
-    })
-  }, [values, isValid, isDirty, onStepStateChange])
+    });
+  }, [values, isValid, isDirty, onStepStateChange]);
 
   const submit = handleSubmit(async (data) => {
-    await onContinue(formatExperiencePayload(data))
-  })
+    await onContinue(formatExperiencePayload(data));
+  });
 
   const handleSaveForLater = handleSubmit(async (data) => {
-    await onSaveForLater?.(formatExperiencePayload(data))
-  })
+    await onSaveForLater?.(formatExperiencePayload(data));
+  });
 
   const handleSkip = async () => {
-    await onSkip?.()
-  }
+    await onSkip?.();
+  };
 
   return (
-    <YStack gap="$4">
-      <YStack gap="$2">
-        <Text fontSize="$6" fontWeight="700">
-          Add your latest experience
-        </Text>
-        <Paragraph color="$color11">
-          Showcase your most recent role. You can add more later in your full profile.
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Text>Add your latest experience</Text>
+        <Paragraph color="$gray11">
+          Showcase your most recent role. You can add more later in your full
+          profile.
         </Paragraph>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
-        <Text fontWeight="600">Job Title *</Text>
+      <Stack gap={8}>
+        <Text>Job Title *</Text>
         <Controller
           control={control}
           name="jobTitle"
           render={({ field }) => (
-            <Input {...field} placeholder="Lead Carpenter" onChangeText={field.onChange} />
+            <Input
+              {...field}
+              placeholder="Lead Carpenter"
+              onChangeText={field.onChange}
+            />
           )}
         />
         {errors.jobTitle && (
-          <Text fontSize="$2" color="$red10">
-            {errors.jobTitle.message}
-          </Text>
+          <Text color="$red10">{errors.jobTitle.message}</Text>
         )}
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
-        <Text fontWeight="600">Company *</Text>
+      <Stack gap={8}>
+        <Text>Company *</Text>
         <Controller
           control={control}
           name="companyName"
           render={({ field }) => (
-            <Input {...field} placeholder="Summit Builders" onChangeText={field.onChange} />
+            <Input
+              {...field}
+              placeholder="Summit Builders"
+              onChangeText={field.onChange}
+            />
           )}
         />
         {errors.companyName && (
-          <Text fontSize="$2" color="$red10">
-            {errors.companyName.message}
-          </Text>
+          <Text color="$red10">{errors.companyName.message}</Text>
         )}
-      </YStack>
+      </Stack>
 
-      <XStack gap="$3">
-        <YStack flex={1} gap="$2">
+      <Row gap={12}>
+        <Stack flex={1} gap={8}>
           <Controller
             control={control}
             name="startDate"
@@ -133,14 +137,16 @@ export function ExperienceStep({
               <MonthYearPicker
                 label="Start Date *"
                 value={parseWizardDate(field.value)}
-                onChange={(date) => field.onChange(date ? formatWizardDate(date) : '')}
+                onChange={(date: Date | null) =>
+                  field.onChange(date ? formatWizardDate(date) : "")
+                }
                 error={errors.startDate?.message}
               />
             )}
           />
-        </YStack>
+        </Stack>
 
-        <YStack flex={1} gap="$2">
+        <Stack flex={1} gap={8}>
           <Controller
             control={control}
             name="endDate"
@@ -148,33 +154,35 @@ export function ExperienceStep({
               <MonthYearPicker
                 label="End Date"
                 value={parseWizardDate(field.value)}
-                onChange={(date) => field.onChange(date ? formatWizardDate(date) : '')}
+                onChange={(date: Date | null) =>
+                  field.onChange(date ? formatWizardDate(date) : "")
+                }
                 disabled={values.isCurrent}
                 error={errors.endDate?.message}
               />
             )}
           />
-        </YStack>
-      </XStack>
+        </Stack>
+      </Row>
 
-      <XStack gap="$2" alignItems="center">
+      <Row gap={8} align="center">
         <Controller
           control={control}
           name="isCurrent"
           render={({ field }) => (
             <ToggleSwitch
               checked={Boolean(field.value)}
-              onCheckedChange={field.onChange}
+              onChange={field.onChange}
               aria-label="I currently work here"
               data-testid="toggle-current-job"
             />
           )}
         />
-        <Text fontSize="$3">I currently work here</Text>
-      </XStack>
+        <Text>I currently work here</Text>
+      </Row>
 
-      <YStack gap="$2">
-        <Text fontWeight="600">Summary</Text>
+      <Stack gap={8}>
+        <Text>Summary</Text>
         <Controller
           control={control}
           name="summary"
@@ -186,7 +194,7 @@ export function ExperienceStep({
             />
           )}
         />
-      </YStack>
+      </Stack>
 
       <StepNavigation
         canGoBack
@@ -199,38 +207,40 @@ export function ExperienceStep({
         onSaveForLater={onSaveForLater ? handleSaveForLater : undefined}
         nextLabel="Next: Certifications"
       />
-    </YStack>
-  )
+    </Stack>
+  );
 }
 
 function parseWizardDate(value?: string | null): Date | null {
-  if (!value) return null
-  const [yearPart, monthPart] = value.split('-')
-  const year = Number.parseInt(yearPart ?? '', 10)
-  const month = Number.parseInt(monthPart ?? '', 10)
+  if (!value) return null;
+  const [yearPart, monthPart] = value.split("-");
+  const year = Number.parseInt(yearPart ?? "", 10);
+  const month = Number.parseInt(monthPart ?? "", 10);
   if (Number.isNaN(year) || Number.isNaN(month)) {
-    return null
+    return null;
   }
-  return new Date(year, month - 1, 1)
+  return new Date(year, month - 1, 1);
 }
 
 function formatWizardDate(date: Date): string {
-  const year = date.getFullYear()
-  const month = `${date.getMonth() + 1}`.padStart(2, '0')
-  return `${year}-${month}-01`
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  return `${year}-${month}-01`;
 }
 
 function normalizeWizardDate(value?: string | null): string | null {
-  if (!value) return null
-  const trimmed = value.trim()
-  return trimmed.length > 0 ? trimmed : null
+  if (!value) return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
 }
 
 function normalizeText(value?: string | null): string {
-  return value?.trim() ?? ''
+  return value?.trim() ?? "";
 }
 
-function formatExperiencePayload(data: Partial<ExperienceFormValues>): ExperienceStepData {
+function formatExperiencePayload(
+  data: Partial<ExperienceFormValues>
+): ExperienceStepData {
   return {
     jobTitle: normalizeText(data.jobTitle),
     companyName: normalizeText(data.companyName),
@@ -238,20 +248,22 @@ function formatExperiencePayload(data: Partial<ExperienceFormValues>): Experienc
     endDate: data.isCurrent ? null : normalizeWizardDate(data.endDate),
     isCurrent: data.isCurrent ?? true,
     summary: normalizeText(data.summary),
-  }
+  };
 }
 
-function toExperienceFormValues(data?: ExperienceStepData | null): ExperienceFormValues {
+function toExperienceFormValues(
+  data?: ExperienceStepData | null
+): ExperienceFormValues {
   if (!data) {
-    return DEFAULT_VALUES
+    return DEFAULT_VALUES;
   }
 
   return {
-    jobTitle: data.jobTitle ?? '',
-    companyName: data.companyName ?? '',
-    startDate: data.startDate ?? '',
-    endDate: data.endDate ?? '',
+    jobTitle: data.jobTitle ?? "",
+    companyName: data.companyName ?? "",
+    startDate: data.startDate ?? "",
+    endDate: data.endDate ?? "",
     isCurrent: data.isCurrent ?? true,
-    summary: data.summary ?? '',
-  }
+    summary: data.summary ?? "",
+  };
 }

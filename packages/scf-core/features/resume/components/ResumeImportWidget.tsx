@@ -1,75 +1,79 @@
-import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
-import { DashboardWidget, spacing } from '@unicornlove/ui'
-import { FileText, ShieldCheck } from '@tamagui/lucide-icons'
-import { useRouter } from 'expo-router'
-import { useCallback, useState } from 'react'
-import { Text, XStack, YStack } from '@unicornlove/ui'
-import { ResumeUploadButton } from './ResumeUploadButton'
-import { ResumeUploadModal } from './ResumeUploadModal'
+import { ROUTES } from "@scf/core/constants/routes";
+import { useHasUploadedResume } from "@scf/core/utils/resume-sdk-hooks";
+import { DashboardWidget } from "@scaffald/ui";
+import { namedSpacing } from "@scaffald/ui/tokens";
+import { FileText, ShieldCheck } from "lucide-react-native";
+import { useRouter } from "expo-router";
+import { useCallback, useState } from "react";
+import { Text, Row, Stack } from "@scaffald/ui";
+import { ResumeUploadButton } from "./ResumeUploadButton";
+import { ResumeUploadModal } from "./ResumeUploadModal";
 
 export function ResumeImportWidget() {
-  const router = useRouter()
-  const [modalOpen, setModalOpen] = useState(false)
+  const router = useRouter();
+  const [modalOpen, setModalOpen] = useState(false);
   const handleResumeUploadComplete = useCallback(
     (resumeId: string) => {
-      setModalOpen(false)
+      setModalOpen(false);
       router.push({
         pathname: ROUTES.DASHBOARD.PROFILE.RESUME.REVIEW.path,
         params: { resumeId },
-      })
+      });
     },
     [router]
-  )
-  const { data, isLoading } = api.resume.hasUploaded.useQuery(undefined, {
+  );
+  const { data, isLoading } = useHasUploadedResume({
     refetchOnWindowFocus: false,
-  })
+  });
 
-  const shouldHideWidget = !isLoading && data?.hasUploaded
+  const shouldHideWidget = !isLoading && data?.hasUploaded;
 
   if (shouldHideWidget) {
-    return null
+    return null;
   }
 
   return (
     <>
       <DashboardWidget>
-        <YStack gap={spacing.md}>
-          <XStack gap={spacing.md} alignItems="center">
-            <YStack
+        <Stack gap={namedSpacing.md}>
+          <Row gap={namedSpacing.md} align="center">
+            <Stack
               width={48}
               height={48}
-              alignItems="center"
-              justifyContent="center"
+              align="center"
+              justify="center"
               backgroundColor="$blue3"
-              borderRadius="$4"
+              borderRadius={16}
             >
               <FileText color="$blue10" size={26} />
-            </YStack>
-            <YStack gap="$1">
-              <Text fontSize="$5" fontWeight="700" color="$color12">
-                Import Your Resume
+            </Stack>
+            <Stack gap={4}>
+              <Text color="$gray11">Import Your Resume</Text>
+              <Text color="$gray11">
+                Upload a PDF or Word document and we'll auto-fill your profile
+                details for you.
               </Text>
-              <Text color="$color11">
-                Upload a PDF or Word document and we’ll auto-fill your profile details for you.
-              </Text>
-            </YStack>
-          </XStack>
+            </Stack>
+          </Row>
 
-          <YStack gap="$2">
-            <XStack gap="$2" alignItems="center">
+          <Stack gap={8}>
+            <Row gap={8} align="center">
               <ShieldCheck size={18} color="$green10" />
-              <Text fontSize="$2" color="$green11">
+              <Text color="$green11">
                 Files stay private — only you can access your resume.
               </Text>
-            </XStack>
-            <Text fontSize="$2" color="$color10">
+            </Row>
+            <Text color="$gray11">
               Accepted formats: PDF, DOC, DOCX. Maximum size: 1MB.
             </Text>
-          </YStack>
+          </Stack>
 
-          <ResumeUploadButton onPress={() => setModalOpen(true)} label="Upload Resume" size="$4" />
-        </YStack>
+          <ResumeUploadButton
+            onPress={() => setModalOpen(true)}
+            label="Upload Resume"
+            size="md"
+          />
+        </Stack>
       </DashboardWidget>
 
       <ResumeUploadModal
@@ -78,5 +82,5 @@ export function ResumeImportWidget() {
         onUploadComplete={handleResumeUploadComplete}
       />
     </>
-  )
+  );
 }

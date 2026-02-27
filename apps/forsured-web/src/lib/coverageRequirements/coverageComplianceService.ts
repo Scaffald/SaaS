@@ -1,5 +1,5 @@
 /**
- * REQ-263: Org-Level vs Project-Level Coverage Distinction
+ * Org-Level vs Project-Level Coverage Distinction
  * TASK-5: Implement Dual-Level Compliance Validation Logic
  *
  * Service for validating subcontractor coverage against both org-level and

@@ -1,6 +1,7 @@
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { useState } from 'react'
-import { Label, Slider } from '@unicornlove/ui'
+import { Label, Slider } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface ScoreThresholdSectionProps {
   minimumScore?: number
@@ -8,64 +9,48 @@ interface ScoreThresholdSectionProps {
 }
 
 export function ScoreThresholdSection({ minimumScore, onUpdate }: ScoreThresholdSectionProps) {
-  const [value, setValue] = useState<number[]>([minimumScore || 50])
+  const { theme } = useThemeContext()
+  const [value, setValue] = useState<number>(minimumScore ?? 50)
 
-  const handleChange = (newValue: number[]) => {
+  const handleChange = (newValue: number) => {
     setValue(newValue)
-    onUpdate(newValue[0])
+    onUpdate(newValue)
   }
 
-  const currentScore = value[0] || 50
-
   return (
-    <YStack gap="$4" padding="$4">
-      <YStack gap="$2">
-        <XStack gap="$2">
-          <Label fontSize="$5" fontWeight="600" flex={1}>
-            Minimum Score
-          </Label>
-          <Text fontSize="$6" fontWeight="700">
-            {currentScore}
-          </Text>
-        </XStack>
-        <Text fontSize="$2">
-          Set the minimum score threshold for auto-screening applicants (0-100 scale)
-        </Text>
-      </YStack>
+    <Stack gap={16} padding="md">
+      <Stack gap={8}>
+        <Row gap={8}>
+          <Label style={{ flex: 1 }}>Minimum Score</Label>
+          <Text>{value}</Text>
+        </Row>
+        <Text>Set the minimum score threshold for auto-screening applicants (0-100 scale)</Text>
+      </Stack>
 
-      <YStack gap="$3">
-        <Slider value={value} onValueChange={handleChange} min={0} max={100} step={1} width="100%">
-          <Slider.Track>
-            <Slider.TrackActive />
-          </Slider.Track>
-          <Slider.Thumb circular index={0} />
-        </Slider>
+      <Stack gap={12}>
+        <Slider value={value} onValueChange={handleChange} min={0} max={100} step={1} />
 
-        <XStack gap="$2">
-          <Text fontSize="$1" flex={1}>
-            0 (Low)
-          </Text>
-          <Text fontSize="$1">100 (High)</Text>
-        </XStack>
-      </YStack>
+        <Row gap={8}>
+          <Text style={{ flex: 1 }}>0 (Low)</Text>
+          <Text>100 (High)</Text>
+        </Row>
+      </Stack>
 
-      <YStack gap="$2" padding="$3">
-        <Text fontSize="$2" fontWeight="600" color="$blue11">
-          Score Guidelines
+      <Stack gap={8} padding="sm">
+        <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Score Guidelines</Text>
+        <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
+          • <Text>0-25:</Text> Entry level, minimal requirements
         </Text>
-        <Text fontSize="$1" color="$blue11">
-          • <Text fontWeight="600">0-25:</Text> Entry level, minimal requirements
+        <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
+          • <Text>26-50:</Text> Some experience required
         </Text>
-        <Text fontSize="$1" color="$blue11">
-          • <Text fontWeight="600">26-50:</Text> Some experience required
+        <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
+          • <Text>51-75:</Text> Experienced candidates preferred
         </Text>
-        <Text fontSize="$1" color="$blue11">
-          • <Text fontWeight="600">51-75:</Text> Experienced candidates preferred
+        <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
+          • <Text>76-100:</Text> Highly qualified candidates only
         </Text>
-        <Text fontSize="$1" color="$blue11">
-          • <Text fontWeight="600">76-100:</Text> Highly qualified candidates only
-        </Text>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

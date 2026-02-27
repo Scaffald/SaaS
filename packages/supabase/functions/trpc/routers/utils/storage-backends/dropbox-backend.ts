@@ -4,7 +4,7 @@
  * Storage backend that stores documents in the user's Dropbox account.
  * Requires OAuth2 authentication to access user's Dropbox.
  *
- * NOTE: This is a placeholder implementation for Phase 3 (TASK-10).
+ * NOTE: Placeholder implementation for Phase 3.
  * Full implementation requires:
  * 1. Dropbox OAuth2 integration (App Key, App Secret)
  * 2. Token storage and refresh logic

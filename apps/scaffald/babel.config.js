@@ -14,15 +14,6 @@ if (process.env.BABEL_VERBOSE === 'true') {
   console.log(`[babel] APP_ENV=${APP_ENV} envPath=${envPath}`)
 }
 
-// Resolve Tamagui config - try package first, fallback to source
-let tamaguiConfigPath
-try {
-  tamaguiConfigPath = require.resolve('@unicornlove/ui/tamagui.config')
-} catch {
-  // Fallback to source path for monorepo dev
-  tamaguiConfigPath = path.resolve(__dirname, '../../packages/ui/src/tamagui.config.ts')
-}
-
 module.exports = (api) => {
   api.cache(true)
 
@@ -67,16 +58,6 @@ module.exports = (api) => {
         },
       ],
       'react-native-reanimated/plugin',
-      [
-        '@tamagui/babel-plugin',
-        {
-          components: ['@unicornlove/ui', 'tamagui'],
-          config: tamaguiConfigPath,
-          logTimings: process.env.DEBUG === 'tamagui',
-          // Extraction enabled for proper native component behavior
-          // disableExtraction: process.env.NODE_ENV === 'development',
-        },
-      ],
     ],
     presets: [
       [

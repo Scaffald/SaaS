@@ -1,6 +1,6 @@
-import { Star } from '@tamagui/lucide-icons'
+import { Star } from 'lucide-react-native'
 import { Pressable } from 'react-native'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 interface StarRatingProps {
   label: string
@@ -11,11 +11,9 @@ interface StarRatingProps {
 
 export function StarRating({ label, value, onChange, readonly = false }: StarRatingProps) {
   return (
-    <YStack gap="$2">
-      <Text fontSize="$5" fontWeight="600" color="$color12">
-        {label}
-      </Text>
-      <XStack gap="$2" alignItems="center">
+    <Stack gap={8}>
+      <Text color="$gray11">{label}</Text>
+      <Row gap={8} align="center">
         {[1, 2, 3, 4, 5].map((star) => (
           <Pressable
             key={`star-${star}`}
@@ -25,10 +23,10 @@ export function StarRating({ label, value, onChange, readonly = false }: StarRat
             <Star size={32} color="$yellow10" fill={star <= value ? '$yellow10' : 'transparent'} />
           </Pressable>
         ))}
-        <Text fontSize="$6" fontWeight="700" color="$color11" marginLeft="$2">
+        <Text style={{ color: '#414e62', marginLeft: 8 }}>
           {value}/5
         </Text>
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

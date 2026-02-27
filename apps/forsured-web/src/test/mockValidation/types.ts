@@ -1,5 +1,5 @@
 /**
- * REQ-306: Mock Validation Framework Types
+ * Mock Validation Framework Types
  *
  * Core interfaces for the mock validation system that ensures
  * all testing mocks accurately represent their real implementations.

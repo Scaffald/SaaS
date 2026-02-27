@@ -1,6 +1,6 @@
 import { PaymentIntentForm } from '@scf/core/features/payments/components/PaymentIntentForm'
 import { memo, useEffect } from 'react'
-import { Button, Text, YStack } from '@unicornlove/ui'
+import { Button, Text, Stack } from '@scaffald/ui'
 
 import type { PaymentDetails } from '../hooks/useBackgroundCheckForm'
 
@@ -51,39 +51,33 @@ export const PaymentStep = memo(function PaymentStep({
   const canCreateSession = Boolean(payment.costCents && selectedPackage)
 
   return (
-    <YStack gap="$4" flex={1}>
-      <YStack gap="$2">
-        <Text fontSize="$6" fontWeight="bold" color="$color12">
-          Payment & Authorization
-        </Text>
-        <Text fontSize="$3" color="$color11">
+    <Stack gap={16} flex={1}>
+      <Stack gap={8}>
+        <Text color="$gray11">Payment & Authorization</Text>
+        <Text color="$gray11">
           Pay for your screening securely with Stripe. Charges are non-refundable and required
           before we can submit your background check.
         </Text>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2" backgroundColor="$color2" padding="$4" borderRadius="$4">
-        <Text fontSize="$2" color="$color11">
-          Total Due
-        </Text>
-        <Text fontSize="$6" fontWeight="bold" color="$color12">
-          {formatCurrency(payment.costCents)}
-        </Text>
-        <Text fontSize="$2" color="$color10">
+      <Stack gap={8} backgroundColor="$color2" padding="md" borderRadius={16}>
+        <Text color="$gray11">Total Due</Text>
+        <Text color="$gray11">{formatCurrency(payment.costCents)}</Text>
+        <Text color="$gray11">
           Package: {selectedPackage?.display_name ?? 'Select a package to continue'}
         </Text>
-      </YStack>
+      </Stack>
 
       {submitError && (
-        <YStack backgroundColor="$red3" padding="$3" borderRadius="$3">
+        <Stack backgroundColor="$red3" padding="sm" borderRadius={12}>
           <Text color="$red11">{submitError.message}</Text>
-        </YStack>
+        </Stack>
       )}
 
       {!paymentSession && (
         <Button
-          size="$4"
-          theme="blue"
+          size="md"
+          color="primary"
           disabled={!canCreateSession || isCreatingSession || isConfirmingPayment}
           onPress={() => onCreatePaymentSession()}
         >
@@ -101,6 +95,6 @@ export const PaymentStep = memo(function PaymentStep({
           onSuccess={(paymentIntentId) => onPaymentSuccess(paymentIntentId)}
         />
       )}
-    </YStack>
+    </Stack>
   )
 })

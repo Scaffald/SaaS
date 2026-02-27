@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Stack, Text, Button, Row, Input } from '@unicornlove/beyond-ui';
+import { Stack, Text, Button, Row, Input } from '@scaffald/ui';
 import { User, Mail, Phone, FileText, MapPin, Briefcase } from 'lucide-react';
 import { SimpleModal } from '../Common/SimpleModal';
 import { useAuth } from '../../contexts/AuthContext';

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { TestTube, MessageSquare } from 'lucide-react';
-import { Stack, Row, Text } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text } from '@scaffald/ui';
 import Accordion, { AccordionItem } from '../../ui/Accordion';
 import NavigationDrawer, { DrawerToggle } from '../DesignSystem/NavigationDrawer';
 import Modal from '../Common/Modal';

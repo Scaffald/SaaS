@@ -1,12 +1,12 @@
 /**
  * Notifications router baseline coverage.
- * Expanded for REQ-74 test coverage.
+ * Notifications router test coverage.
  */
 
-import { assertEquals, assertExists } from '../shared/assert';
+import { assertEquals, assertExists } from "../shared/assert";
 
-import { callTRPCEndpoint, loadCachedTokens } from '../shared/setup';
-import { requireAuthSetup } from '../shared/test-context';
+import { callTRPCEndpoint, loadCachedTokens } from "../shared/setup";
+import { requireAuthSetup } from "../shared/test-context";
 
 Deno.test({
   name: "Notifications router - list requires authentication",
@@ -157,7 +157,8 @@ Deno.test({
 });
 
 Deno.test({
-  name: "Notifications router - list endpoint returns proper notification structure",
+  name:
+    "Notifications router - list endpoint returns proper notification structure",
   sanitizeResources: false,
   sanitizeOps: false,
   async fn() {
@@ -184,8 +185,15 @@ Deno.test({
       assertExists(notification.id, "Notification should have id");
       assertExists(notification.type, "Notification should have type");
       assertExists(notification.title, "Notification should have title");
-      assertExists(notification.created_at, "Notification should have created_at");
-      assertEquals(typeof notification.read, "boolean", "Notification should have read boolean");
+      assertExists(
+        notification.created_at,
+        "Notification should have created_at",
+      );
+      assertEquals(
+        typeof notification.read,
+        "boolean",
+        "Notification should have read boolean",
+      );
     }
   },
 });
@@ -213,7 +221,9 @@ Deno.test({
     assertExists(listData, "List response should include data");
 
     // Count unread manually
-    const unreadCount = listData.items.filter((item: { read: boolean }) => !item.read).length;
+    const unreadCount = listData.items.filter((item: { read: boolean }) =>
+      !item.read
+    ).length;
 
     // Get unread count from endpoint
     const countResponse = await callTRPCEndpoint(
@@ -226,12 +236,17 @@ Deno.test({
 
     const countData = countResponse[0]?.result?.data;
     assertExists(countData, "Unread count should include data");
-    assertEquals(countData.count, unreadCount, "Unread count should match actual unread items");
+    assertEquals(
+      countData.count,
+      unreadCount,
+      "Unread count should match actual unread items",
+    );
   },
 });
 
 Deno.test({
-  name: "Notifications router - user scoping isolates notifications between users",
+  name:
+    "Notifications router - user scoping isolates notifications between users",
   sanitizeResources: false,
   sanitizeOps: false,
   async fn() {
@@ -240,7 +255,7 @@ Deno.test({
     const tokens = await loadCachedTokens();
     assertExists(tokens, "Auth tokens should be cached");
 
-    const { createAdminClient } = await import('../shared/setup');
+    const { createAdminClient } = await import("../shared/setup");
     const admin = createAdminClient();
 
     // Create test notifications for both users
@@ -249,39 +264,53 @@ Deno.test({
 
     // Insert notification for regular user
     const { data: regularNotification, error: regularError } = await admin
-      .schema('core')
-      .from('notifications')
+      .schema("core")
+      .from("notifications")
       .insert({
         user_id: regularUserId,
-        type: 'task_assigned',
-        severity: 'info',
-        title: 'Test notification for regular user',
-        message: 'This notification should only be visible to regular user',
+        type: "task_assigned",
+        severity: "info",
+        title: "Test notification for regular user",
+        message: "This notification should only be visible to regular user",
         read: false,
       })
       .select()
       .single();
 
-    assertExists(regularNotification, "Should create notification for regular user");
-    assertEquals(regularError, null, "Should not have error creating notification");
+    assertExists(
+      regularNotification,
+      "Should create notification for regular user",
+    );
+    assertEquals(
+      regularError,
+      null,
+      "Should not have error creating notification",
+    );
 
     // Insert notification for admin user
     const { data: adminNotification, error: adminError } = await admin
-      .schema('core')
-      .from('notifications')
+      .schema("core")
+      .from("notifications")
       .insert({
         user_id: adminUserId,
-        type: 'task_assigned',
-        severity: 'info',
-        title: 'Test notification for admin user',
-        message: 'This notification should only be visible to admin user',
+        type: "task_assigned",
+        severity: "info",
+        title: "Test notification for admin user",
+        message: "This notification should only be visible to admin user",
         read: false,
       })
       .select()
       .single();
 
-    assertExists(adminNotification, "Should create notification for admin user");
-    assertEquals(adminError, null, "Should not have error creating notification");
+    assertExists(
+      adminNotification,
+      "Should create notification for admin user",
+    );
+    assertEquals(
+      adminError,
+      null,
+      "Should not have error creating notification",
+    );
 
     // Regular user should only see their notification
     const regularListResponse = await callTRPCEndpoint(
@@ -293,17 +322,22 @@ Deno.test({
     );
 
     const regularListData = regularListResponse[0]?.result?.data;
-    assertExists(regularListData, "Regular user list response should include data");
-    const regularNotificationIds = regularListData.items.map((item: { id: string }) => item.id);
+    assertExists(
+      regularListData,
+      "Regular user list response should include data",
+    );
+    const regularNotificationIds = regularListData.items.map((
+      item: { id: string },
+    ) => item.id);
     assertEquals(
       regularNotificationIds.includes(regularNotification.id),
       true,
-      "Regular user should see their own notification"
+      "Regular user should see their own notification",
     );
     assertEquals(
       regularNotificationIds.includes(adminNotification.id),
       false,
-      "Regular user should NOT see admin user's notification"
+      "Regular user should NOT see admin user's notification",
     );
 
     // Admin user should only see their notification
@@ -317,26 +351,35 @@ Deno.test({
 
     const adminListData = adminListResponse[0]?.result?.data;
     assertExists(adminListData, "Admin user list response should include data");
-    const adminNotificationIds = adminListData.items.map((item: { id: string }) => item.id);
+    const adminNotificationIds = adminListData.items.map((
+      item: { id: string },
+    ) => item.id);
     assertEquals(
       adminNotificationIds.includes(adminNotification.id),
       true,
-      "Admin user should see their own notification"
+      "Admin user should see their own notification",
     );
     assertEquals(
       adminNotificationIds.includes(regularNotification.id),
       false,
-      "Admin user should NOT see regular user's notification"
+      "Admin user should NOT see regular user's notification",
     );
 
     // Cleanup
-    await admin.schema('core').from('notifications').delete().eq('id', regularNotification.id);
-    await admin.schema('core').from('notifications').delete().eq('id', adminNotification.id);
+    await admin.schema("core").from("notifications").delete().eq(
+      "id",
+      regularNotification.id,
+    );
+    await admin.schema("core").from("notifications").delete().eq(
+      "id",
+      adminNotification.id,
+    );
   },
 });
 
 Deno.test({
-  name: "Notifications router - soft delete excludes deleted notifications from queries",
+  name:
+    "Notifications router - soft delete excludes deleted notifications from queries",
   sanitizeResources: false,
   sanitizeOps: false,
   async fn() {
@@ -345,28 +388,32 @@ Deno.test({
     const tokens = await loadCachedTokens();
     assertExists(tokens, "Auth tokens should be cached");
 
-    const { createAdminClient } = await import('../shared/setup');
+    const { createAdminClient } = await import("../shared/setup");
     const admin = createAdminClient();
 
     const userId = tokens.regular.userId;
 
     // Create test notification
     const { data: notification, error: insertError } = await admin
-      .schema('core')
-      .from('notifications')
+      .schema("core")
+      .from("notifications")
       .insert({
         user_id: userId,
-        type: 'task_assigned',
-        severity: 'info',
-        title: 'Test notification for soft delete',
-        message: 'This notification will be soft deleted',
+        type: "task_assigned",
+        severity: "info",
+        title: "Test notification for soft delete",
+        message: "This notification will be soft deleted",
         read: false,
       })
       .select()
       .single();
 
     assertExists(notification, "Should create notification");
-    assertEquals(insertError, null, "Should not have error creating notification");
+    assertEquals(
+      insertError,
+      null,
+      "Should not have error creating notification",
+    );
 
     // Verify notification appears in list
     const beforeDeleteResponse = await callTRPCEndpoint(
@@ -379,11 +426,13 @@ Deno.test({
 
     const beforeDeleteData = beforeDeleteResponse[0]?.result?.data;
     assertExists(beforeDeleteData, "List response should include data");
-    const beforeDeleteIds = beforeDeleteData.items.map((item: { id: string }) => item.id);
+    const beforeDeleteIds = beforeDeleteData.items.map((item: { id: string }) =>
+      item.id
+    );
     assertEquals(
       beforeDeleteIds.includes(notification.id),
       true,
-      "Notification should appear in list before deletion"
+      "Notification should appear in list before deletion",
     );
 
     // Soft delete the notification
@@ -410,23 +459,31 @@ Deno.test({
 
     const afterDeleteData = afterDeleteResponse[0]?.result?.data;
     assertExists(afterDeleteData, "List response should include data");
-    const afterDeleteIds = afterDeleteData.items.map((item: { id: string }) => item.id);
+    const afterDeleteIds = afterDeleteData.items.map((item: { id: string }) =>
+      item.id
+    );
     assertEquals(
       afterDeleteIds.includes(notification.id),
       false,
-      "Notification should NOT appear in list after soft delete"
+      "Notification should NOT appear in list after soft delete",
     );
 
     // Verify notification still exists in database with deleted_at set
     const { data: deletedNotification } = await admin
-      .schema('core')
-      .from('notifications')
-      .select('id, deleted_at')
-      .eq('id', notification.id)
+      .schema("core")
+      .from("notifications")
+      .select("id, deleted_at")
+      .eq("id", notification.id)
       .single();
 
-    assertExists(deletedNotification, "Notification should still exist in database");
-    assertExists(deletedNotification.deleted_at, "Notification should have deleted_at timestamp");
+    assertExists(
+      deletedNotification,
+      "Notification should still exist in database",
+    );
+    assertExists(
+      deletedNotification.deleted_at,
+      "Notification should have deleted_at timestamp",
+    );
 
     // Verify unread count excludes deleted notifications
     const countResponse = await callTRPCEndpoint(
@@ -443,20 +500,21 @@ Deno.test({
     assertEquals(
       typeof countData.count,
       "number",
-      "Unread count should be a number"
+      "Unread count should be a number",
     );
 
     // Cleanup - hard delete the test notification
     await admin
-      .schema('core')
-      .from('notifications')
+      .schema("core")
+      .from("notifications")
       .delete()
-      .eq('id', notification.id);
+      .eq("id", notification.id);
   },
 });
 
 Deno.test({
-  name: "Notifications router - audit logging creates entries for all mutations",
+  name:
+    "Notifications router - audit logging creates entries for all mutations",
   sanitizeResources: false,
   sanitizeOps: false,
   async fn() {
@@ -465,37 +523,41 @@ Deno.test({
     const tokens = await loadCachedTokens();
     assertExists(tokens, "Auth tokens should be cached");
 
-    const { createAdminClient } = await import('../shared/setup');
+    const { createAdminClient } = await import("../shared/setup");
     const admin = createAdminClient();
 
     const userId = tokens.regular.userId;
 
     // Create test notification
     const { data: notification, error: insertError } = await admin
-      .schema('core')
-      .from('notifications')
+      .schema("core")
+      .from("notifications")
       .insert({
         user_id: userId,
-        type: 'task_assigned',
-        severity: 'info',
-        title: 'Test notification for audit logging',
-        message: 'This notification will be used to test audit logging',
+        type: "task_assigned",
+        severity: "info",
+        title: "Test notification for audit logging",
+        message: "This notification will be used to test audit logging",
         read: false,
       })
       .select()
       .single();
 
     assertExists(notification, "Should create notification");
-    assertEquals(insertError, null, "Should not have error creating notification");
+    assertEquals(
+      insertError,
+      null,
+      "Should not have error creating notification",
+    );
 
     // Get initial audit log count
     const { data: initialAuditLogs } = await admin
-      .schema('forsured')
-      .from('audit_log')
-      .select('id')
-      .eq('user_id', userId)
-      .eq('table_name', 'notifications')
-      .eq('record_id', notification.id);
+      .schema("forsured")
+      .from("audit_log")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("table_name", "notifications")
+      .eq("record_id", notification.id);
 
     const initialCount = initialAuditLogs?.length ?? 0;
 
@@ -511,27 +573,37 @@ Deno.test({
 
     // Verify audit log entry for markAsRead
     const { data: markReadAuditLogs } = await admin
-      .schema('forsured')
-      .from('audit_log')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('table_name', 'notifications')
-      .order('created_at', { ascending: false })
+      .schema("forsured")
+      .from("audit_log")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("table_name", "notifications")
+      .order("created_at", { ascending: false })
       .limit(5);
 
     assertExists(markReadAuditLogs, "Audit logs should exist");
-    assertEquals(markReadAuditLogs.length > initialCount, true, "Should have new audit log entry");
-    const markReadLog = markReadAuditLogs.find((log: { action: string }) => 
-      log.action === 'notification_markAsRead' || log.action?.includes('markAsRead')
+    assertEquals(
+      markReadAuditLogs.length > initialCount,
+      true,
+      "Should have new audit log entry",
+    );
+    const markReadLog = markReadAuditLogs.find((log: { action: string }) =>
+      log.action === "notification_markAsRead" ||
+      log.action?.includes("markAsRead")
     );
     assertExists(markReadLog, "Should have audit log entry for markAsRead");
-    assertEquals(markReadLog.operation, "UPDATE", "Audit log should have UPDATE operation");
     assertEquals(
-      markReadLog.changed_fields?.includes("read") || 
-      markReadLog.changed_fields?.includes("read_at") ||
-      (markReadLog.metadata as { notification_ids?: string[] })?.notification_ids?.includes(notification.id),
+      markReadLog.operation,
+      "UPDATE",
+      "Audit log should have UPDATE operation",
+    );
+    assertEquals(
+      markReadLog.changed_fields?.includes("read") ||
+        markReadLog.changed_fields?.includes("read_at") ||
+        (markReadLog.metadata as { notification_ids?: string[] })
+          ?.notification_ids?.includes(notification.id),
       true,
-      "Audit log should reference the notification"
+      "Audit log should reference the notification",
     );
 
     // Test archiveMany - should create audit log
@@ -546,25 +618,31 @@ Deno.test({
 
     // Verify audit log entry for archiveMany
     const { data: archiveAuditLogs } = await admin
-      .schema('forsured')
-      .from('audit_log')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('table_name', 'notifications')
-      .order('created_at', { ascending: false })
+      .schema("forsured")
+      .from("audit_log")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("table_name", "notifications")
+      .order("created_at", { ascending: false })
       .limit(5);
 
     assertExists(archiveAuditLogs, "Audit logs should exist");
-    const archiveLog = archiveAuditLogs.find((log: { action: string }) => 
-      log.action === 'notification_archiveMany' || log.action?.includes('archive')
+    const archiveLog = archiveAuditLogs.find((log: { action: string }) =>
+      log.action === "notification_archiveMany" ||
+      log.action?.includes("archive")
     );
     assertExists(archiveLog, "Should have audit log entry for archiveMany");
-    assertEquals(archiveLog.operation, "UPDATE", "Audit log should have UPDATE operation");
+    assertEquals(
+      archiveLog.operation,
+      "UPDATE",
+      "Audit log should have UPDATE operation",
+    );
     assertEquals(
       archiveLog.changed_fields?.includes("archived_at") ||
-      (archiveLog.metadata as { notification_ids?: string[] })?.notification_ids?.includes(notification.id),
+        (archiveLog.metadata as { notification_ids?: string[] })
+          ?.notification_ids?.includes(notification.id),
       true,
-      "Audit log should reference the notification"
+      "Audit log should reference the notification",
     );
 
     // Test deleteMany - should create audit log
@@ -579,37 +657,42 @@ Deno.test({
 
     // Verify audit log entry for deleteMany
     const { data: deleteAuditLogs } = await admin
-      .schema('forsured')
-      .from('audit_log')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('table_name', 'notifications')
-      .order('created_at', { ascending: false })
+      .schema("forsured")
+      .from("audit_log")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("table_name", "notifications")
+      .order("created_at", { ascending: false })
       .limit(5);
 
     assertExists(deleteAuditLogs, "Audit logs should exist");
-    const deleteLog = deleteAuditLogs.find((log: { action: string }) => 
-      log.action === 'notification_deleteMany' || log.action?.includes('delete')
+    const deleteLog = deleteAuditLogs.find((log: { action: string }) =>
+      log.action === "notification_deleteMany" || log.action?.includes("delete")
     );
     assertExists(deleteLog, "Should have audit log entry for deleteMany");
-    assertEquals(deleteLog.operation, "DELETE", "Audit log should have DELETE operation (soft delete)");
+    assertEquals(
+      deleteLog.operation,
+      "DELETE",
+      "Audit log should have DELETE operation (soft delete)",
+    );
     assertEquals(
       deleteLog.changed_fields?.includes("deleted_at") ||
-      (deleteLog.metadata as { notification_ids?: string[] })?.notification_ids?.includes(notification.id),
+        (deleteLog.metadata as { notification_ids?: string[] })
+          ?.notification_ids?.includes(notification.id),
       true,
-      "Audit log should reference the notification"
+      "Audit log should reference the notification",
     );
 
     // Cleanup - hard delete the test notification and audit logs
     await admin
-      .schema('core')
-      .from('notifications')
+      .schema("core")
+      .from("notifications")
       .delete()
-      .eq('id', notification.id);
+      .eq("id", notification.id);
     await admin
-      .schema('forsured')
-      .from('audit_log')
+      .schema("forsured")
+      .from("audit_log")
       .delete()
-      .eq('record_id', notification.id);
+      .eq("record_id", notification.id);
   },
 });

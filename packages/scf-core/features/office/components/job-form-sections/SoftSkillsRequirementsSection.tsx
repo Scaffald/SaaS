@@ -1,7 +1,8 @@
-import { api } from '@scf/core/utils/api'
-import { Button, Text, XStack, YStack } from '@unicornlove/ui'
+import { useSoftSkillsByCategory } from '@scf/core/utils/reviews-sdk-hooks'
+import { Button, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { useState } from 'react'
-import { Label, Spinner } from '@unicornlove/ui'
+import { Label, Spinner } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface SoftSkillsRequirementsSectionProps {
   requiredSoftSkills?: Array<{ skill_id: string; importance: number }> | null
@@ -27,7 +28,8 @@ export function SoftSkillsRequirementsSection({
   requiredSoftSkills,
   onUpdate,
 }: SoftSkillsRequirementsSectionProps) {
-  const { data: softSkillsData, isLoading } = api.reviews.getSoftSkillsByCategory.useQuery()
+  const { theme } = useThemeContext()
+  const { data: softSkillsData, isLoading } = useSoftSkillsByCategory()
 
   const [selectedSkills, setSelectedSkills] = useState<Map<string, number>>(() => {
     const map = new Map<string, number>()
@@ -78,163 +80,151 @@ export function SoftSkillsRequirementsSection({
 
   if (isLoading) {
     return (
-      <YStack
-        gap="$4"
-        padding="$4"
-        backgroundColor="$background"
-        borderRadius="$4"
+      <Stack
+        gap={16}
+        padding="md"
+        style={{ backgroundColor: colors.bg[theme].default }}
+        borderRadius={16}
         borderWidth={1}
-        borderColor="$borderColor"
+        borderColor={colors.border[theme].default}
       >
-        <Text fontSize="$6" fontWeight="600">
-          Soft Skills Requirements
-        </Text>
-        <YStack alignItems="center" padding="$4">
-          <Spinner size="large" color="$blue10" />
-          <Text marginTop="$2" color="$color11">
+        <Text>Soft Skills Requirements</Text>
+        <Stack align="center" padding="md">
+          <Spinner size="lg" color="primary" />
+          <Text style={{ marginTop: 8, color: colors.text[theme].secondary }}>
             Loading soft skills catalog...
           </Text>
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
   if (!softSkillsData || Object.keys(softSkillsData).length === 0) {
     return (
-      <YStack
-        gap="$4"
-        padding="$4"
-        backgroundColor="$background"
-        borderRadius="$4"
+      <Stack
+        gap={16}
+        padding="md"
+        style={{ backgroundColor: colors.bg[theme].default }}
+        borderRadius={16}
         borderWidth={1}
-        borderColor="$borderColor"
+        borderColor={colors.border[theme].default}
       >
-        <Text fontSize="$6" fontWeight="600">
-          Soft Skills Requirements
-        </Text>
-        <Text fontSize="$3" color="$color11">
+        <Text>Soft Skills Requirements</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
           Soft skills catalog is not available.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   const selectedCount = selectedSkills.size
 
   return (
-    <YStack
-      gap="$4"
-      padding="$4"
-      backgroundColor="$background"
-      borderRadius="$4"
+    <Stack
+      gap={16}
+      padding="md"
+      style={{ backgroundColor: colors.bg[theme].default }}
+      borderRadius={16}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
     >
-      <YStack gap="$2">
-        <Text fontSize="$6" fontWeight="600">
-          Soft Skills Requirements
-        </Text>
-        <Text fontSize="$2" color="$color10">
+      <Stack gap={8}>
+        <Text>Soft Skills Requirements</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
           Select which soft skills are required for this job and set their importance level (1-5).
           Candidates will see how well their soft skills match your requirements.
         </Text>
         {selectedCount > 0 && (
-          <Text fontSize="$3" color="$blue11" fontWeight="600">
+          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
             {selectedCount} {selectedCount === 1 ? 'skill' : 'skills'} selected
           </Text>
         )}
-      </YStack>
+      </Stack>
 
       {/* Soft Skills by Category */}
       {Object.entries(softSkillsData).map(([category, skills]) => {
         if (!Array.isArray(skills) || skills.length === 0) return null
 
         return (
-          <YStack key={category} gap="$3">
-            <Text fontSize="$4" fontWeight="600" color="$color12">
+          <Stack key={category} gap={12}>
+            <Text style={{ color: colors.text[theme].secondary }}>
               {categoryLabels[category] || category.charAt(0).toUpperCase() + category.slice(1)}
             </Text>
-            <XStack gap="$2" flexWrap="wrap">
+            <Row gap={8} wrap>
               {skills.map((skill) => {
                 const isSelected = selectedSkills.has(skill.id)
                 const importance = selectedSkills.get(skill.id) ?? 3
 
                 return (
-                  <YStack key={skill.id} gap="$2">
+                  <Stack key={skill.id} gap={8}>
                     <Button
-                      size="$3"
-                      variant={isSelected ? 'outlined' : 'outlined'}
-                      theme={isSelected ? 'blue' : undefined}
+                      size="sm"
+                      variant="outline"
+                      color={isSelected ? 'primary' : 'gray'}
                       onPress={() => handleSkillToggle(skill.id)}
                     >
                       {skill.name}
                     </Button>
                     {isSelected && (
-                      <YStack gap="$1">
-                        <Label fontSize="$2" color="$color11">
+                      <Stack gap={4}>
+                        <Label style={{ color: colors.text[theme].secondary }}>
                           Importance:{' '}
                           {IMPORTANCE_LABELS[importance as keyof typeof IMPORTANCE_LABELS]}
                         </Label>
-                        <XStack gap="$1">
+                        <Row gap={4}>
                           {[1, 2, 3, 4, 5].map((level) => (
                             <Button
                               key={level}
-                              size="$2"
-                              variant={importance === level ? 'outlined' : 'outlined'}
-                              theme={importance === level ? 'blue' : undefined}
+                              size="sm"
+                              variant="outline"
+                              color={importance === level ? 'primary' : 'gray'}
                               onPress={() => handleImportanceChange(skill.id, level)}
                             >
                               {level}
                             </Button>
                           ))}
-                        </XStack>
-                      </YStack>
+                        </Row>
+                      </Stack>
                     )}
-                  </YStack>
+                  </Stack>
                 )
               })}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         )
       })}
 
       {/* Preview Section */}
       {selectedCount > 0 && (
-        <YStack
-          gap="$2"
-          padding="$3"
-          backgroundColor="$blue2"
-          borderRadius="$3"
+        <Stack
+          gap={8}
+          padding="sm"
+          style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
+          borderRadius={12}
           borderWidth={1}
-          borderColor="$blue7"
+          borderColor={theme === "light" ? colors.blue[300] : colors.blue[700]}
         >
-          <Text fontSize="$4" fontWeight="600" color="$blue11">
+          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
             Preview: How candidates will see this
           </Text>
-          <YStack gap="$1">
+          <Stack gap={4}>
             {Array.from(selectedSkills.entries()).map(([skillId, importance]) => {
-              type SoftSkill = {
-                id?: string
-                name?: string
-                category?: string
-                [key: string]: unknown
-              }
-              const skill = (Object.values(softSkillsData) as Array<SoftSkill[]>)
-                .flat()
-                .find((s) => (s as SoftSkill).id === skillId)
+              type SoftSkill = { id?: string; name?: string; category?: string; [key: string]: unknown }
+              const skillsArray = Object.values(softSkillsData) as unknown as SoftSkill[][]
+              const skill = skillsArray.flat().find((s) => s.id === skillId)
               if (!skill) return null
 
               const importanceLabel =
                 IMPORTANCE_LABELS[importance as keyof typeof IMPORTANCE_LABELS]
               return (
-                <Text key={skillId} fontSize="$3" color="$blue11">
+                <Text key={skillId} style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
                   • {skill.name} ({importanceLabel} - {importance}/5)
                 </Text>
               )
             })}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

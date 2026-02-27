@@ -4,10 +4,10 @@ import { NarrativeView } from '@scf/core/features/ipip-assessment/components/Nar
 import { normalizeScores } from '@scf/core/features/ipip-assessment/utils/scoreNormalizer'
 import type { IPIPAnswer } from '@scf/core/features/personality-assessment/lib/ipip'
 import { getResults, getScore } from '@scf/core/features/personality-assessment/lib/ipip'
-import { api } from '@scf/core/utils/api'
+import { useSharedPersonalityResults } from '@scf/core/utils/personality-assessment-sdk-hooks'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Tabs, Text, YStack } from '@unicornlove/ui'
+import { Button, Tabs, Text, Stack } from '@scaffald/ui'
 
 /**
  * Shared IPIP Results Page Route
@@ -22,16 +22,12 @@ export default function SharedIPIPResultsRoute() {
     data: sharedResults,
     isLoading,
     error,
-  } = api.personalityAssessment.getSharedResults.useQuery(
-    { token: token || '' },
-    {
-      enabled: !!token,
-      gcTime: 1000 * 60 * 30,
-      refetchOnWindowFocus: false,
-      retry: false,
-      staleTime: 1000 * 60 * 5,
-    }
-  )
+  } = useSharedPersonalityResults(token || undefined, {
+    enabled: !!token,
+    gcTime: 1000 * 60 * 30,
+    staleTime: 1000 * 60 * 5,
+    retry: false,
+  })
 
   // Process shared results data
   const processedResults = useMemo(() => {
@@ -54,72 +50,48 @@ export default function SharedIPIPResultsRoute() {
 
   if (isLoading) {
     return (
-      <YStack gap="$4" padding="$8" alignItems="center">
-        <Text fontSize="$5" color="$color11">
-          Loading shared results...
-        </Text>
-      </YStack>
+      <Stack gap={16} padding={32} align="center">
+        <Text color="gray">Loading shared results...</Text>
+      </Stack>
     )
   }
 
   if (error || !sharedResults) {
     return (
-      <YStack gap="$4" padding="$8" alignItems="center">
-        <Text fontSize="$5" color="$red10" fontWeight="600">
+      <Stack gap={16} padding={32} align="center">
+        <Text color="red" style={{ fontWeight: '600' }}>
           {error?.message || 'Results Not Found'}
         </Text>
-        <Text fontSize="$4" color="$color11">
-          This share link may be invalid, expired, or revoked.
-        </Text>
+        <Text color="gray">This share link may be invalid, expired, or revoked.</Text>
         <Button onPress={() => router.push(ROUTES.DASHBOARD.path)}>Return to Dashboard</Button>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$6" width="100%" padding="$4" style={{ alignSelf: 'center', maxWidth: 1000 }}>
+    <Stack gap={24} width="100%" padding={16} style={{ alignSelf: 'center', maxWidth: 1000 }}>
       {/* Header */}
-      <YStack gap="$2">
-        <Text fontSize="$8" fontWeight="bold" color="$color12">
+      <Stack gap={8}>
+        <Text style={{ fontWeight: 'bold' }} color="gray">
           Shared Personality Results
         </Text>
-        <Text fontSize="$4" color="$color11">
-          Viewing shared Big Five personality assessment results.
-        </Text>
-      </YStack>
+        <Text color="gray">Viewing shared Big Five personality assessment results.</Text>
+      </Stack>
 
       {/* Tab Navigation */}
       <Tabs
         value={activeTab}
         onValueChange={(value) => setActiveTab(value as 'narrative' | 'chart')}
-        orientation="horizontal"
-        flexDirection="column"
       >
-        <Tabs.List
-          separator={<YStack width="$1" />}
-          disablePassBorderRadius="bottom"
-          aria-label="Manage your personality results view"
-        >
-          <Tabs.Tab flex={1} value="narrative">
-            <Text fontSize="$4" fontWeight="600">
-              Narrative View
-            </Text>
-          </Tabs.Tab>
-          <Tabs.Tab flex={1} value="chart">
-            <Text fontSize="$4" fontWeight="600">
-              Chart View
-            </Text>
-          </Tabs.Tab>
-        </Tabs.List>
+        <Tabs.Item value="narrative">
+          <Tabs.Trigger>Narrative View</Tabs.Trigger>
+        </Tabs.Item>
+        <Tabs.Item value="chart">
+          <Tabs.Trigger>Chart View</Tabs.Trigger>
+        </Tabs.Item>
 
-        <Tabs.Content value="narrative" padding="$4">
-          <YStack
-            backgroundColor="$color1"
-            borderRadius="$4"
-            borderWidth={1}
-            borderColor="$borderColor"
-            padding="$4"
-          >
+        <Tabs.Content value="narrative">
+          <Stack padding={16}>
             {processedResults ? (
               <NarrativeView
                 scores={processedResults.scores}
@@ -129,23 +101,15 @@ export default function SharedIPIPResultsRoute() {
                 completedDomains={5}
               />
             ) : (
-              <YStack alignItems="center" padding="$4">
-                <Text fontSize="$4" color="$color11">
-                  Processing results...
-                </Text>
-              </YStack>
+              <Stack align="center" padding={16}>
+                <Text color="gray">Processing results...</Text>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
         </Tabs.Content>
 
-        <Tabs.Content value="chart" padding="$4">
-          <YStack
-            backgroundColor="$color1"
-            borderRadius="$4"
-            borderWidth={1}
-            borderColor="$borderColor"
-            padding="$4"
-          >
+        <Tabs.Content value="chart">
+          <Stack padding={16}>
             {processedResults ? (
               <ChartView
                 scores={processedResults.scores}
@@ -163,15 +127,13 @@ export default function SharedIPIPResultsRoute() {
                 completedDomains={5}
               />
             ) : (
-              <YStack alignItems="center" padding="$4">
-                <Text fontSize="$4" color="$color11">
-                  Processing results...
-                </Text>
-              </YStack>
+              <Stack align="center" padding={16}>
+                <Text color="gray">Processing results...</Text>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
         </Tabs.Content>
       </Tabs>
-    </YStack>
+    </Stack>
   )
 }

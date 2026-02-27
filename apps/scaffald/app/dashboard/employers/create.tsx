@@ -2,9 +2,9 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { normalizeOrganizationSlug } from '@scf/core/features/discover/utils/normalizeOrganizationSlug'
 import { OrganizationRequestForm } from '@scf/core/features/organizations/components/OrganizationRequestForm'
-import { Building2, Info } from '@tamagui/lucide-icons'
+import { Building2, Info } from 'lucide-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Button, Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Row, Separator, Stack, Text } from '@scaffald/ui'
 
 export default function DashboardOrganizationCreatePage() {
   const router = useRouter()
@@ -19,50 +19,51 @@ export default function DashboardOrganizationCreatePage() {
   const form = <OrganizationRequestForm defaultName={defaultName} defaultSlug={defaultSlug} />
 
   const sidebar = (
-    <YStack gap="$4">
-      <YStack gap="$2">
-        <XStack gap="$2" alignItems="center">
-          <Building2 size={20} color="$blue10" />
-          <Text fontSize="$5" fontWeight="700" color="$color12">
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Row gap={8} align="center">
+          <Building2 size={20} color="#3b82f6" />
+          <Text size="lg" weight="bold">
             What happens next
           </Text>
-        </XStack>
-        <Text fontSize="$3" color="$color11">
+        </Row>
+        <Text size="sm" color="gray">
           Share a few details that help our moderators validate your organization. We&apos;ll
           confirm there are no duplicates and publish it once approved.
         </Text>
-      </YStack>
+      </Stack>
 
       <Separator />
 
-      <YStack gap="$3">
-        <XStack gap="$2" alignItems="center">
-          <Info size={18} color="$color10" />
-          <Text fontSize="$4" fontWeight="600" color="$color10">
+      <Stack gap={12}>
+        <Row gap={8} align="center">
+          <Info size={18} color="#6b7280" />
+          <Text size="md" weight="semibold" color="#6b7280">
             Tips for faster approval
           </Text>
-        </XStack>
-        <Text fontSize="$3" color="$color10">
-          - Provide the organization’s public-facing name and slug
+        </Row>
+        <Text size="sm" color="#6b7280">
+          - Provide the organization's public-facing name and slug
         </Text>
-        <Text fontSize="$3" color="$color10">
+        <Text size="sm" color="#6b7280">
           - Include a website or reference link so we can verify quickly
         </Text>
-        <Text fontSize="$3" color="$color10">
+        <Text size="sm" color="#6b7280">
           - Add any context (e.g., location, contacts) in the notes field
         </Text>
-      </YStack>
+      </Stack>
 
       <Separator />
 
       <Button
-        size="$3"
-        variant="outlined"
+        size="sm"
+        variant="outline"
+        color="primary"
         onPress={() => router.replace(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path)}
       >
         Back to Discover
       </Button>
-    </YStack>
+    </Stack>
   )
 
   return <DashboardPage showBreadcrumb={false} leftContent={form} rightContent={sidebar} />

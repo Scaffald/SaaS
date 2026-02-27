@@ -1,4 +1,4 @@
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 interface ComparisonFieldProps {
   label: string
@@ -9,25 +9,17 @@ interface ComparisonFieldProps {
 
 export function ComparisonField({ label, value, isDifferent, description }: ComparisonFieldProps) {
   return (
-    <YStack
+    <Stack
       backgroundColor={isDifferent ? '$yellow2' : 'transparent'}
-      padding="$2"
-      borderRadius="$2"
-      gap="$1"
+      padding="xs"
+      borderRadius={8}
+      gap={4}
     >
-      <XStack justifyContent="space-between" alignItems="center">
-        <Text fontSize="$3" color="$color11">
-          {label}
-        </Text>
-        <Text fontSize="$3" fontWeight="500" color={isDifferent ? '$yellow11' : '$color12'}>
-          {value}
-        </Text>
-      </XStack>
-      {description && (
-        <Text fontSize="$2" color="$color10">
-          {description}
-        </Text>
-      )}
-    </YStack>
+      <Row justify="space-between" align="center">
+        <Text color="$gray11">{label}</Text>
+        <Text color={isDifferent ? '$yellow11' : '$color12'}>{value}</Text>
+      </Row>
+      {description && <Text color="$gray11">{description}</Text>}
+    </Stack>
   )
 }

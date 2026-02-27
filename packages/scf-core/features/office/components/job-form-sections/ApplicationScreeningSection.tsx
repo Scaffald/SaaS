@@ -1,6 +1,14 @@
-import { ResponsiveSelect, Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
+import {
+  ResponsiveSelect,
+  Text,
+  ToggleSwitch,
+  Row,
+  Stack,
+  useThemeContext,
+} from '@scaffald/ui'
 import { useState } from 'react'
-import { Label } from '@unicornlove/ui'
+import { Label } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface ApplicationScreeningSectionProps {
   requireCurrentLocation: boolean
@@ -35,6 +43,7 @@ export function ApplicationScreeningSection({
   requireEarliestStartDate,
   onUpdate,
 }: ApplicationScreeningSectionProps) {
+  const { theme } = useThemeContext()
   const [localState, setLocalState] = useState({
     require_current_location: requireCurrentLocation,
     require_relocation_willingness: requireRelocationWillingness,
@@ -65,60 +74,58 @@ export function ApplicationScreeningSection({
   }
 
   return (
-    <YStack gap="$4">
+    <Stack gap={16}>
       {/* Current Location */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Current location</Label>
-        </YStack>
-        <XStack gap="$2" alignItems="center">
-          <Text fontSize="$2" color="$color10">
+        </Stack>
+        <Row gap={8} align="center">
+          <Text style={{ color: colors.text[theme].secondary }}>
             {localState.require_current_location ? '1' : '0'}
           </Text>
           <ToggleSwitch
             checked={localState.require_current_location}
-            onCheckedChange={(checked) => handleChange('require_current_location', checked)}
+            onChange={(checked) => handleChange('require_current_location', checked)}
             aria-label="Require current location"
           />
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* Willing to Relocate */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Willing to relocate</Label>
-        </YStack>
-        <XStack gap="$2" alignItems="center">
-          <Text fontSize="$2" color="$color10">
+        </Stack>
+        <Row gap={8} align="center">
+          <Text style={{ color: colors.text[theme].secondary }}>
             {localState.require_relocation_willingness ? '1' : '0'}
           </Text>
           <ToggleSwitch
             checked={localState.require_relocation_willingness}
-            onCheckedChange={(checked) => handleChange('require_relocation_willingness', checked)}
+            onChange={(checked) => handleChange('require_relocation_willingness', checked)}
             aria-label="Require relocation willingness"
           />
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* Minimum Years of Experience */}
-      <YStack gap="$2">
-        <XStack gap="$3" alignItems="center" justifyContent="space-between">
-          <YStack gap="$1" flex={1}>
+      <Stack gap={8}>
+        <Row gap={12} align="center" justify="space-between">
+          <Stack gap={4} flex={1}>
             <Label>Minimum years of experience</Label>
-          </YStack>
-          <XStack gap="$2" alignItems="center">
-            <Text fontSize="$2" color="$color10">
+          </Stack>
+          <Row gap={8} align="center">
+            <Text style={{ color: colors.text[theme].secondary }}>
               {localState.minimum_years_experience_enabled ? '1' : '0'}
             </Text>
             <ToggleSwitch
               checked={localState.minimum_years_experience_enabled}
-              onCheckedChange={(checked) =>
-                handleChange('minimum_years_experience_enabled', checked)
-              }
+              onChange={(checked) => handleChange('minimum_years_experience_enabled', checked)}
               aria-label="Require minimum years of experience"
             />
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
         {localState.minimum_years_experience_enabled && (
           <ResponsiveSelect
             value={localState.minimum_years_experience?.toString() || ''}
@@ -132,41 +139,41 @@ export function ApplicationScreeningSection({
             }))}
           />
         )}
-      </YStack>
+      </Stack>
 
       {/* Work Authorization */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Authorized to work in US</Label>
-        </YStack>
-        <XStack gap="$2" alignItems="center">
-          <Text fontSize="$2" color="$color10">
+        </Stack>
+        <Row gap={8} align="center">
+          <Text style={{ color: colors.text[theme].secondary }}>
             {localState.require_work_authorization ? '1' : '0'}
           </Text>
           <ToggleSwitch
             checked={localState.require_work_authorization}
-            onCheckedChange={(checked) => handleChange('require_work_authorization', checked)}
+            onChange={(checked) => handleChange('require_work_authorization', checked)}
             aria-label="Require work authorization"
           />
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {/* Earliest Start Date */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Earliest start date</Label>
-        </YStack>
-        <XStack gap="$2" alignItems="center">
-          <Text fontSize="$2" color="$color10">
+        </Stack>
+        <Row gap={8} align="center">
+          <Text style={{ color: colors.text[theme].secondary }}>
             {localState.require_earliest_start_date ? '1' : '0'}
           </Text>
           <ToggleSwitch
             checked={localState.require_earliest_start_date}
-            onCheckedChange={(checked) => handleChange('require_earliest_start_date', checked)}
+            onChange={(checked) => handleChange('require_earliest_start_date', checked)}
             aria-label="Require earliest start date"
           />
-        </XStack>
-      </XStack>
-    </YStack>
+        </Row>
+      </Row>
+    </Stack>
   )
 }

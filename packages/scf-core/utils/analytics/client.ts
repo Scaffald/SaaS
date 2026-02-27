@@ -14,7 +14,7 @@
 
 // Export all analytics client functionality
 // The actual exports will be resolved from platform-specific files at build time
-export * from './client.web';
+export * from './client.web'
 
 // Re-export types for convenience
-export type { EventProperties, InitAnalyticsOptions } from './types';
+export type { EventProperties, InitAnalyticsOptions } from './types'

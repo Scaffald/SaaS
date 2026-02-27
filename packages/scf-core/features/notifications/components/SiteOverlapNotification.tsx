@@ -1,7 +1,7 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { AlertTriangle, MapPin, MessageSquare, X } from '@tamagui/lucide-icons'
+import { AlertTriangle, MapPin, MessageSquare, X } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Button, Card, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Text, Row, Stack } from '@scaffald/ui'
 
 export interface SiteOverlapNotificationProps {
   notificationId: string
@@ -52,51 +52,49 @@ export function SiteOverlapNotification({
   }
 
   return (
-    <Card padding="$4" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={2}>
-      <YStack gap="$4">
-        <XStack gap="$3" alignItems="flex-start">
+    <Card padding="md" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={2}>
+      <Stack gap={16}>
+        <Row gap={12} align="flex-start">
           <AlertTriangle size={24} color="$yellow11" />
-          <YStack flex={1} gap="$2">
-            <Text fontSize="$5" fontWeight="600" color="$yellow11">
-              Site Overlap Detected
-            </Text>
-            <Text fontSize="$3" color="$gray11">
+          <Stack flex={1} gap={8}>
+            <Text color="$yellow11">Site Overlap Detected</Text>
+            <Text color="$gray11">
               Site boundaries overlap by {overlapPercent}% (threshold: {threshold}%)
             </Text>
-            <XStack gap="$2" flexWrap="wrap">
-              <Card padding="$2" backgroundColor="$yellow3" borderRadius="$2">
-                <XStack gap="$2" alignItems="center">
-                  <MapPin size={14} />
-                  <Text fontSize="$2">Site 1: {siteId.slice(0, 8)}...</Text>
-                </XStack>
+            <Row gap={8} wrap>
+              <Card padding="sm" backgroundColor="$yellow3" radius="md">
+                <Row gap={8} align="center">
+                  <MapPin size={24} />
+                  <Text>Site 1: {siteId.slice(0, 8)}...</Text>
+                </Row>
               </Card>
-              <Card padding="$2" backgroundColor="$yellow3" borderRadius="$2">
-                <XStack gap="$2" alignItems="center">
-                  <MapPin size={14} />
-                  <Text fontSize="$2">Site 2: {overlappingSiteId.slice(0, 8)}...</Text>
-                </XStack>
+              <Card padding="sm" backgroundColor="$yellow3" radius="md">
+                <Row gap={8} align="center">
+                  <MapPin size={24} />
+                  <Text>Site 2: {overlappingSiteId.slice(0, 8)}...</Text>
+                </Row>
               </Card>
-            </XStack>
-          </YStack>
-        </XStack>
+            </Row>
+          </Stack>
+        </Row>
 
-        <XStack gap="$2" flexWrap="wrap" justifyContent="flex-end">
+        <Row gap={8} wrap justify="flex-end">
           <Button
-            size="$3"
-            variant="outlined"
-            icon={MessageSquare}
+            size="sm"
+            variant="outline"
+            iconStart={MessageSquare}
             onPress={handleRequestSurveyData}
           >
             Request Survey Data
           </Button>
-          <Button size="$3" variant="outlined" icon={MapPin} onPress={handleAdjustBoundaries}>
+          <Button size="sm" variant="outline" iconStart={MapPin} onPress={handleAdjustBoundaries}>
             Adjust Boundaries
           </Button>
-          <Button size="$3" variant="outlined" icon={X} onPress={handleDismiss}>
+          <Button size="sm" variant="outline" iconStart={X} onPress={handleDismiss}>
             Dismiss
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </Card>
   )
 }

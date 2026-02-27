@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const projectRoot = path.resolve(__dirname, '..')
-const expoPackagePath = path.join(projectRoot, 'apps/expo/package.json')
+const expoPackagePath = path.join(projectRoot, 'apps/scaffald/package.json')
 
 const newVersion = process.env.npm_package_version || process.argv[2]
 
@@ -20,7 +20,7 @@ try {
   const packageJson = JSON.parse(readFileSync(expoPackagePath, 'utf8'))
   packageJson.version = newVersion
   writeFileSync(expoPackagePath, `${JSON.stringify(packageJson, null, 2)}\n`)
-  console.log(`Updated apps/expo/package.json to version ${newVersion}`)
+  console.log(`Updated apps/scaffald/package.json to version ${newVersion}`)
 } catch (error) {
   console.error('Failed to update version:', error.message)
   process.exit(1)

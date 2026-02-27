@@ -3,9 +3,9 @@
  * Re-exports from @scf/trpc package to avoid importing Deno-specific code
  */
 
-// Re-export AppRouter type using safe type export to avoid @ts-nocheck issues
-// The app-router-safe-type.ts provides a fallback that prevents type inference failures
-export type { AppRouter } from './app-router-safe-type'
+// Re-export AppRouter type - use fallback when Deno router type fails to resolve
+// The fallback prevents Deno-specific errors from surfacing in Node.js type-checks
+export type { AppRouter } from './app-router-fallback'
 
 // Re-export types from @scf/trpc schemas
 export type {

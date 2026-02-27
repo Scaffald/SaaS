@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Toaster } from 'sonner';
-import { LiveRegion } from '@unicornlove/beyond-ui';
+import { LiveRegion } from '@scaffald/ui';
 import AppRoutes from './router';
 import { FeedbackButton, FeedbackModal } from './components/Feedback';
 import { CommandMenuProvider } from './contexts/CommandMenuContext';

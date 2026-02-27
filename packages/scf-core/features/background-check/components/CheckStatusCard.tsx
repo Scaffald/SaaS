@@ -1,8 +1,8 @@
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
-import { DashboardWidget } from '@unicornlove/ui'
-import { AlertTriangle, Eye, RefreshCcw } from '@tamagui/lucide-icons'
+import { DashboardWidget } from '@scaffald/ui'
+import { AlertTriangle, Eye, RefreshCcw } from 'lucide-react-native'
 import { memo, useMemo } from 'react'
-import { Button, Progress, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, ProgressBarBase, Text, Row, Stack } from '@scaffald/ui'
 
 import {
   type BackgroundCheckSummary,
@@ -53,41 +53,33 @@ export const CheckStatusCard = memo(function CheckStatusCard({
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
-        <XStack justifyContent="space-between" alignItems="flex-start" gap="$4" flexWrap="wrap">
-          <YStack gap="$1" flex={1}>
-            <Text fontSize="$5" fontWeight="600" color="$color12">
-              {packageLabel}
-            </Text>
-            <Text fontSize="$2" color="$color10">
-              Started {formatDate(check.created_at)}
-            </Text>
+      <Stack gap={16}>
+        <Row justify="space-between" align="flex-start" gap={16} wrap>
+          <Stack gap={4} flex={1}>
+            <Text color="$gray11">{packageLabel}</Text>
+            <Text color="$gray11">Started {formatDate(check.created_at)}</Text>
             {estimatedCompletion && (
-              <Text fontSize="$2" color="$color10">
-                Est. completion {formatDate(estimatedCompletion)}
-              </Text>
+              <Text color="$gray11">Est. completion {formatDate(estimatedCompletion)}</Text>
             )}
-          </YStack>
+          </Stack>
 
-          <YStack gap="$2" alignItems="flex-end">
-            <XStack
-              paddingHorizontal="$3"
-              paddingVertical="$1"
+          <Stack gap={8} align="flex-end">
+            <Row
+              paddingHorizontal={12}
+              paddingVertical={4}
               backgroundColor={statusColors.background}
               borderWidth={1}
               borderColor={statusColors.border}
-              borderRadius="$3"
-              alignItems="center"
-              gap="$2"
+              borderRadius={12}
+              align="center"
+              gap={8}
             >
-              <Text fontSize="$2" fontWeight="600" color={statusColors.text}>
-                {statusMeta.label}
-              </Text>
-            </XStack>
+              <Text color={statusColors.text}>{statusMeta.label}</Text>
+            </Row>
             {check.expires_at && (
-              <XStack alignItems="center" gap="$2">
-                {expirationWarning && <AlertTriangle size={14} color="$yellow10" />}
-                <Text fontSize="$2" color={expirationWarning ? '$yellow10' : '$color10'}>
+              <Row align="center" gap={8}>
+                {expirationWarning && <AlertTriangle size="md" color="$yellow10" />}
+                <Text color={expirationWarning ? '$yellow10' : '$color10'}>
                   {expired
                     ? `Expired ${formatDate(check.expires_at)}`
                     : `Expires ${formatDate(check.expires_at)}${
@@ -96,53 +88,45 @@ export const CheckStatusCard = memo(function CheckStatusCard({
                           : ''
                       }`}
                 </Text>
-              </XStack>
+              </Row>
             )}
-          </YStack>
-        </XStack>
+          </Stack>
+        </Row>
 
-        <YStack gap="$2">
-          <XStack justifyContent="space-between" alignItems="center">
-            <Text fontSize="$3" fontWeight="500" color="$color12">
-              Progress
-            </Text>
-            <Text fontSize="$2" color="$color10">
-              {progress}%
-            </Text>
-          </XStack>
-          <Progress value={progress} max={100} backgroundColor="$color3" size="$1">
-            <Progress.Indicator animation="bouncy" backgroundColor={statusColors.border} />
-          </Progress>
-          <Text fontSize="$2" color="$color10">
-            {statusMeta.description}
-          </Text>
-        </YStack>
+        <Stack gap={8}>
+          <Row justify="space-between" align="center">
+            <Text color="$gray11">Progress</Text>
+            <Text color="$gray11">{progress}%</Text>
+          </Row>
+          <ProgressBarBase value={progress} color="primary" />
+          <Text color="$gray11">{statusMeta.description}</Text>
+        </Stack>
 
-        <XStack gap="$2" flexWrap="wrap">
+        <Row gap={8} wrap>
           <Button
-            size="$3"
-            icon={Eye}
+            size="sm"
+            iconStart={Eye}
             onPress={() => onViewDetails(check)}
             accessibilityLabel="View background check details"
           >
             View details
           </Button>
           <Button
-            size="$3"
-            variant="outlined"
-            icon={RefreshCcw}
+            size="sm"
+            variant="outline"
+            iconStart={RefreshCcw}
             onPress={() => onRenew(check)}
             disabled={!renewalEligible}
           >
             Renew
           </Button>
           {onDispute && (
-            <Button size="$3" variant="outlined" theme="warning" onPress={() => onDispute(check)}>
+            <Button size="sm" variant="outline" onPress={() => onDispute(check)}>
               Dispute
             </Button>
           )}
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </DashboardWidget>
   )
 })

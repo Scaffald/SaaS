@@ -100,7 +100,6 @@ pnpm check-deps           # Dependency consistency
 - `pnpm test:lint` - Lint and type check
 - `pnpm test:deps` - Dependency checks
 - `pnpm test:integration` - Integration testing
-- `pnpm test:tamagui` - Tamagui-specific checks
 - `pnpm test:performance` - Performance testing
 - `pnpm test:deno:types` - Deno type checking for Edge Functions
 
@@ -123,16 +122,12 @@ pnpm check-deps           # Dependency consistency
 - `pnpm supa migration:new <name>` - Create new migration
 - `pnpm supa migration:up` - Apply migrations
 
-## UI/Tamagui Commands
+## UI Commands (Beyond UI)
 ### UI Package Operations
 - `pnpm ui:check` - Check UI package
 - `pnpm ui:optimize` - Optimize UI package
 - `pnpm ui:extract` - Extract UI components
-
-### Tamagui Operations
-- `pnpm tamagui:check` - Check Tamagui configuration
-- `pnpm tamagui:upgrade` - Upgrade Tamagui packages
-- `pnpm tamagui:upgrade:canary` - Upgrade to canary versions
+- `pnpm --filter @unicornlove/beyond-ui build` - Build Beyond UI package
 
 ## Build & Deployment
 ### Build Commands

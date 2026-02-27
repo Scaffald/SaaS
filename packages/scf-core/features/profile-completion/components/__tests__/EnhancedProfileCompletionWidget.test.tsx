@@ -22,19 +22,19 @@ vi.mock('../MilestoneBadge', () => ({
   ),
 }))
 
-vi.mock('@unicornlove/ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   DashboardWidget: ({ children }: { children?: ReactNode }) => (
     <div data-testid="dashboard-widget">{children}</div>
   ),
 }))
 
-vi.mock('@tamagui/linear-gradient', () => ({
+vi.mock('expo-linear-gradient', () => ({
   LinearGradient: ({ children }: { children?: ReactNode }) => (
     <div data-testid="linear-gradient">{children}</div>
   ),
 }))
 
-vi.mock('tamagui', () => {
+vi.mock('@scaffald/ui', () => {
   const createStack = (dataTestId: string) =>
     function Stack({
       children,
@@ -117,8 +117,8 @@ vi.mock('tamagui', () => {
   )
 
   return {
-    YStack: createStack('ystack'),
-    XStack: createStack('xstack'),
+    Stack: createStack('ystack'),
+    Row: createStack('xstack'),
     Card,
     CardHeader: Card.Header,
     Button,

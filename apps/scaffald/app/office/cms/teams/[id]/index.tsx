@@ -6,29 +6,16 @@ import {
   TeamMembersList,
   TeamOverviewCard,
 } from '@scf/core/features/office/teams'
-import { api } from '@scf/core/utils/api'
+import { useOfficeListJobs } from '@scf/core/utils/jobs-sdk-hooks'
+import { useTeam, useTeamMembers, useTeamInvitations } from '@scaffald/sdk/react'
 import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
-import type { AppRouter } from '@scf/supabase/client-types'
-import {
-  ArrowLeft,
-  BarChart3,
-  Briefcase,
-  Pencil,
-  RefreshCcw,
-  UserPlus,
-} from '@tamagui/lucide-icons'
-import type { inferRouterOutputs } from '@trpc/server'
+import type { OfficeJob } from '@scaffald/sdk'
+import { ArrowLeft, BarChart3, Briefcase, Pencil, RefreshCcw, UserPlus } from 'lucide-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import type { ComponentType } from 'react'
 import { useMemo, useState } from 'react'
-import { Button, Card, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-
-type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
-type TeamRecord = TeamDetailOutput['team']
-type TeamMembersOutput = inferRouterOutputs<AppRouter>['teams']['members']['list']
-type TeamInvitationOutput = inferRouterOutputs<AppRouter>['teams']['invitations']['list']
-type OfficeJobsOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
-type TeamJobRecord = NonNullable<OfficeJobsOutput['jobs']>[number]
+import { ScrollView } from 'react-native'
+import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 export default function OfficeTeamDetailPage() {
   const { id } = useLocalSearchParams<{ id?: string }>()
@@ -44,61 +31,46 @@ export default function OfficeTeamDetailPage() {
     isFetching: isTeamFetching,
     error: teamError,
     refetch: refetchTeam,
-  } = api.teams.byId.useQuery(
-    { teamId },
-    {
-      enabled: Boolean(teamId),
-      retry: false,
-    }
-  )
+  } = useTeam(teamId, {
+    enabled: Boolean(teamId),
+    retry: false,
+  })
 
   const {
     data: membersData,
     isLoading: isMembersLoading,
     error: membersError,
     refetch: refetchMembers,
-  } = api.teams.members.list.useQuery(
-    { teamId },
-    {
-      enabled: Boolean(teamId),
-      retry: false,
-    }
-  )
+  } = useTeamMembers(teamId, {
+    enabled: Boolean(teamId),
+    retry: false,
+  })
 
   const {
-    data: pendingInvitationsData,
+    data: invitationsData,
     isLoading: isInvitationsLoading,
     refetch: refetchPendingInvitations,
-  } = api.teams.invitations.list.useQuery(
-    {
-      status: 'pending',
-      teamId,
-    },
-    {
-      enabled: Boolean(teamId),
-      retry: false,
-    }
-  )
+  } = useTeamInvitations(teamId, {
+    enabled: Boolean(teamId),
+    retry: false,
+  })
 
   const {
     data: jobsData,
     isLoading: isJobsLoading,
     error: jobsError,
     refetch: refetchJobs,
-  } = api.office.listJobs.useQuery(
+  } = useOfficeListJobs(
     {
       limit: 20,
       offset: 0,
       team_id: teamId || undefined,
     },
-    {
-      enabled: Boolean(teamId),
-      retry: false,
-    }
+    { enabled: Boolean(teamId), staleTime: 60_000, retry: false }
   )
 
   const { roles } = useUserRoles()
-  const team = teamData?.team as TeamRecord | undefined
+  const team = teamData?.team
 
   if (!teamId) {
     return (
@@ -113,10 +85,10 @@ export default function OfficeTeamDetailPage() {
 
   if ((isTeamLoading || isTeamFetching) && !team) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
-        <Spinner size="large" />
-        <Text color="$color11">Loading team details…</Text>
-      </YStack>
+      <Stack align="center" justify="center" gap={12}>
+        <Spinner size="lg" />
+        <Text color="gray">Loading team details…</Text>
+      </Stack>
     )
   }
 
@@ -135,17 +107,15 @@ export default function OfficeTeamDetailPage() {
     )
   }
 
-  const members = (membersData?.members ?? []) as TeamMembersOutput['members']
-  const memberCount = Array.isArray(members) ? members.length : undefined
+  const members = membersData?.members ?? []
+  const memberCount = members.length
 
-  const pendingInvitations = (pendingInvitationsData?.invitations ??
-    []) as TeamInvitationOutput['invitations']
-  const pendingInvitationsCount = Array.isArray(pendingInvitations)
-    ? pendingInvitations.length
-    : undefined
+  const allInvitations = invitationsData?.invitations ?? []
+  const pendingInvitations = allInvitations.filter((inv) => inv.status === 'pending')
+  const pendingInvitationsCount = pendingInvitations.length
 
   const teamJobs = useMemo(() => {
-    return ((jobsData?.jobs ?? []) as TeamJobRecord[]) ?? []
+    return (jobsData?.jobs ?? []) as OfficeJob[]
   }, [jobsData?.jobs])
   const jobCount = teamJobs.length
 
@@ -156,29 +126,34 @@ export default function OfficeTeamDetailPage() {
     ? [
         <Button
           key="edit"
-          size="$2"
-          variant="outlined"
-          icon={Pencil}
+          size="md"
+          variant="outline"
+          iconStart={Pencil}
           onPress={() => router.push(RouteBuilder.officeTeamsEdit(team.id))}
         >
           Edit team
         </Button>,
         <Button
           key="analytics"
-          size="$2"
-          variant="outlined"
-          icon={BarChart3}
+          size="md"
+          variant="outline"
+          iconStart={BarChart3}
           onPress={() => router.push(RouteBuilder.officeTeamsAnalytics(team.id))}
         >
           View analytics
         </Button>,
-        <Button key="invite" size="$2" icon={UserPlus} onPress={() => setIsInviteModalOpen(true)}>
+        <Button
+          key="invite"
+          size="md"
+          iconStart={UserPlus}
+          onPress={() => setIsInviteModalOpen(true)}
+        >
           Invite member
         </Button>,
         <Button
           key="assign"
-          size="$2"
-          icon={Briefcase}
+          size="md"
+          iconStart={Briefcase}
           onPress={() =>
             router.push({
               params: { teamId: team.id },
@@ -196,25 +171,25 @@ export default function OfficeTeamDetailPage() {
   return (
     <>
       <ScrollView>
-        <YStack flex={1} gap="$6" padding="$4">
-          <XStack>
+        <Stack gap={24} padding={16}>
+          <Row>
             <Button
-              size="$2"
-              variant="outlined"
-              icon={ArrowLeft}
+              size="md"
+              variant="outline"
+              iconStart={ArrowLeft}
               onPress={() => router.push(ROUTES.OFFICE.CMS.TEAMS.path)}
             >
               Back to teams
             </Button>
-          </XStack>
+          </Row>
 
           <TeamOverviewCard
             team={team}
             actions={
               quickActions ? (
-                <XStack gap="$2" flexWrap="wrap" justifyContent="flex-end">
+                <Row gap={8} justify="flex-end">
                   {quickActions}
-                </XStack>
+                </Row>
               ) : undefined
             }
             stats={{
@@ -225,15 +200,15 @@ export default function OfficeTeamDetailPage() {
           />
 
           <Button
-            size="$3"
-            variant="outlined"
-            icon={BarChart3}
+            size="md"
+            variant="outline"
+            iconStart={BarChart3}
             onPress={() => router.push(RouteBuilder.officeTeamsAnalytics(team.id))}
           >
             View analytics
           </Button>
 
-          <YStack gap="$4">
+          <Stack gap={16}>
             <TeamMembersList teamId={team.id} organizationId={team.organizationId} />
 
             <TeamJobsList
@@ -257,13 +232,13 @@ export default function OfficeTeamDetailPage() {
               refreshKey={inviteRefreshKey}
               headerAction={
                 canManageTeam ? (
-                  <Button size="$2" icon={UserPlus} onPress={() => setIsInviteModalOpen(true)}>
+                  <Button size="md" iconStart={UserPlus} onPress={() => setIsInviteModalOpen(true)}>
                     Invite member
                   </Button>
                 ) : null
               }
             />
-          </YStack>
+          </Stack>
 
           {(isMembersLoading || membersError) && (
             <InfoBanner
@@ -281,18 +256,12 @@ export default function OfficeTeamDetailPage() {
           )}
 
           {isInvitationsLoading && (
-            <YStack
-              gap="$2"
-              borderWidth={1}
-              borderColor="$borderColor"
-              borderRadius="$4"
-              padding="$3"
-            >
-              <Spinner size="small" />
-              <Text color="$color11">Updating invitation statistics…</Text>
-            </YStack>
+            <Stack gap={8} padding="sm">
+              <Spinner size="sm" />
+              <Text color="gray">Updating invitation statistics…</Text>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       </ScrollView>
 
       <TeamInviteModal
@@ -323,21 +292,15 @@ function CenteredMessageCard({
   onAction: () => void
 }) {
   return (
-    <YStack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
-      <Card
-        padding="$4"
-        borderWidth={1}
-        borderColor="$borderColor"
-        backgroundColor="$color2"
-        gap="$3"
-      >
-        <Text fontSize="$6" fontWeight="700">
-          {title}
-        </Text>
-        <Text color="$color11">{description}</Text>
-        <Button onPress={onAction}>{actionLabel}</Button>
+    <Stack align="center" justify="center" gap={12}>
+      <Card padding="md">
+        <Stack gap={12}>
+          <Text>{title}</Text>
+          <Text color="gray">{description}</Text>
+          <Button onPress={onAction}>{actionLabel}</Button>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   )
 }
 
@@ -353,23 +316,17 @@ function InfoBanner({
   onAction: () => void
 }) {
   return (
-    <Card
-      borderWidth={1}
-      borderColor="$borderColor"
-      backgroundColor="$color2"
-      padding="$4"
-      gap="$3"
-    >
-      <XStack gap="$2" alignItems="center">
-        <Icon size={18} />
-        <Text fontSize="$5" fontWeight="700">
-          {title}
-        </Text>
-      </XStack>
-      <Text color="$color11">{message}</Text>
-      <Button size="$3" onPress={onAction}>
-        Refresh
-      </Button>
+    <Card padding="md">
+      <Stack gap={12}>
+        <Row gap={8} align="center">
+          <Icon size={18} />
+          <Text>{title}</Text>
+        </Row>
+        <Text color="gray">{message}</Text>
+        <Button size="md" onPress={onAction}>
+          Refresh
+        </Button>
+      </Stack>
     </Card>
   )
 }

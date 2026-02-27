@@ -90,7 +90,7 @@ vi.mock('../SuccessStep', () => ({
   SuccessStep: () => <div data-testid="success-step">Application Submitted</div>,
 }))
 
-vi.mock('@unicornlove/ui', () => ({
+vi.mock('@scaffald/ui', () => ({
   SaveStatusIndicator: ({ status }: { status: string }) => (
     <div data-testid="save-status">{status}</div>
   ),

@@ -1,6 +1,6 @@
 /**
  * CCPA Types - Type definitions for CCPA compliance features
- * REQ-131: CCPA Compliance Implementation (USA-Only Scope)
+ * CCPA Compliance Implementation (USA-Only Scope)
  */
 
 // =============================================================================

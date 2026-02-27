@@ -1,48 +1,64 @@
 import { RouteBuilder } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
-import { CheckCircle, Clock, Eye, EyeOff, Plus, XCircle } from '@tamagui/lucide-icons'
+import {
+  useApproveWorkerMutation,
+  useClaimWorkMutation,
+  useProject,
+  useRejectWorkerMutation,
+} from '@scf/core/utils/projects-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
+import { CheckCircle, Clock, Eye, EyeOff, Plus, XCircle } from 'lucide-react-native'
 import { useLocalSearchParams } from 'expo-router'
-import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 export default function ProjectDetailPage() {
   const { id } = useLocalSearchParams<{ id: string }>()
+  const queryClient = useQueryClient()
 
-  const { data, isLoading } = api.projects.get.useQuery({ id: id as string }, { enabled: !!id })
+  const { data, isLoading } = useProject(id as string, { enabled: !!id })
+  const approveWorker = useApproveWorkerMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'projects', 'detail', id] })
+    },
+  })
+  const rejectWorker = useRejectWorkerMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'projects', 'detail', id] })
+    },
+  })
+  const claimWork = useClaimWorkMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['scaffald', 'projects', 'detail', id] })
+    },
+  })
 
   if (!id) {
     return (
-      <YStack flex={1} padding="$4" gap="$4">
-        <Text fontSize="$8" fontWeight="600">
-          Project Not Found
-        </Text>
+      <Stack padding={16} gap={16}>
+        <Text>Project Not Found</Text>
         <Text>Project ID is required</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (isLoading) {
     return (
-      <YStack flex={1} padding="$4" gap="$4" alignItems="center" justifyContent="center">
-        <Text fontSize="$8" fontWeight="600">
-          Loading Project...
-        </Text>
+      <Stack padding={16} gap={16} align="center" justify="center">
+        <Text>Loading Project...</Text>
         <Spinner />
-      </YStack>
+      </Stack>
     )
   }
 
-  if (!data?.project) {
+  if (!data) {
     return (
-      <YStack flex={1} padding="$4" gap="$4">
-        <Text fontSize="$8" fontWeight="600">
-          Project Not Found
-        </Text>
+      <Stack padding={16} gap={16}>
+        <Text>Project Not Found</Text>
         <Text>Project not found</Text>
-      </YStack>
+      </Stack>
     )
   }
 
-  const project = data.project
+  const project = data
   const sites = project.project_sites || []
   const addresses = project.project_addresses || []
   const workers = project.project_workers || []
@@ -99,25 +115,17 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <YStack flex={1} padding="$4" gap="$4">
-      <YStack gap="$2">
-        <Text fontSize="$8" fontWeight="600">
-          {project.name}
-        </Text>
-        {project.description && (
-          <Text fontSize="$4" color="$gray11">
-            {project.description}
-          </Text>
-        )}
-      </YStack>
-      <YStack gap="$4">
+    <Stack padding={16} gap={16}>
+      <Stack gap={8}>
+        <Text>{project.name}</Text>
+        {project.description && <Text color="$gray11">{project.description}</Text>}
+      </Stack>
+      <Stack gap={16}>
         {/* Project Info */}
-        <Card padding="$4">
-          <YStack gap="$4">
-            <XStack justifyContent="space-between" alignItems="center">
-              <Text fontSize="$8" fontWeight="600">
-                {project.name}
-              </Text>
+        <Card padding="md">
+          <Stack gap={16}>
+            <Row justify="space-between" align="center">
+              <Text>{project.name}</Text>
               <Button
                 onPress={() => {
                   // Navigate to edit page
@@ -126,215 +134,184 @@ export default function ProjectDetailPage() {
               >
                 Edit
               </Button>
-            </XStack>
+            </Row>
 
             {project.description && <Text>{project.description}</Text>}
 
-            <XStack gap="$4" flexWrap="wrap">
-              <YStack gap="$1">
-                <Text fontSize="$2" color="$gray10">
-                  Status
-                </Text>
-                <Text fontWeight="600">
-                  {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
-                </Text>
-              </YStack>
+            <Row gap={16}>
+              <Stack gap={4}>
+                <Text color="$gray10">Status</Text>
+                <Text>{project.status.charAt(0).toUpperCase() + project.status.slice(1)}</Text>
+              </Stack>
 
               {project.start_date && (
-                <YStack gap="$1">
-                  <Text fontSize="$2" color="$gray10">
-                    Start Date
-                  </Text>
-                  <Text fontWeight="600">{project.start_date}</Text>
-                </YStack>
+                <Stack gap={4}>
+                  <Text color="$gray10">Start Date</Text>
+                  <Text>{project.start_date}</Text>
+                </Stack>
               )}
 
               {project.end_date && (
-                <YStack gap="$1">
-                  <Text fontSize="$2" color="$gray10">
-                    End Date
-                  </Text>
-                  <Text fontWeight="600">{project.end_date}</Text>
-                </YStack>
+                <Stack gap={4}>
+                  <Text color="$gray10">End Date</Text>
+                  <Text>{project.end_date}</Text>
+                </Stack>
               )}
 
-              <YStack gap="$1">
-                <Text fontSize="$2" color="$gray10">
-                  Location Visibility
-                </Text>
-                <XStack gap="$2" alignItems="center">
+              <Stack gap={4}>
+                <Text color="$gray10">Location Visibility</Text>
+                <Row gap={8} align="center">
                   {getVisibilityIcon(project.location_visibility)({ size: 16 })}
-                  <Text fontWeight="600">{getVisibilityLabel(project.location_visibility)}</Text>
+                  <Text>{getVisibilityLabel(project.location_visibility)}</Text>
                   {project.location_visibility_override && (
-                    <Text fontSize="$1" color="$yellow10">
-                      (Override)
-                    </Text>
+                    <Text color="$yellow10">(Override)</Text>
                   )}
-                </XStack>
-              </YStack>
-            </XStack>
-          </YStack>
+                </Row>
+              </Stack>
+            </Row>
+          </Stack>
         </Card>
 
         {/* Location Section */}
-        <Card padding="$4">
-          <YStack gap="$4">
-            <XStack justifyContent="space-between" alignItems="center">
-              <Text fontSize="$6" fontWeight="600">
-                Location
-              </Text>
-              <Button size="$2" icon={Plus}>
+        <Card padding="md">
+          <Stack gap={16}>
+            <Row justify="space-between" align="center">
+              <Text>Location</Text>
+              <Button size="md" iconStart={Plus}>
                 Add Site
               </Button>
-            </XStack>
+            </Row>
 
             {sites.length === 0 && addresses.length === 0 ? (
               <Text color="$gray10">No location data added yet</Text>
             ) : (
-              <YStack gap="$4">
+              <Stack gap={16}>
                 {sites.length > 0 && (
-                  <YStack gap="$2">
-                    <Text fontWeight="600">Site Boundaries</Text>
-                    {sites.map((ps: (typeof sites)[0]) => (
-                      <Card key={ps.id} padding="$2" backgroundColor="$gray2">
+                  <Stack gap={8}>
+                    <Text>Site Boundaries</Text>
+                    {sites.map((ps: (typeof sites)[0], idx: number) => (
+                      <Card key={ps.site?.id || idx} padding="sm">
                         <Text>
                           {ps.site?.site_identifier || `Site ${ps.site?.id?.slice(0, 8)}`}
                         </Text>
                         {ps.site?.area_sqft && (
-                          <Text fontSize="$2" color="$gray10">
+                          <Text color="$gray10">
                             Area: {ps.site.area_sqft.toLocaleString()} sq ft
                           </Text>
                         )}
                       </Card>
                     ))}
-                  </YStack>
+                  </Stack>
                 )}
 
                 {addresses.length > 0 && (
-                  <YStack gap="$2">
-                    <Text fontWeight="600">Property Addresses</Text>
-                    {addresses.map((pa: (typeof addresses)[0]) => (
-                      <Card key={pa.id} padding="$2" backgroundColor="$gray2">
-                        <Text>
-                          {pa.address?.address?.street || ''}
-                          {pa.address?.address?.city && `, ${pa.address.address.city}`}
-                          {pa.address?.address?.state && `, ${pa.address.address.state}`}
-                          {pa.address?.address?.zip && ` ${pa.address.address.zip}`}
-                        </Text>
+                  <Stack gap={8}>
+                    <Text>Property Addresses</Text>
+                    {addresses.map((pa: (typeof addresses)[0], idx: number) => (
+                      <Card key={pa.address?.id || idx} padding="sm">
+                        <Text>{pa.address?.address || 'No address'}</Text>
                         {pa.address?.property_type && (
-                          <Text fontSize="$2" color="$gray10">
-                            Type: {pa.address.property_type}
-                          </Text>
+                          <Text color="$gray10">Type: {pa.address.property_type}</Text>
                         )}
                       </Card>
                     ))}
-                  </YStack>
+                  </Stack>
                 )}
 
-                {/* TODO: Add Mapbox map display here */}
-                <Text fontSize="$2" color="$gray10" fontStyle="italic">
+                {/* Mapbox map display - see SiteBoundaryDrawer for polygon drawing integration */}
+                <Text color="$gray10">
                   Map display coming soon - will show site boundaries and address pins
                 </Text>
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
         </Card>
 
         {/* Workers Section */}
-        <Card padding="$4">
-          <YStack gap="$4">
-            <XStack justifyContent="space-between" alignItems="center">
-              <Text fontSize="$6" fontWeight="600">
-                Workers
-              </Text>
-              <Button size="$2" icon={Plus}>
+        <Card padding="md">
+          <Stack gap={16}>
+            <Row justify="space-between" align="center">
+              <Text>Workers</Text>
+              <Button size="md" iconStart={Plus}>
                 Add Worker
               </Button>
-            </XStack>
+            </Row>
 
             {workers.length === 0 ? (
               <Text color="$gray10">No workers assigned yet</Text>
             ) : (
-              <YStack gap="$2">
+              <Stack gap={8}>
                 {workers.map((worker: (typeof workers)[0]) => {
                   const StatusIcon = getWorkerStatusIcon(worker.status)
                   const statusColor = getWorkerStatusColor(worker.status)
 
                   return (
-                    <Card key={worker.id} padding="$3" backgroundColor="$gray2">
-                      <XStack justifyContent="space-between" alignItems="center">
-                        <YStack gap="$1" flex={1}>
-                          <XStack gap="$2" alignItems="center">
-                            <StatusIcon size={16} color={statusColor} />
-                            <Text fontWeight="600">Worker {worker.user_id?.slice(0, 8)}</Text>
-                          </XStack>
+                    <Card key={worker.id} padding="md">
+                      <Row justify="space-between" align="center">
+                        <Stack gap={4}>
+                          <Row gap={8} align="center">
+                            <StatusIcon size="lg" color={statusColor} />
+                            <Text>Worker {worker.user_id?.slice(0, 8)}</Text>
+                          </Row>
                           {worker.role_on_project && (
-                            <Text fontSize="$2" color="$gray10">
-                              Role: {worker.role_on_project}
-                            </Text>
+                            <Text color="$gray10">Role: {worker.role_on_project}</Text>
                           )}
                           {worker.start_date && worker.end_date && (
-                            <Text fontSize="$2" color="$gray10">
+                            <Text color="$gray10">
                               {worker.start_date} - {worker.end_date}
                             </Text>
                           )}
                           {worker.claimed_by_worker && (
-                            <Text fontSize="$2" color="$blue10">
-                              Claimed by worker
-                            </Text>
+                            <Text color="$blue10">Claimed by worker</Text>
                           )}
                           {worker.assigned_by_manager && (
-                            <Text fontSize="$2" color="$green10">
-                              Assigned by manager
-                            </Text>
+                            <Text color="green">Assigned by manager</Text>
                           )}
-                        </YStack>
+                        </Stack>
                         {worker.status === 'pending' && (
-                          <XStack gap="$2">
+                          <Row gap={8}>
                             <Button
-                              size="$2"
-                              backgroundColor="$green9"
-                              color="$green12"
-                              onPress={async () => {
-                                // TODO: Implement approve
-                                console.log('Approve worker', worker.id)
-                              }}
+                              size="md"
+                              color="success"
+                              onPress={() =>
+                                approveWorker.mutate({ projectWorkerId: worker.id })
+                              }
+                              disabled={approveWorker.isPending}
                             >
                               Approve
                             </Button>
                             <Button
-                              size="$2"
-                              backgroundColor="$red9"
-                              color="$red12"
-                              onPress={async () => {
-                                // TODO: Implement reject
-                                console.log('Reject worker', worker.id)
-                              }}
+                              size="md"
+                              color="error"
+                              onPress={() =>
+                                rejectWorker.mutate({ projectWorkerId: worker.id })
+                              }
+                              disabled={rejectWorker.isPending}
                             >
                               Reject
                             </Button>
-                          </XStack>
+                          </Row>
                         )}
-                      </XStack>
+                      </Row>
                     </Card>
                   )
                 })}
-              </YStack>
+              </Stack>
             )}
 
             {/* Claim Work Button for current user */}
             <Button
-              theme="blue"
-              onPress={async () => {
-                // TODO: Implement claim work
-                console.log('Claim work on project', project.id)
-              }}
+              color="primary"
+              onPress={() =>
+                claimWork.mutate({ projectId: project.id })
+              }
+              disabled={claimWork.isPending}
             >
               Claim I Worked Here
             </Button>
-          </YStack>
+          </Stack>
         </Card>
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

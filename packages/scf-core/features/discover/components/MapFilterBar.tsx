@@ -1,8 +1,9 @@
-import type { AddressResult } from '@unicornlove/ui'
-import { AddressAutocomplete } from '@unicornlove/ui'
-import { List, RotateCcw } from '@tamagui/lucide-icons'
+import type { AddressResult } from '@scaffald/ui'
+import { AddressAutocomplete } from '@scaffald/ui'
+import { createMapboxGeocodingProvider } from '@scf/core/utils/mapbox-geocoding-provider'
+import { List, RotateCcw } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
-import { Button, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Text, Row, Stack } from '@scaffald/ui'
 import { FilterDropdown } from './FilterDropdown'
 
 type MapFilterBarProps = {
@@ -86,60 +87,49 @@ export const MapFilterBar = ({
   )
 
   return (
-    <XStack
+    <Row
       width="100%"
-      paddingHorizontal="$4"
-      paddingVertical="$3"
-      gap="$3"
-      alignItems="center"
+      paddingHorizontal={16}
+      paddingVertical={12}
+      gap={12}
+      align="center"
       backgroundColor="$background"
-      borderBottomWidth={1}
-      borderBottomColor="$borderColor"
+      style={{ borderBottomWidth: 1, borderBottomColor: '$borderColor' }}
     >
       {/* Search Input */}
-      {tokenValidation.valid ? (
-        <YStack flex={1} minWidth={200}>
+      {tokenValidation.valid && mapboxToken ? (
+        <Stack flex={1} minWidth={200}>
           <AddressAutocomplete
             value={searchQuery}
             onChange={setSearchQuery}
             onAddressSelect={handleLocationSelect}
             placeholder="Search city, county, or region..."
-            provider="mapbox"
-            apiKey={mapboxToken}
-            zoomLevel="city"
+            provider={createMapboxGeocodingProvider(mapboxToken)}
             searchOptions={{
               types: ['place', 'region', 'district', 'locality'],
+              zoomLevel: 'city',
             }}
             minLength={2}
             maxResults={5}
             debounceMs={300}
-            containerProps={{
-              w: '100%',
-              backgroundColor: 'white',
-              borderRadius: '$4',
-            }}
           />
-        </YStack>
+        </Stack>
       ) : (
-        <YStack
+        <Stack
           flex={1}
           minWidth={200}
           backgroundColor="$background"
-          padding="$3"
-          borderRadius="$4"
+          padding="sm"
+          borderRadius={16}
           borderWidth={1}
           borderColor="$red8"
-          gap="$2"
+          gap={8}
         >
-          <XStack alignItems="center" gap="$2">
-            <Text fontSize="$3" color="$red10" fontWeight="600">
-              Map Search Unavailable
-            </Text>
-          </XStack>
-          <Text fontSize="$2" color="$color10">
-            {tokenValidation.error}
-          </Text>
-        </YStack>
+          <Row align="center" gap={8}>
+            <Text color="$red10">Map Search Unavailable</Text>
+          </Row>
+          <Text color="$gray11">{tokenValidation.error}</Text>
+        </Stack>
       )}
 
       {/* Filter Dropdown */}
@@ -154,35 +144,30 @@ export const MapFilterBar = ({
 
       {/* Results Count */}
       <Button
-        size="$4"
-        variant="outlined"
+        size="md"
+        variant="outline"
         onPress={onResultsPress}
-        backgroundColor="$background"
-        hoverStyle={{ backgroundColor: '$backgroundHover' }}
-        pressStyle={{ backgroundColor: '$backgroundPress' }}
-        icon={resultsCount > 0 ? undefined : List}
+        color="gray"
+        iconStart={resultsCount > 0 ? undefined : List}
       >
         {resultsCount > 0 ? (
-          <Text fontSize="$4" fontWeight="600">
+          <Text>
             {resultsCount} {resultsCount === 1 ? 'result' : 'results'}
           </Text>
         ) : (
-          <Text fontSize="$4">Results</Text>
+          <Text>Results</Text>
         )}
       </Button>
 
       {/* Reset Button */}
       <Button
-        size="$4"
-        variant="outlined"
-        icon={RotateCcw}
-        scaleIcon={1.2}
+        size="md"
+        variant="outline"
+        iconStart={RotateCcw}
         onPress={onReset}
-        backgroundColor="$background"
-        hoverStyle={{ backgroundColor: '$backgroundHover' }}
-        pressStyle={{ backgroundColor: '$backgroundPress' }}
-        aria-label="Reset filters and search"
+        color="gray"
+        accessibilityLabel="Reset filters and search"
       />
-    </XStack>
+    </Row>
   )
 }

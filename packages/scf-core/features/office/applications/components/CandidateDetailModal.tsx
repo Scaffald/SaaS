@@ -1,27 +1,26 @@
 import { InquiryCreateForm } from '@scf/core/features/inquiries/components/InquiryCreateForm'
-import { api } from '@scf/core/utils/api'
+import { useInquiryByApplication } from '@scf/core/utils/inquiries-sdk-hooks'
+import { useSuccessFeeStatus } from '@scf/core/utils/success-fees-sdk-hooks'
+import { useAssignApplicationMutation, useTeamMembers } from '@scf/core/utils/teams-sdk-hooks'
+import { useContactInfo } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import type { InquiryCreateInput } from '@scf/schemas'
-import type { AppRouter } from '@scf/supabase/client-types'
-import { ResponsiveModal } from '@unicornlove/ui'
-import { useToastController } from '@tamagui/toast'
-import type { inferRouterOutputs } from '@trpc/server'
+import type { TeamMember } from '@scaffald/sdk'
+import { ResponsiveModal } from '@scaffald/ui'
+import { useToast } from '@scaffald/ui'
+import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
-import { Avatar, Button, Spinner, Tabs, Text, XStack, YStack } from '@unicornlove/ui'
+import { Avatar, Button, Spinner, Tabs, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
 import { ApplicationDetailsTab } from './ApplicationDetailsTab'
 import { CandidateProfileTab } from './CandidateProfileTab'
 import { InquiryTab } from './InquiryTab'
 import { MessagesTab } from './MessagesTab'
 import { NotesTab } from './NotesTab'
+import { colors } from '@scaffald/ui/tokens'
 
-type MembersListOutput = inferRouterOutputs<AppRouter>['teams']['members']['list']
-type MemberRecord = NonNullable<MembersListOutput['members']>[number]
-type InquiryQueryOutput = inferRouterOutputs<AppRouter>['inquiries']['getByApplication']
-
-const mapInquiryToFormValues = (
-  inquiry: NonNullable<InquiryQueryOutput>['inquiry']
-): InquiryCreateInput => ({
+// biome-ignore lint/suspicious/noExplicitAny: legacy inquiry record mapping
+const mapInquiryToFormValues = (inquiry: Record<string, any>): InquiryCreateInput => ({
   applicationId: inquiry.application_id,
   employmentType: (inquiry.employment_type as InquiryCreateInput['employmentType']) ?? undefined,
   employmentTypeNegotiable: inquiry.employment_type_negotiable ?? true,
@@ -56,6 +55,7 @@ interface CandidateDetailModalProps {
 }
 
 export const CandidateDetailModal = ({ application, open, onClose }: CandidateDetailModalProps) => {
+  const { theme } = useThemeContext()
   const [activeTab, setActiveTab] = useState<
     'profile' | 'application' | 'notes' | 'messages' | 'inquiry'
   >('profile')
@@ -63,7 +63,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
   const workerUserId = application?.workerUserId ?? application?.candidate.id ?? ''
   const applicationId = application?.id ?? ''
 
-  const successFeeStatusQuery = api.successFees.getStatusByApplication.useQuery(
+  const successFeeStatusQuery = useSuccessFeeStatus(
     {
       organizationId,
       applicationId,
@@ -77,14 +77,13 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
 
   const contactUnlocked = Boolean(successFeeStatusQuery.data?.status === 'upfront_paid')
 
-  const contactInfoQuery = api.userProfile.getUserContactInfo.useQuery(
+  const contactInfoQuery = useContactInfo(
     {
       userId: workerUserId,
-      organizationId,
       applicationId,
     },
     {
-      enabled: Boolean(contactUnlocked && organizationId && applicationId && workerUserId),
+      enabled: contactUnlocked,
     }
   )
 
@@ -95,11 +94,10 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
       : 'This candidate does not have a linked worker account yet.'
 
   // Check if there's an inquiry for this application
-  const { data: inquiryData, isLoading: isInquiryLoading } =
-    api.inquiries.getByApplication.useQuery(
-      { applicationId: application?.id || '' },
-      { enabled: !!application?.id && open }
-    )
+  const { data: inquiryData, isLoading: isInquiryLoading } = useInquiryByApplication(
+    application?.id,
+    { enabled: !!application?.id && open }
+  )
   const hasInquiry = !!inquiryData?.inquiry
   const [inquiryMode, setInquiryMode] = useState<'view' | 'create' | 'edit'>(
     hasInquiry ? 'view' : 'create'
@@ -122,19 +120,16 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
   const teamId = application.team?.id ?? null
   const teamIdForQuery = teamId ?? '00000000-0000-0000-0000-000000000000'
   const { user: currentUser } = useUser()
-  const toast = useToastController()
-  const utils = api.useUtils()
+  const toast = useToast()
+  const queryClient = useQueryClient()
 
-  const membersQuery = api.teams.members.list.useQuery(
-    { teamId: teamIdForQuery },
-    { enabled: Boolean(teamId) }
-  )
+  const membersQuery = useTeamMembers(teamIdForQuery, { enabled: Boolean(teamId) })
 
   const mentionOptions = useMemo((): Array<{ id: string; label: string }> => {
     if (!membersQuery.data?.members) return []
-    return (membersQuery.data.members as MemberRecord[])
-      .filter((member: MemberRecord) => Boolean(member.user?.id))
-      .map((member: MemberRecord) => ({
+    return membersQuery.data.members
+      .filter((member: TeamMember) => Boolean(member.user?.id))
+      .map((member: TeamMember) => ({
         id: member.user?.id as string,
         label:
           member.user?.displayName ??
@@ -143,29 +138,39 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
       }))
   }, [membersQuery.data?.members])
 
-  const assignMutation = api.teams.applications.assign.useMutation({
+  const assignMutation = useAssignApplicationMutation({
     onSuccess: async () => {
-      toast.show('Application assigned', {
+      toast.show({
+        title: 'Application assigned',
         message: 'You are now responsible for follow-up.',
       })
       if (teamId) {
-        await utils.teams.analytics.activity.invalidate({ teamId, pageSize: 20 })
-        await utils.teams.analytics.comments.invalidate({
-          teamId,
-          applicationId: application.id,
-          limit: 50,
-        })
+        await queryClient.invalidateQueries({ queryKey: ['teams', 'analytics', 'activity'] })
+        await queryClient.invalidateQueries({ queryKey: ['teams', 'analytics', 'comments'] })
       }
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Unable to assign application'
-      toast.show('Unable to assign application', { message })
+      const _message = error instanceof Error ? error.message : 'Unable to assign application'
+      toast.show({
+        title: 'Unable to assign application',
+        message: '',
+        variant: 'error',
+      })
     },
   })
 
   const scoreColor =
-    application.score >= 80 ? '$green10' : application.score >= 60 ? '$blue10' : '$red10'
-  const scoreBg = application.score >= 80 ? '$green3' : application.score >= 60 ? '$blue3' : '$red3'
+    application.score >= 80
+      ? theme === "light" ? colors.green[700] : colors.green[300]
+      : application.score >= 60
+        ? theme === "light" ? colors.blue[700] : colors.blue[300]
+        : theme === "light" ? colors.error[700] : colors.error[300]
+  const scoreBg =
+    application.score >= 80
+      ? theme === "light" ? colors.green[50] : colors.green[900]
+      : application.score >= 60
+        ? theme === "light" ? colors.blue[50] : colors.blue[900]
+        : theme === "light" ? colors.error[50] : colors.error[900]
 
   const inquiryFormValues = useMemo(() => {
     if (!inquiryData?.inquiry) {
@@ -175,7 +180,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
   }, [inquiryData?.inquiry])
 
   const handleInquirySuccess = async () => {
-    await utils.inquiries.getByApplication.invalidate({ applicationId: application.id })
+    await queryClient.invalidateQueries({ queryKey: ['inquiries', 'detail', application.id] })
     setInquiryMode('view')
   }
 
@@ -186,62 +191,51 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
         if (!isOpen) onClose()
       }}
       title={application.candidate.name}
-      size="large"
+      size="lg"
     >
       {/* Candidate Header */}
-      <XStack gap="$3" alignItems="center">
-        <Avatar circular size="$6">
-          <Avatar.Image src={application.candidate.photo} />
-          <Avatar.Fallback backgroundColor="$blue9">
-            <Text color="white" fontWeight="600" fontSize="$6">
-              {application.candidate.name.charAt(0)}
-            </Text>
-          </Avatar.Fallback>
-        </Avatar>
+      <Row gap={12} align="center">
+        <Avatar
+          size={24}
+          src={application.candidate.photo}
+          initials={application.candidate.name.charAt(0)}
+        />
 
-        <YStack flex={1}>
-          <Text fontSize="$4" opacity={0.7}>
-            {application.candidate.title}
-          </Text>
-          <Text fontSize="$2" opacity={0.6} marginTop="$1">
-            {application.candidate.location}
-          </Text>
-        </YStack>
-      </XStack>
+        <Stack flex={1}>
+          <Text style={{ opacity: 0.7 }}>{application.candidate.title}</Text>
+          <Text style={{ opacity: 0.6, marginTop: 4 }}>{application.candidate.location}</Text>
+        </Stack>
+      </Row>
 
       {/* Score Badge */}
-      <YStack
+      <Stack
         backgroundColor={scoreBg}
-        paddingHorizontal="$4"
-        paddingVertical="$3"
-        borderRadius="$4"
-        alignItems="center"
+        paddingHorizontal={16}
+        paddingVertical={12}
+        borderRadius={16}
+        align="center"
       >
-        <Text fontSize="$8" fontWeight="700" color={scoreColor}>
-          {application.score}
-        </Text>
-        <Text fontSize="$3" fontWeight="600" opacity={0.8}>
-          Application Score
-        </Text>
-      </YStack>
+        <Text color={scoreColor}>{application.score}</Text>
+        <Text style={{ opacity: 0.8 }}>Application Score</Text>
+      </Stack>
 
       {/* Quick Actions */}
-      <XStack gap="$2">
-        <Button theme="success" flex={1} size="$4">
+      <Row gap={8}>
+        <Button color="success" style={{ flex: 1 }} size="md">
           Advance to Interview
         </Button>
-        <Button theme="error" flex={1} size="$4">
+        <Button color="error" style={{ flex: 1 }} size="md">
           Reject
         </Button>
-      </XStack>
-      <Button flex={1} size="$4">
+      </Row>
+      <Button style={{ flex: 1 }} size="md">
         Send Message
       </Button>
       {teamId && currentUser?.id ? (
         <Button
-          flex={1}
-          size="$4"
-          variant="outlined"
+          style={{ flex: 1 }}
+          size="md"
+          variant="outline"
           onPress={() =>
             assignMutation.mutate({
               teamId,
@@ -251,169 +245,163 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           }
           disabled={assignMutation.isPending}
         >
-          {assignMutation.isPending ? <Spinner size="small" /> : 'Assign to me'}
+          {assignMutation.isPending ? <Spinner size="sm" /> : 'Assign to me'}
         </Button>
       ) : null}
       {teamId ? (
-        <YStack gap="$1">
-          <Text fontSize="$3" opacity={0.6}>
-            Current assignee
-          </Text>
-          <Text fontSize="$4" fontWeight="600">
+        <Stack gap={4}>
+          <Text style={{ opacity: 0.6 }}>Current assignee</Text>
+          <Text>
             {application.team?.assignedUserId
               ? (mentionOptions.find((option) => option.id === application.team?.assignedUserId)
                   ?.label ?? `User ${application.team?.assignedUserId.slice(0, 6)}`)
               : 'Unassigned'}
           </Text>
-        </YStack>
+        </Stack>
       ) : null}
 
       {/* Application Meta */}
-      <XStack gap="$4" flexWrap="wrap">
-        <YStack flex={1} width={150}>
-          <Text fontSize="$2" opacity={0.6}>
-            Applied
-          </Text>
-          <Text fontSize="$3" fontWeight="600">
+      <Row gap={16} wrap>
+        <Stack flex={1} width={150}>
+          <Text style={{ opacity: 0.6 }}>Applied</Text>
+          <Text>
             {new Date(application.appliedAt).toLocaleDateString('en-US', {
               month: 'long',
               day: 'numeric',
               year: 'numeric',
             })}
           </Text>
-        </YStack>
-        <YStack flex={1} width={150}>
-          <Text fontSize="$2" opacity={0.6}>
-            Job
-          </Text>
-          <Text fontSize="$3" fontWeight="600">
-            {application.job.title}
-          </Text>
-        </YStack>
-        <YStack flex={1} width={150}>
-          <Text fontSize="$2" opacity={0.6}>
-            Experience
-          </Text>
-          <Text fontSize="$3" fontWeight="600">
-            {application.candidate.yearsExperience} years
-          </Text>
-        </YStack>
-      </XStack>
+        </Stack>
+        <Stack flex={1} width={150}>
+          <Text style={{ opacity: 0.6 }}>Job</Text>
+          <Text>{application.job.title}</Text>
+        </Stack>
+        <Stack flex={1} width={150}>
+          <Text style={{ opacity: 0.6 }}>Experience</Text>
+          <Text>{application.candidate.yearsExperience} years</Text>
+        </Stack>
+      </Row>
 
       {/* Tabs */}
-      <Tabs
-        value={activeTab}
-        onValueChange={(value) => setActiveTab(value as typeof activeTab)}
-        orientation="horizontal"
-        flexDirection="column"
-        flex={1}
+      <Stack
+        gap={8}
+        style={{ backgroundColor: colors.bg[theme].subtle }}
+        padding={4}
+        borderRadius={12}
       >
-        <Tabs.List gap="$2" backgroundColor="$color2" padding="$1" borderRadius="$3">
-          <Tabs.Tab value="profile" flex={1}>
-            <Text fontSize="$3" fontWeight="600">
-              Profile
-            </Text>
-          </Tabs.Tab>
-          <Tabs.Tab value="application" flex={1}>
-            <Text fontSize="$3" fontWeight="600">
-              Application
-            </Text>
-          </Tabs.Tab>
-          <Tabs.Tab value="notes" flex={1}>
-            <Text fontSize="$3" fontWeight="600">
-              Notes ({application.notes.length})
-            </Text>
-          </Tabs.Tab>
-          <Tabs.Tab value="messages" flex={1}>
-            <Text fontSize="$3" fontWeight="600">
-              Messages
-            </Text>
-          </Tabs.Tab>
-          <Tabs.Tab value="inquiry" flex={1}>
-            <Text fontSize="$3" fontWeight="600">
-              Inquiry
-            </Text>
-          </Tabs.Tab>
-        </Tabs.List>
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) => setActiveTab(value as typeof activeTab)}
+        >
+          <Tabs.Item value="profile">
+            <Tabs.Trigger containerStyle={{ flex: 1 }}>Profile</Tabs.Trigger>
+          </Tabs.Item>
+          <Tabs.Item value="application">
+            <Tabs.Trigger containerStyle={{ flex: 1 }}>Application</Tabs.Trigger>
+          </Tabs.Item>
+          <Tabs.Item value="notes">
+            <Tabs.Trigger containerStyle={{ flex: 1 }}>Notes ({application.notes.length})</Tabs.Trigger>
+          </Tabs.Item>
+          <Tabs.Item value="messages">
+            <Tabs.Trigger containerStyle={{ flex: 1 }}>Messages</Tabs.Trigger>
+          </Tabs.Item>
+          <Tabs.Item value="inquiry">
+            <Tabs.Trigger containerStyle={{ flex: 1 }}>Inquiry</Tabs.Trigger>
+          </Tabs.Item>
+        </Tabs>
+      </Stack>
 
-        <Tabs.Content value="profile" paddingTop="$4">
-          <CandidateProfileTab
-            candidate={application.candidate}
-            contactInfo={contactInfoQuery.data ?? undefined}
-            isContactLocked={!contactUnlocked}
-            lockReason={contactLockReason}
-          />
-        </Tabs.Content>
-
-        <Tabs.Content value="application" paddingTop="$4">
-          <ApplicationDetailsTab application={application} />
-        </Tabs.Content>
-
-        <Tabs.Content value="notes" paddingTop="$4">
-          <NotesTab
-            applicationId={application.id}
-            teamId={teamId}
-            mentionOptions={mentionOptions}
-          />
-        </Tabs.Content>
-
-        <Tabs.Content value="messages" paddingTop="$4">
-          <MessagesTab applicationId={application.id} />
-        </Tabs.Content>
-
-        <Tabs.Content value="inquiry" paddingTop="$4">
-          {inquiryMode === 'view' && isInquiryLoading && (
-            <YStack padding="$4" alignItems="center" gap="$4">
-              <Spinner size="large" />
-              <Text>Loading inquiry...</Text>
-            </YStack>
-          )}
-
-          {inquiryMode === 'view' && hasInquiry && inquiryData && (
-            <InquiryTab
-              applicationId={application.id}
-              candidateName={application.candidate.name}
-              jobTitle={application.job.title}
-              data={inquiryData}
-              onEditInquiry={() => setInquiryMode('edit')}
-              editLabel={inquiryData.inquiry.status === 'draft' ? 'Finish Draft' : 'Edit Inquiry'}
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as typeof activeTab)}>
+        <Tabs.Content value="profile">
+          <Stack paddingTop={16}>
+            <CandidateProfileTab
+              candidate={application.candidate}
+              contactInfo={contactInfoQuery.data ?? undefined}
+              isContactLocked={!contactUnlocked}
+              lockReason={contactLockReason}
             />
-          )}
+          </Stack>
+        </Tabs.Content>
 
-          {inquiryMode === 'create' && (
-            <InquiryCreateForm
+        <Tabs.Content value="application">
+          <Stack paddingTop={16}>
+            <ApplicationDetailsTab application={application} />
+          </Stack>
+        </Tabs.Content>
+
+        <Tabs.Content value="notes">
+          <Stack paddingTop={16}>
+            <NotesTab
               applicationId={application.id}
-              onSuccess={handleInquirySuccess}
-              onCancel={() => setInquiryMode(hasInquiry ? 'view' : 'create')}
+              teamId={teamId}
+              mentionOptions={mentionOptions}
             />
-          )}
+          </Stack>
+        </Tabs.Content>
 
-          {inquiryMode === 'edit' && hasInquiry && inquiryData?.inquiry && inquiryFormValues ? (
-            <InquiryCreateForm
-              applicationId={application.id}
-              inquiryId={inquiryData.inquiry.id}
-              mode="edit"
-              initialData={inquiryFormValues}
-              onSuccess={handleInquirySuccess}
-              onCancel={() => setInquiryMode('view')}
-            />
-          ) : null}
+        <Tabs.Content value="messages">
+          <Stack paddingTop={16}>
+            <MessagesTab applicationId={application.id} />
+          </Stack>
+        </Tabs.Content>
 
-          {inquiryMode === 'view' && !hasInquiry && !isInquiryLoading && (
-            <YStack padding="$4" gap="$3">
-              <Text color="$color11">No inquiry has been created for this candidate yet.</Text>
-              <Button theme="blue" onPress={() => setInquiryMode('create')}>
-                Start Inquiry
-              </Button>
-            </YStack>
-          )}
+        <Tabs.Content value="inquiry">
+          <Stack paddingTop={16}>
+            {inquiryMode === 'view' && isInquiryLoading && (
+              <Stack padding="md" align="center" gap={16}>
+                <Spinner size="lg" />
+                <Text>Loading inquiry...</Text>
+              </Stack>
+            )}
 
-          {inquiryMode === 'edit' && (!inquiryData?.inquiry || !inquiryFormValues) && (
-            <YStack padding="$4" alignItems="center" gap="$4">
-              <Spinner size="large" />
-              <Text>Preparing inquiry for editing...</Text>
-            </YStack>
-          )}
+            {inquiryMode === 'view' && hasInquiry && inquiryData && (
+              <InquiryTab
+                applicationId={application.id}
+                candidateName={application.candidate.name}
+                jobTitle={application.job.title}
+                data={inquiryData}
+                onEditInquiry={() => setInquiryMode('edit')}
+                editLabel={inquiryData.inquiry.status === 'draft' ? 'Finish Draft' : 'Edit Inquiry'}
+              />
+            )}
+
+            {inquiryMode === 'create' && (
+              <InquiryCreateForm
+                applicationId={application.id}
+                onSuccess={handleInquirySuccess}
+                onCancel={() => setInquiryMode(hasInquiry ? 'view' : 'create')}
+              />
+            )}
+
+            {inquiryMode === 'edit' && hasInquiry && inquiryData?.inquiry && inquiryFormValues ? (
+              <InquiryCreateForm
+                applicationId={application.id}
+                inquiryId={inquiryData.inquiry.id as string}
+                mode="edit"
+                initialData={inquiryFormValues}
+                onSuccess={handleInquirySuccess}
+                onCancel={() => setInquiryMode('view')}
+              />
+            ) : null}
+
+            {inquiryMode === 'view' && !hasInquiry && !isInquiryLoading && (
+              <Stack padding="md" gap={12}>
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  No inquiry has been created for this candidate yet.
+                </Text>
+                <Button color="primary" onPress={() => setInquiryMode('create')}>
+                  Start Inquiry
+                </Button>
+              </Stack>
+            )}
+
+            {inquiryMode === 'edit' && (!inquiryData?.inquiry || !inquiryFormValues) && (
+              <Stack padding="md" align="center" gap={16}>
+                <Spinner size="lg" />
+                <Text>Preparing inquiry for editing...</Text>
+              </Stack>
+            )}
+          </Stack>
         </Tabs.Content>
       </Tabs>
     </ResponsiveModal>

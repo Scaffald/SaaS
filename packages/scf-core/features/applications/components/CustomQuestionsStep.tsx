@@ -1,8 +1,10 @@
 import type { CustomQuestionAnswer } from '@scf/schemas'
-import { ToggleSwitch } from '@unicornlove/ui'
-import { ArrowLeft } from '@tamagui/lucide-icons'
+import { Toggle, useThemeContext } from '@scaffald/ui'
+import { ArrowLeft } from 'lucide-react-native'
 import { useState } from 'react'
-import { Button, Input, Label, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
+import { Pressable } from 'react-native'
+import { Button, Input, Label, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 export interface CustomQuestion {
   id: string
@@ -65,6 +67,7 @@ export function CustomQuestionsStep({
   isSubmitting = false,
 }: CustomQuestionsStepProps) {
   const [errors, setErrors] = useState<Record<string, string | undefined>>({})
+  const { theme } = useThemeContext()
 
   /**
    * Get answer for a specific question
@@ -219,53 +222,51 @@ export function CustomQuestionsStep({
   }
 
   return (
-    <YStack gap="$6" width="100%" maxWidth={800} padding="$4">
+    <Stack gap={24} width="100%" maxWidth={800} padding="md">
       {/* Header */}
-      <YStack gap="$2">
-        <Text fontSize="$8" fontWeight="bold" color="$color12">
-          Additional Questions
-        </Text>
-        <Text fontSize="$4" color="$color11">
+      <Stack gap={8}>
+        <Text style={{ color: colors.text[theme].secondary }}>Additional Questions</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
           The employer has requested additional information
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Validation Summary */}
       {Object.entries(errors).some(([, error]) => error !== undefined) && (
-        <YStack
-          padding="$4"
-          borderRadius="$4"
-          backgroundColor="$red2"
-          borderWidth={1}
-          borderColor="$red7"
-          gap="$2"
+        <Stack
+          padding="md"
+          borderRadius={16}
+          gap={8}
+          style={{
+            backgroundColor: theme === "light" ? colors.error[50] : colors.error[900],
+            borderColor: theme === "light" ? colors.error[300] : colors.error[700],
+            borderWidth: 1,
+          }}
         >
-          <Text fontSize="$4" fontWeight="600" color="$red11">
-            Please complete the following:
-          </Text>
-          <YStack gap="$1">
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Please complete the following:</Text>
+          <Stack gap={4}>
             {Object.entries(errors)
               .filter(([, error]) => error !== undefined)
               .map(([questionId, error]) => {
                 const question = questions.find((q) => q.id === questionId)
                 return (
-                  <Text key={questionId} fontSize="$3" color="$red11">
+                  <Text key={questionId} style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                     • {question?.question || 'Question'}: {error}
                   </Text>
                 )
               })}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
 
       {/* Questions */}
-      <YStack gap="$5">
+      <Stack gap={20}>
         {questions.map((question, index) => (
-          <YStack key={question.id} gap="$2">
-            <Label fontSize="$4" fontWeight="600">
+          <Stack key={question.id} gap={8}>
+            <Label>
               {index + 1}. {question.question}
               {question.required && (
-                <Text color="$red10" marginLeft="$1">
+                <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300], marginLeft: 4 }}>
                   *
                 </Text>
               )}
@@ -273,7 +274,7 @@ export function CustomQuestionsStep({
 
             {/* Short Text Input */}
             {question.type === 'short_text' && (
-              <YStack gap="$2">
+              <Stack gap={8}>
                 <Input
                   value={(getAnswer(question.id) as string) || ''}
                   onChangeText={(text) =>
@@ -286,29 +287,36 @@ export function CustomQuestionsStep({
                     )
                   }
                   placeholder="Type your answer here..."
-                  borderColor={errors[question.id] ? '$red9' : '$borderColor'}
-                  disabled={isSubmitting}
+                  style={{
+                    borderColor: errors[question.id]
+                      ? theme === "light" ? colors.error[300] : colors.error[700]
+                      : colors.border[theme].default,
+                  }}
+                  editable={!isSubmitting}
                   maxLength={getMaxLength(question)}
                 />
-                <XStack justifyContent="flex-end">
+                <Row justify="flex-end">
                   <Text
-                    fontSize="$2"
-                    color={
-                      getCharacterCount(question.id) > getMaxLength(question) ? '$red10' : '$gray11'
-                    }
+                    style={{
+                      color:
+                        getCharacterCount(question.id) > getMaxLength(question)
+                          ? theme === "light" ? colors.error[700] : colors.error[300]
+                          : colors.text[theme].secondary,
+                    }}
                   >
                     {getCharacterCount(question.id)} / {getMaxLength(question)} characters
                   </Text>
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
             )}
 
             {/* Long Text Input */}
             {question.type === 'long_text' && (
-              <YStack gap="$2">
-                <TextArea
+              <Stack gap={8}>
+                <Input
+                  multiline
                   value={(getAnswer(question.id) as string) || ''}
-                  onChangeText={(text) =>
+                  onChangeText={(text: string) =>
                     handleTextChange(
                       question.id,
                       question.question,
@@ -318,198 +326,224 @@ export function CustomQuestionsStep({
                     )
                   }
                   placeholder="Type your answer here..."
-                  style={{ minHeight: 120 }}
-                  borderColor={errors[question.id] ? '$red9' : '$borderColor'}
-                  disabled={isSubmitting}
+                  style={{
+                    minHeight: 120,
+                    borderColor: errors[question.id]
+                      ? theme === "light" ? colors.error[300] : colors.error[700]
+                      : colors.border[theme].default,
+                  }}
+                  editable={!isSubmitting}
                   maxLength={getMaxLength(question)}
                 />
-                <XStack justifyContent="flex-end">
+                <Row justify="flex-end">
                   <Text
-                    fontSize="$2"
-                    color={
-                      getCharacterCount(question.id) > getMaxLength(question) ? '$red10' : '$gray11'
-                    }
+                    style={{
+                      color:
+                        getCharacterCount(question.id) > getMaxLength(question)
+                          ? theme === "light" ? colors.error[700] : colors.error[300]
+                          : colors.text[theme].secondary,
+                    }}
                   >
                     {getCharacterCount(question.id)} / {getMaxLength(question)} characters
                   </Text>
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
             )}
 
             {/* Single Choice (Radio Buttons) */}
             {question.type === 'single_choice' && question.options && (
-              <YStack gap="$2">
+              <Stack gap={8}>
                 {question.options.map((option) => (
-                  <XStack
+                  <Pressable
                     key={option}
-                    gap="$3"
-                    alignItems="center"
-                    padding="$3"
-                    borderRadius="$4"
-                    borderWidth={1}
-                    borderColor={
-                      getAnswer(question.id) === option
-                        ? '$blue9'
-                        : errors[question.id]
-                          ? '$red9'
-                          : '$borderColor'
-                    }
-                    backgroundColor={getAnswer(question.id) === option ? '$blue2' : '$background'}
-                    pressStyle={{ scale: 0.98 }}
                     onPress={() =>
                       updateAnswer(question.id, question.question, 'single_choice', option)
                     }
-                    cursor="pointer"
                     disabled={isSubmitting}
                   >
-                    <YStack
+                  <Row
+                    gap={12}
+                    align="center"
+                    padding="sm"
+                    borderRadius={16}
+                    style={{
+                      borderWidth: 1,
+                      borderColor:
+                        getAnswer(question.id) === option
+                          ? theme === "light" ? colors.blue[300] : colors.blue[700]
+                          : errors[question.id]
+                            ? theme === "light" ? colors.error[300] : colors.error[700]
+                            : colors.border[theme].default,
+                      backgroundColor:
+                        getAnswer(question.id) === option
+                          ? theme === "light" ? colors.blue[50] : colors.blue[900]
+                          : colors.bg[theme].default,
+                    }}
+                  >
+                    <Stack
                       width={20}
                       height={20}
-                      borderRadius="$12"
-                      borderWidth={2}
-                      borderColor={getAnswer(question.id) === option ? '$blue9' : '$borderColor'}
-                      justifyContent="center"
-                      alignItems="center"
-                      backgroundColor="$background"
+                      borderRadius={12}
+                      style={{
+                        borderWidth: 2,
+                        borderColor:
+                          getAnswer(question.id) === option
+                            ? theme === "light" ? colors.blue[300] : colors.blue[700]
+                            : colors.border[theme].default,
+                        backgroundColor: colors.bg[theme].default,
+                      }}
+                      justify="center"
+                      align="center"
                     >
                       {getAnswer(question.id) === option && (
-                        <YStack
+                        <Stack
                           width={12}
                           height={12}
-                          borderRadius="$12"
-                          backgroundColor="$blue9"
+                          borderRadius={12}
+                          style={{ backgroundColor: theme === "light" ? colors.blue[500] : colors.blue[400] }}
                         />
                       )}
-                    </YStack>
-                    <Text fontSize="$3" color="$color12" flex={1}>
+                    </Stack>
+                    <Text style={{ color: colors.text[theme].secondary, flex: 1 }}>
                       {option}
                     </Text>
-                  </XStack>
+                  </Row>
+                  </Pressable>
                 ))}
-              </YStack>
+              </Stack>
             )}
 
             {/* Multiple Choice (Checkboxes) */}
             {question.type === 'multiple_choice' && question.options && (
-              <YStack gap="$2">
+              <Stack gap={8}>
                 {question.options.map((option) => {
                   const currentAnswers = (getAnswer(question.id) as string[]) || []
                   const isSelected = currentAnswers.includes(option)
 
                   return (
-                    <XStack
+                    <Pressable
                       key={option}
-                      gap="$3"
-                      alignItems="center"
-                      padding="$3"
-                      borderRadius="$4"
-                      borderWidth={1}
-                      borderColor={
-                        isSelected ? '$blue9' : errors[question.id] ? '$red9' : '$borderColor'
-                      }
-                      backgroundColor={isSelected ? '$blue2' : '$background'}
-                      pressStyle={{ scale: 0.98 }}
                       onPress={() => {
                         const newAnswers = isSelected
                           ? currentAnswers.filter((a) => a !== option)
                           : [...currentAnswers, option]
                         updateAnswer(question.id, question.question, 'multiple_choice', newAnswers)
                       }}
-                      cursor="pointer"
                       disabled={isSubmitting}
                     >
-                      <YStack
+                    <Row
+                      gap={12}
+                      align="center"
+                      padding="sm"
+                      borderRadius={16}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: isSelected
+                          ? theme === "light" ? colors.blue[300] : colors.blue[700]
+                          : errors[question.id]
+                            ? theme === "light" ? colors.error[300] : colors.error[700]
+                            : colors.border[theme].default,
+                        backgroundColor: isSelected
+                          ? theme === "light" ? colors.blue[50] : colors.blue[900]
+                          : colors.bg[theme].default,
+                      }}
+                    >
+                      <Stack
                         width={20}
                         height={20}
-                        borderRadius="$2"
-                        borderWidth={2}
-                        borderColor={isSelected ? '$blue9' : '$borderColor'}
-                        justifyContent="center"
-                        alignItems="center"
-                        backgroundColor={isSelected ? '$blue9' : '$background'}
+                        borderRadius={8}
+                        style={{
+                          borderWidth: 2,
+                          borderColor: isSelected
+                            ? theme === "light" ? colors.blue[300] : colors.blue[700]
+                            : colors.border[theme].default,
+                          backgroundColor: isSelected
+                            ? theme === "light" ? colors.blue[500] : colors.blue[400]
+                            : colors.bg[theme].default,
+                        }}
+                        justify="center"
+                        align="center"
                       >
-                        {isSelected && (
-                          <Text fontSize="$3" fontWeight="bold" color="white">
-                            ✓
-                          </Text>
-                        )}
-                      </YStack>
-                      <Text fontSize="$3" color="$color12" flex={1}>
+                        {isSelected && <Text style={{ color: colors.white }}>✓</Text>}
+                      </Stack>
+                      <Text style={{ color: colors.text[theme].secondary, flex: 1 }}>
                         {option}
                       </Text>
-                    </XStack>
+                    </Row>
+                    </Pressable>
                   )
                 })}
-              </YStack>
+              </Stack>
             )}
 
             {/* Yes/No Toggle */}
             {question.type === 'yes_no' && (
-              <XStack gap="$4" alignItems="center">
-                <ToggleSwitch
+              <Row gap={16} align="center">
+                <Toggle
                   checked={(getAnswer(question.id) as boolean) || false}
-                  onCheckedChange={(checked) =>
+                  onChange={(checked: boolean) =>
                     updateAnswer(question.id, question.question, 'yes_no', checked)
                   }
                   disabled={isSubmitting}
-                  aria-label={`${question.question} toggle`}
+                  label=""
+                  optional
                 />
-                <Text fontSize="$3" color="$color11">
+                <Text style={{ color: colors.text[theme].secondary }}>
                   {(getAnswer(question.id) as boolean) ? 'Yes' : 'No'}
                 </Text>
-              </XStack>
+              </Row>
             )}
 
             {/* Error Message */}
             {errors[question.id] && (
-              <Text fontSize="$2" color="$red10">
-                {errors[question.id]}
-              </Text>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors[question.id]}</Text>
             )}
-          </YStack>
+          </Stack>
         ))}
-      </YStack>
+      </Stack>
 
       {/* No Questions Message */}
       {questions.length === 0 && (
-        <YStack
-          padding="$6"
-          alignItems="center"
-          gap="$2"
-          backgroundColor="$background"
-          borderRadius="$4"
-          borderWidth={1}
-          borderColor="$borderColor"
+        <Stack
+          padding="xl"
+          align="center"
+          gap={8}
+          borderRadius={16}
+          style={{
+            backgroundColor: colors.bg[theme].default,
+            borderColor: colors.border[theme].default,
+            borderWidth: 1,
+          }}
         >
-          <Text fontSize="$4" color="$color11" textAlign="center">
+          <Text style={{ color: colors.text[theme].secondary }} align="center">
             This position has no additional questions.
           </Text>
-          <Text fontSize="$3" color="$color10" textAlign="center">
+          <Text style={{ color: colors.text[theme].secondary }} align="center">
             You can proceed to the next step.
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {/* Navigation Buttons */}
-      <XStack gap="$3" justifyContent="space-between" marginTop="$4">
+      <Row gap={12} justify="space-between" marginTop={16}>
         <Button
-          size="$4"
-          variant="outlined"
-          icon={ArrowLeft}
+          size="md"
+          variant="outline"
+          iconStart={ArrowLeft}
           onPress={onPrevious}
           disabled={isSubmitting}
         >
           Previous
         </Button>
         <Button
-          size="$4"
-          theme="info"
+          size="md"
+          color="primary"
           onPress={validateAndContinue}
           disabled={isSubmitting || Object.values(errors).some((error) => error !== undefined)}
         >
           {isSubmitting ? 'Saving...' : 'Continue'}
         </Button>
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

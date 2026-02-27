@@ -1,33 +1,34 @@
 import { TeamInvitationList } from '@scf/core/features/dashboard/components'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
-import { RefreshCw } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-import type { inferRouterOutputs } from '@trpc/server'
+import { RefreshCw } from 'lucide-react-native'
 import { useMemo } from 'react'
-import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-
-type InvitationRespondOutput = inferRouterOutputs<AppRouter>['teams']['invitations']['respond']
+import { Button, Spinner, Text, Row, Stack, useToast } from '@scaffald/ui'
+import { useMyTeamInvitations, useRespondToTeamInvitation } from '@scaffald/sdk/react'
 
 export default function DashboardTeamInvitationsScreen() {
-  const toast = useToastController()
+  const toast = useToast()
 
-  const invitationsQuery = api.teams.invitations.mine.useQuery({ status: 'pending' })
+  const invitationsQuery = useMyTeamInvitations({ status: 'pending' })
 
-  const respondMutation = api.teams.invitations.respond.useMutation({
+  const respondMutation = useRespondToTeamInvitation({
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'Unable to respond to invitation'
-      toast.show('Unable to respond', { message })
+      toast.show({
+        title: 'Unable to respond',
+        message,
+        variant: 'error',
+      })
     },
-    onSuccess: (result: InvitationRespondOutput) => {
-      toast.show(result.status === 'accepted' ? 'Invitation accepted' : 'Invitation declined', {
+    onSuccess: (result) => {
+      const invitation = result.invitation
+      toast.show({
+        title: invitation.status === 'accepted' ? 'Invitation accepted' : 'Invitation declined',
         message:
-          result.status === 'accepted'
+          invitation.status === 'accepted'
             ? 'You now have access to the team.'
             : 'You can accept again later if needed.',
+        variant: invitation.status === 'accepted' ? 'success' : 'info',
       })
-      void invitationsQuery.refetch()
     },
   })
 
@@ -37,38 +38,36 @@ export default function DashboardTeamInvitationsScreen() {
   )
 
   const handleRespond = async (invitationId: string, action: 'accept' | 'decline') => {
-    await respondMutation.mutateAsync({ action, invitationId })
+    await respondMutation.mutateAsync({ invitationId, params: { action } })
   }
 
   const content = (
-    <YStack flex={1} padding="$4" gap="$5">
-      <YStack gap="$2">
-        <Text fontSize="$7" fontWeight="700">
-          Team invitations
-        </Text>
-        <Text color="$color11">
+    <Stack padding={16} gap={20}>
+      <Stack gap={8}>
+        <Text>Team invitations</Text>
+        <Text color="gray">
           Review pending invitations from team administrators. Accept to join collaborative hiring
           spaces or decline to keep your dashboard focused.
         </Text>
-      </YStack>
+      </Stack>
 
-      <XStack gap="$2" justifyContent="flex-end">
+      <Row gap={8} justify="flex-end">
         <Button
-          variant="outlined"
-          size="$2"
-          icon={RefreshCw}
+          variant="outline"
+          size="md"
+          iconStart={RefreshCw}
           onPress={() => invitationsQuery.refetch()}
           disabled={invitationsQuery.isFetching}
         >
           Refresh
         </Button>
-      </XStack>
+      </Row>
 
       {invitationsQuery.isLoading ? (
-        <YStack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$10">
-          <Spinner size="large" />
-          <Text color="$color11">Loading invitations…</Text>
-        </YStack>
+        <Stack align="center" justify="center" gap={8} paddingVertical="lg">
+          <Spinner size="lg" />
+          <Text color="gray">Loading invitations…</Text>
+        </Stack>
       ) : (
         <TeamInvitationList
           invitations={invitations}
@@ -76,7 +75,7 @@ export default function DashboardTeamInvitationsScreen() {
           isProcessing={respondMutation.isPending}
         />
       )}
-    </YStack>
+    </Stack>
   )
 
   return <DashboardPage showBreadcrumb={false} pageTitle="Team invitations" leftContent={content} />

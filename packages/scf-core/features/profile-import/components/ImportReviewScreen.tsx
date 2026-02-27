@@ -1,4 +1,8 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useSaveImportDataMutation,
+  useClearImportDataMutation,
+} from "@scf/core/utils/profile-import-sdk-hooks";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   CheckCircle2,
   Clock,
@@ -7,131 +11,139 @@ import {
   ListPlus,
   Loader2,
   RotateCcw,
-} from '@tamagui/lucide-icons'
-import { useMemo, useState } from 'react'
+} from "lucide-react-native";
+import { useMemo, useState } from "react";
 import {
   Button,
   Card,
+  CardHeader,
   H5,
   Paragraph,
   ScrollView,
   Separator,
   Text,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
-import { useImportData } from '../hooks/useImportData'
-import { toConfidenceLevel } from '../utils/importConfidence'
-import { ConfidenceBadge } from './ConfidenceBadge'
-import { EditableField } from './EditableField'
-import { ImportSectionTabs } from './ImportSectionTabs'
+  Row,
+  Stack,
+} from "@scaffald/ui";
+import { useImportData } from "../hooks/useImportData";
+import { toConfidenceLevel } from "../utils/importConfidence";
+import { ConfidenceBadge } from "./ConfidenceBadge";
+import { EditableField } from "./EditableField";
+import { ImportSectionTabs } from "./ImportSectionTabs";
 
 interface SelectedState {
-  [sectionId: string]: Record<string, boolean>
+  [sectionId: string]: Record<string, boolean>;
 }
 
 export function ImportReviewScreen() {
-  const { importData, metadata, isLoading, isError, refetch } = useImportData()
-  const [selectedItems, setSelectedItems] = useState<SelectedState>({})
-  const [activeSection, setActiveSection] = useState<string>('experience')
-  const [isImporting, setIsImporting] = useState(false)
-  const [importProgress, setImportProgress] = useState<{ completed: number; total: number }>({
+  const { importData, metadata, isLoading, isError, refetch } = useImportData();
+  const [selectedItems, setSelectedItems] = useState<SelectedState>({});
+  const [activeSection, setActiveSection] = useState<string>("experience");
+  const [isImporting, setIsImporting] = useState(false);
+  const [importProgress, setImportProgress] = useState<{
+    completed: number;
+    total: number;
+  }>({
     completed: 0,
     total: 0,
-  })
+  });
 
-  const utils = api.useUtils()
-  const saveImportMutation = api.profile.import.saveImportData.useMutation()
-  const clearImportMutation = api.profile.import.clearImportData.useMutation()
+  const queryClient = useQueryClient();
+  const saveImportMutation = useSaveImportDataMutation();
+  const clearImportMutation = useClearImportDataMutation();
 
   const sections = useMemo(() => {
-    if (!importData) return []
+    if (!importData) return [];
     return [
       importData.experience,
       importData.education,
       importData.skills,
       importData.certifications,
       importData.general,
-    ]
-  }, [importData])
+    ];
+  }, [importData]);
 
   const sectionTabs = sections.map((section) => ({
     id: section.id,
     label: section.title,
     count: section.items.length,
-  }))
+  }));
 
-  const currentSection = sections.find((section) => section.id === activeSection) ?? sections[0]
-  const totalItems = sections.reduce((total, section) => total + section.items.length, 0)
+  const currentSection =
+    sections.find((section) => section.id === activeSection) ?? sections[0];
+  const totalItems = sections.reduce(
+    (total, section) => total + section.items.length,
+    0
+  );
   const allSelected =
     totalItems > 0 &&
-    sections.every((section) => section.items.every((item) => selectedItems[section.id]?.[item.id]))
+    sections.every((section) =>
+      section.items.every((item) => selectedItems[section.id]?.[item.id])
+    );
 
   const expiresInLabel = useMemo(() => {
-    if (!metadata?.expiresAt) return null
-    const expiresAtMs = new Date(metadata.expiresAt).getTime()
-    if (Number.isNaN(expiresAtMs)) return null
-    const diffMs = expiresAtMs - Date.now()
+    if (!metadata?.expiresAt) return null;
+    const expiresAtMs = new Date(metadata.expiresAt).getTime();
+    if (Number.isNaN(expiresAtMs)) return null;
+    const diffMs = expiresAtMs - Date.now();
     if (diffMs <= 0) {
       return {
-        status: 'expired' as const,
-        label: 'Import data expired — upload again to continue',
-      }
+        status: "expired" as const,
+        label: "Import data expired — upload again to continue",
+      };
     }
-    const totalMinutes = Math.max(1, Math.round(diffMs / 60000))
-    const hours = Math.floor(totalMinutes / 60)
-    const minutes = totalMinutes % 60
-    let label = 'Expires in '
+    const totalMinutes = Math.max(1, Math.round(diffMs / 60000));
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    let label = "Expires in ";
     if (hours > 0) {
-      label += `${hours}h`
+      label += `${hours}h`;
       if (minutes > 0) {
-        label += ` ${minutes}m`
+        label += ` ${minutes}m`;
       }
     } else if (minutes > 0) {
-      label += `${minutes}m`
+      label += `${minutes}m`;
     } else {
-      label += 'less than a minute'
+      label += "less than a minute";
     }
     return {
-      status: 'active' as const,
+      status: "active" as const,
       label,
-    }
-  }, [metadata?.expiresAt])
+    };
+  }, [metadata?.expiresAt]);
 
   const storedAtLabel = useMemo(() => {
-    if (!metadata?.storedAt) return null
-    const storedDate = new Date(metadata.storedAt)
-    if (Number.isNaN(storedDate.getTime())) return null
+    if (!metadata?.storedAt) return null;
+    const storedDate = new Date(metadata.storedAt);
+    if (Number.isNaN(storedDate.getTime())) return null;
     return storedDate.toLocaleString(undefined, {
-      dateStyle: 'medium',
-      timeStyle: 'short',
-    })
-  }, [metadata?.storedAt])
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
+  }, [metadata?.storedAt]);
 
   if (isLoading) {
     return (
-      <YStack gap="$4" padding="$4" alignItems="center">
-        <Loader2 size={32} color="$color10" />
-        <Text color="$color11">Retrieving imported data...</Text>
-      </YStack>
-    )
+      <Stack gap={16} padding="md" align="center">
+        <Loader2 size={32} color="$gray11" />
+        <Text color="$gray11">Retrieving imported data...</Text>
+      </Stack>
+    );
   }
 
   if (isError || !importData) {
     return (
-      <YStack gap="$3" padding="$4" alignItems="center">
+      <Stack gap={12} padding="md" align="center">
         <FileWarning size={32} color="$red10" />
-        <Text color="$red11" fontWeight="600">
-          We couldn’t load your import data
-        </Text>
-        <Text color="$color11">
+        <Text color="$red11">We couldn't load your import data</Text>
+        <Text color="$gray11">
           Please retry. If the issue persists, try uploading your resume again.
         </Text>
-        <Button size="$4" onPress={() => refetch()}>
+        <Button size="md" onPress={() => refetch()}>
           Retry
         </Button>
-      </YStack>
-    )
+      </Stack>
+    );
   }
 
   const handleToggleItem = (sectionId: string, itemId: string) => {
@@ -141,17 +153,22 @@ export function ImportReviewScreen() {
         ...(prev[sectionId] ?? {}),
         [itemId]: !(prev[sectionId]?.[itemId] ?? false),
       },
-    }))
-  }
+    }));
+  };
 
-  const selectedCount = Object.values(selectedItems).reduce((total, section) => {
-    return total + Object.values(section).filter(Boolean).length
-  }, 0)
+  const selectedCount = Object.values(selectedItems).reduce(
+    (total, section) => {
+      return total + Object.values(section).filter(Boolean).length;
+    },
+    0
+  );
 
   const handleImportSelected = async () => {
-    if (!importData) return
+    if (!importData) return;
 
-    const buildSectionPayload = <T extends { id: string; raw?: Record<string, unknown> }>(
+    const buildSectionPayload = <
+      T extends { id: string; raw?: Record<string, unknown> }
+    >(
       sectionId: string,
       items: T[],
       mapper: (item: T) => Record<string, unknown>
@@ -159,14 +176,15 @@ export function ImportReviewScreen() {
       return items
         .filter((item) => selectedItems[sectionId]?.[item.id])
         .map((item) => {
-          const base = item.raw ?? mapper(item)
+          const base = item.raw ?? mapper(item);
           return Object.fromEntries(
             Object.entries(base).filter(
-              ([, value]) => value !== undefined && value !== null && value !== ''
+              ([, value]) =>
+                value !== undefined && value !== null && value !== ""
             )
-          )
-        })
-    }
+          );
+        });
+    };
 
     const generalPayload = buildSectionPayload(
       importData.general.id,
@@ -178,7 +196,7 @@ export function ImportReviewScreen() {
         summary: item.summary,
         confidence_score: item.confidenceScore,
       })
-    )
+    );
 
     const experiencePayload = buildSectionPayload(
       importData.experience.id,
@@ -191,7 +209,7 @@ export function ImportReviewScreen() {
         is_current: item.isCurrent,
         confidence_score: item.confidenceScore,
       })
-    )
+    );
 
     const educationPayload = buildSectionPayload(
       importData.education.id,
@@ -203,7 +221,7 @@ export function ImportReviewScreen() {
         end_date: item.endDate,
         confidence_score: item.confidenceScore,
       })
-    )
+    );
 
     const skillsPayload = buildSectionPayload(
       importData.skills.id,
@@ -213,7 +231,7 @@ export function ImportReviewScreen() {
         taxonomy: item.taxonomy,
         confidence_score: item.confidenceScore,
       })
-    )
+    );
 
     const certificationsPayload = buildSectionPayload(
       importData.certifications.id,
@@ -224,7 +242,7 @@ export function ImportReviewScreen() {
         issue_date: item.issueDate,
         confidence_score: item.confidenceScore,
       })
-    )
+    );
 
     if (
       generalPayload.length === 0 &&
@@ -233,7 +251,7 @@ export function ImportReviewScreen() {
       skillsPayload.length === 0 &&
       certificationsPayload.length === 0
     ) {
-      return
+      return;
     }
 
     const payload = {
@@ -242,255 +260,280 @@ export function ImportReviewScreen() {
       education: educationPayload,
       skills: skillsPayload,
       certifications: certificationsPayload,
-    }
+    };
 
     const totalSelected =
       payload.general.length +
       payload.experience.length +
       payload.education.length +
       payload.skills.length +
-      payload.certifications.length
+      payload.certifications.length;
 
-    setIsImporting(true)
-    setImportProgress({ completed: 0, total: totalSelected })
+    setIsImporting(true);
+    setImportProgress({ completed: 0, total: totalSelected });
 
     try {
       await saveImportMutation.mutateAsync({
-        source: metadata?.source ?? 'resume',
+        source: metadata?.source ?? "resume",
         // Payload is compatible with mutation input but transformed from UI format
         payload: payload as unknown as Parameters<
           typeof saveImportMutation.mutateAsync
-        >[0]['payload'],
-      })
-      await utils.profile.import.getImportData.invalidate()
-      setSelectedItems({})
-      void refetch()
+        >[0]["payload"],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["scaffald", "profiles", "import", "data"],
+      });
+      setSelectedItems({});
+      void refetch();
 
-      setImportProgress({ completed: totalSelected, total: totalSelected })
+      setImportProgress({ completed: totalSelected, total: totalSelected });
     } catch (error) {
-      console.error('[profile-import] Failed to save selected data', error)
+      console.error("[profile-import] Failed to save selected data", error);
     } finally {
-      setIsImporting(false)
+      setIsImporting(false);
     }
-  }
+  };
 
   const handleSelectAll = () => {
-    if (sections.length === 0) return
+    if (sections.length === 0) return;
     setSelectedItems(() => {
-      const next: SelectedState = {}
+      const next: SelectedState = {};
       for (const section of sections) {
-        const sectionSelections: Record<string, boolean> = {}
+        const sectionSelections: Record<string, boolean> = {};
         for (const item of section.items) {
-          sectionSelections[item.id] = true
+          sectionSelections[item.id] = true;
         }
-        next[section.id] = sectionSelections
+        next[section.id] = sectionSelections;
       }
-      return next
-    })
-  }
+      return next;
+    });
+  };
 
   return (
-    <YStack gap="$4" padding="$4">
+    <Stack gap={16} padding="md">
       <Card bordered backgroundColor="$color2">
-        <Card.Header padded gap="$3">
-          <XStack gap="$3" alignItems="flex-start" flexWrap="wrap">
-            <Info size={20} color="$blue10" />
-            <YStack flex={1} gap="$2">
-              <XStack gap="$2" alignItems="center">
-                <H5>Imported data overview</H5>
-              </XStack>
-              <Paragraph color="$color11">
-                Review and confirm the details we extracted. You can import everything, bring over a
-                subset, or clear the import and start again.
-              </Paragraph>
-              <XStack gap="$3" flexWrap="wrap">
-                <XStack gap="$2" alignItems="center">
-                  <Clock
-                    size={16}
-                    color={expiresInLabel?.status === 'expired' ? '$red10' : '$blue10'}
-                  />
-                  <Text
-                    color={expiresInLabel?.status === 'expired' ? '$red10' : '$color11'}
-                    fontWeight="600"
-                  >
-                    {expiresInLabel?.label ?? 'Expires 24 hours after upload'}
+        <CardHeader>
+          <Stack gap={12}>
+            <Row gap={12} align="flex-start" wrap>
+              <Info size="lg" color="$blue10" />
+              <Stack flex={1} gap={8}>
+                <Row gap={8} align="center">
+                  <H5>Imported data overview</H5>
+                </Row>
+                <Paragraph color="$gray11">
+                  Review and confirm the details we extracted. You can import
+                  everything, bring over a subset, or clear the import and start
+                  again.
+                </Paragraph>
+                <Row gap={12} wrap>
+                  <Row gap={8} align="center">
+                    <Clock
+                      size="md"
+                      color={
+                        expiresInLabel?.status === "expired"
+                          ? "$red10"
+                          : "$blue10"
+                      }
+                    />
+                    <Text
+                      color={
+                        expiresInLabel?.status === "expired"
+                          ? "$red10"
+                          : "$color11"
+                      }
+                    >
+                      {expiresInLabel?.label ?? "Expires 24 hours after upload"}
+                    </Text>
+                  </Row>
+                  {storedAtLabel && (
+                    <Text color="$gray11">Uploaded {storedAtLabel}</Text>
+                  )}
+                  <Text color="$gray11">
+                    Source:{" "}
+                    <Text color="$gray11">
+                      {metadata?.source === "json"
+                        ? "JSON export"
+                        : "Resume upload"}
+                    </Text>
                   </Text>
-                </XStack>
-                {storedAtLabel && <Text color="$color10">Uploaded {storedAtLabel}</Text>}
-                <Text color="$color10">
-                  Source:{' '}
-                  <Text fontWeight="600" color="$color12">
-                    {metadata?.source === 'json' ? 'JSON export' : 'Resume upload'}
+                  <Text color="$gray11">
+                    Items detected: <Text color="$gray11">{totalItems}</Text>
                   </Text>
-                </Text>
-                <Text color="$color10">
-                  Items detected:{' '}
-                  <Text fontWeight="600" color="$color12">
-                    {totalItems}
-                  </Text>
-                </Text>
-              </XStack>
-            </YStack>
-          </XStack>
-        </Card.Header>
+                </Row>
+              </Stack>
+            </Row>
+          </Stack>
+        </CardHeader>
       </Card>
 
-      <YStack gap="$2">
-        <Text fontSize="$6" fontWeight="700">
-          Review Imported Data
+      <Stack gap={8}>
+        <Text>Review Imported Data</Text>
+        <Text color="$gray11">
+          Select the items you'd like to import. We'll highlight anything that
+          might need attention.
         </Text>
-        <Text color="$color11">
-          Select the items you’d like to import. We’ll highlight anything that might need attention.
-        </Text>
-      </YStack>
+      </Stack>
 
       <ImportSectionTabs
         sections={sectionTabs}
-        activeSection={currentSection?.id ?? 'experience'}
+        activeSection={currentSection?.id ?? "experience"}
         onSectionChange={setActiveSection}
       />
 
       <Separator />
 
-      <ScrollView flex={1}>
-        <YStack gap="$3" marginTop="$3">
+      <ScrollView style={{ flex: 1 }}>
+        <Stack gap={12} marginTop={12}>
           {currentSection?.items.length === 0 && (
-            <Card bordered padding="$4" backgroundColor="$color2">
-              <Card.Header>
-                <Text color="$color11">No items were detected for this section.</Text>
-              </Card.Header>
+            <Card bordered padding="md" backgroundColor="$color2">
+              <CardHeader>
+                <Text color="$gray11">
+                  No items were detected for this section.
+                </Text>
+              </CardHeader>
             </Card>
           )}
 
           {currentSection?.items.map((item) => {
-            const isSelected = selectedItems[currentSection.id]?.[item.id] ?? false
+            const isSelected =
+              selectedItems[currentSection.id]?.[item.id] ?? false;
             const confidenceLevel = toConfidenceLevel(
               (item as { confidenceScore?: number }).confidenceScore
-            )
+            );
             return (
-              <Card bordered key={item.id} backgroundColor={isSelected ? '$color3' : '$background'}>
-                <Card.Header gap="$3">
-                  <XStack justifyContent="space-between" alignItems="center">
-                    <ConfidenceBadge level={confidenceLevel} />
-                    <Button
-                      size="$2"
-                      variant={isSelected ? 'outlined' : undefined}
-                      onPress={() => handleToggleItem(currentSection.id, item.id)}
-                    >
-                      {isSelected ? 'Selected' : 'Select'}
-                    </Button>
-                  </XStack>
-                  <YStack gap="$2">
-                    {'jobTitle' in item && (
-                      <EditableField
-                        label="Job Title"
-                        value={item.jobTitle}
-                        onChange={() => {}}
-                        confidenceScore={item.confidenceScore}
-                      />
-                    )}
-                    {'companyName' in item && (
-                      <EditableField
-                        label="Company"
-                        value={item.companyName}
-                        onChange={() => {}}
-                        confidenceScore={item.confidenceScore}
-                      />
-                    )}
-                    {'degree' in item && (
-                      <EditableField
-                        label="Degree"
-                        value={item.degree}
-                        onChange={() => {}}
-                        confidenceScore={item.confidenceScore}
-                      />
-                    )}
-                    {'institution' in item && (
-                      <EditableField
-                        label="Institution"
-                        value={item.institution}
-                        onChange={() => {}}
-                        confidenceScore={item.confidenceScore}
-                      />
-                    )}
-                    {'name' in item && !('jobTitle' in item) && (
-                      <EditableField
-                        label="Name"
-                        value={item.name}
-                        onChange={() => {}}
-                        confidenceScore={item.confidenceScore}
-                      />
-                    )}
-                    {'summary' in item && (
-                      <EditableField
-                        label="Summary"
-                        value={item.summary}
-                        fieldType="textarea"
-                        onChange={() => {}}
-                        confidenceScore={item.confidenceScore}
-                      />
-                    )}
-                  </YStack>
-                </Card.Header>
+              <Card
+                bordered
+                key={item.id}
+                backgroundColor={isSelected ? "$color3" : "$background"}
+              >
+                <CardHeader>
+                  <Stack gap={12}>
+                    <Row justify="space-between" align="center">
+                      <ConfidenceBadge level={confidenceLevel} />
+                      <Button
+                        size="sm"
+                        variant={isSelected ? "outline" : undefined}
+                        onPress={() =>
+                          handleToggleItem(currentSection.id, item.id)
+                        }
+                      >
+                        {isSelected ? "Selected" : "Select"}
+                      </Button>
+                    </Row>
+                    <Stack gap={8}>
+                      {"jobTitle" in item && (
+                        <EditableField
+                          label="Job Title"
+                          value={item.jobTitle}
+                          onChange={() => {}}
+                          confidenceScore={item.confidenceScore}
+                        />
+                      )}
+                      {"companyName" in item && (
+                        <EditableField
+                          label="Company"
+                          value={item.companyName}
+                          onChange={() => {}}
+                          confidenceScore={item.confidenceScore}
+                        />
+                      )}
+                      {"degree" in item && (
+                        <EditableField
+                          label="Degree"
+                          value={item.degree}
+                          onChange={() => {}}
+                          confidenceScore={item.confidenceScore}
+                        />
+                      )}
+                      {"institution" in item && (
+                        <EditableField
+                          label="Institution"
+                          value={item.institution}
+                          onChange={() => {}}
+                          confidenceScore={item.confidenceScore}
+                        />
+                      )}
+                      {"name" in item && !("jobTitle" in item) && (
+                        <EditableField
+                          label="Name"
+                          value={item.name}
+                          onChange={() => {}}
+                          confidenceScore={item.confidenceScore}
+                        />
+                      )}
+                      {"summary" in item && (
+                        <EditableField
+                          label="Summary"
+                          value={item.summary}
+                          fieldType="textarea"
+                          onChange={() => {}}
+                          confidenceScore={item.confidenceScore}
+                        />
+                      )}
+                    </Stack>
+                  </Stack>
+                </CardHeader>
               </Card>
-            )
+            );
           })}
-        </YStack>
+        </Stack>
       </ScrollView>
 
       <Separator />
 
-      <XStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
-        <XStack gap="$2" flexWrap="wrap">
+      <Row justify="space-between" align="center" wrap gap={12}>
+        <Row gap={8} wrap>
           <Button
-            size="$3"
-            variant="outlined"
-            icon={RotateCcw}
+            size="sm"
+            variant="outline"
+            iconStart={RotateCcw}
             onPress={() => setSelectedItems({})}
           >
             Clear selections
           </Button>
           <Button
-            size="$3"
-            variant="outlined"
-            icon={ListPlus}
+            size="sm"
+            variant="outline"
+            iconStart={ListPlus}
             onPress={handleSelectAll}
             disabled={allSelected || totalItems === 0}
           >
             Select all
           </Button>
-        </XStack>
-        <XStack gap="$3" alignItems="center" flexWrap="wrap">
-          <Text color="$color10" aria-live="polite">
+        </Row>
+        <Row gap={12} align="center" wrap>
+          <Text color="$gray11" aria-live="polite">
             Selected {selectedCount} of {totalItems}
           </Text>
           {isImporting && (
-            <Text color="$color10" aria-live="assertive">
+            <Text color="$gray11" aria-live="assertive">
               Importing {importProgress.completed} of {importProgress.total}...
             </Text>
           )}
           <Button
-            size="$3"
-            variant="outlined"
+            size="sm"
+            variant="outline"
             disabled={clearImportMutation.isPending}
             onPress={async () => {
-              await clearImportMutation.mutateAsync({})
-              await utils.profile.import.getImportData.invalidate()
-              void refetch()
+              await clearImportMutation.mutateAsync();
+              await queryClient.invalidateQueries({
+                queryKey: ["scaffald", "profiles", "import", "data"],
+              });
+              void refetch();
             }}
           >
             Clear import
           </Button>
           <Button
-            size="$4"
-            iconAfter={CheckCircle2}
+            size="md"
+            iconEnd={CheckCircle2}
             disabled={selectedCount === 0 || isImporting}
             onPress={handleImportSelected}
           >
             Import selected ({selectedCount})
           </Button>
-        </XStack>
-      </XStack>
-    </YStack>
-  )
+        </Row>
+      </Row>
+    </Stack>
+  );
 }

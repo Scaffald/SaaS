@@ -1,5 +1,5 @@
 /**
- * REQ-267: Due Date Inference & Management
+ * Due Date Inference & Management
  * TASK-2: Implement Due Date Auto-Calculation Logic
  *
  * Tests for the DueDateService inference methods
@@ -20,7 +20,7 @@ import {
 } from '../dueDateService';
 import { Task } from '../../../types';
 
-describe('REQ-267: DueDateService', () => {
+describe('DueDateService', () => {
   describe('inferDueDateFromPolicy', () => {
     it('should calculate due date 30 days before policy expiration', () => {
       const policyExpiration = new Date('2024-06-30T00:00:00.000Z');

@@ -3,11 +3,11 @@ import {
   FEEDBACK_MAX_LENGTH,
   FEEDBACK_MIN_LENGTH,
 } from '@scf/schemas/feedback'
-import type { UploadSelection } from '@unicornlove/ui'
+import type { UploadSelection } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import {
   Button,
   FieldError,
-  Image,
   Input,
   Paragraph,
   ResponsiveModal,
@@ -15,10 +15,11 @@ import {
   Separator,
   Text,
   UploadSurface,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
-import { MessageCircle } from '@tamagui/lucide-icons'
+  Row,
+  Stack,
+} from '@scaffald/ui'
+import { Image } from 'expo-image'
+import { MessageCircle } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import { Controller } from 'react-hook-form'
 import { useFeedbackContext } from './hooks/useFeedbackContext'
@@ -38,20 +39,9 @@ function formatCharacterCounter(current: number) {
 }
 
 function toScreenshotSource(selection: UploadSelection): FeedbackScreenshotSource {
-  if (selection.platform === 'web') {
-    return {
-      kind: 'web',
-      file: selection.file,
-    }
-  }
-
-  return {
-    kind: 'native',
-    uri: selection.asset.uri,
-    name: selection.asset.name ?? 'feedback-screenshot',
-    mimeType: selection.asset.type ?? 'image/png',
-    size: selection.asset.size,
-  }
+  const file = selection.files[0]
+  if (!file) throw new Error('No file selected')
+  return { kind: 'web', file }
 }
 
 export function FeedbackWidget() {
@@ -110,66 +100,60 @@ export function FeedbackWidget() {
 
   return (
     <>
-      <YStack position="absolute" bottom="$4" right="$4" style={{ zIndex: 1000 }}>
+      <Stack style={{ position: 'absolute', bottom: 16, right: 16, zIndex: 1000 }}>
         <Button
-          size="$6"
-          circular
-          icon={MessageCircle}
-          backgroundColor="$blue9"
-          color="$color1"
-          elevation="$4"
-          pressStyle={{ scale: 0.97 }}
-          hoverStyle={{ backgroundColor: '$blue10' }}
-          focusStyle={{ outlineColor: '$blue8' }}
+          size="sm"
+          iconStart={MessageCircle}
+          variant="filled"
           onPress={() => setIsModalOpen(true)}
         >
           Feedback
         </Button>
         {pendingCount > 0 ? (
-          <YStack
-            marginTop="$2"
-            paddingHorizontal="$3"
-            paddingVertical="$2"
+          <Stack
+            marginTop={8}
+            paddingHorizontal={12}
+            paddingVertical={8}
             backgroundColor="$yellow4"
             borderWidth={1}
             borderColor="$yellow6"
-            borderRadius="$3"
+            borderRadius={12}
             style={{ maxWidth: 220 }}
           >
-            <Text fontSize="$2" color="$yellow10">
+            <Text color="$yellow10">
               {pendingCount === 1
                 ? "1 submission will sync when you're online."
                 : `${pendingCount} submissions will sync when you're online.`}
             </Text>
-          </YStack>
+          </Stack>
         ) : null}
-      </YStack>
+      </Stack>
 
       <ResponsiveModal
         open={isModalOpen}
         onOpenChange={handleOpenChange}
         title="Submit Feedback"
-        size="medium"
+        size="md"
       >
         <ScrollView showsVerticalScrollIndicator={false}>
-          <YStack gap="$4" paddingHorizontal="$2" paddingVertical="$2">
-            <Paragraph color="$color11">{INSTRUCTIONS}</Paragraph>
+          <Stack gap={16} paddingHorizontal={8} paddingVertical={8}>
+            <Paragraph color="$gray11">{INSTRUCTIONS}</Paragraph>
 
-            <YStack gap="$2">
-              <Text fontWeight="600">Feedback Type</Text>
+            <Stack gap={8}>
+              <Text>Feedback Type</Text>
               <Controller
                 control={form.control}
                 name="feedbackType"
                 render={({ field: { value, onChange } }) => (
-                  <XStack gap="$2">
+                  <Row gap={8}>
                     {(['bug', 'feature', 'comment'] as const).map((type) => {
                       const isActive = value === type
                       return (
                         <Button
                           key={type}
-                          size="$3"
-                          theme={isActive ? 'blue' : undefined}
-                          variant={isActive ? undefined : 'outlined'}
+                          size="sm"
+                          color={isActive ? 'primary' : undefined}
+                          variant={isActive ? 'filled' : 'outline'}
                           onPress={() => onChange(type)}
                         >
                           {type === 'bug'
@@ -180,36 +164,30 @@ export function FeedbackWidget() {
                         </Button>
                       )
                     })}
-                  </XStack>
+                  </Row>
                 )}
               />
               <FieldError message={form.formState.errors.feedbackType?.message} />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
-              <Text fontWeight="600">Feedback Details</Text>
+            <Stack gap={8}>
+              <Text>Feedback Details</Text>
               <Controller
                 control={form.control}
                 name="feedbackText"
                 render={({ field: { value, onBlur, onChange } }) => (
                   <Input
                     multiline
-                    numberOfLines={6}
                     value={value}
                     onBlur={onBlur}
                     onChangeText={onChange}
                     placeholder="Describe your feedback in detail..."
-                    backgroundColor="$color2"
-                    borderColor={isBelowMinimum ? '$red7' : '$color6'}
-                    textAlignVertical="top"
-                    focusStyle={{
-                      borderColor: '$blue7',
-                      outlineColor: '$blue7',
-                    }}
+                    error={isBelowMinimum}
+                    contentStyle={{ textAlignVertical: 'top' }}
                   />
                 )}
               />
-              <XStack justifyContent="space-between" alignItems="center">
+              <Row justify="space-between" align="center">
                 <FieldError
                   message={
                     form.formState.errors.feedbackText?.message ??
@@ -218,14 +196,14 @@ export function FeedbackWidget() {
                       : undefined)
                   }
                 />
-                <Text color={isBelowMinimum ? '$red9' : '$color9'} fontSize="$2">
+                <Text color={isBelowMinimum ? '$red9' : '$color9'}>
                   {formatCharacterCounter(characterCount)}
                 </Text>
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
 
-            <YStack gap="$2">
-              <Text fontWeight="600">Screenshot (optional)</Text>
+            <Stack gap={8}>
+              <Text>Screenshot (optional)</Text>
               <UploadSurface
                 accept={ACCEPT_TYPES}
                 maxSizeBytes={5 * 1024 * 1024}
@@ -235,95 +213,92 @@ export function FeedbackWidget() {
                 }}
               >
                 {({ open, getInputProps, getRootProps, isDragActive, isProcessing }) => (
-                  <YStack
+                  <Stack
                     {...getRootProps()}
-                    borderWidth={1}
-                    borderStyle="dashed"
-                    paddingHorizontal="$4"
-                    paddingVertical="$6"
-                    alignItems="center"
-                    justifyContent="center"
-                    gap="$2"
-                    backgroundColor="$color2"
-                    borderColor={isDragActive ? '$blue7' : '$color6'}
-                    borderRadius="$4"
+                    paddingHorizontal={16}
+                    paddingVertical={24}
+                    align="center"
+                    justify="center"
+                    gap={8}
+                    borderRadius={16}
+                    style={{
+                      borderWidth: 1,
+                      borderStyle: 'dashed',
+                      backgroundColor: colors.gray[50],
+                      borderColor: isDragActive ? colors.info[200] : colors.gray[200],
+                    }}
                   >
                     <input {...getInputProps()} />
-                    <Text fontWeight="600">
-                      {isProcessing ? 'Processing...' : 'Drag & drop a screenshot'}
-                    </Text>
-                    <Text fontSize="$2" color="$color9">
+                    <Text>{isProcessing ? 'Processing...' : 'Drag & drop a screenshot'}</Text>
+                    <Text style={{ color: colors.gray[500] }}>
                       Accepted formats: PNG, JPG, JPEG, GIF, WebP (max 5MB)
                     </Text>
-                    <Button size="$2" marginTop="$2" onPress={open}>
-                      Choose File
-                    </Button>
-                  </YStack>
+                    <Stack style={{ marginTop: 8 }}>
+                      <Button size="sm" onPress={open}>
+                        Choose File
+                      </Button>
+                    </Stack>
+                  </Stack>
                 )}
               </UploadSurface>
 
               {screenshot ? (
-                <YStack
-                  marginTop="$3"
+                <Stack
+                  marginTop={12}
                   borderWidth={1}
-                  borderColor="$color6"
-                  overflow="hidden"
-                  borderRadius="$4"
+                  borderColor={colors.gray[200]}
+                  borderRadius={16}
+                  style={{ overflow: 'hidden' }}
                 >
                   {screenshotPreview ? (
                     <Image
                       source={{ uri: screenshotPreview }}
-                      width="100%"
-                      height={200}
-                      resizeMode="cover"
+                      style={{ width: '100%', height: 200 }}
+                      contentFit="cover"
                     />
                   ) : null}
-                  <XStack
-                    paddingHorizontal="$3"
-                    paddingVertical="$2"
-                    alignItems="center"
-                    justifyContent="space-between"
+                  <Row
+                    paddingHorizontal={12}
+                    paddingVertical={8}
+                    align="center"
+                    justify="space-between"
                     backgroundColor="$color2"
-                    gap="$2"
+                    gap={8}
                   >
-                    <YStack flex={1}>
-                      <Text numberOfLines={1} fontWeight="600">
+                    <Stack flex={1}>
+                      <Text>
                         {screenshot.kind === 'web' ? screenshot.file.name : screenshot.name}
                       </Text>
-                      <Text fontSize="$2" color="$color9">
+                      <Text style={{ color: colors.gray[500] }}>
                         {screenshot.kind === 'web'
                           ? screenshot.file.type || 'image'
                           : screenshot.mimeType}
                       </Text>
-                    </YStack>
-                    <Button size="$2" variant="outlined" onPress={handleRemoveScreenshot}>
+                    </Stack>
+                    <Button size="sm" variant="outline" onPress={handleRemoveScreenshot}>
                       Remove
                     </Button>
-                  </XStack>
-                </YStack>
+                  </Row>
+                </Stack>
               ) : null}
-            </YStack>
+            </Stack>
 
             <Separator />
 
-            <XStack alignItems="center" justifyContent="space-between" gap="$3">
-              <YStack gap="$1">
-                <Text fontSize="$2" color="$color9">
-                  Captured context:
-                </Text>
-                <Text fontSize="$2" color="$color10">
-                  {context.pageUrl}
-                </Text>
-                <Text fontSize="$2" color="$color10">
+            <Row align="center" justify="space-between" gap={12}>
+              <Stack gap={4}>
+                <Text style={{ color: colors.gray[500] }}>Captured context:</Text>
+                <Text style={{ color: colors.gray[500] }}>{context.pageUrl}</Text>
+                <Text style={{ color: colors.gray[500] }}>
                   {context.browserName
                     ? `${context.browserName} ${context.browserVersion ?? ''}`.trim()
                     : context.userAgent}
                 </Text>
-              </YStack>
+              </Stack>
 
               <Button
-                size="$2"
-                variant="outlined"
+                size="sm"
+                variant="outline"
                 onPress={() => {
                   void processQueue()
                 }}
@@ -331,16 +306,16 @@ export function FeedbackWidget() {
               >
                 {isProcessingQueue ? 'Syncing…' : 'Retry Pending'}
               </Button>
-            </XStack>
+            </Row>
 
             <Button
-              size="$4"
+              size="md"
               disabled={isSubmitting || isBelowMinimum || !form.formState.isValid}
               onPress={form.handleSubmit(handleSubmit)}
             >
               {isSubmitting ? 'Submitting…' : 'Submit Feedback'}
             </Button>
-          </YStack>
+          </Stack>
         </ScrollView>
       </ResponsiveModal>
     </>

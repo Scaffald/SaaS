@@ -16,7 +16,7 @@ import {
   X,
   Info,
 } from 'lucide-react';
-import { Stack, Row, Text } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text } from '@scaffald/ui';
 import StatusBadge from '../Common/StatusBadge';
 import IconButton from '../Common/IconButton';
 import Modal from '../Common/Modal';

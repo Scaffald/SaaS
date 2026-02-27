@@ -5,22 +5,21 @@
 
 import { useState } from 'react'
 import {
-  Button,
   Card,
-  Dialog,
-  H3,
+  Modal,
+  ModalHeader,
+  ModalContent,
+  ModalActions,
   H4,
   Paragraph,
   Separator,
-  Spinner,
-  XStack,
-  YStack,
+  Row,
+  Stack,
   Checkbox,
-  ScrollView,
-} from '@unicornlove/ui'
-import { AlertCircle, CheckCircle, Info, Lock, Shield, XCircle } from '@tamagui/lucide-icons'
+} from '@scaffald/ui'
+import { AlertCircle, CheckCircle, Info, Lock, Shield, XCircle } from 'lucide-react-native'
 
-interface APIKeyScopesManagerProps {
+export interface APIKeyScopesManagerProps {
   isOpen: boolean
   onClose: () => void
   apiKey: {
@@ -188,304 +187,295 @@ export function APIKeyScopesManager({
   }
 
   return (
-    <Dialog modal open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <Dialog.Portal>
-        <Dialog.Overlay
-          key="overlay"
-          animation="quick"
-          opacity={0.5}
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
-        />
-
-        <Dialog.Content
-          bordered
-          elevate
-          key="content"
-          animateOnly={['transform', 'opacity']}
-          animation={[
-            'quick',
-            {
-              opacity: {
-                overshootClamping: true,
-              },
-            },
-          ]}
-          enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
-          exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
-          gap="$4"
-          width="90%"
-          maxWidth={700}
-          maxHeight="85vh"
-        >
-          <YStack gap="$4" f={1}>
-            {/* Header */}
-            <Dialog.Title>
-              <H3>Manage API Key Permissions</H3>
-            </Dialog.Title>
-            <Dialog.Description>
-              <Paragraph color="$gray11">{apiKey.name}</Paragraph>
-            </Dialog.Description>
-
+    <Modal visible={isOpen} onClose={handleClose}>
+      <ModalHeader title="Manage API Key Permissions" description={apiKey.name} />
+      <ModalContent>
+        <Stack gap={16}>
             {!apiKey.is_active && (
-              <Card backgroundColor="$orange2" borderColor="$orange6" borderWidth={1} padding="$3">
-                <XStack ai="center" gap="$2">
-                  <AlertCircle size={20} color="$orange11" />
+              <Card
+                padding="sm"
+                style={{ backgroundColor: '$orange2', borderColor: '$orange6', borderWidth: 1 }}
+              >
+                <Row align="center" gap={8}>
+                  <AlertCircle size="lg" color="$orange11" />
                   <Paragraph color="$orange11">
                     This API key is revoked. Updating scopes will not re-activate it.
                   </Paragraph>
-                </XStack>
+                </Row>
               </Card>
             )}
 
             <Separator />
 
             {/* Info Card */}
-            <Card backgroundColor="$blue2" borderColor="$blue6" borderWidth={1} padding="$3">
-              <XStack ai="flex-start" gap="$3">
-                <Info size={20} color="$blue11" mt="$0.5" />
-                <YStack f={1} gap="$2">
-                  <Paragraph fontWeight="600" color="$blue11">
-                    Permission Scopes
-                  </Paragraph>
-                  <Paragraph size="$3" color="$blue11">
+            <Card
+              padding="sm"
+              style={{ backgroundColor: '$blue2', borderColor: '$blue6', borderWidth: 1 }}
+            >
+              <Row align="flex-start" gap={12}>
+                <Info size={24} color="$blue11" />
+                <Stack flex={1} gap={8}>
+                  <Paragraph color="$blue11">Permission Scopes</Paragraph>
+                  <Paragraph size="sm" color="$blue11">
                     Scopes control what your API key can access. Grant only the minimum permissions
                     needed for your use case (principle of least privilege).
                   </Paragraph>
-                </YStack>
-              </XStack>
+                </Stack>
+              </Row>
             </Card>
 
             {/* Scopes Selection - Scrollable */}
-            <ScrollView maxHeight={400}>
-              <YStack gap="$4">
+            <Stack gap={16} style={{ maxHeight: 400 }}>
                 {/* Read Permissions */}
-                <YStack gap="$3">
-                  <XStack ai="center" gap="$2">
-                    <Shield size={20} color="$green10" />
+                <Stack gap={12}>
+                  <Row align="center" gap={8}>
+                    <Shield size="lg" color="$green10" />
                     <H4>Read Permissions</H4>
-                  </XStack>
-                  <YStack gap="$2">
+                  </Row>
+                  <Stack gap={8}>
                     {SCOPE_DEFINITIONS.filter((s) => s.category === 'read').map((scope) => (
                       <Card
                         key={scope.id}
-                        padding="$3"
-                        backgroundColor={selectedScopes.includes(scope.id) ? '$green2' : '$gray2'}
-                        borderColor={selectedScopes.includes(scope.id) ? '$green6' : '$gray6'}
-                        borderWidth={1}
-                        pressStyle={{ scale: 0.98 }}
+                        padding="sm"
+                        pressable
                         onPress={() => toggleScope(scope.id)}
-                        cursor="pointer"
+                        style={{
+                          backgroundColor: selectedScopes.includes(scope.id) ? '$green2' : '$gray2',
+                          borderColor: selectedScopes.includes(scope.id) ? '$green6' : '$gray6',
+                          borderWidth: 1,
+                        }}
                       >
-                        <XStack ai="flex-start" gap="$3">
+                        <Row align="flex-start" gap={12}>
                           <Checkbox
                             checked={selectedScopes.includes(scope.id)}
-                            onCheckedChange={() => toggleScope(scope.id)}
-                            mt="$0.5"
+                            onChange={() => toggleScope(scope.id)}
                           />
-                          <YStack f={1} gap="$2">
-                            <Paragraph fontWeight="600">{scope.label}</Paragraph>
-                            <Paragraph size="$2" color="$gray11">
+                          <Stack flex={1} gap={8}>
+                            <Paragraph>{scope.label}</Paragraph>
+                            <Paragraph size="sm" color="$gray11">
                               {scope.description}
                             </Paragraph>
                             {scope.requires && scope.requires.length > 0 && (
-                              <XStack ai="center" gap="$2" flexWrap="wrap">
-                                <Paragraph size="$2" color="$gray11">
+                              <Row align="center" gap={8} wrap>
+                                <Paragraph size="sm" color="$gray11">
                                   Requires:
                                 </Paragraph>
                                 {scope.requires.map((req) => (
                                   <Card
                                     key={req}
-                                    backgroundColor="$gray4"
-                                    paddingHorizontal="$2"
-                                    paddingVertical="$1"
-                                    borderRadius="$2"
+                                    style={{
+                                      backgroundColor: '$gray4',
+                                      paddingHorizontal: 8,
+                                      paddingVertical: 4,
+                                      borderRadius: 8,
+                                    }}
                                   >
-                                    <Paragraph size="$1" color="$gray11" fontFamily="$mono">
+                                    <Paragraph size="sm" color="$gray11" style={{ fontFamily: '$mono' }}>
                                       {req}
                                     </Paragraph>
                                   </Card>
                                 ))}
-                              </XStack>
+                              </Row>
                             )}
-                          </YStack>
-                        </XStack>
+                          </Stack>
+                        </Row>
                       </Card>
                     ))}
-                  </YStack>
-                </YStack>
+                  </Stack>
+                </Stack>
 
                 {/* Write Permissions */}
-                <YStack gap="$3">
-                  <XStack ai="center" gap="$2">
-                    <Lock size={20} color="$orange10" />
+                <Stack gap={12}>
+                  <Row align="center" gap={8}>
+                    <Lock size="lg" color="$orange10" />
                     <H4>Write Permissions</H4>
-                  </XStack>
-                  <YStack gap="$2">
+                  </Row>
+                  <Stack gap={8}>
                     {SCOPE_DEFINITIONS.filter((s) => s.category === 'write').map((scope) => (
                       <Card
                         key={scope.id}
-                        padding="$3"
-                        backgroundColor={selectedScopes.includes(scope.id) ? '$orange2' : '$gray2'}
-                        borderColor={selectedScopes.includes(scope.id) ? '$orange6' : '$gray6'}
-                        borderWidth={1}
-                        pressStyle={{ scale: 0.98 }}
+                        padding="sm"
+                        pressable
                         onPress={() => toggleScope(scope.id)}
-                        cursor="pointer"
+                        style={{
+                          backgroundColor: selectedScopes.includes(scope.id) ? '$orange2' : '$gray2',
+                          borderColor: selectedScopes.includes(scope.id) ? '$orange6' : '$gray6',
+                          borderWidth: 1,
+                        }}
                       >
-                        <XStack ai="flex-start" gap="$3">
+                        <Row align="flex-start" gap={12}>
                           <Checkbox
                             checked={selectedScopes.includes(scope.id)}
-                            onCheckedChange={() => toggleScope(scope.id)}
-                            mt="$0.5"
+                            onChange={() => toggleScope(scope.id)}
                           />
-                          <YStack f={1} gap="$2">
-                            <Paragraph fontWeight="600">{scope.label}</Paragraph>
-                            <Paragraph size="$2" color="$gray11">
+                          <Stack flex={1} gap={8}>
+                            <Paragraph>{scope.label}</Paragraph>
+                            <Paragraph size="sm" color="$gray11">
                               {scope.description}
                             </Paragraph>
                             {scope.warning && (
                               <Card
-                                backgroundColor="$orange2"
-                                borderColor="$orange6"
-                                borderWidth={1}
-                                padding="$2"
+                                padding="sm"
+                                style={{
+                                  backgroundColor: '$orange2',
+                                  borderColor: '$orange6',
+                                  borderWidth: 1,
+                                }}
                               >
-                                <XStack ai="flex-start" gap="$2">
-                                  <AlertCircle size={14} color="$orange11" mt="$0.5" />
-                                  <Paragraph size="$2" color="$orange11" f={1}>
+                                <Row align="flex-start" gap={8}>
+                                  <AlertCircle size={20} color="$orange11" />
+                                  <Paragraph size="sm" color="$orange11" style={{ flex: 1 }}>
                                     {scope.warning}
                                   </Paragraph>
-                                </XStack>
+                                </Row>
                               </Card>
                             )}
                             {scope.requires && scope.requires.length > 0 && (
-                              <XStack ai="center" gap="$2" flexWrap="wrap">
-                                <Paragraph size="$2" color="$gray11">
+                              <Row align="center" gap={8} wrap>
+                                <Paragraph size="sm" color="$gray11">
                                   Requires:
                                 </Paragraph>
                                 {scope.requires.map((req) => (
                                   <Card
                                     key={req}
-                                    backgroundColor="$gray4"
-                                    paddingHorizontal="$2"
-                                    paddingVertical="$1"
-                                    borderRadius="$2"
+                                    style={{
+                                      backgroundColor: '$gray4',
+                                      paddingHorizontal: 8,
+                                      paddingVertical: 4,
+                                      borderRadius: 8,
+                                    }}
                                   >
-                                    <Paragraph size="$1" color="$gray11" fontFamily="$mono">
+                                    <Paragraph size="sm" color="$gray11" style={{ fontFamily: '$mono' }}>
                                       {req}
                                     </Paragraph>
                                   </Card>
                                 ))}
-                              </XStack>
+                              </Row>
                             )}
-                          </YStack>
-                        </XStack>
+                          </Stack>
+                        </Row>
                       </Card>
                     ))}
-                  </YStack>
-                </YStack>
-              </YStack>
-            </ScrollView>
+                  </Stack>
+                </Stack>
+              </Stack>
 
             {/* Summary */}
-            <Card backgroundColor="$gray3" padding="$3">
-              <YStack gap="$2">
-                <Paragraph size="$2" color="$gray11">
+            <Card padding="sm" style={{ backgroundColor: '$gray3' }}>
+              <Stack gap={8}>
+                <Paragraph size="sm" color="$gray11">
                   Selected Permissions
                 </Paragraph>
-                <XStack gap="$2" flexWrap="wrap">
+                <Row gap={8} wrap>
                   {selectedScopes.length === 0 ? (
-                    <Paragraph size="$3" color="$gray11">
+                    <Paragraph size="sm" color="$gray11">
                       No permissions selected
                     </Paragraph>
                   ) : (
                     selectedScopes.map((scope) => (
                       <Card
                         key={scope}
-                        backgroundColor="$blue3"
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius="$2"
+                        style={{
+                          backgroundColor: '$blue3',
+                          paddingHorizontal: 8,
+                          paddingVertical: 4,
+                          borderRadius: 8,
+                        }}
                       >
-                        <Paragraph size="$2" color="$blue11">
+                        <Paragraph size="sm" color="$blue11">
                           {scope}
                         </Paragraph>
                       </Card>
                     ))
                   )}
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
             </Card>
 
             {/* Changes Summary */}
             {hasChanges() && (
-              <Card backgroundColor="$yellow2" borderColor="$yellow6" borderWidth={1} padding="$3">
-                <YStack gap="$2">
-                  <Paragraph fontWeight="600" color="$yellow11">
-                    Pending Changes
-                  </Paragraph>
+              <Card
+                padding="sm"
+                style={{
+                  backgroundColor: '$yellow2',
+                  borderColor: '$yellow6',
+                  borderWidth: 1,
+                }}
+              >
+                <Stack gap={8}>
+                  <Paragraph color="$yellow11">Pending Changes</Paragraph>
                   {getAddedScopes().length > 0 && (
-                    <XStack gap="$2" ai="center">
-                      <CheckCircle size={16} color="$green11" />
-                      <Paragraph size="$3" color="$gray11">
+                    <Row gap={8} align="center">
+                      <CheckCircle size="md" color="$green11" />
+                      <Paragraph size="sm" color="$gray11">
                         Adding: {getAddedScopes().join(', ')}
                       </Paragraph>
-                    </XStack>
+                    </Row>
                   )}
                   {getRemovedScopes().length > 0 && (
-                    <XStack gap="$2" ai="center">
-                      <XCircle size={16} color="$red11" />
-                      <Paragraph size="$3" color="$gray11">
+                    <Row gap={8} align="center">
+                      <XCircle size="md" color="$red11" />
+                      <Paragraph size="sm" color="$gray11">
                         Removing: {getRemovedScopes().join(', ')}
                       </Paragraph>
-                    </XStack>
+                    </Row>
                   )}
-                </YStack>
+                </Stack>
               </Card>
             )}
 
             {/* Error Message */}
             {error && (
-              <Card backgroundColor="$red2" borderColor="$red6" borderWidth={1} padding="$3">
-                <XStack ai="center" gap="$2">
-                  <AlertCircle size={20} color="$red11" />
-                  <Paragraph color="$red11" f={1}>
+              <Card
+                padding="sm"
+                style={{
+                  backgroundColor: '$red2',
+                  borderColor: '$red6',
+                  borderWidth: 1,
+                }}
+              >
+                <Row align="center" gap={8}>
+                  <AlertCircle size={24} color="$red11" />
+                  <Paragraph color="$red11" style={{ flex: 1 }}>
                     {error}
                   </Paragraph>
-                </XStack>
+                </Row>
               </Card>
             )}
 
             {/* Success Message */}
             {success && (
-              <Card backgroundColor="$green2" borderColor="$green6" borderWidth={1} padding="$3">
-                <XStack ai="center" gap="$2">
-                  <CheckCircle size={20} color="$green11" />
+              <Card
+                padding="sm"
+                style={{
+                  backgroundColor: '$green2',
+                  borderColor: '$green6',
+                  borderWidth: 1,
+                }}
+              >
+                <Row align="center" gap={8}>
+                  <CheckCircle size="lg" color="$green11" />
                   <Paragraph color="$green11">Scopes updated successfully!</Paragraph>
-                </XStack>
+                </Row>
               </Card>
             )}
 
-            {/* Actions */}
-            <XStack gap="$3" jc="flex-end">
-              <Dialog.Close asChild>
-                <Button variant="outlined" disabled={isUpdating || success}>
-                  Cancel
-                </Button>
-              </Dialog.Close>
-              <Button
-                theme="blue"
-                onPress={handleUpdate}
-                disabled={isUpdating || !hasChanges() || selectedScopes.length === 0 || success}
-                icon={isUpdating ? <Spinner /> : undefined}
-              >
-                {isUpdating ? 'Updating...' : 'Update Permissions'}
-              </Button>
-            </XStack>
-          </YStack>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog>
+        </Stack>
+      </ModalContent>
+      <ModalActions
+        orientation="right"
+        primaryAction={{
+          label: isUpdating ? 'Updating...' : 'Update Permissions',
+          onPress: handleUpdate,
+          loading: isUpdating,
+          disabled: isUpdating || !hasChanges() || selectedScopes.length === 0 || success,
+        }}
+        secondaryAction={{
+          label: 'Cancel',
+          onPress: handleClose,
+          disabled: isUpdating || success,
+        }}
+      />
+    </Modal>
   )
 }

@@ -1,5 +1,5 @@
 import { Users, CheckCircle, Clock, AlertTriangle, XCircle } from 'lucide-react';
-import { Stack, Row, Text } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text } from '@scaffald/ui';
 import StatusBadge from '../Common/StatusBadge';
 import ComplianceScore from '../Common/ComplianceScore';
 

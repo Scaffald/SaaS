@@ -1,7 +1,6 @@
 /**
  * TeamMembersList - Container for team member cards
- * REQ-283: Team Member Management UI
- * TASK-1: Create Team Members List Page
+ * Team member management UI - Team Members List page
  *
  * Displays a grid/list of team members with:
  * - Role filtering
@@ -14,7 +13,7 @@
 
 import React, { useState, useCallback, useMemo } from 'react'
 import { Search, Users as UsersIcon } from 'lucide-react'
-import { Stack, Row, Text, Card, Button, Input, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, Card, Button, Input, Grid } from '@scaffald/ui'
 import { TeamMemberCard, type TeamMember } from './TeamMemberCard'
 
 type RoleFilter = 'all' | TeamMember['role']

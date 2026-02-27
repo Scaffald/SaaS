@@ -1,10 +1,12 @@
 import { supabase } from '@scf/core/utils/supabase/client'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
-import { AlertCircle, Image as ImageIcon, Trash2, Upload } from '@tamagui/lucide-icons'
+import { AlertCircle, Image as ImageIcon, Trash2, Upload } from 'lucide-react-native'
 import { type ChangeEvent, useCallback, useRef, useState } from 'react'
 import { Platform } from 'react-native'
-import { Button, Image, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-import { useFilePicker, MediaTypeOptions } from '@unicornlove/ui'
+import { Button, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { useFilePicker } from '@scaffald/ui'
+import * as ImagePicker from 'expo-image-picker'
+import { Image } from 'react-native'
 
 export interface ImageUploadProps {
   /** Current image URL (for edit mode) */
@@ -219,11 +221,12 @@ export function ImageUpload({
     }
   }, [bucket, onChange, onError, value])
 
-  const { open, getRootProps, dragStatus } = useFilePicker({
-    typeOfPicker: 'image',
-    mediaTypes: [MediaTypeOptions.Images],
-    multiple: false,
-    onPick: async ({ webFiles, nativeFiles }) => {
+  const handlePicked = useCallback(
+    async (param: {
+      webFiles: File[] | null
+      nativeFiles: Array<{ uri: string; width?: number; height?: number; type?: string }> | null
+    }) => {
+      const { webFiles, nativeFiles } = param
       if (webFiles?.length) {
         await handleFileUpload(webFiles[0])
       } else if (nativeFiles?.length) {
@@ -305,6 +308,26 @@ export function ImageUpload({
         }
       }
     },
+    [bucket, maxSizeMB, onChange, onError, generateFilePath, handleFileUpload]
+  )
+
+  const openNativePicker = useCallback(async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: false,
+    })
+    if (!result.canceled && result.assets[0]) {
+      const asset = result.assets[0]
+      await handlePicked({
+        webFiles: null,
+        nativeFiles: [{ uri: asset.uri, width: asset.width, height: asset.height, type: asset.mimeType ?? undefined }],
+      })
+    }
+  }, [handlePicked])
+
+  const { open, getRootProps, dragStatus } = useFilePicker({
+    onPick: handlePicked,
+    onOpenNative: openNativePicker,
   })
 
   // Trigger file picker (defined after useFilePicker so open is available)
@@ -324,120 +347,120 @@ export function ImageUpload({
   const hasImage = !!value
 
   return (
-    <YStack gap="$2">
-      {label && (
-        <Text fontSize="$4" fontWeight="600">
-          {label}
-        </Text>
-      )}
+    <Stack gap={8}>
+      {label && <Text>{label}</Text>}
 
       {/* Upload Area */}
-      <YStack
-        borderWidth={2}
-        borderColor={
-          isDragActive ? '$blue8' : error ? '$red8' : hasImage ? '$borderColor' : '$borderColor'
-        }
-        borderStyle={isDragActive ? 'solid' : 'dashed'}
-        borderRadius="$4"
-        padding="$4"
-        backgroundColor={isDragActive ? '$blue2' : hasImage ? '$background' : '$background'}
-        opacity={disabled ? 0.5 : 1}
+      <Stack
+        style={{
+          borderWidth: 2,
+          borderColor: isDragActive ? '#3b82f6' : error ? '#ef4444' : '#e4e4e7',
+          borderStyle: isDragActive ? 'solid' : 'dashed',
+          borderRadius: 16,
+          opacity: disabled ? 0.5 : 1,
+        }}
+        padding={16}
         {...(Platform.OS === 'web' && getRootProps
           ? (getRootProps() as Record<string, unknown>)
           : {})}
       >
         {hasImage ? (
           // Image Preview Mode
-          <YStack gap="$3" alignItems="center">
-            <YStack position="relative">
+          <Stack gap={12} align="center">
+            <Stack style={{ position: 'relative' }}>
               <Image
                 source={{ uri: value }}
-                width={200}
-                height={200}
+                style={{
+                  width: 200,
+                  height: 200,
+                  borderRadius: 16,
+                  borderWidth: 1,
+                  borderColor: '#e4e4e7',
+                }}
                 resizeMode="contain"
-                borderRadius="$4"
-                borderWidth={1}
-                borderColor="$borderColor"
               />
               {isUploading && (
-                <YStack
-                  position="absolute"
-                  backgroundColor="$background"
-                  opacity={0.8}
-                  alignItems="center"
-                  justifyContent="center"
-                  borderRadius="$4"
-                  style={{ top: 0, left: 0, right: 0, bottom: 0 }}
+                <Stack
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: '#ffffff',
+                    opacity: 0.8,
+                  }}
+                  align="center"
+                  justify="center"
+                  borderRadius={16}
                 >
-                  <Spinner size="large" />
-                </YStack>
+                  <Spinner size="lg" />
+                </Stack>
               )}
-            </YStack>
+            </Stack>
 
-            <XStack gap="$2">
+            <Row gap={8}>
               <Button
-                size="$3"
-                variant="outlined"
+                size="sm"
+                variant="outline"
                 onPress={triggerFilePicker}
                 disabled={disabled || isUploading}
-                icon={Upload}
+                iconStart={Upload}
               >
                 Change Image
               </Button>
               <Button
-                size="$3"
-                variant="outlined"
-                color="$red10"
+                size="sm"
+                variant="outline"
+                color="error"
                 onPress={handleDelete}
                 disabled={disabled || isUploading}
-                icon={Trash2}
+                iconStart={Trash2}
               >
                 Remove
               </Button>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         ) : (
           // Upload Mode
-          <YStack gap="$3" alignItems="center">
+          <Stack gap={12} align="center">
             {/* Icon */}
-            <YStack
+            <Stack
               width={64}
               height={64}
-              alignItems="center"
-              justifyContent="center"
-              borderRadius="$4"
+              align="center"
+              justify="center"
+              borderRadius={16}
               backgroundColor="$blue3"
             >
-              {isUploading ? <Spinner size="large" /> : <ImageIcon size={32} color="$blue10" />}
-            </YStack>
+              {isUploading ? <Spinner size="lg" /> : <ImageIcon size={32} color="$blue10" />}
+            </Stack>
 
             {/* Text */}
-            <YStack gap="$1" alignItems="center">
-              <Text fontWeight="600" fontSize="$5">
-                {isDragActive ? 'Drop image here' : 'Upload Image'}
-              </Text>
-              <Text fontSize="$2" color="$color11" style={{ textAlign: 'center' }}>
+            <Stack gap={4} align="center">
+              <Text>{isDragActive ? 'Drop image here' : 'Upload Image'}</Text>
+              <Text color="gray" style={{ textAlign: 'center' }}>
                 {isUploading
                   ? `Uploading... ${uploadProgress > 0 ? `${uploadProgress}%` : ''}`
                   : 'Drag & drop or click to browse'}
               </Text>
-            </YStack>
+            </Stack>
 
             {/* Button */}
             <Button
-              size="$3"
+              size="sm"
               disabled={disabled || isUploading}
               onPress={triggerFilePicker}
-              icon={Upload}
+              iconStart={Upload}
             >
               {isUploading ? 'Uploading...' : 'Choose Image'}
             </Button>
 
             {/* File Type Info */}
-            <Text fontSize="$1" color="$color10" style={{ textAlign: 'center' }}>
+            <Text color="gray" style={{ textAlign: 'center' }}>
               Supported: {accept.replace(/image\//g, '').replace(/,/g, ', ')} (Max {maxSizeMB}MB)
             </Text>
-          </YStack>
+          </Stack>
         )}
 
         {/* Hidden File Input for web */}
@@ -452,24 +475,20 @@ export function ImageUpload({
             disabled={disabled || isUploading}
           />
         )}
-      </YStack>
+      </Stack>
 
       {/* Helper Text */}
-      {helperText && !error && (
-        <Text fontSize="$2" color="$color10">
-          {helperText}
-        </Text>
-      )}
+      {helperText && !error && <Text color="gray">{helperText}</Text>}
 
       {/* Error Message */}
       {error && (
-        <XStack gap="$2" alignItems="center" padding="$2" backgroundColor="$red2" borderRadius="$3">
-          <AlertCircle size={16} color="$red10" />
-          <Text fontSize="$2" color="$red10" flex={1}>
+        <Row gap={8} align="center" padding={8} style={{ backgroundColor: '#fee2e2', borderRadius: 12 }}>
+          <AlertCircle size="lg" color="$red10" />
+          <Text color="$red10" style={{ flex: 1 }}>
             {error}
           </Text>
-        </XStack>
+        </Row>
       )}
-    </YStack>
+    </Stack>
   )
 }

@@ -1,9 +1,9 @@
 import type { WelcomeSlideCreate, WelcomeSlideUpdate } from '@scf/schemas'
-import { IconSelector, ToggleSwitch } from '@unicornlove/ui'
+import { IconSelector, ToggleSwitch } from '@scaffald/ui'
 import { ImageUpload } from '@scf/core/components/ui'
-import { Save } from '@tamagui/lucide-icons'
+import { Save } from 'lucide-react-native'
 import { useState } from 'react'
-import { Button, Form, H4, Input, Label, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
+import { Button, Form, H4, Input, Label, Text, TextArea, Row, Stack } from '@scaffald/ui'
 
 interface CMSSlideFormProps {
   initialData?: WelcomeSlideUpdate
@@ -50,10 +50,10 @@ export function CMSSlideForm({ initialData, onSubmit, isLoading }: CMSSlideFormP
 
   return (
     <Form onSubmit={handleSubmit}>
-      <YStack gap="$4">
+      <Stack gap={16}>
         <H4>{initialData?.id ? 'Edit' : 'Create'} Welcome Slide</H4>
 
-        <YStack gap="$2">
+        <Stack gap={8}>
           <Label htmlFor="title">Title *</Label>
           <Input
             id="title"
@@ -62,9 +62,9 @@ export function CMSSlideForm({ initialData, onSubmit, isLoading }: CMSSlideFormP
             placeholder="Enter slide title"
             disabled={isLoading}
           />
-        </YStack>
+        </Stack>
 
-        <YStack gap="$2">
+        <Stack gap={8}>
           <Label htmlFor="description">Description *</Label>
           <TextArea
             id="description"
@@ -72,9 +72,8 @@ export function CMSSlideForm({ initialData, onSubmit, isLoading }: CMSSlideFormP
             onChangeText={setDescription}
             placeholder="Enter slide description"
             disabled={isLoading}
-            numberOfLines={4}
           />
-        </YStack>
+        </Stack>
 
         <IconSelector value={iconName} onChange={setIconName} disabled={isLoading} />
 
@@ -89,7 +88,7 @@ export function CMSSlideForm({ initialData, onSubmit, isLoading }: CMSSlideFormP
           helperText="Upload a high-quality background image for the slide"
         />
 
-        <YStack gap="$2">
+        <Stack gap={8}>
           <Label htmlFor="order">Display Order *</Label>
           <Input
             id="order"
@@ -99,27 +98,29 @@ export function CMSSlideForm({ initialData, onSubmit, isLoading }: CMSSlideFormP
             keyboardType="numeric"
             disabled={isLoading}
           />
-          <Text fontSize="$2" opacity={0.6}>
-            Slides are shown in ascending order (1, 2, 3...)
-          </Text>
-        </YStack>
+          <Text style={{ opacity: 0.6 }}>Slides are shown in ascending order (1, 2, 3...)</Text>
+        </Stack>
 
-        <XStack gap="$3" alignItems="center">
+        <Row gap={12} align="center">
           <ToggleSwitch
             checked={isActive}
-            onCheckedChange={setIsActive}
+            onChange={setIsActive}
             disabled={isLoading}
             aria-label="Slide active"
           />
           <Label>Active (visible to users)</Label>
-        </XStack>
+        </Row>
 
-        <XStack gap="$2" justifyContent="flex-end">
-          <Button onPress={handleSubmit} icon={Save} disabled={isLoading || !title || !description}>
+        <Row gap={8} justify="flex-end">
+          <Button
+            onPress={handleSubmit}
+            iconStart={Save}
+            disabled={isLoading || !title || !description}
+          >
             {isLoading ? 'Saving...' : 'Save Slide'}
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </Form>
   )
 }

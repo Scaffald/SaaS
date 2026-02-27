@@ -1,68 +1,69 @@
-import { api } from '@scf/core/utils/api'
-import { CreditCard, DollarSign, Plus } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-import { useState } from 'react'
-import { Button, Card, Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import {
+  useAccountCredits,
+  useCreditLedger,
+  useDepositCreditsMutation,
+} from "@scf/core/utils/payments-sdk-hooks";
+import type { CreditLedgerEntry } from "@scaffald/sdk";
+import { CreditCard, DollarSign, Plus } from "lucide-react-native";
+import { useToast, useThemeContext } from "@scaffald/ui";
+import { useState } from "react";
+import { Button, Card, Input, Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
 type OrganizationCreditsPanelProps = {
-  organizationId: string
-}
+  organizationId: string;
+};
 
-const formatCurrency = (cents: number, currency = 'usd'): string => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
+const formatCurrency = (cents: number, currency = "usd"): string => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
     currency: currency.toUpperCase(),
-  }).format(cents / 100)
-}
+  }).format(cents / 100);
+};
 
-export function OrganizationCreditsPanel({ organizationId }: OrganizationCreditsPanelProps) {
-  const toast = useToastController()
-  const [showDepositForm, setShowDepositForm] = useState(false)
-  const [depositAmount, setDepositAmount] = useState('')
+export function OrganizationCreditsPanel({
+  organizationId,
+}: OrganizationCreditsPanelProps) {
+  const { theme } = useThemeContext();
+  const toast = useToast();
+  const [showDepositForm, setShowDepositForm] = useState(false);
+  const [depositAmount, setDepositAmount] = useState("");
 
-  const creditsQuery = api.payments.getAccountCredits.useQuery(
-    { organizationId },
-    {
-      enabled: Boolean(organizationId),
-      staleTime: 30_000,
-    }
-  )
+  const creditsQuery = useAccountCredits(organizationId);
 
-  const ledgerQuery = api.payments.getCreditLedger.useQuery(
-    { organizationId, limit: 10 },
-    {
-      enabled: Boolean(organizationId),
-      staleTime: 30_000,
-    }
-  )
+  const ledgerQuery = useCreditLedger({ organizationId, limit: 10 });
 
-  const depositMutation = api.payments.depositCredits.useMutation({
+  const depositMutation = useDepositCreditsMutation({
     onSuccess: () => {
-      toast.show('Credits deposited', {
-        message: 'Your account credits have been updated successfully.',
-      })
-      creditsQuery.refetch()
-      ledgerQuery.refetch()
-      setShowDepositForm(false)
-      setDepositAmount('')
+      toast.show({
+        title: "Credits deposited",
+        message: "Your account credits have been updated successfully.",
+      });
+      creditsQuery.refetch();
+      ledgerQuery.refetch();
+      setShowDepositForm(false);
+      setDepositAmount("");
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'An error occurred'
-      toast.show('Failed to deposit credits', {
-        message,
-        type: 'error',
-      })
+      const _message =
+        error instanceof Error ? error.message : "An error occurred";
+      toast.show({
+        title: "Failed to deposit credits",
+        message: _message,
+        variant: "error",
+      });
     },
-  })
+  });
 
   const _handleDepositSubmit = async (_paymentIntentId: string) => {
-    const amountCents = Math.round(Number.parseFloat(depositAmount) * 100)
+    const amountCents = Math.round(Number.parseFloat(depositAmount) * 100);
     if (Number.isNaN(amountCents) || amountCents <= 0) {
-      toast.show('Invalid amount', {
-        message: 'Please enter a valid amount greater than zero.',
-        type: 'error',
-      })
-      return
+      toast.show({
+        title: "Invalid amount",
+        message: "Please enter a valid amount greater than zero.",
+        variant: "error",
+      });
+      return;
     }
 
     // The PaymentIntentForm will handle the payment, but we need to trigger
@@ -70,160 +71,180 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
     // to handle this automatically when the payment succeeds.
     // The depositCredits endpoint creates the PaymentIntent and records it.
     // The webhook should handle the credit deposit when payment succeeds.
-  }
+  };
 
-  const credits = creditsQuery.data
-  const isLoading = creditsQuery.isLoading
+  const credits = creditsQuery.data;
+  const isLoading = creditsQuery.isLoading;
 
   if (isLoading) {
     return (
-      <Card bordered padding="$4">
-        <YStack gap="$3" alignItems="center" paddingVertical="$4">
-          <Spinner size="large" />
-          <Text color="$color11">Loading account credits…</Text>
-        </YStack>
+      <Card bordered padding="md">
+        <Stack gap={12} align="center" paddingVertical={16}>
+          <Spinner size="lg" />
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Loading account credits…
+          </Text>
+        </Stack>
       </Card>
-    )
+    );
   }
 
   return (
-    <Card bordered padding="$4" gap="$3">
-      <XStack justifyContent="space-between" alignItems="center">
-        <YStack>
-          <Text fontSize="$5" fontWeight="600">
-            Account Credits
-          </Text>
-          <Text color="$color10" fontSize="$2">
-            Pre-funded balance for automatic payments
-          </Text>
-        </YStack>
-        {!showDepositForm && (
-          <Button size="$3" theme="blue" icon={Plus} onPress={() => setShowDepositForm(true)}>
-            Add Credits
-          </Button>
-        )}
-      </XStack>
+    <Card bordered padding="md">
+      <Stack gap={12}>
+        <Row justify="space-between" align="center">
+          <Stack>
+            <Text>Account Credits</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              Pre-funded balance for automatic payments
+            </Text>
+          </Stack>
+          {!showDepositForm && (
+            <Button
+              size="sm"
+              color="primary"
+              iconStart={Plus}
+              onPress={() => setShowDepositForm(true)}
+            >
+              Add Credits
+            </Button>
+          )}
+        </Row>
 
-      {/* Balance Display */}
-      <Card padding="$4" backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
-        <XStack gap="$3" alignItems="center">
-          <DollarSign size={32} color="$green11" />
-          <YStack flex={1}>
-            <Text fontSize="$2" color="$color10">
-              Current Balance
-            </Text>
-            <Text fontSize="$6" fontWeight="700" color="$green11">
-              {formatCurrency(credits?.balanceCents ?? 0, credits?.currency)}
-            </Text>
-          </YStack>
-        </XStack>
-      </Card>
-
-      {showDepositForm ? (
-        <YStack gap="$3">
-          <YStack gap="$2">
-            <Text fontSize="$3" fontWeight="600">
-              Deposit Amount
-            </Text>
-            <Input
-              placeholder="0.00"
-              value={depositAmount}
-              onChangeText={setDepositAmount}
-              keyboardType="decimal-pad"
-              size="$4"
+        {/* Balance Display */}
+        <Card
+          padding="md"
+          style={{ backgroundColor: colors.bg[theme].subtle }}
+          borderColor={colors.border[theme].default}
+          borderWidth={1}
+        >
+          <Row gap={12} align="center">
+            <DollarSign
+              size={32}
+              color={theme === "light" ? colors.green[700] : colors.green[300]}
             />
-            <Text fontSize="$2" color="$color10">
-              Enter the amount you want to add to your account credits.
-            </Text>
-          </YStack>
-          <XStack gap="$2">
-            <Button
-              size="$4"
-              variant="outlined"
-              onPress={() => {
-                setShowDepositForm(false)
-                setDepositAmount('')
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              size="$4"
-              theme="blue"
-              icon={CreditCard}
-              onPress={() => {
-                const amountCents = Math.round(Number.parseFloat(depositAmount) * 100)
-                if (Number.isNaN(amountCents) || amountCents <= 0) {
-                  toast.show('Invalid amount', {
-                    message: 'Please enter a valid amount greater than zero.',
-                    type: 'error',
-                  })
-                  return
-                }
-                depositMutation.mutate({
-                  organizationId,
-                  amountCents,
-                })
-              }}
-              disabled={depositMutation.isPending}
-            >
-              {depositMutation.isPending ? 'Processing…' : 'Continue to Payment'}
-            </Button>
-          </XStack>
-        </YStack>
-      ) : (
-        <>
-          {/* Recent Transactions */}
-          {ledgerQuery.data && ledgerQuery.data.items.length > 0 && (
-            <YStack gap="$2">
-              <Text fontSize="$3" fontWeight="600">
-                Recent Transactions
+            <Stack flex={1}>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                Current Balance
               </Text>
-              <YStack gap="$1">
-                {ledgerQuery.data.items
-                  .slice(0, 5)
-                  .map(
-                    (entry: {
-                      id: string
-                      description?: string | null
-                      transactionType: string
-                      createdAt: string
-                      amountCents: number
-                      direction: 'credit' | 'debit'
-                      currency?: string
-                    }) => (
-                      <XStack
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.green[700] : colors.green[300],
+                }}
+              >
+                {formatCurrency(credits?.balanceCents ?? 0, credits?.currency)}
+              </Text>
+            </Stack>
+          </Row>
+        </Card>
+
+        {showDepositForm ? (
+          <Stack gap={12}>
+            <Stack gap={8}>
+              <Text>Deposit Amount</Text>
+              <Input
+                placeholder="0.00"
+                value={depositAmount}
+                onChangeText={setDepositAmount}
+                keyboardType="decimal-pad"
+              />
+              <Text style={{ color: colors.text[theme].secondary }}>
+                Enter the amount you want to add to your account credits.
+              </Text>
+            </Stack>
+            <Row gap={8}>
+              <Button
+                size="md"
+                variant="outline"
+                onPress={() => {
+                  setShowDepositForm(false);
+                  setDepositAmount("");
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                size="md"
+                color="primary"
+                iconStart={CreditCard}
+                onPress={() => {
+                  const amountCents = Math.round(
+                    Number.parseFloat(depositAmount) * 100
+                  );
+                  if (Number.isNaN(amountCents) || amountCents <= 0) {
+                    toast.show({
+                      title: "Invalid amount",
+                      message: "Please enter a valid amount greater than zero.",
+                      variant: "error",
+                    });
+                    return;
+                  }
+                  depositMutation.mutate({
+                    organizationId,
+                    amountCents,
+                  });
+                }}
+                disabled={depositMutation.isPending}
+              >
+                {depositMutation.isPending
+                  ? "Processing…"
+                  : "Continue to Payment"}
+              </Button>
+            </Row>
+          </Stack>
+        ) : (
+          <>
+            {/* Recent Transactions */}
+            {ledgerQuery.data && ledgerQuery.data.items.length > 0 && (
+              <Stack gap={8}>
+                <Text>Recent Transactions</Text>
+                <Stack gap={4}>
+                  {ledgerQuery.data.items
+                    .slice(0, 5)
+                    .map((entry: CreditLedgerEntry) => (
+                      <Row
                         key={entry.id}
-                        justifyContent="space-between"
-                        alignItems="center"
-                        padding="$2"
-                        backgroundColor="$color2"
-                        borderRadius="$2"
+                        justify="space-between"
+                        align="center"
+                        padding="xs"
+                        style={{ backgroundColor: colors.bg[theme].subtle }}
+                        borderRadius={8}
                       >
-                        <YStack flex={1}>
-                          <Text fontSize="$3" fontWeight="500">
+                        <Stack flex={1}>
+                          <Text>
                             {entry.description ?? entry.transactionType}
                           </Text>
-                          <Text fontSize="$2" color="$color10">
+                          <Text style={{ color: colors.text[theme].secondary }}>
                             {new Date(entry.createdAt).toLocaleDateString()}
                           </Text>
-                        </YStack>
+                        </Stack>
                         <Text
-                          fontSize="$4"
-                          fontWeight="600"
-                          color={entry.direction === 'credit' ? '$green11' : '$red11'}
+                          style={{
+                            color:
+                              entry.direction === "credit"
+                                ? theme === "light"
+                                  ? colors.green[700]
+                                  : colors.green[300]
+                                : theme === "light"
+                                ? colors.error[700]
+                                : colors.error[300],
+                          }}
                         >
-                          {entry.direction === 'credit' ? '+' : '-'}
-                          {formatCurrency(entry.amountCents, entry.currency)}
+                          {entry.direction === "credit" ? "+" : "-"}
+                          {formatCurrency(
+                            entry.amountCents ?? 0,
+                            entry.currency ?? "USD"
+                          )}
                         </Text>
-                      </XStack>
-                    )
-                  )}
-              </YStack>
-            </YStack>
-          )}
-        </>
-      )}
+                      </Row>
+                    ))}
+                </Stack>
+              </Stack>
+            )}
+          </>
+        )}
+      </Stack>
     </Card>
-  )
+  );
 }

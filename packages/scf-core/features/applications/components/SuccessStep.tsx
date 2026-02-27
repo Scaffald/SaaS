@@ -1,7 +1,8 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { Check, ExternalLink, Home } from '@tamagui/lucide-icons'
+import { Check, ExternalLink, Home } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Button, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 export interface SuccessStepProps {
   /**
@@ -48,6 +49,7 @@ export function SuccessStep({
   onReturnToJobs,
 }: SuccessStepProps) {
   const router = useRouter()
+  const { theme } = useThemeContext()
 
   // Format application ID (e.g., #APP-12345)
   const formatApplicationId = (id: string): string => {
@@ -67,139 +69,121 @@ export function SuccessStep({
   }
 
   return (
-    <YStack
-      gap="$6"
+    <Stack
+      gap={24}
       width="100%"
       maxWidth={600}
-      padding="$6"
-      alignItems="center"
+      padding="xl"
+      align="center"
       aria-live="polite"
       aria-label="Application submitted successfully"
     >
       {/* Success Icon */}
-      <YStack
+      <Stack
         width={80}
         height={80}
-        borderRadius="$12"
-        backgroundColor="$green2"
-        borderWidth={2}
-        borderColor="$green9"
-        alignItems="center"
-        justifyContent="center"
+        borderRadius={16}
+        style={{
+          backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
+          borderColor: theme === "light" ? colors.green[300] : colors.green[700],
+          borderWidth: 2,
+        }}
+        align="center"
+        justify="center"
         aria-hidden={true}
       >
-        <Check size={48} color="$green10" />
-      </YStack>
+        <Check size={48} color={theme === "light" ? colors.green[700] : colors.green[300]} />
+      </Stack>
 
       {/* Success Message */}
-      <YStack gap="$2" alignItems="center">
-        <Text fontSize="$9" fontWeight="700" color="$color12" textAlign="center">
+      <Stack gap={8} align="center">
+        <Text style={{ color: colors.text[theme].secondary }} align="center">
           Application Submitted Successfully!
         </Text>
-        <Text fontSize="$4" color="$gray11" textAlign="center">
+        <Text style={{ color: colors.text[theme].secondary }} align="center">
           Thank you for applying to {jobTitle} at {organizationName}
         </Text>
-        <Text fontSize="$4" color="$gray11" textAlign="center" marginTop="$2">
+        <Text style={{ color: colors.text[theme].secondary, marginTop: 8 }} align="center">
           Your application has been received and is under review
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Application ID */}
-      <YStack gap="$2" alignItems="center" marginTop="$4">
-        <Text fontSize="$3" fontWeight="600" color="$blue10">
-          Application ID: {formattedId}
-        </Text>
-        <Text fontSize="$2" color="$gray11" textAlign="center">
+      <Stack gap={8} align="center" marginTop={16}>
+        <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>Application ID: {formattedId}</Text>
+        <Text style={{ color: colors.text[theme].secondary }} align="center">
           You will receive an email confirmation shortly
         </Text>
-      </YStack>
+      </Stack>
 
       {/* What Happens Next */}
-      <YStack
-        gap="$3"
-        padding="$4"
-        backgroundColor="$background"
-        borderRadius="$4"
-        borderWidth={1}
-        borderColor="$borderColor"
-        width="100%"
-        marginTop="$8"
+      <Stack
+        gap={12}
+        padding="md"
+        borderRadius={16}
+        style={{
+          backgroundColor: colors.bg[theme].default,
+          borderColor: colors.border[theme].default,
+          borderWidth: 1,
+          width: '100%',
+          marginTop: 32,
+        }}
       >
-        <Text fontSize="$4" fontWeight="600" color="$color12">
-          What happens next:
-        </Text>
+        <Text style={{ color: colors.text[theme].secondary }}>What happens next:</Text>
 
-        <YStack gap="$3" marginTop="$2">
-          <NextStepItem text="Our team will review your application within 3-5 business days" />
-          <NextStepItem text="You'll receive an email update on your application status" />
-          <NextStepItem text="If selected, we'll contact you to schedule an interview" />
-        </YStack>
-      </YStack>
+        <Stack gap={12} marginTop={8}>
+          <NextStepItem text="Our team will review your application within 3-5 business days" theme={theme} />
+          <NextStepItem text="You'll receive an email update on your application status" theme={theme} />
+          <NextStepItem text="If selected, we'll contact you to schedule an interview" theme={theme} />
+        </Stack>
+      </Stack>
 
       {/* Action Buttons */}
-      <XStack
-        gap="$3"
-        width="100%"
-        marginTop="$8"
-        flexWrap="wrap"
-        justifyContent="center"
-        $sm={{ flexDirection: 'column' }}
-      >
+      <Row gap={12} width="100%" marginTop={32} wrap justify="center">
         {onViewApplication && (
           <Button
-            size="$5"
-            theme="info"
-            icon={ExternalLink}
+            size="lg"
+            color="primary"
+            iconStart={ExternalLink}
             onPress={() => onViewApplication(applicationId)}
-            flex={1}
-            minWidth={200}
-            $sm={{ width: '100%' }}
+            style={{ flex: 1, minWidth: 200 }}
           >
             View Application Status
           </Button>
         )}
 
         {onReturnToJobs && (
-          <Button
-            size="$5"
-            variant="outlined"
-            onPress={onReturnToJobs}
-            flex={1}
-            minWidth={200}
-            $sm={{ width: '100%' }}
-          >
+          <Button size="lg" variant="outline" onPress={onReturnToJobs} style={{ flex: 1, minWidth: 200 }}>
             Browse More Jobs
           </Button>
         )}
 
         <Button
-          size="$5"
-          variant="outlined"
-          icon={Home}
+          size="lg"
+          variant="outline"
+          iconStart={Home}
           onPress={handleReturnToDashboard}
-          flex={1}
-          minWidth={200}
-          $sm={{ width: '100%' }}
+          style={{ flex: 1, minWidth: 200 }}
         >
           Return to Dashboard
         </Button>
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }
 
 /**
  * Helper component for next step items (bullet list format)
  */
-function NextStepItem({ text }: { text: string }) {
+function NextStepItem({ text, theme }: { text: string; theme: 'light' | 'dark' }) {
   return (
-    <XStack gap="$3" alignItems="flex-start">
-      <Text fontSize="$3" color="$gray11" marginTop="$1">
+    <Row gap={12} align="flex-start">
+      <Text style={{ color: colors.text[theme].secondary, marginTop: 4 }}>
         •
       </Text>
-      <Text fontSize="$3" color="$gray11" flex={1} lineHeight="$1">
+      <Text style={{ color: colors.text[theme].secondary, flex: 1, lineHeight: 24 }}>
         {text}
       </Text>
-    </XStack>
+    </Row>
   )
 }

@@ -1,5 +1,5 @@
 /**
- * REQ-268: Inbox vs Assigned by Me View
+ * Inbox vs Assigned by Me View
  * TASK-1: View Filter State Management
  *
  * Custom hook that manages task view state ("inbox" | "assigned-by-me")

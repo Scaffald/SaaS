@@ -1,5 +1,5 @@
 /**
- * REQ-133: System Integration & End-to-End Testing
+ * System Integration & End-to-End Testing
  * Playwright configuration for E2E tests
  *
  * CRITICAL: After auth bugs on 2025-12-03, we now enforce:

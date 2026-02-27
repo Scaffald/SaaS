@@ -1,5 +1,5 @@
 /**
- * REQ-129: Manager Dashboard Page
+ * Manager dashboard page
  * Real-time compliance metrics and monitoring
  */
 
@@ -16,7 +16,7 @@ import {
   Input,
   SaaSSectionHeader,
   Grid,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { Search, LayoutDashboard } from 'lucide-react'
 import { dashboardService } from '../../../lib/api/dashboard/dashboardService'
 import { useLexicon } from '../../../contexts/LexiconContext'
@@ -28,15 +28,15 @@ import type {
   ActivityEvent,
   DashboardFilters,
 } from '../../../lib/api/dashboard/types'
-import { MetricCard } from '../../../components/dashboard/MetricCard'
+import { MetricCard } from '../../../components/Dashboard/MetricCard'
 import { RiskBadge } from '../../../components/compliance/RiskBadge'
 import type { RiskLevel } from '../../../lib/compliance/riskCalculationService'
-import { ComplianceTrendChart } from '../../../components/dashboard/ComplianceTrendChart'
-import { TaskBreakdownChart } from '../../../components/dashboard/TaskBreakdownChart'
-import { ActivityTrendChart } from '../../../components/dashboard/ActivityTrendChart'
+import { ComplianceTrendChart } from '../../../components/Dashboard/ComplianceTrendChart'
+import { TaskBreakdownChart } from '../../../components/Dashboard/TaskBreakdownChart'
+import { ActivityTrendChart } from '../../../components/Dashboard/ActivityTrendChart'
 
 export default function DashboardPage() {
-  // REQ-4: Use lexicon for dynamic labels
+  // Use lexicon for dynamic labels
   const { t, getContractorLabel } = useLexicon()
   const [overview, setOverview] = useState<DashboardOverview | null>(null)
   const [subcontractorScores, setSubcontractorScores] = useState<SubcontractorScore[]>([])

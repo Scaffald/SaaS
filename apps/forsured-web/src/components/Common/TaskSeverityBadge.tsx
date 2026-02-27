@@ -1,22 +1,12 @@
 /**
  * Task Severity Badge Component - Using Beyond UI
- * REQ-266: Task Correlation with Compliance Score
- * Migrated from Tamagui to Beyond UI
+ * Task severity and compliance correlation
+
  */
-import React, { useState } from 'react';
-import { Row, Stack, Text, Chip } from '@unicornlove/beyond-ui';
-import {
-  AlertTriangle,
-  AlertCircle,
-  Info,
-  CheckCircle,
-  ShieldAlert,
-} from 'lucide-react';
-import {
-  TaskSeverity,
-  TASK_SEVERITY_CONFIG,
-  ConsequenceType,
-} from '../../types';
+import React, { useState } from 'react'
+import { Row, Stack, Text, Chip } from '@scaffald/ui'
+import { AlertTriangle, AlertCircle, Info, CheckCircle, ShieldAlert } from 'lucide-react'
+import { TaskSeverity, TASK_SEVERITY_CONFIG, ConsequenceType } from '../../types'
 
 // Severity definitions for tooltip display
 const SEVERITY_DEFINITIONS: Record<TaskSeverity, string> = {
@@ -25,7 +15,7 @@ const SEVERITY_DEFINITIONS: Record<TaskSeverity, string> = {
   medium: 'Attention needed. Moderate compliance concern.',
   low: 'Routine follow-up. Minor compliance item.',
   info: 'Informational. No immediate action required.',
-};
+}
 
 // Icon mapping for each severity level
 const SEVERITY_ICONS: Record<
@@ -37,24 +27,27 @@ const SEVERITY_ICONS: Record<
   medium: AlertCircle,
   low: Info,
   info: CheckCircle,
-};
+}
 
 // Map severity to Badge variant
-const SEVERITY_VARIANT_MAP: Record<TaskSeverity, 'default' | 'success' | 'warning' | 'error' | 'info'> = {
+const SEVERITY_VARIANT_MAP: Record<
+  TaskSeverity,
+  'default' | 'success' | 'warning' | 'error' | 'info'
+> = {
   critical: 'error',
   high: 'error',
   medium: 'warning',
   low: 'info',
   info: 'default',
-};
+}
 
 interface TaskSeverityBadgeProps {
-  severity: TaskSeverity;
-  consequenceType?: ConsequenceType;
-  size?: 'xs' | 'sm' | 'md' | 'lg';
-  showIcon?: boolean;
-  showLabel?: boolean;
-  className?: string;
+  severity: TaskSeverity
+  consequenceType?: ConsequenceType
+  size?: 'xs' | 'sm' | 'md' | 'lg'
+  showIcon?: boolean
+  showLabel?: boolean
+  className?: string
 }
 
 export default function TaskSeverityBadge({
@@ -65,30 +58,30 @@ export default function TaskSeverityBadge({
   showLabel = true,
   className = '',
 }: TaskSeverityBadgeProps) {
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false)
 
-  const config = TASK_SEVERITY_CONFIG[severity];
-  const Icon = SEVERITY_ICONS[severity];
-  const variant = SEVERITY_VARIANT_MAP[severity];
+  const config = TASK_SEVERITY_CONFIG[severity]
+  const Icon = SEVERITY_ICONS[severity]
+  const variant = SEVERITY_VARIANT_MAP[severity]
 
   const iconSizes = {
     xs: 10,
     sm: 12,
     md: 14,
     lg: 16,
-  };
+  }
 
   // Build tooltip content
   const getTooltipContent = () => {
-    const definition = SEVERITY_DEFINITIONS[severity];
+    const definition = SEVERITY_DEFINITIONS[severity]
 
     if (consequenceType) {
-      const consequenceLabel = consequenceType.replace(/_/g, ' ');
-      return `${config.label} Severity\n\n${definition}\n\nConsequence: ${consequenceLabel}`;
+      const consequenceLabel = consequenceType.replace(/_/g, ' ')
+      return `${config.label} Severity\n\n${definition}\n\nConsequence: ${consequenceLabel}`
     }
 
-    return `${config.label} Severity\n\n${definition}`;
-  };
+    return `${config.label} Severity\n\n${definition}`
+  }
 
   return (
     <Stack style={{ position: 'relative', display: 'inline-block' }}>
@@ -137,24 +130,24 @@ export default function TaskSeverityBadge({
         </Stack>
       )}
     </Stack>
-  );
+  )
 }
 
 /**
  * Compact severity indicator (icon only) for dense lists
  */
 interface CompactSeverityIndicatorProps {
-  severity: TaskSeverity;
-  className?: string;
+  severity: TaskSeverity
+  className?: string
 }
 
 export function CompactSeverityIndicator({
   severity,
   className = '',
 }: CompactSeverityIndicatorProps) {
-  const config = TASK_SEVERITY_CONFIG[severity];
-  const Icon = SEVERITY_ICONS[severity];
-  const variant = SEVERITY_VARIANT_MAP[severity];
+  const config = TASK_SEVERITY_CONFIG[severity]
+  const Icon = SEVERITY_ICONS[severity]
+  const variant = SEVERITY_VARIANT_MAP[severity]
 
   return (
     <Chip
@@ -165,23 +158,23 @@ export function CompactSeverityIndicator({
     >
       <Icon size={12} />
     </Chip>
-  );
+  )
 }
 
 /**
  * Severity dot indicator for minimal display
  */
 interface SeverityDotProps {
-  severity: TaskSeverity;
-  size?: 'sm' | 'md' | 'lg';
-  className?: string;
+  severity: TaskSeverity
+  size?: 'sm' | 'md' | 'lg'
+  className?: string
 }
 
 const dotSizes = {
   sm: 8,
   md: 12,
   lg: 16,
-};
+}
 
 const dotColors: Record<TaskSeverity, string> = {
   critical: 'var(--color-red-9)',
@@ -189,15 +182,11 @@ const dotColors: Record<TaskSeverity, string> = {
   medium: 'var(--color-yellow-9)',
   low: 'var(--color-blue-9)',
   info: 'var(--color-text-muted)',
-};
+}
 
-export function SeverityDot({
-  severity,
-  size = 'md',
-  className = '',
-}: SeverityDotProps) {
-  const config = TASK_SEVERITY_CONFIG[severity];
-  const dotSize = dotSizes[size];
+export function SeverityDot({ severity, size = 'md', className = '' }: SeverityDotProps) {
+  const config = TASK_SEVERITY_CONFIG[severity]
+  const dotSize = dotSizes[size]
 
   return (
     <Stack
@@ -210,26 +199,26 @@ export function SeverityDot({
         backgroundColor: dotColors[severity],
       }}
     />
-  );
+  )
 }
 
 /**
  * Helper function to get severity color class for text
  */
 export function getSeverityTextColor(severity: TaskSeverity): string {
-  return TASK_SEVERITY_CONFIG[severity].color;
+  return TASK_SEVERITY_CONFIG[severity].color
 }
 
 /**
  * Helper function to get severity background color class
  */
 export function getSeverityBgColor(severity: TaskSeverity): string {
-  return TASK_SEVERITY_CONFIG[severity].bgColor;
+  return TASK_SEVERITY_CONFIG[severity].bgColor
 }
 
 /**
  * Helper function to get severity border color class
  */
 export function getSeverityBorderColor(severity: TaskSeverity): string {
-  return TASK_SEVERITY_CONFIG[severity].borderColor;
+  return TASK_SEVERITY_CONFIG[severity].borderColor
 }

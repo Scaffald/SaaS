@@ -1,7 +1,7 @@
 /**
  * SendGrid Webhook Handler for ForSured
  *
- * REQ-130: Email Communication Auditability
+ * Email Communication Auditability
  *
  * Receives delivery events from SendGrid and:
  * 1. Validates webhook signature (optional, based on env config)

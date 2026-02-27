@@ -1,8 +1,10 @@
-import { api } from '@scf/core/utils/api'
+import { useGetUploadUrlMutation, useConfirmUploadMutation } from '@scf/core/utils/jobs-sdk-hooks'
 import type { AttachmentMetadata } from '@scf/schemas'
-import { ArrowLeft, CheckCircle2, Upload, X } from '@tamagui/lucide-icons'
+import { ArrowLeft, CheckCircle2, Upload, X } from 'lucide-react-native'
 import { type DragEvent, useCallback, useRef, useState } from 'react'
-import { Button, Progress, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { ProgressBarBase } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type AttachmentType = 'resume' | 'cover_letter' | 'portfolio'
 
@@ -95,9 +97,10 @@ export function AttachmentsStep({
   const [uploadProgress, setUploadProgress] = useState<Record<string, number | undefined>>({})
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({})
   const dragOverRefs = useRef<Record<string, boolean>>({})
+  const { theme } = useThemeContext()
 
-  const getUploadUrlMutation = api.applications.getUploadUrl.useMutation()
-  const confirmUploadMutation = api.applications.confirmUpload.useMutation()
+  const getUploadUrlMutation = useGetUploadUrlMutation()
+  const confirmUploadMutation = useConfirmUploadMutation()
 
   /**
    * Get attachment by type
@@ -144,13 +147,12 @@ export function AttachmentsStep({
         let attachmentMetadata: AttachmentMetadata
 
         if (applicationId) {
-          // Get upload URL from tRPC
+          // Get upload URL from SDK
           const { uploadUrl, path } = await getUploadUrlMutation.mutateAsync({
             application_id: applicationId,
             attachment_type: type,
             filename: file.name,
-            mime_type: file.type,
-            size: file.size,
+            content_type: file.type,
           })
 
           // Upload file to Supabase storage
@@ -296,122 +298,125 @@ export function AttachmentsStep({
   }
 
   return (
-    <YStack gap="$6" width="100%" maxWidth={800} padding="$4">
+    <Stack gap={24} width="100%" maxWidth={800} padding="md">
       {/* Header */}
-      <YStack gap="$2">
-        <Text fontSize="$8" fontWeight="bold" color="$color12">
-          Upload Documents
-        </Text>
-        <Text fontSize="$4" color="$color11">
+      <Stack gap={8}>
+        <Text style={{ color: colors.text[theme].secondary }}>Upload Documents</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
           Upload your resume and any additional documents to support your application.
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Resume Upload */}
-      <YStack gap="$3">
-        <XStack gap="$2" alignItems="center">
-          <Text fontSize="$5" fontWeight="600" color="$color12">
-            Resume
-          </Text>
-          {requireResume && (
-            <Text fontSize="$3" color="$red10">
-              Required
-            </Text>
-          )}
-        </XStack>
+      <Stack gap={12}>
+        <Row gap={8} align="center">
+          <Text style={{ color: colors.text[theme].secondary }}>Resume</Text>
+          {requireResume && <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Required</Text>}
+        </Row>
 
         {getAttachment('resume') ? (
-          <XStack
-            padding="$4"
-            borderRadius="$4"
-            borderWidth={2}
-            borderColor="$green9"
-            backgroundColor="$green2"
-            justifyContent="space-between"
-            alignItems="center"
-            gap="$3"
+          <Row
+            padding="md"
+            borderRadius={16}
+            style={{
+              borderWidth: 2,
+              borderColor: theme === "light" ? colors.green[300] : colors.green[700],
+              backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
+            }}
+            justify="space-between"
+            align="center"
+            gap={12}
           >
-            <XStack gap="$3" alignItems="center" flex={1}>
-              <CheckCircle2 size={24} color="$green10" />
-              <YStack flex={1}>
-                <Text fontSize="$4" fontWeight="600" color="$color12">
+            <Row gap={12} align="center" flex={1}>
+              <CheckCircle2 size={24} color={theme === "light" ? colors.green[700] : colors.green[300]} />
+              <Stack flex={1}>
+                <Text style={{ color: colors.text[theme].secondary }}>
                   {getAttachment('resume')?.filename}
                 </Text>
-                <Text fontSize="$2" color="$color11">
+                <Text style={{ color: colors.text[theme].secondary }}>
                   {formatFileSize(getAttachment('resume')?.size ?? 0)}
                 </Text>
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
             <Button
-              size="$3"
-              circular
-              variant="outlined"
-              icon={X}
+              size="sm"
+              variant="outline"
+              iconStart={X}
               onPress={() => handleFileRemove('resume')}
               disabled={isSubmitting || uploading.resume}
             />
-          </XStack>
+          </Row>
         ) : uploading.resume ? (
-          <YStack gap="$2">
-            <YStack
-              padding="$6"
-              borderRadius="$4"
-              borderWidth={2}
-              borderColor="$blue9"
-              backgroundColor="$blue2"
-              alignItems="center"
-              gap="$3"
+          <Stack gap={8}>
+            <Stack
+              padding="xl"
+              borderRadius={16}
+              style={{
+                borderWidth: 2,
+                borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
+                backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
+              }}
+              align="center"
+              gap={12}
             >
-              <Upload size={32} color="$blue10" />
-              <YStack gap="$2" width="100%">
-                <Text fontSize="$4" fontWeight="600" color="$color12" textAlign="center">
+              <Upload size={32} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
+              <Stack gap={8} width="100%">
+                <Text style={{ color: colors.text[theme].secondary }} align="center">
                   Uploading...
                 </Text>
-                <Progress value={uploadProgress.resume || 0} max={100} backgroundColor="$blue4">
-                  <Progress.Indicator animation="bouncy" backgroundColor="$blue9" />
-                </Progress>
-                <Text fontSize="$2" color="$color11" textAlign="center">
+                <ProgressBarBase
+                  value={uploadProgress.resume || 0}
+                  color="primary"
+                  style={{ backgroundColor: colors.bg[theme].default }}
+                />
+                <Text style={{ color: colors.text[theme].secondary }} align="center">
                   {uploadProgress.resume || 0}%
                 </Text>
-              </YStack>
-            </YStack>
-          </YStack>
+              </Stack>
+            </Stack>
+          </Stack>
         ) : (
-          <YStack gap="$2">
+          <Stack gap={8}>
             <label htmlFor="resume-upload">
-              <YStack
-                asChild
-                padding="$6"
-                borderRadius="$4"
-                borderWidth={2}
-                borderColor={
-                  errors.resume ? '$red9' : dragOverRefs.current.resume ? '$blue9' : '$borderColor'
-                }
-                borderStyle="dashed"
-                backgroundColor={dragOverRefs.current.resume ? '$blue2' : '$background'}
-                alignItems="center"
-                gap="$3"
-                cursor="pointer"
-                hoverStyle={{ borderColor: '$blue9', backgroundColor: '$blue2' }}
+              <Stack
+                padding="xl"
+                borderRadius={16}
+                style={{
+                  borderWidth: 2,
+                  borderStyle: 'dashed',
+                  borderColor: errors.resume
+                    ? theme === "light" ? colors.error[300] : colors.error[700]
+                    : dragOverRefs.current.resume
+                      ? theme === "light" ? colors.blue[300] : colors.blue[700]
+                      : colors.border[theme].default,
+                  backgroundColor: dragOverRefs.current.resume
+                    ? theme === "light" ? colors.blue[50] : colors.blue[900]
+                    : colors.bg[theme].default,
+                }}
+                align="center"
+                gap={12}
               >
                 <section
                   aria-label="Resume upload drop zone"
                   onDragOver={(e) => handleDragOver('resume', e)}
                   onDragLeave={() => handleDragLeave('resume')}
                   onDrop={(e) => handleDrop('resume', e)}
-                  style={{ width: '100%' }}
+                  style={{
+                    width: '100%',
+                    color: errors.resume ? theme === "light" ? colors.error[300] : colors.error[700] : theme === "light" ? colors.blue[300] : colors.blue[700],
+                  }}
                 >
-                  <Upload size={32} color={errors.resume ? '$red9' : '$blue9'} />
-                  <YStack gap="$1" alignItems="center">
-                    <Text fontSize="$4" fontWeight="600" color="$color12">
+                  <Upload size={32} />
+                  <Stack gap={4} align="center">
+                    <Text style={{ color: colors.text[theme].secondary }}>
                       Choose a file or drag it here
                     </Text>
-                    <Text fontSize="$3" color="$color11" textAlign="center">
+                    <Text style={{ color: colors.text[theme].secondary }} align="center">
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
-                  </YStack>
+                  </Stack>
                 </section>
-              </YStack>
+              </Stack>
             </label>
             <input
               ref={(el) => {
@@ -428,125 +433,124 @@ export function AttachmentsStep({
               disabled={isSubmitting || uploading.resume}
             />
             {errors.resume && (
-              <Text fontSize="$2" color="$red10">
-                {errors.resume}
-              </Text>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors.resume}</Text>
             )}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
 
       {/* Cover Letter Upload (Optional) */}
-      <YStack gap="$3">
-        <XStack gap="$2" alignItems="center">
-          <Text fontSize="$5" fontWeight="600" color="$color12">
-            Cover Letter
-          </Text>
-          <Text fontSize="$3" color="$color11">
-            Optional
-          </Text>
-        </XStack>
+      <Stack gap={12}>
+        <Row gap={8} align="center">
+          <Text style={{ color: colors.text[theme].secondary }}>Cover Letter</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Optional</Text>
+        </Row>
 
         {getAttachment('cover_letter') ? (
-          <XStack
-            padding="$4"
-            borderRadius="$4"
-            borderWidth={2}
-            borderColor="$green9"
-            backgroundColor="$green2"
-            justifyContent="space-between"
-            alignItems="center"
-            gap="$3"
+          <Row
+            padding="md"
+            borderRadius={16}
+            style={{
+              borderWidth: 2,
+              borderColor: theme === "light" ? colors.green[300] : colors.green[700],
+              backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
+            }}
+            justify="space-between"
+            align="center"
+            gap={12}
           >
-            <XStack gap="$3" alignItems="center" flex={1}>
-              <CheckCircle2 size={24} color="$green10" />
-              <YStack flex={1}>
-                <Text fontSize="$4" fontWeight="600" color="$color12">
+            <Row gap={12} align="center" flex={1}>
+              <CheckCircle2 size={24} color={theme === "light" ? colors.green[700] : colors.green[300]} />
+              <Stack flex={1}>
+                <Text style={{ color: colors.text[theme].secondary }}>
                   {getAttachment('cover_letter')?.filename}
                 </Text>
-                <Text fontSize="$2" color="$color11">
+                <Text style={{ color: colors.text[theme].secondary }}>
                   {formatFileSize(getAttachment('cover_letter')?.size ?? 0)}
                 </Text>
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
             <Button
-              size="$3"
-              circular
-              variant="outlined"
-              icon={X}
+              size="sm"
+              variant="outline"
+              iconStart={X}
               onPress={() => handleFileRemove('cover_letter')}
               disabled={isSubmitting || uploading.cover_letter}
             />
-          </XStack>
+          </Row>
         ) : uploading.cover_letter ? (
-          <YStack gap="$2">
-            <YStack
-              padding="$6"
-              borderRadius="$4"
-              borderWidth={2}
-              borderColor="$blue9"
-              backgroundColor="$blue2"
-              alignItems="center"
-              gap="$3"
+          <Stack gap={8}>
+            <Stack
+              padding="xl"
+              borderRadius={16}
+              style={{
+                borderWidth: 2,
+                borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
+                backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
+              }}
+              align="center"
+              gap={12}
             >
-              <Upload size={32} color="$blue10" />
-              <YStack gap="$2" width="100%">
-                <Text fontSize="$4" fontWeight="600" color="$color12" textAlign="center">
+              <Upload size={32} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
+              <Stack gap={8} width="100%">
+                <Text style={{ color: colors.text[theme].secondary }} align="center">
                   Uploading...
                 </Text>
-                <Progress
+                <ProgressBarBase
                   value={uploadProgress.cover_letter || 0}
-                  max={100}
-                  backgroundColor="$blue4"
-                >
-                  <Progress.Indicator animation="bouncy" backgroundColor="$blue9" />
-                </Progress>
-                <Text fontSize="$2" color="$color11" textAlign="center">
+                  color="primary"
+                  style={{ backgroundColor: colors.bg[theme].default }}
+                />
+                <Text style={{ color: colors.text[theme].secondary }} align="center">
                   {uploadProgress.cover_letter || 0}%
                 </Text>
-              </YStack>
-            </YStack>
-          </YStack>
+              </Stack>
+            </Stack>
+          </Stack>
         ) : (
-          <YStack gap="$2">
+          <Stack gap={8}>
             <label htmlFor="cover-letter-upload">
-              <YStack
-                asChild
-                padding="$6"
-                borderRadius="$4"
-                borderWidth={2}
-                borderColor={
-                  errors.cover_letter
-                    ? '$red9'
+              <Stack
+                padding="xl"
+                borderRadius={16}
+                style={{
+                  borderWidth: 2,
+                  borderStyle: 'dashed',
+                  borderColor: errors.cover_letter
+                    ? theme === "light" ? colors.error[300] : colors.error[700]
                     : dragOverRefs.current.cover_letter
-                      ? '$blue9'
-                      : '$borderColor'
-                }
-                borderStyle="dashed"
-                backgroundColor={dragOverRefs.current.cover_letter ? '$blue2' : '$background'}
-                alignItems="center"
-                gap="$3"
-                cursor="pointer"
-                hoverStyle={{ borderColor: '$blue9', backgroundColor: '$blue2' }}
+                      ? theme === "light" ? colors.blue[300] : colors.blue[700]
+                      : colors.border[theme].default,
+                  backgroundColor: dragOverRefs.current.cover_letter
+                    ? theme === "light" ? colors.blue[50] : colors.blue[900]
+                    : colors.bg[theme].default,
+                }}
+                align="center"
+                gap={12}
               >
                 <section
                   aria-label="Cover letter upload drop zone"
                   onDragOver={(e) => handleDragOver('cover_letter', e)}
                   onDragLeave={() => handleDragLeave('cover_letter')}
                   onDrop={(e) => handleDrop('cover_letter', e)}
-                  style={{ width: '100%' }}
+                  style={{
+                    width: '100%',
+                    color: errors.cover_letter
+                      ? theme === "light" ? colors.error[300] : colors.error[700]
+                      : theme === "light" ? colors.blue[300] : colors.blue[700],
+                  }}
                 >
-                  <Upload size={32} color={errors.cover_letter ? '$red9' : '$blue9'} />
-                  <YStack gap="$1" alignItems="center">
-                    <Text fontSize="$4" fontWeight="600" color="$color12">
+                  <Upload size={32} />
+                  <Stack gap={4} align="center">
+                    <Text style={{ color: colors.text[theme].secondary }}>
                       Choose a file or drag it here
                     </Text>
-                    <Text fontSize="$3" color="$color11" textAlign="center">
+                    <Text style={{ color: colors.text[theme].secondary }} align="center">
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
-                  </YStack>
+                  </Stack>
                 </section>
-              </YStack>
+              </Stack>
             </label>
             <input
               ref={(el) => {
@@ -563,121 +567,124 @@ export function AttachmentsStep({
               disabled={isSubmitting || uploading.cover_letter}
             />
             {errors.cover_letter && (
-              <Text fontSize="$2" color="$red10">
-                {errors.cover_letter}
-              </Text>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors.cover_letter}</Text>
             )}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
 
       {/* Portfolio Upload (Optional) */}
-      <YStack gap="$3">
-        <XStack gap="$2" alignItems="center">
-          <Text fontSize="$5" fontWeight="600" color="$color12">
-            Portfolio / Work Samples
-          </Text>
-          <Text fontSize="$3" color="$color11">
-            Optional
-          </Text>
-        </XStack>
+      <Stack gap={12}>
+        <Row gap={8} align="center">
+          <Text style={{ color: colors.text[theme].secondary }}>Portfolio / Work Samples</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Optional</Text>
+        </Row>
 
         {getAttachment('portfolio') ? (
-          <XStack
-            padding="$4"
-            borderRadius="$4"
-            borderWidth={2}
-            borderColor="$green9"
-            backgroundColor="$green2"
-            justifyContent="space-between"
-            alignItems="center"
-            gap="$3"
+          <Row
+            padding="md"
+            borderRadius={16}
+            style={{
+              borderWidth: 2,
+              borderColor: theme === "light" ? colors.green[300] : colors.green[700],
+              backgroundColor: theme === "light" ? colors.green[50] : colors.green[900],
+            }}
+            justify="space-between"
+            align="center"
+            gap={12}
           >
-            <XStack gap="$3" alignItems="center" flex={1}>
-              <CheckCircle2 size={24} color="$green10" />
-              <YStack flex={1}>
-                <Text fontSize="$4" fontWeight="600" color="$color12">
+            <Row gap={12} align="center" flex={1}>
+              <CheckCircle2 size={24} color={theme === "light" ? colors.green[700] : colors.green[300]} />
+              <Stack flex={1}>
+                <Text style={{ color: colors.text[theme].secondary }}>
                   {getAttachment('portfolio')?.filename}
                 </Text>
-                <Text fontSize="$2" color="$color11">
+                <Text style={{ color: colors.text[theme].secondary }}>
                   {formatFileSize(getAttachment('portfolio')?.size ?? 0)}
                 </Text>
-              </YStack>
-            </XStack>
+              </Stack>
+            </Row>
             <Button
-              size="$3"
-              circular
-              variant="outlined"
-              icon={X}
+              size="sm"
+              variant="outline"
+              iconStart={X}
               onPress={() => handleFileRemove('portfolio')}
               disabled={isSubmitting || uploading.portfolio}
             />
-          </XStack>
+          </Row>
         ) : uploading.portfolio ? (
-          <YStack gap="$2">
-            <YStack
-              padding="$6"
-              borderRadius="$4"
-              borderWidth={2}
-              borderColor="$blue9"
-              backgroundColor="$blue2"
-              alignItems="center"
-              gap="$3"
+          <Stack gap={8}>
+            <Stack
+              padding="xl"
+              borderRadius={16}
+              style={{
+                borderWidth: 2,
+                borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
+                backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
+              }}
+              align="center"
+              gap={12}
             >
-              <Upload size={32} color="$blue10" />
-              <YStack gap="$2" width="100%">
-                <Text fontSize="$4" fontWeight="600" color="$color12" textAlign="center">
+              <Upload size={32} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
+              <Stack gap={8} width="100%">
+                <Text style={{ color: colors.text[theme].secondary }} align="center">
                   Uploading...
                 </Text>
-                <Progress value={uploadProgress.portfolio || 0} max={100} backgroundColor="$blue4">
-                  <Progress.Indicator animation="bouncy" backgroundColor="$blue9" />
-                </Progress>
-                <Text fontSize="$2" color="$color11" textAlign="center">
+                <ProgressBarBase
+                  value={uploadProgress.portfolio || 0}
+                  color="primary"
+                  style={{ backgroundColor: colors.bg[theme].default }}
+                />
+                <Text style={{ color: colors.text[theme].secondary }} align="center">
                   {uploadProgress.portfolio || 0}%
                 </Text>
-              </YStack>
-            </YStack>
-          </YStack>
+              </Stack>
+            </Stack>
+          </Stack>
         ) : (
-          <YStack gap="$2">
+          <Stack gap={8}>
             <label htmlFor="portfolio-upload">
-              <YStack
-                asChild
-                padding="$6"
-                borderRadius="$4"
-                borderWidth={2}
-                borderColor={
-                  errors.portfolio
-                    ? '$red9'
+              <Stack
+                padding="xl"
+                borderRadius={16}
+                style={{
+                  borderWidth: 2,
+                  borderStyle: 'dashed',
+                  borderColor: errors.portfolio
+                    ? theme === "light" ? colors.error[300] : colors.error[700]
                     : dragOverRefs.current.portfolio
-                      ? '$blue9'
-                      : '$borderColor'
-                }
-                borderStyle="dashed"
-                backgroundColor={dragOverRefs.current.portfolio ? '$blue2' : '$background'}
-                alignItems="center"
-                gap="$3"
-                cursor="pointer"
-                hoverStyle={{ borderColor: '$blue9', backgroundColor: '$blue2' }}
+                      ? theme === "light" ? colors.blue[300] : colors.blue[700]
+                      : colors.border[theme].default,
+                  backgroundColor: dragOverRefs.current.portfolio
+                    ? theme === "light" ? colors.blue[50] : colors.blue[900]
+                    : colors.bg[theme].default,
+                }}
+                align="center"
+                gap={12}
               >
                 <section
                   aria-label="Portfolio upload drop zone"
                   onDragOver={(e) => handleDragOver('portfolio', e)}
                   onDragLeave={() => handleDragLeave('portfolio')}
                   onDrop={(e) => handleDrop('portfolio', e)}
-                  style={{ width: '100%' }}
+                  style={{
+                    width: '100%',
+                    color: errors.portfolio
+                      ? theme === "light" ? colors.error[300] : colors.error[700]
+                      : theme === "light" ? colors.blue[300] : colors.blue[700],
+                  }}
                 >
-                  <Upload size={32} color={errors.portfolio ? '$red9' : '$blue9'} />
-                  <YStack gap="$1" alignItems="center">
-                    <Text fontSize="$4" fontWeight="600" color="$color12">
+                  <Upload size={32} />
+                  <Stack gap={4} align="center">
+                    <Text style={{ color: colors.text[theme].secondary }}>
                       Choose a file or drag it here
                     </Text>
-                    <Text fontSize="$3" color="$color11" textAlign="center">
+                    <Text style={{ color: colors.text[theme].secondary }} align="center">
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
-                  </YStack>
+                  </Stack>
                 </section>
-              </YStack>
+              </Stack>
             </label>
             <input
               ref={(el) => {
@@ -694,48 +701,48 @@ export function AttachmentsStep({
               disabled={isSubmitting || uploading.portfolio}
             />
             {errors.portfolio && (
-              <Text fontSize="$2" color="$red10">
-                {errors.portfolio}
-              </Text>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors.portfolio}</Text>
             )}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
 
       {/* Info Box */}
-      <YStack
-        padding="$4"
-        borderRadius="$4"
-        backgroundColor="$blue2"
-        borderWidth={1}
-        borderColor="$blue7"
+      <Stack
+        padding="md"
+        borderRadius={16}
+        style={{
+          backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900],
+          borderColor: colors.border[theme].subtle,
+          borderWidth: 1,
+        }}
       >
-        <Text fontSize="$3" color="$blue11">
+        <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
           💡 Tip: Make sure your documents are up-to-date and clearly showcase your relevant
           experience and skills for this position.
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Navigation Buttons */}
-      <XStack gap="$3" justifyContent="space-between" marginTop="$4">
+      <Row gap={12} justify="space-between" marginTop={16}>
         <Button
-          size="$4"
-          variant="outlined"
-          icon={ArrowLeft}
+          size="md"
+          variant="outline"
+          iconStart={ArrowLeft}
           onPress={onPrevious}
           disabled={isSubmitting || Object.values(uploading).some((v) => v)}
         >
           Previous
         </Button>
         <Button
-          size="$4"
-          theme="info"
+          size="md"
+          color="primary"
           onPress={validateAndContinue}
           disabled={isSubmitting || Object.values(uploading).some((v) => v)}
         >
           {isSubmitting ? 'Saving...' : 'Continue to Review'}
         </Button>
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

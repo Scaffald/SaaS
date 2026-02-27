@@ -1,6 +1,6 @@
 import { InterpretationLanguage, type MainColor, TwoStageTest } from 'luscher-test'
 import { useCallback, useEffect, useState } from 'react'
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack } from '@scaffald/ui'
 
 export interface ResultsStepProps {
   feedbackMessage?: string
@@ -169,91 +169,67 @@ export function ResultsStep({
   }, [canViewResults, interpretation, isLoadingInterpretation, loadError, loadInterpretation])
 
   return (
-    <YStack gap="$6" width="100%" alignSelf="center" padding="$4" style={{ maxWidth: 800 }}>
+    <Stack gap={24} width="100%" alignSelf="center" padding="md" style={{ maxWidth: 800 }}>
       {/* Feedback Message */}
-      <YStack
-        gap="$4"
-        padding="$6"
+      <Stack
+        gap={16}
+        padding="xl"
         backgroundColor="$color2"
-        borderRadius="$4"
+        borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <Text fontSize="$6" fontWeight="bold" color="$color12">
-          Test Complete
-        </Text>
-        <Text fontSize="$4" color="$color11" lineHeight="$5">
+        <Text color="$gray11">Test Complete</Text>
+        <Text color="$gray11" style={{ lineHeight: 20 }}>
           {feedbackMessage}
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Results Content */}
-      <YStack
-        gap="$4"
-        padding="$6"
+      <Stack
+        gap={16}
+        padding="xl"
         backgroundColor="$color1"
-        borderRadius="$4"
+        borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
       >
         {!canViewResults && (
-          <Text fontSize="$4" color="$color11">
-            Results will appear here once both selections are complete.
-          </Text>
+          <Text color="$gray11">Results will appear here once both selections are complete.</Text>
         )}
 
-        {isLoadingInterpretation && (
-          <Text fontSize="$4" color="$color11">
-            Loading results...
-          </Text>
-        )}
+        {isLoadingInterpretation && <Text color="$gray11">Loading results...</Text>}
 
-        {loadError && (
-          <Text fontSize="$4" color="$red10">
-            {loadError}
-          </Text>
-        )}
+        {loadError && <Text color="$red10">{loadError}</Text>}
 
         {interpretation && !isLoadingInterpretation && !loadError && (
-          <YStack gap="$3">
+          <Stack gap={12}>
             {interpretation.split('\n\n').map((paragraph, index) => {
               const paragraphKey = `${paragraph.slice(0, 50)}-${index}`
 
               if (paragraph.startsWith('## ')) {
                 return (
-                  <Text
-                    key={paragraphKey}
-                    fontSize="$6"
-                    fontWeight="bold"
-                    color="$color12"
-                    marginTop={index > 0 ? '$4' : '$0'}
-                  >
+                  <Text key={paragraphKey} color="$gray11" style={{ marginTop: index > 0 ? 16 : 0 }}>
                     {paragraph.replace('## ', '')}
                   </Text>
                 )
               }
               if (paragraph.startsWith('### ')) {
                 return (
-                  <Text
-                    key={paragraphKey}
-                    fontSize="$5"
-                    fontWeight="600"
-                    color="$color12"
-                    marginTop={index > 0 ? '$3' : '$0'}
-                  >
+                  <Text key={paragraphKey} color="$gray11" style={{ marginTop: index > 0 ? 12 : 0 }}>
                     {paragraph.replace('### ', '')}
                   </Text>
                 )
               }
               return (
-                <Text key={paragraphKey} fontSize="$4" color="$color11" lineHeight="$5">
+                <Text key={paragraphKey} color="$gray11" style={{ lineHeight: 20 }}>
                   {paragraph}
                 </Text>
               )
             })}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import type { CompletionMilestone } from '../../hooks/useCompletionStatus'
 import { MilestoneBadge } from '../MilestoneBadge'
 
-vi.mock('tamagui', () => {
+vi.mock('@scaffald/ui', () => {
   const Stack = ({
     children,
     opacity,
@@ -26,13 +26,13 @@ vi.mock('tamagui', () => {
   } & Record<string, unknown>) => <span {...rest}>{children}</span>
 
   return {
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Text,
   }
 })
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Trophy: ({ size, color }: { size?: number; color?: string }) => (
     <span data-testid="trophy-icon" data-size={size} data-color={color}>
       Trophy

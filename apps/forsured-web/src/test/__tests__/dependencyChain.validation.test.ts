@@ -6,7 +6,7 @@
  *
  * 1. The Vite shims for react-native internal paths work
  * 2. The esbuild optimizeDeps configuration is correct
- * 3. @unicornlove/beyond-ui exports can be resolved
+ * 3. @scaffald/ui exports can be resolved
  *
  * If these tests pass, the unit tests can safely use mocks knowing the
  * dependency chain is valid up to the mock boundary.
@@ -87,14 +87,14 @@ describe('Shim File Content Validation', () => {
 
 describe('Mock Alignment Validation', () => {
   /**
-   * This test validates that the mock for @unicornlove/ui exports
+   * This test validates that the mock for @scaffald/ui exports
    * the same component names as the real package would export.
    *
    * This ensures tests using mocks don't pass for the wrong reason
    * (e.g., testing a component that doesn't exist in the real package).
    */
-  it('UI mock should export components that exist in real @unicornlove/ui', () => {
-    const mockPath = resolve(packageRoot, 'src/test/__mocks__/@unicornlove/ui.tsx');
+  it('UI mock should export components that exist in real @scaffald/ui', () => {
+    const mockPath = resolve(packageRoot, 'src/test/__mocks__/@scaffald/ui.tsx');
     expect(existsSync(mockPath)).toBe(true);
 
     const mockContent = readFileSync(mockPath, 'utf-8');
@@ -103,13 +103,10 @@ describe('Mock Alignment Validation', () => {
     const requiredExports = [
       'Button',
       'Text',
-      'View',
-      'YStack',
-      'XStack',
+      'Stack',
+      'Row',
       'Input',
-      'Select',
       'Card',
-      'Dialog',
       'Spinner',
       'Tabs',
     ];

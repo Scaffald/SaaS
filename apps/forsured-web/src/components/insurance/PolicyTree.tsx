@@ -1,11 +1,11 @@
 /**
- * REQ-262: Insurance Policy Parent-Child Model - UI Components
+ * Insurance Policy Parent-Child Model - UI Components
  * PolicyTree component displays insurance policies with expandable hierarchical structure
  */
 
 import { useState, useEffect } from 'react';
 import { AlertCircle } from 'lucide-react';
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card } from '@scaffald/ui';
 import { InsurancePolicy } from '../../types';
 import { getAllPolicies } from '../../lib/api/insurancePolicyService';
 import PolicyCard from './PolicyCard';

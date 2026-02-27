@@ -1,6 +1,6 @@
 /**
  * Document Migration Script
- * REQ-1: Migrate documents from MockDatabase to Scaffald
+ * Migrate documents from MockDatabase to Scaffald
  *
  * This script migrates existing documents from Forsured's MockDatabase
  * to Scaffald's document storage system.

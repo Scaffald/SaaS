@@ -3,7 +3,7 @@
  * User profile display in the sidebar
  */
 
-import { SidebarMenuItem, Avatar } from '@unicornlove/beyond-ui';
+import { SidebarMenuItem, Avatar } from '@scaffald/ui';
 
 export interface SidebarUserProfileProps {
   initials: string;

@@ -1,5 +1,5 @@
-import { DashboardWidget } from '@unicornlove/ui'
-import { H3, Text } from '@unicornlove/ui'
+import { DashboardWidget } from '@scaffald/ui'
+import { H3, Text } from '@scaffald/ui'
 
 interface ProfileRightPanelProps {
   title: string
@@ -15,14 +15,8 @@ export function ProfileRightPanel({ title, description, stats }: ProfileRightPan
   return (
     <DashboardWidget>
       <H3>{title}</H3>
-      {stats && (
-        <Text color="$color11" fontSize="$3">
-          {stats}
-        </Text>
-      )}
-      <Text color="$color11" fontSize="$3">
-        {description}
-      </Text>
+      {stats && <Text color="$gray11">{stats}</Text>}
+      <Text color="$gray11">{description}</Text>
     </DashboardWidget>
   )
 }

@@ -1,34 +1,22 @@
 /**
  * Textarea - Textarea component using Beyond UI
- * Migrated from Tamagui to Beyond UI
+
  */
-import React, { forwardRef, TextareaHTMLAttributes } from 'react';
-import { Stack, Row, Text } from '@unicornlove/beyond-ui';
+import React, { forwardRef, TextareaHTMLAttributes } from 'react'
+import { Stack, Row, Text } from '@scaffald/ui'
 
 export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
-  label?: string;
-  error?: string;
-  helperText?: string;
-  fullWidth?: boolean;
+  label?: string
+  error?: string
+  helperText?: string
+  fullWidth?: boolean
 }
 
 const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  (
-    {
-      label,
-      error,
-      helperText,
-      fullWidth = false,
-      rows = 4,
-      ...props
-    },
-    ref
-  ) => {
+  ({ label, error, helperText, fullWidth = false, rows = 4, ...props }, ref) => {
     // Filter out textAlign from props to prevent React warnings
-    const {
-      textAlign: _textAlign,
-      ...cleanProps
-    } = props as TextareaHTMLAttributes<HTMLTextAreaElement> & { textAlign?: string };
+    const { textAlign: _textAlign, ...cleanProps } =
+      props as TextareaHTMLAttributes<HTMLTextAreaElement> & { textAlign?: string }
 
     return (
       <Stack gap={6} style={{ width: fullWidth ? '100%' : undefined }}>
@@ -77,10 +65,10 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           </Text>
         )}
       </Stack>
-    );
+    )
   }
-);
+)
 
-Textarea.displayName = 'Textarea';
+Textarea.displayName = 'Textarea'
 
-export default Textarea;
+export default Textarea

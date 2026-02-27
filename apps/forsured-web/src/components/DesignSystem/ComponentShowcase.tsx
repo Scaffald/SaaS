@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
-import { Stack, Row, Text, H3, Box } from '@unicornlove/beyond-ui';
-import { colors, spacing, fontSize, borderRadius, shadows } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H3, Box } from '@scaffald/ui';
+import { colors, spacing, fontSize, borderRadius, shadows } from '@scaffald/ui';
 
 export interface ComponentShowcaseProps {
   title: string;

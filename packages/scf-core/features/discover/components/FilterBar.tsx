@@ -1,6 +1,5 @@
-import { List, RotateCcw, Search, SlidersHorizontal } from '@tamagui/lucide-icons'
-import type { CSSProperties } from 'react'
-import { Button, XStack } from '@unicornlove/ui'
+import { List, RotateCcw, Search, SlidersHorizontal } from 'lucide-react-native'
+import { Button, Row } from '@scaffald/ui'
 
 type FilterBarProps = {
   onSearchPress?: () => void
@@ -23,91 +22,59 @@ export const FilterBar = ({
   onResetPress,
   onResultsPress,
   resultsCount = 0,
-  railVisible = false,
+  railVisible: _railVisible = false,
   searchActive = false,
   filterActive = false,
 }: FilterBarProps) => {
   return (
-    <XStack
-      position="absolute"
-      bottom="$4"
-      left={0}
-      $sm={{ right: 0 }}
-      $md={{ right: railVisible ? 440 : 0 }}
-      zIndex={50}
-      alignItems="center"
-      justifyContent="center"
-      animation="quick"
+    <Row
+      align="center"
+      justify="center"
+      style={{ position: 'absolute', bottom: 16, left: 0, zIndex: 50 }}
     >
-      <XStack
+      <Row
         backgroundColor="$background"
-        opacity={0.95}
-        paddingHorizontal="$3"
-        paddingVertical="$2"
-        borderRadius="$12"
-        gap="$2"
-        alignItems="center"
-        justifyContent="center"
+        paddingHorizontal={12}
+        paddingVertical={8}
+        borderRadius={12}
+        gap={8}
+        align="center"
+        justify="center"
         borderWidth={2}
         borderColor="$borderColor"
-        shadowColor="$shadowColor"
-        shadowOffset={{ width: 0, height: 4 }}
-        shadowOpacity={0.25}
-        shadowRadius={16}
-        style={
-          {
-            backdropFilter: 'blur(10px)',
-            WebkitBackdropFilter: 'blur(10px)',
-          } satisfies CSSProperties
-        }
+        style={{
+          opacity: 0.95,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.25,
+          shadowRadius: 16,
+        }}
       >
-        <Button
-          size="$4"
-          circular
-          onPress={onResultsPress}
-          variant="outlined"
-          backgroundColor="$background"
-          hoverStyle={{ backgroundColor: '$backgroundHover' }}
-          pressStyle={{ backgroundColor: '$backgroundPress' }}
-        >
+        <Button size="md" onPress={onResultsPress} variant="outline" color="gray">
           {resultsCount > 0 ? resultsCount : <List size={22} />}
         </Button>
         <Button
-          size="$4"
-          circular
-          icon={Search}
-          scaleIcon={1.4}
+          size="md"
+          iconStart={Search}
           onPress={onSearchPress}
-          variant="outlined"
-          backgroundColor={searchActive ? '$blue9' : '$background'}
-          color={searchActive ? 'white' : '$color'}
-          hoverStyle={{ backgroundColor: searchActive ? '$blue10' : '$backgroundHover' }}
-          pressStyle={{ backgroundColor: searchActive ? '$blue11' : '$backgroundPress' }}
+          variant="outline"
+          color={searchActive ? 'primary' : 'gray'}
         />
         <Button
-          size="$4"
-          circular
-          icon={SlidersHorizontal}
-          scaleIcon={1.4}
+          size="md"
+          iconStart={SlidersHorizontal}
           onPress={onFilterPress}
-          variant="outlined"
-          backgroundColor={filterActive ? '$blue9' : '$background'}
-          color={filterActive ? 'white' : '$color'}
-          hoverStyle={{ backgroundColor: filterActive ? '$blue10' : '$backgroundHover' }}
-          pressStyle={{ backgroundColor: filterActive ? '$blue11' : '$backgroundPress' }}
+          variant="outline"
+          color={filterActive ? 'primary' : 'gray'}
         />
         <Button
-          size="$4"
-          circular
-          icon={RotateCcw}
-          scaleIcon={1.4}
+          size="md"
+          iconStart={RotateCcw}
           onPress={onResetPress}
-          variant="outlined"
-          backgroundColor="$background"
-          hoverStyle={{ backgroundColor: '$backgroundHover' }}
-          pressStyle={{ backgroundColor: '$backgroundPress' }}
+          variant="outline"
+          color="gray"
         />
-      </XStack>
-    </XStack>
+      </Row>
+    </Row>
   )
 }

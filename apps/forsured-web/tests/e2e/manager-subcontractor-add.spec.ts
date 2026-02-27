@@ -29,7 +29,7 @@ test.describe('Manager Add Subcontractor', () => {
     await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
     
     // Wait directly for the button - verified via Playwright MCP browser inspection
-    // This is the most reliable selector that works with Tamagui button rendering
+    // This is the most reliable selector that works with theme button rendering
     const addButton = page.getByRole('button', { name: 'Add Subcontractor' });
     await expect(addButton).toBeVisible({ timeout: 15000 });
 

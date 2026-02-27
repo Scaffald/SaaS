@@ -1,9 +1,9 @@
 /**
  * ProvisionItem - Policy provision item using Beyond UI
- * REQ-262: Insurance Policy Parent-Child Model - UI Components
+ * Insurance Policy Parent-Child Model - UI Components
  */
 import React from 'react';
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card } from '@scaffald/ui';
 import { FileText, DollarSign } from 'lucide-react';
 import { PolicyProvision } from '../../types';
 

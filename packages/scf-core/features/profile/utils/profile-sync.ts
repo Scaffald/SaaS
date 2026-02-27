@@ -1,24 +1,33 @@
-import type { api } from '@scf/core/utils/api'
+import type { QueryClient } from '@tanstack/react-query'
 
-export async function invalidateProfileQueries(
-  utils: ReturnType<typeof api.useContext>
-): Promise<void> {
+export async function invalidateProfileQueries(queryClient: QueryClient): Promise<void> {
   const tasks: Array<Promise<unknown>> = [
-    utils.profile.general.getGeneral.invalidate(),
-    utils.profile.employment.getEmployment.invalidate(),
-    utils.profile.education.getEducation.invalidate(),
-    utils.profile.education.getEducationLevel.invalidate(),
-    utils.profile.experience.getExperience.invalidate(),
-    utils.profile.experience.getExperienceSummary.invalidate(),
-    utils.profile.skills.getUserSkills.invalidate(), // Legacy path for backward compatibility
-    utils.profile.skillsMultiTaxonomy.getUserSkills.invalidate(), // Current path
-    utils.profile.certifications.getUserCertificationTree.invalidate(),
-    utils.profile.certifications.getTopLevelCertifications.invalidate(),
-    utils.userProfile.getUserProfile.invalidate(),
-    utils.userProfile.getUserSkills.invalidate(),
-    utils.userProfile.getUserCertifications.invalidate(),
-    utils.userProfile.getUserExperience.invalidate(),
-    utils.userProfile.getUserEducation.invalidate(),
+    // General profile
+    queryClient.invalidateQueries({ queryKey: ['scaffald', 'profiles', 'general'] }),
+
+    // Employment
+    queryClient.invalidateQueries({ queryKey: ['scaffald', 'profiles', 'employment'] }),
+
+    // Education
+    queryClient.invalidateQueries({ queryKey: ['scaffald', 'profiles', 'education'] }),
+    queryClient.invalidateQueries({ queryKey: ['scaffald', 'profiles', 'education-level'] }),
+
+    // Experience
+    queryClient.invalidateQueries({ queryKey: ['scaffald', 'profiles', 'experience'] }),
+    queryClient.invalidateQueries({ queryKey: ['scaffald', 'profiles', 'experience-summary'] }),
+
+    // Skills (multi-taxonomy)
+    queryClient.invalidateQueries({ queryKey: ['scaffald', 'skills', 'multi-taxonomy'] }),
+    queryClient.invalidateQueries({ queryKey: ['scaffald', 'skills', 'legacy'] }),
+
+    // Certifications
+    queryClient.invalidateQueries({ queryKey: ['scaffald', 'profiles', 'certifications'] }),
+    queryClient.invalidateQueries({
+      queryKey: ['scaffald', 'profiles', 'certifications', 'top-level'],
+    }),
+
+    // User profile (comprehensive view)
+    queryClient.invalidateQueries({ queryKey: ['scaffald', 'user-profiles'] }),
   ]
 
   await Promise.allSettled(tasks)

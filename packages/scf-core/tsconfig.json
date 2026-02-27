@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "composite": true,
     "noEmit": true,
     "skipLibCheck": true,
     "paths": {
@@ -13,6 +12,8 @@
       "@scf/schemas/*": ["../scf-schemas/src/*"],
       "@scf/trpc": ["../scf-trpc/src"],
       "@scf/trpc/*": ["../scf-trpc/src/*"],
+      "@test-helpers": ["../../tests/infrastructure/vitest/helpers"],
+      "@test-helpers/*": ["../../tests/infrastructure/vitest/helpers/*"],
       "@unicornlove/ui": ["../ui/src"],
       "@unicornlove/ui/*": ["../ui/src/*"],
       "expo-clipboard": ["../../types/expo-clipboard.d.ts"]

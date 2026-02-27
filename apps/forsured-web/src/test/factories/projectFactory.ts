@@ -2,11 +2,11 @@
  * Project Factory
  *
  * Creates real project records in the database for testing.
- * REQ-9: Testing Policy - No mocking of owned code
+ * No mocking of owned code
  */
 
-import { testSupabase, CreatedTestData } from '../testDb';
-import { testId, FactoryOptions } from './index';
+import { CreatedTestData, testSupabase } from "../testDb";
+import { FactoryOptions, testId } from "./index";
 
 export interface TestProject {
   id: string;
@@ -23,27 +23,27 @@ interface CreateProjectOptions extends FactoryOptions {
   name?: string;
   organizationId?: string;
   managerId?: string;
-  status?: 'active' | 'completed' | 'archived';
+  status?: "active" | "completed" | "archived";
 }
 
 /**
  * Create a test project with defaults
  */
 export async function createTestProject(
-  options: CreateProjectOptions = {}
+  options: CreateProjectOptions = {},
 ): Promise<TestProject> {
   // Get a valid organization ID if not provided
   let organizationId = options.organizationId;
   if (!organizationId) {
     const { data: org } = await testSupabase
-      .schema('core' as never)
-      .from('organizations')
-      .select('id')
+      .schema("core" as never)
+      .from("organizations")
+      .select("id")
       .limit(1)
       .single();
 
     if (!org) {
-      throw new Error('No organization found for test project');
+      throw new Error("No organization found for test project");
     }
     organizationId = org.id;
   }
@@ -52,12 +52,12 @@ export async function createTestProject(
     name: options.name || `Test Project ${testId()}`,
     organization_id: organizationId,
     manager_id: options.managerId,
-    status: options.status || 'active',
+    status: options.status || "active",
   };
 
   const { data: result, error } = await testSupabase
-    .schema('forsured' as never)
-    .from('projects')
+    .schema("forsured" as never)
+    .from("projects")
     .insert(projectData)
     .select()
     .single();
@@ -83,20 +83,20 @@ export async function createTestProjectWithRequirements(
       coverageType: string;
       minimumAmount: number;
     }>;
-  } = {}
+  } = {},
 ): Promise<{ project: TestProject; requirements: any[] }> {
   const project = await createTestProject(options);
 
   const defaultRequirements = options.requirements || [
-    { coverageType: 'general_liability', minimumAmount: 1000000 },
-    { coverageType: 'workers_comp', minimumAmount: 500000 },
+    { coverageType: "general_liability", minimumAmount: 1000000 },
+    { coverageType: "workers_comp", minimumAmount: 500000 },
   ];
 
   const requirements = [];
   for (const req of defaultRequirements) {
     const { data, error } = await testSupabase
-      .schema('forsured' as never)
-      .from('compliance_requirements')
+      .schema("forsured" as never)
+      .from("compliance_requirements")
       .insert({
         project_id: project.id,
         organization_id: project.organization_id,
@@ -118,13 +118,13 @@ export async function createTestProjectWithRequirements(
  * Get an existing test project or create one
  */
 export async function getOrCreateTestProject(
-  options: CreateProjectOptions = {}
+  options: CreateProjectOptions = {},
 ): Promise<TestProject> {
   // Try to find existing project first
   const { data: existing } = await testSupabase
-    .schema('forsured' as never)
-    .from('projects')
-    .select('*')
+    .schema("forsured" as never)
+    .from("projects")
+    .select("*")
     .limit(1)
     .single();
 

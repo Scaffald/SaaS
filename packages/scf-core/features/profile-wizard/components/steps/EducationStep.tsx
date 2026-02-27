@@ -1,12 +1,13 @@
-import { MonthYearPicker, ToggleSwitch } from '@unicornlove/ui'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
-import { Controller, useForm, useWatch } from 'react-hook-form'
-import { Input, Paragraph, Text, XStack, YStack } from '@unicornlove/ui'
-import { z } from 'zod'
-import type { EducationStepData } from '../../hooks/useProfileWizard'
-import { StepNavigation } from '../StepNavigation'
-import type { WizardStepComponentProps } from './types'
+import { ToggleSwitch } from "@scaffald/ui";
+import { MonthYearPicker } from "../../../profile/components/MonthYearPicker";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import { Input, Paragraph, Text, Row, Stack } from "@scaffald/ui";
+import { z } from "zod";
+import type { EducationStepData } from "../../hooks/useProfileWizard";
+import { StepNavigation } from "../StepNavigation";
+import type { WizardStepComponentProps } from "./types";
 
 const educationSchema = z.object({
   degreeType: z.string().optional(),
@@ -14,17 +15,17 @@ const educationSchema = z.object({
   startDate: z.string().optional(),
   endDate: z.string().optional(),
   isCurrent: z.boolean(),
-})
+});
 
-type EducationFormValues = z.infer<typeof educationSchema>
+type EducationFormValues = z.infer<typeof educationSchema>;
 
 const DEFAULT_VALUES: EducationFormValues = {
-  degreeType: '',
-  institutionName: '',
-  startDate: '',
-  endDate: '',
+  degreeType: "",
+  institutionName: "",
+  startDate: "",
+  endDate: "",
   isCurrent: false,
-}
+};
 
 export function EducationStep({
   initialData,
@@ -35,7 +36,7 @@ export function EducationStep({
   onSaveForLater,
   onSkip,
   onStepStateChange,
-}: WizardStepComponentProps<'education'>) {
+}: WizardStepComponentProps<"education">) {
   const {
     control,
     handleSubmit,
@@ -44,15 +45,15 @@ export function EducationStep({
   } = useForm<EducationFormValues>({
     defaultValues: toEducationFormValues(initialData),
     resolver: zodResolver(educationSchema),
-    mode: 'onChange',
-  })
+    mode: "onChange",
+  });
 
-  const values = useWatch({ control })
+  const values = useWatch({ control });
 
   useEffect(() => {
-    if (!initialData) return
-    reset(toEducationFormValues(initialData), { keepDefaultValues: false })
-  }, [initialData, reset])
+    if (!initialData) return;
+    reset(toEducationFormValues(initialData), { keepDefaultValues: false });
+  }, [initialData, reset]);
 
   useEffect(() => {
     const payload: EducationStepData = {
@@ -61,41 +62,39 @@ export function EducationStep({
       startDate: normalizeWizardDate(values.startDate),
       endDate: values.isCurrent ? null : normalizeWizardDate(values.endDate),
       isCurrent: values.isCurrent ?? false,
-    }
+    };
 
     onStepStateChange?.({
       data: payload,
       isValid: true,
       isDirty,
-    })
-  }, [values, isDirty, onStepStateChange])
+    });
+  }, [values, isDirty, onStepStateChange]);
 
   const submit = handleSubmit(async (data) => {
-    await onContinue(formatEducationPayload(data))
-  })
+    await onContinue(formatEducationPayload(data));
+  });
 
   const handleSaveForLater = handleSubmit(async (data) => {
-    await onSaveForLater?.(formatEducationPayload(data))
-  })
+    await onSaveForLater?.(formatEducationPayload(data));
+  });
 
   const handleSkip = async () => {
-    await onSkip?.()
-  }
+    await onSkip?.();
+  };
 
   return (
-    <YStack gap="$4">
-      <YStack gap="$2">
-        <Text fontSize="$6" fontWeight="700">
-          Highest education
-        </Text>
-        <Paragraph color="$color11">
-          Add your latest degree or training program. This section is optional but strengthens your
-          profile.
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Text>Highest education</Text>
+        <Paragraph color="$gray11">
+          Add your latest degree or training program. This section is optional
+          but strengthens your profile.
         </Paragraph>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
-        <Text fontWeight="600">Degree or credential</Text>
+      <Stack gap={8}>
+        <Text>Degree or credential</Text>
         <Controller
           control={control}
           name="degreeType"
@@ -107,10 +106,10 @@ export function EducationStep({
             />
           )}
         />
-      </YStack>
+      </Stack>
 
-      <YStack gap="$2">
-        <Text fontWeight="600">Institution</Text>
+      <Stack gap={8}>
+        <Text>Institution</Text>
         <Controller
           control={control}
           name="institutionName"
@@ -122,10 +121,10 @@ export function EducationStep({
             />
           )}
         />
-      </YStack>
+      </Stack>
 
-      <XStack gap="$3">
-        <YStack flex={1} gap="$2">
+      <Row gap={12}>
+        <Stack flex={1} gap={8}>
           <Controller
             control={control}
             name="startDate"
@@ -133,13 +132,15 @@ export function EducationStep({
               <MonthYearPicker
                 label="Start Date"
                 value={parseWizardDate(field.value)}
-                onChange={(date) => field.onChange(date ? formatWizardDate(date) : '')}
+                onChange={(date: Date | null) =>
+                  field.onChange(date ? formatWizardDate(date) : "")
+                }
               />
             )}
           />
-        </YStack>
+        </Stack>
 
-        <YStack flex={1} gap="$2">
+        <Stack flex={1} gap={8}>
           <Controller
             control={control}
             name="endDate"
@@ -147,28 +148,30 @@ export function EducationStep({
               <MonthYearPicker
                 label="End Date"
                 value={parseWizardDate(field.value)}
-                onChange={(date) => field.onChange(date ? formatWizardDate(date) : '')}
+                onChange={(date: Date | null) =>
+                  field.onChange(date ? formatWizardDate(date) : "")
+                }
                 disabled={values.isCurrent}
               />
             )}
           />
-        </YStack>
-      </XStack>
+        </Stack>
+      </Row>
 
-      <XStack gap="$2" alignItems="center">
+      <Row gap={8} align="center">
         <Controller
           control={control}
           name="isCurrent"
           render={({ field }) => (
             <ToggleSwitch
               checked={Boolean(field.value)}
-              onCheckedChange={field.onChange}
+              onChange={field.onChange}
               aria-label="I am currently enrolled"
             />
           )}
         />
-        <Text fontSize="$3">I am currently enrolled</Text>
-      </XStack>
+        <Text>I am currently enrolled</Text>
+      </Row>
 
       <StepNavigation
         canGoBack
@@ -181,35 +184,35 @@ export function EducationStep({
         onSaveForLater={onSaveForLater ? handleSaveForLater : undefined}
         nextLabel="Finish"
       />
-    </YStack>
-  )
+    </Stack>
+  );
 }
 
 function parseWizardDate(value?: string | null): Date | null {
-  if (!value) return null
-  const [yearPart, monthPart] = value.split('-')
-  const year = Number.parseInt(yearPart ?? '', 10)
-  const month = Number.parseInt(monthPart ?? '', 10)
+  if (!value) return null;
+  const [yearPart, monthPart] = value.split("-");
+  const year = Number.parseInt(yearPart ?? "", 10);
+  const month = Number.parseInt(monthPart ?? "", 10);
   if (Number.isNaN(year) || Number.isNaN(month)) {
-    return null
+    return null;
   }
-  return new Date(year, month - 1, 1)
+  return new Date(year, month - 1, 1);
 }
 
 function formatWizardDate(date: Date): string {
-  const year = date.getFullYear()
-  const month = `${date.getMonth() + 1}`.padStart(2, '0')
-  return `${year}-${month}-01`
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  return `${year}-${month}-01`;
 }
 
 function normalizeWizardDate(value?: string | null): string | null {
-  if (!value) return null
-  const trimmed = value.trim()
-  return trimmed.length > 0 ? trimmed : null
+  if (!value) return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
 }
 
 function normalizeText(value?: string | null): string {
-  return value?.trim() ?? ''
+  return value?.trim() ?? "";
 }
 
 function formatEducationPayload(data: EducationFormValues): EducationStepData {
@@ -219,19 +222,21 @@ function formatEducationPayload(data: EducationFormValues): EducationStepData {
     startDate: normalizeWizardDate(data.startDate),
     endDate: data.isCurrent ? null : normalizeWizardDate(data.endDate),
     isCurrent: data.isCurrent ?? false,
-  }
+  };
 }
 
-function toEducationFormValues(data?: EducationStepData | null): EducationFormValues {
+function toEducationFormValues(
+  data?: EducationStepData | null
+): EducationFormValues {
   if (!data) {
-    return DEFAULT_VALUES
+    return DEFAULT_VALUES;
   }
 
   return {
-    degreeType: data.degreeType ?? '',
-    institutionName: data.institutionName ?? '',
-    startDate: data.startDate ?? '',
-    endDate: data.endDate ?? '',
+    degreeType: data.degreeType ?? "",
+    institutionName: data.institutionName ?? "",
+    startDate: data.startDate ?? "",
+    endDate: data.endDate ?? "",
     isCurrent: data.isCurrent ?? false,
-  }
+  };
 }

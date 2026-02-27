@@ -1,0 +1,59 @@
+name: Sync @scaffald/ui to Public Repository
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/scaffald-ui/**'
+    tags:
+      - 'ui-v*'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    name: Sync to Scaffald/ui
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout monorepo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.SCAFFALD_UI_SYNC_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+
+      - name: Add public remote
+        run: |
+          git remote add public https://x-access-token:${{ secrets.SCAFFALD_UI_SYNC_TOKEN }}@github.com/Scaffald/ui.git || true
+          git fetch public
+
+      - name: Extract scaffald-ui subtree
+        run: |
+          # Create a temporary branch with only scaffald-ui directory
+          git subtree split --prefix=packages/scaffald-ui -b scaffald-ui-standalone
+
+      - name: Push to public repository
+        run: |
+          # Force push the standalone branch to the public repo's main branch
+          git push public scaffald-ui-standalone:main --force
+
+      - name: Sync tags if version tag
+        if: startsWith(github.ref, 'refs/tags/ui-v')
+        run: |
+          # Extract version from tag (e.g., ui-v1.0.0 -> v1.0.0)
+          TAG_NAME=${GITHUB_REF#refs/tags/ui-}
+
+          # Create tag on standalone branch
+          git tag "v$TAG_NAME" scaffald-ui-standalone
+
+          # Push tag to public repo
+          git push public "v$TAG_NAME" --force
+
+      - name: Cleanup
+        run: |
+          git branch -D scaffald-ui-standalone || true
+          git remote remove public || true

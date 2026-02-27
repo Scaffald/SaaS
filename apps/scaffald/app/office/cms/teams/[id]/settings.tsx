@@ -1,15 +1,11 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { TeamSettingsForm } from '@scf/core/features/office/components/TeamSettingsForm'
-import { api } from '@scf/core/utils/api'
+import { useTeam } from '@scaffald/sdk/react'
 import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
-import type { AppRouter } from '@scf/supabase/client-types'
-import { ArrowLeft } from '@tamagui/lucide-icons'
-import type { inferRouterOutputs } from '@trpc/server'
+import { ArrowLeft } from 'lucide-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Button, Card, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-
-type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
-type TeamRecord = TeamDetailOutput['team']
+import { ScrollView } from 'react-native'
+import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 const PERMITTED_ROLES = new Set(['super_admin', 'partner_admin', 'office', 'admin', 'manager'])
 
@@ -26,13 +22,10 @@ export default function OfficeTeamSettingsPage() {
     isFetching,
     error,
     refetch,
-  } = api.teams.byId.useQuery(
-    { teamId },
-    {
-      enabled: Boolean(teamId),
-      retry: false,
-    }
-  )
+  } = useTeam(teamId, {
+    enabled: Boolean(teamId),
+    retry: false,
+  })
 
   if (!teamId) {
     return (
@@ -47,10 +40,10 @@ export default function OfficeTeamSettingsPage() {
 
   if ((isLoading || isFetching) && !teamData?.team) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
-        <Spinner size="large" />
-        <Text color="$color11">Loading team settings…</Text>
-      </YStack>
+      <Stack align="center" justify="center" gap={12}>
+        <Spinner size="lg" />
+        <Text color="gray">Loading team settings…</Text>
+      </Stack>
     )
   }
 
@@ -69,37 +62,33 @@ export default function OfficeTeamSettingsPage() {
     )
   }
 
-  const team = teamData.team as TeamRecord
+  const team = teamData.team
   const metadata = (team.metadata as Record<string, unknown> | null) ?? {}
   const canEdit = !team.isArchived && roles.some((role: string) => PERMITTED_ROLES.has(role))
   const fallbackRoleId = team.defaultRoleId ?? team.defaultRole?.id ?? null
 
   return (
     <ScrollView>
-      <YStack flex={1} gap="$6" padding="$4">
-        <XStack>
+      <Stack gap={24} padding={16}>
+        <Row>
           <Button
-            size="$2"
-            variant="outlined"
-            icon={ArrowLeft}
+            size="md"
+            variant="outline"
+            iconStart={ArrowLeft}
             onPress={() => router.push(ROUTES.OFFICE.CMS.TEAMS.path)}
           >
             Back to teams
           </Button>
-        </XStack>
+        </Row>
 
         {team.isArchived ? (
-          <Card
-            borderWidth={1}
-            borderColor="$borderColor"
-            backgroundColor="$color2"
-            padding="$3"
-            gap="$2"
-          >
-            <Text fontWeight="600">Archived team</Text>
-            <Text color="$color11">
-              This team has been archived. Update its settings after restoring the team.
-            </Text>
+          <Card padding="md">
+            <Stack gap={8}>
+              <Text>Archived team</Text>
+              <Text color="gray">
+                This team has been archived. Update its settings after restoring the team.
+              </Text>
+            </Stack>
           </Card>
         ) : null}
 
@@ -110,7 +99,7 @@ export default function OfficeTeamSettingsPage() {
           fallbackRoleId={fallbackRoleId}
           canEdit={canEdit}
         />
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }
@@ -127,20 +116,14 @@ function CenteredMessage({
   onAction: () => void
 }) {
   return (
-    <YStack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
-      <Card
-        padding="$4"
-        borderWidth={1}
-        borderColor="$borderColor"
-        backgroundColor="$color2"
-        gap="$3"
-      >
-        <Text fontSize="$6" fontWeight="700">
-          {title}
-        </Text>
-        <Text color="$color11">{description}</Text>
-        <Button onPress={onAction}>{actionLabel}</Button>
+    <Stack align="center" justify="center" gap={12}>
+      <Card padding="md">
+        <Stack gap={12}>
+          <Text>{title}</Text>
+          <Text color="gray">{description}</Text>
+          <Button onPress={onAction}>{actionLabel}</Button>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   )
 }

@@ -1,8 +1,8 @@
-import { DashboardWidget } from '@unicornlove/ui'
+import { DashboardWidget } from '@scaffald/ui'
 import type { ReactNode } from 'react'
-import { ScrollView, YStack, type YStackProps } from '@unicornlove/ui'
+import { ScrollView, Stack, type StackProps } from '@scaffald/ui'
 
-interface ProfileFormPanelProps extends YStackProps {
+interface ProfileFormPanelProps extends StackProps {
   /** Child content for the form panel */
   children: ReactNode
   /** Whether to show scrollbar */
@@ -17,9 +17,9 @@ interface ProfileFormPanelProps extends YStackProps {
  * ```tsx
  * <ProfileFormPanel>
  *   <H4>Skills & Expertise</H4>
- *   <YStack gap="$4">
+ *   <Stack gap={16}>
  *     {/* Form inputs and controls *\/}
- *   </YStack>
+ *   </Stack>
  * </ProfileFormPanel>
  * ```
  */
@@ -31,9 +31,9 @@ export function ProfileFormPanel({
   return (
     <ScrollView showsVerticalScrollIndicator={showScrollbar}>
       <DashboardWidget>
-        <YStack gap="$4" {...props}>
+        <Stack gap={16} {...props}>
           {children}
-        </YStack>
+        </Stack>
       </DashboardWidget>
     </ScrollView>
   )

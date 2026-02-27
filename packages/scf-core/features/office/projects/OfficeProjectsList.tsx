@@ -1,153 +1,175 @@
-import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
-import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
-import { OfficeLayout } from '@scf/core/components/layouts'
-import { ResponsiveSelect } from '@unicornlove/ui'
-import { Eye, EyeOff, Pencil } from '@tamagui/lucide-icons'
-import { createColumnHelper } from '@tanstack/react-table'
-import { useRouter } from 'expo-router'
-import { useMemo, useState } from 'react'
-import { Button, H2, Text, XStack, YStack } from '@unicornlove/ui'
-import { QuickActionsWidget } from '../components/QuickActionsWidget'
+import { ROUTES, buildPath } from "@scf/core/constants/routes";
+import { useProjects } from "@scf/core/utils/projects-sdk-hooks";
+import { useAllOrganizations } from "@scf/core/utils/useAllOrganizations";
+import { OfficeLayout } from "@scf/core/components/layouts";
+import { ResponsiveSelect, useThemeContext } from "@scaffald/ui";
+import { Eye, EyeOff, Pencil } from "lucide-react-native";
+import { createColumnHelper } from "@tanstack/react-table";
+import { useRouter } from "expo-router";
+import { useMemo, useState } from "react";
+import { Button, H2, Text, Row, Stack } from "@scaffald/ui";
+import { QuickActionsWidget } from "../components/QuickActionsWidget";
+import { colors } from "@scaffald/ui/tokens";
 
-type ProjectStatus = 'planning' | 'active' | 'completed' | 'on_hold'
+type ProjectStatus = "planning" | "active" | "completed" | "on_hold";
 
 type Project = {
-  id: string
-  name: string
-  description: string | null
-  status: ProjectStatus
-  start_date: string | null
-  end_date: string | null
-  location_visibility: 'public' | 'authenticated' | 'organization_only' | 'private'
-  location_visibility_override: boolean
-  created_at: string
-  updated_at: string
+  id: string;
+  name: string;
+  description: string | null;
+  status: ProjectStatus;
+  start_date: string | null;
+  end_date: string | null;
+  location_visibility:
+    | "public"
+    | "authenticated"
+    | "organization_only"
+    | "private";
+  location_visibility_override: boolean;
+  created_at: string;
+  updated_at: string;
   organization: {
-    id: string
-    name: string
-    slug: string
-  } | null
-}
+    id: string;
+    name: string;
+    slug: string;
+  } | null;
+};
 
-const columnHelper = createColumnHelper<Project>()
+const columnHelper = createColumnHelper<Project>();
 
-const getVisibilityIcon = (visibility: Project['location_visibility']) => {
+const getVisibilityIcon = (visibility: Project["location_visibility"]) => {
   switch (visibility) {
-    case 'public':
-    case 'authenticated':
-      return Eye
-    case 'organization_only':
-    case 'private':
-      return EyeOff
+    case "public":
+    case "authenticated":
+      return Eye;
+    case "organization_only":
+    case "private":
+      return EyeOff;
     default:
-      return EyeOff
+      return EyeOff;
   }
-}
+};
 
-const getVisibilityLabel = (visibility: Project['location_visibility']) => {
+const getVisibilityLabel = (visibility: Project["location_visibility"]) => {
   switch (visibility) {
-    case 'public':
-      return 'Public'
-    case 'authenticated':
-      return 'Authenticated'
-    case 'organization_only':
-      return 'Organization Only'
-    case 'private':
-      return 'Private'
+    case "public":
+      return "Public";
+    case "authenticated":
+      return "Authenticated";
+    case "organization_only":
+      return "Organization Only";
+    case "private":
+      return "Private";
     default:
-      return 'Unknown'
+      return "Unknown";
   }
-}
+};
 
-const createColumns = (_router: ReturnType<typeof useRouter>) => [
-  columnHelper.accessor('name', {
-    header: 'Name',
+const createColumns = (
+  _router: ReturnType<typeof useRouter>,
+  theme: "light" | "dark"
+) => [
+  columnHelper.accessor("name", {
+    header: "Name",
     cell: (info) => info.getValue(),
   }),
-  columnHelper.accessor('status', {
-    header: 'Status',
+  columnHelper.accessor("status", {
+    header: "Status",
     cell: (info) => {
-      const status = info.getValue()
-      return status.charAt(0).toUpperCase() + status.slice(1)
+      const status = info.getValue();
+      return status.charAt(0).toUpperCase() + status.slice(1);
     },
   }),
-  columnHelper.accessor('organization', {
-    header: 'Organization',
-    cell: (info) => info.getValue()?.name || '-',
+  columnHelper.accessor("organization", {
+    header: "Organization",
+    cell: (info) => info.getValue()?.name || "-",
   }),
-  columnHelper.accessor('location_visibility', {
-    header: 'Visibility',
+  columnHelper.accessor("location_visibility", {
+    header: "Visibility",
     cell: (info) => {
-      const visibility = info.getValue()
-      const Icon = getVisibilityIcon(visibility)
-      const label = getVisibilityLabel(visibility)
-      const hasOverride = info.row.original.location_visibility_override
+      const visibility = info.getValue();
+      const Icon = getVisibilityIcon(visibility);
+      const label = getVisibilityLabel(visibility);
+      const hasOverride = info.row.original.location_visibility_override;
 
       return (
-        <XStack gap="$2" alignItems="center">
-          <Icon size={16} />
+        <Row gap={8} align="center">
+          <Icon size="md" />
           <Text>{label}</Text>
           {hasOverride && (
-            <Text fontSize="$1" color="$yellow10">
+            <Text
+              style={{
+                color:
+                  theme === "light" ? colors.yellow[700] : colors.yellow[300],
+              }}
+            >
               (Override)
             </Text>
           )}
-        </XStack>
-      )
+        </Row>
+      );
     },
   }),
   // Actions column removed - using RowActionOverlay instead
-]
+];
 
-export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean }) {
-  const router = useRouter()
-  const { data: organizationsData } = useAllOrganizations()
-  const [selectedOrg, setSelectedOrg] = useState<string | null>(null)
-  const [statusFilter, setStatusFilter] = useState<ProjectStatus | null | string>(null)
+export function OfficeProjectsList({
+  showHeader = true,
+}: {
+  showHeader?: boolean;
+}) {
+  const { theme } = useThemeContext();
+  const router = useRouter();
+  const { data: organizationsData } = useAllOrganizations();
+  const [selectedOrg, setSelectedOrg] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<
+    ProjectStatus | null | string
+  >(null);
 
-  const { data, isLoading, refetch } = api.projects.list.useQuery({
-    organization_id: selectedOrg || undefined,
+  const { data, isLoading, refetch } = useProjects({
+    organizationId: selectedOrg || undefined,
     status: (statusFilter as ProjectStatus) || undefined,
     limit: 50,
     offset: 0,
-  })
+  });
 
-  const _columns = useMemo(() => createColumns(router), [router])
+  const _columns = useMemo(() => createColumns(router, theme), [router, theme]);
 
-  const projects = data?.projects || []
+  const projects = data?.projects || [];
 
   const _handleRowEdit = (project: Project) => {
-    router.push(buildPath(ROUTES.OFFICE.CMS.PROJECTS.DETAIL.EDIT, { id: project.id }))
-  }
+    router.push(
+      buildPath(ROUTES.OFFICE.CMS.PROJECTS.DETAIL.EDIT, { id: project.id })
+    );
+  };
 
-  const _getItemName = (project: Project) => project.name
+  const _getItemName = (project: Project) => project.name;
 
   return (
     <OfficeLayout
       showBreadcrumb
       leftContent={
-        <YStack flex={1} padding="$4" gap="$4">
+        <Stack flex={1} padding="md" gap={16}>
           {showHeader && (
-            <YStack gap="$2">
+            <Stack gap={8}>
               <H2>Projects</H2>
-              <Text fontSize="$4" color="$gray11">
+              <Text style={{ color: colors.text[theme].secondary }}>
                 Manage construction projects with geographic data
               </Text>
-            </YStack>
+            </Stack>
           )}
-          <YStack gap="$4">
-            <XStack gap="$4" alignItems="center" justifyContent="space-between" flexWrap="wrap">
-              <XStack gap="$4" alignItems="center" flexWrap="wrap">
+          <Stack gap={16}>
+            <Row gap={16} align="center" justify="space-between" wrap>
+              <Row gap={16} align="center" wrap>
                 {organizationsData && (
-                  <XStack width={200}>
+                  <Row width={200}>
                     <ResponsiveSelect
-                      value={selectedOrg || ''}
+                      value={selectedOrg || ""}
                       onValueChange={setSelectedOrg}
                       placeholder="All Organizations"
-                      size="$3"
+                      size="sm"
                       options={[
-                        { value: '', label: 'All Organizations' },
+                        { value: "", label: "All Organizations" },
                         ...(organizationsData?.organizations ?? []).map(
                           (org: { id: string; name: string }) => ({
                             value: org.id,
@@ -156,78 +178,85 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                         ),
                       ]}
                     />
-                  </XStack>
+                  </Row>
                 )}
 
-                <XStack width={150}>
+                <Row width={150}>
                   <ResponsiveSelect
-                    value={statusFilter || ''}
+                    value={statusFilter || ""}
                     onValueChange={setStatusFilter}
                     placeholder="All Statuses"
-                    size="$3"
+                    size="sm"
                     options={[
-                      { value: '', label: 'All Statuses' },
-                      { value: 'planning', label: 'Planning' },
-                      { value: 'active', label: 'Active' },
-                      { value: 'completed', label: 'Completed' },
-                      { value: 'on_hold', label: 'On Hold' },
+                      { value: "", label: "All Statuses" },
+                      { value: "planning", label: "Planning" },
+                      { value: "active", label: "Active" },
+                      { value: "completed", label: "Completed" },
+                      { value: "on_hold", label: "On Hold" },
                     ]}
                   />
-                </XStack>
-              </XStack>
+                </Row>
+              </Row>
 
               <Button
-                onPress={() => router.push(ROUTES.OFFICE.CMS.PROJECTS.CREATE.path)}
-                backgroundColor="$blue9"
-                color="$blue12"
+                onPress={() =>
+                  router.push(ROUTES.OFFICE.CMS.PROJECTS.CREATE.path)
+                }
+                color="primary"
+                variant="filled"
               >
                 Create Project
               </Button>
-            </XStack>
+            </Row>
 
             {isLoading ? (
               <Text>Loading projects...</Text>
             ) : projects.length === 0 ? (
               <Text>No projects found</Text>
             ) : (
-              <YStack gap="$2">
+              <Stack gap={8}>
                 {projects.map((project: (typeof projects)[0]) => (
-                  <XStack
+                  <Row
                     key={project.id}
-                    padding="$4"
-                    backgroundColor="$background"
-                    borderRadius="$4"
-                    justifyContent="space-between"
-                    alignItems="center"
+                    padding="md"
+                    style={{ backgroundColor: colors.bg[theme].default }}
+                    borderRadius={16}
+                    justify="space-between"
+                    align="center"
                     borderWidth={1}
-                    borderColor="$borderColor"
+                    borderColor={colors.border[theme].default}
                   >
-                    <YStack gap="$1" flex={1}>
-                      <Text fontWeight="600">{project.name}</Text>
-                      <Text fontSize="$2" color="$gray10">
-                        {project.organization?.name || 'No organization'} • {project.status}
+                    <Stack gap={4} flex={1}>
+                      <Text>{project.name}</Text>
+                      <Text style={{ color: colors.text[theme].tertiary }}>
+                        {project.organization_id ?? "No organization"} •{" "}
+                        {project.status}
                       </Text>
-                    </YStack>
-                    <XStack gap="$2" alignItems="center">
-                      {getVisibilityIcon(project.location_visibility)({ size: 16 })}
+                    </Stack>
+                    <Row gap={8} align="center">
+                      {getVisibilityIcon(project.location_visibility)({
+                        size: 16,
+                      })}
                       <Button
-                        size="$2"
-                        icon={Pencil}
+                        size="sm"
+                        iconStart={Pencil}
                         onPress={() => {
                           router.push(
-                            buildPath(ROUTES.OFFICE.CMS.PROJECTS.DETAIL.EDIT, { id: project.id })
-                          )
+                            buildPath(ROUTES.OFFICE.CMS.PROJECTS.DETAIL.EDIT, {
+                              id: project.id,
+                            })
+                          );
                         }}
                       >
                         Edit
                       </Button>
-                    </XStack>
-                  </XStack>
+                    </Row>
+                  </Row>
                 ))}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       }
       rightContent={
         <QuickActionsWidget
@@ -239,5 +268,5 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
         />
       }
     />
-  )
+  );
 }

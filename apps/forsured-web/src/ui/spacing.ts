@@ -3,7 +3,7 @@
  * Re-exports spacing tokens from beyond-ui with app-specific defaults
  */
 
-import { spacing, gap, padding } from '@unicornlove/beyond-ui/tokens'
+import { spacing, gap, padding } from '@scaffald/ui/tokens'
 
 // Re-export all spacing tokens
 export { spacing, gap, padding }

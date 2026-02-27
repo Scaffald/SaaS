@@ -1,5 +1,5 @@
-import { Plus } from '@tamagui/lucide-icons'
-import { Button, Input, XStack } from '@unicornlove/ui'
+import { Plus } from 'lucide-react-native'
+import { Button, Input, Row } from '@scaffald/ui'
 
 interface OfficePageHeaderProps {
   searchPlaceholder?: string
@@ -17,18 +17,18 @@ export function OfficePageHeader({
   onCreateClick,
 }: OfficePageHeaderProps) {
   return (
-    <XStack gap="$3" alignItems="center" flex={1} paddingHorizontal="$4">
+    <Row gap={12} align="center" flex={1} paddingHorizontal={16}>
       <Input
-        flex={1}
+        style={{ flex: 1 }}
         placeholder={searchPlaceholder}
         value={searchValue}
         onChangeText={onSearchChange}
       />
       {createButtonLabel && onCreateClick && (
-        <Button icon={Plus} onPress={onCreateClick} themeInverse>
+        <Button iconStart={Plus} onPress={onCreateClick} variant="filled" color="primary">
           {createButtonLabel}
         </Button>
       )}
-    </XStack>
+    </Row>
   )
 }

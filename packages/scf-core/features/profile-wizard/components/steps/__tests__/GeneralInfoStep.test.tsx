@@ -34,7 +34,7 @@ vi.mock('../StepNavigation', () => ({
   ),
 }))
 
-vi.mock('tamagui', () => {
+vi.mock('@scaffald/ui', () => {
   const Stack = ({
     children,
     ...rest
@@ -94,8 +94,8 @@ vi.mock('tamagui', () => {
   )
 
   return {
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Text,
     Input,
     TextArea,

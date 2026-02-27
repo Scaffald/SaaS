@@ -1,6 +1,6 @@
 // src/pages/docs/Components.tsx
 import React from 'react';
-import { Stack, Row, Box, Text, H1, H2, H3 } from '@unicornlove/beyond-ui';
+import { Stack, Row, Box, Text, H1, H2, H3 } from '@scaffald/ui';
 
 interface ComponentDocProps {
   name: string;

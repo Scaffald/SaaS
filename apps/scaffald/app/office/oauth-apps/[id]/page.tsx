@@ -1,6 +1,6 @@
 /**
  * Admin OAuth App Detail Page
- * REQ-10 Task 11: OAuth app detail and approval
+ * OAuth app detail and approval
  */
 
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -27,4 +27,3 @@ export default function OfficeOAuthAppDetailPage() {
     </SafeAreaView>
   )
 }
-

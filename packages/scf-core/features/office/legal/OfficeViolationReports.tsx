@@ -1,176 +1,210 @@
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
-import { DataTable } from '@scf/core/components/ui'
-import { RefreshCw } from '@tamagui/lucide-icons'
-import type { ColumnDef } from '@tanstack/react-table'
-import { createColumnHelper } from '@tanstack/react-table'
-import type { inferRouterOutputs } from '@trpc/server'
-import { useMemo } from 'react'
-import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { columnsFromTanStack } from "@scf/core/utils/table-columns";
+import { RefreshCw } from "lucide-react-native";
+import type { ColumnDef } from "@tanstack/react-table";
+import { createColumnHelper } from "@tanstack/react-table";
+import { useMemo } from "react";
+import type { TableRowData } from "@scaffald/ui";
+import {
+  Button,
+  Card,
+  Spinner,
+  Table,
+  Text,
+  Row,
+  Stack,
+  useThemeContext,
+} from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
+import {
+  useViolationReports,
+  useUpdateViolationReportMutation,
+} from "@scf/core/utils/legal-agreements-sdk-hooks";
+import type { ViolationReport } from "@scaffald/sdk";
 
-type ViolationReportsOutput =
-  inferRouterOutputs<AppRouter>['legalAgreements']['listViolationReports']
-type ViolationReport = ViolationReportsOutput['items'][number]
-
-const columnHelper = createColumnHelper<ViolationReport>()
+type ViolationReportRow = ViolationReport & Record<string, unknown>;
+const columnHelper = createColumnHelper<ViolationReportRow>();
 
 const formatViolationType = (type: string): string => {
   return type
-    .split('_')
+    .split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ')
-}
+    .join(" ");
+};
 
 const formatStatus = (status: string): string => {
   return status
-    .split('_')
+    .split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ')
-}
+    .join(" ");
+};
 
-const getStatusColor = (status: string) => {
+const getStatusColor = (status: string, theme: "light" | "dark") => {
   switch (status) {
-    case 'pending':
-      return '$orange11' as const
-    case 'under_review':
-      return '$blue11' as const
-    case 'confirmed':
-      return '$red11' as const
-    case 'dismissed':
-      return '$gray11' as const
-    case 'resolved':
-      return '$green11' as const
+    case "pending":
+      return theme === "light" ? colors.yellow[700] : colors.yellow[300];
+    case "under_review":
+      return theme === "light" ? colors.blue[700] : colors.blue[300];
+    case "confirmed":
+      return theme === "light" ? colors.error[700] : colors.error[300];
+    case "dismissed":
+      return colors.text[theme].secondary;
+    case "resolved":
+      return theme === "light" ? colors.green[700] : colors.green[300];
     default:
-      return '$color11' as const
+      return colors.text[theme].secondary;
   }
-}
+};
 
 export function OfficeViolationReports() {
-  const reportsQuery = api.legalAgreements.listViolationReports.useQuery(undefined, {
-    staleTime: 30_000,
-  })
+  const { theme } = useThemeContext();
+  const reportsQuery = useViolationReports(undefined, { staleTime: 30_000 });
 
-  const updateMutation = api.legalAgreements.updateViolationReport.useMutation({
+  const updateMutation = useUpdateViolationReportMutation({
     onSuccess: () => {
-      reportsQuery.refetch()
+      reportsQuery.refetch();
     },
-  })
+  });
 
-  const reportsColumns = useMemo(() => {
+  const reportsColumnDefs = useMemo(() => {
     const defs = [
-      columnHelper.accessor('createdAt', {
-        header: 'Date',
+      columnHelper.accessor("createdAt", {
+        header: "Date",
         cell: (info) => new Date(info.getValue()).toLocaleDateString(),
       }),
-      columnHelper.accessor('reportedByName', {
-        header: 'Reported By',
-        cell: (info) => info.getValue() ?? 'N/A',
+      columnHelper.accessor("reportedByName", {
+        header: "Reported By",
+        cell: (info) => info.getValue() ?? "N/A",
       }),
-      columnHelper.accessor('organizationName', {
-        header: 'Organization',
-        cell: (info) => info.getValue() ?? 'N/A',
+      columnHelper.accessor("organizationName", {
+        header: "Organization",
+        cell: (info) => info.getValue() ?? "N/A",
       }),
-      columnHelper.accessor('workerName', {
-        header: 'Worker',
-        cell: (info) => info.getValue() ?? 'N/A',
+      columnHelper.accessor("workerName", {
+        header: "Worker",
+        cell: (info) => info.getValue() ?? "N/A",
       }),
-      columnHelper.accessor('violationType', {
-        header: 'Type',
+      columnHelper.accessor("violationType", {
+        header: "Type",
         cell: (info) => formatViolationType(info.getValue()),
       }),
-      columnHelper.accessor('description', {
-        header: 'Description',
-        cell: (info) => (
-          <Text fontSize="$2" numberOfLines={2}>
-            {info.getValue()}
-          </Text>
-        ),
+      columnHelper.accessor("description", {
+        header: "Description",
+        cell: (info) => <Text>{info.getValue()}</Text>,
       }),
-      columnHelper.accessor('status', {
-        header: 'Status',
+      columnHelper.accessor("status", {
+        header: "Status",
         cell: (info) => {
-          const status = info.getValue()
+          const status = info.getValue();
           return (
-            <Text color={getStatusColor(status)} fontWeight="600">
+            <Text color={getStatusColor(status, theme)}>
               {formatStatus(status)}
             </Text>
-          )
+          );
         },
       }),
-      columnHelper.accessor('id', {
-        header: 'Actions',
+      columnHelper.accessor("id", {
+        header: "Actions",
         cell: (info) => {
-          const row = info.row.original
-          if (row.status === 'pending') {
+          const row = info.row.original;
+          if (row.status === "pending") {
             return (
-              <XStack gap="$1">
+              <Row gap={4}>
                 <Button
-                  size="$2"
-                  variant="outlined"
-                  theme="blue"
+                  size="sm"
+                  variant="outline"
+                  color="primary"
                   onPress={() => {
                     updateMutation.mutate({
                       reportId: info.getValue(),
-                      status: 'under_review',
-                    })
+                      status: "under_review",
+                    });
                   }}
                   disabled={updateMutation.isPending}
                 >
                   Review
                 </Button>
-              </XStack>
-            )
+              </Row>
+            );
           }
-          return null
+          return null;
         },
       }),
-    ]
-    return defs as ColumnDef<ViolationReport, unknown>[]
-  }, [updateMutation])
+    ];
+    return defs as ColumnDef<ViolationReportRow, unknown>[];
+  }, [updateMutation, theme]);
+
+  const tableColumns = useMemo(
+    () =>
+      columnsFromTanStack(
+        reportsColumnDefs as ColumnDef<Record<string, unknown>, unknown>[]
+      ),
+    [reportsColumnDefs]
+  );
 
   return (
-    <YStack flex={1} padding="$4" gap="$4">
-      <XStack justifyContent="space-between" alignItems="center">
-        <YStack>
-          <Text fontSize="$7" fontWeight="700">
-            Anti-Circumvention Violation Reports
-          </Text>
-          <Text color="$color10">
+    <Stack flex={1} padding="md" gap={16}>
+      <Row justify="space-between" align="center">
+        <Stack>
+          <Text>Anti-Circumvention Violation Reports</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
             Review and manage reports of off-platform hires and fee avoidance.
           </Text>
-        </YStack>
+        </Stack>
         <Button
-          size="$3"
-          variant="outlined"
-          icon={RefreshCw}
+          size="sm"
+          variant="outline"
+          iconStart={RefreshCw}
           onPress={() => reportsQuery.refetch()}
           disabled={reportsQuery.isRefetching}
         >
           Refresh
         </Button>
-      </XStack>
+      </Row>
 
       {reportsQuery.isLoading ? (
-        <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
-          <Spinner size="large" />
-          <Text color="$color10">Loading violation reports…</Text>
-        </YStack>
+        <Stack flex={1} align="center" justify="center" gap={12}>
+          <Spinner size="lg" />
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Loading violation reports…
+          </Text>
+        </Stack>
       ) : (
-        <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="$4">
-          <DataTable
-            columns={reportsColumns}
-            data={reportsQuery.data?.items ?? []}
-            isLoading={reportsQuery.isRefetching}
+        <Card
+          borderWidth={1}
+          borderColor={colors.border[theme].default}
+          style={{ backgroundColor: colors.bg[theme].subtle }}
+          padding="md"
+        >
+          <Table
+            columns={tableColumns}
+            data={(reportsQuery.data?.items ?? []) as unknown as TableRowData[]}
+            loading={reportsQuery.isRefetching}
+            renderLoading={() => (
+              <Stack
+                align="center"
+                justify="center"
+                paddingVertical={24}
+                gap={8}
+              >
+                <Spinner size="lg" />
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  Loading…
+                </Text>
+              </Stack>
+            )}
             pageSize={25}
             emptyMessage="No violation reports found."
           />
           {reportsQuery.data && reportsQuery.data.totalCount > 0 && (
-            <Text fontSize="$2" color="$color10" marginTop="$3">
-              Showing {reportsQuery.data.items.length} of {reportsQuery.data.totalCount} reports
+            <Text
+              style={{ color: colors.text[theme].secondary, marginTop: 12 }}
+            >
+              Showing {reportsQuery.data.items.length} of{" "}
+              {reportsQuery.data.totalCount} reports
             </Text>
           )}
         </Card>
       )}
-    </YStack>
-  )
+    </Stack>
+  );
 }

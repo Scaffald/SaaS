@@ -1,5 +1,6 @@
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import { Paragraph, Spinner, Text, View, YStack } from '@unicornlove/ui'
+import { Box, Paragraph, Spinner, Stack, Text, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface SuccessViewProps {
   isVisible: boolean
@@ -7,47 +8,42 @@ interface SuccessViewProps {
 
 export function SuccessView({ isVisible }: SuccessViewProps) {
   const { t } = useTranslation()
+  const { theme } = useThemeContext()
 
   return (
-    <View
+    <Box
       position="absolute"
-      enterStyle={{ opacity: 0, x: 350 }}
-      exitStyle={{ opacity: 0, x: 0 }}
-      backgroundColor="$background"
-      alignItems="center"
-      justifyContent="center"
-      width="100%"
-      height="100%"
-      $md={{ width: '100%', padding: '$5' }}
-      animation="200ms"
-      opacity={!isVisible ? 0 : 1}
-      style={{ pointerEvents: !isVisible ? 'none' : 'auto' }}
-      transform={[{ translateX: !isVisible ? 150 : 0 }]}
+      top={0}
+      left={0}
+      right={0}
+      bottom={0}
+      align="center"
+      justify="center"
+      style={{
+        width: '100%',
+        height: '100%',
+        backgroundColor: colors.bg[theme].default,
+        opacity: !isVisible ? 0 : 1,
+        pointerEvents: !isVisible ? 'none' : 'auto',
+        transform: [{ translateX: !isVisible ? 150 : 0 }],
+      }}
     >
       {isVisible && (
-        <View
-          flex={1}
-          height="auto"
-          alignSelf="center"
-          justifyContent="space-between"
-          alignItems="center"
-          gap="$4"
-          paddingTop="$6"
-        >
-          <YStack flex={1} justifyContent="center" alignItems="center" width="100%" gap="$2">
-            <Text fontWeight="bold" fontSize="$6">
-              {t('auth.success.title')}
-            </Text>
-
-            <Paragraph color="$color10" textAlign="center">
+        <Box flex={1} align="center" justify="space-between" style={{ paddingTop: 24 }}>
+          <Stack flex={1} justify="center" align="center" gap={8} style={{ width: '100%' }}>
+            <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{t('auth.success.title')}</Text>
+            <Paragraph
+              style={{
+                color: colors.text[theme === 'dark' ? 'dark' : 'light'].secondary,
+                textAlign: 'center',
+              }}
+            >
               {t('auth.success.description')}
             </Paragraph>
-
-            {/* Insert loading spinner here */}
-            <Spinner size="large" paddingTop="$6" />
-          </YStack>
-        </View>
+            <Spinner size="lg" style={{ marginTop: 24 }} />
+          </Stack>
+        </Box>
       )}
-    </View>
+    </Box>
   )
 }

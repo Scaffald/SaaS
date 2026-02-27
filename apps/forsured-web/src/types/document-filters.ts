@@ -1,6 +1,6 @@
 /**
  * Document Filters Types
- * REQ-284: Document Organization by Client/Project/GC
+ * Document Organization by Client/Project/GC
  */
 
 /**

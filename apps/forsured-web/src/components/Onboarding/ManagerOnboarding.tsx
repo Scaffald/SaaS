@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building, ArrowRight, X } from 'lucide-react';
-import { Stack, Row, Text, Button, Card, Input, H1 } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card, Input, H1 } from '@scaffald/ui';
 import Select from '../Common/Select';
 import ForsuredLogo from '../Common/ForsuredLogo';
 import { useAuth } from '../../contexts/AuthContext';

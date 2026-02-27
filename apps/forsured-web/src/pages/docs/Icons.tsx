@@ -1,6 +1,6 @@
 // src/pages/docs/Icons.tsx
 import React from 'react';
-import { Stack, Row, Box, Text, H1, H2 } from '@unicornlove/beyond-ui';
+import { Stack, Row, Box, Text, H1, H2 } from '@scaffald/ui';
 import * as LucideIcons from 'lucide-react';
 
 function IconsDoc() {

@@ -7,33 +7,35 @@ import { useState } from 'react'
 import {
   Button,
   Card,
-  Dialog,
+  Modal,
+  ModalHeader,
+  ModalContent,
+  ModalActions,
   H3,
   Input,
   Label,
   Paragraph,
   Separator,
-  XStack,
-  YStack,
+  Row,
+  Stack,
   Checkbox,
-  Spinner,
-} from '@unicornlove/ui'
-import { AlertCircle, CheckCircle, Copy } from '@tamagui/lucide-icons'
+} from '@scaffald/ui'
+import { AlertCircle, CheckCircle, Copy } from 'lucide-react-native'
 import { format, addMonths } from 'date-fns'
 
-interface APIKeyCreateModalProps {
+export interface APIKeyCreateModalProps {
   isOpen: boolean
   onClose: () => void
   onCreate: (params: CreateKeyParams) => Promise<CreateKeyResponse>
 }
 
-interface CreateKeyParams {
+export interface CreateKeyParams {
   name: string
   scopes: string[]
   expiresAt?: string
 }
 
-interface CreateKeyResponse {
+export interface CreateKeyResponse {
   id: string
   key: string
   name: string
@@ -183,311 +185,295 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
   }
 
   return (
-    <Dialog modal open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <Dialog.Portal>
-        <Dialog.Overlay
-          key="overlay"
-          animation="quick"
-          opacity={0.5}
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
-        />
+    <Modal visible={isOpen} onClose={handleClose} width={600}>
+      <ModalHeader title={step === 'configure' ? 'Create API Key' : 'API Key Created!'} />
+      <ModalContent>
+        {step === 'configure' ? (
+          <Stack gap={16}>
+            <Paragraph color="$gray11">
+              Create a new API key to access the Scaffald API programmatically
+            </Paragraph>
 
-        <Dialog.Content
-          bordered
-          elevate
-          key="content"
-          animateOnly={['transform', 'opacity']}
-          animation={[
-            'quick',
-            {
-              opacity: {
-                overshootClamping: true,
-              },
-            },
-          ]}
-          enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
-          exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
-          gap="$4"
-          width="90%"
-          maxWidth={600}
-        >
-          {step === 'configure' ? (
-            <YStack gap="$4">
-              {/* Header */}
-              <Dialog.Title>
-                <H3>Create API Key</H3>
-              </Dialog.Title>
-              <Dialog.Description>
-                <Paragraph color="$gray11">
-                  Create a new API key to access the Scaffald API programmatically
-                </Paragraph>
-              </Dialog.Description>
+            <Separator />
 
-              <Separator />
-
-              {/* Form */}
-              <YStack gap="$4">
-                {/* Key Name */}
-                <YStack gap="$2">
-                  <Label htmlFor="key-name">Key Name</Label>
-                  <Input
-                    id="key-name"
-                    placeholder="Production API Key"
-                    value={keyName}
-                    onChangeText={setKeyName}
-                    disabled={isCreating}
-                  />
-                  <Paragraph size="$2" color="$gray11">
-                    A descriptive name to identify this key
-                  </Paragraph>
-                </YStack>
-
-                {/* Scopes Selection */}
-                <YStack gap="$3">
-                  <Label>Permissions</Label>
-
-                  {/* Read Permissions */}
-                  <YStack gap="$2">
-                    <Paragraph size="$3" fontWeight="600" color="$gray12">
-                      Read Permissions
-                    </Paragraph>
-                    {AVAILABLE_SCOPES.filter((s) => s.category === 'read').map((scope) => (
-                      <Card
-                        key={scope.id}
-                        padding="$3"
-                        backgroundColor={selectedScopes.includes(scope.id) ? '$blue2' : '$gray2'}
-                        borderColor={selectedScopes.includes(scope.id) ? '$blue6' : '$gray6'}
-                        borderWidth={1}
-                        pressStyle={{ scale: 0.98 }}
-                        onPress={() => toggleScope(scope.id)}
-                        cursor="pointer"
-                      >
-                        <XStack ai="center" gap="$3">
-                          <Checkbox
-                            checked={selectedScopes.includes(scope.id)}
-                            onCheckedChange={() => toggleScope(scope.id)}
-                          />
-                          <YStack f={1} gap="$1">
-                            <Paragraph fontWeight="600">{scope.label}</Paragraph>
-                            <Paragraph size="$2" color="$gray11">
-                              {scope.description}
-                            </Paragraph>
-                          </YStack>
-                        </XStack>
-                      </Card>
-                    ))}
-                  </YStack>
-
-                  {/* Write Permissions */}
-                  <YStack gap="$2">
-                    <Paragraph size="$3" fontWeight="600" color="$gray12">
-                      Write Permissions
-                    </Paragraph>
-                    {AVAILABLE_SCOPES.filter((s) => s.category === 'write').map((scope) => (
-                      <Card
-                        key={scope.id}
-                        padding="$3"
-                        backgroundColor={selectedScopes.includes(scope.id) ? '$blue2' : '$gray2'}
-                        borderColor={selectedScopes.includes(scope.id) ? '$blue6' : '$gray6'}
-                        borderWidth={1}
-                        pressStyle={{ scale: 0.98 }}
-                        onPress={() => toggleScope(scope.id)}
-                        cursor="pointer"
-                      >
-                        <XStack ai="center" gap="$3">
-                          <Checkbox
-                            checked={selectedScopes.includes(scope.id)}
-                            onCheckedChange={() => toggleScope(scope.id)}
-                          />
-                          <YStack f={1} gap="$1">
-                            <Paragraph fontWeight="600">{scope.label}</Paragraph>
-                            <Paragraph size="$2" color="$gray11">
-                              {scope.description}
-                            </Paragraph>
-                          </YStack>
-                        </XStack>
-                      </Card>
-                    ))}
-                  </YStack>
-
-                  <Paragraph size="$2" color="$gray11">
-                    Selected: {selectedScopes.length} permission
-                    {selectedScopes.length !== 1 ? 's' : ''}
-                  </Paragraph>
-                </YStack>
-
-                {/* Expiration */}
-                <YStack gap="$2">
-                  <Label>Expiration</Label>
-                  <XStack gap="$2" flexWrap="wrap">
-                    {EXPIRATION_OPTIONS.map((option) => (
-                      <Button
-                        key={option.label}
-                        size="$3"
-                        variant={expirationDays === option.value ? 'outlined' : 'outlined'}
-                        theme={expirationDays === option.value ? 'blue' : undefined}
-                        onPress={() => setExpirationDays(option.value)}
-                        disabled={isCreating}
-                      >
-                        {option.label}
-                      </Button>
-                    ))}
-                  </XStack>
-                  <Paragraph size="$2" color="$gray11">
-                    {expirationDays
-                      ? `Key will expire on ${format(addMonths(new Date(), expirationDays / 30), 'MMM d, yyyy')}`
-                      : 'Key will never expire (not recommended for production)'}
-                  </Paragraph>
-                </YStack>
-
-                {/* Error Message */}
-                {error && (
-                  <Card backgroundColor="$red2" borderColor="$red6" borderWidth={1} padding="$3">
-                    <XStack ai="center" gap="$2">
-                      <AlertCircle size={20} color="$red11" />
-                      <Paragraph color="$red11">{error}</Paragraph>
-                    </XStack>
-                  </Card>
-                )}
-              </YStack>
-
-              {/* Actions */}
-              <XStack gap="$3" jc="flex-end">
-                <Dialog.Close asChild>
-                  <Button variant="outlined" disabled={isCreating}>
-                    Cancel
-                  </Button>
-                </Dialog.Close>
-                <Button
-                  theme="blue"
-                  onPress={handleCreate}
+            {/* Form */}
+            <Stack gap={16}>
+              {/* Key Name */}
+              <Stack gap={8}>
+                <Label htmlFor="key-name">Key Name</Label>
+                <Input
+                  id="key-name"
+                  placeholder="Production API Key"
+                  value={keyName}
+                  onChangeText={setKeyName}
                   disabled={isCreating}
-                  icon={isCreating ? <Spinner /> : undefined}
-                >
-                  {isCreating ? 'Creating...' : 'Create API Key'}
-                </Button>
-              </XStack>
-            </YStack>
-          ) : (
-            <YStack gap="$4">
-              {/* Success Header */}
-              <YStack ai="center" gap="$3">
-                <Card backgroundColor="$green3" padding="$4" borderRadius="$10">
-                  <CheckCircle size={48} color="$green11" />
-                </Card>
-                <H3>API Key Created!</H3>
-                <Paragraph color="$gray11" textAlign="center">
-                  Your API key has been created successfully
+                />
+                <Paragraph size="sm" color="$gray11">
+                  A descriptive name to identify this key
                 </Paragraph>
-              </YStack>
+              </Stack>
 
-              <Separator />
+              {/* Scopes Selection */}
+              <Stack gap={12}>
+                <Label>Permissions</Label>
 
-              {/* Warning */}
-              <Card backgroundColor="$orange2" borderColor="$orange6" borderWidth={1} padding="$4">
-                <XStack ai="flex-start" gap="$3">
-                  <AlertCircle size={20} color="$orange11" mt="$0.5" />
-                  <YStack f={1} gap="$2">
-                    <Paragraph fontWeight="600" color="$orange11">
-                      Save Your API Key Now
-                    </Paragraph>
-                    <Paragraph size="$3" color="$orange11">
-                      This is the only time you'll see the full key. Make sure to copy it and store
-                      it securely. If you lose it, you'll need to create a new one.
-                    </Paragraph>
-                  </YStack>
-                </XStack>
-              </Card>
-
-              {/* API Key Display */}
-              <YStack gap="$3">
-                <Label>API Key</Label>
-                <Card backgroundColor="$gray3" padding="$4" borderRadius="$4">
-                  <YStack gap="$3">
-                    <Paragraph
-                      fontFamily="$mono"
-                      fontSize="$4"
-                      color="$gray12"
-                      wordWrap="break-word"
-                    >
-                      {createdKey?.key}
-                    </Paragraph>
-                    <Button
-                      icon={Copy}
-                      onPress={copyToClipboard}
-                      theme={keyCopied ? 'green' : 'blue'}
-                      disabled={keyCopied}
-                    >
-                      {keyCopied ? 'Copied!' : 'Copy to Clipboard'}
-                    </Button>
-                  </YStack>
-                </Card>
-              </YStack>
-
-              {/* Key Details */}
-              <YStack gap="$2">
-                <Paragraph size="$2" color="$gray11">
-                  Name
-                </Paragraph>
-                <Paragraph fontWeight="600">{createdKey?.name}</Paragraph>
-              </YStack>
-
-              <YStack gap="$2">
-                <Paragraph size="$2" color="$gray11">
-                  Permissions
-                </Paragraph>
-                <XStack gap="$2" flexWrap="wrap">
-                  {createdKey?.scopes.map((scope) => (
+                {/* Read Permissions */}
+                <Stack gap={8}>
+                  <Paragraph size="sm" color="$gray12">
+                    Read Permissions
+                  </Paragraph>
+                  {AVAILABLE_SCOPES.filter((s) => s.category === 'read').map((scope) => (
                     <Card
-                      key={scope}
-                      backgroundColor="$blue3"
-                      paddingHorizontal="$2"
-                      paddingVertical="$1"
-                      borderRadius="$2"
+                      key={scope.id}
+                      pressable
+                      padding="sm"
+                      onPress={() => toggleScope(scope.id)}
+                      style={{
+                        backgroundColor: selectedScopes.includes(scope.id)
+                          ? 'var(--blue-2)'
+                          : 'var(--gray-2)',
+                        borderColor: selectedScopes.includes(scope.id)
+                          ? 'var(--blue-6)'
+                          : 'var(--gray-6)',
+                        borderWidth: 1,
+                      }}
                     >
-                      <Paragraph size="$2" color="$blue11">
-                        {scope}
-                      </Paragraph>
+                      <Row align="center" gap={12}>
+                        <Checkbox
+                          checked={selectedScopes.includes(scope.id)}
+                          onChange={() => toggleScope(scope.id)}
+                        />
+                        <Stack flex={1} gap={4}>
+                          <Paragraph>{scope.label}</Paragraph>
+                          <Paragraph size="sm" color="$gray11">
+                            {scope.description}
+                          </Paragraph>
+                        </Stack>
+                      </Row>
                     </Card>
                   ))}
-                </XStack>
-              </YStack>
+                </Stack>
 
-              {createdKey?.expires_at && (
-                <YStack gap="$2">
-                  <Paragraph size="$2" color="$gray11">
-                    Expires
+                {/* Write Permissions */}
+                <Stack gap={8}>
+                  <Paragraph size="sm" color="$gray12">
+                    Write Permissions
                   </Paragraph>
-                  <Paragraph fontWeight="600" color="$orange11">
-                    {format(new Date(createdKey.expires_at), 'MMM d, yyyy')}
-                  </Paragraph>
-                </YStack>
+                  {AVAILABLE_SCOPES.filter((s) => s.category === 'write').map((scope) => (
+                    <Card
+                      key={scope.id}
+                      pressable
+                      padding="sm"
+                      onPress={() => toggleScope(scope.id)}
+                      style={{
+                        backgroundColor: selectedScopes.includes(scope.id)
+                          ? 'var(--blue-2)'
+                          : 'var(--gray-2)',
+                        borderColor: selectedScopes.includes(scope.id)
+                          ? 'var(--blue-6)'
+                          : 'var(--gray-6)',
+                        borderWidth: 1,
+                      }}
+                    >
+                      <Row align="center" gap={12}>
+                        <Checkbox
+                          checked={selectedScopes.includes(scope.id)}
+                          onChange={() => toggleScope(scope.id)}
+                        />
+                        <Stack flex={1} gap={4}>
+                          <Paragraph>{scope.label}</Paragraph>
+                          <Paragraph size="sm" color="$gray11">
+                            {scope.description}
+                          </Paragraph>
+                        </Stack>
+                      </Row>
+                    </Card>
+                  ))}
+                </Stack>
+
+                <Paragraph size="sm" color="$gray11">
+                  Selected: {selectedScopes.length} permission
+                  {selectedScopes.length !== 1 ? 's' : ''}
+                </Paragraph>
+              </Stack>
+
+              {/* Expiration */}
+              <Stack gap={8}>
+                <Label>Expiration</Label>
+                <Row gap={8} wrap>
+                  {EXPIRATION_OPTIONS.map((option) => (
+                    <Button
+                      key={option.label}
+                      size="sm"
+                      variant="outline"
+                      color={expirationDays === option.value ? 'primary' : 'gray'}
+                      onPress={() => setExpirationDays(option.value)}
+                      disabled={isCreating}
+                    >
+                      {option.label}
+                    </Button>
+                  ))}
+                </Row>
+                <Paragraph size="sm" color="$gray11">
+                  {expirationDays
+                    ? `Key will expire on ${format(addMonths(new Date(), expirationDays / 30), 'MMM d, yyyy')}`
+                    : 'Key will never expire (not recommended for production)'}
+                </Paragraph>
+              </Stack>
+
+              {/* Error Message */}
+              {error && (
+                <Card
+                  padding="sm"
+                  style={{
+                    backgroundColor: 'var(--red-2)',
+                    borderColor: 'var(--red-6)',
+                    borderWidth: 1,
+                  }}
+                >
+                  <Row align="center" gap={8}>
+                    <AlertCircle size="lg" color="$red11" />
+                    <Paragraph color="$red11">{error}</Paragraph>
+                  </Row>
+                </Card>
               )}
-
-              {/* Documentation Link */}
-              <Card backgroundColor="$blue2" borderColor="$blue6" borderWidth={1} padding="$4">
-                <YStack gap="$2">
-                  <Paragraph fontWeight="600" color="$blue11">
-                    Next Steps
-                  </Paragraph>
-                  <Paragraph size="$3" color="$blue11">
-                    Check out our SDK documentation to learn how to use your API key:
-                  </Paragraph>
-                  <Paragraph size="$3" color="$blue11" fontFamily="$mono">
-                    packages/scaffald-sdk/docs/getting-started.md
-                  </Paragraph>
-                </YStack>
+            </Stack>
+          </Stack>
+        ) : (
+          <Stack gap={16}>
+            {/* Success Header */}
+            <Stack align="center" gap={12}>
+              <Card padding="md" style={{ backgroundColor: 'var(--green-3)', borderRadius: 8 }}>
+                <CheckCircle size={48} color="$green11" />
               </Card>
+              <H3>API Key Created!</H3>
+              <Paragraph color="$gray11" style={{ textAlign: 'center' }}>
+                Your API key has been created successfully
+              </Paragraph>
+            </Stack>
 
-              {/* Close Button */}
-              <Button theme="blue" onPress={handleClose}>
-                Done
-              </Button>
-            </YStack>
-          )}
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog>
+            <Separator />
+
+            {/* Warning */}
+            <Card
+              padding="md"
+              style={{
+                backgroundColor: 'var(--orange-2)',
+                borderColor: 'var(--orange-6)',
+                borderWidth: 1,
+              }}
+            >
+              <Row align="flex-start" gap={12}>
+                <AlertCircle size={20} color="$orange11" />
+                <Stack flex={1} gap={8}>
+                  <Paragraph color="$orange11">Save Your API Key Now</Paragraph>
+                  <Paragraph size="sm" color="$orange11">
+                    This is the only time you'll see the full key. Make sure to copy it and store it
+                    securely. If you lose it, you'll need to create a new one.
+                  </Paragraph>
+                </Stack>
+              </Row>
+            </Card>
+
+            {/* API Key Display */}
+            <Stack gap={12}>
+              <Label>API Key</Label>
+              <Card padding="md" style={{ backgroundColor: 'var(--gray-3)', borderRadius: 16 }}>
+                <Stack gap={12}>
+                  <Paragraph color="$gray12" style={{ fontFamily: 'monospace' as const }}>
+                    {createdKey?.key}
+                  </Paragraph>
+                  <Button
+                    iconStart={Copy}
+                    onPress={copyToClipboard}
+                    color={keyCopied ? 'success' : 'primary'}
+                    disabled={keyCopied}
+                  >
+                    {keyCopied ? 'Copied!' : 'Copy to Clipboard'}
+                  </Button>
+                </Stack>
+              </Card>
+            </Stack>
+
+            {/* Key Details */}
+            <Stack gap={8}>
+              <Paragraph size="sm" color="$gray11">
+                Name
+              </Paragraph>
+              <Paragraph>{createdKey?.name}</Paragraph>
+            </Stack>
+
+            <Stack gap={8}>
+              <Paragraph size="sm" color="$gray11">
+                Permissions
+              </Paragraph>
+              <Row gap={8} wrap>
+                {createdKey?.scopes.map((scope) => (
+                  <Card
+                    key={scope}
+                    padding="sm"
+                    style={{
+                      backgroundColor: 'var(--blue-3)',
+                      borderRadius: 8,
+                    }}
+                  >
+                    <Paragraph size="sm" color="$blue11">
+                      {scope}
+                    </Paragraph>
+                  </Card>
+                ))}
+              </Row>
+            </Stack>
+
+            {createdKey?.expires_at && (
+              <Stack gap={8}>
+                <Paragraph size="sm" color="$gray11">
+                  Expires
+                </Paragraph>
+                <Paragraph color="$orange11">
+                  {format(new Date(createdKey.expires_at), 'MMM d, yyyy')}
+                </Paragraph>
+              </Stack>
+            )}
+
+            {/* Documentation Link */}
+            <Card
+              padding="md"
+              style={{
+                backgroundColor: 'var(--blue-2)',
+                borderColor: 'var(--blue-6)',
+                borderWidth: 1,
+              }}
+            >
+              <Stack gap={8}>
+                <Paragraph color="$blue11">Next Steps</Paragraph>
+                <Paragraph size="sm" color="$blue11">
+                  Check out our SDK documentation to learn how to use your API key:
+                </Paragraph>
+                <Paragraph size="sm" color="$blue11" style={{ fontFamily: 'monospace' }}>
+                  packages/scaffald-sdk/docs/getting-started.md
+                </Paragraph>
+              </Stack>
+            </Card>
+          </Stack>
+        )}
+      </ModalContent>
+      <ModalActions
+        orientation="right"
+        primaryAction={
+          step === 'configure'
+            ? {
+                label: isCreating ? 'Creating...' : 'Create API Key',
+                onPress: handleCreate,
+                disabled: isCreating,
+                loading: isCreating,
+              }
+            : { label: 'Done', onPress: handleClose }
+        }
+        secondaryAction={
+          step === 'configure' ? { label: 'Cancel', onPress: handleClose } : undefined
+        }
+      />
+    </Modal>
   )
 }

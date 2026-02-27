@@ -1,6 +1,6 @@
 /**
  * Policies Hook
- * REQ-212: Code Updates for Shared Database Architecture
+ * Code Updates for Shared Database Architecture
  *
  * Manages policy data from forsured.policies table.
  */

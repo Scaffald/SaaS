@@ -1,12 +1,11 @@
 /**
- * REQ-261: Task Type Definitions & Settings Page
- * TASK-3: Build Task Type Settings Page UI
+ * Task type form for settings
  *
  * Form component for creating and editing task types.
  */
 
 import React, { useState, useEffect } from 'react'
-import { Stack, Row, Text, H3, Label, Grid } from '@unicornlove/beyond-ui'
+import { Stack, Row, Text, H3, Label, Grid } from '@scaffald/ui'
 import Button from '../Common/Button'
 import Input from '../Common/Input'
 import Select from '../Common/Select'

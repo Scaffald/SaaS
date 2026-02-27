@@ -1,6 +1,6 @@
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
 import { memo, useMemo } from 'react'
-import { Progress, Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { ProgressBarBase, Separator, Text, Row, Stack } from '@scaffald/ui'
 
 import {
   type BackgroundCheckDetail,
@@ -94,37 +94,27 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
   }, [statusHistory])
 
   const statusMeta = getStatusMetadata(status)
-  const statusColors = getStatusToneColors(statusMeta.tone)
+  const _statusColors = getStatusToneColors(statusMeta.tone)
   const progress = getStatusProgress(
     status,
     normalizedComponents.map((component) => ({ status: component.status }))
   )
 
   return (
-    <YStack gap="$4">
-      <YStack gap="$2">
-        <XStack justifyContent="space-between" alignItems="center">
-          <Text fontSize="$4" fontWeight="600" color="$color12">
-            Overall progress
-          </Text>
-          <Text fontSize="$2" color="$color10">
-            {progress}%
-          </Text>
-        </XStack>
-        <Progress value={progress} max={100} backgroundColor="$color3" size="$2">
-          <Progress.Indicator animation="bouncy" backgroundColor={statusColors.border} />
-        </Progress>
-        <Text fontSize="$2" color="$color10">
-          {statusMeta.description}
-        </Text>
-      </YStack>
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Row justify="space-between" align="center">
+          <Text color="$gray11">Overall progress</Text>
+          <Text color="$gray11">{progress}%</Text>
+        </Row>
+        <ProgressBarBase value={progress} color="primary" />
+        <Text color="$gray11">{statusMeta.description}</Text>
+      </Stack>
 
       {normalizedComponents.length > 0 && (
-        <YStack gap="$2">
-          <Text fontSize="$3" fontWeight="600" color="$color12">
-            Component status
-          </Text>
-          <YStack gap="$2">
+        <Stack gap={8}>
+          <Text color="$gray11">Component status</Text>
+          <Stack gap={8}>
             {normalizedComponents.map((component) => {
               const componentStatusMeta =
                 typeof component.status === 'string'
@@ -134,126 +124,98 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
                 ? getStatusToneColors(componentStatusMeta.tone)
                 : getStatusToneColors('neutral')
               return (
-                <XStack
+                <Row
                   key={component.id}
-                  justifyContent="space-between"
-                  alignItems="center"
-                  padding="$3"
+                  justify="space-between"
+                  align="center"
+                  padding="sm"
                   backgroundColor="$color2"
-                  borderRadius="$3"
+                  borderRadius={12}
                   borderWidth={1}
                   borderColor="$borderColor"
                 >
-                  <YStack gap="$1" flex={1}>
-                    <Text fontSize="$3" fontWeight="500" color="$color12">
-                      {component.label}
-                    </Text>
+                  <Stack gap={4} flex={1}>
+                    <Text color="$gray11">{component.label}</Text>
                     {component.completedAt && (
-                      <Text fontSize="$2" color="$color10">
-                        Completed {formatDate(component.completedAt)}
-                      </Text>
+                      <Text color="$gray11">Completed {formatDate(component.completedAt)}</Text>
                     )}
-                  </YStack>
+                  </Stack>
                   {componentStatusMeta && (
-                    <XStack
-                      paddingHorizontal="$2"
-                      paddingVertical="$1"
+                    <Row
+                      paddingHorizontal={8}
+                      paddingVertical={4}
                       backgroundColor={componentColors.background}
                       borderWidth={1}
                       borderColor={componentColors.border}
-                      borderRadius="$3"
+                      borderRadius={12}
                     >
-                      <Text fontSize="$2" fontWeight="500" color={componentColors.text}>
-                        {componentStatusMeta.label}
-                      </Text>
-                    </XStack>
+                      <Text color={componentColors.text}>{componentStatusMeta.label}</Text>
+                    </Row>
                   )}
-                </XStack>
+                </Row>
               )
             })}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
 
       {normalizedHistory.length > 0 && (
-        <YStack gap="$2">
-          <Text fontSize="$3" fontWeight="600" color="$color12">
-            Recent activity
-          </Text>
-          <YStack gap="$2">
+        <Stack gap={8}>
+          <Text color="$gray11">Recent activity</Text>
+          <Stack gap={8}>
             {normalizedHistory.map((entry, index) => {
               const historyMeta = getStatusMetadata(entry.status as BackgroundCheckStatus)
               const colors = getStatusToneColors(historyMeta.tone)
               return (
-                <XStack key={`${entry.status}-${index}`} gap="$3" alignItems="center">
-                  <YStack width={10} alignItems="center">
-                    <YStack
-                      width={2}
-                      flex={1}
-                      backgroundColor="$color5"
-                      opacity={index === normalizedHistory.length - 1 ? 0 : 1}
-                    />
-                  </YStack>
-                  <YStack
+                <Row key={`${entry.status}-${index}`} gap={12} align="center">
+                  <Stack width={10} align="center">
+                  <Stack
+                    width={2}
                     flex={1}
-                    padding="$3"
+                    backgroundColor="$color5"
+                    style={{ opacity: index === normalizedHistory.length - 1 ? 0 : 1 }}
+                  />
+                  </Stack>
+                  <Stack
+                    flex={1}
+                    padding="sm"
                     backgroundColor="$color2"
-                    borderRadius="$3"
+                    borderRadius={12}
                     borderWidth={1}
                     borderColor="$borderColor"
-                    gap="$1"
+                    gap={4}
                   >
-                    <Text fontSize="$3" fontWeight="500" color={colors.text}>
-                      {historyMeta.label}
-                    </Text>
-                    <XStack gap="$2" alignItems="center">
+                    <Text color={colors.text}>{historyMeta.label}</Text>
+                    <Row gap={8} align="center">
                       {entry.occurredAt && (
-                        <Text fontSize="$2" color="$color10">
-                          {formatDate(entry.occurredAt)}
-                        </Text>
+                        <Text color="$gray11">{formatDate(entry.occurredAt)}</Text>
                       )}
                       {entry.actor && (
                         <>
-                          <Separator vertical />
-                          <Text fontSize="$2" color="$color10">
-                            {entry.actor}
-                          </Text>
+                          <Separator orientation="vertical" />
+                          <Text color="$gray11">{entry.actor}</Text>
                         </>
                       )}
-                    </XStack>
-                  </YStack>
-                </XStack>
+                    </Row>
+                  </Stack>
+                </Row>
               )
             })}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
 
-      <YStack gap="$2">
-        <Text fontSize="$3" fontWeight="600" color="$color12">
-          Key dates
-        </Text>
-        <YStack gap="$1">
-          <Text fontSize="$2" color="$color10">
-            Started: {formatDate(createdAt)}
-          </Text>
+      <Stack gap={8}>
+        <Text color="$gray11">Key dates</Text>
+        <Stack gap={4}>
+          <Text color="$gray11">Started: {formatDate(createdAt)}</Text>
           {estimatedCompletionDate && (
-            <Text fontSize="$2" color="$color10">
-              Estimated completion: {formatDate(estimatedCompletionDate)}
-            </Text>
+            <Text color="$gray11">Estimated completion: {formatDate(estimatedCompletionDate)}</Text>
           )}
-          {completedAt && (
-            <Text fontSize="$2" color="$color10">
-              Completed: {formatDate(completedAt)}
-            </Text>
-          )}
-          {expiresAt && (
-            <Text fontSize="$2" color="$color10">
-              Expires: {formatDate(expiresAt)}
-            </Text>
-          )}
-        </YStack>
-      </YStack>
-    </YStack>
+          {completedAt && <Text color="$gray11">Completed: {formatDate(completedAt)}</Text>}
+          {expiresAt && <Text color="$gray11">Expires: {formatDate(expiresAt)}</Text>}
+        </Stack>
+      </Stack>
+    </Stack>
   )
 })

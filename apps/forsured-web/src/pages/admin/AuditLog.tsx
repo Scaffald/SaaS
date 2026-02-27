@@ -1,8 +1,8 @@
 // src/pages/admin/AuditLog.tsx
 import { useState } from 'react';
 import { Search, RefreshCcw, FileText } from 'lucide-react';
-import { Stack, Row, Text, H1, Card, Button, Input } from '@unicornlove/beyond-ui';
-import { colors, spacing, fontSize } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H1, Card, Button, Input } from '@scaffald/ui';
+import { colors, spacing, fontSize } from '@scaffald/ui';
 import Select from '../../components/Common/Select';
 import { EmptyState } from '../../ui/EmptyState';
 

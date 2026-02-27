@@ -1,9 +1,6 @@
 // Ambient type declarations for external modules used in edge functions
 // These allow TypeScript to understand module types without importing runtime code
-
-declare module '@supabase/supabase-js' {
-  export * from '@supabase/supabase-js'
-}
+// Note: Do not declare '@supabase/supabase-js' here; it shadows the real package and breaks createClient resolution in app/scf-core.
 
 declare module 'expo-server-sdk' {
   type ExpoPushMessage = {

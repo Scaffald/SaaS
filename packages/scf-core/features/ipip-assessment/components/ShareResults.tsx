@@ -1,9 +1,13 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useGenerateShareTokenMutation,
+  useRevokeShareTokenMutation,
+} from '@scf/core/utils/personality-assessment-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
 import { copyToClipboard } from '@scf/core/utils/clipboard'
-import { Calendar, Copy, Lock, Share2, X } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { Calendar, Copy, Lock, Share2, X } from 'lucide-react-native'
+import { useToast } from '@scaffald/ui'
 import { useMemo, useState } from 'react'
-import { Button, Separator, Switch, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Separator, Switch, Text, Row, Stack } from '@scaffald/ui'
 
 export interface ShareResultsProps {
   isComplete: boolean
@@ -14,53 +18,58 @@ export interface ShareResultsProps {
  * ShareResults - Component for sharing IPIP assessment results with privacy controls
  */
 export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps) {
-  const toast = useToastController()
-  const utils = api.useUtils()
+  const toast = useToast()
+  const queryClient = useQueryClient()
   const [shareLink, setShareLink] = useState<string | null>(null)
   const [expiresInDays, setExpiresInDays] = useState<number>(30)
   const [includeArchetype, setIncludeArchetype] = useState(true)
   const [includeScores, setIncludeScores] = useState(true)
 
-  const generateShareToken = api.personalityAssessment.generateShareToken.useMutation({
+  const generateShareToken = useGenerateShareTokenMutation({
     onSuccess: (data: { token: string }) => {
       // Build share URL
       const baseUrl = typeof window !== 'undefined' && window.location ? window.location.origin : ''
       const shareUrl = `${baseUrl}/dashboard/assessments/ipip/shared/${data.token}`
       setShareLink(shareUrl)
-      toast.show('Share link created!', {
+      toast.show({
+        title: 'Share link created!',
         message: 'Your results are now shareable. Copy the link to share.',
       })
-      utils.personalityAssessment.getAssessmentStatus.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Error creating share link', {
+      toast.show({
+        title: 'Error creating share link',
         message: error.message || 'Please try again.',
-        type: 'error',
+        variant: 'error',
       })
     },
   })
 
-  const revokeShareToken = api.personalityAssessment.revokeShareToken.useMutation({
+  const revokeShareToken = useRevokeShareTokenMutation({
     onSuccess: () => {
       setShareLink(null)
-      toast.show('Share link revoked', {
+      toast.show({
+        title: 'Share link revoked',
         message: 'Your share link has been deactivated.',
       })
-      utils.personalityAssessment.getAssessmentStatus.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
     },
     onError: (error: { message?: string }) => {
-      toast.show('Error revoking share link', {
+      toast.show({
+        title: 'Error revoking share link',
         message: error.message || 'Please try again.',
-        type: 'error',
+        variant: 'error',
       })
     },
   })
 
   const handleGenerateShareLink = () => {
     if (!isComplete) {
-      toast.show('Complete assessment first', {
+      toast.show({
+        title: 'Complete assessment first',
         message: 'You must complete the assessment before sharing results.',
-        type: 'error',
+        variant: 'error',
       })
       return
     }
@@ -75,13 +84,15 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
 
     const success = await copyToClipboard(shareLink)
     if (success) {
-      toast.show('Copied!', {
+      toast.show({
+        title: 'Copied!',
         message: 'Share link copied to clipboard',
       })
     } else {
-      toast.show('Error', {
+      toast.show({
+        title: 'Error',
         message: 'Failed to copy link to clipboard',
-        type: 'error',
+        variant: 'error',
       })
     }
   }
@@ -121,238 +132,215 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
 
   if (!isComplete) {
     return (
-      <YStack
-        gap="$3"
-        padding="$4"
+      <Stack
+        gap={12}
+        padding="md"
         backgroundColor="$color2"
-        borderRadius="$4"
+        borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
         aria-live="polite"
       >
-        <XStack alignItems="center" gap="$2">
-          <Lock size="$1" color="$color10" />
-          <Text fontSize="$4" fontWeight="600" color="$color11">
-            Complete Assessment to Share
-          </Text>
-        </XStack>
-        <Text fontSize="$3" color="$color10">
+        <Row align="center" gap={8}>
+          <Lock size="sm" color="$gray11" />
+          <Text color="$gray11">Complete Assessment to Share</Text>
+        </Row>
+        <Text color="$gray11">
           Finish all 120 questions to generate a shareable link to your personality results.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack
-      gap="$4"
-      padding="$4"
+    <Stack
+      gap={16}
+      padding="md"
       backgroundColor="$color2"
-      borderRadius="$4"
+      borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <YStack gap="$2">
-        <XStack alignItems="center" gap="$2">
-          <Share2 size="$1" color="$color11" />
-          <Text fontSize="$5" fontWeight="bold" color="$color12">
-            Share Your Results
-          </Text>
-        </XStack>
-        <Text fontSize="$3" color="$color11">
+      <Stack gap={8}>
+        <Row align="center" gap={8}>
+          <Share2 size="sm" color="$gray11" />
+          <Text color="$gray11">Share Your Results</Text>
+        </Row>
+        <Text color="$gray11">
           Create a shareable link to your personality assessment results. You control what's visible
           and can revoke access at any time.
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Privacy Controls */}
-      <YStack gap="$3">
-        <Text fontSize="$4" fontWeight="600" color="$color12">
-          Privacy Settings
-        </Text>
+      <Stack gap={12}>
+        <Text color="$gray11">Privacy Settings</Text>
 
-        <XStack
-          justifyContent="space-between"
-          alignItems="center"
-          padding="$3"
+        <Row
+          justify="space-between"
+          align="center"
+          padding="sm"
           backgroundColor="$color1"
-          borderRadius="$3"
+          borderRadius={12}
         >
-          <YStack flex={1} gap="$1">
-            <Text fontSize="$4" fontWeight="500" color="$color12">
-              Include Archetype
-            </Text>
-            <Text fontSize="$2" color="$color10">
-              Show your personality archetype classification
-            </Text>
-          </YStack>
+          <Stack flex={1} gap={4}>
+            <Text color="$gray11">Include Archetype</Text>
+            <Text color="$gray11">Show your personality archetype classification</Text>
+          </Stack>
           <Switch
             checked={includeArchetype}
-            onCheckedChange={setIncludeArchetype}
-            size="$3"
+            onChange={setIncludeArchetype}
+            size="sm"
             aria-label="Toggle archetype visibility in shared results"
           />
-        </XStack>
+        </Row>
 
-        <XStack
-          justifyContent="space-between"
-          alignItems="center"
-          padding="$3"
+        <Row
+          justify="space-between"
+          align="center"
+          padding="sm"
           backgroundColor="$color1"
-          borderRadius="$3"
+          borderRadius={12}
         >
-          <YStack flex={1} gap="$1">
-            <Text fontSize="$4" fontWeight="500" color="$color12">
-              Include Domain Scores
-            </Text>
-            <Text fontSize="$2" color="$color10">
-              Show Big Five domain scores and percentages
-            </Text>
-          </YStack>
+          <Stack flex={1} gap={4}>
+            <Text color="$gray11">Include Domain Scores</Text>
+            <Text color="$gray11">Show Big Five domain scores and percentages</Text>
+          </Stack>
           <Switch
             checked={includeScores}
-            onCheckedChange={setIncludeScores}
-            size="$3"
+            onChange={setIncludeScores}
+            size="sm"
             aria-label="Toggle domain scores visibility in shared results"
           />
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       <Separator />
 
       {/* Share Link Generation */}
       {!shareLink ? (
-        <YStack gap="$3">
-          <YStack gap="$2">
-            <Text fontSize="$4" fontWeight="600" color="$color12">
-              Expiration (Optional)
-            </Text>
-            <Text fontSize="$3" color="$color11">
+        <Stack gap={12}>
+          <Stack gap={8}>
+            <Text color="$gray11">Expiration (Optional)</Text>
+            <Text color="$gray11">
               Set how many days until the link expires (1-365 days). Leave empty for no expiration.
             </Text>
-            <XStack gap="$2" alignItems="center">
+            <Row gap={8} align="center">
               <Button
-                size="$3"
-                variant={expiresInDays === 7 ? 'outlined' : 'outlined'}
+                size="sm"
+                variant="outline"
+                color={expiresInDays === 7 ? 'primary' : undefined}
                 onPress={() => setExpiresInDays(7)}
-                backgroundColor={expiresInDays === 7 ? '$blue3' : undefined}
               >
                 7 days
               </Button>
               <Button
-                size="$3"
-                variant="outlined"
+                size="sm"
+                variant="outline"
+                color={expiresInDays === 30 ? 'primary' : undefined}
                 onPress={() => setExpiresInDays(30)}
-                backgroundColor={expiresInDays === 30 ? '$blue3' : undefined}
               >
                 30 days
               </Button>
               <Button
-                size="$3"
-                variant="outlined"
+                size="sm"
+                variant="outline"
+                color={expiresInDays === 90 ? 'primary' : undefined}
                 onPress={() => setExpiresInDays(90)}
-                backgroundColor={expiresInDays === 90 ? '$blue3' : undefined}
               >
                 90 days
               </Button>
               <Button
-                size="$3"
-                variant="outlined"
+                size="sm"
+                variant="outline"
+                color={expiresInDays === 0 ? 'primary' : undefined}
                 onPress={() => setExpiresInDays(0)}
-                backgroundColor={expiresInDays === 0 ? '$blue3' : undefined}
               >
                 Never
               </Button>
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
 
           <Button
-            size="$4"
-            theme="info"
-            icon={Share2}
+            size="md"
+            color="primary"
+            iconStart={Share2}
             onPress={handleGenerateShareLink}
             disabled={generateShareToken.isPending}
           >
             {generateShareToken.isPending ? 'Creating...' : 'Generate Share Link'}
           </Button>
-        </YStack>
+        </Stack>
       ) : (
-        <YStack gap="$3" aria-live="polite">
-          <Text fontSize="$4" fontWeight="600" color="$color12">
-            Your Share Link
-          </Text>
-          <XStack
-            gap="$2"
-            alignItems="center"
-            padding="$3"
+        <Stack gap={12} aria-live="polite">
+          <Text color="$gray11">Your Share Link</Text>
+          <Row
+            gap={8}
+            align="center"
+            padding="sm"
             backgroundColor="$color1"
-            borderRadius="$3"
+            borderRadius={12}
             borderWidth={1}
             borderColor="$borderColor"
           >
             <Text
-              flex={1}
-              style={{ fontFamily: 'monospace' }}
-              fontSize="$3"
-              color="$color11"
-              numberOfLines={1}
+              style={{ flex: 1, fontFamily: 'monospace' }}
+              color="$gray11"
               data-testid="share-link-url"
             >
               {shareLink}
             </Text>
-            <Button size="$3" icon={Copy} onPress={handleCopyLink} variant="outlined">
+            <Button size="sm" iconStart={Copy} onPress={handleCopyLink} variant="outline">
               Copy
             </Button>
             <Button
-              size="$3"
-              icon={X}
+              size="sm"
+              iconStart={X}
               onPress={handleRevokeLink}
-              variant="outlined"
-              theme="error"
+              variant="outline"
+              color="error"
               disabled={revokeShareToken.isPending}
             >
               Revoke
             </Button>
-          </XStack>
-          <Text fontSize="$2" color="$color10">
+          </Row>
+          <Text color="$gray11">
             Anyone with this link can view your results. You can revoke it at any time.
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {/* Cooldown UI */}
       {cooldownInfo && (
         <>
           <Separator />
-          <YStack
-            gap="$2"
-            padding="$3"
+          <Stack
+            gap={8}
+            padding="sm"
             backgroundColor="$yellow2"
-            borderRadius="$3"
+            borderRadius={12}
             borderWidth={1}
             borderColor="$yellow7"
             aria-live="polite"
           >
-            <XStack alignItems="center" gap="$2">
-              <Calendar size="$1" color="$yellow11" />
-              <Text fontSize="$4" fontWeight="600" color="$yellow11">
-                Retake Available Soon
-              </Text>
-            </XStack>
-            <Text fontSize="$3" color="$yellow10">
+            <Row align="center" gap={8}>
+              <Calendar size="sm" color="$yellow11" />
+              <Text color="$yellow11">Retake Available Soon</Text>
+            </Row>
+            <Text color="$yellow10">
               You can retake the IPIP assessment in{' '}
               {cooldownInfo.daysRemaining > 0
                 ? `${cooldownInfo.daysRemaining} day${cooldownInfo.daysRemaining !== 1 ? 's' : ''}`
                 : `${cooldownInfo.hoursRemaining} hour${cooldownInfo.hoursRemaining !== 1 ? 's' : ''}`}
               . This cooldown period ensures accurate results.
             </Text>
-            <Text fontSize="$2" color="$yellow9">
+            <Text color="$yellow9">
               Available: {cooldownInfo.availableDate.toLocaleDateString()}{' '}
               {cooldownInfo.availableDate.toLocaleTimeString()}
             </Text>
-          </YStack>
+          </Stack>
         </>
       )}
-    </YStack>
+    </Stack>
   )
 }

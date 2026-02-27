@@ -13,7 +13,7 @@ const mockUseUtils = vi.fn(() => ({
   },
 }))
 
-vi.mock('tamagui', () => {
+vi.mock('@scaffald/ui', () => {
   const Stack = ({ children }: { children?: ReactNode }) => <div>{children}</div>
   const Text = ({ children }: { children?: ReactNode }) => <span>{children}</span>
   const Button = ({ children, onPress }: { children?: ReactNode; onPress?: () => void }) => (
@@ -73,8 +73,8 @@ vi.mock('tamagui', () => {
 
   return {
     Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Text,
     Button,
     TextArea,
@@ -98,11 +98,11 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@tamagui/toast', () => ({
-  useToastController: () => ({ show: vi.fn() }),
+vi.mock('@scaffald/ui', () => ({
+  useToast: () => ({ show: vi.fn() }),
 }))
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Check: () => <span data-testid="check-icon">Check</span>,
   ChevronDown: () => <span data-testid="chevron-down-icon">ChevronDown</span>,
   MessageCircle: () => <span data-testid="message-circle-icon">MessageCircle</span>,

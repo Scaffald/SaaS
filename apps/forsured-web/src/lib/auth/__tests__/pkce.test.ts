@@ -1,6 +1,6 @@
 /**
  * PKCE Utilities Tests
- * REQ-126: OAuth 2.0 + RBAC Authentication System
+ * OAuth 2.0 + RBAC Authentication System
  */
 
 import { describe, it, expect } from 'vitest';

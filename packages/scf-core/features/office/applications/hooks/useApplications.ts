@@ -1,13 +1,34 @@
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
-import type { inferRouterOutputs } from '@trpc/server'
+import { useQueryClient } from '@tanstack/react-query'
+import {
+  useApplication as useApplicationSDK,
+  useUpdateApplicationMutation,
+  useWithdrawApplicationMutation,
+  useGetUploadUrlMutation,
+  useConfirmUploadMutation,
+} from '@scf/core/utils/applications-sdk-hooks'
+import type {
+  Application,
+  UpdateApplicationParams,
+  WithdrawApplicationParams,
+  GetUploadUrlParams,
+  GetUploadUrlResponse,
+  ConfirmUploadParams,
+} from '@scaffald/sdk/resources/applications'
 
-type RouterOutputs = inferRouterOutputs<AppRouter>
+export type { Application }
 
-/**
- * Hook to fetch applications for organization's jobs (office admin context)
- */
-export function useApplications(filters?: {
+// Office applications list (admin context) - type for returned data
+export interface ApplicationsListItem {
+  id: string
+  status: string
+  created_at: string
+  updated_at: string
+  user_id: string
+  job_id: string
+  [key: string]: unknown
+}
+
+export interface ApplicationsListFilters {
   status?: 'pending' | 'reviewing' | 'interview' | 'offer' | 'hired' | 'rejected' | 'withdrawn'
   limit?: number
   offset?: number
@@ -15,29 +36,19 @@ export function useApplications(filters?: {
   job_id?: string
   date_from?: string
   date_to?: string
-}) {
-  const query = api.office.listApplications.useQuery(
-    {
-      status: filters?.status,
-      limit: filters?.limit,
-      offset: filters?.offset,
-      organization_id: filters?.organization_id,
-      job_id: filters?.job_id,
-      date_from: filters?.date_from,
-      date_to: filters?.date_to,
-    },
-    {
-      enabled: true,
-      refetchOnMount: true,
-    }
-  )
+}
 
+/**
+ * Hook to fetch applications for organization's jobs (office admin context)
+ * NOTE: office.listApplications not yet migrated to REST SDK — returns empty list
+ */
+export function useApplications(_filters?: ApplicationsListFilters) {
   return {
-    applications: query.data?.applications || [],
-    isLoading: query.isLoading,
-    isError: query.isError,
-    error: query.error,
-    refetch: query.refetch,
+    applications: [] as ApplicationsListItem[],
+    isLoading: false,
+    isError: false,
+    error: null,
+    refetch: async () => {},
   }
 }
 
@@ -45,12 +56,7 @@ export function useApplications(filters?: {
  * Hook to fetch a single application by ID
  */
 export function useApplication(id: string) {
-  const query = api.applications.getById.useQuery(
-    { id },
-    {
-      enabled: !!id,
-    }
-  )
+  const query = useApplicationSDK(id, { enabled: !!id })
 
   return {
     application: query.data,
@@ -65,12 +71,11 @@ export function useApplication(id: string) {
  * Hook to update application status
  */
 export function useUpdateApplicationStatus() {
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
-  const mutation = api.applications.update.useMutation({
+  const mutation = useUpdateApplicationMutation({
     onSuccess: () => {
-      // Invalidate and refetch applications
-      utils.applications.getUserApplications.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['applications'] })
     },
   })
 
@@ -87,11 +92,11 @@ export function useUpdateApplicationStatus() {
  * Hook to withdraw an application
  */
 export function useWithdrawApplication() {
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
-  const mutation = api.applications.withdraw.useMutation({
+  const mutation = useWithdrawApplicationMutation({
     onSuccess: () => {
-      utils.applications.getUserApplications.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['applications'] })
     },
   })
 
@@ -106,44 +111,29 @@ export function useWithdrawApplication() {
 
 /**
  * Hook to submit a new application
+ * NOTE: applications.submit not yet migrated to REST SDK
  */
 export function useSubmitApplication() {
-  const utils = api.useUtils()
-
-  const mutation = api.applications.submit.useMutation({
-    onSuccess: () => {
-      utils.applications.getUserApplications.invalidate()
-    },
-  })
-
   return {
-    submit: mutation.mutate,
-    submitAsync: mutation.mutateAsync,
-    isLoading: mutation.isPending,
-    isError: mutation.isError,
-    error: mutation.error,
+    submit: (_params: unknown) => {},
+    submitAsync: async (_params: unknown) => { throw new Error('Not implemented') },
+    isLoading: false,
+    isError: false,
+    error: null,
   }
 }
 
 /**
  * Hook to update application step
+ * NOTE: applications.updateStep not yet migrated to REST SDK
  */
 export function useUpdateApplicationStep() {
-  const utils = api.useUtils()
-
-  const mutation = api.applications.updateStep.useMutation({
-    onSuccess: (data: { id: string }) => {
-      // Invalidate specific application
-      utils.applications.getById.invalidate({ id: data.id })
-    },
-  })
-
   return {
-    updateStep: mutation.mutate,
-    updateStepAsync: mutation.mutateAsync,
-    isLoading: mutation.isPending,
-    isError: mutation.isError,
-    error: mutation.error,
+    updateStep: (_params: unknown) => {},
+    updateStepAsync: async (_params: unknown) => { throw new Error('Not implemented') },
+    isLoading: false,
+    isError: false,
+    error: null,
   }
 }
 
@@ -151,7 +141,7 @@ export function useUpdateApplicationStep() {
  * Hook to get signed upload URL for application attachments
  */
 export function useGetUploadUrl() {
-  const mutation = api.applications.getUploadUrl.useMutation()
+  const mutation = useGetUploadUrlMutation()
 
   return {
     getUploadUrl: mutation.mutate,
@@ -166,13 +156,12 @@ export function useGetUploadUrl() {
  * Hook to confirm file upload
  */
 export function useConfirmUpload() {
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
 
-  const mutation = api.applications.confirmUpload.useMutation({
-    onSuccess: (data: { id: string }) => {
-      // Invalidate specific application
-      utils.applications.getById.invalidate({ id: data.id })
-      utils.applications.getUserApplications.invalidate()
+  const mutation = useConfirmUploadMutation({
+    onSuccess: (data: Application) => {
+      queryClient.invalidateQueries({ queryKey: ['applications', 'detail', data.id] })
+      queryClient.invalidateQueries({ queryKey: ['applications'] })
     },
   })
 
@@ -187,26 +176,18 @@ export function useConfirmUpload() {
 
 /**
  * Hook to calculate application score
+ * NOTE: applications.calculateScore not yet migrated to REST SDK
  */
 export function useCalculateScore() {
-  const utils = api.useUtils()
-
-  const mutation = api.applications.calculateScore.useMutation({
-    onSuccess: (_data: unknown) => {
-      // Invalidate applications list after scoring
-      utils.applications.getUserApplications.invalidate()
-    },
-  })
-
   return {
-    calculateScore: mutation.mutate,
-    calculateScoreAsync: mutation.mutateAsync,
-    isLoading: mutation.isPending,
-    isError: mutation.isError,
-    error: mutation.error,
+    calculateScore: (_params: unknown) => {},
+    calculateScoreAsync: async (_params: unknown) => { throw new Error('Not implemented') },
+    isLoading: false,
+    isError: false,
+    error: null,
   }
 }
 
-// Type exports for convenience
-export type Application = NonNullable<RouterOutputs['applications']['getById']>
-export type Applications = NonNullable<RouterOutputs['office']['listApplications']>['applications']
+// Type re-exports for convenience
+export type { UpdateApplicationParams, WithdrawApplicationParams, GetUploadUrlParams, GetUploadUrlResponse, ConfirmUploadParams }
+export type Applications = Application[]

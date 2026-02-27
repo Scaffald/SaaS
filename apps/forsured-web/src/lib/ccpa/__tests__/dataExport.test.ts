@@ -1,6 +1,6 @@
 /**
  * Data Export Service Tests
- * REQ-131: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';

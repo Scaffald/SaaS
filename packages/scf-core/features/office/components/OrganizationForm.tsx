@@ -1,21 +1,26 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { normalizeOrganizationSlug } from '@scf/core/features/discover/utils/normalizeOrganizationSlug'
 import { OrganizationDeletionPanel } from '@scf/core/features/organizations/components/OrganizationDeletionPanel'
-import { api } from '@scf/core/utils/api'
 import { isSlugValid } from '@scf/core/utils/slugify'
 import { supabase } from '@scf/core/utils/supabase/client'
+import { useScaffaldJobsClient } from '@scf/core/utils/jobs-sdk-context'
+import {
+  useCreateOfficeOrganizationMutation,
+  useUpdateOfficeOrganizationMutation,
+} from '@scf/core/utils/office-organizations-sdk-hooks'
 import { organizationCreateSchema, type OrganizationCreate } from '@scf/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToastController } from '@tamagui/toast'
+import { useToast, useThemeContext } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Input, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-import { ResponsiveSelect } from '@unicornlove/ui'
+import { Button, Input, ScrollView, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { ResponsiveSelect } from '@scaffald/ui'
 import { OrganizationCreditsPanel } from '../payments/OrganizationCreditsPanel'
 import { OrganizationPaymentMethodsPanel } from '../payments/OrganizationPaymentMethodsPanel'
 import { OrganizationLocationsInput } from './OrganizationLocationsInput'
 import { OrganizationProjectPrivacySettings } from './OrganizationProjectPrivacySettings'
+import { colors } from '@scaffald/ui/tokens'
 
 type OrganizationFormData = OrganizationCreate
 
@@ -34,9 +39,10 @@ type SlugAvailabilityState =
   | { state: 'error'; message: string }
 
 export function OrganizationForm({ mode, organizationId, initialData }: OrganizationFormProps) {
+  const { theme } = useThemeContext()
   const router = useRouter()
-  const toast = useToastController()
-  const utils = api.useUtils()
+  const toast = useToast()
+  const client = useScaffaldJobsClient()
   const [isLoading, setIsLoading] = useState(false)
   const [industries, setIndustries] = useState<Array<{ id: string; name: string }>>([])
   const [slugStatus, setSlugStatus] = useState<SlugAvailabilityState>({ state: 'idle' })
@@ -55,7 +61,11 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         setIndustries(data || [])
       } catch (error) {
         console.error('Failed to fetch industries:', error)
-        toast.show('Error', { message: 'Failed to load industries' })
+        toast.show({
+          title: 'Error',
+          message: 'Failed to load industries',
+          variant: 'error',
+        })
       }
     }
 
@@ -134,10 +144,8 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
     setSlugStatus({ state: 'checking' })
     const timeoutId = setTimeout(async () => {
       try {
-        const result = await utils.office.checkOrganizationSlug.fetch({
-          slug: normalizedSlug,
-          organizationId,
-        })
+        if (!client) throw new Error('Missing client')
+        const result = await client.officeOrganizations.checkSlug(normalizedSlug, organizationId)
 
         if (isCancelled) return
 
@@ -182,28 +190,40 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       isCancelled = true
       clearTimeout(timeoutId)
     }
-  }, [slugValue, utils, organizationId, mode, initialSlug])
+  }, [slugValue, client, organizationId, mode, initialSlug])
 
-  const createMutation = api.office.createOrganization.useMutation({
+  const createMutation = useCreateOfficeOrganizationMutation({
     onSuccess: () => {
-      toast.show('Success', { message: 'Organization created successfully' })
+      toast.show({
+        title: 'Success',
+        message: 'Organization created successfully',
+        variant: 'success',
+      })
       router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.path)
     },
     onError: (error: unknown) => {
-      toast.show('Error', {
+      toast.show({
+        title: 'Error',
         message: error instanceof Error ? error.message : 'Failed to create organization',
+        variant: 'error',
       })
     },
   })
 
-  const updateMutation = api.office.updateOrganization.useMutation({
+  const updateMutation = useUpdateOfficeOrganizationMutation({
     onSuccess: () => {
-      toast.show('Success', { message: 'Organization updated successfully' })
+      toast.show({
+        title: 'Success',
+        message: 'Organization updated successfully',
+        variant: 'success',
+      })
       router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.path)
     },
     onError: (error: unknown) => {
-      toast.show('Error', {
+      toast.show({
+        title: 'Error',
         message: error instanceof Error ? error.message : 'Failed to update organization',
+        variant: 'error',
       })
     },
   })
@@ -212,7 +232,6 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
     setIsLoading(true)
     try {
       if (mode === 'create') {
-        // Form data is compatible with mutation input but has extra fields
         await createMutation.mutateAsync(
           data as unknown as Parameters<typeof createMutation.mutateAsync>[0]
         )
@@ -220,10 +239,10 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         if (!organizationId) {
           throw new Error('Organization ID is required for update')
         }
-        // Form data is compatible with mutation input but has extra fields
-        await updateMutation.mutateAsync({ id: organizationId, ...data } as unknown as Parameters<
-          typeof updateMutation.mutateAsync
-        >[0])
+        await updateMutation.mutateAsync({
+          id: organizationId,
+          params: data as unknown as Parameters<typeof updateMutation.mutateAsync>[0]['params'],
+        })
       }
     } finally {
       setIsLoading(false)
@@ -232,9 +251,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
 
   return (
     <ScrollView
-      flex={1}
-      backgroundColor="$color2"
-      padding="$5"
+      style={{ flex: 1, backgroundColor: colors.bg[theme].subtle, padding: 24 }}
       showsVerticalScrollIndicator={false}
     >
       {/* Name */}
@@ -242,21 +259,21 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         name="name"
         control={control}
         render={({ field }) => (
-          <YStack gap="$2">
-            <Text fontWeight="600">Name *</Text>
+          <Stack gap={8}>
+            <Text>Name *</Text>
             <Input
               testID="org-form-name"
               value={field.value}
               onChangeText={handleNameChange}
               placeholder="Enter organization name"
-              borderColor={errors.name ? '$red8' : '$borderColor'}
+              style={{ borderColor: errors.name ? theme === "light" ? colors.error[300] : colors.error[700] : colors.border[theme].default }}
             />
             {errors.name && (
-              <Text data-testid="name-error" color="$red10" fontSize="$2">
+              <Text data-testid="name-error" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                 {errors.name.message}
               </Text>
             )}
-          </YStack>
+          </Stack>
         )}
       />
 
@@ -265,8 +282,8 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         name="slug"
         control={control}
         render={({ field }) => (
-          <YStack gap="$2">
-            <Text fontWeight="600">Vanity URL *</Text>
+          <Stack gap={8}>
+            <Text>Vanity URL *</Text>
             <Input
               testID="org-form-slug"
               value={field.value}
@@ -274,61 +291,58 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               placeholder="organization-username"
               autoCapitalize="none"
               autoCorrect={false}
-              borderColor={slugHasAvailabilityError || errors.slug ? '$red8' : '$borderColor'}
+              style={{
+                borderColor:
+                  slugHasAvailabilityError || errors.slug
+                    ? theme === "light" ? colors.error[300] : colors.error[700]
+                    : colors.border[theme].default,
+              }}
             />
-            <Text fontSize="$2" opacity={0.7}>
-              Lowercase, URL-friendly username (hyphens only)
-            </Text>
+            <Text style={{ opacity: 0.7 }}>Lowercase, URL-friendly username (hyphens only)</Text>
             {errors.slug && (
-              <Text data-testid="slug-error" color="$red10" fontSize="$2">
+              <Text data-testid="slug-error" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                 {errors.slug.message}
               </Text>
             )}
             {slugStatus.state === 'checking' && slugNeedsValidation && (
-              <XStack gap="$2" alignItems="center">
-                <Spinner size="small" />
-                <Text fontSize="$2" color="$color11">
+              <Row gap={8} align="center">
+                <Spinner size="sm" />
+                <Text style={{ color: colors.text[theme].secondary }}>
                   Checking availability...
                 </Text>
-              </XStack>
+              </Row>
             )}
             {slugStatus.state === 'available' && slugNeedsValidation && (
-              <Text color="$green10" fontSize="$2">
+              <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
                 This vanity URL is available.
               </Text>
             )}
             {slugStatus.state === 'invalid' && (
-              <Text color="$red10" fontSize="$2">
-                {slugStatus.message}
-              </Text>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{slugStatus.message}</Text>
             )}
             {slugStatus.state === 'taken' && (
-              <YStack gap="$2">
-                <Text color="$red10" fontSize="$2">
-                  {slugStatus.message}
-                </Text>
+              <Stack gap={8}>
+                <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{slugStatus.message}</Text>
                 {slugStatus.suggestions?.length ? (
-                  <XStack gap="$2" flexWrap="wrap">
+                  <Row gap={8} wrap>
                     {slugStatus.suggestions.map((suggestion) => (
                       <Button
                         key={suggestion}
-                        size="$2"
-                        variant="outlined"
+                        size="sm"
+                        variant="outline"
                         onPress={() => setValue('slug', suggestion, { shouldValidate: true })}
                       >
                         {suggestion}
                       </Button>
                     ))}
-                  </XStack>
+                  </Row>
                 ) : null}
-              </YStack>
+              </Stack>
             )}
             {slugStatus.state === 'error' && (
-              <Text color="$orange10" fontSize="$2">
-                {slugStatus.message}
-              </Text>
+              <Text style={{ color: theme === "light" ? colors.yellow[700] : colors.yellow[300] }}>{slugStatus.message}</Text>
             )}
-          </YStack>
+          </Stack>
         )}
       />
 
@@ -360,21 +374,24 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         name="logo_url"
         control={control}
         render={({ field }) => (
-          <YStack gap="$2">
-            <Text fontWeight="600">Logo URL</Text>
+          <Stack gap={8}>
+            <Text>Logo URL</Text>
             <Input
               testID="org-form-logo-url"
               value={field.value || ''}
               onChangeText={field.onChange}
               placeholder="https://example.com/logo.png"
-              borderColor={errors.logo_url ? '$red8' : '$borderColor'}
+              style={{
+                borderColor:
+                  errors.logo_url ? theme === "light" ? colors.error[300] : colors.error[700] : colors.border[theme].default,
+              }}
             />
             {errors.logo_url && (
-              <Text data-testid="logo-error" color="$red10" fontSize="$2">
+              <Text data-testid="logo-error" style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
                 {errors.logo_url.message}
               </Text>
             )}
-          </YStack>
+          </Stack>
         )}
       />
 
@@ -383,8 +400,8 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         name="visibility"
         control={control}
         render={({ field }) => (
-          <YStack gap="$2">
-            <Text fontWeight="600">Visibility</Text>
+          <Stack gap={8}>
+            <Text>Visibility</Text>
             <ResponsiveSelect
               value={field.value}
               onValueChange={field.onChange}
@@ -397,11 +414,9 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               ]}
             />
             {errors.visibility && (
-              <Text color="$red10" fontSize="$2">
-                {errors.visibility.message}
-              </Text>
+              <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{errors.visibility.message}</Text>
             )}
-          </YStack>
+          </Stack>
         )}
       />
 
@@ -410,16 +425,16 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         name="locations"
         control={control}
         render={({ field }) => (
-          <YStack data-testid="org-form-locations">
+          <Stack data-testid="org-form-locations">
             <OrganizationLocationsInput
-              value={field.value}
-              onChange={field.onChange}
+              value={(field.value ?? []) as Parameters<typeof OrganizationLocationsInput>[0]['value']}
+              onChange={field.onChange as Parameters<typeof OrganizationLocationsInput>[0]['onChange']}
               errors={errors.locations?.message}
               disabled={isLoading}
               provider="mapbox"
               apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
             />
-          </YStack>
+          </Stack>
         )}
       />
 
@@ -444,20 +459,12 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       )}
 
       {/* Submit buttons */}
-      <XStack
-        justifyContent="flex-end"
-        gap="$2"
-        marginTop="$4"
-        $sm={{ flexDirection: 'column' }}
-        $md={{ flexDirection: 'row' }}
-      >
+      <Row justify="flex-end" gap={8} marginTop={16}>
         <Button
           testID="org-form-cancel-btn"
-          variant="outlined"
+          variant="outline"
           onPress={() => router.back()}
           disabled={isLoading}
-          $sm={{ height: 44, width: '100%' }}
-          $md={{ height: undefined, width: undefined }}
         >
           Cancel
         </Button>
@@ -465,13 +472,11 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
           testID="org-form-save-btn"
           onPress={handleSubmit(onSubmit)}
           disabled={!isDirty || isLoading || slugAvailabilityBlocksSubmit}
-          icon={isLoading ? <Spinner /> : undefined}
-          $sm={{ height: 44, width: '100%' }}
-          $md={{ height: undefined, width: undefined }}
+          loading={isLoading}
         >
           {isLoading ? 'Saving...' : mode === 'create' ? 'Create' : 'Update'}
         </Button>
-      </XStack>
+      </Row>
     </ScrollView>
   )
 }

@@ -134,7 +134,7 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('tamagui', () => {
+vi.mock('@scaffald/ui', () => {
   const Stack = ({
     children,
     ...rest
@@ -214,8 +214,8 @@ vi.mock('tamagui', () => {
   } & Record<string, unknown>) => <h5 {...rest}>{children}</h5>
 
   return {
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Button,
     Text,
     Paragraph,
@@ -227,7 +227,7 @@ vi.mock('tamagui', () => {
   }
 })
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   CheckCircle2: () => <span data-testid="check-icon">Check</span>,
   FileWarning: () => <span data-testid="warning-icon">Warning</span>,
   Loader2: () => <span data-testid="loader-icon">Loader</span>,

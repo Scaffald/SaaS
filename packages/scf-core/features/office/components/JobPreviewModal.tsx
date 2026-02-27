@@ -1,6 +1,6 @@
-import { api } from '@scf/core/utils/api'
-import { ResponsiveModal } from '@unicornlove/ui'
-import { extractPlainText } from '@unicornlove/ui'
+import { useJobDetails } from '@scf/core/utils/jobs-sdk-hooks'
+import { ResponsiveModal, useThemeContext } from '@scaffald/ui'
+import { extractPlainText } from '@scaffald/ui'
 import {
   Award,
   Briefcase,
@@ -9,8 +9,9 @@ import {
   DollarSign,
   MapPin,
   Users,
-} from '@tamagui/lucide-icons'
-import { ScrollView, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+} from 'lucide-react-native'
+import { ScrollView, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface JobData {
   id?: string
@@ -54,13 +55,11 @@ interface JobPreviewModalProps {
  * Shows how the job will appear to candidates
  */
 export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalProps) {
+  const { theme } = useThemeContext()
   // Fetch job data using office endpoint
-  const { data, isLoading } = api.office.getJob.useQuery(
-    { id: jobId || '' },
-    { enabled: !!jobId && open }
-  )
+  const { data, isLoading } = useJobDetails(jobId || undefined, { enabled: !!jobId && open })
 
-  const job = (data?.job ?? {}) as JobData
+  const job = (data ?? {}) as JobData
 
   const formatPayRange = (
     minCents: number | null,
@@ -104,96 +103,90 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
   }
 
   return (
-    <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Job Preview" size="large">
+    <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Job Preview" size="lg">
       {isLoading ? (
-        <YStack paddingVertical="$8" alignItems="center" justifyContent="center">
-          <Spinner size="large" color="$blue10" />
-          <Text marginTop="$4" color="$color11">
+        <Stack paddingVertical={32} align="center" justify="center">
+          <Spinner size="lg" color="primary" />
+          <Text style={{ marginTop: 16, color: colors.text[theme].secondary }}>
             Loading job details...
           </Text>
-        </YStack>
+        </Stack>
       ) : !job ? (
-        <YStack paddingVertical="$8" alignItems="center">
-          <Text color="$red10" fontSize="$5" fontWeight="600">
-            Job not found
-          </Text>
-        </YStack>
+        <Stack paddingVertical={32} align="center">
+          <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Job not found</Text>
+        </Stack>
       ) : (
         <ScrollView style={{ maxHeight: 600 }}>
-          <YStack gap="$4" padding="$4">
+          <Stack gap={16} padding="md">
             {/* Job Header */}
-            <YStack gap="$3" alignItems="center">
-              <YStack
+            <Stack gap={12} align="center">
+              <Stack
                 width={80}
                 height={80}
-                borderRadius="$6"
-                backgroundColor="$blue4"
-                alignItems="center"
-                justifyContent="center"
+                borderRadius={24}
+                style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
+                align="center"
+                justify="center"
               >
-                <Briefcase size={40} color="$blue10" />
-              </YStack>
+                <Briefcase size={40} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
+              </Stack>
 
-              <YStack gap="$2" alignItems="center">
-                <Text fontSize="$8" fontWeight="700" color="$color12">
-                  {job.title}
-                </Text>
+              <Stack gap={8} align="center">
+                <Text style={{ color: colors.text[theme].secondary }}>{job.title}</Text>
                 {job.organization && (
-                  <XStack gap="$2" alignItems="center">
-                    <Building2 size={16} color="$color10" />
-                    <Text fontSize="$5" color="$color11">
+                  <Row gap={8} align="center">
+                    <Building2 size={20} color={colors.text[theme].secondary} />
+                    <Text style={{ color: colors.text[theme].secondary }}>
                       {job.organization.name}
                     </Text>
-                  </XStack>
+                  </Row>
                 )}
-              </YStack>
+              </Stack>
 
               {/* Job Type Badge */}
-              <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+              <Row gap={8} wrap justify="center">
                 {formatEmploymentType(job.employment_type ?? null) && (
-                  <XStack
-                    backgroundColor="$blue3"
-                    paddingHorizontal="$3"
-                    paddingVertical="$1"
-                    borderRadius="$3"
-                    gap="$2"
-                    alignItems="center"
+                  <Row
+                    style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
+                    paddingHorizontal={12}
+                    paddingVertical={4}
+                    borderRadius={12}
+                    gap={8}
+                    align="center"
                   >
-                    <Briefcase size={14} color="$blue10" />
-                    <Text fontSize="$2" color="$blue11" fontWeight="600">
+                    <Briefcase size={20} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
+                    <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
                       {formatEmploymentType(job.employment_type ?? null)}
                     </Text>
-                  </XStack>
+                  </Row>
                 )}
                 {formatRemoteOption(job.remote_option ?? null) && (
-                  <XStack
-                    backgroundColor="$green3"
-                    paddingHorizontal="$3"
-                    paddingVertical="$1"
-                    borderRadius="$3"
-                    gap="$2"
-                    alignItems="center"
+                  <Row
+                    style={{ backgroundColor: theme === "light" ? colors.green[50] : colors.green[900] }}
+                    paddingHorizontal={12}
+                    paddingVertical={4}
+                    borderRadius={12}
+                    gap={8}
+                    align="center"
                   >
-                    <MapPin size={14} color="$green10" />
-                    <Text fontSize="$2" color="$green11" fontWeight="600">
+                    <MapPin size={20} color={theme === "light" ? colors.green[700] : colors.green[300]} />
+                    <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>
                       {formatRemoteOption(job.remote_option ?? null)}
                     </Text>
-                  </XStack>
+                  </Row>
                 )}
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
 
             <Separator />
 
             {/* Job Metadata */}
-            <YStack gap="$3">
+            <Stack gap={12}>
               {job.location && (
-                <XStack gap="$2" alignItems="center">
-                  <MapPin size={16} color="$color10" />
-                  <Text fontSize="$3" color="$color11">
-                    {job.location}
-                  </Text>
-                </XStack>
+                <Row gap={8} align="center">
+                  <MapPin size={20} color={colors.text[theme].secondary} />
+                  <Text style={{ color: colors.text[theme].secondary }}>{job.location}</Text>
+                </Row>
               )}
 
               {formatPayRange(
@@ -201,55 +194,51 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                 job.pay_range_max_cents ?? null,
                 job.pay_range_type ?? null
               ) && (
-                <XStack gap="$2" alignItems="center">
-                  <DollarSign size={16} color="$color10" />
-                  <Text fontSize="$3" color="$color11">
+                <Row gap={8} align="center">
+                  <DollarSign size={20} color={colors.text[theme].secondary} />
+                  <Text style={{ color: colors.text[theme].secondary }}>
                     {formatPayRange(
                       job.pay_range_min_cents ?? null,
                       job.pay_range_max_cents ?? null,
                       job.pay_range_type ?? null
                     )}
                   </Text>
-                </XStack>
+                </Row>
               )}
 
               {job.posted_at && (
-                <XStack gap="$2" alignItems="center">
-                  <Calendar size={16} color="$color10" />
-                  <Text fontSize="$3" color="$color11">
+                <Row gap={8} align="center">
+                  <Calendar size={20} color={colors.text[theme].secondary} />
+                  <Text style={{ color: colors.text[theme].secondary }}>
                     Posted{' '}
                     {job.posted_at ? new Date(job.posted_at).toLocaleDateString() : 'Recently'}
                   </Text>
-                </XStack>
+                </Row>
               )}
-            </YStack>
+            </Stack>
 
             <Separator />
 
             {/* Description */}
             {job.description && (
-              <YStack gap="$2">
-                <Text fontSize="$5" fontWeight="600" color="$color12">
-                  Job Description
-                </Text>
-                <Text fontSize="$3" color="$color11" lineHeight="$1">
+              <Stack gap={8}>
+                <Text style={{ color: colors.text[theme].secondary }}>Job Description</Text>
+                <Text style={{ color: colors.text[theme].secondary, lineHeight: 24 }}>
                   {typeof job.description === 'string'
                     ? job.description
                     : extractPlainText(job.description)}
                 </Text>
-              </YStack>
+              </Stack>
             )}
 
             {/* Skills */}
             {job.job_skills && job.job_skills.length > 0 && (
-              <YStack gap="$2">
-                <XStack gap="$2" alignItems="center">
-                  <Users size={16} color="$color10" />
-                  <Text fontSize="$5" fontWeight="600" color="$color12">
-                    Required Skills
-                  </Text>
-                </XStack>
-                <XStack gap="$2" flexWrap="wrap">
+              <Stack gap={8}>
+                <Row gap={8} align="center">
+                  <Users size={20} color={colors.text[theme].secondary} />
+                  <Text style={{ color: colors.text[theme].secondary }}>Required Skills</Text>
+                </Row>
+                <Row gap={8} wrap>
                   {(job.job_skills || []).map((jobSkill, idx: number) => {
                     const skillName =
                       jobSkill?.csi_skill?.name ||
@@ -260,33 +249,31 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                       jobSkill?.onet_occupation?.code?.toString() ||
                       `skill-${idx}-${skillName}`
                     return (
-                      <XStack
+                      <Row
                         key={skillKey}
-                        backgroundColor="$blue3"
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius="$3"
+                        style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
+                        paddingHorizontal={8}
+                        paddingVertical={4}
+                        borderRadius={12}
                       >
-                        <Text fontSize="$2" color="$blue11">
-                          {skillName}
-                        </Text>
-                      </XStack>
+                        <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{skillName}</Text>
+                      </Row>
                     )
                   })}
-                </XStack>
-              </YStack>
+                </Row>
+              </Stack>
             )}
 
             {/* Certifications */}
             {job.job_certifications && job.job_certifications.length > 0 && (
-              <YStack gap="$2">
-                <XStack gap="$2" alignItems="center">
-                  <Award size={16} color="$color10" />
-                  <Text fontSize="$5" fontWeight="600" color="$color12">
+              <Stack gap={8}>
+                <Row gap={8} align="center">
+                  <Award size={20} color={colors.text[theme].secondary} />
+                  <Text style={{ color: colors.text[theme].secondary }}>
                     Required Certifications
                   </Text>
-                </XStack>
-                <YStack gap="$2">
+                </Row>
+                <Stack gap={8}>
                   {job.job_certifications.map(
                     (jobCert: (typeof job.job_certifications)[number], idx: number) => {
                       const certKey =
@@ -294,59 +281,55 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                         jobCert.id?.toString() ||
                         `cert-${idx}-${jobCert.certification?.name || 'unknown'}`
                       return (
-                        <XStack key={certKey} gap="$2" alignItems="center">
-                          <Text fontSize="$3" color="$color11">
+                        <Row key={certKey} gap={8} align="center">
+                          <Text style={{ color: colors.text[theme].secondary }}>
                             {jobCert.certification?.name || 'Unknown Certification'}
                           </Text>
                           {jobCert.is_required && (
-                            <Text fontSize="$2" color="$red10">
-                              (Required)
-                            </Text>
+                            <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>(Required)</Text>
                           )}
-                        </XStack>
+                        </Row>
                       )
                     }
                   )}
-                </YStack>
-              </YStack>
+                </Stack>
+              </Stack>
             )}
 
             {/* Status Badge */}
-            <XStack justifyContent="center">
-              <XStack
+            <Row justify="center">
+              <Row
                 backgroundColor={
                   job.status === 'open'
-                    ? '$green3'
+                    ? theme === "light" ? colors.green[50] : colors.green[900]
                     : job.status === 'draft'
-                      ? '$gray3'
+                      ? colors.bg[theme].muted
                       : job.status === 'paused'
-                        ? '$yellow3'
-                        : '$red3'
+                        ? theme === "light" ? colors.yellow[50] : colors.yellow[900]
+                        : theme === "light" ? colors.error[50] : colors.error[900]
                 }
-                paddingHorizontal="$3"
-                paddingVertical="$1"
-                borderRadius="$3"
+                paddingHorizontal={12}
+                paddingVertical={4}
+                borderRadius={12}
               >
                 <Text
-                  fontSize="$2"
                   color={
                     job.status === 'open'
-                      ? '$green11'
+                      ? theme === "light" ? colors.green[700] : colors.green[300]
                       : job.status === 'draft'
-                        ? '$gray11'
+                        ? colors.text[theme].secondary
                         : job.status === 'paused'
-                          ? '$yellow11'
-                          : '$red11'
+                          ? theme === "light" ? colors.yellow[700] : colors.yellow[300]
+                          : theme === "light" ? colors.error[700] : colors.error[300]
                   }
-                  fontWeight="600"
                 >
                   {job.status
                     ? job.status.charAt(0).toUpperCase() + job.status.slice(1)
                     : 'Unknown'}
                 </Text>
-              </XStack>
-            </XStack>
-          </YStack>
+              </Row>
+            </Row>
+          </Stack>
         </ScrollView>
       )}
     </ResponsiveModal>

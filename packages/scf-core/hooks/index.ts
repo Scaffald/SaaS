@@ -2,4 +2,5 @@ export {
   useBreadcrumbs,
   type UseBreadcrumbsOptions,
   type UseBreadcrumbsReturn,
-} from './useBreadcrumbs';
+} from './useBreadcrumbs'
+export { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect'

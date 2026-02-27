@@ -1,6 +1,6 @@
 /**
  * Test Page for Supabase Integration
- * REQ-212: Code Updates for Shared Database Architecture
+ * Code Updates for Shared Database Architecture
  *
  * This page tests the useTasks hook with real Supabase connection
  * to validate forsured.* schema queries and cross-schema joins.

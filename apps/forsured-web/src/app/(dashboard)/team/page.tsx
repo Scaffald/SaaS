@@ -1,6 +1,6 @@
 /**
  * Team Members Page
- * REQ-283: Team Member Management UI
+ * Team Member Management UI
  * TASK-1: Create Team Members List Page
  * TASK-2: Build Member Detail Modal with Access Management
  *
@@ -14,7 +14,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { Stack, Row, Text, Button, Card, H1 } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card, H1 } from '@scaffald/ui';
 import { Plus } from 'lucide-react';
 import {
   TeamMembersList,

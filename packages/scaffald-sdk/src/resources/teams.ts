@@ -9,6 +9,10 @@ import type {
   RemoveTeamMemberParams,
   InviteTeamMemberParams,
   CreateJobAssignmentParams,
+  ListMyInvitationsParams,
+  RespondToInvitationParams,
+  RespondToInvitationWithTokenParams,
+  RespondToInvitationWithTokenResponse,
   TeamsListResponse,
   TeamResponse,
   TeamMembersListResponse,
@@ -18,6 +22,18 @@ import type {
   TeamJobAssignmentsListResponse,
   TeamJobAssignmentResponse,
   DeleteResponse,
+  RolesListResponse,
+  GetTeamAnalyticsOverviewParams,
+  TeamAnalyticsOverviewResponse,
+  GetTeamWorkloadParams,
+  TeamWorkloadResponse,
+  GetTeamActivityFeedParams,
+  TeamActivityFeedResponse,
+  GetTeamCommentsParams,
+  TeamCommentsResponse,
+  PostTeamCommentParams,
+  TransferTeamOwnershipParams,
+  SelfRemoveFromTeamParams,
 } from '../types/teams.js'
 
 /**
@@ -270,6 +286,124 @@ export class Teams extends Resource {
     return this.del<DeleteResponse>(`/v1/teams/${id}/invitations/${invitationId}`)
   }
 
+  /**
+   * Resend a team invitation
+   *
+   * @param id - The team ID
+   * @param invitationId - The invitation ID
+   * @returns Confirmation of resend
+   *
+   * @example
+   * ```typescript
+   * await client.teams.resendInvitation('team_123', 'inv_456')
+   * ```
+   */
+  async resendInvitation(id: string, invitationId: string): Promise<{ success: boolean }> {
+    return this.post<{ success: boolean }>(`/v1/teams/${id}/invitations/${invitationId}/resend`, {})
+  }
+
+  // ===== Roles Management =====
+
+  /**
+   * List team roles for an organization
+   *
+   * @param organizationId - The organization ID
+   * @returns List of team roles
+   *
+   * @example
+   * ```typescript
+   * const { roles } = await client.teams.listRoles('org_123')
+   * console.log(`Found ${roles.length} team roles`)
+   * ```
+   */
+  async listRoles(organizationId: string): Promise<RolesListResponse> {
+    return this.get<RolesListResponse>(`/v1/teams/roles?organizationId=${organizationId}`)
+  }
+
+  // ===== User-Facing Invitation Operations =====
+
+  /**
+   * List invitations sent to the current user
+   *
+   * @param params - Optional filtering parameters
+   * @returns List of invitations sent to the current user
+   *
+   * @example
+   * ```typescript
+   * // List all pending invitations
+   * const { invitations } = await client.teams.listMyInvitations({ status: 'pending' })
+   * console.log(`You have ${invitations.length} pending team invitations`)
+   *
+   * // List all invitations
+   * const { invitations: allInvitations } = await client.teams.listMyInvitations()
+   * ```
+   */
+  async listMyInvitations(params?: ListMyInvitationsParams): Promise<TeamInvitationsListResponse> {
+    const query = params?.status ? `?status=${params.status}` : ''
+    return this.get<TeamInvitationsListResponse>(`/v1/teams/invitations/mine${query}`)
+  }
+
+  /**
+   * Respond to a team invitation (accept or decline)
+   *
+   * @param invitationId - The invitation ID
+   * @param params - Response parameters (action: accept or decline)
+   * @returns The updated invitation
+   *
+   * @example
+   * ```typescript
+   * // Accept an invitation
+   * const { invitation } = await client.teams.respondToInvitation('inv_123', {
+   *   action: 'accept'
+   * })
+   * console.log(`You are now a member of team ${invitation.team?.name}`)
+   *
+   * // Decline an invitation
+   * await client.teams.respondToInvitation('inv_456', {
+   *   action: 'decline'
+   * })
+   * ```
+   */
+  async respondToInvitation(
+    invitationId: string,
+    params: RespondToInvitationParams
+  ): Promise<TeamInvitationResponse> {
+    return this.post<TeamInvitationResponse>(`/v1/teams/invitations/${invitationId}/respond`, params)
+  }
+
+  /**
+   * Respond to an invitation using a token (public endpoint)
+   *
+   * @param params - Response parameters including token and action
+   * @returns Response status and team ID
+   *
+   * @remarks
+   * This endpoint does not require authentication - it's used for email invitation links.
+   * The token is validated server-side to identify the invitation.
+   *
+   * @example
+   * ```typescript
+   * // Accept an invitation from an email link
+   * const { status, teamId } = await client.teams.respondToInvitationWithToken({
+   *   token: 'invitation_token_from_email',
+   *   action: 'accept',
+   *   responderId: 'user_123'
+   * })
+   * console.log(`Invitation ${status}, team ID: ${teamId}`)
+   *
+   * // Decline an invitation
+   * await client.teams.respondToInvitationWithToken({
+   *   token: 'invitation_token_from_email',
+   *   action: 'decline'
+   * })
+   * ```
+   */
+  async respondToInvitationWithToken(
+    params: RespondToInvitationWithTokenParams
+  ): Promise<RespondToInvitationWithTokenResponse> {
+    return this.post<RespondToInvitationWithTokenResponse>('/v1/teams/invitations/respond', params)
+  }
+
   // ===== Job Assignment Management =====
 
   /**
@@ -325,5 +459,104 @@ export class Teams extends Resource {
    */
   async deleteJobAssignment(id: string, assignmentId: string): Promise<DeleteResponse> {
     return this.del<DeleteResponse>(`/v1/teams/${id}/jobs/${assignmentId}`)
+  }
+
+  /**
+   * Assign an application to a team member
+   */
+  async assignApplication(
+    teamId: string,
+    applicationId: string,
+    params: { assigneeUserId: string }
+  ): Promise<{ success: boolean }> {
+    return this.post<{ success: boolean }>(
+      `/v1/teams/${teamId}/applications/${applicationId}/assign`,
+      params
+    )
+  }
+
+  /**
+   * Get analytics overview for a team
+   */
+  async getAnalyticsOverview(
+    id: string,
+    params?: GetTeamAnalyticsOverviewParams
+  ): Promise<TeamAnalyticsOverviewResponse> {
+    const query = new URLSearchParams()
+    if (params?.startDate) query.set('startDate', params.startDate)
+    if (params?.endDate) query.set('endDate', params.endDate)
+    if (params?.limit) query.set('limit', String(params.limit))
+    const qs = query.toString()
+    return this.get<TeamAnalyticsOverviewResponse>(
+      `/v1/teams/${id}/analytics/overview${qs ? `?${qs}` : ''}`
+    )
+  }
+
+  /**
+   * Get workload snapshots for team members
+   */
+  async getWorkload(id: string, params?: GetTeamWorkloadParams): Promise<TeamWorkloadResponse> {
+    const query = new URLSearchParams()
+    if (params?.includeHistorical !== undefined)
+      query.set('includeHistorical', String(params.includeHistorical))
+    if (params?.asOf) query.set('asOf', params.asOf)
+    const qs = query.toString()
+    return this.get<TeamWorkloadResponse>(`/v1/teams/${id}/analytics/workload${qs ? `?${qs}` : ''}`)
+  }
+
+  /**
+   * Get activity feed for a team (paginated)
+   */
+  async getActivityFeed(
+    id: string,
+    params?: GetTeamActivityFeedParams
+  ): Promise<TeamActivityFeedResponse> {
+    const query = new URLSearchParams()
+    if (params?.pageSize) query.set('pageSize', String(params.pageSize))
+    if (params?.cursor) query.set('cursor', params.cursor)
+    if (params?.startDate) query.set('startDate', params.startDate)
+    if (params?.endDate) query.set('endDate', params.endDate)
+    const qs = query.toString()
+    return this.get<TeamActivityFeedResponse>(
+      `/v1/teams/${id}/analytics/activity${qs ? `?${qs}` : ''}`
+    )
+  }
+
+  /**
+   * Get comments for a team
+   */
+  async getComments(id: string, params?: GetTeamCommentsParams): Promise<TeamCommentsResponse> {
+    const query = new URLSearchParams()
+    if (params?.applicationId) query.set('applicationId', params.applicationId)
+    if (params?.limit) query.set('limit', String(params.limit))
+    if (params?.cursor) query.set('cursor', params.cursor)
+    const qs = query.toString()
+    return this.get<TeamCommentsResponse>(
+      `/v1/teams/${id}/analytics/comments${qs ? `?${qs}` : ''}`
+    )
+  }
+
+  /**
+   * Post a comment to the team discussion
+   */
+  async postComment(id: string, params: PostTeamCommentParams): Promise<{ success: boolean }> {
+    return this.post<{ success: boolean }>(`/v1/teams/${id}/analytics/comments`, params)
+  }
+
+  /**
+   * Transfer team ownership to another member
+   */
+  async transferOwnership(
+    id: string,
+    params: TransferTeamOwnershipParams
+  ): Promise<{ success: boolean }> {
+    return this.post<{ success: boolean }>(`/v1/teams/${id}/members/transfer-ownership`, params)
+  }
+
+  /**
+   * Remove yourself from a team
+   */
+  async selfRemove(id: string, params?: SelfRemoveFromTeamParams): Promise<{ success: boolean }> {
+    return this.post<{ success: boolean }>(`/v1/teams/${id}/members/self-remove`, params ?? {})
   }
 }

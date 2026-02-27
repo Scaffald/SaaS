@@ -5,9 +5,6 @@ deno.lock
 # expo
 **/.expo/*
 
-# tamagui
-**/.tamagui/*
-
 # production
 /build
 

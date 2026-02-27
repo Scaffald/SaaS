@@ -1,20 +1,19 @@
-import { api } from '@scf/core/utils/api'
-import { ROUTES } from '@scf/core/constants/routes'
 import {
-  Heading,
-  LoadingState,
-  ResponsiveModal,
-  SaveStatusIndicator,
-} from '@unicornlove/ui'
-import { CheckCircle2 } from '@tamagui/lucide-icons'
+  useSoftSkills,
+  useUpdateSoftSkillsMutation,
+} from '@scf/core/utils/profile-skills-sdk-hooks'
+import { ROUTES } from '@scf/core/constants/routes'
+import { Heading, LoadingState, ResponsiveModal, SaveStatusIndicator, useThemeContext } from '@scaffald/ui'
+import { CheckCircle2 } from 'lucide-react-native'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'expo-router'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@scaffald/ui'
 import { useCallback, useEffect, useMemo, useRef, useState, type FC } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Card, Separator, Slider, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Separator, Slider, Text, Row, Stack } from '@scaffald/ui'
 import { softSkillsUpdateSchema, type SoftSkillsUpdateInput } from '@scf/schemas/profile'
 import { SoftSkillsCategoryTabs, type SoftSkillCategory } from './SoftSkillsCategoryTabs'
+import { colors } from '@scaffald/ui/tokens'
 
 type SoftSkillsFormData = SoftSkillsUpdateInput
 
@@ -42,8 +41,9 @@ const SOFT_SKILL_LEVELS = [
  * with real-time mini radar charts, auto-save, and validation.
  */
 export const SoftSkillsRatingForm: FC = () => {
+  const { theme } = useThemeContext()
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
   const [activeCategory, setActiveCategory] = useState<SoftSkillCategory>('reliability')
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>(
@@ -54,7 +54,12 @@ export const SoftSkillsRatingForm: FC = () => {
   const lastAutoSaveRef = useRef<SoftSkillsFormData | null>(null)
 
   // Fetch soft skills data
-  const { data, isLoading, error, refetch } = api.profile.skills.getSoftSkills.useQuery(undefined, {
+  const {
+    data,
+    isPending: isLoading,
+    error,
+    refetch,
+  } = useSoftSkills(undefined, {
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   })
 
@@ -119,7 +124,7 @@ export const SoftSkillsRatingForm: FC = () => {
   }, [data, formSkills.length, defaultValues, reset])
 
   // Update mutation
-  const updateMutation = api.profile.skills.updateSoftSkills.useMutation({
+  const updateMutation = useUpdateSoftSkillsMutation({
     onSuccess: () => {
       setAutoSaveStatus('saved')
       setLastSavedAt(new Date())
@@ -192,10 +197,12 @@ export const SoftSkillsRatingForm: FC = () => {
         setAutoSaveStatus('saved')
         setLastSavedAt(new Date())
       } catch (error) {
-        const message =
+        const _message =
           error instanceof Error ? error.message : 'Failed to save assessment. Please try again.'
-        toast.show('Error', {
-          message,
+        toast.show({
+          title: 'Error',
+          message: '',
+          variant: 'error',
         })
       }
     },
@@ -214,42 +221,38 @@ export const SoftSkillsRatingForm: FC = () => {
 
   if (error) {
     return (
-      <YStack gap="$4" alignItems="center" paddingVertical="$8">
-        <Text color="$red10">Failed to load assessment</Text>
-        <Text color="$color11" fontSize="$2">
-          {error.message}
-        </Text>
-        <Button variant="primary" size="$2" onPress={() => void refetch()}>
+      <Stack gap={16} align="center" paddingVertical={32}>
+        <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Failed to load assessment</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
+        <Button variant="filled" color="primary" size="sm" onPress={() => void refetch()}>
           Retry
         </Button>
-      </YStack>
+      </Stack>
     )
   }
 
   if (formSkills.length === 0) {
     return (
-      <YStack gap="$4" alignItems="center" paddingVertical="$8">
-        <Text color="$color11">No soft skills available</Text>
-        <Text color="$color10" fontSize="$2">
-          Please contact support if this issue persists.
-        </Text>
-      </YStack>
+      <Stack gap={16} align="center" paddingVertical={32}>
+        <Text style={{ color: colors.text[theme].secondary }}>No soft skills available</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Please contact support if this issue persists.</Text>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$4">
+    <Stack gap={16}>
       {/* Header */}
-      <XStack justifyContent="space-between" alignItems="center">
-        <Heading variant="h3">Rate Your Soft Skills</Heading>
+      <Row justify="space-between" align="center">
+        <Heading level={3}>Rate Your Soft Skills</Heading>
         <SaveStatusIndicator
           status={autoSaveStatus}
           lastSavedAt={lastSavedAt}
           error={autoSaveStatus === 'error' ? 'Failed to auto-save' : undefined}
         />
-      </XStack>
+      </Row>
 
-      <Text fontSize="$3" color="$color11">
+      <Text style={{ color: colors.text[theme].secondary }}>
         Rate each soft skill from 1-5 based on your proficiency level. Changes are automatically
         saved every 30 seconds.
       </Text>
@@ -265,11 +268,11 @@ export const SoftSkillsRatingForm: FC = () => {
       <Separator />
 
       {/* Skills List for Active Category */}
-      <YStack gap="$4">
+      <Stack gap={16}>
         {categorySkills.length === 0 ? (
-          <YStack gap="$2" alignItems="center" paddingVertical="$8">
-            <Text color="$color11">No skills in this category</Text>
-          </YStack>
+          <Stack gap={8} align="center" paddingVertical={32}>
+            <Text style={{ color: colors.text[theme].secondary }}>No skills in this category</Text>
+          </Stack>
         ) : (
           categorySkills.map((skill) => {
             const skillRatingIndex = watchedRatings.findIndex((r) => r.skill_id === skill.id)
@@ -281,18 +284,12 @@ export const SoftSkillsRatingForm: FC = () => {
             }
 
             return (
-              <Card key={skill.id} bordered padding="$4" backgroundColor="$background">
-                <YStack gap="$3">
-                  <YStack gap="$1">
-                    <Text fontSize="$5" fontWeight="600" color="$color12">
-                      {skill.name}
-                    </Text>
-                    {skill.description && (
-                      <Text fontSize="$3" color="$color11">
-                        {skill.description}
-                      </Text>
-                    )}
-                  </YStack>
+              <Card key={skill.id} bordered padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
+                <Stack gap={12}>
+                  <Stack gap={4}>
+                    <Text style={{ color: colors.text[theme].secondary }}>{skill.name}</Text>
+                    {skill.description && <Text style={{ color: colors.text[theme].secondary }}>{skill.description}</Text>}
+                  </Stack>
 
                   <Controller
                     control={control}
@@ -306,117 +303,95 @@ export const SoftSkillsRatingForm: FC = () => {
                       const sliderValue = typeof value === 'number' ? value : defaultRating
 
                       return (
-                        <YStack gap="$2">
+                        <Stack gap={8}>
                           <Slider
-                            value={[sliderValue]}
-                            onValueChange={(newValue) => onChange(newValue[0])}
+                            value={sliderValue}
+                            onValueChange={(newValue) => onChange(newValue)}
                             min={1}
                             max={5}
                             step={1}
-                            size="$3"
-                            marginTop="$4"
-                            marginBottom="$2"
-                          >
-                            <Slider.Track backgroundColor="$color4" height={6} borderRadius={10}>
-                              <Slider.TrackActive backgroundColor="$blue9" borderRadius={10} />
-                            </Slider.Track>
-                            <Slider.Thumb
-                              index={0}
-                              circular
-                              size="$1"
-                              backgroundColor="$blue9"
-                              borderWidth={2}
-                              borderColor="$blue11"
-                            />
-                          </Slider>
+                            style={{ marginTop: 16, marginBottom: 8 }}
+                          />
 
-                          <XStack justifyContent="space-between" gap="$2" flexWrap="wrap">
+                          <Row justify="space-between" gap={8} wrap>
                             {SOFT_SKILL_LEVELS.map((level) => (
-                              <YStack
+                              <Stack
                                 key={level.value}
                                 flex={1}
                                 minWidth={64}
-                                style={{ alignItems: 'center' }}
-                                opacity={sliderValue === level.value ? 1 : 0.6}
+                                style={{ alignItems: 'center', opacity: sliderValue === level.value ? 1 : 0.6 }}
                               >
-                                <Text fontSize="$2" fontWeight="700" color="$color12">
-                                  {level.value}
-                                </Text>
-                                <Text
-                                  fontSize="$2"
-                                  color="$color11"
-                                  style={{ textAlign: 'center' }}
-                                >
+                                <Text style={{ color: colors.text[theme].secondary }}>{level.value}</Text>
+                                <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
                                   {level.label}
                                 </Text>
-                              </YStack>
+                              </Stack>
                             ))}
-                          </XStack>
-                        </YStack>
+                          </Row>
+                        </Stack>
                       )
                     }}
                   />
-                </YStack>
+                </Stack>
               </Card>
             )
           })
         )}
-      </YStack>
+      </Stack>
 
       <Separator />
 
       {/* Submit Button */}
-      <XStack justifyContent="flex-end" paddingTop="$2">
+      <Row justify="flex-end" paddingTop={8}>
         <Button
-          variant="primary"
-          size="$4"
+          variant="filled" color="primary"
+          size="md"
           onPress={handleSubmit(onSubmit)}
           disabled={!allSkillsRated || updateMutation.isPending}
-          icon={updateMutation.isPending ? undefined : CheckCircle2}
-          iconAfter={updateMutation.isPending ? <Spinner size="small" /> : undefined}
+          loading={updateMutation.isPending}
+          iconStart={updateMutation.isPending ? undefined : CheckCircle2}
         >
           {updateMutation.isPending ? 'Saving...' : 'Save Assessment'}
         </Button>
-      </XStack>
+      </Row>
 
       {/* Success Modal */}
       <ResponsiveModal
         open={showSuccessModal}
         onOpenChange={setShowSuccessModal}
         title="Assessment Complete!"
-        size="medium"
-        showCloseButton={true}
+        size="md"
       >
-        <YStack gap="$4" padding="$4" alignItems="center">
-          <YStack
+        <Stack gap={16} padding="md" align="center">
+          <Stack
             width={80}
             height={80}
-            borderRadius="$12"
+            borderRadius={12}
             backgroundColor="$green2"
             borderWidth={2}
             borderColor="$green9"
-            alignItems="center"
-            justifyContent="center"
+            align="center"
+            justify="center"
           >
             <CheckCircle2 size={48} color="$green10" />
-          </YStack>
+          </Stack>
 
-          <YStack gap="$2" alignItems="center">
-            <Text fontSize="$6" fontWeight="700" color="$color12" style={{ textAlign: 'center' }}>
+          <Stack gap={8} align="center">
+            <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
               Soft Skills Assessment Complete!
             </Text>
-            <Text fontSize="$4" color="$color11" style={{ textAlign: 'center' }}>
+            <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
               Your assessment has been saved successfully. Your ratings will be used to improve job
               matching and showcase your strengths.
             </Text>
-          </YStack>
+          </Stack>
 
-          <XStack gap="$3" paddingTop="$2">
-            <Button variant="outlined" onPress={handleSuccessModalClose}>
+          <Row gap={12} paddingTop={8}>
+            <Button variant="outline" onPress={handleSuccessModalClose}>
               View Profile
             </Button>
             <Button
-              variant="primary"
+              variant="filled" color="primary"
               onPress={() => {
                 setShowSuccessModal(false)
                 router.push(ROUTES.DASHBOARD.DISCOVER.MAP.path)
@@ -424,9 +399,9 @@ export const SoftSkillsRatingForm: FC = () => {
             >
               Find Matching Jobs
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       </ResponsiveModal>
-    </YStack>
+    </Stack>
   )
 }

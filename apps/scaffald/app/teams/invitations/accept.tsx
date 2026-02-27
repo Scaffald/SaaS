@@ -1,81 +1,87 @@
-import { buildPath, ROUTES } from '@scf/core/constants/routes'
-import { useAuth } from '@scf/core/provider/auth/useAuth'
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
-import { AlertTriangle, CheckCircle, LogIn, XCircle } from '@tamagui/lucide-icons'
-import type { inferRouterOutputs } from '@trpc/server'
-import { Link, useLocalSearchParams, useRouter } from 'expo-router'
-import { useEffect, useMemo, useState } from 'react'
-import { Button, Card, Spinner, Text, YStack } from '@unicornlove/ui'
+import { buildPath, ROUTES } from "@scf/core/constants/routes";
+import { useAuth } from "@scf/core/provider/auth/useAuth";
+import { useRespondToTeamInvitationWithToken } from "@scaffald/sdk/react";
+import {
+  AlertTriangle,
+  CheckCircle,
+  LogIn,
+  XCircle,
+} from "lucide-react-native";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useMemo, useState } from "react";
+import { Button, Card, Spinner, Text, Stack } from "@scaffald/ui";
 
-type InvitationAction = 'accept' | 'decline'
-type RespondInvitationOutput = inferRouterOutputs<AppRouter>['teams']['respondToInvitation']
+type InvitationAction = "accept" | "decline";
 
 export default function AcceptTeamInvitationScreen() {
-  const { token } = useLocalSearchParams<{ token?: string }>()
-  const router = useRouter()
-  const { session, isLoading: authLoading } = useAuth()
+  const { token } = useLocalSearchParams<{ token?: string }>();
+  const router = useRouter();
+  const { session, isLoading: authLoading } = useAuth();
 
-  const [status, setStatus] = useState<'idle' | 'pending' | 'success' | 'declined' | 'error'>(
-    'idle'
-  )
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [resultTeamId, setResultTeamId] = useState<string | null>(null)
+  const [status, setStatus] = useState<
+    "idle" | "pending" | "success" | "declined" | "error"
+  >("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [resultTeamId, setResultTeamId] = useState<string | null>(null);
 
-  const respondMutation = api.teams.respondToInvitation.useMutation({
+  const respondMutation = useRespondToTeamInvitationWithToken({
     onError: (error: unknown) => {
-      console.error('[teams] Invitation response failed', error)
+      console.error("[teams] Invitation response failed", error);
       const message =
         error instanceof Error
           ? error.message
-          : 'Unable to process invitation. Please try again later.'
-      setErrorMessage(message)
-      setStatus('error')
+          : "Unable to process invitation. Please try again later.";
+      setErrorMessage(message);
+      setStatus("error");
     },
-    onSuccess: (result: RespondInvitationOutput) => {
-      if (result.status === 'accepted') {
-        setResultTeamId(result.teamId)
-        setStatus('success')
+    onSuccess: (result) => {
+      if (result.status === "accepted") {
+        setResultTeamId(result.teamId);
+        setStatus("success");
       } else {
-        setStatus('declined')
+        setStatus("declined");
       }
     },
-  })
+  });
 
-  const isProcessing = respondMutation.isPending || status === 'pending'
+  const isProcessing = respondMutation.isPending || status === "pending";
 
   const redirectPath = useMemo(() => {
-    if (!token) return ROUTES.DASHBOARD.path
-    return `${ROUTES.TEAMS.INVITATIONS.ACCEPT.path}?token=${encodeURIComponent(token)}`
-  }, [token])
+    if (!token) return ROUTES.DASHBOARD.path;
+    return `${ROUTES.TEAMS.INVITATIONS.ACCEPT.path}?token=${encodeURIComponent(
+      token
+    )}`;
+  }, [token]);
 
   useEffect(() => {
     if (!token) {
-      setStatus('error')
-      setErrorMessage('This invitation link is missing a token.')
+      setStatus("error");
+      setErrorMessage("This invitation link is missing a token.");
     }
-  }, [token])
+  }, [token]);
 
   const handleRespond = async (action: InvitationAction) => {
-    if (!token || !session?.user?.id) return
+    if (!token || !session?.user?.id) return;
 
-    setStatus('pending')
-    setErrorMessage(null)
+    setStatus("pending");
+    setErrorMessage(null);
 
     await respondMutation.mutateAsync({
+      token,
       action,
       responderId: session.user.id,
-      token,
-    })
-  }
+    });
+  };
 
   const handleViewTeam = () => {
     if (resultTeamId) {
-      router.replace(buildPath(ROUTES.DASHBOARD.TEAMS.DETAIL, { teamId: resultTeamId }))
+      router.replace(
+        buildPath(ROUTES.DASHBOARD.TEAMS.DETAIL, { teamId: resultTeamId })
+      );
     } else {
-      router.replace(ROUTES.DASHBOARD.TEAMS.INVITATIONS.path)
+      router.replace(ROUTES.DASHBOARD.TEAMS.INVITATIONS.path);
     }
-  }
+  };
 
   const renderContent = () => {
     if (!token) {
@@ -84,153 +90,138 @@ export default function AcceptTeamInvitationScreen() {
           title="Missing invitation token"
           message="We could not find the invitation token in this link. Please check the URL provided in your email."
         />
-      )
+      );
     }
 
     if (authLoading) {
       return (
-        <YStack gap="$3" alignItems="center" paddingVertical="$6">
-          <Spinner size="large" />
-          <Text color="$color11">Preparing secure invitation…</Text>
-        </YStack>
-      )
+        <Stack gap={12} align="center">
+          <Spinner size="lg" />
+          <Text color="gray">Preparing secure invitation…</Text>
+        </Stack>
+      );
     }
 
     if (!session?.user) {
       return (
-        <YStack gap="$4">
-          <Text fontSize="$6" fontWeight="700">
-            Sign in to continue
-          </Text>
-          <Text color="$color11">
-            You&apos;ll need to sign in so we can confirm your identity and add you to the team.
+        <Stack gap={16}>
+          <Text>Sign in to continue</Text>
+          <Text color="gray">
+            You&apos;ll need to sign in so we can confirm your identity and add
+            you to the team.
           </Text>
           <Link
-            href={`${ROUTES.AUTH.LOGIN.path}?redirect_to=${encodeURIComponent(redirectPath)}`}
+            href={`${ROUTES.AUTH.LOGIN.path}?redirect_to=${encodeURIComponent(
+              redirectPath
+            )}`}
             asChild
           >
-            <Button icon={LogIn} size="$4">
+            <Button iconStart={LogIn} size="lg">
               Sign in or create an account
             </Button>
           </Link>
-        </YStack>
-      )
+        </Stack>
+      );
     }
 
-    if (status === 'success') {
+    if (status === "success") {
       return (
-        <YStack gap="$4" alignItems="center" paddingVertical="$4">
+        <Stack gap={16} align="center">
           <CheckCircle size={48} color="$green9" />
-          <YStack gap="$2" alignItems="center">
-            <Text fontSize="$7" fontWeight="700">
-              You&apos;re in!
+          <Stack gap={8} align="center">
+            <Text>You&apos;re in!</Text>
+            <Text color="gray">
+              You now have access to the team workspace. We&apos;ve added it to
+              your dashboard.
             </Text>
-            <Text color="$color11">
-              You now have access to the team workspace. We&apos;ve added it to your dashboard.
-            </Text>
-          </YStack>
-          <Button size="$4" onPress={handleViewTeam}>
+          </Stack>
+          <Button size="lg" onPress={handleViewTeam}>
             Go to team
           </Button>
-        </YStack>
-      )
+        </Stack>
+      );
     }
 
-    if (status === 'declined') {
+    if (status === "declined") {
       return (
-        <YStack gap="$4" alignItems="center" paddingVertical="$4">
+        <Stack gap={16} align="center">
           <XCircle size={48} color="$red9" />
-          <YStack gap="$2" alignItems="center">
-            <Text fontSize="$7" fontWeight="700">
-              Invitation declined
+          <Stack gap={8} align="center">
+            <Text>Invitation declined</Text>
+            <Text color="gray">
+              You can always accept later from your dashboard if you change your
+              mind.
             </Text>
-            <Text color="$color11">
-              You can always accept later from your dashboard if you change your mind.
-            </Text>
-          </YStack>
-          <Button size="$4" onPress={() => router.replace(ROUTES.DASHBOARD.path)}>
+          </Stack>
+          <Button
+            size="lg"
+            onPress={() => router.replace(ROUTES.DASHBOARD.path)}
+          >
             Return to dashboard
           </Button>
-        </YStack>
-      )
+        </Stack>
+      );
     }
 
-    if (status === 'error' && errorMessage) {
-      return <ErrorState title="Something went wrong" message={errorMessage} />
+    if (status === "error" && errorMessage) {
+      return <ErrorState title="Something went wrong" message={errorMessage} />;
     }
 
     return (
-      <YStack gap="$5">
-        <YStack gap="$2">
-          <Text fontSize="$7" fontWeight="700">
-            Join this team
+      <Stack gap={20}>
+        <Stack gap={8}>
+          <Text>Join this team</Text>
+          <Text color="gray">
+            Accepting will give you access to the team workspace, shared jobs,
+            and collaborative tools.
           </Text>
-          <Text color="$color11">
-            Accepting will give you access to the team workspace, shared jobs, and collaborative
-            tools.
-          </Text>
-        </YStack>
-        <YStack gap="$3">
+        </Stack>
+        <Stack gap={12}>
           <Button
-            size="$4"
-            icon={CheckCircle}
+            size="lg"
+            iconStart={CheckCircle}
             disabled={isProcessing}
-            onPress={() => handleRespond('accept')}
+            onPress={() => handleRespond("accept")}
           >
             Accept invitation
           </Button>
           <Button
-            size="$4"
-            variant="outlined"
-            icon={XCircle}
+            size="lg"
+            variant="outline"
+            iconStart={XCircle}
             disabled={isProcessing}
-            onPress={() => handleRespond('decline')}
+            onPress={() => handleRespond("decline")}
           >
             Decline
           </Button>
-        </YStack>
+        </Stack>
         {isProcessing ? (
-          <YStack gap="$2" alignItems="center">
-            <Spinner size="large" />
-            <Text color="$color11">Processing your response…</Text>
-          </YStack>
+          <Stack gap={8} align="center">
+            <Spinner size="lg" />
+            <Text color="gray">Processing your response…</Text>
+          </Stack>
         ) : null}
-      </YStack>
-    )
-  }
+      </Stack>
+    );
+  };
 
   return (
-    <YStack
-      flex={1}
-      padding="$4"
-      backgroundColor="$color2"
-      justifyContent="center"
-      alignItems="center"
-    >
-      <Card
-        width="100%"
-        maxWidth={480}
-        padding="$5"
-        gap="$5"
-        borderWidth={1}
-        borderColor="$borderColor"
-      >
+    <Stack padding={16} justify="center" align="center">
+      <Card style={{ width: "100%", maxWidth: 480, gap: 20 }} padding="md">
         {renderContent()}
       </Card>
-    </YStack>
-  )
+    </Stack>
+  );
 }
 
 function ErrorState({ title, message }: { title: string; message: string }) {
   return (
-    <YStack gap="$3" alignItems="center" paddingVertical="$4">
+    <Stack gap={12} align="center">
       <AlertTriangle size={48} color="$yellow9" />
-      <YStack gap="$2" alignItems="center">
-        <Text fontSize="$7" fontWeight="700">
-          {title}
-        </Text>
-        <Text color="$color11">{message}</Text>
-      </YStack>
-    </YStack>
-  )
+      <Stack gap={8} align="center">
+        <Text>{title}</Text>
+        <Text color="gray">{message}</Text>
+      </Stack>
+    </Stack>
+  );
 }

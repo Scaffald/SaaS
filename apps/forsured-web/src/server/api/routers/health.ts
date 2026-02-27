@@ -1,6 +1,6 @@
 /**
  * Health Check Router
- * REQ-292: Configure tRPC for production deployment
+ * Configure tRPC for production deployment
  * TASK-8: Create health check endpoint for deployment verification
  *
  * Provides simple health check endpoint for monitoring and deployment verification.

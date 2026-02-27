@@ -1,7 +1,7 @@
 // src/pages/admin/Users.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { Search, RefreshCcw, Users as UsersIcon } from 'lucide-react';
-import { Stack, Row, Text, Button, H1, H3, Card, Input, Spinner } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, H1, H3, Card, Input, Spinner } from '@scaffald/ui';
 import { EmptyState } from '../../ui/EmptyState';
 import { useAuth } from '../../contexts/AuthContext';
 import {

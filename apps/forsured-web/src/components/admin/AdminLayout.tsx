@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { Stack, Row, Text } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text } from '@scaffald/ui';
 import { AdminFeedbackHeader } from './AdminFeedbackHeader';
 
 const adminMenuItems = [

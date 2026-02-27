@@ -1,6 +1,6 @@
 /**
  * Project Router
- * REQ-286: Additional tRPC Routers - Project Management
+ * Additional tRPC Routers - Project Management
  *
  * Implements project management procedures replacing src/lib/api/projectService.ts
  * with type-safe tRPC procedures using Supabase backend.

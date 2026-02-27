@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Button, Progress, Text, YStack } from '@unicornlove/ui'
+import { Button, ProgressBar, Text, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { getChoices, getQuestions, type IPIPAnswer, type IPIPChoice } from '../lib/ipip'
 
 export interface CooldownStepProps {
@@ -26,6 +27,7 @@ export function CooldownStep({
   onCooldownComplete,
   isLoading = false,
 }: CooldownStepProps) {
+  const { theme } = useThemeContext()
   const questions = getQuestions()
   const choices = getChoices()
   const [currentIndex, setCurrentIndex] = useState(initialCurrentIndex)
@@ -99,80 +101,78 @@ export function CooldownStep({
   )
 
   return (
-    <YStack gap="$6" width="100%" style={{ maxWidth: 800, alignSelf: 'center' }}>
+    <Stack gap={24} width="100%" style={{ maxWidth: 800, alignSelf: 'center' }}>
       {/* Cooldown Timer */}
-      <YStack
-        gap="$4"
-        padding="$6"
-        backgroundColor="$color3"
-        borderRadius="$4"
-        borderWidth={1}
-        borderColor="$color7"
+      <Stack
+        gap={16}
+        padding="xl"
+        style={{
+          backgroundColor: colors.bg[theme].muted,
+          borderRadius: 16,
+          borderWidth: 1,
+          borderColor: colors.border[theme].subtle,
+        }}
       >
-        <YStack gap="$2" alignItems="center">
-          <Text fontSize="$6" fontWeight="600" color="$color12" style={{ textAlign: 'center' }}>
+        <Stack gap={8} align="center">
+          <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
             Cooldown Period
           </Text>
-          <Text fontSize="$4" color="$color11" style={{ textAlign: 'center' }}>
+          <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
             Please wait 60 seconds before taking the second color test
           </Text>
-          <Text fontSize="$8" fontWeight="bold" color="$blue10">
-            {formatTime(timeRemaining)}
-          </Text>
-        </YStack>
-        <Progress value={cooldownProgress} max={100} size="$2">
-          <Progress.Indicator animation="quick" />
-        </Progress>
-      </YStack>
+          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{formatTime(timeRemaining)}</Text>
+        </Stack>
+        <ProgressBar value={cooldownProgress} showLabel={false} showIndicator={false} showHintMessage={false} />
+      </Stack>
 
       {/* IPIP Questions Section */}
-      <YStack gap="$4">
-        <YStack gap="$2" alignItems="center">
-          <Text fontSize="$5" fontWeight="600" color="$color12" style={{ textAlign: 'center' }}>
+      <Stack gap={16}>
+        <Stack gap={8} align="center">
+          <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
             While you wait, answer some personality questions
           </Text>
-          <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
+          <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
             Progress: {currentIndex} / 120 ({progress}%)
           </Text>
-        </YStack>
+        </Stack>
 
         {currentQuestion && (
-          <YStack
-            gap="$4"
-            padding="$4"
-            borderRadius="$4"
-            borderWidth={1}
-            borderColor="$borderColor"
+          <Stack
+            gap={16}
+            padding="md"
+            style={{
+              borderRadius: 16,
+              borderWidth: 1,
+              borderColor: colors.border[theme].default,
+            }}
           >
-            <Text fontSize="$5" fontWeight="500" color="$color12">
-              {currentQuestion.text}
-            </Text>
+            <Text style={{ color: colors.text[theme].secondary }}>{currentQuestion.text}</Text>
 
-            <YStack gap="$3">
+            <Stack gap={12}>
               {currentChoices.map((choice) => (
                 <Button
                   key={choice.score}
-                  size="$4"
-                  variant="outlined"
+                  size="md"
+                  variant="outline"
                   onPress={() => handleAnswer(choice)}
                   disabled={isLoading}
-                  width="100%"
+                  fullWidth
                 >
-                  <Button.Text>{choice.text}</Button.Text>
+                  {choice.text}
                 </Button>
               ))}
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         )}
 
         {!currentQuestion && !isCooldownActive && (
-          <YStack gap="$2" alignItems="center" padding="$4">
-            <Text fontSize="$4" color="$green10" fontWeight="600" style={{ textAlign: 'center' }}>
+          <Stack gap={8} align="center" padding="md">
+            <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300], textAlign: 'center' }}>
               All questions answered! You can continue to the next step.
             </Text>
-          </YStack>
+          </Stack>
         )}
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

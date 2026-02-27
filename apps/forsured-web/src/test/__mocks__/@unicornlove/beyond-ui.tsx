@@ -1,11 +1,11 @@
 /**
- * Mock for @unicornlove/beyond-ui package
+ * Mock for @scaffald/ui package
  *
  * Provides minimal HTML-based implementations of UI components for testing.
  * This avoids the complex react-native dependency chain that causes
  * parsing errors in vitest/jsdom.
  *
- * IMPORTANT: This mock does NOT import from tamagui to avoid react-native deps.
+ * This mock avoids the react-native dependency chain for vitest/jsdom.
  */
 import {
   forwardRef,
@@ -587,8 +587,8 @@ export const Form = forwardRef<HTMLFormElement, ComponentProps<'form'>>((props, 
 ));
 Form.displayName = 'Form';
 
-// Additional exports for compatibility
-export const createTamagui = <T extends object>(config: T): T => config;
+// Legacy compatibility: no-op theme config (some tests still reference this)
+export const createTheme = <T extends object>(config: T): T => config;
 export const styled = <T extends object>(Component: React.ComponentType<T>) => Component;
 
 // Group component

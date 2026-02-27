@@ -1,7 +1,12 @@
-import { api } from '@scf/core/utils/api'
-import { extractPlainText, SkeletonList } from '@unicornlove/ui'
+import {
+  useExternalJobs,
+  useJobsWithSoftSkillsMatch,
+  usePublishedJobs,
+  useUserApplications,
+} from '@scf/core/utils/jobs-sdk-hooks'
+import { extractPlainText, SkeletonList } from '@scaffald/ui'
 import type { JSONContent } from '@tiptap/core'
-import { ScrollView, Text, YStack } from '@unicornlove/ui'
+import { ScrollView, Text, Stack } from '@scaffald/ui'
 import { type ExternalJob, ExternalJobCard } from './components/ExternalJobCard'
 import { type InternalJob, InternalJobCard } from './components/InternalJobCard'
 
@@ -35,53 +40,43 @@ export function DiscoverJobsLeft({
   const shouldUseSoftSkillsMatch =
     useSoftSkillsFilter && (jobSource === 'all' || jobSource === 'internal')
 
-  // Fetch external jobs (not affected by soft skills filter)
-  const { data: externalData, isLoading: externalLoading } = api.jobs.getExternalJobs.useQuery(
-    undefined,
-    {
-      enabled: jobSource === 'all' || jobSource === 'external',
-    }
-  )
+  // Fetch external jobs (SDK)
+  const { data: externalData, isLoading: externalLoading } = useExternalJobs({
+    enabled: jobSource === 'all' || jobSource === 'external',
+  })
 
-  // Fetch internal jobs with soft skills match if filter is active
+  // Fetch internal jobs with soft skills match if filter is active (SDK)
   const { data: softSkillsMatchData, isLoading: isLoadingSoftSkillsMatch } =
-    api.jobs.getJobsWithSoftSkillsMatch.useQuery(
+    useJobsWithSoftSkillsMatch(
       {
         minMatchScore: minSoftSkillsMatch ?? undefined,
         sortBy: sortBy === 'match_score' ? 'match_score' : undefined,
         limit: 100,
         offset: 0,
       },
-      {
-        enabled: shouldUseSoftSkillsMatch,
-      }
+      { enabled: shouldUseSoftSkillsMatch }
     )
 
-  // Fetch regular internal jobs - always fetch to get full job data
-  // If soft skills filter is active, we'll filter client-side using matching job IDs
-  const { data: internalData, isLoading: internalLoading } = api.jobs.getPublishedJobs.useQuery(
-    {
-      search: searchQuery,
-    },
-    {
-      enabled: jobSource === 'all' || jobSource === 'internal',
-    }
+  // Fetch regular internal jobs (SDK)
+  const { data: internalData, isLoading: internalLoading } = usePublishedJobs(
+    { search: searchQuery },
+    { enabled: jobSource === 'all' || jobSource === 'internal' }
   )
 
   // Fetch user's applications to show applied status
-  const { data: userApplications } = api.applications.getUserApplications.useQuery(
+  const { data: userApplications } = useUserApplications(
     { limit: 100, offset: 0 },
     { enabled: true }
   )
 
-  const externalJobs = externalData?.jobs || []
-  let internalJobs = internalData?.jobs || []
-  const matchingJobs = softSkillsMatchData?.jobs || []
+  const externalJobs = externalData ?? []
+  let internalJobs = internalData?.data ?? []
+  const matchingJobs = softSkillsMatchData?.jobs ?? []
 
   // If soft skills filter is active, filter internal jobs to only matching ones
   if (shouldUseSoftSkillsMatch && matchingJobs.length > 0) {
     const matchingJobIds = new Set(matchingJobs.map((j: { jobId: string }) => j.jobId))
-    internalJobs = internalJobs.filter((job: InternalJob) => matchingJobIds.has(job.id))
+    internalJobs = internalJobs.filter((job) => matchingJobIds.has(job.id))
   }
 
   // Create a set of job IDs user has applied to
@@ -105,8 +100,8 @@ export function DiscoverJobsLeft({
 
   // Combine and filter both job types
   const mixedJobs: MixedJob[] = [
-    ...externalJobs.map((job: ExternalJob): MixedJob => ({ type: 'external', job })),
-    ...internalJobs.map((job: InternalJob): MixedJob => ({ type: 'internal', job })),
+    ...externalJobs.map((job) => ({ type: 'external' as const, job: job as ExternalJob })),
+    ...internalJobs.map((job) => ({ type: 'internal' as const, job: job as InternalJob })),
   ]
 
   // If soft skills sort is active, sort internal jobs by match score
@@ -192,44 +187,40 @@ export function DiscoverJobsLeft({
   // Handle soft skills assessment required state
   if (shouldUseSoftSkillsMatch && softSkillsMatchData?.needsSelfAssessment) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$3">
-        <Text fontSize="$6" fontWeight="600" color="$color12">
-          Complete Your Assessment
-        </Text>
-        <Text fontSize="$4" color="$color11" style={{ textAlign: 'center' }}>
+      <Stack flex={1} align="center" justify="center" padding="md" gap={12}>
+        <Text color="$gray11">Complete Your Assessment</Text>
+        <Text color="$gray11" style={{ textAlign: 'center' }}>
           Complete your soft skills assessment to filter and sort jobs by match score.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (isLoading) {
     return (
-      <YStack flex={1} padding="$4">
-        <SkeletonList count={5} gap="$3" variant="job" />
-      </YStack>
+      <Stack flex={1} padding="md">
+        <SkeletonList count={5} gap={12} variant="job" />
+      </Stack>
     )
   }
 
   if (filteredJobs.length === 0) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
-        <Text fontSize="$6" fontWeight="600" color="$color12">
-          No jobs found
-        </Text>
-        <Text fontSize="$4" color="$color11">
+      <Stack flex={1} align="center" justify="center" padding="md" gap={8}>
+        <Text color="$gray11">No jobs found</Text>
+        <Text color="$gray11">
           {shouldUseSoftSkillsMatch
             ? 'No jobs match your soft skills filter criteria'
             : 'Try adjusting your filters or search query'}
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <YStack gap="$3" padding="$4">
-        <Text fontSize="$5" fontWeight="600" color="$color12">
+    <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+      <Stack gap={12} padding="md">
+        <Text color="$gray11">
           {filteredJobs.length} {filteredJobs.length === 1 ? 'Job' : 'Jobs'} Available
         </Text>
 
@@ -246,7 +237,7 @@ export function DiscoverJobsLeft({
             />
           )
         })}
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }

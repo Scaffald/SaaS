@@ -1,29 +1,45 @@
-import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
-import { api } from '@scf/core/utils/api'
-import { Activity, CloudOff, DownloadCloud, MessagesSquare, Plus } from '@tamagui/lucide-icons'
-import { useRouter } from 'expo-router'
-import { useCallback, useMemo } from 'react'
-import { RefreshControl, ScrollView } from 'react-native'
-import { Button, Card, Paragraph, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { ROUTES, buildPath } from "@scf/core/constants/routes";
+import { formatDate } from "@scf/core/features/profile/utils/date-formatting";
+import { useWorkLogs } from "@scf/core/utils/work-logs-sdk-hooks";
+import {
+  Activity,
+  CloudOff,
+  DownloadCloud,
+  MessagesSquare,
+  Plus,
+} from "lucide-react-native";
+import { useRouter } from "expo-router";
+import { useCallback } from "react";
+import { RefreshControl, ScrollView } from "react-native";
+import {
+  Button,
+  Card,
+  Separator,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+  useThemeContext,
+} from "@scaffald/ui";
 
-import { useOfflineWorkLogs } from '../hooks/useOfflineWorkLogs'
-import { useWorkLogSync } from '../hooks/useWorkLogSync'
-import type { WorkLogListItem } from '@scf/schemas'
-import { getStatusColor, getStatusLabel } from '../utils/status-formatting'
+import { useOfflineWorkLogs } from "../hooks/useOfflineWorkLogs";
+import { useWorkLogSync } from "../hooks/useWorkLogSync";
+import type { WorkLogListItem } from "@scaffald/sdk";
+import { getStatusColor, getStatusLabel } from "../utils/status-formatting";
 
-type IconRenderer = typeof Activity
+type IconRenderer = typeof Activity;
 
 export function WorkLogListScreen() {
-  const router = useRouter()
+  const router = useRouter();
+  const { theme } = useThemeContext();
 
-  const listQuery = api.workLogs.list.useQuery(
+  const listQuery = useWorkLogs(
     {},
     {
       staleTime: 30_000,
-      refetchOnMount: 'always',
+      refetchOnMount: "always",
     }
-  )
+  );
 
   const {
     offlineWorkLogs,
@@ -31,83 +47,99 @@ export function WorkLogListScreen() {
     markWorkLogForSync,
     mutateOfflineWorkLog,
     removeOfflineWorkLog,
-  } = useOfflineWorkLogs()
+  } = useOfflineWorkLogs();
 
   const syncManager = useWorkLogSync({
     offlineWorkLogs,
     markWorkLogForSync,
     mutateOfflineWorkLog,
     removeOfflineWorkLog,
-  })
+  });
 
-  const hasOfflineQueue = offlineWorkLogs.length > 0
+  const hasOfflineQueue = offlineWorkLogs.length > 0;
 
   const handleRefresh = useCallback(() => {
-    void listQuery.refetch()
-  }, [listQuery])
+    void listQuery.refetch();
+  }, [listQuery]);
 
-  const aggregates = useMemo(() => listQuery.data?.aggregates ?? null, [listQuery.data])
-  const items: WorkLogListItem[] = listQuery.data?.items ?? []
+  const aggregates = null as {
+    totalHours?: number;
+    statusSummary?: {
+      draft: { count: number; hours: number };
+      pending_verification: { count: number; hours: number };
+      verified: { count: number; hours: number };
+      disputed: { count: number; hours: number };
+    };
+  } | null;
+  const items: WorkLogListItem[] = listQuery.data?.workLogs ?? [];
 
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
       refreshControl={
-        <RefreshControl refreshing={listQuery.isFetching} onRefresh={handleRefresh} />
+        <RefreshControl
+          refreshing={listQuery.isFetching}
+          onRefresh={handleRefresh}
+        />
       }
     >
-      <YStack gap="$4" padding="$4" flex={1}>
-        <XStack justifyContent="space-between" alignItems="center">
-          <YStack gap="$1">
-            <Text fontSize="$7" fontWeight="700">
-              Work Logs
+      <Stack gap={16} style={{ padding: 16 }} flex={1}>
+        <Row justify="space-between" align="center">
+          <Stack gap={4}>
+            <Text>Work Logs</Text>
+            <Text style={{ color: "#414e62" }}>
+              Track and review your daily work history, collaborate with
+              teammates, and manage verification.
             </Text>
-            <Paragraph color="$color10">
-              Track and review your daily work history, collaborate with teammates, and manage
-              verification.
-            </Paragraph>
-          </YStack>
+          </Stack>
           <Button
-            size="$4"
-            icon={Plus}
+            size="md"
+            iconStart={Plus}
             onPress={() => router.push(ROUTES.DASHBOARD.WORK_LOGS.CREATE.path)}
           >
             New Work Log
           </Button>
-        </XStack>
+        </Row>
 
         {hasOfflineQueue && (
-          <Card backgroundColor="$yellow3" borderColor="$yellow7" borderWidth={1}>
-            <YStack gap="$3" padding="$3">
-              <XStack gap="$3" alignItems="center">
+          <Card
+            style={{
+              backgroundColor: "#fef3c7",
+              borderColor: "#fbbf24",
+              borderWidth: 1,
+            }}
+          >
+            <Stack gap={12} style={{ padding: 8 }}>
+              <Row gap={12} align="center">
                 <CloudOff color="#b45309" />
-                <YStack gap="$1" flex={1}>
-                  <Text fontWeight="600" color="$yellow11">
+                <Stack gap={4} flex={1}>
+                  <Text style={{ color: "#92400e" }}>
                     Offline drafts ready to sync
                   </Text>
-                  <Paragraph color="$yellow11">
-                    {offlineWorkLogs.length} draft{offlineWorkLogs.length === 1 ? '' : 's'} will
-                    sync once you are back online.
-                  </Paragraph>
-                </YStack>
-              </XStack>
-              <XStack gap="$3" justifyContent="flex-end">
+                  <Text style={{ color: "#92400e" }}>
+                    {offlineWorkLogs.length} draft
+                    {offlineWorkLogs.length === 1 ? "" : "s"} will sync once you
+                    are back online.
+                  </Text>
+                </Stack>
+              </Row>
+              <Row gap={12} justify="flex-end">
                 <Button
-                  size="$3"
-                  variant="outlined"
+                  size="sm"
+                  variant="outline"
                   disabled={syncManager.isSyncing || isOfflineLoading}
                   onPress={() => syncManager.syncNow()}
                 >
-                  {syncManager.isSyncing ? 'Syncing…' : 'Sync Now'}
+                  {syncManager.isSyncing ? "Syncing…" : "Sync Now"}
                 </Button>
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           </Card>
         )}
 
         <AnalyticsBanner
           isLoading={listQuery.isLoading}
-          totalLogs={listQuery.data?.pagination.totalItems ?? 0}
+          totalLogs={listQuery.data?.totalCount ?? 0}
           totalHours={aggregates?.totalHours ?? 0}
           statusSummary={aggregates?.statusSummary}
         />
@@ -115,129 +147,143 @@ export function WorkLogListScreen() {
         <Separator />
 
         {listQuery.isLoading ? (
-          <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
-            <Spinner size="large" />
-            <Text color="$color10">Loading work logs…</Text>
-          </YStack>
+          <Stack flex={1} align="center" justify="center" gap={12}>
+            <Spinner size="lg" />
+            <Text style={{ color: "#414e62" }}>Loading work logs…</Text>
+          </Stack>
         ) : items.length === 0 ? (
-          <EmptyState onCreate={() => router.push(ROUTES.DASHBOARD.WORK_LOGS.CREATE.path)} />
+          <EmptyState
+            onCreate={() => router.push(ROUTES.DASHBOARD.WORK_LOGS.CREATE.path)}
+          />
         ) : (
-          <YStack gap="$3" paddingBottom="$6">
+          <Stack gap={12} paddingBottom={24}>
             {items.map((item) => (
               <Card
                 key={item.id}
-                hoverStyle={{ borderColor: '$color10' }}
-                pressStyle={{ borderColor: '$color8' }}
-                borderColor="$color6"
-                borderWidth={1}
+                style={{ borderWidth: 1 }}
                 onPress={() =>
-                  router.push(buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId: item.id }))
+                  router.push(
+                    buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, {
+                      workLogId: item.id,
+                    })
+                  )
                 }
               >
-                <YStack gap="$3" padding="$3">
-                  <XStack justifyContent="space-between" alignItems="center">
-                    <YStack gap="$1">
-                      <Text fontWeight="700" fontSize="$6">
-                        {item.project?.name ?? 'Unknown Project'}
+                <Stack gap={12} style={{ padding: 8 }}>
+                  <Row justify="space-between" align="center">
+                    <Stack gap={4}>
+                      <Text>{"Work Log"}</Text>
+                      <Text style={{ color: "#414e62" }}>
+                        {item.log_date
+                          ? formatDate(item.log_date)
+                          : "No date recorded"}
                       </Text>
-                      <Text color="$color10">
-                        {item.logDate ? formatDate(item.logDate) : 'No date recorded'}
-                      </Text>
-                    </YStack>
-                    <Text fontWeight="600" color={getStatusColor(item.status) as never}>
+                    </Stack>
+                    <Text style={{ color: getStatusColor(item.status, theme) }}>
                       {getStatusLabel(item.status)}
                     </Text>
-                  </XStack>
+                  </Row>
 
-                  <XStack gap="$2" flexWrap="wrap">
-                    <YStack
-                      paddingHorizontal="$2"
-                      paddingVertical="$1"
-                      borderRadius="$3"
-                      backgroundColor={item.visibility === 'public' ? '$green4' : '$gray4'}
+                  <Row gap={8} wrap>
+                    <Stack
+                      style={{
+                        paddingHorizontal: 8,
+                        paddingVertical: 4,
+                        borderRadius: 12,
+                        backgroundColor:
+                          item.visibility === "public" ? "#dcfce7" : "#f3f4f6",
+                      }}
                     >
                       <Text
-                        fontSize="$2"
-                        color={item.visibility === 'public' ? '$green11' : '$gray11'}
-                        fontWeight="600"
+                        style={{
+                          color:
+                            item.visibility === "public"
+                              ? "#16a34a"
+                              : "#414e62",
+                        }}
                       >
-                        {item.visibility === 'public' ? 'Public' : 'Private'}
+                        {item.visibility === "public" ? "Public" : "Private"}
                       </Text>
-                    </YStack>
-                    {item.showOnProfile && (
-                      <YStack
-                        paddingHorizontal="$2"
-                        paddingVertical="$1"
-                        borderRadius="$3"
-                        backgroundColor="$blue4"
+                    </Stack>
+                    {item.show_on_profile && (
+                      <Stack
+                        style={{
+                          paddingHorizontal: 8,
+                          paddingVertical: 4,
+                          borderRadius: 12,
+                          backgroundColor: "#dbeafe",
+                        }}
                       >
-                        <Text fontSize="$2" color="$blue11" fontWeight="600">
-                          On profile
-                        </Text>
-                      </YStack>
+                        <Text style={{ color: "#1d4ed8" }}>On profile</Text>
+                      </Stack>
                     )}
-                  </XStack>
+                  </Row>
 
-                  <XStack gap="$4" flexWrap="wrap">
+                  <Row gap={16} wrap>
                     <MetricPill
-                      icon={Activity}
+                      iconStart={Activity}
                       label="Hours"
-                      value={`${item.totalHours.toFixed(2)}h`}
+                      value={`${item.total_hours.toFixed(2)}h`}
                     />
                     <MetricPill
-                      icon={MessagesSquare}
+                      iconStart={MessagesSquare}
                       label="Comments"
                       value={`${item.commentCount ?? 0}`}
                     />
                     <MetricPill
-                      icon={DownloadCloud}
+                      iconStart={DownloadCloud}
                       label="Photos"
                       value={`${item.photoCount ?? 0}`}
                     />
-                  </XStack>
+                  </Row>
 
-                  {item.descriptionPreview && (
-                    <Paragraph numberOfLines={2} color="$color10">
-                      {item.descriptionPreview}
-                    </Paragraph>
+                  {item.work_description && (
+                    <Text style={{ color: "#414e62" }}>
+                      {item.work_description}
+                    </Text>
                   )}
 
-                  <XStack justifyContent="space-between" alignItems="center">
-                    <Text color="$color10" fontSize="$3">
-                      Updated {item.updatedAt ? formatDate(item.updatedAt) : 'recently'}
+                  <Row justify="space-between" align="center">
+                    <Text style={{ color: "#414e62" }}>
+                      Updated{" "}
+                      {item.updated_at
+                        ? formatDate(item.updated_at)
+                        : "recently"}
                     </Text>
                     <Button
-                      size="$3"
-                      variant="outlined"
+                      size="sm"
+                      variant="outline"
                       onPress={() =>
                         router.push(
-                          buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId: item.id })
+                          buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, {
+                            workLogId: item.id,
+                          })
                         )
                       }
                     >
                       View Details
                     </Button>
-                  </XStack>
-                </YStack>
+                  </Row>
+                </Stack>
               </Card>
             ))}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     </ScrollView>
-  )
+  );
 }
 
 interface AnalyticsBannerProps {
-  isLoading: boolean
-  totalLogs: number
-  totalHours: number
+  isLoading: boolean;
+  totalLogs: number;
+  totalHours: number;
   statusSummary?: {
-    draft: { count: number; hours: number }
-    pending_verification: { count: number; hours: number }
-    verified: { count: number; hours: number }
-    disputed: { count: number; hours: number }
-  }
+    draft: { count: number; hours: number };
+    pending_verification: { count: number; hours: number };
+    verified: { count: number; hours: number };
+    disputed: { count: number; hours: number };
+  };
 }
 
 function AnalyticsBanner({
@@ -247,26 +293,27 @@ function AnalyticsBanner({
   statusSummary,
 }: AnalyticsBannerProps) {
   return (
-    <Card borderColor="$color6" borderWidth={1}>
-      <YStack gap="$3" padding="$3">
-        <Text fontWeight="700" fontSize="$5">
-          Quick summary
-        </Text>
+    <Card style={{ borderWidth: 1 }}>
+      <Stack gap={12} style={{ padding: 8 }}>
+        <Text>Quick summary</Text>
         {isLoading && !statusSummary ? (
-          <XStack gap="$3" alignItems="center">
-            <Spinner size="small" />
-            <Text color="$color10">Calculating analytics…</Text>
-          </XStack>
+          <Row gap={12} align="center">
+            <Spinner size="sm" />
+            <Text style={{ color: "#414e62" }}>Calculating analytics…</Text>
+          </Row>
         ) : (
-          <YStack gap="$3">
-            <XStack gap="$4" flexWrap="wrap">
+          <Stack gap={12}>
+            <Row gap={16} wrap>
               <SummaryTile label="Total Logs" value={String(totalLogs)} />
-              <SummaryTile label="Total Hours" value={`${totalHours.toFixed(2)}h`} />
+              <SummaryTile
+                label="Total Hours"
+                value={`${totalHours.toFixed(2)}h`}
+              />
               <SummaryTile
                 label="Verified"
                 value={String(statusSummary?.verified.count ?? 0)}
                 subtitle={`${(statusSummary?.verified.hours ?? 0).toFixed(1)}h`}
-                color="$green10"
+                color="#16a34a"
               />
               <SummaryTile
                 label="Needs Attention"
@@ -276,94 +323,90 @@ function AnalyticsBanner({
                 )}
                 subtitle={`${(
                   (statusSummary?.pending_verification.hours ?? 0) +
-                    (statusSummary?.disputed.hours ?? 0)
+                  (statusSummary?.disputed.hours ?? 0)
                 ).toFixed(1)}h`}
-                color="$orange10"
+                color="#ea580c"
               />
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
     </Card>
-  )
+  );
 }
 
 interface SummaryTileProps {
-  label: string
-  value: string
-  subtitle?: string
-  color?: string
+  label: string;
+  value: string;
+  subtitle?: string;
+  color?: string;
 }
 
-function SummaryTile({ label, value, subtitle, color = '$color12' }: SummaryTileProps) {
+function SummaryTile({ label, value, subtitle, color }: SummaryTileProps) {
   return (
-    <YStack
-      backgroundColor="$color2"
-      borderRadius="$4"
-      paddingHorizontal="$4"
-      paddingVertical="$3"
-      gap="$1"
+    <Stack
+      style={{ borderRadius: 16, paddingHorizontal: 16, paddingVertical: 12 }}
+      gap={4}
       flexShrink={0}
     >
-      <Text fontWeight="600" color="$color10">
-        {label}
-      </Text>
-      <Text fontSize="$6" fontWeight="700" color={color as never}>
-        {value}
-      </Text>
-      {subtitle && (
-        <Text fontSize="$3" color="$color10">
-          {subtitle}
-        </Text>
-      )}
-    </YStack>
-  )
+      <Text style={{ color: "#414e62" }}>{label}</Text>
+      <Text style={color ? { color } : undefined}>{value}</Text>
+      {subtitle && <Text style={{ color: "#414e62" }}>{subtitle}</Text>}
+    </Stack>
+  );
 }
 
 interface MetricPillProps {
-  icon: IconRenderer
-  label: string
-  value: string
+  iconStart: IconRenderer;
+  label: string;
+  value: string;
 }
 
-function MetricPill({ icon: IconComponent, label, value }: MetricPillProps) {
+function MetricPill({
+  iconStart: IconComponent,
+  label,
+  value,
+}: MetricPillProps) {
   return (
-    <XStack
-      backgroundColor="$color3"
-      paddingHorizontal="$3"
-      paddingVertical="$2"
-      borderRadius="$4"
-      gap="$2"
-      alignItems="center"
+    <Row
+      style={{ borderRadius: 16, paddingHorizontal: 12, paddingVertical: 8 }}
+      gap={8}
+      align="center"
     >
-      <IconComponent size={16} color="$color10" />
-      <Text fontWeight="600">{value}</Text>
-      <Text fontSize="$3" color="$color10">
-        {label}
-      </Text>
-    </XStack>
-  )
+      <IconComponent size="md" color="#414e62" />
+      <Text>{value}</Text>
+      <Text style={{ color: "#414e62" }}>{label}</Text>
+    </Row>
+  );
 }
 
 interface EmptyStateProps {
-  onCreate: () => void
+  onCreate: () => void;
 }
 
 function EmptyState({ onCreate }: EmptyStateProps) {
   return (
-    <Card borderColor="$color6" borderWidth={1}>
-      <YStack gap="$3" alignItems="center" paddingVertical="$8" paddingHorizontal="$4">
-        <Text fontSize="$6" fontWeight="700">
-          No work logs yet
+    <Card style={{ borderWidth: 1 }}>
+      <Stack
+        gap={12}
+        align="center"
+        style={{ paddingVertical: 32, paddingHorizontal: 16 }}
+      >
+        <Text>No work logs yet</Text>
+        <Text
+          style={{
+            color: "#414e62",
+            textAlign: "center",
+            paddingHorizontal: 24,
+          }}
+        >
+          Create your first work log to start tracking hours, documenting tasks,
+          and collaborating with your team.
         </Text>
-        <Paragraph color="$color10" paddingHorizontal="$6" style={{ textAlign: 'center' }}>
-          Create your first work log to start tracking hours, documenting tasks, and collaborating
-          with your team.
-        </Paragraph>
-        <Button size="$4" icon={DownloadCloud} onPress={onCreate}>
+        <Button size="md" iconStart={DownloadCloud} onPress={onCreate}>
           Record Work Log
         </Button>
-      </YStack>
+      </Stack>
     </Card>
-  )
+  );
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Clock, CheckCircle } from 'lucide-react';
-import { Stack, Row, Text, H2, H3, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H2, H3, Card } from '@scaffald/ui';
 import { Task } from '../../types';
 import { formatDate, isOverdue } from '../../utils/dateHelpers';
 import TaskDetailModal from './TaskDetailModal';

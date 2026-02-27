@@ -1,5 +1,5 @@
-import { Check } from '@tamagui/lucide-icons'
-import { Circle, Text, XStack, YStack } from '@unicornlove/ui'
+import { Check } from 'lucide-react-native'
+import { Text, Row, Stack } from '@scaffald/ui'
 
 export interface AssessmentStep {
   id: string
@@ -30,35 +30,29 @@ export function AssessmentProgress({
 
   if (orientation === 'vertical') {
     return (
-      <YStack gap="$5" width="100%">
+      <Stack gap={20} width="100%">
         {completionScore !== undefined && (
-          <YStack gap="$2">
-            <Text fontSize="$3" fontWeight="600" color="$color11">
-              Progress
-            </Text>
-            <YStack gap="$1">
-              <XStack
+          <Stack gap={8}>
+            <Text color="$gray11">Progress</Text>
+            <Stack gap={4}>
+              <Row
                 height={8}
-                backgroundColor="$color5"
-                borderRadius="$10"
-                overflow="hidden"
-                width="100%"
+                style={{ backgroundColor: '#e5e7eb', overflow: 'hidden', width: '100%' }}
+                borderRadius={10}
               >
-                <XStack
+                <Row
                   height="100%"
-                  backgroundColor="$blue9"
-                  width={`${completionScore}%`}
-                  animation="quick"
+                  style={{ backgroundColor: '#3b82f6', width: `${completionScore}%` }}
                 />
-              </XStack>
-              <Text fontSize="$2" fontWeight="600" color="$blue10" style={{ textAlign: 'right' }}>
+              </Row>
+              <Text color="$blue10" align="right">
                 {completionScore}%
               </Text>
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         )}
 
-        <YStack gap="$4">
+        <Stack gap={16}>
           {sortedSteps.map((step, index) => {
             const isCompleted = completedSteps.has(step.id)
             const isCurrent = step.id === currentStep
@@ -78,85 +72,75 @@ export function AssessmentProgress({
                 : '$color10'
 
             return (
-              <XStack key={step.id} gap="$3" alignItems="flex-start">
-                <YStack alignItems="center" gap="$1" style={{ minWidth: 32 }}>
-                  <Circle
-                    size={32}
-                    backgroundColor={isCompleted ? '$green9' : isCurrent ? '$blue9' : '$color6'}
-                    borderWidth={2}
-                    borderColor={isCurrent ? '$blue11' : 'transparent'}
-                    alignItems="center"
-                    justifyContent="center"
+              <Row key={step.id} gap={12} align="flex-start">
+                <Stack align="center" gap={4} style={{ minWidth: 32 }}>
+                  <Stack
+                    width={32}
+                    height={32}
+                    borderRadius={16}
+                    align="center"
+                    justify="center"
+                    style={{
+                      backgroundColor: isCompleted ? '#22c55e' : isCurrent ? '#3b82f6' : '#e5e7eb',
+                      borderWidth: 2,
+                      borderColor: isCurrent ? '#1d4ed8' : 'transparent',
+                    }}
                   >
                     {isCompleted ? (
                       <Check size={18} color="white" />
                     ) : (
-                      <Text fontSize="$2" fontWeight="600" color={isCurrent ? 'white' : '$color11'}>
-                        {index + 1}
-                      </Text>
+                      <Text color={isCurrent ? 'white' : '#6b7280'}>{index + 1}</Text>
                     )}
-                  </Circle>
+                  </Stack>
                   {!isLast && (
-                    <YStack
-                      backgroundColor={isCompleted || isPast ? '$blue8' : '$color6'}
-                      opacity={isCompleted || isPast ? 0.85 : 0.4}
-                      style={{ width: 2, flexGrow: 1, minHeight: 24 }}
+                    <Stack
+                      style={{
+                        width: 2,
+                        flexGrow: 1,
+                        minHeight: 24,
+                        backgroundColor: isCompleted || isPast ? '#93c5fd' : '#e5e7eb',
+                        opacity: isCompleted || isPast ? 0.85 : 0.4,
+                      }}
                     />
                   )}
-                </YStack>
+                </Stack>
 
-                <YStack gap="$1" flex={1}>
-                  <Text
-                    fontSize="$3"
-                    fontWeight={isCurrent ? '700' : '500'}
-                    color={isCurrent ? '$color12' : '$color11'}
-                  >
-                    {step.label}
-                  </Text>
-                  <Text fontSize="$2" color={statusColor}>
-                    {statusLabel}
-                  </Text>
-                </YStack>
-              </XStack>
+                <Stack gap={4} flex={1}>
+                  <Text color={isCurrent ? '$color12' : '$color11'}>{step.label}</Text>
+                  <Text color={statusColor}>{statusLabel}</Text>
+                </Stack>
+              </Row>
             )
           })}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$3" width="100%">
+    <Stack gap={12} width="100%">
       {/* Progress Bar */}
       {completionScore !== undefined && (
-        <YStack gap="$2">
-          <XStack justifyContent="space-between" alignItems="center">
-            <Text fontSize="$3" color="$color11">
-              Progress
-            </Text>
-            <Text fontSize="$4" fontWeight="600" color="$blue10">
-              {completionScore}%
-            </Text>
-          </XStack>
-          <XStack
+        <Stack gap={8}>
+          <Row justify="space-between" align="center">
+            <Text color="$gray11">Progress</Text>
+            <Text color="$blue10">{completionScore}%</Text>
+          </Row>
+          <Row
             height={8}
-            backgroundColor="$color5"
-            borderRadius="$10"
-            overflow="hidden"
-            width="100%"
+            style={{ backgroundColor: '#e5e7eb', overflow: 'hidden', width: '100%' }}
+            borderRadius={10}
           >
-            <XStack
+            <Row
               height="100%"
-              backgroundColor="$blue9"
-              width={`${completionScore}%`}
-              animation="quick"
+              style={{ backgroundColor: '#3b82f6', width: `${completionScore}%` }}
             />
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       )}
 
       {/* Step Indicators */}
-      <XStack gap="$2" flexWrap="wrap" justifyContent="center" $md={{ gap: '$6' }}>
+      <Row gap={8} wrap justify="center">
         {sortedSteps.map((step, index) => {
           const isCompleted = completedSteps.has(step.id)
           const isCurrent = step.id === currentStep
@@ -164,39 +148,35 @@ export function AssessmentProgress({
           const isPast = currentStepIndex > index
 
           return (
-            <XStack
+            <Row
               key={step.id}
-              alignItems="center"
-              gap="$2"
-              opacity={isPast || isCurrent || isCompleted ? 1 : 0.5}
+              align="center"
+              gap={8}
+              style={{ opacity: isPast || isCurrent || isCompleted ? 1 : 0.5 }}
             >
-              <Circle
-                size={32}
-                backgroundColor={isCompleted ? '$green9' : isCurrent ? '$blue9' : '$color6'}
-                borderWidth={2}
-                borderColor={isCurrent ? '$blue11' : 'transparent'}
-                alignItems="center"
-                justifyContent="center"
+              <Stack
+                width={32}
+                height={32}
+                borderRadius={16}
+                align="center"
+                justify="center"
+                style={{
+                  backgroundColor: isCompleted ? '#22c55e' : isCurrent ? '#3b82f6' : '#e5e7eb',
+                  borderWidth: 2,
+                  borderColor: isCurrent ? '#1d4ed8' : 'transparent',
+                }}
               >
                 {isCompleted ? (
-                  <Check size={16} color="white" />
+                  <Check size={24} color="white" />
                 ) : (
-                  <Text fontSize="$2" fontWeight="600" color={isCurrent ? 'white' : '$color11'}>
-                    {index + 1}
-                  </Text>
+                  <Text color={isCurrent ? 'white' : '#6b7280'}>{index + 1}</Text>
                 )}
-              </Circle>
-              <Text
-                fontSize="$2"
-                fontWeight={isCurrent ? '600' : '400'}
-                color={isCurrent ? '$color12' : '$color11'}
-              >
-                {step.label}
-              </Text>
-            </XStack>
+              </Stack>
+              <Text color={isCurrent ? '$color12' : '$color11'}>{step.label}</Text>
+            </Row>
           )
         })}
-      </XStack>
-    </YStack>
+      </Row>
+    </Stack>
   )
 }

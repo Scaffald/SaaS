@@ -1,6 +1,7 @@
-import { Input, Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
+import { Input, Text, ToggleSwitch, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { useState } from 'react'
-import { Label, TextArea } from '@unicornlove/ui'
+import { Label, TextArea } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface LocationSchedulingSectionProps {
   relocationAssistanceOffered?: boolean
@@ -22,6 +23,7 @@ export function LocationSchedulingSection({
   timezone,
   onUpdate,
 }: LocationSchedulingSectionProps) {
+  const { theme } = useThemeContext()
   const [localState, setLocalState] = useState({
     relocation_assistance_offered: relocationAssistanceOffered,
     relocation_assistance_details: relocationAssistanceDetails,
@@ -36,38 +38,36 @@ export function LocationSchedulingSection({
   }
 
   return (
-    <YStack
-      gap="$4"
-      padding="$4"
-      backgroundColor="$background"
-      borderRadius="$4"
+    <Stack
+      gap={16}
+      padding="md"
+      style={{ backgroundColor: colors.bg[theme].default }}
+      borderRadius={16}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
     >
-      <Text fontSize="$6" fontWeight="600">
-        Location & Scheduling
-      </Text>
-      <Text fontSize="$2" color="$color10">
+      <Text>Location & Scheduling</Text>
+      <Text style={{ color: colors.text[theme].secondary }}>
         Work location and schedule information
       </Text>
 
       {/* Relocation Assistance */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Relocation assistance offered</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Company provides relocation support
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.relocation_assistance_offered || false}
-          onCheckedChange={(checked) => handleChange('relocation_assistance_offered', checked)}
+          onChange={(checked) => handleChange('relocation_assistance_offered', checked)}
           aria-label="Relocation assistance offered"
         />
-      </XStack>
+      </Row>
 
       {localState.relocation_assistance_offered && (
-        <YStack gap="$2">
+        <Stack gap={8}>
           <Label>Relocation assistance details</Label>
           <TextArea
             placeholder="Describe relocation assistance provided"
@@ -75,31 +75,31 @@ export function LocationSchedulingSection({
             onChangeText={(text) =>
               handleChange('relocation_assistance_details', text || undefined)
             }
-            height={80}
+            style={{ minHeight: 80 }}
           />
-        </YStack>
+        </Stack>
       )}
 
       {/* Work Schedule Details */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Work schedule details</Label>
         <TextArea
           placeholder="e.g. Monday-Friday 8am-5pm, flexible hours, compressed workweek"
           value={localState.work_schedule_details || ''}
           onChangeText={(text) => handleChange('work_schedule_details', text || undefined)}
-          height={80}
+          style={{ minHeight: 80 }}
         />
-      </YStack>
+      </Stack>
 
       {/* Timezone */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Timezone</Label>
         <Input
           placeholder="e.g. America/New_York, Pacific Time"
           value={localState.timezone || ''}
           onChangeText={(text) => handleChange('timezone', text || undefined)}
         />
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

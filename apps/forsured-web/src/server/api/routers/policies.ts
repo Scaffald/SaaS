@@ -1,10 +1,10 @@
 /**
  * Policies Router
- * REQ-280: Insurance Coverage Detail Requirements
+ * Insurance Coverage Detail Requirements
  * TASK-2: Build API Endpoints for Policy Provisions with Validation
  *
  * Implements insurance policy and policy provisions management with
- * GL sub-limit validation per REQ-280 requirements.
+ * GL sub-limit validation per requirements.
  */
 
 import { z } from 'zod';
@@ -83,7 +83,7 @@ function getRequirementString(provisionType: ProvisionType): string {
 
 /**
  * Validate a single policy provision against GL requirements
- * REQ-280: Validates each provision against specified requirements
+ * Validates each provision against specified requirements
  */
 function validateProvision(
   provision: PolicyProvision & { provision_value?: string | null }
@@ -206,7 +206,7 @@ function validateProvision(
 
 /**
  * Validate deductible against GL maximum
- * REQ-280: Deductible must be at most $10,000
+ * Deductible must be at most $10,000
  */
 function validateDeductible(deductible: number | null | undefined): ProvisionValidationResult {
   const result: ProvisionValidationResult = {
@@ -357,7 +357,7 @@ export const policiesRouter = createTRPCRouter({
 
   /**
    * Get policy provisions with validation results
-   * REQ-280: Main endpoint for GL sub-limits with validation
+   * Main endpoint for GL sub-limits with validation
    */
   getProvisions: protectedProcedure
     .input(
@@ -566,7 +566,7 @@ export const policiesRouter = createTRPCRouter({
 
   /**
    * Get GL sub-limits display data for the CoverageTable component
-   * REQ-280: Returns formatted data ready for UI rendering
+   * Returns formatted data ready for UI rendering
    */
   getGLSubLimitsDisplay: protectedProcedure
     .input(

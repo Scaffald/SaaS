@@ -4,17 +4,13 @@ import {
   TeamAnalyticsCharts,
   TeamAnalyticsSummary,
 } from '@scf/core/features/office/teams'
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
-import { ArrowLeft, BarChart3 } from '@tamagui/lucide-icons'
-import type { inferRouterOutputs } from '@trpc/server'
+import { useTeam, useTeamMembers } from '@scf/core/utils/teams-sdk-hooks'
+import type { TeamMember } from '@scaffald/sdk'
+import { ArrowLeft, BarChart3 } from 'lucide-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo } from 'react'
 import { ScrollView } from 'react-native'
-import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-
-type MembersListOutput = inferRouterOutputs<AppRouter>['teams']['members']['list']
-type MemberRecord = NonNullable<MembersListOutput['members']>[number]
+import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 export default function TeamAnalyticsPage() {
   const { id } = useLocalSearchParams<{ id?: string }>()
@@ -22,27 +18,16 @@ export default function TeamAnalyticsPage() {
 
   const teamId = typeof id === 'string' ? id : ''
 
-  const teamQuery = api.teams.byId.useQuery(
-    { teamId },
-    {
-      enabled: Boolean(teamId),
-    }
-  )
+  const teamQuery = useTeam(teamId || undefined, { enabled: Boolean(teamId) })
 
-  const membersQuery = api.teams.members.list.useQuery(
-    { teamId },
-    {
-      enabled: Boolean(teamId),
-      staleTime: 60_000,
-    }
-  )
+  const membersQuery = useTeamMembers(teamId || undefined, { enabled: Boolean(teamId) })
 
   const team = teamQuery.data?.team ?? null
 
   const mentionOptions = useMemo((): Array<{ id: string; label: string }> => {
     if (!membersQuery.data?.members) return []
-    return (membersQuery.data.members as MemberRecord[])
-      .map((member: MemberRecord) => ({
+    return (membersQuery.data.members as TeamMember[])
+      .map((member: TeamMember) => ({
         id: member.user?.id ?? '',
         label:
           member.user?.displayName ??
@@ -57,7 +42,7 @@ export default function TeamAnalyticsPage() {
 
     const directory: Record<string, { displayName?: string | null; username?: string | null }> = {}
 
-    for (const member of membersQuery.data.members as MemberRecord[]) {
+    for (const member of membersQuery.data.members as TeamMember[]) {
       if (!member.user?.id) continue
       directory[member.user.id] = {
         displayName: member.user.displayName ?? null,
@@ -81,10 +66,10 @@ export default function TeamAnalyticsPage() {
 
   if (teamQuery.isLoading && !team) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
-        <Spinner size="large" />
-        <Text color="$color11">Loading team analytics…</Text>
-      </YStack>
+      <Stack align="center" justify="center" gap={12}>
+        <Spinner size="lg" />
+        <Text color="gray">Loading team analytics…</Text>
+      </Stack>
     )
   }
 
@@ -105,38 +90,36 @@ export default function TeamAnalyticsPage() {
 
   return (
     <ScrollView>
-      <YStack gap="$5" padding="$4" paddingBottom="$8">
-        <XStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
-          <XStack gap="$2" alignItems="center">
+      <Stack gap={20} padding={16} paddingBottom={32}>
+        <Row justify="space-between" align="center" gap={12}>
+          <Row gap={8} align="center">
             <Button
-              size="$2"
-              variant="outlined"
-              icon={ArrowLeft}
+              size="md"
+              variant="outline"
+              iconStart={ArrowLeft}
               onPress={() => router.push(RouteBuilder.officeTeamsDetail(team.id))}
             >
               Back to team
             </Button>
-            <XStack gap="$2" alignItems="center">
+            <Row gap={8} align="center">
               <BarChart3 size={20} />
-              <YStack>
-                <Text fontSize="$6" fontWeight="700">
-                  {team.name ?? 'Team analytics'}
-                </Text>
-                <Text fontSize="$3" color="$color10">
+              <Stack>
+                <Text>{team.name ?? 'Team analytics'}</Text>
+                <Text color="gray">
                   Insights for collaboration, hiring throughput, and workload.
                 </Text>
-              </YStack>
-            </XStack>
-          </XStack>
+              </Stack>
+            </Row>
+          </Row>
 
           <Button
-            size="$2"
-            variant="outlined"
+            size="md"
+            variant="outline"
             onPress={() => router.push(RouteBuilder.officeTeamsSettings(team.id))}
           >
             Team settings
           </Button>
-        </XStack>
+        </Row>
 
         <TeamAnalyticsSummary teamId={team.id} />
 
@@ -147,7 +130,7 @@ export default function TeamAnalyticsPage() {
           mentionOptions={mentionOptions}
           memberDirectory={memberDirectory}
         />
-      </YStack>
+      </Stack>
     </ScrollView>
   )
 }
@@ -164,20 +147,14 @@ function FallbackCard({
   onAction: () => void
 }) {
   return (
-    <YStack flex={1} alignItems="center" justifyContent="center" paddingHorizontal="$4">
-      <Card
-        borderWidth={1}
-        borderColor="$borderColor"
-        backgroundColor="$color2"
-        padding="$4"
-        gap="$3"
-      >
-        <Text fontSize="$6" fontWeight="700">
-          {title}
-        </Text>
-        <Text color="$color11">{description}</Text>
-        <Button onPress={onAction}>{actionLabel}</Button>
+    <Stack align="center" justify="center">
+      <Card padding="md">
+        <Stack gap={12}>
+          <Text>{title}</Text>
+          <Text color="gray">{description}</Text>
+          <Button onPress={onAction}>{actionLabel}</Button>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   )
 }

@@ -2,8 +2,8 @@ import {
   CookieConsentBanner,
   type CookieConsentStorage,
   CookiePreferencesDialog,
-  CookieConsentProvider as UICookieConsentProvider,
-} from '@unicornlove/ui'
+  CookieConsentProvider as BeyondCookieConsentProvider,
+} from '@scaffald/ui'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import type { ReactNode } from 'react'
 
@@ -37,7 +37,7 @@ const storageAdapter: CookieConsentStorage = {
 
 export const CookieConsentProvider = ({ children }: { children: ReactNode }) => {
   return (
-    <UICookieConsentProvider
+    <BeyondCookieConsentProvider
       storage={storageAdapter}
       storageKey={STORAGE_KEY}
       policyVersion={POLICY_VERSION}
@@ -45,6 +45,6 @@ export const CookieConsentProvider = ({ children }: { children: ReactNode }) => 
       {children}
       <CookieConsentBanner />
       <CookiePreferencesDialog />
-    </UICookieConsentProvider>
+    </BeyondCookieConsentProvider>
   )
 }

@@ -1,10 +1,16 @@
 import { AssessmentProgress, AssessmentWizard } from '@scf/core/features/assessments'
 import { LuscherTestStep } from '@scf/core/features/personality-assessment/components/LuscherTestStep'
-import { api } from '@scf/core/utils/api'
+import {
+  useAssessmentStatus,
+  useLuscherTestAvailability,
+  useSaveLuscher1Mutation,
+  useSaveLuscherTestSessionMutation,
+} from '@scf/core/utils/personality-assessment-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
 import { DashboardLayout } from '@scf/core/components/layouts'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@scaffald/ui'
 import { useEffect, useState } from 'react'
-import { Text, YStack } from '@unicornlove/ui'
+import { Text, Stack } from '@scaffald/ui'
 import { CooldownStep, IntroductionStep, ResultsSidebar, ResultsStep } from './components'
 
 type TestStep = 'intro' | 'luscher1' | 'cooldown' | 'luscher2' | 'results'
@@ -14,7 +20,7 @@ type TestStep = 'intro' | 'luscher1' | 'cooldown' | 'luscher2' | 'results'
  * Combines Test 1 and Test 2 into a single flow with intro, cooldown, and results
  */
 export function LuscherTestWizard() {
-  const toast = useToastController()
+  const toast = useToast()
 
   const [currentStep, setCurrentStep] = useState<TestStep>('intro')
   const [luscher1Choices, setLuscher1Choices] = useState<number[]>([])
@@ -23,21 +29,26 @@ export function LuscherTestWizard() {
   const [cooldownEndTime, setCooldownEndTime] = useState<string>('')
 
   // Get assessment status and availability
-  const { data: availability, isLoading: isLoadingAvailability } =
-    api.personalityAssessment.getLuscherTestAvailability.useQuery()
+  const { data: availabilityData, isLoading: isLoadingAvailability } = useLuscherTestAvailability()
 
   // Get existing assessment if available
-  const { data: assessment } = api.personalityAssessment.getAssessmentStatus.useQuery()
+  const { data: assessmentData } = useAssessmentStatus()
 
-  const utils = api.useUtils()
+  const queryClient = useQueryClient()
+
+  const availability = availabilityData
+  const assessment = assessmentData?.data
 
   // Save Part 1 mutation
-  const savePart1Mutation = api.personalityAssessment.saveLuscher1.useMutation({
+  const savePart1Mutation = useSaveLuscher1Mutation({
     onSuccess: async () => {
       // Fetch the updated assessment to get the cooldown_end_time from the database
-      const updated = await utils.personalityAssessment.getAssessmentStatus.fetch()
-      if (updated?.cooldown_end_time) {
-        setCooldownEndTime(updated.cooldown_end_time)
+      await queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
+      const updated = (await queryClient.fetchQuery({
+        queryKey: ['personality-assessment', 'status'],
+      })) as { data?: { cooldown_end_time?: string } } | undefined
+      if (updated?.data?.cooldown_end_time) {
+        setCooldownEndTime(updated.data.cooldown_end_time)
       } else {
         // Fallback: calculate cooldown end time (60 seconds from now)
         const endTime = new Date(Date.now() + 60 * 1000).toISOString()
@@ -46,25 +57,31 @@ export function LuscherTestWizard() {
       setCurrentStep('cooldown')
     },
     onError: (error: { message?: string }) => {
-      toast.show('Error', {
+      toast.show({
+        title: 'Error',
         message: error.message || 'Failed to save test. Please try again.',
+        variant: 'error',
       })
     },
   })
 
   // Save Part 2 mutation (completes test)
-  const savePart2Mutation = api.personalityAssessment.saveLuscherTestSession.useMutation({
+  const savePart2Mutation = useSaveLuscherTestSessionMutation({
     onSuccess: () => {
       // Invalidate all related queries
-      utils.personalityAssessment.getLuscherTestAvailability.invalidate()
-      utils.personalityAssessment.getAssessmentStatus.invalidate()
-      utils.personalityAssessment.getLuscherTest1Status.invalidate()
-      utils.personalityAssessment.getLuscherTest2Status.invalidate()
+      queryClient.invalidateQueries({
+        queryKey: ['personality-assessment', 'luscher', 'availability'],
+      })
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'luscher-1', 'status'] })
+      queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'luscher-2', 'status'] })
       setCurrentStep('results')
     },
     onError: (error: { message?: string }) => {
-      toast.show('Error', {
+      toast.show({
+        title: 'Error',
         message: error.message || 'Failed to save test. Please try again.',
+        variant: 'error',
       })
     },
   })
@@ -194,15 +211,11 @@ export function LuscherTestWizard() {
   const showResultsSidebar = effectiveCurrentStep === 'results'
 
   const railContent = (
-    <YStack gap="$5" padding="$2" $md={{ padding: '$1' }}>
-      <YStack gap="$1">
-        <Text fontSize="$5" fontWeight="700" color="$color12">
-          Weekly Pulse
-        </Text>
-        <Text fontSize="$3" color="$color10">
-          Track your focus and readiness through five quick moments.
-        </Text>
-      </YStack>
+    <Stack gap={20} padding="xs">
+      <Stack gap={4}>
+        <Text color="$gray11">Weekly Pulse</Text>
+        <Text color="$gray11">Track your focus and readiness through five quick moments.</Text>
+      </Stack>
 
       {!showResultsSidebar && (
         <AssessmentProgress
@@ -217,7 +230,7 @@ export function LuscherTestWizard() {
       {showResultsSidebar && (
         <ResultsSidebar xpAwarded={5} nextAvailableAt={availability?.nextAvailableAt || null} />
       )}
-    </YStack>
+    </Stack>
   )
 
   const wizardContent = (

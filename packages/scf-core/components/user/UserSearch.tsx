@@ -1,7 +1,9 @@
-import { api } from '@scf/core/utils/api'
+import { useOfficeListUsers } from '@scf/core/utils/office-users-sdk-hooks'
 import { useDebounce } from '@scf/core/utils/useDebounce'
+import type { OfficeUser } from '@scaffald/sdk'
 import { useEffect, useState } from 'react'
-import { Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Pressable } from 'react-native'
+import { Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 export interface UserSearchProps {
   value?: string // user ID
@@ -12,21 +14,12 @@ export interface UserSearchProps {
   disabled?: boolean
 }
 
-interface User {
-  id: string
-  username: string
-  display_name: string | null
-  first_name: string
-  last_name: string
-  avatar_path: string | null
-}
-
-const getUserDisplayName = (user: User): string => {
+const getUserDisplayName = (user: OfficeUser): string => {
   if (user.first_name || user.last_name) {
     const name = `${user.first_name || ''} ${user.last_name || ''}`.trim()
-    return name ? `${name} (${user.username})` : user.username
+    return name ? `${name} (${user.username || ''})` : (user.username || '')
   }
-  return user.display_name || user.username
+  return user.display_name || user.username || ''
 }
 
 /**
@@ -54,16 +47,14 @@ export function UserSearch({
   const [selectedUserName, setSelectedUserName] = useState('')
   const [showResults, setShowResults] = useState(false)
 
-  // Fetch all users (office.listUsers doesn't support search, so we filter client-side)
-  const { data, isLoading } = api.office.listUsers.useQuery(undefined, {
-    enabled: true, // Always fetch users for filtering
-  })
+  // Fetch all users (filter client-side)
+  const { data, isLoading } = useOfficeListUsers()
 
   // Debounce search term for filtering
   const debouncedSearch = useDebounce(searchTerm, 300)
 
   // Filter users based on search term
-  const filteredUsers = (data?.users || []).filter((user: User) => {
+  const filteredUsers = (data?.users || []).filter((user: OfficeUser) => {
     if (!debouncedSearch || debouncedSearch.length < 2) return false
 
     const searchLower = debouncedSearch.toLowerCase()
@@ -82,7 +73,7 @@ export function UserSearch({
   })
 
   // Get selected user details when value is provided (for edit mode)
-  const selectedUser = value ? (data?.users || []).find((u: User) => u.id === value) : null
+  const selectedUser = value ? (data?.users || []).find((u: OfficeUser) => u.id === value) : null
 
   // Update display name when value changes (edit mode)
   useEffect(() => {
@@ -99,7 +90,7 @@ export function UserSearch({
     }
   }, [value, selectedUser, selectedUserName])
 
-  const handleSelect = (user: User) => {
+  const handleSelect = (user: OfficeUser) => {
     const userName = getUserDisplayName(user)
     setSearchTerm(userName)
     setSelectedUserName(userName)
@@ -141,127 +132,103 @@ export function UserSearch({
     showResults && debouncedSearch.length >= 2 && (filteredUsers.length > 0 || isLoading)
 
   return (
-    <YStack gap="$2" position="relative" width="100%">
-      <XStack
-        gap="$2"
-        alignItems="center"
-        borderWidth={1}
-        borderColor={error ? '$red8' : '$borderColor'}
-        borderRadius="$4"
-        backgroundColor="$background"
-        paddingHorizontal="$3"
-        paddingVertical="$2"
-        focusStyle={{
-          borderColor: error ? '$red8' : '$color8',
+    <Stack gap={8} style={{ position: 'relative', width: '100%' }}>
+      <Row
+        gap={8}
+        align="center"
+        style={{
+          borderWidth: 1,
+          borderColor: error ? '#ef4444' : '#e4e4e7',
+          borderRadius: 16,
+          backgroundColor: '#ffffff',
+          paddingHorizontal: 12,
+          paddingVertical: 8,
         }}
       >
         <Input
-          flex={1}
+          style={{ flex: 1 }}
           placeholder={placeholder}
           value={searchTerm}
           onChangeText={handleInputChange}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
           disabled={disabled}
-          borderWidth={0}
-          backgroundColor="transparent"
-          fontSize="$4"
         />
-        {isLoading && <Spinner size="small" />}
+        {isLoading && <Spinner size="sm" />}
         {searchTerm && !isLoading && (
-          <Text
-            fontSize="$3"
-            color="$color10"
-            cursor="pointer"
-            onPress={handleClear}
-            paddingHorizontal="$2"
-          >
+          <Text color="secondary" onPress={handleClear} style={{ paddingHorizontal: 8 }}>
             ✕
           </Text>
         )}
-      </XStack>
+      </Row>
 
       {showDropdown && (
-        <YStack
-          position="absolute"
-          top="100%"
-          left={0}
-          right={0}
-          marginTop="$1"
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius="$3"
-          backgroundColor="$background"
-          maxHeight={300}
-          overflow="scroll"
-          zIndex={1000}
-          shadowColor="$shadowColor"
-          shadowOffset={{ width: 0, height: 2 }}
-          shadowOpacity={0.1}
-          shadowRadius={4}
+        <Stack
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            marginTop: 4,
+            borderWidth: 1,
+            borderColor: '#e4e4e7',
+            borderRadius: 12,
+            backgroundColor: '#ffffff',
+            maxHeight: 300,
+            overflow: 'scroll',
+            zIndex: 1000,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+          }}
         >
           {filteredUsers.length > 0 ? (
-            filteredUsers.map((user: User) => {
+            filteredUsers.map((user: OfficeUser) => {
               return (
-                <XStack
-                  key={user.id}
-                  padding="$3"
-                  gap="$2"
-                  hoverStyle={{
-                    backgroundColor: '$backgroundHover',
-                  }}
-                  pressStyle={{
-                    backgroundColor: '$backgroundPress',
-                  }}
-                  cursor="pointer"
-                  onPress={() => handleSelect(user)}
-                >
-                  <YStack flex={1} gap="$1">
-                    <Text fontSize="$3" fontWeight="600">
+                <Pressable key={user.id} onPress={() => handleSelect(user)}>
+                  <Row padding="sm" gap={8}>
+                    <Stack style={{ flex: 1 }} gap={4}>
+                      <Text>
                       {user.first_name || user.last_name
                         ? `${user.first_name || ''} ${user.last_name || ''}`.trim()
                         : user.display_name || user.username}
                     </Text>
-                    <Text fontSize="$2" color="$color11">
-                      @{user.username}
-                    </Text>
-                  </YStack>
-                </XStack>
+                      <Text color="secondary">@{user.username}</Text>
+                    </Stack>
+                  </Row>
+                </Pressable>
               )
             })
           ) : isLoading ? (
-            <YStack padding="$4" alignItems="center">
-              <Text color="$color11">Searching...</Text>
-            </YStack>
+            <Stack padding={16} align="center">
+              <Text color="secondary">Searching...</Text>
+            </Stack>
           ) : null}
-        </YStack>
+        </Stack>
       )}
 
       {debouncedSearch.length >= 2 && !isLoading && filteredUsers.length === 0 && showResults && (
-        <YStack
-          position="absolute"
-          top="100%"
-          left={0}
-          right={0}
-          marginTop="$1"
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius="$3"
-          backgroundColor="$background"
-          padding="$3"
-          zIndex={1000}
+        <Stack
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            marginTop: 4,
+            borderWidth: 1,
+            borderColor: '#e4e4e7',
+            borderRadius: 12,
+            backgroundColor: '#ffffff',
+            zIndex: 1000,
+          }}
+          padding="sm"
         >
-          <Text fontSize="$3" color="$color11">
-            No users found for "{debouncedSearch}"
-          </Text>
-        </YStack>
+          <Text color="secondary">No users found for "{debouncedSearch}"</Text>
+        </Stack>
       )}
 
-      {error && (
-        <Text fontSize="$2" color="$red10">
-          {error}
-        </Text>
-      )}
-    </YStack>
+      {error && <Text color="$red10">{error}</Text>}
+    </Stack>
   )
 }

@@ -1,9 +1,26 @@
-import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
-import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
-import { DashboardWidget, spacing } from '@unicornlove/ui'
-import { useRouter } from 'expo-router'
-import { Avatar, Button, H4, Progress, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { ROUTES } from "@scf/core/constants/routes";
+import { useCurrentUser } from "@scf/core/utils/profile-general-sdk-hooks";
+import {
+  useGeneralInfoWidget,
+  useExperienceWidget,
+  useSkillsWidget,
+  useCertificationsWidget,
+  useEducationWidget,
+} from "@scf/core/utils/profile-widgets-sdk-hooks";
+import { getAvatarUrl } from "@scf/core/utils/supabase/storage";
+import { DashboardWidget, useThemeContext } from "@scaffald/ui";
+import { useRouter } from "expo-router";
+import {
+  Avatar,
+  Button,
+  H4,
+  ProgressBarBase,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+} from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
 /**
  * ProfileSnapshotWidget
@@ -11,319 +28,355 @@ import { Avatar, Button, H4, Progress, Spinner, Text, XStack, YStack } from '@un
  * Shows stats, skills preview, and quick actions
  */
 export function ProfileSnapshotWidget() {
-  const router = useRouter()
-  const { data: user } = api.profile.general.useUser.useQuery()
+  const { theme } = useThemeContext();
+  const router = useRouter();
+  const { data: user } = useCurrentUser();
 
   // Fetch all data needed for snapshot
-  const { data: generalInfo, isLoading: loadingGeneral } =
-    api.profile.widgets.getGeneralInfo.useQuery(
-      { userId: user?.id },
-      { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
-    )
-
-  const { data: experience, isLoading: loadingExperience } =
-    api.profile.widgets.getExperience.useQuery(
-      { userId: user?.id },
-      { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
-    )
-
-  const { data: skills, isLoading: loadingSkills } = api.profile.widgets.getSkills.useQuery(
+  const { data: generalInfo, isLoading: loadingGeneral } = useGeneralInfoWidget(
     { userId: user?.id },
     { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
-  )
+  );
+
+  const { data: experience, isLoading: loadingExperience } =
+    useExperienceWidget(
+      { userId: user?.id },
+      { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
+    );
+
+  const { data: skills, isLoading: loadingSkills } = useSkillsWidget(
+    { userId: user?.id },
+    { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
+  );
 
   const { data: certifications, isLoading: loadingCerts } =
-    api.profile.widgets.getCertifications.useQuery(
+    useCertificationsWidget(
       { userId: user?.id },
       { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
-    )
+    );
 
-  const { data: education, isLoading: loadingEducation } =
-    api.profile.widgets.getEducation.useQuery(
-      { userId: user?.id },
-      { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
-    )
+  const { data: education, isLoading: loadingEducation } = useEducationWidget(
+    { userId: user?.id },
+    { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
+  );
 
   const isLoading =
-    loadingGeneral || loadingExperience || loadingSkills || loadingCerts || loadingEducation
+    loadingGeneral ||
+    loadingExperience ||
+    loadingSkills ||
+    loadingCerts ||
+    loadingEducation;
 
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.md} alignItems="center" paddingVertical={spacing['2xl']}>
-          <Spinner size="large" color="$blue7" />
-          <Text color="$color11">Loading profile...</Text>
-        </YStack>
+        <Stack gap={12} align="center" paddingVertical={32}>
+          <Spinner size="lg" />
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Loading profile...
+          </Text>
+        </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
   if (!generalInfo) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.md} alignItems="center" paddingVertical={spacing['2xl']}>
-          <Text color="$color11">Profile data unavailable</Text>
-        </YStack>
+        <Stack gap={12} align="center" paddingVertical={32}>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Profile data unavailable
+          </Text>
+        </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
   // Calculate profile completion
   const calculateCompletion = (): number => {
-    let completed = 0
-    const total = 7
+    let completed = 0;
+    const total = 7;
 
-    if (generalInfo?.about) completed++
-    if (generalInfo?.headline) completed++
-    if (generalInfo?.years_of_experience !== null) completed++
-    if (experience && experience.length > 0) completed++
-    if (education && education.length > 0) completed++
-    if (skills && skills.length > 0) completed++
-    if (certifications && certifications.length > 0) completed++
+    if (generalInfo?.about) completed++;
+    if (generalInfo?.headline) completed++;
+    if (generalInfo?.years_of_experience !== null) completed++;
+    if (experience && experience.length > 0) completed++;
+    if (education && education.length > 0) completed++;
+    if (skills && skills.length > 0) completed++;
+    if (certifications && certifications.length > 0) completed++;
 
-    return Math.round((completed / total) * 100)
-  }
+    return Math.round((completed / total) * 100);
+  };
 
-  const completion = calculateCompletion()
+  const completion = calculateCompletion();
 
   const resolvedYearsOfExperience =
-    typeof generalInfo.calculatedYearsOfExperience === 'number'
+    typeof generalInfo.calculatedYearsOfExperience === "number"
       ? generalInfo.calculatedYearsOfExperience
-      : (generalInfo.years_of_experience ?? 0)
+      : generalInfo.years_of_experience ?? 0;
 
   const formattedYearsOfExperience =
-    Number.isFinite(resolvedYearsOfExperience) && resolvedYearsOfExperience % 1 !== 0
+    Number.isFinite(resolvedYearsOfExperience) &&
+    resolvedYearsOfExperience % 1 !== 0
       ? resolvedYearsOfExperience.toFixed(1)
-      : (resolvedYearsOfExperience ?? 0)
+      : resolvedYearsOfExperience ?? 0;
 
   // Get current role from experience
-  const currentRole = experience?.find((exp: Record<string, unknown>) => exp.is_current)
+  const currentRole = experience?.find((exp) => exp.is_current);
 
   // Get top skills
-  const topSkills = skills?.slice(0, 5) || []
+  const topSkills = skills?.slice(0, 5) || [];
 
   const displayName =
     generalInfo.display_name ||
     (generalInfo.privateData?.first_name && generalInfo.privateData?.last_name
       ? `${generalInfo.privateData.first_name} ${generalInfo.privateData.last_name}`
-      : generalInfo.username)
+      : generalInfo.username);
 
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
+      <Stack gap={12}>
         {/* Header */}
-        <XStack justifyContent="space-between" alignItems="center">
+        <Row justify="space-between" align="center">
           <H4>Profile</H4>
           <Button
-            size="$2"
-            chromeless
-            color="$blue7"
+            size="sm"
+            variant="text"
+            color="primary"
             onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
           >
             View Full Profile
           </Button>
-        </XStack>
+        </Row>
 
         {/* Avatar & Name Section */}
-        <YStack gap="$3" alignItems="center">
-          <Avatar circular size="$8">
-            <Avatar.Image
-              source={{
-                uri: getAvatarUrl(generalInfo.avatar_path) || generalInfo.avatar_url || '',
-              }}
-            />
-            <Avatar.Fallback backgroundColor="$color6" />
-          </Avatar>
+        <Stack gap={12} align="center">
+          <Avatar
+            size={32}
+            src={
+              getAvatarUrl(generalInfo.avatar_path) ||
+              generalInfo.avatar_url ||
+              undefined
+            }
+            initials={
+              displayName
+                ?.split(/\s+/)
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase()
+                .slice(0, 2) ?? ""
+            }
+            color="gray"
+          />
 
-          <YStack gap="$1" alignItems="center">
-            <Text fontSize="$5" fontWeight="600">
-              {displayName}
-            </Text>
+          <Stack gap={4} align="center">
+            <Text>{displayName}</Text>
             {generalInfo.headline && (
-              <YStack alignItems="center">
-                <Text color="$color11" fontSize="$2">
+              <Stack align="center">
+                <Text style={{ color: colors.text[theme].secondary }}>
                   {generalInfo.headline}
                 </Text>
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
 
           {/* Open to Work Badge */}
           {generalInfo.open_to_work && (
-            <XStack
-              backgroundColor="$green3"
-              paddingHorizontal="$3"
-              paddingVertical="$1.5"
-              borderRadius="$10"
-              borderWidth={1}
-              borderColor="$green7"
+            <Row
+              paddingHorizontal={12}
+              paddingVertical={6}
+              borderRadius={10}
+              style={{
+                backgroundColor: colors.green[100],
+                borderWidth: 1,
+                borderColor: colors.green[600],
+              }}
             >
-              <Text color="$green11" fontSize="$2" fontWeight="600">
-                Open to Work
-              </Text>
-            </XStack>
+              <Text style={{ color: colors.green[800] }}>Open to Work</Text>
+            </Row>
           )}
-        </YStack>
+        </Stack>
 
         {/* Current Role */}
         {currentRole && (
-          <YStack gap="$1" backgroundColor="$color2" padding="$3" borderRadius="$3">
-            <Text fontSize="$2" color="$color10">
+          <Stack
+            gap={4}
+            style={{ backgroundColor: colors.bg[theme].muted }}
+            padding="sm"
+            borderRadius={12}
+          >
+            <Text style={{ color: colors.text[theme].secondary }}>
               Current Role
             </Text>
-            <Text fontSize="$3" fontWeight="600">
-              {currentRole.job_title}
-            </Text>
-            <Text fontSize="$2" color="$color11">
+            <Text>{currentRole.job_title}</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
               {currentRole.company_name}
             </Text>
-          </YStack>
+          </Stack>
         )}
 
         {/* Stats Grid */}
-        <YStack gap="$3">
-          <Text fontSize="$3" fontWeight="600">
-            Profile Stats
-          </Text>
+        <Stack gap={12}>
+          <Text>Profile Stats</Text>
 
           {/* Completion Bar */}
-          <YStack gap="$2">
-            <XStack justifyContent="space-between">
-              <Text fontSize="$2" color="$color11">
+          <Stack gap={8}>
+            <Row justify="space-between">
+              <Text style={{ color: colors.text[theme].secondary }}>
                 Completion
               </Text>
-              <Text fontSize="$2" fontWeight="600">
-                {completion}%
-              </Text>
-            </XStack>
-            <Progress value={completion} max={100}>
-              <Progress.Indicator animation="bouncy" backgroundColor="$blue7" />
-            </Progress>
-          </YStack>
+              <Text>{completion}%</Text>
+            </Row>
+            <ProgressBarBase value={completion} color="primary" />
+          </Stack>
 
           {/* Stats Row */}
-          <XStack gap={spacing.sm} flexWrap="wrap">
-            <YStack
-              gap="$1"
+          <Row gap={10} wrap>
+            <Stack
+              gap={4}
               flex={1}
               minWidth={80}
-              backgroundColor="$color2"
-              padding={spacing.sm}
-              borderRadius="$3"
-              alignItems="center"
+              style={{ backgroundColor: colors.bg[theme].muted }}
+              padding={10}
+              borderRadius={12}
+              align="center"
             >
-              <Text fontSize="$6" fontWeight="700" color="$blue8">
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.blue[700] : colors.blue[300],
+                }}
+              >
                 {skills?.length || 0}
               </Text>
-              <Text fontSize="$1" color="$color11">
+              <Text style={{ color: colors.text[theme].secondary }}>
                 Skills
               </Text>
-            </YStack>
+            </Stack>
 
-            <YStack
-              gap="$1"
+            <Stack
+              gap={4}
               flex={1}
               minWidth={80}
-              backgroundColor="$color2"
-              padding={spacing.sm}
-              borderRadius="$3"
-              alignItems="center"
+              style={{ backgroundColor: colors.bg[theme].muted }}
+              padding={10}
+              borderRadius={12}
+              align="center"
             >
-              <Text fontSize="$6" fontWeight="700" color="$green10">
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.green[700] : colors.green[300],
+                }}
+              >
                 {certifications?.length || 0}
               </Text>
-              <Text fontSize="$1" color="$color11">
-                Certs
-              </Text>
-            </YStack>
+              <Text style={{ color: colors.text[theme].secondary }}>Certs</Text>
+            </Stack>
 
-            <YStack
-              gap="$1"
+            <Stack
+              gap={4}
               flex={1}
               minWidth={80}
-              backgroundColor="$color2"
-              padding={spacing.sm}
-              borderRadius="$3"
-              alignItems="center"
+              style={{ backgroundColor: colors.bg[theme].muted }}
+              padding={10}
+              borderRadius={12}
+              align="center"
             >
-              <Text fontSize="$6" fontWeight="700" color="$blue7">
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.blue[700] : colors.blue[300],
+                }}
+              >
                 {formattedYearsOfExperience}
               </Text>
-              <Text fontSize="$1" color="$color11">
-                Years
-              </Text>
-            </YStack>
-          </XStack>
-        </YStack>
+              <Text style={{ color: colors.text[theme].secondary }}>Years</Text>
+            </Stack>
+          </Row>
+        </Stack>
 
         {/* Top Skills Preview */}
         {topSkills.length > 0 && (
-          <YStack gap="$2">
-            <XStack justifyContent="space-between" alignItems="center">
-              <Text fontSize="$3" fontWeight="600">
-                Top Skills
-              </Text>
+          <Stack gap={8}>
+            <Row justify="space-between" align="center">
+              <Text>Top Skills</Text>
               <Button
-                size="$1"
-                chromeless
-                onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
+                size="sm"
+                variant="text"
+                color="primary"
+                onPress={() =>
+                  router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
+                }
               >
                 View All
               </Button>
-            </XStack>
-            <XStack gap="$2" flexWrap="wrap">
-              {topSkills.map((skill: Record<string, unknown>) => {
-                const displayCode = typeof skill.displayCode === 'string' ? skill.displayCode : null
-                const skillName = typeof skill.name === 'string' ? skill.name : 'Skill'
+            </Row>
+            <Row gap={8} wrap>
+              {topSkills.map((skill) => {
+                const displayCode =
+                  typeof skill.displayCode === "string"
+                    ? skill.displayCode
+                    : null;
+                const skillName =
+                  typeof skill.name === "string" ? skill.name : "Skill";
                 const chipLabel =
-                  typeof skill.label === 'string'
+                  typeof skill.label === "string"
                     ? skill.label
                     : displayCode
-                      ? `${displayCode} · ${skillName}`
-                      : skillName
+                    ? `${displayCode} · ${skillName}`
+                    : skillName;
+                const isVerified = skill.verified === true;
 
                 return (
-                  <XStack
+                  <Row
                     key={skill.id as string}
-                    backgroundColor="$color3"
-                    paddingHorizontal="$2.5"
-                    paddingVertical="$1.5"
-                    borderRadius="$2"
-                    borderWidth={1}
-                    borderColor={skill.verified ? '$green7' : '$color6'}
+                    paddingHorizontal={10}
+                    paddingVertical={6}
+                    borderRadius={8}
+                    style={{
+                      backgroundColor: colors.gray[100],
+                      borderWidth: 1,
+                      borderColor: isVerified
+                        ? colors.green[600]
+                        : colors.gray[300],
+                    }}
                   >
-                    {skill.verified && (
-                      <Text color="$green10" fontSize="$1" marginRight="$1">
+                    {isVerified && (
+                      <Text
+                        style={{ color: colors.green[700], marginRight: 4 }}
+                      >
                         ✓
                       </Text>
                     )}
-                    <Text fontSize="$2">{chipLabel}</Text>
-                  </XStack>
-                )
+                    <Text>{chipLabel}</Text>
+                  </Row>
+                );
               })}
-            </XStack>
-          </YStack>
+            </Row>
+          </Stack>
         )}
 
         {/* Quick Actions */}
-        <YStack gap={spacing.xs}>
+        <Stack gap={8}>
           <Button
-            variant="primary"
-            size="$3"
+            variant="filled"
+            color="primary"
+            size="sm"
             onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
-            width="100%"
+            style={{ width: "100%" }}
           >
             Edit Profile
           </Button>
           {completion < 100 && (
-            <YStack alignItems="center">
-              <Text fontSize="$1" color="$color11">
+            <Stack align="center">
+              <Text style={{ color: colors.text[theme].secondary }}>
                 Complete your profile to attract more opportunities
               </Text>
-            </YStack>
+            </Stack>
           )}
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
     </DashboardWidget>
-  )
+  );
 }

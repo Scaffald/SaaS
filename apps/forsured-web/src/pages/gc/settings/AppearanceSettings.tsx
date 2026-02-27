@@ -6,7 +6,7 @@ import {
   AppearanceThemeCard,
   SettingsSectionHeader,
   useThemeContext,
-} from '@unicornlove/beyond-ui'
+} from '@scaffald/ui'
 import { Palette } from 'lucide-react-native'
 
 function GCAppearanceSettings() {

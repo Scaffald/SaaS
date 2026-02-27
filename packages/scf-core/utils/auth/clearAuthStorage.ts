@@ -1,16 +1,18 @@
-import type { QueryClient } from '@tanstack/react-query';
-import { Platform } from 'react-native';
-import { supabase } from '../supabase/client';
+import type { QueryClient } from '@tanstack/react-query'
+import { Platform } from 'react-native'
+import { supabase } from '../supabase/client'
 
-type CookieStoreDeleteTarget = string | {
-  name: string;
-  domain?: string;
-  path?: string;
-};
+type CookieStoreDeleteTarget =
+  | string
+  | {
+      name: string
+      domain?: string
+      path?: string
+    }
 
 // Guard to prevent concurrent cleanup executions
-let isCleanupInProgress = false;
-let cleanupPromise: Promise<void> | null = null;
+let isCleanupInProgress = false
+let cleanupPromise: Promise<void> | null = null
 
 /**
  * Comprehensive auth storage cleanup utility
@@ -23,25 +25,23 @@ let cleanupPromise: Promise<void> | null = null;
  *
  * @param queryClient - React Query client for cache clearing
  */
-export async function clearAllAuthStorage(
-  queryClient?: QueryClient,
-): Promise<void> {
+export async function clearAllAuthStorage(queryClient?: QueryClient): Promise<void> {
   // If cleanup is already in progress, return the existing promise
   if (isCleanupInProgress && cleanupPromise) {
-    console.log("[clearAuthStorage] Cleanup already in progress, waiting for existing cleanup");
-    return cleanupPromise;
+    console.log('[clearAuthStorage] Cleanup already in progress, waiting for existing cleanup')
+    return cleanupPromise
   }
 
   // Mark cleanup as in progress and create promise
-  isCleanupInProgress = true;
-  cleanupPromise = performCleanup(queryClient);
+  isCleanupInProgress = true
+  cleanupPromise = performCleanup(queryClient)
 
   try {
-    await cleanupPromise;
+    await cleanupPromise
   } finally {
     // Reset flag after cleanup completes (success or failure)
-    isCleanupInProgress = false;
-    cleanupPromise = null;
+    isCleanupInProgress = false
+    cleanupPromise = null
   }
 }
 
@@ -49,121 +49,104 @@ export async function clearAllAuthStorage(
  * Internal cleanup implementation
  */
 async function performCleanup(queryClient?: QueryClient): Promise<void> {
-  console.log("[clearAuthStorage] Starting comprehensive auth cleanup");
+  console.log('[clearAuthStorage] Starting comprehensive auth cleanup')
 
   try {
     // 1. Clear React Query cache
     if (queryClient) {
-      console.log("[clearAuthStorage] Clearing React Query cache");
-      queryClient.clear();
+      console.log('[clearAuthStorage] Clearing React Query cache')
+      queryClient.clear()
     }
 
     // 2. Sign out from Supabase (this clears Supabase's internal storage)
-    await handleSupabaseSignOut();
+    await handleSupabaseSignOut()
 
     // 3. Platform-specific storage cleanup
-    if (Platform.OS === "web") {
-      await clearWebStorage();
+    if (Platform.OS === 'web') {
+      await clearWebStorage()
     } else {
-      await clearNativeStorage();
+      await clearNativeStorage()
     }
 
-    console.log("[clearAuthStorage] Auth cleanup completed successfully");
+    console.log('[clearAuthStorage] Auth cleanup completed successfully')
   } catch (error) {
-    console.error("[clearAuthStorage] Error during cleanup:", error);
+    console.error('[clearAuthStorage] Error during cleanup:', error)
     // Don't throw - we want cleanup to be as complete as possible
   }
 }
 
 async function handleSupabaseSignOut(): Promise<void> {
-  console.log("[clearAuthStorage] Signing out from Supabase");
+  console.log('[clearAuthStorage] Signing out from Supabase')
 
   try {
     const {
       data: { session },
       error: getSessionError,
-    } = await supabase.auth.getSession();
+    } = await supabase.auth.getSession()
 
     if (getSessionError) {
       console.error(
-        "[clearAuthStorage] Error fetching current session before sign out:",
-        getSessionError,
-      );
+        '[clearAuthStorage] Error fetching current session before sign out:',
+        getSessionError
+      )
     }
 
     if (!session) {
       console.log(
-        "[clearAuthStorage] No active Supabase session detected, performing local sign out",
-      );
-      await performLocalSignOut();
-      return;
+        '[clearAuthStorage] No active Supabase session detected, performing local sign out'
+      )
+      await performLocalSignOut()
+      return
     }
 
     // Check if session is expired before attempting signOut
     if (session.expires_at && isSessionExpired(session.expires_at)) {
-      console.log(
-        "[clearAuthStorage] Session expired, performing local cleanup only",
-      );
-      await performLocalSignOut();
-      return;
+      console.log('[clearAuthStorage] Session expired, performing local cleanup only')
+      await performLocalSignOut()
+      return
     }
 
-    const { error: signOutError } = await supabase.auth.signOut();
+    const { error: signOutError } = await supabase.auth.signOut()
     if (signOutError) {
-      console.error("[clearAuthStorage] Supabase signOut error:", signOutError);
+      console.error('[clearAuthStorage] Supabase signOut error:', signOutError)
 
-      if (signOutError.name === "AuthSessionMissingError") {
+      if (signOutError.name === 'AuthSessionMissingError') {
         console.log(
-          "[clearAuthStorage] Session already missing, ensuring local auth storage is cleared",
-        );
-        await performLocalSignOut();
+          '[clearAuthStorage] Session already missing, ensuring local auth storage is cleared'
+        )
+        await performLocalSignOut()
       }
     }
   } catch (error) {
-    console.error(
-      "[clearAuthStorage] Unexpected error during sign out:",
-      error,
-    );
-    await performLocalSignOut();
+    console.error('[clearAuthStorage] Unexpected error during sign out:', error)
+    await performLocalSignOut()
   }
 }
 
 async function performLocalSignOut(): Promise<void> {
   try {
-    const { error } = await supabase.auth.signOut({ scope: "local" });
+    const { error } = await supabase.auth.signOut({ scope: 'local' })
     if (error) {
       // AuthSessionMissingError is expected when session is already gone
-      if (error.name === "AuthSessionMissingError") {
-        console.log(
-          "[clearAuthStorage] Session already cleared (expected for expired sessions)",
-        );
+      if (error.name === 'AuthSessionMissingError') {
+        console.log('[clearAuthStorage] Session already cleared (expected for expired sessions)')
       } else {
-        console.error(
-          "[clearAuthStorage] Local Supabase signOut error:",
-          error,
-        );
+        console.error('[clearAuthStorage] Local Supabase signOut error:', error)
       }
     } else {
-      console.log(
-        "[clearAuthStorage] Local Supabase session cleared successfully",
-      );
+      console.log('[clearAuthStorage] Local Supabase session cleared successfully')
     }
   } catch (error) {
     // Handle AuthSessionMissingError in catch block as well
     if (
       error &&
-      typeof error === "object" &&
-      "name" in error &&
-      error.name === "AuthSessionMissingError"
+      typeof error === 'object' &&
+      'name' in error &&
+      error.name === 'AuthSessionMissingError'
     ) {
-      console.log(
-        "[clearAuthStorage] Session already cleared (expected for expired sessions)",
-      );
+      console.log('[clearAuthStorage] Session already cleared (expected for expired sessions)')
     } else {
-      console.error(
-        "[clearAuthStorage] Unexpected error during local sign out:",
-        error,
-      );
+      console.error('[clearAuthStorage] Unexpected error during local sign out:', error)
     }
   }
 }
@@ -172,95 +155,84 @@ async function performLocalSignOut(): Promise<void> {
  * Clear web storage (localStorage, sessionStorage, cookies)
  */
 async function clearWebStorage(): Promise<void> {
-  console.log("[clearAuthStorage] Clearing web storage");
+  console.log('[clearAuthStorage] Clearing web storage')
 
   try {
     // Clear localStorage items related to auth
-    const authKeys = [
-      "supabase.auth.token",
-      "sb-auth-token",
-      "sb-access-token",
-      "sb-refresh-token",
-    ];
+    const authKeys = ['supabase.auth.token', 'sb-auth-token', 'sb-access-token', 'sb-refresh-token']
 
     // Clear specific auth keys
     for (const key of authKeys) {
-      localStorage.removeItem(key);
+      localStorage.removeItem(key)
     }
 
     // Clear any keys that start with supabase auth patterns
-    const keysToRemove: string[] = [];
+    const keysToRemove: string[] = []
     for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (
-        key &&
-        (key.startsWith("sb-") || key.includes("supabase") ||
-          key.includes("auth"))
-      ) {
-        keysToRemove.push(key);
+      const key = localStorage.key(i)
+      if (key && (key.startsWith('sb-') || key.includes('supabase') || key.includes('auth'))) {
+        keysToRemove.push(key)
       }
     }
     for (const key of keysToRemove) {
-      localStorage.removeItem(key);
+      localStorage.removeItem(key)
     }
 
     // Clear sessionStorage
-    sessionStorage.clear();
+    sessionStorage.clear()
 
-    const cookieStoreApi = (globalThis as typeof globalThis & {
-      cookieStore?: {
-        delete: (options: CookieStoreDeleteTarget) => Promise<void>;
-      };
-    }).cookieStore;
+    const cookieStoreApi = (
+      globalThis as typeof globalThis & {
+        cookieStore?: {
+          delete: (options: CookieStoreDeleteTarget) => Promise<void>
+        }
+      }
+    ).cookieStore
 
-    let cookieStoreWarningLogged = false;
+    let cookieStoreWarningLogged = false
     const deleteCookie = async (cookieName: string) => {
       if (!cookieStoreApi) {
         if (!cookieStoreWarningLogged) {
           console.warn(
-            "[clearAuthStorage] Cookie Store API not available; skipping cookie deletion",
-          );
-          cookieStoreWarningLogged = true;
+            '[clearAuthStorage] Cookie Store API not available; skipping cookie deletion'
+          )
+          cookieStoreWarningLogged = true
         }
-        return;
+        return
       }
 
-      const targets: CookieStoreDeleteTarget[] = [cookieName];
-      const hostname = typeof window !== "undefined"
-        ? window.location.hostname
-        : undefined;
+      const targets: CookieStoreDeleteTarget[] = [cookieName]
+      const hostname = typeof window !== 'undefined' ? window.location.hostname : undefined
       if (hostname) {
-        targets.push({ name: cookieName, path: "/", domain: hostname });
-        targets.push({ name: cookieName, path: "/", domain: `.${hostname}` });
+        targets.push({ name: cookieName, path: '/', domain: hostname })
+        targets.push({ name: cookieName, path: '/', domain: `.${hostname}` })
       }
 
       for (const target of targets) {
-        await cookieStoreApi.delete(target);
-      }
-    };
-
-    // Clear cookies (best effort - some may be httpOnly)
-    const cookies = document.cookie.split(";");
-    for (const cookie of cookies) {
-      const eqPos = cookie.indexOf("=");
-      const name = eqPos > -1
-        ? cookie.substring(0, eqPos).trim()
-        : cookie.trim();
-
-      // Clear auth-related cookies
-      if (
-        name.includes("sb-") ||
-        name.includes("supabase") ||
-        name.includes("auth") ||
-        name.includes("session")
-      ) {
-        await deleteCookie(name);
+        await cookieStoreApi.delete(target)
       }
     }
 
-    console.log("[clearAuthStorage] Web storage cleared");
+    // Clear cookies (best effort - some may be httpOnly)
+    const cookies = document.cookie.split(';')
+    for (const cookie of cookies) {
+      const eqPos = cookie.indexOf('=')
+      const name = eqPos > -1 ? cookie.substring(0, eqPos).trim() : cookie.trim()
+
+      // Clear auth-related cookies
+      if (
+        name.includes('sb-') ||
+        name.includes('supabase') ||
+        name.includes('auth') ||
+        name.includes('session')
+      ) {
+        await deleteCookie(name)
+      }
+    }
+
+    console.log('[clearAuthStorage] Web storage cleared')
   } catch (error) {
-    console.error("[clearAuthStorage] Error clearing web storage:", error);
+    console.error('[clearAuthStorage] Error clearing web storage:', error)
   }
 }
 
@@ -268,35 +240,32 @@ async function clearWebStorage(): Promise<void> {
  * Clear native storage (AsyncStorage)
  */
 async function clearNativeStorage(): Promise<void> {
-  console.log("[clearAuthStorage] Clearing native storage");
+  console.log('[clearAuthStorage] Clearing native storage')
 
   try {
     // Dynamic import for React Native AsyncStorage
-    const AsyncStorage =
-      require("@react-native-async-storage/async-storage").default;
+    const AsyncStorage = require('@react-native-async-storage/async-storage').default
 
     // Get all keys
-    const allKeys = await AsyncStorage.getAllKeys();
+    const allKeys = await AsyncStorage.getAllKeys()
 
     // Filter for auth-related keys
     const authKeys = allKeys.filter(
       (key: string) =>
-        key.startsWith("sb-") ||
-        key.includes("supabase") ||
-        key.includes("auth") ||
-        key.includes("session"),
-    );
+        key.startsWith('sb-') ||
+        key.includes('supabase') ||
+        key.includes('auth') ||
+        key.includes('session')
+    )
 
     if (authKeys.length > 0) {
-      console.log(
-        `[clearAuthStorage] Removing ${authKeys.length} auth keys from AsyncStorage`,
-      );
-      await AsyncStorage.multiRemove(authKeys);
+      console.log(`[clearAuthStorage] Removing ${authKeys.length} auth keys from AsyncStorage`)
+      await AsyncStorage.multiRemove(authKeys)
     }
 
-    console.log("[clearAuthStorage] Native storage cleared");
+    console.log('[clearAuthStorage] Native storage cleared')
   } catch (error) {
-    console.error("[clearAuthStorage] Error clearing native storage:", error);
+    console.error('[clearAuthStorage] Error clearing native storage:', error)
   }
 }
 
@@ -306,10 +275,10 @@ async function clearNativeStorage(): Promise<void> {
  * @returns true if session is expired or will expire in the next 60 seconds
  */
 export function isSessionExpired(expiresAt?: number): boolean {
-  if (!expiresAt) return true;
+  if (!expiresAt) return true
 
-  const now = Math.floor(Date.now() / 1000); // Current time in seconds
-  const bufferSeconds = 60; // Consider expired if less than 60 seconds remaining
+  const now = Math.floor(Date.now() / 1000) // Current time in seconds
+  const bufferSeconds = 60 // Consider expired if less than 60 seconds remaining
 
-  return expiresAt - now < bufferSeconds;
+  return expiresAt - now < bufferSeconds
 }

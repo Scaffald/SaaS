@@ -1,10 +1,10 @@
 /**
- * REQ-165: Compliance Requirements Management System
+ * Compliance Requirements Management System
  * Detail view for a single compliance requirement
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card } from '@scaffald/ui';
 import {
   ComplianceRequirement,
   CoverageType,

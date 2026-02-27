@@ -1,16 +1,13 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
-import { CheckCircle, Clock, Users, XCircle } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-import type { inferRouterOutputs } from '@trpc/server'
+import { useMyTeamInvitations, useRespondToTeamInvitation } from '@scaffald/sdk/react'
+import type { TeamInvitation } from '@scaffald/sdk'
+import { CheckCircle, Clock, Users, XCircle } from 'lucide-react-native'
+import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Card, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
-type InvitationsOutput = inferRouterOutputs<AppRouter>['teams']['invitations']['mine']
-type InvitationRecord = NonNullable<InvitationsOutput['invitations']>[number]
-type InvitationRespondOutput = inferRouterOutputs<AppRouter>['teams']['invitations']['respond']
+type InvitationRecord = TeamInvitation
 
 interface TeamInvitationListProps {
   invitations: InvitationRecord[]
@@ -29,26 +26,26 @@ export function TeamInvitationList({
 
   if (!invitations.length) {
     return (
-      <YStack
-        gap="$2"
+      <Stack
+        gap={8}
         borderWidth={1}
         borderColor="$borderColor"
-        borderRadius="$4"
-        padding="$4"
+        borderRadius={16}
+        padding="md"
         backgroundColor="$color2"
       >
-        <Text fontWeight="600">No pending invitations</Text>
+        <Text>No pending invitations</Text>
         {showEmptyStateDescription ? (
-          <Text color="$color11">
+          <Text color="$gray11">
             You&apos;re all caught up. New invitations will appear here for quick review.
           </Text>
         ) : null}
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$3">
+    <Stack gap={12}>
       {invitations.map((invitation) => {
         const teamName = invitation.team?.name ?? 'Team'
         const organizationName = invitation.team?.organizationName ?? 'Organization'
@@ -62,38 +59,30 @@ export function TeamInvitationList({
         return (
           <Card
             key={invitation.id}
-            padding="$4"
+            padding="md"
             borderWidth={1}
             borderColor="$borderColor"
-            gap="$3"
             backgroundColor="$color1"
+            style={{ gap: 12 }}
           >
-            <XStack justifyContent="space-between" alignItems="center">
-              <YStack gap="$1" flex={1}>
-                <Text fontWeight="700">{teamName}</Text>
-                <Text fontSize="$3" color="$color11">
-                  {organizationName}
-                </Text>
-                <XStack gap="$2" alignItems="center" marginTop="$2">
-                  <Clock size={16} color="$color11" />
-                  <Text fontSize="$3" color="$color11">
+            <Row justify="space-between" align="center">
+              <Stack gap={4} flex={1}>
+                <Text>{teamName}</Text>
+                <Text color="$gray11">{organizationName}</Text>
+                <Row gap={8} align="center" marginTop={8}>
+                  <Clock size="md" color="$gray11" />
+                  <Text color="$gray11">
                     Sent {sentAt ?? 'recently'}
                     {expiresAt ? ` · Expires ${expiresAt}` : null}
                   </Text>
-                </XStack>
-              </YStack>
-              <XStack
-                gap="$2"
-                marginLeft="$4"
-                flexShrink={0}
-                flexWrap="wrap"
-                justifyContent="flex-end"
-              >
+                </Row>
+              </Stack>
+              <Row gap={8} marginLeft={16} flexShrink={0} wrap justify="flex-end">
                 <Button
-                  size="$2"
-                  icon={XCircle}
-                  variant="outlined"
-                  color="$red10"
+                  size="sm"
+                  iconStart={XCircle}
+                  variant="outline"
+                  color="error"
                   disabled={isProcessing}
                   onPress={async () => {
                     setPendingId(invitation.id)
@@ -107,10 +96,10 @@ export function TeamInvitationList({
                   Decline
                 </Button>
                 <Button
-                  size="$2"
-                  icon={CheckCircle}
-                  backgroundColor="$color9"
-                  color="$color1"
+                  size="sm"
+                  iconStart={CheckCircle}
+                  color="gray"
+                  variant="outline"
                   disabled={isProcessing}
                   onPress={async () => {
                     setPendingId(invitation.id)
@@ -121,41 +110,48 @@ export function TeamInvitationList({
                     }
                   }}
                 >
-                  {isPending ? <Spinner size="small" color="$color1" /> : 'Accept'}
+                  {isPending ? <Spinner size="sm" color="gray" /> : 'Accept'}
                 </Button>
-              </XStack>
-            </XStack>
+              </Row>
+            </Row>
           </Card>
         )
       })}
-    </YStack>
+    </Stack>
   )
 }
 
 export function TeamInvitationsWidget() {
   const router = useRouter()
-  const toast = useToastController()
+  const toast = useToast()
 
-  const invitationsQuery = api.teams.invitations.mine.useQuery(
+  const invitationsQuery = useMyTeamInvitations(
     { status: 'pending' },
     {
       staleTime: 30_000,
     }
   )
 
-  const respondMutation = api.teams.invitations.respond.useMutation({
-    onSuccess: (result: InvitationRespondOutput) => {
-      toast.show(result.status === 'accepted' ? 'Invitation accepted' : 'Invitation declined', {
+  const respondMutation = useRespondToTeamInvitation({
+    onSuccess: (result) => {
+      const invitation = result.invitation
+      toast.show({
+        title: invitation.status === 'accepted' ? 'Invitation accepted' : 'Invitation declined',
         message:
-          result.status === 'accepted'
+          invitation.status === 'accepted'
             ? 'You now have access to the team.'
             : 'You can accept again later if you change your mind.',
+        variant: invitation.status === 'accepted' ? 'success' : 'info',
       })
       void invitationsQuery.refetch()
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : 'Unable to respond to invitation'
-      toast.show('Unable to respond', { message })
+      toast.show({
+        title: 'Unable to respond',
+        message,
+        variant: 'error',
+      })
     },
   })
 
@@ -174,37 +170,37 @@ export function TeamInvitationsWidget() {
   const handleRespond = async (invitationId: string, action: 'accept' | 'decline') => {
     await respondMutation.mutateAsync({
       invitationId,
-      action,
+      params: { action },
     })
   }
 
   return (
     <Card
-      padding="$4"
+      padding="md"
       borderColor="$borderColor"
       borderWidth={1}
-      gap="$4"
       backgroundColor="$color1"
+      style={{ gap: 16 }}
     >
-      <XStack justifyContent="space-between" alignItems="center">
-        <XStack gap="$2" alignItems="center">
-          <Users size={20} />
-          <Text fontWeight="700">Team invitations</Text>
-        </XStack>
+      <Row justify="space-between" align="center">
+        <Row gap={8} align="center">
+          <Users size="lg" />
+          <Text>Team invitations</Text>
+        </Row>
         <Button
-          variant="outlined"
-          size="$2"
+          variant="outline"
+          size="sm"
           onPress={() => router.push(ROUTES.DASHBOARD.TEAMS.INVITATIONS.path)}
         >
           Manage
         </Button>
-      </XStack>
+      </Row>
 
       {invitationsQuery.isLoading ? (
-        <YStack alignItems="center" justifyContent="center" paddingVertical="$4" gap="$2">
-          <Spinner size="large" />
-          <Text color="$color11">Checking for invitations…</Text>
-        </YStack>
+        <Stack align="center" justify="center" paddingVertical={16} gap={8}>
+          <Spinner size="lg" />
+          <Text color="$gray11">Checking for invitations…</Text>
+        </Stack>
       ) : (
         <>
           <TeamInvitationList
@@ -216,7 +212,7 @@ export function TeamInvitationsWidget() {
           {remainingCount > 0 ? (
             <>
               <Separator />
-              <Text fontSize="$3" color="$color11">
+              <Text color="$gray11">
                 {remainingCount} more invitation{remainingCount === 1 ? '' : 's'} waiting in your
                 inbox.
               </Text>

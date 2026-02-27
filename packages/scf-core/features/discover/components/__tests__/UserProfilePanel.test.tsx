@@ -43,8 +43,8 @@ vi.mock('expo-router', () => ({
 }))
 
 // Mock toast
-vi.mock('@tamagui/toast', () => ({
-  useToastController: () => ({
+vi.mock('@scaffald/ui', () => ({
+  useToast: () => ({
     show: mockShow,
   }),
 }))
@@ -75,8 +75,8 @@ vi.mock('@scf/core/constants/routes', () => ({
   },
 }))
 
-// Mock Tamagui components
-vi.mock('tamagui', () => {
+// Beyond UI mock
+vi.mock('@scaffald/ui', () => {
   const Stack = ({
     children,
     testID,
@@ -153,8 +153,8 @@ vi.mock('tamagui', () => {
   const Spinner = (props: Record<string, unknown>) => <div data-testid="spinner" {...props} />
 
   return {
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     Button,
     Text,
     Card,
@@ -164,7 +164,7 @@ vi.mock('tamagui', () => {
 })
 
 // Mock lucide icons
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   MapPin: ({ size, color }: { size?: number; color?: string }) => (
     <span data-testid="map-pin-icon" data-size={size} data-color={color}>
       MapPin

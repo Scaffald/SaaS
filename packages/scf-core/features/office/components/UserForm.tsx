@@ -1,180 +1,210 @@
-import { api } from '@scf/core/utils/api'
-import { Button, Input, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
-import { useRouter } from 'expo-router'
-import { useState } from 'react'
-import { Card } from '@unicornlove/ui'
+import { useOfficeUpdateUserMutation } from "@scf/core/utils/office-users-sdk-hooks";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  Button,
+  Input,
+  ScrollView,
+  Text,
+  Row,
+  Stack,
+  useThemeContext,
+} from "@scaffald/ui";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { Card } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
 interface UserFormProps {
-  userId: string
+  userId: string;
   initialProfile: {
-    first_name: string | null
-    last_name: string | null
-    display_name: string | null
-    bio: string | null
-  }
+    first_name: string | null;
+    last_name: string | null;
+    display_name: string | null;
+    bio: string | null;
+  };
   initialPrivateData: {
-    email: string | null
-    phone_number: string | null
-    birth_date: string | null
-    location: string | null
-    employment_status: string | null
-    job_search_status: string | null
-    years_of_experience: number | null
-    current_title: string | null
-    current_employer: string | null
-  } | null
+    email: string | null;
+    phone_number: string | null;
+    birth_date: string | null;
+    location: string | null;
+    employment_status: string | null;
+    job_search_status: string | null;
+    years_of_experience: number | null;
+    current_title: string | null;
+    current_employer: string | null;
+  } | null;
 }
 
-export function UserForm({ userId, initialProfile, initialPrivateData }: UserFormProps) {
-  const router = useRouter()
-  const utils = api.useUtils()
+export function UserForm({
+  userId,
+  initialProfile,
+  initialPrivateData,
+}: UserFormProps) {
+  const { theme } = useThemeContext();
+  const router = useRouter();
+  const queryClient = useQueryClient();
 
   // Profile state
-  const [firstName, setFirstName] = useState(initialProfile.first_name || '')
-  const [lastName, setLastName] = useState(initialProfile.last_name || '')
-  const [displayName, setDisplayName] = useState(initialProfile.display_name || '')
-  const [bio, setBio] = useState(initialProfile.bio || '')
+  const [firstName, setFirstName] = useState(initialProfile.first_name || "");
+  const [lastName, setLastName] = useState(initialProfile.last_name || "");
+  const [displayName, setDisplayName] = useState(
+    initialProfile.display_name || ""
+  );
+  const [bio, setBio] = useState(initialProfile.bio || "");
 
   // Private data state
-  const [email, setEmail] = useState(initialPrivateData?.email || '')
-  const [phone, setPhone] = useState(initialPrivateData?.phone_number || '')
-  const [birthDate, setBirthDate] = useState(initialPrivateData?.birth_date || '')
-  const [location, setLocation] = useState(initialPrivateData?.location || '')
+  const [email, setEmail] = useState(initialPrivateData?.email || "");
+  const [phone, setPhone] = useState(initialPrivateData?.phone_number || "");
+  const [birthDate, setBirthDate] = useState(
+    initialPrivateData?.birth_date || ""
+  );
+  const [location, setLocation] = useState(initialPrivateData?.location || "");
   const [employmentStatus, setEmploymentStatus] = useState(
-    initialPrivateData?.employment_status || ''
-  )
+    initialPrivateData?.employment_status || ""
+  );
   const [jobSearchStatus, setJobSearchStatus] = useState(
-    initialPrivateData?.job_search_status || ''
-  )
+    initialPrivateData?.job_search_status || ""
+  );
   const [yearsOfExperience, setYearsOfExperience] = useState(
-    initialPrivateData?.years_of_experience?.toString() || ''
-  )
-  const [currentTitle, setCurrentTitle] = useState(initialPrivateData?.current_title || '')
-  const [currentEmployer, setCurrentEmployer] = useState(initialPrivateData?.current_employer || '')
+    initialPrivateData?.years_of_experience?.toString() || ""
+  );
+  const [currentTitle, setCurrentTitle] = useState(
+    initialPrivateData?.current_title || ""
+  );
+  const [currentEmployer, setCurrentEmployer] = useState(
+    initialPrivateData?.current_employer || ""
+  );
 
-  const updateUserMutation = api.office.updateUser.useMutation({
+  const updateUserMutation = useOfficeUpdateUserMutation({
     onSuccess: () => {
-      utils.office.getUser.invalidate({ id: userId })
-      utils.office.listUsers.invalidate()
-      router.back()
+      queryClient.invalidateQueries({ queryKey: ["office", "users"] });
+      router.back();
     },
-  })
+  });
 
   const handleSubmit = () => {
-    const profileData: Record<string, string> = {}
-    const privateData: Record<string, string | number> = {}
+    const profileData: Record<string, string> = {};
+    const privateData: Record<string, string | number> = {};
 
     // Only include changed profile fields
-    if (firstName !== initialProfile.first_name) profileData.first_name = firstName
-    if (lastName !== initialProfile.last_name) profileData.last_name = lastName
-    if (displayName !== initialProfile.display_name) profileData.display_name = displayName
-    if (bio !== initialProfile.bio) profileData.bio = bio
+    if (firstName !== initialProfile.first_name)
+      profileData.first_name = firstName;
+    if (lastName !== initialProfile.last_name) profileData.last_name = lastName;
+    if (displayName !== initialProfile.display_name)
+      profileData.display_name = displayName;
+    if (bio !== initialProfile.bio) profileData.bio = bio;
 
     // Only include changed private data fields
-    if (email !== initialPrivateData?.email) privateData.email = email
-    if (phone !== initialPrivateData?.phone_number) privateData.phone_number = phone
-    if (birthDate !== initialPrivateData?.birth_date) privateData.birth_date = birthDate
-    if (location !== initialPrivateData?.location) privateData.location = location
+    if (email !== initialPrivateData?.email) privateData.email = email;
+    if (phone !== initialPrivateData?.phone_number)
+      privateData.phone_number = phone;
+    if (birthDate !== initialPrivateData?.birth_date)
+      privateData.birth_date = birthDate;
+    if (location !== initialPrivateData?.location)
+      privateData.location = location;
     if (employmentStatus !== initialPrivateData?.employment_status)
-      privateData.employment_status = employmentStatus
+      privateData.employment_status = employmentStatus;
     if (jobSearchStatus !== initialPrivateData?.job_search_status)
-      privateData.job_search_status = jobSearchStatus
-    if (yearsOfExperience !== initialPrivateData?.years_of_experience?.toString()) {
-      privateData.years_of_experience = Number.parseInt(yearsOfExperience, 10) || 0
+      privateData.job_search_status = jobSearchStatus;
+    if (
+      yearsOfExperience !== initialPrivateData?.years_of_experience?.toString()
+    ) {
+      privateData.years_of_experience =
+        Number.parseInt(yearsOfExperience, 10) || 0;
     }
-    if (currentTitle !== initialPrivateData?.current_title) privateData.current_title = currentTitle
+    if (currentTitle !== initialPrivateData?.current_title)
+      privateData.current_title = currentTitle;
     if (currentEmployer !== initialPrivateData?.current_employer)
-      privateData.current_employer = currentEmployer
+      privateData.current_employer = currentEmployer;
 
     updateUserMutation.mutate({
       id: userId,
-      profile: Object.keys(profileData).length > 0 ? profileData : undefined,
-      privateData: Object.keys(privateData).length > 0 ? privateData : undefined,
-    })
-  }
+      params: {
+        profile: Object.keys(profileData).length > 0 ? profileData : undefined,
+        privateData:
+          Object.keys(privateData).length > 0 ? privateData : undefined,
+      },
+    });
+  };
 
   return (
-    <ScrollView flex={1} backgroundColor="$background">
-      <YStack padding="$4" gap="$4">
-        <XStack alignItems="center" justifyContent="space-between">
-          <Text fontSize="$8" fontWeight="bold">
-            Edit User
-          </Text>
-          <XStack gap="$2">
-            <Button data-testid="cancel-button" onPress={() => router.back()} variant="outlined">
+    <ScrollView style={{ flex: 1, backgroundColor: colors.bg[theme].default }}>
+      <Stack padding="md" gap={16}>
+        <Row align="center" justify="space-between">
+          <Text>Edit User</Text>
+          <Row gap={8}>
+            <Button
+              data-testid="cancel-button"
+              onPress={() => router.back()}
+              variant="outline"
+            >
               Cancel
             </Button>
             <Button
               data-testid="save-button"
               onPress={handleSubmit}
               disabled={updateUserMutation.isPending}
-              themeInverse
             >
-              {updateUserMutation.isPending ? 'Saving...' : 'Save Changes'}
+              {updateUserMutation.isPending ? "Saving..." : "Save Changes"}
             </Button>
-          </XStack>
-        </XStack>
+          </Row>
+        </Row>
 
         {/* Profile Information */}
-        <Card padding="$4">
-          <YStack gap="$3">
-            <Text fontSize="$6" fontWeight="600" marginBottom="$2">
-              Profile Information
-            </Text>
+        <Card padding="md">
+          <Stack gap={12}>
+            <Text style={{ marginBottom: 8 }}>Profile Information</Text>
 
-            <YStack gap="$2">
-              <Text fontWeight="600">First Name</Text>
+            <Stack gap={8}>
+              <Text>First Name</Text>
               <Input
                 data-testid="user-first-name-input"
                 value={firstName}
                 onChangeText={setFirstName}
                 placeholder="First name"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
-              <Text fontWeight="600">Last Name</Text>
+            <Stack gap={8}>
+              <Text>Last Name</Text>
               <Input
                 data-testid="user-last-name-input"
                 value={lastName}
                 onChangeText={setLastName}
                 placeholder="Last name"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
-              <Text fontWeight="600">Display Name</Text>
+            <Stack gap={8}>
+              <Text>Display Name</Text>
               <Input
                 data-testid="user-display-name-input"
                 value={displayName}
                 onChangeText={setDisplayName}
                 placeholder="Display name"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
-              <Text fontWeight="600">Bio</Text>
+            <Stack gap={8}>
+              <Text>Bio</Text>
               <Input
                 data-testid="user-bio-input"
                 value={bio}
                 onChangeText={setBio}
                 placeholder="Bio"
                 multiline
-                numberOfLines={4}
               />
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         </Card>
 
         {/* Private Information */}
-        <Card padding="$4">
-          <YStack gap="$3">
-            <Text fontSize="$6" fontWeight="600" marginBottom="$2">
-              Private Information
-            </Text>
+        <Card padding="md">
+          <Stack gap={12}>
+            <Text style={{ marginBottom: 8 }}>Private Information</Text>
 
-            <YStack gap="$2">
-              <Text fontWeight="600">Email</Text>
+            <Stack gap={8}>
+              <Text>Email</Text>
               <Input
                 data-testid="user-email-input"
                 value={email}
@@ -183,10 +213,10 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
-              <Text fontWeight="600">Phone</Text>
+            <Stack gap={8}>
+              <Text>Phone</Text>
               <Input
                 data-testid="user-phone-input"
                 value={phone}
@@ -194,59 +224,57 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
                 placeholder="Phone number"
                 keyboardType="phone-pad"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
-              <Text fontWeight="600">Birth Date</Text>
+            <Stack gap={8}>
+              <Text>Birth Date</Text>
               <Input
                 data-testid="user-birth-date-input"
                 value={birthDate}
                 onChangeText={setBirthDate}
                 placeholder="YYYY-MM-DD"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
-              <Text fontWeight="600">Location</Text>
+            <Stack gap={8}>
+              <Text>Location</Text>
               <Input
                 data-testid="user-location-input"
                 value={location}
                 onChangeText={setLocation}
                 placeholder="City, State"
               />
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         </Card>
 
         {/* Employment Information */}
-        <Card padding="$4">
-          <YStack gap="$3">
-            <Text fontSize="$6" fontWeight="600" marginBottom="$2">
-              Employment Information
-            </Text>
+        <Card padding="md">
+          <Stack gap={12}>
+            <Text style={{ marginBottom: 8 }}>Employment Information</Text>
 
-            <YStack gap="$2">
-              <Text fontWeight="600">Employment Status</Text>
+            <Stack gap={8}>
+              <Text>Employment Status</Text>
               <Input
                 data-testid="user-employment-status-input"
                 value={employmentStatus}
                 onChangeText={setEmploymentStatus}
                 placeholder="e.g., employed, unemployed"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
-              <Text fontWeight="600">Job Search Status</Text>
+            <Stack gap={8}>
+              <Text>Job Search Status</Text>
               <Input
                 data-testid="user-job-search-status-input"
                 value={jobSearchStatus}
                 onChangeText={setJobSearchStatus}
                 placeholder="e.g., actively looking, open"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
-              <Text fontWeight="600">Years of Experience</Text>
+            <Stack gap={8}>
+              <Text>Years of Experience</Text>
               <Input
                 data-testid="user-years-experience-input"
                 value={yearsOfExperience}
@@ -254,51 +282,50 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
                 placeholder="Years"
                 keyboardType="numeric"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
-              <Text fontWeight="600">Current Title</Text>
+            <Stack gap={8}>
+              <Text>Current Title</Text>
               <Input
                 data-testid="user-current-title-input"
                 value={currentTitle}
                 onChangeText={setCurrentTitle}
                 placeholder="Job title"
               />
-            </YStack>
+            </Stack>
 
-            <YStack gap="$2">
-              <Text fontWeight="600">Current Employer</Text>
+            <Stack gap={8}>
+              <Text>Current Employer</Text>
               <Input
                 data-testid="user-current-employer-input"
                 value={currentEmployer}
                 onChangeText={setCurrentEmployer}
                 placeholder="Company name"
               />
-            </YStack>
-          </YStack>
+            </Stack>
+          </Stack>
         </Card>
 
         {/* Submit Button (mobile-friendly placement) */}
-        <XStack gap="$2" paddingBottom="$4">
+        <Row gap={8} paddingBottom={16}>
           <Button
             data-testid="cancel-button"
-            flex={1}
+            style={{ flex: 1 }}
             onPress={() => router.back()}
-            variant="outlined"
+            variant="outline"
           >
             Cancel
           </Button>
           <Button
             data-testid="save-button"
-            flex={1}
+            style={{ flex: 1 }}
             onPress={handleSubmit}
             disabled={updateUserMutation.isPending}
-            themeInverse
           >
-            {updateUserMutation.isPending ? 'Saving...' : 'Save Changes'}
+            {updateUserMutation.isPending ? "Saving..." : "Save Changes"}
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
     </ScrollView>
-  )
+  );
 }

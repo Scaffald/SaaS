@@ -1,28 +1,11 @@
-import { CustomToast } from '@unicornlove/ui'
-import { ToastProvider as ToastProviderOG } from '@tamagui/toast'
+import { ToastProvider as ToastProviderOG, ToastContainer } from '@scaffald/ui'
 import type { ReactNode } from 'react'
 
-import { ToastViewport, type ToastViewportProps } from './ToastViewport'
-
-export const ToastProvider = ({
-  children,
-  ...viewportProps
-}: { children: ReactNode } & ToastViewportProps) => {
+export const ToastProvider = ({ children }: { children: ReactNode }) => {
   return (
-    <ToastProviderOG
-      swipeDirection="up"
-      swipeThreshold={20}
-      duration={6000}
-      native={
-        [
-          /* uncomment the next line to do native toasts on mobile - note that it won't be as customizable as custom toasts, especially on android */
-          // 'mobile'
-        ]
-      }
-    >
+    <ToastProviderOG defaultDuration={6000} maxToasts={5}>
       {children}
-      <ToastViewport {...viewportProps} />
-      <CustomToast />
+      <ToastContainer />
     </ToastProviderOG>
   )
 }

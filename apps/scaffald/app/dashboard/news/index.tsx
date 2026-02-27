@@ -1,52 +1,160 @@
-import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
-import type { NewsItem } from '@scf/core/features/news'
-import { useAggregatedNews } from '@scf/core/features/news/hooks/useNewsFeed'
-import { redirect } from '@scf/core/utils/redirect'
-import { supabase } from '@scf/core/utils/supabase/client'
-import { AlertCircle, ExternalLink, RefreshCw } from '@tamagui/lucide-icons'
-import { Button, NewsCard, spacing } from '@unicornlove/ui'
-import { useRouter } from 'expo-router'
-import * as WebBrowser from 'expo-web-browser'
-import { useEffect, useState } from 'react'
-import { Platform } from 'react-native'
-import { Paragraph, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { DashboardPage } from "@scf/core/features/dashboard/DashboardPage";
+import type { NewsItem } from "@scf/core/features/news";
+import { useAggregatedNews } from "@scf/core/features/news/hooks/useNewsFeed";
+import { redirect } from "@scf/core/utils/redirect";
+import { supabase } from "@scf/core/utils/supabase/client";
+import { AlertCircle, ExternalLink, RefreshCw } from "lucide-react-native";
+import {
+  Button,
+  spacing,
+  Paragraph,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+} from "@scaffald/ui";
+import { useRouter } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
+import { useEffect, useState, type ReactNode } from "react";
+import { Platform, Image, Pressable, StyleSheet, View } from "react-native";
+import { colors } from "@scaffald/ui/tokens";
+import { useThemeContext } from "@scaffald/ui";
 
-const FULL_PAGE_ITEM_COUNT = 40
-const DEFAULT_INDUSTRY = 'construction'
+const FULL_PAGE_ITEM_COUNT = 40;
+const DEFAULT_INDUSTRY = "construction";
 
-const formatTimeAgo = (date: Date) => {
-  const diffMs = Date.now() - date.getTime()
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-  const diffDays = Math.floor(diffHours / 24)
-
-  if (diffHours < 1) return 'Just now'
-  if (diffHours < 24) return `${diffHours}h ago`
-  if (diffDays === 1) return '1 day ago'
-  if (diffDays < 7) return `${diffDays} days ago`
-  return date.toLocaleDateString()
+// Simple NewsCard component (temporary inline replacement)
+interface NewsCardProps {
+  title: string;
+  description?: string;
+  image?: string;
+  footer?: ReactNode;
+  onPress?: () => void;
+  fullCardClickable?: boolean;
+  minHeight?: number;
 }
 
+const NewsCard = ({
+  title,
+  description,
+  image,
+  footer,
+  onPress,
+  fullCardClickable,
+  minHeight = 220,
+}: NewsCardProps) => {
+  const { theme } = useThemeContext();
+  const [imageError, setImageError] = useState(false);
+  const fallbackImage = `https://picsum.photos/800/600?random=${Math.floor(
+    Math.random() * 1000
+  )}`;
+  const imageSource = imageError ? fallbackImage : image || fallbackImage;
+
+  return (
+    <Pressable
+      onPress={fullCardClickable ? onPress : undefined}
+      style={({ pressed }) => [
+        styles.newsCard,
+        { minHeight, backgroundColor: colors.bg[theme].subtle },
+        pressed && styles.pressed,
+      ]}
+    >
+      <Image
+        source={{ uri: imageSource }}
+        style={styles.newsCardImage}
+        onError={() => setImageError(true)}
+      />
+      <View style={styles.newsCardOverlay} />
+      <Stack padding={spacing[6]} style={styles.newsCardContent}>
+        <Stack gap={spacing[4]}>
+          <Text size="lg" weight="bold" color={colors.text[theme].primary}>
+            {title}
+          </Text>
+          {description && (
+            <Text size="sm" color={colors.text[theme].secondary}>
+              {description}
+            </Text>
+          )}
+          {footer && (
+            <Row gap={spacing[4]} style={styles.newsCardFooter}>
+              {footer}
+            </Row>
+          )}
+        </Stack>
+      </Stack>
+    </Pressable>
+  );
+};
+
+const styles = StyleSheet.create({
+  newsCard: {
+    borderRadius: 16,
+    overflow: "hidden",
+    position: "relative",
+  },
+  newsCardImage: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: "100%",
+    height: "100%",
+  },
+  newsCardOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  newsCardContent: {
+    flex: 1,
+    justifyContent: "flex-end",
+    zIndex: 1,
+  },
+  newsCardFooter: {
+    alignItems: "center",
+  },
+  pressed: {
+    opacity: 0.8,
+  },
+});
+
+const formatTimeAgo = (date: Date) => {
+  const diffMs = Date.now() - date.getTime();
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffHours < 1) return "Just now";
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays === 1) return "1 day ago";
+  if (diffDays < 7) return `${diffDays} days ago`;
+  return date.toLocaleDateString();
+};
+
 export default function NewsPage() {
-  const router = useRouter()
-  const [industryId, setIndustryId] = useState<string>('')
+  const router = useRouter();
+  const [industryId, setIndustryId] = useState<string>("");
 
   // Get industry ID from slug
   useEffect(() => {
     async function resolveIndustryId() {
       const { data: industryData } = await supabase
-        .schema('core')
-        .from('industries')
-        .select('id')
-        .eq('slug', DEFAULT_INDUSTRY)
-        .single()
+        .schema("core")
+        .from("industries")
+        .select("id")
+        .eq("slug", DEFAULT_INDUSTRY)
+        .single();
 
       if (industryData?.id) {
-        setIndustryId(industryData.id)
+        setIndustryId(industryData.id);
       }
     }
 
-    void resolveIndustryId()
-  }, [])
+    void resolveIndustryId();
+  }, []);
 
   const {
     data: newsItems = [],
@@ -57,138 +165,136 @@ export default function NewsPage() {
   } = useAggregatedNews({
     industryId,
     maxTotalItems: FULL_PAGE_ITEM_COUNT,
-  })
+  });
 
   const handleOpenArticle = async (article: NewsItem) => {
     try {
-      if (Platform.OS === 'web') {
-        window.open(article.link, '_blank', 'noopener,noreferrer')
+      if (Platform.OS === "web") {
+        window.open(article.link, "_blank", "noopener,noreferrer");
       } else {
         await WebBrowser.openBrowserAsync(article.link, {
-          controlsColor: '#2563eb',
-          dismissButtonStyle: 'close',
+          controlsColor: "#2563eb",
+          dismissButtonStyle: "close",
           enableBarCollapsing: true,
-          toolbarColor: '#0f172a',
-        })
+          toolbarColor: "#0f172a",
+        });
       }
     } catch (browserError) {
-      console.warn('Failed to open article, using redirect fallback:', browserError)
-      redirect(article.link)
+      console.warn(
+        "Failed to open article, using redirect fallback:",
+        browserError
+      );
+      redirect(article.link);
     }
-  }
+  };
 
   const content = (
-    <YStack gap="$4" paddingHorizontal={spacing.lg} paddingVertical={spacing.lg}>
-      <YStack gap="$2">
-        <Text fontSize="$8" fontWeight="700" color="$color12">
-          Industry News
-        </Text>
-        <Paragraph size="$4" color="$color10">
-          Curated headlines across construction, safety, technology, and workforce development.
+    <Stack gap={16}>
+      <Stack gap={8}>
+        <Text color="gray">Industry News</Text>
+        <Paragraph size="lg" color="gray">
+          Curated headlines across construction, safety, technology, and
+          workforce development.
         </Paragraph>
-      </YStack>
+      </Stack>
 
-      <XStack gap="$2">
+      <Row gap={8}>
         <Button
-          size="$3"
-          variant="outlined"
-          icon={<RefreshCw size={16} />}
+          size="sm"
+          variant="outline"
+          color="gray"
+          iconStart={RefreshCw}
           onPress={() => {
-            void refetch()
+            void refetch();
           }}
           disabled={isLoading}
         >
           Refresh
         </Button>
-        <Button size="$3" variant="outlined" onPress={() => router.back()}>
+        <Button
+          size="sm"
+          variant="outline"
+          color="gray"
+          onPress={() => router.back()}
+        >
           Back
         </Button>
-      </XStack>
+      </Row>
 
       {isLoading && newsItems.length === 0 ? (
-        <YStack alignItems="center" gap="$3" paddingVertical="$8">
-          <Spinner size="large" color="$blue7" />
-          <Text color="$color11" fontSize="$5">
-            Loading latest news…
-          </Text>
-        </YStack>
+        <Stack align="center" gap={12}>
+          <Spinner size="lg" color="primary" />
+          <Text color="gray">Loading latest news…</Text>
+        </Stack>
       ) : null}
 
       {isError ? (
-        <YStack alignItems="center" gap="$3" paddingVertical="$8">
-          <AlertCircle size={32} color="$red10" />
-          <Text color="$red11" fontSize="$5" style={{ textAlign: 'center' }}>
+        <Stack align="center" gap={12}>
+          <AlertCircle size={32} color="red" />
+          <Text color="red" style={{ textAlign: "center" }}>
             Unable to load news at the moment.
           </Text>
-          <Text color="$color11" fontSize="$4" style={{ textAlign: 'center' }}>
-            {error?.message || 'Please check your connection and try again.'}
+          <Text color="gray" style={{ textAlign: "center" }}>
+            {error?.message || "Please check your connection and try again."}
           </Text>
           <Button
-            variant="primary"
-            size="$3"
+            variant="filled"
+            color="primary"
+            size="sm"
             onPress={() => {
-              void refetch()
+              void refetch();
             }}
           >
             Retry
           </Button>
-        </YStack>
+        </Stack>
       ) : null}
 
       {!isLoading && !isError && newsItems.length === 0 ? (
-        <YStack alignItems="center" gap="$3" paddingVertical="$8">
-          <Text color="$color11" fontSize="$5" fontWeight="600">
-            No articles found
-          </Text>
-          <Text color="$color10" fontSize="$4" style={{ textAlign: 'center' }}>
+        <Stack align="center" gap={12}>
+          <Text color="gray">No articles found</Text>
+          <Text color="gray" style={{ textAlign: "center" }}>
             Please check again soon for more industry updates.
           </Text>
-        </YStack>
+        </Stack>
       ) : null}
 
-      <YStack gap="$4">
-        {newsItems.map((item: NewsItem) => (
+      <Stack gap={16}>
+        {newsItems.map((item) => {
+          const pubDate = item.pubDate instanceof Date ? item.pubDate : new Date(item.pubDate as string)
+          return (
           <NewsCard
             key={item.id}
-            title={item.title}
+            title={item.title ?? ''}
             description={item.description}
-            image={item.image}
-            onPress={() => handleOpenArticle(item)}
+            image={item.image ?? undefined}
+            onPress={() => void handleOpenArticle({ id: item.id, title: item.title ?? '', description: item.description, link: item.link ?? '', pubDate, image: item.image ?? undefined, readTime: item.readTime })}
             fullCardClickable
             minHeight={220}
             footer={
-              <XStack gap="$3" alignItems="center">
-                <Text fontSize="$2" color="$color11">
-                  {formatTimeAgo(item.pubDate)}
-                </Text>
+              <Row gap={12} align="center">
+                <Text color="gray">{formatTimeAgo(pubDate)}</Text>
                 {item.readTime && (
                   <>
-                    <Text fontSize="$2" color="$color11">
-                      •
-                    </Text>
-                    <Text fontSize="$2" color="$color11">
-                      {item.readTime}
-                    </Text>
+                    <Text color="gray">•</Text>
+                    <Text color="gray">{item.readTime}</Text>
                   </>
                 )}
-                {item.author && (
-                  <>
-                    <Text fontSize="$2" color="$color11">
-                      •
-                    </Text>
-                    <Text fontSize="$2" color="$color11">
-                      {item.author}
-                    </Text>
-                  </>
-                )}
-                <ExternalLink size={16} color="$color11" />
-              </XStack>
+                <ExternalLink size="lg" color="gray" />
+              </Row>
             }
           />
-        ))}
-      </YStack>
-    </YStack>
-  )
+          )
+        })}
+      </Stack>
+    </Stack>
+  );
 
-  return <DashboardPage showBreadcrumb={false} pageTitle="Industry News" leftContent={content} />
+  return (
+    <DashboardPage
+      showBreadcrumb={false}
+      pageTitle="Industry News"
+      leftContent={content}
+    />
+  );
 }

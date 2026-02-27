@@ -1,6 +1,12 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
-import { DashboardWidget } from '@unicornlove/ui'
+import {
+  useFollowers,
+  usePendingConnections,
+  useAcceptConnectionMutation,
+  useDeclineConnectionMutation,
+} from '@scf/core/utils/engagement-sdk-hooks'
+import { useProfileViews, useViewAnalytics } from '@scf/core/utils/profile-views-sdk-hooks'
+import { Card } from '@scaffald/ui'
 import {
   ArrowDown,
   ArrowUp,
@@ -10,9 +16,10 @@ import {
   UserPlus,
   Users,
   X,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Avatar, Button, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Avatar, Button, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { useQueryClient } from '@tanstack/react-query'
 
 /**
  * Profile Activity Widget
@@ -20,48 +27,47 @@ import { Avatar, Button, Separator, Spinner, Text, XStack, YStack } from '@unico
  */
 export function ProfileActivityWidget() {
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   // Fetch data
-  const { data: profileViews, isLoading: viewsLoading } = api.profileViews.getProfileViews.useQuery(
-    { limit: 10 }
-  )
+  const { data: profileViewsData, isLoading: viewsLoading } = useProfileViews({ limit: 10 })
+  const profileViewsList = profileViewsData?.views ?? []
+  const profileViewsTotal = profileViewsData?.total ?? 0
 
-  const { data: viewAnalytics, isLoading: analyticsLoading } =
-    api.profileViews.getViewAnalytics.useQuery()
+  const { data: viewAnalytics, isLoading: analyticsLoading } = useViewAnalytics()
 
-  const { data: followers, isLoading: followersLoading } = api.follows.getFollowers.useQuery()
+  const { data: followersData, isLoading: followersLoading } = useFollowers()
+  const followers = followersData?.data
 
-  const { data: pendingRequests, isLoading: requestsLoading } =
-    api.connections.getPendingRequests.useQuery()
+  const { data: pendingData, isLoading: requestsLoading } = usePendingConnections()
+  const pendingRequests = pendingData
 
   // Connection mutations for quick actions
-  const utils = api.useUtils()
-
-  const acceptRequestMutation = api.connections.acceptRequest.useMutation({
+  const acceptRequestMutation = useAcceptConnectionMutation({
     onMutate: async () => {
-      await utils.connections.getPendingRequests.cancel()
+      await queryClient.cancelQueries({ queryKey: ['connections', 'pending'] })
     },
     onSuccess: () => {
-      utils.connections.getPendingRequests.invalidate()
-      utils.connections.getConnections.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
+      queryClient.invalidateQueries({ queryKey: ['connections', 'list'] })
     },
   })
 
-  const declineRequestMutation = api.connections.declineRequest.useMutation({
+  const declineRequestMutation = useDeclineConnectionMutation({
     onMutate: async () => {
-      await utils.connections.getPendingRequests.cancel()
+      await queryClient.cancelQueries({ queryKey: ['connections', 'pending'] })
     },
     onSuccess: () => {
-      utils.connections.getPendingRequests.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['connections', 'pending'] })
     },
   })
 
   const handleAcceptRequest = (connectionId: string) => {
-    acceptRequestMutation.mutate({ connectionId })
+    acceptRequestMutation.mutate(connectionId)
   }
 
   const handleDeclineRequest = (connectionId: string) => {
-    declineRequestMutation.mutate({ connectionId })
+    declineRequestMutation.mutate(connectionId)
   }
 
   const handleViewAllProfileViews = () => {
@@ -75,85 +81,71 @@ export function ProfileActivityWidget() {
   const isLoading = viewsLoading || analyticsLoading || followersLoading || requestsLoading
 
   return (
-    <DashboardWidget>
-      <Text fontSize="$5" fontWeight="600" color="$color12">
-        Profile Activity
-      </Text>
+    <Card>
+      <Text color="$gray11">Profile Activity</Text>
       {isLoading ? (
-        <YStack alignItems="center" justifyContent="center" paddingVertical="$4" gap="$2">
-          <Spinner size="large" />
-          <Text color="$color11">Loading activity...</Text>
-        </YStack>
+        <Stack align="center" justify="center" paddingVertical={16} gap={8}>
+          <Spinner size="lg" />
+          <Text color="$gray11">Loading activity...</Text>
+        </Stack>
       ) : (
-        <YStack gap="$4">
+        <Stack gap={16}>
           {/* 30-Day View Trend */}
           {viewAnalytics && (
-            <YStack
-              gap="$2"
+            <Stack
+              gap={8}
               backgroundColor="$blue2"
-              padding="$3"
-              borderRadius="$4"
+              padding="sm"
+              borderRadius={16}
               borderWidth={1}
               borderColor="$blue6"
             >
-              <XStack alignItems="center" gap="$2">
+              <Row align="center" gap={8}>
                 <Eye size={18} color="$blue10" />
-                <Text fontSize="$4" fontWeight="600" color="$blue11">
-                  Profile Views (30 days)
-                </Text>
-              </XStack>
-              <XStack alignItems="baseline" gap="$2">
-                <Text fontSize="$7" fontWeight="700" color="$blue11">
-                  {viewAnalytics.views30d}
-                </Text>
+                <Text color="$blue11">Profile Views (30 days)</Text>
+              </Row>
+              <Row align="baseline" gap={8}>
+                <Text color="$blue11">{viewAnalytics.views30d}</Text>
                 {viewAnalytics.trend !== 0 && (
-                  <XStack alignItems="center" gap="$1">
+                  <Row align="center" gap={4}>
                     {viewAnalytics.trend > 0 ? (
-                      <ArrowUp size={16} color="$green10" />
+                      <ArrowUp size="md" color="$green10" />
                     ) : (
-                      <ArrowDown size={16} color="$red10" />
+                      <ArrowDown size="md" color="$red10" />
                     )}
-                    <Text
-                      fontSize="$3"
-                      fontWeight="600"
-                      color={viewAnalytics.trend > 0 ? '$green11' : '$red11'}
-                    >
+                    <Text color={viewAnalytics.trend > 0 ? '$green11' : '$red11'}>
                       {Math.abs(viewAnalytics.trend).toFixed(1)}%
                     </Text>
-                  </XStack>
+                  </Row>
                 )}
-              </XStack>
+              </Row>
               {viewAnalytics.viewsTotal > 0 && (
-                <Text fontSize="$2" color="$blue10">
-                  {viewAnalytics.viewsTotal} total views
-                </Text>
+                <Text color="$blue10">{viewAnalytics.viewsTotal} total views</Text>
               )}
-            </YStack>
+            </Stack>
           )}
 
           {/* Recent Profile Views */}
-          <YStack gap="$2">
-            <XStack justifyContent="space-between" alignItems="center">
-              <XStack alignItems="center" gap="$2">
-                <Eye size={18} color="$color12" />
-                <Text fontSize="$5" fontWeight="600" color="$color12">
-                  Recent Views
-                </Text>
-              </XStack>
-              {profileViews && profileViews.total > 0 && (
-                <Button size="$2" variant="outlined" onPress={handleViewAllProfileViews}>
+          <Stack gap={8}>
+            <Row justify="space-between" align="center">
+              <Row align="center" gap={8}>
+                <Eye size={18} color="$gray11" />
+                <Text color="$gray11">Recent Views</Text>
+              </Row>
+              {profileViewsTotal > 0 && (
+                <Button size="sm" variant="outline" onPress={handleViewAllProfileViews}>
                   View All
                 </Button>
               )}
-            </XStack>
+            </Row>
 
-            {!profileViews || profileViews.views.length === 0 ? (
-              <Text fontSize="$3" color="$color10" fontStyle="italic">
+            {profileViewsList.length === 0 ? (
+              <Text color="$gray11" style={{ fontStyle: 'italic' }}>
                 No profile views yet
               </Text>
             ) : (
-              <YStack gap="$2">
-                {profileViews.views.slice(0, 5).map(
+              <Stack gap={8}>
+                {profileViewsList.slice(0, 5).map(
                   (view: {
                     id: string
                     viewer?: {
@@ -163,59 +155,54 @@ export function ProfileActivityWidget() {
                     } | null
                     viewed_at?: string
                   }) => (
-                    <XStack key={view.id} alignItems="center" gap="$2">
-                      <Avatar circular size={32}>
-                        {view.viewer?.avatar_url ? (
-                          <Avatar.Image source={{ uri: view.viewer.avatar_url }} />
-                        ) : (
-                          <Avatar.Fallback backgroundColor="$blue4">
-                            <Text fontSize="$3" fontWeight="600" color="$blue10">
-                              {view.viewer?.display_name?.charAt(0) ||
-                                view.viewer?.username?.charAt(0) ||
-                                '?'}
-                            </Text>
-                          </Avatar.Fallback>
-                        )}
-                      </Avatar>
-                      <YStack flex={1} gap="$1">
-                        <Text fontSize="$3" fontWeight="600" color="$color12">
+                    <Row key={view.id} align="center" gap={8}>
+                      <Avatar
+                        size={32}
+                        src={view.viewer?.avatar_url ? { uri: view.viewer.avatar_url } : undefined}
+                        initials={
+                          view.viewer?.display_name?.charAt(0) ||
+                          view.viewer?.username?.charAt(0) ||
+                          '?'
+                        }
+                        color="info"
+                      />
+                      <Stack style={{ flex: 1 }} gap={4}>
+                        <Text color="$gray11">
                           {view.viewer?.display_name || view.viewer?.username || 'Anonymous'}
                         </Text>
                         {view.viewed_at && (
-                          <Text fontSize="$2" color="$color10">
+                          <Text color="$gray11">
                             {new Date(view.viewed_at).toLocaleDateString('en-US', {
                               month: 'short',
                               day: 'numeric',
                             })}
                           </Text>
                         )}
-                      </YStack>
-                    </XStack>
+                      </Stack>
+                    </Row>
                   )
                 )}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
 
           <Separator />
 
           {/* New Followers */}
-          <YStack gap="$2">
-            <XStack justifyContent="space-between" alignItems="center">
-              <XStack alignItems="center" gap="$2">
-                <UserPlus size={18} color="$color12" />
-                <Text fontSize="$5" fontWeight="600" color="$color12">
-                  New Followers
-                </Text>
-              </XStack>
-            </XStack>
+          <Stack gap={8}>
+            <Row justify="space-between" align="center">
+              <Row align="center" gap={8}>
+                <UserPlus size={18} color="$gray11" />
+                <Text color="$gray11">New Followers</Text>
+              </Row>
+            </Row>
 
             {!followers || followers.length === 0 ? (
-              <Text fontSize="$3" color="$color10" fontStyle="italic">
+              <Text color="$gray11" style={{ fontStyle: 'italic' }}>
                 No followers yet
               </Text>
             ) : (
-              <YStack gap="$2">
+              <Stack gap={8}>
                 {followers.slice(0, 5).map(
                   (follow: {
                     id: string
@@ -226,76 +213,69 @@ export function ProfileActivityWidget() {
                     } | null
                     created_at?: string
                   }) => (
-                    <XStack key={follow.id} alignItems="center" gap="$2">
-                      <Avatar circular size={32}>
-                        {follow.user?.avatar_url ? (
-                          <Avatar.Image source={{ uri: follow.user.avatar_url }} />
-                        ) : (
-                          <Avatar.Fallback backgroundColor="$green4">
-                            <Text fontSize="$3" fontWeight="600" color="$green10">
-                              {follow.user?.display_name?.charAt(0) ||
-                                follow.user?.username?.charAt(0) ||
-                                '?'}
-                            </Text>
-                          </Avatar.Fallback>
-                        )}
-                      </Avatar>
-                      <YStack flex={1} gap="$1">
-                        <Text fontSize="$3" fontWeight="600" color="$color12">
+                    <Row key={follow.id} align="center" gap={8}>
+                      <Avatar
+                        size={32}
+                        src={follow.user?.avatar_url ? { uri: follow.user.avatar_url } : undefined}
+                        initials={
+                          follow.user?.display_name?.charAt(0) ||
+                          follow.user?.username?.charAt(0) ||
+                          '?'
+                        }
+                        color="success"
+                      />
+                      <Stack style={{ flex: 1 }} gap={4}>
+                        <Text color="$gray11">
                           {follow.user?.display_name || follow.user?.username || 'User'}
                         </Text>
                         {follow.created_at && (
-                          <Text fontSize="$2" color="$color10">
+                          <Text color="$gray11">
                             {new Date(follow.created_at).toLocaleDateString('en-US', {
                               month: 'short',
                               day: 'numeric',
                             })}
                           </Text>
                         )}
-                      </YStack>
-                    </XStack>
+                      </Stack>
+                    </Row>
                   )
                 )}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
 
           <Separator />
 
           {/* Pending Connection Requests */}
-          <YStack gap="$2">
-            <XStack justifyContent="space-between" alignItems="center">
-              <XStack alignItems="center" gap="$2">
-                <Users size={18} color="$color12" />
-                <Text fontSize="$5" fontWeight="600" color="$color12">
-                  Pending Requests
-                </Text>
+          <Stack gap={8}>
+            <Row justify="space-between" align="center">
+              <Row align="center" gap={8}>
+                <Users size={18} color="$gray11" />
+                <Text color="$gray11">Pending Requests</Text>
                 {pendingRequests && pendingRequests.received.length > 0 && (
-                  <XStack
+                  <Row
                     backgroundColor="$orange3"
-                    paddingHorizontal="$2"
-                    paddingVertical="$0.5"
-                    borderRadius="$10"
-                    alignItems="center"
-                    justifyContent="center"
+                    paddingHorizontal={8}
+                    paddingVertical={2}
+                    borderRadius={10}
+                    align="center"
+                    justify="center"
                   >
-                    <Text fontSize="$2" fontWeight="700" color="$orange11">
-                      {pendingRequests.received.length}
-                    </Text>
-                  </XStack>
+                    <Text color="$orange11">{pendingRequests.received.length}</Text>
+                  </Row>
                 )}
-              </XStack>
-              <Button size="$2" variant="outlined" onPress={handleManageConnections}>
+              </Row>
+              <Button size="sm" variant="outline" onPress={handleManageConnections}>
                 Manage
               </Button>
-            </XStack>
+            </Row>
 
             {!pendingRequests || pendingRequests.received.length === 0 ? (
-              <Text fontSize="$3" color="$color10" fontStyle="italic">
+              <Text color="$gray11" style={{ fontStyle: 'italic' }}>
                 No pending requests
               </Text>
             ) : (
-              <YStack gap="$2">
+              <Stack gap={8}>
                 {pendingRequests.received.slice(0, 3).map(
                   (request: {
                     id: string
@@ -306,79 +286,71 @@ export function ProfileActivityWidget() {
                     } | null
                     created_at?: string
                   }) => (
-                    <XStack
-                      key={request.id}
-                      alignItems="center"
-                      gap="$2"
-                      justifyContent="space-between"
-                    >
-                      <XStack alignItems="center" gap="$2" flex={1}>
-                        <Avatar circular size={32}>
-                          {request.user?.avatar_url ? (
-                            <Avatar.Image source={{ uri: request.user.avatar_url }} />
-                          ) : (
-                            <Avatar.Fallback backgroundColor="$purple4">
-                              <Text fontSize="$3" fontWeight="600" color="$purple10">
-                                {request.user?.display_name?.charAt(0) ||
-                                  request.user?.username?.charAt(0) ||
-                                  '?'}
-                              </Text>
-                            </Avatar.Fallback>
-                          )}
-                        </Avatar>
-                        <YStack flex={1} gap="$1">
-                          <Text fontSize="$3" fontWeight="600" color="$color12">
+                    <Row key={request.id} align="center" gap={8} justify="space-between">
+                      <Row align="center" gap={8} style={{ flex: 1 }}>
+                        <Avatar
+                          size={32}
+                          src={
+                            request.user?.avatar_url ? { uri: request.user.avatar_url } : undefined
+                          }
+                          initials={
+                            request.user?.display_name?.charAt(0) ||
+                            request.user?.username?.charAt(0) ||
+                            '?'
+                          }
+                          color="primary"
+                        />
+                        <Stack style={{ flex: 1 }} gap={4}>
+                          <Text color="$gray11">
                             {request.user?.display_name || request.user?.username || 'User'}
                           </Text>
                           {request.created_at && (
-                            <Text fontSize="$2" color="$color10">
+                            <Text color="$gray11">
                               {new Date(request.created_at).toLocaleDateString('en-US', {
                                 month: 'short',
                                 day: 'numeric',
                               })}
                             </Text>
                           )}
-                        </YStack>
-                      </XStack>
-                      <XStack gap="$1">
+                        </Stack>
+                      </Row>
+                      <Row gap={4}>
                         <Button
-                          size="$2"
-                          circular
-                          icon={acceptRequestMutation.isPending ? Loader2 : CheckCircle2}
-                          theme="success"
+                          size="sm"
+                          iconStart={acceptRequestMutation.isPending ? Loader2 : CheckCircle2}
+                          color="success"
                           onPress={() => handleAcceptRequest(request.id)}
                           disabled={
                             acceptRequestMutation.isPending || declineRequestMutation.isPending
                           }
                         />
                         <Button
-                          size="$2"
-                          circular
-                          icon={declineRequestMutation.isPending ? Loader2 : X}
-                          variant="outlined"
+                          size="sm"
+                          iconStart={declineRequestMutation.isPending ? Loader2 : X}
+                          variant="outline"
                           onPress={() => handleDeclineRequest(request.id)}
                           disabled={
                             acceptRequestMutation.isPending || declineRequestMutation.isPending
                           }
                         />
-                      </XStack>
-                    </XStack>
+                      </Row>
+                    </Row>
                   )
                 )}
                 {pendingRequests.received.length > 3 && (
                   <>
                     <Separator />
-                    <Text fontSize="$3" color="$color11">
+                    <Text color="$gray11">
                       {pendingRequests.received.length - 3} more request
                       {pendingRequests.received.length - 3 === 1 ? '' : 's'}
                     </Text>
                   </>
                 )}
-              </YStack>
+              </Stack>
             )}
-          </YStack>
-        </YStack>
+          </Stack>
+        </Stack>
       )}
-    </DashboardWidget>
+    </Card>
   )
 }

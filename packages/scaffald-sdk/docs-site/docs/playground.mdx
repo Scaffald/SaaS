@@ -1,0 +1,419 @@
+---
+sidebar_position: 10
+title: Interactive Playground
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeBlock from '@theme/CodeBlock';
+
+# Interactive Playground
+
+Try out the Scaffald SDK with these interactive examples.
+
+## Installation
+
+<Tabs groupId="package-manager">
+  <TabItem value="npm" label="npm" default>
+    ```bash
+    npm install @scaffald/sdk
+    ```
+  </TabItem>
+  <TabItem value="yarn" label="yarn">
+    ```bash
+    yarn add @scaffald/sdk
+    ```
+  </TabItem>
+  <TabItem value="pnpm" label="pnpm">
+    ```bash
+    pnpm add @scaffald/sdk
+    ```
+  </TabItem>
+</Tabs>
+
+## Quick Start Examples
+
+### Basic Client Setup
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript" default>
+    ```typescript
+    import Scaffald from '@scaffald/sdk';
+
+    const client = new Scaffald({
+      apiKey: 'your-api-key',
+      baseURL: 'https://api.scaffald.com', // optional
+    });
+
+    // Type-safe API calls
+    const jobs = await client.jobs.list();
+    console.log(jobs.data);
+    ```
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
+    ```javascript
+    const Scaffald = require('@scaffald/sdk');
+
+    const client = new Scaffald({
+      apiKey: 'your-api-key',
+    });
+
+    // Make API calls
+    const jobs = await client.jobs.list();
+    console.log(jobs.data);
+    ```
+  </TabItem>
+</Tabs>
+
+### Job Operations
+
+<Tabs groupId="operation">
+  <TabItem value="list" label="List Jobs" default>
+    ```typescript
+    // List all jobs with filters
+    const jobs = await client.jobs.list({
+      page: 1,
+      per_page: 20,
+      filters: {
+        is_remote: true,
+        employment_type: 'full_time',
+      },
+    });
+
+    console.log(`Found ${jobs.meta.total} jobs`);
+    jobs.data.forEach(job => {
+      console.log(`${job.title} at ${job.company_name}`);
+    });
+    ```
+  </TabItem>
+  <TabItem value="get" label="Get Single Job">
+    ```typescript
+    // Get a specific job by ID
+    const job = await client.jobs.get({
+      id: 'job_123',
+    });
+
+    console.log(job.title);
+    console.log(job.description);
+    console.log(job.requirements);
+    ```
+  </TabItem>
+  <TabItem value="search" label="Search Jobs">
+    ```typescript
+    // Search for jobs by keyword
+    const results = await client.jobs.search({
+      query: 'Software Engineer',
+      location: 'San Francisco',
+      page: 1,
+      per_page: 10,
+    });
+
+    console.log(`Found ${results.data.length} matching jobs`);
+    ```
+  </TabItem>
+  <TabItem value="create" label="Create Job">
+    ```typescript
+    // Create a new job posting
+    const newJob = await client.jobs.create({
+      title: 'Senior Software Engineer',
+      company_name: 'Tech Co',
+      description: 'We are hiring...',
+      requirements: ['5+ years experience', 'React expertise'],
+      employment_type: 'full_time',
+      is_remote: true,
+      salary_min: 150000,
+      salary_max: 200000,
+    });
+
+    console.log(`Created job: ${newJob.id}`);
+    ```
+  </TabItem>
+</Tabs>
+
+### React Integration
+
+<Tabs groupId="react-feature">
+  <TabItem value="setup" label="Provider Setup" default>
+    ```tsx
+    import { ScaffaldProvider } from '@scaffald/sdk/react';
+    import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+    const queryClient = new QueryClient();
+
+    function App() {
+      return (
+        <QueryClientProvider client={queryClient}>
+          <ScaffaldProvider
+            config={{
+              apiKey: import.meta.env.VITE_SCAFFALD_API_KEY,
+            }}
+          >
+            <YourApp />
+          </ScaffaldProvider>
+        </QueryClientProvider>
+      );
+    }
+    ```
+  </TabItem>
+  <TabItem value="hooks" label="Using Hooks">
+    ```tsx
+    import { useJobs, useJob } from '@scaffald/sdk/react';
+
+    function JobsList() {
+      const { data, isLoading, error } = useJobs({
+        page: 1,
+        per_page: 20,
+      });
+
+      if (isLoading) return <div>Loading...</div>;
+      if (error) return <div>Error: {error.message}</div>;
+
+      return (
+        <div>
+          {data?.data.map(job => (
+            <JobCard key={job.id} job={job} />
+          ))}
+        </div>
+      );
+    }
+    ```
+  </TabItem>
+  <TabItem value="mutations" label="Mutations">
+    ```tsx
+    import { useCreateApplication } from '@scaffald/sdk/react';
+    import { useQueryClient } from '@tanstack/react-query';
+
+    function ApplyButton({ jobId }: { jobId: string }) {
+      const queryClient = useQueryClient();
+      const createApplication = useCreateApplication({
+        onSuccess: () => {
+          // Invalidate and refetch
+          queryClient.invalidateQueries(['applications']);
+          alert('Application submitted!');
+        },
+      });
+
+      const handleApply = () => {
+        createApplication.mutate({
+          job_id: jobId,
+          profile_id: 'profile_123',
+          cover_letter: 'I am very interested...',
+        });
+      };
+
+      return (
+        <button 
+          onClick={handleApply}
+          disabled={createApplication.isPending}
+        >
+          {createApplication.isPending ? 'Submitting...' : 'Apply Now'}
+        </button>
+      );
+    }
+    ```
+  </TabItem>
+</Tabs>
+
+### OAuth Authentication
+
+<Tabs groupId="oauth-step">
+  <TabItem value="redirect" label="1. Authorization" default>
+    ```typescript
+    import Scaffald from '@scaffald/sdk';
+
+    const client = new Scaffald({
+      clientId: 'your_client_id',
+      clientSecret: 'your_client_secret',
+      redirectUri: 'https://yourapp.com/callback',
+    });
+
+    // Generate authorization URL
+    const authUrl = client.oauth.getAuthorizationUrl({
+      scope: ['read:jobs', 'write:applications'],
+      state: crypto.randomUUID(),
+    });
+
+    // Redirect user to authorization
+    window.location.href = authUrl;
+    ```
+  </TabItem>
+  <TabItem value="callback" label="2. Handle Callback">
+    ```typescript
+    // In your callback route handler
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const state = urlParams.get('state');
+
+    // Exchange code for tokens
+    const tokens = await client.oauth.exchangeCode({
+      code,
+      state,
+    });
+
+    // Store tokens securely
+    sessionStorage.setItem('access_token', tokens.access_token);
+    sessionStorage.setItem('refresh_token', tokens.refresh_token);
+    ```
+  </TabItem>
+  <TabItem value="use-token" label="3. Use Token">
+    ```typescript
+    // Initialize client with access token
+    const client = new Scaffald({
+      accessToken: sessionStorage.getItem('access_token'),
+    });
+
+    // Make authenticated requests
+    const profile = await client.profiles.me();
+    console.log(`Logged in as: ${profile.first_name}`);
+    ```
+  </TabItem>
+  <TabItem value="refresh" label="4. Refresh Token">
+    ```typescript
+    // When access token expires, refresh it
+    async function refreshAccessToken() {
+      const refreshToken = sessionStorage.getItem('refresh_token');
+      
+      const tokens = await client.oauth.refreshToken({
+        refresh_token: refreshToken,
+      });
+      
+      // Update stored tokens
+      sessionStorage.setItem('access_token', tokens.access_token);
+      sessionStorage.setItem('refresh_token', tokens.refresh_token);
+      
+      return tokens.access_token;
+    }
+    ```
+  </TabItem>
+</Tabs>
+
+### Error Handling
+
+<Tabs groupId="error-type">
+  <TabItem value="basic" label="Basic Error Handling" default>
+    ```typescript
+    import { ScaffaldError } from '@scaffald/sdk';
+
+    try {
+      const job = await client.jobs.get({ id: 'invalid_id' });
+    } catch (error) {
+      if (error instanceof ScaffaldError) {
+        console.error(`API Error: ${error.message}`);
+        console.error(`Status: ${error.statusCode}`);
+      } else {
+        console.error('Unexpected error:', error);
+      }
+    }
+    ```
+  </TabItem>
+  <TabItem value="validation" label="Validation Errors">
+    ```typescript
+    import { ValidationError } from '@scaffald/sdk';
+
+    try {
+      await client.applications.create({
+        job_id: 'job_123',
+        // Missing required profile_id
+      });
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        console.error('Validation failed:');
+        error.errors.forEach(err => {
+          console.error(`- ${err.field}: ${err.message}`);
+        });
+      }
+    }
+    ```
+  </TabItem>
+  <TabItem value="retry" label="Retry Logic">
+    ```typescript
+    async function fetchWithRetry<T>(
+      fn: () => Promise<T>,
+      maxRetries = 3
+    ): Promise<T> {
+      for (let i = 0; i < maxRetries; i++) {
+        try {
+          return await fn();
+        } catch (error) {
+          const isLastAttempt = i === maxRetries - 1;
+          const isServerError = error.statusCode >= 500;
+          
+          if (isLastAttempt || !isServerError) {
+            throw error;
+          }
+          
+          // Exponential backoff
+          await new Promise(resolve => 
+            setTimeout(resolve, Math.pow(2, i) * 1000)
+          );
+        }
+      }
+      throw new Error('Max retries exceeded');
+    }
+
+    // Usage
+    const jobs = await fetchWithRetry(() => client.jobs.list());
+    ```
+  </TabItem>
+</Tabs>
+
+## Advanced Examples
+
+### Pagination
+
+```typescript
+// Automatic pagination through all pages
+async function getAllJobs() {
+  const allJobs = [];
+  let page = 1;
+  let hasMore = true;
+
+  while (hasMore) {
+    const response = await client.jobs.list({ page, per_page: 50 });
+    allJobs.push(...response.data);
+    hasMore = response.meta.has_next;
+    page++;
+  }
+
+  return allJobs;
+}
+
+const allJobs = await getAllJobs();
+console.log(`Total jobs: ${allJobs.length}`);
+```
+
+### Webhook Verification
+
+```typescript
+import { verifyWebhookSignature } from '@scaffald/sdk';
+
+// In your webhook handler
+app.post('/webhooks/scaffald', (req, res) => {
+  const signature = req.headers['x-scaffald-signature'];
+  const payload = JSON.stringify(req.body);
+  const secret = process.env.WEBHOOK_SECRET;
+
+  const isValid = verifyWebhookSignature(payload, signature, secret);
+
+  if (!isValid) {
+    return res.status(401).json({ error: 'Invalid signature' });
+  }
+
+  // Process webhook
+  const event = req.body;
+  console.log(`Received ${event.type} event`);
+  
+  res.json({ received: true });
+});
+```
+
+## Try It Live
+
+Want to experiment? Check out our [CodeSandbox examples](https://codesandbox.io/examples/scaffald-sdk) to try the SDK in your browser!
+
+## Need Help?
+
+- **Documentation**: [Full API Reference](/docs/api/overview)
+- **Examples**: [GitHub Examples](https://github.com/Scaffald/sdk/tree/main/examples)
+- **Issues**: [Report a Bug](https://github.com/Scaffald/sdk/issues)
+- **Discussions**: [Ask Questions](https://github.com/Scaffald/sdk/discussions)

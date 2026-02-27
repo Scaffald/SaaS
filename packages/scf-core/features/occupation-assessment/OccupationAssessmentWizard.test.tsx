@@ -15,8 +15,8 @@ vi.mock('expo-router', () => ({
   }),
 }))
 
-vi.mock('@tamagui/toast', () => ({
-  useToastController: () => ({
+vi.mock('@scaffald/ui', () => ({
+  useToast: () => ({
     show: mockToastShow,
   }),
 }))
@@ -100,7 +100,7 @@ vi.mock('@scf/core/features/career-assessment/components/OccupationSearch', () =
 }))
 
 // Mock Button and UI components
-vi.mock('@unicornlove/ui', async () => {
+vi.mock('@scaffald/ui', async () => {
   const React = await import('react')
   return {
     Button: ({ children, onPress, disabled, ...props }: {
@@ -116,16 +116,16 @@ vi.mock('@unicornlove/ui', async () => {
     Text: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
       <span {...props}>{children}</span>
     ),
-    XStack: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
+    Row: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
       <div {...props}>{children}</div>
     ),
-    YStack: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
+    Stack: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
       <div {...props}>{children}</div>
     ),
   }
 })
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Plus: () => <span data-testid="plus-icon">+</span>,
   X: () => <span data-testid="x-icon">×</span>,
 }))

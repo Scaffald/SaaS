@@ -1,18 +1,17 @@
-import { api } from '@scf/core/utils/api'
+import { useFollowing } from '@scf/core/utils/engagement-sdk-hooks'
 
 export function useFollowStatus(targetUserId: string | null) {
-  const { data: following, isLoading } = api.follows.getFollowing.useQuery(
-    undefined,
-    {
-      enabled: !!targetUserId,
-    }
-  )
+  const { data: followingData, isLoading } = useFollowing(undefined, {
+    enabled: !!targetUserId,
+  })
 
-  const isFollowing = following?.some((follow: { user?: { id: string } | null }) => follow.user?.id === targetUserId) ?? false
+  const isFollowing =
+    followingData?.data.some(
+      (follow: { followee_id?: string }) => follow.followee_id === targetUserId
+    ) ?? false
 
   return {
     isFollowing,
     isLoading,
   }
 }
-

@@ -111,7 +111,7 @@ await page.waitForURL('/dashboard', { timeout: 10000 });
 // Screenshots are automatically saved to test-results/
 ```
 
-## REQ-9: No Mocking Internal Systems
+## No Mocking Internal Systems
 
 ✅ **DO use real**:
 - Real Supabase database

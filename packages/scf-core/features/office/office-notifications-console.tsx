@@ -1,310 +1,326 @@
-import { api } from '@scf/core/utils/api'
-import { NotificationTag } from '@unicornlove/ui'
-import { AlertCircle, RefreshCw } from '@tamagui/lucide-icons'
-import { useState } from 'react'
-import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { NotificationTag, useThemeContext } from "@scaffald/ui";
+import {
+  useNotificationDeliveries,
+  useNotificationDigestQueue,
+} from "@scf/core/utils/notifications-admin-sdk-hooks";
+import { AlertCircle, RefreshCw } from "lucide-react-native";
+import { useState } from "react";
+import {
+  Button,
+  ScrollView,
+  Separator,
+  Spinner,
+  Text,
+  Row,
+  Stack,
+} from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
 interface NotificationDelivery {
-  id: string
-  channel: string
-  status: string
-  attempts: number
-  last_error?: string | null
-  updated_at?: string | null
+  id: string;
+  channel: string;
+  status: string;
+  attempts: number;
+  last_error?: string | null;
+  updated_at?: string | null;
   notification?: {
-    severity?: 'info' | 'important' | 'critical'
-    title?: string | null
-    preview?: string | null
-    message?: string | null
-  } | null
+    severity?: "info" | "important" | "critical";
+    title?: string | null;
+    preview?: string | null;
+    message?: string | null;
+  } | null;
 }
 
 interface DigestQueueItem {
-  id: string
-  user_id: string
-  type: string
-  bucket: string
-  count: number
-  channels?: string[] | null
-  last_event_at?: string | null
+  id: string;
+  user_id: string;
+  type: string;
+  bucket: string;
+  count: number;
+  channels?: string[] | null;
+  last_event_at?: string | null;
 }
 
 const DELIVERY_STATUSES = [
-  'all',
-  'queued',
-  'sending',
-  'sent',
-  'delivered',
-  'failed',
-  'bounce',
-  'blocked',
-] as const
+  "all",
+  "queued",
+  "sending",
+  "sent",
+  "delivered",
+  "failed",
+  "bounce",
+  "blocked",
+] as const;
 
-type DeliveryStatus = (typeof DELIVERY_STATUSES)[number]
-
-const severityThemeMap: Record<'info' | 'important' | 'critical', 'info' | 'warning' | 'error'> = {
-  info: 'info',
-  important: 'warning',
-  critical: 'error',
-}
+type DeliveryStatus = (typeof DELIVERY_STATUSES)[number];
 
 function formatDate(value: string | null | undefined) {
-  if (!value) return '—'
-  return new Date(value).toLocaleString()
+  if (!value) return "—";
+  return new Date(value).toLocaleString();
 }
 
 function formatChannel(channel: string) {
   switch (channel) {
-    case 'email':
-      return 'Email'
-    case 'sms':
-      return 'SMS'
-    case 'push':
-      return 'Push'
+    case "email":
+      return "Email";
+    case "sms":
+      return "SMS";
+    case "push":
+      return "Push";
     default:
-      return channel
+      return channel;
   }
 }
 
 export function OfficeNotificationsConsole() {
-  const [status, setStatus] = useState<DeliveryStatus>('queued')
+  const { theme } = useThemeContext();
+  const [status, setStatus] = useState<DeliveryStatus>("queued");
 
-  const deliveriesQuery = api.notifications.admin.deliveries.useQuery({
-    status,
-    limit: 50,
-  })
-  const digestQuery = api.notifications.admin.digestQueue.useQuery({ limit: 50 })
+  const deliveriesQuery = useNotificationDeliveries({ status, limit: 50 });
+  const digestQuery = useNotificationDigestQueue({ limit: 50 });
 
-  const deliveries = (deliveriesQuery.data ?? []) as NotificationDelivery[]
-  const digestItems = (digestQuery.data ?? []) as DigestQueueItem[]
+  const deliveries = (deliveriesQuery.data ?? []) as NotificationDelivery[];
+  const digestItems = (digestQuery.data ?? []) as DigestQueueItem[];
 
   return (
-    <YStack gap="$6">
-      <YStack gap="$2">
-        <Text fontSize="$9" fontWeight="700">
-          Notification Operations
+    <Stack gap={24}>
+      <Stack gap={8}>
+        <Text>Notification Operations</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
+          Monitor delivery workers, inspect failures, and triage digest
+          backlogs.
         </Text>
-        <Text fontSize="$3" color="$color10">
-          Monitor delivery workers, inspect failures, and triage digest backlogs.
-        </Text>
-      </YStack>
+      </Stack>
 
-      <YStack gap="$3">
-        <XStack justifyContent="space-between" alignItems="center">
-          <Text fontSize="$7" fontWeight="600">
-            Delivery Queue
-          </Text>
+      <Stack gap={12}>
+        <Row justify="space-between" align="center">
+          <Text>Delivery Queue</Text>
           <Button
-            size="$2"
-            theme="info"
-            icon={RefreshCw}
+            size="sm"
+            variant="outline"
+            color="primary"
+            iconStart={RefreshCw}
             onPress={() => deliveriesQuery.refetch()}
             disabled={deliveriesQuery.isRefetching}
           >
             Refresh
           </Button>
-        </XStack>
+        </Row>
 
-        <XStack gap="$2" flexWrap="wrap">
+        <Row gap={8} wrap>
           {DELIVERY_STATUSES.map((value) => {
-            const isActive = status === value
+            const isActive = status === value;
 
             return (
               <Button
                 key={value}
-                size="$2"
-                theme={isActive ? 'info' : 'gray'}
-                {...(!isActive ? { variant: 'outlined' as const } : {})}
+                size="sm"
+                variant={isActive ? "filled" : "outline"}
+                color={isActive ? "primary" : "gray"}
                 onPress={() => {
-                  setStatus(value)
-                  deliveriesQuery.refetch()
+                  setStatus(value);
+                  deliveriesQuery.refetch();
                 }}
               >
                 {value.charAt(0).toUpperCase() + value.slice(1)}
               </Button>
-            )
+            );
           })}
-        </XStack>
+        </Row>
 
         {deliveriesQuery.isLoading ? (
-          <YStack alignItems="center" gap="$3" marginTop="$4">
-            <Spinner size="large" color="$color10" />
-            <Text color="$color10">Loading deliveries…</Text>
-          </YStack>
+          <Stack align="center" gap={12} marginTop={16}>
+            <Spinner size="lg" color="gray" />
+            <Text style={{ color: colors.text[theme].secondary }}>
+              Loading deliveries…
+            </Text>
+          </Stack>
         ) : deliveries.length === 0 ? (
-          <YStack gap="$3" alignItems="center" marginTop="$4">
-            <AlertCircle size={32} color="$color8" />
-            <Text color="$color10">No deliveries match this filter.</Text>
-          </YStack>
+          <Stack gap={12} align="center" marginTop={16}>
+            <AlertCircle size={32} color={colors.text[theme].secondary} />
+            <Text style={{ color: colors.text[theme].secondary }}>
+              No deliveries match this filter.
+            </Text>
+          </Stack>
         ) : (
-          <YStack borderWidth={1} borderColor="$borderColor" borderRadius="$4" overflow="hidden">
-            <XStack backgroundColor="$color2" padding="$3" gap="$3">
-              <Text flex={2} fontWeight="600">
-                Notification
-              </Text>
-              <Text flex={1} fontWeight="600">
-                Channel
-              </Text>
-              <Text flex={1} fontWeight="600">
-                Status
-              </Text>
-              <Text flex={1} fontWeight="600">
-                Attempts
-              </Text>
-              <Text flex={2} fontWeight="600">
-                Last error
-              </Text>
-              <Text flex={1} fontWeight="600">
-                Updated
-              </Text>
-            </XStack>
+          <Stack
+            borderWidth={1}
+            borderColor={colors.border[theme].default}
+            borderRadius={16}
+            style={{ overflow: "hidden" }}
+          >
+            <Row
+              style={{ backgroundColor: colors.bg[theme].subtle }}
+              padding="sm"
+              gap={12}
+            >
+              <Text style={{ flex: 2 }}>Notification</Text>
+              <Text style={{ flex: 1 }}>Channel</Text>
+              <Text style={{ flex: 1 }}>Status</Text>
+              <Text style={{ flex: 1 }}>Attempts</Text>
+              <Text style={{ flex: 2 }}>Last error</Text>
+              <Text style={{ flex: 1 }}>Updated</Text>
+            </Row>
 
             {deliveries.map((delivery, index) => {
-              const notification = delivery.notification
-              const severity = notification?.severity ?? 'info'
-              const tagTheme = severityThemeMap[severity]
+              const notification = delivery.notification;
+              const severity = notification?.severity ?? "info";
 
               return (
-                <YStack
+                <Stack
                   key={delivery.id}
-                  backgroundColor={index % 2 === 0 ? '$color1' : '$color2'}
-                  padding="$3"
+                  style={{
+                    backgroundColor:
+                      index % 2 === 0
+                        ? colors.bg[theme].default
+                        : colors.bg[theme].subtle,
+                  }}
+                  padding="sm"
                 >
-                  <XStack gap="$3" alignItems="center">
-                    <YStack flex={2} gap="$1">
-                      <XStack gap="$2" alignItems="center">
-                        <Text fontWeight="600" color="$color12" numberOfLines={1}>
-                          {notification?.title ?? 'Untitled notification'}
+                  <Row gap={12} align="center">
+                    <Stack flex={2} gap={4}>
+                      <Row gap={8} align="center">
+                        <Text style={{ color: colors.text[theme].secondary }}>
+                          {notification?.title ?? "Untitled notification"}
                         </Text>
-                        <NotificationTag size="sm" themeName={tagTheme} textColorToken="$color12">
+                        <NotificationTag size="sm">
                           {severity.toUpperCase()}
                         </NotificationTag>
-                      </XStack>
-                      <Text fontSize="$2" color="$color10" numberOfLines={2}>
-                        {notification?.preview ?? notification?.message ?? '—'}
+                      </Row>
+                      <Text style={{ color: colors.text[theme].secondary }}>
+                        {notification?.preview ?? notification?.message ?? "—"}
                       </Text>
-                    </YStack>
-                    <Text flex={1} color="$color11">
+                    </Stack>
+                    <Text
+                      style={{ flex: 1, color: colors.text[theme].secondary }}
+                    >
                       {formatChannel(delivery.channel)}
                     </Text>
-                    <NotificationTag
-                      size="md"
-                      themeName={delivery.status === 'failed' ? 'error' : 'gray'}
-                      flex={1}
-                      justifyContent="center"
-                      textColorToken="$color12"
+                    <Stack style={{ flex: 1 }}>
+                      <NotificationTag size="md">
+                        {delivery.status}
+                      </NotificationTag>
+                    </Stack>
+                    <Text
+                      style={{ flex: 1, color: colors.text[theme].secondary }}
                     >
-                      {delivery.status}
-                    </NotificationTag>
-                    <Text flex={1} color="$color11">
                       {delivery.attempts}
                     </Text>
-                    <Text flex={2} color="$color10" numberOfLines={1}>
-                      {delivery.last_error ?? '—'}
+                    <Text
+                      style={{ flex: 2, color: colors.text[theme].secondary }}
+                    >
+                      {delivery.last_error ?? "—"}
                     </Text>
-                    <Text flex={1} color="$color10">
+                    <Text
+                      style={{ flex: 1, color: colors.text[theme].secondary }}
+                    >
                       {formatDate(delivery.updated_at)}
                     </Text>
-                  </XStack>
-                </YStack>
-              )
+                  </Row>
+                </Stack>
+              );
             })}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
+      </Stack>
 
-      <Separator backgroundColor="$color3" />
+      <Separator style={{ backgroundColor: colors.bg[theme].muted }} />
 
-      <YStack gap="$3">
-        <XStack justifyContent="space-between" alignItems="center">
-          <Text fontSize="$7" fontWeight="600">
-            Digest Backlog
-          </Text>
+      <Stack gap={12}>
+        <Row justify="space-between" align="center">
+          <Text>Digest Backlog</Text>
           <Button
-            size="$2"
-            theme="info"
-            icon={RefreshCw}
+            size="sm"
+            variant="outline"
+            color="primary"
+            iconStart={RefreshCw}
             onPress={() => digestQuery.refetch()}
             disabled={digestQuery.isRefetching}
           >
             Refresh
           </Button>
-        </XStack>
+        </Row>
 
         {digestQuery.isLoading ? (
-          <YStack alignItems="center" gap="$3" marginTop="$4">
-            <Spinner size="large" color="$color10" />
-            <Text color="$color10">Loading digest queue…</Text>
-          </YStack>
+          <Stack align="center" gap={12} marginTop={16}>
+            <Spinner size="lg" color="gray" />
+            <Text style={{ color: colors.text[theme].secondary }}>
+              Loading digest queue…
+            </Text>
+          </Stack>
         ) : digestItems.length === 0 ? (
-          <YStack gap="$3" alignItems="center" marginTop="$4">
-            <AlertCircle size={32} color="$color8" />
-            <Text color="$color10">Digest queue is empty.</Text>
-          </YStack>
+          <Stack gap={12} align="center" marginTop={16}>
+            <AlertCircle size={32} color={colors.text[theme].secondary} />
+            <Text style={{ color: colors.text[theme].secondary }}>
+              Digest queue is empty.
+            </Text>
+          </Stack>
         ) : (
-          <YStack borderWidth={1} borderColor="$borderColor" borderRadius="$4" overflow="hidden">
-            <XStack backgroundColor="$color2" padding="$3" gap="$3">
-              <Text flex={1} fontWeight="600">
-                User ID
-              </Text>
-              <Text flex={1} fontWeight="600">
-                Type
-              </Text>
-              <Text flex={1} fontWeight="600">
-                Bucket
-              </Text>
-              <Text flex={1} fontWeight="600">
-                Count
-              </Text>
-              <Text flex={2} fontWeight="600">
-                Channels
-              </Text>
-              <Text flex={1} fontWeight="600">
-                Last event
-              </Text>
-            </XStack>
+          <Stack
+            borderWidth={1}
+            borderColor={colors.border[theme].default}
+            borderRadius={16}
+            style={{ overflow: "hidden" }}
+          >
+            <Row
+              style={{ backgroundColor: colors.bg[theme].subtle }}
+              padding="sm"
+              gap={12}
+            >
+              <Text style={{ flex: 1 }}>User ID</Text>
+              <Text style={{ flex: 1 }}>Type</Text>
+              <Text style={{ flex: 1 }}>Bucket</Text>
+              <Text style={{ flex: 1 }}>Count</Text>
+              <Text style={{ flex: 2 }}>Channels</Text>
+              <Text style={{ flex: 1 }}>Last event</Text>
+            </Row>
 
             {digestItems.map((item, index) => (
-              <XStack
+              <Row
                 key={item.id}
-                gap="$3"
-                padding="$3"
-                backgroundColor={index % 2 === 0 ? '$color1' : '$color2'}
-                alignItems="flex-start"
+                gap={12}
+                padding="sm"
+                style={{
+                  backgroundColor:
+                    index % 2 === 0
+                      ? colors.bg[theme].default
+                      : colors.bg[theme].subtle,
+                }}
+                align="flex-start"
               >
-                <Text flex={1} color="$color11" numberOfLines={1}>
+                <Text style={{ flex: 1, color: colors.text[theme].secondary }}>
                   {item.user_id}
                 </Text>
-                <Text flex={1} color="$color11">
+                <Text style={{ flex: 1, color: colors.text[theme].secondary }}>
                   {item.type}
                 </Text>
-                <Text flex={1} color="$color11">
+                <Text style={{ flex: 1, color: colors.text[theme].secondary }}>
                   {item.bucket}
                 </Text>
-                <Text flex={1} color="$color11">
+                <Text style={{ flex: 1, color: colors.text[theme].secondary }}>
                   {item.count}
                 </Text>
-                <Text flex={2} color="$color11">
+                <Text style={{ flex: 2, color: colors.text[theme].secondary }}>
                   {Array.isArray(item.channels) && item.channels.length > 0
-                    ? item.channels.join(', ')
-                    : '—'}
+                    ? item.channels.join(", ")
+                    : "—"}
                 </Text>
-                <Text flex={1} color="$color10">
+                <Text style={{ flex: 1, color: colors.text[theme].secondary }}>
                   {formatDate(item.last_event_at)}
                 </Text>
-              </XStack>
+              </Row>
             ))}
-          </YStack>
+          </Stack>
         )}
-      </YStack>
-    </YStack>
-  )
+      </Stack>
+    </Stack>
+  );
 }
 
 export function OfficeNotificationsConsoleScrollWrapper() {
   return (
-    <ScrollView paddingHorizontal="$6" paddingVertical="$6">
+    <ScrollView style={{ paddingHorizontal: 24, paddingVertical: 24 }}>
       <OfficeNotificationsConsole />
     </ScrollView>
-  )
+  );
 }

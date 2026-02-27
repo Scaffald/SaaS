@@ -1,10 +1,12 @@
 import type { ApplicationStepType, AttachmentMetadata } from '@scf/schemas'
 import { ApplicationStep } from '@scf/schemas'
-import { api } from '@scf/core/utils/api'
-import { SaveStatusIndicator } from '@unicornlove/ui'
-import { AlertCircle } from '@tamagui/lucide-icons'
+import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
+import { SaveStatusIndicator, useThemeContext } from '@scaffald/ui'
+import { AlertCircle } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
-import { Button, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Text, Row, Stack } from '@scaffald/ui'
+import { ScrollView } from 'react-native'
+import { colors } from '@scaffald/ui/tokens'
 import { useApplicationForm } from '../hooks/useApplicationForm'
 import type { Attachments } from './AttachmentsStep'
 import { AttachmentsStep } from './AttachmentsStep'
@@ -73,6 +75,7 @@ export function ApplicationWizard({
 }: ApplicationWizardProps) {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [submittedApplicationId, setSubmittedApplicationId] = useState<string | null>(null)
+  const { theme } = useThemeContext()
 
   const {
     currentStep,
@@ -98,13 +101,13 @@ export function ApplicationWizard({
   const customQuestions: CustomQuestion[] = [] // Replace with actual data fetch
 
   // Track application started for engagement analytics
-  const trackEventMutation = api.engagement.trackEvent.useMutation()
+  const trackEventMutation = useTrackEngagementMutation()
 
   useEffect(() => {
     // Track when application wizard is opened (application started)
     try {
       trackEventMutation.mutate({
-        eventType: 'application.started',
+        eventType: 'application_start',
         targetType: 'job',
         targetId: jobId,
         metadata: {
@@ -116,7 +119,7 @@ export function ApplicationWizard({
       // Silent error handling - don't impact user flow
       console.warn('Failed to track application started:', error)
     }
-  }, [jobId, jobTitle, organizationName, trackEventMutation.mutate])
+  }, [jobId, jobTitle, organizationName, trackEventMutation])
 
   // Define application steps - only include custom questions if there are any
   const steps: Array<{ id: ApplicationStepType; label: string }> = [
@@ -136,7 +139,7 @@ export function ApplicationWizard({
         // Track application submitted for engagement analytics
         try {
           trackEventMutation.mutate({
-            eventType: 'application.submitted',
+            eventType: 'application_complete',
             targetType: 'job',
             targetId: jobId,
             metadata: {
@@ -177,31 +180,31 @@ export function ApplicationWizard({
   }
 
   return (
-    <YStack flex={1} backgroundColor="$background">
+    <Stack flex={1} style={{ backgroundColor: colors.bg[theme].default }}>
       {/* Header */}
-      <YStack
-        padding="$4"
-        backgroundColor="$background"
-        borderBottomWidth={1}
-        borderBottomColor="$borderColor"
-        gap="$3"
+      <Stack
+        padding="md"
+        style={{
+          backgroundColor: colors.bg[theme].default,
+          borderBottomColor: colors.border[theme].default,
+          borderBottomWidth: 1,
+        }}
+        gap={12}
       >
-        <XStack justifyContent="space-between" alignItems="flex-start" width="100%">
-          <YStack gap="$1" flex={1}>
-            <Text fontSize="$6" fontWeight="bold" color="$color12">
+        <Row justify="space-between" align="flex-start" width="100%">
+          <Stack gap={4} flex={1}>
+            <Text style={{ color: colors.text[theme].secondary }}>
               {isEditMode ? 'Update Application' : 'Apply'} to {jobTitle}
             </Text>
-            <Text fontSize="$3" color="$color11">
-              {organizationName}
-            </Text>
-          </YStack>
+            <Text style={{ color: colors.text[theme].secondary }}>{organizationName}</Text>
+          </Stack>
           {/* Save Status Indicator */}
           <SaveStatusIndicator
             status={isSaving ? 'saving' : saveError ? 'error' : lastSavedAt ? 'saved' : 'idle'}
             lastSavedAt={lastSavedAt || undefined}
             error={saveError || undefined}
           />
-        </XStack>
+        </Row>
 
         {/* Progress Indicator */}
         <ProgressIndicator
@@ -209,28 +212,30 @@ export function ApplicationWizard({
           completedSteps={completedSteps}
           steps={steps}
         />
-      </YStack>
+      </Stack>
 
       {/* Error Display */}
       {submitError && (
-        <YStack
-          padding="$4"
-          backgroundColor="$red2"
-          borderBottomWidth={1}
-          borderBottomColor="$red7"
+        <Stack
+          padding="md"
+          style={{
+            backgroundColor: theme === "light" ? colors.error[50] : colors.error[900],
+            borderBottomColor: theme === "light" ? colors.error[300] : colors.error[700],
+            borderBottomWidth: 1,
+          }}
         >
-          <XStack gap="$2" alignItems="center">
-            <AlertCircle size={20} color="$red10" />
-            <Text fontSize="$3" color="$red11" flex={1}>
+          <Row gap={8} align="center">
+            <AlertCircle size="lg" color={theme === "light" ? colors.error[700] : colors.error[300]} />
+            <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300], flex: 1 }}>
               {submitError.message || 'An error occurred'}
             </Text>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       )}
 
       {/* Main Content */}
-      <ScrollView flex={1}>
-        <YStack padding="$4" alignItems="center">
+      <ScrollView style={{ flex: 1 }}>
+        <Stack padding="md" align="center">
           {currentStep === 'screening' && (
             <ScreeningStep
               answers={screeningAnswers}
@@ -304,53 +309,55 @@ export function ApplicationWizard({
               isEditMode={isEditMode}
             />
           )}
-        </YStack>
+        </Stack>
       </ScrollView>
 
       {/* Cancel Confirmation Dialog */}
       {showCancelConfirm && (
-        <YStack
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          backgroundColor="rgba(0,0,0,0.5)"
-          alignItems="center"
-          justifyContent="center"
-          padding="$4"
+        <Stack
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+          }}
+          align="center"
+          justify="center"
+          padding="md"
         >
-          <YStack
-            backgroundColor="$background"
-            borderRadius="$4"
-            padding="$6"
-            gap="$4"
-            maxWidth={400}
-            width="100%"
-            borderWidth={1}
-            borderColor="$borderColor"
+          <Stack
+            style={{
+              backgroundColor: colors.bg[theme].default,
+              borderColor: colors.border[theme].default,
+              borderRadius: 16,
+              maxWidth: 400,
+              width: '100%',
+              borderWidth: 1,
+            }}
+            padding="xl"
+            gap={16}
           >
-            <YStack gap="$2">
-              <Text fontSize="$6" fontWeight="bold" color="$color12">
-                Cancel Application?
-              </Text>
-              <Text fontSize="$3" color="$color11">
+            <Stack gap={8}>
+              <Text style={{ color: colors.text[theme].secondary }}>Cancel Application?</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
                 Your progress has been auto-saved. You can return to complete your application
                 later.
               </Text>
-            </YStack>
+            </Stack>
 
-            <XStack gap="$3" justifyContent="flex-end">
-              <Button size="$4" variant="outlined" onPress={() => setShowCancelConfirm(false)}>
+            <Row gap={12} justify="flex-end">
+              <Button size="md" variant="outline" onPress={() => setShowCancelConfirm(false)}>
                 Keep Editing
               </Button>
-              <Button size="$4" theme="error" onPress={confirmCancel}>
+              <Button size="md" color="error" onPress={confirmCancel}>
                 Exit Application
               </Button>
-            </XStack>
-          </YStack>
-        </YStack>
+            </Row>
+          </Stack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

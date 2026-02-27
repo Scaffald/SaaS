@@ -1,15 +1,15 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { OfficePageLayout } from '@scf/core/features/office/components/OfficePageLayout'
-import { api } from '@scf/core/utils/api'
+import { useOrganizationBackgroundChecks } from '@scf/core/utils/background-checks-sdk-hooks'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { ExternalLink, Eye, RefreshCcw } from '@tamagui/lucide-icons'
+import { ExternalLink, Eye, RefreshCcw } from 'lucide-react-native'
 import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@unicornlove/ui'
-import { Button, Label, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@scaffald/ui'
+import { Button, Label, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 import { getStatusMetadata } from '../components/status.utils'
 import { OrganizationCheckDetails } from './OrganizationCheckDetails'
@@ -89,14 +89,9 @@ export function OrganizationBackgroundChecksPage() {
     }
   }, [organizations, selectedOrganizationId])
 
-  const checksQuery = api.backgroundChecks.organizationListChecks.useQuery(
-    { organization_id: selectedOrganizationId ?? '' },
-    {
-      enabled: Boolean(selectedOrganizationId),
-      refetchOnWindowFocus: true,
-      staleTime: 60_000,
-    }
-  )
+  const checksQuery = useOrganizationBackgroundChecks(selectedOrganizationId || undefined, {
+    enabled: Boolean(selectedOrganizationId),
+  })
 
   const rows = useMemo(() => {
     if (!checksQuery.data) return []
@@ -135,16 +130,12 @@ export function OrganizationBackgroundChecksPage() {
           accessorKey: 'workerName',
           header: 'Worker',
           cell: ({ row }: CellContext<CheckRow, unknown>) => (
-            <YStack>
-              <Text fontSize="$3" fontWeight="600" color="$color12">
-                {row.original.workerName}
-              </Text>
+            <Stack>
+              <Text color="$gray11">{row.original.workerName}</Text>
               {row.original.workerEmail ? (
-                <Text fontSize="$2" color="$color10">
-                  {row.original.workerEmail}
-                </Text>
+                <Text color="$gray11">{row.original.workerEmail}</Text>
               ) : null}
-            </YStack>
+            </Stack>
           ),
           meta: {
             width: '$20',
@@ -186,9 +177,9 @@ export function OrganizationBackgroundChecksPage() {
           header: 'Actions',
           cell: ({ row }: CellContext<CheckRow, unknown>) => (
             <Button
-              size="$2"
-              variant="outlined"
-              icon={Eye}
+              size="sm"
+              variant="outline"
+              iconStart={Eye}
               onPress={() => setSelectedCheckId(row.original.id)}
             >
               View
@@ -201,32 +192,28 @@ export function OrganizationBackgroundChecksPage() {
 
   if (isLoadingOrganizations) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$2">
-        <Spinner size="large" />
-        <Text fontSize="$3" color="$color11">
-          Loading organizations…
-        </Text>
-      </YStack>
+      <Stack flex={1} align="center" justify="center" gap={8}>
+        <Spinner size="lg" />
+        <Text color="$gray11">Loading organizations…</Text>
+      </Stack>
     )
   }
 
   if (!organizations.length) {
     return (
-      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
-        <Text fontSize="$6" fontWeight="700" color="$color12">
-          No organizations available
-        </Text>
-        <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
+      <Stack flex={1} align="center" justify="center" gap={12} paddingHorizontal={16}>
+        <Text color="$gray11">No organizations available</Text>
+        <Text color="$gray11" style={{ textAlign: 'center' }}>
           Create an organization before managing background checks.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack flex={1}>
-      <YStack padding="$4" gap="$3">
-        <YStack gap="$2">
+    <Stack flex={1}>
+      <Stack padding="md" gap={12}>
+        <Stack gap={8}>
           <Label htmlFor="office-background-checks-organization">Organization</Label>
           <ResponsiveSelect
             value={selectedOrganizationId ?? ''}
@@ -246,29 +233,29 @@ export function OrganizationBackgroundChecksPage() {
               label: (org.name as string) ?? 'Untitled organization',
             }))}
           />
-        </YStack>
+        </Stack>
 
-        <XStack gap="$2" justifyContent="flex-end">
+        <Row gap={8} justify="flex-end">
           <Button
-            size="$3"
-            variant="outlined"
-            icon={RefreshCcw}
+            size="sm"
+            variant="outline"
+            iconStart={RefreshCcw}
             onPress={() => checksQuery.refetch()}
             disabled={checksQuery.isLoading}
           >
             Refresh
           </Button>
           <Button
-            size="$3"
-            theme="blue"
-            icon={ExternalLink}
+            size="sm"
+            color="primary"
+            iconStart={ExternalLink}
             onPress={handleNavigateToRequest}
             disabled={!selectedOrganizationId}
           >
             Request Check
           </Button>
-        </XStack>
-      </YStack>
+        </Row>
+      </Stack>
 
       {selectedOrganizationId ? (
         <OfficePageLayout
@@ -290,25 +277,23 @@ export function OrganizationBackgroundChecksPage() {
           onRowView={(row: CheckRow) => setSelectedCheckId(row.id)}
         />
       ) : (
-        <YStack flex={1} padding="$4" gap="$3" alignItems="center" justifyContent="center">
-          <Text fontSize="$5" fontWeight="700" color="$color12">
-            Select an organization to view background checks
-          </Text>
-          <Text fontSize="$3" color="$color11">
+        <Stack flex={1} padding="md" gap={12} align="center" justify="center">
+          <Text color="$gray11">Select an organization to view background checks</Text>
+          <Text color="$gray11">
             Choose an organization above to manage screening requests and results.
           </Text>
-        </YStack>
+        </Stack>
       )}
 
       {selectedCheckId ? (
-        <YStack paddingHorizontal="$4" paddingBottom="$6" gap="$3">
+        <Stack paddingHorizontal={16} paddingBottom={24} gap={12}>
           <OrganizationCheckDetails
             checkId={selectedCheckId}
             summary={rows.find((row: CheckRow) => row.id === selectedCheckId)?.raw}
             onClose={() => setSelectedCheckId(null)}
           />
-        </YStack>
+        </Stack>
       ) : null}
-    </YStack>
+    </Stack>
   )
 }

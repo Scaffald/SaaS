@@ -3,7 +3,7 @@ import { ProfilePage } from '@scf/core/features/profile/ProfilePage'
 import { ResumeStepsSidebar, ResumeWizard, ResumeWizardProvider } from '@scf/core/features/resume'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Button, Text, YStack } from '@unicornlove/ui'
+import { Button, Stack, Text } from '@scaffald/ui'
 
 function useResumeIdFromParams() {
   const params = useLocalSearchParams<{ resumeId?: string }>()
@@ -26,24 +26,29 @@ function ResumeReviewContent({ resumeId }: ResumeReviewContentProps) {
 
   if (!resumeId) {
     return (
-      <YStack gap="$3" padding="$4">
-        <Text fontSize="$7" fontWeight="700">
+      <Stack gap={12} padding={16}>
+        <Text size="lg" weight="bold">
           Resume not found
         </Text>
-        <Text color="$color11">
-          We couldn’t locate a resume session. Upload a resume to begin the review process.
+        <Text color="gray">
+          We couldn't locate a resume session. Upload a resume to begin the review process.
         </Text>
-        <Button size="$4" onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.RESUME.path)}>
+        <Button
+          size="md"
+          variant="filled"
+          color="primary"
+          onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.RESUME.path)}
+        >
           Upload Resume
         </Button>
-      </YStack>
+      </Stack>
     )
   }
 
   return (
-    <YStack padding="$4" flex={1}>
+    <Stack padding={16}>
       <ResumeWizard resumeId={resumeId} />
-    </YStack>
+    </Stack>
   )
 }
 

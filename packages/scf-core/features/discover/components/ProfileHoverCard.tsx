@@ -1,8 +1,21 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import {
+  useOrganization,
+  useOrganizationOpenJobsCount,
+} from '@scf/core/utils/organizations-sdk-hooks'
+import { useUserProfilePreview } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
-import { Briefcase, Building2, ExternalLink, MapPin, User } from '@tamagui/lucide-icons'
-import { Button, Spinner, Text, View, XStack, YStack } from '@unicornlove/ui'
+import type { ComponentType } from 'react'
+import type { ViewProps } from 'react-native'
+import { View, Image } from 'react-native'
+import { Briefcase, Building2, ExternalLink, MapPin, User } from 'lucide-react-native'
+
+type ViewWithMouseProps = ViewProps & {
+  onMouseEnter?: () => void
+  onMouseLeave?: () => void
+}
+const ViewWithMouse = View as ComponentType<ViewWithMouseProps>
+import { Button, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 interface ProfileHoverCardProps {
   /** Pin ID (user ID or organization ID) */
@@ -34,23 +47,21 @@ export function ProfileHoverCard({
   onHoverCardLeave,
 }: ProfileHoverCardProps) {
   // Fetch worker preview data (lightweight)
-  const { data: workerPreview, isLoading: isLoadingWorker } = api.userProfile.getPreview.useQuery(
-    { userId: pinId || '' },
-    { enabled: !!pinId && pinType === 'worker' && visible }
-  )
+  const { data: workerPreview, isLoading: isLoadingWorker } = useUserProfilePreview(
+    pinId ?? undefined,
+    {
+    enabled: pinType === 'worker' && visible,
+  })
 
   // Fetch organization data
-  const { data: organization, isLoading: isLoadingOrg } =
-    api.organizations.getOrganization.useQuery(
-      { id: pinId || '' },
-      { enabled: !!pinId && pinType === 'organization' && visible }
-    )
+  const { data: organization, isLoading: isLoadingOrg } = useOrganization(pinId || undefined, {
+    enabled: !!pinId && pinType === 'organization' && visible,
+  })
 
   // Fetch open jobs count for organizations
-  const jobsCountQuery = api.organizations.getOpenJobsCount.useQuery(
-    { organizationId: pinId || '' },
-    { enabled: !!pinId && pinType === 'organization' && visible }
-  )
+  const jobsCountQuery = useOrganizationOpenJobsCount(pinId || undefined, {
+    enabled: !!pinId && pinType === 'organization' && visible,
+  })
   const jobsCount: number = (() => {
     const data = jobsCountQuery.data
     if (typeof data === 'number') return data
@@ -88,99 +99,91 @@ export function ProfileHoverCard({
     }
   }
 
+  const viewProps: ViewWithMouseProps = {
+    style: {
+      position: 'absolute',
+      backgroundColor: 'var(--color-background, #fff)',
+      borderColor: 'var(--color-6, #e5e5e5)',
+      borderWidth: 1,
+      borderRadius: 16,
+      padding: 12,
+      minWidth: 240,
+      maxWidth: 300,
+      zIndex: 1000,
+      top: position?.y ?? 0,
+      left: position?.x ?? 0,
+      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+      pointerEvents: 'auto',
+      transform: [{ translateX: -0 }, { translateY: -4 }],
+    },
+    onMouseEnter: onHoverCardEnter,
+    onMouseLeave: onHoverCardLeave,
+  }
+
   return (
-    <View
-      position="absolute"
-      backgroundColor="$background"
-      borderColor="$color6"
-      borderWidth={1}
-      borderRadius="$4"
-      padding="$3"
-      minWidth={240}
-      maxWidth={300}
-      style={{
-        zIndex: 1000,
-        transform: 'translate(-50%, calc(-100% - 4px))',
-        top: position?.y ?? 0,
-        left: position?.x ?? 0,
-        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-        pointerEvents: 'auto',
-      }}
-      onMouseEnter={onHoverCardEnter}
-      onMouseLeave={onHoverCardLeave}
-    >
+    <ViewWithMouse {...viewProps}>
       {isLoading ? (
-        <YStack alignItems="center" paddingVertical="$4" gap="$2">
-          <Spinner size="small" color="$blue10" />
-          <Text fontSize="$3" color="$color11">
-            Loading...
-          </Text>
-        </YStack>
+        <Stack align="center" paddingVertical={16} gap={8}>
+          <Spinner size="sm" color="primary" />
+          <Text color="gray">Loading...</Text>
+        </Stack>
       ) : pinType === 'worker' && workerPreview ? (
-        <YStack gap="$2">
+        <Stack gap={8}>
           {/* Header with avatar and name */}
-          <XStack gap="$3" alignItems="center">
+          <Row gap={12} align="center">
             {avatarUrl ? (
-              <View
+              <Stack
                 width={48}
                 height={48}
-                borderRadius="$10"
-                overflow="hidden"
+                borderRadius={10}
                 backgroundColor="$color3"
+                style={{ overflow: 'hidden' }}
               >
-                <img
-                  src={avatarUrl}
-                  alt={workerPreview.displayName || 'Worker'}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                <Image
+                  source={{ uri: avatarUrl }}
+                  style={{ width: 48, height: 48 }}
+                  resizeMode="cover"
+                  accessibilityLabel={workerPreview.displayName || 'Worker'}
                 />
-              </View>
+              </Stack>
             ) : (
-              <View
+              <Stack
                 width={48}
                 height={48}
-                borderRadius="$10"
+                borderRadius={10}
                 backgroundColor="$blue4"
-                alignItems="center"
-                justifyContent="center"
+                align="center"
+                justify="center"
               >
-                <User size={24} color="$blue10" />
-              </View>
+                <User size={24} color="#0ea5e9" />
+              </Stack>
             )}
-            <YStack flex={1} gap="$1">
-              <Text fontSize="$5" fontWeight="600" color="$color12" numberOfLines={1}>
-                {workerPreview.displayName}
-              </Text>
-              {workerPreview.headline && (
-                <Text fontSize="$3" color="$color11" numberOfLines={1}>
-                  {workerPreview.headline}
-                </Text>
-              )}
-            </YStack>
+            <Stack flex={1} gap={4}>
+              <Text color="gray">{workerPreview.displayName}</Text>
+              {workerPreview.headline && <Text color="gray">{workerPreview.headline}</Text>}
+            </Stack>
             {profileUrl ? (
               <Button
-                size="$2"
-                circular
-                variant="outlined"
-                icon={ExternalLink}
+                size="sm"
+                variant="outline"
+                iconStart={ExternalLink}
                 aria-label="View full profile in new tab"
                 onPress={handleOpenProfile}
               />
             ) : null}
-          </XStack>
+          </Row>
 
           {/* Location */}
           {workerPreview.location && (
-            <XStack gap="$2" alignItems="center">
-              <MapPin size={14} color="$color10" />
-              <Text fontSize="$3" color="$color11" numberOfLines={1}>
-                {workerPreview.location}
-              </Text>
-            </XStack>
+            <Row gap={8} align="center">
+              <MapPin size={20} color="#737373" />
+              <Text color="gray">{workerPreview.location}</Text>
+            </Row>
           )}
 
           {/* Top Skills */}
           {workerPreview.topSkills && workerPreview.topSkills.length > 0 && (
-            <XStack gap="$1" flexWrap="wrap">
+            <Row gap={4} wrap>
               {workerPreview.topSkills
                 .slice(0, 3)
                 .map((skill: (typeof workerPreview.topSkills)[0]) => {
@@ -190,70 +193,63 @@ export function ProfileHoverCard({
                     skill.taxonomy ||
                     `skill-${Math.random()}`
                   return (
-                    <View
+                    <Stack
                       key={skillKey}
-                      backgroundColor="$blue4"
-                      paddingHorizontal="$2"
-                      paddingVertical="$1"
-                      borderRadius="$2"
+                      paddingHorizontal={8}
+                      paddingVertical={4}
+                      borderRadius={8}
+                      style={{ backgroundColor: 'var(--color-blue-4, #bae6fd)' }}
                     >
-                      <Text fontSize="$1" color="$blue11">
+                      <Text style={{ color: 'var(--color-blue-11, #0c4a6e)' }}>
                         {skill.taxonomy || 'Skill'}
                       </Text>
-                    </View>
+                    </Stack>
                   )
                 })}
               {workerPreview.topSkills.length > 3 && (
-                <Text fontSize="$1" color="$color10">
-                  +{workerPreview.topSkills.length - 3} more
-                </Text>
+                <Text color="gray">+{workerPreview.topSkills.length - 3} more</Text>
               )}
-            </XStack>
+            </Row>
           )}
-        </YStack>
+        </Stack>
       ) : pinType === 'organization' && organization ? (
-        <YStack gap="$2">
+        <Stack gap={8}>
           {/* Header with icon and name */}
-          <XStack gap="$3" alignItems="center">
-            <View
+          <Row gap={12} align="center">
+            <Stack
               width={48}
               height={48}
-              borderRadius="$6"
+              borderRadius={24}
               backgroundColor="$blue4"
-              alignItems="center"
-              justifyContent="center"
+              align="center"
+              justify="center"
             >
-              <Building2 size={24} color="$blue10" />
-            </View>
-            <YStack flex={1} gap="$1">
-              <Text fontSize="$5" fontWeight="600" color="$color12" numberOfLines={1}>
-                {organization.name}
-              </Text>
-              {organization.industry_name && (
-                <Text fontSize="$3" color="$color11" numberOfLines={1}>
-                  {organization.industry_name}
-                </Text>
+              <Building2 size={24} color="#0ea5e9" />
+            </Stack>
+            <Stack flex={1} gap={4}>
+              <Text color="gray">{organization.name}</Text>
+              {(organization as { industry_name?: string }).industry_name && (
+                <Text color="gray">{(organization as { industry_name?: string }).industry_name}</Text>
               )}
-            </YStack>
+            </Stack>
             {profileUrl ? (
               <Button
-                size="$2"
-                circular
-                variant="outlined"
-                icon={ExternalLink}
+                size="sm"
+                variant="outline"
+                iconStart={ExternalLink}
                 aria-label="View organization in new tab"
                 onPress={handleOpenProfile}
               />
             ) : null}
-          </XStack>
+          </Row>
 
           {/* Location */}
           {organization.address &&
             typeof organization.address === 'object' &&
             'city' in organization.address && (
-              <XStack gap="$2" alignItems="center">
-                <MapPin size={14} color="$color10" />
-                <Text fontSize="$3" color="$color11" numberOfLines={1}>
+              <Row gap={8} align="center">
+                <MapPin size="md" color="$gray11" />
+                <Text color="$gray11">
                   {[
                     (organization.address as { city?: string }).city,
                     (organization.address as { state?: string }).state,
@@ -261,29 +257,29 @@ export function ProfileHoverCard({
                     .filter(Boolean)
                     .join(', ')}
                 </Text>
-              </XStack>
+              </Row>
             )}
 
           {/* Key Metrics */}
-          <XStack gap="$3" flexWrap="wrap">
+          <Row gap={12} wrap>
             {jobsCount > 0 && (
-              <XStack gap="$1" alignItems="center">
-                <Briefcase size={14} color="$green10" />
-                <Text fontSize="$2" color="$color11">
+              <Row gap={4} align="center">
+                <Briefcase size={20} color="#22c55e" />
+                <Text color="gray">
                   {jobsCount} {jobsCount === 1 ? 'job' : 'jobs'}
                 </Text>
-              </XStack>
+              </Row>
             )}
-            {organization.employee_count_range && (
-              <XStack gap="$1" alignItems="center">
-                <Text fontSize="$2" color="$color11">
-                  {organization.employee_count_range}
+            {(organization as { employee_count_range?: string }).employee_count_range && (
+              <Row gap={4} align="center">
+                <Text color="gray">
+                  {(organization as { employee_count_range?: string }).employee_count_range}
                 </Text>
-              </XStack>
+              </Row>
             )}
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       ) : null}
-    </View>
+    </ViewWithMouse>
   )
 }

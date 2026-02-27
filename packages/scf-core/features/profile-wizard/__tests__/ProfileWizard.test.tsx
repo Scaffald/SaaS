@@ -267,7 +267,7 @@ vi.mock('../components/steps/EducationStep', () => ({
   ),
 }))
 
-vi.mock('tamagui', () => {
+vi.mock('@scaffald/ui', () => {
   const Stack = ({
     children,
     onPress,
@@ -333,8 +333,8 @@ vi.mock('tamagui', () => {
   )
 
   return {
-    YStack: Stack,
-    XStack: Stack,
+    Stack: Stack,
+    Row: Stack,
     ScrollView: Stack,
     Text: ({
       children,

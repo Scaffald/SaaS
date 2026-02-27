@@ -5,11 +5,16 @@ import type { FC, ReactNode } from 'react'
 import { AuthProvider } from './auth/AuthProvider'
 import { CookieConsentProvider } from './cookie-consent'
 import { QueryClientProvider } from './react-query'
-import { TamaguiProvider } from './tamagui'
+import { ScaffaldProviderFromSession } from './scaffald/ScaffaldProviderFromSession'
 import { UniversalThemeProvider } from './theme'
 import { ToastProvider } from './toast'
+import {
+  ScaffaldJobsSdkProviderFromSession,
+  useScaffaldJobsClient,
+} from '../utils/jobs-sdk-context'
 
 export { loadThemePromise } from './theme/UniversalThemeProvider'
+export { useScaffaldJobsClient }
 
 export function Provider({
   initialSession,
@@ -22,7 +27,11 @@ export function Provider({
     // Note: DatePickerProvider Conflicted with Popover so this is just a temporary solution
     <DatePickerProvider config={{ selectedDates: [], onDatesChange: () => {} }}>
       <Providers>
-        <AuthProvider initialSession={initialSession}>{children}</AuthProvider>
+        <AuthProvider initialSession={initialSession}>
+          <ScaffaldProviderFromSession>
+            <ScaffaldJobsSdkProviderFromSession>{children}</ScaffaldJobsSdkProviderFromSession>
+          </ScaffaldProviderFromSession>
+        </AuthProvider>
       </Providers>
     </DatePickerProvider>
   )
@@ -42,7 +51,6 @@ const compose = (providers: FC<{ children: ReactNode }>[]) =>
 
 const Providers = compose([
   UniversalThemeProvider,
-  TamaguiProvider,
   CookieConsentProvider,
   ToastProvider,
   QueryClientProvider,

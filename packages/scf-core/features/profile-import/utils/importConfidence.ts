@@ -1,12 +1,10 @@
-import type { GetThemeValueForKey } from '@unicornlove/ui';
-
-export type ConfidenceLevel = 'high' | 'medium' | 'low';
+export type ConfidenceLevel = "high" | "medium" | "low";
 
 export interface ConfidenceBadgeConfig {
   level: ConfidenceLevel;
   label: string;
   description: string;
-  colorToken: GetThemeValueForKey<"color">;
+  colorToken: string;
 }
 
 export const CONFIDENCE_BADGES: Record<ConfidenceLevel, ConfidenceBadgeConfig> =
@@ -32,8 +30,8 @@ export const CONFIDENCE_BADGES: Record<ConfidenceLevel, ConfidenceBadgeConfig> =
   };
 
 export function toConfidenceLevel(score?: number | null): ConfidenceLevel {
-  if (score === undefined || score === null) return 'medium';
-  if (score >= 0.8) return 'high';
-  if (score >= 0.6) return 'medium';
-  return 'low';
+  if (score === undefined || score === null) return "medium";
+  if (score >= 0.8) return "high";
+  if (score >= 0.6) return "medium";
+  return "low";
 }

@@ -3,9 +3,9 @@ import type {
   IPIPResult,
   IPIPScore,
 } from '@scf/core/features/personality-assessment/lib/ipip'
-import { ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
+import { ChevronDown, ChevronUp } from 'lucide-react-native'
 import { memo, useState } from 'react'
-import { Button, Progress, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, ProgressBar, Text, Row, Stack } from '@scaffald/ui'
 import { DOMAIN_NAMES } from '../utils/domainGrouping'
 import { FacetList } from './FacetList'
 
@@ -35,55 +35,45 @@ export const DomainCard = memo(function DomainCard({
 
   if (!isComplete) {
     return (
-      <YStack
-        gap="$3"
-        padding="$4"
+      <Stack
+        gap={12}
+        padding="md"
         backgroundColor="$color2"
-        borderRadius="$4"
+        borderRadius={16}
         borderWidth={1}
         borderColor="$borderColor"
-        opacity={0.6}
+        style={{ opacity: 0.6 }}
       >
-        <XStack justifyContent="space-between" alignItems="center">
-          <Text fontSize="$5" fontWeight="bold" color="$color11">
-            {domainName}
-          </Text>
-          <Text fontSize="$3" color="$color10">
-            Incomplete
-          </Text>
-        </XStack>
-        <Text fontSize="$3" color="$color10">
+        <Row justify="space-between" align="center">
+          <Text color="$gray11">{domainName}</Text>
+          <Text color="$gray11">Incomplete</Text>
+        </Row>
+        <Text color="$gray11">
           Complete {domainName} questions to unlock your results for this domain.
         </Text>
-      </YStack>
+      </Stack>
     )
   }
 
   const domainResult = narrative?.results?.[classification as 'low' | 'neutral' | 'high']
 
   return (
-    <YStack
-      gap="$3"
-      padding="$4"
+    <Stack
+      gap={12}
+      padding="md"
       backgroundColor="$color2"
-      borderRadius="$4"
+      borderRadius={16}
       borderWidth={1}
       borderColor="$borderColor"
     >
       {/* Domain Header */}
-      <XStack justifyContent="space-between" alignItems="center">
-        <YStack gap="$1" flex={1}>
-          <Text fontSize="$5" fontWeight="bold" color="$color12">
-            {domainName}
-          </Text>
-          <Text fontSize="$3" color="$color11">
-            {narrative?.summary || ''}
-          </Text>
-        </YStack>
-        <YStack alignItems="flex-end" gap="$1">
+      <Row justify="space-between" align="center">
+        <Stack gap={4} flex={1}>
+          <Text color="$gray11">{domainName}</Text>
+          <Text color="$gray11">{narrative?.summary || ''}</Text>
+        </Stack>
+        <Stack align="flex-end" gap={4}>
           <Text
-            fontSize="$4"
-            fontWeight="bold"
             color={
               classification === 'high'
                 ? '$green10'
@@ -94,31 +84,23 @@ export const DomainCard = memo(function DomainCard({
           >
             {classification.toUpperCase()}
           </Text>
-          <Text fontSize="$3" color="$color10">
-            {Math.round(percentage)}%
-          </Text>
-        </YStack>
-      </XStack>
+          <Text color="$gray11">{Math.round(percentage)}%</Text>
+        </Stack>
+      </Row>
 
       {/* Progress Bar */}
-      <Progress value={percentage} max={100}>
-        <Progress.Indicator animation="bouncy" />
-      </Progress>
+      <ProgressBar value={percentage} />
 
       {/* Domain Result Text */}
-      {domainResult && (
-        <Text fontSize="$3" color="$color12">
-          {domainResult.text}
-        </Text>
-      )}
+      {domainResult && <Text color="$gray11">{domainResult.text}</Text>}
 
       {/* Expand/Collapse Button */}
       {score?.facet && narrative?.facets && (
         <Button
-          size="$3"
-          variant="outlined"
+          size="sm"
+          variant="outline"
           onPress={() => setIsExpanded(!isExpanded)}
-          icon={isExpanded ? ChevronUp : ChevronDown}
+          iconStart={isExpanded ? ChevronUp : ChevronDown}
         >
           {isExpanded ? 'Hide Facets' : 'Show Facets'}
         </Button>
@@ -128,6 +110,6 @@ export const DomainCard = memo(function DomainCard({
       {isExpanded && score?.facet && narrative?.facets && (
         <FacetList facets={score.facet} facetNarratives={narrative.facets} />
       )}
-    </YStack>
+    </Stack>
   )
 })

@@ -1,20 +1,21 @@
-import { ConnectionFollowButtonsInline } from '@scf/core/features/connections/components/ConnectionFollowButtonsInline'
-import { IdVerificationBadge } from '@scf/core/features/id-verification'
-import { ReviewWizard } from '@scf/core/features/reviews/components/ReviewWizard'
-import { api } from '@scf/core/utils/api'
-import { useUser } from '@scf/core/utils/useUser'
-import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
-import { DashboardWidget, LoadingState, ResponsiveModal, spacing } from '@unicornlove/ui'
-import { MessageSquarePlus } from '@tamagui/lucide-icons'
-import { useState } from 'react'
-import { Avatar, Button, Text, XStack, YStack } from '@unicornlove/ui'
-import type { ProfileWidgetProps } from './types'
+import { ConnectionFollowButtonsInline } from "@scf/core/features/connections/components/ConnectionFollowButtonsInline";
+import { IdVerificationBadge } from "@scf/core/features/id-verification";
+import { ReviewWizard } from "@scf/core/features/reviews/components/ReviewWizard";
+import { useGeneralInfoWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
+import { useUserProfile } from "@scf/core/utils/user-profiles-sdk-hooks";
+import { useUser } from "@scf/core/utils/useUser";
+import { getAvatarUrl } from "@scf/core/utils/supabase/storage";
+import { DashboardWidget, LoadingState, ResponsiveModal } from "@scaffald/ui";
+import { MessageSquarePlus } from "lucide-react-native";
+import { useState } from "react";
+import { Avatar, Button, Text, Row, Stack } from "@scaffald/ui";
+import type { ProfileWidgetProps } from "./types";
 
 interface GeneralInfoWidgetProps extends ProfileWidgetProps {
   /** Show connection/follow buttons in header (for viewing other users' profiles) */
-  showButtons?: boolean
+  showButtons?: boolean;
   /** Whether this is the current user's own profile */
-  isOwnProfile?: boolean
+  isOwnProfile?: boolean;
 }
 
 /**
@@ -29,262 +30,243 @@ interface GeneralInfoWidgetProps extends ProfileWidgetProps {
  */
 export function GeneralInfoWidget({
   userId,
-  variant = 'full',
+  variant = "full",
   showButtons = false,
   isOwnProfile = false,
 }: GeneralInfoWidgetProps) {
-  const [showReviewModal, setShowReviewModal] = useState(false)
-  const { user: currentUser } = useUser()
-  const { data, isLoading, error, refetch, isFetching } =
-    api.profile.widgets.getGeneralInfo.useQuery(
-      { userId },
-      {
-        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-      }
-    )
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const { user: currentUser } = useUser();
+  const { data, isLoading, error, refetch, isFetching } = useGeneralInfoWidget(
+    { userId },
+    {
+      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    }
+  );
 
   if (isLoading) {
     return (
       <DashboardWidget>
         <LoadingState message="Loading profile..." />
       </DashboardWidget>
-    )
+    );
   }
 
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingVertical="$8">
-          <Text color="$red10">Failed to load profile information</Text>
-          <Text color="$color11" fontSize="$2">
-            {error.message}
+        <Stack gap={16} align="center" paddingVertical={32}>
+          <Text style={{ color: "#ef4444" }}>
+            Failed to load profile information
           </Text>
+          <Text style={{ color: "#414e62" }}>{error.message}</Text>
           <Button
-            variant="primary"
-            size="$2"
+            variant="filled"
+            color="primary"
+            size="sm"
             onPress={() => {
-              void refetch()
+              void refetch();
             }}
             disabled={isFetching}
           >
             Retry
           </Button>
-        </YStack>
+        </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
   if (!data) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingVertical="$8">
-          <Text color="$color11">No profile data available</Text>
-        </YStack>
+        <Stack gap={16} align="center" paddingVertical={32}>
+          <Text style={{ color: "#414e62" }}>No profile data available</Text>
+        </Stack>
       </DashboardWidget>
-    )
+    );
   }
 
   const displayName =
     data.display_name ||
     (data.privateData?.first_name && data.privateData?.last_name
       ? `${data.privateData.first_name} ${data.privateData.last_name}`
-      : data.username)
+      : data.username);
 
-  const showPrivateInfo = !!data.privateData
-  const badge = data.idVerificationBadge
+  const showPrivateInfo = !!data.privateData;
+  const badge = data.idVerificationBadge;
 
   // Fetch profile data for review modal
-  const { data: profile } = api.userProfile.getUserProfile.useQuery(
-    { userId: userId || '' },
-    { enabled: !!userId && showButtons }
-  )
+  const { data: profile } = useUserProfile(userId, {
+    enabled: showButtons,
+  });
 
   // Only show "Add Review" button if viewing someone else's profile
-  const canLeaveReview = showButtons && !isOwnProfile && currentUser?.id !== userId
+  const canLeaveReview =
+    showButtons && !isOwnProfile && currentUser?.id !== userId;
 
   const handleLeaveReview = () => {
-    setShowReviewModal(true)
-  }
+    setShowReviewModal(true);
+  };
 
   const handleCloseReview = () => {
-    setShowReviewModal(false)
-  }
+    setShowReviewModal(false);
+  };
 
   const handleReviewComplete = async () => {
-    setShowReviewModal(false)
-  }
+    setShowReviewModal(false);
+  };
 
   return (
     <>
       <DashboardWidget>
-        <YStack gap={spacing.md}>
+        <Stack gap={12}>
           {/* Header with Action Buttons */}
           {showButtons && (
-            <XStack justifyContent="flex-end" alignItems="center" marginBottom="$2">
-              <XStack gap="$2" flexWrap="wrap" justifyContent="flex-end">
+            <Row justify="flex-end" align="center" marginBottom={8}>
+              <Row gap={8} wrap justify="flex-end">
                 <ConnectionFollowButtonsInline
-                  targetUserId={userId || ''}
+                  targetUserId={userId || ""}
                   isOwnProfile={isOwnProfile}
-                  size="$3"
                 />
                 {canLeaveReview && (
                   <Button
-                    size="$3"
-                    theme="info"
-                    icon={MessageSquarePlus}
+                    size="sm"
+                    color="primary"
+                    iconStart={MessageSquarePlus}
                     onPress={handleLeaveReview}
                   >
                     <Text>Add Review</Text>
                   </Button>
                 )}
-              </XStack>
-            </XStack>
+              </Row>
+            </Row>
           )}
 
           {/* Avatar & Name Section */}
-          <YStack gap="$3" alignItems="center">
-            <Avatar circular size="$10">
-              <Avatar.Image
-                source={{ uri: getAvatarUrl(data.avatar_path) || data.avatar_url || '' }}
-              />
-              <Avatar.Fallback backgroundColor="$color6" />
-            </Avatar>
+          <Stack gap={12} align="center">
+            <Avatar
+              size={40}
+              src={getAvatarUrl(data.avatar_path) || data.avatar_url || ""}
+              initials={displayName?.slice(0, 2).toUpperCase()}
+            />
 
-            <YStack gap="$1" alignItems="center">
-              <Text fontSize="$6" fontWeight="600">
-                {displayName}
-              </Text>
+            <Stack gap={4} align="center">
+              <Text>{displayName}</Text>
               {data.headline && (
-                <YStack alignItems="center" maxWidth="100%">
-                  <Text color="$color11" fontSize="$3">
-                    {data.headline}
-                  </Text>
-                </YStack>
+                <Stack align="center" maxWidth="100%">
+                  <Text style={{ color: "#414e62" }}>{data.headline}</Text>
+                </Stack>
               )}
               {data.username && (
-                <Text color="$color10" fontSize="$2">
-                  @{data.username}
-                </Text>
+                <Text style={{ color: "#414e62" }}>@{data.username}</Text>
               )}
               {badge && (
                 <IdVerificationBadge
-                  status={badge.badge_status as 'active' | 'expired' | 'revoked' | null}
+                  status={
+                    badge.badge_status as
+                      | "active"
+                      | "expired"
+                      | "revoked"
+                      | null
+                  }
                   badgeExpiresAt={badge.badge_expires_at ?? undefined}
                   size="sm"
                   muted={false}
                 />
               )}
-            </YStack>
+            </Stack>
 
             {/* Status Badges */}
             {data.open_to_work && (
-              <XStack
-                backgroundColor="$blue2"
-                paddingHorizontal="$3"
-                paddingVertical="$1.5"
-                borderRadius="$10"
+              <Row
+                backgroundColor="#eff6ff"
+                paddingHorizontal={12}
+                paddingVertical={6}
+                borderRadius={999}
                 borderWidth={1}
-                borderColor="$blue7"
+                borderColor="#93c5fd"
               >
-                <Text color="$blue11" fontSize="$2" fontWeight="600">
-                  Open to Work
-                </Text>
-              </XStack>
+                <Text style={{ color: "#1d4ed8" }}>Open to Work</Text>
+              </Row>
             )}
-          </YStack>
+          </Stack>
 
           {/* About Section */}
-          {data.about && variant === 'full' && (
-            <YStack gap="$2">
-              <Text fontWeight="600" fontSize="$3">
-                About
-              </Text>
-              <Text color="$color11" fontSize="$3" lineHeight="$3">
+          {data.about && variant === "full" && (
+            <Stack gap={8}>
+              <Text>About</Text>
+              <Text style={{ color: "#414e62", lineHeight: 12 }}>
                 {data.about}
               </Text>
-            </YStack>
+            </Stack>
           )}
 
           {/* Contact Information (Private - only for own profile) */}
-          {showPrivateInfo && data.privateData && variant === 'full' && (
-            <YStack gap="$3">
-              <Text fontWeight="600" fontSize="$3">
-                Contact Information
-              </Text>
+          {showPrivateInfo && data.privateData && variant === "full" && (
+            <Stack gap={12}>
+              <Text>Contact Information</Text>
 
               {data.privateData.email && (
-                <YStack gap="$1">
-                  <Text fontSize="$2" color="$color10">
-                    Email
-                  </Text>
-                  <Text fontSize="$3">{data.privateData.email}</Text>
-                </YStack>
+                <Stack gap={4}>
+                  <Text style={{ color: "#414e62" }}>Email</Text>
+                  <Text>{data.privateData.email}</Text>
+                </Stack>
               )}
 
               {data.privateData.phone && (
-                <YStack gap="$1">
-                  <Text fontSize="$2" color="$color10">
-                    Phone
-                  </Text>
-                  <Text fontSize="$3">{data.privateData.phone}</Text>
-                </YStack>
+                <Stack gap={4}>
+                  <Text style={{ color: "#414e62" }}>Phone</Text>
+                  <Text>{data.privateData.phone}</Text>
+                </Stack>
               )}
 
               {data.privateData.location && (
-                <YStack gap="$1">
-                  <Text fontSize="$2" color="$color10">
-                    Location
-                  </Text>
-                  <Text fontSize="$3">{data.privateData.location}</Text>
-                </YStack>
+                <Stack gap={4}>
+                  <Text style={{ color: "#414e62" }}>Location</Text>
+                  <Text>{data.privateData.location}</Text>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           )}
 
           {/* Professional Details */}
-          {variant === 'full' && (
-            <YStack gap="$3">
-              <Text fontWeight="600" fontSize="$3">
-                Professional Details
-              </Text>
+          {variant === "full" && (
+            <Stack gap={12}>
+              <Text>Professional Details</Text>
 
-              <XStack gap="$4" flexWrap="wrap">
+              <Row gap={16} wrap>
                 {(() => {
                   const yearsValue =
-                    typeof data.calculatedYearsOfExperience === 'number'
+                    typeof data.calculatedYearsOfExperience === "number"
                       ? data.calculatedYearsOfExperience
-                      : data.years_of_experience
+                      : data.years_of_experience;
                   const formattedYears =
-                    typeof yearsValue === 'number' && !Number.isNaN(yearsValue)
+                    typeof yearsValue === "number" && !Number.isNaN(yearsValue)
                       ? yearsValue % 1 !== 0
                         ? yearsValue.toFixed(1)
                         : yearsValue
-                      : null
-                  if (formattedYears === null) return null
+                      : null;
+                  if (formattedYears === null) return null;
                   return (
-                    <YStack gap="$1" flex={1} minWidth={120}>
-                      <Text fontSize="$2" color="$color10">
-                        Experience
+                    <Stack gap={4} flex={1} minWidth={120}>
+                      <Text style={{ color: "#414e62" }}>Experience</Text>
+                      <Text>
+                        {formattedYears}{" "}
+                        {Number(formattedYears) === 1 ? "year" : "years"}
                       </Text>
-                      <Text fontSize="$3">
-                        {formattedYears} {Number(formattedYears) === 1 ? 'year' : 'years'}
-                      </Text>
-                    </YStack>
-                  )
+                    </Stack>
+                  );
                 })()}
 
                 {data.industries && (
-                  <YStack gap="$1" flex={1} minWidth={120}>
-                    <Text fontSize="$2" color="$color10">
-                      Industry
-                    </Text>
-                    <Text fontSize="$3">{data.industries.name}</Text>
-                  </YStack>
+                  <Stack gap={4} flex={1} minWidth={120}>
+                    <Text style={{ color: "#414e62" }}>Industry</Text>
+                    <Text>{data.industries.name}</Text>
+                  </Stack>
                 )}
-              </XStack>
-            </YStack>
+              </Row>
+            </Stack>
           )}
-        </YStack>
+        </Stack>
       </DashboardWidget>
 
       {/* Review Modal */}
@@ -292,17 +274,17 @@ export function GeneralInfoWidget({
         <ResponsiveModal
           open={showReviewModal}
           onOpenChange={setShowReviewModal}
-          title={`Review ${profile?.name || 'User'}`}
-          size="large"
+          title={`Review ${profile?.name || "User"}`}
+          size="lg"
         >
           <ReviewWizard
-            subjectId={userId || ''}
-            subjectName={profile?.name || 'this user'}
+            subjectId={userId || ""}
+            subjectName={profile?.name || "this user"}
             onCancel={handleCloseReview}
             onComplete={handleReviewComplete}
           />
         </ResponsiveModal>
       )}
     </>
-  )
+  );
 }

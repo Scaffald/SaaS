@@ -6,7 +6,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import { Stack, Row, Text, Card, Button, Input, Spinner } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card, Button, Input, Spinner } from '@scaffald/ui';
 import { Copy, Share2, Mail, CheckCircle, Clock, DollarSign, Users, TrendingUp } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useUser } from '../../../contexts/UserContext';

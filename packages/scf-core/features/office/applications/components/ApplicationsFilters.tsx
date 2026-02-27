@@ -1,5 +1,6 @@
-import { Button, ResponsiveSelect, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, ResponsiveSelect, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import type { ApplicationStatus } from '../../mock-data/ats-mock-data'
+import { colors } from '@scaffald/ui/tokens'
 
 interface ApplicationsFiltersProps {
   filters: {
@@ -24,19 +25,20 @@ export const ApplicationsFilters = ({
   onFiltersChange,
   jobs,
 }: ApplicationsFiltersProps) => {
+  const { theme } = useThemeContext()
   return (
-    <XStack
-      gap="$3"
-      paddingVertical="$3"
-      paddingHorizontal="$4"
-      backgroundColor="$color2"
-      borderRadius="$4"
-      marginBottom="$4"
-      flexWrap="wrap"
+    <Row
+      gap={12}
+      paddingVertical={12}
+      paddingHorizontal={16}
+      style={{ backgroundColor: colors.bg[theme].subtle }}
+      borderRadius={16}
+      marginBottom={16}
+      wrap
     >
       {/* Job Filter */}
-      <YStack width={200}>
-        <Text fontSize="$2" marginBottom="$2" opacity={0.7}>
+      <Stack width={200}>
+        <Text style={{ marginBottom: 8, opacity: 0.7 }}>
           Filter by Job
         </Text>
         <ResponsiveSelect
@@ -55,13 +57,12 @@ export const ApplicationsFilters = ({
               label: job.title,
             })),
           ]}
-          triggerProps={{ width: 200 }}
         />
-      </YStack>
+      </Stack>
 
       {/* Status Filter */}
-      <YStack width={200}>
-        <Text fontSize="$2" marginBottom="$2" opacity={0.7}>
+      <Stack width={200}>
+        <Text style={{ marginBottom: 8, opacity: 0.7 }}>
           Filter by Status
         </Text>
         <ResponsiveSelect
@@ -82,16 +83,15 @@ export const ApplicationsFilters = ({
             { value: 'hired', label: 'Hired' },
             { value: 'rejected', label: 'Rejected' },
           ]}
-          triggerProps={{ width: 200 }}
         />
-      </YStack>
+      </Stack>
 
       {/* Clear Filters */}
       {(filters.jobId || filters.status || filters.minScore > 0) && (
-        <YStack justifyContent="flex-end">
+        <Stack justify="flex-end">
           <Button
-            size="$3"
-            chromeless
+            size="sm"
+            variant="outline"
             onPress={() => {
               onFiltersChange({
                 jobId: null,
@@ -102,8 +102,8 @@ export const ApplicationsFilters = ({
           >
             Clear Filters
           </Button>
-        </YStack>
+        </Stack>
       )}
-    </XStack>
+    </Row>
   )
 }

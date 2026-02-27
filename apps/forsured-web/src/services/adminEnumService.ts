@@ -1,5 +1,5 @@
 // src/services/adminEnumService.ts
-// REQ-126: Admin enum CRUD operations
+// Admin enum CRUD operations
 //
 // Provides create, update, delete, and reorder operations for enum values.
 

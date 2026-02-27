@@ -1,6 +1,6 @@
 /**
- * REQ-127: Task Auto-Generation from Compliance Gaps
- * REQ-259: Status Change Notifications
+ * Task Auto-Generation from Compliance Gaps
+ * Status Change Notifications
  * Main export file for task generation and notification services
  */
 
@@ -10,12 +10,12 @@ export { DeduplicationService } from './deduplicationService';
 export { TaskAssignmentService } from './taskAssignmentService';
 export { TaskGenerationService } from './taskGenerationService';
 
-// REQ-259: Status notification exports
+// Status notification exports
 export * from './statusNotificationConfig';
 export { statusNotificationService, createStatusChangeNotifications } from './statusNotificationService';
 export type { NotificationRecord, StatusNotificationResult } from './statusNotificationService';
 
-// REQ-259 TASK-4: Compliance score update exports
+// TASK-4: Compliance score update exports
 export {
   complianceScoreService,
   updateComplianceScoreOnStatusChange,
@@ -25,7 +25,7 @@ export {
 } from './complianceScoreService';
 export type { ComplianceScoreUpdateResult } from './complianceScoreService';
 
-// REQ-260: Task Assignment Workflow exports
+// Task Assignment Workflow exports
 export {
   taskAssignmentTypeService,
   getTaskAssignmentType,

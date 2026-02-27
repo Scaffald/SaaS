@@ -1,25 +1,31 @@
-import { ControlledAddressForm } from '@scf/core/forms'
-import { api } from '@scf/core/utils/api'
+import { ControlledAddressForm } from "@scf/core/forms";
+import {
+  usePrerequisites,
+  useCompletePrerequisites,
+  useIndustries,
+} from "@scaffald/sdk/react";
 import {
   Button,
-  CustomCheckbox,
+  Checkbox,
   DashboardWidget,
   ResponsiveSelect,
-  spacing,
-} from '@unicornlove/ui'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useToastController } from '@tamagui/toast'
-import { useEffect, useRef, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { Pressable } from 'react-native'
-import { Input, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+  namedSpacing,
+  useThemeContext,
+} from "@scaffald/ui";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useToast } from "@scaffald/ui";
+import { useEffect, useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { Pressable } from "react-native";
+import { Input, Separator, Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import {
   type PrerequisitesFormData,
   prerequisitesDefaults,
   prerequisitesSchema,
   USER_TYPE_OPTIONS,
   type UserType,
-} from './config/prerequisites-schema'
+} from "./config/prerequisites-schema";
 
 /**
  * PrerequisiteWidget - Dashboard widget for completing required profile prerequisites
@@ -33,35 +39,40 @@ import {
  * @returns JSX element
  */
 export function PrerequisiteWidget() {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const toast = useToastController()
+  const { theme } = useThemeContext();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const toast = useToast();
 
   // Check prerequisites status
   const {
     data: statusData,
     isLoading: isCheckingStatus,
     refetch: refetchStatus,
-  } = api.prerequisites.check.useQuery()
+  } = usePrerequisites();
 
   // Fetch industries for dropdown
   const { data: industriesData, isLoading: isLoadingIndustries } =
-    api.profile.skillsMultiTaxonomy.getIndustries.useQuery()
+    useIndustries();
 
   // Complete prerequisites mutation
-  const completeMutation = api.prerequisites.complete.useMutation({
+  const completeMutation = useCompletePrerequisites({
     onSuccess: () => {
-      toast.show('Profile Complete', {
-        message: 'Your profile has been set up successfully!',
-      })
-      refetchStatus()
+      toast.show({
+        title: "Profile Complete",
+        message: "Your profile has been set up successfully!",
+        variant: "success",
+      });
+      refetchStatus();
     },
     onError: (error: { message?: string }) => {
-      console.error('Error completing prerequisites:', error)
-      toast.show('Error', {
-        message: error.message || 'Failed to save profile. Please try again.',
-      })
+      console.error("Error completing prerequisites:", error);
+      toast.show({
+        title: "Error",
+        message: error.message || "Failed to save profile. Please try again.",
+        variant: "error",
+      });
     },
-  })
+  });
 
   // Form setup
   const {
@@ -74,85 +85,97 @@ export function PrerequisiteWidget() {
   } = useForm<PrerequisitesFormData>({
     resolver: zodResolver(prerequisitesSchema),
     defaultValues: prerequisitesDefaults,
-    mode: 'onSubmit', // Validate on submit instead of onChange to prevent premature validation errors
-  })
+    mode: "onSubmit", // Validate on submit instead of onChange to prevent premature validation errors
+  });
 
-  const previousPrefillHashRef = useRef<string | null>(null)
+  const previousPrefillHashRef = useRef<string | null>(null);
 
   // Populate form with existing data when loaded
   useEffect(() => {
     if (!statusData?.data) {
-      return
+      return;
     }
 
     const prefillData: PrerequisitesFormData = {
-      first_name: statusData.data.first_name ?? '',
-      last_name: statusData.data.last_name ?? '',
+      first_name: statusData.data.first_name ?? "",
+      last_name: statusData.data.last_name ?? "",
       address: {
-        street: statusData.data.address?.street ?? prerequisitesDefaults.address.street,
-        city: statusData.data.address?.city ?? prerequisitesDefaults.address.city,
-        state: statusData.data.address?.state ?? prerequisitesDefaults.address.state,
+        street:
+          statusData.data.address?.street ??
+          prerequisitesDefaults.address.street,
+        city:
+          statusData.data.address?.city ?? prerequisitesDefaults.address.city,
+        state:
+          statusData.data.address?.state ?? prerequisitesDefaults.address.state,
         zip: statusData.data.address?.zip ?? prerequisitesDefaults.address.zip,
-        country: statusData.data.address?.country ?? prerequisitesDefaults.address.country,
+        country:
+          statusData.data.address?.country ??
+          prerequisitesDefaults.address.country,
         latitude: statusData.data.address?.latitude,
         longitude: statusData.data.address?.longitude,
       },
       user_types: statusData.data.user_types ?? [],
-      industry_id: statusData.data.industry_id ?? '',
+      industry_id: statusData.data.industry_id ?? "",
       accepts_privacy_policy:
         (statusData.data as unknown as { accepts_privacy_policy?: boolean })
           .accepts_privacy_policy ?? false,
       accepts_terms_of_service:
         (statusData.data as unknown as { accepts_terms_of_service?: boolean })
           .accepts_terms_of_service ?? false,
-    }
+    };
 
-    const prefillHash = JSON.stringify(prefillData)
+    const prefillHash = JSON.stringify(prefillData);
 
     if (previousPrefillHashRef.current === prefillHash) {
-      return
+      return;
     }
 
-    previousPrefillHashRef.current = prefillHash
-    reset(prefillData)
-  }, [reset, statusData?.data])
+    previousPrefillHashRef.current = prefillHash;
+    reset(prefillData);
+  }, [reset, statusData?.data]);
 
   // Handle form submission
   const onSubmit = async (data: PrerequisitesFormData) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      await completeMutation.mutateAsync(data)
+      await completeMutation.mutateAsync(data);
     } catch (error) {
-      console.error('Submission error:', error)
+      console.error("Submission error:", error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <DashboardWidget>
-      <YStack gap={spacing.md}>
-        <YStack gap={spacing.xs}>
-          <Text fontSize="$6" fontWeight="bold" color="$color12">
+      <Stack gap={namedSpacing.md}>
+        <Stack gap={namedSpacing.xs}>
+          <Text style={{ color: colors.text[theme].secondary }}>
             Complete Your Profile
           </Text>
-          <Text fontSize="$3" color="$color11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Please complete these required fields to continue using Scaffald
           </Text>
-        </YStack>
+        </Stack>
 
         {isCheckingStatus ? (
-          <YStack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
-            <Spinner size="large" color="$blue7" />
-            <Text color="$color11">Loading...</Text>
-          </YStack>
+          <Stack
+            gap={namedSpacing.sm}
+            align="center"
+            paddingVertical={namedSpacing.xl}
+          >
+            <Spinner size="lg" color="primary" />
+            <Text style={{ color: colors.text[theme].secondary }}>
+              Loading...
+            </Text>
+          </Stack>
         ) : (
           <>
             {/* 1. Name Fields */}
-            <YStack gap="$3">
-              <XStack gap="$3">
-                <YStack gap="$2" flex={1}>
-                  <Text fontWeight="600">First Name *</Text>
+            <Stack gap={12}>
+              <Row gap={12}>
+                <Stack gap={8} flex={1}>
+                  <Text>First Name *</Text>
                   <Controller
                     name="first_name"
                     control={control}
@@ -161,19 +184,17 @@ export function PrerequisiteWidget() {
                         placeholder="First name"
                         value={field.value}
                         onChangeText={field.onChange}
-                        borderColor={errors.first_name ? '$red8' : '$borderColor'}
+                        error={!!errors.first_name}
                       />
                     )}
                   />
                   {errors.first_name && (
-                    <Text color="$red10" fontSize="$2">
-                      {errors.first_name.message}
-                    </Text>
+                    <Text color="$red10">{errors.first_name.message}</Text>
                   )}
-                </YStack>
+                </Stack>
 
-                <YStack gap="$2" flex={1}>
-                  <Text fontWeight="600">Last Name *</Text>
+                <Stack gap={8} flex={1}>
+                  <Text>Last Name *</Text>
                   <Controller
                     name="last_name"
                     control={control}
@@ -182,25 +203,25 @@ export function PrerequisiteWidget() {
                         placeholder="Last name"
                         value={field.value}
                         onChangeText={field.onChange}
-                        borderColor={errors.last_name ? '$red8' : '$borderColor'}
+                        error={!!errors.last_name}
                       />
                     )}
                   />
                   {errors.last_name && (
-                    <Text color="$red10" fontSize="$2">
-                      {errors.last_name.message}
-                    </Text>
+                    <Text color="$red10">{errors.last_name.message}</Text>
                   )}
-                </YStack>
-              </XStack>
-            </YStack>
+                </Stack>
+              </Row>
+            </Stack>
 
             <Separator />
 
             {/* 2. Address */}
-            <YStack gap="$3">
-              <Text fontWeight="600">Address *</Text>
-              <Text fontSize="$2" color="$color11" marginBottom="$2">
+            <Stack gap={12}>
+              <Text>Address *</Text>
+              <Text
+                style={{ color: colors.text[theme].secondary, marginBottom: 8 }}
+              >
                 Search and select your home address
               </Text>
               <ControlledAddressForm
@@ -209,98 +230,110 @@ export function PrerequisiteWidget() {
                 setValue={setValue}
                 trigger={trigger}
                 placeholder="Search for your address..."
-                error={errors.address?.street?.message || errors.address?.city?.message}
+                error={
+                  errors.address?.street?.message ||
+                  errors.address?.city?.message
+                }
               />
               {errors.address && (
-                <Text color="$red10" fontSize="$2">
+                <Text color="$red10">
                   {errors.address.street?.message ||
                     errors.address.city?.message ||
                     errors.address.state?.message ||
                     errors.address.zip?.message}
                 </Text>
               )}
-            </YStack>
+            </Stack>
 
             <Separator />
 
             {/* 3. User Types */}
-            <YStack gap="$3">
-              <Text fontWeight="600">I am a (select all that apply) *</Text>
+            <Stack gap={12}>
+              <Text>I am a (select all that apply) *</Text>
               <Controller
                 name="user_types"
                 control={control}
                 render={({ field }) => (
-                  <YStack gap="$2">
+                  <Stack gap={8}>
                     {USER_TYPE_OPTIONS.map((option) => (
-                      <XStack key={option.value} gap="$3" alignItems="center">
-                        <CustomCheckbox
-                          checked={field.value?.includes(option.value as UserType)}
-                          onCheckedChange={(checked: boolean) => {
-                            const currentTypes = field.value || []
+                      <Row key={option.value} gap={12} align="center">
+                        <Checkbox
+                          checked={field.value?.includes(
+                            option.value as UserType
+                          )}
+                          onChange={(checked: boolean) => {
+                            const currentTypes = field.value || [];
                             if (checked) {
-                              field.onChange([...currentTypes, option.value])
+                              field.onChange([...currentTypes, option.value]);
                             } else {
-                              field.onChange(currentTypes.filter((t) => t !== option.value))
+                              field.onChange(
+                                currentTypes.filter((t) => t !== option.value)
+                              );
                             }
                           }}
-                          size="medium"
-                          testID={`checkbox-user-type-${option.value}`}
-                          ariaLabelledBy={`checkbox-user-type-${option.value}-label`}
+                          size="md"
                         />
                         <Pressable
                           onPress={() => {
-                            const currentTypes = field.value || []
-                            const isChecked = currentTypes.includes(option.value as UserType)
+                            const currentTypes = field.value || [];
+                            const isChecked = currentTypes.includes(
+                              option.value as UserType
+                            );
                             if (isChecked) {
-                              field.onChange(currentTypes.filter((t) => t !== option.value))
+                              field.onChange(
+                                currentTypes.filter((t) => t !== option.value)
+                              );
                             } else {
-                              field.onChange([...currentTypes, option.value])
+                              field.onChange([...currentTypes, option.value]);
                             }
                           }}
                           accessibilityRole="button"
                           style={({ pressed }) => ({
                             flexShrink: 1,
                             opacity: pressed ? 0.7 : 1,
-                            alignSelf: 'flex-start',
+                            alignSelf: "flex-start",
                           })}
                         >
-                          <Text nativeID={`checkbox-user-type-${option.value}-label`}>
+                          <Text
+                            nativeID={`checkbox-user-type-${option.value}-label`}
+                          >
                             {option.label}
                           </Text>
                         </Pressable>
-                      </XStack>
+                      </Row>
                     ))}
-                  </YStack>
+                  </Stack>
                 )}
               />
               {errors.user_types && (
-                <Text color="$red10" fontSize="$2">
-                  {errors.user_types.message}
-                </Text>
+                <Text color="$red10">{errors.user_types.message}</Text>
               )}
-            </YStack>
+            </Stack>
 
             <Separator />
 
             {/* 4. Primary Industry */}
-            <YStack gap="$3">
-              <Text fontWeight="600">Primary Industry *</Text>
+            <Stack gap={12}>
+              <Text>Primary Industry *</Text>
               <Controller
                 name="industry_id"
                 control={control}
                 render={({ field }) => (
-                  <YStack gap="$2">
+                  <Stack gap={8}>
                     {isLoadingIndustries ? (
-                      <XStack gap="$2" alignItems="center">
-                        <Spinner size="small" />
-                        <Text color="$color11">Loading industries...</Text>
-                      </XStack>
-                    ) : industriesData?.industries && industriesData.industries.length > 0 ? (
+                      <Row gap={8} align="center">
+                        <Spinner size="sm" />
+                        <Text style={{ color: colors.text[theme].secondary }}>
+                          Loading industries...
+                        </Text>
+                      </Row>
+                    ) : industriesData?.data &&
+                      industriesData.data.length > 0 ? (
                       <ResponsiveSelect
-                        value={field.value || ''}
+                        value={field.value || ""}
                         onValueChange={field.onChange}
                         placeholder="Select your industry"
-                        options={industriesData.industries.map(
+                        options={industriesData.data.map(
                           (industry: { id: string; name: string }) => ({
                             value: industry.id,
                             label: industry.name,
@@ -308,57 +341,61 @@ export function PrerequisiteWidget() {
                         )}
                       />
                     ) : (
-                      <Text color="$color11" fontSize="$2">
+                      <Text style={{ color: colors.text[theme].secondary }}>
                         No industries available
                       </Text>
                     )}
-                  </YStack>
+                  </Stack>
                 )}
               />
               {errors.industry_id && (
-                <Text color="$red10" fontSize="$2">
-                  {errors.industry_id.message}
-                </Text>
+                <Text color="$red10">{errors.industry_id.message}</Text>
               )}
-            </YStack>
+            </Stack>
 
             <Separator />
 
             {/* 5. Legal Agreements */}
-            <YStack gap="$3">
-              <Text fontWeight="600">Legal Agreements *</Text>
+            <Stack gap={12}>
+              <Text>Legal Agreements *</Text>
 
               {/* Privacy Policy */}
               <Controller
                 name="accepts_privacy_policy"
                 control={control}
                 render={({ field }) => (
-                  <YStack gap="$2">
-                    <XStack gap="$3" alignItems="center">
-                      <CustomCheckbox
+                  <Stack gap={8}>
+                    <Row gap={12} align="center">
+                      <Checkbox
                         checked={field.value}
-                        onCheckedChange={field.onChange}
-                        size="medium"
-                        testID="checkbox-legal-privacy-policy"
-                        ariaLabelledBy="checkbox-legal-privacy-policy-label"
+                        onChange={field.onChange}
+                        size="md"
                       />
                       <Pressable
                         onPress={() => field.onChange(!field.value)}
                         accessibilityRole="button"
                         style={({ pressed }) => ({
-                          alignSelf: 'flex-start',
+                          alignSelf: "flex-start",
                           opacity: pressed ? 0.7 : 1,
                         })}
                       >
                         <Text nativeID="checkbox-legal-privacy-policy-label">
-                          I accept the{' '}
+                          I accept the{" "}
                           <Text
-                            color="$blue7"
-                            textDecorationLine="underline"
+                            style={{
+                              color:
+                                theme === "light"
+                                  ? colors.blue[700]
+                                  : colors.blue[300],
+                              textDecorationLine: "underline",
+                            }}
                             onPress={(event) => {
-                              event.stopPropagation?.()
-                              if (typeof window !== 'undefined') {
-                                window.open('https://scaffald.com/privacy', '_blank')
+                              event.stopPropagation?.();
+                              if (typeof window !== "undefined") {
+                                window.open(
+                                  "https://scaffald.com/privacy",
+                                  "_blank"
+                                );
                               }
                             }}
                           >
@@ -366,13 +403,13 @@ export function PrerequisiteWidget() {
                           </Text>
                         </Text>
                       </Pressable>
-                    </XStack>
+                    </Row>
                     {errors.accepts_privacy_policy && (
-                      <Text color="$red10" fontSize="$2">
+                      <Text color="$red10">
                         {errors.accepts_privacy_policy.message}
                       </Text>
                     )}
-                  </YStack>
+                  </Stack>
                 )}
               />
 
@@ -381,32 +418,38 @@ export function PrerequisiteWidget() {
                 name="accepts_terms_of_service"
                 control={control}
                 render={({ field }) => (
-                  <YStack gap="$2">
-                    <XStack gap="$3" alignItems="center">
-                      <CustomCheckbox
+                  <Stack gap={8}>
+                    <Row gap={12} align="center">
+                      <Checkbox
                         checked={field.value}
-                        onCheckedChange={field.onChange}
-                        size="medium"
-                        testID="checkbox-legal-terms-of-service"
-                        ariaLabelledBy="checkbox-legal-terms-of-service-label"
+                        onChange={field.onChange}
+                        size="md"
                       />
                       <Pressable
                         onPress={() => field.onChange(!field.value)}
                         accessibilityRole="button"
                         style={({ pressed }) => ({
-                          alignSelf: 'flex-start',
+                          alignSelf: "flex-start",
                           opacity: pressed ? 0.7 : 1,
                         })}
                       >
                         <Text nativeID="checkbox-legal-terms-of-service-label">
-                          I accept the{' '}
+                          I accept the{" "}
                           <Text
-                            color="$blue7"
-                            textDecorationLine="underline"
+                            style={{
+                              color:
+                                theme === "light"
+                                  ? colors.blue[700]
+                                  : colors.blue[300],
+                              textDecorationLine: "underline",
+                            }}
                             onPress={(event) => {
-                              event.stopPropagation?.()
-                              if (typeof window !== 'undefined') {
-                                window.open('https://scaffald.com/terms', '_blank')
+                              event.stopPropagation?.();
+                              if (typeof window !== "undefined") {
+                                window.open(
+                                  "https://scaffald.com/terms",
+                                  "_blank"
+                                );
                               }
                             }}
                           >
@@ -414,38 +457,32 @@ export function PrerequisiteWidget() {
                           </Text>
                         </Text>
                       </Pressable>
-                    </XStack>
+                    </Row>
                     {errors.accepts_terms_of_service && (
-                      <Text color="$red10" fontSize="$2">
+                      <Text color="$red10">
                         {errors.accepts_terms_of_service.message}
                       </Text>
                     )}
-                  </YStack>
+                  </Stack>
                 )}
               />
-            </YStack>
+            </Stack>
 
             {/* Submit Button */}
             <Button
-              variant="primary"
+              variant="filled"
+              color="primary"
               onPress={handleSubmit(onSubmit)}
               disabled={isSubmitting}
-              opacity={isSubmitting ? 0.5 : 1}
-              size="$5"
-              marginTop={spacing.xs}
+              loading={isSubmitting}
+              size="lg"
+              style={{ marginTop: namedSpacing.xs }}
             >
-              {isSubmitting ? (
-                <XStack gap={spacing.xs} alignItems="center">
-                  <Spinner size="small" color="white" />
-                  <Button.Text>Completing...</Button.Text>
-                </XStack>
-              ) : (
-                <Button.Text>Complete Profile</Button.Text>
-              )}
+              {isSubmitting ? "Completing..." : "Complete Profile"}
             </Button>
           </>
         )}
-      </YStack>
+      </Stack>
     </DashboardWidget>
-  )
+  );
 }

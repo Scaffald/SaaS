@@ -1,16 +1,16 @@
 import type { ReactElement, ReactNode } from 'react';
 import { render, type RenderOptions } from '@testing-library/react';
 import { FormTestWrapper } from './form-setup';
-import { TamaguiTestWrapper } from './tamagui-setup';
+import { BeyondUIThemeWrapper } from './theme-setup';
 
 /**
  * Options for custom render function
  */
 export interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
   /**
-   * Whether to wrap with Tamagui provider
+   * Whether to wrap with theme provider (Beyond-UI)
    */
-  withTamagui?: boolean;
+  withTheme?: boolean;
   /**
    * Whether to wrap with React Hook Form provider
    */
@@ -29,7 +29,7 @@ export function renderWithProviders(
   options: CustomRenderOptions = {},
 ) {
   const {
-    withTamagui = true,
+    withTheme = true,
     withForm = false,
     formOptions,
     ...renderOptions
@@ -46,8 +46,8 @@ export function renderWithProviders(
       );
     }
 
-    if (withTamagui) {
-      content = <TamaguiTestWrapper>{content}</TamaguiTestWrapper>;
+    if (withTheme) {
+      content = <BeyondUIThemeWrapper>{content}</BeyondUIThemeWrapper>;
     }
 
     return <>{content}</>;

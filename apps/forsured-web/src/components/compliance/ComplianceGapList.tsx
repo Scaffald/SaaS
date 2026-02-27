@@ -1,10 +1,10 @@
 /**
- * REQ-128: Compliance Rule Evaluation Engine
+ * Compliance Rule Evaluation Engine
  * Compliance Gap List Component
  */
 
 import React from 'react';
-import { Stack, Row, Text } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text } from '@scaffald/ui';
 import { ComplianceGap, GapType, GapSeverity } from '../../lib/compliance/evaluator';
 
 interface ComplianceGapListProps {

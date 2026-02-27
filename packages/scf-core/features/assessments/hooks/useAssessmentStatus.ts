@@ -1,4 +1,10 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useLuscherTest1Status,
+  useLuscherTest2Status,
+  useLuscherTestAvailability,
+  useIPIPStatus,
+} from '@scf/core/utils/personality-assessment-sdk-hooks'
+import { useRIASECStatus, useOccupationStatus } from '@scf/core/utils/onet-sdk-hooks'
 
 /**
  * Hook to fetch completion status for all isolated assessments
@@ -6,14 +12,14 @@ import { api } from '@scf/core/utils/api'
  */
 export function useAssessmentStatus() {
   // Personality assessment queries
-  const luscher1Query = api.personalityAssessment.getLuscherTest1Status.useQuery()
-  const luscherAvailabilityQuery = api.personalityAssessment.getLuscherTestAvailability.useQuery()
-  const ipipQuery = api.personalityAssessment.getIPIPStatus.useQuery()
-  const luscher2Query = api.personalityAssessment.getLuscherTest2Status.useQuery()
+  const luscher1Query = useLuscherTest1Status()
+  const luscherAvailabilityQuery = useLuscherTestAvailability()
+  const ipipQuery = useIPIPStatus()
+  const luscher2Query = useLuscherTest2Status()
 
   // Career assessment queries
-  const riasecQuery = api.onet.getRIASECStatus.useQuery()
-  const occupationQuery = api.onet.getOccupationStatus.useQuery()
+  const riasecQuery = useRIASECStatus()
+  const occupationQuery = useOccupationStatus()
 
   const luscher1Completed = luscher1Query.data?.isCompleted ?? false
   const luscher1OnCooldown = luscherAvailabilityQuery.data?.isOnCooldown ?? false
@@ -26,7 +32,7 @@ export function useAssessmentStatus() {
       nextAvailableAt: luscherAvailabilityQuery.data?.nextAvailableAt ?? null,
     },
     ipip: {
-      isCompleted: ipipQuery.data?.isCompleted ?? false,
+      isCompleted: (ipipQuery.data as { data?: { isCompleted?: boolean } } | undefined)?.data?.isCompleted ?? false,
       isLoading: ipipQuery.isLoading,
     },
     luscher2: {
@@ -34,11 +40,11 @@ export function useAssessmentStatus() {
       isLoading: luscher2Query.isLoading,
     },
     riasec: {
-      isCompleted: riasecQuery.data?.isCompleted ?? false,
+      isCompleted: (riasecQuery.data as { isCompleted?: boolean; complete?: boolean })?.isCompleted ?? (riasecQuery.data as { complete?: boolean })?.complete ?? false,
       isLoading: riasecQuery.isLoading,
     },
     occupation: {
-      isCompleted: occupationQuery.data?.isCompleted ?? false,
+      isCompleted: (occupationQuery.data as { isCompleted?: boolean; complete?: boolean })?.isCompleted ?? (occupationQuery.data as { complete?: boolean })?.complete ?? false,
       isLoading: occupationQuery.isLoading,
     },
   }

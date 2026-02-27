@@ -1,7 +1,8 @@
 import { useUser } from '@scf/core/utils/useUser'
-import { Text, XStack, YStack } from '@unicornlove/ui'
-import { Check, MessageSquare } from '@tamagui/lucide-icons'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { Check, MessageSquare } from 'lucide-react-native'
 import { useMemo } from 'react'
+import { colors } from '@scaffald/ui/tokens'
 
 interface InquiryStatusBadgesProps {
   inquiryData: {
@@ -21,6 +22,7 @@ interface InquiryStatusBadgesProps {
 }
 
 export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
+  const { theme } = useThemeContext()
   const { user: currentUser } = useUser()
 
   if (!inquiryData || !currentUser) return null
@@ -48,96 +50,86 @@ export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
   }
 
   return (
-    <XStack gap="$1" flexWrap="wrap" marginTop="$2">
+    <Row gap={4} wrap marginTop={8}>
       {/* Unread comments badge */}
       {unreadComments > 0 && (
-        <XStack
-          backgroundColor="$blue3"
-          paddingHorizontal="$2"
-          paddingVertical="$1"
-          borderRadius="$2"
-          alignItems="center"
-          gap="$1"
+        <Row
+          style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
+          paddingHorizontal={8}
+          paddingVertical={4}
+          borderRadius={8}
+          align="center"
+          gap={4}
         >
-          <MessageSquare size={12} color="$blue10" />
-          <Text fontSize="$1" color="$blue10" fontWeight="500">
-            {unreadComments}
-          </Text>
-        </XStack>
+          <MessageSquare size={16} color={theme === "light" ? colors.blue[700] : colors.blue[300]} />
+          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>{unreadComments}</Text>
+        </Row>
       )}
 
       {/* All accepted badge */}
       {allAccepted && (
-        <XStack
-          backgroundColor="$green9"
-          paddingHorizontal="$2"
-          paddingVertical="$1"
-          borderRadius="$2"
-          alignItems="center"
-          gap="$1"
+        <Row
+          style={{ backgroundColor: theme === "light" ? colors.green[50] : colors.green[900] }}
+          paddingHorizontal={8}
+          paddingVertical={4}
+          borderRadius={8}
+          align="center"
+          gap={4}
         >
-          <Check size={12} color="white" />
-          <Text fontSize="$1" color="white" fontWeight="600">
-            Check completed
-          </Text>
-        </XStack>
+          <Check size={16} color="white" />
+          <Text style={{ color: 'white' }}>Check completed</Text>
+        </Row>
       )}
 
       {/* Pending sections badge */}
       {pendingSections > 0 && !allAccepted && (
-        <YStack
-          backgroundColor="$gray3"
-          paddingHorizontal="$2"
-          paddingVertical="$1"
-          borderRadius="$2"
+        <Stack
+          style={{ backgroundColor: colors.bg[theme].muted }}
+          paddingHorizontal={8}
+          paddingVertical={4}
+          borderRadius={8}
         >
-          <Text fontSize="$1" color="$gray11" fontWeight="500">
-            {pendingSections} Pending
-          </Text>
-        </YStack>
+          <Text style={{ color: colors.text[theme].secondary }}>{pendingSections} Pending</Text>
+        </Stack>
       )}
 
       {/* Completed sections badge */}
       {acceptedSections > 0 && !allAccepted && (
-        <YStack
-          backgroundColor="$green3"
-          paddingHorizontal="$2"
-          paddingVertical="$1"
-          borderRadius="$2"
+        <Stack
+          style={{ backgroundColor: theme === "light" ? colors.green[50] : colors.green[900] }}
+          paddingHorizontal={8}
+          paddingVertical={4}
+          borderRadius={8}
         >
-          <Text fontSize="$1" color="$green10" fontWeight="500">
-            {acceptedSections} Completed
-          </Text>
-        </YStack>
+          <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>{acceptedSections} Completed</Text>
+        </Stack>
       )}
 
       {/* Pending checks badge */}
       {hasPendingChecks && (
-        <YStack
-          backgroundColor="$gray3"
-          paddingHorizontal="$2"
-          paddingVertical="$1"
-          borderRadius="$2"
+        <Stack
+          style={{ backgroundColor: colors.bg[theme].muted }}
+          paddingHorizontal={8}
+          paddingVertical={4}
+          borderRadius={8}
         >
-          <Text fontSize="$1" color="$gray11" fontWeight="500">
-            Pending checks
-          </Text>
-        </YStack>
+          <Text style={{ color: colors.text[theme].secondary }}>Pending checks</Text>
+        </Stack>
       )}
 
       {/* Progress indicator */}
       {!allAccepted && (
-        <YStack
-          backgroundColor="$blue2"
-          paddingHorizontal="$2"
-          paddingVertical="$1"
-          borderRadius="$2"
+        <Stack
+          style={{ backgroundColor: theme === "light" ? colors.blue[50] : colors.blue[900] }}
+          paddingHorizontal={8}
+          paddingVertical={4}
+          borderRadius={8}
         >
-          <Text fontSize="$1" color="$blue11" fontWeight="500">
+          <Text style={{ color: theme === "light" ? colors.blue[700] : colors.blue[300] }}>
             {acceptedSections}/{totalSections}
           </Text>
-        </YStack>
+        </Stack>
       )}
-    </XStack>
+    </Row>
   )
 }

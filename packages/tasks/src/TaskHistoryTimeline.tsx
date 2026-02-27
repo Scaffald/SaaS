@@ -1,10 +1,12 @@
 /**
- * TaskHistoryTimeline - Timeline showing task history/activity
- * REQ-288: Tamagui UI Component Library
+ * TaskHistoryTimeline - Timeline showing task history/activity.
+ * Beyond UI component.
  */
 
 import { useState } from 'react'
-import { styled, YStack, XStack, Text, View, type YStackProps } from 'tamagui'
+import { Stack, Row, Box, Text } from '@scaffald/ui'
+import { colors, spacing, borderRadius } from '@scaffald/ui/tokens'
+import type { StackProps } from '@scaffald/ui'
 import {
   CheckCircle,
   Circle,
@@ -14,7 +16,8 @@ import {
   User,
   Edit3,
   ArrowRight,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
+import { Pressable, View } from 'react-native'
 
 export type HistoryEventType =
   | 'created'
@@ -40,14 +43,10 @@ export interface HistoryEvent {
   }
 }
 
-export interface TaskHistoryTimelineProps extends Omit<YStackProps, 'children'> {
-  /** Array of history events */
+export interface TaskHistoryTimelineProps extends Omit<StackProps, 'children'> {
   events: HistoryEvent[]
-  /** Maximum events to show initially */
   maxVisible?: number
-  /** Show timestamps as relative (e.g., "2 hours ago") or absolute */
   relativeTime?: boolean
-  /** Click handler for event */
   onEventPress?: (event: HistoryEvent) => void
 }
 
@@ -57,132 +56,40 @@ const eventConfig: Record<
 > = {
   created: {
     icon: Circle,
-    color: '$green11',
-    bgColor: '$green3',
+    color: colors.success[700],
+    bgColor: colors.success[100],
   },
   status_change: {
     icon: ArrowRight,
-    color: '$blue11',
-    bgColor: '$blue3',
+    color: colors.info[700],
+    bgColor: colors.info[100],
   },
   assigned: {
     icon: User,
-    color: '$purple11',
-    bgColor: '$purple3',
+    color: colors.violet[700],
+    bgColor: colors.violet[100],
   },
   comment: {
     icon: MessageSquare,
-    color: '$orange11',
-    bgColor: '$orange3',
+    color: colors.orange[700],
+    bgColor: colors.orange[100],
   },
   attachment: {
     icon: FileText,
-    color: '$gray11',
-    bgColor: '$gray3',
+    color: colors.gray[700],
+    bgColor: colors.gray[200],
   },
   edited: {
     icon: Edit3,
-    color: '$yellow11',
-    bgColor: '$yellow3',
+    color: colors.warning[700],
+    bgColor: colors.warning[100],
   },
   due_date_change: {
     icon: Clock,
-    color: '$red11',
-    bgColor: '$red3',
+    color: colors.error[700],
+    bgColor: colors.error[100],
   },
 }
-
-const TimelineContainer = styled(YStack, {
-  name: 'TaskHistoryTimeline',
-  gap: 0,
-})
-
-const TimelineItem = styled(XStack, {
-  name: 'TaskHistoryTimelineItem',
-  gap: '$3',
-  position: 'relative',
-})
-
-const TimelineLine = styled(View, {
-  name: 'TaskHistoryTimelineLine',
-  position: 'absolute',
-  left: 15,
-  top: 32,
-  bottom: 0,
-  width: 2,
-  backgroundColor: '$borderColor',
-})
-
-const IconContainer = styled(View, {
-  name: 'TaskHistoryTimelineIcon',
-  width: 32,
-  height: 32,
-  borderRadius: '$full',
-  alignItems: 'center',
-  justifyContent: 'center',
-  flexShrink: 0,
-  zIndex: 1,
-})
-
-const EventContent = styled(YStack, {
-  name: 'TaskHistoryEventContent',
-  flex: 1,
-  paddingBottom: '$4',
-  gap: '$1',
-})
-
-const EventHeader = styled(XStack, {
-  name: 'TaskHistoryEventHeader',
-  alignItems: 'center',
-  gap: '$2',
-})
-
-const UserName = styled(Text, {
-  name: 'TaskHistoryUserName',
-  fontSize: '$3',
-  fontWeight: '600',
-  color: '$color12',
-})
-
-const EventDescription = styled(Text, {
-  name: 'TaskHistoryEventDescription',
-  fontSize: '$3',
-  color: '$color11',
-})
-
-const Timestamp = styled(Text, {
-  name: 'TaskHistoryTimestamp',
-  fontSize: '$2',
-  color: '$color9',
-})
-
-const MetadataContainer = styled(XStack, {
-  name: 'TaskHistoryMetadata',
-  alignItems: 'center',
-  gap: '$2',
-  paddingTop: '$1',
-})
-
-const MetadataValue = styled(Text, {
-  name: 'TaskHistoryMetadataValue',
-  fontSize: '$2',
-  paddingHorizontal: '$2',
-  paddingVertical: '$1',
-  borderRadius: '$sm',
-})
-
-const ShowMoreButton = styled(XStack, {
-  name: 'TaskHistoryShowMore',
-  paddingVertical: '$2',
-  paddingHorizontal: '$3',
-  alignItems: 'center',
-  justifyContent: 'center',
-  cursor: 'pointer',
-
-  hoverStyle: {
-    opacity: 0.8,
-  },
-})
 
 function formatRelativeTime(timestamp: string): string {
   const date = new Date(timestamp)
@@ -221,61 +128,118 @@ export function TaskHistoryTimeline({
   const hasMore = events.length > maxVisible
 
   return (
-    <TimelineContainer {...props}>
+    <Stack gap={0} {...props}>
       {visibleEvents.map((event, index) => {
         const config = eventConfig[event.type]
         const Icon = config.icon
         const isLast = index === visibleEvents.length - 1
 
         return (
-          <TimelineItem
+          <Pressable
             key={event.id}
             onPress={() => onEventPress?.(event)}
-            cursor={onEventPress ? 'pointer' : undefined}
+            style={{ opacity: onEventPress ? 1 : 1 }}
           >
-            {!isLast && <TimelineLine />}
-            <IconContainer backgroundColor={config.bgColor}>
-              <Icon size={14} color={config.color} />
-            </IconContainer>
-            <EventContent>
-              <EventHeader>
-                <UserName>{event.user.name}</UserName>
-                <Timestamp>
-                  {relativeTime
-                    ? formatRelativeTime(event.timestamp)
-                    : formatAbsoluteTime(event.timestamp)}
-                </Timestamp>
-              </EventHeader>
-              <EventDescription>{event.description}</EventDescription>
-              {event.metadata && (event.metadata.oldValue || event.metadata.newValue) && (
-                <MetadataContainer>
-                  {event.metadata.oldValue && (
-                    <MetadataValue backgroundColor="$red3" color="$red11">
-                      {event.metadata.oldValue}
-                    </MetadataValue>
-                  )}
-                  {event.metadata.oldValue && event.metadata.newValue && (
-                    <ArrowRight size={12} color="$color9" />
-                  )}
-                  {event.metadata.newValue && (
-                    <MetadataValue backgroundColor="$green3" color="$green11">
-                      {event.metadata.newValue}
-                    </MetadataValue>
-                  )}
-                </MetadataContainer>
+            <Row
+              gap={spacing[12]}
+              style={{ position: 'relative' }}
+            >
+              {!isLast && (
+                <View
+                  style={{
+                    position: 'absolute',
+                    left: 15,
+                    top: 32,
+                    bottom: 0,
+                    width: 2,
+                    backgroundColor: colors.border?.default ?? colors.gray[200],
+                  }}
+                />
               )}
-            </EventContent>
-          </TimelineItem>
+              <View
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: borderRadius.max,
+                  backgroundColor: config.bgColor,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 1,
+                }}
+              >
+                <Icon size={14} color={config.color} />
+              </View>
+              <Stack flex={1} gap={spacing[4]} style={{ paddingBottom: spacing[16] }}>
+                <Row align="center" gap={spacing[8]}>
+                  <Text size="md" weight="semibold" style={{ color: colors.gray[800] }}>
+                    {event.user.name}
+                  </Text>
+                  <Text size="sm" style={{ color: colors.gray[500] }}>
+                    {relativeTime
+                      ? formatRelativeTime(event.timestamp)
+                      : formatAbsoluteTime(event.timestamp)}
+                  </Text>
+                </Row>
+                <Text size="md" style={{ color: colors.gray[700] }}>
+                  {event.description}
+                </Text>
+                {event.metadata &&
+                  (event.metadata.oldValue || event.metadata.newValue) && (
+                    <Row align="center" gap={spacing[8]} style={{ paddingTop: spacing[4] }}>
+                      {event.metadata.oldValue && (
+                        <Box
+                          style={{
+                            paddingHorizontal: spacing[8],
+                            paddingVertical: spacing[4],
+                            borderRadius: borderRadius.xs,
+                            backgroundColor: colors.error[100],
+                          }}
+                        >
+                          <Text size="sm" style={{ color: colors.error[700] }}>
+                            {event.metadata.oldValue}
+                          </Text>
+                        </Box>
+                      )}
+                      {event.metadata.oldValue && event.metadata.newValue && (
+                        <ArrowRight size={12} color={colors.gray[500]} />
+                      )}
+                      {event.metadata.newValue && (
+                        <Box
+                          style={{
+                            paddingHorizontal: spacing[8],
+                            paddingVertical: spacing[4],
+                            borderRadius: borderRadius.xs,
+                            backgroundColor: colors.success[100],
+                          }}
+                        >
+                          <Text size="sm" style={{ color: colors.success[700] }}>
+                            {event.metadata.newValue}
+                          </Text>
+                        </Box>
+                      )}
+                    </Row>
+                  )}
+              </Stack>
+            </Row>
+          </Pressable>
         )
       })}
 
       {hasMore && !showAll && (
-        <ShowMoreButton onPress={() => setShowAll(true)}>
-          <Text fontSize="$2" color="$blue10" fontWeight="500">
+        <Pressable
+          onPress={() => setShowAll(true)}
+          style={{
+            paddingVertical: spacing[8],
+            paddingHorizontal: spacing[12],
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Text size="sm" weight="medium" style={{ color: colors.info[600] }}>
             Show {events.length - maxVisible} more events
           </Text>
-        </ShowMoreButton>
+        </Pressable>
       )}
-    </TimelineContainer>
+    </Stack>
   )
 }

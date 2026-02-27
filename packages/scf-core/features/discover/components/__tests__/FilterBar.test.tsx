@@ -3,8 +3,8 @@ import userEvent from '@testing-library/user-event'
 import type { CSSProperties, ReactNode } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
-// Mock Tamagui components before import
-vi.mock('tamagui', () => {
+// Beyond UI mock before import
+vi.mock('@scaffald/ui', () => {
   const mapStyleProps = (props: Record<string, unknown>) => {
     const styleProps: Record<string, unknown> = {
       ...(props.style as Record<string, unknown> | undefined),
@@ -59,7 +59,7 @@ vi.mock('tamagui', () => {
         case 'pressStyle':
         case 'scaleIcon':
         case 'variant':
-        case 'circular':
+        case '':
         case 'icon':
         case 'color':
         case 'size':
@@ -105,12 +105,12 @@ vi.mock('tamagui', () => {
   }
 
   return {
-    XStack: MockXStack,
+    Row: MockXStack,
     Button: MockButton,
   }
 })
 
-vi.mock('@tamagui/lucide-icons', () => ({
+vi.mock('lucide-react-native', () => ({
   Search: () => <span data-testid="icon-search" />,
   SlidersHorizontal: () => <span data-testid="icon-filters" />,
   RotateCcw: () => <span data-testid="icon-reset" />,

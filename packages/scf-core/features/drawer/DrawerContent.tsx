@@ -1,7 +1,7 @@
 import { ScaffaldLogo } from '@scf/core/assets'
 import { ROUTES } from '@scf/core/constants/routes'
 import { useThemeSetting } from '@scf/core/provider/theme/UniversalThemeProvider'
-import { api } from '@scf/core/utils/api'
+import { useGeneralInfo } from '@scf/core/utils/profile-general-sdk-hooks'
 import { usePathname } from '@scf/core/utils/usePathname'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
@@ -15,13 +15,13 @@ import {
   PanelRightClose,
   Settings as SettingsIcon,
   Sun,
-} from '@tamagui/lucide-icons'
+} from 'lucide-react-native'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import { useCallback, type ReactNode } from 'react'
 import { Pressable, type PressableStateCallbackType } from 'react-native'
 import type { GestureResponderEvent } from 'react-native'
-import { Text, useWindowDimensions, XStack, YStack } from '@unicornlove/ui'
+import { Text, useWindowDimensions, Row, Stack } from '@scaffald/ui'
 import { DrawerLink } from './DrawerLink'
 import { getDrawerItems } from './config'
 import type { DrawerItemConfig } from './types'
@@ -71,7 +71,7 @@ export const DrawerContent = ({
   const { resolvedTheme, set: setTheme } = useThemeSetting()
   const { user, profile } = useUser()
   const { hasOfficeRole } = useUserRoles()
-  const { data: generalProfile } = api.profile.general.getGeneral.useQuery(undefined, {
+  const { data: generalProfile } = useGeneralInfo({
     staleTime: 5 * 60 * 1000,
   })
   const isSmall = width < 1024
@@ -154,22 +154,22 @@ export const DrawerContent = ({
   )
 
   return (
-    <YStack
+    <Stack
       flex={1}
       backgroundColor="$color3"
-      paddingHorizontal={isCollapsed ? '$2' : '$6'}
-      paddingVertical="$5"
-      alignItems={isCollapsed ? 'center' : 'stretch'}
+      paddingHorizontal={isCollapsed ? 8 : 24}
+      paddingVertical={20}
+      align={isCollapsed ? 'center' : 'stretch'}
     >
-      <YStack flex={1} justifyContent="space-between" gap="$5" width="100%">
+      <Stack flex={1} justify="space-between" gap={20} width="100%">
         {!isSmall ? (
-          <XStack justifyContent="center" alignItems="center" gap="$3" paddingTop="$2" width="100%">
+          <Row justify="center" align="center" gap={12} paddingTop={8} width="100%">
             <ScaffaldLogo
               height={isCollapsed ? 30 : 40}
               width={isCollapsed ? 30 : 120}
               showWordmark={!isCollapsed}
             />
-          </XStack>
+          </Row>
         ) : null}
 
         {!isCollapsed ? (
@@ -182,12 +182,12 @@ export const DrawerContent = ({
           />
         ) : null}
 
-        <YStack
-          gap="$2"
+        <Stack
+          gap={8}
           flex={1}
-          marginTop="$2"
+          marginTop={8}
           width="100%"
-          alignItems={isCollapsed ? 'center' : 'stretch'}
+          align={isCollapsed ? 'center' : 'stretch'}
         >
           {hasOfficeRole ? (
             <DrawerLink
@@ -206,22 +206,19 @@ export const DrawerContent = ({
               isCollapsed={isCollapsed}
             />
           ))}
-        </YStack>
+        </Stack>
 
-        <YStack
-          paddingTop="$4"
-          borderTopWidth={1}
-          borderColor="$color5"
-          width="100%"
-          alignItems={isCollapsed ? 'center' : 'stretch'}
+        <Stack
+          style={{ paddingTop: 16, borderTopWidth: 1, borderColor: '#94a3b8', width: '100%' }}
+          align={isCollapsed ? 'center' : 'stretch'}
         >
           {isCollapsed ? (
-            <YStack gap="$3" alignItems="center">
+            <Stack gap={12} align="center">
               <FooterActionButton label="Settings" onPress={handleSettingsPress}>
-                <SettingsIcon size={footerIconSize} color="$color11" />
+                <SettingsIcon size={footerIconSize} color="$gray11" />
               </FooterActionButton>
               <FooterActionButton label={themeToggleLabel} onPress={handleThemeToggle}>
-                <ThemeToggleIcon size={footerIconSize} color="$color11" />
+                <ThemeToggleIcon size={footerIconSize} color="$gray11" />
               </FooterActionButton>
               {canCollapse && onToggleCollapse ? (
                 <FooterActionButton
@@ -229,26 +226,26 @@ export const DrawerContent = ({
                   onPress={onToggleCollapse}
                 >
                   {isCollapsed ? (
-                    <PanelRightClose size={footerIconSize} color="$color11" />
+                    <PanelRightClose size={footerIconSize} color="$gray11" />
                   ) : (
-                    <PanelLeftClose size={footerIconSize} color="$color11" />
+                    <PanelLeftClose size={footerIconSize} color="$gray11" />
                   )}
                 </FooterActionButton>
               ) : null}
-            </YStack>
+            </Stack>
           ) : (
-            <XStack
+            <Row
               width="100%"
-              justifyContent="space-between"
-              alignItems="center"
-              gap="$3"
-              paddingHorizontal="$3"
+              justify="space-between"
+              align="center"
+              gap={12}
+              paddingHorizontal={12}
             >
               <FooterActionButton label="Settings" onPress={handleSettingsPress}>
-                <SettingsIcon size={footerIconSize} color="$color11" />
+                <SettingsIcon size={footerIconSize} color="$gray11" />
               </FooterActionButton>
               <FooterActionButton label={themeToggleLabel} onPress={handleThemeToggle}>
-                <ThemeToggleIcon size={footerIconSize} color="$color11" />
+                <ThemeToggleIcon size={footerIconSize} color="$gray11" />
               </FooterActionButton>
               {canCollapse && onToggleCollapse ? (
                 <FooterActionButton
@@ -256,17 +253,17 @@ export const DrawerContent = ({
                   onPress={onToggleCollapse}
                 >
                   {isCollapsed ? (
-                    <PanelRightClose size={footerIconSize} color="$color11" />
+                    <PanelRightClose size={footerIconSize} color="$gray11" />
                   ) : (
-                    <PanelLeftClose size={footerIconSize} color="$color11" />
+                    <PanelLeftClose size={footerIconSize} color="$gray11" />
                   )}
                 </FooterActionButton>
               ) : null}
-            </XStack>
+            </Row>
           )}
-        </YStack>
-      </YStack>
-    </YStack>
+        </Stack>
+      </Stack>
+    </Stack>
   )
 }
 
@@ -288,77 +285,61 @@ const DrawerProfileCard = ({
   const avatarSize = 40
 
   return (
-    <XStack
+    <Row
       width="100%"
       borderWidth={1}
       borderColor="$color4"
-      padding="$3"
-      gap="$3"
-      alignItems="center"
-      borderRadius="$4"
+      padding="sm"
+      gap={12}
+      align="center"
+      borderRadius={16}
     >
       {avatarUri ? (
-        <YStack
-          width={avatarSize}
-          height={avatarSize}
-          overflow="hidden"
-          borderWidth={1}
-          borderColor="$borderColor"
-          backgroundColor="$color2"
-          alignItems="center"
-          justifyContent="center"
-          style={{ borderRadius: avatarSize / 2 }}
+        <Stack
+          style={{
+            width: avatarSize,
+            height: avatarSize,
+            overflow: 'hidden',
+            borderWidth: 1,
+            borderColor: '#e2e8f0',
+            backgroundColor: '#f1f5f9',
+            borderRadius: avatarSize / 2,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
         >
-          <Image
-            source={{ uri: avatarUri }}
-            style={{ width: '100%', height: '100%' }}
-            contentFit="cover"
-          />
-        </YStack>
+          <Image source={{ uri: avatarUri }} contentFit="cover" />
+        </Stack>
       ) : (
-        <YStack
+        <Stack
           width={avatarSize}
           height={avatarSize}
           backgroundColor="$blue10"
-          alignItems="center"
-          justifyContent="center"
+          align="center"
+          justify="center"
           borderWidth={1}
           borderColor="$borderColor"
           style={{ borderRadius: avatarSize / 2 }}
         >
-          <Text color="$color1" fontSize={16} fontWeight="700">
-            {fallbackInitial}
-          </Text>
-        </YStack>
+          <Text color="$gray11">{fallbackInitial}</Text>
+        </Stack>
       )}
 
-      <YStack flex={1} gap="$2">
-        <Text fontSize="$4" fontWeight="600" color="$color12">
-          {displayName}
-        </Text>
-        <XStack gap="$4">
-          <Text
-            fontSize="$2"
-            color="$blue10"
-            textDecorationLine="underline"
-            cursor="pointer"
-            onPress={onProfilePress}
-            pressStyle={{ opacity: 0.7 }}
-          >
-            My Profile
-          </Text>
-          <Text
-            fontSize="$2"
-            color="$red10"
-            textDecorationLine="underline"
-            cursor="pointer"
-            onPress={onLogoutPress}
-            pressStyle={{ opacity: 0.7 }}
-          >
-            Logout
-          </Text>
-        </XStack>
-      </YStack>
-    </XStack>
+      <Stack flex={1} gap={8}>
+        <Text color="$gray11">{displayName}</Text>
+        <Row gap={16}>
+          <Pressable onPress={onProfilePress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
+            <Text color="primary" style={{ textDecorationLine: 'underline' }}>
+              My Profile
+            </Text>
+          </Pressable>
+          <Pressable onPress={onLogoutPress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
+            <Text color="error" style={{ textDecorationLine: 'underline' }}>
+              Logout
+            </Text>
+          </Pressable>
+        </Row>
+      </Stack>
+    </Row>
   )
 }

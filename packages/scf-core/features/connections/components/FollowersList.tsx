@@ -1,79 +1,53 @@
-import { api } from '@scf/core/utils/api'
-import { DataTable } from '@scf/core/components/ui'
+import { useFollowers } from '@scf/core/utils/engagement-sdk-hooks'
+import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
-import { Avatar, Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Avatar, Input, Spinner, Table, Text, Row, Stack } from '@scaffald/ui'
 
-interface FollowerData {
-  user?: {
-    display_name?: string | null
-    username?: string | null
-    avatar_url?: string | null
-    industry?: {
-      name?: string | null
-    } | null
-  } | null
-  created_at?: string
-  id?: string
-  follower_id?: string
-}
-
-type FollowersQueryResult = ReturnType<typeof api.follows.getFollowers.useQuery>
-type Follower = NonNullable<FollowersQueryResult['data']> extends Array<infer T> ? T : FollowerData
+import type { Follow } from '@scaffald/sdk/resources/follows'
 
 export function FollowersList() {
   const [searchTerm, setSearchTerm] = useState('')
 
-  const { data: followers, isLoading } = api.follows.getFollowers.useQuery()
+  const { data: followersResponse, isLoading } = useFollowers()
+  const followers = followersResponse?.data
 
   const filteredFollowers = useMemo(() => {
     if (!followers) return []
     if (!searchTerm.trim()) return followers
 
     const search = searchTerm.toLowerCase()
-    return followers.filter((follow: Follower) => {
-      const name = follow.user?.display_name || follow.user?.username || ''
+    return followers.filter((follow: Follow) => {
+      const f = follow.follower
+      const name = f ? `${f.first_name || ''} ${f.last_name || ''}`.trim() : ''
       return name.toLowerCase().includes(search)
     })
   }, [followers, searchTerm])
 
-  const columns = useMemo<ColumnDef<Follower>[]>(
+  const columnDefs = useMemo<ColumnDef<Follow>[]>(
     () => [
       {
-        accessorKey: 'user',
+        accessorKey: 'follower',
         header: 'User',
         cell: ({ row }) => {
           const follow = row.original
-          const user = follow.user
-          const name = user?.display_name || user?.username || 'Unknown'
-          const avatar = user?.avatar_url
+          const follower = follow.follower
+          const name = follower
+            ? `${follower.first_name || ''} ${follower.last_name || ''}`.trim() || 'Unknown'
+            : 'Unknown'
+          const avatar = follower?.avatar_url
 
           return (
-            <XStack alignItems="center" gap="$2">
-              <Avatar circular size={32}>
-                {avatar ? (
-                  <Avatar.Image source={{ uri: avatar }} />
-                ) : (
-                  <Avatar.Fallback backgroundColor="$green4">
-                    <Text fontSize="$3" fontWeight="600" color="$green10">
-                      {name.charAt(0).toUpperCase()}
-                    </Text>
-                  </Avatar.Fallback>
-                )}
-              </Avatar>
-              <Text fontSize="$3" fontWeight="500">
-                {name}
-              </Text>
-            </XStack>
+            <Row align="center" gap={8}>
+              <Avatar
+                size={32}
+                src={avatar ? { uri: avatar } : undefined}
+                initials={!avatar ? name.charAt(0).toUpperCase() : undefined}
+                color="success"
+              />
+              <Text>{name}</Text>
+            </Row>
           )
-        },
-      },
-      {
-        accessorKey: 'industry',
-        header: 'Industry',
-        cell: ({ row }) => {
-          const user = row.original.user
-          return <Text fontSize="$3">{user?.industry?.name || '-'}</Text>
         },
       },
       {
@@ -81,62 +55,62 @@ export function FollowersList() {
         header: 'Following Since',
         cell: ({ row }) => {
           const date = row.original.created_at
-          return (
-            <Text fontSize="$3" color="$color10">
-              {date ? new Date(date).toLocaleDateString() : '-'}
-            </Text>
-          )
+          return <Text color="$gray11">{date ? new Date(date).toLocaleDateString() : '-'}</Text>
         },
       },
     ],
     []
   )
 
+  const tableColumns = useMemo(
+    () => columnsFromTanStack<Follow & Record<string, unknown>>(columnDefs as ColumnDef<Follow & Record<string, unknown>>[]),
+    [columnDefs]
+  )
+
   if (isLoading) {
     return (
-      <YStack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
-        <Spinner size="large" />
-        <Text color="$color11">Loading followers…</Text>
-      </YStack>
+      <Stack align="center" justify="center" paddingVertical={24} gap={8}>
+        <Spinner size="lg" />
+        <Text color="$gray11">Loading followers…</Text>
+      </Stack>
     )
   }
 
   return (
-    <YStack gap="$4">
+    <Stack gap={16}>
       <Input
         placeholder="Search followers..."
         value={searchTerm}
         onChangeText={setSearchTerm}
-        size="$4"
       />
 
       {filteredFollowers.length === 0 ? (
-        <YStack
-          gap="$3"
+        <Stack
+          gap={12}
           borderWidth={1}
           borderColor="$borderColor"
-          borderRadius="$4"
-          padding="$4"
+          borderRadius={16}
+          padding="md"
           backgroundColor="$color2"
-          alignItems="center"
-          justifyContent="center"
+          align="center"
+          justify="center"
           style={{ minHeight: 300 }}
         >
-          <Text fontWeight="600">No followers yet</Text>
-          <Text color="$color11" style={{ textAlign: 'center' }}>
+          <Text>No followers yet</Text>
+          <Text color="$gray11" style={{ textAlign: 'center' }}>
             {searchTerm
               ? 'No followers match your search.'
               : "You don't have any followers yet. Build your profile to attract followers."}
           </Text>
-        </YStack>
+        </Stack>
       ) : (
-        <DataTable
-          columns={columns}
-          data={filteredFollowers}
+        <Table
+          columns={tableColumns}
+          data={filteredFollowers as (Follow & Record<string, unknown>)[]}
           pageSize={20}
           emptyMessage="No followers found"
         />
       )}
-    </YStack>
+    </Stack>
   )
 }

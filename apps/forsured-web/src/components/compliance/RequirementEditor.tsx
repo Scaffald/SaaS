@@ -1,10 +1,10 @@
 /**
- * REQ-165: Compliance Requirements Management System
+ * Compliance Requirements Management System
  * Form-based editor for creating and updating compliance requirements
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Stack, Row, Text, Button, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card } from '@scaffald/ui';
 import {
   CoverageType,
   RequirementStatus,

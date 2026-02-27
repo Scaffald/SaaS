@@ -4,7 +4,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { Camera, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
-import { Row, Text, Button } from '@unicornlove/beyond-ui';
+import { Row, Text, Button } from '@scaffald/ui';
 
 interface PageScreenshotProps {
   onCapture: (blob: Blob, fileName: string) => void;

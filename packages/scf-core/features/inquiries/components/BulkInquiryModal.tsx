@@ -1,21 +1,25 @@
-import { api } from '@scf/core/utils/api'
+import { useCreateBulkInquiriesMutation } from '@scf/core/utils/inquiries-sdk-hooks'
 import { type BulkInquiryInput, bulkInquirySchema } from '@scf/schemas'
 import {
   Button,
-  CustomCheckbox,
+  Checkbox,
   Input,
   ScrollView,
   Separator,
   Sheet,
+  SheetHeader,
+  SheetContent,
+  SheetFooter,
   Text,
-  XStack,
-  YStack,
-} from '@unicornlove/ui'
+  Row,
+  Stack,
+  ProgressBarBase,
+  TextArea,
+} from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToastController } from '@tamagui/toast'
+import { useToast } from '@scaffald/ui'
 import { useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { Progress, TextArea } from '@unicornlove/ui'
 import { InquiryHelpSidebar } from './InquiryHelpSidebar'
 
 interface BulkInquiryModalProps {
@@ -36,7 +40,7 @@ const WORK_SCHEDULE_OPTIONS = [
 ] as const
 
 export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryModalProps) {
-  const toast = useToastController()
+  const toast = useToast()
   const [showResults, setShowResults] = useState(false)
   const [bulkResults, setBulkResults] = useState<{
     total: number
@@ -81,30 +85,20 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
     },
   })
 
-  const createBulk = api.inquiries.createBulk.useMutation({
-    onSuccess: (result: {
-      total: number
-      successful: number
-      failed: number
-      results: Array<{
-        applicationId: string
-        success: boolean
-        inquiryId?: string
-        error?: string
-      }>
-    }) => {
+  const createBulk = useCreateBulkInquiriesMutation({
+    onSuccess: (result) => {
       setBulkResults(result)
       setShowResults(true)
 
       if (result.failed > 0) {
-        toast.show('Bulk inquiry partially completed', {
+        toast.show({
+          title: 'Bulk inquiry partially completed',
           message: `Successfully sent to ${result.successful} candidates. ${result.failed} failed.`,
-          duration: 5000,
         })
       } else {
-        toast.show('Bulk inquiry sent', {
+        toast.show({
+          title: 'Bulk inquiry sent',
           message: `Successfully sent inquiry to ${result.successful} candidates.`,
-          duration: 3000,
         })
         // Close after successful completion
         setTimeout(() => {
@@ -112,10 +106,11 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
         }, 2000)
       }
     },
-    onError: (error: { message?: string }) => {
-      toast.show('Failed to send bulk inquiry', {
+    onError: (error) => {
+      toast.show({
+        title: 'Failed to send bulk inquiry',
         message: error.message ?? 'Please try again.',
-        duration: 5000,
+        variant: 'error',
       })
     },
   })
@@ -156,242 +151,207 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
 
   if (showResults && bulkResults) {
     return (
-      <Sheet modal open={open} onOpenChange={handleClose}>
-        <Sheet.Frame>
-          <ScrollView>
-            <YStack gap="$4" padding="$4">
-              <Text fontSize="$7" fontWeight="600">
-                Bulk Inquiry Results
-              </Text>
-
-              {/* Summary */}
-              <YStack gap="$3" padding="$4" backgroundColor="$color2" borderRadius="$4">
-                <XStack gap="$2" alignItems="center">
-                  <Text fontSize="$5" fontWeight="600" color="$green10">
-                    ✓ {bulkResults.successful} Successful
-                  </Text>
-                </XStack>
-                {bulkResults.failed > 0 && (
-                  <XStack gap="$2" alignItems="center">
-                    <Text fontSize="$5" fontWeight="600" color="$red10">
-                      ✗ {bulkResults.failed} Failed
-                    </Text>
-                  </XStack>
-                )}
-                <Text fontSize="$3" color="$color11">
-                  Total: {bulkResults.total} candidates
-                </Text>
-              </YStack>
-
-              {/* Failed details */}
+      <Sheet visible={open} onClose={handleClose} height="three-quarters">
+        <SheetHeader
+          title="Bulk Inquiry Results"
+          onClose={handleClose}
+        />
+        <SheetContent scrollable>
+          <Stack gap={16} padding="md">
+            {/* Summary */}
+            <Stack gap={12} padding="md" backgroundColor="$color2" borderRadius={16}>
+              <Row gap={8} align="center">
+                <Text color="$green10">✓ {bulkResults.successful} Successful</Text>
+              </Row>
               {bulkResults.failed > 0 && (
-                <YStack gap="$2">
-                  <Text fontSize="$5" fontWeight="600" color="$red10">
-                    Failed Inquiries
-                  </Text>
-                  {bulkResults.results
-                    .filter((r) => !r.success)
-                    .map((result) => (
-                      <YStack
-                        key={result.applicationId}
-                        padding="$3"
-                        backgroundColor="$red2"
-                        borderRadius="$3"
-                        gap="$1"
-                      >
-                        <Text fontSize="$3" fontWeight="600">
-                          Application: {result.applicationId}
-                        </Text>
-                        <Text fontSize="$2" color="$red11">
-                          {result.error || 'Unknown error'}
-                        </Text>
-                      </YStack>
-                    ))}
-                </YStack>
+                <Row gap={8} align="center">
+                  <Text color="$red10">✗ {bulkResults.failed} Failed</Text>
+                </Row>
               )}
+              <Text color="$gray11">Total: {bulkResults.total} candidates</Text>
+            </Stack>
 
-              {/* Actions */}
-              <XStack gap="$3" justifyContent="flex-end" paddingTop="$2">
-                <Button variant="outlined" onPress={handleClose}>
-                  Close
-                </Button>
-              </XStack>
-            </YStack>
-          </ScrollView>
-        </Sheet.Frame>
+            {/* Failed details */}
+            {bulkResults.failed > 0 && (
+              <Stack gap={8}>
+                <Text color="$red10">Failed Inquiries</Text>
+                {bulkResults.results
+                  .filter((r) => !r.success)
+                  .map((result) => (
+                    <Stack
+                      key={result.applicationId}
+                      padding="sm"
+                      backgroundColor="$red2"
+                      borderRadius={12}
+                      gap={4}
+                    >
+                      <Text>Application: {result.applicationId}</Text>
+                      <Text color="$red11">{result.error || 'Unknown error'}</Text>
+                    </Stack>
+                  ))}
+              </Stack>
+            )}
+          </Stack>
+        </SheetContent>
+        <SheetFooter>
+          <Button variant="outline" onPress={handleClose}>
+            Close
+          </Button>
+        </SheetFooter>
       </Sheet>
     )
   }
 
   return (
-    <Sheet modal open={open} onOpenChange={handleClose}>
-      <Sheet.Frame>
+    <Sheet visible={open} onClose={handleClose} height="full" maxHeight={0.9}>
+      <SheetHeader
+        title={`Send Inquiry to ${applicationIds.length} Candidates`}
+        onClose={handleClose}
+      />
+      <SheetContent scrollable={false}>
         <FormProvider {...form}>
-          <YStack padding="$4" flex={1}>
-            <XStack gap="$4" flex={1} $sm={{ flexDirection: 'column' }}>
+          <Stack padding="md" style={{ flex: 1 }}>
+            <Row gap={16} style={{ flex: 1 }}>
               {/* Main Form */}
-              <YStack flex={1} gap="$4">
+              <Stack style={{ flex: 1 }} gap={16}>
                 <ScrollView>
-                  <YStack gap="$6" padding="$4" $sm={{ gap: '$8', padding: '$3' }}>
+                  <Stack gap={24} padding="md">
                     {/* Header */}
-                    <YStack gap="$2">
-                      <Text fontSize="$8" fontWeight="700">
-                        Send Inquiry to {applicationIds.length} Candidates
-                      </Text>
-                      <Text fontSize="$3" color="$color11">
+                    <Stack gap={8}>
+                      <Text color="$gray11">
                         The same inquiry will be sent to all selected candidates
                       </Text>
-                    </YStack>
+                    </Stack>
 
                     {/* Progress indicator */}
                     {isSubmitting && (
-                      <YStack gap="$2" padding="$4" backgroundColor="$blue2" borderRadius="$4">
-                        <Text fontSize="$4" fontWeight="600">
-                          Sending inquiries...
-                        </Text>
-                        <Progress value={75} />
-                        <Text fontSize="$2" color="$color11">
+                      <Stack gap={8} padding="md" backgroundColor="$blue2" borderRadius={16}>
+                        <Text>Sending inquiries...</Text>
+                        <ProgressBarBase value={75} />
+                        <Text color="$gray11">
                           Please wait while we send inquiries to all candidates
                         </Text>
-                      </YStack>
+                      </Stack>
                     )}
 
                     {/* Employment Section */}
-                    <YStack gap="$4">
-                      <XStack alignItems="center" gap="$2">
-                        <Text fontSize="$6" fontWeight="700">
-                          Employment
-                        </Text>
-                      </XStack>
+                    <Stack gap={16}>
+                      <Row align="center" gap={8}>
+                        <Text>Employment</Text>
+                      </Row>
 
                       {/* Employment Type */}
-                      <YStack gap="$2">
-                        <Text fontWeight="600" fontSize="$4">
-                          Employment type
-                        </Text>
+                      <Stack gap={8}>
+                        <Text>Employment type</Text>
                         <Controller
                           control={control}
                           name="employmentType"
                           render={({ field }) => (
-                            <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
+                            <Row gap={8}>
                               {EMPLOYMENT_TYPE_OPTIONS.map((option) => {
                                 const isSelected = field.value === option.value
                                 return (
                                   <Button
                                     key={option.value}
-                                    flex={1}
-                                    theme={isSelected ? 'blue' : 'gray'}
-                                    variant={isSelected ? undefined : 'outlined'}
+                                    style={{ flex: 1 }}
+                                    color={isSelected ? 'primary' : undefined}
+                                    variant={isSelected ? undefined : 'outline'}
                                     onPress={() => field.onChange(option.value)}
-                                    size="$4"
-                                    $sm={{ height: 48 }}
+                                    size="md"
                                   >
                                     {option.label}
                                   </Button>
                                 )
                               })}
-                            </XStack>
+                            </Row>
                           )}
                         />
-                        <XStack alignItems="center" gap="$2">
+                        <Row align="center" gap={8}>
                           <Controller
                             control={control}
                             name="employmentTypeNegotiable"
                             render={({ field }) => (
-                              <CustomCheckbox
+                              <Checkbox
                                 checked={!field.value}
-                                onCheckedChange={(checked) => field.onChange(!checked)}
-                                size="medium"
+                                onChange={(checked: boolean) => field.onChange(!checked)}
+                                size="md"
                               />
                             )}
                           />
-                          <Text fontSize="$3" color="$color11">
-                            Non-negotiable
-                          </Text>
-                        </XStack>
-                      </YStack>
+                          <Text color="$gray11">Non-negotiable</Text>
+                        </Row>
+                      </Stack>
 
                       {/* Work Schedule */}
-                      <YStack gap="$2">
-                        <Text fontWeight="600" fontSize="$4">
-                          Work schedule
-                        </Text>
+                      <Stack gap={8}>
+                        <Text>Work schedule</Text>
                         <Controller
                           control={control}
                           name="workSchedule"
                           render={({ field }) => (
-                            <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
+                            <Row gap={8}>
                               {WORK_SCHEDULE_OPTIONS.map((option) => {
                                 const isSelected = field.value === option.value
                                 return (
                                   <Button
                                     key={option.value}
-                                    flex={1}
-                                    theme={isSelected ? 'blue' : 'gray'}
-                                    variant={isSelected ? undefined : 'outlined'}
+                                    style={{ flex: 1 }}
+                                    color={isSelected ? 'primary' : undefined}
+                                    variant={isSelected ? undefined : 'outline'}
                                     onPress={() => field.onChange(option.value)}
-                                    size="$4"
-                                    $sm={{ height: 48 }}
+                                    size="md"
                                   >
                                     {option.label}
                                   </Button>
                                 )
                               })}
-                            </XStack>
+                            </Row>
                           )}
                         />
-                      </YStack>
-                    </YStack>
+                      </Stack>
+                    </Stack>
 
                     <Separator />
 
                     {/* Compensation Section */}
-                    <YStack gap="$4">
-                      <Text fontSize="$6" fontWeight="700">
-                        Compensation
-                      </Text>
+                    <Stack gap={16}>
+                      <Text>Compensation</Text>
 
                       {/* Rate Type */}
-                      <YStack gap="$2">
-                        <Text fontWeight="600" fontSize="$4">
-                          Rate type
-                        </Text>
+                      <Stack gap={8}>
+                        <Text>Rate type</Text>
                         <Controller
                           control={control}
                           name="rateType"
                           render={({ field }) => (
-                            <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
+                            <Row gap={8}>
                               <Button
-                                flex={1}
-                                theme={field.value === 'hourly' ? 'blue' : 'gray'}
-                                variant={field.value === 'hourly' ? undefined : 'outlined'}
+                                style={{ flex: 1 }}
+                                color={field.value === 'hourly' ? 'primary' : undefined}
+                                variant={field.value === 'hourly' ? undefined : 'outline'}
                                 onPress={() => field.onChange('hourly')}
-                                size="$4"
-                                $sm={{ height: 48 }}
+                                size="md"
                               >
                                 Hourly
                               </Button>
                               <Button
-                                flex={1}
-                                theme={field.value === 'salary' ? 'blue' : 'gray'}
-                                variant={field.value === 'salary' ? undefined : 'outlined'}
+                                style={{ flex: 1 }}
+                                color={field.value === 'salary' ? 'primary' : undefined}
+                                variant={field.value === 'salary' ? undefined : 'outline'}
                                 onPress={() => field.onChange('salary')}
-                                size="$4"
-                                $sm={{ height: 48 }}
+                                size="md"
                               >
                                 Salary
                               </Button>
-                            </XStack>
+                            </Row>
                           )}
                         />
-                      </YStack>
+                      </Stack>
 
                       {/* Rate Range */}
-                      <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
-                        <YStack gap="$2" flex={1}>
-                          <Text fontWeight="600" fontSize="$4">
-                            Minimum rate
-                          </Text>
+                      <Row gap={8}>
+                        <Stack gap={8} flex={1}>
+                          <Text>Minimum rate</Text>
                           <Controller
                             control={control}
                             name="rateMinCents"
@@ -409,11 +369,9 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                               />
                             )}
                           />
-                        </YStack>
-                        <YStack gap="$2" flex={1}>
-                          <Text fontWeight="600" fontSize="$4">
-                            Maximum rate (optional)
-                          </Text>
+                        </Stack>
+                        <Stack gap={8} flex={1}>
+                          <Text>Maximum rate (optional)</Text>
                           <Controller
                             control={control}
                             name="rateMaxCents"
@@ -431,17 +389,15 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                               />
                             )}
                           />
-                        </YStack>
-                      </XStack>
-                    </YStack>
+                        </Stack>
+                      </Row>
+                    </Stack>
 
                     <Separator />
 
                     {/* Other Section */}
-                    <YStack gap="$4">
-                      <Text fontSize="$6" fontWeight="700">
-                        Additional Notes
-                      </Text>
+                    <Stack gap={16}>
+                      <Text>Additional Notes</Text>
                       <Controller
                         control={control}
                         name="additionalNotes"
@@ -450,62 +406,36 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                             placeholder="Add any additional information or requirements..."
                             value={field.value || ''}
                             onChangeText={field.onChange}
-                            numberOfLines={4}
-                            height={120}
+                            style={{ minHeight: 120 }}
                           />
                         )}
                       />
-                    </YStack>
+                    </Stack>
 
-                    {/* Form Actions */}
-                    <XStack
-                      gap="$3"
-                      padding="$4"
-                      backgroundColor="$background"
-                      borderTopWidth={1}
-                      borderTopColor="$borderColor"
-                      justifyContent="flex-end"
-                      $sm={{ flexDirection: 'column-reverse' }}
-                    >
-                      <Button
-                        variant="outlined"
-                        onPress={handleClose}
-                        disabled={isSubmitting}
-                        $sm={{ height: 48, flex: 1 }}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        onPress={onSubmit}
-                        disabled={isSubmitting}
-                        theme="blue"
-                        $sm={{ height: 48, flex: 1 }}
-                      >
-                        {isSubmitting
-                          ? 'Sending...'
-                          : `Send to ${applicationIds.length} Candidates`}
-                      </Button>
-                    </XStack>
-                  </YStack>
+                  </Stack>
                 </ScrollView>
-              </YStack>
+              </Stack>
 
               {/* Help Sidebar */}
-              <YStack
-                width={300}
-                padding="$4"
-                backgroundColor="$color2"
-                borderLeftWidth={1}
-                borderLeftColor="$borderColor"
-                $sm={{ display: 'none' }}
+              <Stack
+                style={{ width: 300, padding: 16, backgroundColor: '$color2', borderLeftWidth: 1, borderLeftColor: '$borderColor' }}
               >
                 <InquiryHelpSidebar />
-              </YStack>
-            </XStack>
-          </YStack>
+              </Stack>
+            </Row>
+          </Stack>
         </FormProvider>
-      </Sheet.Frame>
-      <Sheet.Overlay />
+      </SheetContent>
+      <SheetFooter align="space-between">
+        <Button variant="outline" onPress={handleClose} disabled={isSubmitting}>
+          Cancel
+        </Button>
+        <Button onPress={onSubmit} disabled={isSubmitting} color="primary">
+          {isSubmitting
+            ? 'Sending...'
+            : `Send to ${applicationIds.length} Candidates`}
+        </Button>
+      </SheetFooter>
     </Sheet>
   )
 }

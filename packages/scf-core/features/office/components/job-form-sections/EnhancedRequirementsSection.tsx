@@ -1,6 +1,15 @@
-import { Input, ResponsiveSelect, Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
+import {
+  Input,
+  ResponsiveSelect,
+  Text,
+  ToggleSwitch,
+  Row,
+  Stack,
+  useThemeContext,
+} from '@scaffald/ui'
 import { useState } from 'react'
-import { Label } from '@unicornlove/ui'
+import { Label } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface EnhancedRequirementsSectionProps {
   minimumEducationLevel?: 'none' | 'high_school' | 'associate' | 'bachelor' | 'master' | 'phd'
@@ -46,6 +55,7 @@ export function EnhancedRequirementsSection({
   shiftRequirements,
   onUpdate,
 }: EnhancedRequirementsSectionProps) {
+  const { theme } = useThemeContext()
   const [localState, setLocalState] = useState({
     minimum_education_level: minimumEducationLevel,
     require_background_check: requireBackgroundCheck,
@@ -68,23 +78,21 @@ export function EnhancedRequirementsSection({
   }
 
   return (
-    <YStack
-      gap="$4"
-      padding="$4"
-      backgroundColor="$background"
-      borderRadius="$4"
+    <Stack
+      gap={16}
+      padding="md"
+      style={{ backgroundColor: colors.bg[theme].default }}
+      borderRadius={16}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
     >
-      <Text fontSize="$6" fontWeight="600">
-        Enhanced Requirements
-      </Text>
-      <Text fontSize="$2" color="$color10">
+      <Text>Enhanced Requirements</Text>
+      <Text style={{ color: colors.text[theme].secondary }}>
         Additional job requirements and qualifications
       </Text>
 
       {/* Minimum Education Level */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Minimum education level</Label>
         <ResponsiveSelect
           value={localState.minimum_education_level || ''}
@@ -96,87 +104,87 @@ export function EnhancedRequirementsSection({
             label: level.label,
           }))}
         />
-      </YStack>
+      </Stack>
 
       {/* Background Check */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Require background check</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Background screening required for this position
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.require_background_check || false}
-          onCheckedChange={(checked) => handleChange('require_background_check', checked)}
+          onChange={(checked) => handleChange('require_background_check', checked)}
           aria-label="Require background check"
         />
-      </XStack>
+      </Row>
 
       {localState.require_background_check && (
-        <YStack gap="$2">
+        <Stack gap={8}>
           <Label>Background check type</Label>
           <Input
             placeholder="e.g. Criminal, Credit, Employment history"
             value={localState.background_check_type || ''}
             onChangeText={(text) => handleChange('background_check_type', text || undefined)}
           />
-        </YStack>
+        </Stack>
       )}
 
       {/* Drug Test */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Require drug test</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Pre-employment drug screening required
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.require_drug_test || false}
-          onCheckedChange={(checked) => handleChange('require_drug_test', checked)}
+          onChange={(checked) => handleChange('require_drug_test', checked)}
           aria-label="Require drug test"
         />
-      </XStack>
+      </Row>
 
       {/* Driver's License */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
-        <YStack gap="$1" flex={1}>
+      <Row gap={12} align="center" justify="space-between">
+        <Stack gap={4} flex={1}>
           <Label>Require driver's license</Label>
-          <Text fontSize="$2" color="$color10">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Valid driver's license required
           </Text>
-        </YStack>
+        </Stack>
         <ToggleSwitch
           checked={localState.require_drivers_license || false}
-          onCheckedChange={(checked) => handleChange('require_drivers_license', checked)}
+          onChange={(checked) => handleChange('require_drivers_license', checked)}
           aria-label="Require driver's license"
         />
-      </XStack>
+      </Row>
 
       {localState.require_drivers_license && (
-        <YStack gap="$2">
+        <Stack gap={8}>
           <Label>License type</Label>
           <Input
             placeholder="e.g. Class A CDL, Standard"
             value={localState.drivers_license_type || ''}
             onChangeText={(text) => handleChange('drivers_license_type', text || undefined)}
           />
-        </YStack>
+        </Stack>
       )}
 
       {/* Security Clearance */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Security clearance required</Label>
         <Input
           placeholder="e.g. Secret, Top Secret, Confidential"
           value={localState.security_clearance_required || ''}
           onChangeText={(text) => handleChange('security_clearance_required', text || undefined)}
         />
-      </YStack>
+      </Stack>
 
       {/* Travel Percentage */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Travel percentage (%)</Label>
         <Input
           placeholder="0-100"
@@ -189,20 +197,20 @@ export function EnhancedRequirementsSection({
             }
           }}
         />
-        <Text fontSize="$2" color="$color10">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Percentage of time spent traveling for work
         </Text>
-      </YStack>
+      </Stack>
 
       {/* Shift Requirements */}
-      <YStack gap="$2">
+      <Stack gap={8}>
         <Label>Shift requirements</Label>
         <Input
           placeholder="e.g. Day shift, Night shift, Rotating shifts"
           value={localState.shift_requirements || ''}
           onChangeText={(text) => handleChange('shift_requirements', text || undefined)}
         />
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

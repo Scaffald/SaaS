@@ -1,43 +1,41 @@
-import type {
-  IPIPAnswer,
-  IPIPScores,
-} from '@scf/core/features/personality-assessment/lib/ipip';
+import type { IPIPAnswer, IPIPScores } from '@scf/core/features/personality-assessment/lib/ipip'
+import { getResults, getScore } from '@scf/core/features/personality-assessment/lib/ipip'
 import {
-  getResults,
-  getScore,
-} from '@scf/core/features/personality-assessment/lib/ipip';
-import { api } from '@scf/core/utils/api';
-import { useMemo } from 'react';
-import { normalizeScores } from '../utils/scoreNormalizer';
+  useAssessmentStatus,
+  useGetArchetype,
+} from '@scf/core/utils/personality-assessment-sdk-hooks'
+import type { AssessmentStatus } from '@scaffald/sdk'
+import { useMemo } from 'react'
+import { normalizeScores } from '../utils/scoreNormalizer'
 
-const RESULTS_STALE_TIME_MS = 1000 * 60 * 5; // 5 minutes
-const RESULTS_CACHE_TIME_MS = 1000 * 60 * 30; // 30 minutes
+const RESULTS_STALE_TIME_MS = 1000 * 60 * 5 // 5 minutes
+const RESULTS_CACHE_TIME_MS = 1000 * 60 * 30 // 30 minutes
 
 export interface IPIPResultsData {
-  scores: IPIPScores | null;
-  normalizedScores: ReturnType<typeof normalizeScores> | null;
-  narratives: ReturnType<typeof getResults> | null;
+  scores: IPIPScores | null
+  normalizedScores: ReturnType<typeof normalizeScores> | null
+  narratives: ReturnType<typeof getResults> | null
   archetype: {
-    name: string;
-    confidence: number;
+    name: string
+    confidence: number
     details: {
-      name: string;
-      description: string;
-      strengths: string[];
-      work_styles: string;
-      team_dynamics: string;
-      growth_areas: string[];
-    } | null;
-  } | null;
-  isComplete: boolean;
-  completedDomains: number;
-  nextAvailableAt: string | null | undefined;
-  isLoading: boolean;
-  error: Error | null;
-  hasPartialResults: boolean;
-  scoringError: Error | null;
-  normalizationError: Error | null;
-  narrativeError: Error | null;
+      name: string
+      description: string
+      strengths: string[]
+      work_styles: string
+      team_dynamics: string
+      growth_areas: string[]
+    } | null
+  } | null
+  isComplete: boolean
+  completedDomains: number
+  nextAvailableAt: string | null | undefined
+  isLoading: boolean
+  error: Error | null
+  hasPartialResults: boolean
+  scoringError: Error | null
+  normalizationError: Error | null
+  narrativeError: Error | null
 }
 
 /**
@@ -45,93 +43,84 @@ export interface IPIPResultsData {
  */
 export function useIPIPResults(): IPIPResultsData {
   const {
-    data: assessment,
+    data: assessmentData,
     isLoading: assessmentLoading,
     error: assessmentError,
-  } = api.personalityAssessment.getAssessmentStatus.useQuery(undefined, {
+  } = useAssessmentStatus()
+
+  const assessment = (assessmentData as { data?: AssessmentStatus } | undefined)?.data
+
+  const { data: archetypeData, isLoading: archetypeLoading } = useGetArchetype({
+    enabled: !!assessment?.ipip_completed_at,
     staleTime: RESULTS_STALE_TIME_MS,
     gcTime: RESULTS_CACHE_TIME_MS,
-    refetchOnWindowFocus: false,
-  });
+  })
 
-  const { data: archetypeData, isLoading: archetypeLoading } = api
-    .personalityAssessment.getArchetype.useQuery(undefined, {
-      enabled: !!assessment?.ipip_completed_at,
-      staleTime: RESULTS_STALE_TIME_MS,
-      gcTime: RESULTS_CACHE_TIME_MS,
-      refetchOnWindowFocus: false,
-    });
-
-  const answers = (assessment?.ipip_answers as IPIPAnswer[]) || [];
-  const isComplete = answers.length >= 120;
-  const completedDomains = Math.floor(answers.length / 24);
-  const hasPartialResults = answers.length > 0 && answers.length < 120;
+  const answers = (assessment?.ipip_answers as IPIPAnswer[]) || []
+  const isComplete = answers.length >= 120
+  const completedDomains = Math.floor(answers.length / 24)
+  const hasPartialResults = answers.length > 0 && answers.length < 120
 
   // Calculate scores if we have answers
-  const scoresResult = useMemo<
-    { scores: IPIPScores | null; error: Error | null }
-  >(() => {
-    if (answers.length === 0) return { scores: null, error: null };
+  const scoresResult = useMemo<{ scores: IPIPScores | null; error: Error | null }>(() => {
+    if (answers.length === 0) return { scores: null, error: null }
     try {
-      const calculatedScores = getScore({ answers });
-      return { scores: calculatedScores, error: null };
+      const calculatedScores = getScore({ answers })
+      return { scores: calculatedScores, error: null }
     } catch (error) {
-      console.error("Error calculating IPIP scores:", error);
-      const scoringError = error instanceof Error
-        ? error
-        : new Error("Failed to calculate personality scores");
-      return { scores: null, error: scoringError };
+      console.error('Error calculating IPIP scores:', error)
+      const scoringError =
+        error instanceof Error ? error : new Error('Failed to calculate personality scores')
+      return { scores: null, error: scoringError }
     }
-  }, [answers]);
+  }, [answers])
 
-  const scores = scoresResult.scores;
-  const scoringError = scoresResult.error;
+  const scores = scoresResult.scores
+  const scoringError = scoresResult.error
 
   // Normalize scores to 0-100 scale
   const normalizedResult = useMemo(() => {
-    if (!scores) return { normalizedScores: null, error: null };
+    if (!scores) return { normalizedScores: null, error: null }
     try {
-      const normalized = normalizeScores(scores);
-      return { normalizedScores: normalized, error: null };
+      const normalized = normalizeScores(scores)
+      return { normalizedScores: normalized, error: null }
     } catch (error) {
-      console.error("Error normalizing scores:", error);
-      const normalizationError = error instanceof Error
-        ? error
-        : new Error("Failed to normalize scores");
-      return { normalizedScores: null, error: normalizationError };
+      console.error('Error normalizing scores:', error)
+      const normalizationError =
+        error instanceof Error ? error : new Error('Failed to normalize scores')
+      return { normalizedScores: null, error: normalizationError }
     }
-  }, [scores]);
+  }, [scores])
 
-  const normalizedScores = normalizedResult.normalizedScores;
-  const normalizationError = normalizedResult.error;
+  const normalizedScores = normalizedResult.normalizedScores
+  const normalizationError = normalizedResult.error
 
   // Load narrative content
   const narrativeResult = useMemo(() => {
     try {
-      const loadedNarratives = getResults();
-      return { narratives: loadedNarratives, error: null };
+      const loadedNarratives = getResults()
+      return { narratives: loadedNarratives, error: null }
     } catch (error) {
-      console.error("Error loading narratives:", error);
-      const narrativeError = error instanceof Error
-        ? error
-        : new Error("Failed to load narrative content");
-      return { narratives: null, error: narrativeError };
+      console.error('Error loading narratives:', error)
+      const narrativeError =
+        error instanceof Error ? error : new Error('Failed to load narrative content')
+      return { narratives: null, error: narrativeError }
     }
-  }, []);
+  }, [])
 
-  const narratives = narrativeResult.narratives;
-  const narrativeError = narrativeResult.error;
+  const narratives = narrativeResult.narratives
+  const narrativeError = narrativeResult.error
 
   // Format archetype data
   const archetype = useMemo(() => {
-    if (!archetypeData) return null;
+    if (!archetypeData) return null
 
     return {
-      name: archetypeData.archetype || "",
+      name: archetypeData.archetype || '',
       confidence: archetypeData.confidence || 0,
       details: archetypeData.details,
-    };
-  }, [archetypeData]);
+    }
+  }, [archetypeData])
 
   return {
     scores,
@@ -147,5 +136,5 @@ export function useIPIPResults(): IPIPResultsData {
     scoringError,
     normalizationError,
     narrativeError,
-  };
+  }
 }

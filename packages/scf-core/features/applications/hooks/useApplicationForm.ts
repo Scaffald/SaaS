@@ -1,4 +1,8 @@
-import { api } from '@scf/core/utils/api'
+import {
+  useCreateJobApplicationMutation,
+  useMyApplicationForJob,
+  useUpdateJobApplicationMutation,
+} from '@scf/core/utils/jobs-sdk-hooks'
 import type {
   ApplicationCreateInput,
   ApplicationStepType,
@@ -44,37 +48,34 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
     applicationId: existingApplicationId,
   })
 
-  // API mutations
-  const submitMutation = api.applications.submit.useMutation()
-  const createDraftMutation = api.jobs.createApplication.useMutation()
-  const updateMutation = api.jobs.updateApplication.useMutation()
-  const updateStepMutation = api.applications.updateStep.useMutation()
+  // API mutations (now fully SDK-based)
+  const submitMutation = useCreateJobApplicationMutation()
+  const createDraftMutation = useCreateJobApplicationMutation()
+  const updateMutation = useUpdateJobApplicationMutation()
+  const updateStepMutation = useUpdateJobApplicationMutation()
 
-  // Load existing application data if in edit mode
-  const { data: existingApp } = api.jobs.getMyApplicationForJob.useQuery(
-    { job_id: jobId },
-    { enabled: !existingApplicationId && !!jobId }
-  )
+  // Load existing application data if in edit mode (SDK)
+  const { data: existingApp } = useMyApplicationForJob(jobId, {
+    enabled: !existingApplicationId && !!jobId,
+  })
 
   // Pre-populate form with existing data when available
   useEffect(() => {
-    if (existingApp?.application) {
+    if (existingApp) {
       setState((prev) => ({
         ...prev,
-        applicationId: existingApp.application.id,
+        applicationId: existingApp.id,
         screeningAnswers: {
-          current_location: existingApp.application.current_location || '',
-          willing_to_relocate: existingApp.application.willing_to_relocate || false,
-          years_experience: existingApp.application.years_experience || 0,
-          is_authorized_to_work: existingApp.application.is_authorized_to_work || false,
-          earliest_start_date: existingApp.application.earliest_start_date || '',
+          current_location: existingApp.current_location || '',
+          willing_to_relocate: existingApp.willing_to_relocate ?? false,
+          years_experience: existingApp.years_experience ?? 0,
+          is_authorized_to_work: existingApp.is_authorized_to_work ?? false,
+          earliest_start_date: existingApp.earliest_start_date || '',
         },
-        customQuestionAnswers: existingApp.application.custom_question_answers || [],
-        attachments: existingApp.application.attachments || {},
-        isDirty: false, // Loaded data is clean
-        lastSavedAt: existingApp.application.updated_at
-          ? new Date(existingApp.application.updated_at)
-          : null,
+        customQuestionAnswers: existingApp.custom_question_answers || [],
+        attachments: existingApp.attachments || {},
+        isDirty: false,
+        lastSavedAt: existingApp.updated_at ? new Date(existingApp.updated_at) : null,
       }))
     }
   }, [existingApp])
@@ -101,10 +102,10 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
         is_complete: false, // Draft, not complete
       }
 
-      // Use createApplication for drafts (accepts optional fields)
+      // Use SDK applications.create for drafts
       const result = await createDraftMutation.mutateAsync(draftData)
 
-      const applicationId = result?.application?.id
+      const applicationId = result?.id
       if (!applicationId) {
         throw new Error('Failed to create application: no ID returned')
       }
@@ -128,7 +129,7 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
       }))
       throw error
     }
-  }, [jobId, state, createDraftMutation.mutateAsync])
+  }, [jobId, state, createDraftMutation.mutateAsync, createDraftMutation])
 
   /**
    * Save progress for current step
@@ -164,9 +165,11 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
       })
 
       await updateStepMutation.mutateAsync({
-        application_id: appId,
-        step: state.currentStep,
-        data,
+        id: appId,
+        params: {
+          ...data,
+          completed_steps: [...state.completedSteps, state.currentStep],
+        } as Parameters<typeof updateStepMutation.mutateAsync>[0]['params'],
       })
 
       setState((prev) => ({
@@ -345,10 +348,9 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
     setState((prev) => ({ ...prev, isSaving: true }))
 
     try {
-      // If we have an applicationId, update existing application
+      // If we have an applicationId, update existing application (SDK)
       if (state.applicationId) {
-        const updateData = {
-          id: state.applicationId,
+        const params = {
           current_location: state.screeningAnswers.current_location,
           willing_to_relocate: state.screeningAnswers.willing_to_relocate,
           years_experience: state.screeningAnswers.years_experience,
@@ -358,7 +360,10 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
           attachments: state.attachments,
         }
 
-        const result = await updateMutation.mutateAsync(updateData)
+        const result = await updateMutation.mutateAsync({
+          id: state.applicationId,
+          params,
+        })
 
         setState((prev) => ({
           ...prev,

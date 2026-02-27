@@ -1,7 +1,7 @@
 // src/pages/gc/settings/TeamSettings.tsx
 import { useState } from 'react';
-import { Stack, Row, Button, SettingsTeamTable, SettingsSectionHeader } from '@unicornlove/beyond-ui';
-import type { TeamMember } from '@unicornlove/beyond-ui';
+import { Stack, Row, Button, SettingsTeamTable, SettingsSectionHeader } from '@scaffald/ui';
+import type { TeamMember } from '@scaffald/ui';
 import { PlusCircle, Users } from 'lucide-react-native';
 
 const mockTeamMembers: TeamMember[] = [

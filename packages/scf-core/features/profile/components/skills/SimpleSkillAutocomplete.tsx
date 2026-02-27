@@ -1,6 +1,7 @@
-import { X } from '@tamagui/lucide-icons'
+import { X } from 'lucide-react-native'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, Card, Input, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Pressable } from 'react-native'
+import { Button, Card, Input, ScrollView, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import type { ParentSkill } from '../../types/profile-skills-types'
 
 // Local debounce hook to avoid dependency issues
@@ -108,8 +109,8 @@ export function SimpleSkillAutocomplete({
   )
 
   return (
-    <YStack gap="$2" style={{ zIndex: 1000 }}>
-      <YStack position="relative">
+    <Stack gap={8} style={{ zIndex: 1000 }}>
+      <Stack style={{ position: 'relative' }}>
         <Input
           value={value}
           onChangeText={(text) => {
@@ -117,93 +118,70 @@ export function SimpleSkillAutocomplete({
             if (text.length >= 2) setShowResults(true)
           }}
           placeholder={placeholder}
-          paddingRight={40}
-          size="$4"
-          borderColor="$borderColor"
-          focusStyle={{ borderColor: '$blue9' }}
         />
 
         {value.length > 0 && (
           <Button
-            position="absolute"
-            right={4}
-            top={4}
-            bottom={4}
-            size="$2"
-            circular
-            chromeless
+            style={{ position: 'absolute', right: 4, top: 4, bottom: 4 }}
+            size="sm"
+            variant="text"
             onPress={() => {
               onChangeText('')
               setShowResults(false)
             }}
-            icon={X}
+            iconStart={X}
           />
         )}
-      </YStack>
+      </Stack>
 
       {/* Results Dropdown */}
       {showResults && (value.length >= 2 || results.length > 0) && (
         <Card
           bordered
           elevate
-          position="absolute"
-          top="100%"
-          left={0}
-          right={0}
-          marginTop={4}
-          maxHeight={300}
-          zIndex={2000}
-          backgroundColor="$background"
+          style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4, maxHeight: 300, zIndex: 2000 }}
         >
           <ScrollView>
-            <YStack>
+            <Stack>
               {isLoading || isSearching ? (
-                <YStack padding="$4" alignItems="center" justifyContent="center">
-                  <Spinner size="small" />
-                  <Text fontSize="$2" color="$color11" marginTop="$2">
+                <Stack padding="md" align="center" justify="center">
+                  <Spinner size="sm" />
+                  <Text color="$gray11" style={{ marginTop: 8 }}>
                     Searching...
                   </Text>
-                </YStack>
+                </Stack>
               ) : results.length > 0 ? (
                 results.map((skill) => {
                   const isExisting = existingSkillIds.includes(skill.id)
                   return (
-                    <YStack
+                    <Pressable
                       key={skill.id}
-                      padding="$3"
-                      pressStyle={{ backgroundColor: '$backgroundHover' }}
                       onPress={() => handleSelect(skill)}
-                      borderBottomWidth={1}
-                      borderBottomColor="$borderColor"
-                      opacity={isExisting ? 0.6 : 1}
+                      style={{ opacity: isExisting ? 0.6 : 1, borderBottomWidth: 1, borderBottomColor: '$borderColor' }}
                     >
-                      <XStack justifyContent="space-between" alignItems="center">
-                        <YStack flex={1}>
-                          <Text fontWeight="600">{skill.name}</Text>
-                          {skill.code && (
-                            <Text fontSize="$2" color="$color11">
-                              {skill.code}
-                            </Text>
-                          )}
-                        </YStack>
-                        {isExisting && (
-                          <Text fontSize="$2" color="$blue9" fontWeight="600">
-                            Added
-                          </Text>
-                        )}
-                      </XStack>
-                    </YStack>
+                    <Stack
+                      padding="sm"
+                    >
+                      <Row justify="space-between" align="center">
+                        <Stack flex={1}>
+                          <Text>{skill.name}</Text>
+                          {skill.code && <Text color="$gray11">{skill.code}</Text>}
+                        </Stack>
+                        {isExisting && <Text color="$blue9">Added</Text>}
+                      </Row>
+                    </Stack>
+                    </Pressable>
                   )
                 })
               ) : (
-                <YStack padding="$4" alignItems="center">
-                  <Text color="$color11">No skills found</Text>
-                </YStack>
+                <Stack padding="md" align="center">
+                  <Text color="$gray11">No skills found</Text>
+                </Stack>
               )}
-            </YStack>
+            </Stack>
           </ScrollView>
         </Card>
       )}
-    </YStack>
+    </Stack>
   )
 }

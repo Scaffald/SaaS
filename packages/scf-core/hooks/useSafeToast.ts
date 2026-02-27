@@ -1,16 +1,16 @@
-import { useToastController, useToastState } from '@tamagui/toast'
+import { useToast } from '@scaffald/ui'
 import { Alert, Platform } from 'react-native'
 
 /**
  * Safe toast hook that handles React Native platform differences
- * 
- * Wraps Tamagui's toast controller to gracefully handle cases where
+ *
+ * Wraps beyond-ui's toast hook to gracefully handle cases where
  * window.addEventListener is not available (React Native).
- * 
+ *
  * Falls back to React Native Alert on native platforms if toast fails.
  */
 export function useSafeToast() {
-  const toast = useToastController()
+  const toast = useToast()
 
   const show = (
     title: string,
@@ -26,16 +26,23 @@ export function useSafeToast() {
 
     // On native platforms, use Alert directly if window is not available
     if (isNative && !hasWindow) {
-      const message = options?.message
-        ? `${title}: ${options.message}`
-        : title
+      const message = options?.message ? `${title}: ${options.message}` : title
       Alert.alert(title, message)
       return
     }
 
     // Try to use toast, but catch any errors
     try {
-      toast.show(title, options)
+      // Map type to variant for beyond-ui
+      const variant =
+        options?.type === 'error' ? 'error' : options?.type === 'success' ? 'success' : 'info'
+
+      toast.show({
+        title,
+        message: options?.message ?? title,
+        duration: options?.duration,
+        variant,
+      })
     } catch (error) {
       // Handle case where window.addEventListener is not available (React Native)
       if (
@@ -46,9 +53,7 @@ export function useSafeToast() {
       ) {
         // Fallback to React Native Alert on native platforms
         if (Platform.OS !== 'web') {
-          const message = options?.message
-            ? `${title}: ${options.message}`
-            : title
+          const message = options?.message ? `${title}: ${options.message}` : title
           Alert.alert(title, message)
         } else {
           // On web, log the error but don't crash
@@ -62,9 +67,5 @@ export function useSafeToast() {
     }
   }
 
-  // Use useToastState to get current toast data if needed
-  const currentToast = useToastState()
-
-  return { show, hide: toast.hide, currentToast }
+  return { show, hide: toast.dismissAll }
 }
-

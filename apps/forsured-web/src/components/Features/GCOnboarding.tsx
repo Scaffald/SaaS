@@ -12,7 +12,7 @@ import {
   AlertTriangle,
   Info,
 } from 'lucide-react';
-import { Stack, Row, Text, H1, H2, H3, Card, Button, Input } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H1, H2, H3, Card, Button, Input } from '@scaffald/ui';
 
 interface CompanyInfo {
   companyName: string;

@@ -1,139 +1,115 @@
 import { RouteBuilder } from '@scf/core/constants/routes'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
-import { api } from '@scf/core/utils/api'
-import type { AppRouter } from '@scf/supabase/client-types'
-import { Users } from '@tamagui/lucide-icons'
-import type { inferRouterOutputs } from '@trpc/server'
+import { Users } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-
-type TeamsListOutput = inferRouterOutputs<AppRouter>['teams']['list']
-type TeamRecord = NonNullable<TeamsListOutput['teams']>[number]
+import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { useTeams } from '@scaffald/sdk/react'
+import type { Team } from '@scaffald/sdk'
 
 export default function DashboardTeamsIndexPage() {
   const router = useRouter()
-  const { data, isLoading, error, refetch, isRefetching } = api.teams.list.useQuery({
+  const { data, isLoading, error, refetch, isRefetching } = useTeams({
     includeArchived: false,
   })
 
-  const teams = useMemo<TeamRecord[]>(() => (data?.teams ?? []) as TeamRecord[], [data?.teams])
+  const teams = useMemo<Team[]>(() => data?.teams ?? [], [data?.teams])
 
   const mainContent = (
-    <YStack gap="$4">
-      <XStack justifyContent="space-between" alignItems="center">
-        <YStack gap="$1">
-          <Text fontSize="$7" fontWeight="700">
-            Teams
-          </Text>
-          <Text color="$color11">
+    <Stack gap={16}>
+      <Row justify="space-between" align="center">
+        <Stack gap={4}>
+          <Text>Teams</Text>
+          <Text color="gray">
             View the teams you collaborate with and access shared hiring workspaces.
           </Text>
-        </YStack>
+        </Stack>
         <Button
-          variant="outlined"
-          size="$3"
+          variant="outline"
+          size="md"
           onPress={() => router.push(RouteBuilder.dashboardTeamsInvitations())}
         >
           Manage invitations
         </Button>
-      </XStack>
+      </Row>
 
       {isLoading || isRefetching ? (
-        <YStack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
-          <Spinner size="large" />
-          <Text color="$color11">Loading your teams…</Text>
-        </YStack>
+        <Stack align="center" justify="center" gap={8}>
+          <Spinner size="lg" />
+          <Text color="gray">Loading your teams…</Text>
+        </Stack>
       ) : error ? (
-        <YStack
-          gap="$3"
-          borderWidth={1}
-          borderColor="$red8"
-          borderRadius="$4"
-          padding="$4"
-          backgroundColor="$red2"
-        >
-          <Text fontWeight="600" color="$red11">
-            Unable to load teams
-          </Text>
-          <Text color="$red10">
+        <Stack gap={12} padding={16}>
+          <Text color="red">Unable to load teams</Text>
+          <Text color="red">
             {error.message ?? 'An unexpected error occurred while loading your teams.'}
           </Text>
-          <Button size="$3" onPress={() => refetch()}>
+          <Button size="md" onPress={() => refetch()}>
             Try again
           </Button>
-        </YStack>
+        </Stack>
       ) : teams.length === 0 ? (
-        <YStack
-          gap="$3"
-          borderWidth={1}
-          borderColor="$borderColor"
-          borderRadius="$4"
-          padding="$4"
-          backgroundColor="$color2"
-        >
-          <Text fontWeight="600">No teams yet</Text>
-          <Text color="$color11">
+        <Stack gap={12} padding={16}>
+          <Text>No teams yet</Text>
+          <Text color="gray">
             You&apos;re not part of any teams yet. Accept invitations from your inbox or reach out
             to an administrator to be added.
           </Text>
           <Button
-            size="$3"
-            variant="outlined"
+            size="md"
+            variant="outline"
             onPress={() => router.push(RouteBuilder.dashboardTeamsInvitations())}
           >
             View invitations
           </Button>
-        </YStack>
+        </Stack>
       ) : (
-        <YStack gap="$3">
+        <Stack gap={12}>
           {teams.map((team) => {
             const formattedPurpose = team.purpose
               ? team.purpose.replace(/^\w/, (char: string) => char.toUpperCase())
               : 'General'
 
             return (
-              <Card key={team.id} padding="$4" borderWidth={1} borderColor="$borderColor" gap="$3">
-                <XStack gap="$3" alignItems="center">
-                  <Users size={20} />
-                  <Text fontSize="$5" fontWeight="700">
-                    {team.name || 'Untitled team'}
-                  </Text>
-                </XStack>
-                {team.description ? (
-                  <Text color="$color11">{team.description}</Text>
-                ) : (
-                  <Text color="$color11">No description provided for this team.</Text>
-                )}
-                <XStack gap="$3" alignItems="center">
-                  <Text color="$color10" fontSize="$3">
-                    {formattedPurpose}
-                  </Text>
-                  <Text color="$color10" fontSize="$3">
-                    Visibility: {team.visibility === 'private' ? 'Private' : 'Organization'}
-                  </Text>
-                </XStack>
-                <XStack gap="$2">
-                  <Button
-                    size="$3"
-                    onPress={() => router.push(RouteBuilder.dashboardTeamDetail(team.id))}
-                  >
-                    Open team
-                  </Button>
-                  <Button
-                    size="$3"
-                    variant="outlined"
-                    onPress={() => router.push(RouteBuilder.dashboardTeamsInvitations())}
-                  >
-                    View invitations
-                  </Button>
-                </XStack>
+              <Card key={team.id} padding="md">
+                <Stack gap={12}>
+                  <Row gap={12} align="center">
+                    <Users size={20} />
+                    <Text>{team.name || 'Untitled team'}</Text>
+                  </Row>
+                  {team.description ? (
+                    <Text color="gray">{team.description}</Text>
+                  ) : (
+                    <Text color="gray">No description provided for this team.</Text>
+                  )}
+                  <Row gap={12} align="center">
+                    <Text color="gray">{formattedPurpose}</Text>
+                    <Text color="gray">
+                      Visibility: {team.visibility === 'private' ? 'Private' : 'Organization'}
+                    </Text>
+                  </Row>
+                  <Row gap={8}>
+                    <Button
+                      size="md"
+                      onPress={() => router.push(RouteBuilder.dashboardTeamDetail(team.id))}
+                    >
+                      Open team
+                    </Button>
+                    <Button
+                      size="md"
+                      variant="outline"
+                      onPress={() => router.push(RouteBuilder.dashboardTeamsInvitations())}
+                    >
+                      View invitations
+                    </Button>
+                  </Row>
+                </Stack>
               </Card>
             )
           })}
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 
   return <DashboardPage leftContent={mainContent} showBreadcrumb={false} rightContent={null} />

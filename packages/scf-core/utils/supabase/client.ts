@@ -2,6 +2,7 @@ import type { Database } from '@scf/supabase/types'
 import { createClient } from '@supabase/supabase-js'
 import Constants from 'expo-constants'
 import { Platform } from 'react-native'
+import { logger } from '../logger'
 
 // Platform-specific imports
 type AsyncStorageType = typeof import('@react-native-async-storage/async-storage').default
@@ -14,18 +15,20 @@ if (Platform.OS === 'web') {
   // Native: Use AsyncStorage
   void import('react-native-url-polyfill/auto') // Required for React Native
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const AsyncStorage = require('@react-native-async-storage/async-storage').default as AsyncStorageType
+  const AsyncStorage = require('@react-native-async-storage/async-storage')
+    .default as AsyncStorageType
   storage = AsyncStorage
 }
 
 // Environment variables validation
-const supabaseExtra = (Constants?.expoConfig?.extra as {
-  supabase?: { url?: string; anonKey?: string }
-})?.supabase
+const supabaseExtra = (
+  Constants?.expoConfig?.extra as {
+    supabase?: { url?: string; anonKey?: string }
+  }
+)?.supabase
 
 const resolvedSupabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL ?? supabaseExtra?.url
-const resolvedSupabaseAnonKey =
-  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? supabaseExtra?.anonKey
+const resolvedSupabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? supabaseExtra?.anonKey
 
 if (!resolvedSupabaseUrl) {
   throw new Error(
@@ -42,9 +45,14 @@ if (!resolvedSupabaseAnonKey) {
 const supabaseUrl = resolvedSupabaseUrl
 const supabaseAnonKey = resolvedSupabaseAnonKey
 
-// Debug logging
-console.log(`[${Platform.OS}] Supabase URL:`, supabaseUrl)
-console.log(`[${Platform.OS}] Supabase Key:`, supabaseAnonKey ? 'Present' : 'Missing')
+// Debug logging (development only)
+if (__DEV__) {
+  logger.debug('Supabase client initialized', {
+    platform: Platform.OS,
+    hasUrl: !!supabaseUrl,
+    hasKey: !!supabaseAnonKey,
+  })
+}
 
 // Create unified Supabase client with platform-specific storage
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {

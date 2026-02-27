@@ -1,6 +1,7 @@
 import type { ApplicationStepType } from '@scf/schemas'
-import { CheckCircle2 } from '@tamagui/lucide-icons'
-import { Text, XStack, YStack } from '@unicornlove/ui'
+import { CheckCircle2 } from 'lucide-react-native'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 export interface ProgressIndicatorProps {
   /**
@@ -38,6 +39,8 @@ export interface ProgressIndicatorProps {
  * - Accessibility support
  */
 export function ProgressIndicator({ currentStep, completedSteps, steps }: ProgressIndicatorProps) {
+  const { theme } = useThemeContext()
+
   const getStepStatus = (stepId: ApplicationStepType): 'completed' | 'current' | 'upcoming' => {
     if (completedSteps.includes(stepId)) return 'completed'
     if (stepId === currentStep) return 'current'
@@ -45,11 +48,11 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
   }
 
   return (
-    <XStack
-      gap="$2"
-      alignItems="center"
-      flexWrap="wrap"
-      padding="$4"
+    <Row
+      gap={8}
+      align="center"
+      wrap
+      padding="md"
       role="progressbar"
       aria-label="Application progress"
       aria-valuenow={steps.findIndex((s) => s.id === currentStep) + 1}
@@ -72,80 +75,99 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
           })
 
         return (
-          <XStack key={step.id} gap="$2" alignItems="center" flex={1} minWidth={0}>
+          <Row key={step.id} gap={8} align="center" flex={1} minWidth={0}>
             {/* Step Circle */}
-            <YStack gap="$2" alignItems="center" flexShrink={0}>
+            <Stack gap={8} align="center" flexShrink={0}>
               {status === 'completed' ? (
-                <YStack
+                <Stack
                   width={32}
                   height={32}
-                  borderRadius="$10"
-                  backgroundColor="$blue9"
-                  alignItems="center"
-                  justifyContent="center"
-                  borderWidth={2}
-                  borderColor="$blue10"
-                  shadowColor="$blue9"
-                  shadowOffset={{ width: 0, height: 2 }}
-                  shadowOpacity={0.2}
-                  shadowRadius={4}
+                  borderRadius={16}
+                  style={{
+                    backgroundColor: colors.bg[theme].default,
+                    borderColor: theme === "light" ? colors.blue[300] : colors.blue[700],
+                    shadowColor: colors.bg[theme].default,
+                    borderWidth: 2,
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 4,
+                  }}
+                  align="center"
+                  justify="center"
                 >
-                  <CheckCircle2 size={20} color="$color12" />
-                </YStack>
+                  <CheckCircle2 size={20} color={colors.text[theme].secondary} />
+                </Stack>
               ) : (
-                <YStack
+                <Stack
                   width={32}
                   height={32}
-                  borderRadius="$10"
-                  backgroundColor={status === 'current' ? '$blue9' : '$gray4'}
-                  alignItems="center"
-                  justifyContent="center"
-                  borderWidth={status === 'current' ? 2 : 1}
-                  borderColor={status === 'current' ? '$blue10' : '$gray7'}
-                  shadowColor={status === 'current' ? '$blue9' : undefined}
-                  shadowOffset={status === 'current' ? { width: 0, height: 2 } : undefined}
-                  shadowOpacity={status === 'current' ? 0.2 : undefined}
-                  shadowRadius={status === 'current' ? 4 : undefined}
+                  borderRadius={16}
+                  style={{
+                    backgroundColor:
+                      status === 'current' ? colors.bg[theme].default : colors.bg[theme].muted,
+                    borderColor:
+                      status === 'current'
+                        ? theme === "light" ? colors.blue[300] : colors.blue[700]
+                        : colors.border[theme].subtle,
+                    shadowColor: status === 'current' ? colors.bg[theme].default : undefined,
+                    borderWidth: status === 'current' ? 2 : 1,
+                    ...(status === 'current' && {
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.2,
+                      shadowRadius: 4,
+                    }),
+                  }}
+                  align="center"
+                  justify="center"
                 >
                   <Text
-                    fontSize="$4"
-                    fontWeight="600"
-                    color={status === 'current' ? '$color12' : '$gray11'}
+                    style={{
+                      color:
+                        status === 'current'
+                          ? colors.text[theme].primary
+                          : colors.text[theme].secondary,
+                    }}
                   >
                     {stepNumber}
                   </Text>
-                </YStack>
+                </Stack>
               )}
 
               {/* Step Label */}
               <Text
-                fontSize="$3"
-                fontWeight={status === 'current' ? '600' : '400'}
-                color={
-                  status === 'current' ? '$blue10' : status === 'completed' ? '$gray11' : '$gray10'
-                }
-                textAlign="center"
-                maxWidth={100}
-                numberOfLines={1}
+                style={{
+                  color:
+                    status === 'current'
+                      ? theme === "light" ? colors.blue[700] : colors.blue[300]
+                      : status === 'completed'
+                        ? colors.text[theme].secondary
+                        : colors.text[theme].tertiary,
+                  maxWidth: 100,
+                }}
+                align="center"
                 ellipsizeMode="tail"
               >
                 {step.label}
               </Text>
-            </YStack>
+            </Stack>
 
             {/* Connector Line */}
             {!isLast && (
-              <YStack
+              <Stack
                 flex={1}
                 height={2}
-                backgroundColor={isLineCompleted ? '$blue9' : '$gray4'}
-                marginHorizontal="$2"
+                style={{
+                  backgroundColor: isLineCompleted
+                    ? colors.bg[theme].default
+                    : colors.bg[theme].muted,
+                }}
+                marginHorizontal={8}
                 minWidth={20}
               />
             )}
-          </XStack>
+          </Row>
         )
       })}
-    </XStack>
+    </Row>
   )
 }

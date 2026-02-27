@@ -1,6 +1,6 @@
 /**
  * Task Router
- * REQ-286: Additional tRPC Routers - Task Management
+ * Additional tRPC Routers - Task Management
  *
  * Implements task management procedures replacing src/lib/api/taskService.ts
  * with type-safe tRPC procedures using Supabase backend.

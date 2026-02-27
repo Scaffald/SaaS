@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react'
-import { ScrollView, XStack, YStack } from '@unicornlove/ui'
-import { Breadcrumb, type BreadcrumbItem } from '@unicornlove/ui'
+import { ScrollView, StyleSheet } from 'react-native'
+import { Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
+import { Breadcrumb, type BreadcrumbItemData } from '@scaffald/ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 
 type DashboardLayoutProps = {
@@ -9,7 +11,7 @@ type DashboardLayoutProps = {
   /** Whether to show breadcrumb navigation (default: true) */
   showBreadcrumb?: boolean
   /** Manual breadcrumb items to override auto-generation */
-  breadcrumbItems?: BreadcrumbItem[]
+  breadcrumbItems?: BreadcrumbItemData[]
   /** Whether to auto-generate breadcrumbs from route (default: true) */
   autoGenerateBreadcrumbs?: boolean
 }
@@ -30,56 +32,31 @@ export const DashboardLayout = ({
   // Determine which breadcrumbs to display
   const displayBreadcrumbs = breadcrumbItems || breadcrumbs
 
-  const hasBothColumns = Boolean(leftContent) && Boolean(rightContent)
+  // Calculate current index (last item is always active)
+  const currentIndex = displayBreadcrumbs.length - 1
+
+  const _hasBothColumns = Boolean(leftContent) && Boolean(rightContent)
 
   return (
-    <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
-      <YStack gap="$3" paddingTop="$3" paddingBottom="$5">
+    <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+      <Stack gap={12} paddingTop="sm" paddingBottom="lg">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
-          <XStack paddingHorizontal="$2" paddingTop="$3" $md={{ paddingHorizontal: '$7' }}>
-            <Breadcrumb items={displayBreadcrumbs} />
-          </XStack>
+          <Row paddingHorizontal="xs" paddingTop="sm">
+            <Breadcrumb items={displayBreadcrumbs} currentIndex={currentIndex} />
+          </Row>
         )}
 
         {/* Content Area - Responsive two-column or single-column layout */}
-        <XStack
-          gap="$3"
-          flexDirection="column"
-          $md={{
-            gap: '$8',
-            padding: '$7',
-            flexDirection: 'row',
-          }}
-        >
-          {leftContent && (
-            <YStack
-              width="100%"
-              $md={{
-                width: hasBothColumns ? undefined : '100%',
-                flex: hasBothColumns ? 3 : undefined,
-                minWidth: hasBothColumns ? 300 : undefined,
-                maxWidth: hasBothColumns ? undefined : '100%',
-              }}
-            >
-              {leftContent}
-            </YStack>
-          )}
-          {rightContent && (
-            <YStack
-              width="100%"
-              $md={{
-                width: hasBothColumns ? undefined : '100%',
-                flex: hasBothColumns ? 2 : undefined,
-                minWidth: hasBothColumns ? 300 : undefined,
-                maxWidth: hasBothColumns ? undefined : '100%',
-              }}
-            >
-              {rightContent}
-            </YStack>
-          )}
-        </XStack>
-      </YStack>
+        <Row gap={12}>
+          {leftContent && <Stack width="100%">{leftContent}</Stack>}
+          {rightContent && <Stack width="100%">{rightContent}</Stack>}
+        </Row>
+      </Stack>
     </ScrollView>
   )
 }
+
+const styles = StyleSheet.create({
+  scroll: { flex: 1, backgroundColor: colors.gray[50] },
+})

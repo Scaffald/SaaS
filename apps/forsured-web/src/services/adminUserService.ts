@@ -1,5 +1,5 @@
 // src/services/adminUserService.ts
-// REQ-126: Admin user management service
+// Admin user management service
 //
 // Provides CRUD operations for user management in the admin interface.
 // Queries both forsured.user_profiles and forsured.users tables.

@@ -1,6 +1,6 @@
 /**
  * Forsured Deletion Handler - CCPA Right to Delete Implementation
- * REQ-3: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  *
  * Handles CCPA deletion requests for Forsured-specific data.
  * Implements data retention requirements:

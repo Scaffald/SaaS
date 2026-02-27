@@ -1,14 +1,15 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { api } from '@scf/core/utils/api'
+import { useCurrentUser } from '@scf/core/utils/profile-general-sdk-hooks'
+import { useGeneralInfoWidget, useSkillsWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { redirect } from '@scf/core/utils/redirect'
 import { supabase } from '@scf/core/utils/supabase/client'
-import { Button, Sheet, spacing } from '@unicornlove/ui'
-import { AlertCircle, ExternalLink, RefreshCw } from '@tamagui/lucide-icons'
+import { Button, Sheet, SheetContent, SheetHeader } from '@scaffald/ui'
+import { AlertCircle, ExternalLink, RefreshCw } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
 import { useEffect, useMemo, useState } from 'react'
 import { Platform, Pressable } from 'react-native'
-import { Paragraph, Spinner, Switch, Text, XStack, YStack } from '@unicornlove/ui'
+import { Paragraph, Spinner, Switch, Text, Row, Stack } from '@scaffald/ui'
 import type { NewsItem, NewsWidgetProps } from './config/types'
 import { useAggregatedNews } from './hooks/useNewsFeed'
 
@@ -134,10 +135,10 @@ export function NewsWidget({
   const headlineLimit = Math.max(1, maxItems)
   const fetchCount = headlineLimit * FETCH_MULTIPLIER
 
-  const { data: user } = api.profile.general.useUser.useQuery()
+  const { data: user } = useCurrentUser()
   const userId = user?.id
 
-  const { data: generalInfo } = api.profile.widgets.getGeneralInfo.useQuery(
+  const { data: generalInfo } = useGeneralInfoWidget(
     { userId },
     { enabled: !!userId, staleTime: 5 * 60 * 1000 }
   )
@@ -228,7 +229,7 @@ export function NewsWidget({
   })
   const [preferencesOpen, setPreferencesOpen] = useState(false)
 
-  const { data: userSkills } = api.profile.widgets.getSkills.useQuery(
+  const { data: userSkills } = useSkillsWidget(
     { userId },
     { enabled: !!userId, staleTime: 5 * 60 * 1000 }
   )
@@ -236,7 +237,7 @@ export function NewsWidget({
   const skillKeywords = useMemo(() => {
     if (!userSkills) return [] as string[]
     const keywords = new Set<string>()
-    for (const skill of userSkills as Array<Record<string, unknown>>) {
+    for (const skill of userSkills as unknown as Array<Record<string, unknown>>) {
       const label =
         typeof skill.label === 'string'
           ? sanitize(skill.label)
@@ -264,7 +265,9 @@ export function NewsWidget({
         : null
 
     const fallbackIndustry =
-      typeof generalInfo?.industry_name === 'string' ? generalInfo.industry_name : null
+      typeof (generalInfo as unknown as { industry_name?: string })?.industry_name === 'string'
+        ? (generalInfo as unknown as { industry_name: string }).industry_name
+        : null
 
     const resolved = industryFromRelation ?? fallbackIndustry
 
@@ -288,9 +291,10 @@ export function NewsWidget({
   )
 
   const enrichedNews = useMemo(() => {
-    if (!newsItems.length) return [] as EnrichedNewsItem[]
+    const items = newsItems as unknown as NewsItem[]
+    if (!items.length) return [] as EnrichedNewsItem[]
 
-    const scored = newsItems.map((item: NewsItem) => {
+    const scored = items.map((item: NewsItem) => {
       const { score, reasons, hoursSincePublished } = computeRelevance(
         item,
         relevanceContext,
@@ -324,7 +328,7 @@ export function NewsWidget({
       return sorted
     }
 
-    const fallback = newsItems
+    const fallback = items
       .filter(
         (item: NewsItem) => !sorted.some((existing: EnrichedNewsItem) => existing.id === item.id)
       )
@@ -347,10 +351,11 @@ export function NewsWidget({
 
   // Use fallback news (global ENR) when no matching news is found
   const fallbackEnrichedNews = useMemo(() => {
-    if (!fallbackNewsItems.length) return [] as EnrichedNewsItem[]
+    const items = fallbackNewsItems as unknown as NewsItem[]
+    if (!items.length) return [] as EnrichedNewsItem[]
 
     // For fallback, just sort by date (no relevance scoring needed)
-    return fallbackNewsItems
+    return items
       .sort((a: NewsItem, b: NewsItem) => {
         const dateA = a.pubDate instanceof Date ? a.pubDate : new Date(a.pubDate)
         const dateB = b.pubDate instanceof Date ? b.pubDate : new Date(b.pubDate)
@@ -433,190 +438,169 @@ export function NewsWidget({
   }
 
   return (
-    <YStack gap={spacing.md}>
-      <XStack justifyContent="space-between" alignItems="center" paddingTop={spacing.sm}>
-        <Text fontSize="$6" fontWeight="600" color="$color12">
-          News
-        </Text>
+    <Stack gap={12}>
+      <Row justify="space-between" align="center" paddingTop={8}>
+        <Text color="$gray11">News</Text>
 
-        <XStack gap={spacing.xs} alignItems="center">
+        <Row gap={4} align="center">
           {/* TODO: Implement and refine filter button functionality later */}
           {/* <Button
-            size="$3"
-            variant="outlined"
-            icon={<Settings2 size={16} />}
+            size="sm"
+            variant="outline"
+            iconStart={<Settings2 size="md" />}
             onPress={() => setPreferencesOpen(true)}
           /> */}
           <Button
-            size="$3"
-            variant="outlined"
+            size="sm"
+            variant="outline"
             onPress={() => {
               void refetch()
             }}
             disabled={isLoading}
-            icon={isLoading ? <Spinner size="small" /> : <RefreshCw size={16} />}
+            iconStart={RefreshCw}
           />
-        </XStack>
-      </XStack>
+        </Row>
+      </Row>
 
       {isLoading && displayNews.length === 0 && !isFallbackLoading ? (
-        <YStack alignItems="center" gap={spacing.sm}>
-          <Spinner size="large" color="$blue7" />
-          <Text color="$color11" fontSize="$4">
-            Loading personalised news...
-          </Text>
-        </YStack>
+        <Stack align="center" gap={8}>
+          <Spinner size="lg" color="primary" />
+          <Text color="$gray11">Loading personalised news...</Text>
+        </Stack>
       ) : null}
 
       {isError && displayNews.length === 0 ? (
-        <YStack alignItems="center" gap={spacing.sm}>
+        <Stack align="center" gap={8}>
           <AlertCircle size={24} color="$red10" />
-          <Text color="$red11" fontSize="$4" style={{ textAlign: 'center' }}>
+          <Text color="$red11" style={{ textAlign: 'center' }}>
             Failed to load news feed
           </Text>
-          <Text color="$color11" fontSize="$3" style={{ textAlign: 'center' }}>
+          <Text color="$gray11" style={{ textAlign: 'center' }}>
             {error?.message || 'Please check your connection and try again.'}
           </Text>
           <Button
-            variant="primary"
+            variant="filled" color="primary"
             onPress={() => {
               void refetch()
             }}
-            size="$3"
+            size="sm"
           >
             Try Again
           </Button>
-        </YStack>
+        </Stack>
       ) : null}
 
       {displayNews.length > 0 && (
-        <YStack gap="$3">
+        <Stack gap={12}>
           {displayNews.map((item: EnrichedNewsItem) => (
             <Pressable key={item.id} onPress={() => handleNewsClick(item)}>
               {({ pressed }) => (
-                <YStack
-                  gap="$2"
-                  padding="$3"
+                <Stack
+                  gap={8}
+                  padding="sm"
                   backgroundColor="$color2"
                   borderWidth={1}
                   borderColor="$color4"
-                  opacity={pressed ? 0.7 : 1}
-                  style={{ borderRadius: 12 }}
+                  style={{ borderRadius: 12, opacity: pressed ? 0.7 : 1 }}
                 >
-                  <XStack justifyContent="space-between" alignItems="flex-start" gap="$3">
-                    <Text
-                      fontSize="$4"
-                      fontWeight="600"
-                      color="$color12"
-                      flex={1}
-                      numberOfLines={2}
-                    >
+                  <Row justify="space-between" align="flex-start" gap={12}>
+                    <Text color="$gray11" style={{ flex: 1 }}>
                       {item.title}
                     </Text>
-                    <ExternalLink size={16} color="$color10" />
-                  </XStack>
-                  <XStack gap="$2" alignItems="center" flexWrap="wrap">
-                    <Text fontSize="$2" color="$color11">
-                      {formatTimeAgo(item.pubDate)}
-                    </Text>
-                    {item.category && (
-                      <Text fontSize="$2" color="$color10">
-                        • {capitalise(item.category)}
-                      </Text>
-                    )}
-                    <Text fontSize="$2" color="$color10">
-                      • {relevanceLabel(item.relevanceScore)}
-                    </Text>
-                  </XStack>
+                    <ExternalLink size="md" color="$gray11" />
+                  </Row>
+                  <Row gap={8} align="center" wrap>
+                    <Text color="$gray11">{formatTimeAgo(item.pubDate)}</Text>
+                    {item.category && <Text color="$gray11">• {capitalise(item.category)}</Text>}
+                    <Text color="$gray11">• {relevanceLabel(item.relevanceScore)}</Text>
+                  </Row>
                   {item.reasons.length > 0 && (
-                    <XStack gap="$2" flexWrap="wrap">
+                    <Row gap={8} wrap>
                       {item.reasons.slice(0, 2).map((reason: string, index: number) => (
-                        <YStack
+                        <Stack
                           key={`${item.id}-reason-${index}`}
-                          paddingHorizontal="$2"
-                          paddingVertical="$1"
+                          paddingHorizontal={8}
+                          paddingVertical={4}
                           backgroundColor="$blue3"
                           style={{ borderRadius: 8 }}
                         >
-                          <Text fontSize="$1" color="$blue11">
-                            {reason}
-                          </Text>
-                        </YStack>
+                          <Text color="$blue11">{reason}</Text>
+                        </Stack>
                       ))}
-                    </XStack>
+                    </Row>
                   )}
-                </YStack>
+                </Stack>
               )}
             </Pressable>
           ))}
 
           <Button
-            size="$3"
-            variant="outlined"
+            size="sm"
+            variant="outline"
             onPress={handleViewAll}
-            iconAfter={<ExternalLink size={16} />}
+            iconEnd={ExternalLink}
           >
             View All News
           </Button>
-        </YStack>
+        </Stack>
       )}
 
       <Sheet
-        modal
-        open={preferencesOpen}
-        onOpenChange={setPreferencesOpen}
-        snapPoints={[60]}
-        dismissOnSnapToBottom
+        visible={preferencesOpen}
+        onClose={() => setPreferencesOpen(false)}
+        height="half"
       >
-        <Sheet.Overlay animation="lazy" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
-        <Sheet.Frame padding="$4" gap="$3">
-          <Sheet.Handle />
-          <Text fontSize="$5" fontWeight="600">
-            Customise Recommendations
-          </Text>
-          <Paragraph color="$color11" size="$3">
+        <SheetHeader
+          title="Customise Recommendations"
+          onClose={() => setPreferencesOpen(false)}
+          showCloseButton
+        />
+        <SheetContent>
+          <Stack padding="md" gap={12}>
+          <Paragraph color="$gray11" size="sm">
             Tailor the news feed using your profile information.
           </Paragraph>
 
-          <YStack gap="$3">
-            <XStack justifyContent="space-between" alignItems="center">
-              <Paragraph size="$3">Match my skills</Paragraph>
+          <Stack gap={12}>
+            <Row justify="space-between" align="center">
+              <Paragraph size="sm">Match my skills</Paragraph>
               <Switch
-                size="$2"
+                size="sm"
                 checked={preferences.matchSkills}
-                onCheckedChange={(value) => updatePreference('matchSkills', value)}
+                onChange={(value) => updatePreference('matchSkills', value)}
               />
-            </XStack>
+            </Row>
 
-            <XStack justifyContent="space-between" alignItems="center">
-              <Paragraph size="$3">Match my industry</Paragraph>
+            <Row justify="space-between" align="center">
+              <Paragraph size="sm">Match my industry</Paragraph>
               <Switch
-                size="$2"
+                size="sm"
                 checked={preferences.matchIndustry}
-                onCheckedChange={(value) => updatePreference('matchIndustry', value)}
+                onChange={(value) => updatePreference('matchIndustry', value)}
               />
-            </XStack>
+            </Row>
 
-            <XStack justifyContent="space-between" alignItems="center">
-              <Paragraph size="$3">Boost trending stories</Paragraph>
+            <Row justify="space-between" align="center">
+              <Paragraph size="sm">Boost trending stories</Paragraph>
               <Switch
-                size="$2"
+                size="sm"
                 checked={preferences.prioritizeTrending}
-                onCheckedChange={(value) => updatePreference('prioritizeTrending', value)}
+                onChange={(value) => updatePreference('prioritizeTrending', value)}
               />
-            </XStack>
+            </Row>
 
-            <XStack justifyContent="space-between" alignItems="center">
-              <Paragraph size="$3">Show recent stories only</Paragraph>
+            <Row justify="space-between" align="center">
+              <Paragraph size="sm">Show recent stories only</Paragraph>
               <Switch
-                size="$2"
+                size="sm"
                 checked={preferences.recentOnly}
-                onCheckedChange={(value) => updatePreference('recentOnly', value)}
+                onChange={(value) => updatePreference('recentOnly', value)}
               />
-            </XStack>
-          </YStack>
-        </Sheet.Frame>
+            </Row>
+          </Stack>
+        </Stack>
+        </SheetContent>
       </Sheet>
-    </YStack>
+    </Stack>
   )
 }

@@ -1,9 +1,10 @@
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { AlertTriangle } from '@tamagui/lucide-icons'
+import { AlertTriangle } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo } from 'react'
-import { Button, Dialog, Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { DialogCompound as Dialog } from '@scf/core/components/ui/DialogCompound'
+import { Button, Separator, Text, Row, Stack } from '@scaffald/ui'
 import { useDispute } from '../hooks/useDispute'
 import { DisputeForm } from './DisputeForm'
 import { DisputeStatusTracker } from './DisputeStatusTracker'
@@ -69,61 +70,42 @@ export function DisputeBackgroundCheckDialog({
     check?.package?.display_name ?? check?.package?.slug ?? 'Background check package'
 
   return (
-    <Dialog modal open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay
           key="overlay"
-          animation="quick"
-          opacity={0.5}
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
+          style={{ opacity: 0.5 }}
         />
         <Dialog.Content
           key="content"
-          bordered
-          elevate
-          animation="quick"
-          enterStyle={{ y: -10, opacity: 0 }}
-          exitStyle={{ y: -10, opacity: 0 }}
           style={{ width: '90%', maxWidth: 520 }}
         >
-          <YStack gap="$4">
-            <XStack justifyContent="space-between" alignItems="center">
-              <Dialog.Title fontSize="$6" fontWeight="700">
-                Dispute background check
-              </Dialog.Title>
+          <Stack gap={16}>
+            <Row justify="space-between" align="center">
+              <Dialog.Title>Dispute background check</Dialog.Title>
               <Dialog.Close asChild>
-                <Button size="$2" variant="outlined" disabled={isSubmitting || isUploading}>
+                <Button size="sm" variant="outline" disabled={isSubmitting || isUploading}>
                   Close
                 </Button>
               </Dialog.Close>
-            </XStack>
+            </Row>
 
             {check ? (
-              <YStack gap="$2" backgroundColor="$color3" padding="$3" borderRadius="$4">
-                <XStack gap="$2" alignItems="center">
-                  <AlertTriangle size={18} color="$yellow10" />
-                  <Text fontSize="$3" fontWeight="600" color="$color12">
-                    {statusMeta?.label ?? 'Background check'}
-                  </Text>
-                </XStack>
-                <Text fontSize="$2" color="$color10">
-                  Package:{' '}
-                  <Text fontWeight="600" color="$color12">
-                    {summaryPackage}
-                  </Text>
+              <Stack gap={8} style={{ borderRadius: 16, padding: 8 }}>
+                <Row gap={8} align="center">
+                  <AlertTriangle size={18} color="#b45309" />
+                  <Text style={{ color: '#414e62' }}>{statusMeta?.label ?? 'Background check'}</Text>
+                </Row>
+                <Text style={{ color: '#414e62' }}>
+                  Package: <Text style={{ color: '#414e62' }}>{summaryPackage}</Text>
                 </Text>
-                <Text fontSize="$2" color="$color10">
-                  Completed: {formatDate(check.completed_at)}
-                </Text>
-                <Text fontSize="$2" color="$color10">
-                  Expires: {formatDate(check.expires_at)}
-                </Text>
-                <Text fontSize="$2" color="$color10">
+                <Text style={{ color: '#414e62' }}>Completed: {formatDate(check.completed_at)}</Text>
+                <Text style={{ color: '#414e62' }}>Expires: {formatDate(check.expires_at)}</Text>
+                <Text style={{ color: '#414e62' }}>
                   Disputes should focus on factual inaccuracies, missing context, or mismatched
                   records.
                 </Text>
-              </YStack>
+              </Stack>
             ) : null}
 
             {check ? (
@@ -151,13 +133,13 @@ export function DisputeBackgroundCheckDialog({
                 />
               </>
             ) : (
-              <YStack gap="$3" alignItems="center" paddingVertical="$6">
-                <Text fontSize="$3" color="$color10">
+              <Stack gap={12} align="center" style={{ paddingVertical: 24 }}>
+                <Text style={{ color: '#414e62' }}>
                   Select a background check to review dispute information.
                 </Text>
-              </YStack>
+              </Stack>
             )}
-          </YStack>
+          </Stack>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog>

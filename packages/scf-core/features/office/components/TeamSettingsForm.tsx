@@ -1,14 +1,15 @@
-import { api } from '@scf/core/utils/api'
+import { useUpdateTeam } from '@scaffald/sdk/react'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Info } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { Info } from 'lucide-react-native'
+import { useToast, useThemeContext } from '@scaffald/ui'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { type Control, Controller, useForm } from 'react-hook-form'
-import { ResponsiveSelect } from '@unicornlove/ui'
-import { Button, Card, Separator, Spinner, Switch, Text, XStack, YStack } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@scaffald/ui'
+import { Button, Card, Separator, Spinner, Switch, Text, Row, Stack } from '@scaffald/ui'
 import { z } from 'zod'
 import { useTeamFormOptions } from '../teams/hooks/useTeamFormOptions'
+import { colors } from '@scaffald/ui/tokens'
 
 const DEFAULT_SETTINGS = {
   defaultRoleId: null as string | null,
@@ -59,8 +60,8 @@ export function TeamSettingsForm({
   canEdit,
   onSettingsSaved,
 }: TeamSettingsFormProps) {
-  const toast = useToastController()
-  const utils = api.useUtils()
+  const { theme } = useThemeContext()
+  const toast = useToast()
 
   const [metadataState, setMetadataState] = useState<Record<string, unknown>>(
     () => (metadata ?? {}) as Record<string, unknown>
@@ -106,8 +107,8 @@ export function TeamSettingsForm({
   const watchedValues = watch()
   const debouncedValues = useDebounce(watchedValues, 800)
 
-  const updateMutation = api.teams.update.useMutation({
-    onSuccess: async () => {
+  const updateMutation = useUpdateTeam({
+    onSuccess: () => {
       setStatus('saved')
       lastSavedRef.current = JSON.stringify(debouncedValues)
       const committedMetadata = pendingMetadataRef.current ?? metadataState
@@ -116,15 +117,15 @@ export function TeamSettingsForm({
       if (onSettingsSaved) {
         onSettingsSaved(committedMetadata)
       }
-      await utils.teams.byId.invalidate({ teamId })
       setTimeout(() => setStatus('idle'), 2000)
     },
     onError: (error: unknown) => {
       setStatus('error')
       pendingMetadataRef.current = null
-      toast.show('Unable to update settings', {
+      toast.show({
+        title: 'Unable to update settings',
         message: error instanceof Error ? error.message : 'Please try again shortly.',
-        type: 'error',
+        variant: 'error',
       })
     },
   })
@@ -150,9 +151,11 @@ export function TeamSettingsForm({
     setStatus('saving')
     pendingMetadataRef.current = nextMetadata
     updateMutation.mutate({
-      teamId,
-      // Metadata structure stored as JSON - compatible with mutation input
-      metadata: nextMetadata as unknown as Parameters<typeof updateMutation.mutate>[0]['metadata'],
+      id: teamId,
+      params: {
+        // Metadata structure stored as JSON - compatible with mutation input
+        metadata: nextMetadata,
+      },
     })
   }, [canEdit, debouncedValues, isDirty, metadataState, teamId, updateMutation])
 
@@ -207,36 +210,37 @@ export function TeamSettingsForm({
     }
   })()
 
-  const statusColor = status === 'error' ? '$red10' : status === 'saved' ? '$green10' : '$color11'
+  const statusColor =
+    status === 'error'
+      ? theme === "light" ? colors.error[700] : colors.error[300]
+      : status === 'saved'
+        ? theme === "light" ? colors.green[700] : colors.green[300]
+        : colors.text[theme].secondary
 
   return (
     <Card
-      padding="$4"
+      padding="md"
       borderWidth={1}
-      borderColor="$borderColor"
-      gap="$4"
-      backgroundColor="$color2"
+      borderColor={colors.border[theme].default}
+      style={{ backgroundColor: colors.bg[theme].subtle }}
     >
-      <YStack gap="$2">
-        <Text fontSize="$7" fontWeight="700">
-          Team settings
-        </Text>
-        <Text color="$color11">
+      <Stack gap={16}>
+      <Stack gap={8}>
+        <Text>Team settings</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
           Configure defaults and collaboration preferences for this team. Changes are saved
           automatically.
         </Text>
-      </YStack>
+      </Stack>
 
       {!canEdit ? <PermissionBanner /> : null}
 
       <Separator />
 
-      <YStack gap="$4" opacity={canEdit ? 1 : 0.6}>
-        <YStack gap="$2">
-          <Text fontSize="$5" fontWeight="600">
-            Default role for new members
-          </Text>
-          <Text color="$color11">
+      <Stack gap={16} style={{ opacity: canEdit ? 1 : 0.6 }}>
+        <Stack gap={8}>
+          <Text>Default role for new members</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
             Select which role is assigned when a member is added without specifying a role.
           </Text>
           <Controller
@@ -259,12 +263,10 @@ export function TeamSettingsForm({
               />
             )}
           />
-        </YStack>
+        </Stack>
 
-        <YStack gap="$3">
-          <Text fontSize="$5" fontWeight="600">
-            Notification preferences
-          </Text>
+        <Stack gap={12}>
+          <Text>Notification preferences</Text>
           <SettingsToggle
             label="Notify team when a new member joins"
             description="Send in-app notifications for new members."
@@ -293,12 +295,10 @@ export function TeamSettingsForm({
             control={control}
             name="notifications.applicationAssigned"
           />
-        </YStack>
+        </Stack>
 
-        <YStack gap="$3">
-          <Text fontSize="$5" fontWeight="600">
-            Assignment rules
-          </Text>
+        <Stack gap={12}>
+          <Text>Assignment rules</Text>
           <SettingsToggle
             label="Auto-assign applications to team members"
             description="Distribute applications evenly across team recruiters."
@@ -313,27 +313,26 @@ export function TeamSettingsForm({
             control={control}
             name="jobAssignment.requireApproval"
           />
-        </YStack>
-      </YStack>
+        </Stack>
+      </Stack>
 
       <Separator />
 
-      <XStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
-        <XStack gap="$2" alignItems="center">
-          {updateMutation.isPending ? <Spinner size="small" /> : null}
-          <Text fontSize="$3" color={statusColor}>
-            {statusLabel}
-          </Text>
-        </XStack>
+      <Row justify="space-between" align="center" wrap gap={12}>
+        <Row gap={8} align="center">
+          {updateMutation.isPending ? <Spinner size="sm" /> : null}
+          <Text color={statusColor}>{statusLabel}</Text>
+        </Row>
         <Button
-          size="$3"
-          variant="outlined"
+          size="sm"
+          variant="outline"
           onPress={handleReset}
           disabled={!canEdit || updateMutation.isPending}
         >
           Reset to defaults
         </Button>
-      </XStack>
+      </Row>
+      </Stack>
     </Card>
   )
 }
@@ -394,6 +393,7 @@ function SettingsToggle({
     | 'jobAssignment.autoAssignApplications'
     | 'jobAssignment.requireApproval'
 }) {
+  const { theme } = useThemeContext()
   return (
     <Controller
       control={control}
@@ -401,27 +401,24 @@ function SettingsToggle({
       render={({ field }) => (
         <Card
           borderWidth={1}
-          borderColor="$borderColor"
-          backgroundColor="$color3"
-          padding="$3"
-          gap="$2"
+          borderColor={colors.border[theme].default}
+          style={{ backgroundColor: colors.bg[theme].muted }}
+          padding="sm"
         >
-          <XStack justifyContent="space-between" alignItems="center" gap="$3">
-            <YStack flex={1} gap="$1">
-              <Text fontWeight="600">{label}</Text>
-              <Text fontSize="$3" color="$color11">
-                {description}
-              </Text>
-            </YStack>
+          <Stack gap={8}>
+          <Row justify="space-between" align="center" gap={12}>
+            <Stack flex={1} gap={4}>
+              <Text>{label}</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>{description}</Text>
+            </Stack>
             <Switch
               checked={field.value}
-              onCheckedChange={(value) => field.onChange(Boolean(value))}
+              onChange={(value) => field.onChange(Boolean(value))}
               disabled={disabled}
-              size="$3"
-            >
-              <Switch.Thumb />
-            </Switch>
-          </XStack>
+              size="sm"
+            />
+          </Row>
+          </Stack>
         </Card>
       )}
     />
@@ -429,24 +426,25 @@ function SettingsToggle({
 }
 
 function PermissionBanner() {
+  const { theme } = useThemeContext()
   return (
-    <XStack
-      gap="$3"
-      alignItems="center"
+    <Row
+      gap={12}
+      align="center"
       borderWidth={1}
-      borderColor="$borderColor"
-      backgroundColor="$color3"
-      borderRadius="$4"
-      paddingHorizontal="$3"
-      paddingVertical="$2"
+      borderColor={colors.border[theme].default}
+      style={{ backgroundColor: colors.bg[theme].muted }}
+      borderRadius={16}
+      paddingHorizontal={12}
+      paddingVertical={8}
     >
-      <Info size={18} color="$color11" />
-      <YStack gap="$1">
-        <Text fontWeight="600">View only</Text>
-        <Text fontSize="$3" color="$color11">
+      <Info size={18} color={colors.text[theme].secondary} />
+      <Stack gap={4}>
+        <Text>View only</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
           You need team admin permissions to update settings for this team.
         </Text>
-      </YStack>
-    </XStack>
+      </Stack>
+    </Row>
   )
 }

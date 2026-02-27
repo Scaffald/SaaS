@@ -1,8 +1,9 @@
-import { api } from '@scf/core/utils/api'
-import { Text, XStack, YStack } from '@unicornlove/ui'
-import { AlertCircle, Check, Edit3, FileText, MessageSquare, Send } from '@tamagui/lucide-icons'
+import { useInquiryHistory } from '@scf/core/utils/inquiries-sdk-hooks'
+import { Text, Row, Stack } from '@scaffald/ui'
+import type { ReactNode } from 'react'
+import { AlertCircle, Check, Edit3, FileText, MessageSquare, Send } from 'lucide-react-native'
 import { useMemo } from 'react'
-import { Avatar, type GetThemeValueForKey } from '@unicornlove/ui'
+import { Avatar } from '@scaffald/ui'
 
 interface InquiryHistoryTimelineProps {
   inquiryId: string
@@ -31,7 +32,7 @@ interface AuditLogEntry {
   } | null
 }
 
-const getEventColor = (eventType: EventType): `$${string}` => {
+const getEventColor = (eventType: EventType): string => {
   switch (eventType) {
     case 'inquiry_created':
     case 'inquiry_sent':
@@ -129,41 +130,35 @@ const formatTimestamp = (timestamp: string): string => {
 }
 
 export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProps) {
-  const {
-    data: history,
-    isLoading,
-    error,
-  } = api.inquiries.getHistory.useQuery({
-    inquiryId,
-  })
+  const { data: history, isLoading, error } = useInquiryHistory(inquiryId)
 
   const sortedHistory = useMemo(() => {
     if (!history) return []
     // Already sorted by created_at ascending from the query
-    return [...history].reverse() // Show most recent first
+    return [...(history as unknown as AuditLogEntry[])].reverse() // Show most recent first
   }, [history])
 
   if (isLoading) {
     return (
-      <YStack padding="$4" alignItems="center" gap="$4">
+      <Stack padding="md" align="center" gap={16}>
         <Text>Loading history...</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (error) {
     return (
-      <YStack padding="$4" alignItems="center" gap="$4">
+      <Stack padding="md" align="center" gap={16}>
         <Text color="$red10">Failed to load history</Text>
-      </YStack>
+      </Stack>
     )
   }
 
   if (!sortedHistory || sortedHistory.length === 0) {
     return (
-      <YStack padding="$4" alignItems="center" gap="$4">
-        <Text color="$color11">No history available</Text>
-      </YStack>
+      <Stack padding="md" align="center" gap={16}>
+        <Text color="$gray11">No history available</Text>
+      </Stack>
     )
   }
 
@@ -173,68 +168,58 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
   }
 
   return (
-    <YStack gap="$3" padding="$4">
-      <Text fontSize="$6" fontWeight="600">
-        History
-      </Text>
+    <Stack gap={12} padding="md">
+      <Text>History</Text>
 
-      <YStack gap="$2">
+      <Stack gap={8}>
         {sortedHistory.map((event, index) => {
           const EventIcon = getEventIcon(event.event_type as EventType)
           const eventColor = getEventColor(event.event_type as EventType)
           const isLast = index === sortedHistory.length - 1
 
           return (
-            <XStack key={event.id} gap="$3" alignItems="flex-start">
+            <Row key={event.id} gap={12} align="flex-start">
               {/* Timeline dot and line */}
-              <YStack alignItems="center" width={24}>
-                <YStack
+              <Stack align="center" width={24}>
+                <Stack
                   width={12}
                   height={12}
-                  borderRadius="$10"
-                  backgroundColor={eventColor as GetThemeValueForKey<'backgroundColor'>}
-                  alignItems="center"
-                  justifyContent="center"
+                  borderRadius={10}
+                  style={{ backgroundColor: eventColor }}
+                  align="center"
+                  justify="center"
                 >
-                  <EventIcon size={8} color="white" />
-                </YStack>
-                {!isLast && <YStack flex={1} width={2} backgroundColor="$gray5" height={40} />}
-              </YStack>
+                  <EventIcon size={16} color="white" />
+                </Stack>
+                {!isLast && <Stack flex={1} width={2} backgroundColor="$gray5" height={40} />}
+              </Stack>
 
               {/* Event details */}
-              <YStack flex={1} gap="$1">
-                <XStack gap="$2" alignItems="center">
-                  <Avatar size="$2" circular>
-                    <Avatar.Image src={event.actor?.avatar_path || undefined} />
-                    <Avatar.Fallback backgroundColor="$blue9">
-                      <Text color="white" fontWeight="600" fontSize="$1">
-                        {actorDisplayName(event.actor).charAt(0).toUpperCase()}
-                      </Text>
-                    </Avatar.Fallback>
-                  </Avatar>
-                  <Text fontSize="$4" fontWeight="600">
-                    {actorDisplayName(event.actor)}
-                  </Text>
-                  <Text fontSize="$3" color="$color11">
-                    {formatEventType(event.event_type as EventType)}
-                  </Text>
-                </XStack>
+              <Stack flex={1} gap={4}>
+                <Row gap={8} align="center">
+                  <Avatar
+                    size={32}
+                    src={(event.actor as AuditLogEntry['actor'])?.avatar_path ?? undefined}
+                    initials={actorDisplayName(event.actor as AuditLogEntry['actor']).charAt(0).toUpperCase()}
+                  />
+                  <Text>{actorDisplayName(event.actor as AuditLogEntry['actor'])}</Text>
+                  <Text color="$gray11">{formatEventType(event.event_type as EventType)}</Text>
+                </Row>
 
-                <Text fontSize="$2" color="$color11">
-                  {formatTimestamp(event.created_at)}
-                </Text>
+                <Text color="$gray11">{formatTimestamp(event.created_at as string)}</Text>
 
                 {/* Event-specific details */}
-                {event.event_data && (
-                  <Text fontSize="$3" color="$color11" marginTop="$1">
-                    {formatEventData(event.event_type as EventType, event.event_data)}
-                  </Text>
-                )}
-              </YStack>
-            </XStack>
+                {event.event_data
+                  ? ((): ReactNode => {
+                      const msg = formatEventData(event.event_type as EventType, event.event_data as Record<string, unknown>)
+                      return msg != null ? <Text color="$gray11" style={{ marginTop: 4 }}>{msg}</Text> : null
+                    })()
+                  : null}
+              </Stack>
+            </Row>
           )
         })}
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }

@@ -1,6 +1,6 @@
 /**
  * useCompliancePermissions Hook
- * REQ-2, TASK-18: Compliance-specific authorization hook
+ * Compliance-specific authorization hook
  *
  * Provides permission checking for compliance operations in React components
  */

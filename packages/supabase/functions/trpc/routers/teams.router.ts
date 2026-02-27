@@ -2475,7 +2475,7 @@ function buildAnalyticsRouter(procedure: AuthenticatedProcedure) {
             .string()
             .trim()
             .transform((value) => new Date(value))
-            .pipe(z.date({ invalid_type_error: 'Metric date must be a valid date string' }))
+            .pipe(z.date({ message: 'Metric date must be a valid date string' }))
             .transform((date) => date.toISOString().slice(0, 10))
             .optional(),
         })

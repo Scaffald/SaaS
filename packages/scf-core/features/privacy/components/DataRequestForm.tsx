@@ -1,6 +1,6 @@
 /**
  * Data Request Form Component
- * REQ-3: CCPA Compliance Implementation
+ * CCPA Compliance Implementation
  *
  * Form for users to submit CCPA data requests:
  * - Data export (Right to Know)
@@ -8,22 +8,23 @@
  * - Data correction (Right to Correct)
  */
 
-import { useState } from 'react'
-import { Button, Text, XStack, YStack, Spinner } from '@unicornlove/ui'
-import { api } from '@scf/core/utils/api'
+import { useState } from "react";
+import { Pressable } from "react-native";
+import { Button, Text, Row, Stack, Spinner } from "@scaffald/ui";
+import { useCCPASubmitRequestMutation } from "@scf/core/utils/ccpa-sdk-hooks";
 
 /**
  * Request type options
  */
-export type DataRequestType = 'export' | 'deletion' | 'correction'
+export type DataRequestType = "export" | "deletion" | "correction";
 
 /**
  * Props for DataRequestForm
  */
 interface DataRequestFormProps {
-  onSuccess?: (requestId: string) => void
-  onCancel?: () => void
-  initialType?: DataRequestType
+  onSuccess?: (requestId: string) => void;
+  onCancel?: () => void;
+  initialType?: DataRequestType;
 }
 
 /**
@@ -32,50 +33,78 @@ interface DataRequestFormProps {
 const REQUEST_TYPE_INFO: Record<
   DataRequestType,
   {
-    title: string
-    description: string
-    confirmText: string
-    buttonColor: string
-    warning?: string
+    title: string;
+    description: string;
+    confirmText: string;
+    buttonColor: string;
+    warning?: string;
   }
 > = {
   export: {
-    title: 'Request My Data',
+    title: "Request My Data",
     description:
-      'Request a copy of all personal information we have collected about you. This includes your profile information, documents, activities, and any other data associated with your account.',
-    confirmText: 'Submit Export Request',
-    buttonColor: '$blue10',
+      "Request a copy of all personal information we have collected about you. This includes your profile information, documents, activities, and any other data associated with your account.",
+    confirmText: "Submit Export Request",
+    buttonColor: "#2563eb",
   },
   deletion: {
-    title: 'Request Data Deletion',
+    title: "Request Data Deletion",
     description:
-      'Request the deletion of your personal information. Please note that some information may be retained for legal, regulatory, or business purposes as permitted under CCPA.',
-    confirmText: 'Submit Deletion Request',
-    buttonColor: '$red10',
+      "Request the deletion of your personal information. Please note that some information may be retained for legal, regulatory, or business purposes as permitted under CCPA.",
+    confirmText: "Submit Deletion Request",
+    buttonColor: "#ef4444",
     warning:
-      'This action cannot be undone. Some data may be anonymized rather than deleted due to retention requirements. Financial and compliance records may be retained for up to 7 years.',
+      "This action cannot be undone. Some data may be anonymized rather than deleted due to retention requirements. Financial and compliance records may be retained for up to 7 years.",
   },
   correction: {
-    title: 'Request Data Correction',
+    title: "Request Data Correction",
     description:
-      'Request correction of inaccurate personal information. Please describe what information is incorrect and what the correct information should be.',
-    confirmText: 'Submit Correction Request',
-    buttonColor: '$purple10',
+      "Request correction of inaccurate personal information. Please describe what information is incorrect and what the correct information should be.",
+    confirmText: "Submit Correction Request",
+    buttonColor: "#9333ea",
   },
-}
+};
 
 /**
  * Data categories that can be selected for export/deletion
  */
 const DATA_CATEGORIES = [
-  { id: 'profile', label: 'Profile Information', description: 'Name, email, phone, company info' },
-  { id: 'documents', label: 'Documents', description: 'Uploaded files and certificates' },
-  { id: 'policies', label: 'Insurance Policies', description: 'Policy records and coverage info' },
-  { id: 'tasks', label: 'Tasks & Activities', description: 'Task history and completions' },
-  { id: 'projects', label: 'Projects', description: 'Project data and assignments' },
-  { id: 'compliance', label: 'Compliance Records', description: 'Compliance scores and issues' },
-  { id: 'usage', label: 'Usage Data', description: 'Login history and feature usage' },
-]
+  {
+    id: "profile",
+    label: "Profile Information",
+    description: "Name, email, phone, company info",
+  },
+  {
+    id: "documents",
+    label: "Documents",
+    description: "Uploaded files and certificates",
+  },
+  {
+    id: "policies",
+    label: "Insurance Policies",
+    description: "Policy records and coverage info",
+  },
+  {
+    id: "tasks",
+    label: "Tasks & Activities",
+    description: "Task history and completions",
+  },
+  {
+    id: "projects",
+    label: "Projects",
+    description: "Project data and assignments",
+  },
+  {
+    id: "compliance",
+    label: "Compliance Records",
+    description: "Compliance scores and issues",
+  },
+  {
+    id: "usage",
+    label: "Usage Data",
+    description: "Login history and feature usage",
+  },
+];
 
 /**
  * Checkbox component
@@ -86,52 +115,44 @@ function Checkbox({
   label,
   description,
 }: {
-  checked: boolean
-  onChange: (checked: boolean) => void
-  label: string
-  description?: string
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  label: string;
+  description?: string;
 }) {
   return (
-    <XStack
-      padding="$3"
-      backgroundColor={checked ? '$blue2' : '$color2'}
-      borderRadius="$2"
-      borderWidth={1}
-      borderColor={checked ? '$blue6' : '$borderColor'}
-      cursor="pointer"
-      onPress={() => onChange(!checked)}
-      gap="$3"
-      alignItems="flex-start"
-    >
-      <YStack
-        width={20}
-        height={20}
-        borderRadius={4}
-        borderWidth={2}
-        borderColor={checked ? '$blue10' : '$color8'}
-        backgroundColor={checked ? '$blue10' : 'transparent'}
-        alignItems="center"
-        justifyContent="center"
-        marginTop={2}
+    <Pressable onPress={() => onChange(!checked)}>
+      <Row
+        padding="sm"
+        backgroundColor={checked ? "#dbeafe" : "#f9fafb"}
+        borderRadius={8}
+        borderWidth={1}
+        borderColor={checked ? "#93c5fd" : "#e5e7eb"}
+        gap={12}
+        align="flex-start"
       >
-        {checked && (
-          <Text color="white" fontSize="$2" fontWeight="bold">
-            ✓
-          </Text>
-        )}
-      </YStack>
-      <YStack flex={1} gap="$1">
-        <Text fontSize="$3" fontWeight="500">
-          {label}
-        </Text>
-        {description && (
-          <Text fontSize="$2" color="$color10">
-            {description}
-          </Text>
-        )}
-      </YStack>
-    </XStack>
-  )
+        <Stack
+          width={20}
+          height={20}
+          borderRadius={4}
+          borderWidth={2}
+          borderColor={checked ? "#2563eb" : "#9ca3af"}
+          backgroundColor={checked ? "#2563eb" : "transparent"}
+          align="center"
+          justify="center"
+          style={{ marginTop: 2 }}
+        >
+          {checked && <Text style={{ color: "white" }}>✓</Text>}
+        </Stack>
+        <Stack flex={1} gap={4}>
+          <Text>{label}</Text>
+          {description && (
+            <Text style={{ color: "#414e62" }}>{description}</Text>
+          )}
+        </Stack>
+      </Row>
+    </Pressable>
+  );
 }
 
 /**
@@ -143,212 +164,216 @@ function RadioButton({
   label,
   description,
 }: {
-  selected: boolean
-  onSelect: () => void
-  label: string
-  description?: string
+  selected: boolean;
+  onSelect: () => void;
+  label: string;
+  description?: string;
 }) {
   return (
-    <XStack
-      padding="$3"
-      backgroundColor={selected ? '$blue2' : '$color2'}
-      borderRadius="$2"
-      borderWidth={1}
-      borderColor={selected ? '$blue6' : '$borderColor'}
-      cursor="pointer"
-      onPress={onSelect}
-      gap="$3"
-      alignItems="flex-start"
-    >
-      <YStack
-        width={20}
-        height={20}
-        borderRadius={10}
-        borderWidth={2}
-        borderColor={selected ? '$blue10' : '$color8'}
-        alignItems="center"
-        justifyContent="center"
-        marginTop={2}
+    <Pressable onPress={onSelect}>
+      <Row
+        padding="sm"
+        backgroundColor={selected ? "#dbeafe" : "#f9fafb"}
+        borderRadius={8}
+        borderWidth={1}
+        borderColor={selected ? "#93c5fd" : "#e5e7eb"}
+        gap={12}
+        align="flex-start"
       >
-        {selected && (
-          <YStack width={10} height={10} borderRadius={5} backgroundColor="$blue10" />
-        )}
-      </YStack>
-      <YStack flex={1} gap="$1">
-        <Text fontSize="$3" fontWeight="500">
-          {label}
-        </Text>
-        {description && (
-          <Text fontSize="$2" color="$color10">
-            {description}
-          </Text>
-        )}
-      </YStack>
-    </XStack>
-  )
+        <Stack
+          width={20}
+          height={20}
+          borderRadius={10}
+          borderWidth={2}
+          borderColor={selected ? "#2563eb" : "#9ca3af"}
+          align="center"
+          justify="center"
+          style={{ marginTop: 2 }}
+        >
+          {selected && (
+            <Stack
+              width={10}
+              height={10}
+              borderRadius={5}
+              backgroundColor="#2563eb"
+            />
+          )}
+        </Stack>
+        <Stack flex={1} gap={4}>
+          <Text>{label}</Text>
+          {description && (
+            <Text style={{ color: "#414e62" }}>{description}</Text>
+          )}
+        </Stack>
+      </Row>
+    </Pressable>
+  );
 }
 
 /**
  * Data Request Form Component
  */
-export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }: DataRequestFormProps) {
-  const [requestType, setRequestType] = useState<DataRequestType>(initialType)
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
-  const [correctionDetails, _setCorrectionDetails] = useState('')
-  const [confirmChecked, setConfirmChecked] = useState(false)
-  const [step, setStep] = useState<'type' | 'categories' | 'confirm' | 'submitted'>('type')
+export function DataRequestForm({
+  onSuccess,
+  onCancel,
+  initialType = "export",
+}: DataRequestFormProps) {
+  const [requestType, setRequestType] = useState<DataRequestType>(initialType);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [correctionDetails, _setCorrectionDetails] = useState("");
+  const [confirmChecked, setConfirmChecked] = useState(false);
+  const [step, setStep] = useState<
+    "type" | "categories" | "confirm" | "submitted"
+  >("type");
 
   // Submit request mutation
-  const submitRequest = api.ccpa.submitRequest.useMutation({
+  const submitRequest = useCCPASubmitRequestMutation({
     onSuccess: (data) => {
-      setStep('submitted')
-      onSuccess?.(data.id)
+      setStep("submitted");
+      onSuccess?.(data.id);
     },
-  })
+  });
 
-  const typeInfo = REQUEST_TYPE_INFO[requestType]
+  const typeInfo = REQUEST_TYPE_INFO[requestType];
 
   const toggleCategory = (categoryId: string) => {
     setSelectedCategories((prev) =>
       prev.includes(categoryId)
         ? prev.filter((id) => id !== categoryId)
         : [...prev, categoryId]
-    )
-  }
+    );
+  };
 
   const selectAllCategories = () => {
-    setSelectedCategories(DATA_CATEGORIES.map((c) => c.id))
-  }
+    setSelectedCategories(DATA_CATEGORIES.map((c) => c.id));
+  };
 
   const handleSubmit = () => {
     submitRequest.mutate({
       type: requestType,
-      categories: selectedCategories.length > 0 ? selectedCategories : undefined,
-      correctionDetails: requestType === 'correction' ? correctionDetails : undefined,
-    })
-  }
+      categories:
+        selectedCategories.length > 0 ? selectedCategories : undefined,
+      correctionDetails:
+        requestType === "correction" ? correctionDetails : undefined,
+    });
+  };
 
   // Submitted state
-  if (step === 'submitted') {
+  if (step === "submitted") {
     return (
-      <YStack padding="$4" gap="$4" alignItems="center">
-        <YStack
+      <Stack padding="md" gap={16} align="center">
+        <Stack
           width={80}
           height={80}
           borderRadius={40}
-          backgroundColor="$green3"
-          alignItems="center"
-          justifyContent="center"
+          backgroundColor="#dcfce7"
+          align="center"
+          justify="center"
         >
-          <Text fontSize="$8" color="$green10">
-            ✓
-          </Text>
-        </YStack>
-        <Text fontSize="$6" fontWeight="600" textAlign="center">
-          Request Submitted
+          <Text style={{ color: "#16a34a" }}>✓</Text>
+        </Stack>
+        <Text style={{ textAlign: "center" }}>Request Submitted</Text>
+        <Text style={{ color: "#414e62", textAlign: "center" }}>
+          Your{" "}
+          {requestType === "export"
+            ? "data export"
+            : requestType === "deletion"
+            ? "deletion"
+            : "correction"}{" "}
+          request has been submitted. We will process your request within 45
+          days as required by CCPA.
         </Text>
-        <Text fontSize="$3" color="$color11" textAlign="center">
-          Your {requestType === 'export' ? 'data export' : requestType === 'deletion' ? 'deletion' : 'correction'}{' '}
-          request has been submitted. We will process your request within 45 days as required by CCPA.
-        </Text>
-        <Text fontSize="$3" color="$color11" textAlign="center">
+        <Text style={{ color: "#414e62", textAlign: "center" }}>
           You will receive email updates about the status of your request.
         </Text>
-        <Button onPress={onCancel} marginTop="$4">
+        <Button onPress={onCancel} style={{ marginTop: 16 }}>
           Close
         </Button>
-      </YStack>
-    )
+      </Stack>
+    );
   }
 
   return (
-    <YStack gap="$4" padding="$4">
+    <Stack gap={16} padding="md">
       {/* Header */}
-      <YStack gap="$2">
-        <Text fontSize="$6" fontWeight="600">
-          {typeInfo.title}
-        </Text>
-        <Text fontSize="$3" color="$color11">
-          {typeInfo.description}
-        </Text>
-      </YStack>
+      <Stack gap={8}>
+        <Text>{typeInfo.title}</Text>
+        <Text style={{ color: "#414e62" }}>{typeInfo.description}</Text>
+      </Stack>
 
       {/* Step 1: Select Request Type */}
-      {step === 'type' && (
-        <YStack gap="$3">
-          <Text fontSize="$4" fontWeight="500">
-            Select Request Type
-          </Text>
-          <YStack gap="$2">
+      {step === "type" && (
+        <Stack gap={12}>
+          <Text>Select Request Type</Text>
+          <Stack gap={8}>
             <RadioButton
-              selected={requestType === 'export'}
-              onSelect={() => setRequestType('export')}
+              selected={requestType === "export"}
+              onSelect={() => setRequestType("export")}
               label="Request My Data (Export)"
               description="Get a copy of all your personal information"
             />
             <RadioButton
-              selected={requestType === 'deletion'}
-              onSelect={() => setRequestType('deletion')}
+              selected={requestType === "deletion"}
+              onSelect={() => setRequestType("deletion")}
               label="Delete My Data"
               description="Request deletion of your personal information"
             />
             <RadioButton
-              selected={requestType === 'correction'}
-              onSelect={() => setRequestType('correction')}
+              selected={requestType === "correction"}
+              onSelect={() => setRequestType("correction")}
               label="Correct My Data"
               description="Request correction of inaccurate information"
             />
-          </YStack>
+          </Stack>
 
-          <XStack gap="$3" justifyContent="flex-end" marginTop="$4">
-            <Button variant="outlined" onPress={onCancel}>
+          <Row gap={12} justify="flex-end" style={{ marginTop: 16 }}>
+            <Button variant="outline" onPress={onCancel}>
               Cancel
             </Button>
-            <Button onPress={() => setStep('categories')}>
-              Next
-            </Button>
-          </XStack>
-        </YStack>
+            <Button onPress={() => setStep("categories")}>Next</Button>
+          </Row>
+        </Stack>
       )}
 
       {/* Step 2: Select Data Categories */}
-      {step === 'categories' && (
-        <YStack gap="$3">
-          <XStack justifyContent="space-between" alignItems="center">
-            <Text fontSize="$4" fontWeight="500">
-              {requestType === 'correction' ? 'Describe Correction' : 'Select Data Categories'}
+      {step === "categories" && (
+        <Stack gap={12}>
+          <Row justify="space-between" align="center">
+            <Text>
+              {requestType === "correction"
+                ? "Describe Correction"
+                : "Select Data Categories"}
             </Text>
-            {requestType !== 'correction' && (
-              <Button size="$2" variant="outlined" onPress={selectAllCategories}>
+            {requestType !== "correction" && (
+              <Button size="sm" variant="outline" onPress={selectAllCategories}>
                 Select All
               </Button>
             )}
-          </XStack>
+          </Row>
 
-          {requestType === 'correction' ? (
-            <YStack gap="$2">
-              <Text fontSize="$3" color="$color11">
-                Please describe what information is incorrect and what the correct information should be:
+          {requestType === "correction" ? (
+            <Stack gap={8}>
+              <Text style={{ color: "#414e62" }}>
+                Please describe what information is incorrect and what the
+                correct information should be:
               </Text>
-              <YStack
-                as="textarea"
-                minHeight={150}
-                padding="$3"
+              <Stack
+                style={{ minHeight: 150 }}
+                padding="sm"
                 backgroundColor="$color2"
-                borderRadius="$2"
+                borderRadius={8}
                 borderWidth={1}
                 borderColor="$borderColor"
               >
                 <Text
-                  fontSize="$3"
-                  color={correctionDetails ? '$color12' : '$color10'}
+                  style={{ color: correctionDetails ? "#111827" : "#9ca3af" }}
                 >
-                  {correctionDetails || 'Enter correction details here...'}
+                  {correctionDetails || "Enter correction details here..."}
                 </Text>
-              </YStack>
-            </YStack>
+              </Stack>
+            </Stack>
           ) : (
-            <YStack gap="$2">
+            <Stack gap={8}>
               {DATA_CATEGORIES.map((category) => (
                 <Checkbox
                   key={category.id}
@@ -358,80 +383,75 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
                   description={category.description}
                 />
               ))}
-            </YStack>
+            </Stack>
           )}
 
-          <XStack gap="$3" justifyContent="flex-end" marginTop="$4">
-            <Button variant="outlined" onPress={() => setStep('type')}>
+          <Row gap={12} justify="flex-end" style={{ marginTop: 16 }}>
+            <Button variant="outline" onPress={() => setStep("type")}>
               Back
             </Button>
             <Button
-              onPress={() => setStep('confirm')}
+              onPress={() => setStep("confirm")}
               disabled={
-                (requestType !== 'correction' && selectedCategories.length === 0) ||
-                (requestType === 'correction' && !correctionDetails.trim())
+                (requestType !== "correction" &&
+                  selectedCategories.length === 0) ||
+                (requestType === "correction" && !correctionDetails.trim())
               }
             >
               Next
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       )}
 
       {/* Step 3: Confirmation */}
-      {step === 'confirm' && (
-        <YStack gap="$3">
-          <Text fontSize="$4" fontWeight="500">
-            Confirm Your Request
-          </Text>
+      {step === "confirm" && (
+        <Stack gap={12}>
+          <Text>Confirm Your Request</Text>
 
           {/* Summary */}
-          <YStack
-            padding="$3"
+          <Stack
+            padding="sm"
             backgroundColor="$color2"
-            borderRadius="$2"
-            gap="$2"
+            borderRadius={8}
+            gap={8}
           >
-            <Text fontSize="$3" fontWeight="500">
-              Request Type: {REQUEST_TYPE_INFO[requestType].title}
-            </Text>
-            {requestType !== 'correction' && (
-              <Text fontSize="$3" color="$color11">
-                Categories: {selectedCategories.length === DATA_CATEGORIES.length
-                  ? 'All categories'
+            <Text>Request Type: {REQUEST_TYPE_INFO[requestType].title}</Text>
+            {requestType !== "correction" && (
+              <Text style={{ color: "#414e62" }}>
+                Categories:{" "}
+                {selectedCategories.length === DATA_CATEGORIES.length
+                  ? "All categories"
                   : selectedCategories
-                      .map((id) => DATA_CATEGORIES.find((c) => c.id === id)?.label)
-                      .join(', ')}
+                      .map(
+                        (id) => DATA_CATEGORIES.find((c) => c.id === id)?.label
+                      )
+                      .join(", ")}
               </Text>
             )}
-          </YStack>
+          </Stack>
 
           {/* Warning for deletion */}
           {typeInfo.warning && (
-            <XStack
-              padding="$3"
-              backgroundColor="$red2"
-              borderRadius="$2"
+            <Row
+              padding="sm"
+              backgroundColor="#fef2f2"
+              borderRadius={8}
               borderWidth={1}
-              borderColor="$red6"
+              borderColor="#fca5a5"
             >
-              <Text fontSize="$3" color="$red11">
-                ⚠️ {typeInfo.warning}
-              </Text>
-            </XStack>
+              <Text style={{ color: "#ef4444" }}>⚠️ {typeInfo.warning}</Text>
+            </Row>
           )}
 
           {/* Processing time info */}
-          <XStack
-            padding="$3"
-            backgroundColor="$blue2"
-            borderRadius="$2"
-          >
-            <Text fontSize="$3" color="$blue11">
-              Your request will be processed within 45 days as required by CCPA. You will receive
-              email notifications about the status of your request.
+          <Row padding="sm" backgroundColor="#dbeafe" borderRadius={8}>
+            <Text style={{ color: "#2563eb" }}>
+              Your request will be processed within 45 days as required by CCPA.
+              You will receive email notifications about the status of your
+              request.
             </Text>
-          </XStack>
+          </Row>
 
           {/* Confirmation checkbox */}
           <Checkbox
@@ -439,35 +459,35 @@ export function DataRequestForm({ onSuccess, onCancel, initialType = 'export' }:
             onChange={setConfirmChecked}
             label="I understand and confirm this request"
             description={
-              requestType === 'deletion'
-                ? 'I understand that some data may be retained for legal purposes and this action cannot be undone.'
-                : 'I confirm that I want to submit this privacy request.'
+              requestType === "deletion"
+                ? "I understand that some data may be retained for legal purposes and this action cannot be undone."
+                : "I confirm that I want to submit this privacy request."
             }
           />
 
-          <XStack gap="$3" justifyContent="flex-end" marginTop="$4">
-            <Button variant="outlined" onPress={() => setStep('categories')}>
+          <Row gap={12} justify="flex-end" style={{ marginTop: 16 }}>
+            <Button variant="outline" onPress={() => setStep("categories")}>
               Back
             </Button>
             <Button
               onPress={handleSubmit}
               disabled={!confirmChecked || submitRequest.isPending}
-              theme={requestType === 'deletion' ? 'red' : undefined}
+              color={requestType === "deletion" ? "error" : undefined}
             >
               {submitRequest.isPending ? (
-                <XStack gap="$2" alignItems="center">
-                  <Spinner size="small" />
+                <Row gap={8} align="center">
+                  <Spinner size="sm" />
                   <Text>Submitting...</Text>
-                </XStack>
+                </Row>
               ) : (
                 typeInfo.confirmText
               )}
             </Button>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       )}
-    </YStack>
-  )
+    </Stack>
+  );
 }
 
-export default DataRequestForm
+export default DataRequestForm;

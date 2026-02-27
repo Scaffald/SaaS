@@ -1,41 +1,41 @@
 /**
  * ProjectVerificationStep - Project list with confirmation checkboxes
- * REQ-12: Add Manual Broker and Contractor Registration
- * TASK-10: Build merge workflow UI - conflict resolution and data verification
+ * Merge project verification step
+ * Merge workflow - conflict resolution and data verification
  *
  * Shows list of projects the manual user was associated with,
  * allowing the real user to confirm which ones to transfer.
  */
-import { useState, useCallback } from 'react';
-import { Stack, Row, Text, H2, Card } from '@unicornlove/beyond-ui';
-import { Building, Calendar, User, Check, AlertTriangle } from 'lucide-react';
-import Button from '../Common/Button';
+import { useState, useCallback } from 'react'
+import { Stack, Row, Text, H2, Card } from '@scaffald/ui'
+import { Building, Calendar, User, Check, AlertTriangle } from 'lucide-react'
+import Button from '../Common/Button'
 
 interface Project {
-  id: string;
-  name: string;
-  role: string;
-  addedBy: string;
-  addedAt: string;
+  id: string
+  name: string
+  role: string
+  addedBy: string
+  addedAt: string
 }
 
 interface ProjectVerificationStepProps {
-  projects: Project[];
-  selectedProjectIds: string[];
-  onComplete: (projectIds: string[]) => void;
-  onBack: () => void;
+  projects: Project[]
+  selectedProjectIds: string[]
+  onComplete: (projectIds: string[]) => void
+  onBack: () => void
 }
 
 /**
  * Format date for display
  */
 function formatDate(dateString: string): string {
-  const date = new Date(dateString);
+  const date = new Date(dateString)
   return date.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
-  });
+  })
 }
 
 /**
@@ -49,8 +49,8 @@ function formatRole(role: string): string {
     broker: 'Insurance Broker',
     manager: 'Project Manager',
     member: 'Team Member',
-  };
-  return roleMap[role] || role.charAt(0).toUpperCase() + role.slice(1);
+  }
+  return roleMap[role] || role.charAt(0).toUpperCase() + role.slice(1)
 }
 
 export function ProjectVerificationStep({
@@ -59,45 +59,45 @@ export function ProjectVerificationStep({
   onComplete,
   onBack,
 }: ProjectVerificationStepProps) {
-  const [selected, setSelected] = useState<Set<string>>(new Set(selectedProjectIds));
-  const [showSkipWarning, setShowSkipWarning] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set(selectedProjectIds))
+  const [showSkipWarning, setShowSkipWarning] = useState(false)
 
   // Handle checkbox toggle
   const handleToggle = useCallback((projectId: string) => {
-    setSelected(prev => {
-      const newSet = new Set(prev);
+    setSelected((prev) => {
+      const newSet = new Set(prev)
       if (newSet.has(projectId)) {
-        newSet.delete(projectId);
+        newSet.delete(projectId)
       } else {
-        newSet.add(projectId);
+        newSet.add(projectId)
       }
-      return newSet;
-    });
-  }, []);
+      return newSet
+    })
+  }, [])
 
   // Handle Select All
   const handleSelectAll = useCallback(() => {
-    setSelected(new Set(projects.map(p => p.id)));
-  }, [projects]);
+    setSelected(new Set(projects.map((p) => p.id)))
+  }, [projects])
 
   // Handle Deselect All
   const handleDeselectAll = useCallback(() => {
-    setSelected(new Set());
-  }, []);
+    setSelected(new Set())
+  }, [])
 
   // Handle continue
   const handleContinue = useCallback(() => {
     if (selected.size === 0) {
-      setShowSkipWarning(true);
-      return;
+      setShowSkipWarning(true)
+      return
     }
-    onComplete(Array.from(selected));
-  }, [selected, onComplete]);
+    onComplete(Array.from(selected))
+  }, [selected, onComplete])
 
   // Handle confirm skip
   const handleConfirmSkip = useCallback(() => {
-    onComplete([]);
-  }, [onComplete]);
+    onComplete([])
+  }, [onComplete])
 
   // If no projects, skip this step
   if (projects.length === 0) {
@@ -126,7 +126,7 @@ export function ProjectVerificationStep({
           Continue
         </Button>
       </Stack>
-    );
+    )
   }
 
   return (
@@ -135,8 +135,8 @@ export function ProjectVerificationStep({
       <Stack gap={8}>
         <H2 style={{ fontSize: 28, fontWeight: 700 }}>Verify Projects</H2>
         <Text size="md" muted>
-          The following projects were associated with your manual profile.
-          Select which ones you want to transfer to your new account.
+          The following projects were associated with your manual profile. Select which ones you
+          want to transfer to your new account.
         </Text>
       </Stack>
 
@@ -158,7 +158,7 @@ export function ProjectVerificationStep({
       {/* Project cards */}
       <Stack gap={12}>
         {projects.map((project) => {
-          const isSelected = selected.has(project.id);
+          const isSelected = selected.has(project.id)
 
           return (
             <Card
@@ -168,7 +168,9 @@ export function ProjectVerificationStep({
                 padding: 16,
                 cursor: 'pointer',
                 backgroundColor: isSelected ? 'var(--color-blue-2)' : 'var(--color-background)',
-                border: isSelected ? '2px solid var(--color-blue-8)' : '1px solid var(--color-border)',
+                border: isSelected
+                  ? '2px solid var(--color-blue-8)'
+                  : '1px solid var(--color-border)',
                 borderRadius: 12,
                 transition: 'all 0.15s ease',
               }}
@@ -225,7 +227,7 @@ export function ProjectVerificationStep({
                 </Stack>
               </Row>
             </Card>
-          );
+          )
         })}
       </Stack>
 
@@ -240,7 +242,10 @@ export function ProjectVerificationStep({
           }}
         >
           <Row alignItems="flex-start" gap={12}>
-            <AlertTriangle size={20} style={{ color: 'var(--color-orange-10)', flexShrink: 0, marginTop: 2 }} />
+            <AlertTriangle
+              size={20}
+              style={{ color: 'var(--color-orange-10)', flexShrink: 0, marginTop: 2 }}
+            />
             <Stack gap={12} style={{ flex: 1 }}>
               <Stack gap={4}>
                 <Text size="md" weight="semibold" style={{ color: 'var(--color-orange-11)' }}>
@@ -252,18 +257,10 @@ export function ProjectVerificationStep({
                 </Text>
               </Stack>
               <Row gap={8}>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onPress={() => setShowSkipWarning(false)}
-                >
+                <Button variant="secondary" size="sm" onPress={() => setShowSkipWarning(false)}>
                   Go Back
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onPress={handleConfirmSkip}
-                >
+                <Button variant="ghost" size="sm" onPress={handleConfirmSkip}>
                   Skip Anyway
                 </Button>
               </Row>
@@ -274,23 +271,15 @@ export function ProjectVerificationStep({
 
       {/* Navigation buttons */}
       <Row gap={12} style={{ marginTop: 16 }}>
-        <Button
-          variant="ghost"
-          onPress={onBack}
-          style={{ flex: 1 }}
-        >
+        <Button variant="ghost" onPress={onBack} style={{ flex: 1 }}>
           Back
         </Button>
-        <Button
-          variant="primary"
-          onPress={handleContinue}
-          style={{ flex: 2 }}
-        >
+        <Button variant="primary" onPress={handleContinue} style={{ flex: 2 }}>
           Continue
         </Button>
       </Row>
     </Stack>
-  );
+  )
 }
 
-export default ProjectVerificationStep;
+export default ProjectVerificationStep

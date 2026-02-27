@@ -1,6 +1,6 @@
 /**
  * Compliance Routers Index
- * REQ-2, TASK-19: Integrate Authorization Checks into tRPC Routers
+ * Compliance routers with authorization checks
  *
  * Exports all compliance-related tRPC routers.
  */

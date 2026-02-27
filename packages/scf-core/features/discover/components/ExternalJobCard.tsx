@@ -1,8 +1,8 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { DiscoverCard } from '@unicornlove/ui'
-import { Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
+import { DiscoverCard } from '@scaffald/ui'
+import { Building2, Clock, DollarSign, MapPin } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Button, Separator, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Separator, Text, Row, Stack } from '@scaffald/ui'
 
 export interface ExternalJob {
   id: string
@@ -73,150 +73,128 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
       variant={job.featured ? 'info' : 'neutral'}
       isSelected={job.featured}
       interactive={false}
-      padding="$4"
-      gap="$3"
+      padding="md"
+      gap={12}
     >
       {/* Header */}
-      <XStack gap="$3" alignItems="flex-start">
+      <Row gap={12} align="flex-start">
         {job.company_logo ? (
-          <YStack
+          <Stack
             width={48}
             height={48}
-            borderRadius="$2"
-            overflow="hidden"
+            borderRadius={8}
             backgroundColor="$color3"
-            alignItems="center"
-            justifyContent="center"
+            align="center"
+            justify="center"
+            style={{ overflow: 'hidden' }}
           >
             <img
               src={job.company_logo}
               alt={job.company_name || 'Company'}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
-          </YStack>
+          </Stack>
         ) : (
-          <YStack
+          <Stack
             width={48}
             height={48}
-            borderRadius="$2"
+            borderRadius={8}
             backgroundColor="$blue4"
-            alignItems="center"
-            justifyContent="center"
+            align="center"
+            justify="center"
           >
             <Building2 size={24} color="$blue10" />
-          </YStack>
+          </Stack>
         )}
 
-        <YStack flex={1} gap="$1">
-          <Text fontSize="$6" fontWeight="600" color="$color12">
-            {job.title}
-          </Text>
-          {job.company_name && (
-            <Text fontSize="$4" color="$color11">
-              {job.company_name}
-            </Text>
-          )}
-        </YStack>
+        <Stack flex={1} gap={4}>
+          <Text color="$gray11">{job.title}</Text>
+          {job.company_name && <Text color="$gray11">{job.company_name}</Text>}
+        </Stack>
 
         {job.featured && (
-          <YStack
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
+          <Stack
+            paddingHorizontal={8}
+            paddingVertical={4}
+            borderRadius={8}
             backgroundColor="$blue5"
           >
-            <Text fontSize="$2" fontWeight="600" color="$blue11">
-              FEATURED
-            </Text>
-          </YStack>
+            <Text color="$blue11">FEATURED</Text>
+          </Stack>
         )}
-      </XStack>
+      </Row>
 
       {/* Meta Info */}
-      <XStack gap="$4" flexWrap="wrap">
+      <Row gap={16} wrap>
         {job.job_location && (
-          <XStack gap="$2" alignItems="center">
-            <MapPin size={16} color="$color10" />
-            <Text fontSize="$3" color="$color11">
-              {job.job_location}
-            </Text>
-          </XStack>
+          <Row gap={8} align="center">
+            <MapPin size="md" color="$gray11" />
+            <Text color="$gray11">{job.job_location}</Text>
+          </Row>
         )}
 
         {job.job_type && (
-          <XStack gap="$2" alignItems="center">
-            <Clock size={16} color="$color10" />
-            <Text fontSize="$3" color="$color11">
-              {job.job_type}
-            </Text>
-          </XStack>
+          <Row gap={8} align="center">
+            <Clock size="md" color="$gray11" />
+            <Text color="$gray11">{job.job_type}</Text>
+          </Row>
         )}
 
         {compensation && (
-          <XStack gap="$2" alignItems="center">
-            <DollarSign size={16} color="$color10" />
-            <Text fontSize="$3" color="$color11">
-              {compensation}
-            </Text>
-          </XStack>
+          <Row gap={8} align="center">
+            <DollarSign size="md" color="$gray11" />
+            <Text color="$gray11">{compensation}</Text>
+          </Row>
         )}
 
-        {postedDate && (
-          <Text fontSize="$3" color="$color10">
-            {postedDate}
-          </Text>
-        )}
-      </XStack>
+        {postedDate && <Text color="$gray11">{postedDate}</Text>}
+      </Row>
 
       {/* Description */}
       {job.description && (
-        <Text fontSize="$3" color="$color11" numberOfLines={3} ellipsizeMode="tail">
+        <Text color="$gray11" ellipsizeMode="tail">
           {job.description}
         </Text>
       )}
 
       {/* Tags */}
-      <XStack gap="$2" flexWrap="wrap">
+      <Row gap={8} wrap>
         {primaryIndustry && (
-          <YStack
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
+          <Stack
+            paddingHorizontal={8}
+            paddingVertical={4}
+            borderRadius={8}
             backgroundColor="$blue3"
           >
-            <Text fontSize="$2" color="$blue11">
-              {primaryIndustry}
-            </Text>
-          </YStack>
+            <Text color="$blue11">{primaryIndustry}</Text>
+          </Stack>
         )}
         {job.job_category && (
-          <YStack
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-            borderRadius="$2"
+          <Stack
+            paddingHorizontal={8}
+            paddingVertical={4}
+            borderRadius={8}
             backgroundColor="$color3"
           >
-            <Text fontSize="$2" color="$color11">
-              {job.job_category}
-            </Text>
-          </YStack>
+            <Text color="$gray11">{job.job_category}</Text>
+          </Stack>
         )}
-      </XStack>
+      </Row>
 
       <Separator />
 
       {/* Actions */}
-      <XStack gap="$2" justifyContent="flex-end">
+      <Row gap={8} justify="flex-end">
         <Button
-          size="$3"
-          theme="info"
+          size="sm"
+          color="primary"
           onPress={() =>
             router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS.DETAIL, { id: job.id }))
           }
         >
           View Details
         </Button>
-      </XStack>
+      </Row>
     </DiscoverCard>
   )
 }

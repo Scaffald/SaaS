@@ -1,39 +1,38 @@
 // src/lib/scaffald/client.ts
-// REQ-126: OAuth 2.0 + RBAC Authentication System
-// REQ-3: CCPA Compliance Integration
+// OAuth 2.0 + RBAC and CCPA integration
 //
 // Scaffald API client with feature flag support for mock/real modes
 
 import {
-  getValidAccessToken,
-  getMemoryTokens,
-  logout,
   clearMemoryTokens,
+  getMemoryTokens,
+  getValidAccessToken,
   isTokenExpired,
+  logout,
   refreshSessionTokens,
-} from './auth';
+} from "./auth";
 import type {
-  ScaffaldDocument,
-  ScaffaldDocumentVersion,
-  UploadDocumentInput,
-  UploadDocumentResponse,
-  ListDocumentsInput,
-  ListDocumentsResponse,
-  UpdateDocumentInput,
-  GetDownloadUrlInput,
-  GetDownloadUrlResponse,
-  UploadVersionInput,
-  UploadVersionResponse,
-  DocumentCategory,
+  CCPAAppRegistration,
   CCPADataContribution,
   CCPADeletionConfirmation,
-  CCPAAppRegistration,
   CCPAOptOutStatus,
-} from './types';
+  DocumentCategory,
+  GetDownloadUrlInput,
+  GetDownloadUrlResponse,
+  ListDocumentsInput,
+  ListDocumentsResponse,
+  ScaffaldDocument,
+  ScaffaldDocumentVersion,
+  UpdateDocumentInput,
+  UploadDocumentInput,
+  UploadDocumentResponse,
+  UploadVersionInput,
+  UploadVersionResponse,
+} from "./types";
 
 // Feature flag to toggle between magic link and OAuth for Forsured
 // Note: This is Forsured-specific. Scaffald always uses magic links.
-const USE_OAUTH = import.meta.env.VITE_FORSURED_USE_OAUTH === 'true';
+const USE_OAUTH = import.meta.env.VITE_FORSURED_USE_OAUTH === "true";
 const SCAFFALD_API_URL = import.meta.env.VITE_SCAFFALD_API_URL;
 const SCAFFALD_CLIENT_ID = import.meta.env.VITE_SCAFFALD_CLIENT_ID;
 const SCAFFALD_TOKEN_ENDPOINT = import.meta.env.VITE_SCAFFALD_TOKEN_ENDPOINT;
@@ -45,54 +44,54 @@ const SCAFFALD_TOKEN_ENDPOINT = import.meta.env.VITE_SCAFFALD_TOKEN_ENDPOINT;
  */
 const MOCK_TEST_USERS: Record<string, { id: string; name: string }> = {
   // GC Users
-  'fresh.gc@test.forsured.com': {
-    id: '10000000-0000-0000-0000-000000000001',
-    name: 'Fresh GC User',
+  "fresh.gc@test.forsured.com": {
+    id: "10000000-0000-0000-0000-000000000001",
+    name: "Fresh GC User",
   },
-  'onboarding.gc@test.forsured.com': {
-    id: '10000000-0000-0000-0000-000000000002',
-    name: 'Onboarding GC User',
+  "onboarding.gc@test.forsured.com": {
+    id: "10000000-0000-0000-0000-000000000002",
+    name: "Onboarding GC User",
   },
-  'active.gc@test.forsured.com': {
-    id: '10000000-0000-0000-0000-000000000003',
-    name: 'Active GC User',
+  "active.gc@test.forsured.com": {
+    id: "10000000-0000-0000-0000-000000000003",
+    name: "Active GC User",
   },
-  'multiproject.gc@test.forsured.com': {
-    id: '10000000-0000-0000-0000-000000000004',
-    name: 'Multi-Project GC User',
+  "multiproject.gc@test.forsured.com": {
+    id: "10000000-0000-0000-0000-000000000004",
+    name: "Multi-Project GC User",
   },
   // Contractor Users
-  'fresh.contractor@test.forsured.com': {
-    id: '20000000-0000-0000-0000-000000000001',
-    name: 'Fresh Contractor User',
+  "fresh.contractor@test.forsured.com": {
+    id: "20000000-0000-0000-0000-000000000001",
+    name: "Fresh Contractor User",
   },
-  'active.contractor@test.forsured.com': {
-    id: '20000000-0000-0000-0000-000000000002',
-    name: 'Active Contractor User',
+  "active.contractor@test.forsured.com": {
+    id: "20000000-0000-0000-0000-000000000002",
+    name: "Active Contractor User",
   },
-  'noncompliant.contractor@test.forsured.com': {
-    id: '20000000-0000-0000-0000-000000000003',
-    name: 'Non-Compliant Contractor User',
+  "noncompliant.contractor@test.forsured.com": {
+    id: "20000000-0000-0000-0000-000000000003",
+    name: "Non-Compliant Contractor User",
   },
   // Broker Users
-  'fresh.broker@test.forsured.com': {
-    id: '30000000-0000-0000-0000-000000000001',
-    name: 'Fresh Broker User',
+  "fresh.broker@test.forsured.com": {
+    id: "30000000-0000-0000-0000-000000000001",
+    name: "Fresh Broker User",
   },
-  'active.broker@test.forsured.com': {
-    id: '30000000-0000-0000-0000-000000000002',
-    name: 'Active Broker User',
+  "active.broker@test.forsured.com": {
+    id: "30000000-0000-0000-0000-000000000002",
+    name: "Active Broker User",
   },
   // Admin User
-  'admin@test.forsured.com': {
-    id: '40000000-0000-0000-0000-000000000001',
-    name: 'Admin User',
+  "admin@test.forsured.com": {
+    id: "40000000-0000-0000-0000-000000000001",
+    name: "Admin User",
   },
 };
 
 // Check if Scaffald is properly configured
 const isScaffaldConfigured = SCAFFALD_API_URL && SCAFFALD_CLIENT_ID &&
-  SCAFFALD_CLIENT_ID !== 'your_scaffald_client_id_here';
+  SCAFFALD_CLIENT_ID !== "your_scaffald_client_id_here";
 
 interface ScaffaldClient {
   auth: {
@@ -122,7 +121,10 @@ interface ScaffaldClient {
     upload(input: UploadDocumentInput): Promise<UploadDocumentResponse>;
     get(documentId: string): Promise<ScaffaldDocument>;
     list(input: ListDocumentsInput): Promise<ListDocumentsResponse>;
-    update(documentId: string, input: UpdateDocumentInput): Promise<ScaffaldDocument>;
+    update(
+      documentId: string,
+      input: UpdateDocumentInput,
+    ): Promise<ScaffaldDocument>;
     delete(documentId: string): Promise<void>;
     getVersions(documentId: string): Promise<ScaffaldDocumentVersion[]>;
     uploadVersion(input: UploadVersionInput): Promise<UploadVersionResponse>;
@@ -135,7 +137,7 @@ interface ScaffaldClient {
     contributeExportData(
       requestId: string,
       appId: string,
-      data: CCPADataContribution
+      data: CCPADataContribution,
     ): Promise<{ success: boolean }>;
     /**
      * Confirm deletion completion to Scaffald
@@ -143,13 +145,13 @@ interface ScaffaldClient {
     confirmDeletion(
       requestId: string,
       appId: string,
-      confirmation: CCPADeletionConfirmation
+      confirmation: CCPADeletionConfirmation,
     ): Promise<{ success: boolean }>;
     /**
      * Register data categories with Scaffald
      */
     registerDataCategories(
-      registration: CCPAAppRegistration
+      registration: CCPAAppRegistration,
     ): Promise<{ success: boolean; app_id: string }>;
     /**
      * Get user's opt-out status from Scaffald
@@ -161,7 +163,7 @@ interface ScaffaldClient {
     verifyWebhookSignature(
       payload: string,
       signature: string,
-      secret: string
+      secret: string,
     ): boolean;
   };
 }
@@ -173,15 +175,15 @@ interface ScaffaldClient {
 async function fetchWithAuth(
   url: string,
   options: RequestInit = {},
-  retries = 3
+  retries = 3,
 ): Promise<Response> {
   // Get valid access token (refreshes via edge function if needed)
   const accessToken = await getValidAccessToken();
 
   if (!accessToken) {
     clearMemoryTokens();
-    window.location.href = '/';
-    throw new Error('No valid access token available');
+    window.location.href = "/";
+    throw new Error("No valid access token available");
   }
 
   const authHeaders = { Authorization: `Bearer ${accessToken}` };
@@ -190,7 +192,7 @@ async function fetchWithAuth(
     const response = await fetch(url, {
       ...options,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...authHeaders,
         ...options.headers,
       },
@@ -209,7 +211,7 @@ async function fetchWithAuth(
 
     return response;
   } catch (error) {
-    console.error('[ScaffaldClient] Fetch error:', error);
+    console.error("[ScaffaldClient] Fetch error:", error);
     throw error;
   }
 }
@@ -221,12 +223,12 @@ async function fetchWithAuth(
 async function fetchDocumentApi(
   url: string,
   options: RequestInit = {},
-  retries = 3
+  retries = 3,
 ): Promise<Response> {
   return fetchWithAuth(url, {
     ...options,
     headers: {
-      'X-OAuth-App-ID': 'forsured',
+      "X-OAuth-App-ID": "forsured",
       ...options.headers,
     },
   }, retries);
@@ -240,7 +242,7 @@ function createRealScaffaldClient(config: {
   clientId: string;
   tokenEndpoint: string;
 }): ScaffaldClient {
-  console.log('[ScaffaldClient] Using REAL Scaffald client');
+  console.log("[ScaffaldClient] Using REAL Scaffald client");
 
   return {
     auth: {
@@ -253,7 +255,7 @@ function createRealScaffaldClient(config: {
         // Refresh via edge function (httpOnly cookie mode)
         const success = await refreshSessionTokens();
         if (!success) {
-          throw new Error('Token refresh failed');
+          throw new Error("Token refresh failed");
         }
         // Return memory tokens after refresh
         return getMemoryTokens();
@@ -270,10 +272,10 @@ function createRealScaffaldClient(config: {
 
       async exchangeCodeForTokens(code: string) {
         const response = await fetch(config.tokenEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: new URLSearchParams({
-            grant_type: 'authorization_code',
+            grant_type: "authorization_code",
             client_id: config.clientId,
             code,
             redirect_uri: `${window.location.origin}/callback`,
@@ -282,7 +284,9 @@ function createRealScaffaldClient(config: {
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.error_description || 'Token exchange failed');
+          throw new Error(
+            errorData.error_description || "Token exchange failed",
+          );
         }
 
         const tokens = await response.json();
@@ -290,7 +294,7 @@ function createRealScaffaldClient(config: {
           access_token: tokens.access_token,
           refresh_token: tokens.refresh_token,
           expires_in: tokens.expires_in || 3600,
-          token_type: tokens.token_type || 'Bearer',
+          token_type: tokens.token_type || "Bearer",
           created_at: Math.floor(Date.now() / 1000),
         };
       },
@@ -303,25 +307,35 @@ function createRealScaffaldClient(config: {
 
     companies: {
       async list() {
-        const response = await fetchWithAuth(`${config.baseUrl}/api/v1/companies`);
+        const response = await fetchWithAuth(
+          `${config.baseUrl}/api/v1/companies`,
+        );
         return response.json();
       },
       async get(id: string) {
-        const response = await fetchWithAuth(`${config.baseUrl}/api/v1/companies/${id}`);
+        const response = await fetchWithAuth(
+          `${config.baseUrl}/api/v1/companies/${id}`,
+        );
         return response.json();
       },
       async create(data: any) {
-        const response = await fetchWithAuth(`${config.baseUrl}/api/v1/companies`, {
-          method: 'POST',
-          body: JSON.stringify(data),
-        });
+        const response = await fetchWithAuth(
+          `${config.baseUrl}/api/v1/companies`,
+          {
+            method: "POST",
+            body: JSON.stringify(data),
+          },
+        );
         return response.json();
       },
       async update(id: string, data: any) {
-        const response = await fetchWithAuth(`${config.baseUrl}/api/v1/companies/${id}`, {
-          method: 'PATCH',
-          body: JSON.stringify(data),
-        });
+        const response = await fetchWithAuth(
+          `${config.baseUrl}/api/v1/companies/${id}`,
+          {
+            method: "PATCH",
+            body: JSON.stringify(data),
+          },
+        );
         return response.json();
       },
     },
@@ -329,26 +343,34 @@ function createRealScaffaldClient(config: {
     projects: {
       async list(companyId: string) {
         const response = await fetchWithAuth(
-          `${config.baseUrl}/api/v1/companies/${companyId}/projects`
+          `${config.baseUrl}/api/v1/companies/${companyId}/projects`,
         );
         return response.json();
       },
       async get(id: string) {
-        const response = await fetchWithAuth(`${config.baseUrl}/api/v1/projects/${id}`);
+        const response = await fetchWithAuth(
+          `${config.baseUrl}/api/v1/projects/${id}`,
+        );
         return response.json();
       },
       async create(data: any) {
-        const response = await fetchWithAuth(`${config.baseUrl}/api/v1/projects`, {
-          method: 'POST',
-          body: JSON.stringify(data),
-        });
+        const response = await fetchWithAuth(
+          `${config.baseUrl}/api/v1/projects`,
+          {
+            method: "POST",
+            body: JSON.stringify(data),
+          },
+        );
         return response.json();
       },
       async update(id: string, data: any) {
-        const response = await fetchWithAuth(`${config.baseUrl}/api/v1/projects/${id}`, {
-          method: 'PATCH',
-          body: JSON.stringify(data),
-        });
+        const response = await fetchWithAuth(
+          `${config.baseUrl}/api/v1/projects/${id}`,
+          {
+            method: "PATCH",
+            body: JSON.stringify(data),
+          },
+        );
         return response.json();
       },
     },
@@ -356,7 +378,7 @@ function createRealScaffaldClient(config: {
     users: {
       async getByCompany(companyId: string) {
         const response = await fetchWithAuth(
-          `${config.baseUrl}/api/v1/companies/${companyId}/users`
+          `${config.baseUrl}/api/v1/companies/${companyId}/users`,
         );
         return response.json();
       },
@@ -364,83 +386,114 @@ function createRealScaffaldClient(config: {
         const response = await fetchWithAuth(
           `${config.baseUrl}/api/v1/companies/${companyId}/invitations`,
           {
-            method: 'POST',
+            method: "POST",
             body: JSON.stringify({ email }),
-          }
+          },
         );
         return response.json();
       },
     },
 
     documents: {
-      async upload(input: UploadDocumentInput): Promise<UploadDocumentResponse> {
-        const response = await fetchDocumentApi(`${config.baseUrl}/api/v1/documents`, {
-          method: 'POST',
-          body: JSON.stringify(input),
-        });
+      async upload(
+        input: UploadDocumentInput,
+      ): Promise<UploadDocumentResponse> {
+        const response = await fetchDocumentApi(
+          `${config.baseUrl}/api/v1/documents`,
+          {
+            method: "POST",
+            body: JSON.stringify(input),
+          },
+        );
         return response.json();
       },
 
       async get(documentId: string): Promise<ScaffaldDocument> {
-        const response = await fetchDocumentApi(`${config.baseUrl}/api/v1/documents/${documentId}`);
+        const response = await fetchDocumentApi(
+          `${config.baseUrl}/api/v1/documents/${documentId}`,
+        );
         return response.json();
       },
 
       async list(input: ListDocumentsInput): Promise<ListDocumentsResponse> {
         const params = new URLSearchParams();
-        params.set('organizationId', input.organizationId);
-        if (input.folderId) params.set('folderId', input.folderId);
-        if (input.category) params.set('category', input.category);
-        if (input.tags?.length) params.set('tags', input.tags.join(','));
-        if (input.isTemplate !== undefined) params.set('isTemplate', String(input.isTemplate));
-        if (input.includeDeleted) params.set('includeDeleted', 'true');
-        if (input.search) params.set('search', input.search);
-        if (input.page) params.set('page', String(input.page));
-        if (input.limit) params.set('limit', String(input.limit));
-        if (input.sortBy) params.set('sortBy', input.sortBy);
-        if (input.sortOrder) params.set('sortOrder', input.sortOrder);
+        params.set("organizationId", input.organizationId);
+        if (input.folderId) params.set("folderId", input.folderId);
+        if (input.category) params.set("category", input.category);
+        if (input.tags?.length) params.set("tags", input.tags.join(","));
+        if (input.isTemplate !== undefined) {
+          params.set("isTemplate", String(input.isTemplate));
+        }
+        if (input.includeDeleted) params.set("includeDeleted", "true");
+        if (input.search) params.set("search", input.search);
+        if (input.page) params.set("page", String(input.page));
+        if (input.limit) params.set("limit", String(input.limit));
+        if (input.sortBy) params.set("sortBy", input.sortBy);
+        if (input.sortOrder) params.set("sortOrder", input.sortOrder);
 
-        const response = await fetchDocumentApi(`${config.baseUrl}/api/v1/documents?${params.toString()}`);
+        const response = await fetchDocumentApi(
+          `${config.baseUrl}/api/v1/documents?${params.toString()}`,
+        );
         return response.json();
       },
 
-      async update(documentId: string, input: UpdateDocumentInput): Promise<ScaffaldDocument> {
-        const response = await fetchDocumentApi(`${config.baseUrl}/api/v1/documents/${documentId}`, {
-          method: 'PATCH',
-          body: JSON.stringify(input),
-        });
+      async update(
+        documentId: string,
+        input: UpdateDocumentInput,
+      ): Promise<ScaffaldDocument> {
+        const response = await fetchDocumentApi(
+          `${config.baseUrl}/api/v1/documents/${documentId}`,
+          {
+            method: "PATCH",
+            body: JSON.stringify(input),
+          },
+        );
         return response.json();
       },
 
       async delete(documentId: string): Promise<void> {
-        await fetchDocumentApi(`${config.baseUrl}/api/v1/documents/${documentId}`, {
-          method: 'DELETE',
-        });
+        await fetchDocumentApi(
+          `${config.baseUrl}/api/v1/documents/${documentId}`,
+          {
+            method: "DELETE",
+          },
+        );
       },
 
-      async getVersions(documentId: string): Promise<ScaffaldDocumentVersion[]> {
-        const response = await fetchDocumentApi(`${config.baseUrl}/api/v1/documents/${documentId}/versions`);
+      async getVersions(
+        documentId: string,
+      ): Promise<ScaffaldDocumentVersion[]> {
+        const response = await fetchDocumentApi(
+          `${config.baseUrl}/api/v1/documents/${documentId}/versions`,
+        );
         return response.json();
       },
 
-      async uploadVersion(input: UploadVersionInput): Promise<UploadVersionResponse> {
-        const response = await fetchDocumentApi(`${config.baseUrl}/api/v1/documents/${input.documentId}/versions`, {
-          method: 'POST',
-          body: JSON.stringify({
-            file: input.file,
-            fileName: input.fileName,
-            contentType: input.contentType,
-            fileSize: input.fileSize,
-            notes: input.notes,
-          }),
-        });
+      async uploadVersion(
+        input: UploadVersionInput,
+      ): Promise<UploadVersionResponse> {
+        const response = await fetchDocumentApi(
+          `${config.baseUrl}/api/v1/documents/${input.documentId}/versions`,
+          {
+            method: "POST",
+            body: JSON.stringify({
+              file: input.file,
+              fileName: input.fileName,
+              contentType: input.contentType,
+              fileSize: input.fileSize,
+              notes: input.notes,
+            }),
+          },
+        );
         return response.json();
       },
 
-      async getDownloadUrl(input: GetDownloadUrlInput): Promise<GetDownloadUrlResponse> {
+      async getDownloadUrl(
+        input: GetDownloadUrlInput,
+      ): Promise<GetDownloadUrlResponse> {
         const params = new URLSearchParams();
-        if (input.versionId) params.set('versionId', input.versionId);
-        if (input.expiresIn) params.set('expiresIn', String(input.expiresIn));
+        if (input.versionId) params.set("versionId", input.versionId);
+        if (input.expiresIn) params.set("expiresIn", String(input.expiresIn));
 
         const url = params.toString()
           ? `${config.baseUrl}/api/v1/documents/${input.documentId}/download?${params.toString()}`
@@ -455,14 +508,14 @@ function createRealScaffaldClient(config: {
       async contributeExportData(
         requestId: string,
         appId: string,
-        data: CCPADataContribution
+        data: CCPADataContribution,
       ) {
         const response = await fetchWithAuth(
           `${config.baseUrl}/api/v1/ccpa/requests/${requestId}/contributions`,
           {
-            method: 'POST',
+            method: "POST",
             body: JSON.stringify({ app_id: appId, data }),
-          }
+          },
         );
         return response.json();
       },
@@ -470,14 +523,14 @@ function createRealScaffaldClient(config: {
       async confirmDeletion(
         requestId: string,
         appId: string,
-        confirmation: CCPADeletionConfirmation
+        confirmation: CCPADeletionConfirmation,
       ) {
         const response = await fetchWithAuth(
           `${config.baseUrl}/api/v1/ccpa/requests/${requestId}/deletion-confirmation`,
           {
-            method: 'POST',
+            method: "POST",
             body: JSON.stringify({ app_id: appId, confirmation }),
-          }
+          },
         );
         return response.json();
       },
@@ -486,16 +539,16 @@ function createRealScaffaldClient(config: {
         const response = await fetchWithAuth(
           `${config.baseUrl}/api/v1/ccpa/apps/register`,
           {
-            method: 'POST',
+            method: "POST",
             body: JSON.stringify(registration),
-          }
+          },
         );
         return response.json();
       },
 
       async getOptOutStatus(userId: string) {
         const response = await fetchWithAuth(
-          `${config.baseUrl}/api/v1/ccpa/opt-outs/${userId}`
+          `${config.baseUrl}/api/v1/ccpa/opt-outs/${userId}`,
         );
         return response.json();
       },
@@ -503,7 +556,7 @@ function createRealScaffaldClient(config: {
       verifyWebhookSignature(
         payload: string,
         signature: string,
-        secret: string
+        secret: string,
       ): boolean {
         // HMAC-SHA256 signature verification
         // In browser, we use SubtleCrypto; this is a sync wrapper for the check
@@ -530,7 +583,9 @@ function createRealScaffaldClient(config: {
         //   encoder.encode(payload)
         // );
 
-        console.log('[ScaffaldClient] Webhook signature verification - implement server-side');
+        console.log(
+          "[ScaffaldClient] Webhook signature verification - implement server-side",
+        );
         return true;
       },
     },
@@ -544,23 +599,26 @@ function createRealScaffaldClient(config: {
  * to override the mock user returned by getUser().
  */
 function createMockScaffaldClient(): ScaffaldClient {
-  console.log('[ScaffaldClient] Using MOCK Scaffald client');
+  console.log("[ScaffaldClient] Using MOCK Scaffald client");
 
   // Key for storing the current mock user (persists across getUser() calls)
-  const MOCK_CURRENT_USER_KEY = 'mock_scaffald_current_user';
+  const MOCK_CURRENT_USER_KEY = "mock_scaffald_current_user";
 
   return {
     auth: {
       async getUser() {
         // Check for E2E test user override in localStorage
-        const testUserJson = localStorage.getItem('e2e_test_user');
+        const testUserJson = localStorage.getItem("e2e_test_user");
         if (testUserJson) {
           try {
             const testUser = JSON.parse(testUserJson);
-            console.log('[Mock ScaffaldClient] getUser() - using E2E test user:', testUser.email);
+            console.log(
+              "[Mock ScaffaldClient] getUser() - using E2E test user:",
+              testUser.email,
+            );
             return testUser;
           } catch {
-            console.warn('[Mock ScaffaldClient] Invalid e2e_test_user JSON');
+            console.warn("[Mock ScaffaldClient] Invalid e2e_test_user JSON");
           }
         }
 
@@ -569,25 +627,31 @@ function createMockScaffaldClient(): ScaffaldClient {
         if (currentUserJson) {
           try {
             const currentUser = JSON.parse(currentUserJson);
-            console.log('[Mock ScaffaldClient] getUser() - returning cached user:', currentUser.email);
+            console.log(
+              "[Mock ScaffaldClient] getUser() - returning cached user:",
+              currentUser.email,
+            );
             return currentUser;
           } catch {
-            console.warn('[Mock ScaffaldClient] Invalid cached user JSON');
+            console.warn("[Mock ScaffaldClient] Invalid cached user JSON");
             localStorage.removeItem(MOCK_CURRENT_USER_KEY);
           }
         }
 
         // Check for mock login hint from OAuth flow
-        const loginHint = sessionStorage.getItem('mock_login_hint');
+        const loginHint = sessionStorage.getItem("mock_login_hint");
         if (loginHint) {
-          console.log('[Mock ScaffaldClient] getUser() - using login hint:', loginHint);
-          sessionStorage.removeItem('mock_login_hint'); // Clear hint after use
+          console.log(
+            "[Mock ScaffaldClient] getUser() - using login hint:",
+            loginHint,
+          );
+          sessionStorage.removeItem("mock_login_hint"); // Clear hint after use
 
           let user;
           // Check if this is a known test user email
           const testUser = MOCK_TEST_USERS[loginHint];
           if (testUser) {
-            console.log('[Mock ScaffaldClient] Found test user:', testUser.id);
+            console.log("[Mock ScaffaldClient] Found test user:", testUser.id);
             user = {
               id: testUser.id,
               email: loginHint,
@@ -597,14 +661,19 @@ function createMockScaffaldClient(): ScaffaldClient {
           } else {
             // Generate a deterministic UUID from the email for unknown users
             // Use a UUID format so it's valid for the database
-            const hash = loginHint.split('').reduce((acc, char) => {
+            const hash = loginHint.split("").reduce((acc, char) => {
               return ((acc << 5) - acc) + char.charCodeAt(0);
             }, 0);
-            const userId = `00000000-0000-4000-8000-${Math.abs(hash).toString(16).padStart(12, '0')}`;
+            const userId = `00000000-0000-4000-8000-${
+              Math.abs(hash).toString(16).padStart(12, "0")
+            }`;
             user = {
               id: userId,
               email: loginHint,
-              name: loginHint.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+              name: loginHint.split("@")[0].replace(/[._-]/g, " ").replace(
+                /\b\w/g,
+                (c) => c.toUpperCase(),
+              ),
               avatar_url: null,
             };
           }
@@ -615,42 +684,42 @@ function createMockScaffaldClient(): ScaffaldClient {
         }
 
         // No user logged in - return default mock user with valid UUID
-        console.log('[Mock ScaffaldClient] getUser() - no authenticated user');
+        console.log("[Mock ScaffaldClient] getUser() - no authenticated user");
         return {
-          id: '00000000-0000-0000-0000-000000000000',
-          email: 'mock@scaffald.com',
-          name: 'Mock Scaffald User',
+          id: "00000000-0000-0000-0000-000000000000",
+          email: "mock@scaffald.com",
+          name: "Mock Scaffald User",
           avatar_url: null,
         };
       },
       async refreshToken() {
-        console.log('[Mock ScaffaldClient] refreshToken()');
+        console.log("[Mock ScaffaldClient] refreshToken()");
         return {
           access_token: `mock-token-${Date.now()}`,
-          refresh_token: 'mock-refresh-token',
+          refresh_token: "mock-refresh-token",
           expires_in: 3600,
-          token_type: 'Bearer',
+          token_type: "Bearer",
           created_at: Math.floor(Date.now() / 1000),
         };
       },
       async getSession() {
-        console.log('[Mock ScaffaldClient] getSession()');
+        console.log("[Mock ScaffaldClient] getSession()");
         const tokens = getMemoryTokens();
         if (!tokens) return null;
         return { user: await this.getUser() };
       },
       async exchangeCodeForTokens(code: string) {
-        console.log('[Mock ScaffaldClient] exchangeCodeForTokens()', code);
+        console.log("[Mock ScaffaldClient] exchangeCodeForTokens()", code);
         return {
           access_token: `mock-token-${code}`,
-          refresh_token: 'mock-refresh-token',
+          refresh_token: "mock-refresh-token",
           expires_in: 3600,
-          token_type: 'Bearer',
+          token_type: "Bearer",
           created_at: Math.floor(Date.now() / 1000),
         };
       },
       async signOut() {
-        console.log('[Mock ScaffaldClient] signOut()');
+        console.log("[Mock ScaffaldClient] signOut()");
         clearMemoryTokens();
         // Clear cached mock user so next login can use a different user
         localStorage.removeItem(MOCK_CURRENT_USER_KEY);
@@ -661,7 +730,7 @@ function createMockScaffaldClient(): ScaffaldClient {
         return [];
       },
       async get(id: string) {
-        return { id, name: 'Mock Company' };
+        return { id, name: "Mock Company" };
       },
       async create(data: any) {
         return { id: `mock-company-${Date.now()}`, ...data };
@@ -675,7 +744,7 @@ function createMockScaffaldClient(): ScaffaldClient {
         return [];
       },
       async get(id: string) {
-        return { id, name: 'Mock Project' };
+        return { id, name: "Mock Project" };
       },
       async create(data: any) {
         return { id: `mock-project-${Date.now()}`, ...data };
@@ -694,43 +763,45 @@ function createMockScaffaldClient(): ScaffaldClient {
     },
 
     documents: {
-      async upload(input: UploadDocumentInput): Promise<UploadDocumentResponse> {
-        console.log('[Mock ScaffaldClient] documents.upload()', input.name);
+      async upload(
+        input: UploadDocumentInput,
+      ): Promise<UploadDocumentResponse> {
+        console.log("[Mock ScaffaldClient] documents.upload()", input.name);
         const now = new Date().toISOString();
         return {
           id: `mock-doc-${Date.now()}`,
           name: input.name,
-          category: input.category || 'general',
-          storageBackend: 'supabase',
+          category: input.category || "general",
+          storageBackend: "supabase",
           storagePath: `org/${input.organizationId}/docs/${input.fileName}`,
           downloadUrl: null,
-          oauthAppId: 'forsured',
+          oauthAppId: "forsured",
           version: 1,
           fileSize: input.fileSize,
           mimeType: input.contentType,
           checksum: `mock-checksum-${Date.now().toString(16)}`,
           createdAt: now,
-          uploadedBy: 'mock-user',
+          uploadedBy: "mock-user",
         };
       },
 
       async get(documentId: string): Promise<ScaffaldDocument> {
-        console.log('[Mock ScaffaldClient] documents.get()', documentId);
+        console.log("[Mock ScaffaldClient] documents.get()", documentId);
         const now = new Date().toISOString();
         return {
           id: documentId,
-          name: 'Mock Document',
-          description: 'A mock document for development',
-          category: 'general' as DocumentCategory,
+          name: "Mock Document",
+          description: "A mock document for development",
+          category: "general" as DocumentCategory,
           tags: [],
           isTemplate: false,
           versionCount: 1,
           latestVersionNumber: 1,
           latestSizeBytes: 1024,
-          latestMimeType: 'application/pdf',
-          oauthAppId: 'forsured',
+          latestMimeType: "application/pdf",
+          oauthAppId: "forsured",
           storagePath: `org/mock-org/docs/${documentId}`,
-          storageBackend: 'supabase',
+          storageBackend: "supabase",
           downloadUrl: null,
           createdAt: now,
           updatedAt: now,
@@ -741,7 +812,7 @@ function createMockScaffaldClient(): ScaffaldClient {
       },
 
       async list(input: ListDocumentsInput): Promise<ListDocumentsResponse> {
-        console.log('[Mock ScaffaldClient] documents.list()', input);
+        console.log("[Mock ScaffaldClient] documents.list()", input);
         return {
           documents: [],
           pagination: {
@@ -753,23 +824,30 @@ function createMockScaffaldClient(): ScaffaldClient {
         };
       },
 
-      async update(documentId: string, input: UpdateDocumentInput): Promise<ScaffaldDocument> {
-        console.log('[Mock ScaffaldClient] documents.update()', documentId, input);
+      async update(
+        documentId: string,
+        input: UpdateDocumentInput,
+      ): Promise<ScaffaldDocument> {
+        console.log(
+          "[Mock ScaffaldClient] documents.update()",
+          documentId,
+          input,
+        );
         const now = new Date().toISOString();
         return {
           id: documentId,
-          name: input.name || 'Updated Mock Document',
+          name: input.name || "Updated Mock Document",
           description: input.description ?? null,
-          category: (input.category || 'general') as DocumentCategory,
+          category: (input.category || "general") as DocumentCategory,
           tags: input.tags || [],
           isTemplate: input.isTemplate || false,
           versionCount: 1,
           latestVersionNumber: 1,
           latestSizeBytes: 1024,
-          latestMimeType: 'application/pdf',
-          oauthAppId: 'forsured',
+          latestMimeType: "application/pdf",
+          oauthAppId: "forsured",
           storagePath: `org/mock-org/docs/${documentId}`,
-          storageBackend: 'supabase',
+          storageBackend: "supabase",
           downloadUrl: null,
           createdAt: now,
           updatedAt: now,
@@ -780,16 +858,26 @@ function createMockScaffaldClient(): ScaffaldClient {
       },
 
       async delete(documentId: string): Promise<void> {
-        console.log('[Mock ScaffaldClient] documents.delete()', documentId);
+        console.log("[Mock ScaffaldClient] documents.delete()", documentId);
       },
 
-      async getVersions(documentId: string): Promise<ScaffaldDocumentVersion[]> {
-        console.log('[Mock ScaffaldClient] documents.getVersions()', documentId);
+      async getVersions(
+        documentId: string,
+      ): Promise<ScaffaldDocumentVersion[]> {
+        console.log(
+          "[Mock ScaffaldClient] documents.getVersions()",
+          documentId,
+        );
         return [];
       },
 
-      async uploadVersion(input: UploadVersionInput): Promise<UploadVersionResponse> {
-        console.log('[Mock ScaffaldClient] documents.uploadVersion()', input.documentId);
+      async uploadVersion(
+        input: UploadVersionInput,
+      ): Promise<UploadVersionResponse> {
+        console.log(
+          "[Mock ScaffaldClient] documents.uploadVersion()",
+          input.documentId,
+        );
         return {
           versionId: `mock-version-${Date.now()}`,
           versionNumber: 2,
@@ -799,8 +887,13 @@ function createMockScaffaldClient(): ScaffaldClient {
         };
       },
 
-      async getDownloadUrl(input: GetDownloadUrlInput): Promise<GetDownloadUrlResponse> {
-        console.log('[Mock ScaffaldClient] documents.getDownloadUrl()', input.documentId);
+      async getDownloadUrl(
+        input: GetDownloadUrlInput,
+      ): Promise<GetDownloadUrlResponse> {
+        console.log(
+          "[Mock ScaffaldClient] documents.getDownloadUrl()",
+          input.documentId,
+        );
         return {
           downloadUrl: null,
           expiresIn: input.expiresIn || 3600,
@@ -812,35 +905,48 @@ function createMockScaffaldClient(): ScaffaldClient {
       async contributeExportData(
         requestId: string,
         appId: string,
-        data: CCPADataContribution
+        data: CCPADataContribution,
       ) {
-        console.log('[Mock ScaffaldClient] contributeExportData()', { requestId, appId });
+        console.log("[Mock ScaffaldClient] contributeExportData()", {
+          requestId,
+          appId,
+        });
         return { success: true };
       },
 
       async confirmDeletion(
         requestId: string,
         appId: string,
-        confirmation: CCPADeletionConfirmation
+        confirmation: CCPADeletionConfirmation,
       ) {
-        console.log('[Mock ScaffaldClient] confirmDeletion()', { requestId, appId });
+        console.log("[Mock ScaffaldClient] confirmDeletion()", {
+          requestId,
+          appId,
+        });
         return { success: true };
       },
 
       async registerDataCategories(registration: CCPAAppRegistration) {
-        console.log('[Mock ScaffaldClient] registerDataCategories()', registration.app_id);
+        console.log(
+          "[Mock ScaffaldClient] registerDataCategories()",
+          registration.app_id,
+        );
         return { success: true, app_id: registration.app_id };
       },
 
       async getOptOutStatus(userId: string): Promise<CCPAOptOutStatus> {
-        console.log('[Mock ScaffaldClient] getOptOutStatus()', userId);
+        console.log("[Mock ScaffaldClient] getOptOutStatus()", userId);
         return {
           user_id: userId,
           categories: [
-            { category: 'sale', opted_out: false, source: 'default' },
-            { category: 'sharing', opted_out: false, source: 'default' },
-            { category: 'targeted_advertising', opted_out: false, source: 'default' },
-            { category: 'profiling', opted_out: false, source: 'default' },
+            { category: "sale", opted_out: false, source: "default" },
+            { category: "sharing", opted_out: false, source: "default" },
+            {
+              category: "targeted_advertising",
+              opted_out: false,
+              source: "default",
+            },
+            { category: "profiling", opted_out: false, source: "default" },
           ],
         };
       },
@@ -848,9 +954,11 @@ function createMockScaffaldClient(): ScaffaldClient {
       verifyWebhookSignature(
         payload: string,
         signature: string,
-        secret: string
+        secret: string,
       ): boolean {
-        console.log('[Mock ScaffaldClient] verifyWebhookSignature() - mock returns true');
+        console.log(
+          "[Mock ScaffaldClient] verifyWebhookSignature() - mock returns true",
+        );
         return true;
       },
     },
@@ -862,10 +970,10 @@ const shouldUseRealClient = USE_OAUTH && isScaffaldConfigured;
 
 export const scaffaldClient: ScaffaldClient = shouldUseRealClient
   ? createRealScaffaldClient({
-      baseUrl: SCAFFALD_API_URL,
-      clientId: SCAFFALD_CLIENT_ID,
-      tokenEndpoint: SCAFFALD_TOKEN_ENDPOINT,
-    })
+    baseUrl: SCAFFALD_API_URL,
+    clientId: SCAFFALD_CLIENT_ID,
+    tokenEndpoint: SCAFFALD_TOKEN_ENDPOINT,
+  })
   : createMockScaffaldClient();
 
 // Export flag for components to check
@@ -874,6 +982,6 @@ export const isUsingRealScaffald = shouldUseRealClient;
 // Log configuration status
 if (USE_OAUTH && !isScaffaldConfigured) {
   console.warn(
-    '[ScaffaldClient] VITE_FORSURED_USE_OAUTH is true but Scaffald is not configured. Using mock client.'
+    "[ScaffaldClient] VITE_FORSURED_USE_OAUTH is true but Scaffald is not configured. Using mock client.",
   );
 }

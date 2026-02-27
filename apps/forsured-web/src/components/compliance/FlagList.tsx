@@ -1,10 +1,10 @@
 /**
- * REQ-269: Policy & Endorsement Level Flags
+ * Policy & Endorsement Level Flags
  * FlagList component displays multiple compliance flags grouped by level
  */
 
 import { CheckCircle, AlertTriangle, AlertCircle, Info } from 'lucide-react';
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Card } from '@scaffald/ui';
 import { FlagBadge, getEntityTypeLabel } from './FlagBadge';
 import { FlagComplianceIssue } from '../../lib/compliance/evaluator';
 import { FlaggableEntityType, FlagSeverity } from '../../types';

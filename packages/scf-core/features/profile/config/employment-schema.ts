@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
 /**
  * Employment Profile Form Schema
@@ -8,7 +8,7 @@ export const employmentProfileSchema = z.object({
   // Preferred work locations (up to 3)
   preferred_work_locations: z
     .array(z.string())
-    .max(3, "Maximum 3 work locations allowed")
+    .max(3, 'Maximum 3 work locations allowed')
     .optional(),
 
   // Travel preferences
@@ -17,10 +17,7 @@ export const employmentProfileSchema = z.object({
 
   // Residency (multiple countries but keep US boolean)
   us_resident: z.boolean().optional(),
-  authorized_countries: z.array(z.string()).max(
-    3,
-    "Maximum 3 countries allowed",
-  ).optional(),
+  authorized_countries: z.array(z.string()).max(3, 'Maximum 3 countries allowed').optional(),
 
   // Passport
   us_passport: z.boolean().default(false),
@@ -28,53 +25,36 @@ export const employmentProfileSchema = z.object({
   // Drivers License (multi-select array)
   drivers_license_classes: z
     .array(
-      z.enum([
-        "Class M",
-        "Class A",
-        "Class B",
-        "Class C",
-        "Class D",
-        "CDL A",
-        "CDL B",
-        "CDL C",
-      ]),
+      z.enum(['Class M', 'Class A', 'Class B', 'Class C', 'Class D', 'CDL A', 'CDL B', 'CDL C'])
     )
     .optional(),
 
   // Military Status (multi-select)
   military_status: z
-    .array(
-      z.enum([
-        "Active Duty",
-        "Reserve",
-        "National Guard",
-        "Veteran",
-        "Retired",
-      ]),
-    )
+    .array(z.enum(['Active Duty', 'Reserve', 'National Guard', 'Veteran', 'Retired']))
     .optional(),
 
   // Availability (multi-select)
   availability: z
     .array(
       z.enum([
-        "Part-time",
-        "Contract",
-        "Full-time",
-        "Weekend",
-        "Night Shift",
-        "Day Shift",
-        "Temporary",
-        "Short Notice",
-      ]),
+        'Part-time',
+        'Contract',
+        'Full-time',
+        'Weekend',
+        'Night Shift',
+        'Day Shift',
+        'Temporary',
+        'Short Notice',
+      ])
     )
     .optional(),
 
   // Hourly Rate
   hourly_rate: z.number().min(0).max(200).default(0),
-});
+})
 
-export type EmploymentProfileFormData = z.infer<typeof employmentProfileSchema>;
+export type EmploymentProfileFormData = z.infer<typeof employmentProfileSchema>
 
 export const employmentProfileDefaults: Partial<EmploymentProfileFormData> = {
   preferred_work_locations: [],
@@ -87,35 +67,35 @@ export const employmentProfileDefaults: Partial<EmploymentProfileFormData> = {
   military_status: [],
   availability: [],
   hourly_rate: 0,
-};
+}
 
 // Helper constants for form options
 export const DRIVERS_LICENSE_OPTIONS = [
-  "Class M",
-  "Class A",
-  "Class B",
-  "Class C",
-  "Class D",
-  "CDL A",
-  "CDL B",
-  "CDL C",
-] as const;
+  'Class M',
+  'Class A',
+  'Class B',
+  'Class C',
+  'Class D',
+  'CDL A',
+  'CDL B',
+  'CDL C',
+] as const
 
 export const MILITARY_STATUS_OPTIONS = [
-  "Active Duty",
-  "Reserve",
-  "National Guard",
-  "Veteran",
-  "Retired",
-] as const;
+  'Active Duty',
+  'Reserve',
+  'National Guard',
+  'Veteran',
+  'Retired',
+] as const
 
 export const AVAILABILITY_OPTIONS = [
-  "Part-time",
-  "Contract",
-  "Full-time",
-  "Weekend",
-  "Night Shift",
-  "Day Shift",
-  "Temporary",
-  "Short Notice",
-] as const;
+  'Part-time',
+  'Contract',
+  'Full-time',
+  'Weekend',
+  'Night Shift',
+  'Day Shift',
+  'Temporary',
+  'Short Notice',
+] as const

@@ -1,11 +1,17 @@
 import { PaymentIntentForm } from '@scf/core/features/payments/components/PaymentIntentForm'
-import { api } from '@scf/core/utils/api'
+import {
+  useIdVerificationPricing,
+  useCurrentIdVerification,
+  useIdVerificationRequest,
+  useIdVerificationConfirm,
+} from '@scf/core/utils/id-verification-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
-import { AlertCircle } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
+import { AlertCircle } from 'lucide-react-native'
+import { useToast } from '@scaffald/ui'
 import { formatDistanceToNow } from 'date-fns'
 import { useEffect, useMemo, useState } from 'react'
-import { Button, Card, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
+import { Button, Card, ScrollView, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { IdVerificationBadge } from './IdVerificationBadge'
 
 type PricingRow = {
@@ -43,20 +49,13 @@ const formatDuration = (value?: string | null) => {
 
 export function IdVerificationContent() {
   const { user } = useUser()
-  const toast = useToastController()
+  const toast = useToast()
 
-  const pricingQuery = api.idVerification.getPricing.useQuery(undefined, {
-    staleTime: 5 * 60 * 1000,
-  })
-  const currentVerificationQuery = api.idVerification.getCurrentVerification.useQuery(
-    {},
-    {
-      staleTime: 60 * 1000,
-    }
-  )
+  const pricingQuery = useIdVerificationPricing({ staleTime: 5 * 60 * 1000 })
+  const currentVerificationQuery = useCurrentIdVerification(undefined, { staleTime: 60 * 1000 })
 
-  const requestVerification = api.idVerification.requestVerification.useMutation()
-  const confirmVerification = api.idVerification.confirmVerificationPayment.useMutation()
+  const requestVerification = useIdVerificationRequest()
+  const confirmVerification = useIdVerificationConfirm()
 
   const [selectedPricingId, setSelectedPricingId] = useState<string | null>(null)
   const [paymentSession, setPaymentSession] = useState<PaymentSession | null>(null)
@@ -81,15 +80,17 @@ export function IdVerificationContent() {
 
   const handleCreatePaymentSession = async () => {
     if (!user) {
-      toast.show('Sign in required', {
+      toast.show({
+        title: 'Sign in required',
         message: 'Please sign in again before starting verification.',
-        type: 'error',
+        variant: 'error',
       })
       return
     }
 
     if (!selectedPricing) {
-      toast.show('Select a plan', {
+      toast.show({
+        title: 'Select a plan',
         message: 'Choose a verification option to continue.',
       })
       return
@@ -103,50 +104,58 @@ export function IdVerificationContent() {
         pricingId: selectedPricing.id,
       })
       setPaymentSession(response)
-      toast.show('Secure payment ready', {
+      toast.show({
+        title: 'Secure payment ready',
         message: 'Enter your card details below to continue.',
       })
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to start payment. Try again.'
       setRequestError(message)
-      toast.show('Payment setup failed', { message, type: 'error' })
+      toast.show({
+        title: 'Payment setup failed',
+        message: error instanceof Error ? error.message : 'Please try again.',
+        variant: 'error',
+      })
     }
   }
 
   const handlePaymentSuccess = async (paymentIntentId: string) => {
     try {
       await confirmVerification.mutateAsync({ paymentIntentId })
-      toast.show('Verification scheduled', {
+      toast.show({
+        title: 'Verification scheduled',
         message: "We're creating your Persona inquiry now.",
       })
       setPaymentSession(null)
       void currentVerificationQuery.refetch()
     } catch (error) {
-      const message =
+      const _message =
         error instanceof Error ? error.message : 'Unable to confirm payment with Stripe.'
-      toast.show('Payment confirmation failed', { message, type: 'error' })
+      toast.show({
+        title: 'Payment confirmation failed',
+        message: error instanceof Error ? error.message : 'Please try again.',
+        variant: 'error',
+      })
     }
   }
 
   return (
-    <YStack gap="$4">
+    <Stack gap={16}>
       {statusCard}
 
-      <Card padding="$4" bordered>
-        <YStack gap="$2">
-          <Text fontSize="$5" fontWeight="600">
-            Why verify your identity?
-          </Text>
-          <Text color="$color11">
+      <Card padding="md" bordered>
+        <Stack gap={8}>
+          <Text>Why verify your identity?</Text>
+          <Text color="$gray11">
             Verified profiles are highlighted across search, inquiries, and background checks,
             giving organizations confidence that you are who you say you are.
           </Text>
-          <YStack gap="$1" marginTop="$2">
-            <Text color="$color11">• Badge displayed on your profile and worker cards</Text>
-            <Text color="$color11">• Valid for 6 months with automated reminders</Text>
-            <Text color="$color11">• Powered by Persona, the same provider used by banks</Text>
-          </YStack>
-        </YStack>
+          <Stack gap={4} marginTop={8}>
+            <Text color="$gray11">• Badge displayed on your profile and worker cards</Text>
+            <Text color="$gray11">• Valid for 6 months with automated reminders</Text>
+            <Text color="$gray11">• Powered by Persona, the same provider used by banks</Text>
+          </Stack>
+        </Stack>
       </Card>
 
       <PricingSection
@@ -171,83 +180,77 @@ export function IdVerificationContent() {
         }}
         onPaymentSuccess={handlePaymentSuccess}
       />
-    </YStack>
+    </Stack>
   )
 }
 
 export function IdVerificationRight() {
   return (
-    <YStack gap="$4">
-      <Card padding="$4" bordered>
-        <YStack gap="$2">
-          <Text fontSize="$5" fontWeight="600">
-            What happens after payment?
-          </Text>
-          <Text color="$color11">
+    <Stack gap={16}>
+      <Card padding="md" bordered>
+        <Stack gap={8}>
+          <Text>What happens after payment?</Text>
+          <Text color="$gray11">
             We automatically create a Persona inquiry using your Scaffald profile details. You'll
             receive an email and in-app notification with a secure link to upload your government ID
             and selfie. Most verifications finish within a few minutes.
           </Text>
-          <YStack gap="$1">
-            <Text color="$color11">1. Complete the Persona flow on web or mobile</Text>
-            <Text color="$color11">2. Persona confirms the authenticity of your ID</Text>
-            <Text color="$color11">3. Your badge updates instantly across the platform</Text>
-          </YStack>
-        </YStack>
+          <Stack gap={4}>
+            <Text color="$gray11">1. Complete the Persona flow on web or mobile</Text>
+            <Text color="$gray11">2. Persona confirms the authenticity of your ID</Text>
+            <Text color="$gray11">3. Your badge updates instantly across the platform</Text>
+          </Stack>
+        </Stack>
       </Card>
 
-      <Card padding="$4" bordered backgroundColor="$blue2" borderColor="$blue6">
-        <YStack gap="$2">
-          <Text fontSize="$4" fontWeight="600" color="$blue12">
-            Need help?
-          </Text>
+      <Card padding="md" bordered backgroundColor="$blue2" borderColor="$blue6">
+        <Stack gap={8}>
+          <Text color="$blue12">Need help?</Text>
           <Text color="$blue11">
             Email support@scaffald.com if you run into issues with Persona, need an invoice, or want
             to request a bulk verification plan for your organization.
           </Text>
-        </YStack>
+        </Stack>
       </Card>
-    </YStack>
+    </Stack>
   )
 }
 
 export function IdVerificationFlow() {
   return (
-    <YStack flex={1} backgroundColor="$background">
-      <ScrollView flex={1}>
-        <YStack gap="$4" paddingHorizontal="$4" paddingBottom="$8">
+    <Stack flex={1} backgroundColor="$background">
+      <ScrollView style={{ flex: 1 }}>
+        <Stack gap={16} paddingHorizontal={16} paddingBottom={32}>
           <IdVerificationContent />
-        </YStack>
+        </Stack>
       </ScrollView>
-    </YStack>
+    </Stack>
   )
 }
 
 function renderStatusCard(
-  queryReturn: ReturnType<typeof api.idVerification.getCurrentVerification.useQuery>
+  queryReturn: ReturnType<typeof useCurrentIdVerification>
 ) {
   if (queryReturn.isLoading) {
     return (
-      <Card padding="$4" bordered>
-        <YStack gap="$2">
+      <Card padding="md" bordered>
+        <Stack gap={8}>
           <IdVerificationBadge status={null} muted size="md" />
-          <Text color="$color11">Loading your verification badge…</Text>
-        </YStack>
+          <Text color="$gray11">Loading your verification badge…</Text>
+        </Stack>
       </Card>
     )
   }
 
   if (queryReturn.isError) {
     return (
-      <Card padding="$4" bordered backgroundColor="$red2" borderColor="$red6">
-        <YStack gap="$2">
-          <Text fontSize="$5" fontWeight="600" color="$red12">
-            Unable to load badge
-          </Text>
+      <Card padding="md" bordered backgroundColor="$red2" borderColor="$red6">
+        <Stack gap={8}>
+          <Text color="$red12">Unable to load badge</Text>
           <Text color="$red11">
             {queryReturn.error?.message ?? 'Please refresh to try loading your verification badge.'}
           </Text>
-        </YStack>
+        </Stack>
       </Card>
     )
   }
@@ -263,25 +266,25 @@ function renderStatusCard(
     | undefined
   if (!badge) {
     return (
-      <Card padding="$4" bordered>
-        <YStack gap="$2">
+      <Card padding="md" bordered>
+        <Stack gap={8}>
           <IdVerificationBadge status={null} muted size="md" />
-          <Text color="$color11">
+          <Text color="$gray11">
             Purchase a verification to unlock the "Verified Identity" badge on your profile.
           </Text>
-        </YStack>
+        </Stack>
       </Card>
     )
   }
 
   return (
-    <Card padding="$4" bordered>
-      <YStack gap="$2">
+    <Card padding="md" bordered>
+      <Stack gap={8}>
         <IdVerificationBadge
           status={badge.badgeStatus as 'active' | 'expired' | 'revoked'}
           badgeExpiresAt={badge.badgeExpiresAt}
         />
-        <Text color="$color11">
+        <Text color="$gray11">
           {badge.badgeStatus === 'active'
             ? `Valid until ${formatDate(badge.badgeExpiresAt ?? '')} (${formatDuration(
                 badge.badgeExpiresAt ?? ''
@@ -290,11 +293,11 @@ function renderStatusCard(
               ? `Expired on ${formatDate(badge.badgeExpiresAt ?? '')}`
               : 'Contact support to resolve revocation.'}
         </Text>
-        <Text color="$color10">
+        <Text color="$gray11">
           Verified on {formatDate(badge.verifiedAt ?? '')} • Level:{' '}
           {badge.verificationLevel ?? 'N/A'}
         </Text>
-      </YStack>
+      </Stack>
     </Card>
   )
 }
@@ -314,76 +317,62 @@ function PricingSection({
 }: PricingSectionProps) {
   if (isLoading) {
     return (
-      <Card padding="$4" bordered>
-        <YStack gap="$2" alignItems="center">
-          <Spinner size="small" />
-          <Text color="$color11">Loading verification options…</Text>
-        </YStack>
+      <Card padding="md" bordered>
+        <Stack gap={8} align="center">
+          <Spinner size="sm" />
+          <Text color="$gray11">Loading verification options…</Text>
+        </Stack>
       </Card>
     )
   }
 
   if (pricingOptions.length === 0) {
     return (
-      <Card padding="$4" bordered backgroundColor="$color2" borderColor="$borderColor">
-        <YStack gap="$2">
-          <Text fontSize="$5" fontWeight="600">
-            Verification temporarily unavailable
+      <Card padding="md" bordered backgroundColor="$color2" borderColor="$borderColor">
+        <Stack gap={8}>
+          <Text>Verification temporarily unavailable</Text>
+          <Text color="$gray11">
+            Pricing hasn't been published yet. Check back soon or contact support@scaffald.com.
           </Text>
-          <Text color="$color11">
-            Pricing hasn’t been published yet. Check back soon or contact support@scaffald.com.
-          </Text>
-        </YStack>
+        </Stack>
       </Card>
     )
   }
 
   return (
-    <YStack gap="$2">
-      <Text fontSize="$5" fontWeight="600">
-        Choose a verification option
-      </Text>
-      <YStack gap="$3">
+    <Stack gap={8}>
+      <Text>Choose a verification option</Text>
+      <Stack gap={12}>
         {pricingOptions.map((plan) => {
           const isActive = plan.id === selectedPricingId
           return (
             <Card
               key={plan.id}
-              padding="$4"
+              padding="md"
               bordered
-              animation="quick"
-              backgroundColor={isActive ? '$blue2' : '$color1'}
-              borderColor={isActive ? '$blue8' : '$borderColor'}
+              style={{ backgroundColor: isActive ? colors.info[50] : undefined, borderColor: isActive ? colors.info[400] : colors.gray[200] }}
               onPress={() => onSelectPlan(plan.id)}
             >
-              <YStack gap="$2">
-                <XStack justifyContent="space-between" alignItems="center">
-                  <Text fontSize="$4" fontWeight="600">
-                    {plan.name}
-                  </Text>
-                  <Text fontSize="$5" fontWeight="700">
-                    {formatCurrency(plan.priceCents)}
-                  </Text>
-                </XStack>
-                {plan.description && (
-                  <Text color="$color11" fontSize="$3">
-                    {plan.description}
-                  </Text>
-                )}
+              <Stack gap={8}>
+                <Row justify="space-between" align="center">
+                  <Text>{plan.name}</Text>
+                  <Text>{formatCurrency(plan.priceCents)}</Text>
+                </Row>
+                {plan.description && <Text color="$gray11">{plan.description}</Text>}
                 <Button
-                  size="$3"
-                  theme={isActive ? 'blue' : undefined}
-                  variant={isActive ? undefined : 'outlined'}
+                  size="sm"
+                  color={isActive ? 'primary' : undefined}
+                  variant={isActive ? 'filled' : 'outline'}
                   onPress={() => onSelectPlan(plan.id)}
                 >
                   {isActive ? 'Selected' : 'Select this option'}
                 </Button>
-              </YStack>
+              </Stack>
             </Card>
           )
         })}
-      </YStack>
-    </YStack>
+      </Stack>
+    </Stack>
   )
 }
 
@@ -409,37 +398,35 @@ function PaymentSection({
   onPaymentSuccess,
 }: PaymentSectionProps) {
   return (
-    <YStack gap="$3">
-      <YStack gap="$1">
-        <Text fontSize="$5" fontWeight="600">
-          Secure payment
-        </Text>
-        <Text color="$color11">
+    <Stack gap={12}>
+      <Stack gap={4}>
+        <Text>Secure payment</Text>
+        <Text color="$gray11">
           Charges are non-refundable and processed via Stripe. Your badge will update immediately
           after Persona confirms your identity.
         </Text>
-      </YStack>
+      </Stack>
 
       {requestError && (
-        <YStack
-          gap="$2"
-          padding="$3"
+        <Stack
+          gap={8}
+          padding="sm"
           backgroundColor="$red2"
           borderColor="$red6"
           borderWidth={1}
-          borderRadius="$4"
+          borderRadius={16}
         >
-          <XStack gap="$2" alignItems="center">
+          <Row gap={8} align="center">
             <AlertCircle size={18} color="$red11" />
             <Text color="$red11">{requestError}</Text>
-          </XStack>
-        </YStack>
+          </Row>
+        </Stack>
       )}
 
       {!paymentSession && (
         <Button
-          size="$4"
-          theme="blue"
+          size="md"
+          color="primary"
           disabled={!selectedPricing || isRequesting || isConfirming}
           onPress={onCreateSession}
         >
@@ -448,7 +435,7 @@ function PaymentSection({
       )}
 
       {paymentSession && (
-        <YStack gap="$3">
+        <Stack gap={12}>
           <PaymentIntentForm
             clientSecret={paymentSession.clientSecret}
             amountCents={paymentSession.amountCents}
@@ -457,11 +444,11 @@ function PaymentSection({
             disabled={isConfirming}
             onSuccess={onPaymentSuccess}
           />
-          <Button size="$3" variant="outlined" disabled={isConfirming} onPress={onResetSession}>
+          <Button size="sm" variant="outline" disabled={isConfirming} onPress={onResetSession}>
             Start over
           </Button>
-        </YStack>
+        </Stack>
       )}
-    </YStack>
+    </Stack>
   )
 }

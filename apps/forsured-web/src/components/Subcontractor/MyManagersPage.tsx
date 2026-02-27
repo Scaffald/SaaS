@@ -1,15 +1,15 @@
 /**
  * MyManagersPage - My managers page using Beyond UI
- * Migrated from Tamagui to Beyond UI
+
  */
-import React, { useState } from 'react';
-import { Stack, Row, Text, Card } from '@unicornlove/beyond-ui';
-import { Button } from '@unicornlove/beyond-ui';
-import { Building, Users, TrendingUp, CheckCircle } from 'lucide-react';
-import RelationshipCard from '../Shared/RelationshipCard';
+import React, { useState } from 'react'
+import { Stack, Row, Text, Card } from '@scaffald/ui'
+import { Button } from '@scaffald/ui'
+import { Building, Users, TrendingUp, CheckCircle } from 'lucide-react'
+import RelationshipCard from '../Shared/RelationshipCard'
 
 export default function MyManagersPage() {
-  const [filter, setFilter] = useState<'all' | 'active' | 'pending'>('all');
+  const [filter, setFilter] = useState<'all' | 'active' | 'pending'>('all')
 
   const mockRelationships = [
     {
@@ -18,9 +18,7 @@ export default function MyManagersPage() {
       organizationType: 'gc' as const,
       status: 'active' as const,
       complianceScore: 95,
-      lastActivity: new Date(
-        Date.now() - 2 * 24 * 60 * 60 * 1000
-      ).toISOString(),
+      lastActivity: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
       relationshipHealth: 'excellent' as const,
       activeProjects: 3,
     },
@@ -30,9 +28,7 @@ export default function MyManagersPage() {
       organizationType: 'gc' as const,
       status: 'active' as const,
       complianceScore: 88,
-      lastActivity: new Date(
-        Date.now() - 5 * 24 * 60 * 60 * 1000
-      ).toISOString(),
+      lastActivity: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
       relationshipHealth: 'good' as const,
       activeProjects: 2,
     },
@@ -42,9 +38,7 @@ export default function MyManagersPage() {
       organizationType: 'gc' as const,
       status: 'pending' as const,
       complianceScore: 0,
-      lastActivity: new Date(
-        Date.now() - 1 * 24 * 60 * 60 * 1000
-      ).toISOString(),
+      lastActivity: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
       relationshipHealth: undefined,
       activeProjects: 0,
     },
@@ -54,35 +48,30 @@ export default function MyManagersPage() {
       organizationType: 'gc' as const,
       status: 'inactive' as const,
       complianceScore: 82,
-      lastActivity: new Date(
-        Date.now() - 45 * 24 * 60 * 60 * 1000
-      ).toISOString(),
+      lastActivity: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
       relationshipHealth: 'fair' as const,
       activeProjects: 0,
     },
-  ];
+  ]
 
   const filteredRelationships = mockRelationships.filter((rel) => {
-    if (filter === 'all') return true;
-    if (filter === 'active') return rel.status === 'active';
-    if (filter === 'pending') return rel.status === 'pending';
-    return true;
-  });
+    if (filter === 'all') return true
+    if (filter === 'active') return rel.status === 'active'
+    if (filter === 'pending') return rel.status === 'pending'
+    return true
+  })
 
   const stats = {
     total: mockRelationships.length,
     active: mockRelationships.filter((r) => r.status === 'active').length,
-    totalProjects: mockRelationships.reduce(
-      (acc, r) => acc + r.activeProjects,
-      0
-    ),
+    totalProjects: mockRelationships.reduce((acc, r) => acc + r.activeProjects, 0),
     avgCompliance: Math.round(
       mockRelationships
         .filter((r) => r.complianceScore > 0)
         .reduce((acc, r) => acc + r.complianceScore, 0) /
         mockRelationships.filter((r) => r.complianceScore > 0).length
     ),
-  };
+  }
 
   return (
     <Stack gap={24}>
@@ -101,7 +90,9 @@ export default function MyManagersPage() {
         <Card style={{ padding: 16, flex: 1, minWidth: 200 }}>
           <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
             <Building size={20} color="currentColor" />
-            <Text size="xs" muted>Total Managers</Text>
+            <Text size="xs" muted>
+              Total Managers
+            </Text>
           </Row>
           <Text size="2xl" weight="bold">
             {stats.total}
@@ -111,7 +102,9 @@ export default function MyManagersPage() {
         <Card style={{ padding: 16, flex: 1, minWidth: 200 }}>
           <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
             <CheckCircle size={20} color="currentColor" />
-            <Text size="xs" muted>Active</Text>
+            <Text size="xs" muted>
+              Active
+            </Text>
           </Row>
           <Text size="2xl" weight="bold">
             {stats.active}
@@ -121,7 +114,9 @@ export default function MyManagersPage() {
         <Card style={{ padding: 16, flex: 1, minWidth: 200 }}>
           <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
             <Users size={20} color="currentColor" />
-            <Text size="xs" muted>Total Projects</Text>
+            <Text size="xs" muted>
+              Total Projects
+            </Text>
           </Row>
           <Text size="2xl" weight="bold">
             {stats.totalProjects}
@@ -131,7 +126,9 @@ export default function MyManagersPage() {
         <Card style={{ padding: 16, flex: 1, minWidth: 200 }}>
           <Row alignItems="center" gap={8} style={{ marginBottom: 8 }}>
             <TrendingUp size={20} color="currentColor" />
-            <Text size="xs" muted>Avg Compliance</Text>
+            <Text size="xs" muted>
+              Avg Compliance
+            </Text>
           </Row>
           <Text size="2xl" weight="bold">
             {stats.avgCompliance}%
@@ -177,11 +174,11 @@ export default function MyManagersPage() {
             relationshipHealth={relationship.relationshipHealth}
             activeProjects={relationship.activeProjects}
             onPress={() => {
-              console.log('Navigate to manager:', relationship.id);
+              console.log('Navigate to manager:', relationship.id)
             }}
           />
         ))}
       </Row>
     </Stack>
-  );
+  )
 }

@@ -16,7 +16,7 @@ import {
   Download,
   Loader2,
 } from 'lucide-react';
-import { Stack, Row, Text, H1, H2, H3, Button, Card } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, H1, H2, H3, Button, Card } from '@scaffald/ui';
 import StatusBadge from '../Common/StatusBadge';
 
 interface UploadedDocument {
