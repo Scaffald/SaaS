@@ -31,8 +31,8 @@ type RenewalSettingsSectionProps = {
 }
 
 function RenewalSettingsSection({ organizationId }: RenewalSettingsSectionProps) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const utils = (api as any).useUtils()
+  // biome-ignore lint/suspicious/noExplicitAny: api.useUtils unavailable in Node.js typecheck (Deno functions excluded)
+  const utils = (api as unknown as Record<string, any>).useUtils()
   const { data: renewalSettings, isLoading } = useRenewalSettings(organizationId)
   const updateMutation = useUpdateRenewalSettings()
   const [enabled, setEnabled] = useState<boolean | null>(null)
@@ -45,7 +45,7 @@ function RenewalSettingsSection({ organizationId }: RenewalSettingsSectionProps)
 
   const handleAddInterval = () => {
     const value = parseInt(newInterval, 10)
-    if (isNaN(value) || value < 1 || value > 365) {
+    if (Number.isNaN(value) || value < 1 || value > 365) {
       return
     }
     if (!currentIntervals.includes(value)) {
@@ -66,8 +66,8 @@ function RenewalSettingsSection({ organizationId }: RenewalSettingsSectionProps)
         intervals: currentIntervals,
       })
       // Invalidate cache and clear local overrides so we re-sync from server
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      void (utils as any).organizations.getRenewalSettings.invalidate({ organizationId })
+      // biome-ignore lint/suspicious/noExplicitAny: api.useUtils unavailable in Node.js typecheck (Deno functions excluded)
+      void (utils as unknown as Record<string, any>).organizations.getRenewalSettings.invalidate({ organizationId })
       setEnabled(null)
       setIntervals(null)
     } catch {

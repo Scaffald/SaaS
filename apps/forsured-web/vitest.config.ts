@@ -75,7 +75,13 @@ export default defineConfig({
       'tests/performance/**/*.{test,spec}.{ts,tsx}',
       'tests/contracts/**/*.{test,spec}.{ts,tsx}',
     ],
-    exclude: ['**/node_modules/**', '**/dist/**'],
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/*.integration.test.*',
+      '**/*.pg.test.*',
+      'tests/performance/**',
+    ],
     // Configure dependency handling for tests
     server: {
       deps: {

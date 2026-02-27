@@ -19,9 +19,9 @@ vi.mock('@scaffald/ui', () => {
     children?: ReactNode
   } & Record<string, unknown>) => <span {...rest}>{children}</span>
 
-  const Progress = ({
+  const ProgressBar = ({
     value,
-    max,
+    max = 100,
     children,
     ...rest
   }: {
@@ -34,27 +34,20 @@ vi.mock('@scaffald/ui', () => {
     </div>
   )
 
-  Progress.Indicator = ({
-    animation,
-    ...rest
-  }: {
-    animation?: string
-  } & Record<string, unknown>) => (
-    <div data-testid="progress-indicator" data-animation={animation} {...rest} />
-  )
-
   const Separator = ({
-    vertical,
+    orientation,
     ...rest
   }: {
-    vertical?: boolean
-  } & Record<string, unknown>) => <div data-testid="separator" data-vertical={vertical} {...rest} />
+    orientation?: string
+  } & Record<string, unknown>) => (
+    <div data-testid="separator" data-vertical={orientation === 'vertical'} {...rest} />
+  )
 
   return {
     Stack: Stack,
     Row: Stack,
     Text,
-    Progress,
+    ProgressBar,
     Separator,
   }
 })

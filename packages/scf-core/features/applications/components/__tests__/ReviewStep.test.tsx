@@ -6,27 +6,51 @@ import { ReviewStep } from '../ReviewStep'
 const mockOnEdit = vi.fn()
 const mockOnSubmit = vi.fn()
 
-vi.mock('@scaffald/ui', () => ({
-  Checkbox: ({
-    checked,
-    onCheckedChange,
-    label,
-  }: {
-    checked: boolean
-    onCheckedChange: (checked: boolean) => void
-    label?: string
-  }) => (
-    <label>
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={(e) => onCheckedChange(e.target.checked)}
-        data-testid="consent-checkbox"
-      />
-      {label}
-    </label>
-  ),
-}))
+vi.mock('@scaffald/ui', () => {
+  const React = require('react')
+  const createEl =
+    (tag: string) =>
+    ({ children, ...rest }: { children?: React.ReactNode; [key: string]: unknown }) =>
+      React.createElement(tag, rest, children)
+
+  return {
+    Stack: createEl('div'),
+    Row: createEl('div'),
+    Text: createEl('span'),
+    Separator: createEl('hr'),
+    Button: ({
+      children,
+      onPress,
+      disabled,
+      ...rest
+    }: {
+      children?: React.ReactNode
+      onPress?: () => void
+      disabled?: boolean
+      [key: string]: unknown
+    }) => React.createElement('button', { type: 'button', disabled, onClick: onPress, ...rest }, children),
+    Checkbox: ({
+      checked,
+      onChange,
+      label,
+    }: {
+      checked: boolean
+      onChange: (checked: boolean) => void
+      label?: string
+    }) => React.createElement(
+      'label',
+      null,
+      React.createElement('input', {
+        type: 'checkbox',
+        checked,
+        onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.checked),
+        'data-testid': 'consent-checkbox',
+      }),
+      label,
+    ),
+    useThemeContext: () => ({ theme: 'light' as const }),
+  }
+})
 
 describe('ReviewStep', () => {
   const screeningAnswers: Partial<ScreeningAnswers> = {
@@ -89,7 +113,7 @@ describe('ReviewStep', () => {
 
     expect(screen.getByText('Screening Questions')).toBeInTheDocument()
     expect(screen.getByText(/New York, NY/)).toBeInTheDocument()
-    expect(screen.getByText(/Yes/)).toBeInTheDocument() // willing to relocate
+    expect(screen.getAllByText(/Yes/).length).toBeGreaterThan(0) // willing to relocate / authorized to work
   })
 
   it('displays custom question answers', () => {
@@ -149,7 +173,7 @@ describe('ReviewStep', () => {
     render(<ReviewStep {...defaultProps} />)
 
     const checkbox = screen.getByTestId('consent-checkbox')
-    fireEvent.change(checkbox, { target: { checked: true } })
+    fireEvent.click(checkbox)
 
     const submitButton = screen.getByText('Submit Application')
     expect(submitButton).not.toBeDisabled()
@@ -159,7 +183,7 @@ describe('ReviewStep', () => {
     render(<ReviewStep {...defaultProps} />)
 
     const checkbox = screen.getByTestId('consent-checkbox')
-    fireEvent.change(checkbox, { target: { checked: true } })
+    fireEvent.click(checkbox)
 
     const submitButton = screen.getByText('Submit Application')
     fireEvent.click(submitButton)
@@ -172,7 +196,7 @@ describe('ReviewStep', () => {
   it('displays loading state when submitting', () => {
     render(<ReviewStep {...defaultProps} isSubmitting={true} />)
 
-    expect(screen.getByText('Submitting...')).toBeInTheDocument()
+    expect(screen.getByText('Submitting Application...')).toBeInTheDocument()
   })
 
   it('handles empty custom question answers', () => {

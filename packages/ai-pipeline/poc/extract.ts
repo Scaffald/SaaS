@@ -29,29 +29,29 @@ async function main() {
   const resolvedPath = resolve(pdfPath);
   const fileName = basename(resolvedPath);
 
-  console.error(`\n--- ACORD Extraction POC ---`);
+  console.error('\n--- ACORD Extraction POC ---');
   console.error(`File: ${fileName}`);
   console.error(`Prompt: ${PROMPT_VERSION}`);
-  console.error(`Model: gpt-4o`);
-  console.error(`---`);
+  console.error('Model: gpt-4o');
+  console.error('---');
 
   // 1. Read PDF
-  console.error(`Reading PDF...`);
+  console.error('Reading PDF...');
   const pdfBuffer = readFileSync(resolvedPath);
   console.error(`PDF size: ${(pdfBuffer.length / 1024).toFixed(1)} KB`);
 
   // 2. Convert to images
-  console.error(`Converting to images...`);
+  console.error('Converting to images...');
   const pages = await convertPdfToImages(pdfBuffer);
   console.error(`Pages: ${pages.length}`);
 
   // 3. Extract via GPT-4o Vision
-  console.error(`Sending to GPT-4o Vision...`);
+  console.error('Sending to GPT-4o Vision...');
   const service = new AIExtractionService(apiKey);
   const result = await service.extractCertificate(pages, ACORD25_SYSTEM_PROMPT);
 
   // 4. Print metadata to stderr (so JSON output on stdout is clean)
-  console.error(`\n--- Results ---`);
+  console.error('\n--- Results ---');
   console.error(`Confidence: ${result.data.extraction_confidence}%`);
   console.error(`Coverages found: ${result.data.coverages.length}`);
   console.error(`Endorsements found: ${result.data.endorsements.length}`);
@@ -66,7 +66,7 @@ async function main() {
     const cost = (result.usage.prompt_tokens * 2.5 + result.usage.completion_tokens * 10) / 1_000_000;
     console.error(`Est. cost: $${cost.toFixed(4)}`);
   }
-  console.error(`---\n`);
+  console.error('---\n');
 
   // 5. Print structured JSON to stdout (pipe-friendly)
   console.log(JSON.stringify(result.data, null, 2));

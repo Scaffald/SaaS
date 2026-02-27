@@ -43,7 +43,7 @@ describe('ProgressIndicator', () => {
   })
 
   it('highlights current step', () => {
-    const { container } = render(
+    render(
       <ProgressIndicator
         currentStep={ApplicationStep.CUSTOM_QUESTIONS}
         completedSteps={[ApplicationStep.SCREENING]}
@@ -52,9 +52,7 @@ describe('ProgressIndicator', () => {
     )
 
     // Current step should have step number 2 visible
-    const stepNumbers = container.querySelectorAll('text')
-    const step2 = Array.from(stepNumbers).find((el) => el.textContent === '2')
-    expect(step2).toBeInTheDocument()
+    expect(screen.getByText('2')).toBeInTheDocument()
   })
 
   it('shows checkmark for completed steps', () => {

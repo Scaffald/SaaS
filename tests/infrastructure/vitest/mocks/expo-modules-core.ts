@@ -1,6 +1,7 @@
 // Mock for expo-modules-core
 // This module is used by various Expo libraries but requires native module registry
 // In test environment, we provide stubs for all the required APIs
+import { vi } from 'vitest'
 
 const mockLogger = {
   info: () => {},
@@ -16,10 +17,29 @@ const mockNativeModuleProxy = new Proxy(
   }
 );
 
+const mockNativeModule = new Proxy(
+  {},
+  {
+    get: () => vi.fn(),
+    apply: () => mockNativeModule,
+  }
+) as Record<string, unknown>;
+
 export const NativeModulesProxy = mockNativeModuleProxy;
 export const ExpoModulesCoreJSLogger = mockLogger;
+export const requireNativeModule = vi.fn(() => mockNativeModule);
+export const requireOptionalNativeModule = vi.fn(() => null);
+export const EventEmitter = vi.fn().mockImplementation(() => ({
+  addListener: vi.fn(),
+  removeAllListeners: vi.fn(),
+}));
+export const SharedObject = vi.fn();
+export const NativeModule = vi.fn();
 
 export default {
   NativeModulesProxy: mockNativeModuleProxy,
   ExpoModulesCoreJSLogger: mockLogger,
+  requireNativeModule,
+  requireOptionalNativeModule,
+  EventEmitter,
 };

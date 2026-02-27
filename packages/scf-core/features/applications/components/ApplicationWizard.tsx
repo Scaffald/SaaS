@@ -254,7 +254,7 @@ export function ApplicationWizard({
             />
           )}
 
-          {currentStep === 'custom_questions' && customQuestions.length > 0 && (
+          {currentStep === 'custom_questions' && (
             <CustomQuestionsStep
               questions={customQuestions}
               answers={customQuestionAnswers}

@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { GeneralInfoStep } from '../GeneralInfoStep'
 
-vi.mock('../StepNavigation', () => ({
+vi.mock('../../StepNavigation', () => ({
   StepNavigation: ({
     canGoNext,
     isSaving,
