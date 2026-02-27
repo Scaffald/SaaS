@@ -1,4 +1,4 @@
-export { ScaffaldProvider, useScaffald } from './provider.js'
+export { ScaffaldProvider, useScaffald, useScaffaldOrNull } from './provider.js'
 export type { ScaffaldProviderProps } from './provider.js'
 
 export {

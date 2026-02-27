@@ -78,3 +78,11 @@ export function useScaffald(): Scaffald {
   }
   return context
 }
+
+/**
+ * Returns the Scaffald client or null if not inside a ScaffaldProvider.
+ * Use useScaffald() if you want a hard error on missing provider.
+ */
+export function useScaffaldOrNull(): Scaffald | null {
+  return useContext(ScaffaldContext)
+}
