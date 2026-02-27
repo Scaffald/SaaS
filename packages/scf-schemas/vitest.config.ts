@@ -12,7 +12,7 @@ export default mergeConfig(
   defineConfig({
     root: workspaceRoot,
     test: {
-      include: ['packages/schemas/**/*.{test,spec}.{ts}'],
+      include: ['packages/scf-schemas/**/*.{test,spec}.{ts,tsx}'],
       watchExclude: ['**/dist/**', '**/.turbo/**'],
       testTimeout: 60000, // 60 second timeout per test
       hookTimeout: 30000, // 30 second timeout for setup/teardown
@@ -20,7 +20,7 @@ export default mergeConfig(
     resolve: {
       alias: [
         { find: 'react-native', replacement: 'react-native-web' },
-        { find: '@scf/schemas', replacement: resolve(workspaceRoot, 'packages/schemas/src') },
+        { find: '@scf/schemas', replacement: resolve(workspaceRoot, 'packages/scf-schemas/src') },
       ],
     },
   }) as Config

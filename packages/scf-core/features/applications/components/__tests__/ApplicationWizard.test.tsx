@@ -192,6 +192,7 @@ describe('ApplicationWizard', () => {
 
   it('submits application and shows success step', async () => {
     mockUseApplicationForm.currentStep = 'review'
+    mockUseApplicationForm.submitApplication = vi.fn().mockResolvedValue({ success: true, applicationId: 'app-123' })
     render(<ApplicationWizard {...defaultProps} />)
 
     const submitButton = screen.getByText('Submit Application')

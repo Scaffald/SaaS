@@ -27,9 +27,7 @@ export function useWizardAutoSave({
 
   useEffect(() => {
     latestPayloadRef.current = payload
-  }, [payload])
 
-  useEffect(() => {
     if (!enabled || !isDirty) {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
@@ -58,5 +56,5 @@ export function useWizardAutoSave({
         timeoutRef.current = null
       }
     }
-  }, [enabled, isDirty, debounceMs, onSave, step, onSavingStateChange])
+  }, [enabled, isDirty, debounceMs, onSave, step, onSavingStateChange, payload])
 }

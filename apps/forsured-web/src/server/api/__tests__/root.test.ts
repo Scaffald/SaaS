@@ -1,6 +1,6 @@
 /**
  * Root Router and API Handler Tests
- * Create tRPC Router Structure for Forsured
+ * REQ-286: Create tRPC Router Structure for Forsured
  * TASK-4: Create Root Router and API Handler Integration - Unit Tests
  */
 
@@ -83,7 +83,7 @@ describe('API Handler', () => {
       updated_at: new Date().toISOString(),
     };
 
-    vi.mocked(supabaseModule.core).mockReturnValue({
+    vi.mocked(supabaseModule.forsured).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
       single: vi.fn().mockResolvedValue({ data: mockOrgData, error: null }),

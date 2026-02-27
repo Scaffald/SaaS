@@ -16,13 +16,6 @@ import { corsHeaders, createCorsResponse } from '../_shared/cors.ts'
 import { insertNotification } from '../_shared/notifications/utils.ts'
 
 // Types
-interface ContractorProfile {
-  id: string
-  email: string | null
-  name: string | null
-  scaffald_user_id: string | null
-}
-
 interface ProcessedFile {
   fileName: string
   filePath: string

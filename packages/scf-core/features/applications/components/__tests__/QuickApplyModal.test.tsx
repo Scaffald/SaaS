@@ -1,78 +1,155 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { QuickApplyModal } from '../QuickApplyModal'
 
 const mockOnOpenChange = vi.fn()
 const mockOnSuccess = vi.fn()
 const mockShowToast = vi.fn()
+const mockMutateAsync = vi.fn()
 
-const mockSubmitMutation = {
-  mutateAsync: vi.fn(),
-  isLoading: false,
-}
+// Must use vi.hoisted() so the variable is available when vi.mock factories run
+const { mockCreateMapboxProvider } = vi.hoisted(() => ({
+  mockCreateMapboxProvider: vi.fn(),
+}))
 
-vi.mock('@scf/core/utils/api', () => ({
-  api: {
-    applications: {
-      submit: {
-        useMutation: (callbacks?: {
-          onSuccess?: (data: { id: string }) => void
-          onError?: (error: { message?: string }) => void
-        }) => {
-          if (callbacks) {
-            mockSubmitMutation.mutateAsync = vi.fn(async (_data) => {
-              try {
-                const result = { id: 'app-123' }
-                callbacks.onSuccess?.(result)
-                return result
-              } catch (error) {
-                callbacks.onError?.(error as { message?: string })
-                throw error
-              }
-            })
-          }
-          return mockSubmitMutation
-        },
-      },
-    },
+// Store mutation callbacks so tests can trigger success/error flows
+const mutationCallbacks: {
+  onSuccess?: (data: { id: string }) => void
+  onError?: (error: { message?: string }) => void
+} = {}
+
+vi.mock('@scf/core/utils/jobs-sdk-hooks', () => ({
+  useCreateJobApplicationMutation: (callbacks?: {
+    onSuccess?: (data: { id: string }) => void
+    onError?: (error: { message?: string }) => void
+  }) => {
+    if (callbacks?.onSuccess) mutationCallbacks.onSuccess = callbacks.onSuccess
+    if (callbacks?.onError) mutationCallbacks.onError = callbacks.onError
+    return { mutateAsync: mockMutateAsync, isPending: false }
   },
 }))
 
-vi.mock('@scaffald/ui', () => ({
-  useToast: () => ({
-    show: mockShowToast,
-  }),
+vi.mock('@scf/core/utils/mapbox-geocoding-provider', () => ({
+  createMapboxGeocodingProvider: mockCreateMapboxProvider,
 }))
 
-vi.mock('@scaffald/ui', () => ({
-  AddressAutocomplete: ({
-    value,
-    onChange,
-    onAddressSelect,
-    placeholder,
-  }: {
-    value: string
-    onChange: (text: string) => void
-    onAddressSelect: (address: { formattedAddress: string }) => void
-    placeholder?: string
-  }) => (
-    <div data-testid="address-autocomplete">
-      <input
-        data-testid="address-input"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-      />
-      <button
-        type="button"
-        data-testid="select-address"
-        onClick={() => onAddressSelect({ formattedAddress: '123 Main St' })}
-      >
-        Select
-      </button>
-    </div>
-  ),
-}))
+vi.mock('@scaffald/ui', () => {
+  const React = require('react')
+  const El =
+    (tag: string) =>
+    ({ children, ...rest }: { children?: React.ReactNode; [key: string]: unknown }) =>
+      React.createElement(tag, rest, children)
+  return {
+    useThemeContext: () => ({ theme: 'light' as const }),
+    useToast: () => ({ show: mockShowToast }),
+    Modal: ({
+      children,
+      visible,
+    }: {
+      children?: React.ReactNode
+      visible?: boolean
+    }) =>
+      visible
+        ? React.createElement('div', { role: 'dialog', 'data-testid': 'modal' }, children)
+        : null,
+    ModalHeader: ({
+      title,
+      description,
+      onClose,
+    }: {
+      title?: string
+      description?: string
+      onClose?: () => void
+    }) =>
+      React.createElement(
+        'div',
+        { 'data-testid': 'modal-header' },
+        React.createElement('span', null, title),
+        description && React.createElement('span', null, description),
+        React.createElement(
+          'button',
+          { type: 'button', 'aria-label': 'Close', onClick: onClose },
+          'Close',
+        ),
+      ),
+    ModalContent: El('div'),
+    AddressAutocomplete: ({
+      value,
+      onChange,
+      onAddressSelect,
+      placeholder,
+    }: {
+      value: string
+      onChange: (text: string) => void
+      onAddressSelect: (address: { formattedAddress: string }) => void
+      placeholder?: string
+    }) =>
+      React.createElement(
+        'div',
+        { 'data-testid': 'address-autocomplete' },
+        React.createElement('input', {
+          'data-testid': 'address-input',
+          value,
+          onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value),
+          placeholder,
+        }),
+        React.createElement(
+          'button',
+          {
+            type: 'button',
+            'data-testid': 'select-address',
+            onClick: () => onAddressSelect({ formattedAddress: '123 Main St' }),
+          },
+          'Select',
+        ),
+      ),
+    ResponsiveSelect: ({
+      value,
+      onValueChange,
+      options,
+      placeholder,
+      testID,
+    }: {
+      value?: string
+      onValueChange?: (val: string) => void
+      options?: Array<{ value: string; label: string }>
+      placeholder?: string
+      testID?: string
+    }) =>
+      React.createElement(
+        'select',
+        {
+          'data-testid': testID,
+          value: value ?? '',
+          onChange: (e: React.ChangeEvent<HTMLSelectElement>) => onValueChange?.(e.target.value),
+        },
+        React.createElement('option', { value: '' }, placeholder),
+        ...(options ?? []).map((opt: { value: string; label: string }) =>
+          React.createElement('option', { key: opt.value, value: opt.value }, opt.label),
+        ),
+      ),
+    Stack: El('div'),
+    Row: El('div'),
+    Text: El('span'),
+    Label: El('label'),
+    Button: ({
+      children,
+      onPress,
+      disabled,
+      ...rest
+    }: {
+      children?: React.ReactNode
+      onPress?: () => void
+      disabled?: boolean
+      [key: string]: unknown
+    }) =>
+      React.createElement(
+        'button',
+        { type: 'button', disabled, onClick: onPress, ...rest },
+        children,
+      ),
+  }
+})
 
 describe('QuickApplyModal', () => {
   const defaultProps = {
@@ -86,10 +163,25 @@ describe('QuickApplyModal', () => {
     optionalSkills: ['Node.js'],
   }
 
+  // Fill all required form fields using mock UI elements
+  const fillRequiredFields = () => {
+    fireEvent.change(screen.getByTestId('address-input'), { target: { value: 'New York' } })
+    fireEvent.change(screen.getByTestId('years_experience'), { target: { value: '1-3' } })
+    fireEvent.change(screen.getByTestId('earliest_start_date'), { target: { value: 'Immediately' } })
+  }
+
   beforeEach(() => {
     vi.clearAllMocks()
+    mutationCallbacks.onSuccess = undefined
+    mutationCallbacks.onError = undefined
     process.env.EXPO_PUBLIC_MAPBOX_TOKEN = 'test-token'
-    mockSubmitMutation.mutateAsync.mockResolvedValue({ id: 'app-123' })
+    // Re-setup after vi.clearAllMocks() resets mock implementations
+    mockCreateMapboxProvider.mockReturnValue({})
+    mockMutateAsync.mockImplementation(async () => {
+      const result = { id: 'app-123' }
+      mutationCallbacks.onSuccess?.(result)
+      return result
+    })
   })
 
   it('renders modal when open', () => {
@@ -117,113 +209,113 @@ describe('QuickApplyModal', () => {
   it('validates required fields before submission', async () => {
     render(<QuickApplyModal {...defaultProps} />)
 
-    const submitButton = screen.getByText('Submit')
-    fireEvent.click(submitButton)
+    fireEvent.click(screen.getByText('Submit'))
 
     await waitFor(() => {
       expect(screen.getByText('Current location is required')).toBeInTheDocument()
     })
 
-    expect(mockSubmitMutation.mutateAsync).not.toHaveBeenCalled()
+    expect(mockMutateAsync).not.toHaveBeenCalled()
   })
 
-  it('submits application when all fields are valid', async () => {
+  it('submits application when all required fields are filled', async () => {
+    mockMutateAsync.mockImplementation(async () => {
+      const result = { id: 'app-123' }
+      mutationCallbacks.onSuccess?.(result)
+      return result
+    })
     render(<QuickApplyModal {...defaultProps} />)
 
-    // Fill in required fields
-    const addressInput = screen.getByTestId('address-input')
-    fireEvent.change(addressInput, { target: { value: 'New York' } })
+    fillRequiredFields()
+    fireEvent.click(screen.getByText('Submit'))
 
-    const yesButtons = screen.getAllByText('Yes')
-    // Willing to relocate
-    const relocateButton = yesButtons[0]?.closest('button')
-    if (relocateButton) fireEvent.click(relocateButton)
-    // Work authorization
-    const workAuthButton = yesButtons[1]?.closest('button')
-    if (workAuthButton) fireEvent.click(workAuthButton)
-
-    // Select years of experience and start date via dropdowns
-    // (In a real test, we'd interact with the Select components)
-
-    const submitButton = screen.getByText('Submit')
-    fireEvent.click(submitButton)
-
-    // Wait for validation to pass and submission
-    await waitFor(
-      () => {
-        expect(mockSubmitMutation.mutateAsync).toHaveBeenCalled()
-      },
-      { timeout: 3000 }
-    )
+    await waitFor(() => {
+      expect(mockMutateAsync).toHaveBeenCalled()
+    })
   })
 
   it('shows success state after submission', async () => {
+    mockMutateAsync.mockImplementation(async () => {
+      const result = { id: 'app-123' }
+      mutationCallbacks.onSuccess?.(result)
+      return result
+    })
     render(<QuickApplyModal {...defaultProps} />)
 
-    // Mock successful submission
-    await act(async () => {
-      // Trigger submission (simplified for test)
-      const submitButton = screen.getByText('Submit')
-      fireEvent.click(submitButton)
-    })
+    fillRequiredFields()
+    fireEvent.click(screen.getByText('Submit'))
 
     await waitFor(() => {
-      expect(screen.getByText(/Application sent successfully/)).toBeInTheDocument()
+      expect(screen.getByText('Application Submitted!')).toBeInTheDocument()
     })
   })
 
   it('calls onSuccess callback after successful submission', async () => {
+    mockMutateAsync.mockImplementation(async () => {
+      const result = { id: 'app-123' }
+      mutationCallbacks.onSuccess?.(result)
+      return result
+    })
     render(<QuickApplyModal {...defaultProps} />)
 
-    // This would be triggered after successful submission
-    // In a real scenario, we'd fill the form and submit
-    expect(mockOnSuccess).toBeDefined()
+    fillRequiredFields()
+    fireEvent.click(screen.getByText('Submit'))
+
+    await waitFor(() => {
+      expect(mockOnSuccess).toHaveBeenCalledWith('app-123')
+    })
   })
 
   it('closes modal when close button is clicked', () => {
     render(<QuickApplyModal {...defaultProps} />)
 
-    const closeButton =
-      screen.getByLabelText(/close/i) || screen.getByRole('button', { name: /close/i })
-    if (closeButton) {
-      fireEvent.click(closeButton)
-      expect(mockOnOpenChange).toHaveBeenCalledWith(false)
-    }
+    fireEvent.click(screen.getByRole('button', { name: /close/i }))
+
+    expect(mockOnOpenChange).toHaveBeenCalledWith(false)
   })
 
-  it('resets form when modal is closed', () => {
-    const { rerender } = render(<QuickApplyModal {...defaultProps} />)
+  it('resets form when close button is clicked', () => {
+    render(<QuickApplyModal {...defaultProps} />)
 
-    // Fill some data
     const addressInput = screen.getByTestId('address-input')
     fireEvent.change(addressInput, { target: { value: 'New York' } })
+    expect(addressInput).toHaveValue('New York')
 
-    // Close modal
-    rerender(<QuickApplyModal {...defaultProps} open={false} />)
+    fireEvent.click(screen.getByRole('button', { name: /close/i }))
 
-    // Reopen modal
-    rerender(<QuickApplyModal {...defaultProps} open={true} />)
-
-    // Form should be reset
-    const newAddressInput = screen.getByTestId('address-input')
-    expect(newAddressInput).toHaveValue('')
+    expect(screen.getByTestId('address-input')).toHaveValue('')
   })
 
   it('shows toast notification on success', async () => {
+    mockMutateAsync.mockImplementation(async () => {
+      const result = { id: 'app-123' }
+      mutationCallbacks.onSuccess?.(result)
+      return result
+    })
     render(<QuickApplyModal {...defaultProps} />)
 
-    // After successful submission
+    fillRequiredFields()
+    fireEvent.click(screen.getByText('Submit'))
+
     await waitFor(() => {
       expect(mockShowToast).toHaveBeenCalled()
     })
   })
 
   it('handles submission errors', async () => {
-    mockSubmitMutation.mutateAsync.mockRejectedValueOnce({ message: 'Submission failed' })
-
+    mockMutateAsync.mockImplementation(async () => {
+      mutationCallbacks.onError?.({ message: 'Submission failed' })
+      throw new Error('Submission failed')
+    })
     render(<QuickApplyModal {...defaultProps} />)
 
-    // Attempt submission would trigger error handling
-    expect(mockShowToast).toBeDefined()
+    fillRequiredFields()
+    fireEvent.click(screen.getByText('Submit'))
+
+    await waitFor(() => {
+      expect(mockShowToast).toHaveBeenCalledWith(
+        expect.objectContaining({ variant: 'error' }),
+      )
+    })
   })
 })

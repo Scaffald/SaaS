@@ -37,7 +37,6 @@ declare module 'expo-server-sdk' {
   }
 }
 
-
 // @hono/zod-openapi re-exports Zod's z
 declare module '@hono/zod-openapi' {
   export { z } from 'zod'
@@ -54,11 +53,9 @@ declare module 'unpdf' {
 
 // JSZip - ZIP file manipulation
 declare module 'jszip' {
-  // biome-ignore lint/suspicious/noExplicitAny: Minimal declaration for Deno compatibility
   class JSZip {
     // biome-ignore lint/suspicious/noExplicitAny: Minimal declaration
     file(name: string, data?: any, options?: any): this
-    // biome-ignore lint/suspicious/noExplicitAny: Minimal declaration
     folder(name: string): JSZip | null
     // biome-ignore lint/suspicious/noExplicitAny: Minimal declaration
     generateAsync(options: Record<string, any>): Promise<any>
@@ -72,12 +69,11 @@ declare module 'jszip' {
 
 // openai - OpenAI SDK
 declare module 'openai' {
-  // biome-ignore lint/suspicious/noExplicitAny: Minimal declaration for Deno compatibility
   class OpenAI {
     // biome-ignore lint/suspicious/noExplicitAny: Minimal declaration
     constructor(options?: Record<string, any>)
     // biome-ignore lint/suspicious/noExplicitAny: Minimal declaration
-    chat: { completions: { create: (...args: any[]) => Promise<any> } }
+    chat: { completions: { create: (...args: any[]) => Promise<any> } };
     // biome-ignore lint/suspicious/noExplicitAny: Minimal declaration
     [key: string]: any
   }
@@ -86,8 +82,10 @@ declare module 'openai' {
 
 // mammoth - DOCX to HTML/text conversion
 declare module 'mammoth' {
-  // biome-ignore lint/suspicious/noExplicitAny: Minimal declaration for Deno compatibility
-  export function extractRawText(options: Record<string, any>): Promise<{ value: string; messages: any[] }>
-  // biome-ignore lint/suspicious/noExplicitAny: Minimal declaration
-  export function convertToHtml(options: Record<string, any>): Promise<{ value: string; messages: any[] }>
+  export function extractRawText(
+    options: Record<string, unknown>
+  ): Promise<{ value: string; messages: unknown[] }>
+  export function convertToHtml(
+    options: Record<string, unknown>
+  ): Promise<{ value: string; messages: unknown[] }>
 }

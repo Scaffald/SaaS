@@ -25,7 +25,8 @@
       "!!**/.turbo",
       "!!**/.nx",
       "!!**/.storybook",
-      "!!**/packages/supabase/scripts/seed-universities.json"
+      "!!**/packages/supabase/scripts/seed-universities.json",
+      "!!**/packages/supabase/email-templates/**"
     ]
   },
   "formatter": {

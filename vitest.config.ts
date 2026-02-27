@@ -167,6 +167,14 @@ export default defineConfig({
       // Exclude Deno tests - they run separately with Deno
       "packages/supabase/tests/routers/**",
       "packages/supabase/tests/**/*.test.ts",
+      // Exclude supabase integration tests that require live services
+      "packages/supabase/functions/**",
+      "packages/supabase/scripts/**",
+      // Exclude ai-pipeline - uses @napi-rs/canvas (native binary, incompatible with jsdom/threads)
+      "packages/ai-pipeline/**",
+      // Exclude tests that require live API keys / external services (run manually)
+      "packages/scf-core/utils/analytics/__tests__/verify-posthog-syncing.test.ts",
+      "packages/scf-core/utils/analytics/__tests__/posthog-api-verification.test.ts",
     ],
     include: ["packages/**/*.{test,spec}.{ts,tsx}"],
     // Limit concurrent tests to reduce memory pressure

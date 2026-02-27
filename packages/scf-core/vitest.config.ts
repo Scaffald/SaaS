@@ -8,7 +8,6 @@ const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url))
 const packageConfig = {
   root: workspaceRoot,
   test: {
-    include: ['packages/scf-core/**/*.{test,spec}.{ts,tsx}'],
     watchExclude: ['**/dist/**'],
   },
   resolve: {
@@ -22,4 +21,9 @@ const packageConfig = {
   },
 }
 
-export default mergeConfig(baseConfig, packageConfig)
+// mergeConfig concatenates arrays, so we override include after merging to
+// avoid picking up test files from every other package in the monorepo.
+const merged = mergeConfig(baseConfig, packageConfig)
+merged.test.include = ['packages/scf-core/**/*.{test,spec}.{ts,tsx}']
+
+export default merged
