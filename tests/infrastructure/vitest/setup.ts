@@ -1,14 +1,9 @@
-import { JSDOM } from "jsdom";
 import { afterEach, beforeEach, vi } from "vitest";
 import "@testing-library/jest-dom";
 import { cleanup } from "@testing-library/react";
 
 // Import Supabase mocks to register them
 import "./mocks/supabase";
-
-const dom = new JSDOM();
-global.document = dom.window.document;
-global.window = dom.window as any;
 
 // Define __DEV__ as a global variable
 global.__DEV__ = true;

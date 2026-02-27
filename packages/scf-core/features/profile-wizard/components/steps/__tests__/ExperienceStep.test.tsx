@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ExperienceStep } from '../ExperienceStep'
 
-vi.mock('../StepNavigation', () => ({
+vi.mock('../../StepNavigation', () => ({
   StepNavigation: ({
     canGoNext,
     isSaving,
@@ -50,7 +50,7 @@ vi.mock('../StepNavigation', () => ({
   ),
 }))
 
-vi.mock('@scaffald/ui', () => ({
+vi.mock('../../../../profile/components/MonthYearPicker', () => ({
   MonthYearPicker: ({
     label,
     value,
@@ -89,23 +89,6 @@ vi.mock('@scaffald/ui', () => ({
       </div>
     )
   },
-  ToggleSwitch: ({
-    checked,
-    onCheckedChange,
-    'aria-label': ariaLabel,
-  }: {
-    checked: boolean
-    onCheckedChange: (checked: boolean) => void
-    'aria-label'?: string
-  }) => (
-    <input
-      type="checkbox"
-      checked={checked}
-      onChange={(e) => onCheckedChange(e.target.checked)}
-      aria-label={ariaLabel}
-      data-testid="toggle-current-job"
-    />
-  ),
 }))
 
 vi.mock('@scaffald/ui', () => {
@@ -163,6 +146,24 @@ vi.mock('@scaffald/ui', () => {
     </button>
   )
 
+  const ToggleSwitch = ({
+    checked,
+    onChange,
+    'aria-label': ariaLabel,
+  }: {
+    checked: boolean
+    onChange: (checked: boolean) => void
+    'aria-label'?: string
+  }) => (
+    <input
+      type="checkbox"
+      checked={checked}
+      onChange={(e) => onChange(e.target.checked)}
+      aria-label={ariaLabel}
+      data-testid="toggle-current-job"
+    />
+  )
+
   return {
     Stack: Stack,
     Row: Stack,
@@ -170,6 +171,7 @@ vi.mock('@scaffald/ui', () => {
     Text,
     Paragraph,
     Button,
+    ToggleSwitch,
   }
 })
 

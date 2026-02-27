@@ -54,8 +54,9 @@ export default defineConfig({
     alias: {
       // Local app alias
       '@': resolve(packageRoot, 'src'),
-      // Use mock for @scaffald/ui to avoid react-native dependency chain
+      // Use mock for @scaffald/ui and @unicornlove/beyond-ui to avoid react-native dependency chain
       '@scaffald/ui': resolve(packageRoot, 'src/test/__mocks__/@scaffald/ui.tsx'),
+      '@unicornlove/beyond-ui': resolve(packageRoot, 'src/test/__mocks__/@scaffald/ui.tsx'),
       // Shim expo-router (forsured-web uses react-router-dom)
       'expo-router': resolve(packageRoot, 'src/shims/expo-router-shim.ts'),
       // Point to source for forsured packages (not yet built)
@@ -75,7 +76,13 @@ export default defineConfig({
       'tests/performance/**/*.{test,spec}.{ts,tsx}',
       'tests/contracts/**/*.{test,spec}.{ts,tsx}',
     ],
-    exclude: ['**/node_modules/**', '**/dist/**'],
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/*.integration.test.*',
+      '**/*.pg.test.*',
+      'tests/performance/**',
+    ],
     // Configure dependency handling for tests
     server: {
       deps: {

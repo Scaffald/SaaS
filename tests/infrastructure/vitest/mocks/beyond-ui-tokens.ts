@@ -24,10 +24,11 @@ export const gap = {
 }
 
 export const colors = {
-  error: { 600: '#ef4444' },
+  white: '#ffffff',
+  error: { 50: '#fef2f2', 300: '#fca5a5', 600: '#ef4444', 700: '#b91c1c', 900: '#7f1d1d' },
   gray: { 100: '#f2f4f7', 200: '#e4e7ec', 400: '#97a1af', 600: '#414e62', 700: '#344051', 900: '#1a232d' },
-  green: { 600: '#16a34a' },
-  blue: { 600: '#2563eb' },
+  green: { 50: '#f0fdf4', 300: '#86efac', 600: '#16a34a', 700: '#15803d', 900: '#14532d' },
+  blue: { 50: '#eff6ff', 300: '#93c5fd', 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 900: '#1e3a8a' },
   bg: {
     primary: '#ffffff',
     light: {

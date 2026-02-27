@@ -1,0 +1,123 @@
+<!--
+  SendGrid Dynamic Template: contractor-invitation-with-insurance-upload
+  REQ-13: Contractor Invitation Email with Insurance Document Upload
+
+  SETUP INSTRUCTIONS:
+  1. Log into SendGrid Dashboard: https://app.sendgrid.com
+  2. Navigate to: Email API > Dynamic Templates
+  3. Create a new Dynamic Template
+  4. Name it: contractor-invitation-with-insurance-upload
+  5. Add Version > Code Editor
+  6. Copy this entire HTML content into the editor
+  7. Set subject line to: {{manager_name}} invited you to share insurance documents on ForSured
+  8. Save and copy the Template ID (starts with d-)
+  9. Add Template ID to env: SENDGRID_CONTRACTOR_INVITATION_TEMPLATE_ID
+
+  TEMPLATE VARIABLES:
+  - {{manager_name}}         - Name of inviting manager
+  - {{manager_company}}      - Manager's company name
+  - {{contractor_email}}     - Contractor's registered email
+  - {{invitation_link}}      - Link to create ForSured account
+  - {{inbound_email_address}} - Unique email for forwarding docs
+  - {{broker_invitation_link}} - Link for broker to upload docs
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ForSured Invitation</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f5f5f5;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+
+          <!-- Header -->
+          <tr>
+            <td style="padding: 32px 40px 24px; text-align: center; border-bottom: 1px solid #e5e5e5;">
+              <img src="https://app.forsured.com/logo.png" alt="ForSured" width="150" style="max-width: 150px;">
+            </td>
+          </tr>
+
+          <!-- Main Content -->
+          <tr>
+            <td style="padding: 40px;">
+              <h1 style="margin: 0 0 16px; font-size: 24px; font-weight: 600; color: #1a1a1a;">
+                You're invited to ForSured
+              </h1>
+
+              <p style="margin: 0 0 24px; font-size: 16px; line-height: 1.6; color: #4a4a4a;">
+                <strong>{{manager_name}}</strong> from <strong>{{manager_company}}</strong> has invited you to share your insurance documents through ForSured.
+              </p>
+
+              <!-- Section 1: Create Account -->
+              <div style="background-color: #f8fafc; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+                <h2 style="margin: 0 0 12px; font-size: 18px; font-weight: 600; color: #1a1a1a;">
+                  Option 1: Create Your Account
+                </h2>
+                <p style="margin: 0 0 16px; font-size: 14px; line-height: 1.5; color: #4a4a4a;">
+                  Get full access to manage your insurance documents, track expiration dates, and share with multiple managers.
+                </p>
+                <a href="{{invitation_link}}" style="display: inline-block; padding: 12px 24px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 500; font-size: 14px;">
+                  Create Account
+                </a>
+              </div>
+
+              <!-- Section 2: Forward by Email -->
+              <div style="background-color: #fefce8; border-radius: 8px; padding: 24px; margin-bottom: 24px; border: 1px solid #fef08a;">
+                <h2 style="margin: 0 0 12px; font-size: 18px; font-weight: 600; color: #1a1a1a;">
+                  Option 2: Forward Your Insurance Documents
+                </h2>
+                <p style="margin: 0 0 12px; font-size: 14px; line-height: 1.5; color: #4a4a4a;">
+                  Simply forward your insurance certificates to this email address:
+                </p>
+                <div style="background-color: #ffffff; border: 2px dashed #d4d4d4; border-radius: 6px; padding: 16px; text-align: center; margin-bottom: 12px;">
+                  <code style="font-size: 16px; color: #2563eb; font-weight: 500;">{{inbound_email_address}}</code>
+                </div>
+                <p style="margin: 0; font-size: 13px; color: #6b7280;">
+                  <strong>Important:</strong> Forward from <strong>{{contractor_email}}</strong> only. Emails from other addresses will be rejected for security.
+                </p>
+                <p style="margin: 8px 0 0; font-size: 13px; color: #6b7280;">
+                  Accepted formats: PDF, DOCX, JPEG, PNG, GIF (max 2MB each)
+                </p>
+              </div>
+
+              <!-- Section 3: Broker Upload Link -->
+              <div style="background-color: #f0fdf4; border-radius: 8px; padding: 24px; border: 1px solid #bbf7d0;">
+                <h2 style="margin: 0 0 12px; font-size: 18px; font-weight: 600; color: #1a1a1a;">
+                  Option 3: Have Your Broker Upload
+                </h2>
+                <p style="margin: 0 0 12px; font-size: 14px; line-height: 1.5; color: #4a4a4a;">
+                  Share this link with your insurance broker so they can upload documents on your behalf:
+                </p>
+                <div style="background-color: #ffffff; border: 2px dashed #d4d4d4; border-radius: 6px; padding: 16px; text-align: center; margin-bottom: 12px;">
+                  <a href="{{broker_invitation_link}}" style="font-size: 14px; color: #2563eb; word-break: break-all;">{{broker_invitation_link}}</a>
+                </div>
+                <p style="margin: 0; font-size: 13px; color: #6b7280;">
+                  Your broker won't need an account to upload documents for you.
+                </p>
+              </div>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 24px 40px; background-color: #f9fafb; border-top: 1px solid #e5e5e5; border-radius: 0 0 8px 8px;">
+              <p style="margin: 0 0 8px; font-size: 13px; color: #6b7280; text-align: center;">
+                This invitation was sent by {{manager_name}} from {{manager_company}}.
+              </p>
+              <p style="margin: 0; font-size: 13px; color: #6b7280; text-align: center;">
+                Questions? Reply to this email or contact <a href="mailto:support@forsured.com" style="color: #2563eb;">support@forsured.com</a>
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

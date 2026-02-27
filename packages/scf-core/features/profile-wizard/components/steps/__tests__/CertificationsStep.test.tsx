@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { CertificationsStep } from '../CertificationsStep'
 
-vi.mock('../StepNavigation', () => ({
+vi.mock('../../StepNavigation', () => ({
   StepNavigation: ({
     canGoNext,
     isSaving,
@@ -51,7 +51,7 @@ vi.mock('../StepNavigation', () => ({
   ),
 }))
 
-vi.mock('@scaffald/ui', () => ({
+vi.mock('../../../../profile/components/MonthYearPicker', () => ({
   MonthYearPicker: ({
     label,
     value,
@@ -239,14 +239,6 @@ describe('CertificationsStep', () => {
         onStepStateChange={onStepStateChange}
       />
     )
-
-    // First verify component renders something
-    const bodyContent = container.querySelector('body')?.innerHTML || ''
-    if (!bodyContent || bodyContent.trim() === '') {
-      // Component didn't render - this is the root issue
-      screen.debug(container)
-      throw new Error('Component rendered empty body. This indicates a rendering issue that needs to be fixed first.')
-    }
 
     expect(screen.getByText('OSHA 30-Hour Construction Safety')).toBeInTheDocument()
     expect(screen.getByText('OSHA')).toBeInTheDocument()

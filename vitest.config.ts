@@ -18,6 +18,14 @@ const reactNativeMockPath = resolve(
   workspaceRoot,
   "tests/infrastructure/vitest/mocks/react-native.ts",
 );
+const lucideReactNativeMockPath = resolve(
+  workspaceRoot,
+  "tests/infrastructure/vitest/mocks/lucide-react-native.ts",
+);
+const expoUpdatesMockPath = resolve(
+  workspaceRoot,
+  "tests/infrastructure/vitest/mocks/expo-updates.ts",
+);
 
 export default defineConfig({
   plugins,
@@ -26,6 +34,14 @@ export default defineConfig({
       {
         find: "msw/node",
         replacement: resolve(workspaceRoot, "node_modules/msw/node"),
+      },
+      {
+        find: "lucide-react-native",
+        replacement: lucideReactNativeMockPath,
+      },
+      {
+        find: "expo-updates",
+        replacement: expoUpdatesMockPath,
       },
       {
         find: "react-native",

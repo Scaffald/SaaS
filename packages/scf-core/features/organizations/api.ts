@@ -138,16 +138,16 @@ export const useOrganizationStorageUsage = (organizationId: string) =>
   })
 
 export const useRenewalSettings = (organizationId: string) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (api as any).organizations.getRenewalSettings.useQuery(
+  // biome-ignore lint/suspicious/noExplicitAny: api.organizations unavailable in Node.js typecheck (Deno functions excluded)
+  return (api as unknown as Record<string, any>).organizations.getRenewalSettings.useQuery(
     { organizationId },
     { enabled: Boolean(organizationId) }
   ) as import('@tanstack/react-query').UseQueryResult<{ enabled: boolean; intervals: number[] }>
 }
 
 export const useUpdateRenewalSettings = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (api as any).organizations.updateRenewalSettings.useMutation() as import('@tanstack/react-query').UseMutationResult<
+  // biome-ignore lint/suspicious/noExplicitAny: api.organizations unavailable in Node.js typecheck (Deno functions excluded)
+  return (api as unknown as Record<string, any>).organizations.updateRenewalSettings.useMutation() as import('@tanstack/react-query').UseMutationResult<
     { enabled: boolean; intervals: number[] },
     Error,
     { organizationId: string; enabled?: boolean; intervals?: number[] }

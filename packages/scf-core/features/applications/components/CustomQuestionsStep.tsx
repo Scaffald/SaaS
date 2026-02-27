@@ -158,8 +158,8 @@ export function CustomQuestionsStep({
       }
     }
 
-    // Text length validation
-    if (typeof answer === 'string' && answer.length > 0) {
+    // Text length validation (only for text input questions)
+    if ((question.type === 'short_text' || question.type === 'long_text') && typeof answer === 'string' && answer.length > 0) {
       const minLength = getMinLength(question)
       const maxLength = getMaxLength(question)
 
