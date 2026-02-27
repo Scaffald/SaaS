@@ -5,13 +5,13 @@
 // Uses React.lazy() for code splitting to reduce initial bundle size
 import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import LoadingSpinner from './components/common/LoadingSpinner'
+import LoadingSpinner from './components/Common/LoadingSpinner'
 import { useAuth } from './contexts/AuthContext'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 
 // Layout - loaded immediately (needed for all routes)
 import Layout from './components/Layout/Layout'
-import ErrorBoundary from './components/common/ErrorBoundary'
+import ErrorBoundary from './components/Common/ErrorBoundary'
 
 // Suspense wrapper for lazy components
 const LazyRoute = ({ children }: { children: React.ReactNode }) => (
