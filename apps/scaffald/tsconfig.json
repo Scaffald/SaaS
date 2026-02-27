@@ -17,6 +17,8 @@
       "@scf/trpc/*": ["packages/scf-trpc/src/*"],
       "@unicornlove/beyond-ui": ["packages/beyond-ui/src/index.ts"],
       "@unicornlove/beyond-ui/*": ["packages/beyond-ui/src/*"],
+      "@scaffald/sdk": ["packages/scaffald-sdk/src/index.ts"],
+      "@scaffald/sdk/*": ["packages/scaffald-sdk/src/*"],
       "expo-clipboard": ["types/expo-clipboard.d.ts"]
     },
     "skipDefaultLibCheck": true,
@@ -29,7 +31,8 @@
     "../../packages/beyond-ui/src/**/*.stories.ts",
     "../../packages/beyond-ui/src/**/*.stories.tsx",
     "../../packages/scf-core/**/*.test.ts",
-    "../../packages/scf-core/**/*.test.tsx"
+    "../../packages/scf-core/**/*.test.tsx",
+    "../../packages/scaffald-sdk/src/**/__tests__/**/*"
   ],
   "extends": "../../tsconfig.base",
   "include": [
@@ -41,6 +44,7 @@
     "../../packages/api",
     "../../packages/scf-core",
     "../../packages/beyond-ui/src",
+    "../../packages/scaffald-sdk/src",
     "../../packages/scf-schemas/src/**/*.ts",
     "../../packages/scf-schemas/src/**/*.tsx",
     "../../packages/scf-trpc/src/**/*.ts",

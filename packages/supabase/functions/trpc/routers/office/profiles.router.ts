@@ -33,6 +33,7 @@ const nudgeHistorySchema = z
   .object({
     dismissed: z
       .record(
+        z.string(),
         z.object({
           dismissedAt: z.string(),
           reason: z.string().optional(),

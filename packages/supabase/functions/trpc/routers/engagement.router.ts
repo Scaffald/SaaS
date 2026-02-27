@@ -33,14 +33,14 @@ const getRecentActivitySchema = z
     eventTypes: z.array(z.string()).optional(),
   })
   .optional()
-  .default({})
+  .default({ limit: 50 })
 
 const getEngagementMetricsSchema = z
   .object({
     days: z.number().min(1).max(365).default(30),
   })
   .optional()
-  .default({})
+  .default({ days: 30 })
 
 // =========================================================
 // Engagement Router
