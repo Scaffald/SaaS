@@ -5,5 +5,5 @@
   },
   "exclude": ["functions/trpc/**/*", "functions.deno/**/*"],
   "extends": "../../tsconfig.base.json",
-  "include": ["functions/_shared/**/*", "../../types/custom-modules.d.ts"]
+  "include": ["functions/_shared/**/*", "../../types/custom-modules.d.ts", "deno-env.d.ts"]
 }

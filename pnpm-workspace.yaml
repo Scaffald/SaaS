@@ -13,6 +13,7 @@ packages:
   - packages/insurance
   - packages/compliance
   - packages/tasks
+  - packages/ai-pipeline
   - examples/*
 
 catalog:

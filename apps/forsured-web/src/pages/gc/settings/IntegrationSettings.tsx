@@ -6,6 +6,8 @@ import type { Integration } from '@scaffald/ui';
 import { Plug, Figma, Github, Notebook, Slack, Mail } from 'lucide-react-native';
 import SyncStatus from '../../../components/scaffald/SyncStatus';
 import SyncHistory from '../../../components/scaffald/SyncHistory';
+import ProcoreIntegration from './components/ProcoreIntegration';
+import SyncReviewPanel from './components/SyncReviewPanel';
 
 // Initial state - Scaffald starts disconnected for the connection flow test
 const initialIntegrations: Integration[] = [
@@ -38,7 +40,10 @@ const mockSyncHistory = [
   },
 ];
 
+type View = 'integrations' | 'procore-review';
+
 function GCIntegrationSettings() {
+  const [view, setView] = useState<View>('integrations');
   const [integrations, setIntegrations] = useState<Integration[]>(initialIntegrations);
   const [showConnectionDialog, setShowConnectionDialog] = useState(false);
   const [companySyncStatus, setCompanySyncStatus] = useState<'idle' | 'pending' | 'synced' | 'error'>('idle');
@@ -97,6 +102,11 @@ function GCIntegrationSettings() {
     setIsSyncing(false);
   };
 
+  // Show sync review panel
+  if (view === 'procore-review') {
+    return <SyncReviewPanel onBack={() => setView('integrations')} />;
+  }
+
   return (
     <Stack style={{ gap: 'var(--space-6)' }}>
       <SettingsSectionHeader
@@ -104,6 +114,9 @@ function GCIntegrationSettings() {
         title="Integrations"
         description="Connect and manage external services"
       />
+
+      {/* Procore Integration */}
+      <ProcoreIntegration onReviewQueue={() => setView('procore-review')} />
 
       {/* Sync Status Section - only show when Scaffald is connected */}
       {isScaffaldConnected && (

@@ -4,6 +4,7 @@
  */
 
 // Re-export AppRouter type - use fallback when Deno router type fails to resolve
+// The fallback prevents Deno-specific errors from surfacing in Node.js type-checks
 export type { AppRouter } from './app-router-fallback'
 
 // Re-export types from @scf/trpc schemas

@@ -10,6 +10,13 @@ import { handleTRPCRequest } from '../handler';
 import type { User } from '@supabase/supabase-js';
 import * as supabaseModule from '../../../lib/supabase';
 
+// Mock the procore router to avoid env var requirements at import time
+vi.mock('../routers/procore', () => ({
+  procoreRouter: {
+    _def: { procedures: {}, _config: {} },
+  },
+}));
+
 // Mock the supabase module
 vi.mock('../../../lib/supabase', () => ({
   supabase: {

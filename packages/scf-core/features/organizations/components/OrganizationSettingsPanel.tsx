@@ -4,6 +4,7 @@ import {
 } from "@scf/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
+import { useState } from "react";
 import {
   Button,
   Card,
@@ -19,8 +20,122 @@ import {
 import {
   useOrganizationSettings,
   useOrganizationStorageUsage,
+  useRenewalSettings,
   useUpdateOrganizationSettings,
+  useUpdateRenewalSettings,
 } from "../api";
+import { api } from '@scf/core/utils/api'
+
+type RenewalSettingsSectionProps = {
+  organizationId: string
+}
+
+function RenewalSettingsSection({ organizationId }: RenewalSettingsSectionProps) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const utils = (api as any).useUtils()
+  const { data: renewalSettings, isLoading } = useRenewalSettings(organizationId)
+  const updateMutation = useUpdateRenewalSettings()
+  const [enabled, setEnabled] = useState<boolean | null>(null)
+  const [intervals, setIntervals] = useState<number[] | null>(null)
+  const [newInterval, setNewInterval] = useState('')
+
+  // Use local state if user has edited, otherwise use server data
+  const currentEnabled = enabled ?? renewalSettings?.enabled ?? false
+  const currentIntervals = (intervals ?? renewalSettings?.intervals ?? []) as number[]
+
+  const handleAddInterval = () => {
+    const value = parseInt(newInterval, 10)
+    if (isNaN(value) || value < 1 || value > 365) {
+      return
+    }
+    if (!currentIntervals.includes(value)) {
+      setIntervals([...currentIntervals, value].sort((a, b) => a - b))
+    }
+    setNewInterval('')
+  }
+
+  const handleRemoveInterval = (value: number) => {
+    setIntervals(currentIntervals.filter((v) => v !== value))
+  }
+
+  const handleSave = async () => {
+    try {
+      await updateMutation.mutateAsync({
+        organizationId,
+        enabled: currentEnabled,
+        intervals: currentIntervals,
+      })
+      // Invalidate cache and clear local overrides so we re-sync from server
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      void (utils as any).organizations.getRenewalSettings.invalidate({ organizationId })
+      setEnabled(null)
+      setIntervals(null)
+    } catch {
+      // Error is surfaced by mutation state
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <Card bordered padding="md">
+        <H4>Renewal Reminders</H4>
+        <Separator />
+        <Spinner />
+      </Card>
+    )
+  }
+
+  const hasChanges = enabled !== null || intervals !== null
+
+  return (
+    <Card bordered padding="md">
+      <H4>Renewal Reminders</H4>
+      <Separator />
+      <Stack gap={12}>
+        <Row justify="space-between" align="center">
+          <Text>Enable renewal reminders</Text>
+          <Switch checked={currentEnabled} onChange={setEnabled} />
+        </Row>
+        <Stack gap={8}>
+          <Text>Reminder intervals (days before expiry)</Text>
+          <Row gap={8} style={{ flexWrap: 'wrap' }}>
+            {currentIntervals.map((day) => (
+              <Row key={day} align="center" gap={4} style={{ paddingVertical: 2, paddingHorizontal: 8, borderRadius: 8, backgroundColor: 'var(--color-3)' }}>
+                <Text>{day}d</Text>
+                <Button
+                  size="sm"
+                  variant="text"
+                  onPress={() => handleRemoveInterval(day)}
+                >
+                  ×
+                </Button>
+              </Row>
+            ))}
+          </Row>
+          <Row gap={8} align="center">
+            <Input
+              style={{ flex: 1 }}
+              keyboardType="numeric"
+              placeholder="e.g. 30"
+              value={newInterval}
+              onChangeText={setNewInterval}
+              onSubmitEditing={handleAddInterval}
+            />
+            <Button size="sm" onPress={handleAddInterval}>
+              Add
+            </Button>
+          </Row>
+        </Stack>
+        <Button
+          onPress={handleSave}
+          disabled={updateMutation.isPending || !hasChanges}
+        >
+          {updateMutation.isPending ? 'Saving...' : 'Save renewal settings'}
+        </Button>
+      </Stack>
+    </Card>
+  )
+}
 
 type OrganizationSettingsPanelProps = {
   organizationId: string;
@@ -64,89 +179,92 @@ export function OrganizationSettingsPanel({
   });
 
   return (
-    <Card bordered padding="md">
-      <Row justify="space-between" align="center">
-        <H4>Organization Settings</H4>
-        {usage.data ? (
-          <Text color="$gray11">
-            {(usage.data.percentUsed ?? 0).toFixed(1)}% storage used (
-            {usage.data.documentCount} docs)
-          </Text>
-        ) : null}
-      </Row>
-      <Separator />
-      {isLoading || !settings ? (
-        <Spinner />
-      ) : (
-        <Stack gap={12}>
-          <Controller
-            control={form.control}
-            name="timezone"
-            render={({ field }) => (
-              <Stack gap={4}>
-                <Text>Timezone</Text>
-                <Input
-                  value={field.value}
-                  onChangeText={(value) => field.onChange(value)}
-                />
-              </Stack>
-            )}
-          />
-          <Controller
-            control={form.control}
-            name="locale"
-            render={({ field }) => (
-              <Stack gap={4}>
-                <Text>Locale</Text>
-                <Input
-                  value={field.value}
-                  onChangeText={(value) => field.onChange(value)}
-                />
-              </Stack>
-            )}
-          />
-          <Controller
-            control={form.control}
-            name="defaultCurrency"
-            render={({ field }) => (
-              <Stack gap={4}>
-                <Text>Default currency</Text>
-                <Input
-                  value={field.value}
-                  onChangeText={(value) => field.onChange(value)}
-                />
-              </Stack>
-            )}
-          />
-          <Controller
-            control={form.control}
-            name="enforceMfa"
-            render={({ field }) => (
-              <Row justify="space-between" align="center">
-                <Text>Require MFA for members</Text>
-                <Switch checked={field.value} onChange={field.onChange} />
-              </Row>
-            )}
-          />
-          <Controller
-            control={form.control}
-            name="sessionTimeoutMinutes"
-            render={({ field }) => (
-              <Stack gap={4}>
-                <Text>Session timeout (minutes)</Text>
-                <Input
-                  keyboardType="numeric"
-                  value={String(field.value)}
-                  onChangeText={(value) => field.onChange(Number(value))}
-                />
-              </Stack>
-            )}
-          />
-          <Button onPress={handleSave} disabled={updateMutation.isPending}>
-            {updateMutation.isPending ? "Saving…" : "Save settings"}
-          </Button>
-        </Stack>
-      )}
-    </Card>
+    <Stack gap={16}>
+      <Card bordered padding="md">
+        <Row justify="space-between" align="center">
+          <H4>Organization Settings</H4>
+          {usage.data ? (
+            <Text color="$gray11">
+              {(usage.data.percentUsed ?? 0).toFixed(1)}% storage used (
+              {usage.data.documentCount} docs)
+            </Text>
+          ) : null}
+        </Row>
+        <Separator />
+        {isLoading || !settings ? (
+          <Spinner />
+        ) : (
+          <Stack gap={12}>
+            <Controller
+              control={form.control}
+              name="timezone"
+              render={({ field }) => (
+                <Stack gap={4}>
+                  <Text>Timezone</Text>
+                  <Input
+                    value={field.value}
+                    onChangeText={(value) => field.onChange(value)}
+                  />
+                </Stack>
+              )}
+            />
+            <Controller
+              control={form.control}
+              name="locale"
+              render={({ field }) => (
+                <Stack gap={4}>
+                  <Text>Locale</Text>
+                  <Input
+                    value={field.value}
+                    onChangeText={(value) => field.onChange(value)}
+                  />
+                </Stack>
+              )}
+            />
+            <Controller
+              control={form.control}
+              name="defaultCurrency"
+              render={({ field }) => (
+                <Stack gap={4}>
+                  <Text>Default currency</Text>
+                  <Input
+                    value={field.value}
+                    onChangeText={(value) => field.onChange(value)}
+                  />
+                </Stack>
+              )}
+            />
+            <Controller
+              control={form.control}
+              name="enforceMfa"
+              render={({ field }) => (
+                <Row justify="space-between" align="center">
+                  <Text>Require MFA for members</Text>
+                  <Switch checked={field.value} onChange={field.onChange} />
+                </Row>
+              )}
+            />
+            <Controller
+              control={form.control}
+              name="sessionTimeoutMinutes"
+              render={({ field }) => (
+                <Stack gap={4}>
+                  <Text>Session timeout (minutes)</Text>
+                  <Input
+                    keyboardType="numeric"
+                    value={String(field.value)}
+                    onChangeText={(value) => field.onChange(Number(value))}
+                  />
+                </Stack>
+              )}
+            />
+            <Button onPress={handleSave} disabled={updateMutation.isPending}>
+              {updateMutation.isPending ? "Saving…" : "Save settings"}
+            </Button>
+          </Stack>
+        )}
+      </Card>
+      <RenewalSettingsSection organizationId={organizationId} />
+    </Stack>
   );
 }

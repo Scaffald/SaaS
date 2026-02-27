@@ -232,6 +232,13 @@ export default function EnhancedManagerDashboard() {
     return items
   }, [complianceScores, subcontractors, projects])
 
+  // Get existing emails for validation (must be before early returns to maintain hook order)
+  const existingEmails = useMemo(() => {
+    return subcontractors
+      .map((s) => s.contact_info?.email?.toLowerCase())
+      .filter((email): email is string => !!email)
+  }, [subcontractors])
+
   // Utility functions imported from ../../ui
 
   // Show loading state
@@ -306,13 +313,6 @@ export default function EnhancedManagerDashboard() {
 
   // Get organization ID from first project (GC's organization)
   const organizationId = projects[0]?.manager_org_id || ''
-
-  // Get existing emails for validation
-  const existingEmails = useMemo(() => {
-    return subcontractors
-      .map((s) => s.contact_info?.email?.toLowerCase())
-      .filter((email): email is string => !!email)
-  }, [subcontractors])
 
   return (
     <Stack gap={24}>

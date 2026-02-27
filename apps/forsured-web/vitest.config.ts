@@ -70,8 +70,10 @@ export default defineConfig({
     environment: 'jsdom',
     include: [
       'src/**/*.{test,spec}.{ts,tsx}',
+      'tests/unit/**/*.{test,spec}.{ts,tsx}',
       'tests/integration/**/*.{test,spec}.{ts,tsx}',
       'tests/performance/**/*.{test,spec}.{ts,tsx}',
+      'tests/contracts/**/*.{test,spec}.{ts,tsx}',
     ],
     exclude: ['**/node_modules/**', '**/dist/**'],
     // Configure dependency handling for tests

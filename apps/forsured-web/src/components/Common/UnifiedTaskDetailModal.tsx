@@ -29,6 +29,7 @@ import { useAttachments } from '../../hooks/useAttachments'
 import { useStatusHistory } from '../../hooks/useStatusHistory'
 import { useUsers } from '../../hooks/useUsers'
 import COIComparisonViewer from '../Document/COIComparisonViewer'
+import { trpc } from '../../lib/trpc'
 
 interface UnifiedTaskDetailModalProps {
   task: Task
@@ -47,9 +48,9 @@ export default function UnifiedTaskDetailModal({
   currentUser,
   availableUsers = [],
 }: UnifiedTaskDetailModalProps) {
-  const [activeTab, setActiveTab] = useState<'details' | 'comments' | 'attachments' | 'history'>(
-    'details'
-  )
+  const [activeTab, setActiveTab] = useState<
+    'details' | 'comments' | 'attachments' | 'history' | 'conversations'
+  >('details')
   const [showReassignModal, setShowReassignModal] = useState(false)
   const [showBlockModal, setShowBlockModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
@@ -93,6 +94,26 @@ export default function UnifiedTaskDetailModal({
 
   const { users } = useUsers()
   const allUsers = availableUsers.length > 0 ? availableUsers : users
+
+  // Conversation state (Task 12)
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
+  const [newMessage, setNewMessage] = useState('');
+  const { data: conversationsData, isLoading: conversationsLoading } =
+    trpc.conversation.listByTask.useQuery(
+      { taskId: task.id },
+      { enabled: activeTab === 'conversations' }
+    );
+  const conversations = conversationsData ?? [];
+  const { data: messagesData, isLoading: messagesLoading } =
+    trpc.conversation.getMessages.useQuery(
+      { conversationId: selectedConversationId! },
+      { enabled: Boolean(selectedConversationId) }
+    );
+  const messages = messagesData?.messages ?? [];
+  const sendMessageMutation = trpc.conversation.sendMessage.useMutation({
+    onSuccess: () => setNewMessage(''),
+  });
+  const promoteAttachmentMutation = trpc.conversation.promoteAttachment.useMutation();
 
   useEffect(() => {
     if (isOpen) {
@@ -506,7 +527,7 @@ export default function UnifiedTaskDetailModal({
           {/* Tabs */}
           <Stack style={{ borderBottom: '1px solid var(--color-border)' }}>
             <Row gap={24}>
-              {(['details', 'comments', 'attachments', 'history'] as const).map((tab) => (
+              {(['details', 'comments', 'attachments', 'conversations', 'history'] as const).map((tab) => (
                 <Button
                   key={tab}
                   onPress={() => setActiveTab(tab)}
@@ -837,6 +858,36 @@ export default function UnifiedTaskDetailModal({
                                 </Button>
                               </a>
                             )}
+                            {/* Promote to policy document (Task 13) */}
+                            {'promoted_to_document_id' in attachment ? (
+                              attachment.promoted_to_document_id ? (
+                                <Text
+                                  size="xs"
+                                  style={{
+                                    padding: '2px 8px',
+                                    backgroundColor: 'var(--color-green-3)',
+                                    color: 'var(--color-green-11)',
+                                    borderRadius: 8,
+                                  }}
+                                >
+                                  Policy doc
+                                </Text>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onPress={() =>
+                                    promoteAttachmentMutation.mutate({
+                                      attachmentId: attachment.id,
+                                    })
+                                  }
+                                  disabled={promoteAttachmentMutation.isPending}
+                                  style={{ padding: '4px 8px', color: 'var(--color-blue-9)', fontSize: 12 }}
+                                >
+                                  Use as policy doc
+                                </Button>
+                              )
+                            ) : null}
                             <Button
                               onPress={() => handleDeleteAttachment(attachment.id)}
                               size="sm"
@@ -851,6 +902,149 @@ export default function UnifiedTaskDetailModal({
                     </Stack>
                   )}
                 </Stack>
+              </Stack>
+            )}
+
+            {activeTab === 'conversations' && (
+              <Stack gap={16}>
+                <Row gap={16}>
+                  {/* Conversation list */}
+                  <Stack
+                    style={{
+                      width: 240,
+                      borderRight: '1px solid var(--color-border)',
+                      paddingRight: 16,
+                      flexShrink: 0,
+                    }}
+                    gap={8}
+                  >
+                    <Text size="sm" weight="semibold">
+                      Conversations
+                    </Text>
+                    {conversationsLoading ? (
+                      <Text muted size="sm">Loading...</Text>
+                    ) : conversations.length === 0 ? (
+                      <Text muted size="sm">No conversations yet</Text>
+                    ) : (
+                      conversations.map((conv) => {
+                        const isSelected = conv.id === selectedConversationId;
+                        return (
+                          <Button
+                            key={conv.id}
+                            variant="ghost"
+                            onPress={() => setSelectedConversationId(conv.id)}
+                            style={{
+                              justifyContent: 'flex-start',
+                              padding: '8px 12px',
+                              borderRadius: 8,
+                              backgroundColor: isSelected
+                                ? 'var(--color-blue-3)'
+                                : 'var(--color-background-hover)',
+                              color: isSelected ? 'var(--color-blue-11)' : undefined,
+                              textAlign: 'left',
+                            }}
+                          >
+                            <Stack gap={2}>
+                              <Text size="xs" weight="medium">
+                                {conv.type === 'private_broker' ? 'Broker Private' : 'Cross-party'}
+                              </Text>
+                              <Text size="xs" muted>
+                                {conv.participant_count ?? 0} participants
+                              </Text>
+                            </Stack>
+                          </Button>
+                        );
+                      })
+                    )}
+                  </Stack>
+
+                  {/* Message thread */}
+                  <Stack flex={1} gap={12}>
+                    {!selectedConversationId ? (
+                      <Stack alignItems="center" style={{ paddingTop: 48 }}>
+                        <Text muted>Select a conversation to view messages</Text>
+                      </Stack>
+                    ) : messagesLoading ? (
+                      <Stack alignItems="center" style={{ paddingTop: 48 }}>
+                        <Text muted>Loading messages...</Text>
+                      </Stack>
+                    ) : (
+                      <>
+                        <Stack gap={8} style={{ maxHeight: 300, overflowY: 'auto' }}>
+                          {messages.length === 0 ? (
+                            <Text muted size="sm">No messages yet</Text>
+                          ) : (
+                            messages.map((msg) => (
+                              <Row key={msg.id} gap={8}>
+                                <Row
+                                  alignItems="center"
+                                  justifyContent="center"
+                                  style={{
+                                    width: 28,
+                                    height: 28,
+                                    backgroundColor: 'var(--color-blue-9)',
+                                    borderRadius: '50%',
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  <Text size="xs" weight="semibold" style={{ color: 'white' }}>
+                                    {getUserName(msg.sender_user_id)
+                                      .split(' ')
+                                      .map((n: string) => n[0])
+                                      .join('')}
+                                  </Text>
+                                </Row>
+                                <Stack flex={1}>
+                                  <Row alignItems="center" gap={8}>
+                                    <Text size="xs" weight="medium">
+                                      {getUserName(msg.sender_user_id)}
+                                    </Text>
+                                    {msg.source === 'email' && (
+                                      <Text
+                                        size="xs"
+                                        style={{
+                                          padding: '1px 6px',
+                                          backgroundColor: 'var(--color-gray-3)',
+                                          borderRadius: 4,
+                                          color: 'var(--color-gray-10)',
+                                        }}
+                                      >
+                                        via email
+                                      </Text>
+                                    )}
+                                  </Row>
+                                  <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>
+                                    {msg.body_plaintext}
+                                  </Text>
+                                </Stack>
+                              </Row>
+                            ))
+                          )}
+                        </Stack>
+                        <Row gap={8} style={{ borderTop: '1px solid var(--color-border)', paddingTop: 12 }}>
+                          <Input
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                            placeholder="Type a message..."
+                            style={{ flex: 1 }}
+                          />
+                          <Button
+                            onPress={() => {
+                              if (!newMessage.trim() || !selectedConversationId) return;
+                              sendMessageMutation.mutate({
+                                conversationId: selectedConversationId,
+                                body: newMessage.trim(),
+                              });
+                            }}
+                            disabled={!newMessage.trim() || sendMessageMutation.isPending}
+                          >
+                            Send
+                          </Button>
+                        </Row>
+                      </>
+                    )}
+                  </Stack>
+                </Row>
               </Stack>
             )}
 

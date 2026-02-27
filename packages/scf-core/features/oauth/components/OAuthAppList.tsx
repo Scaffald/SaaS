@@ -7,6 +7,7 @@ import { Button, Card, Text, Row, Stack } from '@scaffald/ui'
 import { useState } from 'react'
 import { useRouter } from 'expo-router'
 import { useAdminOAuthApps } from '@scf/core/utils/oauth-sdk-hooks'
+import { ROUTES } from '@scf/core/constants/routes'
 
 type AppStatus = 'all' | 'pending' | 'active' | 'trusted' | 'suspended' | 'revoked'
 
@@ -61,7 +62,7 @@ export function OAuthAppList() {
               </Stack>
               <Button
                 size="sm"
-                onPress={() => router.push(`/office/oauth-apps/${app.id}`)}
+                onPress={() => router.push(ROUTES.OFFICE.OAUTH_APPS.DETAIL.path.replace(':id', app.id))}
                 data-testid="oauth-app-view-button"
               >
                 View

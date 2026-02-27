@@ -2567,4 +2567,91 @@ export const organizationsRouter = t.router({
         updatedAt: usage.updated_at,
       }
     }),
+
+  /**
+   * Get renewal reminder settings for an organization
+   */
+  getRenewalSettings: protectedProcedure
+    .input(z.object({ organizationId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      await ensureOrganizationAccess(ctx, input.organizationId, {
+        requireAdmin: true,
+      })
+
+      const { data: org, error } = await ctx.supabase
+        .schema('core')
+        .from('organizations')
+        .select('renewal_reminder_enabled, renewal_reminder_intervals')
+        .eq('id', input.organizationId)
+        .single()
+
+      if (error || !org) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Organization not found',
+        })
+      }
+
+      return {
+        enabled: org.renewal_reminder_enabled ?? true,
+        intervals: org.renewal_reminder_intervals ?? [30, 60, 90],
+      }
+    }),
+
+  /**
+   * Update renewal reminder settings for an organization
+   */
+  updateRenewalSettings: protectedProcedure
+    .input(
+      z.object({
+        organizationId: z.string().uuid(),
+        enabled: z.boolean().optional(),
+        intervals: z.array(z.number().int().min(1).max(365)).min(1).optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ensureOrganizationAccess(ctx, input.organizationId, {
+        requireAdmin: true,
+      })
+
+      const updates: Record<string, unknown> = {}
+      if (input.enabled !== undefined) updates.renewal_reminder_enabled = input.enabled
+      if (input.intervals !== undefined) updates.renewal_reminder_intervals = input.intervals
+
+      if (Object.keys(updates).length === 0) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'At least one setting must be provided',
+        })
+      }
+
+      const { data: org, error } = await ctx.supabase
+        .schema('core')
+        .from('organizations')
+        .update(updates)
+        .eq('id', input.organizationId)
+        .select('renewal_reminder_enabled, renewal_reminder_intervals')
+        .single()
+
+      if (error || !org) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to update renewal settings: ${error?.message}`,
+        })
+      }
+
+      await recordOrganizationAuditLog(ctx, input.organizationId, {
+        actionType: 'settings.update',
+        targetType: 'settings',
+        targetId: input.organizationId,
+        description: `Updated renewal reminder settings: ${
+          input.enabled !== undefined ? (input.enabled ? 'enabled' : 'disabled') : 'unchanged'
+        }, intervals: ${input.intervals ? input.intervals.join(', ') : 'unchanged'}`,
+      })
+
+      return {
+        enabled: org.renewal_reminder_enabled ?? true,
+        intervals: org.renewal_reminder_intervals ?? [30, 60, 90],
+      }
+    }),
 })

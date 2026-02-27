@@ -10558,6 +10558,7 @@ export type Database = {
         | "inquiry.reminder"
         | "connection.request"
         | "connection.accepted"
+        | "policy.renewal"
       organization_document_category:
         | "contracts"
         | "templates"
@@ -18803,6 +18804,7 @@ export const Constants = {
         "inquiry.reminder",
         "connection.request",
         "connection.accepted",
+        "policy.renewal",
       ],
       organization_document_category: [
         "contracts",

@@ -26,6 +26,7 @@ export interface SendEmailOptions {
   subject: string;
   html: string;
   text?: string;
+  replyTo?: string;
   metadata?: Record<string, unknown>;
 }
 
@@ -78,7 +79,7 @@ export async function sendEmail(
     }
   }
 
-  const payload = {
+  const payload: Record<string, unknown> = {
     personalizations: [
       {
         to: recipients.map((email) => ({ email })),
@@ -97,6 +98,10 @@ export async function sendEmail(
     categories: ["forsured"],
     custom_args: customArgs,
   };
+
+  if (options.replyTo) {
+    payload.reply_to = { email: options.replyTo }
+  }
 
   try {
     const response = await fetch("https://api.sendgrid.com/v3/mail/send", {

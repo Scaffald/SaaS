@@ -1,3 +1,4 @@
+import { api } from '@scf/core/utils/api'
 import {
   useInviteOrganizationMemberMutation,
   useOrganizationMembers as useOrgMembersSdk,
@@ -135,3 +136,20 @@ export const useOrganizationStorageUsage = (organizationId: string) =>
     enabled: Boolean(organizationId),
     refetchInterval: 60_000,
   })
+
+export const useRenewalSettings = (organizationId: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (api as any).organizations.getRenewalSettings.useQuery(
+    { organizationId },
+    { enabled: Boolean(organizationId) }
+  ) as import('@tanstack/react-query').UseQueryResult<{ enabled: boolean; intervals: number[] }>
+}
+
+export const useUpdateRenewalSettings = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (api as any).organizations.updateRenewalSettings.useMutation() as import('@tanstack/react-query').UseMutationResult<
+    { enabled: boolean; intervals: number[] },
+    Error,
+    { organizationId: string; enabled?: boolean; intervals?: number[] }
+  >
+}

@@ -73,6 +73,7 @@ export const NOTIFICATION_TYPES = [
   'message.received',
   'connection.request',
   'connection.accepted',
+  'policy.renewal',
 ] as const
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number]
 
