@@ -4,7 +4,7 @@
 // Protected route wrapper that enforces authentication and role-based access
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
-import LoadingSpinner from '../common/LoadingSpinner'
+import LoadingSpinner from '../Common/LoadingSpinner'
 import type { UserType } from '../../types'
 
 interface ProtectedRouteProps {

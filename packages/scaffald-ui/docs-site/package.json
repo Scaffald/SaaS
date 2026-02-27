@@ -3,16 +3,16 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "pnpm exec docusaurus build",
-    "clear": "pnpm exec docusaurus clear",
-    "deploy": "pnpm exec docusaurus deploy",
-    "docusaurus": "pnpm exec docusaurus",
-    "serve": "pnpm exec docusaurus serve",
-    "start": "pnpm exec docusaurus start",
-    "swizzle": "pnpm exec docusaurus swizzle",
+    "build": "docusaurus build",
+    "clear": "docusaurus clear",
+    "deploy": "docusaurus deploy",
+    "docusaurus": "docusaurus",
+    "serve": "docusaurus serve",
+    "start": "docusaurus start",
+    "swizzle": "docusaurus swizzle",
     "typecheck": "tsc",
-    "write-heading-ids": "pnpm exec docusaurus write-heading-ids",
-    "write-translations": "pnpm exec docusaurus write-translations"
+    "write-heading-ids": "docusaurus write-heading-ids",
+    "write-translations": "docusaurus write-translations"
   },
   "browserslist": {
     "production": [
