@@ -199,7 +199,6 @@
   "packageManager": "pnpm@10.20.0",
   "pnpm": {
     "overrides": {
-      "react-native": "0.84.0",
       "@supabase/supabase-js": "~2.86.0",
       "axios@<=1.13.4": ">=1.13.5",
       "baseline-browser-mapping": ">=2.9.19",
@@ -214,6 +213,7 @@
       "preact@>=10.28.0 <10.28.2": ">=10.28.2",
       "qs@>=6.7.0 <=6.14.1": ">=6.14.2",
       "react-dom": "19.2.0",
+      "react-native": "0.84.0",
       "react-router@>=7.0.0 <=7.11.0": ">=7.12.0",
       "react-router@>=7.0.0 <7.12.0": ">=7.12.0",
       "tar@<7.5.7": ">=7.5.7",
