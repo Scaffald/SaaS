@@ -43,7 +43,7 @@ catalog:
   babel-preset-expo: ~55.0.3
   burnt: ~0.13.0
   cross-env: ~7.0.3
-  expo: 55.0.0-preview.9
+  expo: 55.0.4
   expo-apple-authentication: ~55.0.4
   expo-build-properties: ~55.0.5
   expo-clipboard: ~55.0.4
@@ -60,7 +60,7 @@ catalog:
   expo-localization: ~55.0.4
   expo-location: ~55.0.5
   expo-notifications: ~55.0.5
-  expo-router: 55.0.0-preview.6
+  expo-router: 55.0.3
   expo-secure-store: ~55.0.4
   expo-splash-screen: ~55.0.4
   expo-status-bar: ~55.0.2
