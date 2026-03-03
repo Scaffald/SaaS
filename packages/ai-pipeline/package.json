@@ -9,11 +9,11 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "poc:extract": "tsx poc/extract.ts",
-    "poc:batch": "tsx poc/batch-extract.ts",
-    "poc:eval": "tsx poc/eval-report.ts",
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
+    "poc:batch": "tsx poc/batch-extract.ts",
+    "poc:eval": "tsx poc/eval-report.ts",
+    "poc:extract": "tsx poc/extract.ts",
     "test:unit": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"

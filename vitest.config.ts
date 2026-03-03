@@ -31,6 +31,11 @@ export default defineConfig({
   plugins,
   resolve: {
     alias: [
+      // Force single React instance across all packages (pnpm scoped modules workaround)
+      { find: /^react$/, replacement: resolve(workspaceRoot, "node_modules/react") },
+      { find: /^react\/jsx-runtime$/, replacement: resolve(workspaceRoot, "node_modules/react/jsx-runtime") },
+      { find: /^react-dom$/, replacement: resolve(workspaceRoot, "node_modules/react-dom") },
+      { find: /^react-dom\/client$/, replacement: resolve(workspaceRoot, "node_modules/react-dom/client") },
       {
         find: "msw/node",
         replacement: resolve(workspaceRoot, "node_modules/msw/node"),
