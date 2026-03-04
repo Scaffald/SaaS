@@ -49,6 +49,20 @@ export default defineConfig({
         replacement: expoUpdatesMockPath,
       },
       {
+        find: "expo-router",
+        replacement: resolve(
+          workspaceRoot,
+          "tests/infrastructure/vitest/mocks/expo-router.ts",
+        ),
+      },
+      {
+        find: "@react-native-community/netinfo",
+        replacement: resolve(
+          workspaceRoot,
+          "tests/infrastructure/vitest/mocks/react-native-community-netinfo.ts",
+        ),
+      },
+      {
         find: "react-native",
         replacement: reactNativeMockPath,
       },
@@ -186,6 +200,11 @@ export default defineConfig({
     maxConcurrency: 3,
     // Using threads pool - shares memory, lower overhead than forks
     pool: "threads",
+    // Cap worker threads to 2 to prevent OOM on 14-CPU machines.
+    // Default is CPU count (14), each thread loads full module graph → 30GB+ RAM.
+    // Note: minThreads/maxThreads are top-level in Vitest 4 (poolOptions removed).
+    minThreads: 1,
+    maxThreads: 2,
     reporters: [
       quietProgressReporterPath,
       ["json", { outputFile: "tests/reports/coverage/test-results.json" }],
