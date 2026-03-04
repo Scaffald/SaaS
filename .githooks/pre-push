@@ -13,7 +13,7 @@ cd "$PROJECT_ROOT"
 # Fetch to ensure nx affected has correct base
 git fetch origin main 2>/dev/null || true
 
-if ! pnpm test:affected; then
+if ! pnpm affected:test; then
     echo "❌ Affected tests failed. Fix failures or push with: git push --no-verify"
     exit 1
 fi
