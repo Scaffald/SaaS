@@ -49,7 +49,7 @@ jobs:
         run: pnpm check
 
       - name: Standalone Type Check (nx run-many)
-        run: pnpm exec nx run-many -t typecheck
+        run: pnpm typecheck
 
       - name: Build all packages (nx run-many)
         run: pnpm exec nx run-many -t build --exclude=@scaffald/ui-docs
