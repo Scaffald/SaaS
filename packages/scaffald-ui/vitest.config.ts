@@ -36,4 +36,6 @@ const packageConfig = {
   },
 }
 
-export default mergeConfig(baseConfig, packageConfig)
+const merged = mergeConfig(baseConfig, packageConfig)
+merged.test.include = ['packages/scaffald-ui/src/**/*.{test,spec}.{ts,tsx}']
+export default merged
