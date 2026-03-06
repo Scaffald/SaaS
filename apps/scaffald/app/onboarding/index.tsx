@@ -223,6 +223,7 @@ export default function OnboardingPage() {
                   setValue={setValue}
                   trigger={trigger}
                   placeholder="Search for your address..."
+                  manualFieldsVariant="expand"
                   error={
                     errors.address?.street?.message ||
                     errors.address?.city?.message

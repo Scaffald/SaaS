@@ -55,6 +55,10 @@ export interface ControlledAddressFormProps<TFieldValues extends FieldValues = F
   required?: boolean
   disabled?: boolean
   error?: string
+  /** When 'expand', manual address fields are hidden by default behind an Expand button. */
+  manualFieldsVariant?: 'always' | 'expand'
+  expandLabel?: string
+  collapseLabel?: string
 
   // Optional callbacks
   onAddressSelect?: (address: AddressResult) => void
