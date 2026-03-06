@@ -3,7 +3,7 @@
  * Authentication flow - cookies
  */
 
-export const SESSION_COOKIE_NAME = 'forsured_session'
+export const SESSION_COOKIE_NAME = 'scaffald_session'
 
 // 30 days in seconds
 export const SESSION_MAX_AGE = 30 * 24 * 60 * 60

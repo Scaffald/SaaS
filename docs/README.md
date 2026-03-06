@@ -2,8 +2,6 @@
 
 ## Setup and operations
 
-- [Forsured env checklist](forsured-env-checklist.md)
-- [Forsured magic link setup](forsured-magic-link-setup.md)
 - [GoTrue env config](gotrue-env-config.md)
 - [Manual validation checklist](MANUAL-VALIDATION-CHECKLIST.md)
 

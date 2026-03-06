@@ -254,11 +254,11 @@ Add these environment variables to your deployment:
 # SendGrid Email Template
 SENDGRID_CONTRACTOR_INVITATION_TEMPLATE_ID=d-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-# Inbound Parse Domain
-INBOUND_PARSE_DOMAIN=inbound.forsured.com
+# Inbound Parse Domain (example - use your app's domain)
+INBOUND_PARSE_DOMAIN=inbound.example.com
 
-# App URLs (for email links)
-FORSURED_APP_URL=https://app.forsured.com
+# App URL for email links
+APP_URL=https://app.example.com
 ```
 
 ### Supabase Edge Function Secrets
@@ -270,8 +270,8 @@ Set these in Supabase Dashboard > Edge Functions > Secrets:
 SENDGRID_API_KEY=SG.xxxxxxxxxxxxxxxxxxxx
 
 # SendGrid From Email
-SENDGRID_FROM_EMAIL=notifications@forsured.com
-SENDGRID_FROM_NAME=ForSured
+SENDGRID_FROM_EMAIL=notifications@example.com
+SENDGRID_FROM_NAME=My App
 ```
 
 ---

@@ -9,7 +9,6 @@ packages:
   - packages/scaffald-ui/docs-site
   - packages/scaffald-sdk
   - packages/scaffald-cli
-  - packages/forsured
   - packages/insurance
   - packages/compliance
   - packages/tasks

@@ -27,8 +27,6 @@
       "!!**/.storybook",
       "!!**/packages/supabase/scripts/seed-universities.json",
       "!!**/packages/supabase/email-templates/**",
-      "!!apps/forsured-web/**",
-      "!!packages/forsured/**",
       "!!packages/insurance/**",
       "!!packages/compliance/**",
       "!!packages/tasks/**"

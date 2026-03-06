@@ -1,9 +1,0 @@
-export { ManagerDashboardPage } from './dashboard.page';
-export { ManagerTasksPage } from './tasks.page';
-export { ManagerProjectsPage } from './projects.page';
-export { ManagerProjectDetailPage } from './project-detail.page';
-export { ManagerSettingsPage } from './settings.page';
-export { ManagerSubcontractorsPage } from './subcontractors.page';
-export { ManagerDocumentsPage } from './documents.page';
-export { ManagerAcknowledgementsPage } from './acknowledgements.page';
-export { ManagerNotificationsPage } from './notifications.page';

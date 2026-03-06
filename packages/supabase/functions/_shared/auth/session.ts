@@ -39,7 +39,7 @@ export interface UpdateTokensInput {
 
 /**
  * Create Supabase client with service role for session operations
- * Uses the 'forsured' schema where auth session functions are defined
+ * Uses the 'public' schema where auth session functions are defined
  */
 export function createServiceClient(): SupabaseClient {
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
@@ -52,7 +52,7 @@ export function createServiceClient(): SupabaseClient {
   const client = createClient(supabaseUrl, serviceKey, {
     global: { headers: { 'X-Client-Info': 'auth-edge-functions' } },
     auth: { persistSession: false },
-    db: { schema: 'forsured' }, // Use forsured schema for auth session functions
+    db: { schema: 'public' }, // Use public schema for auth session functions
   })
   return client as unknown as SupabaseClient
 }

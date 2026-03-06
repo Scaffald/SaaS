@@ -92,3 +92,8 @@ export function AuthFloatingToggles() {
     </View>
   )
 }
+
+/** Default export for Expo Router (file is under app/auth; prevents "missing default export" warning). */
+export default function FloatingTogglesRoute() {
+  return null
+}
