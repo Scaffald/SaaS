@@ -44,6 +44,10 @@ export function GeneralInfoWidget({
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     }
   );
+  // Call unconditionally so hook order is stable (needed for review modal when showButtons is true)
+  const { data: profile } = useUserProfile(userId, {
+    enabled: showButtons,
+  });
 
   if (isLoading) {
     return (
@@ -113,11 +117,6 @@ export function GeneralInfoWidget({
   const showPrivateInfo = !!data.privateData;
   const badge = data.idVerificationBadge;
 
-  // Fetch profile data for review modal
-  const { data: profile } = useUserProfile(userId, {
-    enabled: showButtons,
-  });
-
   // Only show "Add Review" button if viewing someone else's profile
   const canLeaveReview =
     showButtons && !isOwnProfile && currentUser?.id !== userId;
@@ -165,7 +164,7 @@ export function GeneralInfoWidget({
             <Avatar
               size={40}
               src={getAvatarUrl(data.avatar_path) || data.avatar_url || ""}
-              initials={displayName?.slice(0, 2).toUpperCase()}
+              initials={displayName ? displayName.slice(0, 2).toUpperCase() : undefined}
             />
 
             <Stack gap={4} align="center">

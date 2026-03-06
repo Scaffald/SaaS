@@ -245,7 +245,15 @@ export function Avatar({
         )}
 
         {/* Icon/Logo */}
-        {!hasImage && !hasInitials && hasIcon && <View style={styles.iconContainer}>{icon}</View>}
+        {!hasImage && !hasInitials && hasIcon && (
+          <View style={styles.iconContainer}>
+            {typeof icon === 'string' || typeof icon === 'number' ? (
+              <Text style={[styles.initials, { color: textColor }]}>{String(icon)}</Text>
+            ) : (
+              icon
+            )}
+          </View>
+        )}
       </View>
 
       {/* Status indicator */}
@@ -320,7 +328,11 @@ export function Avatar({
             },
           ]}
         >
-          {badge}
+          {typeof badge === 'string' || typeof badge === 'number' ? (
+            <Text style={[styles.badgeText, { fontSize: dimensions.badgeSize * 0.6 }]}>{String(badge)}</Text>
+          ) : (
+            badge
+          )}
         </View>
       )}
     </View>
