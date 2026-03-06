@@ -193,30 +193,27 @@ app.openapi(getProfileRoute, async (c) => {
   const supabase = c.get('supabase')
   const { username } = c.req.valid('param')
 
-  // Get user profile by username
-  const { data: profile, error } = await supabase
+  // Get user by username from core.users (public profile data)
+  const { data: user, error: userError } = await supabase
     .schema('core')
-    .from('user_profiles')
+    .from('users')
     .select(`
       id,
       username,
-      full_name,
+      slug,
+      display_name,
+      headline,
       bio,
       avatar_url,
-      location,
-      website,
-      linkedin_url,
-      github_url,
-      years_experience,
-      current_position,
+      avatar_path,
+      years_of_experience,
       created_at
     `)
     .eq('username', username)
-    .eq('is_public', true)
     .single()
 
-  if (error) {
-    if (error.code === 'PGRST116') {
+  if (userError) {
+    if (userError.code === 'PGRST116') {
       return c.json(
         {
           error: 'Not Found',
@@ -225,38 +222,69 @@ app.openapi(getProfileRoute, async (c) => {
         404
       )
     }
-    console.error('Error fetching profile:', error)
+    console.error('Error fetching profile:', userError)
     return c.json(
       {
         error: 'Internal Server Error',
-        message: error.message,
+        message: userError.message,
       },
       500
     )
   }
+
+  // Get location from core.profile (PII table)
+  const { data: privateProfile } = await supabase
+    .schema('core')
+    .from('profile')
+    .select('location')
+    .eq('user_id', user.id)
+    .single()
 
   // Get user skills
   const { data: skills } = await supabase
     .schema('core')
     .from('user_skills')
     .select('skill:skills(name)')
-    .eq('user_id', profile.id)
+    .eq('user_id', user.id)
     .limit(20)
 
-  // Get user certifications
-  const { data: certifications } = await supabase
+  // Get user certifications (join certifications for name and issuing_organization)
+  const { data: certRows } = await supabase
     .schema('core')
     .from('user_certifications')
-    .select('name, issuer, issued_at')
-    .eq('user_id', profile.id)
+    .select('certifications(name, issuing_organization), issue_date')
+    .eq('user_id', user.id)
+    .eq('is_active', true)
     .limit(10)
+
+  const certifications = (certRows || []).map((row: { certifications?: { name?: string; issuing_organization?: string } | null; issue_date?: string }) => ({
+    name: row.certifications?.name ?? '',
+    issuer: row.certifications?.issuing_organization ?? null,
+    issued_at: row.issue_date ?? null,
+  }))
+
+  // Map to public profile shape (full_name from display_name; website/linkedin/github/current_position not in core schema, return null)
+  const profile = {
+    id: user.id,
+    username: user.username ?? '',
+    full_name: user.display_name ?? null,
+    bio: user.bio ?? null,
+    avatar_url: user.avatar_url ?? null,
+    location: privateProfile?.location ?? null,
+    website: null as string | null,
+    linkedin_url: null as string | null,
+    github_url: null as string | null,
+    years_experience: user.years_of_experience ?? null,
+    current_position: user.headline ?? null,
+    created_at: user.created_at,
+  }
 
   return c.json(
     {
       data: {
         ...profile,
         skills: skills?.map((s: { skill?: { name?: string } | null }) => s.skill?.name).filter(Boolean) || [],
-        certifications: certifications || [],
+        certifications,
       },
     },
     200

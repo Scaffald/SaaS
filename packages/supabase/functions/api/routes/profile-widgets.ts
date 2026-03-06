@@ -76,8 +76,8 @@ app.openapi(generalInfoRoute, async (c) => {
 
   const { data, error } = await supabase
     .schema('core')
-    .from('user_profiles')
-    .select('*')
+    .from('users')
+    .select('id, username, slug, avatar_path, avatar_url, about, headline, display_name, industry_id, years_of_experience, open_to_work')
     .eq('id', targetUserId)
     .single()
 
@@ -393,7 +393,7 @@ app.openapi(preferencesRoute, async (c) => {
 
   const { data, error } = await supabase
     .schema('core')
-    .from('user_preferences')
+    .from('preferences')
     .select('*')
     .eq('user_id', user.id)
     .single()

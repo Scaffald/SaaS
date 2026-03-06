@@ -18,7 +18,7 @@ import { cleanupCurrentTestData } from '../helpers/fixtures.ts'
 import { markTestStart, createAdminClient } from '../setup.ts'
 
 /**
- * Helper to create a test user profile
+ * Helper to create a test user profile (uses core.users + core.profile)
  */
 async function createTestUserProfile(overrides: {
   username?: string
@@ -37,25 +37,33 @@ async function createTestUserProfile(overrides: {
     email_confirm: true,
   })
 
-  // Create user profile
-  const { data: profile } = await admin
-    .schema('core')
-    .from('user_profiles')
-    .insert({
-      id: authUser.user.id,
-      username,
-      full_name: overrides.full_name || 'Test User',
-      bio: 'Test bio',
-      location: 'San Francisco, CA',
-      website: 'https://example.com',
-      years_experience: 5,
-      current_position: 'Software Engineer',
-      is_public: overrides.is_public !== undefined ? overrides.is_public : true,
-    })
-    .select()
-    .single()
+  const userId = authUser.user.id
 
-  return profile
+  // Create core.users row (public profile)
+  await admin
+    .schema('core')
+    .from('users')
+    .insert({
+      id: userId,
+      username,
+      display_name: overrides.full_name || 'Test User',
+      bio: 'Test bio',
+      headline: 'Software Engineer',
+      years_of_experience: 5,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+
+  // Create core.profile row (location etc.)
+  await admin
+    .schema('core')
+    .from('profile')
+    .insert({
+      user_id: userId,
+      location: 'San Francisco, CA',
+    })
+
+  return { id: userId, username }
 }
 
 /**
@@ -194,15 +202,26 @@ Deno.test('GET /v1/profiles/:username - includes user certifications', async () 
   const admin = createAdminClient()
   const profile = await createTestUserProfile()
 
-  // Add certification
+  // Create a certification in the catalog, then link via user_certifications
+  const { data: cert } = await admin
+    .schema('core')
+    .from('certifications')
+    .insert({
+      name: 'AWS Certified Developer',
+      slug: 'aws-certified-developer',
+      issuing_organization: 'Amazon Web Services',
+    })
+    .select()
+    .single()
+
   await admin
     .schema('core')
     .from('user_certifications')
     .insert({
       user_id: profile.id,
-      name: 'AWS Certified Developer',
-      issuer: 'Amazon Web Services',
-      issued_at: '2024-01-01',
+      certification_id: cert.id,
+      issue_date: '2024-01-01',
+      is_active: true,
     })
 
   const client = createTestClient()
@@ -230,14 +249,10 @@ Deno.test('GET /v1/profiles/:username - returns 404 if profile not found', async
   await cleanupCurrentTestData()
 })
 
-Deno.test('GET /v1/profiles/:username - returns 404 if profile is not public', async () => {
+Deno.test('GET /v1/profiles/:username - returns 404 if username does not exist', async () => {
   markTestStart()
 
-  const profile = await createTestUserProfile({
-    username: 'privateuser',
-    is_public: false,
-  })
-
+  // Do not create any user with username 'privateuser'; GET should 404
   const client = createTestClient()
   const response = await client.get('/v1/profiles/privateuser')
 
