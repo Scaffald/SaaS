@@ -8,32 +8,43 @@ import {
   useEducationWidget,
 } from "@scf/core/utils/profile-widgets-sdk-hooks";
 import { getAvatarUrl } from "@scf/core/utils/supabase/storage";
-import { DashboardWidget, useThemeContext } from "@scaffald/ui";
-import { useRouter } from "expo-router";
+import type { ScaffaldError } from "@scaffald/sdk";
 import {
   Avatar,
   Button,
+  DashboardWidget,
   H4,
   ProgressBarBase,
-  Spinner,
-  Text,
   Row,
+  Skeleton,
+  SkeletonAvatar,
+  SkeletonGroup,
+  SkeletonText,
   Stack,
+  Text,
+  useThemeContext,
 } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
+import { useRouter } from "expo-router";
 
 /**
  * ProfileSnapshotWidget
- * Comprehensive profile overview for dashboard
- * Shows stats, skills preview, and quick actions
+ * Comprehensive profile overview for dashboard.
+ * Shows stats, skills preview, and quick actions.
+ * Aligned with Stitch "Reimagined Branded Profile Card" design.
  */
 export function ProfileSnapshotWidget() {
   const { theme } = useThemeContext();
   const router = useRouter();
   const { data: user } = useCurrentUser();
 
-  // Fetch all data needed for snapshot
-  const { data: generalInfo, isLoading: loadingGeneral } = useGeneralInfoWidget(
+  const {
+    data: generalInfo,
+    isLoading: loadingGeneral,
+    isError: generalInfoError,
+    error: generalInfoErr,
+    refetch: refetchGeneral,
+  } = useGeneralInfoWidget(
     { userId: user?.id },
     { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
   );
@@ -67,26 +78,116 @@ export function ProfileSnapshotWidget() {
     loadingCerts ||
     loadingEducation;
 
+  const isProfileNotFound =
+    generalInfoError &&
+    generalInfoErr &&
+    (generalInfoErr as ScaffaldError).statusCode === 404;
+
+  // Shimmer loading state (Stitch-aligned structure)
   if (isLoading) {
     return (
       <DashboardWidget>
-        <Stack gap={12} align="center" paddingVertical={32}>
-          <Spinner size="lg" />
-          <Text style={{ color: colors.text[theme].secondary }}>
-            Loading profile...
-          </Text>
+        <SkeletonGroup gap={24} animation="wave">
+          <Row justify="space-between" align="center">
+            <Skeleton width={100} height={28} borderRadius={4} />
+            <Skeleton width={120} height={20} borderRadius={4} />
+          </Row>
+          <Stack gap={16} align="center">
+            <SkeletonAvatar size={80} animation="wave" />
+            <SkeletonText lines={2} lastLineWidth="60%" animation="wave" />
+          </Stack>
+          <Stack gap={8}>
+            <Row justify="space-between">
+              <Skeleton width={80} height={16} />
+              <Skeleton width={36} height={16} />
+            </Row>
+            <Skeleton height={10} width="100%" borderRadius={99} />
+          </Stack>
+          <Row gap={12} wrap>
+            {[1, 2, 3].map((i) => (
+              <Stack
+                key={i}
+                gap={4}
+                flex={1}
+                minWidth={80}
+                align="center"
+                style={{ padding: 16, backgroundColor: colors.bg[theme].muted, borderRadius: 16 }}
+              >
+                <Skeleton width={32} height={24} />
+                <Skeleton width={48} height={10} />
+              </Stack>
+            ))}
+          </Row>
+          <Stack gap={8}>
+            <Row justify="space-between">
+              <Skeleton width={80} height={14} />
+              <Skeleton width={50} height={14} />
+            </Row>
+            <Row gap={8} wrap>
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} width={100} height={28} borderRadius={8} />
+              ))}
+            </Row>
+          </Stack>
+          <Skeleton height={44} width="100%" borderRadius={16} />
+        </SkeletonGroup>
+      </DashboardWidget>
+    );
+  }
+
+  // Error state: 404 → "Complete your profile" CTA; other errors → message + Retry
+  if (generalInfoError && !generalInfo) {
+    return (
+      <DashboardWidget>
+        <Stack gap={16} align="center" paddingVertical={24}>
+          {isProfileNotFound ? (
+            <>
+              <Text style={{ color: colors.text[theme].secondary, textAlign: "center" }}>
+                Complete your profile to get started
+              </Text>
+              <Button
+                variant="filled"
+                color="primary"
+                onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
+              >
+                Complete Profile
+              </Button>
+            </>
+          ) : (
+            <>
+              <Text style={{ color: colors.text[theme].secondary, textAlign: "center" }}>
+                We couldn't load your profile. Try again.
+              </Text>
+              <Button
+                variant="filled"
+                color="primary"
+                size="sm"
+                onPress={() => refetchGeneral()}
+              >
+                Retry
+              </Button>
+            </>
+          )}
         </Stack>
       </DashboardWidget>
     );
   }
 
+  // Empty state (no error but no data)
   if (!generalInfo) {
     return (
       <DashboardWidget>
-        <Stack gap={12} align="center" paddingVertical={32}>
-          <Text style={{ color: colors.text[theme].secondary }}>
-            Profile data unavailable
+        <Stack gap={16} align="center" paddingVertical={24}>
+          <Text style={{ color: colors.text[theme].secondary, textAlign: "center" }}>
+            Complete your profile to get started
           </Text>
+          <Button
+            variant="filled"
+            color="primary"
+            onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
+          >
+            Complete Profile
+          </Button>
         </Stack>
       </DashboardWidget>
     );
@@ -96,7 +197,6 @@ export function ProfileSnapshotWidget() {
   const calculateCompletion = (): number => {
     let completed = 0;
     const total = 7;
-
     if (generalInfo?.about) completed++;
     if (generalInfo?.headline) completed++;
     if (generalInfo?.years_of_experience !== null) completed++;
@@ -104,27 +204,21 @@ export function ProfileSnapshotWidget() {
     if (education && education.length > 0) completed++;
     if (skills && skills.length > 0) completed++;
     if (certifications && certifications.length > 0) completed++;
-
     return Math.round((completed / total) * 100);
   };
 
   const completion = calculateCompletion();
-
   const resolvedYearsOfExperience =
     typeof generalInfo.calculatedYearsOfExperience === "number"
       ? generalInfo.calculatedYearsOfExperience
       : generalInfo.years_of_experience ?? 0;
-
   const formattedYearsOfExperience =
     Number.isFinite(resolvedYearsOfExperience) &&
     resolvedYearsOfExperience % 1 !== 0
       ? resolvedYearsOfExperience.toFixed(1)
       : resolvedYearsOfExperience ?? 0;
 
-  // Get current role from experience
   const currentRole = experience?.find((exp) => exp.is_current);
-
-  // Get top skills
   const topSkills = skills?.slice(0, 5) || [];
 
   const displayName =
@@ -136,7 +230,7 @@ export function ProfileSnapshotWidget() {
   return (
     <DashboardWidget>
       <Stack gap={24}>
-        {/* Header */}
+        {/* Header - Stitch: Profile + View Full Profile */}
         <Row justify="space-between" align="center">
           <H4>Profile</H4>
           <Button
@@ -149,10 +243,10 @@ export function ProfileSnapshotWidget() {
           </Button>
         </Row>
 
-        {/* Avatar & Name Section */}
+        {/* Avatar & Name - Stitch: centered, larger avatar */}
         <Stack gap={16} align="center">
           <Avatar
-            size={32}
+            size={80}
             src={
               getAvatarUrl(generalInfo.avatar_path) ||
               generalInfo.avatar_url ||
@@ -168,19 +262,14 @@ export function ProfileSnapshotWidget() {
             }
             color="gray"
           />
-
           <Stack gap={4} align="center">
-            <Text>{displayName}</Text>
+            <Text style={{ fontWeight: "700", fontSize: 20 }}>{displayName}</Text>
             {generalInfo.headline && (
-              <Stack align="center">
-                <Text style={{ color: colors.text[theme].secondary }}>
-                  {generalInfo.headline}
-                </Text>
-              </Stack>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                {generalInfo.headline}
+              </Text>
             )}
           </Stack>
-
-          {/* Open to Work Badge */}
           {generalInfo.open_to_work && (
             <Row
               paddingHorizontal={12}
@@ -197,116 +286,164 @@ export function ProfileSnapshotWidget() {
           )}
         </Stack>
 
-        {/* Current Role */}
+        {/* Current Role - Stitch: centered label + role + company */}
         {currentRole && (
-          <Stack
-            gap={4}
-            style={{ backgroundColor: colors.bg[theme].muted }}
-            padding="sm"
-            borderRadius={16}
-          >
-            <Text style={{ color: colors.text[theme].secondary }}>
+          <Stack gap={4} align="center" style={{ marginBottom: 8 }}>
+            <Text
+              style={{
+                fontSize: 11,
+                textTransform: "uppercase",
+                letterSpacing: 1.5,
+                fontWeight: "700",
+                color: colors.text[theme].tertiary,
+              }}
+            >
               Current Role
             </Text>
-            <Text>{currentRole.job_title}</Text>
+            <Text style={{ fontWeight: "700", fontSize: 18 }}>
+              {currentRole.job_title}
+            </Text>
             <Text style={{ color: colors.text[theme].secondary }}>
               {currentRole.company_name}
             </Text>
           </Stack>
         )}
 
-        {/* Stats Grid */}
+        {/* Completion + Stats - Stitch: completion bar then 3-col stats */}
         <Stack gap={16}>
-          <Text style={{ textTransform: 'uppercase', letterSpacing: 1.5, fontSize: 11, fontWeight: '700', color: colors.text[theme].tertiary }}>Profile Stats</Text>
-
-          {/* Completion Bar */}
           <Stack gap={8}>
-            <Row justify="space-between">
-              <Text style={{ color: colors.text[theme].secondary }}>
+            <Row justify="space-between" align="center">
+              <Text
+                style={{
+                  fontWeight: "600",
+                  fontSize: 14,
+                  color: colors.text[theme].primary,
+                }}
+              >
                 Completion
               </Text>
-              <Text>{completion}%</Text>
+              <Text
+                style={{
+                  fontWeight: "700",
+                  fontSize: 14,
+                  color: theme === "light" ? colors.blue[700] : colors.blue[300],
+                }}
+              >
+                {completion}%
+              </Text>
             </Row>
             <ProgressBarBase value={completion} color="primary" />
           </Stack>
-
-          {/* Stats Row */}
-          <Row gap={10} wrap>
+          <Row gap={12} wrap>
             <Stack
               gap={4}
               flex={1}
               minWidth={80}
-              style={{ backgroundColor: colors.bg[theme].muted }}
-              padding={16}
-              borderRadius={16}
+              style={{
+                backgroundColor: colors.bg[theme].muted,
+                padding: 16,
+                borderRadius: 16,
+              }}
               align="center"
             >
               <Text
                 style={{
-                  color:
-                    theme === "light" ? colors.blue[700] : colors.blue[300],
                   fontSize: 24,
-                  fontWeight: '700',
+                  fontWeight: "700",
+                  color: colors.text[theme].primary,
                 }}
               >
-                {skills?.length || 0}
+                {skills?.length ?? 0}
               </Text>
-              <Text style={{ color: colors.text[theme].secondary, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>
+              <Text
+                style={{
+                  fontSize: 11,
+                  textTransform: "uppercase",
+                  letterSpacing: 1,
+                  color: colors.text[theme].secondary,
+                }}
+              >
                 Skills
               </Text>
             </Stack>
-
             <Stack
               gap={4}
               flex={1}
               minWidth={80}
-              style={{ backgroundColor: colors.bg[theme].muted }}
-              padding={16}
-              borderRadius={16}
+              style={{
+                backgroundColor: colors.bg[theme].muted,
+                padding: 16,
+                borderRadius: 16,
+              }}
               align="center"
             >
               <Text
                 style={{
-                  color:
-                    theme === "light" ? colors.green[700] : colors.green[300],
                   fontSize: 24,
-                  fontWeight: '700',
+                  fontWeight: "700",
+                  color: colors.text[theme].primary,
                 }}
               >
-                {certifications?.length || 0}
+                {certifications?.length ?? 0}
               </Text>
-              <Text style={{ color: colors.text[theme].secondary, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Certs</Text>
+              <Text
+                style={{
+                  fontSize: 11,
+                  textTransform: "uppercase",
+                  letterSpacing: 1,
+                  color: colors.text[theme].secondary,
+                }}
+              >
+                Certs
+              </Text>
             </Stack>
-
             <Stack
               gap={4}
               flex={1}
               minWidth={80}
-              style={{ backgroundColor: colors.bg[theme].muted }}
-              padding={16}
-              borderRadius={16}
+              style={{
+                backgroundColor: colors.bg[theme].muted,
+                padding: 16,
+                borderRadius: 16,
+              }}
               align="center"
             >
               <Text
                 style={{
-                  color:
-                    theme === "light" ? colors.blue[700] : colors.blue[300],
                   fontSize: 24,
-                  fontWeight: '700',
+                  fontWeight: "700",
+                  color: colors.text[theme].primary,
                 }}
               >
                 {formattedYearsOfExperience}
               </Text>
-              <Text style={{ color: colors.text[theme].secondary, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Years</Text>
+              <Text
+                style={{
+                  fontSize: 11,
+                  textTransform: "uppercase",
+                  letterSpacing: 1,
+                  color: colors.text[theme].secondary,
+                }}
+              >
+                Years
+              </Text>
             </Stack>
           </Row>
         </Stack>
 
-        {/* Top Skills Preview */}
+        {/* Top Skills - Stitch: Top Skills + View All, chips */}
         {topSkills.length > 0 && (
           <Stack gap={8}>
             <Row justify="space-between" align="center">
-              <Text style={{ textTransform: 'uppercase', letterSpacing: 1.5, fontSize: 11, fontWeight: '700', color: colors.text[theme].tertiary }}>Top Skills</Text>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "700",
+                  color: colors.text[theme].primary,
+                }}
+              >
+                Top Skills
+              </Text>
               <Button
                 size="sm"
                 variant="text"
@@ -330,8 +467,8 @@ export function ProfileSnapshotWidget() {
                   typeof skill.label === "string"
                     ? skill.label
                     : displayCode
-                    ? `${displayCode} · ${skillName}`
-                    : skillName;
+                      ? `${displayCode} · ${skillName}`
+                      : skillName;
                 const isVerified = skill.verified === true;
 
                 return (
@@ -339,9 +476,9 @@ export function ProfileSnapshotWidget() {
                     key={skill.id as string}
                     paddingHorizontal={10}
                     paddingVertical={6}
-                    borderRadius={8}
+                    borderRadius={999}
                     style={{
-                      backgroundColor: colors.gray[100],
+                      backgroundColor: colors.bg[theme].muted,
                       borderWidth: 1,
                       borderColor: isVerified
                         ? colors.green[600]
@@ -355,7 +492,15 @@ export function ProfileSnapshotWidget() {
                         ✓
                       </Text>
                     )}
-                    <Text>{chipLabel}</Text>
+                    <Text
+                      style={{
+                        fontSize: 11,
+                        fontWeight: "600",
+                        color: colors.text[theme].primary,
+                      }}
+                    >
+                      {chipLabel}
+                    </Text>
                   </Row>
                 );
               })}
@@ -363,23 +508,27 @@ export function ProfileSnapshotWidget() {
           </Stack>
         )}
 
-        {/* Quick Actions */}
+        {/* Edit Profile CTA - Stitch: full-width button + helper text */}
         <Stack gap={8}>
           <Button
             variant="filled"
             color="primary"
-            size="sm"
+            size="md"
             onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
             style={{ width: "100%" }}
           >
             Edit Profile
           </Button>
           {completion < 100 && (
-            <Stack align="center">
-              <Text style={{ color: colors.text[theme].secondary }}>
-                Complete your profile to attract more opportunities
-              </Text>
-            </Stack>
+            <Text
+              style={{
+                fontSize: 12,
+                color: colors.text[theme].secondary,
+                textAlign: "center",
+              }}
+            >
+              Complete your profile to attract more opportunities
+            </Text>
           )}
         </Stack>
       </Stack>
