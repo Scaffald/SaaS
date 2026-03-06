@@ -86,7 +86,7 @@ export function FloatingLocaleToggle() {
 
 export function AuthFloatingToggles() {
   return (
-    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 100 }} pointerEvents="box-none">
+    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 100, pointerEvents: 'box-none' }}>
       <FloatingLocaleToggle />
       <FloatingThemeToggle />
     </View>

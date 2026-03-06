@@ -1,4 +1,4 @@
-import { DiscoverCard } from '@scaffald/ui'
+import { DiscoverCard, getIconSize } from '@scaffald/ui'
 import { Building, MapPin, Users } from 'lucide-react-native'
 import type { ComponentRef } from 'react'
 import { forwardRef, memo } from 'react'
@@ -23,7 +23,7 @@ export const OrganizationCard = memo(
         >
           <Row justify="space-between" align="center">
             <Row align="center" gap={8} flex={1}>
-              <Building size="lg" color={isSelected ? '$color1' : '$blue11'} />
+              <Building size={getIconSize('lg')} color={isSelected ? '$color1' : '$blue11'} />
               <Text size="lg" color={isSelected ? '$color1' : '$color12'} style={{ flex: 1 }}>
                 {organization.name}
               </Text>
@@ -32,7 +32,7 @@ export const OrganizationCard = memo(
 
           {organization.address && (
             <Row align="center" gap={4}>
-              <MapPin size="md" color={isSelected ? '$color1' : '$color10'} />
+              <MapPin size={getIconSize('md')} color={isSelected ? '$color1' : '$color10'} />
               <Text color={isSelected ? '$color1' : '$color11'}>
                 {organization.address.city}
                 {organization.address.state && `, ${organization.address.state}`}
@@ -42,7 +42,7 @@ export const OrganizationCard = memo(
 
           {organization.employeeCount && (
             <Row align="center" gap={4}>
-              <Users size="md" color={isSelected ? '$color1' : '$color10'} />
+              <Users size={getIconSize('md')} color={isSelected ? '$color1' : '$color10'} />
               <Text color={isSelected ? '$color1' : '$color11'}>
                 {organization.employeeCount} employees
               </Text>

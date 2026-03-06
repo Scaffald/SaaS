@@ -47,11 +47,6 @@ export const CMS_TABS: OfficeTabsItem[] = [
     href: ROUTES.OFFICE.CMS.ORGANIZATIONS.path,
   },
   {
-    key: "cms-welcome",
-    label: i18n.t(ROUTES.OFFICE.CMS.WELCOME.titleKey),
-    href: ROUTES.OFFICE.CMS.WELCOME.path,
-  },
-  {
     key: "cms-applications",
     label: i18n.t(ROUTES.OFFICE.APPLICATIONS.titleKey),
     href: ROUTES.OFFICE.APPLICATIONS.path,
@@ -137,22 +132,6 @@ export const CMS_ACCORDION_SECTIONS: OfficeAccordionSection[] = [
         key: "organizations-create",
         label: "Create Organization",
         href: ROUTES.OFFICE.CMS.ORGANIZATIONS.CREATE.path,
-      },
-    ],
-  },
-  {
-    key: "cms-welcome",
-    title: "CMS Content",
-    links: [
-      {
-        key: "welcome-list",
-        label: "Welcome Slides",
-        href: ROUTES.OFFICE.CMS.WELCOME.path,
-      },
-      {
-        key: "welcome-create",
-        label: "Create Slide",
-        href: ROUTES.OFFICE.CMS.WELCOME.CREATE.path,
       },
     ],
   },

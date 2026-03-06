@@ -18,7 +18,6 @@ import { documentsRouter } from "./documents.router.ts";
 import { applicationsRouter } from "./applications.router.ts";
 import { authRouter } from "./auth.router.ts";
 import { backgroundChecksRouter } from "./background-checks.router.ts";
-import { cmsRouter } from "./cms.router.ts";
 import { connectionsRouter } from "./connections.router.ts";
 import { employersRouter } from "./employers.router.ts";
 import { engagementRouter } from "./engagement.router.ts";
@@ -60,7 +59,6 @@ export const appRouter = t.router({
   profile: profileRouter,
   profileWizard: profileWizardRouter,
   auth: authRouter,
-  cms: cmsRouter,
   documents: documentsRouter,
   office: officeRouter,
   applications: applicationsRouter,

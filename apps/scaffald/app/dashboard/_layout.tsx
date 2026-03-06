@@ -2,6 +2,7 @@ import { ErrorBoundary } from '@scf/core/components/ErrorBoundary'
 import { ROUTES } from '@scf/core/constants/routes'
 import { DrawerLayout } from '@scf/core/features/drawer/DrawerLayout'
 import { useProtectedRoute } from '@scf/core/utils/auth/useProtectedRoute'
+import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { usePrerequisites } from '@scaffald/sdk/react'
 import { useRouter } from 'expo-router'
 import { Drawer } from 'expo-router/drawer'
@@ -10,6 +11,7 @@ import { Spinner, Text, Stack } from '@scaffald/ui'
 
 export default function Layout() {
   const { isLoading, user } = useProtectedRoute()
+  const { session, isLoading: isSessionLoading } = useSessionContext()
   const router = useRouter()
 
   // Check prerequisites status - only run when we have a valid user
@@ -25,8 +27,11 @@ export default function Layout() {
     }
   }, [statusData, isCheckingPrereqs, router])
 
+  // Wait for session before rendering drawer so SDK has token and API calls don't 401
+  const sessionReady = !isSessionLoading && (user ? !!session?.access_token : true)
+
   // Show loading state BEFORE rendering the drawer
-  if (isLoading || isCheckingPrereqs) {
+  if (isLoading || isCheckingPrereqs || !sessionReady) {
     return (
       <Stack justify="center" align="center">
         <Spinner size="lg" />

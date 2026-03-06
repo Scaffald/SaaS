@@ -36,7 +36,6 @@ import employersRouter from "./routes/employers.ts";
 import onetRouter from "./routes/onet.ts";
 import workersRouter from "./routes/workers.ts";
 import personalityAssessmentRouter from "./routes/personality-assessment.ts";
-import cmsRouter from "./routes/cms.ts";
 import feedbackRouter from "./routes/feedback.ts";
 import officeJobsRouter from "./routes/office-jobs.ts";
 import officeOrganizationsRouter from "./routes/office-organizations.ts";
@@ -128,7 +127,6 @@ app.route("/v1/employers", employersRouter); // Employers
 app.route("/v1/onet", onetRouter); // O*NET data
 app.route("/v1/workers", workersRouter); // Workers discovery
 app.route("/v1/personality-assessment", personalityAssessmentRouter);
-app.route("/v1/cms", cmsRouter); // Personality assessments
 app.route("/v1/feedback", feedbackRouter); // User feedback (submit, upload-url)
 app.route("/v1/office/jobs", officeJobsRouter); // Office jobs list (office role)
 app.route("/v1/office/organizations", officeOrganizationsRouter); // Office organizations management (office role)

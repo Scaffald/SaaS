@@ -14,7 +14,7 @@ import {
 import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Input, Label, Separator, Stack, Text, Row } from '@scaffald/ui'
+import { Button, Input, Label, Separator, Stack, Text, Row, getIconSize } from '@scaffald/ui'
 import { normalizeOrganizationSlug } from '../utils/normalizeOrganizationSlug'
 
 const MIN_QUERY_LENGTH = 2
@@ -110,7 +110,7 @@ export function AddOrganizationWidget() {
     <DashboardWidget gap={16}>
       <Stack gap={8}>
         <Row gap={8} align="center">
-          <Building2 size="lg" color="$blue10" />
+          <Building2 size={getIconSize('lg')} color="$blue10" />
           <Text color="$gray11">Add an Organization</Text>
         </Row>
         <Text color="$gray11">
@@ -149,7 +149,7 @@ export function AddOrganizationWidget() {
         />
       ) : isFetching || isLoading ? (
         <Row gap={8} align="center">
-          <Loader2 size="md" color="$blue10" />
+          <Loader2 size={getIconSize('md')} color="$blue10" />
           <Text color="$gray11">Checking for existing organizations...</Text>
         </Row>
       ) : (
@@ -170,7 +170,7 @@ export function AddOrganizationWidget() {
       >
         {isSubmitting ? (
           <Row gap={8} align="center">
-            <Loader2 size="md" color="$gray11" />
+            <Loader2 size={getIconSize('md')} color="$gray11" />
             <Text color="$gray11">Submitting...</Text>
           </Row>
         ) : submittedRequest ? (
@@ -208,7 +208,7 @@ function StatusSummary({
     return (
       <Stack gap={12}>
         <Row gap={8} align="center">
-          <AlertTriangle size="md" color="$yellow10" />
+          <AlertTriangle size={getIconSize('md')} color="$yellow10" />
           <Text color="$yellow10">We found existing organizations that match your search.</Text>
         </Row>
         <Stack gap={8}>
@@ -224,7 +224,7 @@ function StatusSummary({
   return (
     <Stack gap={8}>
       <Row gap={8} align="center">
-        <CheckCircle2 size="md" color="$green10" />
+        <CheckCircle2 size={getIconSize('md')} color="$green10" />
         <Text color="$green10">This name looks available.</Text>
       </Row>
       <Text color="$gray11">
@@ -270,7 +270,7 @@ function SubmissionSummary({ request, onAddDetails }: SubmissionSummaryProps) {
   return (
     <Stack gap={8}>
       <Row gap={8} align="center">
-        <CheckCircle2 size="md" color="$green10" />
+        <CheckCircle2 size={getIconSize('md')} color="$green10" />
         <Text color="$green10">Request submitted for {request.name}</Text>
       </Row>
       <Text color="$gray11">

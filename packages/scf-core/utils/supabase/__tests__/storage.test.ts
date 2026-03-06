@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 
-import { getAvatarUrl, getCMSMediaUrl, getStorageUrl } from '../storage'
+import { getAvatarUrl, getStorageUrl } from '../storage'
 
 const SUPABASE_URL = 'https://supabase.test'
 
@@ -64,24 +64,6 @@ describe('supabase storage url helpers', () => {
 
       expect(getStorageUrl('public', 'file.pdf')).toBeNull()
       expect(errorSpy).toHaveBeenCalledWith('EXPO_PUBLIC_SUPABASE_URL is not set')
-    })
-  })
-
-  describe('getCMSMediaUrl', () => {
-    it('returns null for empty media paths', () => {
-      expect(getCMSMediaUrl(undefined)).toBeNull()
-      expect(getCMSMediaUrl('')).toBeNull()
-    })
-
-    it('returns fully-qualified URLs unchanged', () => {
-      const url = 'https://cdn.example.com/media/file.mp4'
-      expect(getCMSMediaUrl(url)).toBe(url)
-    })
-
-    it('delegates to storage helper for cms-media bucket', () => {
-      expect(getCMSMediaUrl('welcome/slide.png')).toBe(
-        `${SUPABASE_URL}/storage/v1/object/public/cms-media/welcome/slide.png`,
-      )
     })
   })
 })
