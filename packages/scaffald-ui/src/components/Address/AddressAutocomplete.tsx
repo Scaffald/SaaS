@@ -70,7 +70,7 @@ export function AddressAutocomplete({
     typeof error === 'string' ? error : (errorMessage ?? searchError ?? undefined)
 
   return (
-    <View style={{ position: 'relative' }}>
+    <View style={{ position: 'relative', zIndex: 1, overflow: 'visible' as const }}>
       <Input
         value={inputValue}
         onChangeText={handleChange}
@@ -93,12 +93,12 @@ export function AddressAutocomplete({
             borderWidth: 1,
             borderColor: '#e5e7eb',
             maxHeight: 240,
-            zIndex: 1000,
+            zIndex: 10000,
+            elevation: 10,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.1,
             shadowRadius: 8,
-            elevation: 4,
           }}
         >
           {loading ? (
