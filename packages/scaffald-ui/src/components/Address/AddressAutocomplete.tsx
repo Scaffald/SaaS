@@ -154,6 +154,16 @@ export function AddressAutocomplete({
     typeof error === 'string' ? error : (errorMessage ?? searchError ?? undefined)
 
   const isWebFixed = Platform.isWeb && dropdownLayout && showList
+  const shadowStyle =
+    Platform.OS === 'web'
+      ? { boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }
+      : {
+          elevation: 10,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+        }
   const dropdownStyle = (isWebFixed
     ? {
         position: 'fixed' as const,
@@ -168,11 +178,7 @@ export function AddressAutocomplete({
         borderWidth: 1,
         borderColor: '#e5e7eb',
         overflow: 'hidden' as const,
-        elevation: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
+        ...shadowStyle,
       }
     : {
         position: 'absolute' as const,
@@ -187,11 +193,7 @@ export function AddressAutocomplete({
         borderColor: '#e5e7eb',
         overflow: 'hidden' as const,
         zIndex: DROPDOWN_Z,
-        elevation: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
+        ...shadowStyle,
       }) as ViewStyle
 
   const dropdownContent = showList ? (
