@@ -1,6 +1,7 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { useOccupationStatus } from '@scf/core/utils/onet-sdk-hooks'
-import { Button, DashboardWidget, useThemeContext } from '@scaffald/ui'
+import { Button, DashboardWidget, DashboardWidgetHeader, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import { Spinner, Text, Stack } from '@scaffald/ui'
 
@@ -8,7 +9,7 @@ import { Spinner, Text, Stack } from '@scaffald/ui'
  * OccupationAssessmentWidget - Dashboard widget CTA for Occupation Preferences
  */
 export function OccupationAssessmentWidget() {
-  useThemeContext()
+  const { theme } = useThemeContext()
   const router = useRouter()
 
   const { data: status, isLoading } = useOccupationStatus()
@@ -18,7 +19,7 @@ export function OccupationAssessmentWidget() {
       <DashboardWidget>
         <Stack gap={8} align="center" paddingVertical={40}>
           <Spinner size="lg" color="primary" />
-          <Text color="$gray11">Loading...</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -35,19 +36,17 @@ export function OccupationAssessmentWidget() {
   return (
     <DashboardWidget>
       <Stack gap={12}>
-        <Stack gap={4}>
-          <Text color="$gray11">Occupation Preferences</Text>
-          <Text color="$gray11">
-            Tell us about your current occupation and target occupations to help us recommend
-            relevant opportunities.
-          </Text>
-        </Stack>
+        <DashboardWidgetHeader title="Occupation Preferences" />
+        <Text style={{ color: colors.text[theme].secondary }}>
+          Tell us about your current occupation and target occupations to help us recommend
+          relevant opportunities.
+        </Text>
 
         <Button variant="filled" color="primary" onPress={handleStart} size="lg">
           Add Occupations
         </Button>
 
-        <Text color="$gray11">Takes about 1-2 minutes (optional)</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Takes about 1-2 minutes (optional)</Text>
       </Stack>
     </DashboardWidget>
   )

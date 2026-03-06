@@ -559,9 +559,10 @@ async function main() {
   const newsImported = await triggerNewsImport()
 
   if (!newsImported) {
-    console.warn(
-      '\n⚠️  News import failed. You can manually trigger it later with: pnpm supa:news:import'
-    )
+    console.error('\n❌ News import failed. To see news in the app, run after seed:')
+    console.error('   pnpm supa:news:import')
+    console.error('   (Requires Supabase Edge Functions running: pnpm supa:functions)')
+    process.exit(1)
   }
 
   console.log('\n✅ Seeding complete!')

@@ -597,6 +597,16 @@ SCAFFALD_WEBHOOK_SECRET=whsec_...
 
 For address autocomplete (e.g. onboarding, profile) and for the **dashboard map page** (`/dashboard/map`), set `EXPO_PUBLIC_MAPBOX_TOKEN` (or pass `apiKey` to `ControlledAddressForm`). See `.env.template` for Mapbox vars.
 
+### News
+
+The dashboard News widget and `/dashboard/news` page show articles from `core.cached_news_articles`. To see news locally:
+
+1. **Seed data** – Run full seed so industries and news feeds exist: `pnpm supa:seed` (or `pnpm supa db reset && pnpm supa:seed`). Seed includes news feeds (Step 6) and triggers news import (Step 7).
+2. **News import** – The import step runs the `news-import` Edge Function. It requires Edge Functions to be running (`pnpm supa:functions` in a separate terminal). If seed completes but news import fails, run it manually: `pnpm supa:news:import`.
+3. **Optional fallback industry** – For local/dev when the construction industry is missing from the DB, set `EXPO_PUBLIC_NEWS_CONSTRUCTION_INDUSTRY_ID` to a valid industry UUID so the widget can still show articles.
+
+**Summary:** Run full seed (with functions running) so news import runs once; if import was skipped or failed, run `pnpm supa:news:import` after seed.
+
 ---
 
 ## Testing

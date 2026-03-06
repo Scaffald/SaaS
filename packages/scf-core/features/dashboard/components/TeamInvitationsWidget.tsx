@@ -1,11 +1,11 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { useMyTeamInvitations, useRespondToTeamInvitation } from '@scaffald/sdk/react'
 import type { TeamInvitation } from '@scaffald/sdk'
-import { CheckCircle, Clock, Users, XCircle } from 'lucide-react-native'
+import { CheckCircle, Clock, XCircle } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Card, Separator, Skeleton, SkeletonBox, SkeletonText, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Card, DashboardWidget, DashboardWidgetHeader, Separator, Skeleton, SkeletonBox, SkeletonText, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 function TeamInvitationsWidgetSkeleton() {
   return (
@@ -207,26 +207,19 @@ export function TeamInvitationsWidget() {
   }
 
   return (
-    <Card
-      padding="md"
-      borderColor="$borderColor"
-      borderWidth={1}
-      backgroundColor="$color1"
-      style={{ gap: 16 }}
-    >
-      <Row justify="space-between" align="center">
-        <Row gap={8} align="center">
-          <Users size="lg" />
-          <Text>Team invitations</Text>
-        </Row>
-        <Button
-          variant="outline"
-          size="sm"
-          onPress={() => router.push(ROUTES.DASHBOARD.TEAMS.INVITATIONS.path)}
-        >
-          Manage
-        </Button>
-      </Row>
+    <DashboardWidget gap={16}>
+      <DashboardWidgetHeader
+        title="Team invitations"
+        action={
+          <Button
+            variant="outline"
+            size="sm"
+            onPress={() => router.push(ROUTES.DASHBOARD.TEAMS.INVITATIONS.path)}
+          >
+            Manage
+          </Button>
+        }
+      />
 
       <TeamInvitationList
         invitations={topInvitations}
@@ -243,6 +236,6 @@ export function TeamInvitationsWidget() {
           </Text>
         </>
       ) : null}
-    </Card>
+    </DashboardWidget>
   )
 }

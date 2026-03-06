@@ -4,7 +4,8 @@ import {
   useAssessmentStatus,
   useIPIPStatus,
 } from '@scf/core/utils/personality-assessment-sdk-hooks'
-import { Button, DashboardWidget, useThemeContext } from '@scaffald/ui'
+import { Button, DashboardWidget, DashboardWidgetHeader, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { ArrowRight, CheckCircle2 } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { ProgressBar, Spinner, Text, Row, Stack } from '@scaffald/ui'
@@ -15,7 +16,7 @@ import { DOMAIN_NAMES, DOMAIN_ORDER, getCompletedDomainsCount } from './utils/do
  * IPIPAssessmentWidget - Dashboard widget with CTA and results preview
  */
 export function IPIPAssessmentWidget() {
-  useThemeContext()
+  const { theme } = useThemeContext()
   const router = useRouter()
 
   const { data: statusData, isLoading } = useIPIPStatus()
@@ -30,7 +31,7 @@ export function IPIPAssessmentWidget() {
       <DashboardWidget>
         <Stack gap={8} align="center" paddingVertical={40}>
           <Spinner size="lg" color="primary" />
-          <Text color="$gray11">Loading...</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -56,13 +57,15 @@ export function IPIPAssessmentWidget() {
     return (
       <DashboardWidget>
         <Stack gap={12}>
+          <DashboardWidgetHeader title="Personality Assessment" />
           <Row justify="space-between" align="center">
             <Stack gap={4} flex={1}>
               <Row align="center" gap={8}>
-                <CheckCircle2 size={16} color="$green10" />
-                <Text color="$gray11">Personality Assessment</Text>
+                <CheckCircle2 size={16} color={colors.green[500]} />
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  Your Big Five personality profile is complete
+                </Text>
               </Row>
-              <Text color="$gray11" style={{ flex: 1 }}>Your Big Five personality profile is complete</Text>
             </Stack>
           </Row>
 
@@ -77,10 +80,14 @@ export function IPIPAssessmentWidget() {
           >
             <Row justify="space-between" align="center">
               <Stack gap={4} flex={1}>
-                <Text color="$gray11">Your Archetype</Text>
-                <Text color="$blue11">{results.archetype.name}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>Your Archetype</Text>
+                <Text style={{ color: theme === 'light' ? colors.blue[700] : colors.blue[300] }}>
+                  {results.archetype.name}
+                </Text>
                 {results.archetype.confidence > 0 && (
-                  <Text color="$gray11">{results.archetype.confidence}% confidence</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>
+                    {results.archetype.confidence}% confidence
+                  </Text>
                 )}
               </Stack>
             </Row>
@@ -88,7 +95,7 @@ export function IPIPAssessmentWidget() {
             {/* Top 3 Domain Scores Preview */}
             {results.normalizedScores && (
               <Stack gap={8} marginTop={8}>
-                <Text color="$gray11">Top Traits</Text>
+                <Text style={{ color: colors.text[theme].primary }}>Top Traits</Text>
                 {DOMAIN_ORDER.slice(0, 3).map((domain) => {
                   const normalized = results.normalizedScores?.[domain]
                   if (!normalized) return null
@@ -99,18 +106,23 @@ export function IPIPAssessmentWidget() {
 
                   return (
                     <Row key={domain} justify="space-between" align="center" gap={8}>
-                      <Text color="$gray11" style={{ flex: 1 }}>
+                      <Text style={{ flex: 1, color: colors.text[theme].secondary }}>
                         {domainName}
                       </Text>
                       <ProgressBar value={percentage} />
-                      <Text color="$gray11" style={{ minWidth: 45 }}>
+                      <Text style={{ minWidth: 45, color: colors.text[theme].secondary }}>
                         {percentage}%
                       </Text>
                       <Text
-                        color={
-                          result === 'high' ? '$green10' : result === 'low' ? '$blue10' : '$gray10'
-                        }
-                        style={{ minWidth: 50 }}
+                        style={{
+                          minWidth: 50,
+                          color:
+                            result === 'high'
+                              ? colors.green[600]
+                              : result === 'low'
+                                ? colors.blue[600]
+                                : colors.text[theme].secondary,
+                        }}
                       >
                         {result.toUpperCase()}
                       </Text>
@@ -133,26 +145,26 @@ export function IPIPAssessmentWidget() {
   return (
     <DashboardWidget>
       <Stack gap={12}>
-        <Stack gap={4}>
-          <Text color="$gray11">Personality Assessment</Text>
-          <Text color="$gray11">
-            Answer 120 questions to discover your personality traits using the Big Five personality
-            model.
-          </Text>
-        </Stack>
+        <DashboardWidgetHeader title="Personality Assessment" />
+        <Text style={{ color: colors.text[theme].secondary }}>
+          Answer 120 questions to discover your personality traits using the Big Five personality
+          model.
+        </Text>
 
         {/* Progress Bar */}
         {hasStarted && (
           <Stack gap={8}>
             <Row justify="space-between" align="center">
-              <Text color="$gray11">Progress</Text>
-              <Text color="$gray11">
+              <Text style={{ color: colors.text[theme].secondary }}>Progress</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
                 {progress}/120 ({progressPercentage}%)
               </Text>
             </Row>
             <ProgressBar value={progressPercentage} />
             {completedDomains > 0 && (
-              <Text color="$gray11">{completedDomains} of 5 domains completed</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
+                {completedDomains} of 5 domains completed
+              </Text>
             )}
           </Stack>
         )}
@@ -161,7 +173,7 @@ export function IPIPAssessmentWidget() {
           {hasStarted ? 'Continue Questions' : 'Start Questions'}
         </Button>
 
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           {hasStarted ? `${progress}/120 questions answered` : 'Takes about 10-15 minutes'}
         </Text>
       </Stack>

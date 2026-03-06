@@ -293,7 +293,7 @@ describe('Chart', () => {
           <BarChart data={[10, 20, 30]} />
         </TestWrapper>
       )
-      expect(getByRole('image')).toBeTruthy()
+      expect(getByRole('img')).toBeTruthy()
     })
 
     it('should have accessible empty state', () => {

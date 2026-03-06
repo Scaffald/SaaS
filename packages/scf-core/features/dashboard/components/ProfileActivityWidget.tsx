@@ -10,7 +10,7 @@ import {
   Avatar,
   Button,
   DashboardWidget,
-  H4,
+  DashboardWidgetHeader,
   Skeleton,
   SkeletonAvatar,
   SkeletonBox,
@@ -193,10 +193,7 @@ export function ProfileActivityWidget() {
 
   return (
     <DashboardWidget gap={0}>
-      {/* ── Widget header ── */}
-      <Row align="center" style={{ paddingBottom: 4 }}>
-        <H4 style={{ color: colors.text[theme].primary }}>Activity</H4>
-      </Row>
+      <DashboardWidgetHeader title="Activity" />
 
       {/* ── 30-Day analytics banner ── */}
       {viewAnalytics && (

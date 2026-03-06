@@ -27,6 +27,11 @@ export async function authMiddleware(c: Context, next: Next) {
     await next()
     return
   }
+  // Skip auth for symbolicate (Expo/Metro stack trace symbolication; this API does not provide it)
+  if (path.includes('/symbolicate')) {
+    await next()
+    return
+  }
 
   const authHeader = c.req.header('Authorization')
   const token = authHeader?.replace('Bearer ', '')?.trim()

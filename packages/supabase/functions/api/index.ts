@@ -24,6 +24,7 @@ import profileWidgetsRouter from "./routes/profile-widgets.ts";
 import profileCompletionRouter from "./routes/profile-completion.ts";
 import profileImportRouter from "./routes/profile-import.ts";
 import profileViewsRouter from "./routes/profile-views.ts";
+import symbolicateRouter from "./routes/symbolicate.ts";
 import backgroundChecksRouter from "./routes/background-checks.ts";
 import backgroundChecksAdminRouter from "./routes/background-checks-admin.ts";
 import inquiriesRouter from "./routes/inquiries.ts";
@@ -112,6 +113,8 @@ app.route("/v1/profiles/widgets", profileWidgetsRouter); // Profile widgets
 app.route("/v1/profiles/completion", profileCompletionRouter); // Profile completion tracking
 app.route("/v1/profiles/import", profileImportRouter); // Profile import
 app.route("/v1/profile-views", profileViewsRouter); // Profile views tracking
+app.route("/v1/symbolicate", symbolicateRouter); // Symbolicate stub (Expo/Metro; no-op)
+app.route("/symbolicate", symbolicateRouter); // Same stub for clients that call /api/symbolicate
 app.route("/v1/background-checks", backgroundChecksRouter);
 app.route("/v1/background-checks/admin", backgroundChecksAdminRouter); // Background checks
 app.route("/v1/inquiries", inquiriesRouter); // User inquiries

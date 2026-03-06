@@ -113,7 +113,7 @@ describe('CertificationSearch', () => {
   const openResults = async (user: ReturnType<typeof userFactory>, query = 'OSHA') => {
     const input = screen.getByPlaceholderText(/Search certifications/i)
     await user.type(input, query)
-    await screen.findByTestId('scroll-view')
+    await screen.findByTestId('cert-search-results')
   }
 
   it('debounces search input and groups results by depth', async () => {

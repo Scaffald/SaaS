@@ -208,7 +208,6 @@ export function Avatar({
               },
             ]}
             onError={handleImageError}
-            accessibilityLabel={alt}
           />
         )}
         {hasImage && typeof src !== 'string' && (
@@ -223,7 +222,6 @@ export function Avatar({
               },
             ]}
             onError={handleImageError}
-            accessibilityLabel={alt}
           />
         )}
 

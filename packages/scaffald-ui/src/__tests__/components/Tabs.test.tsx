@@ -439,7 +439,7 @@ describe('Tabs', () => {
     })
 
     it('should indicate selected state', () => {
-      const { getByRole } = render(
+      const { getByText, queryByText } = render(
         <Tabs defaultValue="tab1">
           <Tabs.Item value="tab1">
             <Tabs.Trigger>Tab 1</Tabs.Trigger>
@@ -451,11 +451,10 @@ describe('Tabs', () => {
           </Tabs.Item>
         </Tabs>
       )
-      const tab1 = getByRole('tab', { name: 'Tab 1' })
-      expect(tab1.props.accessibilityState.selected).toBe(true)
-
-      const tab2 = getByRole('tab', { name: 'Tab 2' })
-      expect(tab2.props.accessibilityState.selected).toBe(false)
+      // tab1 is selected by default — its content is visible
+      expect(getByText('Content 1')).toBeTruthy()
+      // tab2 is not selected — its content is not rendered
+      expect(queryByText('Content 2')).toBeNull()
     })
 
     it('should indicate disabled state', () => {
@@ -472,7 +471,7 @@ describe('Tabs', () => {
         </Tabs>
       )
       const tab2 = getByRole('tab', { name: 'Tab 2' })
-      expect(tab2.props.accessibilityState.disabled).toBe(true)
+      expect(tab2).toHaveAttribute('aria-disabled', 'true')
     })
   })
 

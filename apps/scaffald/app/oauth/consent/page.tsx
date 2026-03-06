@@ -7,6 +7,7 @@ import { ConsentScreen } from '@scf/core/features/oauth/components/ConsentScreen
 import { useOAuthAppDetails } from '@scf/core/utils/oauth-sdk-hooks'
 import { useLocalSearchParams } from 'expo-router'
 import { useEffect, useState } from 'react'
+import { Text, View } from 'react-native'
 
 interface AppDetails {
   id: string
@@ -47,11 +48,19 @@ export default function OAuthConsentPage() {
   }, [getAppDetails.data])
 
   if (isLoading || !appDetails) {
-    return <div>Loading...</div>
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Loading...</Text>
+      </View>
+    )
   }
 
   if (!clientId || !redirectUri || !state) {
-    return <div>Invalid OAuth authorization request</div>
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Invalid OAuth authorization request</Text>
+      </View>
+    )
   }
 
   const requestedScopes = scope ? scope.split(' ').filter((s) => s.length > 0) : []

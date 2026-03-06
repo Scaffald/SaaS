@@ -13,7 +13,7 @@ import {
   Avatar,
   Button,
   DashboardWidget,
-  H4,
+  DashboardWidgetHeader,
   ProgressBarBase,
   Row,
   Skeleton,
@@ -237,17 +237,19 @@ export function ProfileSnapshotWidget() {
     <DashboardWidget>
       <Stack gap={24}>
         {/* Header - Stitch: Profile + View Full Profile */}
-        <Row justify="space-between" align="center">
-          <H4>Profile</H4>
-          <Button
-            size="sm"
-            variant="text"
-            color="primary"
-            onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
-          >
-            View Full Profile
-          </Button>
-        </Row>
+        <DashboardWidgetHeader
+          title="Profile"
+          action={
+            <Button
+              size="sm"
+              variant="text"
+              color="primary"
+              onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
+            >
+              View Full Profile
+            </Button>
+          }
+        />
 
         {/* Avatar & Name - Stitch: centered, larger avatar */}
         <Stack gap={16} align="center">
@@ -269,7 +271,9 @@ export function ProfileSnapshotWidget() {
             color="gray"
           />
           <Stack gap={4} align="center">
-            <Text style={{ fontWeight: "700", fontSize: 20 }}>{displayName}</Text>
+            <Text style={{ fontWeight: "700", fontSize: 20, color: colors.text[theme].primary }}>
+              {displayName}
+            </Text>
             {generalInfo.headline && (
               <Text style={{ color: colors.text[theme].secondary }}>
                 {generalInfo.headline}
@@ -306,7 +310,7 @@ export function ProfileSnapshotWidget() {
             >
               Current Role
             </Text>
-            <Text style={{ fontWeight: "700", fontSize: 18 }}>
+            <Text style={{ fontWeight: "700", fontSize: 18, color: colors.text[theme].primary }}>
               {currentRole.job_title}
             </Text>
             <Text style={{ color: colors.text[theme].secondary }}>

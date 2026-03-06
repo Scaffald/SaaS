@@ -13,7 +13,8 @@ describe('CommandShortcut', () => {
 
   it('renders double key shortcut', () => {
     const { getByText } = render(<CommandShortcut variant="Double" keys={['⌘', 'K']} />)
-    expect(getByText('⌘')).toBeTruthy()
+    // On web platform, '⌘' is mapped to 'Ctrl' by the component
+    expect(getByText('Ctrl')).toBeTruthy()
     expect(getByText('K')).toBeTruthy()
   })
 

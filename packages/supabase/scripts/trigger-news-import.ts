@@ -85,6 +85,11 @@ async function triggerNewsImport() {
         console.log(`   Errors: ${data.results.errors || 0}`)
         console.log(`   Feeds processed: ${data.results.feeds_processed || 0}`)
         console.log(`   Feeds failed: ${data.results.feeds_failed || 0}`)
+        const messages = data.results.errorMessages
+        if (Array.isArray(messages) && messages.length > 0) {
+          console.log('\n   Feed errors:')
+          for (const msg of messages) console.log(`   - ${msg}`)
+        }
       }
 
       // Check article count
