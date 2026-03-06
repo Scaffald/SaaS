@@ -6,7 +6,7 @@ import {
   useDeclineConnectionMutation,
 } from '@scf/core/utils/engagement-sdk-hooks'
 import { useProfileViews, useViewAnalytics } from '@scf/core/utils/profile-views-sdk-hooks'
-import { Card } from '@scaffald/ui'
+import { Card, Skeleton, SkeletonAvatar, SkeletonText, SkeletonBox } from '@scaffald/ui'
 import {
   ArrowDown,
   ArrowUp,
@@ -18,8 +18,66 @@ import {
   X,
 } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Avatar, Button, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Avatar, Button, Separator, Text, Row, Stack } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
+
+function ProfileActivityWidgetSkeleton() {
+  return (
+    <Card>
+      <Stack gap={16}>
+        {/* Stat tiles */}
+        <Row gap={8}>
+          <SkeletonBox height={80} style={{ flex: 1 }} />
+          <SkeletonBox height={80} style={{ flex: 1 }} />
+          <SkeletonBox height={80} style={{ flex: 1 }} />
+        </Row>
+
+        {/* Recent Views section */}
+        <Stack gap={8}>
+          <Skeleton width={120} height={14} shape="text" />
+          {[0, 1, 2].map((i) => (
+            <Row key={i} align="center" gap={8}>
+              <SkeletonAvatar size={32} />
+              <SkeletonText lines={1} style={{ flex: 1 }} />
+            </Row>
+          ))}
+        </Stack>
+
+        <Skeleton height={1} />
+
+        {/* Followers section */}
+        <Stack gap={8}>
+          <Skeleton width={120} height={14} shape="text" />
+          {[0, 1, 2].map((i) => (
+            <Row key={i} align="center" gap={8}>
+              <SkeletonAvatar size={32} />
+              <SkeletonText lines={1} style={{ flex: 1 }} />
+            </Row>
+          ))}
+        </Stack>
+
+        <Skeleton height={1} />
+
+        {/* Pending requests section */}
+        <Stack gap={8}>
+          <Skeleton width={140} height={14} shape="text" />
+          {[0, 1].map((i) => (
+            <Row key={i} align="center" gap={8} justify="space-between">
+              <Row align="center" gap={8} style={{ flex: 1 }}>
+                <SkeletonAvatar size={32} />
+                <SkeletonText lines={1} style={{ flex: 1 }} />
+              </Row>
+              <Row gap={4}>
+                <SkeletonBox width={36} height={32} borderRadius={8} />
+                <SkeletonBox width={36} height={32} borderRadius={8} />
+              </Row>
+            </Row>
+          ))}
+        </Stack>
+      </Stack>
+    </Card>
+  )
+}
 
 /**
  * Profile Activity Widget
@@ -80,16 +138,12 @@ export function ProfileActivityWidget() {
 
   const isLoading = viewsLoading || analyticsLoading || followersLoading || requestsLoading
 
+  if (isLoading) return <ProfileActivityWidgetSkeleton />
+
   return (
     <Card>
       <Text color="$gray11">Profile Activity</Text>
-      {isLoading ? (
-        <Stack align="center" justify="center" paddingVertical={16} gap={8}>
-          <Spinner size="lg" />
-          <Text color="$gray11">Loading activity...</Text>
-        </Stack>
-      ) : (
-        <Stack gap={16}>
+      <Stack gap={16}>
           {/* 30-Day View Trend */}
           {viewAnalytics && (
             <Stack
@@ -350,7 +404,6 @@ export function ProfileActivityWidget() {
             )}
           </Stack>
         </Stack>
-      )}
     </Card>
   )
 }

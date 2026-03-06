@@ -5,7 +5,9 @@ import {
   DashboardWidget,
   EmptyState,
   H4,
-  LoadingState,
+  Skeleton,
+  SkeletonAvatar,
+  SkeletonText,
   useThemeContext,
 } from "@scaffald/ui";
 import { GraduationCap } from "lucide-react-native";
@@ -43,7 +45,17 @@ export function EducationWidget({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <LoadingState message="Loading education..." />
+        <Stack gap={12}>
+          <Row justify="space-between" align="center">
+            <Skeleton width={80} height={20} shape="text" />
+          </Row>
+          {[0, 1].map((i) => (
+            <Row key={i} gap={12} align="flex-start">
+              <SkeletonAvatar size={40} />
+              <SkeletonText lines={2} style={{ flex: 1 }} />
+            </Row>
+          ))}
+        </Stack>
       </DashboardWidget>
     );
   }

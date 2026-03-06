@@ -16,8 +16,10 @@ import {
   DashboardWidget,
   EmptyState,
   H4,
-  LoadingState,
   ResponsiveModal,
+  Skeleton,
+  SkeletonBox,
+  SkeletonGroup,
   Tabs,
   useThemeContext,
 } from "@scaffald/ui";
@@ -129,7 +131,18 @@ export function SkillsWidget({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <LoadingState message="Loading skills..." />
+        <Stack gap={12}>
+          <Row justify="space-between" align="center">
+            <Skeleton width={60} height={20} shape="text" />
+          </Row>
+          <SkeletonBox width="100%" height={36} borderRadius={8} />
+          <Skeleton width="100%" height={1} />
+          <SkeletonGroup direction="row" gap={8} style={{ flexWrap: 'wrap' }}>
+            {[100, 80, 120, 90, 110].map((w, i) => (
+              <SkeletonBox key={i} width={w} height={32} borderRadius={99} />
+            ))}
+          </SkeletonGroup>
+        </Stack>
       </DashboardWidget>
     );
   }
@@ -224,7 +237,11 @@ export function SkillsWidget({
         {/* Technical Skills Tab Content */}
         {activeTab === "technical" &&
           (isLoadingSkills ? (
-            <LoadingState message="Loading skills..." />
+            <SkeletonGroup direction="row" gap={8} style={{ flexWrap: 'wrap' }}>
+              {[100, 80, 120, 90, 110].map((w, i) => (
+                <SkeletonBox key={i} width={w} height={32} borderRadius={99} />
+              ))}
+            </SkeletonGroup>
           ) : error ? (
             <Stack gap={16} align="center" paddingVertical={32}>
               <Text style={{ color: colors.fg[theme].error }}>Failed to load skills</Text>
@@ -342,7 +359,11 @@ export function SkillsWidget({
         {/* Soft Skills Tab Content */}
         {activeTab === "soft-skills" &&
           (isLoadingSoftSkills ? (
-            <LoadingState message="Loading soft skills..." />
+            <SkeletonGroup direction="row" gap={8} style={{ flexWrap: 'wrap' }}>
+              {[100, 80, 120, 90, 110].map((w, i) => (
+                <SkeletonBox key={i} width={w} height={32} borderRadius={99} />
+              ))}
+            </SkeletonGroup>
           ) : softSkillsError ? (
             <Stack gap={16} align="center" paddingVertical={32}>
               <Text style={{ color: colors.fg[theme].error }}>

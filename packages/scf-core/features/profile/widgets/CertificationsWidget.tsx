@@ -5,7 +5,8 @@ import {
   DashboardWidget,
   EmptyState,
   H4,
-  LoadingState,
+  Skeleton,
+  SkeletonList,
   useThemeContext,
 } from "@scaffald/ui";
 import { Award, CheckCircle } from "lucide-react-native";
@@ -45,7 +46,10 @@ export function CertificationsWidget({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <LoadingState message="Loading certifications..." />
+        <Stack gap={12}>
+          <Skeleton width={120} height={20} shape="text" />
+          <SkeletonList count={3} variant="profile" />
+        </Stack>
       </DashboardWidget>
     );
   }

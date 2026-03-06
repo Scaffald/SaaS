@@ -5,8 +5,10 @@ import {
   Button,
   DashboardWidget,
   H4,
-  LoadingState,
   ResponsiveModal,
+  Skeleton,
+  SkeletonBox,
+  SkeletonList,
   useThemeContext,
 } from '@scaffald/ui'
 import { randomUUID } from 'expo-crypto'
@@ -84,7 +86,11 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
   if (isLoading) {
     return (
       <DashboardWidget>
-        <LoadingState message="Loading reviews..." />
+        <Stack gap={16}>
+          <Skeleton width={140} height={20} shape="text" />
+          <SkeletonBox width="100%" height={80} borderRadius={12} />
+          <SkeletonList count={2} variant="profile" />
+        </Stack>
       </DashboardWidget>
     )
   }

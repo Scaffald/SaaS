@@ -5,7 +5,7 @@ import { useGeneralInfoWidget } from "@scf/core/utils/profile-widgets-sdk-hooks"
 import { useUserProfile } from "@scf/core/utils/user-profiles-sdk-hooks";
 import { useUser } from "@scf/core/utils/useUser";
 import { getAvatarUrl } from "@scf/core/utils/supabase/storage";
-import { DashboardWidget, LoadingState, ResponsiveModal, useThemeContext } from "@scaffald/ui";
+import { DashboardWidget, ResponsiveModal, Skeleton, SkeletonAvatar, SkeletonBox, SkeletonText, useThemeContext } from "@scaffald/ui";
 import { MessageSquarePlus } from "lucide-react-native";
 import { useState } from "react";
 import { Avatar, Button, Text, Row, Stack } from "@scaffald/ui";
@@ -48,7 +48,24 @@ export function GeneralInfoWidget({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <LoadingState message="Loading profile..." />
+        <Stack gap={12} align="center">
+          <SkeletonAvatar size={40} />
+          <Skeleton width={160} height={16} shape="text" />
+          <Skeleton width={120} height={14} shape="text" />
+          <SkeletonBox width={100} height={28} borderRadius={99} />
+        </Stack>
+        <Stack gap={12} style={{ marginTop: 12 }}>
+          <Skeleton width={60} height={14} shape="text" />
+          <SkeletonText lines={3} lastLineWidth="80%" />
+        </Stack>
+        <Stack gap={8} style={{ marginTop: 12 }}>
+          {[0, 1, 2, 3, 4].map((i) => (
+            <Stack key={i} gap={4}>
+              <Skeleton width="30%" height={12} shape="text" />
+              <Skeleton width="100%" height={14} shape="text" />
+            </Stack>
+          ))}
+        </Stack>
       </DashboardWidget>
     );
   }

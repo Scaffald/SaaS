@@ -10,7 +10,8 @@ import {
   DashboardWidget,
   EmptyState,
   H4,
-  LoadingState,
+  Skeleton,
+  SkeletonBox,
   useThemeContext,
 } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
@@ -168,7 +169,10 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <LoadingState message="Loading soft skills..." />
+        <Stack gap={12}>
+          <Skeleton width={160} height={20} shape="text" />
+          <SkeletonBox width="100%" height={200} borderRadius={12} />
+        </Stack>
       </DashboardWidget>
     )
   }
