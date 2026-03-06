@@ -86,9 +86,12 @@ export function ToggleAnimated({
     }
   }, [checked, sizeConfig.thumbTranslate, prefersReducedMotion, thumbPosition])
 
-  const animatedThumbStyle = useAnimatedStyleAsserted(() => ({
-    transform: [{ translateX: thumbPosition.value }],
-  }))
+  const animatedThumbStyle = useAnimatedStyleAsserted(
+    () => ({
+      transform: [{ translateX: thumbPosition.value }],
+    }),
+    [thumbPosition]
+  )
 
   const handlePress = () => {
     if (disabled) return
