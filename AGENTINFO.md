@@ -598,6 +598,7 @@ SCAFFALD_CLIENT_SECRET=your_client_secret
 SCAFFALD_WEBHOOK_SECRET=whsec_...
 ```
 
+<<<<<<< HEAD
 For address autocomplete (e.g. onboarding, profile) and for the **dashboard map page** (`/dashboard/map`), set `EXPO_PUBLIC_MAPBOX_TOKEN` (or pass `apiKey` to `ControlledAddressForm`). See `.env.template` for Mapbox vars.
 
 ### News
@@ -609,6 +610,9 @@ The dashboard News widget and `/dashboard/news` page show articles from `core.ca
 3. **Optional fallback industry** – For local/dev when the construction industry is missing from the DB, set `EXPO_PUBLIC_NEWS_CONSTRUCTION_INDUSTRY_ID` to a valid industry UUID so the widget can still show articles.
 
 **Summary:** Run full seed (with functions running) so news import runs once; if import was skipped or failed, run `pnpm supa:news:import` after seed.
+=======
+For address autocomplete (e.g. onboarding, profile), set `EXPO_PUBLIC_MAPBOX_TOKEN` (or pass `apiKey` to `ControlledAddressForm`). See `.env.template` for Mapbox vars.
+>>>>>>> 1dbb2307b (feat(onboarding): Mapbox address autocomplete and expandable manual fields)
 
 ---
 

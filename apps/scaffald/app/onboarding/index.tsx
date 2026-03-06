@@ -234,7 +234,10 @@ export default function OnboardingPage() {
                   trigger={trigger}
                   placeholder="Search for your address..."
                   manualFieldsVariant="expand"
+<<<<<<< HEAD
                   proximity={proximity}
+=======
+>>>>>>> 1dbb2307b (feat(onboarding): Mapbox address autocomplete and expandable manual fields)
                   error={
                     errors.address?.street?.message ||
                     errors.address?.city?.message
