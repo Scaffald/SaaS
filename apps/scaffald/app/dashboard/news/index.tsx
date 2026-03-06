@@ -1,8 +1,8 @@
 import { DashboardPage } from "@scf/core/features/dashboard/DashboardPage";
 import type { NewsItem } from "@scf/core/features/news";
 import { useAggregatedNews } from "@scf/core/features/news/hooks/useNewsFeed";
+import { useNewsIndustryResolution } from "@scf/core/features/news/hooks/useNewsIndustryResolution";
 import { redirect } from "@scf/core/utils/redirect";
-import { supabase } from "@scf/core/utils/supabase/client";
 import { AlertCircle, ExternalLink, RefreshCw } from "lucide-react-native";
 import {
   Button,
@@ -15,15 +15,14 @@ import {
 } from "@scaffald/ui";
 import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
-import { useEffect, useState, type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { Platform, Image, Pressable, StyleSheet, View } from "react-native";
 import { colors } from "@scaffald/ui/tokens";
 import { useThemeContext } from "@scaffald/ui";
 
 const FULL_PAGE_ITEM_COUNT = 40;
-const DEFAULT_INDUSTRY = "construction";
 
-// Simple NewsCard component (temporary inline replacement)
+// Simple NewsCard component
 interface NewsCardProps {
   title: string;
   description?: string;
@@ -136,25 +135,13 @@ const formatTimeAgo = (date: Date) => {
 
 export default function NewsPage() {
   const router = useRouter();
-  const [industryId, setIndustryId] = useState<string>("");
+  const { theme } = useThemeContext();
 
-  // Get industry ID from slug
-  useEffect(() => {
-    async function resolveIndustryId() {
-      const { data: industryData } = await supabase
-        .schema("core")
-        .from("industries")
-        .select("id")
-        .eq("slug", DEFAULT_INDUSTRY)
-        .single();
-
-      if (industryData?.id) {
-        setIndustryId(industryData.id);
-      }
-    }
-
-    void resolveIndustryId();
-  }, []);
+  const { effectiveIndustryId, isResolving: isResolvingIndustry } =
+    useNewsIndustryResolution({
+      industrySlug: "construction",
+      useUserIndustry: false,
+    });
 
   const {
     data: newsItems = [],
@@ -163,8 +150,9 @@ export default function NewsPage() {
     error,
     refetch,
   } = useAggregatedNews({
-    industryId,
+    industryId: effectiveIndustryId ?? "",
     maxTotalItems: FULL_PAGE_ITEM_COUNT,
+    enabled: !!effectiveIndustryId,
   });
 
   const handleOpenArticle = async (article: NewsItem) => {
@@ -221,10 +209,12 @@ export default function NewsPage() {
         </Button>
       </Row>
 
-      {isLoading && newsItems.length === 0 ? (
+      {isResolvingIndustry || (isLoading && newsItems.length === 0) ? (
         <Stack align="center" gap={12}>
           <Spinner size="lg" color="primary" />
-          <Text color="gray">Loading latest news…</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Loading latest news…
+          </Text>
         </Stack>
       ) : null}
 

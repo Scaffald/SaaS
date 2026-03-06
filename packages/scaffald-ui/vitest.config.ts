@@ -13,6 +13,10 @@ const packageConfig = {
     alias: [
       { find: 'react-native', replacement: 'react-native-web' },
       {
+        find: 'react-native-svg',
+        replacement: resolve(workspaceRoot, 'tests/infrastructure/vitest/mocks/react-native-svg.tsx'),
+      },
+      {
         find: '@scaffald/ui',
         replacement: resolve(packageRoot, 'src'),
       },

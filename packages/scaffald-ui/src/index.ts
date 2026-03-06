@@ -1123,8 +1123,8 @@ export type {
 } from "./components/Chart";
 
 // Widget components
-export { DashboardWidget } from "./components/Widgets/DashboardWidget";
-export type { DashboardWidgetProps } from "./components/Widgets/DashboardWidget";
+export { DashboardWidget, DashboardWidgetHeader } from "./components/Widgets/DashboardWidget";
+export type { DashboardWidgetProps, DashboardWidgetHeaderProps } from "./components/Widgets/DashboardWidget";
 export { LegendIndicator } from "./components/Widgets/LegendIndicator";
 export type {
   LegendIndicatorProps,

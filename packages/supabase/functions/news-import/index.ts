@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server'
 import { createClient } from '@supabase/supabase-js'
+import { parseFeed } from 'https://deno.land/x/rss@1.1.3/mod.ts'
 import { corsHeaders } from '../_shared/cors'
 import type { Database } from '../_shared/database.types.ts'
 
@@ -12,7 +13,7 @@ interface NewsArticle {
   imageUrl?: string
 }
 
-// Decode HTML entities
+// Decode HTML entities (fallback when entry content is raw HTML)
 function decodeHtmlEntities(text: string): string {
   const entities: Record<string, string> = {
     '&amp;': '&',
@@ -25,7 +26,7 @@ function decodeHtmlEntities(text: string): string {
   return text.replace(/&[#\w]+;/g, (entity) => entities[entity] || entity)
 }
 
-// Strip HTML tags
+// Strip HTML tags for description text
 function stripHtmlTags(html: string): string {
   return html
     .replace(/<[^>]*>/g, '')
@@ -33,31 +34,66 @@ function stripHtmlTags(html: string): string {
     .trim()
 }
 
-// Parse RSS feed
-async function parseRSSFeed(url: string): Promise<NewsArticle[]> {
-  try {
-    const response = await fetch(url, {
-      headers: {
-        Accept: 'application/xml, text/xml;q=0.9, */*;q=0.8',
-        'User-Agent': 'SCF-Scaffald/1.0 (+https://scaffald.com)',
-      },
-      signal: AbortSignal.timeout(30000), // 30 second timeout
-    })
+function getTextValue(value: unknown): string {
+  if (value == null) return ''
+  if (typeof value === 'string') return value
+  if (typeof value === 'object' && value !== null && 'value' in value && typeof (value as { value: unknown }).value === 'string') {
+    return (value as { value: string }).value
+  }
+  return String(value)
+}
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+/** Parse RSS/Atom feed using deno.land/x/rss; falls back to regex for malformed feeds. */
+async function parseRSSFeed(url: string): Promise<NewsArticle[]> {
+  const response = await fetch(url, {
+    headers: {
+      Accept: 'application/xml, text/xml;q=0.9, */*;q=0.8',
+      'User-Agent': 'SCF-Scaffald/1.0 (+https://scaffald.com)',
+    },
+    signal: AbortSignal.timeout(30000),
+  })
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+  }
+
+  const xml = await response.text()
+
+  try {
+    const feed = await parseFeed(xml)
+    const items: NewsArticle[] = []
+
+    for (const entry of feed.entries ?? []) {
+      const link = entry.links?.[0]?.href ?? entry.id ?? ''
+      const title = getTextValue(entry.title) || 'Untitled'
+      const descriptionRaw = getTextValue(entry.description) ?? getTextValue(entry.content)
+      const description = descriptionRaw ? stripHtmlTags(decodeHtmlEntities(descriptionRaw)) : undefined
+      const guid = entry.id ?? link
+      const published = entry.published ?? entry.updated
+      const pubDateISO = published instanceof Date ? published.toISOString() : new Date(published ?? Date.now()).toISOString()
+      const imageUrl = entry.attachments?.[0]?.url ?? undefined
+
+      if (link) {
+        items.push({
+          guid,
+          title: title.trim(),
+          description,
+          link,
+          pubDate: pubDateISO,
+          imageUrl,
+        })
+      }
     }
 
-    const xml = await response.text()
-
-    // Simple XML parsing for RSS feeds
+    return items
+  } catch {
+    // Fallback: regex parse for feeds that don't conform to the parser
     const items: NewsArticle[] = []
     const itemRegex = /<item[^>]*>([\s\S]*?)<\/item>/g
-    let match: RegExpExecArray | null = itemRegex.exec(xml)
+    let match = itemRegex.exec(xml)
 
     while (match !== null) {
       const itemXml = match[1]
-
       const titleMatch =
         itemXml.match(/<title[^>]*><!\[CDATA\[([\s\S]*?)\]\]><\/title>/) ||
         itemXml.match(/<title[^>]*>([\s\S]*?)<\/title>/)
@@ -72,18 +108,11 @@ async function parseRSSFeed(url: string): Promise<NewsArticle[]> {
         itemXml.match(/<media:content[^>]*url="([^"]*)"[^>]*>/)
 
       if (titleMatch && linkMatch) {
-        const title = decodeHtmlEntities(stripHtmlTags(titleMatch[1].trim()))
         const link = linkMatch[1].trim()
-        const description = descriptionMatch
-          ? stripHtmlTags(decodeHtmlEntities(descriptionMatch[1].trim()))
-          : undefined
         const guid = guidMatch ? guidMatch[1].trim() : link
-        const pubDate = pubDateMatch ? pubDateMatch[1].trim() : new Date().toISOString()
-        const imageUrl = imageMatch ? imageMatch[1].trim() : undefined
-
-        // Parse pubDate to ISO string
         let pubDateISO: string
         try {
+          const pubDate = pubDateMatch ? pubDateMatch[1].trim() : new Date().toISOString()
           pubDateISO = new Date(pubDate).toISOString()
         } catch {
           pubDateISO = new Date().toISOString()
@@ -91,20 +120,19 @@ async function parseRSSFeed(url: string): Promise<NewsArticle[]> {
 
         items.push({
           guid,
-          title,
-          description,
+          title: decodeHtmlEntities(stripHtmlTags(titleMatch[1].trim())),
+          description: descriptionMatch
+            ? stripHtmlTags(decodeHtmlEntities(descriptionMatch[1].trim()))
+            : undefined,
           link,
           pubDate: pubDateISO,
-          imageUrl,
+          imageUrl: imageMatch ? imageMatch[1].trim() : undefined,
         })
       }
       match = itemRegex.exec(xml)
     }
 
     return items
-  } catch (error) {
-    console.error('Error parsing RSS feed:', error)
-    throw error
   }
 }
 
@@ -138,6 +166,7 @@ serve(async (req) => {
       errors: 0,
       feeds_processed: 0,
       feeds_failed: 0,
+      errorMessages: [] as string[],
     }
 
     for (const feed of feeds || []) {
@@ -248,13 +277,17 @@ serve(async (req) => {
 
         results.feeds_failed++
         results.errors++
+        results.errorMessages.push(`${feed.name} (${feed.url}): ${errorMessage}`)
       }
     }
 
     return new Response(
       JSON.stringify({
         success: true,
-        results,
+        results: {
+          ...results,
+          feeds_ok: results.feeds_processed,
+        },
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

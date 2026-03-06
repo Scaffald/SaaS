@@ -215,21 +215,20 @@ describe('Tooltip', () => {
       expect(queryByText('Tooltip')).toBeNull()
     })
 
-    it('should call onVisibleChange when visibility changes', () => {
-      const onVisibleChange = vi.fn()
-      const { rerender } = render(
-        <Tooltip content="Tooltip" visible onVisibleChange={onVisibleChange}>
+    it('should hide tooltip content when visible changes to false', () => {
+      const { rerender, queryByText } = render(
+        <Tooltip content="Tooltip" visible>
           <Button>Trigger</Button>
         </Tooltip>,
       )
 
       rerender(
-        <Tooltip content="Tooltip" visible={false} onVisibleChange={onVisibleChange}>
+        <Tooltip content="Tooltip" visible={false}>
           <Button>Trigger</Button>
         </Tooltip>,
       )
 
-      expect(onVisibleChange).toHaveBeenCalledWith(false)
+      expect(queryByText('Tooltip')).toBeNull()
     })
   })
 
@@ -255,6 +254,7 @@ describe('Tooltip', () => {
 
   describe('Delay', () => {
     it('should respect delay prop', async () => {
+      vi.useFakeTimers()
       const onVisibleChange = vi.fn()
       const { getByText } = render(
         <Tooltip content="Tooltip" delay={500} onVisibleChange={onVisibleChange}>
@@ -263,11 +263,12 @@ describe('Tooltip', () => {
       )
 
       const trigger = getByText('Trigger')
-      const triggerParent = trigger.parent
+      // In DOM mode, use parentElement (not .parent which is a ReactTestInstance property)
+      const triggerParent = trigger.parentElement
 
       // Simulate hover on web
       if (triggerParent) {
-        fireEvent(triggerParent, 'mouseEnter')
+        fireEvent.mouseEnter(triggerParent)
       }
 
       // Before delay, should not be visible
@@ -277,9 +278,9 @@ describe('Tooltip', () => {
       vi.advanceTimersByTime(500)
 
       // After delay, should be visible
-      await waitFor(() => {
-        expect(onVisibleChange).toHaveBeenCalledWith(true)
-      })
+      expect(onVisibleChange).toHaveBeenCalledWith(true)
+
+      vi.useRealTimers()
     })
   })
 

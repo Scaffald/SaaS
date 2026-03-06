@@ -8,8 +8,8 @@ import type { SoftSkill } from '../components/SoftSkillsCategoryTabs'
 import {
   Button,
   DashboardWidget,
+  DashboardWidgetHeader,
   EmptyState,
-  H4,
   Skeleton,
   SkeletonBox,
   useThemeContext,
@@ -193,9 +193,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
     return (
       <DashboardWidget>
         <Stack gap={16}>
-          <Row justify="space-between" align="center">
-            <H4>Soft Skills Analysis</H4>
-          </Row>
+          <DashboardWidgetHeader title="Soft Skills Analysis" />
           <EmptyState
             title="No soft skills assessment"
             description="Complete your soft skills assessment to see your profile"
@@ -215,9 +213,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
     return (
       <DashboardWidget>
         <Stack gap={16}>
-          <Row justify="space-between" align="center">
-            <H4>Soft Skills Analysis</H4>
-          </Row>
+          <DashboardWidgetHeader title="Soft Skills Analysis" />
           <Stack gap={16}>
             <Stack gap={8}>
               <Text style={{ color: colors.text[theme].secondary }}>
@@ -243,20 +239,22 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
     <DashboardWidget>
       <Stack gap={16}>
         {/* Header */}
-        <Row justify="space-between" align="center">
-          <H4>Soft Skills Analysis</H4>
-          {showEdit && (
-            <Button
-              variant="outline"
-              size="sm"
-              onPress={() => {
-                router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
-              }}
-            >
-              Edit
-            </Button>
-          )}
-        </Row>
+        <DashboardWidgetHeader
+          title="Soft Skills Analysis"
+          action={
+            showEdit ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onPress={() => {
+                  router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
+                }}
+              >
+                Edit
+              </Button>
+            ) : undefined
+          }
+        />
 
         {/* Category Tabs */}
         {skills.length > 0 && (

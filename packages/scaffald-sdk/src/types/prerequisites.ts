@@ -55,8 +55,6 @@ export interface CompletePrerequisitesParams {
   address: PrerequisiteAddress
   user_types: UserType[]
   industry_id: string
-  accepts_privacy_policy: boolean
-  accepts_terms_of_service: boolean
 }
 
 /**

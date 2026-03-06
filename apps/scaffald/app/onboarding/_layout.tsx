@@ -4,11 +4,13 @@ import { usePrerequisitesCheck } from '@scf/core/utils/prerequisites-sdk-hooks'
 import { useRouter } from 'expo-router'
 import { Stack } from 'expo-router/stack'
 import { useEffect } from 'react'
-import { Spinner, Text, Stack as UIStack } from '@scaffald/ui'
+import { Spinner, Text, Stack as UIStack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 export default function OnboardingLayout() {
   const { isLoading, user } = useProtectedRoute()
   const router = useRouter()
+  const { theme } = useThemeContext()
 
   // Check prerequisites status - only run when we have a valid user
   const { data: statusData, isLoading: isCheckingPrereqs } = usePrerequisitesCheck({
@@ -27,7 +29,7 @@ export default function OnboardingLayout() {
     return (
       <UIStack justify="center" align="center">
         <Spinner size="lg" />
-        <Text>Loading...</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Loading...</Text>
       </UIStack>
     )
   }

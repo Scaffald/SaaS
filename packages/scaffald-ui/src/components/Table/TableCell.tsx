@@ -264,6 +264,7 @@ export function TableCell(props: TableCellProps) {
         {...pressableProps}
       >
         {text && <Text style={[styles.text, textStyle]}>{text}</Text>}
+        {children}
       </Container>
     )
   }

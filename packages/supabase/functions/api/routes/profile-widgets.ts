@@ -282,7 +282,7 @@ app.openapi(skillsRoute, async (c) => {
     .from('user_skills')
     .select('*')
     .eq('user_id', targetUserId)
-    .in('taxonomy', ['csi', 'onet'])
+    .in('skill_taxonomy', ['csi', 'onet'])
 
   if (error) {
     return c.json({ error: 'Failed to fetch skills', message: error.message }, 500)

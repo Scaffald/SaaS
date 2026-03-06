@@ -39,6 +39,8 @@ vi.mock('@scaffald/ui', async () => {
     Stack: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
       <div {...props}>{children}</div>
     ),
+    ThemeProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    useThemeContext: () => ({ theme: 'light' as const }),
   }
 })
 

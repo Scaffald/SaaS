@@ -58,8 +58,6 @@ const completePrerequisitesRequestSchema = z
     address: addressSchema,
     user_types: z.array(z.enum(['worker', 'employer', 'customer'])).min(1),
     industry_id: z.string().min(1),
-    accepts_privacy_policy: z.boolean(),
-    accepts_terms_of_service: z.boolean(),
   })
   .openapi('CompletePrerequisitesRequest')
 
@@ -111,14 +109,25 @@ app.openapi(checkRoute, async (c) => {
   const supabase = c.get('supabase')
   const user = c.get('user')
 
+  // When unauthenticated, return default "incomplete" so clients (e.g. onboarding) don't get 401
   if (!user) {
-    return c.json(
-      {
-        error: 'Unauthorized',
-        message: 'User not authenticated',
+    return c.json({
+      isComplete: false,
+      hasName: false,
+      hasAddress: false,
+      hasUserTypes: false,
+      hasIndustry: false,
+      hasAcceptedPrivacy: false,
+      hasAcceptedTerms: false,
+      completedAt: null,
+      data: {
+        first_name: '',
+        last_name: '',
+        address: null,
+        user_types: [],
+        industry_id: '',
       },
-      401
-    )
+    })
   }
 
   try {
@@ -194,7 +203,7 @@ app.openapi(checkRoute, async (c) => {
     const hasAcceptedTerms = !!preferences?.accepted_terms_of_service_at
 
     const isComplete =
-      hasName && hasAddress && hasUserTypes && hasIndustry && hasAcceptedPrivacy && hasAcceptedTerms
+      hasName && hasAddress && hasUserTypes && hasIndustry
 
     return c.json({
       isComplete: !!isComplete,
@@ -345,10 +354,10 @@ app.openapi(completeRoute, async (c) => {
         user_id: user.id,
         user_types: data.user_types,
         prerequisites_completed_at: now,
-        accepted_privacy_policy_at: data.accepts_privacy_policy ? now : null,
-        accepted_terms_of_service_at: data.accepts_terms_of_service ? now : null,
-        privacy_policy_version: data.accepts_privacy_policy ? 'v1.0' : null,
-        terms_of_service_version: data.accepts_terms_of_service ? 'v1.0' : null,
+        accepted_privacy_policy_at: now,
+        accepted_terms_of_service_at: now,
+        privacy_policy_version: 'v1.0',
+        terms_of_service_version: 'v1.0',
         updated_at: now,
       })
 

@@ -14,7 +14,7 @@ Apps should pass the session like this: `Authorization: Bearer <session.access_t
 | Auth type | Behavior | Example routes |
 |-----------|----------|----------------|
 | **None** | Only global auth middleware; anon key or JWT both pass. No user required. | `/health`, `GET /v1/jobs`, `GET /v1/profiles/:username`, `GET /v1/industries`, `GET /v1/onet/*`, public OAuth endpoints |
-| **requireAuth** | User JWT **or** API key required. Missing/invalid token → 401. | `/v1/auth/roles`, `/v1/auth/session`, `/v1/api-keys`, `/v1/applications`, `/v1/feedback`, `/v1/account-deletion`, success-fees (status, create, confirm), id-verification (pricing, request, confirm, status, current), resume, profile-wizard, documents-storage, etc. |
+| **requireAuth** | User JWT **or** API key required. Missing/invalid token → 401. | `/v1/auth/roles`, `/v1/auth/session`, `/v1/api-keys`, `/v1/prerequisites/check`, `/v1/profile-views`, `/v1/applications`, `/v1/feedback`, `/v1/account-deletion`, success-fees (status, create, confirm), id-verification (pricing, request, confirm, status, current), resume, profile-wizard, documents-storage, etc. |
 | **requireRole('office', 'platform')** | Authenticated user **and** office role with platform scope. Valid JWT without role → 403. | All `/v1/office/*` (jobs, organizations, storage, users, universities, certifications), `/v1/notifications/admin`, `/v1/stripe-settings`, `/v1/legal-agreements`, `/v1/background-checks/admin`, id-verification list/revoke, oauth-management admin routes |
 
 ## Common causes of 401

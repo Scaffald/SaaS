@@ -135,6 +135,35 @@ const preferencesResponseSchema = z
   })
   .openapi('PreferencesResponse')
 
+// Map DB row (channel_enabled, type_overrides) to API shape (email_notifications, push_notifications, notification_types)
+function mapPreferencesRowToApi(row: Record<string, unknown> | null): z.infer<typeof notificationPreferencesSchema> | null {
+  if (!row || typeof row.user_id !== 'string') return null
+  const channelEnabled = (row.channel_enabled as Record<string, boolean>) ?? {}
+  const typeOverrides = (row.type_overrides as Record<string, { email?: boolean; push?: boolean }>) ?? {}
+  const defaultTypes: Record<string, { email: boolean; push: boolean }> = {
+    application_status: { email: true, push: true },
+    connection_request: { email: true, push: true },
+    message: { email: true, push: true },
+    job_match: { email: true, push: false },
+    system: { email: true, push: true },
+  }
+  const notificationTypes: Record<string, { email: boolean; push: boolean }> = {}
+  for (const key of Object.keys(defaultTypes)) {
+    const override = typeOverrides[key]
+    notificationTypes[key] = {
+      email: override?.email ?? defaultTypes[key].email,
+      push: override?.push ?? defaultTypes[key].push,
+    }
+  }
+  return {
+    user_id: row.user_id as string,
+    email_notifications: channelEnabled.email ?? true,
+    push_notifications: channelEnabled.push ?? true,
+    notification_types: notificationTypes,
+    quiet_hours: (row.quiet_hours as { enabled?: boolean; start?: string; end?: string } | null) ?? undefined,
+  }
+}
+
 // ============================================================================
 // Routes
 // ============================================================================
@@ -316,22 +345,16 @@ app.openapi(getPreferencesRoute, async (c) => {
     return c.json({ error: 'Failed to fetch preferences', message: error.message }, 500)
   }
 
-  // Create default preferences if they don't exist
+  // Create default preferences if they don't exist (use actual DB columns)
   if (!preferences) {
-    const { data: newPreferences, error: createError } = await supabase
+    const { data: newRow, error: createError } = await supabase
       .schema('core')
       .from('notification_preferences')
       .insert({
         user_id: user.id,
-        email_notifications: true,
-        push_notifications: true,
-        notification_types: {
-          application_status: { email: true, push: true },
-          connection_request: { email: true, push: true },
-          message: { email: true, push: true },
-          job_match: { email: true, push: false },
-          system: { email: true, push: true },
-        },
+        global_enabled: true,
+        channel_enabled: { in_app: true, email: true, push: true, sms: false },
+        type_overrides: {},
       })
       .select()
       .single()
@@ -344,10 +367,12 @@ app.openapi(getPreferencesRoute, async (c) => {
       )
     }
 
-    return c.json({ data: newPreferences })
+    const mapped = mapPreferencesRowToApi(newRow as Record<string, unknown>)
+    return c.json({ data: mapped ?? newRow })
   }
 
-  return c.json({ data: preferences })
+  const mapped = mapPreferencesRowToApi(preferences as Record<string, unknown>)
+  return c.json({ data: mapped ?? preferences })
 })
 
 /**
@@ -391,10 +416,40 @@ app.openapi(updatePreferencesRoute, async (c) => {
     return c.json({ error: 'Unauthorized' }, 401)
   }
 
+  // Map API shape to DB columns; need current row to merge channel_enabled and type_overrides
+  const { data: current, error: fetchError } = await supabase
+    .schema('core')
+    .from('notification_preferences')
+    .select('channel_enabled, type_overrides')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (fetchError) {
+    console.error('Error fetching preferences for update:', fetchError)
+    return c.json({ error: 'Failed to fetch preferences', message: fetchError.message }, 500)
+  }
+
+  const currentChannel = (current?.channel_enabled as Record<string, boolean>) ?? {}
+  const currentTypeOverrides = (current?.type_overrides as Record<string, unknown>) ?? {}
+  const channel_enabled = {
+    in_app: currentChannel.in_app ?? true,
+    email: updates.email_notifications ?? currentChannel.email ?? true,
+    push: updates.push_notifications ?? currentChannel.push ?? true,
+    sms: currentChannel.sms ?? false,
+  }
+  const type_overrides = updates.notification_types
+    ? { ...currentTypeOverrides, ...updates.notification_types }
+    : currentTypeOverrides
+  const quiet_hours = updates.quiet_hours ?? (current as { quiet_hours?: unknown })?.quiet_hours
+
   const { data: preferences, error } = await supabase
     .schema('core')
     .from('notification_preferences')
-    .update(updates)
+    .update({
+      channel_enabled,
+      type_overrides,
+      ...(quiet_hours !== undefined && { quiet_hours }),
+    })
     .eq('user_id', user.id)
     .select()
     .single()
@@ -404,7 +459,8 @@ app.openapi(updatePreferencesRoute, async (c) => {
     return c.json({ error: 'Failed to update preferences', message: error.message }, 500)
   }
 
-  return c.json({ data: preferences })
+  const mapped = mapPreferencesRowToApi(preferences as Record<string, unknown>)
+  return c.json({ data: mapped ?? preferences })
 })
 
 /**

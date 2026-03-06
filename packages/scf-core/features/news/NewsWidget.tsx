@@ -2,16 +2,30 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { useCurrentUser } from '@scf/core/utils/profile-general-sdk-hooks'
 import { useGeneralInfoWidget, useSkillsWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { redirect } from '@scf/core/utils/redirect'
-import { supabase } from '@scf/core/utils/supabase/client'
-import { Button, Sheet, SheetContent, SheetHeader } from '@scaffald/ui'
+import {
+  Button,
+  DashboardWidget,
+  DashboardWidgetHeader,
+  Paragraph,
+  Row,
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  Spinner,
+  Stack,
+  Switch,
+  Text,
+  useThemeContext,
+} from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { AlertCircle, ExternalLink, RefreshCw } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Platform, Pressable } from 'react-native'
-import { Paragraph, Spinner, Switch, Text, Row, Stack } from '@scaffald/ui'
 import type { NewsItem, NewsWidgetProps } from './config/types'
 import { useAggregatedNews } from './hooks/useNewsFeed'
+import { useNewsIndustryResolution } from './hooks/useNewsIndustryResolution'
 
 const HEADLINE_LIMIT_DEFAULT = 10
 const FETCH_MULTIPLIER = 4
@@ -135,71 +149,15 @@ export function NewsWidget({
   const headlineLimit = Math.max(1, maxItems)
   const fetchCount = headlineLimit * FETCH_MULTIPLIER
 
-  const { data: user } = useCurrentUser()
-  const userId = user?.id
-
-  const { data: generalInfo } = useGeneralInfoWidget(
-    { userId },
-    { enabled: !!userId, staleTime: 5 * 60 * 1000 }
-  )
-
-  // Get industry ID from user profile or lookup by slug
-  const [industryId, setIndustryId] = useState<string | null>(null)
-  // Construction industry ID for fallback news
-  const [constructionIndustryId, setConstructionIndustryId] = useState<string | null>(null)
-
-  useEffect(() => {
-    async function resolveIndustryId() {
-      // First try to get from user's profile
-      if (generalInfo?.industries?.id) {
-        setIndustryId(generalInfo.industries.id)
-        return
-      }
-
-      // Fallback: lookup industry by slug (from prop or default to 'construction')
-      const industrySlug = industry || 'construction'
-      const { data: industryData } = await supabase
-        .schema('core')
-        .from('industries')
-        .select('id')
-        .eq('slug', industrySlug)
-        .single()
-
-      if (industryData?.id) {
-        setIndustryId(industryData.id)
-      } else {
-        // Final fallback: try to get construction industry
-        const { data: fallbackData } = await supabase
-          .schema('core')
-          .from('industries')
-          .select('id')
-          .eq('slug', 'construction')
-          .single()
-
-        setIndustryId(fallbackData?.id || null)
-      }
-    }
-
-    void resolveIndustryId()
-  }, [generalInfo?.industries?.id, industry])
-
-  // Resolve construction industry ID for fallback news
-  useEffect(() => {
-    async function resolveConstructionIndustryId() {
-      const { data: constructionData } = await supabase
-        .schema('core')
-        .from('industries')
-        .select('id')
-        .eq('slug', 'construction')
-        .single()
-
-      if (constructionData?.id) {
-        setConstructionIndustryId(constructionData.id)
-      }
-    }
-
-    void resolveConstructionIndustryId()
-  }, [])
+  const {
+    industryId: primaryIndustryId,
+    constructionId,
+    isResolving: isResolvingIndustry,
+    effectiveIndustryId,
+  } = useNewsIndustryResolution({
+    industrySlug: industry,
+    useUserIndustry: true,
+  })
 
   const {
     data: newsItems = [],
@@ -208,18 +166,36 @@ export function NewsWidget({
     error,
     refetch,
   } = useAggregatedNews({
-    industryId: industryId || '', // Will be validated in hook - query disabled if invalid
+    industryId: effectiveIndustryId ?? '',
     maxTotalItems: fetchCount,
+    enabled: !!effectiveIndustryId,
   })
 
-  // Fallback query for global ENR news when no matching news is found
-  // Only fetch fallback if main query is done, no error, and construction industry ID is available
-  // We'll check enrichedNews length after it's computed to determine if we need fallback
-  const { data: fallbackNewsItems = [], isLoading: isFallbackLoading } = useAggregatedNews({
-    industryId: constructionIndustryId || '', // Construction industry for global ENR news
+  // Fallback: when primary industry returns no articles, try construction industry
+  const shouldFetchFallback =
+    !!constructionId &&
+    constructionId !== primaryIndustryId &&
+    constructionId !== effectiveIndustryId &&
+    !isLoading &&
+    (newsItems as unknown[]).length === 0
+
+  const {
+    data: fallbackNewsItems = [],
+    isLoading: isFallbackLoading,
+    refetch: refetchFallback,
+  } = useAggregatedNews({
+    industryId: constructionId ?? '',
     maxTotalItems: headlineLimit,
-    enabled: !isLoading && !isError && !!constructionIndustryId, // Fetch fallback when main query is done
+    enabled: shouldFetchFallback,
   })
+
+  const { data: user } = useCurrentUser()
+  const userId = user?.id
+
+  const { data: generalInfo } = useGeneralInfoWidget(
+    { userId },
+    { enabled: !!userId, staleTime: 5 * 60 * 1000 }
+  )
 
   const [preferences, setPreferences] = useState<NewsPreferences>({
     prioritizeTrending: true,
@@ -349,12 +325,11 @@ export function NewsWidget({
     return [...sorted, ...fallback]
   }, [headlineLimit, newsItems, preferences, relevanceContext])
 
-  // Use fallback news (global ENR) when no matching news is found
+  // Enrich fallback news (construction) when primary returned empty
   const fallbackEnrichedNews = useMemo(() => {
     const items = fallbackNewsItems as unknown as NewsItem[]
     if (!items.length) return [] as EnrichedNewsItem[]
 
-    // For fallback, just sort by date (no relevance scoring needed)
     return items
       .sort((a: NewsItem, b: NewsItem) => {
         const dateA = a.pubDate instanceof Date ? a.pubDate : new Date(a.pubDate)
@@ -370,29 +345,32 @@ export function NewsWidget({
       }))
   }, [fallbackNewsItems, headlineLimit])
 
-  // Determine which news to display: enriched news if available, otherwise fallback
-  const displayNews = useMemo(() => {
-    // If we have enriched news, use it
-    if (enrichedNews.length > 0) {
-      return enrichedNews
-    }
-    // Otherwise, use fallback news (global ENR)
-    return fallbackEnrichedNews
-  }, [enrichedNews, fallbackEnrichedNews])
+  // Display primary news if available, otherwise fallback (construction) news
+  const displayNews = (newsItems as unknown[]).length > 0 ? enrichedNews : fallbackEnrichedNews
 
-  // Hide widget entirely if no news is available (after loading completes)
-  const shouldShowWidget = useMemo(() => {
-    // Show widget if we're still loading (either main or fallback)
-    if (isLoading || isFallbackLoading) {
-      return true
+  const { theme } = useThemeContext()
+
+  // Single state machine: resolving → loading → success | error | empty (or not_configured)
+  const status: 'resolving' | 'loading' | 'error' | 'empty' | 'not_configured' | 'success' =
+    isResolvingIndustry
+      ? 'resolving'
+      : !effectiveIndustryId
+        ? 'not_configured'
+        : isError && displayNews.length === 0
+          ? 'error'
+          : (isLoading && (newsItems as unknown[]).length === 0 && !shouldFetchFallback) ||
+              (shouldFetchFallback && isFallbackLoading && displayNews.length === 0)
+            ? 'loading'
+            : displayNews.length === 0
+              ? 'empty'
+              : 'success'
+
+  const handleRefetch = () => {
+    void refetch()
+    if (shouldFetchFallback || displayNews.length > 0) {
+      void refetchFallback()
     }
-    // Show widget if there's an error (so user can see error message)
-    if (isError) {
-      return true
-    }
-    // Hide widget if no news is available
-    return displayNews.length > 0
-  }, [isLoading, isFallbackLoading, isError, displayNews.length])
+  }
 
   const handleNewsClick = async (article: NewsItem) => {
     if (onArticleClick) {
@@ -432,66 +410,78 @@ export function NewsWidget({
     return 'From your feeds'
   }
 
-  // Hide widget entirely if no news is available
-  if (!shouldShowWidget) {
-    return null
-  }
-
+  // Always show the widget so the News section is visible; show loading, error, empty, or list
   return (
-    <Stack gap={12}>
-      <Row justify="space-between" align="center" paddingTop={8}>
-        <Text color="$gray11">News</Text>
+    <DashboardWidget gap={12}>
+      <DashboardWidgetHeader
+        title="News"
+        action={
+          <Row gap={4} align="center">
+            <Button
+              size="sm"
+              variant="outline"
+              onPress={handleRefetch}
+              disabled={isLoading || (shouldFetchFallback && isFallbackLoading)}
+              iconStart={RefreshCw}
+            />
+          </Row>
+        }
+      />
 
-        <Row gap={4} align="center">
-          {/* TODO: Implement and refine filter button functionality later */}
-          {/* <Button
-            size="sm"
-            variant="outline"
-            iconStart={<Settings2 size="md" />}
-            onPress={() => setPreferencesOpen(true)}
-          /> */}
-          <Button
-            size="sm"
-            variant="outline"
-            onPress={() => {
-              void refetch()
-            }}
-            disabled={isLoading}
-            iconStart={RefreshCw}
-          />
-        </Row>
-      </Row>
-
-      {isLoading && displayNews.length === 0 && !isFallbackLoading ? (
+      {status === 'resolving' ? (
         <Stack align="center" gap={8}>
           <Spinner size="lg" color="primary" />
-          <Text color="$gray11">Loading personalised news...</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading news…</Text>
         </Stack>
-      ) : null}
-
-      {isError && displayNews.length === 0 ? (
+      ) : status === 'not_configured' ? (
         <Stack align="center" gap={8}>
-          <AlertCircle size={24} color="$red10" />
-          <Text color="$red11" style={{ textAlign: 'center' }}>
+          <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
+            News isn&apos;t configured. Run database seed and news import to see articles.
+          </Text>
+        </Stack>
+      ) : status === 'loading' ? (
+        <Stack align="center" gap={8}>
+          <Spinner size="lg" color="primary" />
+          <Text style={{ color: colors.text[theme].secondary }}>
+            {shouldFetchFallback ? 'Loading news…' : 'Loading personalised news…'}
+          </Text>
+        </Stack>
+      ) : status === 'error' ? (
+        <Stack align="center" gap={8}>
+          <AlertCircle size={24} color={colors.error[500]} />
+          <Text style={{ color: colors.text[theme].primary, textAlign: 'center' }}>
             Failed to load news feed
           </Text>
-          <Text color="$gray11" style={{ textAlign: 'center' }}>
+          <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
             {error?.message || 'Please check your connection and try again.'}
           </Text>
-          <Button
-            variant="filled" color="primary"
-            onPress={() => {
-              void refetch()
-            }}
-            size="sm"
-          >
+          <Button variant="filled" color="primary" onPress={handleRefetch} size="sm">
             Try Again
+          </Button>
+        </Stack>
+      ) : status === 'empty' ? (
+        <Stack align="center" gap={8}>
+          <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
+            No articles right now. Check back later or try refreshing.
+          </Text>
+          <Button size="sm" variant="outline" onPress={handleRefetch} iconStart={RefreshCw}>
+            Refresh
           </Button>
         </Stack>
       ) : null}
 
-      {displayNews.length > 0 && (
+      {status === 'success' && (
         <Stack gap={12}>
+          {__DEV__ && (
+            <Text
+              style={{
+                fontSize: 11,
+                color: colors.text[theme].tertiary,
+              }}
+            >
+              News industry: {effectiveIndustryId ?? '—'}, articles: {displayNews.length}
+            </Text>
+          )}
           {displayNews.map((item: EnrichedNewsItem) => (
             <Pressable key={item.id} onPress={() => handleNewsClick(item)}>
               {({ pressed }) => (
@@ -504,15 +494,23 @@ export function NewsWidget({
                   style={{ borderRadius: 12, opacity: pressed ? 0.7 : 1 }}
                 >
                   <Row justify="space-between" align="flex-start" gap={12}>
-                    <Text color="$gray11" style={{ flex: 1 }}>
+                    <Text style={{ flex: 1, color: colors.text[theme].primary }}>
                       {item.title}
                     </Text>
-                    <ExternalLink size="md" color="$gray11" />
+                    <ExternalLink size="md" color={colors.text[theme].tertiary} />
                   </Row>
                   <Row gap={8} align="center" wrap>
-                    <Text color="$gray11">{formatTimeAgo(item.pubDate)}</Text>
-                    {item.category && <Text color="$gray11">• {capitalise(item.category)}</Text>}
-                    <Text color="$gray11">• {relevanceLabel(item.relevanceScore)}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>
+                      {formatTimeAgo(item.pubDate)}
+                    </Text>
+                    {item.category && (
+                      <Text style={{ color: colors.text[theme].secondary }}>
+                        • {capitalise(item.category)}
+                      </Text>
+                    )}
+                    <Text style={{ color: colors.text[theme].secondary }}>
+                      • {relevanceLabel(item.relevanceScore)}
+                    </Text>
                   </Row>
                   {item.reasons.length > 0 && (
                     <Row gap={8} wrap>
@@ -524,7 +522,13 @@ export function NewsWidget({
                           backgroundColor="$blue3"
                           style={{ borderRadius: 8 }}
                         >
-                          <Text color="$blue11">{reason}</Text>
+                          <Text
+                            style={{
+                              color: theme === 'dark' ? colors.blue[300] : colors.blue[700],
+                            }}
+                          >
+                            {reason}
+                          </Text>
                         </Stack>
                       ))}
                     </Row>
@@ -557,7 +561,7 @@ export function NewsWidget({
         />
         <SheetContent>
           <Stack padding="md" gap={12}>
-          <Paragraph color="$gray11" size="sm">
+          <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
             Tailor the news feed using your profile information.
           </Paragraph>
 
@@ -601,6 +605,6 @@ export function NewsWidget({
         </Stack>
         </SheetContent>
       </Sheet>
-    </Stack>
+    </DashboardWidget>
   )
 }
