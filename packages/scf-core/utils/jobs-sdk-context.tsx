@@ -50,17 +50,20 @@ export function ScaffaldJobsSdkProviderFromSession({ children }: { children: Rea
   const queryClient = useQueryClient()
 
   const config = useMemo(() => {
-    if (!baseUrl) return null
-    // Don't configure SDK until session state is resolved — prevents authenticated
-    // endpoints from firing with the anon key during the post-OAuth load window.
-    if (isLoading) return null
+    if (!baseUrl) return { baseUrl: 'https://api.scaffald.com', apiKey: 'dummy' }
+    // Don't fire real requests while session is loading — use dummy key as placeholder
+    // so the Scaffald constructor accepts the config. Once resolved, swap in real auth.
+    if (isLoading) return { baseUrl, apiKey: 'dummy' }
     const token = session?.access_token?.trim()
-    const auth = token ? { supabaseToken: token } : anonKey ? { apiKey: anonKey } : null
-    if (!auth) return null
-    return { ...auth, baseUrl }
+    if (token) return { baseUrl, supabaseToken: token }
+    if (anonKey) return { baseUrl, apiKey: anonKey }
+    return { baseUrl, apiKey: 'dummy' }
   }, [session?.access_token, baseUrl, anonKey, isLoading])
 
-  if (!config) return <>{children}</>
+  // Always render ScaffaldProvider so the tree structure never changes.
+  // Switching between <>{children}</> and <ScaffaldProvider> causes the entire
+  // Stack (NativeStackNavigator) to unmount/remount, firing all navigation
+  // effects at once and exceeding React's max update depth.
   return (
     <ScaffaldProvider config={config} queryClient={queryClient}>
       {children}
