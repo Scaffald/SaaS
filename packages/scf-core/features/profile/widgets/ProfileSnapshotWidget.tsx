@@ -236,6 +236,7 @@ export function ProfileSnapshotWidget() {
   return (
     <DashboardWidget>
       <Stack gap={24}>
+<<<<<<< HEAD
         {/* Header - Stitch: Profile + View Full Profile */}
         <DashboardWidgetHeader
           title="Profile"
@@ -252,6 +253,22 @@ export function ProfileSnapshotWidget() {
         />
 
         {/* Avatar & Name - Stitch: centered, larger avatar */}
+=======
+        {/* Header */}
+        <Row justify="space-between" align="center">
+          <H4>Profile</H4>
+          <Button
+            size="sm"
+            variant="text"
+            color="primary"
+            onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
+          >
+            View Full Profile
+          </Button>
+        </Row>
+
+        {/* Avatar & Name Section */}
+>>>>>>> 239b0c919 (feat(ui): Typography system, component refinements, and profile widget updates)
         <Stack gap={16} align="center">
           <Avatar
             size={80}
@@ -298,6 +315,7 @@ export function ProfileSnapshotWidget() {
 
         {/* Current Role - Stitch: centered label + role + company */}
         {currentRole && (
+<<<<<<< HEAD
           <Stack gap={4} align="center" style={{ marginBottom: 8 }}>
             <Text
               style={{
@@ -308,6 +326,15 @@ export function ProfileSnapshotWidget() {
                 color: colors.text[theme].tertiary,
               }}
             >
+=======
+          <Stack
+            gap={4}
+            style={{ backgroundColor: colors.bg[theme].muted }}
+            padding="sm"
+            borderRadius={16}
+          >
+            <Text style={{ color: colors.text[theme].secondary }}>
+>>>>>>> 239b0c919 (feat(ui): Typography system, component refinements, and profile widget updates)
               Current Role
             </Text>
             <Text style={{ fontWeight: "700", fontSize: 18, color: colors.text[theme].primary }}>
@@ -319,8 +346,16 @@ export function ProfileSnapshotWidget() {
           </Stack>
         )}
 
+<<<<<<< HEAD
         {/* Completion + Stats - Stitch: completion bar then 3-col stats */}
         <Stack gap={16}>
+=======
+        {/* Stats Grid */}
+        <Stack gap={16}>
+          <Text style={{ textTransform: 'uppercase', letterSpacing: 1.5, fontSize: 11, fontWeight: '700', color: colors.text[theme].tertiary }}>Profile Stats</Text>
+
+          {/* Completion Bar */}
+>>>>>>> 239b0c919 (feat(ui): Typography system, component refinements, and profile widget updates)
           <Stack gap={8}>
             <Row justify="space-between" align="center">
               <Text
@@ -344,6 +379,7 @@ export function ProfileSnapshotWidget() {
             </Row>
             <ProgressBarBase value={completion} color="primary" />
           </Stack>
+<<<<<<< HEAD
           <Row gap={12} wrap>
             <Pressable
               onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
@@ -472,6 +508,78 @@ export function ProfileSnapshotWidget() {
                 </Text>
               </Stack>
             </Pressable>
+=======
+
+          {/* Stats Row */}
+          <Row gap={10} wrap>
+            <Stack
+              gap={4}
+              flex={1}
+              minWidth={80}
+              style={{ backgroundColor: colors.bg[theme].muted }}
+              padding={16}
+              borderRadius={16}
+              align="center"
+            >
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.blue[700] : colors.blue[300],
+                  fontSize: 24,
+                  fontWeight: '700',
+                }}
+              >
+                {skills?.length || 0}
+              </Text>
+              <Text style={{ color: colors.text[theme].secondary, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>
+                Skills
+              </Text>
+            </Stack>
+
+            <Stack
+              gap={4}
+              flex={1}
+              minWidth={80}
+              style={{ backgroundColor: colors.bg[theme].muted }}
+              padding={16}
+              borderRadius={16}
+              align="center"
+            >
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.green[700] : colors.green[300],
+                  fontSize: 24,
+                  fontWeight: '700',
+                }}
+              >
+                {certifications?.length || 0}
+              </Text>
+              <Text style={{ color: colors.text[theme].secondary, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Certs</Text>
+            </Stack>
+
+            <Stack
+              gap={4}
+              flex={1}
+              minWidth={80}
+              style={{ backgroundColor: colors.bg[theme].muted }}
+              padding={16}
+              borderRadius={16}
+              align="center"
+            >
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.blue[700] : colors.blue[300],
+                  fontSize: 24,
+                  fontWeight: '700',
+                }}
+              >
+                {formattedYearsOfExperience}
+              </Text>
+              <Text style={{ color: colors.text[theme].secondary, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Years</Text>
+            </Stack>
+>>>>>>> 239b0c919 (feat(ui): Typography system, component refinements, and profile widget updates)
           </Row>
         </Stack>
 
@@ -479,6 +587,7 @@ export function ProfileSnapshotWidget() {
         {topSkills.length > 0 && (
           <Stack gap={8}>
             <Row justify="space-between" align="center">
+<<<<<<< HEAD
               <Text
                 style={{
                   fontSize: 14,
@@ -488,6 +597,9 @@ export function ProfileSnapshotWidget() {
               >
                 Top Skills
               </Text>
+=======
+              <Text style={{ textTransform: 'uppercase', letterSpacing: 1.5, fontSize: 11, fontWeight: '700', color: colors.text[theme].tertiary }}>Top Skills</Text>
+>>>>>>> 239b0c919 (feat(ui): Typography system, component refinements, and profile widget updates)
               <Button
                 size="sm"
                 variant="text"

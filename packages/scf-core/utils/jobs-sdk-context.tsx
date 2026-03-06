@@ -50,6 +50,7 @@ export function ScaffaldJobsSdkProviderFromSession({ children }: { children: Rea
   const queryClient = useQueryClient()
 
   const config = useMemo(() => {
+<<<<<<< HEAD
     if (!baseUrl) return { baseUrl: 'https://api.scaffald.com', apiKey: 'dummy' }
     // Use valid credentials whenever available, even while loading (e.g. initialSession).
     // Only use dummy when we have no token and no anon key yet.
@@ -58,6 +59,17 @@ export function ScaffaldJobsSdkProviderFromSession({ children }: { children: Rea
     if (anonKey) return { baseUrl, apiKey: anonKey }
     return { baseUrl, apiKey: 'dummy' }
   }, [session?.access_token, baseUrl, anonKey])
+=======
+    if (!baseUrl) return null
+    // Don't configure SDK until session state is resolved — prevents authenticated
+    // endpoints from firing with the anon key during the post-OAuth load window.
+    if (isLoading) return null
+    const token = session?.access_token?.trim()
+    const auth = token ? { supabaseToken: token } : anonKey ? { apiKey: anonKey } : null
+    if (!auth) return null
+    return { ...auth, baseUrl }
+  }, [session?.access_token, baseUrl, anonKey, isLoading])
+>>>>>>> 239b0c919 (feat(ui): Typography system, component refinements, and profile widget updates)
 
   // When session loading completes, invalidate SDK queries so any that ran with dummy auth refetch.
   const wasLoadingRef = useRef(isLoading)
