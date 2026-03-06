@@ -9,7 +9,7 @@
  */
 
 import { Cloud, Database, HardDrive } from "lucide-react-native";
-import { Button, DashboardWidget, H4, LoadingState, useThemeContext } from "@scaffald/ui";
+import { Button, DashboardWidget, H4, Skeleton, SkeletonBox, useThemeContext } from "@scaffald/ui";
 import type { ComponentType } from "react";
 import { useState, useEffect } from "react";
 import { Pressable } from "react-native";
@@ -92,7 +92,12 @@ export function StoragePreferencesWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <LoadingState message="Loading storage preferences..." />
+        <Stack gap={12}>
+          <Skeleton width={160} height={20} shape="text" />
+          {[0, 1, 2].map((i) => (
+            <SkeletonBox key={i} width="100%" height={72} borderRadius={12} />
+          ))}
+        </Stack>
       </DashboardWidget>
     );
   }

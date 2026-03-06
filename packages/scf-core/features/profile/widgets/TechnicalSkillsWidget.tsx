@@ -5,7 +5,9 @@ import {
   DashboardWidget,
   EmptyState,
   H4,
-  LoadingState,
+  Skeleton,
+  SkeletonBox,
+  SkeletonGroup,
   useThemeContext,
 } from "@scaffald/ui";
 import { CheckCircle } from "lucide-react-native";
@@ -45,7 +47,14 @@ export function TechnicalSkillsWidget({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <LoadingState message="Loading skills..." />
+        <Stack gap={12}>
+          <Skeleton width={60} height={20} shape="text" />
+          <SkeletonGroup direction="row" gap={8} style={{ flexWrap: 'wrap' }}>
+            {[100, 80, 120, 90, 110].map((w, i) => (
+              <SkeletonBox key={i} width={w} height={32} borderRadius={99} />
+            ))}
+          </SkeletonGroup>
+        </Stack>
       </DashboardWidget>
     );
   }
