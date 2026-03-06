@@ -7,7 +7,7 @@ import { useTranslation } from '@scf/core/utils/useTranslation'
 import { CheckCircle2 } from 'lucide-react-native'
 import { router } from 'expo-router'
 import { useCallback, useState } from 'react'
-import { Box, Card, Paragraph, Spinner, Stack, useThemeContext } from '@scaffald/ui'
+import { Box, Paragraph, Spinner, Stack, useThemeContext } from '@scaffald/ui'
 import { colors, spacing } from '@scaffald/ui/tokens'
 
 import { CodeConfirmation } from './CodeConfirmation'
@@ -94,91 +94,84 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
   const displayEmail = email ?? t('auth.verify.fallbackEmail')
 
   return (
-    <Box flex={1} align="center" justify="center" padding={spacing[20]} style={{ width: '100%' }}>
-      <Card
-        variant="elevated"
-        radius="lg"
-        elevation="md"
-        padding="lg"
+    <Stack
+      gap={spacing[20]}
+      padding={spacing[20]}
+      align="center"
+      style={{ width: '100%', maxWidth: 440, flex: 1 }}
+    >
+      {codeEntered && (
+        <Box style={{ flexDirection: 'row', gap: spacing[8], marginBottom: spacing[8] }}>
+          {verified && (
+            <Paragraph
+              style={{
+                color: theme === 'light' ? colors.green[700] : colors.green[300],
+              }}
+            >
+              {t('auth.verify.successBanner')}
+            </Paragraph>
+          )}
+          <CheckCircle2 size={24} color={colors.icon[theme].success} />
+        </Box>
+      )}
+
+      <Box
+        key="code"
         style={{
-          minWidth: 300,
+          opacity: codeEntered ? 0 : 1,
+          pointerEvents: codeEntered ? 'none' : 'auto',
+          transform: [{ translateX: codeEntered ? -150 : 0 }],
           width: '100%',
-          maxWidth: 450,
         }}
       >
-        {codeEntered && (
-          <Box style={{ flexDirection: 'row', gap: spacing[8], marginBottom: spacing[8] }}>
-            {verified && (
-              <Paragraph
-                style={{
-                  color: theme === 'light' ? colors.green[700] : colors.green[300],
-                }}
-              >
-                {t('auth.verify.successBanner')}
-              </Paragraph>
-            )}
-            <CheckCircle2 size={24} color={colors.icon[theme].success} />
+        <Stack
+          justify="space-between"
+          gap={spacing[16]}
+          style={{ opacity: code !== undefined ? 0 : 1, width: '100%' }}
+        >
+          <EmailHeader email={displayEmail} />
+
+          <Box style={{ width: '100%' }}>
+            <CodeConfirmation codeSize={6} secureText={false} onEnter={handleEnter} />
+
+            <ResendTimer
+              onComplete={handleResendComplete}
+              onResendClick={handleResendClick}
+              disabled={isSubmitting}
+            />
+          </Box>
+
+          {error && (
+            <Paragraph
+              size="sm"
+              accessibilityRole="alert"
+              style={{
+                color: theme === 'light' ? colors.error[700] : colors.error[300],
+                textAlign: 'center',
+              }}
+            >
+              {error}
+            </Paragraph>
+          )}
+        </Stack>
+
+        {code !== undefined && (
+          <Box
+            position="absolute"
+            top={0}
+            left={0}
+            right={0}
+            bottom={0}
+            align="center"
+            justify="center"
+            style={{ backgroundColor: colors.bg[theme].default }}
+            accessibilityLabel={t('auth.verify.verifying')}
+            accessibilityLiveRegion="polite"
+          >
+            <Spinner size="md" color="gray" />
           </Box>
         )}
-
-        <Box
-          key="code"
-          style={{
-            opacity: codeEntered ? 0 : 1,
-            pointerEvents: codeEntered ? 'none' : 'auto',
-            transform: [{ translateX: codeEntered ? -150 : 0 }],
-            width: '100%',
-          }}
-        >
-          <Stack
-            justify="space-between"
-            gap={spacing[16]}
-            style={{ opacity: code !== undefined ? 0 : 1, width: '100%' }}
-          >
-            <EmailHeader email={displayEmail} />
-
-            <Box style={{ width: '100%' }}>
-              <CodeConfirmation codeSize={6} secureText={false} onEnter={handleEnter} />
-
-              <ResendTimer
-                onComplete={handleResendComplete}
-                onResendClick={handleResendClick}
-                disabled={isSubmitting}
-              />
-            </Box>
-
-            {error && (
-              <Paragraph
-                size="sm"
-                accessibilityRole="alert"
-                style={{
-                  color: theme === 'light' ? colors.error[700] : colors.error[300],
-                  textAlign: 'center',
-                }}
-              >
-                {error}
-              </Paragraph>
-            )}
-          </Stack>
-
-          {code !== undefined && (
-            <Box
-              position="absolute"
-              top={0}
-              left={0}
-              right={0}
-              bottom={0}
-              align="center"
-              justify="center"
-              style={{ backgroundColor: colors.bg[theme].default }}
-              accessibilityLabel={t('auth.verify.verifying')}
-              accessibilityLiveRegion="polite"
-            >
-              <Spinner size="md" color="gray" />
-            </Box>
-          )}
-        </Box>
-      </Card>
-    </Box>
+      </Box>
+    </Stack>
   )
 }
