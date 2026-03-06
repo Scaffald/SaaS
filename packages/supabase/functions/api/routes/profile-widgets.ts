@@ -82,6 +82,13 @@ app.openapi(generalInfoRoute, async (c) => {
     .single()
 
   if (error) {
+    // No row found (e.g. profile not yet created) → 404 so frontend can show "Complete your profile"
+    if (error.code === 'PGRST116') {
+      return c.json(
+        { error: 'profile_not_found', message: 'Profile not found. Complete your profile to get started.' },
+        404
+      )
+    }
     return c.json({ error: 'Failed to fetch profile', message: error.message }, 500)
   }
 
