@@ -1,5 +1,5 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { authMiddleware } from '../middleware/auth.ts'
+import { authMiddleware, requireAuth } from '../middleware/auth.ts'
 import { rateLimiter } from '../middleware/rate-limiter.ts'
 
 const app = new OpenAPIHono()
@@ -15,13 +15,79 @@ app.use(
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100, // limit each IP to 100 requests per windowMs
     keyGenerator: (c) => {
-      // Use user ID if authenticated, otherwise IP address
       const user = c.get('user')
       const ip = c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || 'unknown'
       return user ? `user:${user.id}` : `ip:${ip}`
     },
   })
 )
+
+// Static routes first (so they match before /{username})
+// GET /v1/profiles/current - current user (SDK: getCurrentUser)
+app.get('/current', requireAuth, async (c) => {
+  const user = c.get('user')
+  if (!user) return c.json({ error: 'Unauthorized', message: 'Authentication required' }, 401)
+  return c.json({ id: user.id, email: user.email ?? null }, 200)
+})
+// GET /v1/profiles/general - general profile (SDK: getGeneralInfo)
+app.get('/general', requireAuth, async (c) => {
+  const supabase = c.get('supabase')
+  const user = c.get('user')
+  const userToken = c.get('userToken')
+  if (!user) return c.json({ error: 'Unauthorized', message: 'Authentication required' }, 401)
+  const { data: authUser } = await supabase.auth.getUser(userToken)
+  const { data: profile } = await supabase
+    .schema('core')
+    .from('users')
+    .select('avatar_path, about')
+    .eq('id', user.id)
+    .single()
+  const { data: privateData } = await supabase
+    .schema('core')
+    .from('profile')
+    .select('first_name, last_name, address, phone')
+    .eq('user_id', user.id)
+    .single()
+  const phone = privateData?.phone ?? authUser?.user?.phone ?? ''
+  return c.json({
+    first_name: privateData?.first_name ?? '',
+    last_name: privateData?.last_name ?? '',
+    avatar_path: profile?.avatar_path ?? '',
+    email: authUser?.user?.email ?? '',
+    phone,
+    about: profile?.about ?? null,
+    address: privateData?.address ?? null,
+  }, 200)
+})
+// PATCH /v1/profiles/general - update general (SDK: updateGeneralInfo)
+app.patch('/general', requireAuth, async (c) => {
+  const supabase = c.get('supabase')
+  const user = c.get('user')
+  if (!user) return c.json({ error: 'Unauthorized', message: 'Authentication required' }, 401)
+  const input = (await c.req.json()) as Record<string, unknown>
+  if (input.avatar_path !== undefined || input.about !== undefined) {
+    const profileUpdate: Record<string, unknown> = { updated_at: new Date().toISOString() }
+    if (input.avatar_path !== undefined) profileUpdate.avatar_path = input.avatar_path
+    if (input.about !== undefined) profileUpdate.about = input.about
+    const { error } = await supabase.schema('core').from('users').update(profileUpdate).eq('id', user.id)
+    if (error) return c.json({ error: 'Failed to update profile', message: error.message }, 500)
+  }
+  if (
+    input.first_name !== undefined ||
+    input.last_name !== undefined ||
+    input.address !== undefined ||
+    input.phone !== undefined
+  ) {
+    const privateUpdate: Record<string, unknown> = { user_id: user.id, updated_at: new Date().toISOString() }
+    if (input.first_name !== undefined) privateUpdate.first_name = input.first_name
+    if (input.last_name !== undefined) privateUpdate.last_name = input.last_name
+    if (input.address !== undefined) privateUpdate.address = input.address
+    if (input.phone !== undefined) privateUpdate.phone = input.phone
+    const { error } = await supabase.schema('core').from('profile').upsert(privateUpdate)
+    if (error) return c.json({ error: 'Failed to update profile', message: error.message }, 500)
+  }
+  return c.json({ success: true }, 200)
+})
 
 /**
  * Zod Schemas for Profiles API
@@ -126,6 +192,7 @@ const rateLimitErrorSchema = z
     }),
   })
   .openapi('RateLimitError')
+
 
 /**
  * GET /v1/profiles/:username

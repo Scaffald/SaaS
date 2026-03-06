@@ -14,6 +14,76 @@ const _errorResponseSchema = z.object({
   message: z.string().optional(),
 })
 
+// GET /v1/onet/riasec/status - RIASEC assessment status (SDK: getRIASECStatus)
+app.get('/riasec/status', async (c) => {
+  const supabase = c.get('supabase')
+  const user = c.get('user')
+  if (!user) return c.json({ error: 'Unauthorized' }, 401)
+  const { data, error } = await supabase
+    .schema('core')
+    .from('preferences')
+    .select('riasec_scores, career_assessment_completed_at')
+    .eq('user_id', user.id)
+    .single()
+  if (error && error.code !== 'PGRST116') {
+    return c.json({ error: 'Failed to fetch status', message: error.message }, 500)
+  }
+  const scores = data?.riasec_scores as Record<string, number> | null | undefined
+  const hasAll =
+    scores &&
+    typeof scores.realistic === 'number' &&
+    typeof scores.investigative === 'number' &&
+    typeof scores.artistic === 'number' &&
+    typeof scores.social === 'number' &&
+    typeof scores.enterprising === 'number' &&
+    typeof scores.conventional === 'number'
+  return c.json({
+    isCompleted: !!hasAll,
+    complete: !!hasAll,
+    scores: scores ?? null,
+    completed_at: data?.career_assessment_completed_at ?? null,
+  })
+})
+
+// GET /v1/onet/occupation/status - Occupation selection status (SDK: getOccupationStatus)
+app.get('/occupation/status', async (c) => {
+  const supabase = c.get('supabase')
+  const user = c.get('user')
+  if (!user) return c.json({ error: 'Unauthorized' }, 401)
+  const { data, error } = await supabase
+    .schema('core')
+    .from('preferences')
+    .select('current_occupation_code, target_occupation_codes, updated_at')
+    .eq('user_id', user.id)
+    .single()
+  if (error && error.code !== 'PGRST116') {
+    return c.json({ error: 'Failed to fetch status', message: error.message }, 500)
+  }
+  const current = data?.current_occupation_code
+  const targets = data?.target_occupation_codes ?? []
+  const codes = [...(current ? [current] : []), ...(Array.isArray(targets) ? targets : [])]
+  let occupations: Array<{ onet_code: string; title: string; description?: string }> = []
+  if (codes.length > 0) {
+    const { data: occs } = await supabase
+      .schema('core')
+      .from('onet_occupations')
+      .select('onet_code, title, description')
+      .in('onet_code', codes)
+    occupations = (occs ?? []).map((o: { onet_code: string; title: string; description?: string }) => ({
+      onet_code: o.onet_code,
+      title: o.title,
+      description: o.description,
+    }))
+  }
+  const selected = !!(current || (Array.isArray(targets) && targets.length > 0))
+  return c.json({
+    isCompleted: selected,
+    selected,
+    occupations,
+    updated_at: data?.updated_at ?? null,
+  })
+})
+
 /**
  * GET /v1/onet/search
  * Search occupations by keyword
