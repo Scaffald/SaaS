@@ -38,7 +38,7 @@ export function ControlledAddressForm<
   control,
   name,
   setValue,
-  trigger,
+  trigger: _trigger,
   fieldMapping = "nested",
   storeCoordinates = true,
   coordinateFields = { lat: "latitude", lng: "longitude" },
@@ -136,62 +136,56 @@ export function ControlledAddressForm<
 
   // Handle address selection from autocomplete
   const handleAddressSelect = (address: AddressResult) => {
-    // Update all address fields
+    const opts = { shouldValidate: false };
     if (fieldPaths.street) {
       setValue(
         fieldPaths.street as FieldPath<TFieldValues>,
         (address.streetAddress || "") as PathValue<
           TFieldValues,
           FieldPath<TFieldValues>
-        >
+        >,
+        opts
       );
-      trigger?.(fieldPaths.street as FieldPath<TFieldValues>);
     }
-
     if (fieldPaths.city) {
       setValue(
         fieldPaths.city as FieldPath<TFieldValues>,
         (address.locality || "") as PathValue<
           TFieldValues,
           FieldPath<TFieldValues>
-        >
+        >,
+        opts
       );
-      trigger?.(fieldPaths.city as FieldPath<TFieldValues>);
     }
-
     if (fieldPaths.state) {
       setValue(
         fieldPaths.state as FieldPath<TFieldValues>,
         (address.stateAbbreviation ||
           address.administrativeAreaLevel1 ||
-          "") as PathValue<TFieldValues, FieldPath<TFieldValues>>
+          "") as PathValue<TFieldValues, FieldPath<TFieldValues>>,
+        opts
       );
-      trigger?.(fieldPaths.state as FieldPath<TFieldValues>);
     }
-
     if (fieldPaths.zip) {
       setValue(
         fieldPaths.zip as FieldPath<TFieldValues>,
         (address.postalCode || "") as PathValue<
           TFieldValues,
           FieldPath<TFieldValues>
-        >
+        >,
+        opts
       );
-      trigger?.(fieldPaths.zip as FieldPath<TFieldValues>);
     }
-
     if (fieldPaths.country) {
       setValue(
         fieldPaths.country as FieldPath<TFieldValues>,
         (address.country || "United States") as PathValue<
           TFieldValues,
           FieldPath<TFieldValues>
-        >
+        >,
+        opts
       );
-      trigger?.(fieldPaths.country as FieldPath<TFieldValues>);
     }
-
-    // Store coordinates if enabled
     if (storeCoordinates && address.coordinates) {
       if (fieldPaths.latitude && address.coordinates.lat !== undefined) {
         setValue(
@@ -199,7 +193,8 @@ export function ControlledAddressForm<
           address.coordinates.lat as PathValue<
             TFieldValues,
             FieldPath<TFieldValues>
-          >
+          >,
+          opts
         );
       }
       if (fieldPaths.longitude && address.coordinates.lng !== undefined) {
@@ -208,12 +203,11 @@ export function ControlledAddressForm<
           address.coordinates.lng as PathValue<
             TFieldValues,
             FieldPath<TFieldValues>
-          >
+          >,
+          opts
         );
       }
     }
-
-    // Call custom callback if provided
     onAddressSelect?.(address);
   };
 
@@ -268,7 +262,14 @@ export function ControlledAddressForm<
   };
 
   return (
-    <Stack gap={8} style={{ position: "relative", zIndex: 1000 }}>
+    <Stack
+      gap={8}
+      style={{
+        position: "relative",
+        zIndex: 10000,
+        overflow: "visible",
+      }}
+    >
       {label && (
         <Text>
           {label}
