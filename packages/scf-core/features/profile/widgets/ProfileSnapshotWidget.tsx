@@ -26,6 +26,7 @@ import {
 } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
 import { useRouter } from "expo-router";
+import { Pressable } from "react-native";
 
 /**
  * ProfileSnapshotWidget
@@ -335,99 +336,121 @@ export function ProfileSnapshotWidget() {
             <ProgressBarBase value={completion} color="primary" />
           </Stack>
           <Row gap={12} wrap>
-            <Stack
-              gap={4}
-              flex={1}
-              minWidth={80}
-              style={{
-                backgroundColor: colors.bg[theme].muted,
-                padding: 16,
-                borderRadius: 16,
-              }}
-              align="center"
+            <Pressable
+              onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
+              style={({ pressed }) => [
+                {
+                  flex: 1,
+                  minWidth: 80,
+                  backgroundColor: colors.bg[theme].muted,
+                  padding: 16,
+                  borderRadius: 16,
+                  opacity: pressed ? 0.85 : 1,
+                },
+              ]}
+              accessibilityRole="button"
+              accessibilityLabel="Skills. Navigate to profile skills"
             >
-              <Text
-                style={{
-                  fontSize: 24,
-                  fontWeight: "700",
-                  color: colors.text[theme].primary,
-                }}
-              >
-                {skills?.length ?? 0}
-              </Text>
-              <Text
-                style={{
-                  fontSize: 11,
-                  textTransform: "uppercase",
-                  letterSpacing: 1,
-                  color: colors.text[theme].secondary,
-                }}
-              >
-                Skills
-              </Text>
-            </Stack>
-            <Stack
-              gap={4}
-              flex={1}
-              minWidth={80}
-              style={{
-                backgroundColor: colors.bg[theme].muted,
-                padding: 16,
-                borderRadius: 16,
-              }}
-              align="center"
+              <Stack gap={4} align="center">
+                <Text
+                  style={{
+                    fontSize: 24,
+                    fontWeight: "700",
+                    color: colors.text[theme].primary,
+                  }}
+                >
+                  {skills?.length ?? 0}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 11,
+                    textTransform: "uppercase",
+                    letterSpacing: 1,
+                    color: colors.text[theme].secondary,
+                  }}
+                >
+                  Skills
+                </Text>
+              </Stack>
+            </Pressable>
+            <Pressable
+              onPress={() =>
+                router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)
+              }
+              style={({ pressed }) => [
+                {
+                  flex: 1,
+                  minWidth: 80,
+                  backgroundColor: colors.bg[theme].muted,
+                  padding: 16,
+                  borderRadius: 16,
+                  opacity: pressed ? 0.85 : 1,
+                },
+              ]}
+              accessibilityRole="button"
+              accessibilityLabel="Certifications. Navigate to profile certifications"
             >
-              <Text
-                style={{
-                  fontSize: 24,
-                  fontWeight: "700",
-                  color: colors.text[theme].primary,
-                }}
-              >
-                {certifications?.length ?? 0}
-              </Text>
-              <Text
-                style={{
-                  fontSize: 11,
-                  textTransform: "uppercase",
-                  letterSpacing: 1,
-                  color: colors.text[theme].secondary,
-                }}
-              >
-                Certs
-              </Text>
-            </Stack>
-            <Stack
-              gap={4}
-              flex={1}
-              minWidth={80}
-              style={{
-                backgroundColor: colors.bg[theme].muted,
-                padding: 16,
-                borderRadius: 16,
-              }}
-              align="center"
+              <Stack gap={4} align="center">
+                <Text
+                  style={{
+                    fontSize: 24,
+                    fontWeight: "700",
+                    color: colors.text[theme].primary,
+                  }}
+                >
+                  {certifications?.length ?? 0}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 11,
+                    textTransform: "uppercase",
+                    letterSpacing: 1,
+                    color: colors.text[theme].secondary,
+                  }}
+                >
+                  Certs
+                </Text>
+              </Stack>
+            </Pressable>
+            <Pressable
+              onPress={() =>
+                router.push(ROUTES.DASHBOARD.PROFILE.GENERAL.path)
+              }
+              style={({ pressed }) => [
+                {
+                  flex: 1,
+                  minWidth: 80,
+                  backgroundColor: colors.bg[theme].muted,
+                  padding: 16,
+                  borderRadius: 16,
+                  opacity: pressed ? 0.85 : 1,
+                },
+              ]}
+              accessibilityRole="button"
+              accessibilityLabel="Years of experience. Navigate to profile general"
             >
-              <Text
-                style={{
-                  fontSize: 24,
-                  fontWeight: "700",
-                  color: colors.text[theme].primary,
-                }}
-              >
-                {formattedYearsOfExperience}
-              </Text>
-              <Text
-                style={{
-                  fontSize: 11,
-                  textTransform: "uppercase",
-                  letterSpacing: 1,
-                  color: colors.text[theme].secondary,
-                }}
-              >
-                Years
-              </Text>
-            </Stack>
+              <Stack gap={4} align="center">
+                <Text
+                  style={{
+                    fontSize: 24,
+                    fontWeight: "700",
+                    color: colors.text[theme].primary,
+                  }}
+                >
+                  {formattedYearsOfExperience}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 11,
+                    textTransform: "uppercase",
+                    letterSpacing: 1,
+                    color: colors.text[theme].secondary,
+                  }}
+                >
+                  Years
+                </Text>
+              </Stack>
+            </Pressable>
           </Row>
         </Stack>
 

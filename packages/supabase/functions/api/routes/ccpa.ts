@@ -38,7 +38,7 @@ ccpaRouter.get("/data-summary", async (c) => {
       supabase.schema("core").from("certifications").select("id", { count: "exact" }).eq("user_id", user.id),
       supabase.schema("core").from("work_logs").select("id", { count: "exact" }).eq("user_id", user.id),
       supabase.schema("core").from("applications").select("id", { count: "exact" }).eq("user_id", user.id),
-      supabase.schema("core").from("connections").select("id", { count: "exact" }).or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`),
+      supabase.schema("core").from("connections").select("id", { count: "exact" }).or(`requester_user_id.eq.${user.id},addressee_user_id.eq.${user.id}`),
       supabase.schema("core").from("background_checks").select("id", { count: "exact" }).eq("user_id", user.id),
       supabase.schema("core").from("id_verifications").select("id", { count: "exact" }).eq("user_id", user.id),
       supabase.schema("core").from("personality_assessments").select("id", { count: "exact" }).eq("user_id", user.id),

@@ -32,13 +32,13 @@ export const fontSize = {
   xl: 20, // Extra large
   '2xl': 22,
 
-  // Heading sizes
-  h6: 24, // H6
-  h5: 28, // H5
-  h4: 36, // H4
-  h3: 48,
-  h2: 60,
-  h1: 72,
+  // Heading sizes (reduced overall scale)
+  h6: 20, // H6
+  h5: 22, // H5
+  h4: 28, // H4
+  h3: 38,
+  h2: 48,
+  h1: 56,
 } as const
 
 /**
@@ -63,13 +63,13 @@ export const lineHeight = {
   lg: 28, // Paragraph L line height
   xl: 32,
 
-  // Heading line heights
-  h6: 32, // H6 line height
-  h5: 36, // H5 line height
-  h4: 44, // H4 line height
-  h3: 56,
-  h2: 68,
-  h1: 80,
+  // Heading line heights (reduced to match smaller sizes)
+  h6: 26, // H6 line height
+  h5: 28, // H5 line height
+  h4: 34, // H4 line height
+  h3: 46,
+  h2: 56,
+  h1: 64,
 } as const
 
 /**
@@ -110,7 +110,7 @@ export const textTransform = {
  * All variants from Figma Forsured Design System
  */
 export const typographyVariants = {
-  // H1 - Heading (Size: 72 / Line-height: 80 / Letter spacing: -2%)
+  // H1 - Heading (Size: 56 / Line-height: 64 / Letter spacing: -2%)
   h1Bold: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h1,
@@ -147,7 +147,7 @@ export const typographyVariants = {
     letterSpacing: letterSpacing.tighter, // -2%
   },
 
-  // H2 - Heading (Size: 60 / Line-height: 72 / Letter spacing: -2%)
+  // H2 - Heading (Size: 48 / Line-height: 56 / Letter spacing: -2%)
   h2Bold: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h2,
@@ -184,7 +184,7 @@ export const typographyVariants = {
     letterSpacing: letterSpacing.tighter, // -2%
   },
 
-  // H3 - Heading (Size: 48 / Line-height: 60 / Letter spacing: -1%)
+  // H3 - Heading (Size: 38 / Line-height: 46 / Letter spacing: -1%)
   h3Bold: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h3,
@@ -221,7 +221,7 @@ export const typographyVariants = {
     letterSpacing: letterSpacing.tight, // -1%
   },
 
-  // H4 - Heading (Size: 36 / Line-height: 44 / Letter spacing: -1%)
+  // H4 - Heading (Size: 28 / Line-height: 34 / Letter spacing: -1%)
   h4Bold: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h4,
@@ -258,7 +258,7 @@ export const typographyVariants = {
     letterSpacing: letterSpacing.tight, // -1%
   },
 
-  // H5 - Heading (Size: 28 / Line-height: 36 / Letter spacing: -1%)
+  // H5 - Heading (Size: 22 / Line-height: 28 / Letter spacing: -1%)
   h5Bold: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h5,
@@ -295,7 +295,7 @@ export const typographyVariants = {
     letterSpacing: letterSpacing.tight, // -1%
   },
 
-  // H6 - Heading (Size: 24 / Line-height: 32 / Letter spacing: -1%)
+  // H6 - Heading (Size: 20 / Line-height: 26 / Letter spacing: -1%)
   h6Bold: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h6,
