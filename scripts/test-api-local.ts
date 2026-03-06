@@ -57,6 +57,7 @@ const ENDPOINTS: EndpointDef[] = [
   { path: '/v1/onet/skills', method: 'GET', authType: 'none' },
   { path: '/v1/news', method: 'GET', authType: 'none' },
   { path: '/v1/map/location-counts', method: 'GET', authType: 'none' },
+<<<<<<< HEAD
   // Profile
   { path: '/v1/profiles/experience', method: 'GET', authType: 'requireAuth' },
   { path: '/v1/profiles/experience/summary', method: 'GET', authType: 'requireAuth' },
@@ -80,6 +81,8 @@ const ENDPOINTS: EndpointDef[] = [
   { path: '/v1/legal-agreements', method: 'GET', authType: 'requireAuth' },
   { path: '/v1/account-deletion', method: 'GET', authType: 'requireAuth' },
   { path: '/v1/documents/storage-preference', method: 'GET', authType: 'requireAuth' },
+=======
+>>>>>>> bcccec207 (chore: SDK integration tests, supabase config, forsured-web updates, and infra cleanup)
 ]
 
 async function fetchWithAuth(
@@ -110,6 +113,7 @@ function tokenCheck(token: string): Promise<boolean> {
 }
 
 async function testHealth(): Promise<boolean> {
+<<<<<<< HEAD
   const url = `${API_BASE}/health`
   try {
     const res = await fetch(url, { method: 'GET' })
@@ -129,6 +133,12 @@ async function testHealth(): Promise<boolean> {
     console.error('   If using .env, ensure EXPO_PUBLIC_SUPABASE_URL or SUPABASE_URL points to local (e.g. http://127.0.0.1:54321).')
     return false
   }
+=======
+  const res = await fetch(`${API_BASE}/health`, { method: 'GET' })
+  if (!res.ok) return false
+  const data = await res.json()
+  return data?.status === 'ok'
+>>>>>>> bcccec207 (chore: SDK integration tests, supabase config, forsured-web updates, and infra cleanup)
 }
 
 async function main() {

@@ -461,7 +461,10 @@ Location: `packages/supabase/supabase/migrations/`
 Key migrations:
 - `001-099`: Core schema (users, organizations, roles, teams)
 - `100-199`: Jobs and applications
+<<<<<<< HEAD
 - `132`, `133`, `20251118181923`: Map RPCs (`core.get_jobs_with_coords`, `core.get_organizations_with_coords` and public wrappers) — required for `/dashboard/map`
+=======
+>>>>>>> bcccec207 (chore: SDK integration tests, supabase config, forsured-web updates, and infra cleanup)
 - `300-302`: API keys system
 - `400+`: O*NET occupational database
 

@@ -13,9 +13,15 @@
     "android": "pnpm --filter scaffald-app android",
     "prebuild": "pnpm --filter scaffald-app prebuild && pnpm setup-sentry",
     "build": "pnpm locales:validate && nx run-many -t build",
+<<<<<<< HEAD
     "check": "pnpm locales:validate && nx run-many -t lint --exclude=@unicornlove/insurance,@unicornlove/compliance,@unicornlove/tasks,@scaffald/integration-test && cross-env NODE_OPTIONS=--max-old-space-size=4096 nx run-many -t typecheck --parallel=1 --exclude=@unicornlove/insurance,@unicornlove/compliance,@unicornlove/tasks,@scaffald/integration-test",
     "check:affected": "pnpm locales:validate && nx affected -t lint --exclude=@unicornlove/insurance,@unicornlove/compliance,@unicornlove/tasks,@scaffald/integration-test && nx affected -t typecheck --parallel=1 --exclude=@unicornlove/insurance,@unicornlove/compliance,@unicornlove/tasks,@scaffald/integration-test",
     "check:affected:fast": "nx affected -t lint --exclude=@unicornlove/insurance,@unicornlove/compliance,@unicornlove/tasks,@scaffald/integration-test && nx affected -t typecheck --exclude=@unicornlove/insurance,@unicornlove/compliance,@unicornlove/tasks,@scaffald/integration-test",
+=======
+    "check": "pnpm locales:validate && nx run-many -t lint --exclude=@unicornlove/forsured-app,@unicornlove/forsured,@unicornlove/insurance,@unicornlove/compliance,@unicornlove/tasks,@scaffald/integration-test && cross-env NODE_OPTIONS=--max-old-space-size=4096 nx run-many -t typecheck --parallel=1 --exclude=@unicornlove/forsured-app,@unicornlove/forsured,@unicornlove/insurance,@unicornlove/compliance,@unicornlove/tasks,@scaffald/integration-test",
+    "check:affected": "pnpm locales:validate && nx affected -t lint --exclude=@unicornlove/forsured-app,@unicornlove/forsured,@unicornlove/insurance,@unicornlove/compliance,@unicornlove/tasks,@scaffald/integration-test && nx affected -t typecheck --parallel=1 --exclude=@unicornlove/forsured-app,@unicornlove/forsured,@unicornlove/insurance,@unicornlove/compliance,@unicornlove/tasks,@scaffald/integration-test",
+    "check:affected:fast": "nx affected -t lint --exclude=@unicornlove/forsured-app,@unicornlove/forsured,@unicornlove/insurance,@unicornlove/compliance,@unicornlove/tasks,@scaffald/integration-test && nx affected -t typecheck --exclude=@unicornlove/forsured-app,@unicornlove/forsured,@unicornlove/insurance,@unicornlove/compliance,@unicornlove/tasks,@scaffald/integration-test",
+>>>>>>> bcccec207 (chore: SDK integration tests, supabase config, forsured-web updates, and infra cleanup)
     "check-circular-deps": "nx graph --file=output.html",
     "check-deps": "cross-env NODE_OPTIONS=--max-old-space-size=8192 check-dependency-version-consistency .",
     "deploy": "pnpm prod",
@@ -98,7 +104,10 @@
     "test:affected": "nx affected -t test",
     "test:all": "pnpm test:integration && pnpm test:build",
     "test:api": "pnpm --filter @scf/supabase test:endpoints",
+<<<<<<< HEAD
     "test:api:all": "pnpm --filter @scf/supabase test:api:rest:suite && pnpm verify:api:e2e && pnpm test:api",
+=======
+>>>>>>> bcccec207 (chore: SDK integration tests, supabase config, forsured-web updates, and infra cleanup)
     "test:api:rest": "pnpm verify:api:e2e",
     "test:build": "pnpm build && echo '✅ All packages built successfully'",
     "test:contracts": "vitest run tests/reports/contracts/contract-suite.test.ts --config vitest.contracts.config.ts",
