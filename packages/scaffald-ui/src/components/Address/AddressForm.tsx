@@ -3,7 +3,8 @@
  * Provider-agnostic: pass a GeocodingProvider to AddressAutocomplete.
  */
 
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
+import { Pressable, Text } from 'react-native'
 import { Stack } from '../Layout'
 import { Input } from '../Input'
 import { AddressAutocomplete } from './AddressAutocomplete'
@@ -18,8 +19,13 @@ export function AddressForm({
   mode = 'autocomplete-only',
   placeholder = 'Search addresses...',
   provider,
+  manualFieldsVariant = 'always',
+  expandLabel = 'Edit address manually',
+  collapseLabel = 'Hide',
   ...autocompleteProps
 }: AddressFormProps) {
+  const [manualExpanded, setManualExpanded] = useState(false)
+
   const handleSelect = useCallback(
     (address: AddressResult) => {
       onAddressSelect?.(address)
@@ -38,7 +44,10 @@ export function AddressForm({
     [onAddressSelect, onAddressChange]
   )
 
-  const showManualFields = mode === 'full' || mode === 'hybrid'
+  const hasManualFields = mode === 'full' || mode === 'hybrid'
+  const useExpandVariant = hasManualFields && manualFieldsVariant === 'expand'
+  const showManualFields =
+    hasManualFields && (!useExpandVariant || manualExpanded)
   const addr = addressValue ?? {}
 
   return (
@@ -51,8 +60,39 @@ export function AddressForm({
         provider={provider}
         {...autocompleteProps}
       />
+      {useExpandVariant && !manualExpanded && (
+        <Pressable
+          onPress={() => setManualExpanded(true)}
+          accessibilityRole="button"
+          accessibilityLabel={expandLabel}
+          style={({ pressed }) => ({
+            alignSelf: 'flex-start',
+            paddingVertical: 8,
+            paddingHorizontal: 0,
+            opacity: pressed ? 0.7 : 1,
+          })}
+        >
+          <Text style={{ fontSize: 14, color: '#2563eb' }}>{expandLabel}</Text>
+        </Pressable>
+      )}
       {showManualFields && (
         <Stack gap={12}>
+          {useExpandVariant && (
+            <Pressable
+              onPress={() => setManualExpanded(false)}
+              accessibilityRole="button"
+              accessibilityLabel={collapseLabel}
+              style={({ pressed }) => ({
+                alignSelf: 'flex-start',
+                paddingVertical: 4,
+                paddingHorizontal: 0,
+                marginBottom: 4,
+                opacity: pressed ? 0.7 : 1,
+              })}
+            >
+              <Text style={{ fontSize: 13, color: '#6b7280' }}>{collapseLabel}</Text>
+            </Pressable>
+          )}
           <Input
             label="Street"
             value={addr.streetAddress ?? ''}

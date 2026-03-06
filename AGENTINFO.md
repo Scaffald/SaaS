@@ -594,6 +594,8 @@ SCAFFALD_CLIENT_SECRET=your_client_secret
 SCAFFALD_WEBHOOK_SECRET=whsec_...
 ```
 
+For address autocomplete (e.g. onboarding, profile), set `EXPO_PUBLIC_MAPBOX_TOKEN` (or pass `apiKey` to `ControlledAddressForm`). See `.env.template` for Mapbox vars.
+
 ---
 
 ## Testing

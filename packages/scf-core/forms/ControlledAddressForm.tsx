@@ -1,4 +1,5 @@
 import { AddressForm, type AddressResult } from "@scaffald/ui";
+import { createMapboxGeocodingProvider } from "@scf/core/utils/mapbox-geocoding-provider";
 import { useMemo } from "react";
 import {
   type FieldPath,
@@ -17,6 +18,9 @@ import type {
  *
  * A smart wrapper around AddressForm that automatically integrates with react-hook-form.
  * Eliminates boilerplate code by handling setValue, trigger, and addressValue construction.
+ *
+ * When provider="mapbox" (default), address autocomplete uses Mapbox Geocoding API. Set
+ * EXPO_PUBLIC_MAPBOX_TOKEN in .env or pass apiKey so the component can create the provider.
  *
  * @example
  * ```tsx
@@ -39,8 +43,8 @@ export function ControlledAddressForm<
   storeCoordinates = true,
   coordinateFields = { lat: "latitude", lng: "longitude" },
   mode = "hybrid",
-  provider: _provider = "mapbox",
-  apiKey: _apiKey,
+  provider = "mapbox",
+  apiKey,
   zoomLevel = "street",
   label,
   placeholder = "Search for your address...",
@@ -49,7 +53,17 @@ export function ControlledAddressForm<
   error,
   onAddressSelect,
   onChange,
+  manualFieldsVariant,
+  expandLabel,
+  collapseLabel,
 }: ControlledAddressFormProps<TFieldValues>) {
+  const mapboxToken =
+    apiKey ??
+    (typeof process !== "undefined" ? process.env?.EXPO_PUBLIC_MAPBOX_TOKEN ?? "" : "");
+  const geocodingProvider = useMemo(() => {
+    if (provider !== "mapbox" || !mapboxToken) return null;
+    return createMapboxGeocodingProvider(mapboxToken);
+  }, [provider, mapboxToken]);
   // Determine field paths based on mapping strategy
   const fieldPaths = useMemo(() => {
     if (typeof fieldMapping === "object") {
@@ -267,9 +281,14 @@ export function ControlledAddressForm<
         disabled={disabled}
         error={error}
         addressValue={addressValue}
+        value={addressValue.formattedAddress}
+        provider={geocodingProvider}
         onAddressSelect={handleAddressSelect}
         onAddressChange={handleAddressChange}
         onChange={onChange}
+        manualFieldsVariant={manualFieldsVariant}
+        expandLabel={expandLabel}
+        collapseLabel={collapseLabel}
       />
     </Stack>
   );
