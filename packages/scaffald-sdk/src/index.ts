@@ -18,14 +18,6 @@ export type {
 } from './resources/auth.js'
 
 export type {
-  WelcomeSlide,
-  GetActiveWelcomeSlidesResponse,
-  ListWelcomeSlidesParams,
-  CreateWelcomeSlideParams,
-  UpdateWelcomeSlideParams,
-} from './resources/cms.js'
-
-export type {
   Job,
   JobListParams,
   JobListResponse,

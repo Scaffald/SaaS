@@ -420,25 +420,6 @@ const ROUTES_CONFIG = {
       titleKey: 'routes.office.cms.title',
       protected: true,
       exact: false,
-      WELCOME: {
-        path: '/office/cms/welcome',
-        titleKey: 'routes.office.cms.welcome.title',
-        protected: true,
-        exact: false,
-        icon: FileText,
-        CREATE: {
-          path: '/office/cms/welcome/create',
-          titleKey: 'routes.office.cms.welcome.create',
-          protected: true,
-          exact: true,
-        },
-        EDIT: {
-          path: '/office/cms/welcome/:id/edit',
-          titleKey: 'routes.office.cms.welcome.edit',
-          protected: true,
-          exact: true,
-        },
-      },
       WORKERS: {
         path: '/office/cms/workers',
         titleKey: 'routes.office.cms.workers.title',

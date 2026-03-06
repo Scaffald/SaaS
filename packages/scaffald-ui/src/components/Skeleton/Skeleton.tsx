@@ -5,7 +5,7 @@
 
 import type React from 'react'
 import { useEffect, useRef, useMemo, useState } from 'react'
-import { View, Animated, Easing, StyleSheet, type LayoutChangeEvent, type ViewStyle, type DimensionValue } from 'react-native'
+import { View, Animated, Easing, StyleSheet, Platform, type LayoutChangeEvent, type ViewStyle, type DimensionValue } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius as radiusTokens } from '../../tokens/borders'
@@ -36,6 +36,9 @@ const SHAPE_RADIUS: Record<SkeletonShape, number> = {
   text: radiusTokens.xxs,
 }
 
+/** On web, native driver is not supported; use JS driver to avoid console warning. */
+const USE_NATIVE_DRIVER = Platform.OS !== 'web'
+
 // ============================================================================
 // Animation Hooks
 // ============================================================================
@@ -54,12 +57,12 @@ function usePulseAnimation(animation: SkeletonAnimation, duration: number) {
         Animated.timing(animValue, {
           toValue: 1,
           duration: duration / 2,
-          useNativeDriver: true,
+          useNativeDriver: USE_NATIVE_DRIVER,
         }),
         Animated.timing(animValue, {
           toValue: 0,
           duration: duration / 2,
-          useNativeDriver: true,
+          useNativeDriver: USE_NATIVE_DRIVER,
         }),
       ])
     ).start()
@@ -84,7 +87,7 @@ function useShimmerAnimation(animation: SkeletonAnimation, duration: number) {
         toValue: 1,
         duration,
         easing: Easing.linear,
-        useNativeDriver: true,
+        useNativeDriver: USE_NATIVE_DRIVER,
       })
     ).start()
 

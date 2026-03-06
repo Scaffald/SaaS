@@ -4,8 +4,8 @@ project_id = "scaffald"
 
 [api]
 port = 54321
-schemas = ["auth", "public", "core", "cms", "storage", "data", "onet"]
-extra_search_path = ["public", "core", "cms", "data", "onet"]
+schemas = ["auth", "public", "core", "storage", "data", "onet"]
+extra_search_path = ["public", "core", "data", "onet"]
 max_rows = 1000
 
 [db]

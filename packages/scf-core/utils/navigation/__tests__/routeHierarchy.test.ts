@@ -37,11 +37,11 @@ describe("routeHierarchy utilities", () => {
     );
     expect(childPaths).toEqual(
       expect.arrayContaining([
-        ROUTES.OFFICE.CMS.WELCOME.path,
         ROUTES.OFFICE.CMS.WORKERS.path,
         ROUTES.OFFICE.CMS.JOBS.path,
         ROUTES.OFFICE.CMS.ORGANIZATIONS.path,
         ROUTES.OFFICE.CMS.TEAMS.path,
+        ROUTES.OFFICE.CMS.PROJECTS.path,
         ROUTES.OFFICE.CMS.UNIVERSITIES.path,
       ]),
     );
@@ -53,7 +53,7 @@ describe("routeHierarchy utilities", () => {
     );
     expect(tierThree).toEqual(
       expect.arrayContaining([
-        ROUTES.OFFICE.CMS.WELCOME.path,
+        ROUTES.OFFICE.CMS.WORKERS.path,
         ROUTES.OFFICE.CMS.JOBS.path,
       ]),
     );
