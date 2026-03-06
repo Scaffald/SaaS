@@ -11,7 +11,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-AWS_PROFILE="${AWS_PROFILE:-scf-notify}"
+AWS_PROFILE="${AWS_PROFILE:-scaffald}"
 
 # Distribution IDs
 DEV_DIST="E2GNS3I4O5M1RZ"

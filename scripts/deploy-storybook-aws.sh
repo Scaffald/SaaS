@@ -35,7 +35,7 @@ case "$ENV" in
         ;;
 esac
 
-AWS_PROFILE="${AWS_PROFILE:-scf-notify}"
+AWS_PROFILE="${AWS_PROFILE:-scaffald}"
 AWS_REGION="${AWS_REGION:-us-east-1}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"

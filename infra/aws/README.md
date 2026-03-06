@@ -1,9 +1,14 @@
-# AWS Notifications Bootstrap (SES + SNS/SMS)
+# AWS Infrastructure
 
-## 1. Credentials
+## 1. AWS Accounts & Credentials
 
-- IAM user `clay-cursor` has AdministratorAccess; credentials stored via `aws configure --profile scf-notify`.
-- CLI verification: `aws sts get-caller-identity --profile scf-notify`.
+### Scaffald AWS Account
+
+- **Purpose**: scaffald.com app hosting, SES/SNS alerts, Lambda dispatchers, Route53
+- **IAM user**: `clay-cursor` with AdministratorAccess
+- **CLI profile**: `scaffald`
+- **Setup**: `aws configure --profile scaffald`
+- **Verify**: `aws sts get-caller-identity --profile scaffald`
 
 ## 2. Static Frontend Hosting (S3 + CloudFront)
 
@@ -87,10 +92,10 @@ The deployment script will:
 
 #### Environment Variables
 
-Set these environment variables for deployment:
+Set these environment variables for local deployment (Scaffald account):
 
 ```bash
-export AWS_PROFILE=scf-notify
+export AWS_PROFILE=scaffald
 export AWS_ENV=dev  # or preview, production
 export AWS_S3_BUCKET=scaffald-app-dev  # Optional, auto-detected from ENV
 export AWS_CLOUDFRONT_DISTRIBUTION_ID=<distribution-id>  # Optional, auto-detected
@@ -104,19 +109,20 @@ The script will auto-detect bucket and distribution ID if not set, based on the 
 GitHub Actions automatically deploys to the correct environment based on branch:
 
 - **`main` branch** → Development environment
-- **`preview` branch** → Preview environment  
+- **`preview` branch** → Preview environment
 - **`prod` branch** → Production environment
 
-Required GitHub Secrets:
-- `AWS_ACCESS_KEY_ID`
-- `AWS_SECRET_ACCESS_KEY`
-- `AWS_REGION` (optional, defaults to us-east-1)
-- `AWS_S3_BUCKET_DEV` (optional, defaults to scaffald-app-dev)
-- `AWS_S3_BUCKET_PREVIEW` (optional, defaults to scaffald-app-preview)
-- `AWS_S3_BUCKET_PROD` (optional, defaults to scaffald-app-prod)
-- `AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV` (optional)
-- `AWS_CLOUDFRONT_DISTRIBUTION_ID_PREVIEW` (optional)
-- `AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD` (optional)
+**Scaffald AWS secrets** (used by `deploy-web.yml`):
+- `SCAFFALD_AWS_ACCESS_KEY_ID`
+- `SCAFFALD_AWS_SECRET_ACCESS_KEY`
+- `SCAFFALD_AWS_REGION` (optional, defaults to us-east-1)
+- `SCAFFALD_AWS_S3_BUCKET_DEV` (optional, defaults to scaffald-app-dev)
+- `SCAFFALD_AWS_S3_BUCKET_PREVIEW` (optional, defaults to scaffald-app-preview)
+- `SCAFFALD_AWS_S3_BUCKET_PROD` (optional, defaults to scaffald-app-prod)
+- `SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV` (optional)
+- `SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_PREVIEW` (optional)
+- `SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD` (optional)
+
 
 ### Updating DNS
 
@@ -210,7 +216,7 @@ cd infra/aws/route53
 aws route53 change-resource-record-sets \
   --hosted-zone-id Z0610739109YR6SDKL45L \
   --change-batch file://infra/aws/route53/scaffald-complete-records.json \
-  --profile scf-notify
+  --profile scaffald
 ```
 
 **Verification**
@@ -218,7 +224,7 @@ aws route53 change-resource-record-sets \
 # List all records in Route53
 aws route53 list-resource-record-sets \
   --hosted-zone-id Z0610739109YR6SDKL45L \
-  --profile scf-notify
+  --profile scaffald
 
 # Test DNS resolution (after nameserver switch)
 dig scaffald.com A
@@ -256,7 +262,7 @@ dig www.scaffald.com CNAME
 
 ```bash
 aws ses send-email \
-  --profile scf-notify \
+  --profile scaffald \
   --from no-reply@alerts.scaffald.com \
   --destination ToAddresses=test@example.com \
   --message 'Subject={Data=Test},Body={Text={Data=hello}}' \
@@ -273,7 +279,7 @@ aws ses send-email \
 
 ```bash
 aws sns publish \
-  --profile scf-notify \
+  --profile scaffald \
   --phone-number +15555550100 \
   --message "Test SMS from SCF" \
   --message-attributes '{"AWS.SNS.SMS.SMSType":{"DataType":"String","StringValue":"Transactional"}}'

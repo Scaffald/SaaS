@@ -628,7 +628,7 @@ export default function HomePage() {
                 marginBottom: 'var(--space-6)',
               }}
             >
-              Built for Construction
+              Built for skilled trades
             </h2>
             <Text
               style={{

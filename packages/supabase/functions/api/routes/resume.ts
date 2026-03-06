@@ -6,7 +6,6 @@
 
 import { Hono } from 'hono'
 import { authMiddleware } from '../middleware/auth.ts'
-import { Buffer } from 'node:buffer'
 import { extractTextFromPdf } from '../../_shared/pdf/extract-text.ts'
 
 const app = new Hono()
@@ -77,7 +76,8 @@ function buildResumePath(userId: string, fileName: string): string {
 async function extractTextFromDocLike(bytes: Uint8Array): Promise<string> {
   try {
     const mammoth = await getMammoth()
-    const result = await mammoth.extractRawText({ buffer: Buffer.from(bytes) })
+    // Pass Uint8Array (Deno edge runtime has no node:buffer; mammoth accepts buffer-like)
+    const result = await mammoth.extractRawText({ buffer: bytes })
     if (result.value.trim().length > 0) {
       return result.value
     }

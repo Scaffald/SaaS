@@ -9,6 +9,17 @@ const config = getDefaultConfig(__dirname, {
   isCSSEnabled: true,
 })
 
+// Prefer 'source' field in package.json exports so workspace packages like @scaffald/ui
+// are bundled from TypeScript source directly — no build step needed during development.
+config.resolver.unstable_enablePackageExports = true
+config.resolver.unstable_conditionNames = [
+  'source',
+  'react-native',
+  'browser',
+  'require',
+  'default',
+]
+
 // Resolve TypeScript ESM-style `.js` imports (e.g. `./provider.js` → `./provider.tsx`)
 // This is needed for workspace packages (like @scaffald/sdk) that use moduleResolution:"bundler"
 const originalResolveRequest = config.resolver?.resolveRequest

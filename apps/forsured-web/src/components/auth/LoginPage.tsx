@@ -190,7 +190,7 @@ export const LoginPage: React.FC = () => {
             ) : (
               <Row style={{ alignItems: 'center', gap: spacing[8] }}>
                 <Text>→</Text>
-                <Text>Sign in with Scaffald</Text>
+                <Text>Login with Scaffald</Text>
               </Row>
             )}
           </Button>
@@ -214,7 +214,7 @@ export const LoginPage: React.FC = () => {
                 </Text>
               </Stack>
               <Text style={{ fontSize: fontSize.xs, color: colors.primary[700], flex: 1 }}>
-                You'll be redirected to Scaffald to sign in with your existing credentials.
+                You'll be redirected to Scaffald to login with your existing credentials.
               </Text>
             </Row>
           </Stack>

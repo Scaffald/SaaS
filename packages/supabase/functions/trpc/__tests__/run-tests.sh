@@ -28,14 +28,14 @@ fi
 echo -e "${GREEN}✅ Supabase is running${NC}"
 echo ""
 
-# Check if Inbucket is running
+# Check if Inbucket is running (optional when disabled in config)
 echo -e "${YELLOW}🔍 Checking Inbucket (email testing) status...${NC}"
 if ! curl -s http://127.0.0.1:54324/api/v1/mailbox > /dev/null 2>&1; then
-  echo -e "${RED}❌ Inbucket is not running!${NC}"
-  echo -e "${YELLOW}   Inbucket should start automatically with Supabase${NC}"
-  exit 1
+  echo -e "${YELLOW}⚠️  Inbucket is not running (optional). Email-dependent tests may be skipped.${NC}"
+  echo -e "${YELLOW}   To enable: set [inbucket] enabled = true in supabase config, or start full stack.${NC}"
+else
+  echo -e "${GREEN}✅ Inbucket is running${NC}"
 fi
-echo -e "${GREEN}✅ Inbucket is running${NC}"
 echo ""
 
 # Step 1: Run auth tests to generate tokens
@@ -44,7 +44,9 @@ echo -e "${YELLOW}📝 Step 1: Running Authentication Tests${NC}"
 echo -e "${BLUE}═══════════════════════════════════════════════════════════${NC}"
 echo ""
 
-if deno test --allow-all --no-check functions/trpc/__tests__/auth.test.ts; then
+# Run from functions/trpc with explicit deno config so Deno does not load repo tsconfig (e.g. react-native jsx)
+TRPC_DIR="functions/trpc"
+if deno test --allow-all --no-check --config="${TRPC_DIR}/deno.json" "${TRPC_DIR}/__tests__/auth.test.ts"; then
   echo ""
   echo -e "${GREEN}✅ Authentication tests passed!${NC}"
   echo -e "${GREEN}   Tokens cached and ready for integration tests${NC}"
@@ -64,7 +66,7 @@ echo ""
 
 # Check if integration directory exists
 if [ -d "functions/trpc/__tests__/integration" ]; then
-  if deno test --allow-all --no-check functions/trpc/__tests__/integration/*.test.ts; then
+  if deno test --allow-all --no-check --config="${TRPC_DIR}/deno.json" functions/trpc/__tests__/integration/*.test.ts; then
     echo ""
     echo -e "${GREEN}✅ Integration tests passed!${NC}"
     echo ""
@@ -86,7 +88,7 @@ echo ""
 
 # Run universities.test.ts if it exists
 if [ -f "functions/trpc/__tests__/universities.test.ts" ]; then
-  if deno test --allow-all --no-check functions/trpc/__tests__/universities.test.ts; then
+  if deno test --allow-all --no-check --config="${TRPC_DIR}/deno.json" functions/trpc/__tests__/universities.test.ts; then
     echo -e "${GREEN}✅ Universities tests passed!${NC}"
     echo ""
   else

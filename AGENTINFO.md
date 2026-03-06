@@ -25,8 +25,7 @@
 **UNI-Construct** is a monorepo containing:
 
 1. **Scaffald** - Job platform for connecting employers and job seekers
-2. **Forsured** - Insurance compliance platform
-3. **Scaffald SDK** (`@scaffald/sdk`) - Official JavaScript SDK for third-party developers
+2. **Scaffald SDK** (`@scaffald/sdk`) - Official JavaScript SDK for third-party developers
 
 ### Tech Stack
 
@@ -40,7 +39,6 @@
 ### Key Repositories
 
 - **Main App**: `apps/scaffald` - Expo app (iOS, Android, Web)
-- **Web Apps**: `apps/forsured-web` - Vite web app
 - **SDK**: `packages/scaffald-sdk` - Published npm package
 - **UI**: `packages/scaffald-ui` - Published npm package (`@scaffald/ui`)
 - **Core**: `packages/scf-core` - Shared business logic
@@ -55,8 +53,7 @@
 ```
 UNI-Construct/
 ├── apps/
-│   ├── scaffald/              # Expo app (iOS, Android, Web) - port 8081
-│   └── forsured-web/          # Vite web app - port 5173
+│   └── scaffald/              # Expo app (iOS, Android, Web) - port 8081
 │
 ├── packages/
 │   ├── scaffald-sdk/          # @scaffald/sdk - Published SDK
@@ -66,7 +63,6 @@ UNI-Construct/
 │   ├── scf-trpc/              # tRPC routers (internal API)
 │   ├── supabase/              # Database + Edge Functions
 │   ├── beyond-ui/             # @unicornlove/beyond-ui - UI components
-│   ├── forsured/              # Forsured exports
 │   ├── insurance/             # Insurance components
 │   ├── compliance/            # Compliance features
 │   └── tasks/                 # Task management
@@ -78,7 +74,6 @@ UNI-Construct/
 ### Database Schemas
 
 - **`core.*`** - Shared platform tables (users, organizations, jobs, applications)
-- **`forsured.*`** - Insurance compliance tables
 - **`data.*`** - Reference data (industries, universities, skills)
 - **`onet.*`** - O*NET occupational database (1,016 occupations)
 - **`cms.*`** - Content management
@@ -87,7 +82,7 @@ UNI-Construct/
 
 | API Type | Use Case | Auth | Location |
 |----------|----------|------|----------|
-| **tRPC** | Internal apps (Scaffald, Forsured) | JWT (Supabase Auth) | `packages/scf-trpc` |
+| **tRPC** | Internal apps (Scaffald) | JWT (Supabase Auth) | `packages/scf-trpc` |
 | **REST API** | Third-party developers | API Keys or OAuth 2.0 | `packages/supabase/functions/api` |
 | **SDK** | Abstraction over REST API | API Keys or OAuth 2.0 | `packages/scaffald-sdk` |
 
@@ -466,7 +461,6 @@ Location: `packages/supabase/supabase/migrations/`
 Key migrations:
 - `001-099`: Core schema (users, organizations, roles, teams)
 - `100-199`: Jobs and applications
-- `200-232`: Forsured insurance tables
 - `300-302`: API keys system
 - `400+`: O*NET occupational database
 
@@ -542,17 +536,26 @@ pnpm supa db push
 pnpm install
 
 # Copy environment file
-cp .env.example .env
+cp .env.template .env
+# Or: cp .env.example .env  (if present)
 
-# Setup Supabase
-pnpm supa:start
+# Start Supabase stack (Terminal 1)
+pnpm supa start
+# Or use the full start script: pnpm supa:start:full
 
-# Reset database
+# Reset database and seed
 pnpm supa db reset && pnpm supa:seed
 
 # Generate types
 pnpm supa:generate
 ```
+
+**Local backend (two processes):** The REST API and tRPC are served by Edge Functions, which run in a **separate process**. For full local backend (profiles, jobs, notifications, etc.):
+
+1. **Terminal 1:** `pnpm supa start` (or `pnpm supa:start:full`) — Supabase stack (DB, Auth, Kong).
+2. **Terminal 2:** `pnpm supa:functions` — serves the `api` Edge Function and others. Leave this running.
+
+**Verify API:** `curl -s http://127.0.0.1:54321/functions/v1/api/health` should return HTTP 200 and `{"status":"ok",...}`. If you get 404, start the functions server (step 2). See also [troubleshooting (.cursor/rules/memory/troubleshooting-guide.md)](.cursor/rules/memory/troubleshooting-guide.md) section 5b.
 
 ### Development Commands
 
@@ -566,11 +569,6 @@ pnpm ios
 # Run Scaffald Android
 pnpm android
 
-# Run Forsured web
-pnpm dev:forsured
-
-# Run all (Scaffald + Forsured)
-pnpm dev:all
 ```
 
 ### Environment Variables
@@ -578,9 +576,12 @@ pnpm dev:all
 Required in `.env`:
 
 ```bash
-# Supabase
+# Supabase (local: use http://127.0.0.1:54321)
 EXPO_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
 EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbGc...
+
+# Optional: explicit REST API base (local: http://127.0.0.1:54321/functions/v1/api)
+# EXPO_PUBLIC_SCAFFALD_API_URL=http://127.0.0.1:54321/functions/v1/api
 
 # Scaffald SDK
 SCAFFALD_API_KEY=sk_test_...
@@ -605,9 +606,6 @@ pnpm test
 
 # Run SDK tests
 pnpm --filter @scaffald/sdk test
-
-# Run Forsured tests (2400+ tests)
-pnpm test:forsured
 
 # Run SDK integration tests
 cd examples/integration-test && node simple-test.mjs
@@ -694,16 +692,6 @@ When migrating from Tamagui-style props to scaffald-ui, use this mapping:
 ---
 
 ## Deployment
-
-### Forsured (Vite)
-
-```bash
-# Build
-pnpm build:forsured
-
-# Preview
-pnpm preview:forsured
-```
 
 ### Scaffald (Expo)
 

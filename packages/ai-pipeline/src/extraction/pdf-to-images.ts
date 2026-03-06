@@ -23,6 +23,6 @@ export async function convertPdfToImages(pdfBuffer: Buffer): Promise<PageImage[]
 
   return pngPages.map((page) => ({
     pageNumber: page.pageNumber,
-    base64: page.content!.toString('base64'),
+    base64: page.content?.toString('base64') ?? '',
   }));
 }

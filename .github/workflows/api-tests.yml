@@ -4,12 +4,16 @@ on:
   pull_request:
     paths:
       - 'packages/supabase/functions/api/**'
+      - 'scripts/test-api-local.ts'
+      - 'scripts/deno.json'
       - '.github/workflows/api-tests.yml'
   push:
     branches:
       - main
     paths:
       - 'packages/supabase/functions/api/**'
+      - 'scripts/test-api-local.ts'
+      - 'scripts/deno.json'
 
 # Cancel in-progress runs for the same workflow
 concurrency:
@@ -67,14 +71,19 @@ jobs:
 
       - name: Start Supabase
         run: |
-          cd packages/supabase
+          cd packages
           supabase start
         env:
           SUPABASE_DB_PASSWORD: postgres
 
-      - name: Wait for Supabase
+      - name: Wait for API
         run: |
-          timeout 60 bash -c 'until curl -f http://127.0.0.1:54321/functions/v1/health 2>/dev/null; do sleep 2; done'
+          timeout 60 bash -c 'until curl -sf http://127.0.0.1:54321/functions/v1/api/health 2>/dev/null | grep -q ok; do sleep 2; done'
+
+      - name: Seed database
+        run: |
+          cd packages
+          supabase db seed
 
       - name: Run Unit Tests
         working-directory: packages/supabase
@@ -151,10 +160,19 @@ jobs:
           check_name: REST API Test Results
           fail_on_failure: true
 
+      - name: REST API endpoint verification
+        run: |
+          pnpm exec deno run --config=scripts/deno.json --allow-net --allow-env --allow-read scripts/test-api-local.ts
+        env:
+          SUPABASE_URL: http://127.0.0.1:54321
+          EXPO_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY_LOCAL || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY_LOCAL || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' }}
+
       - name: Stop Supabase
         if: always()
         run: |
-          cd packages/supabase
+          cd packages
           supabase stop --no-backup
 
   benchmark:
@@ -186,7 +204,7 @@ jobs:
 
       - name: Start Supabase
         run: |
-          cd packages/supabase
+          cd packages
           supabase start
 
       - name: Run Benchmarks
@@ -217,7 +235,7 @@ jobs:
       - name: Stop Supabase
         if: always()
         run: |
-          cd packages/supabase
+          cd packages
           supabase stop --no-backup
 
   lint:

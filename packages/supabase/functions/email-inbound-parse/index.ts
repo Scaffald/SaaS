@@ -414,7 +414,7 @@ serve(async (req) => {
       // Validate file
       const validation = validateFile(mimeType, fileSize, fileName)
       if (!validation.valid) {
-        rejectedFiles.push({ fileName, reason: validation.reason! })
+        rejectedFiles.push({ fileName, reason: validation.reason ?? 'Invalid file' })
         continue
       }
 
@@ -470,9 +470,9 @@ serve(async (req) => {
     }
 
     // Send confirmation email if any files were uploaded
-    if (uploadedFiles.length > 0) {
+    if (uploadedFiles.length > 0 && contractor.email) {
       await sendConfirmationEmail(
-        contractor.email!,
+        contractor.email,
         contractor.name,
         uploadedFiles,
         rejectedFiles,

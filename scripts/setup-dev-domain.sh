@@ -12,7 +12,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-AWS_PROFILE="${AWS_PROFILE:-scf-notify}"
+AWS_PROFILE="${AWS_PROFILE:-scaffald}"
 AWS_REGION="${AWS_REGION:-us-east-1}"
 DOMAIN_NAME="dev.scaffald.com"
 HOSTED_ZONE_ID="Z0610739109YR6SDKL45L"

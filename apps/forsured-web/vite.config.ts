@@ -210,6 +210,12 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      // Point @scaffald/ui sub-paths to source (more specific aliases must come first)
+      '@scaffald/ui/tokens': path.resolve(__dirname, '../../packages/scaffald-ui/src/tokens'),
+      '@scaffald/ui/chart': path.resolve(__dirname, '../../packages/scaffald-ui/src/chart'),
+      '@scaffald/ui/rich-text-editor': path.resolve(__dirname, '../../packages/scaffald-ui/src/rich-text-editor'),
+      '@scaffald/ui/maps': path.resolve(__dirname, '../../packages/scaffald-ui/src/maps'),
+      '@scaffald/ui': path.resolve(__dirname, '../../packages/scaffald-ui/src'),
       // Use extended react-native-web shim that includes missing exports (TurboModuleRegistry, etc.)
       'react-native': path.resolve(__dirname, './src/shims/react-native-web-extended.ts'),
       // Shim expo-router for web (we use react-router-dom instead)

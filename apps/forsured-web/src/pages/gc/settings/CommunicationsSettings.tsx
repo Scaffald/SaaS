@@ -1,6 +1,6 @@
 // src/pages/gc/settings/CommunicationsSettings.tsx
 import { useState, useEffect } from 'react';
-import { Stack, Text, Button, H2, Card } from '@unicornlove/beyond-ui';
+import { Stack, Text, Button, H2, Card } from '@scaffald/ui';
 import { MessageSquare } from 'lucide-react-native';
 import { trpc } from '../../../lib/trpc';
 import { toast } from 'sonner';

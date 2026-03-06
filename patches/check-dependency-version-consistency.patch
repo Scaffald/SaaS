@@ -1,0 +1,35 @@
+diff --git a/dist/lib/workspace.js b/dist/lib/workspace.js
+index 0b6250b8c2d7d767867c41e2a1cf4fe883cc09ab..d4dcd2caf4f6efc3eace9f81d5dca4bddfa7dae9 100644
+--- a/dist/lib/workspace.js
++++ b/dist/lib/workspace.js
+@@ -64,19 +64,20 @@ function expandWorkspaces(root, workspacePatterns) {
+         });
+     });
+ }
+-// Recursively collect packages from a workspace.
++// Iteratively collect packages from a workspace (avoids stack overflow in large monorepos).
+ function accumulatePackages(root, paths) {
+     const results = [];
+-    for (const relativePath of paths) {
+-        const path = join(root, relativePath);
++    const stack = paths.map((relativePath) => ({ currentRoot: root, workspaceRoot: root, relativePath }));
++    while (stack.length > 0) {
++        const { currentRoot, workspaceRoot, relativePath } = stack.pop();
++        const path = join(currentRoot, relativePath);
+         if (Package.exists(path)) {
+-            const package_ = new Package(path, root);
+-            results.push(
+-            // Add the current package.
+-            package_, 
+-            // Recursively add any nested workspace packages that might exist here.
+-            // This package is the new root.
+-            ...accumulatePackages(path, expandWorkspaces(path, package_.workspacePatterns)));
++            const package_ = new Package(path, workspaceRoot);
++            results.push(package_);
++            const expanded = expandWorkspaces(path, package_.workspacePatterns);
++            for (let i = expanded.length - 1; i >= 0; i--) {
++                stack.push({ currentRoot: path, workspaceRoot: path, relativePath: expanded[i] });
++            }
+         }
+     }
+     return results;

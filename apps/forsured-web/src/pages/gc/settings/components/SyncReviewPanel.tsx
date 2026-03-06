@@ -10,7 +10,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import { Stack, Row, Text, Button, Card, H3, Spinner } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card, H3, Spinner } from '@scaffald/ui';
 import { ArrowLeft, Check, Link2, Plus, X } from 'lucide-react-native';
 import { trpc } from '../../../../lib/trpc';
 

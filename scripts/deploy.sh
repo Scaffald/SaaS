@@ -289,19 +289,19 @@ if [ "$DEPLOY_RESET" = true ]; then
             DEPLOY_RESET=false
         else
             echo -e "${CYAN}Command being executed:${NC}"
-            echo "  dotenv -e ../../${ENV_FILE} -- pnpx supabase db reset --db-url \"[REDACTED]\""
+            echo "  dotenv -e ../${ENV_FILE} -- pnpx supabase db reset --db-url \"[REDACTED]\""
             echo ""
             echo -e "${CYAN}Target:${NC}"
             echo "  Project: ${PROJECT_REF}"
             echo "  Environment: ${ENV_DISPLAY_LOWER}"
             echo ""
             
-            cd packages/supabase
-            if dotenv -e ../../${ENV_FILE} -- pnpx supabase db reset --db-url "$DB_URL" 2>&1 | tee /tmp/supabase-reset-${ENV}.log; then
-                cd ../..
+            cd packages
+            if dotenv -e ../${ENV_FILE} -- pnpx supabase db reset --db-url "$DB_URL" 2>&1 | tee /tmp/supabase-reset-${ENV}.log; then
+                cd ..
                 echo -e "${GREEN}✅ Database reset and migrations applied successfully${NC}"
             else
-                cd ../..
+                cd ..
                 echo -e "${RED}❌ Database reset failed${NC}"
                 if [ -f /tmp/supabase-reset-${ENV}.log ]; then
                     echo ""
@@ -347,7 +347,7 @@ if [ "$DEPLOY_MIGRATIONS" = true ]; then
             DIFF_OUTPUT="Docker not running"
         else
             echo -e "${CYAN}Command being executed:${NC}"
-            echo "  dotenv -e ../../${ENV_FILE} -- pnpx supabase db diff --db-url \"[REDACTED]\""
+            echo "  dotenv -e ../${ENV_FILE} -- pnpx supabase db diff --db-url \"[REDACTED]\""
             echo ""
             echo -e "${CYAN}Target:${NC}"
             echo "  Project: ${PROJECT_REF}"
@@ -356,17 +356,17 @@ if [ "$DEPLOY_MIGRATIONS" = true ]; then
             echo -e "${YELLOW}⚠️  This may fail or hang without Docker${NC}"
             echo ""
             
-            cd packages/supabase
+            cd packages
             set +e
             # Add timeout to prevent indefinite hanging
-            DIFF_OUTPUT=$(run_with_timeout 120 dotenv -e ../../${ENV_FILE} -- pnpx supabase db diff --db-url "$DB_URL" 2>&1)
+            DIFF_OUTPUT=$(run_with_timeout 120 dotenv -e ../${ENV_FILE} -- pnpx supabase db diff --db-url "$DB_URL" 2>&1)
             DIFF_EXIT_CODE=$?
             set -e
-            cd ../..
+            cd ..
         fi
     else
         echo -e "${CYAN}Command being executed:${NC}"
-        echo "  dotenv -e ../../${ENV_FILE} -- pnpx supabase db diff --db-url \"[REDACTED]\""
+        echo "  dotenv -e ../${ENV_FILE} -- pnpx supabase db diff --db-url \"[REDACTED]\""
         echo ""
         echo -e "${CYAN}Target:${NC}"
         echo "  Project: ${PROJECT_REF}"
@@ -375,13 +375,13 @@ if [ "$DEPLOY_MIGRATIONS" = true ]; then
         echo -e "${BLUE}ℹ️  This will create a temporary shadow database (may take a minute)${NC}"
         echo ""
         
-        cd packages/supabase
+        cd packages
         set +e
         # Add timeout to prevent indefinite hanging (2 minutes should be enough)
-        DIFF_OUTPUT=$(run_with_timeout 120 dotenv -e ../../${ENV_FILE} -- pnpx supabase db diff --db-url "$DB_URL" 2>&1)
+        DIFF_OUTPUT=$(run_with_timeout 120 dotenv -e ../${ENV_FILE} -- pnpx supabase db diff --db-url "$DB_URL" 2>&1)
         DIFF_EXIT_CODE=$?
         set -e
-        cd ../..
+        cd ..
     fi
     
     echo "$DIFF_OUTPUT" > /tmp/migration-diff-${ENV}.txt
@@ -422,7 +422,7 @@ if [ "$DEPLOY_MIGRATIONS" = true ]; then
                         PUSH_OUTPUT="Docker not running"
                     else
                         echo -e "${CYAN}Command being executed:${NC}"
-                        echo "  dotenv -e ../../${ENV_FILE} -- pnpx supabase db push --db-url \"[REDACTED]\" --include-all"
+                        echo "  dotenv -e ../${ENV_FILE} -- pnpx supabase db push --db-url \"[REDACTED]\" --include-all"
                         echo ""
                         echo -e "${CYAN}Target:${NC}"
                         echo "  Project: ${PROJECT_REF}"
@@ -433,13 +433,13 @@ if [ "$DEPLOY_MIGRATIONS" = true ]; then
                         echo -e "${CYAN}Migration push output:${NC}"
                         echo "----------------------------------------"
                         
-                        cd packages/supabase
+                        cd packages
                         set +e
                         # Add timeout to prevent indefinite hanging (5 minutes for push)
-                        PUSH_OUTPUT=$(run_with_timeout 300 dotenv -e ../../${ENV_FILE} -- pnpx supabase db push --db-url "$DB_URL" --include-all 2>&1)
+                        PUSH_OUTPUT=$(run_with_timeout 300 dotenv -e ../${ENV_FILE} -- pnpx supabase db push --db-url "$DB_URL" --include-all 2>&1)
                         PUSH_EXIT_CODE=$?
                         set -e
-                        cd ../..
+                        cd ..
                     fi
                 
                     # Save and display output
@@ -482,7 +482,7 @@ if [ "$DEPLOY_MIGRATIONS" = true ]; then
                     PUSH_OUTPUT="Docker not running"
                 else
                     echo -e "${CYAN}Command being executed:${NC}"
-                    echo "  dotenv -e ../../${ENV_FILE} -- pnpx supabase db push --db-url \"[REDACTED]\" --include-all"
+                    echo "  dotenv -e ../${ENV_FILE} -- pnpx supabase db push --db-url \"[REDACTED]\" --include-all"
                     echo ""
                     echo -e "${CYAN}Target:${NC}"
                     echo "  Project: ${PROJECT_REF}"
@@ -491,13 +491,13 @@ if [ "$DEPLOY_MIGRATIONS" = true ]; then
                     echo -e "${BLUE}ℹ️  This will create a temporary shadow database (may take a minute)${NC}"
                     echo ""
                     
-                    cd packages/supabase
+                    cd packages
                     set +e
                     # Add timeout to prevent indefinite hanging (5 minutes for push)
-                    PUSH_OUTPUT=$(run_with_timeout 300 dotenv -e ../../${ENV_FILE} -- pnpx supabase db push --db-url "$DB_URL" --include-all 2>&1)
+                    PUSH_OUTPUT=$(run_with_timeout 300 dotenv -e ../${ENV_FILE} -- pnpx supabase db push --db-url "$DB_URL" --include-all 2>&1)
                     PUSH_EXIT_CODE=$?
                     set -e
-                    cd ../..
+                    cd ..
                 fi
             
                 echo "$PUSH_OUTPUT" > /tmp/supabase-migration-push-${ENV}-fallback.log
@@ -566,7 +566,7 @@ if [ "$DEPLOY_FUNCTIONS" = true ]; then
             echo ""
             
             # Change to supabase directory and deploy with environment
-            cd packages/supabase
+            cd packages
             
             for func in "${FUNCTIONS_TO_DEPLOY[@]}"; do
                 echo ""
@@ -583,23 +583,23 @@ if [ "$DEPLOY_FUNCTIONS" = true ]; then
                 echo ""
                 
                 # Verify function exists
-                if [ ! -d "functions/${func}" ]; then
-                    echo -e "${RED}❌ Function directory not found: functions/${func}${NC}"
+                if [ ! -d "supabase/functions/${func}" ]; then
+                    echo -e "${RED}❌ Function directory not found: supabase/functions/${func}${NC}"
                     echo ""
                     echo "Available functions:"
-                    ls -la functions/ | grep "^d" | awk '{print "  - " $NF}'
+                    ls -la supabase/functions/ | grep "^d" | awk '{print "  - " $NF}'
                     continue
                 fi
                 
                 echo -e "${CYAN}Command being executed:${NC}"
-                echo "  dotenv -e ../../${ENV_FILE} -- pnpx supabase functions deploy \"$func\" --project-ref \"${PROJECT_REF}\""
+                echo "  dotenv -e ../${ENV_FILE} -- pnpx supabase functions deploy \"$func\" --project-ref \"${PROJECT_REF}\""
                 echo ""
                 echo -e "${CYAN}Deployment output:${NC}"
                 echo "----------------------------------------"
                 
                 # Capture output and exit code separately
                 set +e  # Temporarily disable exit on error to capture exit code
-                DEPLOY_OUTPUT=$(dotenv -e ../../${ENV_FILE} -- pnpx supabase functions deploy "$func" --project-ref "$PROJECT_REF" 2>&1)
+                DEPLOY_OUTPUT=$(dotenv -e ../${ENV_FILE} -- pnpx supabase functions deploy "$func" --project-ref "$PROJECT_REF" 2>&1)
                 DEPLOY_EXIT_CODE=$?
                 set -e  # Re-enable exit on error
                 
@@ -618,7 +618,7 @@ if [ "$DEPLOY_FUNCTIONS" = true ]; then
                     # Verify deployment by checking function list
                     echo -e "${CYAN}Verifying deployment...${NC}"
                     set +e
-                    VERIFY_OUTPUT=$(dotenv -e ../../${ENV_FILE} -- pnpx supabase functions list --project-ref "$PROJECT_REF" 2>&1)
+                    VERIFY_OUTPUT=$(dotenv -e ../${ENV_FILE} -- pnpx supabase functions list --project-ref "$PROJECT_REF" 2>&1)
                     VERIFY_EXIT_CODE=$?
                     set -e
                     
@@ -645,13 +645,13 @@ if [ "$DEPLOY_FUNCTIONS" = true ]; then
                     echo -e "${RED}❌ Command failed with exit code: ${DEPLOY_EXIT_CODE}${NC}"
                     echo ""
                     echo -e "${YELLOW}💡 Troubleshooting tips:${NC}"
-                    echo "   1. Verify the function exists: ls -la functions/${func}/"
+                    echo "   1. Verify the function exists: ls -la supabase/functions/${func}/"
                     echo "   2. Check Supabase CLI version: pnpx supabase --version"
                     echo "   3. Verify project ref is correct: ${PROJECT_REF}"
                     echo "   4. Check authentication:"
-                    echo "      dotenv -e ../../${ENV_FILE} -- pnpx supabase projects list"
+                    echo "      dotenv -e ../${ENV_FILE} -- pnpx supabase projects list"
                     echo "   5. Try deploying with debug:"
-                    echo "      dotenv -e ../../${ENV_FILE} -- pnpx supabase functions deploy ${func} --project-ref ${PROJECT_REF} --debug"
+                    echo "      dotenv -e ../${ENV_FILE} -- pnpx supabase functions deploy ${func} --project-ref ${PROJECT_REF} --debug"
                     echo "   6. Check full logs: cat /tmp/supabase-deploy-${ENV}-${func}.log"
                 fi
                 
@@ -660,7 +660,7 @@ if [ "$DEPLOY_FUNCTIONS" = true ]; then
                 echo ""
             done
             
-            cd ../..
+            cd ..
         else
             echo -e "${YELLOW}⏹️  Skipping functions deployment${NC}"
         fi

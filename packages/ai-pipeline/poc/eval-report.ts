@@ -39,7 +39,8 @@ function compareField(
   if (!comparisons.has(fieldName)) {
     comparisons.set(fieldName, { field: fieldName, matches: 0, total: 0, mismatches: [] });
   }
-  const comp = comparisons.get(fieldName)!;
+  const comp = comparisons.get(fieldName);
+  if (!comp) return;
   comp.total++;
 
   // Skip null/undefined expected (field wasn't verified by human)

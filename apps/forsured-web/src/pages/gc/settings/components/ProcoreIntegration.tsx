@@ -9,7 +9,7 @@
  */
 
 import { useState } from 'react';
-import { Stack, Row, Text, Button, Card, H3, Spinner } from '@unicornlove/beyond-ui';
+import { Stack, Row, Text, Button, Card, H3, Spinner } from '@scaffald/ui';
 import { RefreshCcw, Link2, AlertTriangle, Check, Clock } from 'lucide-react-native';
 import { trpc } from '../../../../lib/trpc';
 

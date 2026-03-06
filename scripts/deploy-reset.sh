@@ -143,7 +143,7 @@ echo "════════════════════════�
 echo "📋 Step 4: Deploying Edge Functions"
 echo "═══════════════════════════════════════"
 
-cd packages/supabase
+cd packages
 
 echo ""
 echo "Deploying tRPC Router..."
@@ -151,7 +151,7 @@ if pnpx supabase functions deploy trpc; then
     echo -e "${GREEN}✅ tRPC function deployed${NC}"
 else
     echo -e "${RED}❌ tRPC deployment failed${NC}"
-    cd ../..
+    cd ..
     exit 1
 fi
 
@@ -171,7 +171,7 @@ else
     echo -e "${YELLOW}⚠️  news deployment had warnings${NC}"
 fi
 
-cd ../..
+cd ..
 
 # Deploy Web App
 echo ""
