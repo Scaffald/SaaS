@@ -11,33 +11,31 @@ import { useCookieConsent } from './CookieConsentProvider'
 import type { CookieConsentCategory, CookieConsentSelections } from './CookieConsent.types'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
+import { borderRadius } from '../../tokens/borders'
+import { shadows } from '../../tokens/shadows'
 import { useThemeContext } from '../../theme'
 
 const REQUIRED_COPY = 'Always on — required for the site to work properly.'
 
 function RequiredCategoryRow({ category }: { category: CookieConsentCategory }) {
   const { theme } = useThemeContext()
-  const labelColor = colors.text[theme].primary
-  const descColor = colors.text[theme].secondary
-  const hintColor = colors.text[theme].tertiary
-  const rowBg = colors.bg[theme].subtle
 
   return (
     <View
       style={{
-        padding: spacing[4],
-        backgroundColor: rowBg,
-        borderRadius: 16,
-        gap: spacing[2],
+        padding: spacing[12],
+        backgroundColor: colors.bg[theme].subtle,
+        borderRadius: borderRadius.xl,
+        gap: spacing[8],
       }}
     >
-      <Paragraph size="md" weight="semibold" style={{ color: labelColor }}>
+      <Paragraph size="md" weight="semibold" style={{ color: colors.text[theme].primary }}>
         {category.label}
       </Paragraph>
-      <Paragraph size="sm" style={{ color: descColor }}>
+      <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
         {category.description}
       </Paragraph>
-      <Paragraph size="xs" style={{ color: hintColor }}>
+      <Paragraph size="xs" style={{ color: colors.text[theme].tertiary }}>
         {REQUIRED_COPY}
       </Paragraph>
     </View>
@@ -59,28 +57,28 @@ function OptionalCategoryRow({
       ? colors.primary[50]
       : colors.primary[900]
     : colors.bg[theme].subtle
-  const labelColor = colors.text[theme].primary
-  const descColor = colors.text[theme].secondary
 
   return (
-    <View
-      style={{
-        padding: spacing[4],
-        backgroundColor: rowBg,
-        borderRadius: 16,
-        gap: spacing[2],
-      }}
-    >
-      <Row justify="space-between" align="center" style={{ gap: spacing[4] }}>
-        <Paragraph size="md" weight="semibold" style={{ color: labelColor, flex: 1 }}>
-          {category.label}
+    <Pressable onPress={() => onChange(!value)}>
+      <View
+        style={{
+          padding: spacing[12],
+          backgroundColor: rowBg,
+          borderRadius: borderRadius.xl,
+          gap: spacing[8],
+        }}
+      >
+        <Row justify="space-between" align="center" style={{ gap: spacing[8] }}>
+          <Paragraph size="md" weight="semibold" style={{ color: colors.text[theme].primary, flex: 1 }}>
+            {category.label}
+          </Paragraph>
+          <Toggle checked={value} onChange={onChange} size="md" color="primary" />
+        </Row>
+        <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
+          {category.description}
         </Paragraph>
-        <Toggle checked={value} onChange={onChange} size="md" color="primary" />
-      </Row>
-      <Paragraph size="sm" style={{ color: descColor }}>
-        {category.description}
-      </Paragraph>
-    </View>
+      </View>
+    </Pressable>
   )
 }
 
@@ -132,10 +130,7 @@ export function CookiePreferencesDialog() {
 
   if (!isPreferencesOpen) return null
 
-  const overlayBg = colors.bg[theme].overlay
-  const contentBg = colors.bg[theme].default
   const borderColor = colors.border[theme].default
-  const descColor = colors.text[theme].secondary
 
   return (
     <Modal
@@ -148,10 +143,10 @@ export function CookiePreferencesDialog() {
       <Pressable
         style={{
           flex: 1,
-          backgroundColor: overlayBg,
+          backgroundColor: colors.bg[theme].overlay,
           justifyContent: 'center',
           alignItems: 'center',
-          padding: spacing[6],
+          padding: spacing[16],
         }}
         onPress={closePreferences}
       >
@@ -161,25 +156,26 @@ export function CookiePreferencesDialog() {
         >
           <View
             style={{
-              backgroundColor: contentBg,
-              borderRadius: 16,
-              padding: spacing[6],
+              backgroundColor: colors.bg[theme].default,
+              borderRadius: borderRadius.xl,
+              padding: spacing[16],
               maxHeight: 600,
               borderWidth: 1,
               borderColor,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.15,
-              shadowRadius: 12,
-              elevation: 8,
+              ...shadows.m,
             }}
           >
             <Row
               justify="space-between"
               align="center"
-              style={{ marginBottom: spacing[4], paddingBottom: spacing[4], borderBottomWidth: 1, borderBottomColor: borderColor }}
+              style={{
+                marginBottom: spacing[12],
+                paddingBottom: spacing[12],
+                borderBottomWidth: 1,
+                borderBottomColor: borderColor,
+              }}
             >
-              <Heading level={5} style={{ color: colors.text[theme].primary }}>
+              <Heading level={6} style={{ color: colors.text[theme].primary }}>
                 Manage Cookies
               </Heading>
               <Button
@@ -194,14 +190,14 @@ export function CookiePreferencesDialog() {
 
             <Paragraph
               size="md"
-              style={{ color: descColor, marginBottom: spacing[5] }}
+              style={{ color: colors.text[theme].secondary, marginBottom: spacing[12] }}
             >
               Choose which categories of cookies to allow. Not all cookies can be turned off — some
               are required for the site to work properly.
             </Paragraph>
 
             <ScrollView style={{ maxHeight: 360 }} showsVerticalScrollIndicator={false}>
-              <Stack gap={spacing[4]}>
+              <Stack gap={spacing[12]}>
                 {categories.map((category) =>
                   category.required ? (
                     <RequiredCategoryRow key={category.id} category={category} />
@@ -216,15 +212,16 @@ export function CookiePreferencesDialog() {
                 )}
               </Stack>
             </ScrollView>
+
             <View
               style={{
-                marginTop: spacing[5],
-                paddingTop: spacing[5],
+                marginTop: spacing[12],
+                paddingTop: spacing[12],
                 borderTopWidth: 1,
                 borderTopColor: borderColor,
               }}
             >
-              <Row gap={spacing[3]} justify="flex-end" align="center" style={{ flexWrap: 'wrap' }}>
+              <Row gap={spacing[8]} justify="flex-end" align="center" style={{ flexWrap: 'wrap' }}>
                 <Button color="success" variant="filled" onPress={handleSave} disabled={isSubmitting}>
                   Save
                 </Button>

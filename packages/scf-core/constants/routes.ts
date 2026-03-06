@@ -98,6 +98,18 @@ const ROUTES_CONFIG = {
       protected: false,
       exact: true,
     },
+    TERMS: {
+      path: '/auth/terms',
+      titleKey: 'routes.auth.terms',
+      protected: false,
+      exact: true,
+    },
+    PRIVACY: {
+      path: '/auth/privacy',
+      titleKey: 'routes.auth.privacy',
+      protected: false,
+      exact: true,
+    },
   },
 
   ONBOARDING: {
