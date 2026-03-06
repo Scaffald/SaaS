@@ -10,6 +10,7 @@ import { useUser } from '@scf/core/utils/useUser'
 import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 import {
   Building2,
+  LogOut,
   Moon,
   PanelLeftClose,
   PanelRightClose,
@@ -19,11 +20,10 @@ import {
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import { useCallback, type ReactNode } from 'react'
-import { Pressable, type PressableStateCallbackType } from 'react-native'
+import { Platform, Pressable, type PressableStateCallbackType } from 'react-native'
 import type { GestureResponderEvent } from 'react-native'
 import { Text, useWindowDimensions, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import { shadows } from '@scaffald/ui'
 import { DrawerLink } from './DrawerLink'
 import { getDrawerItems } from './config'
 import type { DrawerItemConfig } from './types'
@@ -156,20 +156,31 @@ export const DrawerContent = ({
     </Pressable>
   )
 
+  const glassStyle = {
+    backgroundColor: theme === 'dark'
+      ? 'rgba(30, 25, 20, 0.92)'
+      : 'rgba(251, 248, 243, 0.88)',
+    borderRightWidth: 1,
+    borderRightColor: theme === 'dark'
+      ? 'rgba(80, 73, 64, 0.4)'
+      : 'rgba(237, 221, 201, 0.5)',
+    ...(Platform.OS === 'web' ? { backdropFilter: 'blur(14px)' } as object : {}),
+  }
+
   return (
     <Stack
       flex={1}
-      style={{ backgroundColor: colors.bg[theme].subtle }}
+      style={glassStyle}
       paddingHorizontal={isCollapsed ? 8 : 24}
       paddingVertical={20}
       align={isCollapsed ? 'center' : 'stretch'}
     >
       <Stack flex={1} justify="space-between" gap={20} width="100%">
         {!isSmall ? (
-          <Row justify="center" align="center" gap={12} paddingTop={8} width="100%">
+          <Row justify="center" align="center" gap={12} paddingTop={16} paddingBottom={8} width="100%">
             <ScaffaldLogo
               height={isCollapsed ? 30 : 40}
-              width={isCollapsed ? 30 : 120}
+              width={isCollapsed ? 30 : 160}
               showWordmark={!isCollapsed}
             />
           </Row>
@@ -181,14 +192,13 @@ export const DrawerContent = ({
             avatarUri={avatarUri}
             fallbackInitial={fallbackInitial}
             onProfilePress={handleProfilePress}
-            onLogoutPress={handleLogoutPress}
           />
         ) : null}
 
         <Stack
-          gap={8}
+          gap={4}
           flex={1}
-          marginTop={8}
+          marginTop={12}
           width="100%"
           align={isCollapsed ? 'center' : 'stretch'}
         >
@@ -228,6 +238,9 @@ export const DrawerContent = ({
               <FooterActionButton label={themeToggleLabel} onPress={handleThemeToggle}>
                 <ThemeToggleIcon size={footerIconSize} color={colors.icon[theme].default} />
               </FooterActionButton>
+              <FooterActionButton label="Sign out" onPress={handleLogoutPress}>
+                <LogOut size={footerIconSize} color={colors.error[500]} />
+              </FooterActionButton>
               {canCollapse && onToggleCollapse ? (
                 <FooterActionButton
                   label={isCollapsed ? 'Expand navigation' : 'Collapse navigation'}
@@ -255,6 +268,9 @@ export const DrawerContent = ({
               <FooterActionButton label={themeToggleLabel} onPress={handleThemeToggle}>
                 <ThemeToggleIcon size={footerIconSize} color={colors.icon[theme].default} />
               </FooterActionButton>
+              <FooterActionButton label="Sign out" onPress={handleLogoutPress}>
+                <LogOut size={footerIconSize} color={colors.error[500]} />
+              </FooterActionButton>
               {canCollapse && onToggleCollapse ? (
                 <FooterActionButton
                   label={isCollapsed ? 'Expand navigation' : 'Collapse navigation'}
@@ -280,7 +296,6 @@ type DrawerProfileCardProps = {
   avatarUri: string | null
   fallbackInitial: string
   onProfilePress: () => void
-  onLogoutPress: () => void
 }
 
 const DrawerProfileCard = ({
@@ -288,23 +303,24 @@ const DrawerProfileCard = ({
   avatarUri,
   fallbackInitial,
   onProfilePress,
-  onLogoutPress,
 }: DrawerProfileCardProps) => {
   const { theme } = useThemeContext()
-  const avatarSize = 40
+  const avatarSize = 48
 
   return (
-    <Row
-      width="100%"
-      padding="sm"
-      gap={12}
-      align="center"
-      borderRadius={16}
-      style={{
-        backgroundColor: colors.bg[theme].muted,
-        borderWidth: 0,
-        ...shadows.soft,
-      }}
+    <Pressable
+      onPress={onProfilePress}
+      style={({ pressed }) => ({
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        padding: 12,
+        borderRadius: 20,
+        backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.5)',
+        borderWidth: 1,
+        borderColor: theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.6)',
+        opacity: pressed ? 0.8 : 1,
+      })}
     >
       {avatarUri ? (
         <Stack
@@ -313,12 +329,12 @@ const DrawerProfileCard = ({
             height: avatarSize,
             overflow: 'hidden',
             backgroundColor: colors.gray[100],
-            borderRadius: avatarSize / 2,
+            borderRadius: 14,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Image source={{ uri: avatarUri }} contentFit="cover" />
+          <Image source={{ uri: avatarUri }} contentFit="cover" style={{ width: avatarSize, height: avatarSize }} />
         </Stack>
       ) : (
         <Stack
@@ -327,31 +343,37 @@ const DrawerProfileCard = ({
           align="center"
           justify="center"
           style={{
-            backgroundColor: colors.primary[500],
-            borderWidth: 1,
-            borderColor: colors.border[theme].default,
-            borderRadius: avatarSize / 2,
+            backgroundColor: colors.primary[600],
+            borderRadius: 14,
           }}
         >
-          <Text style={{ color: colors.text[theme].quaternary }}>{fallbackInitial}</Text>
+          <Text style={{ color: colors.white, fontWeight: '700', fontSize: 18 }}>{fallbackInitial}</Text>
         </Stack>
       )}
 
-      <Stack flex={1} gap={8}>
-        <Text style={{ color: colors.text[theme].primary }}>{displayName}</Text>
-        <Row gap={16}>
-          <Pressable onPress={onProfilePress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
-            <Text color="primary" style={{ textDecorationLine: 'underline' }}>
-              My Profile
-            </Text>
-          </Pressable>
-          <Pressable onPress={onLogoutPress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
-            <Text color="error" style={{ textDecorationLine: 'underline' }}>
-              Logout
-            </Text>
-          </Pressable>
-        </Row>
+      <Stack flex={1} gap={2}>
+        <Text
+          style={{
+            color: theme === 'dark' ? colors.gray[100] : colors.gray[900],
+            fontWeight: '700',
+            fontSize: 15,
+            letterSpacing: -0.3,
+          }}
+        >
+          {displayName}
+        </Text>
+        <Text
+          style={{
+            color: colors.primary[500],
+            fontWeight: '600',
+            fontSize: 11,
+            textTransform: 'uppercase',
+            letterSpacing: 0.8,
+          }}
+        >
+          View Profile
+        </Text>
       </Stack>
-    </Row>
+    </Pressable>
   )
 }
