@@ -123,6 +123,12 @@ export interface TabsProps {
   triggerSizing?: 'auto' | 'equal' | 'fixed'
 
   /**
+   * When true and orientation is horizontal, the tab list scrolls horizontally on small viewports.
+   * @default false
+   */
+  scrollable?: boolean
+
+  /**
    * Children tab items
    */
   children: ReactNode

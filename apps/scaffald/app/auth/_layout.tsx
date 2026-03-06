@@ -2,7 +2,7 @@ import { useProtectedRoute } from '@scf/core/utils/auth/useProtectedRoute'
 import { Box, Text, ToastContainer, ToastProvider } from '@scaffald/ui'
 import { Stack } from 'expo-router'
 import { View } from 'react-native'
-import { AuthFloatingToggles } from './FloatingToggles'
+import { AuthFloatingToggles } from './_FloatingToggles'
 
 export default function Layout() {
   const { isLoading } = useProtectedRoute()

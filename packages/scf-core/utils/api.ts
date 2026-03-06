@@ -62,13 +62,15 @@ const sessionValidationLink: TRPCLink<AppRouter> = () => {
       const unsubscribe = next(op).subscribe({
         next: observer.next.bind(observer),
         error: async (err) => {
-          // Check if this is an UNAUTHORIZED error indicating invalid session
-          if (
+          // Check if this is an UNAUTHORIZED error or HTTP 401 indicating invalid session
+          const isUnauthorized =
             err instanceof TRPCClientError &&
-            err.data?.code === "UNAUTHORIZED"
-          ) {
+            (err.data?.code === "UNAUTHORIZED" ||
+              (err as { data?: { httpStatus?: number } }).data?.httpStatus === 401);
+
+          if (isUnauthorized) {
             console.log(
-              "[tRPC] UNAUTHORIZED error detected - invalid or expired session"
+              "[tRPC] UNAUTHORIZED/401 error detected - invalid or expired session"
             );
 
             // Clear any existing timeout
