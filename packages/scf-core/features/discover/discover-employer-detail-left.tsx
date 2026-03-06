@@ -4,7 +4,7 @@ import { DashboardWidget, extractPlainText } from '@scaffald/ui'
 import { ArrowLeft, Building2, ExternalLink, MapPin, Users } from 'lucide-react-native'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
-import { Button, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Separator, Skeleton, SkeletonAvatar, SkeletonBox, SkeletonText, Text, Row, Stack } from '@scaffald/ui'
 
 type DiscoverEmployerDetailLeftProps = {
   employerId: string
@@ -48,9 +48,20 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
   if (isLoading || isFetching) {
     return (
       <DashboardWidget>
-        <Stack align="center" justify="center" padding={32} gap={12}>
-          <Spinner size="lg" color="primary" />
-          <Text color="secondary">Loading employer details...</Text>
+        <Stack gap={16}>
+          <Row gap={12} align="center">
+            <SkeletonAvatar size={48} />
+            <Stack gap={6} style={{ flex: 1 }}>
+              <Skeleton width={160} height={18} shape="text" />
+              <Skeleton width={100} height={14} shape="text" />
+            </Stack>
+          </Row>
+          <SkeletonText lines={3} lastLineWidth="70%" />
+          <Row gap={8} wrap>
+            {[0, 1, 2].map((i) => (
+              <SkeletonBox key={i} width={90} height={28} borderRadius={99} />
+            ))}
+          </Row>
         </Stack>
       </DashboardWidget>
     )

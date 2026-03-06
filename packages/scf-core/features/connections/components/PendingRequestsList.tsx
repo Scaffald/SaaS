@@ -10,7 +10,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { useToast } from '@scaffald/ui'
 import { CheckCircle2, X } from 'lucide-react-native'
 import { useCallback, useMemo } from 'react'
-import { Avatar, Button, Separator, Spinner, Table, Text, Row, Stack } from '@scaffald/ui'
+import { Avatar, Button, Separator, SkeletonList, Table, Text, Row, Stack } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 
 type PendingRequest = ConnectionRequest & { type: 'sent' }
@@ -208,12 +208,7 @@ export function PendingRequestsList() {
   )
 
   if (isLoading) {
-    return (
-      <Stack align="center" justify="center" paddingVertical={24} gap={8}>
-        <Spinner size="lg" />
-        <Text color="$gray11">Loading pending requests…</Text>
-      </Stack>
-    )
+    return <SkeletonList count={4} variant="profile" />
   }
 
   const sentRequests = pendingRequests?.sent || []
