@@ -15,7 +15,6 @@ jobs:
 
     steps:
       - name: Checkout code
-<<<<<<< HEAD
         uses: actions/checkout@v6
 
       - name: Install pnpm
@@ -29,21 +28,6 @@ jobs:
           node-version: '20'
           cache: 'pnpm'
 
-=======
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.20.0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
-
->>>>>>> bcccec207 (chore: SDK integration tests, supabase config, forsured-web updates, and infra cleanup)
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 

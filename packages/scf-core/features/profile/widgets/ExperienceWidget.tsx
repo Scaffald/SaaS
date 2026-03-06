@@ -5,13 +5,7 @@ import {
   DashboardWidget,
   EmptyState,
   H4,
-<<<<<<< HEAD
-  Skeleton,
-  SkeletonAvatar,
-  SkeletonText,
-=======
   LoadingState,
->>>>>>> 239b0c919 (feat(ui): Typography system, component refinements, and profile widget updates)
   useThemeContext,
 } from "@scaffald/ui";
 import { Briefcase } from "lucide-react-native";

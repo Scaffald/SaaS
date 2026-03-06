@@ -5,13 +5,7 @@ import {
   DashboardWidget,
   EmptyState,
   H4,
-<<<<<<< HEAD
-  Skeleton,
-  SkeletonBox,
-  SkeletonGroup,
-=======
   LoadingState,
->>>>>>> 239b0c919 (feat(ui): Typography system, component refinements, and profile widget updates)
   useThemeContext,
 } from "@scaffald/ui";
 import { CheckCircle } from "lucide-react-native";

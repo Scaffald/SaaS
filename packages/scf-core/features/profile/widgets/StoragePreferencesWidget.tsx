@@ -9,11 +9,7 @@
  */
 
 import { Cloud, Database, HardDrive } from "lucide-react-native";
-<<<<<<< HEAD
-import { Button, DashboardWidget, H4, Skeleton, SkeletonBox, useThemeContext } from "@scaffald/ui";
-=======
 import { Button, DashboardWidget, H4, LoadingState, useThemeContext } from "@scaffald/ui";
->>>>>>> 239b0c919 (feat(ui): Typography system, component refinements, and profile widget updates)
 import type { ComponentType } from "react";
 import { useState, useEffect } from "react";
 import { Pressable } from "react-native";

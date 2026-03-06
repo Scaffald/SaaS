@@ -25,10 +25,6 @@ serve(async (req) => {
   if (req.method !== 'POST') {
     return jsonResponse({ error: 'Method not allowed' }, 405)
   }
-<<<<<<< HEAD
-  // No-op: accept and acknowledge without processing (forsured schema removed)
-  return jsonResponse({ received: true })
-=======
 
   const supabase = createServiceSupabaseClient()
 
@@ -203,5 +199,4 @@ serve(async (req) => {
       500
     )
   }
->>>>>>> bcccec207 (chore: SDK integration tests, supabase config, forsured-web updates, and infra cleanup)
 })

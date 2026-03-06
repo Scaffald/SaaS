@@ -24,10 +24,6 @@ serve(async (req) => {
   if (req.method !== 'POST') {
     return jsonResponse({ error: 'Method not allowed' }, 405)
   }
-<<<<<<< HEAD
-  // No-op: accept and acknowledge without processing (forsured schema removed)
-  return jsonResponse({ received: true })
-=======
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
   const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
@@ -228,5 +224,4 @@ serve(async (req) => {
     // Always return 200 to prevent SendGrid retries
     return jsonResponse({ status: 'error', reason: 'processing_failed' })
   }
->>>>>>> bcccec207 (chore: SDK integration tests, supabase config, forsured-web updates, and infra cleanup)
 })
