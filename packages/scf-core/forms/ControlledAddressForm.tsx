@@ -46,6 +46,7 @@ export function ControlledAddressForm<
   provider = "mapbox",
   apiKey,
   zoomLevel = "street",
+  proximity,
   label,
   placeholder = "Search for your address...",
   required = false,
@@ -276,7 +277,7 @@ export function ControlledAddressForm<
       )}
       <AddressForm
         mode={mode}
-        searchOptions={{ zoomLevel }}
+        searchOptions={{ zoomLevel, proximity }}
         placeholder={placeholder}
         disabled={disabled}
         error={error}
