@@ -30,6 +30,12 @@ function parseMapboxFeature(feature: MapboxFeature): AddressResult {
 
   const [lng, lat] = feature.center
 
+  // Mapbox returns region.short_code as "US-MI", "CA-ON", etc. Normalize to state/region code only (e.g. "MI", "ON").
+  const rawRegionCode = region?.short_code ?? ''
+  const stateAbbreviation = rawRegionCode.includes('-')
+    ? rawRegionCode.split('-').slice(-1)[0] ?? rawRegionCode
+    : rawRegionCode
+
   return {
     id: feature.id,
     formattedAddress: feature.place_name,
@@ -38,7 +44,7 @@ function parseMapboxFeature(feature: MapboxFeature): AddressResult {
     streetAddress: [feature.address, feature.text].filter(Boolean).join(' '),
     locality: place?.text ?? '',
     administrativeAreaLevel1: region?.text ?? '',
-    stateAbbreviation: region?.short_code ?? '',
+    stateAbbreviation,
     postalCode: postcode?.text ?? '',
     country: country?.text ?? '',
     countryCode: country?.short_code ?? '',
