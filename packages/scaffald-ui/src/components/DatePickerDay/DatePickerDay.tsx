@@ -64,7 +64,7 @@ export function DatePickerDay({
   const textStyles = getTextStyles(currentState, disabled, isLabel, theme)
 
   const dayContent = (
-    <View style={[containerStyles, style]} pointerEvents="box-none">
+    <View style={[containerStyles, style, { pointerEvents: 'box-none' }]}>
       <Text style={[textStyles, textStyle]}>{displayText}</Text>
       {showIndicator && !disabled && currentState !== 'empty' && (
         <View style={getIndicatorStyles()} />

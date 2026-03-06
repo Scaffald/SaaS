@@ -19,9 +19,9 @@ export function LoadingOverlay({
       style={[
         styles.overlay,
         dimmed && { backgroundColor: `rgba(0,0,0,${dimOpacity})` },
+        { pointerEvents: 'box-none' },
         style,
       ]}
-      pointerEvents="box-none"
     >
       <View style={styles.centered}>
         <Spinner size={spinnerSize} color={spinnerColor} />

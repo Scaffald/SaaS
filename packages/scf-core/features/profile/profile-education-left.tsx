@@ -1,9 +1,9 @@
-import { api } from "@scf/core/utils/api";
 import {
   useEducation,
   useEducationLevel,
   useSaveEducationMutation,
 } from "@scf/core/utils/profile-education-sdk-hooks";
+import { useSearchUniversities } from "@scf/core/utils/office-universities-sdk-hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Button,
@@ -223,43 +223,15 @@ export function ProfileEducationLeft({
     Record<number, boolean>
   >({});
 
-  // University search query (only runs when query is valid). TODO: migrate to SDK
-  const searchUniversitiesQuery = (
-    api as unknown as {
-      office: {
-        universities: {
-          searchUniversities: {
-            useQuery: (
-              input: { query: string; country: string; limit: number },
-              opts?: { enabled?: boolean; placeholderData?: (prev: unknown) => unknown }
-            ) => {
-              data?: { universities?: unknown[] };
-              error?: Error | null;
-              isLoading: boolean;
-              isFetching: boolean;
-              refetch: () => void;
-            }
-          }
-        }
-      }
-    }
-  ).office.universities.searchUniversities.useQuery(
-      {
-        query: searchQuery,
-        country: "United States",
-        limit: 5,
-      },
-      {
-        enabled: searchQuery.length >= 3,
-        placeholderData: (previousData: unknown) => previousData,
-      }
-    ) as {
-      data?: { universities?: unknown[] };
-      error?: Error | null;
-      isLoading: boolean;
-      isFetching: boolean;
-      refetch: () => void;
-    };
+  // University search query (SDK). Only runs when query is valid.
+  const searchUniversitiesQuery = useSearchUniversities(
+    {
+      query: searchQuery,
+      country: "United States",
+      limit: 5,
+    },
+    { enabled: searchQuery.length >= 3 }
+  );
 
   // Handle search input changes
   const handleUniversitySearch = useCallback((query: string) => {
