@@ -38,10 +38,16 @@ export const DrawerLink = ({
 
   const title = useMemo(() => resolveTitle(), [resolveTitle])
 
+  const activeBg = colors.bg[theme].drawerNavActive
+  const activeFg = colors.white
+
   const renderIcon = useCallback(() => {
     if (!Icon) return null
     return (
-      <Icon size="lg" color={active ? colors.icon[theme].active : colors.icon[theme].default} />
+      <Icon
+        size="lg"
+        color={active ? activeFg : colors.icon[theme].default}
+      />
     )
   }, [Icon, active, theme])
 
@@ -50,13 +56,13 @@ export const DrawerLink = ({
       <Row
         align="center"
         justify="center"
-        width={collapsed ? 48 : 32}
-        height={collapsed ? 48 : 32}
-        borderRadius={32}
+        width={collapsed ? 48 : 28}
+        height={collapsed ? 48 : 28}
+        borderRadius={collapsed ? 32 : 0}
         style={{
           backgroundColor: collapsed
             ? active
-              ? colors.bg[theme].selected
+              ? activeBg
               : colors.bg[theme].subtle
             : 'transparent',
         }}
@@ -70,19 +76,20 @@ export const DrawerLink = ({
     }
 
     return (
-      <Row align="center" gap={12}>
+      <Row align="center" gap={12} flex={1}>
         {iconWrapper}
         <Paragraph
           size="md"
           style={{
-            color: active ? colors.info[500] : colors.text[theme].primary,
+            color: active ? activeFg : colors.text[theme].primary,
+            flex: 1,
           }}
         >
           {title}
         </Paragraph>
       </Row>
     )
-  }, [active, collapsed, renderIcon, title, theme])
+  }, [active, activeBg, collapsed, renderIcon, theme, title])
 
   const renderRightSide = useCallback(() => {
     if (collapsed) {
@@ -103,7 +110,7 @@ export const DrawerLink = ({
             <Paragraph
               size="sm"
               style={{
-                color: active ? colors.info[500] : colors.text[theme].primary,
+                color: active ? activeFg : colors.text[theme].primary,
               }}
             >
               {item.badge}
@@ -111,7 +118,7 @@ export const DrawerLink = ({
           </Row>
         )}
         {!item.isExpandable && item.hasChevron && (
-          <ChevronRight size="md" color={colors.icon[theme].subtle} />
+          <ChevronRight size="md" color={active ? activeFg : colors.icon[theme].subtle} />
         )}
       </Row>
     )
@@ -164,9 +171,9 @@ export const DrawerLink = ({
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: active
-              ? colors.info[900]
+              ? activeBg
               : pressed
-                ? colors.info[100]
+                ? colors.bg[theme].muted
                 : 'transparent',
           })}
         >
@@ -183,25 +190,29 @@ export const DrawerLink = ({
           style={({ pressed }: { pressed: boolean }) => ({
             flexDirection: 'row',
             alignItems: 'center',
-            borderRadius: 16,
+            borderRadius: 10,
             columnGap: 12,
-            paddingHorizontal: 12,
-            paddingVertical: 8,
+            paddingHorizontal: 16,
+            paddingVertical: 10,
             paddingLeft: 36,
-            backgroundColor: pressed ? colors.gray[50] : undefined,
+            marginVertical: 2,
+            backgroundColor: active ? activeBg : pressed ? colors.gray[50] : undefined,
             flex: 1,
           })}
         >
           <Paragraph
             size="md"
-            style={{ color: active ? colors.info[900] : colors.gray[900], flex: 1 }}
+            style={{
+              color: active ? activeFg : colors.text[theme].primary,
+              flex: 1,
+            }}
           >
             {title}
           </Paragraph>
           {item.isOnCooldown ? (
-            <Clock size="md" color={colors.info[900]} />
+            <Clock size="md" color={active ? activeFg : colors.info[600]} />
           ) : item.isCompleted ? (
-            <Check size="md" color={colors.success[600]} />
+            <Check size="md" color={active ? activeFg : colors.success[600]} />
           ) : null}
         </Pressable>
       </Link>
@@ -217,12 +228,14 @@ export const DrawerLink = ({
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between',
-              paddingHorizontal: 12,
-              paddingVertical: 8,
-              borderRadius: 16,
-              marginVertical: 4,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+              borderRadius: 10,
+              marginVertical: 2,
+              width: '100%',
+              alignSelf: 'stretch',
               backgroundColor: active
-                ? colors.info[900]
+                ? activeBg
                 : pressed
                   ? colors.gray[200]
                   : 'transparent',
@@ -261,12 +274,14 @@ export const DrawerLink = ({
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between',
-              paddingHorizontal: 12,
-              paddingVertical: 8,
-              borderRadius: 16,
-              marginVertical: 4,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+              borderRadius: 10,
+              marginVertical: 2,
+              width: '100%',
+              alignSelf: 'stretch',
               backgroundColor: active
-                ? colors.info[900]
+                ? activeBg
                 : pressed
                   ? colors.gray[200]
                   : 'transparent',
@@ -305,12 +320,14 @@ export const DrawerLink = ({
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between',
-              paddingHorizontal: 12,
-              paddingVertical: 8,
-              borderRadius: 16,
-              marginVertical: 4,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+              borderRadius: 10,
+              marginVertical: 2,
+              width: '100%',
+              alignSelf: 'stretch',
               backgroundColor: active
-                ? colors.info[900]
+                ? activeBg
                 : pressed
                   ? colors.gray[200]
                   : 'transparent',
@@ -345,12 +362,14 @@ export const DrawerLink = ({
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
-          paddingHorizontal: 12,
+          paddingHorizontal: 16,
           paddingVertical: 12,
-          borderRadius: 8,
-          marginVertical: 4,
+          borderRadius: 10,
+          marginVertical: 2,
+          width: '100%',
+          alignSelf: 'stretch',
           backgroundColor: active
-            ? colors.info[900]
+            ? activeBg
             : pressed
               ? colors.gray[200]
               : 'transparent',

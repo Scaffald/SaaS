@@ -17,6 +17,8 @@ import type { ViewStyle } from 'react-native'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { typographyVariants } from '../../../tokens/typography'
+import { useThemeContext } from '../../../theme'
+import type { ResolvedThemeMode } from '../../../tokens/colors'
 
 export interface Contact {
   id: string
@@ -47,6 +49,8 @@ export function ContactsWidget({
   onContactPress,
   style,
 }: ContactsWidgetProps) {
+  const { theme } = useThemeContext()
+  const styles = getStyles(theme)
   return (
     <View style={[styles.container, style]}>
       <Text style={styles.title}>Contacts</Text>
@@ -86,7 +90,8 @@ export function ContactsWidget({
   )
 }
 
-const styles = StyleSheet.create({
+function getStyles(theme: ResolvedThemeMode) {
+  return StyleSheet.create({
   container: {
     flexDirection: 'column',
     gap: spacing[12],
@@ -95,7 +100,7 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typographyVariants.paragraphMMedium,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   scrollView: {
     flex: 1,
@@ -109,7 +114,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   contactItemPressed: {
-    backgroundColor: colors.gray[100],
+    backgroundColor: colors.bg[theme].subtle,
   },
   avatar: {
     width: 40,
@@ -121,7 +126,7 @@ const styles = StyleSheet.create({
   },
   avatarText: {
     ...typographyVariants.paragraphSMedium,
-    color: colors.text.inverse,
+    color: colors.text[theme].quaternary,
   },
   avatarPlaceholder: {
     width: 40,
@@ -136,16 +141,17 @@ const styles = StyleSheet.create({
   },
   contactName: {
     ...typographyVariants.paragraphSMedium,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   contactEmail: {
     ...typographyVariants.captionRegular,
-    color: colors.text.tertiary,
+    color: colors.text[theme].tertiary,
   },
   emptyText: {
     ...typographyVariants.paragraphSRegular,
-    color: colors.text.tertiary,
+    color: colors.text[theme].tertiary,
     textAlign: 'center',
     paddingVertical: spacing[24],
   },
 })
+}

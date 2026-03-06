@@ -31,8 +31,8 @@ export function getSettingsToggleCardStyles(
         ? colors.gray[700]
         : colors.gray[300]
       : isLight
-        ? colors.border.light['200']
-        : colors.border.dark['200'],
+        ? colors.border.light.default
+        : colors.border.dark.default,
     ...shadows.button,
     ...(disabled && {
       opacity: 0.5,

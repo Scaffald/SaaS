@@ -21,7 +21,9 @@ import { useRouter } from 'expo-router'
 import { useCallback, type ReactNode } from 'react'
 import { Pressable, type PressableStateCallbackType } from 'react-native'
 import type { GestureResponderEvent } from 'react-native'
-import { Text, useWindowDimensions, Row, Stack } from '@scaffald/ui'
+import { Text, useWindowDimensions, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
+import { shadows } from '@scaffald/ui'
 import { DrawerLink } from './DrawerLink'
 import { getDrawerItems } from './config'
 import type { DrawerItemConfig } from './types'
@@ -66,6 +68,7 @@ export const DrawerContent = ({
   onToggleCollapse,
 }: DrawerContentProps) => {
   const { width } = useWindowDimensions()
+  const { theme } = useThemeContext()
   const pathname = normalizePath(usePathname())
   const router = useRouter()
   const { resolvedTheme, set: setTheme } = useThemeSetting()
@@ -156,7 +159,7 @@ export const DrawerContent = ({
   return (
     <Stack
       flex={1}
-      backgroundColor="$color3"
+      style={{ backgroundColor: colors.bg[theme].subtle }}
       paddingHorizontal={isCollapsed ? 8 : 24}
       paddingVertical={20}
       align={isCollapsed ? 'center' : 'stretch'}
@@ -209,16 +212,21 @@ export const DrawerContent = ({
         </Stack>
 
         <Stack
-          style={{ paddingTop: 16, borderTopWidth: 1, borderColor: '#94a3b8', width: '100%' }}
+          style={{
+            paddingTop: 16,
+            borderTopWidth: 1,
+            borderTopColor: colors.border[theme].default,
+            width: '100%',
+          }}
           align={isCollapsed ? 'center' : 'stretch'}
         >
           {isCollapsed ? (
             <Stack gap={12} align="center">
               <FooterActionButton label="Settings" onPress={handleSettingsPress}>
-                <SettingsIcon size={footerIconSize} color="$gray11" />
+                <SettingsIcon size={footerIconSize} color={colors.icon[theme].default} />
               </FooterActionButton>
               <FooterActionButton label={themeToggleLabel} onPress={handleThemeToggle}>
-                <ThemeToggleIcon size={footerIconSize} color="$gray11" />
+                <ThemeToggleIcon size={footerIconSize} color={colors.icon[theme].default} />
               </FooterActionButton>
               {canCollapse && onToggleCollapse ? (
                 <FooterActionButton
@@ -226,9 +234,9 @@ export const DrawerContent = ({
                   onPress={onToggleCollapse}
                 >
                   {isCollapsed ? (
-                    <PanelRightClose size={footerIconSize} color="$gray11" />
+                    <PanelRightClose size={footerIconSize} color={colors.icon[theme].default} />
                   ) : (
-                    <PanelLeftClose size={footerIconSize} color="$gray11" />
+                    <PanelLeftClose size={footerIconSize} color={colors.icon[theme].default} />
                   )}
                 </FooterActionButton>
               ) : null}
@@ -242,10 +250,10 @@ export const DrawerContent = ({
               paddingHorizontal={12}
             >
               <FooterActionButton label="Settings" onPress={handleSettingsPress}>
-                <SettingsIcon size={footerIconSize} color="$gray11" />
+                <SettingsIcon size={footerIconSize} color={colors.icon[theme].default} />
               </FooterActionButton>
               <FooterActionButton label={themeToggleLabel} onPress={handleThemeToggle}>
-                <ThemeToggleIcon size={footerIconSize} color="$gray11" />
+                <ThemeToggleIcon size={footerIconSize} color={colors.icon[theme].default} />
               </FooterActionButton>
               {canCollapse && onToggleCollapse ? (
                 <FooterActionButton
@@ -253,9 +261,9 @@ export const DrawerContent = ({
                   onPress={onToggleCollapse}
                 >
                   {isCollapsed ? (
-                    <PanelRightClose size={footerIconSize} color="$gray11" />
+                    <PanelRightClose size={footerIconSize} color={colors.icon[theme].default} />
                   ) : (
-                    <PanelLeftClose size={footerIconSize} color="$gray11" />
+                    <PanelLeftClose size={footerIconSize} color={colors.icon[theme].default} />
                   )}
                 </FooterActionButton>
               ) : null}
@@ -282,17 +290,21 @@ const DrawerProfileCard = ({
   onProfilePress,
   onLogoutPress,
 }: DrawerProfileCardProps) => {
+  const { theme } = useThemeContext()
   const avatarSize = 40
 
   return (
     <Row
       width="100%"
-      borderWidth={1}
-      borderColor="$color4"
       padding="sm"
       gap={12}
       align="center"
       borderRadius={16}
+      style={{
+        backgroundColor: colors.bg[theme].muted,
+        borderWidth: 0,
+        ...shadows.soft,
+      }}
     >
       {avatarUri ? (
         <Stack
@@ -300,9 +312,7 @@ const DrawerProfileCard = ({
             width: avatarSize,
             height: avatarSize,
             overflow: 'hidden',
-            borderWidth: 1,
-            borderColor: '#e2e8f0',
-            backgroundColor: '#f1f5f9',
+            backgroundColor: colors.gray[100],
             borderRadius: avatarSize / 2,
             alignItems: 'center',
             justifyContent: 'center',
@@ -314,19 +324,21 @@ const DrawerProfileCard = ({
         <Stack
           width={avatarSize}
           height={avatarSize}
-          backgroundColor="$blue10"
           align="center"
           justify="center"
-          borderWidth={1}
-          borderColor="$borderColor"
-          style={{ borderRadius: avatarSize / 2 }}
+          style={{
+            backgroundColor: colors.primary[500],
+            borderWidth: 1,
+            borderColor: colors.border[theme].default,
+            borderRadius: avatarSize / 2,
+          }}
         >
-          <Text color="$gray11">{fallbackInitial}</Text>
+          <Text style={{ color: colors.text[theme].quaternary }}>{fallbackInitial}</Text>
         </Stack>
       )}
 
       <Stack flex={1} gap={8}>
-        <Text color="$gray11">{displayName}</Text>
+        <Text style={{ color: colors.text[theme].primary }}>{displayName}</Text>
         <Row gap={16}>
           <Pressable onPress={onProfilePress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
             <Text color="primary" style={{ textDecorationLine: 'underline' }}>

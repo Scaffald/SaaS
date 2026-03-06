@@ -19,6 +19,8 @@ import { CreditCardWidget } from './CreditCardWidget'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { typographyVariants } from '../../../tokens/typography'
+import { useThemeContext } from '../../../theme'
+import type { ResolvedThemeMode } from '../../../tokens/colors'
 
 export interface VirtualCard {
   id: string
@@ -50,6 +52,8 @@ export function VirtualCardsWidget({
   onCreateCard,
   style,
 }: VirtualCardsWidgetProps) {
+  const { theme } = useThemeContext()
+  const styles = getStyles(theme)
   return (
     <View style={[styles.container, style]}>
       <Text style={styles.title}>Virtual Cards</Text>
@@ -75,7 +79,8 @@ export function VirtualCardsWidget({
   )
 }
 
-const styles = StyleSheet.create({
+function getStyles(theme: ResolvedThemeMode) {
+  return StyleSheet.create({
   container: {
     flexDirection: 'column',
     gap: spacing[16],
@@ -84,7 +89,7 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typographyVariants.paragraphMMedium,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   cardsList: {
     flexDirection: 'column',
@@ -92,10 +97,10 @@ const styles = StyleSheet.create({
   },
   createButton: {
     padding: spacing[16],
-    backgroundColor: colors.gray[100],
+    backgroundColor: colors.bg[theme].subtle,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.border.light.default,
+    borderColor: colors.border[theme].default,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 152,
@@ -105,3 +110,4 @@ const styles = StyleSheet.create({
     color: colors.primary[500],
   },
 })
+}

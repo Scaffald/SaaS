@@ -18,34 +18,64 @@ body {
   font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-/* Sonner Toast Styling - Beyond UI Compliance */
+/* Theme CSS variables - aligned with scaffald-ui semantic tokens */
+:root,
+[data-theme='light'] {
+  --color-background: #ffffff;
+  --color-background-secondary: #f9f8f6;
+  --color-text-primary: #16110d;
+  --color-text-secondary: #3c352c;
+  --color-text-tertiary: #6e6760;
+  --color-border: #e3dfd9;
+}
+
+[data-theme='dark'] {
+  --color-background: #16110d;
+  --color-background-secondary: #1e1914;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #e3dfd9;
+  --color-text-tertiary: #9e9790;
+  --color-border: #6e6760;
+}
+
+[data-theme='earth'] {
+  /* Earth variant: reuse light palette for UI package; override here if needed */
+  --color-background: #ffffff;
+  --color-background-secondary: #fbf8f3;
+  --color-text-primary: #16110d;
+  --color-text-secondary: #3c352c;
+  --color-text-tertiary: #6e6760;
+  --color-border: #e3dfd9;
+}
+
+/* Sonner Toast Styling - theme-aware via CSS variables */
 /* Style sonner toasts to match beyond-ui design tokens */
-/* Using beyond-ui design tokens: white background, 12px border radius, medium shadow, Roboto font */
+/* Style sonner toasts to match design tokens; colors respond to data-theme */
 .beyond-ui-toast {
-  background: #ffffff !important;
-  border: 1px solid #e4e7ec !important; /* gray[200] */
-  border-radius: 12px !important; /* borderRadius.l */
-  box-shadow: 0 4px 6px -1px rgba(20, 28, 37, 0.078) !important; /* boxShadows.m */
-  padding: 16px !important; /* spacing[16] */
+  background: var(--color-background) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 6px -1px rgba(20, 28, 37, 0.078) !important;
+  padding: 16px !important;
   font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-  color: #1a232d !important; /* gray[800] - primary text */
+  color: var(--color-text-primary) !important;
 }
 
 .beyond-ui-toast-description {
-  color: #637083 !important; /* gray[500] - secondary text */
+  color: var(--color-text-secondary) !important;
   font-size: 14px !important;
   line-height: 1.5 !important;
   margin-top: 4px !important;
 }
 
-/* Success toast specific styling - using beyond-ui success colors */
+/* Success toast - semantic colors (same in light/dark) */
 [data-sonner-toast][data-type="success"] {
-  background: #ffffff !important;
-  border-color: #a7f3d0 !important; /* success[200] */
+  background: var(--color-background) !important;
+  border-color: #a7f3d0 !important;
 }
 
 [data-sonner-toast][data-type="success"] [data-icon] {
-  background-color: #065f46 !important; /* success[800] */
+  background-color: #065f46 !important;
   color: white !important;
   border-radius: 50% !important;
   width: 24px !important;
@@ -55,14 +85,14 @@ body {
   justify-content: center !important;
 }
 
-/* Error toast styling - using beyond-ui error colors */
+/* Error toast */
 [data-sonner-toast][data-type="error"] {
-  background: #ffffff !important;
-  border-color: #fca5a5 !important; /* red[300] */
+  background: var(--color-background) !important;
+  border-color: #fca5a5 !important;
 }
 
 [data-sonner-toast][data-type="error"] [data-icon] {
-  background-color: #991b1b !important; /* red[800] */
+  background-color: #991b1b !important;
   color: white !important;
   border-radius: 50% !important;
   width: 24px !important;
@@ -72,14 +102,14 @@ body {
   justify-content: center !important;
 }
 
-/* Warning toast styling - using beyond-ui warning colors */
+/* Warning toast */
 [data-sonner-toast][data-type="warning"] {
-  background: #ffffff !important;
-  border-color: #fde047 !important; /* yellow[300] */
+  background: var(--color-background) !important;
+  border-color: #fde047 !important;
 }
 
 [data-sonner-toast][data-type="warning"] [data-icon] {
-  background-color: #713f12 !important; /* yellow[900] */
+  background-color: #713f12 !important;
   color: white !important;
   border-radius: 50% !important;
   width: 24px !important;
@@ -89,10 +119,10 @@ body {
   justify-content: center !important;
 }
 
-/* Info toast styling - using beyond-ui info/blue colors */
+/* Info toast */
 [data-sonner-toast][data-type="info"] {
-  background: #ffffff !important;
-  border-color: #93c5fd !important; /* blue[300] */
+  background: var(--color-background) !important;
+  border-color: #93c5fd !important;
 }
 
 [data-sonner-toast][data-type="info"] [data-icon] {

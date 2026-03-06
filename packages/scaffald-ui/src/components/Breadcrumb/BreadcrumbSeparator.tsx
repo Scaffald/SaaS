@@ -25,7 +25,7 @@ export function BreadcrumbSeparator({ separator, style }: BreadcrumbSeparatorPro
   const isLight = theme === 'light'
 
   // Get separator color based on theme
-  const separatorColor = isLight ? colors.gray[300] : colors.border.dark['200']
+const separatorColor = isLight ? colors.gray[300] : colors.border.dark.default
 
   // If custom separator provided, render it
   if (separator) {

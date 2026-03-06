@@ -2,14 +2,15 @@ import { useThemeSetting } from '@scf/core/provider/theme/UniversalThemeProvider
 import { supabase } from '@scf/core/utils/supabase/client'
 import { LogOut, Moon, Sun } from 'lucide-react-native'
 import type { GestureResponderEvent } from 'react-native'
-import { Button, Row } from '@scaffald/ui'
+import { Button, Row, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 /**
  * DrawerFooter component renders fixed action buttons at the bottom of the drawer
  * Includes theme toggle button and logout button
  */
 export const DrawerFooter = () => {
-  // Using supabase directly from import
+  const { theme } = useThemeContext()
   const { resolvedTheme, toggle } = useThemeSetting()
 
   const handleLogout = async (event?: GestureResponderEvent) => {
@@ -27,6 +28,7 @@ export const DrawerFooter = () => {
   }
 
   const isDark = resolvedTheme === 'dark'
+  const iconColor = colors.fg[theme].active
 
   return (
     <Row
@@ -34,7 +36,7 @@ export const DrawerFooter = () => {
         paddingHorizontal: 16,
         paddingVertical: 12,
         borderTopWidth: 1,
-        borderTopColor: '#e2e8f0',
+        borderTopColor: colors.border[theme].default,
         justifyContent: 'space-between',
         alignItems: 'center',
       }}
@@ -47,7 +49,7 @@ export const DrawerFooter = () => {
         onPress={handleThemeToggle}
         aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
       >
-        {isDark ? <Sun size={20} color="#3b82f6" /> : <Moon size={20} color="#3b82f6" />}
+        {isDark ? <Sun size={20} color={iconColor} /> : <Moon size={20} color={iconColor} />}
       </Button>
 
       {/* Logout Button */}
@@ -58,7 +60,7 @@ export const DrawerFooter = () => {
         onPress={handleLogout}
         aria-label="Sign out"
       >
-        <LogOut size={20} color="#3b82f6" />
+        <LogOut size={20} color={iconColor} />
       </Button>
     </Row>
   )

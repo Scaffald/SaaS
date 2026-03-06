@@ -17,6 +17,8 @@ import type { ViewStyle } from 'react-native'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { typographyVariants } from '../../../tokens/typography'
+import { useThemeContext } from '../../../theme'
+import type { ResolvedThemeMode } from '../../../tokens/colors'
 
 export interface Transaction {
   id: string
@@ -39,6 +41,8 @@ export interface TransactionsWidgetProps {
 }
 
 export function TransactionsWidget({ transactions = [], style }: TransactionsWidgetProps) {
+  const { theme } = useThemeContext()
+  const styles = getStyles(theme)
   return (
     <View style={[styles.container, style]}>
       <Text style={styles.title}>Recent Transactions</Text>
@@ -72,7 +76,8 @@ export function TransactionsWidget({ transactions = [], style }: TransactionsWid
   )
 }
 
-const styles = StyleSheet.create({
+function getStyles(theme: ResolvedThemeMode) {
+  return StyleSheet.create({
   container: {
     flexDirection: 'column',
     gap: spacing[12],
@@ -81,7 +86,7 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typographyVariants.paragraphMMedium,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   scrollView: {
     flex: 1,
@@ -92,7 +97,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacing[12],
     borderBottomWidth: 1,
-    borderBottomColor: colors.border.light.default,
+    borderBottomColor: colors.border[theme].default,
   },
   transactionInfo: {
     flexDirection: 'column',
@@ -101,15 +106,15 @@ const styles = StyleSheet.create({
   },
   transactionDescription: {
     ...typographyVariants.paragraphSMedium,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   transactionCategory: {
     ...typographyVariants.captionRegular,
-    color: colors.text.tertiary,
+    color: colors.text[theme].tertiary,
   },
   transactionDate: {
     ...typographyVariants.captionRegular,
-    color: colors.text.tertiary,
+    color: colors.text[theme].tertiary,
   },
   transactionAmount: {
     ...typographyVariants.paragraphSMedium,
@@ -118,12 +123,13 @@ const styles = StyleSheet.create({
     color: colors.success[500],
   },
   amountNegative: {
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   emptyText: {
     ...typographyVariants.paragraphSRegular,
-    color: colors.text.tertiary,
+    color: colors.text[theme].tertiary,
     textAlign: 'center',
     paddingVertical: spacing[24],
   },
 })
+}

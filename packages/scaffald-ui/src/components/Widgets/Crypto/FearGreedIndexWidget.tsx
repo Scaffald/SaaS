@@ -17,12 +17,16 @@ import { CircleChart } from '../Charts'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { typographyVariants } from '../../../tokens/typography'
+import { useThemeContext } from '../../../theme'
+import type { ResolvedThemeMode } from '../../../tokens/colors'
 
 export function FearGreedIndexWidget({
   value,
   label,
   style,
 }: FearGreedIndexWidgetProps) {
+  const { theme } = useThemeContext()
+  const styles = getStyles(theme)
   const clampedValue = Math.max(0, Math.min(100, value))
 
   // Determine color based on value
@@ -52,15 +56,16 @@ export function FearGreedIndexWidget({
   )
 }
 
-const styles = StyleSheet.create({
+function getStyles(theme: ResolvedThemeMode) {
+  return StyleSheet.create({
   container: {
     flexDirection: 'column',
     gap: spacing[16],
     padding: spacing[16],
-    backgroundColor: colors.bg.light.default,
+    backgroundColor: colors.bg[theme].default,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.border.light.default,
+    borderColor: colors.border[theme].default,
     width: 367,
     minHeight: 232,
     alignItems: 'center',
@@ -73,11 +78,11 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typographyVariants.paragraphMMedium,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   indexLabel: {
     ...typographyVariants.paragraphSMedium,
-    color: colors.text.secondary,
+    color: colors.text[theme].secondary,
   },
   chartSection: {
     alignItems: 'center',
@@ -87,6 +92,7 @@ const styles = StyleSheet.create({
   value: {
     position: 'absolute',
     ...typographyVariants.h5SemiBold,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
 })
+}

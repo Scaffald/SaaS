@@ -29,6 +29,8 @@ import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { fontSize, fontWeight, lineHeight, letterSpacing } from '../../../tokens/typography'
 import { borderRadius } from '../../../tokens/borders'
+import { useThemeContext } from '../../../theme'
+import type { ResolvedThemeMode } from '../../../tokens/colors'
 
 export function BalanceWidget({
   variant = 'Balance 01',
@@ -41,6 +43,8 @@ export function BalanceWidget({
   chartData,
   style,
 }: BalanceWidgetProps) {
+  const { theme } = useThemeContext()
+  const styles = getStyles(theme)
   const showChart = variant === 'Balance 01' && chartData && chartData.length > 0
 
   // Parse amount to extract currency symbol and value
@@ -138,7 +142,7 @@ export function BalanceWidget({
                         height={barActualHeight}
                         fill={isActive ? `url(#barGradient-${index})` : colors.gray[200]}
                         rx={borderRadius.xxs}
-                        stroke={colors.bg.light.default}
+                        stroke={colors.bg[theme].default}
                         strokeWidth={1}
                       />
                     </Svg>
@@ -161,7 +165,8 @@ export function BalanceWidget({
   )
 }
 
-const styles = StyleSheet.create({
+function getStyles(theme: ResolvedThemeMode) {
+  return StyleSheet.create({
   container: {
     flexDirection: 'column',
     gap: spacing[12],
@@ -173,7 +178,7 @@ const styles = StyleSheet.create({
     fontWeight: fontWeight.medium, // 500
     lineHeight: lineHeight.md, // 24
     letterSpacing: letterSpacing.normal, // 0
-    color: colors.text.primary, // #141c25
+    color: colors.text[theme].primary, // #141c25
     textAlign: 'right',
   },
   contentSection: {
@@ -208,7 +213,7 @@ const styles = StyleSheet.create({
     fontWeight: fontWeight.semibold, // 600
     lineHeight: lineHeight.h6, // 32
     letterSpacing: -0.24, // tracking -0.24px
-    color: colors.text.primary, // #141c25
+    color: colors.text[theme].primary, // #141c25
   },
   changeContainer: {
     flexDirection: 'row',
@@ -236,7 +241,7 @@ const styles = StyleSheet.create({
     fontWeight: fontWeight.regular, // 400
     lineHeight: lineHeight.xs, // 16
     letterSpacing: letterSpacing.normal,
-    color: colors.text.secondary, // #344051
+    color: colors.text[theme].secondary, // #344051
   },
   chartContainer: {
     flexDirection: 'row',
@@ -263,9 +268,10 @@ const styles = StyleSheet.create({
     letterSpacing: letterSpacing.normal,
   },
   barLabelActive: {
-    color: colors.text.secondary, // #344051
+    color: colors.text[theme].secondary, // #344051
   },
   barLabelInactive: {
-    color: colors.text.disabled, // #97a1af
+    color: colors.text[theme].disabled, // #97a1af
   },
 })
+}

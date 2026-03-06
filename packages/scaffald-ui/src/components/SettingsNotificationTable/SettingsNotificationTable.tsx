@@ -50,7 +50,7 @@ export function SettingsNotificationTable({
 
   const headerBg = isLight ? colors.gray[50] : colors.gray[800]
   const cellBg = isLight ? colors.bg.light.default : colors.bg.dark.default
-  const borderColor = isLight ? colors.border.light['200'] : colors.border.dark['200']
+  const borderColor = isLight ? colors.border.light.default : colors.border.dark.default
   const textPrimary = isLight ? colors.text.light.primary : colors.text.dark.primary
   const textSecondary = isLight ? colors.text.light.secondary : colors.text.dark.secondary
 

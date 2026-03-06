@@ -13,9 +13,9 @@ import { BeyondUIProvider } from './providers/BeyondUIProvider';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BeyondUIProvider initialTheme="light">
-      <BrowserRouter>
-        <ThemeProvider>
+    <ThemeProvider>
+      <BeyondUIProvider>
+        <BrowserRouter>
           <AuthProvider>
             <TRPCProvider>
               <LexiconProvider>
@@ -27,8 +27,8 @@ createRoot(document.getElementById('root')!).render(
               </LexiconProvider>
             </TRPCProvider>
           </AuthProvider>
-        </ThemeProvider>
-      </BrowserRouter>
-    </BeyondUIProvider>
+        </BrowserRouter>
+      </BeyondUIProvider>
+    </ThemeProvider>
   </StrictMode>
 );
