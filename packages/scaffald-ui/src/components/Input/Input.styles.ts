@@ -22,6 +22,7 @@ export function getInputStyles(
   hasExternalAddon: boolean,
   theme: ThemeMode = 'light'
 ): InputStyleConfig {
+  const resolvedTheme = theme === 'system' ? 'light' : theme
   const isError = state === 'error'
   const isFocused = state === 'focused'
   const isFilled = state === 'filled'
@@ -38,6 +39,9 @@ export function getInputStyles(
   }
 
   // Base input container styles
+  // Dark mode: use bg.dark.subtle (#1e1914), one shade darker than card (bg.dark.muted #2f2820),
+  // so inputs read as inset. Social/outline buttons use the same token for consistent treatment.
+  const inputDefaultBg = resolvedTheme === 'dark' ? colors.bg.dark.subtle : colors.bg.light.default
   const baseInputContainer: ViewStyle = {
     flexDirection: 'row',
     alignItems: 'center',
@@ -45,7 +49,7 @@ export function getInputStyles(
     paddingHorizontal: spacing[12],
     paddingVertical: spacing[8],
     borderRadius: borderRadius.m,
-    backgroundColor: colors.bg[theme].default,
+    backgroundColor: inputDefaultBg,
     borderWidth: 1,
     gap: spacing[8],
   }
@@ -54,7 +58,7 @@ export function getInputStyles(
   const baseInputText: TextStyle = {
     ...typography.body,
     flex: 1,
-    color: colors.text[theme].primary,
+    color: colors.text[resolvedTheme].primary,
     padding: 0, // Remove default padding
     margin: 0,
     letterSpacing: 0, // Convert string to number for React Native
@@ -67,31 +71,31 @@ export function getInputStyles(
     fontWeight: typography.bodyMedium.fontWeight,
     lineHeight: typography.small.lineHeight,
     letterSpacing: 0,
-    color: colors.text[theme].primary,
+    color: colors.text[resolvedTheme].primary,
   }
 
   // Base helper text styles
   const baseHelperText: TextStyle = {
     ...typography.small,
     letterSpacing: 0, // Convert string to number for React Native
-    color: colors.text[theme].tertiary,
+    color: colors.text[resolvedTheme].tertiary,
   }
 
   // Get state-specific styles
-  let borderColor: string = colors.border[theme].default // border-200
-  let backgroundColor: string = colors.bg[theme].default
-  let iconColor: string = colors.icon[theme].muted // icon-500
-  let textColor: string = colors.text[theme].primary
+  let borderColor: string = colors.border[resolvedTheme].default // border-200
+  let backgroundColor: string = inputDefaultBg
+  let iconColor: string = colors.icon[resolvedTheme].muted // icon-500
+  let textColor: string = colors.text[resolvedTheme].primary
   let shadowStyle: ViewStyle = {}
-  const externalAddonBg: string = colors.bg[theme].subtle // bg-50
+  const externalAddonBg: string = colors.bg[resolvedTheme].subtle // bg-50
 
   if (disabled) {
-    borderColor = colors.border[theme].disabled
-    backgroundColor = colors.bg[theme].disabled
-    iconColor = colors.icon[theme].disabled
-    textColor = colors.text[theme].disabled
+    borderColor = colors.border[resolvedTheme].disabled
+    backgroundColor = colors.bg[resolvedTheme].disabled
+    iconColor = colors.icon[resolvedTheme].disabled
+    textColor = colors.text[resolvedTheme].disabled
   } else if (isError) {
-    borderColor = colors.border[theme].error
+    borderColor = colors.border[resolvedTheme].error
     iconColor = colors.error[500]
   } else if (isFocused) {
     borderColor = colors.primary[600] // Focus border color
@@ -100,7 +104,7 @@ export function getInputStyles(
     borderColor = colors.gray[300] // border-200_hover (ced2da)
   } else if (isFilled) {
     // Filled state - same as default but indicates content
-    borderColor = colors.border[theme].default
+    borderColor = colors.border[resolvedTheme].default
   }
 
   // Apply shadow only for default/classic type (button-shadow)
@@ -156,7 +160,7 @@ export function getInputStyles(
     ? {
         ...typography.body,
         letterSpacing: 0,
-        color: colors.text[theme].tertiary,
+        color: colors.text[resolvedTheme].tertiary,
       }
     : undefined
 
@@ -167,7 +171,7 @@ export function getInputStyles(
     label: baseLabel,
     helperText: {
       ...baseHelperText,
-      color: isError ? colors.error[500] : colors.text.light.tertiary,
+      color: isError ? colors.error[500] : colors.text[resolvedTheme].tertiary,
     },
     iconColor,
     externalAddonContainer,

@@ -21,6 +21,8 @@ import { LinearChart } from '../Charts'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { typographyVariants } from '../../../tokens/typography'
+import { useThemeContext } from '../../../theme'
+import type { ResolvedThemeMode } from '../../../tokens/colors'
 
 export function CryptoSinglePriceWidget({
   symbol,
@@ -31,6 +33,8 @@ export function CryptoSinglePriceWidget({
   chartData,
   style,
 }: CryptoSinglePriceWidgetProps) {
+  const { theme } = useThemeContext()
+  const styles = getStyles(theme)
   const priceValue = typeof price === 'number' ? `$${price.toLocaleString()}` : price
 
   return (
@@ -67,15 +71,16 @@ export function CryptoSinglePriceWidget({
   )
 }
 
-const styles = StyleSheet.create({
+function getStyles(theme: ResolvedThemeMode) {
+  return StyleSheet.create({
   container: {
     flexDirection: 'column',
     gap: spacing[16],
     padding: spacing[24],
-    backgroundColor: colors.bg.light.default,
+    backgroundColor: colors.bg[theme].default,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.border.light.default,
+    borderColor: colors.border[theme].default,
     width: 593,
     minHeight: 375,
   },
@@ -90,11 +95,11 @@ const styles = StyleSheet.create({
   },
   symbol: {
     ...typographyVariants.paragraphMMedium,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   name: {
     ...typographyVariants.captionRegular,
-    color: colors.text.tertiary,
+    color: colors.text[theme].tertiary,
   },
   change: {
     ...typographyVariants.paragraphSMedium,
@@ -107,9 +112,10 @@ const styles = StyleSheet.create({
   },
   price: {
     ...typographyVariants.h4SemiBold,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   chartSection: {
     width: '100%',
   },
 })
+}

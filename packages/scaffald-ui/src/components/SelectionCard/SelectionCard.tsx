@@ -131,7 +131,7 @@ export function SelectionCard({
       })
     } else {
       baseStyles.push({
-        borderColor: isLight ? colors.border.light['200'] : colors.border.dark['200'],
+        borderColor: isLight ? colors.border.light.default : colors.border.dark.default,
         borderWidth: 1,
       })
     }
@@ -268,7 +268,7 @@ export function SelectionCard({
             styles.expandedContent,
             {
               backgroundColor: isLight ? colors.bg.light.default : colors.bg.dark.default,
-              borderColor: isLight ? colors.border.light['200'] : colors.border.dark['200'],
+              borderColor: isLight ? colors.border.light.default : colors.border.dark.default,
             },
           ]}
         >

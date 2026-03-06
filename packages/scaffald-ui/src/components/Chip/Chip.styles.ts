@@ -16,7 +16,6 @@ export const staticStyles = StyleSheet.create({
     borderWidth: 1,
   },
   focusRing: {
-    shadowColor: colors.icon.light['300'],
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
     shadowRadius: 0,
@@ -94,6 +93,7 @@ export function getChipStyles(
 ): ViewStyle[] {
   const sizeConfig = sizeConfigs[size]
   const isLight = theme === 'light'
+  const resolvedTheme = theme === 'system' ? 'light' : theme
   const baseStyles: ViewStyle[] = [
     staticStyles.chip,
     {
@@ -105,6 +105,7 @@ export function getChipStyles(
   ]
 
   // Background and border based on state
+  const borderDefault = isLight ? colors.border.light.default : colors.border.dark.default
   if (isLight) {
     if (selected) {
       baseStyles.push({
@@ -115,13 +116,13 @@ export function getChipStyles(
     } else if (isHovered && !disabled) {
       baseStyles.push({
         backgroundColor: colors.bg.light.subtle,
-        borderColor: colors.border.light['200'],
+        borderColor: borderDefault,
         borderWidth: 1,
       })
     } else {
       baseStyles.push({
         backgroundColor: colors.bg.light.default,
-        borderColor: colors.border.light['200'],
+        borderColor: borderDefault,
         borderWidth: 1,
       })
     }
@@ -135,13 +136,13 @@ export function getChipStyles(
     } else if (isHovered && !disabled) {
       baseStyles.push({
         backgroundColor: colors.bg.dark.subtle,
-        borderColor: colors.border.dark['200'],
+        borderColor: borderDefault,
         borderWidth: 1,
       })
     } else {
       baseStyles.push({
         backgroundColor: colors.bg.dark.default,
-        borderColor: colors.border.dark['200'],
+        borderColor: borderDefault,
         borderWidth: 1,
       })
     }
@@ -149,7 +150,10 @@ export function getChipStyles(
 
   // Focus state
   if (isFocused && !disabled) {
-    baseStyles.push(staticStyles.focusRing)
+    baseStyles.push({
+      ...staticStyles.focusRing,
+      shadowColor: colors.icon[resolvedTheme].muted,
+    })
   }
 
   // Disabled state

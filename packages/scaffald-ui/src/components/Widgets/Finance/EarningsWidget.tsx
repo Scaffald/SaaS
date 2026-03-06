@@ -20,6 +20,8 @@ import { DonutChart } from '../Charts'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { typographyVariants } from '../../../tokens/typography'
+import { useThemeContext } from '../../../theme'
+import type { ResolvedThemeMode } from '../../../tokens/colors'
 
 export interface EarningsDataItem {
   label: string
@@ -49,6 +51,8 @@ export function EarningsWidget({
   earningsData = [],
   style,
 }: EarningsWidgetProps) {
+  const { theme } = useThemeContext()
+  const styles = getStyles(theme)
   const earningsValue =
     totalEarnings !== undefined
       ? typeof totalEarnings === 'number'
@@ -92,7 +96,8 @@ export function EarningsWidget({
   )
 }
 
-const styles = StyleSheet.create({
+function getStyles(theme: ResolvedThemeMode) {
+  return StyleSheet.create({
   container: {
     flexDirection: 'column',
     gap: spacing[16],
@@ -105,11 +110,11 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typographyVariants.paragraphMMedium,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   earnings: {
     ...typographyVariants.h5SemiBold,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   chartSection: {
     flexDirection: 'row',
@@ -133,11 +138,12 @@ const styles = StyleSheet.create({
   },
   legendLabel: {
     ...typographyVariants.paragraphSRegular,
-    color: colors.text.secondary,
+    color: colors.text[theme].secondary,
     flex: 1,
   },
   legendValue: {
     ...typographyVariants.paragraphSMedium,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
 })
+}

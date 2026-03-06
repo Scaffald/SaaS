@@ -8,19 +8,51 @@ Learn how to customize Scaffald UI to match your brand and design system.
 
 ## Theme Provider
 
-Wrap your app with the `ThemeProvider` to enable theming:
+Wrap your app with the `ThemeProvider` to enable theming. You can use it in **uncontrolled** mode (provider owns state and persistence) or **controlled** mode (your app owns state and passes `theme` + `onThemeChange`).
+
+### Uncontrolled (default)
 
 ```tsx
 import { ThemeProvider } from '@scaffald/ui';
 
 export default function App() {
   return (
-    <ThemeProvider initialTheme="light">
+    <ThemeProvider initialTheme="system">
       {/* Your app content */}
     </ThemeProvider>
   );
 }
 ```
+
+- `initialTheme` can be `'light' | 'dark' | 'system'`. Default is `'system'`.
+- Theme is persisted (localStorage on web, AsyncStorage on native) under the key `beyond-ui-theme`.
+- System appearance changes are respected when preference is `'system'`.
+
+### Controlled mode (single source of truth)
+
+When your app already has its own theme context, pass the current resolved theme and a change handler so the UI package follows your app's theme:
+
+```tsx
+import { ThemeProvider } from '@scaffald/ui';
+
+function AppWithOwnTheme() {
+  const { theme, setTheme } = useMyAppTheme();
+  const resolved = theme === 'earth' ? 'light' : theme;
+
+  return (
+    <ThemeProvider
+      theme={resolved}
+      onThemeChange={(pref) => setTheme(pref === 'system' ? getSystemTheme() : pref)}
+    >
+      {/* Your app content */}
+    </ThemeProvider>
+  );
+}
+```
+
+- Use **one theme source per app**. Either the app drives theme (controlled) or `ThemeProvider` drives it (uncontrolled).
+- **forsured-web:** App `ThemeProvider` is the source; `BeyondUIProvider` uses controlled `ThemeProvider` (earth maps to light for UI).
+- **scaffald app:** `UniversalThemeProvider` (scf-core) is the source; a bridge uses `useThemeSetting()` and renders `ThemeProvider` with `theme` and `onThemeChange`.
 
 ## Using the Theme
 

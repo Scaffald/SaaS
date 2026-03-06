@@ -23,6 +23,8 @@ import { MiniLinearChart } from '../../Chart'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { fontSize, fontWeight, lineHeight, letterSpacing } from '../../../tokens/typography'
+import { useThemeContext } from '../../../theme'
+import type { ResolvedThemeMode } from '../../../tokens/colors'
 
 export function MetricWidget({
   type = 'Chart 01',
@@ -35,6 +37,8 @@ export function MetricWidget({
   chartType = 'linear',
   style,
 }: MetricWidgetProps) {
+  const { theme } = useThemeContext()
+  const styles = getStyles(theme)
   // Determine if chart should be shown
   const showChart = type.startsWith('Chart') && chartData && chartData.length > 0
   const isBlank = type.startsWith('Blank')
@@ -108,7 +112,8 @@ export function MetricWidget({
   )
 }
 
-const styles = StyleSheet.create({
+function getStyles(theme: ResolvedThemeMode) {
+  return StyleSheet.create({
   container: {
     flexDirection: 'column',
     gap: spacing[12],
@@ -123,7 +128,7 @@ const styles = StyleSheet.create({
     fontWeight: fontWeight.medium, // 500
     lineHeight: lineHeight.md, // 24
     letterSpacing: letterSpacing.normal, // 0
-    color: colors.text.primary, // #141c25
+    color: colors.text[theme].primary, // #141c25
     textAlign: 'right',
   },
   valueSection: {
@@ -149,7 +154,7 @@ const styles = StyleSheet.create({
     fontWeight: fontWeight.semibold, // 600
     lineHeight: lineHeight.lg, // 28
     letterSpacing: letterSpacing.normal, // 0
-    color: colors.text.primary, // #141c25
+    color: colors.text[theme].primary, // #141c25
   },
   changeContainer: {
     flexDirection: 'row',
@@ -171,10 +176,11 @@ const styles = StyleSheet.create({
     fontWeight: fontWeight.regular, // 400
     lineHeight: lineHeight.xs, // 16
     letterSpacing: letterSpacing.normal, // 0
-    color: colors.text.tertiary, // #637083
+    color: colors.text[theme].tertiary, // #637083
   },
   chartContainer: {
     width: 112,
     height: 59,
   },
 })
+}

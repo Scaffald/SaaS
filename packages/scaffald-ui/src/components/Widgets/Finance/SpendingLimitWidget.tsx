@@ -18,6 +18,8 @@ import type { SpendingLimitWidgetProps } from './FinanceWidget.types'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { typographyVariants } from '../../../tokens/typography'
+import { useThemeContext } from '../../../theme'
+import type { ResolvedThemeMode } from '../../../tokens/colors'
 
 export function SpendingLimitWidget({
   variant = 'Spending Limit 01',
@@ -26,6 +28,8 @@ export function SpendingLimitWidget({
   remaining,
   style,
 }: SpendingLimitWidgetProps) {
+  const { theme } = useThemeContext()
+  const styles = getStyles(theme)
   const limitValue = typeof limit === 'number' ? `$${limit.toLocaleString()}` : limit
   const usedValue = typeof used === 'number' ? `$${used.toLocaleString()}` : used
   const remainingValue =
@@ -60,7 +64,8 @@ export function SpendingLimitWidget({
   )
 }
 
-const styles = StyleSheet.create({
+function getStyles(theme: ResolvedThemeMode) {
+  return StyleSheet.create({
   container: {
     flexDirection: 'column',
     gap: spacing[12],
@@ -71,11 +76,11 @@ const styles = StyleSheet.create({
   },
   label: {
     ...typographyVariants.paragraphMMedium,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   limit: {
     ...typographyVariants.subtitleSemiBold,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   progressSection: {
     flexDirection: 'column',
@@ -83,7 +88,7 @@ const styles = StyleSheet.create({
   },
   progressBarContainer: {
     height: 8,
-    backgroundColor: colors.gray[200],
+    backgroundColor: colors.bg[theme].emphasis,
     borderRadius: 4,
     overflow: 'hidden',
   },
@@ -99,10 +104,11 @@ const styles = StyleSheet.create({
   },
   used: {
     ...typographyVariants.captionRegular,
-    color: colors.text.secondary,
+    color: colors.text[theme].secondary,
   },
   remaining: {
     ...typographyVariants.captionRegular,
-    color: colors.text.tertiary,
+    color: colors.text[theme].tertiary,
   },
 })
+}
