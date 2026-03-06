@@ -139,6 +139,9 @@ async function seedOnet() {
     return true
   } catch (error) {
     console.error('❌ Error seeding O*NET data:', error)
+    console.error(
+      '💡 To fetch O*NET data, run: pnpm --filter @scf/supabase run download-onet\n   See packages/supabase/docs/ONET_SEED.md'
+    )
     return false
   }
 }
