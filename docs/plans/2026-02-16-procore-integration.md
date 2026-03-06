@@ -531,7 +531,7 @@ describe('ProcoreClient', () => {
   beforeEach(() => {
     process.env.PROCORE_CLIENT_ID = 'test-client-id';
     process.env.PROCORE_CLIENT_SECRET = 'test-client-secret';
-    process.env.PROCORE_REDIRECT_URI = 'https://app.forsured.com/api/procore/callback';
+    process.env.PROCORE_REDIRECT_URI = 'https://app.example.com/api/procore/callback';
     vi.resetModules();
     mockFetch.mockReset();
   });
@@ -2640,7 +2640,7 @@ describe.skipIf(!hasDb)('Procore Sync Integration', () => {
 
     const { data: user } = await supabase
       .from('users')
-      .insert({ email: 'procore-test@test.forsured.com', name: 'Test User', organization_id: testOrgId })
+      .insert({ email: 'procore-test@test.example.com', name: 'Test User', organization_id: testOrgId })
       .select('id')
       .single();
     testUserId = user!.id;

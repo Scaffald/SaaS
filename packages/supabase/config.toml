@@ -4,8 +4,8 @@ project_id = "scaffald"
 
 [api]
 port = 54321
-schemas = ["auth", "public", "core", "cms", "storage", "data", "onet", "forsured"]
-extra_search_path = ["public", "core", "cms", "data", "onet", "forsured"]
+schemas = ["auth", "public", "core", "cms", "storage", "data", "onet"]
+extra_search_path = ["public", "core", "cms", "data", "onet"]
 max_rows = 1000
 
 [db]
@@ -26,7 +26,7 @@ port = 54323
 # Email testing server. Emails sent with the local dev setup are not actually sent - rather, they
 # are monitored, and you can view the emails that would have been sent from the web interface.
 # Mailpit is enabled when:
-# 1. NODE_ENV=development AND VITE_FORSURED_USE_OAUTH=false (Forsured magic links)
+# 1. NODE_ENV=development (magic link / email testing)
 # 2. Tests are running (any app)
 # 3. Scaffald app is running (always uses magic links)
 [inbucket]

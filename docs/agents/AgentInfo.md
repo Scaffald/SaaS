@@ -47,15 +47,13 @@ Guidelines and policies for AI agents working on this codebase.
 ```
 UNI-Construct/
 ├── apps/
-│   ├── scaffald/              # Expo app (iOS, Android, Web) - port 8081
-│   └── forsured-web/          # Vite web app for Forsured - port 5173
+│   └── scaffald/              # Expo app (iOS, Android, Web) - port 8081
 ├── packages/
 │   ├── scf-core/              # @scf/core - Shared business logic and features
 │   │   └── features/              # Route-based feature organization
 │   ├── beyond-ui/             # @unicornlove/beyond-ui - Cross-platform UI components
 │   ├── supabase/          # @scf/supabase - Database, migrations, Edge Functions
-│   │   └── migrations/        # 001-137 (Scaffald) + 200-232 (Forsured)
-│   ├── forsured/              # @unicornlove/forsured - Zod schemas
+│   │   └── migrations/        # Schema and feature migrations
 │   ├── insurance/             # @unicornlove/insurance - Insurance domain
 │   ├── compliance/            # @unicornlove/compliance - Compliance domain
 │   └── tasks/                 # @unicornlove/tasks - Task management
@@ -82,12 +80,6 @@ pnpm dev              # Start Expo dev server (port 8081)
 pnpm web              # Start Expo Web dev server (port 8081)
 pnpm ios              # Build and run iOS app
 pnpm android          # Build and run Android app
-
-# Start development environment - Forsured (Vite)
-pnpm dev:forsured     # Start Forsured Vite dev server (port 5173)
-pnpm build:forsured   # Build Forsured for production
-pnpm test:forsured    # Run Forsured tests (2401+ tests)
-pnpm dev:all          # Run both Scaffald + Forsured concurrently
 
 # Quick iteration (FAST - only affected packages)
 pnpm check:affected   # Lint and type check only changed packages
@@ -506,33 +498,14 @@ This project uses comprehensive Cursor rules located in `.cursor/rules/`. These 
 
 ### Schema Organization (CRITICAL)
 - **`core.*`**: Platform/shared tables (users, organizations, role_assignments)
-  - Used by BOTH Scaffald and Forsured applications
   - User profiles, jobs, organizations, applications, etc.
   - Private/PII data: `core.profile`, `core.preferences`, `core.applications`
   - NO `private_` prefix - RLS handles privacy
-- **`forsured.*`**: Forsured insurance compliance tables (migrations 200-232)
-  - Insurance policies, compliance issues, documents, tasks
-  - Projects, companies, coverage requirements
-  - References `core.*` for users and organizations
 - **`data.*`**: Reference data (universities, MasterFormat, certifications) - READ-ONLY
 - **`cms.*`**: CMS content (welcome_slides, etc.) - READ-ONLY
 - **`onet.*`**: O*NET occupational reference data - READ-ONLY
 
-### Forsured Database Client
-```typescript
-// Import from @scf/supabase/forsured-client
-import { forsured, core } from '@scf/supabase/forsured-client';
-
-// Query Forsured-specific data (insurance, compliance, etc.)
-const policies = await forsured('insurance_policies').select('*').eq('status', 'active');
-const tasks = await forsured('tasks').select('*').eq('project_id', projectId);
-
-// Query core/platform data (users, organizations)
-const users = await core('users').select('*').eq('organization_id', orgId);
-const org = await core('organizations').select('*').eq('id', orgId).single();
-```
-
-### Schema Highlights
+### Database Client Usage
 - **User profiles**: Comprehensive worker profiles with private/public separation
 - **Jobs**: Job postings with skills, location (PostGIS), compensation
 - **Applications**: ATS pipeline with status tracking
@@ -656,26 +629,6 @@ Mocks can hide real bugs in infrastructure, configuration, and integration point
 
 - **Package**: `packages/beyond-ui/` — `@unicornlove/beyond-ui`. Use Beyond UI components; see `.cursor/rules/beyond-ui-properties.mdc` and `packages/beyond-ui/docs/API_CONVENTIONS.md`.
 - **Cross-platform**: Ensure components work on web, iOS, and Android.
-
-## UI Alignment Policy
-
-**ForSured UI must align with Scaffald's UI patterns and components.**
-
-When building UI for `apps/forsured-web`, always reference and align with `apps/scaffald` (the Expo app). We borrow from Scaffald to make ForSured work rather than reinvent the wheel.
-
-### Guiding Principles
-
-1. **Shared UI Package**: Both apps use Beyond UI (`@unicornlove/beyond-ui`) - use components from this package first
-2. **Theme System**: Use theme tokens and color system from the Beyond UI package
-3. **Component Patterns**: When a component exists in Scaffald, use the same approach in ForSured
-4. **Providers**: Prefer using shared providers from `@scf/core` when they fit ForSured's needs
-
-### What To Check When Building ForSured UI
-
-1. Does this component exist in Scaffald? If yes, use the same pattern
-2. Are we using `@unicornlove/beyond-ui` components correctly?
-3. Are theme tokens being used consistently?
-4. Is the component responsive and works on both light and dark themes?
 
 ## Common Development Patterns
 

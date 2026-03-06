@@ -18,8 +18,7 @@ const IGNORE_DIRS = new Set([
   'reports',
   'storybook-static',
 ])
-// apps/forsured-web is a Next.js app with its own routing conventions (not ROUTES constants)
-const IGNORE_PATHS = [path.join(ROOT, 'apps/forsured-web')]
+const IGNORE_PATHS = []
 const ALLOWLIST = new Set([
   path.join(ROOT, 'packages/core/constants/routes.ts'),
   path.join(ROOT, 'packages/scf-core/constants/routes.ts'),

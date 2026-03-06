@@ -1,7 +1,7 @@
 # Dashboard Browser Test Results
 
 **Date:** 2025-02-13  
-**Apps tested:** Forsured (forsured-web), Scaffald (Expo Web)  
+**Apps tested:** Scaffald (Expo Web)  
 **Method:** Playwright E2E with console capture
 
 ---
@@ -10,35 +10,14 @@
 
 | App | Test Login | Dashboard Access | Console Errors | Critical Issues |
 |-----|------------|------------------|----------------|-----------------|
-| Forsured | Pass | Pass | 1 error, 1 warning | Minor (401 on some request) |
 | Scaffald | N/A (magic link only) | Redirects to /auth when unauthenticated | Multiple errors | **ProfileSnapshotWidget crash** |
-
----
-
-## Forsured (localhost:5173)
-
-### Test Results
-- **Test user login:** Pass. "Test as GC / Manager" correctly redirects to `/manager/dashboard`.
-- **Auth flow:** Seeded test users work with `signInWithPassword`.
-
-### Console Output
-
-**Errors:**
-- `Failed to load resource: the server responded with a status of 401 (Unauthorized)` – Some API or asset request returned 401. Worth investigating which URL fails.
-
-**Warnings:**
-- `"shadow*" style props are deprecated. Use "boxShadow".` – React Native Web deprecation; non-blocking.
-
-### Recommendations
-1. Identify the 401 request (check Network tab for failing URLs).
-2. Replace deprecated `shadow*` props with `boxShadow` where used.
 
 ---
 
 ## Scaffald (localhost:8081)
 
 ### Test Results
-- **Shared Supabase session:** Session from Forsured does **not** carry over to Scaffald (different origins: 5173 vs 8081). Navigating to Scaffald after Forsured login lands on `/auth`.
+- **Shared Supabase session:** Session from another app does **not** carry over to Scaffald (different origins). Navigating to Scaffald after login elsewhere lands on `/auth`.
 - **Direct /dashboard (unauthenticated):** Correctly redirects to `/auth`.
 - **Dashboard with auth:** When the dashboard attempts to render (e.g., after auth), it crashes due to `ProfileSnapshotWidget`.
 
@@ -93,5 +72,4 @@ Error: <svg> attribute height: Expected length, "lg".
 
 ## Test Artifacts
 
-- Playwright spec: [apps/forsured-web/tests/e2e/dashboard-browser-check.spec.ts](apps/forsured-web/tests/e2e/dashboard-browser-check.spec.ts)
-- Run with: `cd apps/forsured-web && pnpm exec playwright test tests/e2e/dashboard-browser-check.spec.ts`
+- Playwright spec: run dashboard/browser E2E from project root or apps that have Playwright configured.

@@ -50,10 +50,6 @@ import { teamsRouter } from "./teams.router.ts";
 import { userProfileRouter } from "./user-profile.router.ts";
 import { workLogsRouter } from "./work-logs.router.ts";
 import { workersRouter } from "./workers.router.ts";
-import {
-  complianceDependenciesRouter,
-  complianceRequirementsRouter,
-} from "./compliance/index.ts";
 import { oauthRouter } from "./oauth.router.ts";
 
 /**
@@ -100,9 +96,6 @@ export const appRouter = t.router({
   apiKeys: apiKeysRouter,
   connections: connectionsRouter,
   profileViews: profileViewsRouter,
-  // Compliance routers
-  complianceRequirements: complianceRequirementsRouter,
-  complianceDependencies: complianceDependenciesRouter,
   // CCPA router
   ccpa: ccpaRouter,
   // OAuth router
