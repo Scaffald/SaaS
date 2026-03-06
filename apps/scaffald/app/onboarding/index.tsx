@@ -1,5 +1,6 @@
 import { ROUTES } from "@scf/core/constants/routes";
 import { ControlledAddressForm } from "@scf/core/forms";
+import { useUserLocation } from "@scf/core/hooks";
 import {
   usePrerequisites,
   useCompletePrerequisites,
@@ -44,8 +45,20 @@ import {
  */
 export default function OnboardingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [proximity, setProximity] = useState<{ lat: number; lng: number } | undefined>();
   const toast = useToast();
   const router = useRouter();
+  const { requestLocation } = useUserLocation();
+
+  // Optionally bias address autocomplete by user location (after a short delay to avoid blocking or prompting immediately)
+  useEffect(() => {
+    const t = setTimeout(() => {
+      requestLocation()
+        .then((loc) => setProximity({ lat: loc.latitude, lng: loc.longitude }))
+        .catch(() => {});
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [requestLocation]);
 
   // Check prerequisites status
   const {
@@ -224,6 +237,7 @@ export default function OnboardingPage() {
                   trigger={trigger}
                   placeholder="Search for your address..."
                   manualFieldsVariant="expand"
+                  proximity={proximity}
                   error={
                     errors.address?.street?.message ||
                     errors.address?.city?.message
