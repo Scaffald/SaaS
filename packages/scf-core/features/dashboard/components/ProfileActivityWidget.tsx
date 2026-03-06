@@ -9,9 +9,8 @@ import { useProfileViews, useViewAnalytics } from '@scf/core/utils/profile-views
 import {
   Avatar,
   Button,
-  Card,
+  DashboardWidget,
   H4,
-  Separator,
   Skeleton,
   SkeletonAvatar,
   SkeletonBox,
@@ -27,7 +26,6 @@ import {
   CheckCircle2,
   Eye,
   Loader2,
-  TrendingUp,
   UserPlus,
   Users,
   X,
@@ -39,17 +37,14 @@ import { useQueryClient } from '@tanstack/react-query'
 
 function ProfileActivityWidgetSkeleton() {
   return (
-    <Card style={{ gap: 16, padding: 16 }}>
+    <DashboardWidget gap={16}>
       {/* Header */}
       <Row align="center" gap={8}>
-        <Skeleton width={16} height={16} shape="circle" />
         <Skeleton width={130} height={16} shape="text" />
       </Row>
 
       {/* Analytics card */}
       <SkeletonBox width="100%" height={72} borderRadius={12} />
-
-      <Separator />
 
       {/* Recent Views */}
       <Stack gap={10}>
@@ -71,8 +66,6 @@ function ProfileActivityWidgetSkeleton() {
         ))}
       </Stack>
 
-      <Separator />
-
       {/* Followers */}
       <Stack gap={10}>
         <Row align="center" gap={6}>
@@ -89,8 +82,6 @@ function ProfileActivityWidgetSkeleton() {
           </Row>
         ))}
       </Stack>
-
-      <Separator />
 
       {/* Pending requests */}
       <Stack gap={10}>
@@ -114,7 +105,7 @@ function ProfileActivityWidgetSkeleton() {
           </Row>
         ))}
       </Stack>
-    </Card>
+    </DashboardWidget>
   )
 }
 
@@ -135,7 +126,7 @@ function SectionHeader({
     <Row align="center" justify="space-between">
       <Row align="center" gap={6}>
         {icon}
-        <Text style={{ color: colors.text[theme].secondary, fontWeight: '600', fontSize: 13 }}>
+        <Text size="md" weight="semibold" style={{ color: colors.text[theme].secondary }}>
           {label}
         </Text>
       </Row>
@@ -146,7 +137,7 @@ function SectionHeader({
 
 function EmptyRow({ label, theme }: { label: string; theme: 'light' | 'dark' }) {
   return (
-    <Text style={{ color: colors.text[theme].tertiary, fontStyle: 'italic', fontSize: 13 }}>
+    <Text size="sm" style={{ color: colors.text[theme].tertiary, fontStyle: 'italic' }}>
       {label}
     </Text>
   )
@@ -201,18 +192,16 @@ export function ProfileActivityWidget() {
   const trendPositive = viewAnalytics && viewAnalytics.trend > 0
 
   return (
-    <Card style={{ gap: 0, overflow: 'hidden' }}>
+    <DashboardWidget gap={0}>
       {/* ── Widget header ── */}
-      <Row align="center" gap={8} style={{ padding: 16, paddingBottom: 12 }}>
-        <TrendingUp size={16} color={colors.primary[500]} />
-        <H4 style={{ color: colors.text[theme].primary }}>Profile Activity</H4>
+      <Row align="center" style={{ paddingBottom: 4 }}>
+        <H4 style={{ color: colors.text[theme].primary }}>Activity</H4>
       </Row>
 
       {/* ── 30-Day analytics banner ── */}
       {viewAnalytics && (
         <Stack
           style={{
-            marginHorizontal: 16,
             marginBottom: 12,
             padding: 12,
             backgroundColor: theme === 'dark' ? colors.bg[theme].selected : colors.primary[50],
@@ -223,23 +212,23 @@ export function ProfileActivityWidget() {
         >
           <Row align="center" justify="space-between">
             <Row align="center" gap={6}>
-              <Eye size={14} color={colors.primary[500]} />
-              <Text style={{ color: colors.primary[600], fontSize: 12, fontWeight: '600' }}>
+              <Eye size={16} color={colors.primary[500]} />
+              <Text size="sm" weight="semibold" style={{ color: colors.primary[600] }}>
                 Views · 30 days
               </Text>
             </Row>
             {viewAnalytics.trend !== 0 && (
               <Row align="center" gap={3}>
                 {trendPositive ? (
-                  <ArrowUp size={12} color={colors.success[500]} />
+                  <ArrowUp size={14} color={colors.success[500]} />
                 ) : (
-                  <ArrowDown size={12} color={colors.error[500]} />
+                  <ArrowDown size={14} color={colors.error[500]} />
                 )}
                 <Text
+                  size="sm"
+                  weight="semibold"
                   style={{
                     color: trendPositive ? colors.success[600] : colors.error[600],
-                    fontSize: 12,
-                    fontWeight: '600',
                   }}
                 >
                   {Math.abs(viewAnalytics.trend).toFixed(1)}%
@@ -248,11 +237,11 @@ export function ProfileActivityWidget() {
             )}
           </Row>
           <Row align="baseline" gap={6} style={{ marginTop: 4 }}>
-            <Text style={{ color: colors.primary[700], fontSize: 24, fontWeight: '700' }}>
+            <Text size="2xl" weight="bold" style={{ color: colors.primary[700] }}>
               {viewAnalytics.views30d}
             </Text>
             {viewAnalytics.viewsTotal > 0 && (
-              <Text style={{ color: colors.primary[500], fontSize: 12 }}>
+              <Text size="sm" style={{ color: colors.primary[500] }}>
                 of {viewAnalytics.viewsTotal} total
               </Text>
             )}
@@ -260,10 +249,8 @@ export function ProfileActivityWidget() {
         </Stack>
       )}
 
-      <Separator />
-
       {/* ── Recent profile views ── */}
-      <Stack style={{ padding: 16, paddingVertical: 14 }} gap={10}>
+      <Stack style={{ paddingVertical: 14 }} gap={10}>
         <SectionHeader
           theme={theme}
           icon={<Eye size={14} color={colors.text[theme].tertiary} />}
@@ -271,8 +258,9 @@ export function ProfileActivityWidget() {
           action={
             profileViewsTotal > 0 ? (
               <Button
+                variant="text"
+                color="primary"
                 size="sm"
-                variant="outline"
                 onPress={() => router.push(buildPath(ROUTES.DASHBOARD.CONNECTIONS, {}))}
               >
                 View All
@@ -299,11 +287,11 @@ export function ProfileActivityWidget() {
                     color="info"
                   />
                   <Stack style={{ flex: 1 }} gap={2}>
-                    <Text style={{ color: colors.text[theme].secondary, fontSize: 13, fontWeight: '500' }}>
+                    <Text size="md" weight="medium" style={{ color: colors.text[theme].secondary }}>
                       {view.viewer?.display_name || view.viewer?.username || 'Anonymous'}
                     </Text>
                     {view.viewed_at && (
-                      <Text style={{ color: colors.text[theme].tertiary, fontSize: 11 }}>
+                      <Text size="sm" style={{ color: colors.text[theme].tertiary }}>
                         {new Date(view.viewed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </Text>
                     )}
@@ -315,10 +303,8 @@ export function ProfileActivityWidget() {
         )}
       </Stack>
 
-      <Separator />
-
       {/* ── New followers ── */}
-      <Stack style={{ padding: 16, paddingVertical: 14 }} gap={10}>
+      <Stack style={{ paddingVertical: 14 }} gap={10}>
         <SectionHeader
           theme={theme}
           icon={<UserPlus size={14} color={colors.text[theme].tertiary} />}
@@ -343,11 +329,11 @@ export function ProfileActivityWidget() {
                     color="success"
                   />
                   <Stack style={{ flex: 1 }} gap={2}>
-                    <Text style={{ color: colors.text[theme].secondary, fontSize: 13, fontWeight: '500' }}>
+                    <Text size="md" weight="medium" style={{ color: colors.text[theme].secondary }}>
                       {follow.user?.display_name || follow.user?.username || 'User'}
                     </Text>
                     {follow.created_at && (
-                      <Text style={{ color: colors.text[theme].tertiary, fontSize: 11 }}>
+                      <Text size="sm" style={{ color: colors.text[theme].tertiary }}>
                         {new Date(follow.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </Text>
                     )}
@@ -359,10 +345,8 @@ export function ProfileActivityWidget() {
         )}
       </Stack>
 
-      <Separator />
-
       {/* ── Pending connection requests ── */}
-      <Stack style={{ padding: 16, paddingVertical: 14 }} gap={10}>
+      <Stack style={{ paddingVertical: 14 }} gap={10}>
         <SectionHeader
           theme={theme}
           icon={<Users size={14} color={colors.text[theme].tertiary} />}
@@ -373,8 +357,9 @@ export function ProfileActivityWidget() {
           }
           action={
             <Button
+              variant="text"
+              color="primary"
               size="sm"
-              variant="outline"
               onPress={() => router.push(buildPath(ROUTES.DASHBOARD.CONNECTIONS, {}))}
             >
               Manage
@@ -402,13 +387,15 @@ export function ProfileActivityWidget() {
                     />
                     <Stack style={{ flex: 1, minWidth: 0 }} gap={2}>
                       <Text
-                        style={{ color: colors.text[theme].secondary, fontSize: 13, fontWeight: '500' }}
+                        size="md"
+                        weight="medium"
+                        style={{ color: colors.text[theme].secondary }}
                         numberOfLines={1}
                       >
                         {request.user?.display_name || request.user?.username || 'User'}
                       </Text>
                       {request.created_at && (
-                        <Text style={{ color: colors.text[theme].tertiary, fontSize: 11 }}>
+                        <Text size="sm" style={{ color: colors.text[theme].tertiary }}>
                           {new Date(request.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </Text>
                       )}
@@ -434,13 +421,13 @@ export function ProfileActivityWidget() {
               )
             )}
             {pendingRequests.received.length > 3 && (
-              <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>
+              <Text size="sm" style={{ color: colors.text[theme].tertiary }}>
                 +{pendingRequests.received.length - 3} more request{pendingRequests.received.length - 3 === 1 ? '' : 's'}
               </Text>
             )}
           </Stack>
         )}
       </Stack>
-    </Card>
+    </DashboardWidget>
   )
 }

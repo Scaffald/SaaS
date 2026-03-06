@@ -11,7 +11,7 @@ const profileTipCards = [
   {
     children: (
       <Stack gap={12}>
-        <H4 color="$color">📸 Add a Profile Photo</H4>
+        <H4 color="$color">Add a Profile Photo</H4>
         <Text color="$gray11" style={{ fontStyle: 'italic', lineHeight: 16 }}>
           Did you know that profiles with a photo are dramatically more visible?
         </Text>
@@ -26,7 +26,7 @@ const profileTipCards = [
   {
     children: (
       <Stack gap={12}>
-        <H4 color="$color">⏱ First Impressions</H4>
+        <H4 color="$color">First Impressions</H4>
         <Text color="$gray11" style={{ fontStyle: 'italic', lineHeight: 16 }}>
           Make Every Second Count
         </Text>
@@ -41,7 +41,7 @@ const profileTipCards = [
   {
     children: (
       <Stack gap={12}>
-        <H4 color="$color">🎖 Verified Credentials</H4>
+        <H4 color="$color">Verified Credentials</H4>
         <Text color="$gray11" style={{ fontStyle: 'italic', lineHeight: 16 }}>
           Verified Details Build Trust
         </Text>
