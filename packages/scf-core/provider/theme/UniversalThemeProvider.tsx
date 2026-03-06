@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar'
 import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from 'react'
 import { Appearance, Platform, useColorScheme } from 'react-native'
 import { useIsomorphicLayoutEffect } from '@scf/core/hooks/useIsomorphicLayoutEffect'
+import { colors } from '@scaffald/ui/tokens'
 
 type ThemeProviderProps = {
   themes: string[]
@@ -115,6 +116,10 @@ const InnerProvider = ({ children }: { children: ReactNode }) => {
     if (Platform.OS === 'web') {
       if (typeof document !== 'undefined') {
         document.documentElement.setAttribute('data-theme', resolvedTheme)
+        // Match the app's background so overscroll bounce areas use the same color
+        const bg = resolvedTheme === 'dark' ? colors.bg.dark.subtle : colors.bg.light.subtle
+        document.documentElement.style.backgroundColor = bg
+        document.body.style.backgroundColor = bg
       }
     } else {
       // Native: ensure we set color scheme as soon as possible

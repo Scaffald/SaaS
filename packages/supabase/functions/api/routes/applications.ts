@@ -73,6 +73,16 @@ const applicationResponseSchema = z
   })
   .openapi('ApplicationResponse')
 
+// List applications response
+const listApplicationsResponseSchema = z
+  .object({
+    data: z.array(applicationSchema),
+    total: z.number().int(),
+    limit: z.number().int(),
+    offset: z.number().int(),
+  })
+  .openapi('ListApplicationsResponse')
+
 // Error response schema
 const errorResponseSchema = z
   .object({
@@ -80,6 +90,94 @@ const errorResponseSchema = z
     message: z.string().optional(),
   })
   .openapi('ErrorResponse')
+
+/**
+ * GET /v1/applications
+ * List current user's applications (with optional status filter and pagination)
+ */
+const listApplicationsRoute = createRoute({
+  method: 'get',
+  path: '/',
+  tags: ['Applications'],
+  summary: 'List applications',
+  description: "List the authenticated user's applications with optional status filter and pagination.",
+  request: {
+    query: z.object({
+      status: z.enum([
+        'pending',
+        'reviewing',
+        'inquired',
+        'interview',
+        'offer',
+        'hired',
+        'rejected',
+        'withdrawn',
+      ]).optional(),
+      limit: z.coerce.number().int().min(1).max(100).optional().default(20),
+      offset: z.coerce.number().int().min(0).optional().default(0),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'List of applications',
+      content: {
+        'application/json': {
+          schema: listApplicationsResponseSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+      content: { 'application/json': { schema: errorResponseSchema } },
+    },
+  },
+  security: [{ bearerAuth: [] }],
+})
+
+app.openapi(listApplicationsRoute, requireAuth, async (c) => {
+  const supabase = c.get('supabase')
+  const user = c.get('user')
+  const { status, limit, offset } = c.req.valid('query')
+
+  if (!user) {
+    return c.json({ error: 'Unauthorized', message: 'Authentication required' }, 401)
+  }
+
+  let query = supabase
+    .schema('core')
+    .from('applications')
+    .select('*', { count: 'exact' })
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+    .range(offset, offset + limit - 1)
+
+  if (status) {
+    query = query.eq('status', status)
+  }
+
+  const { data, error, count } = await query
+
+  if (error) {
+    console.error('Error listing applications:', error)
+    return c.json({ error: 'Internal Server Error', message: error.message }, 500)
+  }
+
+  const rows = data ?? []
+  const mapped = rows.map((row: Record<string, unknown>) => ({
+    ...row,
+    applied_at: row.applied_at ?? row.created_at,
+  }))
+
+  return c.json(
+    {
+      data: mapped,
+      total: count ?? 0,
+      limit,
+      offset,
+    },
+    200
+  )
+})
 
 /**
  * POST /v1/applications

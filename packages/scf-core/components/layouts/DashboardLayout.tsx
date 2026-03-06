@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
-import { ScrollView, StyleSheet } from 'react-native'
-import { Grid, Row, Stack } from '@scaffald/ui'
+import { ScrollView, useWindowDimensions } from 'react-native'
+import { Grid, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { Breadcrumb, type BreadcrumbItemData } from '@scaffald/ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
@@ -26,6 +26,12 @@ export const DashboardLayout = ({
   breadcrumbItems,
   autoGenerateBreadcrumbs = true,
 }: DashboardLayoutProps) => {
+  const { width } = useWindowDimensions()
+  const { theme } = useThemeContext()
+  const isDesktop = width >= 1024
+  const contentPadding = isDesktop ? '2xl' : 'lg'
+  const verticalPadding = isDesktop ? '3xl' : 'sm'
+
   // Auto-generate breadcrumbs if enabled and no manual override
   const { breadcrumbs } = useBreadcrumbs({
     autoGenerate: autoGenerateBreadcrumbs && !breadcrumbItems,
@@ -38,18 +44,23 @@ export const DashboardLayout = ({
   // Calculate current index (last item is always active)
   const currentIndex = displayBreadcrumbs.length - 1
 
+  const bgColor = colors.bg[theme].subtle
+
   return (
-    <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
-      <Stack gap={12} paddingTop="sm" paddingBottom="lg">
+    <ScrollView
+      style={{ flex: 1, backgroundColor: bgColor }}
+      showsVerticalScrollIndicator={false}
+    >
+      <Stack gap={12} paddingTop={verticalPadding} paddingBottom={verticalPadding}>
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
-          <Row paddingHorizontal="xs" paddingTop="sm">
+          <Row paddingHorizontal={contentPadding}>
             <Breadcrumb items={displayBreadcrumbs} currentIndex={currentIndex} />
           </Row>
         )}
 
         {/* Content Area - Two-column golden ratio (lg+) or single column, min 300px per column */}
-        <Stack paddingHorizontal="lg" paddingTop="sm">
+        <Stack paddingHorizontal={contentPadding}>
           <Grid
             columns={{ base: 1, lg: GOLDEN_RATIO_TEMPLATE }}
             gap={24}
@@ -63,7 +74,3 @@ export const DashboardLayout = ({
     </ScrollView>
   )
 }
-
-const styles = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: colors.gray[50] },
-})
