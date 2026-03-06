@@ -88,6 +88,10 @@ test-results.log
 # build artifacts
 **/dist/
 
+# NX project graph outputs
+output.html
+static/
+
 # test artifacts
 **/playwright-report/
 **/test-results/
