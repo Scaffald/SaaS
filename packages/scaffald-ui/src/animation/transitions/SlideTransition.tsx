@@ -208,17 +208,20 @@ function ReanimatedSlide({
   const durationMs = typeof duration === 'number' ? duration : (timingConfigs[duration || 'normal']?.duration ?? 300)
 
   // Animated style
-  const animatedStyle = useAnimatedStyleAsserted(() => {
-    'worklet'
-    const transform = isVertical
-      ? [{ translateY: translate.value }]
-      : [{ translateX: translate.value }]
+  const animatedStyle = useAnimatedStyleAsserted(
+    () => {
+      'worklet'
+      const transform = isVertical
+        ? [{ translateY: translate.value }]
+        : [{ translateX: translate.value }]
 
-    return {
-      transform,
-      opacity: withFade ? opacity.value : 1,
-    }
-  })
+      return {
+        transform,
+        opacity: withFade ? opacity.value : 1,
+      }
+    },
+    [translate, opacity, isVertical, withFade]
+  )
 
   // Handle visibility changes
   useEffect(() => {

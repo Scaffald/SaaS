@@ -183,13 +183,16 @@ function ReanimatedScale({
   const opacity = useSharedValueAsserted(visible ? 1 : 0)
   const spring = springConfigs[springConfig || 'snappy']
 
-  const animatedStyle = useAnimatedStyleAsserted(() => {
-    'worklet'
-    return {
-      transform: [{ scale: scale.value }],
-      opacity: withFade ? opacity.value : 1,
-    }
-  })
+  const animatedStyle = useAnimatedStyleAsserted(
+    () => {
+      'worklet'
+      return {
+        transform: [{ scale: scale.value }],
+        opacity: withFade ? opacity.value : 1,
+      }
+    },
+    [scale, opacity, withFade]
+  )
 
   useEffect(() => {
     if (visible) {

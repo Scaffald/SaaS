@@ -149,12 +149,15 @@ function ReanimatedPressable({
   const scale = useSharedValueAsserted(1)
   const config = springConfigs[springConfig || 'press']
 
-  const animatedStyle = useAnimatedStyleAsserted(() => {
-    'worklet'
-    return {
-      transform: [{ scale: scale.value }],
-    }
-  })
+  const animatedStyle = useAnimatedStyleAsserted(
+    () => {
+      'worklet'
+      return {
+        transform: [{ scale: scale.value }],
+      }
+    },
+    [scale]
+  )
 
   const pressScaleValue = pressScale ?? 0.95
 
