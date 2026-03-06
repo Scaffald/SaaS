@@ -41,10 +41,11 @@ export function ScaffaldProviderFromSession({ children }: { children: ReactNode 
       return { baseUrl: 'https://api.scaffald.com', apiKey: 'dummy' }
     }
     // Do not pass anon key while session is loading so authenticated routes
-    // don't fire requests with anon key and get 401. Once session is resolved,
-    // we use token for authenticated users or anon key for public/unauthenticated.
+    // don't fire requests with anon key and get 401. Pass a placeholder so
+    // the Scaffald constructor accepts the config; once session is resolved we
+    // use token for authenticated users or anon key for public/unauthenticated.
     if (isLoading) {
-      return { baseUrl }
+      return { baseUrl, apiKey: 'dummy' }
     }
     const token = session?.access_token?.trim()
     if (token) {
