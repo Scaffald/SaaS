@@ -59,8 +59,11 @@ export function createMapboxGeocodingProvider(apiKey: string): GeocodingProvider
   ): Promise<AddressResult[]> => {
     const limit = options?.limit ?? 5
     const encoded = encodeURIComponent(query)
-    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encoded}.json?access_token=${apiKey}&limit=${limit}`
-
+    let url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encoded}.json?access_token=${apiKey}&limit=${limit}`
+    if (options?.proximity) {
+      const { lng, lat } = options.proximity
+      url += `&proximity=${lng},${lat}`
+    }
     const res = await fetch(url)
     if (!res.ok) {
       throw new Error(`Mapbox geocoding failed: ${res.status}`)
