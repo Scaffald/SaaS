@@ -26,7 +26,7 @@ import { useRouter } from 'expo-router'
 import type { JSONContent } from '@tiptap/core'
 import { useMemo } from 'react'
 import { ScrollView } from 'react-native'
-import { Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Separator, Skeleton, SkeletonBox, SkeletonText, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 // Helper function to extract plain text from TipTap JSON content
 function extractPlainText(content: JSONContent): string {
@@ -185,11 +185,15 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
 
   if (isLoading) {
     return (
-      <Stack style={{ flex: 1 }} align="center" justify="center" padding="md">
-        <Spinner size="lg" color="primary" />
-        <Text color="secondary" style={{ marginTop: 8 }}>
-          Loading job details...
-        </Text>
+      <Stack gap={16} padding="md">
+        <Skeleton width={220} height={22} shape="text" />
+        <Skeleton width={150} height={14} shape="text" />
+        <Row gap={8} wrap>
+          {[0, 1, 2].map((i) => (
+            <SkeletonBox key={i} width={90} height={28} borderRadius={99} />
+          ))}
+        </Row>
+        <SkeletonText lines={5} lastLineWidth="65%" />
       </Stack>
     )
   }

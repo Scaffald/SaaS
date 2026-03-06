@@ -7,7 +7,7 @@ import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks
 import { ExternalLink } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Button, Spinner, Text, Stack, Row } from '@scaffald/ui'
+import { Button, Skeleton, SkeletonBox, SkeletonText, Text, Stack, Row } from '@scaffald/ui'
 
 interface DiscoverJobDetailLeftProps {
   jobId: string
@@ -122,11 +122,16 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
 
   if (isLoading) {
     return (
-      <Stack style={{ flex: 1 }} align="center" justify="center" padding="md">
-        <Spinner size="lg" color="primary" />
-        <Text color="secondary" style={{ marginTop: 8 }}>
-          Loading...
-        </Text>
+      <Stack gap={16} padding="md">
+        <Skeleton width={200} height={22} shape="text" />
+        <Skeleton width={140} height={14} shape="text" />
+        <Row gap={8} wrap>
+          {[0, 1, 2].map((i) => (
+            <SkeletonBox key={i} width={80} height={28} borderRadius={99} />
+          ))}
+        </Row>
+        <SkeletonText lines={4} lastLineWidth="60%" />
+        <SkeletonBox width="100%" height={44} borderRadius={8} />
       </Stack>
     )
   }

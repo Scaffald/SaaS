@@ -1,6 +1,6 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useRouter } from 'expo-router'
-import { ScrollView, Spinner, Text, Stack } from '@scaffald/ui'
+import { ScrollView, SkeletonCard, Text, Stack } from '@scaffald/ui'
 import { type Employer, EmployerCard } from './components/EmployerCard'
 
 interface DiscoverEmployersLeftProps {
@@ -21,11 +21,10 @@ export function DiscoverEmployersLeft({ employers, isLoading }: DiscoverEmployer
 
   if (isLoading) {
     return (
-      <Stack flex={1} align="center" justify="center" padding="md">
-        <Spinner size="lg" color="primary" />
-        <Text style={{ marginTop: 8 }} color="secondary">
-          Loading employers...
-        </Text>
+      <Stack gap={12} padding="md">
+        {[0, 1, 2, 3, 4].map((i) => (
+          <SkeletonCard key={i} hasAvatar textLines={2} />
+        ))}
       </Stack>
     )
   }

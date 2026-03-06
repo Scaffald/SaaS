@@ -2,7 +2,7 @@ import { useFollowers } from '@scf/core/utils/engagement-sdk-hooks'
 import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
-import { Avatar, Input, Spinner, Table, Text, Row, Stack } from '@scaffald/ui'
+import { Avatar, Input, SkeletonList, Table, Text, Row, Stack } from '@scaffald/ui'
 
 import type { Follow } from '@scaffald/sdk/resources/follows'
 
@@ -68,12 +68,7 @@ export function FollowersList() {
   )
 
   if (isLoading) {
-    return (
-      <Stack align="center" justify="center" paddingVertical={24} gap={8}>
-        <Spinner size="lg" />
-        <Text color="$gray11">Loading followers…</Text>
-      </Stack>
-    )
+    return <SkeletonList count={4} variant="profile" />
   }
 
   return (

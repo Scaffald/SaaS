@@ -1,6 +1,6 @@
 import { AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react-native'
 import type { ReactNode } from 'react'
-import { Button, ScrollView, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Button, ScrollView, Skeleton, SkeletonBox, SkeletonText, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { AssessmentProgress, type AssessmentStep } from './AssessmentProgress'
 
@@ -126,9 +126,11 @@ export function AssessmentWizard({
   // Loading state
   if (isLoading) {
     return (
-      <Stack flex={1} align="center" justify="center" gap={16} padding={32}>
-        <Spinner size="lg" />
-        <Text color="$gray11">Loading assessment...</Text>
+      <Stack gap={16} padding={32}>
+        <Skeleton width={200} height={22} shape="text" />
+        <SkeletonText lines={3} lastLineWidth="70%" />
+        <SkeletonBox width="100%" height={120} borderRadius={12} />
+        <SkeletonBox width={140} height={44} borderRadius={8} />
       </Stack>
     )
   }
