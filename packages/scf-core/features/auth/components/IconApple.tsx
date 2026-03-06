@@ -6,7 +6,7 @@ export interface IconAppleProps {
   color?: string
 }
 
-const AppleLogo = ({ size = 24, color = 'black' }: IconAppleProps) => {
+const AppleLogo = ({ size = 16, color = 'black' }: IconAppleProps) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
       <Path
