@@ -15,7 +15,7 @@ import {
   type ProfileWizardSaveStepInput,
   profileWizardDefaultProgress,
   profileWizardSaveStepInputSchema,
-} from '@scf/trpc/schemas'
+} from '../lib/profile-wizard-schema.ts'
 
 const app = new Hono()
 app.use('*', authMiddleware)

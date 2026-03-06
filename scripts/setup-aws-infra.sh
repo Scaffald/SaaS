@@ -43,7 +43,7 @@ case "$ENV" in
 esac
 
 # Configuration
-AWS_PROFILE="${AWS_PROFILE:-scf-notify}"
+AWS_PROFILE="${AWS_PROFILE:-scaffald}"
 AWS_REGION="${AWS_REGION:-us-east-1}"
 BUCKET_NAME="scaffald-app-$BUCKET_SUFFIX"
 HOSTED_ZONE_ID="Z0610739109YR6SDKL45L"

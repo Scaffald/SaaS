@@ -63,7 +63,7 @@ async function main() {
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
     const filePath = join(INPUT_DIR, file);
-    const resultName = basename(file, extname(file)) + '.json';
+    const resultName = `${basename(file, extname(file))}.json`;
     const resultPath = join(RESULTS_DIR, resultName);
 
     console.log(`[${i + 1}/${files.length}] ${file}`);

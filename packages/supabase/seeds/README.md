@@ -12,9 +12,10 @@ This directory contains all seed data for development and testing environments. 
 #### Modular Core Seeds (Imported by seed.sql)
 1. **`001_seed-industries.sql`** - 4 industries (Construction, Manufacturing, Transportation, Energy)
 2. **`002_seed-users.sql`** - 50 realistic users with full profiles, auth accounts, and geographic distribution
-3. **`003_seed-organizations.sql`** - 8 sample organizations across different locations
-4. **`004_seed-unicorn-org.sql`** - Unicorn organization and 3 initial jobs
-5. **`005_seed-ats-data.sql`** - Complete ATS testing data:
+3. **`002a_seed-api-test-user.sql`** - API test user for automation: `test@example.com` / `test123456` (used by `scripts/test-api-local.ts` and SDK integration tests)
+4. **`003_seed-organizations.sql`** - 8 sample organizations across different locations
+5. **`004_seed-unicorn-org.sql`** - Unicorn organization and 3 initial jobs
+6. **`005_seed-ats-data.sql`** - Complete ATS testing data:
    - 8 demo job postings across multiple organizations
    - 18 candidate applications in various stages
    - Application messages for communication tracking

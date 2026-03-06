@@ -2,9 +2,8 @@
 # Supabase Start Script with Conditional Mailpit
 #
 # Conditionally enables Mailpit based on:
-# 1. Development + VITE_FORSURED_USE_OAUTH=false (Forsured magic links)
+# 1. Development mode (apps use magic links)
 # 2. Tests running (any app)
-# 3. Scaffald app running (always uses magic links)
 #
 # Usage: ./scripts/supabase-start.sh
 
@@ -31,25 +30,10 @@ fi
 # Determine if Mailpit should be enabled
 ENABLE_MAILPIT=false
 
-# Case 1: Development + Forsured magic link mode
+# Case 1: Development mode — apps use magic links, always need Mailpit
 if [ "$NODE_ENV" = "development" ]; then
-  # Check if Forsured is using magic links (VITE_FORSURED_USE_OAUTH=false or unset)
-  if [ -z "$VITE_FORSURED_USE_OAUTH" ] || [ "$VITE_FORSURED_USE_OAUTH" = "false" ]; then
-    ENABLE_MAILPIT=true
-    echo "✓ Mailpit enabled: Development mode + Forsured magic link mode (VITE_FORSURED_USE_OAUTH=false)"
-  fi
-  
-  # Case 3: Scaffald app always uses magic links
-  # Scaffald always needs Mailpit because it uses magic links
-  # We detect this by checking if we're running Scaffald-related commands
-  # For Scaffald, Mailpit is always needed, so we enable it in development
-  # (unless explicitly disabled)
-  if [ "$ENABLE_MAILPIT" = "false" ]; then
-    # If we're in development and not using Forsured OAuth, assume Scaffald needs Mailpit
-    # This is a safe default since Scaffald always uses magic links
-    ENABLE_MAILPIT=true
-    echo "✓ Mailpit enabled: Development mode (Scaffald always uses magic links)"
-  fi
+  ENABLE_MAILPIT=true
+  echo "✓ Mailpit enabled: Development mode (apps use magic links)"
 fi
 
 # Case 2: Tests running (any app) - Mailpit needed for email testing
@@ -72,47 +56,40 @@ BACKUP_FILE="${CONFIG_FILE}.bak"
 cp "$CONFIG_FILE" "$BACKUP_FILE" 2>/dev/null || true
 
 if [ "$ENABLE_MAILPIT" = "true" ]; then
-  # Enable Mailpit in config
-  if grep -q "^enabled = false" "$CONFIG_FILE" 2>/dev/null; then
-    # macOS and Linux compatible sed
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-      sed -i '' 's/^enabled = false/enabled = true/' "$CONFIG_FILE"
-    else
-      sed -i 's/^enabled = false/enabled = true/' "$CONFIG_FILE"
-    fi
-    echo "✓ Enabled Mailpit in config.toml"
-  elif ! grep -q "^enabled = true" "$CONFIG_FILE" 2>/dev/null; then
-    # Add enabled = true if not present (after [inbucket] line)
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-      sed -i '' '/^\[inbucket\]/a\
-enabled = true
-' "$CONFIG_FILE"
-    else
-      sed -i '/^\[inbucket\]/a enabled = true' "$CONFIG_FILE"
-    fi
-    echo "✓ Added enabled = true to config.toml"
-  fi
+  TARGET_VAL="true"
 else
-  # Disable Mailpit in config
-  if grep -q "^enabled = true" "$CONFIG_FILE" 2>/dev/null; then
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-      sed -i '' 's/^enabled = true/enabled = false/' "$CONFIG_FILE"
-    else
-      sed -i 's/^enabled = true/enabled = false/' "$CONFIG_FILE"
-    fi
-    echo "✓ Disabled Mailpit in config.toml"
-  elif ! grep -q "^enabled = false" "$CONFIG_FILE" 2>/dev/null; then
-    # Add enabled = false if not present
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-      sed -i '' '/^\[inbucket\]/a\
-enabled = false
-' "$CONFIG_FILE"
-    else
-      sed -i '/^\[inbucket\]/a enabled = false' "$CONFIG_FILE"
-    fi
-    echo "✓ Added enabled = false to config.toml"
-  fi
+  TARGET_VAL="false"
 fi
+
+# Update enabled in [inbucket] section only, using python for reliable TOML section scoping
+python3 -c "
+import sys
+target = '$TARGET_VAL'
+lines = open('$CONFIG_FILE').readlines()
+in_inbucket = False
+found = False
+out = []
+for line in lines:
+    s = line.strip()
+    if s.startswith('['):
+        in_inbucket = (s == '[inbucket]')
+    if in_inbucket and s.startswith('enabled ='):
+        found = True
+        line = 'enabled = ' + target + '\n'
+    out.append(line)
+open('$CONFIG_FILE', 'w').writelines(out)
+sys.exit(0 if found else 1)
+" && echo "✓ Set Mailpit enabled=$TARGET_VAL in config.toml" || {
+    # No enabled key found in [inbucket] section at all — insert one
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      sed -i '' "/^\[inbucket\]/a\\
+enabled = $TARGET_VAL
+" "$CONFIG_FILE"
+    else
+      sed -i "/^\[inbucket\]/a enabled = $TARGET_VAL" "$CONFIG_FILE"
+    fi
+    echo "✓ Added enabled=$TARGET_VAL to [inbucket] in config.toml"
+  }
 
 # Start Supabase with explicit GOTRUE_SITE_URL to override defaults
 # This ensures magic links use the correct redirect URL
@@ -132,6 +109,9 @@ if [ -z "$GOTRUE_URI_ALLOW_LIST" ]; then
   export GOTRUE_URI_ALLOW_LIST="${BASE_URL},${BASE_URL}/auth/callback,http://127.0.0.1:5173,http://127.0.0.1:5173/auth/callback,http://127.0.0.1:8081"
 fi
 
+# Raise file watcher limit so Edge Functions don't stop with "too many files" in the monorepo
+export SUPABASE_FUNCTIONS_WATCH_LIMIT="${SUPABASE_FUNCTIONS_WATCH_LIMIT:-4000}"
+
 echo "Starting Supabase with:"
 echo "  GOTRUE_SITE_URL=$GOTRUE_SITE_URL"
 echo "  GOTRUE_URI_ALLOW_LIST=$GOTRUE_URI_ALLOW_LIST"
@@ -149,26 +129,16 @@ fi
 # Check if Supabase is in a bad state (thinks it's running but containers are dead)
 # If so, stop it first to clean up the state
 echo "🔍 Checking Supabase status..."
-if pnpm env-local pnpx supabase --workdir packages/supabase status > /dev/null 2>&1; then
+if pnpm env-local pnpx supabase --workdir packages status > /dev/null 2>&1; then
   # Supabase reports it's running - check if containers are actually running
   if ! curl -s --max-time 2 http://127.0.0.1:54321/rest/v1/ > /dev/null 2>&1; then
     echo "⚠️  Supabase reports running but API is not responding"
     echo "   Stopping Supabase to clean up state..."
-    pnpm env-local pnpx supabase --workdir packages/supabase stop > /dev/null 2>&1 || true
+    pnpm env-local pnpx supabase --workdir packages stop > /dev/null 2>&1 || true
     sleep 2
   fi
 fi
 
 # Start Supabase - Docker Compose will automatically read .env.test via env_file in override file
 # Environment variables are already exported above, so they're available to Docker Compose
-pnpm env-local pnpx supabase --workdir packages/supabase start "$@"
-
-# Fix GoTrue environment variables after Supabase starts
-# This ensures magic links use the correct redirect URL
-echo ""
-echo "🔧 Applying GoTrue environment variable fixes..."
-bash "$(dirname "$0")/fix-gotrue-env.sh" || {
-  echo "⚠️  Warning: Could not apply GoTrue environment variable fixes"
-  echo "   Magic links may still use the default redirect URL"
-}
-
+pnpm env-local pnpx supabase --workdir packages start "$@"

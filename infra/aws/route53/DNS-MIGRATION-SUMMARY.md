@@ -54,7 +54,7 @@ cd infra/aws/route53
 ```bash
 aws route53 list-resource-record-sets \
   --hosted-zone-id Z0610739109YR6SDKL45L \
-  --profile scf-notify
+  --profile scaffald
 ```
 
 ### 4. Update Nameservers at Registrar

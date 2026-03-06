@@ -304,7 +304,7 @@ pnpm supa projects list
 ### Function Deployment Fails
 ```bash
 # Deploy individual function manually
-cd packages/supabase
+cd packages
 pnpx supabase functions deploy trpc
 ```
 
@@ -359,7 +359,61 @@ pnpm supa status
 - **AWS CloudWatch**: https://console.aws.amazon.com/cloudwatch/
 - **GitHub Actions**: https://github.com/YOUR-ORG/SCF-Scaffald/actions
 
+## Running the full stack for API tests
+
+To get **Supabase**, **Inbucket (Mailpit)**, and **Edge Functions** running so `pnpm test:api` and `pnpm verify:api:e2e` can pass:
+
+### 1. Start Supabase with Inbucket (Mailpit)
+
+From the repo root, either:
+
+- **Recommended (enables Mailpit for tests):**
+  ```bash
+  pnpm supa:start:full
+  ```
+  This runs `scripts/supabase-start.sh` with Mailpit enabled so the tRPC auth tests (magic links) can receive emails.
+
+- **Or** start Supabase only (no Mailpit; `test:api` auth tests will fail):
+  ```bash
+  pnpm supa start
+  ```
+
+Wait until Supabase is up (Studio at http://127.0.0.1:54323, API at http://127.0.0.1:54321).
+
+### 2. Serve Edge Functions (tRPC + API)
+
+In a **second terminal**, from the repo root:
+
+```bash
+pnpm supa:functions
+```
+
+This serves all Edge Functions (including `trpc` and `api`) using `.env`. Leave this running.
+
+### 3. Run tests
+
+- **tRPC endpoint tests:** `pnpm test:api`
+- **REST API E2E:** `pnpm verify:api:e2e` or `pnpm test:api:rest`
+
+**Summary:** Terminal 1 → `pnpm supa:start:full`; Terminal 2 → `pnpm supa:functions`; then run `pnpm test:api` or `pnpm verify:api:e2e`.
+
 ## Archived Scripts
+
+### API testing and E2E verification
+
+- **`pnpm test:api`** – tRPC endpoint tests (`@scf/supabase test:endpoints`).
+- **`pnpm test:api:rest`** / **`pnpm verify:api:e2e`** – REST API E2E: health, login with seeded user, token check, then a fixed list of endpoints. Requires local Supabase and the `api` function served (e.g. `pnpm supa start` and `pnpm supa:functions` or `pnpm supa functions serve api --env-file .env`). Uses seeded user `test@example.com` / `test123456` (see `packages/supabase/seeds/002a_seed-api-test-user.sql`).
+- **`pnpm verify:api:e2e:full`** – Same as `verify:api:e2e` then SDK integration tests (`SCAFFALD_INTEGRATION=1 pnpm --filter @scaffald/sdk test:integration`).
+
+**CI:** `.github/workflows/api-tests.yml` runs Deno unit/integration tests for the REST API, seeds the DB, then runs the same REST endpoint script (`scripts/test-api-local.ts`). REST E2E is covered in CI when API or workflow changes are pushed.
+
+Example (local):
+```bash
+# Requires: pnpm supa start, and in another terminal: pnpm supa functions serve api --env-file .env
+pnpm verify:api:e2e
+```
+
+See `packages/supabase/functions/api/AUTH.md` for auth details and route matrix.
 
 One-off codemods and setup scripts live in [scripts/archive/](archive/). Use standard workflows (e.g. `pnpm supa db push`, `pnpm test:api`) for ongoing work. Remaining scripts for specific use cases:
 - `deploy-reset.sh` - Standalone database reset script (`pnpm deploy:reset`)
@@ -367,9 +421,7 @@ One-off codemods and setup scripts live in [scripts/archive/](archive/). Use sta
 - `verify-prod-deployment.sh` - Production deployment verification (`pnpm deploy:verify`)
 - `test-api.sh` - Quick REST API health checks (see [API Testing Guide](../docs/API_TESTING_GUIDE.md))
 - `test-api-keys.mjs` / `test-api-keys.sh` - API key validation (local Supabase)
-- `test-api-local.ts` - Deno-based API test (health + auth flows)
-
-One-off codemods and setup scripts: [archive/](archive/)
+- `test-api-local.ts` - Deno-based API test (health + auth flows). Uses seeded user `test@example.com` / `test123456` (see `packages/supabase/seeds/002a_seed-api-test-user.sql`). Run with `pnpm verify:api:e2e` (requires Supabase + API served).
 
 ## Security Notes
 

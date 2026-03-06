@@ -52,7 +52,7 @@ echo ""
 echo "📋 Step 2: Database Connection"
 echo "========================================"
 
-cd packages/supabase
+cd packages
 
 if pnpx supabase db remote --status > /dev/null 2>&1; then
     echo -e "${GREEN}✅ Database connection successful${NC}"
@@ -66,7 +66,7 @@ echo ""
 echo "📋 Step 3: Migration Status"
 echo "========================================"
 
-MIGRATION_COUNT=$(ls -1 ../../packages/supabase/migrations/*.sql 2>/dev/null | wc -l | tr -d ' ')
+MIGRATION_COUNT=$(ls -1 supabase/migrations/*.sql 2>/dev/null | wc -l | tr -d ' ')
 echo "Local migrations: $MIGRATION_COUNT"
 
 if [ "$MIGRATION_COUNT" -gt 0 ]; then
@@ -90,7 +90,7 @@ else
     ((ERRORS++))
 fi
 
-cd ../..
+cd ..
 
 # Test tRPC endpoint
 echo ""
