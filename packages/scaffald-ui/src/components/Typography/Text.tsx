@@ -16,6 +16,7 @@ import {
   fontWeight as fontWeightTokens,
 } from '../../tokens/typography'
 import { colors } from '../../tokens/colors'
+import { getFontFamily } from './Typography.styles'
 
 /**
  * Get typography values for text size
@@ -44,13 +45,11 @@ const getTextStyle = (
     '2xl': 32,
   }
 
-  // Determine font family - cast to string to allow different fonts
-  let font: string = fontFamily.body
-  if (mono) font = fontFamily.mono
-  else if (serif) font = fontFamily.serif
+  // For mono, fall back to the token directly (not loaded as a custom font yet)
+  const fontFamilyValue = mono ? fontFamily.mono : getFontFamily(weight, serif)
 
   return {
-    fontFamily: font,
+    fontFamily: fontFamilyValue,
     fontSize: sizes[size],
     fontWeight: fontWeightTokens[weight],
     lineHeight: lineHeights[size],

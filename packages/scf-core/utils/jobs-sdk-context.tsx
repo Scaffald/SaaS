@@ -43,7 +43,7 @@ function getSupabaseAnonKey(): string {
  * QueryClientProvider is added to the tree.
  */
 export function ScaffaldJobsSdkProviderFromSession({ children }: { children: ReactNode }) {
-  const { session } = useSessionContext()
+  const { session, isLoading } = useSessionContext()
   const baseUrl = useMemo(getSupabaseApiBaseUrl, [])
   const anonKey = useMemo(getSupabaseAnonKey, [])
   // Re-use the QueryClient already in the tree — avoids a duplicate QueryClientProvider.
@@ -51,11 +51,14 @@ export function ScaffaldJobsSdkProviderFromSession({ children }: { children: Rea
 
   const config = useMemo(() => {
     if (!baseUrl) return null
+    // Don't configure SDK until session state is resolved — prevents authenticated
+    // endpoints from firing with the anon key during the post-OAuth load window.
+    if (isLoading) return null
     const token = session?.access_token?.trim()
     const auth = token ? { supabaseToken: token } : anonKey ? { apiKey: anonKey } : null
     if (!auth) return null
     return { ...auth, baseUrl }
-  }, [session?.access_token, baseUrl, anonKey])
+  }, [session?.access_token, baseUrl, anonKey, isLoading])
 
   if (!config) return <>{children}</>
   return (

@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { ScrollView, StyleSheet } from 'react-native'
 import { Row, Stack } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
 import { Breadcrumb, type BreadcrumbItemData } from '@scaffald/ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 import { ProfileTabs } from '../navigation/ProfileTabs'
@@ -41,7 +40,7 @@ export const ProfileLayout = ({
 
   return (
     <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
-      <Stack gap={12} paddingTop="sm" paddingBottom="lg">
+      <Stack gap={24} paddingTop="sm" paddingBottom="lg">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
           <Row paddingHorizontal="xs" paddingTop="sm">
@@ -57,7 +56,7 @@ export const ProfileLayout = ({
         )}
 
         {/* Content Area - Responsive two-column layout */}
-        <Row gap={12} paddingHorizontal="sm" paddingTop="sm">
+        <Row gap={24} paddingHorizontal="lg" paddingTop="sm">
           <Stack width="100%">{leftContent}</Stack>
           <Stack width="100%">{rightContent}</Stack>
         </Row>
@@ -67,5 +66,5 @@ export const ProfileLayout = ({
 }
 
 const styles = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: colors.gray[50] },
+  scroll: { flex: 1, backgroundColor: '#f8f9f8' },
 })

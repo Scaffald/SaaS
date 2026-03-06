@@ -29,9 +29,9 @@ export function DashboardWidget({
   return (
     <Card
       variant={elevated ? 'elevated' : 'surface'}
-      padding="lg"
-      radius="lg"
-      elevation={elevated ? 'md' : 'sm'}
+      padding="2xl"
+      radius="2xl"
+      elevation={elevated ? 'soft' : 'soft'}
       style={style}
       testID={testID}
     >

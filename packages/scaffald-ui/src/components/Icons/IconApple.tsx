@@ -10,7 +10,7 @@ export interface IconAppleProps {
   color?: string
 }
 
-function AppleLogo({ size = 24, color = 'black' }: IconAppleProps) {
+function AppleLogo({ size = 16, color = 'black' }: IconAppleProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
       <Path

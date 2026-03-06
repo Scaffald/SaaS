@@ -12,10 +12,10 @@ import {
   fontSize,
   lineHeight,
   letterSpacing,
-  fontFamily,
   fontWeight as fontWeightTokens,
 } from '../../tokens/typography'
 import { colors } from '../../tokens/colors'
+import { getFontFamily } from './Typography.styles'
 
 /**
  * Get typography values for label size
@@ -37,7 +37,7 @@ const getLabelStyle = (
   }
 
   return {
-    fontFamily: fontFamily.body,
+    fontFamily: getFontFamily(weight),
     fontSize: sizes[size],
     fontWeight: fontWeightTokens[weight],
     lineHeight: lineHeights[size],

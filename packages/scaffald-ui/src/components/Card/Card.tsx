@@ -23,6 +23,7 @@ import {
   getCardMediaStyles,
 } from './Card.styles'
 import { useStyles } from '../../hooks'
+import { useThemeContext } from '../../theme'
 
 // ============================================================================
 // Card Component
@@ -83,6 +84,7 @@ export function Card({
   borderWidth,
 }: CardProps): React.ReactElement {
   const [isPressed, setIsPressed] = useState(false)
+  const { theme } = useThemeContext()
 
   // Map deprecated props to variant
   const variant =
@@ -99,7 +101,7 @@ export function Card({
   }, [onPressOut])
 
   // Get styles from factory function
-  const styles = useStyles(getCardStyles, [variant, padding, radius, elevation, isPressed, disabled] as const)
+  const styles = useStyles(getCardStyles, [variant, padding, radius, elevation, isPressed, disabled, theme] as const)
   const deprecatedStyle = [
     backgroundColor !== undefined && { backgroundColor },
     borderColor !== undefined && { borderColor },

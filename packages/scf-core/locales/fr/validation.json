@@ -1,14 +1,14 @@
 {
   "email": {
-    "invalid": "Please enter a valid email address",
-    "required": "Email is required"
+    "invalid": "Veuillez entrer une adresse e-mail valide",
+    "required": "L’e-mail est obligatoire"
   },
   "password": {
-    "required": "Password is required"
+    "required": "Le mot de passe est obligatoire"
   },
   "string": {
-    "required": "This field is required",
-    "tooLong": "Must be no more than {{max}} characters",
-    "tooShort": "Must be at least {{min}} characters"
+    "required": "Ce champ est obligatoire",
+    "tooLong": "Doit contenir au maximum {{max}} caractères",
+    "tooShort": "Doit contenir au moins {{min}} caractères"
   }
 }

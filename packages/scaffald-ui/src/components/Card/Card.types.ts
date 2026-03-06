@@ -9,23 +9,24 @@ import type { ImageStyle, StyleProp, ViewStyle } from "react-native";
 /**
  * Card variant determines the visual style.
  * Use "surface" for form containers (elevated with shadow); same as elevated.
+ * Use "glass" for frosted glass effect (web only).
  */
-export type CardVariant = "elevated" | "surface" | "outlined" | "filled";
+export type CardVariant = "elevated" | "surface" | "outlined" | "filled" | "glass";
 
 /**
  * Card padding size
  */
-export type CardPadding = "none" | "sm" | "md" | "lg" | "xl";
+export type CardPadding = "none" | "sm" | "md" | "lg" | "xl" | "2xl";
 
 /**
  * Card border radius size
  */
-export type CardRadius = "sm" | "md" | "lg" | "xl";
+export type CardRadius = "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
 
 /**
  * Card elevation level (for elevated variant)
  */
-export type CardElevation = "sm" | "md" | "lg";
+export type CardElevation = "sm" | "md" | "lg" | "soft";
 
 /**
  * Card component props

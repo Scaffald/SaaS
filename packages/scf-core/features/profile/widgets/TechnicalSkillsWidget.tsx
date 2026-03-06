@@ -6,10 +6,12 @@ import {
   EmptyState,
   H4,
   LoadingState,
+  useThemeContext,
 } from "@scaffald/ui";
 import { CheckCircle } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { Text, Row, Stack } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import { getProficiencyLabel } from "../constants/proficiency-levels";
 import type { ProfileWidgetProps } from "./types";
 import type { SkillWidgetEntry } from "@scaffald/sdk";
@@ -30,6 +32,7 @@ export function TechnicalSkillsWidget({
   variant = "full",
 }: ProfileWidgetProps) {
   const router = useRouter();
+  const { theme } = useThemeContext();
 
   // Fetch technical skills
   const { data, isLoading, error, refetch, isFetching } = useSkillsWidget(
@@ -51,8 +54,8 @@ export function TechnicalSkillsWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text style={{ color: "#ef4444" }}>Failed to load skills</Text>
-          <Text style={{ color: "#414e62" }}>{error.message}</Text>
+          <Text style={{ color: colors.fg[theme].error }}>Failed to load skills</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
           <Button
             variant="filled"
             color="primary"
@@ -137,7 +140,7 @@ export function TechnicalSkillsWidget({
                 <Stack key={taxonomy} gap={8}>
                   {/* Taxonomy Header */}
                   <Text
-                    style={{ color: "#414e62", textTransform: "uppercase" }}
+                    style={{ color: colors.text[theme].secondary, textTransform: "uppercase" }}
                   >
                     {taxonomy === "onet"
                       ? "O*NET"
@@ -160,27 +163,27 @@ export function TechnicalSkillsWidget({
                           gap={8}
                           align="center"
                           style={{
-                            backgroundColor: "#bfdbfe",
-                            borderColor: skill.verified ? "#1d4ed8" : "#3b82f6",
+                            backgroundColor: colors.blue[200],
+                            borderColor: skill.verified ? colors.blue[700] : colors.blue[500],
                           }}
                         >
                           {skill.verified && (
-                            <CheckCircle size={16} color="#1d4ed8" />
+                            <CheckCircle size={16} color={colors.blue[700]} />
                           )}
                           <Stack gap={2}>
-                            <Text style={{ color: "#1d4ed8" }}>
+                            <Text style={{ color: colors.blue[700] }}>
                               {skill.name}
                             </Text>
                             {!showCompact && (
                               <Row gap={8}>
                                 {skill.proficiency > 0 && (
-                                  <Text style={{ color: "#1e40af" }}>
+                                  <Text style={{ color: colors.blue[800] }}>
                                     {getProficiencyLabel(skill.proficiency)}
                                   </Text>
                                 )}
                                 {skill.yearsExperience !== null &&
                                   skill.yearsExperience > 0 && (
-                                    <Text style={{ color: "#1e40af" }}>
+                                    <Text style={{ color: colors.blue[800] }}>
                                       • {skill.yearsExperience}y
                                     </Text>
                                   )}
@@ -196,7 +199,7 @@ export function TechnicalSkillsWidget({
             {/* Show More link for compact view */}
             {showCompact && skills.length > 5 && (
               <Text
-                style={{ color: "#1d4ed8", cursor: "pointer" }}
+                style={{ color: colors.blue[700], cursor: "pointer" }}
                 onPress={() =>
                   router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
                 }

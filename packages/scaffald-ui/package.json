@@ -26,26 +26,31 @@
   "sideEffects": false,
   "exports": {
     ".": {
+      "source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
     "./tokens": {
+      "source": "./src/tokens/index.ts",
       "types": "./dist/tokens/index.d.ts",
       "import": "./dist/tokens/index.mjs",
       "require": "./dist/tokens/index.js"
     },
     "./chart": {
+      "source": "./src/chart.ts",
       "types": "./dist/chart.d.ts",
       "import": "./dist/chart.mjs",
       "require": "./dist/chart.js"
     },
     "./rich-text-editor": {
+      "source": "./src/rich-text-editor.ts",
       "types": "./dist/rich-text-editor.d.ts",
       "import": "./dist/rich-text-editor.mjs",
       "require": "./dist/rich-text-editor.js"
     },
     "./maps": {
+      "source": "./src/maps.ts",
       "types": "./dist/maps.d.ts",
       "import": "./dist/maps.mjs",
       "require": "./dist/maps.js"

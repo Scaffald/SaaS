@@ -135,7 +135,7 @@ export function ProfileSnapshotWidget() {
 
   return (
     <DashboardWidget>
-      <Stack gap={12}>
+      <Stack gap={24}>
         {/* Header */}
         <Row justify="space-between" align="center">
           <H4>Profile</H4>
@@ -150,7 +150,7 @@ export function ProfileSnapshotWidget() {
         </Row>
 
         {/* Avatar & Name Section */}
-        <Stack gap={12} align="center">
+        <Stack gap={16} align="center">
           <Avatar
             size={32}
             src={
@@ -203,7 +203,7 @@ export function ProfileSnapshotWidget() {
             gap={4}
             style={{ backgroundColor: colors.bg[theme].muted }}
             padding="sm"
-            borderRadius={12}
+            borderRadius={16}
           >
             <Text style={{ color: colors.text[theme].secondary }}>
               Current Role
@@ -216,8 +216,8 @@ export function ProfileSnapshotWidget() {
         )}
 
         {/* Stats Grid */}
-        <Stack gap={12}>
-          <Text>Profile Stats</Text>
+        <Stack gap={16}>
+          <Text style={{ textTransform: 'uppercase', letterSpacing: 1.5, fontSize: 11, fontWeight: '700', color: colors.text[theme].tertiary }}>Profile Stats</Text>
 
           {/* Completion Bar */}
           <Stack gap={8}>
@@ -237,19 +237,21 @@ export function ProfileSnapshotWidget() {
               flex={1}
               minWidth={80}
               style={{ backgroundColor: colors.bg[theme].muted }}
-              padding={10}
-              borderRadius={12}
+              padding={16}
+              borderRadius={16}
               align="center"
             >
               <Text
                 style={{
                   color:
                     theme === "light" ? colors.blue[700] : colors.blue[300],
+                  fontSize: 24,
+                  fontWeight: '700',
                 }}
               >
                 {skills?.length || 0}
               </Text>
-              <Text style={{ color: colors.text[theme].secondary }}>
+              <Text style={{ color: colors.text[theme].secondary, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>
                 Skills
               </Text>
             </Stack>
@@ -259,19 +261,21 @@ export function ProfileSnapshotWidget() {
               flex={1}
               minWidth={80}
               style={{ backgroundColor: colors.bg[theme].muted }}
-              padding={10}
-              borderRadius={12}
+              padding={16}
+              borderRadius={16}
               align="center"
             >
               <Text
                 style={{
                   color:
                     theme === "light" ? colors.green[700] : colors.green[300],
+                  fontSize: 24,
+                  fontWeight: '700',
                 }}
               >
                 {certifications?.length || 0}
               </Text>
-              <Text style={{ color: colors.text[theme].secondary }}>Certs</Text>
+              <Text style={{ color: colors.text[theme].secondary, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Certs</Text>
             </Stack>
 
             <Stack
@@ -279,19 +283,21 @@ export function ProfileSnapshotWidget() {
               flex={1}
               minWidth={80}
               style={{ backgroundColor: colors.bg[theme].muted }}
-              padding={10}
-              borderRadius={12}
+              padding={16}
+              borderRadius={16}
               align="center"
             >
               <Text
                 style={{
                   color:
                     theme === "light" ? colors.blue[700] : colors.blue[300],
+                  fontSize: 24,
+                  fontWeight: '700',
                 }}
               >
                 {formattedYearsOfExperience}
               </Text>
-              <Text style={{ color: colors.text[theme].secondary }}>Years</Text>
+              <Text style={{ color: colors.text[theme].secondary, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Years</Text>
             </Stack>
           </Row>
         </Stack>
@@ -300,7 +306,7 @@ export function ProfileSnapshotWidget() {
         {topSkills.length > 0 && (
           <Stack gap={8}>
             <Row justify="space-between" align="center">
-              <Text>Top Skills</Text>
+              <Text style={{ textTransform: 'uppercase', letterSpacing: 1.5, fontSize: 11, fontWeight: '700', color: colors.text[theme].tertiary }}>Top Skills</Text>
               <Button
                 size="sm"
                 variant="text"
