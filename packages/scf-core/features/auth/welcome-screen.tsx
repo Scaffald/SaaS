@@ -1,15 +1,18 @@
+import { useActiveWelcomeSlides } from '@scf/core/utils/cms-sdk-hooks'
 import { useTranslation } from '@scf/core/utils/useTranslation'
+import type { WelcomeSlide } from '@scf/schemas'
 import {
   Onboarding,
   OnboardingStepContent,
   Box,
   Stack,
+  Spinner,
   Text,
   type OnboardingStepInfo,
 } from '@scaffald/ui'
 import { ScaffaldLogo } from '@scf/core/assets'
 import { UserSearch, Share2, Sprout } from 'lucide-react-native'
-import type { FC } from 'react'
+import type { ComponentType, FC } from 'react'
 
 interface WelcomeScreenProps {
   onOnboarded?: () => void
@@ -166,7 +169,16 @@ const createDefaultSlides = (
 ]
 
 export const WelcomeScreen = ({ onOnboarded, brandedPanel = false }: WelcomeScreenProps = {}) => {
+  const { data, isLoading } = useActiveWelcomeSlides()
   const { t } = useTranslation()
+
+  if (isLoading) {
+    return (
+      <Stack flex={1} align="center" justify="center">
+        <Spinner size="lg" />
+      </Stack>
+    )
+  }
 
   // Branded auth panel: dark testimonial carousel
   if (brandedPanel) {
@@ -187,7 +199,28 @@ export const WelcomeScreen = ({ onOnboarded, brandedPanel = false }: WelcomeScre
   }
 
   // Standard onboarding flow (mobile)
-  const steps: OnboardingStepInfo[] = createDefaultSlides(t)
+  const steps: OnboardingStepInfo[] =
+    data?.slides && data.slides.length > 0
+      ? data.slides.map((slide: WelcomeSlide) => {
+          const icons: Record<string, ComponentType<{ size?: number; color?: string }>> = {
+            UserSearch,
+            Share2,
+            Sprout,
+          }
+          const IconComponent = icons[slide.icon_name] ?? UserSearch
+
+          return {
+            backgroundImage: slide.background_image_url,
+            Content: () => (
+              <OnboardingStepContent
+                title={slide.title}
+                icon={IconComponent}
+                description={slide.description}
+              />
+            ),
+          }
+        })
+      : createDefaultSlides(t)
 
   return (
     <Box flex={1}>

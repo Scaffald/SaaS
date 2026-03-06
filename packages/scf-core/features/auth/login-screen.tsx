@@ -11,6 +11,7 @@ import { useUser } from '@scf/core/utils/useUser'
 import { applyZodErrorMap } from '@scf/core/utils/zodErrorMap'
 import {
   Button,
+  Card,
   Checkbox,
   Form,
   H5,
@@ -53,8 +54,13 @@ export const LoginScreen = () => {
   const { t } = useTranslation()
   const { theme } = useThemeContext()
   const textTertiary = colors.text[theme].tertiary
-  const textSecondary = colors.text[theme].secondary
-  const linkColor = colors.primary[700]
+
+  // The glass card is always a warm near-white surface regardless of theme.
+  // Dark-mode text tokens (light colors) fail contrast on it (~1.2:1).
+  // Force light-mode dark text for all content rendered inside the card.
+  const cardTextSecondary = colors.text.light.secondary   // #3c352c — 7.7:1 on glass
+  const cardTextTertiary = colors.text.light.tertiary     // #6e6760 — 3.6:1 on glass
+  const cardLinkColor = colors.primary[700]               // #034550 — 6.8:1 on glass
 
   useEffect(() => {
     if (params?.email) {
@@ -148,86 +154,88 @@ export const LoginScreen = () => {
           </Paragraph>
         </Stack>
 
-        <Form onSubmit={handleSubmit} gap={spacing[20]}>
-          <Stack gap={spacing[20]}>
-            <Input
-              placeholder={t('auth.login.emailPlaceholder')}
-              value={form.watch('email')}
-              onChangeText={(text) => form.setValue('email', text)}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-              iconStart={Mail}
-              error={!!form.formState.errors.email}
-              errorMessage={form.formState.errors.email?.message}
-              disabled={!hasAgreed}
-            />
+        <Card variant="glass" radius="lg" elevation="md" padding="lg" style={{ width: '100%' }}>
+          <Form onSubmit={handleSubmit} gap={spacing[20]}>
+            <Stack gap={spacing[20]}>
+              <Input
+                placeholder={t('auth.login.emailPlaceholder')}
+                value={form.watch('email')}
+                onChangeText={(text) => form.setValue('email', text)}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+                iconStart={Mail}
+                error={!!form.formState.errors.email}
+                errorMessage={form.formState.errors.email?.message}
+                disabled={!hasAgreed}
+              />
 
-            <Button
-              onPress={handleSubmit}
-              disabled={!hasAgreed || isSubmitting || requestMagicLink.isPending}
-              color="primary"
-              variant="filled"
-              style={{
-                alignSelf: 'stretch',
-                opacity: !hasAgreed || isSubmitting || requestMagicLink.isPending ? 0.5 : 1,
-              }}
-            >
-              {isSubmitting || requestMagicLink.isPending
-                ? t('auth.login.sending')
-                : t('auth.login.submitButton')}
-            </Button>
+              <Button
+                onPress={handleSubmit}
+                disabled={!hasAgreed || isSubmitting || requestMagicLink.isPending}
+                color="primary"
+                variant="filled"
+                style={{
+                  alignSelf: 'stretch',
+                  opacity: !hasAgreed || isSubmitting || requestMagicLink.isPending ? 0.5 : 1,
+                }}
+              >
+                {isSubmitting || requestMagicLink.isPending
+                  ? t('auth.login.sending')
+                  : t('auth.login.submitButton')}
+              </Button>
 
-            <SocialLogin />
-            <Paragraph size="sm" style={{ color: textSecondary }}>
-              {t('auth.login.socialDescription')}
-            </Paragraph>
+              <SocialLogin />
+              <Paragraph size="sm" style={{ color: cardTextSecondary }}>
+                {t('auth.login.socialDescription')}
+              </Paragraph>
 
-            {/* Legal consent checkbox */}
-            <Stack gap={spacing[4]}>
-              <Pressable onPress={() => setHasAgreed(!hasAgreed)}>
-                <Row gap={spacing[10]} align="center">
-                  <Checkbox
-                    checked={hasAgreed}
-                    onChange={setHasAgreed}
-                  />
-                  <Paragraph size="xs" style={{ color: textTertiary, flex: 1, lineHeight: 18 }}>
-                    {'I agree to the '}
-                    <Text
-                      style={{
-                        color: linkColor,
-                        textDecorationLine: 'underline',
-                        fontSize: 12,
-                        lineHeight: 18,
-                      }}
-                      onPress={() => router.push(ROUTES.AUTH.TERMS.path)}
-                    >
-                      Terms of Service
-                    </Text>
-                    {' and '}
-                    <Text
-                      style={{
-                        color: linkColor,
-                        textDecorationLine: 'underline',
-                        fontSize: 12,
-                        lineHeight: 18,
-                      }}
-                      onPress={() => router.push(ROUTES.AUTH.PRIVACY.path)}
-                    >
-                      Privacy Policy
-                    </Text>
-                    {', and acknowledge the use of cookies.'}
+              {/* Legal consent checkbox */}
+              <Stack gap={spacing[4]}>
+                <Pressable onPress={() => setHasAgreed(!hasAgreed)}>
+                  <Row gap={spacing[10]} align="center">
+                    <Checkbox
+                      checked={hasAgreed}
+                      onChange={setHasAgreed}
+                    />
+                    <Paragraph size="xs" style={{ color: cardTextTertiary, flex: 1, lineHeight: 18 }}>
+                      {'I agree to the '}
+                      <Text
+                        style={{
+                          color: cardLinkColor,
+                          textDecorationLine: 'underline',
+                          fontSize: 12,
+                          lineHeight: 18,
+                        }}
+                        onPress={() => router.push(ROUTES.AUTH.TERMS.path)}
+                      >
+                        Terms of Service
+                      </Text>
+                      {' and '}
+                      <Text
+                        style={{
+                          color: cardLinkColor,
+                          textDecorationLine: 'underline',
+                          fontSize: 12,
+                          lineHeight: 18,
+                        }}
+                        onPress={() => router.push(ROUTES.AUTH.PRIVACY.path)}
+                      >
+                        Privacy Policy
+                      </Text>
+                      {', and acknowledge the use of cookies.'}
+                    </Paragraph>
+                  </Row>
+                </Pressable>
+                {!hasAgreed && (
+                  <Paragraph size="xs" style={{ color: colors.fg.light.error }}>
+                    You must agree to the Terms and Privacy Policy to continue.
                   </Paragraph>
-                </Row>
-              </Pressable>
-              {!hasAgreed && (
-                <Paragraph size="xs" style={{ color: colors.fg.light.error }}>
-                  You must agree to the Terms and Privacy Policy to continue.
-                </Paragraph>
-              )}
+                )}
+              </Stack>
             </Stack>
-          </Stack>
-        </Form>
+          </Form>
+        </Card>
       </Stack>
       {isLoadingSession && <LoadingOverlay />}
     </FormProvider>
