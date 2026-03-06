@@ -62,29 +62,40 @@ const listRoute = createRoute({
   },
 })
 
+const SCHEMA_CACHE_MSG = 'Could not query the database for the schema cache'
+const MAX_RETRIES = 3
+const RETRY_MS = 150
+
 app.openapi(listRoute, async (c) => {
   const supabase = c.get('supabase')
-  const { data, error } = await supabase
-    .schema('core')
-    .from('industries')
-    .select('id, name, slug, description')
-    .order('name', { ascending: true })
+  let lastError: { message: string } | null = null
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    const { data, error } = await supabase
+      .schema('core')
+      .from('industries')
+      .select('id, name, slug, description')
+      .order('name', { ascending: true })
 
-  if (error) {
-    return c.json(
-      {
-        error: 'Failed to fetch industries',
-        message: error.message,
-      },
-      500
-    )
+    if (!error) {
+      const list = data ?? []
+      return c.json({
+        data: list,
+        total: list.length,
+      })
+    }
+    lastError = error
+    const isSchemaCache = error.message.includes(SCHEMA_CACHE_MSG)
+    if (!isSchemaCache || attempt === MAX_RETRIES) break
+    await new Promise((r) => setTimeout(r, RETRY_MS))
   }
 
-  const list = data ?? []
-  return c.json({
-    data: list,
-    total: list.length,
-  })
+  return c.json(
+    {
+      error: 'Failed to fetch industries',
+      message: lastError?.message ?? 'Unknown error',
+    },
+    500
+  )
 })
 
 // GET /:slug - Get industry by slug

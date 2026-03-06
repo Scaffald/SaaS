@@ -3,6 +3,7 @@
  * Migrated from: packages/supabase/functions/trpc/routers/cms.router.ts
  */
 
+import { createClient } from '@supabase/supabase-js'
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
@@ -13,29 +14,44 @@ app.use('*', authMiddleware)
 
 // ============================================================================
 // GET /active - Public, active slides only
+// Uses service role to avoid anon RLS and schema-cache flakiness; data is public.
 // ============================================================================
 
+const SCHEMA_CACHE_MSG = 'Could not query the database for the schema cache'
+const MAX_RETRIES = 3
+const RETRY_MS = 150
+
 app.get('/welcome-slides/active', async (c) => {
-  const supabase = c.get('supabase')
+  const supabaseAdmin = c.get('supabaseAdmin')
+  const url = Deno.env.get('SUPABASE_URL')
+  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+  const client = supabaseAdmin ?? (url && serviceKey ? createClient(url, serviceKey) : c.get('supabase'))
 
-  const { data, error } = await supabase
-    .schema('cms')
-    .from('welcome_slides')
-    .select('*')
-    .eq('is_active', true)
-    .order('display_order', { ascending: true })
+  let lastError: { message: string } | null = null
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    const { data, error } = await client
+      .schema('cms')
+      .from('welcome_slides')
+      .select('*')
+      .eq('is_active', true)
+      .order('display_order', { ascending: true })
 
-  if (error) {
-    return c.json(
-      {
-        error: 'Internal Server Error',
-        message: `Failed to fetch welcome slides: ${error.message}`,
-      },
-      500
-    )
+    if (!error) {
+      return c.json({ data: { slides: data } })
+    }
+    lastError = error
+    const isSchemaCache = error.message.includes(SCHEMA_CACHE_MSG)
+    if (!isSchemaCache || attempt === MAX_RETRIES) break
+    await new Promise((r) => setTimeout(r, RETRY_MS))
   }
 
-  return c.json({ data: { slides: data } })
+  return c.json(
+    {
+      error: 'Internal Server Error',
+      message: `Failed to fetch welcome slides: ${lastError?.message ?? 'Unknown error'}`,
+    },
+    500
+  )
 })
 
 // ============================================================================
