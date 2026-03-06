@@ -1,9 +1,10 @@
 import type { ViewStyle, TextStyle } from 'react-native'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
+import { boxShadows } from '../../tokens/shadows'
 import type { ThemeMode } from '../../tokens/colors'
 import type { ChipSize } from './Chip.types'
 
@@ -15,6 +16,7 @@ export const staticStyles = StyleSheet.create({
     borderRadius: borderRadius.max, // Fully rounded (pill shape)
     borderWidth: 1,
   },
+  // Focus ring: shadow* only used on native; web uses getChipFocusStyle()
   focusRing: {
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
@@ -148,12 +150,16 @@ export function getChipStyles(
     }
   }
 
-  // Focus state
+  // Focus state (use boxShadow on web to avoid "shadow* deprecated" console error)
   if (isFocused && !disabled) {
-    baseStyles.push({
-      ...staticStyles.focusRing,
-      shadowColor: colors.icon[resolvedTheme].muted,
-    })
+    if (Platform.OS === 'web') {
+      baseStyles.push({ boxShadow: boxShadows.focusBase })
+    } else {
+      baseStyles.push({
+        ...staticStyles.focusRing,
+        shadowColor: colors.icon[resolvedTheme].muted,
+      })
+    }
   }
 
   // Disabled state

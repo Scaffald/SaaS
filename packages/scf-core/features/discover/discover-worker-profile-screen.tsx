@@ -14,10 +14,13 @@ import { LinearGradient } from 'expo-linear-gradient'
 import type { ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
 import type { DimensionValue } from 'react-native'
-import { Animated, Easing } from 'react-native'
+import { Animated, Easing, Platform } from 'react-native'
 import { Text, Row, Stack } from '@scaffald/ui'
 
 const SHIMMER_WIDTH = 220
+
+/** On web, native driver is not supported; use JS driver to avoid console warning. */
+const USE_NATIVE_DRIVER = Platform.OS !== 'web'
 
 interface DiscoverWorkerProfileScreenOptions {
   userId: string | null | undefined
@@ -46,7 +49,7 @@ function SkeletonBlock({
         toValue: 1,
         duration: 1400,
         easing: Easing.linear,
-        useNativeDriver: true,
+        useNativeDriver: USE_NATIVE_DRIVER,
       })
     )
 
@@ -74,7 +77,6 @@ function SkeletonBlock({
       }}
     >
       <Animated.View
-        pointerEvents="none"
         style={{
           position: 'absolute',
           top: 0,
@@ -82,6 +84,7 @@ function SkeletonBlock({
           height: '100%',
           width: SHIMMER_WIDTH,
           transform: [{ translateX }],
+          pointerEvents: 'none',
         }}
       >
         <LinearGradient

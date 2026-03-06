@@ -22,6 +22,8 @@ export function initSentry() {
   }
 
   if (!isSentryAvailable()) {
+    // Silent when DSN not configured (e.g. local dev) to keep console clean
+    if (__DEV__) return
     console.warn('[sentry] DSN not configured; Sentry disabled.')
     return
   }

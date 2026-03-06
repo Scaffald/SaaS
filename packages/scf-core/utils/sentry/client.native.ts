@@ -23,6 +23,7 @@ export function initSentry() {
   }
 
   if (!isSentryAvailable()) {
+    if (__DEV__) return
     console.warn('[sentry] DSN not configured; Sentry disabled.')
     return
   }

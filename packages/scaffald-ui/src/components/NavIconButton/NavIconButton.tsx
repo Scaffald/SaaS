@@ -79,7 +79,7 @@ export function NavIconButton({
   const Icon = IconComponent || Bell
 
   const buttonContent = (
-    <View style={[containerStyles, style]} pointerEvents="box-none">
+    <View style={[containerStyles, style, { pointerEvents: 'box-none' }]}>
       {/* Icon */}
       <View style={styles.iconContainer}>
         <Icon size={iconSize} color={iconColor} />

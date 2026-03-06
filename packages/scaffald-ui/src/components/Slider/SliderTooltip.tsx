@@ -89,9 +89,9 @@ export function SliderTooltip({
           backgroundColor: getBackgroundColor(),
         },
         tooltipPosition,
+        { pointerEvents: 'none' },
         style,
       ]}
-      pointerEvents="none"
     >
       <Text style={[styles.text, textStyle]}>{getDisplayText()}</Text>
     </View>

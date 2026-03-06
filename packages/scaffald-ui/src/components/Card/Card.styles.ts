@@ -125,13 +125,11 @@ export function getCardStyles(
     case "elevated": {
       container = {
         ...baseStyle,
-        ...SHADOW_MAP[elevation],
+        // On web use boxShadow only to avoid "shadow* deprecated" console error
+        ...(Platform.OS === "web"
+          ? { boxShadow: BOX_SHADOW_MAP[elevation] }
+          : SHADOW_MAP[elevation]),
       };
-      // Add web-specific box-shadow
-      if (Platform.OS === "web") {
-        (container as Record<string, unknown>).boxShadow =
-          BOX_SHADOW_MAP[elevation];
-      }
       break;
     }
     case "outlined":

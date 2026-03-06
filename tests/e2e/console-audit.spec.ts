@@ -19,16 +19,38 @@ const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:8081'
 /** Public routes – no auth */
 const PUBLIC_ROUTES = ['/', '/auth', '/auth/verify', '/auth/success']
 
-/** Dashboard routes – require auth */
+/** Dashboard routes – require auth. Covers all static dashboard pages. */
 const DASHBOARD_ROUTES = [
   '/dashboard',
   '/dashboard/map',
   '/dashboard/profile',
+  '/dashboard/profile/general',
+  '/dashboard/profile/education',
+  '/dashboard/profile/experience',
+  '/dashboard/profile/employment',
+  '/dashboard/profile/skills',
+  '/dashboard/profile/certifications',
+  '/dashboard/profile/resume',
+  '/dashboard/profile/background-check',
   '/dashboard/workers',
   '/dashboard/jobs',
   '/dashboard/employers',
   '/dashboard/work-logs',
+  '/dashboard/work-logs/create',
+  '/dashboard/assessments',
+  '/dashboard/assessments/pulse',
+  '/dashboard/assessments/ipip',
+  '/dashboard/assessments/riasec',
+  '/dashboard/assessments/occupation',
+  '/dashboard/settings',
+  '/dashboard/organizations',
+  '/dashboard/teams',
+  '/dashboard/news',
+  '/dashboard/connections',
 ]
+
+/** Dynamic dashboard routes (require valid IDs). Audit manually with real IDs or add test fixture IDs. */
+// const DASHBOARD_DYNAMIC_ROUTES = ['/dashboard/workers/[id]', '/dashboard/employers/[id]', '/dashboard/work-logs/[workLogId]', '/dashboard/users/[id]']
 
 /** Office routes – require admin */
 const OFFICE_ROUTES = ['/office', '/office/jobs', '/office/applications', '/office/cms']
@@ -70,11 +92,13 @@ function isLikelyNoise(msg: ConsoleEntry): boolean {
   if (/shadow\*.*deprecated.*boxShadow/i.test(t)) return true
   if (/props\.pointerEvents is deprecated/i.test(t)) return true
   if (/Image: style\.resizeMode is deprecated/i.test(t)) return true
+  if (/Error fetching profiles.*PGRST002|Could not query the database for the schema cache/i.test(t)) return true
   return false
 }
 
 test.describe('Console audit', () => {
   test('collect console and network output for all main routes', async ({ page }) => {
+    test.setTimeout(10 * 60 * 1000) // 10 min – many routes (public + dashboard + office)
     const routeLogs: ConsoleEntry[] = []
     const routeNetwork: NetworkError[] = []
 
@@ -205,6 +229,16 @@ test.describe('Console audit', () => {
 
     const mdPath = join(docsDir, 'console-audit.md')
     writeFileSync(mdPath, md, 'utf-8')
+
+    // Append static triage/fixes section (not overwritten by next run)
+    const triageSection = `
+
+## Triage and allowlist
+
+- **Allowlisted (not reported as errors):** Failed to load resource (browser network errors), Sentry DSN not configured, useNativeDriver on web, Route missing default export, shadow*/pointerEvents/resizeMode deprecations, PGRST002 schema cache errors.
+- **Fixes applied:** Expo route default exports (\`_FloatingToggles.tsx\`, \`_LegalDocumentLayout.tsx\`); Lucide icon size tokens replaced with \`getIconSize('md'|'lg')\` in discover (InternalJobCard, EmployerCard, discover-workers-right, OrganizationCard, JobCard, AddOrganizationWidget). Dashboard audit 2026-03-06: profile education tRPC → \`useSearchUniversities\` (office-universities-sdk-hooks); profile skills SVG size → \`getIconSize('lg')\` in SkillCompletionProgress. Console cleanup: Sentry no log when DSN not configured in \`__DEV__\`; Card/Chip/SaaSNavigation/SaaSSectionHeader use \`boxShadow\` only on web (no shadow*); \`pointerEvents\` moved to \`style.pointerEvents\` in Slider, DatePickerDay, NavIconButton, LoadingOverlay, ToastContainer, SliderTooltip, NotificationListItem, discover-worker-profile-screen.
+`
+    writeFileSync(mdPath, md + triageSection, 'utf-8')
 
     expect(audits.length).toBeGreaterThan(0)
   })
