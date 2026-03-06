@@ -11,10 +11,12 @@ import {
   EmptyState,
   H4,
   LoadingState,
+  useThemeContext,
 } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState, type FC } from 'react'
 import { Separator, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import type { ProfileWidgetProps } from './types'
 
 interface SkillsChartDataset {
@@ -43,6 +45,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
   showCTA = false,
 }) => {
   const router = useRouter()
+  const { theme } = useThemeContext()
   const [activeCategory, setActiveCategory] = useState<SoftSkillCategory>('reliability')
 
   // Fetch soft skills data
@@ -126,13 +129,13 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
       {
         label: categoryLabels[activeCategory],
         data: chartData,
-        fillColor: '#bfdbfe',
-        strokeColor: '#1d4ed8',
+        fillColor: colors.blue[200],
+        strokeColor: colors.blue[700],
         strokeWidth: 3,
         fillOpacity: 0.02,
         gradient: {
-          startColor: '#3b82f6',
-          endColor: '#bfdbfe',
+          startColor: colors.blue[500],
+          endColor: colors.blue[200],
         },
       },
     ]
@@ -151,8 +154,8 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
         datasets.push({
           label: 'Peer Average',
           data: peerChartData,
-          fillColor: '#dcfce7',
-          strokeColor: '#15803d',
+          fillColor: colors.green[100],
+          strokeColor: colors.green[700],
           strokeWidth: 3,
           fillOpacity: 0.02,
         })
@@ -174,8 +177,8 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text style={{ color: '#ef4444' }}>Failed to load soft skills</Text>
-          <Text style={{ color: '#414e62' }}>{error.message}</Text>
+          <Text style={{ color: colors.fg[theme].error }}>Failed to load soft skills</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -213,11 +216,11 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
           </Row>
           <Stack gap={16}>
             <Stack gap={8}>
-              <Text style={{ color: '#414e62' }}>
+              <Text style={{ color: colors.text[theme].secondary }}>
                 Complete your soft skills assessment to showcase your strengths and improve job
                 matching.
               </Text>
-              <Text style={{ color: '#414e62' }}>{completionCount} of 25 skills rated</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>{completionCount} of 25 skills rated</Text>
             </Stack>
             <Button variant="filled" color="primary" onPress={handleNavigateToAssessment}>
               Complete Soft Skills Assessment
@@ -265,13 +268,13 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
         {/* Chart Comparison */}
         {categoryChartData && categoryChartData.length > 0 && (
           <Stack gap={16}>
-            <Text style={{ color: '#414e62', textAlign: 'center' }}>
+            <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
               {categoryLabels[activeCategory]} Skills
             </Text>
 
             {/* Skills chart placeholder - SkillsChart not available in @scaffald/ui */}
             <Stack align="center" paddingVertical={16} style={{ height: chartHeight }}>
-              <Text style={{ color: '#414e62' }}>
+              <Text style={{ color: colors.text[theme].secondary }}>
                 Chart radius: {chartRadius}px
               </Text>
             </Stack>
@@ -280,17 +283,17 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
             {categoryChartData.length > 1 && (
               <Row gap={16} align="center" justify="center" paddingVertical={8}>
                 <Row gap={8} align="center">
-                  <Stack width={20} height={3} backgroundColor="#1d4ed8" />
-                  <Text style={{ color: '#414e62' }}>Self Assessment</Text>
+                  <Stack width={20} height={3} backgroundColor={colors.blue[700]} />
+                  <Text style={{ color: colors.text[theme].secondary }}>Self Assessment</Text>
                 </Row>
                 <Row gap={8} align="center">
-                  <Stack width={20} height={3} backgroundColor="#15803d" />
-                  <Text style={{ color: '#414e62' }}>Peer Average</Text>
+                  <Stack width={20} height={3} backgroundColor={colors.green[700]} />
+                  <Text style={{ color: colors.text[theme].secondary }}>Peer Average</Text>
                 </Row>
               </Row>
             )}
 
-            <Text style={{ color: '#414e62', textAlign: 'center' }}>
+            <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
               Individual skill ratings in {categoryLabels[activeCategory]}
             </Text>
           </Stack>

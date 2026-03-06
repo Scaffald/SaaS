@@ -7,11 +7,13 @@ import {
   H4,
   LoadingState,
   ResponsiveModal,
+  useThemeContext,
 } from '@scaffald/ui'
 import { randomUUID } from 'expo-crypto'
 import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from 'lucide-react-native'
 import { useState } from 'react'
 import { Card, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { ReviewWizard } from '../../reviews/components/ReviewWizard'
 import type { ProfileWidgetProps } from './types'
 
@@ -38,6 +40,7 @@ interface Review {
  */
 export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: ProfileWidgetProps) {
   const [showReviewModal, setShowReviewModal] = useState(false)
+  const { theme } = useThemeContext()
   const { user: currentUser } = useUser()
 
   // Fetch profile data for review modal
@@ -90,8 +93,8 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={24}>
-          <Text style={{ color: '#ef4444' }}>Failed to load reviews</Text>
-          <Text style={{ color: '#414e62' }}>{error.message}</Text>
+          <Text style={{ color: colors.fg[theme].error }}>Failed to load reviews</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
           <Button
             variant="filled" color="primary"
             size="sm"
@@ -126,8 +129,8 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
               )}
             </Row>
             <Stack align="center" justify="center" minHeight={150} gap={8}>
-              <Text style={{ color: '#414e62' }}>No reviews yet</Text>
-              {canLeaveReview && <Text style={{ color: '#414e62' }}>Be the first to leave a review</Text>}
+              <Text style={{ color: colors.text[theme].secondary }}>No reviews yet</Text>
+              {canLeaveReview && <Text style={{ color: colors.text[theme].secondary }}>Be the first to leave a review</Text>}
             </Stack>
           </Stack>
         </DashboardWidget>
@@ -198,22 +201,22 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
           </Row>
 
           {/* Rating Summary */}
-          <Card variant="outlined" backgroundColor="#f9fafb">
+          <Card variant="outlined" backgroundColor={colors.bg[theme].subtle}>
             <Stack gap={12} padding="md">
               <Row gap={16} align="center">
                 <Stack align="center">
-                  <Text style={{ color: '#414e62' }}>{overallRating.toFixed(1)}</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>{overallRating.toFixed(1)}</Text>
                   <Row gap={4}>
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={randomUUID()}
                         size={16}
-                        color="#d97706"
-                        fill={i < Math.floor(overallRating) ? '#d97706' : 'transparent'}
+                        color={colors.amber[600]}
+                        fill={i < Math.floor(overallRating) ? colors.amber[600] : 'transparent'}
                       />
                     ))}
                   </Row>
-                  <Text style={{ color: '#414e62' }}>
+                  <Text style={{ color: colors.text[theme].secondary }}>
                     {totalReviews} {totalReviews === 1 ? 'review' : 'reviews'}
                   </Text>
                 </Stack>
@@ -224,22 +227,22 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                       const categoryData = data as { sum: number; count: number }
                       return (
                         <Row key={category} gap={8} align="center">
-                          <Text style={{ color: '#414e62', width: 100, textTransform: 'capitalize' }}>
+                          <Text style={{ color: colors.text[theme].secondary, width: 100, textTransform: 'capitalize' }}>
                             {category}
                           </Text>
                           <Row
                             flex={1}
                             height={6}
-                            backgroundColor="#f3f4f6"
+                            backgroundColor={colors.bg[theme].muted}
                             borderRadius={8}
                             style={{ overflow: 'hidden' }}
                           >
                             <Row
                               width={`${(categoryData.sum / categoryData.count / 5) * 100}%`}
-                              backgroundColor="#d97706"
+                              backgroundColor={colors.amber[600]}
                             />
                           </Row>
-                          <Text style={{ color: '#414e62', width: 30 }}>
+                          <Text style={{ color: colors.text[theme].secondary, width: 30 }}>
                             {(categoryData.sum / categoryData.count).toFixed(1)}
                           </Text>
                         </Row>
@@ -256,22 +259,22 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                   align="center"
                   paddingHorizontal={12}
                   paddingVertical={8}
-                  backgroundColor="#dcfce7"
+                  backgroundColor={colors.green[100]}
                   borderRadius={12}
                 >
-                  <ThumbsUp size={16} color="#16a34a" />
-                  <Text style={{ color: '#16a34a' }}>{recommendCount} Recommend</Text>
+                  <ThumbsUp size={16} color={colors.fg[theme].success} />
+                  <Text style={{ color: colors.fg[theme].success }}>{recommendCount} Recommend</Text>
                 </Row>
                 <Row
                   gap={8}
                   align="center"
                   paddingHorizontal={12}
                   paddingVertical={8}
-                  backgroundColor="#fef2f2"
+                  backgroundColor={colors.error[50]}
                   borderRadius={12}
                 >
-                  <ThumbsDown size={16} color="#ef4444" />
-                  <Text style={{ color: '#ef4444' }}>{notRecommendCount} Don't Recommend</Text>
+                  <ThumbsDown size={16} color={colors.fg[theme].error} />
+                  <Text style={{ color: colors.fg[theme].error }}>{notRecommendCount} Don't Recommend</Text>
                 </Row>
               </Row>
             </Stack>
@@ -279,28 +282,28 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
 
           {/* Reviews List */}
           <Stack gap={12}>
-            <Text style={{ color: '#414e62' }}>Reviews ({totalReviews})</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Reviews ({totalReviews})</Text>
             {reviewsToShow.map((review: Review) => (
-              <Card key={review.id} variant="outlined" backgroundColor="#f9fafb">
+              <Card key={review.id} variant="outlined" backgroundColor={colors.bg[theme].subtle}>
                 <Stack gap={12} padding="md">
                   <Row justify="space-between" align="flex-start">
                     <Stack gap={4}>
                       <Row gap={8} align="center">
-                        <Text style={{ color: '#414e62' }}>Anonymous Reviewer</Text>
+                        <Text style={{ color: colors.text[theme].secondary }}>Anonymous Reviewer</Text>
                         <Row
                           gap={4}
                           align="center"
                           paddingHorizontal={8}
                           paddingVertical={2}
-                          backgroundColor="#dbeafe"
+                          backgroundColor={colors.blue[100]}
                           borderRadius={8}
                         >
-                          <Shield size={14} color="#2563eb" />
-                          <Text style={{ color: '#2563eb' }}>VERIFIED</Text>
+                          <Shield size={14} color={colors.blue[600]} />
+                          <Text style={{ color: colors.blue[600] }}>VERIFIED</Text>
                         </Row>
                       </Row>
                     </Stack>
-                    <Text style={{ color: '#414e62' }}>{new Date(review.created_at).toLocaleDateString()}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>{new Date(review.created_at).toLocaleDateString()}</Text>
                   </Row>
 
                   {/* Overall Rating */}
@@ -316,8 +319,8 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                           <Star
                             key={randomUUID()}
                             size={16}
-                            color="#d97706"
-                            fill={i < Math.floor(avgRating) ? '#d97706' : 'transparent'}
+                            color={colors.amber[600]}
+                            fill={i < Math.floor(avgRating) ? colors.amber[600] : 'transparent'}
                           />
                         )
                       })}
@@ -325,20 +328,20 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                   )}
 
                   {/* Comment */}
-                  {review.comment && <Text style={{ color: '#414e62' }}>{review.comment}</Text>}
+                  {review.comment && <Text style={{ color: colors.text[theme].secondary }}>{review.comment}</Text>}
 
                   {/* Recommendation */}
                   {review.reaction !== null && (
                     <Row gap={8} align="center">
                       {review.reaction === 1 ? (
                         <>
-                          <ThumbsUp size={16} color="#16a34a" />
-                          <Text style={{ color: '#16a34a' }}>Recommends this person</Text>
+                          <ThumbsUp size={16} color={colors.fg[theme].success} />
+                          <Text style={{ color: colors.fg[theme].success }}>Recommends this person</Text>
                         </>
                       ) : (
                         <>
-                          <ThumbsDown size={16} color="#ef4444" />
-                          <Text style={{ color: '#ef4444' }}>Does not recommend</Text>
+                          <ThumbsDown size={16} color={colors.fg[theme].error} />
+                          <Text style={{ color: colors.fg[theme].error }}>Does not recommend</Text>
                         </>
                       )}
                     </Row>
@@ -348,7 +351,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
             ))}
 
             {showCompact && reviews.length > 2 && (
-              <Text style={{ color: '#3b82f6', cursor: 'pointer' }}>
+              <Text style={{ color: colors.blue[500], cursor: 'pointer' }}>
                 + {reviews.length - 2} more reviews
               </Text>
             )}

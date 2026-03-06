@@ -8,9 +8,9 @@
 
 /**
  * Shadow color from Figma
- * gray[900] (#141c25) with varying opacity
+ * gray[900] (#16110d) warm near-black with varying opacity
  */
-const shadowColor = '#141c25'
+const shadowColor = '#16110d'
 
 /**
  * Shadow definitions mapped from Figma Forsured Design System
@@ -120,9 +120,9 @@ export const shadows = {
   },
 
   // Focus state shadows - Primary (Brand)
-  // Double shadow: Outer ring (Primary Brand/200 #ffc4a8, spread: 4) + Inner ring (white, spread: 2)
+  // Double shadow: Outer ring (primary[200] teal #91d8e2, spread: 4) + Inner ring (white, spread: 2)
   focusPrimary: {
-    shadowColor: '#ffc4a8', // Primary Brand/200 - outer ring
+    shadowColor: '#7fd1de', // primary[200] teal - outer ring
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
     shadowRadius: 0, // Pure spread, no blur
@@ -133,9 +133,9 @@ export const shadows = {
   },
 
   // Focus state shadows - Error
-  // Double shadow: Outer ring (Error/300 #ff8585, spread: 4) + Inner ring (white, spread: 2)
+  // Double shadow: Outer ring (error[300] terracotta #e58e80, spread: 4) + Inner ring (white, spread: 2)
   focusError: {
-    shadowColor: '#ff8585', // Error/300 - outer ring
+    shadowColor: '#e58e80', // error[300] terracotta - outer ring
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
     shadowRadius: 0, // Pure spread, no blur
@@ -143,6 +143,16 @@ export const shadows = {
     // Note: React Native doesn't support spread radius well.
     // For web, use boxShadows.focusError which includes both shadows.
     // For React Native, consider using border-based focus indicators.
+  },
+
+  // Soft wide-diffused shadow - matches comp's "0 4px 20px -2px rgba(0,0,0,0.05)"
+  // Lighter and more airy than shadow-m; ideal for profile/dashboard cards
+  soft: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 3,
   },
 
   // Legacy aliases for backward compatibility
@@ -186,28 +196,28 @@ export const boxShadows = {
   none: 'none',
 
   // Extra small shadow - shadow-xs
-  xs: '0 1px 2px 0 rgba(20, 28, 37, 0.051)', // #141c250d
+  xs: '0 1px 2px 0 rgba(22, 17, 13, 0.051)', // #16110d0d
 
   // Small shadow - shadow-s
-  s: '0 1px 3px 0 rgba(20, 28, 37, 0.078)', // #141c2514
+  s: '0 1px 3px 0 rgba(22, 17, 13, 0.078)', // #16110d14
 
   // Medium shadow - shadow-m
-  m: '0 4px 6px -1px rgba(20, 28, 37, 0.078)', // #141c2514, spread: -1
+  m: '0 4px 6px -1px rgba(22, 17, 13, 0.078)', // #16110d14, spread: -1
 
   // Large shadow - shadow-l
-  l: '0 10px 15px -3px rgba(20, 28, 37, 0.078)', // #141c2514, spread: -3
+  l: '0 10px 15px -3px rgba(22, 17, 13, 0.078)', // #16110d14, spread: -3
 
   // Extra large shadow - shadow-xl
-  xl: '0 20px 25px -5px rgba(20, 28, 37, 0.102)', // #141c251a, spread: -5
+  xl: '0 20px 25px -5px rgba(22, 17, 13, 0.102)', // #16110d1a, spread: -5
 
   // Extra extra large shadow - shadow-xxl
-  xxl: '0 25px 50px -12px rgba(20, 28, 37, 0.251)', // #141c2540, spread: -12
+  xxl: '0 25px 50px -12px rgba(22, 17, 13, 0.251)', // #16110d40, spread: -12
 
   // Button shadow - button-shadow
-  button: '0 1px 2px 0 rgba(20, 28, 37, 0.039)', // #141c250a
+  button: '0 1px 2px 0 rgba(22, 17, 13, 0.039)', // #16110d0a
 
   // Tabs shadow - tabs-shadow
-  tabs: '0 1px 3px 0 rgba(20, 28, 37, 0.051)', // #141c250d
+  tabs: '0 1px 3px 0 rgba(22, 17, 13, 0.051)', // #16110d0d
 
   // Focus state shadows - Base
   // Double shadow creates an outline ring: Outer gray ring (4px spread) + Inner white ring (2px spread)
@@ -216,17 +226,20 @@ export const boxShadows = {
 
   // Focus state shadows - Primary (Brand)
   // Double shadow creates an outline ring: Outer primary ring (4px spread) + Inner white ring (2px spread)
-  focusPrimary: '0 0 0 4px rgba(255, 196, 168, 1), 0 0 0 2px rgba(255, 255, 255, 1)', // Primary Brand/200 outer, white inner
+  focusPrimary: '0 0 0 4px rgba(127, 209, 222, 1), 0 0 0 2px rgba(255, 255, 255, 1)', // primary[200] teal outer, white inner
 
   // Focus state shadows - Error
   // Double shadow creates an outline ring: Outer error ring (4px spread) + Inner white ring (2px spread)
-  focusError: '0 0 0 4px rgba(255, 133, 133, 1), 0 0 0 2px rgba(255, 255, 255, 1)', // Error/300 outer, white inner
+  focusError: '0 0 0 4px rgba(229, 142, 128, 1), 0 0 0 2px rgba(255, 255, 255, 1)', // error[300] terracotta outer, white inner
+
+  // Soft wide-diffused shadow - matches comp's card shadow
+  soft: '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
 
   // Legacy aliases for backward compatibility
-  sm: '0 1px 3px 0 rgba(20, 28, 37, 0.078)', // Matches shadow-s
-  md: '0 4px 6px -1px rgba(20, 28, 37, 0.078)', // Matches shadow-m
-  lg: '0 10px 15px -3px rgba(20, 28, 37, 0.078)', // Matches shadow-l
-  '2xl': '0 25px 50px -12px rgba(20, 28, 37, 0.251)', // Matches shadow-xxl
+  sm: '0 1px 3px 0 rgba(22, 17, 13, 0.078)', // Matches shadow-s
+  md: '0 4px 6px -1px rgba(22, 17, 13, 0.078)', // Matches shadow-m
+  lg: '0 10px 15px -3px rgba(22, 17, 13, 0.078)', // Matches shadow-l
+  '2xl': '0 25px 50px -12px rgba(22, 17, 13, 0.251)', // Matches shadow-xxl
 } as const
 
 /**

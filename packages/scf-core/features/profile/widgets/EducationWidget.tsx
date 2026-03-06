@@ -6,10 +6,12 @@ import {
   EmptyState,
   H4,
   LoadingState,
+  useThemeContext,
 } from "@scaffald/ui";
 import { GraduationCap } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { Separator, Text, Row, Stack } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import { formatDate } from "../utils/date-formatting";
 import type { ProfileWidgetProps } from "./types";
 import type { EducationWidgetEntry } from "@scaffald/sdk";
@@ -30,6 +32,7 @@ export function EducationWidget({
   variant = "full",
 }: ProfileWidgetProps) {
   const router = useRouter();
+  const { theme } = useThemeContext();
   const { data, isLoading, error, refetch, isFetching } = useEducationWidget(
     { userId },
     {
@@ -49,8 +52,8 @@ export function EducationWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text style={{ color: "#ef4444" }}>Failed to load education</Text>
-          <Text style={{ color: "#414e62" }}>{error.message}</Text>
+          <Text style={{ color: colors.fg[theme].error }}>Failed to load education</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
           <Button
             variant="filled"
             color="primary"
@@ -116,18 +119,18 @@ export function EducationWidget({
                       {edu.degree_type || "Degree"}
                       {edu.field_of_study && ` in ${edu.field_of_study}`}
                     </Text>
-                    <Text style={{ color: "#414e62" }}>
+                    <Text style={{ color: colors.text[theme].secondary }}>
                       {edu.institution_name || "Institution"}
                     </Text>
                   </Stack>
 
                   {/* Duration */}
                   <Row gap={8} align="center">
-                    <Text style={{ color: "#414e62" }}>
+                    <Text style={{ color: colors.text[theme].secondary }}>
                       {formatDate(edu.start_date)}
                     </Text>
-                    <Text style={{ color: "#414e62" }}>-</Text>
-                    <Text style={{ color: "#414e62" }}>
+                    <Text style={{ color: colors.text[theme].secondary }}>-</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>
                       {edu.is_current ? "Present" : formatDate(edu.end_date)}
                     </Text>
                     {edu.is_current && (
@@ -137,23 +140,23 @@ export function EducationWidget({
                         borderRadius={8}
                         borderWidth={1}
                         style={{
-                          backgroundColor: "#bfdbfe",
-                          borderColor: "#1d4ed8",
+                          backgroundColor: colors.blue[200],
+                          borderColor: colors.blue[700],
                         }}
                       >
-                        <Text style={{ color: "#1d4ed8" }}>Current</Text>
+                        <Text style={{ color: colors.blue[700] }}>Current</Text>
                       </Row>
                     )}
                   </Row>
 
                   {/* Location */}
                   {edu.location && (
-                    <Text style={{ color: "#414e62" }}>📍 {edu.location}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>📍 {edu.location}</Text>
                   )}
 
                   {/* Description */}
                   {edu.description && !showCompact && (
-                    <Text style={{ color: "#414e62", lineHeight: 12 }}>
+                    <Text style={{ color: colors.text[theme].secondary, lineHeight: 12 }}>
                       {edu.description}
                     </Text>
                   )}
@@ -168,7 +171,7 @@ export function EducationWidget({
             {/* Show More link for compact view */}
             {showCompact && education.length > 2 && (
               <Text
-                style={{ color: "#1d4ed8", cursor: "pointer" }}
+                style={{ color: colors.blue[700], cursor: "pointer" }}
                 onPress={() =>
                   router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)
                 }

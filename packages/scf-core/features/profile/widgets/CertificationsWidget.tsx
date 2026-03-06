@@ -6,11 +6,13 @@ import {
   EmptyState,
   H4,
   LoadingState,
+  useThemeContext,
 } from "@scaffald/ui";
 import { Award, CheckCircle } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { Linking } from "react-native";
 import { Separator, Text, Row, Stack } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import { formatDate } from "../utils/date-formatting";
 import type { ProfileWidgetProps } from "./types";
 import type { CertificationWidgetEntry } from "@scaffald/sdk";
@@ -31,6 +33,7 @@ export function CertificationsWidget({
   variant = "full",
 }: ProfileWidgetProps) {
   const router = useRouter();
+  const { theme } = useThemeContext();
   const { data, isLoading, error, refetch, isFetching } =
     useCertificationsWidget(
       { userId },
@@ -51,10 +54,10 @@ export function CertificationsWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text style={{ color: "#ef4444" }}>
+          <Text style={{ color: colors.fg[theme].error }}>
             Failed to load certifications
           </Text>
-          <Text style={{ color: "#414e62" }}>{error.message}</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
           <Button
             variant="filled"
             color="primary"
@@ -141,19 +144,19 @@ export function CertificationsWidget({
                             paddingVertical={2}
                             borderRadius={8}
                             style={{
-                              backgroundColor: "#eff6ff",
+                              backgroundColor: colors.blue[50],
                               borderWidth: 1,
-                              borderColor: "#3b82f6",
+                              borderColor: colors.blue[500],
                             }}
                           >
-                            <CheckCircle size={14} color="#1d4ed8" />
-                            <Text style={{ color: "#1d4ed8", marginLeft: 4 }}>
+                            <CheckCircle size={14} color={colors.blue[700]} />
+                            <Text style={{ color: colors.blue[700], marginLeft: 4 }}>
                               Active
                             </Text>
                           </Row>
                         </Row>
                         {cert.issuing_organization && (
-                          <Text style={{ color: "#414e62" }}>
+                          <Text style={{ color: colors.text[theme].secondary }}>
                             {cert.issuing_organization}
                           </Text>
                         )}
@@ -163,19 +166,19 @@ export function CertificationsWidget({
                       <Row gap={16} wrap>
                         {cert.issue_date && (
                           <Stack gap={4}>
-                            <Text style={{ color: "#414e62" }}>Issued</Text>
+                            <Text style={{ color: colors.text[theme].secondary }}>Issued</Text>
                             <Text>{formatDate(cert.issue_date)}</Text>
                           </Stack>
                         )}
                         {!cert.does_not_expire && cert.expiration_date && (
                           <Stack gap={4}>
-                            <Text style={{ color: "#414e62" }}>Expires</Text>
+                            <Text style={{ color: colors.text[theme].secondary }}>Expires</Text>
                             <Text>{formatDate(cert.expiration_date)}</Text>
                           </Stack>
                         )}
                         {cert.does_not_expire && (
                           <Stack gap={4}>
-                            <Text style={{ color: "#414e62" }}>Validity</Text>
+                            <Text style={{ color: colors.text[theme].secondary }}>Validity</Text>
                             <Text>No Expiration</Text>
                           </Stack>
                         )}
@@ -187,7 +190,7 @@ export function CertificationsWidget({
                           <Row gap={16} wrap>
                             {cert.credential_id && (
                               <Stack gap={4}>
-                                <Text style={{ color: "#414e62" }}>
+                                <Text style={{ color: colors.text[theme].secondary }}>
                                   Credential ID
                                 </Text>
                                 <Text>{cert.credential_id}</Text>
@@ -195,12 +198,12 @@ export function CertificationsWidget({
                             )}
                             {cert.credential_url && (
                               <Stack gap={4}>
-                                <Text style={{ color: "#414e62" }}>
+                                <Text style={{ color: colors.text[theme].secondary }}>
                                   Verification
                                 </Text>
                                 <Text
                                   style={{
-                                    color: "#3b82f6",
+                                    color: colors.blue[500],
                                     textDecorationLine: "underline",
                                   }}
                                   onPress={() =>
@@ -226,7 +229,7 @@ export function CertificationsWidget({
             {/* Expired Certifications (collapsed by default, only in full variant) */}
             {!showCompact && expiredCerts.length > 0 && (
               <Stack gap={12}>
-                <Text style={{ color: "#414e62" }}>
+                <Text style={{ color: colors.text[theme].secondary }}>
                   Expired ({expiredCerts.length})
                 </Text>
                 {expiredCerts.slice(0, 2).map((cert: UserCertification) => (
@@ -237,13 +240,13 @@ export function CertificationsWidget({
                         paddingHorizontal={8}
                         paddingVertical={2}
                         borderRadius={8}
-                        style={{ borderWidth: 1, borderColor: "#e2e8f0" }}
+                        style={{ borderWidth: 1, borderColor: colors.border[theme].subtle }}
                       >
-                        <Text style={{ color: "#414e62" }}>Expired</Text>
+                        <Text style={{ color: colors.text[theme].secondary }}>Expired</Text>
                       </Row>
                     </Row>
                     {cert.issuing_organization && (
-                      <Text style={{ color: "#414e62" }}>
+                      <Text style={{ color: colors.text[theme].secondary }}>
                         {cert.issuing_organization}
                       </Text>
                     )}
@@ -255,7 +258,7 @@ export function CertificationsWidget({
             {/* Show More link for compact view */}
             {showCompact && certifications.length > 3 && (
               <Text
-                style={{ color: "#3b82f6" }}
+                style={{ color: colors.blue[500] }}
                 onPress={() =>
                   router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)
                 }

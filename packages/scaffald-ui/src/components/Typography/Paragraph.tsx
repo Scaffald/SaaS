@@ -12,10 +12,10 @@ import {
   fontSize,
   lineHeight,
   letterSpacing,
-  fontFamily,
   fontWeight as fontWeightTokens,
 } from '../../tokens/typography'
 import { colors } from '../../tokens/colors'
+import { getFontFamily } from './Typography.styles'
 
 /**
  * Get typography values for paragraph size
@@ -44,7 +44,7 @@ const getParagraphStyle = (
   }
 
   return {
-    fontFamily: serif ? fontFamily.serif : fontFamily.body,
+    fontFamily: getFontFamily(weight, serif),
     fontSize: sizes[size],
     fontWeight: fontWeightTokens[weight],
     lineHeight: lineHeights[size],
