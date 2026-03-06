@@ -96,6 +96,9 @@ pnpm check-deps           # Dependency consistency
 
 ### Comprehensive Testing
 - `pnpm test:all` - Full test suite (integration + build)
+- `pnpm test:api` - tRPC API tests (auth, integration, universities)
+- `pnpm test:api:all` - All API tests: REST route + REST integration + smoke script + tRPC (requires Supabase running, DB seeded, API served)
+- `pnpm test:api:rest` / `pnpm verify:api:e2e` - Smoke script for REST endpoints
 - `pnpm test:build` - Build verification
 - `pnpm test:lint` - Lint and type check
 - `pnpm test:deps` - Dependency checks

@@ -1,26 +1,26 @@
 /**
  * Border tokens mapped from Figma Forsured Design System
  *
- * Border radius values: s(8), m(10), l(12), xl(16), xxl(20)
+ * Border radius values: s(5), m(6), l(8), xl(10), xxl(12)
  * All values are in pixels
  */
 
 /**
  * Border radius scale
- * Mapped from Figma radius tokens exactly
+ * Reduced to ~4-5px range for primary sizes (s/m)
  */
 export const borderRadius = {
   none: 0, // radius-none
   xxxs: 2, // radius-xxxs
-  xxs: 4, // radius-xxs
-  xs: 6, // radius-xs
-  s: 8, // radius-s
-  m: 10, // radius-m
-  l: 12, // radius-l
-  xl: 16, // radius-xl
-  xxl: 20, // radius-xxl
-  xxxl: 32, // radius-xxxl
-  xxxxl: 48, // radius-xxxxl
+  xxs: 3, // radius-xxs
+  xs: 4, // radius-xs
+  s: 5, // radius-s
+  m: 6, // radius-m
+  l: 8, // radius-l
+  xl: 10, // radius-xl
+  xxl: 12, // radius-xxl
+  xxxl: 16, // radius-xxxl
+  xxxxl: 24, // radius-xxxxl
   max: 999, // radius-max (fully rounded/pill shape)
 } as const
 
@@ -31,15 +31,15 @@ export const borderRadius = {
 export const radius = {
   none: borderRadius.none, // 0
   xxxs: borderRadius.xxxs, // 2
-  xxs: borderRadius.xxs, // 4
-  xs: borderRadius.xs, // 6
-  sm: borderRadius.s, // 8
-  md: borderRadius.m, // 10
-  lg: borderRadius.l, // 12
-  xl: borderRadius.xl, // 16
-  '2xl': borderRadius.xxl, // 20
-  '3xl': borderRadius.xxxl, // 32
-  '4xl': borderRadius.xxxxl, // 48
+  xxs: borderRadius.xxs, // 3
+  xs: borderRadius.xs, // 4
+  sm: borderRadius.s, // 5
+  md: borderRadius.m, // 6
+  lg: borderRadius.l, // 8
+  xl: borderRadius.xl, // 10
+  '2xl': borderRadius.xxl, // 12
+  '3xl': borderRadius.xxxl, // 16
+  '4xl': borderRadius.xxxxl, // 24
   full: borderRadius.max, // 999 (pill shape)
 } as const
 

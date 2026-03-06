@@ -108,6 +108,25 @@ export const UniversalThemeProvider = ({ children }: { children: ReactNode }) =>
   )
 }
 
+// Custom React Navigation themes that use our app's background colors.
+// DefaultTheme.colors.background is rgb(242,242,242) which shows up during overscroll —
+// we override it to match our subtle background so overscroll blends seamlessly.
+const AppLightTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: colors.bg.light.subtle,
+  },
+}
+
+const AppDarkTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    background: colors.bg.dark.subtle,
+  },
+}
+
 const InnerProvider = ({ children }: { children: ReactNode }) => {
   const { resolvedTheme } = useThemeSetting()
 
@@ -131,12 +150,14 @@ const InnerProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [resolvedTheme])
 
+  const navTheme = resolvedTheme === 'dark' ? AppDarkTheme : AppLightTheme
+
   // Wrap all platforms with React Navigation theme provider
   // This is needed because expo-router/drawer uses React Navigation components
   // that require theme context (like Background, Header, etc.)
   if (Platform.OS === 'web') {
     return (
-      <ThemeProvider value={resolvedTheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <ThemeProvider value={navTheme}>
         {children}
       </ThemeProvider>
     )
@@ -144,7 +165,7 @@ const InnerProvider = ({ children }: { children: ReactNode }) => {
 
   // Native: also include status bar
   return (
-    <ThemeProvider value={resolvedTheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={navTheme}>
       <StatusBar style={resolvedTheme === 'dark' ? 'light' : 'dark'} hidden />
       {children}
     </ThemeProvider>

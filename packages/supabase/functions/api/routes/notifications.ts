@@ -219,6 +219,303 @@ app.openapi(listNotificationsRoute, async (c) => {
   })
 })
 
+// ---------------------------------------------------------------------------
+// Static paths (must be registered before /{id} to avoid matching as id param)
+// ---------------------------------------------------------------------------
+
+/**
+ * GET /v1/notifications/unread-count
+ * Get unread notification count
+ */
+const getUnreadCountRoute = createRoute({
+  method: 'get',
+  path: '/unread-count',
+  tags: ['Notifications'],
+  summary: 'Get unread count',
+  description: 'Get the count of unread notifications',
+  responses: {
+    200: {
+      description: 'Unread notification count',
+      content: {
+        'application/json': {
+          schema: unreadCountResponseSchema,
+        },
+      },
+    },
+  },
+  security: [{ bearerAuth: [] }],
+})
+
+app.openapi(getUnreadCountRoute, async (c) => {
+  const supabase = c.get('supabase')
+  const user = c.get('user')
+
+  if (!user) {
+    return c.json({ error: 'Unauthorized' }, 401)
+  }
+
+  const { count, error } = await supabase
+    .schema('core')
+    .from('notifications')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', user.id)
+    .eq('read', false)
+
+  if (error) {
+    console.error('Error getting unread count:', error)
+    return c.json({ error: 'Failed to get unread count', message: error.message }, 500)
+  }
+
+  return c.json({
+    data: {
+      unread_count: count || 0,
+    },
+  })
+})
+
+/**
+ * GET /v1/notifications/preferences
+ * Get notification preferences
+ */
+const getPreferencesRoute = createRoute({
+  method: 'get',
+  path: '/preferences',
+  tags: ['Notifications'],
+  summary: 'Get preferences',
+  description: 'Get notification preferences for the authenticated user',
+  responses: {
+    200: {
+      description: 'Notification preferences',
+      content: {
+        'application/json': {
+          schema: preferencesResponseSchema,
+        },
+      },
+    },
+  },
+  security: [{ bearerAuth: [] }],
+})
+
+app.openapi(getPreferencesRoute, async (c) => {
+  const supabase = c.get('supabase')
+  const user = c.get('user')
+
+  if (!user) {
+    return c.json({ error: 'Unauthorized' }, 401)
+  }
+
+  const { data: preferences, error } = await supabase
+    .schema('core')
+    .from('notification_preferences')
+    .select('*')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (error) {
+    console.error('Error fetching preferences:', error)
+    return c.json({ error: 'Failed to fetch preferences', message: error.message }, 500)
+  }
+
+  // Create default preferences if they don't exist
+  if (!preferences) {
+    const { data: newPreferences, error: createError } = await supabase
+      .schema('core')
+      .from('notification_preferences')
+      .insert({
+        user_id: user.id,
+        email_notifications: true,
+        push_notifications: true,
+        notification_types: {
+          application_status: { email: true, push: true },
+          connection_request: { email: true, push: true },
+          message: { email: true, push: true },
+          job_match: { email: true, push: false },
+          system: { email: true, push: true },
+        },
+      })
+      .select()
+      .single()
+
+    if (createError) {
+      console.error('Error creating preferences:', createError)
+      return c.json(
+        { error: 'Failed to create preferences', message: createError.message },
+        500
+      )
+    }
+
+    return c.json({ data: newPreferences })
+  }
+
+  return c.json({ data: preferences })
+})
+
+/**
+ * PATCH /v1/notifications/preferences
+ * Update notification preferences
+ */
+const updatePreferencesRoute = createRoute({
+  method: 'patch',
+  path: '/preferences',
+  tags: ['Notifications'],
+  summary: 'Update preferences',
+  description: 'Update notification preferences',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: updatePreferencesSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Preferences updated',
+      content: {
+        'application/json': {
+          schema: preferencesResponseSchema,
+        },
+      },
+    },
+  },
+  security: [{ bearerAuth: [] }],
+})
+
+app.openapi(updatePreferencesRoute, async (c) => {
+  const supabase = c.get('supabase')
+  const user = c.get('user')
+  const updates = c.req.valid('json')
+
+  if (!user) {
+    return c.json({ error: 'Unauthorized' }, 401)
+  }
+
+  const { data: preferences, error } = await supabase
+    .schema('core')
+    .from('notification_preferences')
+    .update(updates)
+    .eq('user_id', user.id)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Error updating preferences:', error)
+    return c.json({ error: 'Failed to update preferences', message: error.message }, 500)
+  }
+
+  return c.json({ data: preferences })
+})
+
+/**
+ * POST /v1/notifications/read-all
+ * Mark all notifications as read
+ */
+const markAllAsReadRoute = createRoute({
+  method: 'post',
+  path: '/read-all',
+  tags: ['Notifications'],
+  summary: 'Mark all as read',
+  description: 'Mark all unread notifications as read',
+  responses: {
+    200: {
+      description: 'All notifications marked as read',
+      content: {
+        'application/json': {
+          schema: markAllAsReadResponseSchema,
+        },
+      },
+    },
+  },
+  security: [{ bearerAuth: [] }],
+})
+
+app.openapi(markAllAsReadRoute, async (c) => {
+  const supabase = c.get('supabase')
+  const user = c.get('user')
+
+  if (!user) {
+    return c.json({ error: 'Unauthorized' }, 401)
+  }
+
+  const { count, error } = await supabase
+    .schema('core')
+    .from('notifications')
+    .update({
+      read: true,
+      read_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq('user_id', user.id)
+    .eq('read', false)
+    .select('*', { count: 'exact', head: true })
+
+  if (error) {
+    console.error('Error marking all as read:', error)
+    return c.json({ error: 'Failed to mark all as read', message: error.message }, 500)
+  }
+
+  return c.json({
+    data: {
+      updated_count: count || 0,
+    },
+  })
+})
+
+/**
+ * DELETE /v1/notifications
+ * Delete all notifications
+ */
+const deleteAllNotificationsRoute = createRoute({
+  method: 'delete',
+  path: '/',
+  tags: ['Notifications'],
+  summary: 'Delete all notifications',
+  description: 'Delete all notifications for the authenticated user',
+  responses: {
+    200: {
+      description: 'All notifications deleted',
+      content: {
+        'application/json': {
+          schema: deleteAllResponseSchema,
+        },
+      },
+    },
+  },
+  security: [{ bearerAuth: [] }],
+})
+
+app.openapi(deleteAllNotificationsRoute, async (c) => {
+  const supabase = c.get('supabase')
+  const user = c.get('user')
+
+  if (!user) {
+    return c.json({ error: 'Unauthorized' }, 401)
+  }
+
+  const { count, error } = await supabase
+    .schema('core')
+    .from('notifications')
+    .delete()
+    .eq('user_id', user.id)
+    .select('*', { count: 'exact', head: true })
+
+  if (error) {
+    console.error('Error deleting all notifications:', error)
+    return c.json({ error: 'Failed to delete notifications', message: error.message }, 500)
+  }
+
+  return c.json({
+    data: {
+      deleted_count: count || 0,
+    },
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Param routes (/{id} and /{id}/*) — registered after static paths
+// ---------------------------------------------------------------------------
+
 /**
  * GET /v1/notifications/:id
  * Get a specific notification
@@ -408,61 +705,6 @@ app.openapi(markAsUnreadRoute, async (c) => {
 })
 
 /**
- * POST /v1/notifications/read-all
- * Mark all notifications as read
- */
-const markAllAsReadRoute = createRoute({
-  method: 'post',
-  path: '/read-all',
-  tags: ['Notifications'],
-  summary: 'Mark all as read',
-  description: 'Mark all unread notifications as read',
-  responses: {
-    200: {
-      description: 'All notifications marked as read',
-      content: {
-        'application/json': {
-          schema: markAllAsReadResponseSchema,
-        },
-      },
-    },
-  },
-  security: [{ bearerAuth: [] }],
-})
-
-app.openapi(markAllAsReadRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
-
-  if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
-  }
-
-  const { count, error } = await supabase
-    .schema('core')
-    .from('notifications')
-    .update({
-      read: true,
-      read_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    })
-    .eq('user_id', user.id)
-    .eq('read', false)
-    .select('*', { count: 'exact', head: true })
-
-  if (error) {
-    console.error('Error marking all as read:', error)
-    return c.json({ error: 'Failed to mark all as read', message: error.message }, 500)
-  }
-
-  return c.json({
-    data: {
-      updated_count: count || 0,
-    },
-  })
-})
-
-/**
  * DELETE /v1/notifications/:id
  * Delete a notification
  */
@@ -515,240 +757,6 @@ app.openapi(deleteNotificationRoute, async (c) => {
   }
 
   return c.body(null, 204)
-})
-
-/**
- * DELETE /v1/notifications
- * Delete all notifications
- */
-const deleteAllNotificationsRoute = createRoute({
-  method: 'delete',
-  path: '/',
-  tags: ['Notifications'],
-  summary: 'Delete all notifications',
-  description: 'Delete all notifications for the authenticated user',
-  responses: {
-    200: {
-      description: 'All notifications deleted',
-      content: {
-        'application/json': {
-          schema: deleteAllResponseSchema,
-        },
-      },
-    },
-  },
-  security: [{ bearerAuth: [] }],
-})
-
-app.openapi(deleteAllNotificationsRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
-
-  if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
-  }
-
-  const { count, error } = await supabase
-    .schema('core')
-    .from('notifications')
-    .delete()
-    .eq('user_id', user.id)
-    .select('*', { count: 'exact', head: true })
-
-  if (error) {
-    console.error('Error deleting all notifications:', error)
-    return c.json({ error: 'Failed to delete notifications', message: error.message }, 500)
-  }
-
-  return c.json({
-    data: {
-      deleted_count: count || 0,
-    },
-  })
-})
-
-/**
- * GET /v1/notifications/unread-count
- * Get unread notification count
- */
-const getUnreadCountRoute = createRoute({
-  method: 'get',
-  path: '/unread-count',
-  tags: ['Notifications'],
-  summary: 'Get unread count',
-  description: 'Get the count of unread notifications',
-  responses: {
-    200: {
-      description: 'Unread notification count',
-      content: {
-        'application/json': {
-          schema: unreadCountResponseSchema,
-        },
-      },
-    },
-  },
-  security: [{ bearerAuth: [] }],
-})
-
-app.openapi(getUnreadCountRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
-
-  if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
-  }
-
-  const { count, error } = await supabase
-    .schema('core')
-    .from('notifications')
-    .select('*', { count: 'exact', head: true })
-    .eq('user_id', user.id)
-    .eq('read', false)
-
-  if (error) {
-    console.error('Error getting unread count:', error)
-    return c.json({ error: 'Failed to get unread count', message: error.message }, 500)
-  }
-
-  return c.json({
-    data: {
-      unread_count: count || 0,
-    },
-  })
-})
-
-/**
- * GET /v1/notifications/preferences
- * Get notification preferences
- */
-const getPreferencesRoute = createRoute({
-  method: 'get',
-  path: '/preferences',
-  tags: ['Notifications'],
-  summary: 'Get preferences',
-  description: 'Get notification preferences for the authenticated user',
-  responses: {
-    200: {
-      description: 'Notification preferences',
-      content: {
-        'application/json': {
-          schema: preferencesResponseSchema,
-        },
-      },
-    },
-  },
-  security: [{ bearerAuth: [] }],
-})
-
-app.openapi(getPreferencesRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
-
-  if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
-  }
-
-  const { data: preferences, error } = await supabase
-    .schema('core')
-    .from('notification_preferences')
-    .select('*')
-    .eq('user_id', user.id)
-    .maybeSingle()
-
-  if (error) {
-    console.error('Error fetching preferences:', error)
-    return c.json({ error: 'Failed to fetch preferences', message: error.message }, 500)
-  }
-
-  // Create default preferences if they don't exist
-  if (!preferences) {
-    const { data: newPreferences, error: createError } = await supabase
-      .schema('core')
-      .from('notification_preferences')
-      .insert({
-        user_id: user.id,
-        email_notifications: true,
-        push_notifications: true,
-        notification_types: {
-          application_status: { email: true, push: true },
-          connection_request: { email: true, push: true },
-          message: { email: true, push: true },
-          job_match: { email: true, push: false },
-          system: { email: true, push: true },
-        },
-      })
-      .select()
-      .single()
-
-    if (createError) {
-      console.error('Error creating preferences:', createError)
-      return c.json(
-        { error: 'Failed to create preferences', message: createError.message },
-        500
-      )
-    }
-
-    return c.json({ data: newPreferences })
-  }
-
-  return c.json({ data: preferences })
-})
-
-/**
- * PATCH /v1/notifications/preferences
- * Update notification preferences
- */
-const updatePreferencesRoute = createRoute({
-  method: 'patch',
-  path: '/preferences',
-  tags: ['Notifications'],
-  summary: 'Update preferences',
-  description: 'Update notification preferences',
-  request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: updatePreferencesSchema,
-        },
-      },
-    },
-  },
-  responses: {
-    200: {
-      description: 'Preferences updated',
-      content: {
-        'application/json': {
-          schema: preferencesResponseSchema,
-        },
-      },
-    },
-  },
-  security: [{ bearerAuth: [] }],
-})
-
-app.openapi(updatePreferencesRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
-  const updates = c.req.valid('json')
-
-  if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
-  }
-
-  const { data: preferences, error } = await supabase
-    .schema('core')
-    .from('notification_preferences')
-    .update(updates)
-    .eq('user_id', user.id)
-    .select()
-    .single()
-
-  if (error) {
-    console.error('Error updating preferences:', error)
-    return c.json({ error: 'Failed to update preferences', message: error.message }, 500)
-  }
-
-  return c.json({ data: preferences })
 })
 
 export default app

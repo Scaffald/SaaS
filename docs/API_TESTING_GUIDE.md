@@ -9,6 +9,38 @@
 
 ---
 
+## Prerequisites for running API tests
+
+Before running REST API route tests, integration tests, or the smoke script (`pnpm verify:api:e2e`), ensure:
+
+1. **Supabase is running** – `pnpm supa start` (from repo root).
+2. **Database is seeded** – At minimum run `pnpm supa db reset` so migrations and SQL seeds (industries, users, API test user, orgs) are applied. Optional: `pnpm supa:seed` for CSI, jobs, O*NET, etc. See [Seed for API testing](#seed-for-api-testing) below.
+3. **API function is served** – In a **separate terminal**, run `pnpm supa functions serve api` (or `supabase functions serve api --no-verify-jwt --env-file packages/supabase/.env.local`). The smoke script and Deno tests hit `http://127.0.0.1:54321/functions/v1/api`.
+
+### Seed for API testing
+
+To get a consistent database for API tests:
+
+1. `pnpm supa start`
+2. `pnpm supa db reset` (migrations + all `seeds/*.sql`)
+3. Optional: `pnpm supa:seed` (CSI, jobs, etc.)
+4. In another terminal: `pnpm supa functions serve api`
+
+Or from repo root: **`pnpm supa:seed:api`** (runs reset and optionally full TypeScript seed if `FULL_SEED=1`). See `packages/supabase/seeds/README.md` and `packages/supabase/docs/SEEDING.md`.
+
+### Run all API tests (one command)
+
+From repo root, **`pnpm test:api:all`** runs in order:
+
+1. REST API route tests (Deno)
+2. REST API integration tests (Deno)
+3. Smoke script (`test-api-local.ts`)
+4. tRPC tests (auth, integration, universities)
+
+Prerequisites above must be met (Supabase running, DB seeded, API function served).
+
+---
+
 ## Issue: Edge Function Not Auto-Serving
 
 The `api` Edge Function isn't being automatically picked up by Supabase local. This is normal - Edge Functions need to be explicitly served in development.

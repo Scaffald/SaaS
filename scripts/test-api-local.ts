@@ -57,6 +57,29 @@ const ENDPOINTS: EndpointDef[] = [
   { path: '/v1/onet/skills', method: 'GET', authType: 'none' },
   { path: '/v1/news', method: 'GET', authType: 'none' },
   { path: '/v1/map/location-counts', method: 'GET', authType: 'none' },
+  // Profile
+  { path: '/v1/profiles/experience', method: 'GET', authType: 'requireAuth' },
+  { path: '/v1/profiles/experience/summary', method: 'GET', authType: 'requireAuth' },
+  { path: '/v1/profiles/education', method: 'GET', authType: 'requireAuth' },
+  { path: '/v1/profiles/certifications/top-level', method: 'GET', authType: 'requireAuth' },
+  { path: '/v1/profiles/certifications/tree', method: 'GET', authType: 'requireAuth' },
+  { path: '/v1/profiles/portfolio', method: 'GET', authType: 'requireAuth' },
+  { path: '/v1/profiles/widgets/general-info', method: 'GET', authType: 'requireAuth' },
+  { path: '/v1/profiles/completion/status', method: 'GET', authType: 'requireAuth' },
+  { path: '/v1/profiles/skills', method: 'GET', authType: 'requireAuth' },
+  { path: '/v1/profiles/employment', method: 'GET', authType: 'requireAuth' },
+  { path: '/v1/profile-wizard/progress', method: 'GET', authType: 'requireAuth' },
+  // User profiles (preview may 400 without userId; smoke check)
+  { path: '/v1/user-profiles/preview', method: 'GET', authType: 'requireAuth', note: 'may 400 if no userId' },
+  // Other
+  { path: '/v1/prerequisites', method: 'GET', authType: 'requireAuth' },
+  { path: '/v1/teams', method: 'GET', authType: 'requireAuth' },
+  { path: '/v1/organizations', method: 'GET', authType: 'requireAuth' },
+  { path: '/v1/inquiries', method: 'GET', authType: 'requireAuth' },
+  { path: '/v1/background-checks', method: 'GET', authType: 'requireAuth' },
+  { path: '/v1/legal-agreements', method: 'GET', authType: 'requireAuth' },
+  { path: '/v1/account-deletion', method: 'GET', authType: 'requireAuth' },
+  { path: '/v1/documents/storage-preference', method: 'GET', authType: 'requireAuth' },
 ]
 
 async function fetchWithAuth(

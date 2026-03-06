@@ -37,14 +37,14 @@ export const patternOpacity = {
  * Grid-based pattern with alternating colored blocks
  * - Block size: 40px × 40px
  * - Gap: 4px between blocks
- * - Border radius: 8px (radius-s)
+ * - Border radius: 5px (radius-s)
  * - Colors: Alternating between bg-200 (#e4e7ec) and bg-100 (#f2f4f7)
  * - Opacity: 60% (0.6)
  */
 export const blocksPattern = {
   blockSize: 40, // 40px × 40px blocks
   gap: spacing[4], // 4px gap between blocks
-  borderRadius: borderRadius.s, // 8px border radius
+  borderRadius: borderRadius.s, // 5px border radius
   colors: {
     primary: colors.bg.light.emphasis, // Base/200: #e4e7ec
     secondary: colors.bg.light.muted, // Base/100: #f2f4f7

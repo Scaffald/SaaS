@@ -461,6 +461,7 @@ Location: `packages/supabase/supabase/migrations/`
 Key migrations:
 - `001-099`: Core schema (users, organizations, roles, teams)
 - `100-199`: Jobs and applications
+- `132`, `133`, `20251118181923`: Map RPCs (`core.get_jobs_with_coords`, `core.get_organizations_with_coords` and public wrappers) — required for `/dashboard/map`
 - `300-302`: API keys system
 - `400+`: O*NET occupational database
 
@@ -594,7 +595,7 @@ SCAFFALD_CLIENT_SECRET=your_client_secret
 SCAFFALD_WEBHOOK_SECRET=whsec_...
 ```
 
-For address autocomplete (e.g. onboarding, profile), set `EXPO_PUBLIC_MAPBOX_TOKEN` (or pass `apiKey` to `ControlledAddressForm`). See `.env.template` for Mapbox vars.
+For address autocomplete (e.g. onboarding, profile) and for the **dashboard map page** (`/dashboard/map`), set `EXPO_PUBLIC_MAPBOX_TOKEN` (or pass `apiKey` to `ControlledAddressForm`). See `.env.template` for Mapbox vars.
 
 ---
 

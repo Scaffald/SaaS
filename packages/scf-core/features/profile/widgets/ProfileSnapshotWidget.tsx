@@ -22,6 +22,7 @@ import {
   SkeletonText,
   Stack,
   Text,
+  useHoverState,
   useThemeContext,
 } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
@@ -38,6 +39,10 @@ export function ProfileSnapshotWidget() {
   const { theme } = useThemeContext();
   const router = useRouter();
   const { data: user } = useCurrentUser();
+
+  const skillsHover = useHoverState();
+  const certsHover = useHoverState();
+  const yearsHover = useHoverState();
 
   const {
     data: generalInfo,
@@ -338,15 +343,19 @@ export function ProfileSnapshotWidget() {
           <Row gap={12} wrap>
             <Pressable
               onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
+              {...skillsHover.hoverProps}
               style={({ pressed }) => [
                 {
                   flex: 1,
                   minWidth: 80,
-                  backgroundColor: colors.bg[theme].muted,
                   padding: 16,
                   borderRadius: 16,
-                  opacity: pressed ? 0.85 : 1,
+                  backgroundColor:
+                    skillsHover.isHovered || pressed
+                      ? colors.bg[theme].active
+                      : colors.bg[theme].muted,
                 },
+                pressed && { opacity: 0.9 },
               ]}
               accessibilityRole="button"
               accessibilityLabel="Skills. Navigate to profile skills"
@@ -377,15 +386,19 @@ export function ProfileSnapshotWidget() {
               onPress={() =>
                 router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)
               }
+              {...certsHover.hoverProps}
               style={({ pressed }) => [
                 {
                   flex: 1,
                   minWidth: 80,
-                  backgroundColor: colors.bg[theme].muted,
                   padding: 16,
                   borderRadius: 16,
-                  opacity: pressed ? 0.85 : 1,
+                  backgroundColor:
+                    certsHover.isHovered || pressed
+                      ? colors.bg[theme].active
+                      : colors.bg[theme].muted,
                 },
+                pressed && { opacity: 0.9 },
               ]}
               accessibilityRole="button"
               accessibilityLabel="Certifications. Navigate to profile certifications"
@@ -416,15 +429,19 @@ export function ProfileSnapshotWidget() {
               onPress={() =>
                 router.push(ROUTES.DASHBOARD.PROFILE.GENERAL.path)
               }
+              {...yearsHover.hoverProps}
               style={({ pressed }) => [
                 {
                   flex: 1,
                   minWidth: 80,
-                  backgroundColor: colors.bg[theme].muted,
                   padding: 16,
                   borderRadius: 16,
-                  opacity: pressed ? 0.85 : 1,
+                  backgroundColor:
+                    yearsHover.isHovered || pressed
+                      ? colors.bg[theme].active
+                      : colors.bg[theme].muted,
                 },
+                pressed && { opacity: 0.9 },
               ]}
               accessibilityRole="button"
               accessibilityLabel="Years of experience. Navigate to profile general"
