@@ -4,10 +4,10 @@
 
 The SCF-Scaffald project uses a multi-step seeding process that separates concerns:
 
-1. **Database migrations** create the schema (via `pnpm supa:reset`)
-2. **Base seed data** (`seed.sql`) creates industries, organizations, users, and soft skills
-3. **CSI codes** (`seed-csi.ts`) seeds construction skills from CSI MasterFormat 2020 CSV
-4. **External jobs** (`seed-all.ts`) orchestrates CSI seeding and imports jobs from RSS feeds
+1. **Database migrations** create the schema (via `pnpm supa db reset`).
+2. **Base seed data**: All `packages/supabase/seeds/*.sql` files run automatically when you run `pnpm supa db reset` (see `config.toml` → `[db.seed]` → `sql_paths = ['./seeds/*.sql']`). There is no single `seed.sql` orchestrator; the glob runs each `.sql` file in alphabetical order. Active files: `001_seed-industries.sql`, `002_seed-users.sql`, `002a_seed-api-test-user.sql`, `003_seed-organizations.sql`, `004_seed-unicorn-org.sql`. File `005_seed-ats-data.sql` is disabled by default (stored as `005_seed-ats-data.sql.disabled`).
+3. **CSI codes** (`seed-csi.ts`) seed construction skills from CSI MasterFormat 2020 CSV.
+4. **External jobs** (`seed-all.ts`) orchestrates CSI seeding and imports jobs from RSS feeds.
 
 ## Quick Start
 
@@ -16,9 +16,18 @@ The SCF-Scaffald project uses a multi-step seeding process that separates concer
 pnpm supa:reset:seed
 
 # Or step by step:
-pnpm supa:reset      # Reset database and run migrations + seed.sql
-pnpm supa:seed       # Run comprehensive seeding (CSI codes + jobs)
+pnpm supa db reset   # Reset database; runs migrations then all seeds/*.sql
+pnpm supa:seed       # Run comprehensive TypeScript seeding (CSI codes + jobs)
 ```
+
+### Seed for API testing
+
+1. Start Supabase: `pnpm supa start`
+2. Reset and run SQL seeds: `pnpm supa db reset`
+3. Optional: `pnpm supa:seed` for CSI, jobs, O*NET, etc.
+4. Serve the API (separate terminal): `pnpm supa functions serve api`
+
+Or use: `pnpm supa:seed:api` (or `./scripts/seed-for-api-testing.sh`) from repo root. Use `FULL_SEED=1` to include TypeScript seed.
 
 ## Available Commands
 
@@ -26,7 +35,7 @@ pnpm supa:seed       # Run comprehensive seeding (CSI codes + jobs)
 
 ```bash
 # Database Operations
-pnpm supa:reset           # Reset database (runs migrations + seed.sql)
+pnpm supa:reset           # Reset database (runs migrations + all seeds/*.sql)
 pnpm supa:seed            # Seed CSI codes and external jobs
 pnpm supa:reset:seed      # Full reset + seed (one command)
 pnpm supa:setup           # Full setup (reset + seed + permission tests)
@@ -59,19 +68,20 @@ pnpm test:permissions     # Test permissions
 
 ## Seeding Architecture
 
-### 1. Base Data (`seed.sql`)
+### 1. Base data (`seeds/*.sql`)
 
-**Location:** `packages/supabase/seeds/seed.sql`  
-**Runs:** Automatically when `pnpm supa:reset` is executed  
+**Location:** `packages/supabase/seeds/`  
+**Runs:** Automatically when `pnpm supa db reset` is executed (each `*.sql` file in glob order).  
+**Files run:** `001_seed-industries.sql`, `002_seed-users.sql`, `002a_seed-api-test-user.sql`, `003_seed-organizations.sql`, `004_seed-unicorn-org.sql`. File `005_seed-ats-data.sql` is disabled by default (saved as `005_seed-ats-data.sql.disabled`).
+
 **Seeds:**
 - 4 base industries (Construction, Manufacturing, Transportation, Energy)
-- 6 cross-industry soft skills (leadership, teamwork, communication, etc.)
+- API test user (`test@example.com` / `test123456`) for API and SDK tests
 - 8 sample organizations with geographic data
-- Sample affiliate programs
 - 50 realistic users with profiles, locations, and skills
-- ATS pipelines, jobs, and applications for testing
+- Unicorn org and initial jobs
 
-**Note:** Industry-specific skills (construction, manufacturing, etc.) are NOT seeded here. They come from separate scripts.
+**Note:** Industry-specific skills (construction, manufacturing, etc.) and ATS demo data are optional; see `packages/supabase/seeds/README.md`.
 
 ### Additional Seed Files
 
@@ -155,14 +165,14 @@ See `packages/supabase/seeds/README.md` for detailed documentation on all seed f
 pnpm supa:reset:seed
     ↓
 ┌─────────────────────────┐
-│  pnpm supa:reset        │
+│  pnpm supa db reset     │
 │  (Reset DB + Migrations)│
 └───────────┬─────────────┘
             ↓
-    ┌───────────────┐
-    │  seed.sql     │ ← Runs automatically
-    │  (Base data)  │
-    └───────┬───────┘
+    ┌───────────────────────┐
+    │  seeds/*.sql          │ ← Runs automatically (glob order)
+    │  (Base data)          │
+    └───────┬───────────────┘
             ↓
     ┌───────────────────────┐
     │  pnpm supa:seed       │
@@ -294,7 +304,7 @@ SQL
 
 ### Adding New Seed Data
 
-1. **For base data:** Edit `packages/supabase/seed.sql`
+1. **For base data:** Add or edit a `.sql` file in `packages/supabase/seeds/` (use numbered prefix for order, e.g. `006_seed-myfeature.sql`).
 2. **For CSI codes:** Update `packages/supabase/scripts/seed-csi-2020.csv`
 3. **For new data sources:** Create new script in `packages/supabase/scripts/`
 
@@ -333,7 +343,12 @@ Add to `package.json`:
 packages/supabase/
 ├── seeds/                          # All seed data (organized by concern)
 │   ├── README.md                   # Detailed seed documentation
-│   ├── seed.sql                    # Base data (runs on db reset)
+│   ├── 001_seed-industries.sql     # Base data (run on db reset)
+│   ├── 002_seed-users.sql
+│   ├── 002a_seed-api-test-user.sql
+│   ├── 003_seed-organizations.sql
+│   ├── 004_seed-unicorn-org.sql
+│   ├── 005_seed-ats-data.sql.disabled  # Optional ATS demo data
 │   ├── seed-affiliates.sql         # Affiliate programs
 │   ├── seed-soft-skills.sql        # Soft skills taxonomy
 │   ├── seed-test-users.sql         # Test users
