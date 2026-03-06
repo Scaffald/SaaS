@@ -1,8 +1,8 @@
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { Check, ChevronRight, Clock } from 'lucide-react-native'
 import { Link } from 'expo-router'
-import { useCallback, useMemo, useState } from 'react'
-import { Pressable, View } from 'react-native'
+import { useCallback, useMemo } from 'react'
+import { Pressable } from 'react-native'
 import { Paragraph, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import type { DrawerLinkProps } from './types'
@@ -38,18 +38,14 @@ export const DrawerLink = ({
 
   const title = useMemo(() => resolveTitle(), [resolveTitle])
 
-  const [isHovered, setIsHovered] = useState(false)
-
-  const activeBg = colors.primary[600]
+  const activeBg = colors.bg[theme].drawerNavActive
   const activeFg = colors.white
-  const hoverBg = theme === 'dark' ? 'rgba(16, 83, 47, 0.25)' : colors.primary[50]
-  const itemBg = active ? activeBg : isHovered ? hoverBg : 'transparent'
 
   const renderIcon = useCallback(() => {
     if (!Icon) return null
     return (
       <Icon
-        size={22}
+        size="lg"
         color={active ? activeFg : colors.icon[theme].default}
       />
     )
@@ -60,8 +56,8 @@ export const DrawerLink = ({
       <Row
         align="center"
         justify="center"
-        width={collapsed ? 48 : 24}
-        height={collapsed ? 48 : 24}
+        width={collapsed ? 48 : 28}
+        height={collapsed ? 48 : 28}
         borderRadius={collapsed ? 32 : 0}
         style={{
           backgroundColor: collapsed
@@ -80,13 +76,12 @@ export const DrawerLink = ({
     }
 
     return (
-      <Row align="center" gap={14} flex={1}>
+      <Row align="center" gap={12} flex={1}>
         {iconWrapper}
         <Paragraph
           size="md"
           style={{
             color: active ? activeFg : colors.text[theme].primary,
-            fontWeight: active ? '600' : '400',
             flex: 1,
           }}
         >
@@ -106,15 +101,17 @@ export const DrawerLink = ({
         {item.badge && (
           <Row
             paddingHorizontal={8}
-            paddingVertical={2}
-            borderRadius={999}
-            style={{ backgroundColor: colors.primary[500] }}
+            paddingVertical={4}
+            borderRadius={8}
+            style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
             minWidth={20}
             align="center"
           >
             <Paragraph
               size="sm"
-              style={{ color: colors.white, fontWeight: '700', fontSize: 10 }}
+              style={{
+                color: active ? activeFg : colors.text[theme].primary,
+              }}
             >
               {item.badge}
             </Paragraph>
@@ -167,16 +164,18 @@ export const DrawerLink = ({
     return (
       <Link href={item.href} asChild>
         <Pressable
-          onHoverIn={() => setIsHovered(true)}
-          onHoverOut={() => setIsHovered(false)}
-          style={{
+          style={({ pressed }) => ({
             width: 56,
             height: 56,
             borderRadius: 32,
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: itemBg,
-          }}
+            backgroundColor: active
+              ? activeBg
+              : pressed
+                ? colors.bg[theme].muted
+                : 'transparent',
+          })}
         >
           {renderIcon()}
         </Pressable>
@@ -188,48 +187,23 @@ export const DrawerLink = ({
     return (
       <Link href={item.href} asChild>
         <Pressable
-          onHoverIn={() => setIsHovered(true)}
-          onHoverOut={() => setIsHovered(false)}
-          style={{
+          style={({ pressed }: { pressed: boolean }) => ({
             flexDirection: 'row',
             alignItems: 'center',
-            borderRadius: 16,
+            borderRadius: 10,
             columnGap: 12,
             paddingHorizontal: 16,
             paddingVertical: 10,
-            paddingLeft: 40,
-            position: 'relative',
-            backgroundColor: itemBg,
+            paddingLeft: 36,
+            marginVertical: 2,
+            backgroundColor: active ? activeBg : pressed ? colors.gray[50] : undefined,
             flex: 1,
-          }}
+          })}
         >
-          {/* Tree vertical line */}
-          <View
-            style={{
-              position: 'absolute',
-              left: 20,
-              top: 0,
-              height: 20,
-              width: 1,
-              backgroundColor: colors.border[theme].default,
-            }}
-          />
-          {/* Tree horizontal line */}
-          <View
-            style={{
-              position: 'absolute',
-              left: 20,
-              top: 19,
-              width: 12,
-              height: 1,
-              backgroundColor: colors.border[theme].default,
-            }}
-          />
           <Paragraph
             size="md"
             style={{
-              color: active ? activeFg : colors.text[theme].secondary,
-              fontWeight: active ? '600' : '400',
+              color: active ? activeFg : colors.text[theme].primary,
               flex: 1,
             }}
           >
@@ -250,19 +224,22 @@ export const DrawerLink = ({
       <Stack flex={1}>
         <Link href={item.href} asChild>
           <Pressable
-            onHoverIn={() => setIsHovered(true)}
-            onHoverOut={() => setIsHovered(false)}
-            style={{
+            style={({ pressed }: { pressed: boolean }) => ({
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between',
               paddingHorizontal: 16,
-              paddingVertical: 14,
-              borderRadius: 16,
+              paddingVertical: 12,
+              borderRadius: 10,
+              marginVertical: 2,
               width: '100%',
               alignSelf: 'stretch',
-              backgroundColor: itemBg,
-            }}
+              backgroundColor: active
+                ? activeBg
+                : pressed
+                  ? colors.gray[200]
+                  : 'transparent',
+            })}
           >
             {renderContent()}
             {renderRightSide()}
@@ -293,19 +270,22 @@ export const DrawerLink = ({
       <Stack flex={1}>
         <Link href={item.href} asChild>
           <Pressable
-            onHoverIn={() => setIsHovered(true)}
-            onHoverOut={() => setIsHovered(false)}
-            style={{
+            style={({ pressed }: { pressed: boolean }) => ({
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between',
               paddingHorizontal: 16,
-              paddingVertical: 14,
-              borderRadius: 16,
+              paddingVertical: 12,
+              borderRadius: 10,
+              marginVertical: 2,
               width: '100%',
               alignSelf: 'stretch',
-              backgroundColor: itemBg,
-            }}
+              backgroundColor: active
+                ? activeBg
+                : pressed
+                  ? colors.gray[200]
+                  : 'transparent',
+            })}
           >
             {renderContent()}
             {renderRightSide()}
@@ -336,19 +316,22 @@ export const DrawerLink = ({
       <Stack flex={1}>
         <Link href={item.href} asChild>
           <Pressable
-            onHoverIn={() => setIsHovered(true)}
-            onHoverOut={() => setIsHovered(false)}
-            style={{
+            style={({ pressed }: { pressed: boolean }) => ({
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between',
               paddingHorizontal: 16,
-              paddingVertical: 14,
-              borderRadius: 16,
+              paddingVertical: 12,
+              borderRadius: 10,
+              marginVertical: 2,
               width: '100%',
               alignSelf: 'stretch',
-              backgroundColor: itemBg,
-            }}
+              backgroundColor: active
+                ? activeBg
+                : pressed
+                  ? colors.gray[200]
+                  : 'transparent',
+            })}
           >
             {renderContent()}
             {renderRightSide()}
@@ -375,19 +358,22 @@ export const DrawerLink = ({
   return (
     <Link href={item.href} asChild>
       <Pressable
-        onHoverIn={() => setIsHovered(true)}
-      onHoverOut={() => setIsHovered(false)}
-      style={{
+        style={({ pressed }: { pressed: boolean }) => ({
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
           paddingHorizontal: 16,
-          paddingVertical: 14,
-          borderRadius: 12,
+          paddingVertical: 12,
+          borderRadius: 10,
+          marginVertical: 2,
           width: '100%',
           alignSelf: 'stretch',
-          backgroundColor: itemBg,
-        }}
+          backgroundColor: active
+            ? activeBg
+            : pressed
+              ? colors.gray[200]
+              : 'transparent',
+        })}
       >
         {renderContent()}
         {renderRightSide()}
