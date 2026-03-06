@@ -5,6 +5,7 @@ import {
   useUnreadCount,
   useMarkAsReadMutation,
 } from '@scf/core/utils/notifications-sdk-hooks'
+import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { useQueryClient } from '@tanstack/react-query'
 import { shadows, useThemeContext, useWindowDimensions, Row } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
@@ -40,6 +41,7 @@ interface DrawerLayoutProps {
 export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProps) {
   const { width } = useWindowDimensions()
   const { theme } = useThemeContext()
+  const { session } = useSessionContext()
   // Permanent drawer when width >= 1024px, front drawer otherwise
   const isSmall = width < 1024
   const [isDrawerCollapsed, setIsDrawerCollapsed] = useState(false)
@@ -57,8 +59,8 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
     limit: 25,
   })
 
-  // Fetch unread count
-  const { data: unreadCountData } = useUnreadCount()
+  // Fetch unread count only when authenticated to avoid 400 from OpenAPI validation
+  const { data: unreadCountData } = useUnreadCount({ enabled: !!session })
   const _unreadCount = unreadCountData?.data?.unread_count ?? 0
 
   // Mark as read mutation

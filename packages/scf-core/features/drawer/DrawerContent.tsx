@@ -3,7 +3,7 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { useThemeSetting } from '@scf/core/provider/theme/UniversalThemeProvider'
 import { useGeneralInfo } from '@scf/core/utils/profile-general-sdk-hooks'
 import { usePathname } from '@scf/core/utils/usePathname'
-import { supabase } from '@scf/core/utils/supabase/client'
+import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
 import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
 import { useUser } from '@scf/core/utils/useUser'
@@ -71,6 +71,7 @@ export const DrawerContent = ({
   const { theme } = useThemeContext()
   const pathname = normalizePath(usePathname())
   const router = useRouter()
+  const { clearAuth } = useSessionContext()
   const { resolvedTheme, set: setTheme } = useThemeSetting()
   const { user, profile } = useUser()
   const { hasOfficeRole } = useUserRoles()
@@ -119,12 +120,14 @@ export const DrawerContent = ({
 
   const handleLogoutPress = useCallback(async () => {
     try {
-      await supabase.auth.signOut()
+      await clearAuth()
       handleNavigate(pathname)
+      router.replace(ROUTES.AUTH.LOGIN.path)
     } catch (error) {
       console.error('Error signing out from drawer:', error)
+      router.replace(ROUTES.AUTH.LOGIN.path)
     }
-  }, [handleNavigate, pathname])
+  }, [clearAuth, handleNavigate, pathname, router])
 
   const drawerItems = getDrawerItems()
   const ThemeToggleIcon = resolvedTheme === 'dark' ? Sun : Moon

@@ -7,7 +7,7 @@
 import { createContext, useContext } from 'react'
 import { View } from 'react-native'
 import type { TabItemProps, TabItemContextValue } from './Tabs.types'
-import { useTabsContext } from './Tabs'
+import { useTabsContext } from './TabsContext'
 import { useTabItem } from './useTabItem'
 
 // TabItem context

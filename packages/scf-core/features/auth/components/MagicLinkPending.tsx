@@ -22,7 +22,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
   const [code, setCode] = useState<number>()
   const [codeEntered, setCodeEntered] = useState(false)
   const [verified, setVerified] = useState(false)
-  const [_isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const requestMagicLink = useRequestMagicLinkMutation()
   const { t } = useTranslation()
@@ -140,12 +140,17 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
             <Box style={{ width: '100%' }}>
               <CodeConfirmation codeSize={6} secureText={false} onEnter={handleEnter} />
 
-              <ResendTimer onComplete={handleResendComplete} onResendClick={handleResendClick} />
+              <ResendTimer
+                onComplete={handleResendComplete}
+                onResendClick={handleResendClick}
+                disabled={isSubmitting}
+              />
             </Box>
 
             {error && (
               <Paragraph
                 size="sm"
+                accessibilityRole="alert"
                 style={{
                   color: theme === 'light' ? colors.error[700] : colors.error[300],
                   textAlign: 'center',
@@ -165,11 +170,11 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
               bottom={0}
               align="center"
               justify="center"
-              style={{
-                backgroundColor: colors.bg[theme].default,
-              }}
+              style={{ backgroundColor: colors.bg[theme].default }}
+              accessibilityLabel={t('auth.verify.verifying')}
+              accessibilityLiveRegion="polite"
             >
-              <Spinner color="gray" />
+              <Spinner size="md" color="gray" />
             </Box>
           )}
         </Box>

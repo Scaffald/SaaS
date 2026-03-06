@@ -80,12 +80,15 @@ export function getTabsStyles(
  */
 export function getTabListStyles(
   orientation: TabOrientation,
-  _theme: ThemeMode = 'light'
+  _theme: ThemeMode = 'light',
+  options?: { gap?: number }
 ): ViewStyle {
+  const gap = options?.gap ?? (orientation === 'horizontal' ? spacing[8] : 0)
   return {
     flexDirection: orientation === 'horizontal' ? 'row' : 'column',
     alignItems: orientation === 'horizontal' ? 'flex-start' : 'stretch',
     width: '100%',
+    ...(gap > 0 && { gap }),
   }
 }
 
