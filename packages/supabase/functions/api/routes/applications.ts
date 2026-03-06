@@ -101,6 +101,7 @@ const listApplicationsRoute = createRoute({
   tags: ['Applications'],
   summary: 'List applications',
   description: "List the authenticated user's applications with optional status filter and pagination.",
+  middleware: requireAuth,
   request: {
     query: z.object({
       status: z.enum([
@@ -134,7 +135,7 @@ const listApplicationsRoute = createRoute({
   security: [{ bearerAuth: [] }],
 })
 
-app.openapi(listApplicationsRoute, requireAuth, async (c) => {
+app.openapi(listApplicationsRoute, async (c) => {
   const supabase = c.get('supabase')
   const user = c.get('user')
   const { status, limit, offset } = c.req.valid('query')
@@ -190,6 +191,7 @@ const createApplicationRoute = createRoute({
   summary: 'Submit job application',
   description:
     'Submit a new application for a job posting. Supports both quick applications (screening questions only) and full applications with custom questions and document uploads.',
+  middleware: requireAuth,
   request: {
     body: {
       content: {
@@ -248,7 +250,7 @@ const createApplicationRoute = createRoute({
   ],
 })
 
-app.openapi(createApplicationRoute, requireAuth, async (c) => {
+app.openapi(createApplicationRoute, async (c) => {
   const supabase = c.get('supabase')
   const user = c.get('user')
   const input = c.req.valid('json')
@@ -374,6 +376,7 @@ const getApplicationRoute = createRoute({
   summary: 'Get application details',
   description:
     'Retrieve detailed information about a specific application. Users can only access their own applications.',
+  middleware: requireAuth,
   request: {
     params: z.object({
       id: z.string().uuid().openapi({
@@ -423,7 +426,7 @@ const getApplicationRoute = createRoute({
   ],
 })
 
-app.openapi(getApplicationRoute, requireAuth, async (c) => {
+app.openapi(getApplicationRoute, async (c) => {
   const supabase = c.get('supabase')
   const user = c.get('user')
   const { id } = c.req.valid('param')
@@ -472,6 +475,7 @@ const updateApplicationRoute = createRoute({
   summary: 'Update application',
   description:
     'Update an existing application. Users can only update their own applications that are in pending or reviewing status.',
+  middleware: requireAuth,
   request: {
     params: z.object({
       id: z.string().uuid().openapi({
@@ -536,7 +540,7 @@ const updateApplicationRoute = createRoute({
   ],
 })
 
-app.openapi(updateApplicationRoute, requireAuth, async (c) => {
+app.openapi(updateApplicationRoute, async (c) => {
   const supabase = c.get('supabase')
   const user = c.get('user')
   const { id } = c.req.valid('param')
@@ -617,6 +621,7 @@ const withdrawApplicationRoute = createRoute({
   summary: 'Withdraw application',
   description:
     'Withdraw a submitted application. Can only withdraw applications in pending, reviewing, or inquired status.',
+  middleware: requireAuth,
   request: {
     params: z.object({
       id: z.string().uuid().openapi({
@@ -681,7 +686,7 @@ const withdrawApplicationRoute = createRoute({
   ],
 })
 
-app.openapi(withdrawApplicationRoute, requireAuth, async (c) => {
+app.openapi(withdrawApplicationRoute, async (c) => {
   const supabase = c.get('supabase')
   const user = c.get('user')
   const { id } = c.req.valid('param')
