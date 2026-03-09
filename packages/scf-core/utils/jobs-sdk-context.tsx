@@ -6,7 +6,7 @@
 
 import { ScaffaldProvider, useScaffaldOrNull } from '@scaffald/sdk/react'
 import { useQueryClient } from '@tanstack/react-query'
-import { useMemo, type ReactNode } from 'react'
+import { useMemo, useEffect, useRef, type ReactNode } from 'react'
 import Constants from 'expo-constants'
 import { useSessionContext } from './supabase/useSessionContext'
 
@@ -51,14 +51,43 @@ export function ScaffaldJobsSdkProviderFromSession({ children }: { children: Rea
 
   const config = useMemo(() => {
     if (!baseUrl) return { baseUrl: 'https://api.scaffald.com', apiKey: 'dummy' }
-    // Don't fire real requests while session is loading — use dummy key as placeholder
-    // so the Scaffald constructor accepts the config. Once resolved, swap in real auth.
-    if (isLoading) return { baseUrl, apiKey: 'dummy' }
+    // Use valid credentials whenever available, even while loading (e.g. initialSession).
+    // Only use dummy when we have no token and no anon key yet.
     const token = session?.access_token?.trim()
     if (token) return { baseUrl, supabaseToken: token }
     if (anonKey) return { baseUrl, apiKey: anonKey }
     return { baseUrl, apiKey: 'dummy' }
-  }, [session?.access_token, baseUrl, anonKey, isLoading])
+  }, [session?.access_token, baseUrl, anonKey])
+
+  // When session loading completes, invalidate SDK queries so any that ran with dummy auth refetch.
+  const wasLoadingRef = useRef(isLoading)
+  useEffect(() => {
+    if (wasLoadingRef.current && !isLoading) {
+      wasLoadingRef.current = false
+      const sdkQueryKeyPrefixes = [
+        'jobs',
+        'applications',
+        'profiles',
+        'industries',
+        'organizations',
+        'teams',
+        'prerequisites',
+        'apiKeys',
+        'webhooks',
+      ]
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          const key = query.queryKey
+          return (
+            Array.isArray(key) &&
+            typeof key[0] === 'string' &&
+            sdkQueryKeyPrefixes.includes(key[0])
+          )
+        },
+      })
+    }
+    if (isLoading) wasLoadingRef.current = true
+  }, [isLoading, queryClient])
 
   // Always render ScaffaldProvider so the tree structure never changes.
   // Switching between <>{children}</> and <ScaffaldProvider> causes the entire

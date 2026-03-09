@@ -32,7 +32,7 @@ function getSupabaseAnonKey(): string {
 }
 
 export function ScaffaldProviderFromSession({ children }: { children: ReactNode }) {
-  const { session, isLoading } = useSessionContext()
+  const { session } = useSessionContext()
   const baseUrl = useMemo(getSupabaseApiBaseUrl, [])
   const anonKey = useMemo(getSupabaseAnonKey, [])
 
@@ -40,13 +40,8 @@ export function ScaffaldProviderFromSession({ children }: { children: ReactNode 
     if (!baseUrl) {
       return { baseUrl: 'https://api.scaffald.com', apiKey: 'dummy' }
     }
-    // Do not pass anon key while session is loading so authenticated routes
-    // don't fire requests with anon key and get 401. Pass a placeholder so
-    // the Scaffald constructor accepts the config; once session is resolved we
-    // use token for authenticated users or anon key for public/unauthenticated.
-    if (isLoading) {
-      return { baseUrl, apiKey: 'dummy' }
-    }
+    // Use valid credentials whenever available, even while loading (e.g. initialSession).
+    // Only use dummy when we have no token and no anon key yet.
     const token = session?.access_token?.trim()
     if (token) {
       return { baseUrl, supabaseToken: token }
@@ -55,7 +50,7 @@ export function ScaffaldProviderFromSession({ children }: { children: ReactNode 
       return { baseUrl, apiKey: anonKey }
     }
     return { baseUrl, apiKey: 'dummy' }
-  }, [baseUrl, isLoading, session?.access_token, anonKey])
+  }, [baseUrl, session?.access_token, anonKey])
 
   return <ScaffaldProvider config={config}>{children}</ScaffaldProvider>
 }
