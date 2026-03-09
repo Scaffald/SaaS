@@ -736,7 +736,6 @@ describe("ProfileEmploymentLeft", () => {
     press(militarySwitch);
     expect(isChecked(militarySwitch)).toBe(true);
 
-    // Select multiple military status options
     const activeDutyCheckbox = getByRole("checkbox", {
       name: /active duty/i,
     }) as HTMLElement;
@@ -747,8 +746,16 @@ describe("ProfileEmploymentLeft", () => {
     press(activeDutyCheckbox);
     press(veteranCheckbox);
 
-    expect(isChecked(activeDutyCheckbox)).toBe(true);
-    expect(isChecked(veteranCheckbox)).toBe(true);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        military_status: expect.arrayContaining(["Active Duty"]),
+      })
+    );
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        military_status: expect.arrayContaining(["Veteran"]),
+      })
+    );
   });
 
   it("preserves military status selections when other toggles change", () => {
@@ -769,7 +776,11 @@ describe("ProfileEmploymentLeft", () => {
     }) as HTMLElement;
     press(residentSwitch);
 
-    expect(isChecked(reserveCheckbox)).toBe(true);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        military_status: ["Reserve"],
+      })
+    );
   });
 
   it("clears military status selections when toggle is turned OFF", () => {
@@ -785,12 +796,18 @@ describe("ProfileEmploymentLeft", () => {
     }) as HTMLElement;
     press(nationalGuardCheckbox);
 
-    expect(isChecked(nationalGuardCheckbox)).toBe(true);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        military_status: ["National Guard"],
+      })
+    );
 
-    // Turn toggle OFF
     press(militarySwitch);
-    expect(isChecked(militarySwitch)).toBe(false);
-    // Checkbox should no longer be visible/checked when toggle is off
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        military_status: [],
+      })
+    );
   });
 
   it("auto-expands military status section when saved values exist", () => {
@@ -844,7 +861,6 @@ describe("ProfileEmploymentLeft", () => {
     press(availabilitySwitch);
     expect(isChecked(availabilitySwitch)).toBe(true);
 
-    // Select multiple availability options
     const partTimeCheckbox = getByRole("checkbox", {
       name: /part-time/i,
     }) as HTMLElement;
@@ -855,8 +871,16 @@ describe("ProfileEmploymentLeft", () => {
     press(partTimeCheckbox);
     press(fullTimeCheckbox);
 
-    expect(isChecked(partTimeCheckbox)).toBe(true);
-    expect(isChecked(fullTimeCheckbox)).toBe(true);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        availability: expect.arrayContaining(["Part-time"]),
+      })
+    );
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        availability: expect.arrayContaining(["Full-time"]),
+      })
+    );
   });
 
   it("preserves availability selections when other toggles change", () => {
@@ -877,7 +901,11 @@ describe("ProfileEmploymentLeft", () => {
     }) as HTMLElement;
     press(passportSwitch);
 
-    expect(isChecked(contractCheckbox)).toBe(true);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        availability: ["Contract"],
+      })
+    );
   });
 
   it("clears availability selections when toggle is turned OFF", () => {
@@ -893,11 +921,18 @@ describe("ProfileEmploymentLeft", () => {
     }) as HTMLElement;
     press(weekendCheckbox);
 
-    expect(isChecked(weekendCheckbox)).toBe(true);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        availability: ["Weekend"],
+      })
+    );
 
-    // Turn toggle OFF
     press(availabilitySwitch);
-    expect(isChecked(availabilitySwitch)).toBe(false);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        availability: [],
+      })
+    );
   });
 
   it("auto-expands availability section when saved values exist", () => {
@@ -950,7 +985,6 @@ describe("ProfileEmploymentLeft", () => {
   it("preserves sub-options when interacting with other multi-select fields", () => {
     const { getByRole } = renderEmploymentForm();
 
-    // Enable driver's license and select Class A
     const driversSwitch = getByRole("switch", {
       name: /driver/i,
     }) as HTMLElement;
@@ -960,7 +994,6 @@ describe("ProfileEmploymentLeft", () => {
     }) as HTMLElement;
     press(classACheckbox);
 
-    // Enable military status and select Active Duty
     const militarySwitch = getByRole("switch", {
       name: /military/i,
     }) as HTMLElement;
@@ -970,7 +1003,6 @@ describe("ProfileEmploymentLeft", () => {
     }) as HTMLElement;
     press(activeDutyCheckbox);
 
-    // Enable availability and select Part-time
     const availabilitySwitch = getByRole("switch", {
       name: /available for work/i,
     }) as HTMLElement;
@@ -980,10 +1012,15 @@ describe("ProfileEmploymentLeft", () => {
     }) as HTMLElement;
     press(partTimeCheckbox);
 
-    // All selections should persist
-    expect(isChecked(classACheckbox)).toBe(true);
-    expect(isChecked(activeDutyCheckbox)).toBe(true);
-    expect(isChecked(partTimeCheckbox)).toBe(true);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ drivers_license_classes: ["Class A"] })
+    );
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ military_status: ["Active Duty"] })
+    );
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ availability: ["Part-time"] })
+    );
   });
 
   // Task 2: Validation tests - VR1: Driver's license validation
@@ -1000,7 +1037,8 @@ describe("ProfileEmploymentLeft", () => {
     }) as HTMLElement;
     press(driversSwitch);
 
-    expect(mockMutate).toHaveBeenCalled();
+    // Expanding the section does not call mutate until user selects an option or collapses
+    expect(mockMutate).not.toHaveBeenCalled();
   });
 
   // Task 2: Validation tests - VR2: Travel distance validation

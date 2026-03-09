@@ -52,6 +52,7 @@ export function Checkbox({
   size = 'md',
   color = 'primary',
   disabled = false,
+  accessibilityLabel,
   error = false,
   errorMessage,
   showError = true,
@@ -128,6 +129,7 @@ export function Checkbox({
         onPress={handlePress}
         disabled={disabled}
         accessibilityRole="checkbox"
+        accessibilityLabel={accessibilityLabel}
         accessibilityState={{ checked, disabled }}
         {...interactiveProps}
         style={({ pressed }) => [

@@ -61,7 +61,7 @@ function FeaturedPanel({
       {hasImage ? (
         <View style={styles.featuredImageWrap}>
           <Image
-            source={{ uri: item.image! }}
+            source={hasImage && item.image ? { uri: item.image } : undefined}
             style={StyleSheet.absoluteFillObject}
             resizeMode="cover"
             onError={() => setImgError(true)}
@@ -215,7 +215,7 @@ function FeedRow({
         >
           {hasImage ? (
             <Image
-              source={{ uri: item.image! }}
+              source={hasImage && item.image ? { uri: item.image } : undefined}
               style={styles.feedThumb}
               resizeMode="cover"
               onError={() => setImgError(true)}

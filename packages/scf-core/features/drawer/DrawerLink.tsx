@@ -53,7 +53,7 @@ export const DrawerLink = ({
         color={active ? activeFg : colors.icon[theme].default}
       />
     )
-  }, [Icon, active, theme, activeFg])
+  }, [Icon, active, theme])
 
   const renderContent = useCallback(() => {
     const iconWrapper = (
@@ -94,7 +94,7 @@ export const DrawerLink = ({
         </Paragraph>
       </Row>
     )
-  }, [active, activeBg, collapsed, renderIcon, theme, title, activeFg])
+  }, [active, activeBg, collapsed, renderIcon, theme, title])
 
   const renderRightSide = useCallback(() => {
     if (collapsed) {
@@ -125,7 +125,7 @@ export const DrawerLink = ({
         )}
       </Row>
     )
-  }, [active, collapsed, item.badge, item.hasChevron, item.isExpandable, theme, activeFg])
+  }, [active, collapsed, item.badge, item.hasChevron, item.isExpandable, theme])
 
   if (collapsed && depth > 0) {
     return null
