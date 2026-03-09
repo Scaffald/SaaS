@@ -107,8 +107,8 @@ export function AvatarImagePicker({
   const inputProps = getInputProps() as Record<string, unknown>
 
   return (
-    <Stack gap={spacing[3]} style={{ alignItems: 'center' }}>
-      <View style={{ position: 'relative' }}>
+    <Row gap={spacing[4]} align="center">
+      <View style={{ position: 'relative', flexShrink: 0 }}>
         {isWeb && typeof document !== 'undefined' && (
           <input
             ref={(el) => {
@@ -171,9 +171,9 @@ export function AvatarImagePicker({
           )}
         </Pressable>
       </View>
-      <Row gap={spacing[2]} align="center">
+      <Stack gap={spacing[2]}>
         <Button
-          size="md"
+          size="sm"
           variant="outline"
           color="gray"
           onPress={open}
@@ -183,9 +183,9 @@ export function AvatarImagePicker({
           {value ? 'Change Photo' : placeholder}
         </Button>
         {value ? (
-          <>
+          <Row gap={spacing[2]}>
             <Button
-              size="md"
+              size="sm"
               variant="outline"
               color="gray"
               iconStart={Edit3}
@@ -195,7 +195,7 @@ export function AvatarImagePicker({
               Edit
             </Button>
             <Button
-              size="md"
+              size="sm"
               variant="outline"
               color="gray"
               iconStart={Trash2}
@@ -204,9 +204,9 @@ export function AvatarImagePicker({
             >
               Remove
             </Button>
-          </>
+          </Row>
         ) : null}
-      </Row>
+      </Stack>
       <AvatarCropModal
         open={cropModalOpen}
         onOpenChange={setCropModalOpen}
@@ -214,6 +214,6 @@ export function AvatarImagePicker({
         onCropComplete={handleCropComplete}
         onError={handleCropError}
       />
-    </Stack>
+    </Row>
   )
 }

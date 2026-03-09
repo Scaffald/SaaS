@@ -8,6 +8,8 @@ import type { SheetHeight } from '../Sheet/Sheet.types'
 export interface ResponsiveSelectOption {
   value: string
   label: string
+  /** Optional compact label shown in the trigger button (falls back to label) */
+  triggerLabel?: string
   disabled?: boolean
 }
 

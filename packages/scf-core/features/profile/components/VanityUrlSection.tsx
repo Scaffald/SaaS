@@ -154,16 +154,7 @@ export function VanityUrlSection() {
   const handleCopyUrl = async () => {
     if (!profileData?.slug) return
 
-    // Get base URL - works for both web and React Native
-    let baseUrl = ''
-    if (typeof window !== 'undefined' && window.location) {
-      baseUrl = window.location.origin
-    } else {
-      // For React Native, you might want to use a config or env variable
-      // For now, just use the relative path
-      baseUrl = ''
-    }
-    const vanityUrl = baseUrl ? `${baseUrl}/u/${profileData.slug}` : `/u/${profileData.slug}`
+    const vanityUrl = `https://scaffald.com/u/${profileData.slug}`
     const success = await copyToClipboard(vanityUrl)
 
     if (success) {
@@ -222,7 +213,6 @@ export function VanityUrlSection() {
   }
 
   const currentSlug = profileData?.slug
-  const vanityUrl = currentSlug ? `/u/${currentSlug}` : null
   const nextChangeAllowed = slugHistory?.nextChangeAllowed
   const daysRemaining = slugHistory?.daysRemaining
 
@@ -245,7 +235,7 @@ export function VanityUrlSection() {
         </Stack>
 
         {/* Current URL Display */}
-        {vanityUrl && !isEditing && (
+        {currentSlug && !isEditing && (
           <Stack gap={8}>
             <Text>Your Profile URL</Text>
             <Row
@@ -257,10 +247,8 @@ export function VanityUrlSection() {
               borderWidth={1}
               borderColor="$color6"
             >
-              <Text style={{ flex: 1, fontFamily: 'monospace', color: '#414e62' }}>
-                {typeof window !== 'undefined' && window.location
-                  ? `${window.location.origin}${vanityUrl}`
-                  : vanityUrl}
+              <Text style={{ flex: 1, fontFamily: 'monospace', color: '#414e62' }} numberOfLines={1}>
+                scaffald.com/u/{currentSlug}
               </Text>
               <Button size="sm" iconStart={Copy} onPress={handleCopyUrl} variant="outline">
                 Copy

@@ -38,7 +38,7 @@ export function ResponsiveSelect({
   const [isOpen, setIsOpen] = useState(false)
 
   const selectedOption = options.find((opt) => opt.value === value)
-  const displayValue = selectedOption?.label ?? placeholder
+  const displayValue = selectedOption?.triggerLabel ?? selectedOption?.label ?? placeholder
 
   const handleSelect = (optionValue: string) => {
     onValueChange(optionValue)
