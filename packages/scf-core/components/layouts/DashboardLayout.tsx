@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
-import { ScrollView, useWindowDimensions } from 'react-native'
-import { Grid, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { ScrollView } from 'react-native'
+import { Grid, Row, Stack, useThemeContext, useResponsive } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { Breadcrumb, type BreadcrumbItemData } from '@scaffald/ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
@@ -17,6 +17,8 @@ type DashboardLayoutProps = {
   breadcrumbItems?: BreadcrumbItemData[]
   /** Whether to auto-generate breadcrumbs from route (default: true) */
   autoGenerateBreadcrumbs?: boolean
+  /** Expand content to full width (single column, no right panel) */
+  fullWidth?: boolean
 }
 
 export const DashboardLayout = ({
@@ -25,12 +27,14 @@ export const DashboardLayout = ({
   showBreadcrumb = true,
   breadcrumbItems,
   autoGenerateBreadcrumbs = true,
+  fullWidth = false,
 }: DashboardLayoutProps) => {
-  const { width } = useWindowDimensions()
+  const { isDesktop } = useResponsive()
   const { theme } = useThemeContext()
-  const isDesktop = width >= 1024
   const contentPadding = isDesktop ? '2xl' : 'lg'
   const verticalPadding = isDesktop ? '3xl' : 'sm'
+  const columnGap = isDesktop ? 48 : 24
+  const columnTemplate = fullWidth ? '1fr' : GOLDEN_RATIO_TEMPLATE
 
   // Auto-generate breadcrumbs if enabled and no manual override
   const { breadcrumbs } = useBreadcrumbs({
@@ -62,9 +66,9 @@ export const DashboardLayout = ({
         {/* Content Area - Two-column golden ratio (lg+) or single column, min 300px per column */}
         <Stack paddingHorizontal={contentPadding}>
           <Grid
-            columns={{ base: 1, lg: GOLDEN_RATIO_TEMPLATE }}
-            gap={24}
-            rowGap={24}
+            columns={{ base: 1, lg: columnTemplate }}
+            gap={columnGap}
+            rowGap={isDesktop ? 32 : 24}
           >
             {leftContent ? <Stack>{leftContent}</Stack> : null}
             {rightContent ? <Stack>{rightContent}</Stack> : null}

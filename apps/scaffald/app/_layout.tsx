@@ -1,6 +1,6 @@
 import { ErrorBoundary } from '@scf/core/components/ErrorBoundary'
 import { getVersionDebugPayload } from '@scf/core/constants/appVersion'
-import { loadThemePromise, Provider, UniversalThemeProvider, useThemeSetting } from '@scf/core/provider'
+import { loadThemePromise, Provider, UniversalThemeProvider, useThemeSetting, ThemeContext } from '@scf/core/provider'
 import { initSentry } from '@scf/core/utils/sentry'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { logger } from '@scf/core'
@@ -16,15 +16,23 @@ import { RobotoSerif_400Regular } from '@expo-google-fonts/roboto-serif'
 import type { Session } from '@supabase/auth-js'
 import { SplashScreen, Stack, useSegments } from 'expo-router'
 import type { ReactNode } from 'react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 /** Bridges UniversalThemeProvider (scf-core) to scaffald-ui ThemeProvider so one source drives both. */
 function ThemeBridge({ children }: { children: ReactNode }) {
-  const { resolvedTheme, set } = useThemeSetting()
+  const { resolvedTheme } = useThemeSetting()
+  // Use the stable onChangeTheme from context directly (memoized in UniversalThemeProvider)
+  // rather than the new function created by useThemeSetting() on every call.
+  const ctx = useContext(ThemeContext)
+  const onChangeThemeRef = useRef(ctx?.onChangeTheme)
+  onChangeThemeRef.current = ctx?.onChangeTheme
+  const handleThemeChange = useCallback((theme: string) => {
+    onChangeThemeRef.current?.(theme)
+  }, [])
   return (
-    <ThemeProvider theme={resolvedTheme as ResolvedThemeMode} onThemeChange={set}>
+    <ThemeProvider theme={resolvedTheme as ResolvedThemeMode} onThemeChange={handleThemeChange}>
       {children}
     </ThemeProvider>
   )

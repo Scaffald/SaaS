@@ -12,7 +12,7 @@ import { RIASECAssessmentWidget } from '../riasec-assessment'
  */
 export function DashboardIndexLeft() {
   return (
-    <Stack gap={16}>
+    <Stack gap={20}>
       {/* <ResumeImportWidget /> */}
       {/* <ProfileCompletionExperience /> */}
       <ProfileSnapshotWidget />

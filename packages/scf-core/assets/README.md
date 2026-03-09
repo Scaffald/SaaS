@@ -53,7 +53,7 @@ Use the official brand colors for consistent theming:
 import { BRAND_COLORS } from '@app/core/assets'
 
 // Primary colors
-const primary = BRAND_COLORS.primary      // #034550
+const primary = BRAND_COLORS.primary      // #239cb2
 const secondary = BRAND_COLORS.secondary  // #2A7F8E
 
 // Gradient colors

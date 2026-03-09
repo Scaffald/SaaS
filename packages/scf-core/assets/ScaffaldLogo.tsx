@@ -24,7 +24,7 @@ export interface ScaffaldLogoProps {
  *
  * @param width - Logo width (default: 609)
  * @param height - Logo height (default: 99)
- * @param primaryColor - Primary brand color (default: #034550)
+ * @param primaryColor - Primary brand color (default: #2a7f8e)
  * @param secondaryColor - Secondary brand color (default: #2A7F8E)
  * @param gradientStart - Gradient start color (default: #76EAFF)
  * @param gradientEnd - Gradient end color (default: #239CB2)
@@ -33,7 +33,7 @@ export interface ScaffaldLogoProps {
 export const ScaffaldLogo = ({
   width = 609,
   height = 99,
-  primaryColor = '#034550',
+  primaryColor = '#2a7f8e',
   secondaryColor = '#2A7F8E',
   gradientStart = '#76EAFF',
   gradientEnd = '#239CB2',

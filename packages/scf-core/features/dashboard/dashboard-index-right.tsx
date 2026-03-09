@@ -47,7 +47,7 @@ export function DashboardIndexRight() {
   const card = profileTipCards[index]
 
   return (
-    <Stack gap={16}>
+    <Stack gap={20}>
       <ProfileActivityWidget />
       <DashboardWidget gap={12} elevated>
         {card ? (
@@ -82,7 +82,7 @@ export function DashboardIndexRight() {
         ) : null}
       </DashboardWidget>
       <TeamInvitationsWidget />
-      <NewsWidget industry="construction" maxItems={10} />
+      <NewsWidget industry="construction" maxItems={6} />
     </Stack>
   )
 }

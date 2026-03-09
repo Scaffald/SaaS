@@ -22,7 +22,7 @@ import { useRouter } from 'expo-router'
 import { useCallback, useState, type ReactNode } from 'react'
 import { Platform, Pressable, ScrollView, type PressableStateCallbackType } from 'react-native'
 import type { GestureResponderEvent } from 'react-native'
-import { Text, useWindowDimensions, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { Text, useResponsive, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { DrawerLink } from './DrawerLink'
 import { getDrawerItems } from './config'
@@ -67,7 +67,7 @@ export const DrawerContent = ({
   canCollapse = false,
   onToggleCollapse,
 }: DrawerContentProps) => {
-  const { width } = useWindowDimensions()
+  const { width } = useResponsive()
   const { theme } = useThemeContext()
   const pathname = normalizePath(usePathname())
   const router = useRouter()

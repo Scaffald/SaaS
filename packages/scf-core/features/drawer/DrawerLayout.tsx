@@ -7,7 +7,7 @@ import {
 } from '@scf/core/utils/notifications-sdk-hooks'
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { useQueryClient } from '@tanstack/react-query'
-import { shadows, useThemeContext, useWindowDimensions, Row } from '@scaffald/ui'
+import { shadows, useThemeContext, useResponsive, Row } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import type { NotificationItem } from '@scf/core/components/notifications'
 import { DrawerActions } from '@react-navigation/native'
@@ -39,7 +39,7 @@ interface DrawerLayoutProps {
  * Provides consistent drawer behavior, styling, and responsive design
  */
 export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProps) {
-  const { width } = useWindowDimensions()
+  const { width } = useResponsive()
   const { theme } = useThemeContext()
   const { session } = useSessionContext()
   // Permanent drawer when width >= 1024px, front drawer otherwise
