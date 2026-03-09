@@ -44,6 +44,7 @@ export function PhoneNumberInput({
   const countryOptions = countries.map((c) => ({
     value: c.code,
     label: `${c.flag} ${c.dialCode} ${c.name}`,
+    triggerLabel: `${c.flag} ${c.dialCode}`,
   }))
 
   const syncFromValue = useCallback(() => {
@@ -91,7 +92,7 @@ export function PhoneNumberInput({
     <Stack gap={spacing[2]} testID={testID}>
       {label ? <Label>{label}</Label> : null}
       <Row gap={spacing[2]} align="stretch">
-        <View style={{ width: 112, flexShrink: 0 }}>
+        <View style={{ width: 100, flexShrink: 0 }}>
           <ResponsiveSelect
             value={selectedCountry.code}
             onValueChange={handleCountryChange}
