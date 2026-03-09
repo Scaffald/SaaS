@@ -27,9 +27,9 @@ test.describe('Regular • /dashboard/profile/employment', () => {
     await ensureProfileComplete(page)
     await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForSelector('text=Willing to Travel', { state: 'visible' })
+    await page.waitForSelector('text=Open to travel', { state: 'visible' })
 
-    const travelToggle = page.getByRole('switch', { name: /willing to travel/i })
+    const travelToggle = page.getByRole('switch', { name: /open to travel/i })
     await travelToggle.click()
 
     const slider = page.getByRole('slider', { name: /travel/i })
