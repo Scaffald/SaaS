@@ -57,7 +57,7 @@ export function ProfileEmploymentLeft() {
   const onSave = updateMutation.mutate;
 
   return (
-    <Stack>
+    <Stack gap={20}>
       <DashboardWidget>
         <Stack gap={16} padding="md" flex={1}>
           <Text weight="semibold" size="lg">
