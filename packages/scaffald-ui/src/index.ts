@@ -679,6 +679,8 @@ export { FieldError } from "./components/FieldError";
 export type { FieldErrorProps } from "./components/FieldError";
 
 export { CancelIcon, CheckIcon, Icon, InfoIcon } from "./components/Icon";
+export { IconCircle } from "./components/IconCircle";
+export type { IconCircleProps } from "./components/IconCircle";
 export type {
   CancelIconProps,
   CheckIconProps,

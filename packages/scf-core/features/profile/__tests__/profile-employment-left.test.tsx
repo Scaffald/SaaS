@@ -580,8 +580,12 @@ describe("ProfileEmploymentLeft", () => {
     press(residentSwitch);
     press(passportSwitch);
 
-    expect(isChecked(residentSwitch)).toBe(true);
-    expect(isChecked(passportSwitch)).toBe(true);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ us_resident: true })
+    );
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ us_passport: true })
+    );
   });
 
   it("preserves driver license selections when other toggles change", () => {
@@ -611,17 +615,17 @@ describe("ProfileEmploymentLeft", () => {
   });
 
   it("maintains travel distance slider value when changed", () => {
-    const { getByRole, getByText } = renderEmploymentForm();
+    const { getByRole } = renderEmploymentForm();
 
     const slider = getByRole("slider", {
       name: /travel slider/i,
     }) as HTMLElement;
     expect(slider).toBeInstanceOf(HTMLElement);
 
-    // Slider should be visible (travel is always enabled)
     press(slider);
-    // Value should change
-    expect(getByText(/miles/i)).toBeInstanceOf(HTMLElement);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ travel_distance_miles: 30 })
+    );
   });
 
   it("displays the travel slider within the 10-250 mile range", () => {
@@ -714,14 +718,13 @@ describe("ProfileEmploymentLeft", () => {
 
     const { getByRole } = renderEmploymentForm();
 
-    // Enable driver's license toggle but do not select any class
     const driversSwitch = getByRole("switch", {
       name: /driver/i,
     }) as HTMLElement;
     press(driversSwitch);
 
-    // With atomic save, turning toggle on then off sends []. No "submit" to block.
-    expect(mockMutate).toHaveBeenCalled();
+    // With atomic save, expanding without selecting does not call mutate
+    expect(mockMutate).not.toHaveBeenCalled();
   });
 
   // Task 1: Multi-select field tests - Military Status
