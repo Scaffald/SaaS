@@ -110,10 +110,25 @@ function tokenCheck(token: string): Promise<boolean> {
 }
 
 async function testHealth(): Promise<boolean> {
-  const res = await fetch(`${API_BASE}/health`, { method: 'GET' })
-  if (!res.ok) return false
-  const data = await res.json()
-  return data?.status === 'ok'
+  const url = `${API_BASE}/health`
+  try {
+    const res = await fetch(url, { method: 'GET' })
+    if (!res.ok) {
+      console.error(`   Health GET ${url} → ${res.status} ${res.statusText}`)
+      if (res.status === 404) {
+        console.error('   A 404 here often means the function server is running old code (e.g. with basePath). Restart: pnpm supa functions serve api')
+      }
+      return false
+    }
+    const data = await res.json()
+    return data?.status === 'ok'
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    console.error(`   Health GET ${url} failed: ${msg}`)
+    console.error('   Ensure Supabase is running (pnpm supa start) and the API function is served (pnpm supa functions serve api).')
+    console.error('   If using .env, ensure EXPO_PUBLIC_SUPABASE_URL or SUPABASE_URL points to local (e.g. http://127.0.0.1:54321).')
+    return false
+  }
 }
 
 async function main() {

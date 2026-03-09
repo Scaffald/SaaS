@@ -67,7 +67,7 @@ import {
   trackApiKeyUsage,
 } from "./middleware/usage-tracker.ts";
 
-const app = new Hono().basePath("/api");
+const app = new Hono();
 
 // CORS middleware - handle preflight and add headers to all responses
 app.use("*", async (c, next) => {
@@ -175,4 +175,23 @@ app.onError((err, c) => {
   );
 });
 
-Deno.serve(app.fetch);
+const EDGE_FUNCTION_PATH_PREFIX = "/functions/v1/api";
+
+function stripEdgeFunctionPathPrefix(req: Request): Request {
+  const url = new URL(req.url);
+  if (!url.pathname.startsWith(EDGE_FUNCTION_PATH_PREFIX)) {
+    return req;
+  }
+  const newPath = url.pathname.slice(EDGE_FUNCTION_PATH_PREFIX.length) || "/";
+  url.pathname = newPath;
+  return new Request(url, {
+    method: req.method,
+    headers: req.headers,
+    body: req.body,
+  });
+}
+
+Deno.serve((req) => {
+  const normalizedReq = stripEdgeFunctionPathPrefix(req);
+  return app.fetch(normalizedReq);
+});
