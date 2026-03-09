@@ -1,7 +1,7 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server'
+import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
 import { createClient } from '@supabase/supabase-js'
 import { parseFeed } from 'https://deno.land/x/rss@1.1.3/mod.ts'
-import { corsHeaders } from '../_shared/cors'
+import { corsHeaders } from '../_shared/cors.ts'
 import type { Database } from '../_shared/database.types.ts'
 
 interface NewsArticle {

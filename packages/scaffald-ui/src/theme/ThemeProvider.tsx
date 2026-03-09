@@ -162,28 +162,30 @@ export function ThemeProvider(props: ThemeProviderProps) {
     persistTheme()
   }, [controlled, themePreference, resolved, isReady])
 
+  const onThemeChange = props.onThemeChange
+
   const setTheme = useCallback(
     (newTheme: ThemeMode) => {
-      if (controlled && props.onThemeChange) {
-        props.onThemeChange(newTheme)
+      if (controlled && onThemeChange) {
+        onThemeChange(newTheme)
       } else {
         setThemePreference(newTheme)
       }
     },
-    [controlled, props]
+    [controlled, onThemeChange]
   )
 
   const toggleTheme = useCallback(() => {
-    if (controlled && props.onThemeChange) {
+    if (controlled && onThemeChange) {
       const next: ThemeMode = resolved === 'light' ? 'dark' : 'light'
-      props.onThemeChange(next)
+      onThemeChange(next)
     } else {
       setThemePreference((prev) => {
         const currentResolved = resolveTheme(prev, Appearance.getColorScheme())
         return currentResolved === 'light' ? 'dark' : 'light'
       })
     }
-  }, [controlled, resolved, props])
+  }, [controlled, resolved, onThemeChange])
 
   const value: ThemeContextValue = {
     theme: resolved,

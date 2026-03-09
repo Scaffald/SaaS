@@ -1,6 +1,6 @@
 import { AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react-native'
 import type { ReactNode } from 'react'
-import { Button, ScrollView, Skeleton, SkeletonBox, SkeletonText, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Button, ScrollView, Skeleton, SkeletonBox, SkeletonText, Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { AssessmentProgress, type AssessmentStep } from './AssessmentProgress'
 

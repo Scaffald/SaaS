@@ -7,11 +7,14 @@ import { usePrerequisites } from '@scaffald/sdk/react'
 import { useRouter } from 'expo-router'
 import { Drawer } from 'expo-router/drawer'
 import { useEffect } from 'react'
-import { Spinner, Text, Stack } from '@scaffald/ui'
+import { StyleSheet } from 'react-native'
+import { Spinner, Text, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 export default function Layout() {
   const { isLoading, user } = useProtectedRoute()
   const { session, isLoading: isSessionLoading } = useSessionContext()
+  const { theme } = useThemeContext()
   const router = useRouter()
 
   // Check prerequisites status - only run when we have a valid user
@@ -21,26 +24,32 @@ export default function Layout() {
   })
 
   // Redirect to /onboarding if prerequisites incomplete
+  // biome-ignore lint/correctness/useExhaustiveDependencies: router is a stable expo-router ref; including it would cause re-runs on every route change
   useEffect(() => {
     if (!isCheckingPrereqs && statusData && !statusData.isComplete) {
       router.replace(ROUTES.ONBOARDING.path)
     }
-  }, [statusData, isCheckingPrereqs, router])
+  }, [statusData, isCheckingPrereqs])
 
   // Wait for session before rendering drawer so SDK has token and API calls don't 401
   const sessionReady = !isSessionLoading && (user ? !!session?.access_token : true)
 
-  // Show loading state BEFORE rendering the drawer
-  if (isLoading || isCheckingPrereqs || !sessionReady) {
-    return (
-      <Stack justify="center" align="center">
+  // Show loading overlay while auth/session/prereqs are pending.
+  // Keep DrawerLayout always mounted so the Drawer navigator never remounts — remounting
+  // fires all Drawer.Screen navigation effects simultaneously, causing the
+  // "Maximum update depth exceeded" crash.
+  const loadingOverlay =
+    isLoading || isCheckingPrereqs || !sessionReady ? (
+      <Stack
+        style={{ ...StyleSheet.absoluteFillObject, backgroundColor: colors.bg[theme].default }}
+        justify="center"
+        align="center"
+      >
         <Spinner size="lg" />
         <Text>Loading...</Text>
       </Stack>
-    )
-  }
+    ) : null
 
-  // Only render drawer once auth is confirmed
   return (
     <ErrorBoundary
       context={{
@@ -48,7 +57,7 @@ export default function Layout() {
         userId: user?.id,
       }}
     >
-      <DrawerLayout protectionComponent={null} hideDrawer={!statusData?.isComplete}>
+      <DrawerLayout protectionComponent={loadingOverlay} hideDrawer={!statusData?.isComplete}>
         <Drawer.Screen name="index" options={{ title: 'Dashboard' }} />
         <Drawer.Screen name="map/index" options={{ title: 'Map Search' }} />
         <Drawer.Screen name="workers/index" options={{ title: 'Search Workers' }} />

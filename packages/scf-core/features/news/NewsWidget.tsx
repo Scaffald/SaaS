@@ -4,7 +4,6 @@ import { useGeneralInfoWidget, useSkillsWidget } from '@scf/core/utils/profile-w
 import { redirect } from '@scf/core/utils/redirect'
 import {
   Button,
-  DashboardWidget,
   DashboardWidgetHeader,
   Paragraph,
   Row,
@@ -18,11 +17,11 @@ import {
   useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import { AlertCircle, ExternalLink, RefreshCw } from 'lucide-react-native'
+import { AlertCircle, RefreshCw } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
 import { useMemo, useState } from 'react'
-import { Platform, Pressable } from 'react-native'
+import { Image, Platform, Pressable } from 'react-native'
 import type { NewsItem, NewsWidgetProps } from './config/types'
 import { useAggregatedNews } from './hooks/useNewsFeed'
 import { useNewsIndustryResolution } from './hooks/useNewsIndustryResolution'
@@ -403,16 +402,18 @@ export function NewsWidget({
     setPreferences((prev) => ({ ...prev, [key]: value }))
   }
 
-  const relevanceLabel = (score: number) => {
+  const _relevanceLabel = (score: number) => {
     if (score >= 10) return 'High relevance'
     if (score >= 7) return 'Relevant'
     if (score >= 4) return 'General interest'
     return 'From your feeds'
   }
 
+  const dividerColor = colors.border[theme].default
+
   // Always show the widget so the News section is visible; show loading, error, empty, or list
   return (
-    <DashboardWidget gap={12}>
+    <Stack gap={12}>
       <DashboardWidgetHeader
         title="News"
         action={
@@ -471,79 +472,114 @@ export function NewsWidget({
       ) : null}
 
       {status === 'success' && (
-        <Stack gap={12}>
-          {__DEV__ && (
-            <Text
-              style={{
-                fontSize: 11,
-                color: colors.text[theme].tertiary,
-              }}
-            >
-              News industry: {effectiveIndustryId ?? '—'}, articles: {displayNews.length}
-            </Text>
-          )}
-          {displayNews.map((item: EnrichedNewsItem) => (
-            <Pressable key={item.id} onPress={() => handleNewsClick(item)}>
-              {({ pressed }) => (
-                <Stack
-                  gap={8}
-                  padding="sm"
-                  backgroundColor="$color2"
-                  borderWidth={1}
-                  borderColor="$color4"
-                  style={{ borderRadius: 12, opacity: pressed ? 0.7 : 1 }}
-                >
-                  <Row justify="space-between" align="flex-start" gap={12}>
-                    <Text style={{ flex: 1, color: colors.text[theme].primary }}>
-                      {item.title}
-                    </Text>
-                    <ExternalLink size="md" color={colors.text[theme].tertiary} />
-                  </Row>
-                  <Row gap={8} align="center" wrap>
-                    <Text style={{ color: colors.text[theme].secondary }}>
-                      {formatTimeAgo(item.pubDate)}
-                    </Text>
-                    {item.category && (
-                      <Text style={{ color: colors.text[theme].secondary }}>
-                        • {capitalise(item.category)}
+        <Stack>
+          {displayNews.map((item: EnrichedNewsItem, index: number) => (
+            <Stack key={item.id}>
+              {index > 0 && (
+                <Stack style={{ height: 1, backgroundColor: dividerColor }} />
+              )}
+              <Pressable onPress={() => handleNewsClick(item)}>
+                {({ pressed }) => (
+                  <Row
+                    gap={12}
+                    align="flex-start"
+                    style={{ paddingVertical: 12, opacity: pressed ? 0.6 : 1 }}
+                  >
+                    {item.image ? (
+                      <Image
+                        source={{ uri: item.image }}
+                        style={{ width: 72, height: 72, borderRadius: 8 }}
+                        resizeMode="cover"
+                      />
+                    ) : null}
+                    <Stack style={{ flex: 1 }} gap={4}>
+                      <Text
+                        numberOfLines={2}
+                        style={{
+                          fontSize: 14,
+                          fontWeight: '600',
+                          lineHeight: 20,
+                          color: colors.text[theme].primary,
+                        }}
+                      >
+                        {item.title}
                       </Text>
-                    )}
-                    <Text style={{ color: colors.text[theme].secondary }}>
-                      • {relevanceLabel(item.relevanceScore)}
-                    </Text>
-                  </Row>
-                  {item.reasons.length > 0 && (
-                    <Row gap={8} wrap>
-                      {item.reasons.slice(0, 2).map((reason: string, index: number) => (
-                        <Stack
-                          key={`${item.id}-reason-${index}`}
-                          paddingHorizontal={8}
-                          paddingVertical={4}
-                          backgroundColor="$blue3"
-                          style={{ borderRadius: 8 }}
+                      {item.description ? (
+                        <Text
+                          numberOfLines={2}
+                          style={{
+                            fontSize: 13,
+                            lineHeight: 18,
+                            color: colors.text[theme].secondary,
+                          }}
                         >
-                          <Text
+                          {item.description}
+                        </Text>
+                      ) : null}
+                      <Row gap={6} align="center" wrap style={{ marginTop: 4 }}>
+                        <Text style={{ fontSize: 12, color: colors.text[theme].tertiary }}>
+                          {formatTimeAgo(item.pubDate)}
+                        </Text>
+                        {item.category ? (
+                          <Stack
                             style={{
-                              color: theme === 'dark' ? colors.blue[300] : colors.blue[700],
+                              paddingHorizontal: 6,
+                              paddingVertical: 2,
+                              backgroundColor:
+                                theme === 'dark' ? colors.bg[theme].subtle : colors.bg[theme].muted,
+                              borderRadius: 4,
                             }}
                           >
-                            {reason}
+                            <Text
+                              style={{ fontSize: 11, color: colors.text[theme].secondary }}
+                            >
+                              {capitalise(item.category)}
+                            </Text>
+                          </Stack>
+                        ) : null}
+                        {item.source ? (
+                          <Text
+                            numberOfLines={1}
+                            style={{ fontSize: 12, color: colors.text[theme].tertiary }}
+                          >
+                            {item.source}
                           </Text>
-                        </Stack>
-                      ))}
-                    </Row>
-                  )}
-                </Stack>
-              )}
-            </Pressable>
+                        ) : null}
+                      </Row>
+                      {item.reasons.length > 0 ? (
+                        <Row gap={4} wrap style={{ marginTop: 2 }}>
+                          {item.reasons.slice(0, 2).map((reason: string, i: number) => (
+                            <Stack
+                              key={`${item.id}-r-${i}`}
+                              style={{
+                                paddingHorizontal: 6,
+                                paddingVertical: 2,
+                                backgroundColor:
+                                  theme === 'dark' ? colors.blue[900] : colors.blue[50],
+                                borderRadius: 4,
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  fontSize: 11,
+                                  color: theme === 'dark' ? colors.blue[300] : colors.blue[700],
+                                }}
+                              >
+                                {reason}
+                              </Text>
+                            </Stack>
+                          ))}
+                        </Row>
+                      ) : null}
+                    </Stack>
+                  </Row>
+                )}
+              </Pressable>
+            </Stack>
           ))}
 
-          <Button
-            size="sm"
-            variant="outline"
-            onPress={handleViewAll}
-            iconEnd={ExternalLink}
-          >
+          <Stack style={{ height: 1, backgroundColor: dividerColor, marginBottom: 12 }} />
+          <Button size="sm" variant="outline" onPress={handleViewAll}>
             View All News
           </Button>
         </Stack>
@@ -561,50 +597,50 @@ export function NewsWidget({
         />
         <SheetContent>
           <Stack padding="md" gap={12}>
-          <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
-            Tailor the news feed using your profile information.
-          </Paragraph>
+            <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
+              Tailor the news feed using your profile information.
+            </Paragraph>
 
-          <Stack gap={12}>
-            <Row justify="space-between" align="center">
-              <Paragraph size="sm">Match my skills</Paragraph>
-              <Switch
-                size="sm"
-                checked={preferences.matchSkills}
-                onChange={(value) => updatePreference('matchSkills', value)}
-              />
-            </Row>
+            <Stack gap={12}>
+              <Row justify="space-between" align="center">
+                <Paragraph size="sm">Match my skills</Paragraph>
+                <Switch
+                  size="sm"
+                  checked={preferences.matchSkills}
+                  onChange={(value) => updatePreference('matchSkills', value)}
+                />
+              </Row>
 
-            <Row justify="space-between" align="center">
-              <Paragraph size="sm">Match my industry</Paragraph>
-              <Switch
-                size="sm"
-                checked={preferences.matchIndustry}
-                onChange={(value) => updatePreference('matchIndustry', value)}
-              />
-            </Row>
+              <Row justify="space-between" align="center">
+                <Paragraph size="sm">Match my industry</Paragraph>
+                <Switch
+                  size="sm"
+                  checked={preferences.matchIndustry}
+                  onChange={(value) => updatePreference('matchIndustry', value)}
+                />
+              </Row>
 
-            <Row justify="space-between" align="center">
-              <Paragraph size="sm">Boost trending stories</Paragraph>
-              <Switch
-                size="sm"
-                checked={preferences.prioritizeTrending}
-                onChange={(value) => updatePreference('prioritizeTrending', value)}
-              />
-            </Row>
+              <Row justify="space-between" align="center">
+                <Paragraph size="sm">Boost trending stories</Paragraph>
+                <Switch
+                  size="sm"
+                  checked={preferences.prioritizeTrending}
+                  onChange={(value) => updatePreference('prioritizeTrending', value)}
+                />
+              </Row>
 
-            <Row justify="space-between" align="center">
-              <Paragraph size="sm">Show recent stories only</Paragraph>
-              <Switch
-                size="sm"
-                checked={preferences.recentOnly}
-                onChange={(value) => updatePreference('recentOnly', value)}
-              />
-            </Row>
+              <Row justify="space-between" align="center">
+                <Paragraph size="sm">Show recent stories only</Paragraph>
+                <Switch
+                  size="sm"
+                  checked={preferences.recentOnly}
+                  onChange={(value) => updatePreference('recentOnly', value)}
+                />
+              </Row>
+            </Stack>
           </Stack>
-        </Stack>
         </SheetContent>
       </Sheet>
-    </DashboardWidget>
+    </Stack>
   )
 }

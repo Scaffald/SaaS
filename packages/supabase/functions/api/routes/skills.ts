@@ -1044,7 +1044,7 @@ app.openapi(getPrimaryIndustryRoute, async (c) => {
 
   const { data: profile } = await supabase
     .schema('core')
-    .from('user_profiles')
+    .from('users')
     .select('industry_id, industries:industry_id(id, name, slug)')
     .eq('id', user.id)
     .single()
@@ -1106,7 +1106,7 @@ app.openapi(updatePrimaryIndustryRoute, async (c) => {
 
   const { error } = await supabase
     .schema('core')
-    .from('user_profiles')
+    .from('users')
     .update({ industry_id: industryId, updated_at: new Date().toISOString() })
     .eq('id', user.id)
 

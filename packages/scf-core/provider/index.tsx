@@ -12,7 +12,7 @@ import {
   useScaffaldJobsClient,
 } from '../utils/jobs-sdk-context'
 
-export { loadThemePromise } from './theme/UniversalThemeProvider'
+export { loadThemePromise, ThemeContext } from './theme/UniversalThemeProvider'
 export { UniversalThemeProvider, useThemeSetting } from './theme'
 export { useScaffaldJobsClient }
 
