@@ -1,11 +1,9 @@
 import { ControlledAddressForm } from "@scf/core/forms";
-import type { SaveExperienceParams } from "@scaffald/sdk";
 import {
   useExperience,
   useExperienceSummary,
-  useSaveExperienceMutation,
+  useSaveExperienceMutationWithSync,
 } from "@scf/core/utils/profile-experience-sdk-hooks";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   Button,
   Checkbox,
@@ -25,7 +23,6 @@ import {
   Plus,
   X,
 } from "lucide-react-native";
-import { useToast } from "@scaffald/ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { H4, Input, Spinner, Text, TextArea, Row, Stack } from "@scaffald/ui";
@@ -60,27 +57,12 @@ type ExperienceEntry = {
   updated_at?: string;
 };
 import { useExperienceEdit } from "./contexts/experience-edit-context";
-import { invalidateProfileQueries } from "./utils/profile-sync";
-import {
-  completeProfileSync,
-  failProfileSync,
-  resetProfileSyncError,
-  startProfileSync,
-  useAdaptiveProfileSync,
-} from "./utils/profile-sync-store";
+import { useAdaptiveProfileSync } from "./utils/profile-sync-store";
 
 type ExperienceEntries = NonNullable<
   ExperienceProfileFormData["experience_entries"]
 >;
 
-// API response types from tRPC router
-type ExperienceApiResponse = ExperienceEntry[];
-type ExperienceSummaryApiResponse = { career_level: string | null };
-
-interface SaveExperienceContext {
-  previousExperience?: ExperienceApiResponse | undefined;
-  previousSummary?: ExperienceSummaryApiResponse | undefined;
-}
 
 /**
  * Profile Experience Left Component
@@ -92,102 +74,13 @@ export function ProfileExperienceLeft() {
   const syncStatus = useAdaptiveProfileSync(300);
   const isSyncing = syncStatus === "syncing";
   const { editingEntryId, cancelEditing } = useExperienceEdit();
-  const toast = useToast();
 
   // Queries
   const experienceQuery = useExperience();
   const experienceSummaryQuery = useExperienceSummary();
-  const queryClient = useQueryClient();
 
   // Mutations
-  const saveExperienceMutation = useSaveExperienceMutation({
-    async onMutate(
-      input: SaveExperienceParams
-    ): Promise<SaveExperienceContext> {
-      resetProfileSyncError();
-      startProfileSync();
-      await Promise.all([
-        queryClient.cancelQueries({ queryKey: ["profiles", "experience"] }),
-        queryClient.cancelQueries({
-          queryKey: ["profiles", "experience", "summary"],
-        }),
-      ]);
-
-      const previousExperience =
-        queryClient.getQueryData<ExperienceApiResponse>([
-          "profiles",
-          "experience",
-        ]);
-      const previousSummary =
-        queryClient.getQueryData<ExperienceSummaryApiResponse>([
-          "profiles",
-          "experience",
-          "summary",
-        ]);
-
-      // Type assertions needed because form data types don't exactly match API response types
-      // Form data is compatible but has slightly different optionality
-      queryClient.setQueryData(
-        ["profiles", "experience"],
-        input.experience_entries as ExperienceApiResponse
-      );
-      queryClient.setQueryData(["profiles", "experience", "summary"], {
-        career_level: (input.career_level ?? null) as string | null,
-      });
-
-      return {
-        previousExperience: previousExperience as
-          | ExperienceApiResponse
-          | undefined,
-        previousSummary: previousSummary as
-          | ExperienceSummaryApiResponse
-          | undefined,
-      };
-    },
-    onError: (
-      error: Error,
-      _input: SaveExperienceParams,
-      _onMutateResult: unknown,
-      context: unknown
-    ) => {
-      console.error("Error saving experience:", error);
-      const ctx = context as SaveExperienceContext | undefined;
-      if (ctx?.previousExperience) {
-        queryClient.setQueryData(
-          ["profiles", "experience"],
-          ctx.previousExperience
-        );
-      }
-      if (ctx?.previousSummary) {
-        queryClient.setQueryData(
-          ["profiles", "experience", "summary"],
-          ctx.previousSummary
-        );
-      }
-      failProfileSync();
-      toast.show({
-        title: "Error",
-        message:
-          error instanceof Error
-            ? error.message
-            : "Failed to save experience. Please try again.",
-        variant: "error",
-      });
-    },
-    onSuccess: () => {
-      toast.show({
-        title: "Experience Saved",
-        message: "Your work experience has been updated successfully!",
-        variant: "success",
-      });
-    },
-    onSettled: (_data: { success: boolean } | undefined, error: unknown) => {
-      if (!error) {
-        completeProfileSync();
-      }
-      void invalidateProfileQueries(queryClient);
-    },
-  });
+  const saveExperienceMutation = useSaveExperienceMutationWithSync();
   const [saveState, setSaveState] = useState<"idle" | "saving" | "success">(
     "idle"
   );
@@ -768,7 +661,7 @@ export function ProfileExperienceLeft() {
                 <Check size={18} color="#22c55e" />
                 <Text style={{ color: "#22c55e" }}>Saved!</Text>
               </Row>
-            ) : isSyncing && saveState === "saving" ? (
+            ) : isSyncing ? (
               <Row gap={8} align="center">
                 <Spinner size="sm" />
                 <Text>Saving...</Text>

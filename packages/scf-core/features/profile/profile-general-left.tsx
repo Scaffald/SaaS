@@ -1,8 +1,7 @@
 import { ControlledAddressForm } from "@scf/core/forms";
-import type { UpdateGeneralInfoParams } from "@scaffald/sdk";
 import {
   useGeneralInfo,
-  useUpdateGeneralInfoMutation,
+  useUpdateGeneralInfoMutationWithSync,
   useUploadAvatarMutation,
 } from "@scf/core/utils/profile-general-sdk-hooks";
 import { getAvatarUrl } from "@scf/core/utils/supabase/storage";
@@ -47,10 +46,6 @@ import {
   useAdaptiveProfileSync,
 } from "./utils/profile-sync-store";
 
-interface UpdateGeneralContext {
-  previousGeneral?: GeneralProfileFormData | undefined;
-}
-
 /**
  * Profile General Left Component
  * Form for editing general profile information
@@ -66,64 +61,7 @@ export function ProfileGeneralLeft() {
 
   // Fetch and update profile data using SDK
   const { data: profileData, isLoading: isLoadingProfile } = useGeneralInfo();
-  const updateProfileMutation = useUpdateGeneralInfoMutation({
-    async onMutate(
-      input: UpdateGeneralInfoParams
-    ): Promise<UpdateGeneralContext> {
-      resetProfileSyncError();
-      startProfileSync();
-      await queryClient.cancelQueries({
-        queryKey: ["scaffald", "profiles", "general"],
-      });
-      const previousGeneral = queryClient.getQueryData([
-        "scaffald",
-        "profiles",
-        "general",
-      ]) as GeneralProfileFormData | undefined;
-      queryClient.setQueryData(
-        ["scaffald", "profiles", "general"],
-        (current: GeneralProfileFormData | undefined): GeneralProfileFormData =>
-          ({
-            ...(current ?? {}),
-            ...(input as unknown as GeneralProfileFormData),
-          } as GeneralProfileFormData)
-      );
-      return { previousGeneral };
-    },
-    onError: (
-      error: Error,
-      _input: UpdateGeneralInfoParams,
-      _onMutateResult: unknown,
-      context: unknown
-    ) => {
-      console.error("Error saving profile:", error);
-      const ctx = context as UpdateGeneralContext | undefined;
-      if (ctx?.previousGeneral) {
-        queryClient.setQueryData(
-          ["scaffald", "profiles", "general"],
-          ctx.previousGeneral
-        );
-      }
-      failProfileSync();
-      toast.show("Error", {
-        message:
-          error instanceof Error
-            ? error.message
-            : "Failed to save profile. Please try again.",
-      });
-    },
-    onSuccess: () => {
-      toast.show("Profile Updated", {
-        message: "Your profile has been saved successfully!",
-      });
-    },
-    onSettled: (_data: { success: boolean } | undefined, error: unknown) => {
-      if (!error) {
-        completeProfileSync();
-      }
-      void invalidateProfileQueries(queryClient);
-    },
-  });
+  const updateProfileMutation = useUpdateGeneralInfoMutationWithSync();
 
   const uploadAvatarMutation = useUploadAvatarMutation({
     onMutate: () => {
