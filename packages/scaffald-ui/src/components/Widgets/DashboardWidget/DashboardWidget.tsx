@@ -8,6 +8,7 @@ import type React from 'react'
 import { Card } from '../../Card'
 import { Stack } from '../../Layout'
 import type { GapValue } from '../../Layout'
+import { useResponsive } from '../../../hooks/useResponsive'
 
 export interface DashboardWidgetProps {
   children: React.ReactNode
@@ -26,11 +27,12 @@ export function DashboardWidget({
   style,
   testID,
 }: DashboardWidgetProps): React.ReactElement {
+  const { isDesktop } = useResponsive()
   return (
     <Card
       variant={elevated ? 'elevated' : 'surface'}
-      padding="2xl"
-      radius="lg"
+      padding={isDesktop ? '2xl' : 'lg'}
+      radius={isDesktop ? 'lg' : 'md'}
       elevation={elevated ? 'soft' : 'soft'}
       style={style}
       testID={testID}

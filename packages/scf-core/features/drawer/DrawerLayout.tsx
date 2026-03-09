@@ -10,12 +10,15 @@ import { useQueryClient } from '@tanstack/react-query'
 import { shadows, useThemeContext, useResponsive, Row } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import type { NotificationItem } from '@scf/core/components/notifications'
+import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { DrawerActions } from '@react-navigation/native'
-import { Menu } from 'lucide-react-native'
+import { Bell, Menu } from 'lucide-react-native'
 import { Drawer } from 'expo-router/drawer'
+import { useRouter } from 'expo-router'
 import { useEffect, useState, type ReactNode } from 'react'
 import { Pressable } from 'react-native'
 import { DrawerContent } from './DrawerContent'
+import { MobileBottomNav } from './MobileBottomNav'
 import { ScaffaldLogo } from '@scf/core/assets'
 
 interface DrawerLayoutProps {
@@ -41,6 +44,7 @@ interface DrawerLayoutProps {
 export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProps) {
   const { width } = useResponsive()
   const { theme } = useThemeContext()
+  const router = useRouter()
   const { session } = useSessionContext()
   // Permanent drawer when width >= 1024px, front drawer otherwise
   const isSmall = width < 1024
@@ -139,6 +143,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
           drawerType: isSmall ? 'front' : 'permanent',
           swipeEnabled: isSmall,
           headerShown: isSmall,
+          contentStyle: { paddingBottom: isSmall ? 56 : 0 },
           headerStyle: {
             backgroundColor: colors.bg[theme].default,
             borderWidth: 0,
@@ -172,11 +177,19 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
               </Pressable>
             ) : null
           },
-          headerRight: () => (
-            <Row gap={12} align="center">
-              <ScaffaldLogo height={22} width={22} showWordmark={false} />
-            </Row>
-          ),
+          headerRight: () =>
+            isSmall ? (
+              <Pressable
+                onPress={() => router.push(buildPath(ROUTES.DASHBOARD.SETTINGS.NOTIFICATIONS, {}))}
+                style={{ paddingRight: 4 }}
+              >
+                <Bell size={22} color={colors.icon[theme].default} />
+              </Pressable>
+            ) : (
+              <Row gap={12} align="center">
+                <ScaffaldLogo height={22} width={22} showWordmark={false} />
+              </Row>
+            ),
         })}
         drawerContent={(props) => (
           <DrawerContent
@@ -189,6 +202,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
       >
         {children}
       </Drawer>
+      {isSmall && <MobileBottomNav />}
       {/* TODO: Uncomment this when we implement fully */}
       {/* {!hideDrawer ? <FeedbackWidget /> : null} */}
     </>

@@ -32,7 +32,7 @@ export const DashboardLayout = ({
   const { isDesktop } = useResponsive()
   const { theme } = useThemeContext()
   const contentPadding = isDesktop ? '2xl' : 'lg'
-  const verticalPadding = isDesktop ? '3xl' : 'sm'
+  const verticalPadding = isDesktop ? '3xl' : 'md'
   const columnGap = isDesktop ? 48 : 24
   const columnTemplate = fullWidth ? '1fr' : GOLDEN_RATIO_TEMPLATE
 
