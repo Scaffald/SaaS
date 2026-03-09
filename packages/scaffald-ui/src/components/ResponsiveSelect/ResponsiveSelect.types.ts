@@ -3,6 +3,7 @@
  */
 
 import type { ReactNode } from 'react'
+import type { ViewStyle, TextStyle } from 'react-native'
 import type { SheetHeight } from '../Sheet/Sheet.types'
 
 export interface ResponsiveSelectOption {
@@ -38,6 +39,10 @@ export interface ResponsiveSelectProps {
   sheetTitle?: string
   /** Whether to show check indicator on selected item */
   showIndicator?: boolean
+  /** Style override for the trigger (desktop: Dropdown trigger, mobile: Button) */
+  triggerStyle?: ViewStyle
+  /** Text style override for the trigger label (desktop only) */
+  triggerTextStyle?: TextStyle
   testID?: string
 }
 
