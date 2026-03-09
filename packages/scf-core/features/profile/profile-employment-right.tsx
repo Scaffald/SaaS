@@ -1,4 +1,5 @@
-import { Text, Stack } from '@scaffald/ui'
+import { ProfileSectionIntro } from "@scf/core/features/profile/components";
+import { Stack } from "@scaffald/ui";
 
 /**
  * Profile Employment Right Component
@@ -6,13 +7,11 @@ import { Text, Stack } from '@scaffald/ui'
  */
 export function ProfileEmploymentRight() {
   return (
-    <Stack>
-      <Stack style={{ gap: 16, padding: 16 }}>
-        <Text style={{ color: '#414e62' }}>
-          Update your employment preferences including location, travel willingness, availability,
-          and compensation.
-        </Text>
-      </Stack>
+    <Stack gap={16}>
+      <ProfileSectionIntro
+        title="Employment Preferences"
+        description="Update your employment preferences including location, travel willingness, availability, and compensation."
+      />
     </Stack>
-  )
+  );
 }
