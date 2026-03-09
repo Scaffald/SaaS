@@ -49,6 +49,19 @@ All Button components accept standard React Native [`View` props](https://reactn
 - `md` (default) - Medium button
 - `lg` - Large button
 
+### Loading state
+
+Use the `loading` prop to show a loading indicator inside the button. The indicator is sized to fit the button (sm/md/lg). This matches the pattern used on onboarding and other forms.
+
+**Do not** put a `<Spinner>` or other large indicator in the button's children—that can overflow the button. Use the `loading` prop instead.
+
+If you don't see loading indicator updates after changing the UI package, rebuild it (`pnpm nx run @scaffald/ui:build`) or restart the dev server so the app picks up the latest build.
+
+```tsx
+<Button loading>Saving</Button>
+<Button loading variant="filled" color="primary">Submit</Button>
+```
+
 ## Examples
 
 ### With Icon

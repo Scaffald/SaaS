@@ -5,7 +5,7 @@ import { CheckCircle, Clock, XCircle } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Card, DashboardWidget, DashboardWidgetHeader, Separator, Skeleton, SkeletonBox, SkeletonText, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Card, DashboardWidget, DashboardWidgetHeader, Separator, Skeleton, SkeletonBox, SkeletonText, Text, Row, Stack } from '@scaffald/ui'
 
 function TeamInvitationsWidgetSkeleton() {
   return (
@@ -137,8 +137,9 @@ export function TeamInvitationList({
                       setPendingId(null)
                     }
                   }}
+                  loading={isPending}
                 >
-                  {isPending ? <Spinner size="sm" color="gray" /> : 'Accept'}
+                  Accept
                 </Button>
               </Row>
             </Row>

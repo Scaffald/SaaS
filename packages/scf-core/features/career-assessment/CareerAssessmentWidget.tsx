@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast } from '@scaffald/ui'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Separator, Spinner, Text, Stack } from '@scaffald/ui'
 import { OccupationSearch } from './components/OccupationSearch'
 import { RiasecQuickAssessment } from './components/RiasecQuickAssessment'
 import {
@@ -154,17 +154,11 @@ export function CareerAssessmentWidget() {
           color="primary"
           onPress={handleSubmit(onSubmit)}
           disabled={isSubmitting}
+          loading={isSubmitting}
           size="lg"
           style={{ opacity: isSubmitting ? 0.5 : 1, marginTop: gap.xs }}
         >
-          {isSubmitting ? (
-            <Row gap={gap.xs} align="center">
-              <Spinner size="sm" color="gray" />
-              Saving Assessment...
-            </Row>
-          ) : (
-            'Complete Assessment'
-          )}
+          Complete Assessment
         </Button>
 
         <Text color="$gray11">

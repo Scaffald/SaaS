@@ -6,7 +6,7 @@ import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { usePrerequisites } from '@scaffald/sdk/react'
 import { useRouter } from 'expo-router'
 import { Drawer } from 'expo-router/drawer'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { StyleSheet } from 'react-native'
 import { Spinner, Text, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
@@ -16,6 +16,7 @@ export default function Layout() {
   const { session, isLoading: isSessionLoading } = useSessionContext()
   const { theme } = useThemeContext()
   const router = useRouter()
+  const hasRedirectedToOnboardingRef = useRef(false)
 
   // Check prerequisites status - only run when we have a valid user
   // This prevents race conditions after DB resets when session is invalid
@@ -23,12 +24,14 @@ export default function Layout() {
     enabled: !!user, // Only run if user exists
   })
 
-  // Redirect to /onboarding if prerequisites incomplete
-  // biome-ignore lint/correctness/useExhaustiveDependencies: router is a stable expo-router ref; including it would cause re-runs on every route change
+  // Redirect to /onboarding once when prerequisites incomplete (avoids loop / double replace)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: router is stable; deps would cause re-runs on every route change
   useEffect(() => {
-    if (!isCheckingPrereqs && statusData && !statusData.isComplete) {
-      router.replace(ROUTES.ONBOARDING.path)
+    if (isCheckingPrereqs || !statusData || statusData.isComplete || hasRedirectedToOnboardingRef.current) {
+      return
     }
+    hasRedirectedToOnboardingRef.current = true
+    router.replace(ROUTES.ONBOARDING.path)
   }, [statusData, isCheckingPrereqs])
 
   // Wait for session before rendering drawer so SDK has token and API calls don't 401

@@ -52,6 +52,15 @@ const sizeConfig = {
 } as const
 
 /**
+ * Icon/loading indicator size per button size (from Figma).
+ * Use for start/end icons and loading indicator so they fit inside the button.
+ */
+export function getButtonIconSize(size: ButtonSize): number {
+  const validSize: ButtonSize = sizeConfig[size] ? size : 'md'
+  return sizeConfig[validSize].iconSize
+}
+
+/**
  * Get button styles based on variant, color, size, state, and theme
  */
 export function getButtonStyles(

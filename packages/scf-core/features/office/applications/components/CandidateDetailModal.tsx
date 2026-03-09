@@ -244,8 +244,9 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
             })
           }
           disabled={assignMutation.isPending}
+          loading={assignMutation.isPending}
         >
-          {assignMutation.isPending ? <Spinner size="sm" /> : 'Assign to me'}
+          Assign to me
         </Button>
       ) : null}
       {teamId ? (

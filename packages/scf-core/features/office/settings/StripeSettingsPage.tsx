@@ -199,13 +199,14 @@ export function StripeSettingsPage() {
                     backgroundColor: colors.bg[theme].default,
                   }}
                   disabled={updatePublishableKey.isPending || publishableKey.length < 16}
+                  loading={updatePublishableKey.isPending}
                   onPress={() =>
                     updatePublishableKey.mutate({
                       publishableKey,
                     })
                   }
                 >
-                  {updatePublishableKey.isPending ? <Spinner /> : 'Save Publishable Key'}
+                  Save Publishable Key
                 </Button>
               </Row>
             </Stack>
@@ -239,12 +240,13 @@ export function StripeSettingsPage() {
                       backgroundColor: theme === 'light' ? colors.green[50] : colors.green[900],
                     }}
                     disabled={updateApiKey.isPending || apiSecret.length < 20}
+                    loading={updateApiKey.isPending}
                     onPress={() => {
                       updateApiKey.mutate({ secret: apiSecret })
                       setApiSecret('')
                     }}
                   >
-                    {updateApiKey.isPending ? <Spinner /> : 'Store API Secret'}
+                    Store API Secret
                   </Button>
                 </Row>
                 {data?.hasApiKey ? (
@@ -278,12 +280,13 @@ export function StripeSettingsPage() {
                       backgroundColor: theme === 'light' ? colors.green[50] : colors.green[900],
                     }}
                     disabled={updateWebhookSecret.isPending || webhookSecret.length < 10}
+                    loading={updateWebhookSecret.isPending}
                     onPress={() => {
                       updateWebhookSecret.mutate({ secret: webhookSecret })
                       setWebhookSecret('')
                     }}
                   >
-                    {updateWebhookSecret.isPending ? <Spinner /> : 'Store Webhook Secret'}
+                    Store Webhook Secret
                   </Button>
                 </Row>
                 {data?.hasWebhookSecret ? (
@@ -374,9 +377,10 @@ export function StripeSettingsPage() {
                   backgroundColor: colors.bg[theme].default,
                 }}
                 disabled={testConnection.isPending || !data?.hasApiKey}
+                loading={testConnection.isPending}
                 onPress={() => testConnection.mutate()}
               >
-                {testConnection.isPending ? <Spinner /> : 'Run Connection Test'}
+                Run Connection Test
               </Button>
             </Row>
           </Stack>
