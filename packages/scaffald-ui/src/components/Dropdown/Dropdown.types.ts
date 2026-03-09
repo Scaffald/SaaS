@@ -52,6 +52,11 @@ export interface DropdownProps {
   triggerStyle?: ViewStyle
 
   /**
+   * Custom trigger text style (e.g. to change text color when trigger bg is overridden)
+   */
+  triggerTextStyle?: TextStyle
+
+  /**
    * Custom menu container style
    */
   menuStyle?: ViewStyle

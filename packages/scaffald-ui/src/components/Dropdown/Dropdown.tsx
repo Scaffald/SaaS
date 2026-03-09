@@ -88,6 +88,7 @@ export function Dropdown({
   disabled = false,
   children,
   triggerStyle,
+  triggerTextStyle,
   menuStyle,
 }: DropdownProps) {
   const dropdown = useDropdown({
@@ -110,7 +111,7 @@ export function Dropdown({
           triggerStyle,
         ]}
       >
-        <Text style={styles.triggerText}>{trigger || 'Select'}</Text>
+        <Text style={[styles.triggerText, triggerTextStyle]}>{trigger || 'Select'}</Text>
         <CaretIcon isOpen={dropdown.isOpen} />
       </Pressable>
 

@@ -31,6 +31,8 @@ export function ResponsiveSelect({
   size = 'md',
   sheetTitle,
   showIndicator = true,
+  triggerStyle,
+  triggerTextStyle,
   testID,
 }: ResponsiveSelectProps) {
   const { width } = useWindowDimensions()
@@ -124,6 +126,8 @@ export function ResponsiveSelect({
         trigger={displayValue}
         disabled={disabled}
         position="bottom-left"
+        triggerStyle={triggerStyle}
+        triggerTextStyle={triggerTextStyle}
       >
         {options.map((opt) => (
           <DropdownItem

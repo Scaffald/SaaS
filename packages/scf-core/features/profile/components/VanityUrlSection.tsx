@@ -7,10 +7,12 @@ import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { copyToClipboard } from '@scf/core/utils/clipboard'
 import { isReservedSlug, isSlugValid } from '@scf/core/utils/slugify'
-import { Button, DashboardWidget } from '@scaffald/ui'
+import { Button, DashboardWidget, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { AlertCircle, Check, Clock, Copy } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useEffect, useState } from 'react'
+import { Pressable } from 'react-native'
 import { H4, Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 type UpdateSlugResult = {
@@ -27,6 +29,7 @@ type VanityMutationError = { message?: string }
  */
 export function VanityUrlSection() {
   const toast = useToast()
+  const { theme } = useThemeContext()
   const [slugInput, setSlugInput] = useState('')
   const [isEditing, setIsEditing] = useState(false)
   const [debouncedSlug, setDebouncedSlug] = useState('')
@@ -238,22 +241,13 @@ export function VanityUrlSection() {
         {currentSlug && !isEditing && (
           <Stack gap={8}>
             <Text>Your Profile URL</Text>
-            <Row
-              gap={8}
-              align="center"
-              padding="sm"
-              backgroundColor="$color3"
-              borderRadius={16}
-              borderWidth={1}
-              borderColor="$color6"
-            >
-              <Text style={{ flex: 1, fontFamily: 'monospace', color: '#414e62' }} numberOfLines={1}>
-                scaffald.com/u/{currentSlug}
-              </Text>
-              <Button size="sm" iconStart={Copy} onPress={handleCopyUrl} variant="outline">
-                Copy
-              </Button>
-            </Row>
+            <Input
+              value={`scaffald.com/u/${currentSlug}`}
+              editable={false}
+              iconEnd={Copy}
+              iconEndOnPress={handleCopyUrl}
+              iconEndAccessibilityLabel="Copy profile URL"
+            />
           </Stack>
         )}
 
@@ -262,13 +256,20 @@ export function VanityUrlSection() {
           <Row align="center" justify="space-between">
             <Text>Profile Vanity URL</Text>
             {!isEditing && (
-              <Button
-                size="sm"
+              <Pressable
                 onPress={() => setIsEditing(true)}
                 disabled={!!daysRemaining && daysRemaining > 0}
               >
-                {daysRemaining && daysRemaining > 0 ? 'Change Unavailable' : 'Edit'}
-              </Button>
+                <Text
+                  style={{
+                    color: colors.primary[600],
+                    textDecorationLine: 'underline',
+                    opacity: (!!daysRemaining && daysRemaining > 0) ? 0.4 : 1,
+                  }}
+                >
+                  {daysRemaining && daysRemaining > 0 ? 'Change unavailable' : 'Edit'}
+                </Text>
+              </Pressable>
             )}
           </Row>
 
@@ -353,19 +354,12 @@ export function VanityUrlSection() {
               </Row>
             </Stack>
           ) : (
-            <Row
-              gap={8}
-              align="center"
-              padding="sm"
-              backgroundColor="$color3"
-              borderRadius={16}
-              borderWidth={1}
-              borderColor="$color6"
-            >
-              <Text style={{ flex: 1, fontFamily: 'monospace', color: '#414e62' }}>
-                {currentSlug || 'No vanity URL set'}
-              </Text>
-            </Row>
+            <Input
+              value={currentSlug || ''}
+              editable={false}
+              externalAddon="scaffald.com/u/"
+              placeholder="No vanity URL set"
+            />
           )}
         </Stack>
 
@@ -374,11 +368,8 @@ export function VanityUrlSection() {
           <Row
             gap={8}
             align="center"
-            padding="sm"
-            backgroundColor="$yellow3"
-            borderRadius={16}
-            borderWidth={1}
-            borderColor="$yellow7"
+            padding={8}
+            style={{ backgroundColor: '#fefce8', borderRadius: 8, borderWidth: 1, borderColor: '#fde047' }}
           >
             <Clock size={16} color="#f97316" />
             <Stack style={{ flex: 1 }} gap={4}>
@@ -409,8 +400,8 @@ export function VanityUrlSection() {
                   <Row
                     key={`${entry.changed_at}-${entry.new_slug}`}
                     gap={8}
-                    padding="xs"
-                    backgroundColor="$color3"
+                    padding={4}
+                    backgroundColor={colors.bg[theme].subtle}
                     borderRadius={8}
                   >
                     <Text style={{ color: '#414e62', flex: 1 }}>
