@@ -22,6 +22,7 @@ export default defineConfig({
     "**/test-office-api-keys-analytics.spec.ts", // API Keys analytics E2E tests
     "**/console-audit.spec.ts", // Console audit – writes docs/console-audit.md
     "**/profile-audit-magiclink.spec.ts", // Profile audit (magic link + Mailpit)
+    "**/test-supabase-hardening-regression.spec.ts", // Supabase hardening regression
   ],
 
   // Exclude debug/exploration files permanently
