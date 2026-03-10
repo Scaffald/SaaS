@@ -12,7 +12,6 @@ import { BarChart3, Clock, Filter, TrendingUp, Users } from 'lucide-react-native
 import { type ReactNode, useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
 import {
-  Button,
   Card,
   H2,
   ResponsiveSelect,

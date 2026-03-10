@@ -137,7 +137,7 @@ export const CMS_ACCORDION_SECTIONS: OfficeAccordionSection[] = [
   },
   {
     key: "cms-ats",
-    title: "Applications & Background Checks",
+    title: "Applications & Scheduling",
     links: [
       {
         key: "ats-dashboard",
@@ -153,6 +153,27 @@ export const CMS_ACCORDION_SECTIONS: OfficeAccordionSection[] = [
         key: "ats-request",
         label: "Request Background Check",
         href: ROUTES.OFFICE.ATS.CHECKS.REQUEST.path,
+      },
+      {
+        key: "ats-scheduling",
+        label: "Interview Scheduling",
+        href: ROUTES.OFFICE.ATS.SCHEDULING.path,
+      },
+    ],
+  },
+  {
+    key: "cms-integrations",
+    title: "Integrations",
+    links: [
+      {
+        key: "integrations-hris",
+        label: "HRIS & Payroll",
+        href: ROUTES.OFFICE.INTEGRATIONS.HRIS.path,
+      },
+      {
+        key: "integrations-bg-checks",
+        label: "Background Check Providers",
+        href: ROUTES.OFFICE.INTEGRATIONS.BACKGROUND_CHECKS.path,
       },
     ],
   },

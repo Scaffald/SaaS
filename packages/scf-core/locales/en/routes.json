@@ -105,6 +105,8 @@
       },
       "detail": "Application Detail",
       "idVerifications": "ID Verifications",
+      "scheduling": "Interview Scheduling",
+      "selfSchedule": "Self-Schedule",
       "title": "ATS"
     },
     "cms": {
@@ -157,6 +159,11 @@
       "eeoReports": "EEO Reports",
       "projectHiring": "Project Hiring",
       "title": "Compliance"
+    },
+    "integrations": {
+      "backgroundChecks": "Background Check Providers",
+      "hris": "HRIS & Payroll",
+      "title": "Integrations"
     },
     "notifications": "Notifications",
     "oauthApps": {
