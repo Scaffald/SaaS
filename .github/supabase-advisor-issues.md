@@ -307,7 +307,7 @@ Track progress on Supabase Database Linter and Auth advisor findings. Each item 
 - [x] #171 — Review and fix security definer views
 - [x] #172 — Set explicit search_path on database functions
 - [x] #173 — Move extensions out of public schema
-- [ ] #174 — Tighten permissive RLS policies (USING/WITH CHECK true)
+- [x] #174 — Tighten permissive RLS policies (USING/WITH CHECK true)
 - [ ] #175 — Harden Auth: leaked password protection and MFA
 - [ ] #176 — Add indexes for unindexed foreign keys
 
