@@ -42,6 +42,14 @@ export const prerequisitesSchema = z.object({
 
   // Primary industry required
   industry_id: z.string().min(1, 'Please select your primary industry'),
+
+  // Legal agreements - must be accepted
+  accepts_privacy_policy: z
+    .boolean()
+    .refine((val) => val === true, { message: 'You must accept the Privacy Policy' }),
+  accepts_terms_of_service: z
+    .boolean()
+    .refine((val) => val === true, { message: 'You must accept the Terms of Service' }),
 })
 
 export type PrerequisitesFormData = z.infer<typeof prerequisitesSchema>
@@ -63,4 +71,6 @@ export const prerequisitesDefaults: PrerequisitesFormData = {
   },
   user_types: [],
   industry_id: '',
+  accepts_privacy_policy: false,
+  accepts_terms_of_service: false,
 }

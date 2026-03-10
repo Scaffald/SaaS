@@ -1,8 +1,7 @@
 import type { ReactNode } from 'react'
 import { ScrollView, StyleSheet } from 'react-native'
-import { Row, Stack } from '@scaffald/ui'
+import { Row, Stack, useResponsive } from '@scaffald/ui'
 import { Breadcrumb, type BreadcrumbItemData } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 import { ProfileTabs } from '../navigation/ProfileTabs'
 
@@ -31,11 +30,10 @@ export const ProfileLayout = ({
   autoGenerateBreadcrumbs = true,
 }: ProfileLayoutProps) => {
   const { isDesktop } = useResponsive()
-  const { theme } = useThemeContext()
   const contentPadding = isDesktop ? '2xl' : 'lg'
-  const verticalPadding = isDesktop ? '3xl' : 'sm'
-  const columnGap = isDesktop ? 48 : 24
-  const columnTemplate = rightContent ? GOLDEN_RATIO_TEMPLATE : '1fr'
+  const _verticalPadding = isDesktop ? '3xl' : 'sm'
+  const _columnGap = isDesktop ? 48 : 24
+  const _columnTemplate = rightContent ? GOLDEN_RATIO_TEMPLATE : '1fr'
 
   const { breadcrumbs } = useBreadcrumbs({
     autoGenerate: autoGenerateBreadcrumbs && !breadcrumbItems,

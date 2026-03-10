@@ -64,8 +64,8 @@ export const Button = forwardRef<View, ButtonProps>(function Button({
     [color, variant, size, isDisabled, iconOnly, theme]
   )
 
-  // Calculate icon size based on button size (16px for consistency with inputs)
-  const iconSize = 16
+  // Calculate icon size based on button size (from Figma: sm=20, md=24, lg=24)
+  const iconSize = getButtonIconSize(size)
 
   return (
     <Pressable
@@ -88,8 +88,8 @@ export const Button = forwardRef<View, ButtonProps>(function Button({
       {loading ? (
         <View
           style={{
-            width: loadingSize,
-            height: loadingSize,
+            width: iconSize,
+            height: iconSize,
             alignItems: 'center',
             justifyContent: 'center',
             overflow: 'hidden',

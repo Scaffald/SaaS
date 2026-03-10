@@ -13,7 +13,7 @@ import {
   Avatar,
   Button,
   DashboardWidget,
-  DashboardWidgetHeader,
+  H4,
   ProgressBarBase,
   Row,
   Skeleton,
@@ -27,7 +27,6 @@ import {
 } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
 import { useRouter } from "expo-router";
-import { Pressable } from "react-native";
 
 /**
  * ProfileSnapshotWidget
@@ -40,9 +39,9 @@ export function ProfileSnapshotWidget() {
   const router = useRouter();
   const { data: user } = useCurrentUser();
 
-  const skillsHover = useHoverState();
-  const certsHover = useHoverState();
-  const yearsHover = useHoverState();
+  const _skillsHover = useHoverState();
+  const _certsHover = useHoverState();
+  const _yearsHover = useHoverState();
 
   const {
     data: generalInfo,
