@@ -8,7 +8,7 @@ import { getAvatarUrl } from "@scf/core/utils/supabase/storage";
 import { DashboardWidget, LoadingState, ResponsiveModal, useThemeContext } from "@scaffald/ui";
 import { MessageSquarePlus } from "lucide-react-native";
 import { useState } from "react";
-import { Avatar, Button, Text, Row, Stack } from "@scaffald/ui";
+import { Avatar, Button, Skeleton, SkeletonAvatar, SkeletonBox, SkeletonText, Text, Row, Stack } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
 import type { ProfileWidgetProps } from "./types";
 

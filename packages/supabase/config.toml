@@ -135,10 +135,6 @@ verify_jwt = false
 verify_jwt = false
 [functions.email-inbound-parse]
 verify_jwt = false
-[functions.feedback-sync-retry]
-verify_jwt = false
-[functions.feedback-to-braingrid]
-verify_jwt = false
 [functions.inbound-conversation-email]
 verify_jwt = false
 [functions.job-import]

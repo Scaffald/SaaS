@@ -53,10 +53,6 @@ export interface FeedbackHistoryItem {
   operating_system: string | null
   screen_resolution: string | null
   viewport_size: string | null
-  braingrid_feature_id: string | null
-  braingrid_sync_status: string | null
-  braingrid_sync_error: string | null
-  braingrid_synced_at: string | null
   created_at: string
   updated_at: string
 }

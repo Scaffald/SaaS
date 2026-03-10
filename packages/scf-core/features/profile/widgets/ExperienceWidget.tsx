@@ -10,7 +10,7 @@ import {
 } from "@scaffald/ui";
 import { Briefcase } from "lucide-react-native";
 import { useRouter } from "expo-router";
-import { Separator, Text, Row, Stack } from "@scaffald/ui";
+import { Separator, Skeleton, SkeletonAvatar, SkeletonText, Text, Row, Stack } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
 import { formatDate } from "../utils/date-formatting";
 import type { ProfileWidgetProps } from "./types";

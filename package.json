@@ -55,6 +55,7 @@
     "prebuild:clean": "pnpm --filter scaffald-app prebuild --clean && pnpm setup-sentry",
     "prebuild:only": "pnpm --filter scaffald-app prebuild",
     "precommit": "pnpm lint:routes && pnpm lint:sorted-keys && nx affected -t lint,typecheck",
+    "radium:check": "./scripts/radium-check.sh",
     "prepare": "git config core.hooksPath .githooks 2>/dev/null || true",
     "preview": "./scripts/deploy.sh preview",
     "prod": "./scripts/deploy.sh production",

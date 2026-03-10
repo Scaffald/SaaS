@@ -23,12 +23,12 @@ export function ProfileOverviewLeft() {
   return <div>Left content</div>
 }
 
-// Right column component  
+// Right column component
 export function ProfileOverviewRight() {
   return <div>Right content</div>
 }
 
-// Main screen component (in apps/expo/app/dashboard/profile/overview.tsx)
+// Main screen component (in apps/scaffald/app/dashboard/profile/overview.tsx)
 import { DashboardLayout } from '@app/core/features/dashboard/DashboardLayout'
 
 export default function Screen() {
@@ -83,13 +83,11 @@ import { Component } from './Component.android'  # Android specific
 ## Component Patterns
 
 ### Beyond UI Component Usage
-Use components from `@unicornlove/beyond-ui`. See `packages/beyond-ui/docs/API_CONVENTIONS.md` and `.cursor/rules/beyond-ui-properties.mdc` for patterns, tokens, and style factories.
+Use components from `@scaffald/ui` (which re-exports `@unicornlove/beyond-ui`). See `packages/scaffald-ui/` and `.cursor/rules/beyond-ui-properties.mdc` for patterns, tokens, and style factories.
 
 ### Cross-Platform Component Pattern
 ```typescript
-// packages/beyond-ui or app components
-import { ComponentProps } from 'react'
-import { Button, Text, Stack } from '@unicornlove/beyond-ui'
+import { Button, Text, Stack } from '@scaffald/ui'
 
 export interface ExampleComponentProps {
   title: string
@@ -97,73 +95,71 @@ export interface ExampleComponentProps {
   variant?: 'primary' | 'secondary'
 }
 
-/**
- * Example cross-platform component
- * @param props - Component props
- * @returns JSX element
- */
-export const ExampleComponent = ({ 
-  title, 
-  onPress, 
-  variant = 'primary' 
+export const ExampleComponent = ({
+  title,
+  onPress,
+  variant = 'primary'
 }: ExampleComponentProps) => {
   return (
-    <YStack space="$2">
-      <Text fontSize="$5">{title}</Text>
-      <Button 
-        theme={variant === 'primary' ? 'blue' : 'gray'}
+    <Stack gap={8}>
+      <Text size="md">{title}</Text>
+      <Button
+        variant={variant === 'primary' ? 'filled' : 'outline'}
+        color="primary"
         onPress={onPress}
       >
         {title}
       </Button>
-    </YStack>
+    </Stack>
   )
 }
 ```
 
 ## Data Fetching Patterns
 
-### tRPC Query Pattern
+### SDK Query Pattern
 ```typescript
-import { api } from '@app/core/utils/api'
+import { useProfile } from '@scaffald/sdk/react'
 
 export function ProfileComponent() {
-  const { data: profile, isLoading, error } = api.profile.get.useQuery()
-  
+  const { data, isLoading, error } = useProfile()
+
   if (isLoading) return <Text>Loading...</Text>
   if (error) return <Text>Error: {error.message}</Text>
-  if (!profile) return <Text>No profile found</Text>
-  
+  if (!data?.data) return <Text>No profile found</Text>
+
+  const profile = data.data
+
   return (
-    <YStack space="$4">
-      <Text fontSize="$6">{profile.name}</Text>
+    <Stack gap={16}>
+      <Text size="lg">{profile.name}</Text>
       <Text>{profile.email}</Text>
-    </YStack>
+    </Stack>
   )
 }
 ```
 
-### tRPC Mutation Pattern
+### SDK Mutation Pattern
 ```typescript
-import { api } from '@app/core/utils/api'
+import { useUpdateProfileMutation } from '@scf/core/utils/profile-sdk-hooks'
+import { useQueryClient } from '@tanstack/react-query'
 
 export function UpdateProfileForm() {
-  const utils = api.useUtils()
-  
-  const updateProfile = api.profile.update.useMutation({
+  const queryClient = useQueryClient()
+
+  const updateProfile = useUpdateProfileMutation({
     onSuccess: () => {
-      // Invalidate and refetch profile data
-      utils.profile.get.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
     },
     onError: (error) => {
       console.error('Failed to update profile:', error)
     }
   })
-  
+
   const handleSubmit = (data: ProfileUpdateData) => {
     updateProfile.mutate(data)
   }
-  
+
   return (
     <Form onSubmit={handleSubmit}>
       {/* Form fields */}
@@ -216,8 +212,8 @@ router.push(ROUTES.DASHBOARD.PROFILE.OVERVIEW)
 
 ### React Query with Zustand
 ```typescript
-// For server state - use React Query (tRPC)
-const { data: user } = api.auth.getUser.useQuery()
+// For server state - use React Query (via SDK hooks)
+const { data: user } = useCurrentUser()
 
 // For client state - use Zustand
 import { create } from 'zustand'
@@ -237,32 +233,28 @@ export const useAppStore = create<AppState>((set) => ({
 
 ### API Error Handling
 ```typescript
-import { api } from '@app/core/utils/api'
+import { useJobs } from '@scaffald/sdk/react'
 
 export function DataComponent() {
-  const { data, error, isLoading } = api.data.get.useQuery(
-    { id: '123' },
+  const { data, error, isLoading, refetch } = useJobs(
+    { organizationId: '123' },
     {
       retry: 3,
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-      onError: (error) => {
-        console.error('Data fetch failed:', error)
-        // Show toast notification
-      }
     }
   )
-  
+
   if (error) {
     return (
-      <YStack space="$2" alignItems="center">
-        <Text color="$red10">Failed to load data</Text>
+      <Stack gap={8} align="center">
+        <Text color="error">Failed to load data</Text>
         <Button onPress={() => refetch()}>
           Retry
         </Button>
-      </YStack>
+      </Stack>
     )
   }
-  
+
   return <div>{/* Success UI */}</div>
 }
 ```
@@ -284,43 +276,43 @@ const profileSchema = z.object({
 type ProfileFormData = z.infer<typeof profileSchema>
 
 export function ProfileForm() {
-  const { 
-    register, 
-    handleSubmit, 
-    formState: { errors, isSubmitting } 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting }
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema)
   })
-  
+
   const onSubmit = async (data: ProfileFormData) => {
     try {
-      await api.profile.update.mutate(data)
+      await updateProfile(data)
     } catch (error) {
       console.error('Form submission failed:', error)
     }
   }
-  
+
   return (
-    <YStack space="$4" asChild>
+    <Stack gap={16}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Input 
+        <Input
           placeholder="Name"
           {...register('name')}
           error={errors.name?.message}
         />
-        <Input 
+        <Input
           placeholder="Email"
           {...register('email')}
           error={errors.email?.message}
         />
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           disabled={isSubmitting}
         >
           {isSubmitting ? 'Saving...' : 'Save'}
         </Button>
       </form>
-    </YStack>
+    </Stack>
   )
 }
 ```
@@ -329,7 +321,8 @@ export function ProfileForm() {
 
 ### Component Testing
 ```typescript
-import { render, screen } from '@testing-library/react-native'
+import { render, screen, fireEvent } from '@testing-library/react-native'
+import { describe, it, expect, vi } from 'vitest'
 import { ExampleComponent } from './ExampleComponent'
 
 describe('ExampleComponent', () => {
@@ -337,11 +330,11 @@ describe('ExampleComponent', () => {
     render(<ExampleComponent title="Test Title" />)
     expect(screen.getByText('Test Title')).toBeTruthy()
   })
-  
+
   it('calls onPress when button is pressed', () => {
-    const mockOnPress = jest.fn()
+    const mockOnPress = vi.fn()
     render(<ExampleComponent title="Test" onPress={mockOnPress} />)
-    
+
     fireEvent.press(screen.getByText('Test'))
     expect(mockOnPress).toHaveBeenCalledTimes(1)
   })
@@ -412,20 +405,21 @@ export const ExpensiveComponent = memo(({ data, onUpdate }) => {
       processed: true
     }))
   }, [data])
-  
+
   const handleUpdate = useCallback((id: string) => {
     onUpdate(id)
   }, [onUpdate])
-  
+
   return (
-    <YStack>
+    <Stack>
       {processedData.map(item => (
-        <Item 
-          key={item.id} 
-          data={item} 
+        <Item
+          key={item.id}
+          data={item}
           onUpdate={handleUpdate}
         />
       ))}
-    </YStack>
+    </Stack>
   )
 })
+```

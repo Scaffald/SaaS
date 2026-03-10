@@ -112,10 +112,6 @@ app.get('/user-feedback', zValidator('query', historyQuerySchema), async (c) => 
       operating_system,
       screen_resolution,
       viewport_size,
-      braingrid_feature_id,
-      braingrid_sync_status,
-      braingrid_sync_error,
-      braingrid_synced_at,
       created_at,
       updated_at
     `,
@@ -179,15 +175,13 @@ app.post('/submit', zValidator('json', feedbackSubmitSchema), async (c) => {
     operating_system: input.operatingSystem ?? null,
     screen_resolution: input.screenResolution ?? null,
     viewport_size: input.viewportSize ?? null,
-    braingrid_sync_status: 'pending',
-    sync_retry_count: 0,
   }
 
   const { data, error } = await supabase
     .schema('logs')
     .from('user_feedback')
     .insert(insertPayload)
-    .select('id, braingrid_sync_status, created_at')
+    .select('id, created_at')
     .single()
 
   if (error) {
@@ -195,61 +189,10 @@ app.post('/submit', zValidator('json', feedbackSubmitSchema), async (c) => {
     return c.json({ error: 'Failed to submit feedback', message: error.message }, 500)
   }
 
-  let syncStatus = (data as { braingrid_sync_status?: string }).braingrid_sync_status ?? 'pending'
-
-  try {
-    const { data: syncResult, error: syncError } = await supabase.functions.invoke('feedback-to-braingrid', {
-      body: { feedbackId: (data as { id: string }).id, trigger: 'submission' },
-    })
-
-    if (syncError) {
-      await supabase
-        .schema('logs')
-        .from('user_feedback')
-        .update({
-          braingrid_sync_status: 'failed',
-          braingrid_sync_error: syncError.message,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', (data as { id: string }).id)
-      syncStatus = 'failed'
-    } else if (
-      syncResult &&
-      typeof syncResult === 'object' &&
-      'success' in syncResult &&
-      (syncResult as { success?: boolean }).success
-    ) {
-      syncStatus = 'synced'
-    } else if (syncResult && typeof syncResult === 'object' && 'error' in syncResult) {
-      const errMsg = (syncResult as { error?: string }).error ?? 'Unknown sync error'
-      await supabase
-        .schema('logs')
-        .from('user_feedback')
-        .update({
-          braingrid_sync_status: 'failed',
-          braingrid_sync_error: errMsg,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', (data as { id: string }).id)
-      syncStatus = 'failed'
-    }
-  } catch (invokeError) {
-    await supabase
-      .schema('logs')
-      .from('user_feedback')
-      .update({
-        braingrid_sync_status: 'failed',
-        braingrid_sync_error: invokeError instanceof Error ? invokeError.message : String(invokeError),
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', (data as { id: string }).id)
-    syncStatus = 'failed'
-  }
-
   return c.json({
     data: {
       id: (data as { id: string }).id,
-      status: syncStatus,
+      status: 'submitted',
       createdAt: (data as { created_at: string }).created_at,
     },
   }, 201)

@@ -105,15 +105,13 @@ export const feedbackRouter = t.router({
       operating_system: input.operatingSystem ?? null,
       screen_resolution: input.screenResolution ?? null,
       viewport_size: input.viewportSize ?? null,
-      braingrid_sync_status: 'pending',
-      sync_retry_count: 0,
     }
 
     const { data, error } = await supabase
       .schema('logs')
       .from('user_feedback')
       .insert(insertPayload)
-      .select('id, braingrid_sync_status, created_at')
+      .select('id, created_at')
       .single()
 
     if (error) {
@@ -127,86 +125,9 @@ export const feedbackRouter = t.router({
       })
     }
 
-    let syncStatus = data.braingrid_sync_status ?? 'pending'
-
-    try {
-      const { data: syncResult, error: syncError } = await supabase.functions.invoke(
-        'feedback-to-braingrid',
-        {
-          body: {
-            feedbackId: data.id,
-            trigger: 'submission',
-          },
-        }
-      )
-
-      if (syncError) {
-        console.error('[feedback.submit] Braingrid sync invocation failed', {
-          feedbackId: data.id,
-          message: syncError.message,
-        })
-
-        await supabase
-          .schema('logs')
-          .from('user_feedback')
-          .update({
-            braingrid_sync_status: 'failed',
-            braingrid_sync_error: syncError.message,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', data.id)
-
-        syncStatus = 'failed'
-      } else if (
-        syncResult &&
-        typeof syncResult === 'object' &&
-        'success' in syncResult &&
-        (syncResult as { success?: boolean }).success
-      ) {
-        syncStatus = 'synced'
-      } else if (syncResult && typeof syncResult === 'object' && 'error' in syncResult) {
-        const errorMessage =
-          (syncResult as { error?: string }).error ?? 'Unknown Braingrid sync error'
-        console.warn('[feedback.submit] Braingrid sync returned error', {
-          feedbackId: data.id,
-          error: errorMessage,
-        })
-
-        await supabase
-          .schema('logs')
-          .from('user_feedback')
-          .update({
-            braingrid_sync_status: 'failed',
-            braingrid_sync_error: errorMessage,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', data.id)
-
-        syncStatus = 'failed'
-      }
-    } catch (invokeError) {
-      console.error('[feedback.submit] Unexpected Braingrid invocation error', {
-        feedbackId: data.id,
-        error: invokeError instanceof Error ? invokeError.message : invokeError,
-      })
-
-      await supabase
-        .schema('logs')
-        .from('user_feedback')
-        .update({
-          braingrid_sync_status: 'failed',
-          braingrid_sync_error:
-            invokeError instanceof Error ? invokeError.message : String(invokeError),
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', data.id)
-
-      syncStatus = 'failed'
-    }
-
     return {
       id: data.id,
-      status: syncStatus,
+      status: 'submitted',
       createdAt: data.created_at,
     }
   }),
@@ -243,10 +164,6 @@ export const feedbackRouter = t.router({
             operating_system,
             screen_resolution,
             viewport_size,
-            braingrid_feature_id,
-            braingrid_sync_status,
-            braingrid_sync_error,
-            braingrid_synced_at,
             created_at,
             updated_at
           `,
