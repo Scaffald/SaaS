@@ -175,20 +175,24 @@ app.onError((err, c) => {
   );
 });
 
-const EDGE_FUNCTION_PATH_PREFIX = "/functions/v1/api";
+// Production: Kong forwards the full path /functions/v1/api/…
+// Local: Supabase edge runtime already strips /functions/v1/<fn>, leaving /api/…
+// Check longer prefix first so "/api" doesn't match when "/functions/v1/api" is present.
+const EDGE_FUNCTION_PATH_PREFIXES = ["/functions/v1/api", "/api"];
 
 function stripEdgeFunctionPathPrefix(req: Request): Request {
   const url = new URL(req.url);
-  if (!url.pathname.startsWith(EDGE_FUNCTION_PATH_PREFIX)) {
-    return req;
+  for (const prefix of EDGE_FUNCTION_PATH_PREFIXES) {
+    if (url.pathname === prefix || url.pathname.startsWith(prefix + "/")) {
+      url.pathname = url.pathname.slice(prefix.length) || "/";
+      return new Request(url, {
+        method: req.method,
+        headers: req.headers,
+        body: req.body,
+      });
+    }
   }
-  const newPath = url.pathname.slice(EDGE_FUNCTION_PATH_PREFIX.length) || "/";
-  url.pathname = newPath;
-  return new Request(url, {
-    method: req.method,
-    headers: req.headers,
-    body: req.body,
-  });
+  return req;
 }
 
 Deno.serve((req) => {

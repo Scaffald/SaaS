@@ -4,7 +4,7 @@ import { usePrerequisites } from '@scaffald/sdk/react'
 import { useRouter } from 'expo-router'
 import { Stack } from 'expo-router/stack'
 import { useEffect, useRef } from 'react'
-import { Spinner, Text, Stack as UIStack, useThemeContext } from '@scaffald/ui'
+import { Button, Spinner, Text, Stack as UIStack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 export default function OnboardingLayout() {
@@ -14,7 +14,7 @@ export default function OnboardingLayout() {
   const hasRedirectedToDashboardRef = useRef(false)
 
   // Use same prerequisites hook as app index and dashboard so cache/invalidation is shared
-  const { data: statusData, isLoading: isCheckingPrereqs } = usePrerequisites({
+  const { data: statusData, isLoading: isCheckingPrereqs, isError, refetch } = usePrerequisites({
     enabled: !!user,
   })
 
@@ -34,6 +34,20 @@ export default function OnboardingLayout() {
       <UIStack justify="center" align="center">
         <Spinner size="lg" />
         <Text style={{ color: colors.text[theme].secondary }}>Loading...</Text>
+      </UIStack>
+    )
+  }
+
+  // Show error state with retry when API is unavailable
+  if (isError) {
+    return (
+      <UIStack justify="center" align="center" gap={12}>
+        <Text style={{ color: colors.text[theme].secondary }}>
+          Unable to load. Please try again.
+        </Text>
+        <Button variant="outline" onPress={() => refetch()}>
+          Retry
+        </Button>
       </UIStack>
     )
   }
