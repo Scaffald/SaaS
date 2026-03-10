@@ -40,7 +40,7 @@ export default function RootIndex() {
 
     // On native, wait for segments to be available or use a timeout
     const checkRouter = () => {
-      if (segments.length > 0 || router) {
+      if (segments.length > 0) {
         setIsRouterReady(true)
       }
     }
@@ -53,7 +53,7 @@ export default function RootIndex() {
     }, 100)
 
     return () => clearTimeout(timeout)
-  }, [segments, router])
+  }, [segments])
 
   // Handle magic link verification
   useEffect(() => {
@@ -89,6 +89,7 @@ export default function RootIndex() {
   }, [params.token, params.type])
 
   // Handle navigation after everything is ready
+  // biome-ignore lint/correctness/useExhaustiveDependencies: router is a stable expo-router ref; including it would cause re-runs on every route change
   useEffect(() => {
     // Don't navigate if we're still loading, verifying, router isn't ready, or have already navigated
     if (isPending || isVerifying || !isRouterReady || hasNavigated || verificationError) {
@@ -99,6 +100,10 @@ export default function RootIndex() {
     if (user && isCheckingPrereqs) {
       return
     }
+
+    // Set hasNavigated synchronously BEFORE the async call to prevent re-entry
+    // if navigation causes a re-render before the async setState commits.
+    setHasNavigated(true)
 
     const performNavigation = async () => {
       try {
@@ -122,7 +127,6 @@ export default function RootIndex() {
           console.log('Navigating to auth for unauthenticated user')
           router.replace(AUTH_ROUTES.LOGIN.path)
         }
-        setHasNavigated(true)
       } catch (error) {
         console.error('Navigation error:', error)
         // Don't retry automatically to avoid infinite loops
@@ -145,7 +149,6 @@ export default function RootIndex() {
     isRouterReady,
     hasNavigated,
     verificationError,
-    router,
     isCheckingPrereqs,
     prereqStatus,
   ])

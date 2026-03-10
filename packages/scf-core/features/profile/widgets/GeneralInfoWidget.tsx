@@ -5,10 +5,11 @@ import { useGeneralInfoWidget } from "@scf/core/utils/profile-widgets-sdk-hooks"
 import { useUserProfile } from "@scf/core/utils/user-profiles-sdk-hooks";
 import { useUser } from "@scf/core/utils/useUser";
 import { getAvatarUrl } from "@scf/core/utils/supabase/storage";
-import { DashboardWidget, LoadingState, ResponsiveModal } from "@scaffald/ui";
+import { DashboardWidget, ResponsiveModal, Skeleton, SkeletonAvatar, SkeletonBox, SkeletonText, useThemeContext } from "@scaffald/ui";
 import { MessageSquarePlus } from "lucide-react-native";
 import { useState } from "react";
 import { Avatar, Button, Text, Row, Stack } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import type { ProfileWidgetProps } from "./types";
 
 interface GeneralInfoWidgetProps extends ProfileWidgetProps {
@@ -35,6 +36,7 @@ export function GeneralInfoWidget({
   isOwnProfile = false,
 }: GeneralInfoWidgetProps) {
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const { theme } = useThemeContext();
   const { user: currentUser } = useUser();
   const { data, isLoading, error, refetch, isFetching } = useGeneralInfoWidget(
     { userId },
@@ -42,11 +44,32 @@ export function GeneralInfoWidget({
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     }
   );
+  // Call unconditionally so hook order is stable (needed for review modal when showButtons is true)
+  const { data: profile } = useUserProfile(userId, {
+    enabled: showButtons,
+  });
 
   if (isLoading) {
     return (
       <DashboardWidget>
-        <LoadingState message="Loading profile..." />
+        <Stack gap={12} align="center">
+          <SkeletonAvatar size={40} />
+          <Skeleton width={160} height={16} shape="text" />
+          <Skeleton width={120} height={14} shape="text" />
+          <SkeletonBox width={100} height={28} borderRadius={99} />
+        </Stack>
+        <Stack gap={12} style={{ marginTop: 12 }}>
+          <Skeleton width={60} height={14} shape="text" />
+          <SkeletonText lines={3} lastLineWidth="80%" />
+        </Stack>
+        <Stack gap={8} style={{ marginTop: 12 }}>
+          {[0, 1, 2, 3, 4].map((i) => (
+            <Stack key={i} gap={4}>
+              <Skeleton width="30%" height={12} shape="text" />
+              <Skeleton width="100%" height={14} shape="text" />
+            </Stack>
+          ))}
+        </Stack>
       </DashboardWidget>
     );
   }
@@ -55,10 +78,10 @@ export function GeneralInfoWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text style={{ color: "#ef4444" }}>
+          <Text style={{ color: colors.fg[theme].error }}>
             Failed to load profile information
           </Text>
-          <Text style={{ color: "#414e62" }}>{error.message}</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
           <Button
             variant="filled"
             color="primary"
@@ -79,7 +102,7 @@ export function GeneralInfoWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text style={{ color: "#414e62" }}>No profile data available</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>No profile data available</Text>
         </Stack>
       </DashboardWidget>
     );
@@ -93,11 +116,6 @@ export function GeneralInfoWidget({
 
   const showPrivateInfo = !!data.privateData;
   const badge = data.idVerificationBadge;
-
-  // Fetch profile data for review modal
-  const { data: profile } = useUserProfile(userId, {
-    enabled: showButtons,
-  });
 
   // Only show "Add Review" button if viewing someone else's profile
   const canLeaveReview =
@@ -146,18 +164,18 @@ export function GeneralInfoWidget({
             <Avatar
               size={40}
               src={getAvatarUrl(data.avatar_path) || data.avatar_url || ""}
-              initials={displayName?.slice(0, 2).toUpperCase()}
+              initials={displayName ? displayName.slice(0, 2).toUpperCase() : undefined}
             />
 
             <Stack gap={4} align="center">
               <Text>{displayName}</Text>
               {data.headline && (
                 <Stack align="center" maxWidth="100%">
-                  <Text style={{ color: "#414e62" }}>{data.headline}</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>{data.headline}</Text>
                 </Stack>
               )}
               {data.username && (
-                <Text style={{ color: "#414e62" }}>@{data.username}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>@{data.username}</Text>
               )}
               {badge && (
                 <IdVerificationBadge
@@ -178,14 +196,14 @@ export function GeneralInfoWidget({
             {/* Status Badges */}
             {data.open_to_work && (
               <Row
-                backgroundColor="#eff6ff"
+                backgroundColor={colors.blue[50]}
                 paddingHorizontal={12}
                 paddingVertical={6}
                 borderRadius={999}
                 borderWidth={1}
-                borderColor="#93c5fd"
+                borderColor={colors.blue[300]}
               >
-                <Text style={{ color: "#1d4ed8" }}>Open to Work</Text>
+                <Text style={{ color: colors.blue[700] }}>Open to Work</Text>
               </Row>
             )}
           </Stack>
@@ -194,7 +212,7 @@ export function GeneralInfoWidget({
           {data.about && variant === "full" && (
             <Stack gap={8}>
               <Text>About</Text>
-              <Text style={{ color: "#414e62", lineHeight: 12 }}>
+              <Text style={{ color: colors.text[theme].secondary, lineHeight: 12 }}>
                 {data.about}
               </Text>
             </Stack>
@@ -207,21 +225,21 @@ export function GeneralInfoWidget({
 
               {data.privateData.email && (
                 <Stack gap={4}>
-                  <Text style={{ color: "#414e62" }}>Email</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>Email</Text>
                   <Text>{data.privateData.email}</Text>
                 </Stack>
               )}
 
               {data.privateData.phone && (
                 <Stack gap={4}>
-                  <Text style={{ color: "#414e62" }}>Phone</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>Phone</Text>
                   <Text>{data.privateData.phone}</Text>
                 </Stack>
               )}
 
               {data.privateData.location && (
                 <Stack gap={4}>
-                  <Text style={{ color: "#414e62" }}>Location</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>Location</Text>
                   <Text>{data.privateData.location}</Text>
                 </Stack>
               )}
@@ -248,7 +266,7 @@ export function GeneralInfoWidget({
                   if (formattedYears === null) return null;
                   return (
                     <Stack gap={4} flex={1} minWidth={120}>
-                      <Text style={{ color: "#414e62" }}>Experience</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>Experience</Text>
                       <Text>
                         {formattedYears}{" "}
                         {Number(formattedYears) === 1 ? "year" : "years"}
@@ -259,7 +277,7 @@ export function GeneralInfoWidget({
 
                 {data.industries && (
                   <Stack gap={4} flex={1} minWidth={120}>
-                    <Text style={{ color: "#414e62" }}>Industry</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>Industry</Text>
                     <Text>{data.industries.name}</Text>
                   </Stack>
                 )}

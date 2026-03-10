@@ -118,8 +118,8 @@ test.describe('Admin • /dashboard/profile/employment', () => {
     expect(pageContent).toMatch(/(up to three|3 locations|max.*3)/i)
   })
 
-  // Test 7: Willing to travel toggle card
-  test('displays "Willing to Travel" toggle card', async ({ page }: { page: Page }) => {
+  // Test 7: Open to travel toggle card
+  test('displays "Open to travel" toggle card', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
 
@@ -132,8 +132,8 @@ test.describe('Admin • /dashboard/profile/employment', () => {
     await page.waitForTimeout(1000)
 
     const pageContent = (await page.locator('body').textContent()) || ''
-    expect(pageContent).toContain('Willing to Travel')
-    expect(pageContent).toMatch(/available for work.*travel/i)
+    expect(pageContent).toContain('Open to travel')
+    expect(pageContent).toMatch(/travel|available for work/i)
   })
 
   // Test 8: Travel distance slider (when travel is enabled)
@@ -157,7 +157,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
 
     // Check for travel distance related content
     const hasTravelDistance = pageContent.match(/\d+\s*miles?/i)
-    expect(hasTravelDistance || pageContent.includes('Willing to Travel')).toBeTruthy()
+    expect(hasTravelDistance || pageContent.includes('Open to travel')).toBeTruthy()
   })
 
   // Test 9: US Resident toggle card
@@ -331,9 +331,8 @@ test.describe('Admin • /dashboard/profile/employment', () => {
     expect(pageContent).toMatch(/available|availability/i)
   })
 
-  // Test 17: Save button presence
-  test('displays save button', async ({ page }: { page: Page }) => {
-    // Authentication handled by storage state (tests/.auth/admin.json)
+  // Test 17: Atomic save - no Save button; changes save automatically
+  test('saves automatically when toggling (no Save button)', async ({ page }: { page: Page }) => {
     await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
@@ -344,19 +343,16 @@ test.describe('Admin • /dashboard/profile/employment', () => {
       .catch(() => {})
     await page.waitForTimeout(1500)
 
-    // Check for save button
+    // Employment page uses atomic save: no "Save Changes" button
+    const pageContent = (await page.locator('body').textContent()) || ''
+    expect(pageContent).not.toMatch(/Save Changes|Save changes/)
+    // Page should have at least one interactive control
     const buttons = await page.locator('button').all()
-    const buttonTexts = await Promise.all(buttons.map((b) => b.textContent()))
-    const hasSaveButton = buttonTexts.some(
-      (text) => text?.toLowerCase().includes('save') || text?.toLowerCase().includes('update')
-    )
-
     expect(buttons.length).toBeGreaterThan(0)
   })
 
-  // Test 18: Save button disabled when form is clean
-  test('save button is disabled when no changes are made', async ({ page }: { page: Page }) => {
-    // Authentication handled by storage state (tests/.auth/admin.json)
+  // Test 18: Atomic save - toggling triggers save (no disabled Save button)
+  test('employment section has no Save button (save-as-you-go)', async ({ page }: { page: Page }) => {
     await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
@@ -367,12 +363,8 @@ test.describe('Admin • /dashboard/profile/employment', () => {
       .catch(() => {})
     await page.waitForTimeout(2000)
 
-    // Look for save button and check if it's disabled initially
-    const buttons = await page.locator('button').all()
-    const buttonTexts = await Promise.all(buttons.map((b) => b.textContent()))
-
-    // At least one button should exist
-    expect(buttons.length).toBeGreaterThan(0)
+    const saveButton = page.getByRole('button', { name: /Save Changes|Save changes/i })
+    await expect(saveButton).toHaveCount(0)
   })
 
   // Test 19: Toggle card interaction - clicking enables

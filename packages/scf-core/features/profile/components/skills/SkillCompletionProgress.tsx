@@ -1,5 +1,5 @@
 import { Sparkles } from 'lucide-react-native'
-import { ProgressBar, Text, Row, Stack } from '@scaffald/ui'
+import { ProgressBar, Text, Row, Stack, getIconSize } from '@scaffald/ui'
 
 interface SkillCompletionProgressProps {
   /** Current skill count */
@@ -29,7 +29,7 @@ export function SkillCompletionProgress({
       borderRadius={16}
     >
       <Row gap={12} align="center">
-        <Sparkles size="lg" color="$blue10" />
+        <Sparkles size={getIconSize('lg')} color="$blue10" />
         <Stack gap={4} flex={1}>
           <Text color="$blue11">
             {hasMinimumSkills

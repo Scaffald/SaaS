@@ -1,16 +1,42 @@
 import { ErrorBoundary } from '@scf/core/components/ErrorBoundary'
 import { getVersionDebugPayload } from '@scf/core/constants/appVersion'
-import { loadThemePromise, Provider } from '@scf/core/provider'
+import { loadThemePromise, Provider, UniversalThemeProvider, useThemeSetting, ThemeContext } from '@scf/core/provider'
 import { initSentry } from '@scf/core/utils/sentry'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { logger } from '@scf/core'
 import { ThemeProvider } from '@scaffald/ui'
-import { RobotoSerif_400Regular, useFonts } from '@expo-google-fonts/roboto-serif'
+import type { ResolvedThemeMode } from '@scaffald/ui'
+import {
+  Roboto_400Regular,
+  Roboto_500Medium,
+  Roboto_700Bold,
+  useFonts,
+} from '@expo-google-fonts/roboto'
+import { RobotoSerif_400Regular } from '@expo-google-fonts/roboto-serif'
 import type { Session } from '@supabase/auth-js'
 import { SplashScreen, Stack, useSegments } from 'expo-router'
-import { useCallback, useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+
+/** Bridges UniversalThemeProvider (scf-core) to scaffald-ui ThemeProvider so one source drives both. */
+function ThemeBridge({ children }: { children: ReactNode }) {
+  const { resolvedTheme } = useThemeSetting()
+  // Use the stable onChangeTheme from context directly (memoized in UniversalThemeProvider)
+  // rather than the new function created by useThemeSetting() on every call.
+  const ctx = useContext(ThemeContext)
+  const onChangeThemeRef = useRef(ctx?.onChangeTheme)
+  onChangeThemeRef.current = ctx?.onChangeTheme
+  const handleThemeChange = useCallback((theme: string) => {
+    onChangeThemeRef.current?.(theme)
+  }, [])
+  return (
+    <ThemeProvider theme={resolvedTheme as ResolvedThemeMode} onThemeChange={handleThemeChange}>
+      {children}
+    </ThemeProvider>
+  )
+}
 
 // Initialize Sentry as early as possible (before any other initialization)
 initSentry()
@@ -20,7 +46,10 @@ SplashScreen.preventAutoHideAsync()
 export default function DashboardLayout() {
   const segments = useSegments()
   const [fontLoaded] = useFonts({
-    RobotoSerif_400Regular,
+    Roboto: Roboto_400Regular,
+    'Roboto-Medium': Roboto_500Medium,
+    'Roboto-Bold': Roboto_700Bold,
+    'Roboto Serif': RobotoSerif_400Regular,
   })
 
   const [themeLoaded, setThemeLoaded] = useState(false)
@@ -61,38 +90,40 @@ export default function DashboardLayout() {
   }
 
   return (
-    <ThemeProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-          <Provider initialSession={initialSession}>
-            <ErrorBoundary
-              context={{
-                environment: process.env.APP_ENV,
-                route: segments.join('/') || '/',
-              }}
-            >
-              <Stack
-                screenOptions={{
-                  headerShown: false,
+    <UniversalThemeProvider>
+      <ThemeBridge>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+            <Provider initialSession={initialSession}>
+              <ErrorBoundary
+                context={{
+                  environment: process.env.APP_ENV,
+                  route: segments.join('/') || '/',
                 }}
               >
-                <Stack.Screen
-                  name="auth"
-                  options={{
+                <Stack
+                  screenOptions={{
                     headerShown: false,
                   }}
-                />
-                <Stack.Screen
-                  name="dashboard"
-                  options={{
-                    headerShown: false,
-                  }}
-                />
-              </Stack>
-            </ErrorBoundary>
-          </Provider>
-        </View>
-      </GestureHandlerRootView>
-    </ThemeProvider>
+                >
+                  <Stack.Screen
+                    name="auth"
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="dashboard"
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
+                </Stack>
+              </ErrorBoundary>
+            </Provider>
+          </View>
+        </GestureHandlerRootView>
+      </ThemeBridge>
+    </UniversalThemeProvider>
   )
 }

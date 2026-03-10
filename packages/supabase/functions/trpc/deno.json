@@ -1,4 +1,9 @@
 {
+  "compilerOptions": {
+    "lib": ["deno.window", "deno.ns", "deno.unstable"],
+    "strict": true,
+    "jsx": "react-jsx"
+  },
   "imports": {
     "@hono/zod-openapi": "npm:@hono/zod-openapi@0.18.2",
     "@trpc/server": "npm:@trpc/server@10.45.0",

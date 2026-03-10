@@ -146,6 +146,59 @@ export const FullWidth: Story = {
   ),
 }
 
+/**
+ * Modal-style footer: secondary Cancel + primary Saving (loading).
+ * Use to verify loading indicator fits inside the button at all sizes.
+ */
+export const ModalActionsWithLoading: Story = {
+  render: () => (
+    <View style={styles.container}>
+      <View style={styles.row}>
+        <Button variant="outline" color="gray" size="md" onPress={() => {}}>
+          Cancel
+        </Button>
+        <Button
+          variant="filled"
+          color="primary"
+          size="md"
+          loading
+          onPress={() => {}}
+        >
+          Saving
+        </Button>
+      </View>
+      <View style={styles.row}>
+        <Button variant="outline" color="gray" size="sm" onPress={() => {}}>
+          Cancel
+        </Button>
+        <Button
+          variant="filled"
+          color="primary"
+          size="sm"
+          loading
+          onPress={() => {}}
+        >
+          Saving
+        </Button>
+      </View>
+      <View style={styles.row}>
+        <Button variant="outline" color="gray" size="lg" onPress={() => {}}>
+          Cancel
+        </Button>
+        <Button
+          variant="filled"
+          color="primary"
+          size="lg"
+          loading
+          onPress={() => {}}
+        >
+          Saving
+        </Button>
+      </View>
+    </View>
+  ),
+}
+
 const styles = StyleSheet.create({
   container: {
     gap: spacing[16],

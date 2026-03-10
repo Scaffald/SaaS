@@ -9,6 +9,7 @@ import {
   Separator,
   Stack,
   Text,
+  getIconSize,
 } from '@scaffald/ui'
 import { SearchFilterWidget } from './components/SearchFilterWidget'
 
@@ -125,7 +126,7 @@ export function DiscoverWorkersRight({
           onSearchChange={handleSearchChange}
           searchLabel={
             <Row align="center" gap={8}>
-              <Search size="md" />
+              <Search size={getIconSize('md')} />
               <Text>Search</Text>
             </Row>
           }
@@ -157,7 +158,7 @@ export function DiscoverWorkersRight({
           {/* Skills Filter */}
           <Stack gap={12}>
             <Row align="center" gap={8}>
-              <Award size="md" color="$gray11" />
+              <Award size={getIconSize('md')} color="$gray11" />
               <Text color="$gray11">Skills</Text>
             </Row>
 
@@ -201,7 +202,7 @@ export function DiscoverWorkersRight({
           {/* Certifications Filter */}
           <Stack gap={12}>
             <Row align="center" gap={8}>
-              <BadgeCheck size="md" color="$gray11" />
+              <BadgeCheck size={getIconSize('md')} color="$gray11" />
               <Text color="$gray11">Certifications</Text>
             </Row>
 

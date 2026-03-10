@@ -7,7 +7,7 @@ set -e
 HOSTED_ZONE_ID="Z0610739109YR6SDKL45L"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 CHANGE_BATCH_FILE="$SCRIPT_DIR/scaffald-complete-records.json"
-AWS_PROFILE="scf-notify"
+AWS_PROFILE="scaffald"
 
 # Check if AWS CLI is available
 if ! command -v aws &> /dev/null; then

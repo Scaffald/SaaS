@@ -48,6 +48,8 @@ export interface ControlledAddressFormProps<TFieldValues extends FieldValues = F
   provider?: 'mapbox' | 'google'
   apiKey?: string
   zoomLevel?: 'street' | 'city' | 'region'
+  /** Optional proximity (e.g. user location) to bias autocomplete results. Mapbox will rank results closer to this point higher. */
+  proximity?: { lat: number; lng: number }
 
   // UI customization
   label?: string
@@ -55,6 +57,10 @@ export interface ControlledAddressFormProps<TFieldValues extends FieldValues = F
   required?: boolean
   disabled?: boolean
   error?: string
+  /** When 'expand', manual address fields are hidden by default behind an Expand button. */
+  manualFieldsVariant?: 'always' | 'expand'
+  expandLabel?: string
+  collapseLabel?: string
 
   // Optional callbacks
   onAddressSelect?: (address: AddressResult) => void

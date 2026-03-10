@@ -6,7 +6,7 @@
 
 import { ScaffaldProvider, useScaffaldOrNull } from '@scaffald/sdk/react'
 import { useQueryClient } from '@tanstack/react-query'
-import { useMemo, type ReactNode } from 'react'
+import { useMemo, useEffect, useRef, type ReactNode } from 'react'
 import Constants from 'expo-constants'
 import { useSessionContext } from './supabase/useSessionContext'
 
@@ -43,21 +43,56 @@ function getSupabaseAnonKey(): string {
  * QueryClientProvider is added to the tree.
  */
 export function ScaffaldJobsSdkProviderFromSession({ children }: { children: ReactNode }) {
-  const { session } = useSessionContext()
+  const { session, isLoading } = useSessionContext()
   const baseUrl = useMemo(getSupabaseApiBaseUrl, [])
   const anonKey = useMemo(getSupabaseAnonKey, [])
   // Re-use the QueryClient already in the tree — avoids a duplicate QueryClientProvider.
   const queryClient = useQueryClient()
 
   const config = useMemo(() => {
-    if (!baseUrl) return null
+    if (!baseUrl) return { baseUrl: 'https://api.scaffald.com', apiKey: 'dummy' }
+    // Use valid credentials whenever available, even while loading (e.g. initialSession).
+    // Only use dummy when we have no token and no anon key yet.
     const token = session?.access_token?.trim()
-    const auth = token ? { supabaseToken: token } : anonKey ? { apiKey: anonKey } : null
-    if (!auth) return null
-    return { ...auth, baseUrl }
+    if (token) return { baseUrl, supabaseToken: token }
+    if (anonKey) return { baseUrl, apiKey: anonKey }
+    return { baseUrl, apiKey: 'dummy' }
   }, [session?.access_token, baseUrl, anonKey])
 
-  if (!config) return <>{children}</>
+  // When session loading completes, invalidate SDK queries so any that ran with dummy auth refetch.
+  const wasLoadingRef = useRef(isLoading)
+  useEffect(() => {
+    if (wasLoadingRef.current && !isLoading) {
+      wasLoadingRef.current = false
+      const sdkQueryKeyPrefixes = [
+        'jobs',
+        'applications',
+        'profiles',
+        'industries',
+        'organizations',
+        'teams',
+        'prerequisites',
+        'apiKeys',
+        'webhooks',
+      ]
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          const key = query.queryKey
+          return (
+            Array.isArray(key) &&
+            typeof key[0] === 'string' &&
+            sdkQueryKeyPrefixes.includes(key[0])
+          )
+        },
+      })
+    }
+    if (isLoading) wasLoadingRef.current = true
+  }, [isLoading, queryClient])
+
+  // Always render ScaffaldProvider so the tree structure never changes.
+  // Switching between <>{children}</> and <ScaffaldProvider> causes the entire
+  // Stack (NativeStackNavigator) to unmount/remount, firing all navigation
+  // effects at once and exceeding React's max update depth.
   return (
     <ScaffaldProvider config={config} queryClient={queryClient}>
       {children}

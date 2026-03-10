@@ -21,7 +21,7 @@ import {
   useState,
 } from "react";
 import { Text, Row, Stack } from "@scaffald/ui";
-import { ProfileResultCard, ProfileResultsPanel } from "./components";
+import { ProfileResultCard, ProfileResultsPanel, ProfileSectionIntro } from "./components";
 import { SkillCompletionProgress } from "./components/skills/SkillCompletionProgress";
 import { SkillGuidanceWidget } from "./components/skills/SkillGuidanceWidget";
 import { getProficiencyLabel } from "./constants/proficiency-levels";
@@ -248,6 +248,10 @@ export function ProfileSkillsRight() {
           }}
         />
       </Modal>
+      <ProfileSectionIntro
+        title="Skills"
+        description="Add and manage your professional skills. Search by industry, then add skills with proficiency levels; they appear in the list below."
+      />
       <DashboardWidget>
         <Stack gap={12}>
           <SkillCompletionProgress

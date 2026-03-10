@@ -12,6 +12,8 @@ export interface NewsItem {
   image?: string
   author?: string
   readTime?: string
+  source?: string | null
+  region?: string | null
 }
 
 export interface NewsFeed {

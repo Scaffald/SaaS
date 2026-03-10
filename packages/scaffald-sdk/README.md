@@ -898,7 +898,7 @@ The SDK has comprehensive test coverage using Vitest and MSW (Mock Service Worke
 ### Running Tests
 
 ```bash
-# Run all tests
+# Run all unit tests (default; uses MSW mocks)
 pnpm test
 
 # Run tests for specific resource
@@ -910,6 +910,25 @@ pnpm test:watch
 # Generate coverage report
 pnpm test:coverage
 ```
+
+### Integration tests (real API and token)
+
+Optional integration tests run against a **real** local Supabase instance and API. They verify token issuance, token validity, and per-endpoint success with a live server.
+
+**Prerequisites:**
+
+- Local Supabase running (`pnpm supa start` from repo root)
+- API function served (e.g. `pnpm supa functions serve api` or `supabase functions serve api`)
+- Test user: `test@example.com` / `test123456` (create in Supabase Studio if needed)
+
+**Run integration tests:**
+
+```bash
+# From repo root or packages/scaffald-sdk
+SCAFFALD_INTEGRATION=1 pnpm --filter @scaffald/sdk test:integration
+```
+
+If `SCAFFALD_INTEGRATION` (or `REAL_API`) is not set, integration tests are skipped. Unit tests (`pnpm test`) always use MSW and do not hit the real API.
 
 ### Test Coverage
 

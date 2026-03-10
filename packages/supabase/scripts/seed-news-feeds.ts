@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import { CONSTRUCTION_FEEDS } from '../../core/features/news/config/news-feeds'
+import { CONSTRUCTION_FEEDS } from '../../scf-core/features/news/config/news-feeds'
 
 const supabaseUrl =
   process.env.EXPO_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || 'http://127.0.0.1:54321'

@@ -180,7 +180,7 @@ app.openapi(getExperienceSummaryRoute, async (c) => {
     .from('user_profiles')
     .select('career_level')
     .eq('id', user.id)
-    .single()
+    .maybeSingle()
 
   if (error) {
     console.error('Error fetching experience summary:', error)
@@ -188,7 +188,7 @@ app.openapi(getExperienceSummaryRoute, async (c) => {
   }
 
   return c.json({
-    career_level: profile?.career_level || null,
+    career_level: profile?.career_level ?? null,
   })
 })
 

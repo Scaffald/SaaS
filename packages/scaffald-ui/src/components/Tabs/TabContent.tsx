@@ -6,7 +6,7 @@
 import { View, Text } from 'react-native'
 import type { TabContentProps } from './Tabs.types'
 import { useTabItemContext } from './TabItem'
-import { useTabsContext } from './Tabs'
+import { useTabsContext } from './TabsContext'
 import { getTabContentStyles } from './Tabs.styles'
 import { useThemeContext } from '../../theme'
 

@@ -6,14 +6,14 @@ import { AuthProvider } from './auth/AuthProvider'
 import { CookieConsentProvider } from './cookie-consent'
 import { QueryClientProvider } from './react-query'
 import { ScaffaldProviderFromSession } from './scaffald/ScaffaldProviderFromSession'
-import { UniversalThemeProvider } from './theme'
 import { ToastProvider } from './toast'
 import {
   ScaffaldJobsSdkProviderFromSession,
   useScaffaldJobsClient,
 } from '../utils/jobs-sdk-context'
 
-export { loadThemePromise } from './theme/UniversalThemeProvider'
+export { loadThemePromise, ThemeContext } from './theme/UniversalThemeProvider'
+export { UniversalThemeProvider, useThemeSetting } from './theme'
 export { useScaffaldJobsClient }
 
 export function Provider({
@@ -50,7 +50,6 @@ const compose = (providers: FC<{ children: ReactNode }>[]) =>
   })
 
 const Providers = compose([
-  UniversalThemeProvider,
   CookieConsentProvider,
   ToastProvider,
   QueryClientProvider,

@@ -18,6 +18,8 @@ import { CircleChart } from '../Charts'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { typographyVariants } from '../../../tokens/typography'
+import { useThemeContext } from '../../../theme'
+import type { ResolvedThemeMode } from '../../../tokens/colors'
 
 export function CryptoBalanceWidget({
   symbol,
@@ -25,6 +27,8 @@ export function CryptoBalanceWidget({
   balanceUSD,
   style,
 }: CryptoBalanceWidgetProps) {
+  const { theme } = useThemeContext()
+  const styles = getStyles(theme)
   const balanceValue = typeof balance === 'number' ? balance.toFixed(8) : balance
   const usdValue =
     balanceUSD !== undefined
@@ -52,15 +56,16 @@ export function CryptoBalanceWidget({
   )
 }
 
-const styles = StyleSheet.create({
+function getStyles(theme: ResolvedThemeMode) {
+  return StyleSheet.create({
   container: {
     flexDirection: 'column',
     gap: spacing[16],
     padding: spacing[24],
-    backgroundColor: colors.bg.light.default,
+    backgroundColor: colors.bg[theme].default,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.border.light.default,
+    borderColor: colors.border[theme].default,
     width: 593,
     minHeight: 282,
   },
@@ -71,11 +76,11 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typographyVariants.paragraphMMedium,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   symbol: {
     ...typographyVariants.paragraphSMedium,
-    color: colors.text.secondary,
+    color: colors.text[theme].secondary,
   },
   balanceSection: {
     flexDirection: 'column',
@@ -83,14 +88,15 @@ const styles = StyleSheet.create({
   },
   balance: {
     ...typographyVariants.h4SemiBold,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   usdBalance: {
     ...typographyVariants.paragraphSRegular,
-    color: colors.text.tertiary,
+    color: colors.text[theme].tertiary,
   },
   chartSection: {
     alignItems: 'center',
     justifyContent: 'center',
   },
 })
+}

@@ -1,0 +1,977 @@
+{
+  "date": "2026-03-06",
+  "audits": [
+    {
+      "path": "/",
+      "group": "public",
+      "errors": [],
+      "warnings": [],
+      "networkErrors": [],
+      "ok": true
+    },
+    {
+      "path": "/auth",
+      "group": "public",
+      "errors": [],
+      "warnings": [],
+      "networkErrors": [],
+      "ok": true
+    },
+    {
+      "path": "/auth/verify",
+      "group": "public",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "%s\n\n%s\n An error occurred in the <ScaffaldProvider> component. Consider adding an error boundary to your tree to customize error handling behavior.\nVisit https://react.dev/link/error-boundaries to learn more about error boundaries.",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:10191:14",
+          "timestamp": 1772777737909
+        }
+      ],
+      "networkErrors": [],
+      "ok": true
+    },
+    {
+      "path": "/auth/success",
+      "group": "public",
+      "errors": [],
+      "warnings": [],
+      "networkErrors": [],
+      "ok": true
+    },
+    {
+      "path": "/dashboard",
+      "group": "dashboard",
+      "errors": [
+        {
+          "type": "error",
+          "text": "Refused to execute script from 'http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable' because its MIME type ('application/json') is not executable, and strict MIME type checking is enabled.",
+          "location": "http://localhost:8081/dashboard:0:0",
+          "timestamp": 1772777748881
+        }
+      ],
+      "warnings": [],
+      "networkErrors": [
+        {
+          "status": 500,
+          "url": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable",
+          "method": "GET"
+        }
+      ],
+      "ok": false
+    },
+    {
+      "path": "/dashboard/map",
+      "group": "dashboard",
+      "errors": [
+        {
+          "type": "error",
+          "text": "%o\n\n%s\n\n%s\n ReferenceError: useActiveWelcomeSlides is not defined\n    at Screen (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:760683:65)\n    at WrappedScreenComponent (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:188865:47)\n    at BaseRoute (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:188937:56)\n    at SceneView (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:158862:99)\n    at render (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:158596:65)\n    at http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:158646:23\n    at Array.reduce (<anonymous>)\n    at useDescriptors (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:158643:32)\n    at useNavigationBuilder (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:158233:44)\n    at NativeStackNavigator (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:207697:43)\n    at http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:184571:52\n    at Object.assign.Screen (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:184339:45)\n    at Layout (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:760275:64)\n    at WrappedScreenComponent (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:188865:47)\n    at BaseRoute (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:188937:56)\n    at SceneView (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:158862:99)\n    at render (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:158596:65)\n    at http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:158646:23\n    at Array.reduce (<anonymous>)\n    at useDescriptors (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:158643:32)\n    at useNavigationBuilder (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:158233:44)\n    at NativeStackNavigator (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:207697:43)\n    at http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:184571:52\n    at Object.assign.Screen (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:184339:45)\n    at DashboardLayout (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:25412:71)\n    at WrappedScreenComponent (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:188865:47)\n    at BaseRoute (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:188937:56)\n    at SceneView (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:158862:99)\n    at render (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:158596:65)\n    at http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:158646:23\n    at Array.reduce (<anonymous>)\n    at useDescriptors (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:158643:32)\n    at useNavigationBuilder (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:158233:44)\n    at Content (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:210997:43)\n    at ContextNavigator (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:210938:56)\n    at ExpoRoot (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:210849:45)\n    at App (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:24602:50)\n    at WithDevTools (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:201395:64) The above error occurred in the <WelcomeScreen> component. React will try to recreate this component tree from scratch using the error boundary you provided, ErrorBoundary.",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:880:26",
+          "timestamp": 1772777752468
+        },
+        {
+          "type": "error",
+          "text": "[ERROR] ErrorBoundary caught error ReferenceError: useActiveWelcomeSlides is not defined\n    at DashboardLayout (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:25407:69)\n    at WrappedScreenComponent (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:188865:47)\n    at BaseRoute (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:188937:56)\n    at SceneView (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:158862:99)\n    at render (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:158596:65)\n    at http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:158646:23\n    at Array.reduce (<anonymous>)\n    at useDescriptors (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:158643:32)\n    at useNavigationBuilder (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:158233:44)\n    at Content (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:210997:43)\n    at ContextNavigator (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:210938:56)\n    at ExpoRoot (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:210849:45)\n    at App (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:24602:50)\n    at WithDevTools (http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:201395:64) {componentStack: \n    at WelcomeScreen (http://localhost:8081/node_…unstable_transformProfile=hermes-stable:177962:5)}",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:880:26",
+          "timestamp": 1772777752471
+        }
+      ],
+      "warnings": [],
+      "networkErrors": [],
+      "ok": false
+    },
+    {
+      "path": "/dashboard/profile",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777755143
+        }
+      ],
+      "networkErrors": [],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/profile/general",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777757142
+        }
+      ],
+      "networkErrors": [],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/profile/education",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777761327
+        }
+      ],
+      "networkErrors": [
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/education/level",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/general",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications/preferences",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications?limit=25",
+          "method": "GET"
+        },
+        {
+          "status": 500,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/education",
+          "method": "GET"
+        },
+        {
+          "status": 500,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/education",
+          "method": "GET"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/profile/experience",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777764519
+        }
+      ],
+      "networkErrors": [
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications/preferences",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/general",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications?limit=25",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/experience/summary",
+          "method": "GET"
+        },
+        {
+          "status": 500,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/experience",
+          "method": "GET"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/profile/employment",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777766968
+        }
+      ],
+      "networkErrors": [
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/general",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications?limit=25",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications/preferences",
+          "method": "GET"
+        },
+        {
+          "status": 500,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/employment",
+          "method": "GET"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/profile/skills",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777769168
+        }
+      ],
+      "networkErrors": [
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/general",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications?limit=25",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications/preferences",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/skills/primary-industry",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/skills/multi-taxonomy",
+          "method": "GET"
+        },
+        {
+          "status": 500,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/skills/industries",
+          "method": "GET"
+        },
+        {
+          "status": 500,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/skills/industries",
+          "method": "GET"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/profile/certifications",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777771575
+        }
+      ],
+      "networkErrors": [
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/general",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/certifications/tree",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications?limit=25",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications/preferences",
+          "method": "GET"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/profile/resume",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777774427
+        }
+      ],
+      "networkErrors": [
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/resume/has-uploaded",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications?limit=25",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications/preferences",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/general",
+          "method": "GET"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/profile/background-check",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777776764
+        }
+      ],
+      "networkErrors": [
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/general",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications/preferences",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications?limit=25",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/background-checks",
+          "method": "GET"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/workers",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777778984
+        }
+      ],
+      "networkErrors": [
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/general",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications/preferences",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications?limit=25",
+          "method": "GET"
+        },
+        {
+          "status": 503,
+          "url": "http://127.0.0.1:54321/rest/v1/v_profile_search?select=*&order=gamified_score.desc&limit=500",
+          "method": "GET"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/jobs",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777780844
+        }
+      ],
+      "networkErrors": [
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/general",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/skills/soft",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/applications?limit=100",
+          "method": "GET"
+        },
+        {
+          "status": 500,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/jobs/external",
+          "method": "GET"
+        },
+        {
+          "status": 500,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/jobs/external/filter-options",
+          "method": "GET"
+        },
+        {
+          "status": 500,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/jobs?status=published&search=",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications/preferences",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications?limit=25",
+          "method": "GET"
+        },
+        {
+          "status": 500,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/jobs/external/filter-options",
+          "method": "GET"
+        },
+        {
+          "status": 500,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/jobs/external",
+          "method": "GET"
+        },
+        {
+          "status": 500,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/jobs?status=published&search=",
+          "method": "GET"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/employers",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777783023
+        }
+      ],
+      "networkErrors": [
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/general",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications/preferences",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications?limit=25",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/employers",
+          "method": "GET"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/work-logs",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777785094
+        }
+      ],
+      "networkErrors": [
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications/preferences",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/work-logs",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications?limit=25",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/general",
+          "method": "GET"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/work-logs/create",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777787329
+        }
+      ],
+      "networkErrors": [
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/general",
+          "method": "GET"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/work-logs/projects",
+          "method": "GET"
+        },
+        {
+          "status": 500,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/skills",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications/preferences",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications?limit=25",
+          "method": "GET"
+        },
+        {
+          "status": 500,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/skills",
+          "method": "GET"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/assessments",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777789749
+        }
+      ],
+      "networkErrors": [
+        {
+          "status": 502,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications?limit=25",
+          "method": "GET"
+        },
+        {
+          "status": 502,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications/preferences",
+          "method": "GET"
+        },
+        {
+          "status": 502,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/general",
+          "method": "GET"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/assessments/pulse",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777792123
+        }
+      ],
+      "networkErrors": [
+        {
+          "status": 502,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/general",
+          "method": "GET"
+        },
+        {
+          "status": 502,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications?limit=25",
+          "method": "GET"
+        },
+        {
+          "status": 502,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications/preferences",
+          "method": "GET"
+        },
+        {
+          "status": 502,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/personality-assessment/status",
+          "method": "GET"
+        },
+        {
+          "status": 502,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/personality-assessment/luscher/availability",
+          "method": "GET"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/assessments/ipip",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777794221
+        }
+      ],
+      "networkErrors": [],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/assessments/riasec",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777796594
+        }
+      ],
+      "networkErrors": [],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/assessments/occupation",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777799258
+        }
+      ],
+      "networkErrors": [],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/settings",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777801308
+        }
+      ],
+      "networkErrors": [],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/organizations",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777804266
+        }
+      ],
+      "networkErrors": [
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/general",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications/preferences",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications?limit=25",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications/unread-count",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications?limit=25",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/general",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications/preferences",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications?limit=25",
+          "method": "GET"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/teams",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777806613
+        }
+      ],
+      "networkErrors": [
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications/preferences",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications?limit=25",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/general",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/teams?includeArchived=false",
+          "method": "GET"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/news",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777808604
+        }
+      ],
+      "networkErrors": [
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/general",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications/preferences",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications?limit=25",
+          "method": "GET"
+        },
+        {
+          "status": 503,
+          "url": "http://127.0.0.1:54321/rest/v1/industries?select=id&slug=eq.construction",
+          "method": "GET"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "path": "/dashboard/connections",
+      "group": "dashboard",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777811087
+        }
+      ],
+      "networkErrors": [
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications/preferences",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/connections/pending",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/profiles/general",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/notifications?limit=25",
+          "method": "GET"
+        },
+        {
+          "status": 401,
+          "url": "http://127.0.0.1:54321/functions/v1/api/v1/connections",
+          "method": "GET"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "path": "/office",
+      "group": "office",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777813586
+        }
+      ],
+      "networkErrors": [],
+      "ok": true
+    },
+    {
+      "path": "/office/jobs",
+      "group": "office",
+      "errors": [],
+      "warnings": [],
+      "networkErrors": [],
+      "ok": true
+    },
+    {
+      "path": "/office/applications",
+      "group": "office",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777819412
+        }
+      ],
+      "networkErrors": [],
+      "ok": true
+    },
+    {
+      "path": "/office/cms",
+      "group": "office",
+      "errors": [],
+      "warnings": [
+        {
+          "type": "warning",
+          "text": "\"textShadow*\" style props are deprecated. Use \"textShadow\".",
+          "location": "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:33940:14",
+          "timestamp": 1772777822037
+        }
+      ],
+      "networkErrors": [],
+      "ok": true
+    }
+  ]
+}

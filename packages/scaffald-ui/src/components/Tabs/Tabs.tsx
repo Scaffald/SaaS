@@ -34,25 +34,17 @@
  * ```
  */
 
-import { createContext, useContext, Children, isValidElement, cloneElement } from 'react'
-import { View } from 'react-native'
-import type { TabsProps, TabsContextValue } from './Tabs.types'
+import { Children, isValidElement, cloneElement } from 'react'
+import { View, ScrollView } from 'react-native'
+import type { TabsProps } from './Tabs.types'
 import { getTabsStyles, getTabListStyles } from './Tabs.styles'
 import { useThemeContext } from '../../theme'
+import { TabsContext } from './TabsContext'
 import { TabTrigger } from './TabTrigger'
 import { TabContent } from './TabContent'
 import { useTabs } from './useTabs'
 
-// Tabs context
-const TabsContext = createContext<TabsContextValue | null>(null)
-
-export function useTabsContext() {
-  const context = useContext(TabsContext)
-  if (!context) {
-    throw new Error('Tabs components must be used within a Tabs component')
-  }
-  return context
-}
+export { useTabsContext } from './TabsContext'
 
 export function Tabs({
   value,
@@ -66,6 +58,7 @@ export function Tabs({
   fullWidth = false,
   contentVariant = 'default',
   triggerSizing = 'auto',
+  scrollable = false,
   children,
   containerStyle,
 }: TabsProps) {
@@ -140,23 +133,39 @@ export function Tabs({
     return (
       <TabsContext.Provider value={tabs}>
         <View style={[{ width: '100%', flexDirection: 'column' }, containerStyle]}>
-          {/* Trigger row - only triggers are rendered here, preserving TabItem context */}
-          <View style={getTabListStyles(orientation, theme)}>
-            {tabItems.map((item, index) => {
-              // Clone the full TabItem but only pass the trigger as children
-              // This preserves TabItemContext for the trigger
-              return cloneElement(item.fullItem, {
-                key: item.value || `trigger-${index}`,
-                children: item.trigger,
-              } as any)
-            })}
-          </View>
+          {/* Trigger row - scrollable when scrollable prop is true */}
+          {scrollable ? (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                gap: 8,
+              }}
+              style={{ width: '100%' }}
+            >
+              {tabItems.map((item, index) => {
+                return cloneElement(item.fullItem, {
+                  key: item.value || `trigger-${index}`,
+                  children: item.trigger,
+                } as any)
+              })}
+            </ScrollView>
+          ) : (
+            <View style={getTabListStyles(orientation, theme)}>
+              {tabItems.map((item, index) => {
+                return cloneElement(item.fullItem, {
+                  key: item.value || `trigger-${index}`,
+                  children: item.trigger,
+                } as any)
+              })}
+            </View>
+          )}
           {/* Content area - render content separately while preserving TabItem context */}
           <View style={{ width: '100%' }}>
             {tabItems.map((item, index) => {
               if (!item.content) return null
-              // Clone the full TabItem but only pass the content as children
-              // This preserves TabItemContext for the content
               return cloneElement(item.fullItem, {
                 key: `content-${item.value || index}`,
                 children: item.content,

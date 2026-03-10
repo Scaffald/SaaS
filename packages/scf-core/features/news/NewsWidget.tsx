@@ -2,16 +2,29 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { useCurrentUser } from '@scf/core/utils/profile-general-sdk-hooks'
 import { useGeneralInfoWidget, useSkillsWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { redirect } from '@scf/core/utils/redirect'
-import { supabase } from '@scf/core/utils/supabase/client'
-import { Button, Sheet, SheetContent, SheetHeader } from '@scaffald/ui'
-import { AlertCircle, ExternalLink, RefreshCw } from 'lucide-react-native'
+import {
+  Button,
+  DashboardWidgetHeader,
+  Paragraph,
+  Row,
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  Spinner,
+  Stack,
+  Switch,
+  Text,
+  useThemeContext,
+} from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
+import { AlertCircle, RefreshCw } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
-import { useEffect, useMemo, useState } from 'react'
-import { Platform, Pressable } from 'react-native'
-import { Paragraph, Spinner, Switch, Text, Row, Stack } from '@scaffald/ui'
+import { useMemo, useState } from 'react'
+import { Image, Platform, Pressable } from 'react-native'
 import type { NewsItem, NewsWidgetProps } from './config/types'
 import { useAggregatedNews } from './hooks/useNewsFeed'
+import { useNewsIndustryResolution } from './hooks/useNewsIndustryResolution'
 
 const HEADLINE_LIMIT_DEFAULT = 10
 const FETCH_MULTIPLIER = 4
@@ -135,71 +148,15 @@ export function NewsWidget({
   const headlineLimit = Math.max(1, maxItems)
   const fetchCount = headlineLimit * FETCH_MULTIPLIER
 
-  const { data: user } = useCurrentUser()
-  const userId = user?.id
-
-  const { data: generalInfo } = useGeneralInfoWidget(
-    { userId },
-    { enabled: !!userId, staleTime: 5 * 60 * 1000 }
-  )
-
-  // Get industry ID from user profile or lookup by slug
-  const [industryId, setIndustryId] = useState<string | null>(null)
-  // Construction industry ID for fallback news
-  const [constructionIndustryId, setConstructionIndustryId] = useState<string | null>(null)
-
-  useEffect(() => {
-    async function resolveIndustryId() {
-      // First try to get from user's profile
-      if (generalInfo?.industries?.id) {
-        setIndustryId(generalInfo.industries.id)
-        return
-      }
-
-      // Fallback: lookup industry by slug (from prop or default to 'construction')
-      const industrySlug = industry || 'construction'
-      const { data: industryData } = await supabase
-        .schema('core')
-        .from('industries')
-        .select('id')
-        .eq('slug', industrySlug)
-        .single()
-
-      if (industryData?.id) {
-        setIndustryId(industryData.id)
-      } else {
-        // Final fallback: try to get construction industry
-        const { data: fallbackData } = await supabase
-          .schema('core')
-          .from('industries')
-          .select('id')
-          .eq('slug', 'construction')
-          .single()
-
-        setIndustryId(fallbackData?.id || null)
-      }
-    }
-
-    void resolveIndustryId()
-  }, [generalInfo?.industries?.id, industry])
-
-  // Resolve construction industry ID for fallback news
-  useEffect(() => {
-    async function resolveConstructionIndustryId() {
-      const { data: constructionData } = await supabase
-        .schema('core')
-        .from('industries')
-        .select('id')
-        .eq('slug', 'construction')
-        .single()
-
-      if (constructionData?.id) {
-        setConstructionIndustryId(constructionData.id)
-      }
-    }
-
-    void resolveConstructionIndustryId()
-  }, [])
+  const {
+    industryId: primaryIndustryId,
+    constructionId,
+    isResolving: isResolvingIndustry,
+    effectiveIndustryId,
+  } = useNewsIndustryResolution({
+    industrySlug: industry,
+    useUserIndustry: true,
+  })
 
   const {
     data: newsItems = [],
@@ -208,18 +165,36 @@ export function NewsWidget({
     error,
     refetch,
   } = useAggregatedNews({
-    industryId: industryId || '', // Will be validated in hook - query disabled if invalid
+    industryId: effectiveIndustryId ?? '',
     maxTotalItems: fetchCount,
+    enabled: !!effectiveIndustryId,
   })
 
-  // Fallback query for global ENR news when no matching news is found
-  // Only fetch fallback if main query is done, no error, and construction industry ID is available
-  // We'll check enrichedNews length after it's computed to determine if we need fallback
-  const { data: fallbackNewsItems = [], isLoading: isFallbackLoading } = useAggregatedNews({
-    industryId: constructionIndustryId || '', // Construction industry for global ENR news
+  // Fallback: when primary industry returns no articles, try construction industry
+  const shouldFetchFallback =
+    !!constructionId &&
+    constructionId !== primaryIndustryId &&
+    constructionId !== effectiveIndustryId &&
+    !isLoading &&
+    (newsItems as unknown[]).length === 0
+
+  const {
+    data: fallbackNewsItems = [],
+    isLoading: isFallbackLoading,
+    refetch: refetchFallback,
+  } = useAggregatedNews({
+    industryId: constructionId ?? '',
     maxTotalItems: headlineLimit,
-    enabled: !isLoading && !isError && !!constructionIndustryId, // Fetch fallback when main query is done
+    enabled: shouldFetchFallback,
   })
+
+  const { data: user } = useCurrentUser()
+  const userId = user?.id
+
+  const { data: generalInfo } = useGeneralInfoWidget(
+    { userId },
+    { enabled: !!userId, staleTime: 5 * 60 * 1000 }
+  )
 
   const [preferences, setPreferences] = useState<NewsPreferences>({
     prioritizeTrending: true,
@@ -349,12 +324,11 @@ export function NewsWidget({
     return [...sorted, ...fallback]
   }, [headlineLimit, newsItems, preferences, relevanceContext])
 
-  // Use fallback news (global ENR) when no matching news is found
+  // Enrich fallback news (construction) when primary returned empty
   const fallbackEnrichedNews = useMemo(() => {
     const items = fallbackNewsItems as unknown as NewsItem[]
     if (!items.length) return [] as EnrichedNewsItem[]
 
-    // For fallback, just sort by date (no relevance scoring needed)
     return items
       .sort((a: NewsItem, b: NewsItem) => {
         const dateA = a.pubDate instanceof Date ? a.pubDate : new Date(a.pubDate)
@@ -370,29 +344,32 @@ export function NewsWidget({
       }))
   }, [fallbackNewsItems, headlineLimit])
 
-  // Determine which news to display: enriched news if available, otherwise fallback
-  const displayNews = useMemo(() => {
-    // If we have enriched news, use it
-    if (enrichedNews.length > 0) {
-      return enrichedNews
-    }
-    // Otherwise, use fallback news (global ENR)
-    return fallbackEnrichedNews
-  }, [enrichedNews, fallbackEnrichedNews])
+  // Display primary news if available, otherwise fallback (construction) news
+  const displayNews = (newsItems as unknown[]).length > 0 ? enrichedNews : fallbackEnrichedNews
 
-  // Hide widget entirely if no news is available (after loading completes)
-  const shouldShowWidget = useMemo(() => {
-    // Show widget if we're still loading (either main or fallback)
-    if (isLoading || isFallbackLoading) {
-      return true
+  const { theme } = useThemeContext()
+
+  // Single state machine: resolving → loading → success | error | empty (or not_configured)
+  const status: 'resolving' | 'loading' | 'error' | 'empty' | 'not_configured' | 'success' =
+    isResolvingIndustry
+      ? 'resolving'
+      : !effectiveIndustryId
+        ? 'not_configured'
+        : isError && displayNews.length === 0
+          ? 'error'
+          : (isLoading && (newsItems as unknown[]).length === 0 && !shouldFetchFallback) ||
+              (shouldFetchFallback && isFallbackLoading && displayNews.length === 0)
+            ? 'loading'
+            : displayNews.length === 0
+              ? 'empty'
+              : 'success'
+
+  const handleRefetch = () => {
+    void refetch()
+    if (shouldFetchFallback || displayNews.length > 0) {
+      void refetchFallback()
     }
-    // Show widget if there's an error (so user can see error message)
-    if (isError) {
-      return true
-    }
-    // Hide widget if no news is available
-    return displayNews.length > 0
-  }, [isLoading, isFallbackLoading, isError, displayNews.length])
+  }
 
   const handleNewsClick = async (article: NewsItem) => {
     if (onArticleClick) {
@@ -425,121 +402,184 @@ export function NewsWidget({
     setPreferences((prev) => ({ ...prev, [key]: value }))
   }
 
-  const relevanceLabel = (score: number) => {
+  const _relevanceLabel = (score: number) => {
     if (score >= 10) return 'High relevance'
     if (score >= 7) return 'Relevant'
     if (score >= 4) return 'General interest'
     return 'From your feeds'
   }
 
-  // Hide widget entirely if no news is available
-  if (!shouldShowWidget) {
-    return null
-  }
+  const dividerColor = colors.border[theme].default
 
+  // Always show the widget so the News section is visible; show loading, error, empty, or list
   return (
     <Stack gap={12}>
-      <Row justify="space-between" align="center" paddingTop={8}>
-        <Text color="$gray11">News</Text>
+      <DashboardWidgetHeader
+        title="News"
+        action={
+          <Row gap={4} align="center">
+            <Button
+              size="sm"
+              variant="outline"
+              onPress={handleRefetch}
+              disabled={isLoading || (shouldFetchFallback && isFallbackLoading)}
+              iconStart={RefreshCw}
+            />
+          </Row>
+        }
+      />
 
-        <Row gap={4} align="center">
-          {/* TODO: Implement and refine filter button functionality later */}
-          {/* <Button
-            size="sm"
-            variant="outline"
-            iconStart={<Settings2 size="md" />}
-            onPress={() => setPreferencesOpen(true)}
-          /> */}
-          <Button
-            size="sm"
-            variant="outline"
-            onPress={() => {
-              void refetch()
-            }}
-            disabled={isLoading}
-            iconStart={RefreshCw}
-          />
-        </Row>
-      </Row>
-
-      {isLoading && displayNews.length === 0 && !isFallbackLoading ? (
+      {status === 'resolving' ? (
         <Stack align="center" gap={8}>
           <Spinner size="lg" color="primary" />
-          <Text color="$gray11">Loading personalised news...</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading news…</Text>
         </Stack>
-      ) : null}
-
-      {isError && displayNews.length === 0 ? (
+      ) : status === 'not_configured' ? (
         <Stack align="center" gap={8}>
-          <AlertCircle size={24} color="$red10" />
-          <Text color="$red11" style={{ textAlign: 'center' }}>
+          <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
+            News isn&apos;t configured. Run database seed and news import to see articles.
+          </Text>
+        </Stack>
+      ) : status === 'loading' ? (
+        <Stack align="center" gap={8}>
+          <Spinner size="lg" color="primary" />
+          <Text style={{ color: colors.text[theme].secondary }}>
+            {shouldFetchFallback ? 'Loading news…' : 'Loading personalised news…'}
+          </Text>
+        </Stack>
+      ) : status === 'error' ? (
+        <Stack align="center" gap={8}>
+          <AlertCircle size={24} color={colors.error[500]} />
+          <Text style={{ color: colors.text[theme].primary, textAlign: 'center' }}>
             Failed to load news feed
           </Text>
-          <Text color="$gray11" style={{ textAlign: 'center' }}>
+          <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
             {error?.message || 'Please check your connection and try again.'}
           </Text>
-          <Button
-            variant="filled" color="primary"
-            onPress={() => {
-              void refetch()
-            }}
-            size="sm"
-          >
+          <Button variant="filled" color="primary" onPress={handleRefetch} size="sm">
             Try Again
+          </Button>
+        </Stack>
+      ) : status === 'empty' ? (
+        <Stack align="center" gap={8}>
+          <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
+            No articles right now. Check back later or try refreshing.
+          </Text>
+          <Button size="sm" variant="outline" onPress={handleRefetch} iconStart={RefreshCw}>
+            Refresh
           </Button>
         </Stack>
       ) : null}
 
-      {displayNews.length > 0 && (
-        <Stack gap={12}>
-          {displayNews.map((item: EnrichedNewsItem) => (
-            <Pressable key={item.id} onPress={() => handleNewsClick(item)}>
-              {({ pressed }) => (
-                <Stack
-                  gap={8}
-                  padding="sm"
-                  backgroundColor="$color2"
-                  borderWidth={1}
-                  borderColor="$color4"
-                  style={{ borderRadius: 12, opacity: pressed ? 0.7 : 1 }}
-                >
-                  <Row justify="space-between" align="flex-start" gap={12}>
-                    <Text color="$gray11" style={{ flex: 1 }}>
-                      {item.title}
-                    </Text>
-                    <ExternalLink size="md" color="$gray11" />
-                  </Row>
-                  <Row gap={8} align="center" wrap>
-                    <Text color="$gray11">{formatTimeAgo(item.pubDate)}</Text>
-                    {item.category && <Text color="$gray11">• {capitalise(item.category)}</Text>}
-                    <Text color="$gray11">• {relevanceLabel(item.relevanceScore)}</Text>
-                  </Row>
-                  {item.reasons.length > 0 && (
-                    <Row gap={8} wrap>
-                      {item.reasons.slice(0, 2).map((reason: string, index: number) => (
-                        <Stack
-                          key={`${item.id}-reason-${index}`}
-                          paddingHorizontal={8}
-                          paddingVertical={4}
-                          backgroundColor="$blue3"
-                          style={{ borderRadius: 8 }}
-                        >
-                          <Text color="$blue11">{reason}</Text>
-                        </Stack>
-                      ))}
-                    </Row>
-                  )}
-                </Stack>
+      {status === 'success' && (
+        <Stack>
+          {displayNews.map((item: EnrichedNewsItem, index: number) => (
+            <Stack key={item.id}>
+              {index > 0 && (
+                <Stack style={{ height: 1, backgroundColor: dividerColor }} />
               )}
-            </Pressable>
+              <Pressable onPress={() => handleNewsClick(item)}>
+                {({ pressed }) => (
+                  <Row
+                    gap={12}
+                    align="flex-start"
+                    style={{ paddingVertical: 12, opacity: pressed ? 0.6 : 1 }}
+                  >
+                    {item.image ? (
+                      <Image
+                        source={{ uri: item.image }}
+                        style={{ width: 72, height: 72, borderRadius: 8 }}
+                        resizeMode="cover"
+                      />
+                    ) : null}
+                    <Stack style={{ flex: 1 }} gap={4}>
+                      <Text
+                        numberOfLines={2}
+                        style={{
+                          fontSize: 14,
+                          fontWeight: '600',
+                          lineHeight: 20,
+                          color: colors.text[theme].primary,
+                        }}
+                      >
+                        {item.title}
+                      </Text>
+                      {item.description ? (
+                        <Text
+                          numberOfLines={2}
+                          style={{
+                            fontSize: 13,
+                            lineHeight: 18,
+                            color: colors.text[theme].secondary,
+                          }}
+                        >
+                          {item.description}
+                        </Text>
+                      ) : null}
+                      <Row gap={6} align="center" wrap style={{ marginTop: 4 }}>
+                        <Text style={{ fontSize: 12, color: colors.text[theme].tertiary }}>
+                          {formatTimeAgo(item.pubDate)}
+                        </Text>
+                        {item.category ? (
+                          <Stack
+                            style={{
+                              paddingHorizontal: 6,
+                              paddingVertical: 2,
+                              backgroundColor:
+                                theme === 'dark' ? colors.bg[theme].subtle : colors.bg[theme].muted,
+                              borderRadius: 4,
+                            }}
+                          >
+                            <Text
+                              style={{ fontSize: 11, color: colors.text[theme].secondary }}
+                            >
+                              {capitalise(item.category)}
+                            </Text>
+                          </Stack>
+                        ) : null}
+                        {item.source ? (
+                          <Text
+                            numberOfLines={1}
+                            style={{ fontSize: 12, color: colors.text[theme].tertiary }}
+                          >
+                            {item.source}
+                          </Text>
+                        ) : null}
+                      </Row>
+                      {item.reasons.length > 0 ? (
+                        <Row gap={4} wrap style={{ marginTop: 2 }}>
+                          {item.reasons.slice(0, 2).map((reason: string, i: number) => (
+                            <Stack
+                              key={`${item.id}-r-${i}`}
+                              style={{
+                                paddingHorizontal: 6,
+                                paddingVertical: 2,
+                                backgroundColor:
+                                  theme === 'dark' ? colors.blue[900] : colors.blue[50],
+                                borderRadius: 4,
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  fontSize: 11,
+                                  color: theme === 'dark' ? colors.blue[300] : colors.blue[700],
+                                }}
+                              >
+                                {reason}
+                              </Text>
+                            </Stack>
+                          ))}
+                        </Row>
+                      ) : null}
+                    </Stack>
+                  </Row>
+                )}
+              </Pressable>
+            </Stack>
           ))}
 
-          <Button
-            size="sm"
-            variant="outline"
-            onPress={handleViewAll}
-            iconEnd={ExternalLink}
-          >
+          <Stack style={{ height: 1, backgroundColor: dividerColor, marginBottom: 12 }} />
+          <Button size="sm" variant="outline" onPress={handleViewAll}>
             View All News
           </Button>
         </Stack>
@@ -557,48 +597,48 @@ export function NewsWidget({
         />
         <SheetContent>
           <Stack padding="md" gap={12}>
-          <Paragraph color="$gray11" size="sm">
-            Tailor the news feed using your profile information.
-          </Paragraph>
+            <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
+              Tailor the news feed using your profile information.
+            </Paragraph>
 
-          <Stack gap={12}>
-            <Row justify="space-between" align="center">
-              <Paragraph size="sm">Match my skills</Paragraph>
-              <Switch
-                size="sm"
-                checked={preferences.matchSkills}
-                onChange={(value) => updatePreference('matchSkills', value)}
-              />
-            </Row>
+            <Stack gap={12}>
+              <Row justify="space-between" align="center">
+                <Paragraph size="sm">Match my skills</Paragraph>
+                <Switch
+                  size="sm"
+                  checked={preferences.matchSkills}
+                  onChange={(value) => updatePreference('matchSkills', value)}
+                />
+              </Row>
 
-            <Row justify="space-between" align="center">
-              <Paragraph size="sm">Match my industry</Paragraph>
-              <Switch
-                size="sm"
-                checked={preferences.matchIndustry}
-                onChange={(value) => updatePreference('matchIndustry', value)}
-              />
-            </Row>
+              <Row justify="space-between" align="center">
+                <Paragraph size="sm">Match my industry</Paragraph>
+                <Switch
+                  size="sm"
+                  checked={preferences.matchIndustry}
+                  onChange={(value) => updatePreference('matchIndustry', value)}
+                />
+              </Row>
 
-            <Row justify="space-between" align="center">
-              <Paragraph size="sm">Boost trending stories</Paragraph>
-              <Switch
-                size="sm"
-                checked={preferences.prioritizeTrending}
-                onChange={(value) => updatePreference('prioritizeTrending', value)}
-              />
-            </Row>
+              <Row justify="space-between" align="center">
+                <Paragraph size="sm">Boost trending stories</Paragraph>
+                <Switch
+                  size="sm"
+                  checked={preferences.prioritizeTrending}
+                  onChange={(value) => updatePreference('prioritizeTrending', value)}
+                />
+              </Row>
 
-            <Row justify="space-between" align="center">
-              <Paragraph size="sm">Show recent stories only</Paragraph>
-              <Switch
-                size="sm"
-                checked={preferences.recentOnly}
-                onChange={(value) => updatePreference('recentOnly', value)}
-              />
-            </Row>
+              <Row justify="space-between" align="center">
+                <Paragraph size="sm">Show recent stories only</Paragraph>
+                <Switch
+                  size="sm"
+                  checked={preferences.recentOnly}
+                  onChange={(value) => updatePreference('recentOnly', value)}
+                />
+              </Row>
+            </Stack>
           </Stack>
-        </Stack>
         </SheetContent>
       </Sheet>
     </Stack>

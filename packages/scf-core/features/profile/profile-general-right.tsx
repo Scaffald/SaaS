@@ -3,10 +3,11 @@ import {
   ResumeUploadButton,
   ResumeUploadModal,
 } from "@scf/core/features/resume";
+import { ProfileSectionIntro } from "@scf/core/features/profile/components";
 import { DashboardWidget } from "@scaffald/ui";
 import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { H3, H4, Text, Stack } from "@scaffald/ui";
+import { H4, Text, Stack } from "@scaffald/ui";
 import { VanityUrlSection } from "./components/VanityUrlSection";
 
 /**
@@ -30,13 +31,10 @@ export function ProfileGeneralRight() {
   return (
     <>
       <Stack gap={16}>
-        <DashboardWidget>
-          <H3>General Information</H3>
-          <Text style={{ color: "#414e62" }}>
-            Update your basic profile information including your name, photo,
-            and contact details.
-          </Text>
-        </DashboardWidget>
+        <ProfileSectionIntro
+          title="General Information"
+          description="Update your basic profile information including your name, photo, and contact details."
+        />
 
         <DashboardWidget>
           <Stack gap={10}>

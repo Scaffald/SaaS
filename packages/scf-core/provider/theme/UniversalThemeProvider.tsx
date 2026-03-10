@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar'
 import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from 'react'
 import { Appearance, Platform, useColorScheme } from 'react-native'
 import { useIsomorphicLayoutEffect } from '@scf/core/hooks/useIsomorphicLayoutEffect'
+import { colors } from '@scaffald/ui/tokens'
 
 type ThemeProviderProps = {
   themes: string[]
@@ -107,6 +108,25 @@ export const UniversalThemeProvider = ({ children }: { children: ReactNode }) =>
   )
 }
 
+// Custom React Navigation themes that use our app's background colors.
+// DefaultTheme.colors.background is rgb(242,242,242) which shows up during overscroll —
+// we override it to match our subtle background so overscroll blends seamlessly.
+const AppLightTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: colors.bg.light.subtle,
+  },
+}
+
+const AppDarkTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    background: colors.bg.dark.subtle,
+  },
+}
+
 const InnerProvider = ({ children }: { children: ReactNode }) => {
   const { resolvedTheme } = useThemeSetting()
 
@@ -115,6 +135,10 @@ const InnerProvider = ({ children }: { children: ReactNode }) => {
     if (Platform.OS === 'web') {
       if (typeof document !== 'undefined') {
         document.documentElement.setAttribute('data-theme', resolvedTheme)
+        // Match the app's background so overscroll bounce areas use the same color
+        const bg = resolvedTheme === 'dark' ? colors.bg.dark.subtle : colors.bg.light.subtle
+        document.documentElement.style.backgroundColor = bg
+        document.body.style.backgroundColor = bg
       }
     } else {
       // Native: ensure we set color scheme as soon as possible
@@ -126,12 +150,14 @@ const InnerProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [resolvedTheme])
 
+  const navTheme = resolvedTheme === 'dark' ? AppDarkTheme : AppLightTheme
+
   // Wrap all platforms with React Navigation theme provider
   // This is needed because expo-router/drawer uses React Navigation components
   // that require theme context (like Background, Header, etc.)
   if (Platform.OS === 'web') {
     return (
-      <ThemeProvider value={resolvedTheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <ThemeProvider value={navTheme}>
         {children}
       </ThemeProvider>
     )
@@ -139,7 +165,7 @@ const InnerProvider = ({ children }: { children: ReactNode }) => {
 
   // Native: also include status bar
   return (
-    <ThemeProvider value={resolvedTheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={navTheme}>
       <StatusBar style={resolvedTheme === 'dark' ? 'light' : 'dark'} hidden />
       {children}
     </ThemeProvider>

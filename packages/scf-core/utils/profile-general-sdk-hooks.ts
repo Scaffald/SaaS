@@ -1,6 +1,7 @@
 import {
   useMutation,
   useQuery,
+  useQueryClient,
   type UseMutationOptions,
   type UseQueryOptions,
 } from '@tanstack/react-query'
@@ -16,6 +17,14 @@ import type {
   UploadAvatarResponse,
 } from '@scaffald/sdk'
 import { useScaffaldJobsClient } from '@scf/core/provider'
+import { useToast } from '@scaffald/ui'
+import { invalidateProfileQueries } from '@scf/core/features/profile/utils/profile-sync'
+import {
+  completeProfileSync,
+  failProfileSync,
+  resetProfileSyncError,
+  startProfileSync,
+} from '@scf/core/features/profile/utils/profile-sync-store'
 
 /**
  * Get current authenticated user info (id, email)
@@ -150,6 +159,59 @@ export function useSlugHistory(
     enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
+  })
+}
+
+interface UpdateGeneralInfoContext {
+  previousGeneral?: GeneralInfo | undefined
+}
+
+/**
+ * Update general info mutation with optimistic updates and profile sync.
+ */
+export function useUpdateGeneralInfoMutationWithSync(
+  overrides?: UseMutationOptions<{ success: boolean }, Error, UpdateGeneralInfoParams>
+) {
+  const queryClient = useQueryClient()
+  const toast = useToast()
+
+  return useUpdateGeneralInfoMutation({
+    async onMutate(input: UpdateGeneralInfoParams): Promise<UpdateGeneralInfoContext> {
+      resetProfileSyncError()
+      startProfileSync()
+      await queryClient.cancelQueries({ queryKey: ['profiles', 'general'] })
+      const previousGeneral = queryClient.getQueryData<GeneralInfo>(['profiles', 'general'])
+      queryClient.setQueryData(
+        ['profiles', 'general'],
+        (current: GeneralInfo | undefined): GeneralInfo =>
+          ({ ...(current ?? {}), ...input }) as GeneralInfo
+      )
+      return { previousGeneral }
+    },
+    onError(error: Error, _variables: UpdateGeneralInfoParams, _context: unknown) {
+      const ctx = _context as UpdateGeneralInfoContext | undefined
+      if (ctx?.previousGeneral) {
+        queryClient.setQueryData(['profiles', 'general'], ctx.previousGeneral)
+      }
+      failProfileSync()
+      toast.show({
+        title: 'Error',
+        message: error.message || 'Failed to save profile. Please try again.',
+        variant: 'error',
+      })
+    },
+    onSuccess() {
+      toast.show({
+        title: 'Profile Updated',
+        message: 'Your profile has been saved successfully!',
+        variant: 'success',
+      })
+    },
+    async onSettled(_data: { success: boolean } | undefined, error: unknown) {
+      if (!error) completeProfileSync()
+      await invalidateProfileQueries(queryClient)
+    },
+    ...overrides,
   })
 }
 

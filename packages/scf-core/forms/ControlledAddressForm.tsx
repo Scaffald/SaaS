@@ -1,4 +1,5 @@
 import { AddressForm, type AddressResult } from "@scaffald/ui";
+import { createMapboxGeocodingProvider } from "@scf/core/utils/mapbox-geocoding-provider";
 import { useMemo } from "react";
 import {
   type FieldPath,
@@ -18,6 +19,9 @@ import type {
  * A smart wrapper around AddressForm that automatically integrates with react-hook-form.
  * Eliminates boilerplate code by handling setValue, trigger, and addressValue construction.
  *
+ * When provider="mapbox" (default), address autocomplete uses Mapbox Geocoding API. Set
+ * EXPO_PUBLIC_MAPBOX_TOKEN in .env or pass apiKey so the component can create the provider.
+ *
  * @example
  * ```tsx
  * <ControlledAddressForm
@@ -34,14 +38,15 @@ export function ControlledAddressForm<
   control,
   name,
   setValue,
-  trigger,
+  trigger: _trigger,
   fieldMapping = "nested",
   storeCoordinates = true,
   coordinateFields = { lat: "latitude", lng: "longitude" },
   mode = "hybrid",
-  provider: _provider = "mapbox",
-  apiKey: _apiKey,
+  provider = "mapbox",
+  apiKey,
   zoomLevel = "street",
+  proximity,
   label,
   placeholder = "Search for your address...",
   required = false,
@@ -49,7 +54,17 @@ export function ControlledAddressForm<
   error,
   onAddressSelect,
   onChange,
+  manualFieldsVariant,
+  expandLabel,
+  collapseLabel,
 }: ControlledAddressFormProps<TFieldValues>) {
+  const mapboxToken =
+    apiKey ??
+    (typeof process !== "undefined" ? process.env?.EXPO_PUBLIC_MAPBOX_TOKEN ?? "" : "");
+  const geocodingProvider = useMemo(() => {
+    if (provider !== "mapbox" || !mapboxToken) return null;
+    return createMapboxGeocodingProvider(mapboxToken);
+  }, [provider, mapboxToken]);
   // Determine field paths based on mapping strategy
   const fieldPaths = useMemo(() => {
     if (typeof fieldMapping === "object") {
@@ -121,62 +136,56 @@ export function ControlledAddressForm<
 
   // Handle address selection from autocomplete
   const handleAddressSelect = (address: AddressResult) => {
-    // Update all address fields
+    const opts = { shouldValidate: false };
     if (fieldPaths.street) {
       setValue(
         fieldPaths.street as FieldPath<TFieldValues>,
         (address.streetAddress || "") as PathValue<
           TFieldValues,
           FieldPath<TFieldValues>
-        >
+        >,
+        opts
       );
-      trigger?.(fieldPaths.street as FieldPath<TFieldValues>);
     }
-
     if (fieldPaths.city) {
       setValue(
         fieldPaths.city as FieldPath<TFieldValues>,
         (address.locality || "") as PathValue<
           TFieldValues,
           FieldPath<TFieldValues>
-        >
+        >,
+        opts
       );
-      trigger?.(fieldPaths.city as FieldPath<TFieldValues>);
     }
-
     if (fieldPaths.state) {
       setValue(
         fieldPaths.state as FieldPath<TFieldValues>,
         (address.stateAbbreviation ||
           address.administrativeAreaLevel1 ||
-          "") as PathValue<TFieldValues, FieldPath<TFieldValues>>
+          "") as PathValue<TFieldValues, FieldPath<TFieldValues>>,
+        opts
       );
-      trigger?.(fieldPaths.state as FieldPath<TFieldValues>);
     }
-
     if (fieldPaths.zip) {
       setValue(
         fieldPaths.zip as FieldPath<TFieldValues>,
         (address.postalCode || "") as PathValue<
           TFieldValues,
           FieldPath<TFieldValues>
-        >
+        >,
+        opts
       );
-      trigger?.(fieldPaths.zip as FieldPath<TFieldValues>);
     }
-
     if (fieldPaths.country) {
       setValue(
         fieldPaths.country as FieldPath<TFieldValues>,
         (address.country || "United States") as PathValue<
           TFieldValues,
           FieldPath<TFieldValues>
-        >
+        >,
+        opts
       );
-      trigger?.(fieldPaths.country as FieldPath<TFieldValues>);
     }
-
-    // Store coordinates if enabled
     if (storeCoordinates && address.coordinates) {
       if (fieldPaths.latitude && address.coordinates.lat !== undefined) {
         setValue(
@@ -184,7 +193,8 @@ export function ControlledAddressForm<
           address.coordinates.lat as PathValue<
             TFieldValues,
             FieldPath<TFieldValues>
-          >
+          >,
+          opts
         );
       }
       if (fieldPaths.longitude && address.coordinates.lng !== undefined) {
@@ -193,12 +203,11 @@ export function ControlledAddressForm<
           address.coordinates.lng as PathValue<
             TFieldValues,
             FieldPath<TFieldValues>
-          >
+          >,
+          opts
         );
       }
     }
-
-    // Call custom callback if provided
     onAddressSelect?.(address);
   };
 
@@ -253,7 +262,14 @@ export function ControlledAddressForm<
   };
 
   return (
-    <Stack gap={8} style={{ position: "relative", zIndex: 1000 }}>
+    <Stack
+      gap={8}
+      style={{
+        position: "relative",
+        zIndex: 10000,
+        overflow: "visible",
+      }}
+    >
       {label && (
         <Text>
           {label}
@@ -262,14 +278,19 @@ export function ControlledAddressForm<
       )}
       <AddressForm
         mode={mode}
-        searchOptions={{ zoomLevel }}
+        searchOptions={{ zoomLevel, proximity }}
         placeholder={placeholder}
         disabled={disabled}
         error={error}
         addressValue={addressValue}
+        value={addressValue.formattedAddress}
+        provider={geocodingProvider}
         onAddressSelect={handleAddressSelect}
         onAddressChange={handleAddressChange}
         onChange={onChange}
+        manualFieldsVariant={manualFieldsVariant}
+        expandLabel={expandLabel}
+        collapseLabel={collapseLabel}
       />
     </Stack>
   );

@@ -7,12 +7,11 @@ import baseConfig from '../../vitest.config';
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url))
 const sharedConfig = baseConfig as Config
 
-export default mergeConfig(
+const merged = mergeConfig(
   sharedConfig,
   defineConfig({
     root: workspaceRoot,
     test: {
-      include: ['packages/scf-schemas/**/*.{test,spec}.{ts,tsx}'],
       watchExclude: ['**/dist/**', '**/.turbo/**'],
       testTimeout: 60000, // 60 second timeout per test
       hookTimeout: 30000, // 30 second timeout for setup/teardown
@@ -25,3 +24,5 @@ export default mergeConfig(
     },
   }) as Config
 )
+merged.test.include = ['packages/scf-schemas/**/*.{test,spec}.{ts,tsx}']
+export default merged

@@ -233,10 +233,10 @@ app.openapi(getSoftSkillsRoute, async (c) => {
 
   const targetUserId = userId || user.id
 
-  // Get soft skills catalog
+  // Get soft skills catalog from core.soft_skills (table is soft_skills, not soft_skills_catalog)
   const { data: catalog, error: catalogError } = await supabase
     .schema('core')
-    .from('soft_skills_catalog')
+    .from('soft_skills')
     .select('*')
     .eq('is_active', true)
     .order('order_index')
@@ -288,10 +288,10 @@ app.openapi(getSoftSkillsRoute, async (c) => {
     technical: 0,
   }
 
-  // Merge catalog with ratings
+  // Merge catalog with ratings (catalog from core.soft_skills)
   type CatalogSkill = { id: string; name: string; category: string; description?: string; order_index?: number }
   type RatingRow = { skill_id: string; rating: number; self_assessed_at?: string }
-  const skills = catalog.map((skill: CatalogSkill) => {
+  const skills = (catalog || []).map((skill: CatalogSkill) => {
     const rating = ratings?.find((r: RatingRow) => r.skill_id === skill.id)
     if (rating) {
       categoryAverages[skill.category] += rating.rating
@@ -404,10 +404,10 @@ app.openapi(updateSoftSkillsRoute, async (c) => {
     return c.json({ error: 'Failed to update soft skills', message: error.message }, 500)
   }
 
-  // Calculate category averages
+  // Calculate category averages from core.soft_skills
   const { data: catalog } = await supabase
     .schema('core')
-    .from('soft_skills_catalog')
+    .from('soft_skills')
     .select('id, category')
     .in(
       'id',
@@ -435,6 +435,176 @@ app.openapi(updateSoftSkillsRoute, async (c) => {
     selfAssessedAt,
     createdNewVersion: true,
     categoryAverages,
+  })
+})
+
+// Soft skills history response: versions with categoryAverages
+const softSkillsHistoryVersionSchema = z.object({
+  version: z.number(),
+  selfAssessedAt: z.string().nullable(),
+  categoryAverages: categoryAveragesSchema,
+})
+const getSoftSkillsHistoryResponseSchema = z
+  .object({
+    versions: z.array(softSkillsHistoryVersionSchema),
+  })
+  .openapi('GetSoftSkillsHistoryResponse')
+
+const getSoftSkillsHistoryRoute = createRoute({
+  method: 'get',
+  path: '/soft/history',
+  tags: ['Skills'],
+  summary: 'Get soft skills history',
+  description: 'Get history of soft skills self-assessment versions for the authenticated user.',
+  responses: {
+    200: {
+      description: 'Soft skills history',
+      content: { 'application/json': { schema: getSoftSkillsHistoryResponseSchema } },
+    },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: errorResponseSchema } } },
+  },
+  security: [{ bearerAuth: [] }],
+})
+
+app.openapi(getSoftSkillsHistoryRoute, async (c) => {
+  const supabase = c.get('supabase')
+  const user = c.get('user')
+  if (!user) return c.json({ error: 'Unauthorized' }, 401)
+
+  const { data: catalog } = await supabase
+    .schema('core')
+    .from('soft_skills')
+    .select('id, category')
+    .eq('is_active', true)
+  const categoryBySkillId = new Map((catalog || []).map((s: { id: string; category: string }) => [s.id, s.category]))
+
+  const { data: rows, error } = await supabase
+    .schema('core')
+    .from('soft_skills_ratings')
+    .select('version, skill_id, rating, self_assessed_at')
+    .eq('user_id', user.id)
+    .order('version', { ascending: false })
+
+  if (error) return c.json({ error: 'Failed to fetch history', message: error.message }, 500)
+
+  const byVersion = new Map<
+    number,
+    { version: number; selfAssessedAt: string | null; sums: Record<string, number>; counts: Record<string, number> }
+  >()
+  for (const row of rows || []) {
+    const category = categoryBySkillId.get(row.skill_id)
+    if (!category) continue
+    if (!byVersion.has(row.version)) {
+      byVersion.set(row.version, {
+        version: row.version,
+        selfAssessedAt: row.self_assessed_at ?? null,
+        sums: { reliability: 0, collaboration: 0, professionalism: 0, technical: 0 },
+        counts: { reliability: 0, collaboration: 0, professionalism: 0, technical: 0 },
+      })
+    }
+    const b = byVersion.get(row.version)
+    if (b) {
+      b.sums[category] = (b.sums[category] || 0) + row.rating
+      b.counts[category] = (b.counts[category] || 0) + 1
+    }
+  }
+
+  const versions = Array.from(byVersion.values()).map((b) => ({
+    version: b.version,
+    selfAssessedAt: b.selfAssessedAt,
+    categoryAverages: {
+      reliability: b.counts.reliability ? b.sums.reliability / b.counts.reliability : 0,
+      collaboration: b.counts.collaboration ? b.sums.collaboration / b.counts.collaboration : 0,
+      professionalism: b.counts.professionalism ? b.sums.professionalism / b.counts.professionalism : 0,
+      technical: b.counts.technical ? b.sums.technical / b.counts.technical : 0,
+    },
+  }))
+
+  return c.json({ versions })
+})
+
+// Soft skills comparison: self vs peer averages
+const getSoftSkillsComparisonResponseSchema = z
+  .object({
+    version: z.number().nullable(),
+    self: categoryAveragesSchema.nullable(),
+    peer: categoryAveragesSchema.nullable(),
+    peerSampleSize: z.number().int(),
+    alignmentScore: z.number().nullable(),
+  })
+  .openapi('GetSoftSkillsComparisonResponse')
+
+const getSoftSkillsComparisonRoute = createRoute({
+  method: 'get',
+  path: '/soft/comparison',
+  tags: ['Skills'],
+  summary: 'Get soft skills comparison',
+  description: 'Compare current user soft skills category averages to peer (e.g. aggregate) averages.',
+  responses: {
+    200: {
+      description: 'Soft skills comparison',
+      content: { 'application/json': { schema: getSoftSkillsComparisonResponseSchema } },
+    },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: errorResponseSchema } } },
+  },
+  security: [{ bearerAuth: [] }],
+})
+
+app.openapi(getSoftSkillsComparisonRoute, async (c) => {
+  const supabase = c.get('supabase')
+  const user = c.get('user')
+  if (!user) return c.json({ error: 'Unauthorized' }, 401)
+
+  // Get current user's latest soft skills (reuse same logic as GET /soft)
+  const { data: latestVersion } = await supabase
+    .schema('core')
+    .from('soft_skills_ratings')
+    .select('version')
+    .eq('user_id', user.id)
+    .order('version', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  let self: Record<string, number> | null = null
+  let version: number | null = null
+  if (latestVersion) {
+    const { data: ratings } = await supabase
+      .schema('core')
+      .from('soft_skills_ratings')
+      .select('skill_id, rating')
+      .eq('user_id', user.id)
+      .eq('version', latestVersion.version)
+    const { data: catalog } = await supabase.schema('core').from('soft_skills').select('id, category').eq('is_active', true)
+    const categoryBySkillId = new Map((catalog || []).map((s: { id: string; category: string }) => [s.id, s.category]))
+    const sums: Record<string, number> = {}
+    const counts: Record<string, number> = {}
+    for (const r of ratings || []) {
+      const cat = categoryBySkillId.get(r.skill_id)
+      if (!cat) continue
+      sums[cat] = (sums[cat] || 0) + r.rating
+      counts[cat] = (counts[cat] || 0) + 1
+    }
+    self = {
+      reliability: counts.reliability ? sums.reliability / counts.reliability : 0,
+      collaboration: counts.collaboration ? sums.collaboration / counts.collaboration : 0,
+      professionalism: counts.professionalism ? sums.professionalism / counts.professionalism : 0,
+      technical: counts.technical ? sums.technical / counts.technical : 0,
+    }
+    version = latestVersion.version
+  }
+
+  // Peer aggregate: optional - count of rating rows as peerSampleSize for now
+  const { count: peerCount } = await supabase
+    .schema('core')
+    .from('soft_skills_ratings')
+    .select('*', { count: 'exact', head: true })
+  const peerSampleSize = peerCount ?? 0
+  return c.json({
+    version,
+    self,
+    peer: null,
+    peerSampleSize,
+    alignmentScore: null,
   })
 })
 
@@ -874,7 +1044,7 @@ app.openapi(getPrimaryIndustryRoute, async (c) => {
 
   const { data: profile } = await supabase
     .schema('core')
-    .from('user_profiles')
+    .from('users')
     .select('industry_id, industries:industry_id(id, name, slug)')
     .eq('id', user.id)
     .single()
@@ -936,7 +1106,7 @@ app.openapi(updatePrimaryIndustryRoute, async (c) => {
 
   const { error } = await supabase
     .schema('core')
-    .from('user_profiles')
+    .from('users')
     .update({ industry_id: industryId, updated_at: new Date().toISOString() })
     .eq('id', user.id)
 

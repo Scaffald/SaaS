@@ -11,7 +11,8 @@ import {
   DashboardWidget,
   EmptyState,
   H4,
-  LoadingState,
+  Skeleton,
+  SkeletonBox,
   ResponsiveModal,
 } from "@scaffald/ui";
 import { Download } from "lucide-react-native";
@@ -79,7 +80,10 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <LoadingState message="Loading soft skills..." />
+        <Stack gap={12}>
+          <Skeleton width={120} height={20} shape="text" />
+          <SkeletonBox width="100%" height={200} borderRadius={12} />
+        </Stack>
       </DashboardWidget>
     );
   }

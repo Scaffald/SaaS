@@ -3,13 +3,14 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { useThemeSetting } from '@scf/core/provider/theme/UniversalThemeProvider'
 import { useGeneralInfo } from '@scf/core/utils/profile-general-sdk-hooks'
 import { usePathname } from '@scf/core/utils/usePathname'
-import { supabase } from '@scf/core/utils/supabase/client'
+import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
 import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
 import { useUser } from '@scf/core/utils/useUser'
 import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 import {
   Building2,
+  LogOut,
   Moon,
   PanelLeftClose,
   PanelRightClose,
@@ -18,10 +19,11 @@ import {
 } from 'lucide-react-native'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
-import { useCallback, type ReactNode } from 'react'
-import { Pressable, type PressableStateCallbackType } from 'react-native'
+import { useCallback, useState, type ReactNode } from 'react'
+import { Platform, Pressable, ScrollView, type PressableStateCallbackType } from 'react-native'
 import type { GestureResponderEvent } from 'react-native'
-import { Text, useWindowDimensions, Row, Stack } from '@scaffald/ui'
+import { Text, useResponsive, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { DrawerLink } from './DrawerLink'
 import { getDrawerItems } from './config'
 import type { DrawerItemConfig } from './types'
@@ -65,9 +67,11 @@ export const DrawerContent = ({
   canCollapse = false,
   onToggleCollapse,
 }: DrawerContentProps) => {
-  const { width } = useWindowDimensions()
+  const { width } = useResponsive()
+  const { theme } = useThemeContext()
   const pathname = normalizePath(usePathname())
   const router = useRouter()
+  const { clearAuth } = useSessionContext()
   const { resolvedTheme, set: setTheme } = useThemeSetting()
   const { user, profile } = useUser()
   const { hasOfficeRole } = useUserRoles()
@@ -116,12 +120,14 @@ export const DrawerContent = ({
 
   const handleLogoutPress = useCallback(async () => {
     try {
-      await supabase.auth.signOut()
+      await clearAuth()
       handleNavigate(pathname)
+      router.replace(ROUTES.AUTH.LOGIN.path)
     } catch (error) {
       console.error('Error signing out from drawer:', error)
+      router.replace(ROUTES.AUTH.LOGIN.path)
     }
-  }, [handleNavigate, pathname])
+  }, [clearAuth, handleNavigate, pathname, router])
 
   const drawerItems = getDrawerItems()
   const ThemeToggleIcon = resolvedTheme === 'dark' ? Sun : Moon
@@ -153,20 +159,27 @@ export const DrawerContent = ({
     </Pressable>
   )
 
+  const glassStyle = {
+    backgroundColor: theme === 'dark'
+      ? 'rgba(30, 25, 20, 0.92)'
+      : 'rgba(251, 248, 243, 0.88)',
+    ...(Platform.OS === 'web' ? { backdropFilter: 'blur(14px)' } as object : {}),
+  }
+
   return (
     <Stack
       flex={1}
-      backgroundColor="$color3"
+      style={glassStyle}
       paddingHorizontal={isCollapsed ? 8 : 24}
       paddingVertical={20}
       align={isCollapsed ? 'center' : 'stretch'}
     >
-      <Stack flex={1} justify="space-between" gap={20} width="100%">
+      <Stack flex={1} gap={0} width="100%">
         {!isSmall ? (
-          <Row justify="center" align="center" gap={12} paddingTop={8} width="100%">
+          <Row justify="center" align="center" gap={12} paddingTop={16} paddingBottom={8} width="100%">
             <ScaffaldLogo
               height={isCollapsed ? 30 : 40}
-              width={isCollapsed ? 30 : 120}
+              width={isCollapsed ? 30 : 160}
               showWordmark={!isCollapsed}
             />
           </Row>
@@ -178,16 +191,18 @@ export const DrawerContent = ({
             avatarUri={avatarUri}
             fallbackInitial={fallbackInitial}
             onProfilePress={handleProfilePress}
-            onLogoutPress={handleLogoutPress}
           />
         ) : null}
 
-        <Stack
-          gap={8}
-          flex={1}
-          marginTop={8}
-          width="100%"
-          align={isCollapsed ? 'center' : 'stretch'}
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{
+            gap: 6,
+            paddingTop: 12,
+            paddingBottom: 8,
+            alignItems: isCollapsed ? 'center' : 'stretch',
+          }}
+          showsVerticalScrollIndicator={false}
         >
           {hasOfficeRole ? (
             <DrawerLink
@@ -206,19 +221,31 @@ export const DrawerContent = ({
               isCollapsed={isCollapsed}
             />
           ))}
-        </Stack>
+        </ScrollView>
 
         <Stack
-          style={{ paddingTop: 16, borderTopWidth: 1, borderColor: '#94a3b8', width: '100%' }}
+          style={{
+            paddingTop: 16,
+            paddingBottom: 4,
+            borderTopWidth: 1,
+            borderTopColor: colors.border[theme].default,
+            width: '100%',
+            backgroundColor: theme === 'dark'
+              ? 'rgba(30, 25, 20, 0.97)'
+              : 'rgba(251, 248, 243, 0.97)',
+          }}
           align={isCollapsed ? 'center' : 'stretch'}
         >
           {isCollapsed ? (
             <Stack gap={12} align="center">
               <FooterActionButton label="Settings" onPress={handleSettingsPress}>
-                <SettingsIcon size={footerIconSize} color="$gray11" />
+                <SettingsIcon size={footerIconSize} color={colors.icon[theme].default} />
               </FooterActionButton>
               <FooterActionButton label={themeToggleLabel} onPress={handleThemeToggle}>
-                <ThemeToggleIcon size={footerIconSize} color="$gray11" />
+                <ThemeToggleIcon size={footerIconSize} color={colors.icon[theme].default} />
+              </FooterActionButton>
+              <FooterActionButton label="Sign out" onPress={handleLogoutPress}>
+                <LogOut size={footerIconSize} color={colors.error[500]} />
               </FooterActionButton>
               {canCollapse && onToggleCollapse ? (
                 <FooterActionButton
@@ -226,9 +253,9 @@ export const DrawerContent = ({
                   onPress={onToggleCollapse}
                 >
                   {isCollapsed ? (
-                    <PanelRightClose size={footerIconSize} color="$gray11" />
+                    <PanelRightClose size={footerIconSize} color={colors.icon[theme].default} />
                   ) : (
-                    <PanelLeftClose size={footerIconSize} color="$gray11" />
+                    <PanelLeftClose size={footerIconSize} color={colors.icon[theme].default} />
                   )}
                 </FooterActionButton>
               ) : null}
@@ -242,10 +269,13 @@ export const DrawerContent = ({
               paddingHorizontal={12}
             >
               <FooterActionButton label="Settings" onPress={handleSettingsPress}>
-                <SettingsIcon size={footerIconSize} color="$gray11" />
+                <SettingsIcon size={footerIconSize} color={colors.icon[theme].default} />
               </FooterActionButton>
               <FooterActionButton label={themeToggleLabel} onPress={handleThemeToggle}>
-                <ThemeToggleIcon size={footerIconSize} color="$gray11" />
+                <ThemeToggleIcon size={footerIconSize} color={colors.icon[theme].default} />
+              </FooterActionButton>
+              <FooterActionButton label="Sign out" onPress={handleLogoutPress}>
+                <LogOut size={footerIconSize} color={colors.error[500]} />
               </FooterActionButton>
               {canCollapse && onToggleCollapse ? (
                 <FooterActionButton
@@ -253,9 +283,9 @@ export const DrawerContent = ({
                   onPress={onToggleCollapse}
                 >
                   {isCollapsed ? (
-                    <PanelRightClose size={footerIconSize} color="$gray11" />
+                    <PanelRightClose size={footerIconSize} color={colors.icon[theme].default} />
                   ) : (
-                    <PanelLeftClose size={footerIconSize} color="$gray11" />
+                    <PanelLeftClose size={footerIconSize} color={colors.icon[theme].default} />
                   )}
                 </FooterActionButton>
               ) : null}
@@ -272,7 +302,6 @@ type DrawerProfileCardProps = {
   avatarUri: string | null
   fallbackInitial: string
   onProfilePress: () => void
-  onLogoutPress: () => void
 }
 
 const DrawerProfileCard = ({
@@ -280,19 +309,31 @@ const DrawerProfileCard = ({
   avatarUri,
   fallbackInitial,
   onProfilePress,
-  onLogoutPress,
 }: DrawerProfileCardProps) => {
-  const avatarSize = 40
+  const { theme } = useThemeContext()
+  const [isHovered, setIsHovered] = useState(false)
+  const avatarSize = 48
 
   return (
-    <Row
-      width="100%"
-      borderWidth={1}
-      borderColor="$color4"
-      padding="sm"
-      gap={12}
-      align="center"
-      borderRadius={16}
+    <Pressable
+      onPress={onProfilePress}
+      onHoverIn={() => setIsHovered(true)}
+      onHoverOut={() => setIsHovered(false)}
+      style={({ pressed }) => ({
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        padding: 12,
+        borderRadius: 20,
+        backgroundColor: isHovered
+          ? theme === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.85)'
+          : theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.5)',
+        borderWidth: 1,
+        borderColor: isHovered
+          ? theme === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.9)'
+          : theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.6)',
+        opacity: pressed ? 0.8 : 1,
+      })}
     >
       {avatarUri ? (
         <Stack
@@ -300,46 +341,52 @@ const DrawerProfileCard = ({
             width: avatarSize,
             height: avatarSize,
             overflow: 'hidden',
-            borderWidth: 1,
-            borderColor: '#e2e8f0',
-            backgroundColor: '#f1f5f9',
-            borderRadius: avatarSize / 2,
+            backgroundColor: colors.gray[100],
+            borderRadius: 14,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Image source={{ uri: avatarUri }} contentFit="cover" />
+          <Image source={{ uri: avatarUri }} contentFit="cover" style={{ width: avatarSize, height: avatarSize }} />
         </Stack>
       ) : (
         <Stack
           width={avatarSize}
           height={avatarSize}
-          backgroundColor="$blue10"
           align="center"
           justify="center"
-          borderWidth={1}
-          borderColor="$borderColor"
-          style={{ borderRadius: avatarSize / 2 }}
+          style={{
+            backgroundColor: colors.primary[600],
+            borderRadius: 14,
+          }}
         >
-          <Text color="$gray11">{fallbackInitial}</Text>
+          <Text style={{ color: colors.white, fontWeight: '700', fontSize: 18 }}>{fallbackInitial}</Text>
         </Stack>
       )}
 
-      <Stack flex={1} gap={8}>
-        <Text color="$gray11">{displayName}</Text>
-        <Row gap={16}>
-          <Pressable onPress={onProfilePress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
-            <Text color="primary" style={{ textDecorationLine: 'underline' }}>
-              My Profile
-            </Text>
-          </Pressable>
-          <Pressable onPress={onLogoutPress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
-            <Text color="error" style={{ textDecorationLine: 'underline' }}>
-              Logout
-            </Text>
-          </Pressable>
-        </Row>
+      <Stack flex={1} gap={2}>
+        <Text
+          style={{
+            color: theme === 'dark' ? colors.gray[100] : colors.gray[900],
+            fontWeight: '700',
+            fontSize: 15,
+            letterSpacing: -0.3,
+          }}
+        >
+          {displayName}
+        </Text>
+        <Text
+          style={{
+            color: colors.primary[500],
+            fontWeight: '600',
+            fontSize: 11,
+            textTransform: 'uppercase',
+            letterSpacing: 0.8,
+          }}
+        >
+          View Profile
+        </Text>
       </Stack>
-    </Row>
+    </Pressable>
   )
 }

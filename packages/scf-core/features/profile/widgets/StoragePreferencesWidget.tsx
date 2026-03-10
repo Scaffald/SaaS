@@ -9,11 +9,12 @@
  */
 
 import { Cloud, Database, HardDrive } from "lucide-react-native";
-import { Button, DashboardWidget, H4, LoadingState } from "@scaffald/ui";
+import { Button, DashboardWidget, H4, Skeleton, SkeletonBox, useThemeContext } from "@scaffald/ui";
 import type { ComponentType } from "react";
 import { useState, useEffect } from "react";
 import { Pressable } from "react-native";
 import { Text, Row, Stack } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useStoragePreference,
@@ -61,6 +62,7 @@ export function StoragePreferencesWidget() {
   const [selectedPreference, setSelectedPreference] =
     useState<StorageBackend>("supabase");
   const [hasChanges, setHasChanges] = useState(false);
+  const { theme } = useThemeContext();
 
   const { data, isLoading, error } = useStoragePreference();
   const queryClient = useQueryClient();
@@ -90,7 +92,12 @@ export function StoragePreferencesWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <LoadingState message="Loading storage preferences..." />
+        <Stack gap={12}>
+          <Skeleton width={160} height={20} shape="text" />
+          {[0, 1, 2].map((i) => (
+            <SkeletonBox key={i} width="100%" height={72} borderRadius={12} />
+          ))}
+        </Stack>
       </DashboardWidget>
     );
   }
@@ -99,10 +106,10 @@ export function StoragePreferencesWidget() {
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text style={{ color: "#ef4444" }}>
+          <Text style={{ color: colors.fg[theme].error }}>
             Failed to load storage preferences
           </Text>
-          <Text style={{ color: "#414e62" }}>{error.message}</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
         </Stack>
       </DashboardWidget>
     );
@@ -115,7 +122,7 @@ export function StoragePreferencesWidget() {
         <Row justify="space-between" align="center">
           <Stack gap={4}>
             <H4>Document Storage</H4>
-            <Text style={{ color: "#414e62" }}>
+            <Text style={{ color: colors.text[theme].secondary }}>
               Choose where your documents are stored
             </Text>
           </Stack>
@@ -150,8 +157,8 @@ export function StoragePreferencesWidget() {
                   align="center"
                   style={{
                     borderWidth: 2,
-                    borderColor: isSelected ? "#60a5fa" : "#e2e8f0",
-                    backgroundColor: isSelected ? "#eff6ff" : "#ffffff",
+                    borderColor: isSelected ? colors.blue[400] : colors.border[theme].default,
+                    backgroundColor: isSelected ? colors.blue[50] : colors.bg[theme].default,
                     opacity: option.available ? 1 : 0.5,
                   }}
                 >
@@ -162,26 +169,26 @@ export function StoragePreferencesWidget() {
                     align="center"
                     justify="center"
                     style={{
-                      backgroundColor: isSelected ? "#bfdbfe" : "#f1f5f9",
+                      backgroundColor: isSelected ? colors.blue[200] : colors.bg[theme].muted,
                     }}
                   >
                     <IconComponent
                       size={24}
-                      color={isSelected ? "#2563eb" : "#64748b"}
+                      color={isSelected ? colors.blue[600] : colors.text[theme].tertiary}
                     />
                   </Row>
 
                   <Stack flex={1} gap={4}>
                     <Row align="center" gap={8}>
-                      <Text style={{ color: "#414e62" }}>{option.label}</Text>
+                      <Text style={{ color: colors.text[theme].secondary }}>{option.label}</Text>
                       {!option.available && (
                         <Row
                           paddingHorizontal={8}
                           paddingVertical={4}
                           borderRadius={8}
-                          style={{ backgroundColor: "#fef9c3" }}
+                          style={{ backgroundColor: colors.yellow[100] }}
                         >
-                          <Text style={{ color: "#854d0e" }}>COMING SOON</Text>
+                          <Text style={{ color: colors.yellow[800] }}>COMING SOON</Text>
                         </Row>
                       )}
                       {isSelected && option.available && (
@@ -189,13 +196,13 @@ export function StoragePreferencesWidget() {
                           paddingHorizontal={8}
                           paddingVertical={4}
                           borderRadius={8}
-                          style={{ backgroundColor: "#dcfce7" }}
+                          style={{ backgroundColor: colors.green[100] }}
                         >
-                          <Text style={{ color: "#166534" }}>ACTIVE</Text>
+                          <Text style={{ color: colors.green[800] }}>ACTIVE</Text>
                         </Row>
                       )}
                     </Row>
-                    <Text style={{ color: "#414e62" }}>
+                    <Text style={{ color: colors.text[theme].secondary }}>
                       {option.description}
                     </Text>
                   </Stack>
@@ -207,12 +214,12 @@ export function StoragePreferencesWidget() {
 
         {/* Status Messages */}
         {mutation.isSuccess && (
-          <Text style={{ color: "#16a34a" }}>
+          <Text style={{ color: colors.fg[theme].success }}>
             Storage preference saved successfully.
           </Text>
         )}
         {mutation.isError && (
-          <Text style={{ color: "#ef4444" }}>
+          <Text style={{ color: colors.fg[theme].error }}>
             Failed to save storage preference: {mutation.error.message}
           </Text>
         )}
@@ -222,12 +229,12 @@ export function StoragePreferencesWidget() {
           padding="sm"
           borderRadius={12}
           style={{
-            backgroundColor: "#eff6ff",
+            backgroundColor: colors.blue[50],
             borderWidth: 1,
-            borderColor: "#93c5fd",
+            borderColor: colors.blue[300],
           }}
         >
-          <Text style={{ color: "#1d4ed8" }}>
+          <Text style={{ color: colors.blue[700] }}>
             Note: Existing documents will remain in their current storage
             location. Only new documents will use your selected preference.
           </Text>

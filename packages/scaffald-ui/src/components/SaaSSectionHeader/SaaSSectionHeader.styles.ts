@@ -4,6 +4,7 @@
  */
 
 import type { ViewStyle, TextStyle } from 'react-native'
+import { Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import type { ThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
@@ -55,9 +56,7 @@ export function getLeftSectionStyles(): ViewStyle {
  * Matches Figma: gradient from bg-50 to bg-100 with double border effect
  */
 export function getFeaturedIconStyles(_theme: ThemeMode = 'light'): ViewStyle {
-  // Figma uses gradient from bg-50 (#f9fafb) to bg-100 (#f2f4f7)
-  // With double border: 2px white, 3px gray-100
-  return {
+  const base: ViewStyle = {
     width: 32,
     height: 32,
     borderRadius: borderRadius.s,
@@ -66,15 +65,16 @@ export function getFeaturedIconStyles(_theme: ThemeMode = 'light'): ViewStyle {
     borderColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
-    // Double border effect: outer ring (3px gray-100) + inner ring (2px white)
+  }
+  if (Platform.OS === 'web') {
+    return { ...base, boxShadow: '0 0 0 3px rgba(242, 244, 247, 1), 0 0 0 2px rgba(255, 255, 255, 1)' }
+  }
+  return {
+    ...base,
     shadowColor: colors.gray[100],
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
     shadowRadius: 0,
-    // For web, we'll use boxShadow with double shadow
-    ...(typeof window !== 'undefined' && {
-      boxShadow: '0 0 0 3px rgba(242, 244, 247, 1), 0 0 0 2px rgba(255, 255, 255, 1)',
-    } as any),
     elevation: 0,
   }
 }

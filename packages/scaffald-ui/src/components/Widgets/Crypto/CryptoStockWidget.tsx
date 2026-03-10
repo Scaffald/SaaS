@@ -22,6 +22,8 @@ import { MiniLinearChart } from '../../Chart'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { typographyVariants } from '../../../tokens/typography'
+import { useThemeContext } from '../../../theme'
+import type { ResolvedThemeMode } from '../../../tokens/colors'
 
 export function CryptoStockWidget({
   variant = 'Crypto Stock 01',
@@ -33,6 +35,8 @@ export function CryptoStockWidget({
   chartData,
   style,
 }: CryptoStockWidgetProps) {
+  const { theme } = useThemeContext()
+  const styles = getStyles(theme)
   const priceValue = typeof price === 'number' ? `$${price.toLocaleString()}` : price
   const isCompact = variant === 'Crypto Stock 02'
 
@@ -69,15 +73,16 @@ export function CryptoStockWidget({
   )
 }
 
-const styles = StyleSheet.create({
+function getStyles(theme: ResolvedThemeMode) {
+  return StyleSheet.create({
   container: {
     flexDirection: 'column',
     gap: spacing[12],
     padding: spacing[16],
-    backgroundColor: colors.bg.light.default,
+    backgroundColor: colors.bg[theme].default,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.border.light.default,
+    borderColor: colors.border[theme].default,
     width: 320,
     minHeight: 294,
   },
@@ -96,11 +101,11 @@ const styles = StyleSheet.create({
   },
   symbol: {
     ...typographyVariants.paragraphMMedium,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   name: {
     ...typographyVariants.captionRegular,
-    color: colors.text.tertiary,
+    color: colors.text[theme].tertiary,
   },
   change: {
     ...typographyVariants.paragraphSMedium,
@@ -118,6 +123,7 @@ const styles = StyleSheet.create({
   },
   price: {
     ...typographyVariants.h5SemiBold,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
 })
+}

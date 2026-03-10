@@ -17,6 +17,8 @@ import type { ViewStyle } from 'react-native'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { typographyVariants } from '../../../tokens/typography'
+import { useThemeContext } from '../../../theme'
+import type { ResolvedThemeMode } from '../../../tokens/colors'
 
 export interface Subscription {
   id: string
@@ -48,6 +50,8 @@ export function SubscriptionsWidget({
   totalMonthly,
   style,
 }: SubscriptionsWidgetProps) {
+  const { theme } = useThemeContext()
+  const styles = getStyles(theme)
   const totalValue = totalMonthly !== undefined ? `$${totalMonthly.toFixed(2)}` : undefined
 
   return (
@@ -98,7 +102,8 @@ export function SubscriptionsWidget({
   )
 }
 
-const styles = StyleSheet.create({
+function getStyles(theme: ResolvedThemeMode) {
+  return StyleSheet.create({
   container: {
     flexDirection: 'column',
     gap: spacing[12],
@@ -112,11 +117,11 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typographyVariants.paragraphMMedium,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   total: {
     ...typographyVariants.paragraphSMedium,
-    color: colors.text.secondary,
+    color: colors.text[theme].secondary,
   },
   scrollView: {
     flex: 1,
@@ -127,7 +132,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacing[12],
     borderBottomWidth: 1,
-    borderBottomColor: colors.border.light.default,
+    borderBottomColor: colors.border[theme].default,
   },
   subscriptionInfo: {
     flexDirection: 'column',
@@ -136,11 +141,11 @@ const styles = StyleSheet.create({
   },
   subscriptionName: {
     ...typographyVariants.paragraphSMedium,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   subscriptionPeriod: {
     ...typographyVariants.captionRegular,
-    color: colors.text.tertiary,
+    color: colors.text[theme].tertiary,
   },
   statusBadge: {
     paddingHorizontal: spacing[8],
@@ -170,8 +175,9 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     ...typographyVariants.paragraphSRegular,
-    color: colors.text.tertiary,
+    color: colors.text[theme].tertiary,
     textAlign: 'center',
     paddingVertical: spacing[24],
   },
 })
+}

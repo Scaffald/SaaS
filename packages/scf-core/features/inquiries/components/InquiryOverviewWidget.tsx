@@ -1,7 +1,8 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useUserApplications } from '@scf/core/utils/jobs-sdk-hooks'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { Button, SkeletonCard, Text, Stack } from '@scaffald/ui'
+import { Button, DashboardWidget, DashboardWidgetHeader, SkeletonCard, Text, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 
@@ -11,6 +12,7 @@ type ApplicationRecord = NonNullable<
 
 export function InquiryOverviewWidget() {
   const router = useRouter()
+  const { theme } = useThemeContext()
   const { data: response, isLoading } = useUserApplications({
     status: 'inquired',
     limit: 5,
@@ -29,9 +31,9 @@ export function InquiryOverviewWidget() {
   const entries = data.slice(0, 3)
 
   return (
-    <Stack padding="md" backgroundColor="$color2" borderRadius={16} gap={12}>
-      <Text>Negotiations</Text>
-      <Text color="$gray11">
+    <DashboardWidget gap={12}>
+      <DashboardWidgetHeader title="Negotiations" />
+      <Text style={{ color: colors.text[theme].secondary }}>
         {data.length === 1
           ? 'You have 1 active inquiry.'
           : `You have ${data.length} active inquiries.`}
@@ -46,8 +48,12 @@ export function InquiryOverviewWidget() {
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <Text>{application.job?.title ?? 'Role'}</Text>
-          <Text color="$gray11">{application.job?.location ?? 'Location TBD'}</Text>
+          <Text style={{ color: colors.text[theme].primary }}>
+            {application.job?.title ?? 'Role'}
+          </Text>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            {application.job?.location ?? 'Location TBD'}
+          </Text>
           <Button
             size="sm"
             onPress={() =>
@@ -61,8 +67,10 @@ export function InquiryOverviewWidget() {
         </Stack>
       ))}
       {data.length > entries.length && (
-        <Text color="$gray11">{data.length - entries.length} more in progress</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
+          {data.length - entries.length} more in progress
+        </Text>
       )}
-    </Stack>
+    </DashboardWidget>
   )
 }

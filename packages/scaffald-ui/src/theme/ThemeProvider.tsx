@@ -43,9 +43,18 @@ export function useThemeContext(): ThemeContextValue {
 
 const THEME_STORAGE_KEY = 'beyond-ui-theme'
 
-interface ThemeProviderProps {
+export interface ThemeProviderProps {
   children: React.ReactNode
+  /** Uncontrolled: initial theme. Ignored when theme + onThemeChange are provided. */
   initialTheme?: ThemeMode
+  /** Controlled: current resolved theme (light/dark). */
+  theme?: ResolvedThemeMode
+  /** Controlled: called when user requests a theme change. When both theme and onThemeChange are set, provider is controlled. */
+  onThemeChange?: (preference: ThemeMode) => void
+}
+
+function isControlled(props: ThemeProviderProps): boolean {
+  return props.theme !== undefined && props.onThemeChange !== undefined
 }
 
 function resolveTheme(preference: ThemeMode, colorScheme: ColorSchemeName | null | undefined): ResolvedThemeMode {
@@ -55,17 +64,22 @@ function resolveTheme(preference: ThemeMode, colorScheme: ColorSchemeName | null
   return preference
 }
 
-export function ThemeProvider({ children, initialTheme = 'system' }: ThemeProviderProps) {
-  // We store the user's preference (light, dark, system)
-  const [themePreference, setThemePreference] = useState<ThemeMode>(initialTheme)
-  // We store the resolved theme (light, dark)
-  const [resolved, setResolved] = useState<ResolvedThemeMode>(
-    resolveTheme(initialTheme, Appearance.getColorScheme())
-  )
-  const [isReady, setIsReady] = useState(false)
+export function ThemeProvider(props: ThemeProviderProps) {
+  const controlled = isControlled(props)
+  const { children } = props
 
-  // Initialize theme from storage
+  // Controlled: use props; Uncontrolled: use internal state
+  const [themePreference, setThemePreference] = useState<ThemeMode>(
+    controlled && props.theme != null ? (props.theme as ThemeMode) : (props.initialTheme ?? 'system')
+  )
+  const [resolved, setResolved] = useState<ResolvedThemeMode>(
+    controlled && props.theme != null ? props.theme : resolveTheme(props.initialTheme ?? 'system', Appearance.getColorScheme())
+  )
+  const [isReady, setIsReady] = useState(controlled)
+
+  // Initialize theme from storage (uncontrolled only)
   useEffect(() => {
+    if (controlled) return
     let isMounted = true
 
     const initializeTheme = async () => {
@@ -82,15 +96,16 @@ export function ThemeProvider({ children, initialTheme = 'system' }: ThemeProvid
             setThemePreference(stored as ThemeMode)
             setResolved(resolveTheme(stored as ThemeMode, Appearance.getColorScheme()))
           } else {
-            setThemePreference(initialTheme)
-            setResolved(resolveTheme(initialTheme, Appearance.getColorScheme()))
+            const init = props.initialTheme ?? 'system'
+            setThemePreference(init)
+            setResolved(resolveTheme(init, Appearance.getColorScheme()))
           }
           setIsReady(true)
         }
       } catch (e) {
         if (isMounted) {
-          setThemePreference(initialTheme)
-          setResolved(resolveTheme(initialTheme, Appearance.getColorScheme()))
+          setThemePreference(props.initialTheme ?? 'system')
+          setResolved(resolveTheme(props.initialTheme ?? 'system', Appearance.getColorScheme()))
           setIsReady(true)
         }
       }
@@ -101,25 +116,34 @@ export function ThemeProvider({ children, initialTheme = 'system' }: ThemeProvid
     return () => {
       isMounted = false
     }
-  }, [initialTheme])
+  }, [controlled, props.initialTheme])
 
-  // Listen to system theme changes
+  // Listen to system theme changes (uncontrolled only)
   useEffect(() => {
+    if (controlled) return
     const subscription = Appearance.addChangeListener(({ colorScheme }) => {
       setResolved(resolveTheme(themePreference, colorScheme))
     })
 
     return () => subscription.remove()
-  }, [themePreference])
+  }, [controlled, themePreference])
 
-  // Update resolved when preference changes
+  // Update resolved when preference changes (uncontrolled only)
   useEffect(() => {
+    if (controlled) return
     setResolved(resolveTheme(themePreference, Appearance.getColorScheme()))
-  }, [themePreference])
+  }, [controlled, themePreference])
 
-  // Persist theme changes when they occur, and apply body styles on web
+  // Sync resolved from controlled theme
   useEffect(() => {
-    if (!isReady) return
+    if (controlled && props.theme != null) {
+      setResolved(props.theme)
+    }
+  }, [controlled, props.theme])
+
+  // Persist theme changes when they occur, and apply body styles on web (uncontrolled only)
+  useEffect(() => {
+    if (controlled || !isReady) return
 
     const persistTheme = async () => {
       try {
@@ -136,18 +160,32 @@ export function ThemeProvider({ children, initialTheme = 'system' }: ThemeProvid
     }
 
     persistTheme()
-  }, [themePreference, resolved, isReady])
+  }, [controlled, themePreference, resolved, isReady])
 
-  const setTheme = useCallback((newTheme: ThemeMode) => {
-    setThemePreference(newTheme)
-  }, [])
+  const onThemeChange = props.onThemeChange
+
+  const setTheme = useCallback(
+    (newTheme: ThemeMode) => {
+      if (controlled && onThemeChange) {
+        onThemeChange(newTheme)
+      } else {
+        setThemePreference(newTheme)
+      }
+    },
+    [controlled, onThemeChange]
+  )
 
   const toggleTheme = useCallback(() => {
-    setThemePreference((prev) => {
-      const currentResolved = resolveTheme(prev, Appearance.getColorScheme())
-      return currentResolved === 'light' ? 'dark' : 'light'
-    })
-  }, [])
+    if (controlled && onThemeChange) {
+      const next: ThemeMode = resolved === 'light' ? 'dark' : 'light'
+      onThemeChange(next)
+    } else {
+      setThemePreference((prev) => {
+        const currentResolved = resolveTheme(prev, Appearance.getColorScheme())
+        return currentResolved === 'light' ? 'dark' : 'light'
+      })
+    }
+  }, [controlled, resolved, onThemeChange])
 
   const value: ThemeContextValue = {
     theme: resolved,

@@ -40,6 +40,11 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - name: Build workspace packages (required for typecheck)
+        run: |
+          pnpm --filter @scaffald/sdk build
+          pnpm --filter @scaffald/ui build
+
       # Set NX_BASE for affected commands
       - name: Set Nx SHAs
         uses: nrwl/nx-set-shas@v4

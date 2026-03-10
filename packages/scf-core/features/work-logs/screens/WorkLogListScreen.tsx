@@ -15,7 +15,9 @@ import {
   Button,
   Card,
   Separator,
-  Spinner,
+  Skeleton,
+  SkeletonBox,
+  SkeletonText,
   Text,
   Row,
   Stack,
@@ -147,9 +149,21 @@ export function WorkLogListScreen() {
         <Separator />
 
         {listQuery.isLoading ? (
-          <Stack flex={1} align="center" justify="center" gap={12}>
-            <Spinner size="lg" />
-            <Text style={{ color: "#414e62" }}>Loading work logs…</Text>
+          <Stack gap={12} paddingBottom={24}>
+            {[0, 1, 2, 3].map((i) => (
+              <Card key={i} style={{ borderWidth: 1 }}>
+                <Stack gap={12} style={{ padding: 8 }}>
+                  <Row justify="space-between" align="center">
+                    <Stack gap={4}>
+                      <Skeleton width={80} height={14} shape="text" />
+                      <Skeleton width={100} height={12} shape="text" />
+                    </Stack>
+                    <SkeletonBox width={70} height={24} borderRadius={99} />
+                  </Row>
+                  <SkeletonText lines={2} lastLineWidth="60%" />
+                </Stack>
+              </Card>
+            ))}
           </Stack>
         ) : items.length === 0 ? (
           <EmptyState
@@ -297,9 +311,10 @@ function AnalyticsBanner({
       <Stack gap={12} style={{ padding: 8 }}>
         <Text>Quick summary</Text>
         {isLoading && !statusSummary ? (
-          <Row gap={12} align="center">
-            <Spinner size="sm" />
-            <Text style={{ color: "#414e62" }}>Calculating analytics…</Text>
+          <Row gap={8} wrap>
+            {[0, 1, 2, 3].map((i) => (
+              <SkeletonBox key={i} width={80} height={48} borderRadius={8} />
+            ))}
           </Row>
         ) : (
           <Stack gap={12}>

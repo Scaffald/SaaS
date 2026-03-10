@@ -1,5 +1,6 @@
 import { ROUTES } from "@scf/core/constants/routes";
 import { ControlledAddressForm } from "@scf/core/forms";
+import { useUserLocation } from "@scf/core/hooks";
 import {
   usePrerequisites,
   useCompletePrerequisites,
@@ -16,7 +17,9 @@ import {
   Row,
   Stack,
   useToast,
+  useThemeContext,
 } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -44,8 +47,21 @@ import {
  */
 export default function OnboardingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [proximity, setProximity] = useState<{ lat: number; lng: number } | undefined>();
   const toast = useToast();
   const router = useRouter();
+  const { theme } = useThemeContext();
+  const { requestLocation } = useUserLocation();
+
+  // Optionally bias address autocomplete by user location (after a short delay to avoid blocking or prompting immediately)
+  useEffect(() => {
+    const t = setTimeout(() => {
+      requestLocation()
+        .then((loc) => setProximity({ lat: loc.latitude, lng: loc.longitude }))
+        .catch(() => {});
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [requestLocation]);
 
   // Check prerequisites status
   const {
@@ -122,12 +138,6 @@ export default function OnboardingPage() {
       },
       user_types: statusData.data.user_types ?? [],
       industry_id: statusData.data.industry_id ?? "",
-      accepts_privacy_policy:
-        (statusData.data as unknown as { accepts_privacy_policy?: boolean })
-          .accepts_privacy_policy ?? false,
-      accepts_terms_of_service:
-        (statusData.data as unknown as { accepts_terms_of_service?: boolean })
-          .accepts_terms_of_service ?? false,
     };
 
     const prefillHash = JSON.stringify(prefillData);
@@ -157,8 +167,8 @@ export default function OnboardingPage() {
       <Stack justify="center" align="center" padding={16} minHeight="100vh">
         <Stack maxWidth={600} width="100%" gap={12} padding={24}>
           <Stack gap={8}>
-            <Text color="gray">Complete Your Profile</Text>
-            <Text color="gray">
+            <Text style={{ color: colors.text[theme].primary }}>Complete Your Profile</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
               Please complete these required fields to continue using Scaffald
             </Text>
           </Stack>
@@ -166,7 +176,7 @@ export default function OnboardingPage() {
           {isCheckingStatus ? (
             <Stack gap={10} align="center">
               <Spinner size="lg" color="primary" />
-              <Text color="gray">Loading...</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>Loading...</Text>
             </Stack>
           ) : (
             <>
@@ -174,7 +184,7 @@ export default function OnboardingPage() {
               <Stack gap={12}>
                 <Row gap={12}>
                   <Stack gap={8}>
-                    <Text>First Name *</Text>
+                    <Text style={{ color: colors.text[theme].primary }}>First Name *</Text>
                     <Controller
                       name="first_name"
                       control={control}
@@ -192,7 +202,7 @@ export default function OnboardingPage() {
                   </Stack>
 
                   <Stack gap={8}>
-                    <Text>Last Name *</Text>
+                    <Text style={{ color: colors.text[theme].primary }}>Last Name *</Text>
                     <Controller
                       name="last_name"
                       control={control}
@@ -215,14 +225,16 @@ export default function OnboardingPage() {
 
               {/* 2. Address */}
               <Stack gap={12}>
-                <Text>Address *</Text>
-                <Text color="gray">Search and select your home address</Text>
+                <Text style={{ color: colors.text[theme].primary }}>Address *</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>Search and select your home address</Text>
                 <ControlledAddressForm
                   control={control}
                   name="address"
                   setValue={setValue}
                   trigger={trigger}
                   placeholder="Search for your address..."
+                  manualFieldsVariant="expand"
+                  proximity={proximity}
                   error={
                     errors.address?.street?.message ||
                     errors.address?.city?.message
@@ -242,7 +254,7 @@ export default function OnboardingPage() {
 
               {/* 3. User Types */}
               <Stack gap={12}>
-                <Text>I am a (select all that apply) *</Text>
+                <Text style={{ color: colors.text[theme].primary }}>I am a (select all that apply) *</Text>
                 <Controller
                   name="user_types"
                   control={control}
@@ -291,6 +303,7 @@ export default function OnboardingPage() {
                           >
                             <Text
                               nativeID={`checkbox-user-type-${option.value}-label`}
+                              style={{ color: colors.text[theme].primary }}
                             >
                               {option.label}
                             </Text>
@@ -309,7 +322,7 @@ export default function OnboardingPage() {
 
               {/* 4. Primary Industry */}
               <Stack gap={12}>
-                <Text>Primary Industry *</Text>
+                <Text style={{ color: colors.text[theme].primary }}>Primary Industry *</Text>
                 <Controller
                   name="industry_id"
                   control={control}
@@ -318,7 +331,7 @@ export default function OnboardingPage() {
                       {isLoadingIndustries ? (
                         <Row gap={8} align="center">
                           <Spinner size="sm" />
-                          <Text color="gray">Loading industries...</Text>
+                          <Text style={{ color: colors.text[theme].secondary }}>Loading industries...</Text>
                         </Row>
                       ) : industriesData?.data &&
                         industriesData.data.length > 0 ? (
@@ -334,7 +347,7 @@ export default function OnboardingPage() {
                           )}
                         />
                       ) : (
-                        <Text color="gray">No industries available</Text>
+                        <Text style={{ color: colors.text[theme].secondary }}>No industries available</Text>
                       )}
                     </Stack>
                   )}
@@ -342,129 +355,6 @@ export default function OnboardingPage() {
                 {errors.industry_id && (
                   <Text color="red">{errors.industry_id.message}</Text>
                 )}
-              </Stack>
-
-              <Separator />
-
-              {/* 5. Legal Agreements */}
-              <Stack gap={12}>
-                <Text>Legal Agreements *</Text>
-
-                {/* Privacy Policy */}
-                <Controller
-                  name="accepts_privacy_policy"
-                  control={control}
-                  render={({ field }) => (
-                    <Stack gap={8}>
-                      <Row gap={12} align="center">
-                        <Checkbox
-                          checked={field.value}
-                          onChange={(checked) => {
-                            // Use setValue with shouldValidate: false to prevent form-wide validation
-                            setValue("accepts_privacy_policy", checked, {
-                              shouldValidate: false,
-                            });
-                          }}
-                          size="md"
-                        />
-                        <Pressable
-                          onPress={() => {
-                            // Use setValue with shouldValidate: false to prevent form-wide validation
-                            setValue("accepts_privacy_policy", !field.value, {
-                              shouldValidate: false,
-                            });
-                          }}
-                          accessibilityRole="button"
-                          style={({ pressed }) => ({
-                            alignSelf: "flex-start",
-                            opacity: pressed ? 0.7 : 1,
-                          })}
-                        >
-                          <Text nativeID="checkbox-legal-privacy-policy-label">
-                            I accept the{" "}
-                            <Text
-                              color="blue"
-                              onPress={(event) => {
-                                event.stopPropagation?.();
-                                if (typeof window !== "undefined") {
-                                  window.open(
-                                    "https://scaffald.com/privacy",
-                                    "_blank"
-                                  );
-                                }
-                              }}
-                            >
-                              Privacy Policy
-                            </Text>
-                          </Text>
-                        </Pressable>
-                      </Row>
-                      {errors.accepts_privacy_policy && (
-                        <Text color="red">
-                          {errors.accepts_privacy_policy.message}
-                        </Text>
-                      )}
-                    </Stack>
-                  )}
-                />
-
-                {/* Terms of Service */}
-                <Controller
-                  name="accepts_terms_of_service"
-                  control={control}
-                  render={({ field }) => (
-                    <Stack gap={8}>
-                      <Row gap={12} align="center">
-                        <Checkbox
-                          checked={field.value}
-                          onChange={(checked) => {
-                            // Use setValue with shouldValidate: false to prevent form-wide validation
-                            setValue("accepts_terms_of_service", checked, {
-                              shouldValidate: false,
-                            });
-                          }}
-                          size="md"
-                        />
-                        <Pressable
-                          onPress={() => {
-                            // Use setValue with shouldValidate: false to prevent form-wide validation
-                            setValue("accepts_terms_of_service", !field.value, {
-                              shouldValidate: false,
-                            });
-                          }}
-                          accessibilityRole="button"
-                          style={({ pressed }) => ({
-                            alignSelf: "flex-start",
-                            opacity: pressed ? 0.7 : 1,
-                          })}
-                        >
-                          <Text nativeID="checkbox-legal-terms-of-service-label">
-                            I accept the{" "}
-                            <Text
-                              color="blue"
-                              onPress={(event) => {
-                                event.stopPropagation?.();
-                                if (typeof window !== "undefined") {
-                                  window.open(
-                                    "https://scaffald.com/terms",
-                                    "_blank"
-                                  );
-                                }
-                              }}
-                            >
-                              Terms of Service
-                            </Text>
-                          </Text>
-                        </Pressable>
-                      </Row>
-                      {errors.accepts_terms_of_service && (
-                        <Text color="red">
-                          {errors.accepts_terms_of_service.message}
-                        </Text>
-                      )}
-                    </Stack>
-                  )}
-                />
               </Stack>
 
               {/* Submit Button */}

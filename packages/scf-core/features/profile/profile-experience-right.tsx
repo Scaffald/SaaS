@@ -2,6 +2,7 @@ import {
   useExperience,
   useExperienceSummary,
 } from "@scf/core/utils/profile-experience-sdk-hooks";
+import { ProfileSectionIntro } from "@scf/core/features/profile/components";
 import { DashboardWidget } from "@scaffald/ui";
 import { Briefcase, Calendar, MapPin, Pencil } from "lucide-react-native";
 import { Button, H4, Spinner, Text, Row, Stack } from "@scaffald/ui";
@@ -91,30 +92,47 @@ export function ProfileExperienceRight() {
   // Show loading state
   if (experienceQuery.isLoading || experienceSummaryQuery.isLoading) {
     return (
-      <DashboardWidget>
+      <Stack gap={16}>
+        <ProfileSectionIntro
+          title="Work Experience"
+          description="Manage your work history and career level. Add or edit positions in the left panel; they appear here once saved."
+        />
+        <DashboardWidget>
         <Stack align="center" justify="center" padding={32} gap={16}>
           <Spinner size="lg" />
           <Text style={{ color: "#414e62" }}>Loading experience data...</Text>
         </Stack>
       </DashboardWidget>
+      </Stack>
     );
   }
 
   // Show error state
   if (experienceQuery.isError || experienceSummaryQuery.isError) {
     return (
-      <DashboardWidget>
+      <Stack gap={16}>
+        <ProfileSectionIntro
+          title="Work Experience"
+          description="Manage your work history and career level. Add or edit positions in the left panel; they appear here once saved."
+        />
+        <DashboardWidget>
         <Stack align="center" justify="center" padding={32} gap={16}>
           <Text style={{ color: "#ef4444" }}>
             Failed to load experience data
           </Text>
         </Stack>
       </DashboardWidget>
+      </Stack>
     );
   }
 
   return (
-    <DashboardWidget>
+    <Stack gap={16}>
+      <ProfileSectionIntro
+        title="Work Experience"
+        description="Manage your work history and career level. Add or edit positions in the left panel; they appear here once saved."
+      />
+      <DashboardWidget>
       <H4>Saved Work Experience</H4>
 
       <Text style={{ color: "#414e62", marginBottom: 16 }}>
@@ -259,5 +277,6 @@ export function ProfileExperienceRight() {
         </Stack>
       )}
     </DashboardWidget>
+    </Stack>
   );
 }

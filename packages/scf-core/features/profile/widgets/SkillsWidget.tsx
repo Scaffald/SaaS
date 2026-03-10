@@ -16,14 +16,18 @@ import {
   DashboardWidget,
   EmptyState,
   H4,
-  LoadingState,
   ResponsiveModal,
+  Skeleton,
+  SkeletonBox,
+  SkeletonGroup,
   Tabs,
+  useThemeContext,
 } from "@scaffald/ui";
 import { CheckCircle } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { Separator, Text, Row, Stack } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import { getProficiencyLabel } from "../constants/proficiency-levels";
 import type { ProfileWidgetProps } from "./types";
 
@@ -54,6 +58,7 @@ export function SkillsWidget({
   variant = "full",
 }: ProfileWidgetProps) {
   const router = useRouter();
+  const { theme } = useThemeContext();
   const [activeTab, setActiveTab] = useState<"technical" | "soft-skills">(
     "technical"
   );
@@ -126,7 +131,18 @@ export function SkillsWidget({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <LoadingState message="Loading skills..." />
+        <Stack gap={12}>
+          <Row justify="space-between" align="center">
+            <Skeleton width={60} height={20} shape="text" />
+          </Row>
+          <SkeletonBox width="100%" height={36} borderRadius={8} />
+          <Skeleton width="100%" height={1} />
+          <SkeletonGroup direction="row" gap={8} style={{ flexWrap: 'wrap' }}>
+            {[100, 80, 120, 90, 110].map((w, i) => (
+              <SkeletonBox key={i} width={w} height={32} borderRadius={99} />
+            ))}
+          </SkeletonGroup>
+        </Stack>
       </DashboardWidget>
     );
   }
@@ -135,8 +151,8 @@ export function SkillsWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text style={{ color: "#ef4444" }}>Failed to load skills</Text>
-          <Text style={{ color: "#414e62" }}>{error.message}</Text>
+          <Text style={{ color: colors.fg[theme].error }}>Failed to load skills</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
           <Button
             variant="filled"
             color="primary"
@@ -221,11 +237,15 @@ export function SkillsWidget({
         {/* Technical Skills Tab Content */}
         {activeTab === "technical" &&
           (isLoadingSkills ? (
-            <LoadingState message="Loading skills..." />
+            <SkeletonGroup direction="row" gap={8} style={{ flexWrap: 'wrap' }}>
+              {[100, 80, 120, 90, 110].map((w, i) => (
+                <SkeletonBox key={i} width={w} height={32} borderRadius={99} />
+              ))}
+            </SkeletonGroup>
           ) : error ? (
             <Stack gap={16} align="center" paddingVertical={32}>
-              <Text style={{ color: "#ef4444" }}>Failed to load skills</Text>
-              <Text style={{ color: "#414e62" }}>
+              <Text style={{ color: colors.fg[theme].error }}>Failed to load skills</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>
                 {String(
                   (error as unknown as Record<string, unknown>).message ?? ""
                 )}
@@ -264,7 +284,7 @@ export function SkillsWidget({
                   <Stack key={taxonomy} gap={8}>
                     {/* Taxonomy Header */}
                     <Text
-                      style={{ color: "#414e62", textTransform: "uppercase" }}
+                      style={{ color: colors.text[theme].secondary, textTransform: "uppercase" }}
                     >
                       {taxonomy === "onet"
                         ? "O*NET"
@@ -286,30 +306,30 @@ export function SkillsWidget({
                             gap={8}
                             align="center"
                             style={{
-                              backgroundColor: "#eff6ff",
+                              backgroundColor: colors.blue[50],
                               borderWidth: 1,
                               borderColor: skill.verified
-                                ? "#3b82f6"
-                                : "#bfdbfe",
+                                ? colors.blue[500]
+                                : colors.blue[300],
                             }}
                           >
                             {skill.verified && (
-                              <CheckCircle size={16} color="#1d4ed8" />
+                              <CheckCircle size={16} color={colors.blue[700]} />
                             )}
                             <Stack gap={2}>
-                              <Text style={{ color: "#1d4ed8" }}>
+                              <Text style={{ color: colors.blue[700] }}>
                                 {skill.name}
                               </Text>
                               {!showCompact && (
                                 <Row gap={8}>
                                   {skill.proficiency > 0 && (
-                                    <Text style={{ color: "#2563eb" }}>
+                                    <Text style={{ color: colors.blue[600] }}>
                                       {getProficiencyLabel(skill.proficiency)}
                                     </Text>
                                   )}
                                   {skill.yearsExperience !== null &&
                                     skill.yearsExperience > 0 && (
-                                      <Text style={{ color: "#2563eb" }}>
+                                      <Text style={{ color: colors.blue[600] }}>
                                         • {skill.yearsExperience}y
                                       </Text>
                                     )}
@@ -325,7 +345,7 @@ export function SkillsWidget({
               {/* Show More link for compact view */}
               {showCompact && skills.length > 5 && (
                 <Text
-                  style={{ color: "#3b82f6" }}
+                  style={{ color: colors.blue[500] }}
                   onPress={() =>
                     router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
                   }
@@ -339,13 +359,17 @@ export function SkillsWidget({
         {/* Soft Skills Tab Content */}
         {activeTab === "soft-skills" &&
           (isLoadingSoftSkills ? (
-            <LoadingState message="Loading soft skills..." />
+            <SkeletonGroup direction="row" gap={8} style={{ flexWrap: 'wrap' }}>
+              {[100, 80, 120, 90, 110].map((w, i) => (
+                <SkeletonBox key={i} width={w} height={32} borderRadius={99} />
+              ))}
+            </SkeletonGroup>
           ) : softSkillsError ? (
             <Stack gap={16} align="center" paddingVertical={32}>
-              <Text style={{ color: "#ef4444" }}>
+              <Text style={{ color: colors.fg[theme].error }}>
                 Failed to load soft skills
               </Text>
-              <Text style={{ color: "#414e62" }}>
+              <Text style={{ color: colors.text[theme].secondary }}>
                 {softSkillsError.message}
               </Text>
               <Button

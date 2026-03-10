@@ -2,9 +2,11 @@ import { Stack } from '../Layout'
 import { Paragraph } from '../Typography'
 import { spacing } from '../../tokens/spacing'
 import { colors } from '../../tokens/colors'
+import { useThemeContext } from '../../theme'
 import type { ChecklistHeaderProps } from './Checklist.types'
 
 export function ChecklistHeader({ title, subtitle }: ChecklistHeaderProps) {
+  const { theme } = useThemeContext()
   if (!title && !subtitle) return null
 
   return (
@@ -14,7 +16,7 @@ export function ChecklistHeader({ title, subtitle }: ChecklistHeaderProps) {
           style={{
             fontSize: 18,
             fontWeight: '600',
-            color: colors.text.light.primary,
+            color: colors.text[theme].primary,
           }}
         >
           {title}
@@ -24,7 +26,7 @@ export function ChecklistHeader({ title, subtitle }: ChecklistHeaderProps) {
         <Paragraph
           style={{
             fontSize: 14,
-            color: colors.text.light.secondary,
+            color: colors.text[theme].secondary,
             lineHeight: 20,
           }}
         >

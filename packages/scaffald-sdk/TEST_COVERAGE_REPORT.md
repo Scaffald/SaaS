@@ -65,6 +65,14 @@
 
 ## Test Infrastructure
 
+### Integration tests (env-gated)
+
+- **Location**: `src/__tests__/integration/`
+- **Config**: `vitest.integration.config.ts` (no MSW; real fetch)
+- **When**: Run with `SCAFFALD_INTEGRATION=1` or `REAL_API=1` and local Supabase + API
+- **What**: Token issuance (signInWithPassword), token validity (`GET /v1/auth/roles`), and per-resource smoke calls (jobs, industries, auth, apiKeys, connections, notifications, prerequisites, profiles)
+- **CI**: Run only when local Supabase or test project is available; skip when env is not set
+
 ### Mock Server (MSW)
 - **File**: `src/__tests__/mocks/server.ts`
 - **Size**: 5,800+ lines

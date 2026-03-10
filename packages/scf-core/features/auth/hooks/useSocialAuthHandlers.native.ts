@@ -25,8 +25,8 @@ export function useSocialAuthHandlers() {
     try {
       captureEvent("auth_social_sign_in_started", { provider: "google" });
       GoogleSignin.configure({
-        iosClientId: process.env.GOOGLE_IOS_CLIENT_ID,
-        webClientId: process.env.GOOGLE_WEB_CLIENT_ID,
+        iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+        webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
       });
       await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();

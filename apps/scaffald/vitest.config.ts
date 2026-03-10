@@ -44,4 +44,13 @@ const expoConfig = {
   },
 };
 
-export default mergeConfig(baseConfig, expoConfig);
+const merged = mergeConfig(baseConfig, expoConfig)
+merged.test.include = ['apps/scaffald/**/*.{test,spec}.{ts,tsx}']
+// Exclude tests that require live services or a running browser
+merged.test.exclude = [
+  ...(merged.test.exclude ?? []),
+  'apps/scaffald/tests/e2e/**',
+  'apps/scaffald/tests/testDb.test.ts',
+  'apps/scaffald/tests/integration-*.test.ts',
+]
+export default merged

@@ -271,6 +271,7 @@ export function ReviewStep({
         color="primary"
         onPress={onSubmit}
         disabled={isSubmitting || !hasConsent}
+        loading={isSubmitting}
         iconStart={isSubmitting ? undefined : Check}
         style={{ opacity: !hasConsent ? 0.5 : 1 }}
       >

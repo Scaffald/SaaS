@@ -41,6 +41,9 @@ import {
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window')
 
+/** On web, native driver is not supported; use JS driver to avoid console warning. */
+const USE_NATIVE_DRIVER = Platform.OS !== 'web'
+
 // ============================================================================
 // Height Calculation
 // ============================================================================
@@ -108,12 +111,12 @@ export function Sheet({
       Animated.timing(translateY, {
         toValue: SCREEN_HEIGHT,
         duration: animationDuration,
-        useNativeDriver: true,
+        useNativeDriver: USE_NATIVE_DRIVER,
       }),
       Animated.timing(backdropOpacity, {
         toValue: 0,
         duration: animationDuration,
-        useNativeDriver: true,
+        useNativeDriver: USE_NATIVE_DRIVER,
       }),
     ])
 
@@ -135,12 +138,12 @@ export function Sheet({
         Animated.timing(translateY, {
           toValue: 0,
           duration: animationDuration,
-          useNativeDriver: true,
+          useNativeDriver: USE_NATIVE_DRIVER,
         }),
         Animated.timing(backdropOpacity, {
           toValue: 1,
           duration: animationDuration,
-          useNativeDriver: true,
+          useNativeDriver: USE_NATIVE_DRIVER,
         }),
       ]).start()
     }
@@ -187,7 +190,7 @@ export function Sheet({
           // Snap back to open position
           Animated.spring(translateY, {
             toValue: 0,
-            useNativeDriver: true,
+            useNativeDriver: USE_NATIVE_DRIVER,
             tension: 100,
             friction: 10,
           }).start()

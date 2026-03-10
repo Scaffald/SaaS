@@ -1,20 +1,10 @@
 import { LoginScreen } from '@scf/core/features/auth/login-screen'
 import { WelcomeScreen } from '@scf/core/features/auth/welcome-screen'
-import { Button, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import { Stack as RouterStack } from 'expo-router'
 import { useState } from 'react'
 import { useWindowDimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-
-function AuthHeaderThemeToggle() {
-  const { theme, toggleTheme } = useThemeContext()
-  return (
-    <Button variant="outline" size="sm" onPress={toggleTheme} color="gray">
-      {theme === 'light' ? 'Dark' : 'Light'}
-    </Button>
-  )
-}
 
 export default function Screen() {
   const [hasOnboarded, setHasOnboarded] = useState(false)
@@ -25,34 +15,23 @@ export default function Screen() {
 
   if (isSmallScreen && !hasOnboarded) {
     return (
-      <SafeAreaView style={screenBg} edges={['bottom', 'left', 'right']}>
-        <RouterStack.Screen
-          options={{
-            headerRight: () => <AuthHeaderThemeToggle />,
-          }}
-        />
+      <SafeAreaView style={screenBg} edges={['top', 'bottom', 'left', 'right']}>
         <WelcomeScreen onOnboarded={() => setHasOnboarded(true)} />
       </SafeAreaView>
     )
   }
 
   return (
-    <SafeAreaView style={screenBg} edges={['bottom', 'left', 'right']}>
-      <RouterStack.Screen
-        options={{
-          headerRight: () => <AuthHeaderThemeToggle />,
-        }}
-      />
+    <SafeAreaView style={screenBg} edges={['top', 'bottom', 'left', 'right']}>
       <Row flex={1}>
-        <Stack flex={2} justify="center" align="center" padding={24} style={{ minWidth: 0 }}>
-          <LoginScreen />
-        </Stack>
-
         {!isSmallScreen && (
           <Stack flex={3} style={{ minWidth: 0 }}>
             <WelcomeScreen brandedPanel />
           </Stack>
         )}
+        <Stack flex={2} justify="center" align="center" padding={24} style={{ minWidth: 0 }}>
+          <LoginScreen />
+        </Stack>
       </Row>
     </SafeAreaView>
   )

@@ -112,7 +112,7 @@ export function SettingsPageLayout({
   const activeTabBg = isLight ? colors.bg.light.default : colors.bg.dark.default
   const textPrimary = isLight ? colors.text.light.primary : colors.text.dark.primary
   const textSecondary = isLight ? colors.text.light.secondary : colors.text.dark.secondary
-  const borderColor = isLight ? colors.border.light['200'] : colors.border.dark['200']
+  const borderColor = isLight ? colors.border.light.default : colors.border.dark.default
   const iconColor = isLight ? colors.gray[600] : colors.gray[300]
 
   return (

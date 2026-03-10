@@ -26,7 +26,10 @@
       "!!**/.nx",
       "!!**/.storybook",
       "!!**/packages/supabase/scripts/seed-universities.json",
-      "!!**/packages/supabase/email-templates/**"
+      "!!**/packages/supabase/email-templates/**",
+      "!!packages/insurance/**",
+      "!!packages/compliance/**",
+      "!!packages/tasks/**"
     ]
   },
   "formatter": {

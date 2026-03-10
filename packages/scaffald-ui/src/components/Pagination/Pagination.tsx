@@ -102,7 +102,7 @@ function PaginationNavButton({
         styles.navButton,
         showBorder && {
           borderWidth: 1,
-          borderColor: isLight ? colors.border.light['200'] : colors.border.dark['200'],
+          borderColor: isLight ? colors.border.light.default : colors.border.dark.default,
         },
         isHovered &&
           !disabled && {

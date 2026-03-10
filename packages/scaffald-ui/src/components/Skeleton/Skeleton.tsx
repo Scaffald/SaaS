@@ -4,8 +4,8 @@
  */
 
 import type React from 'react'
-import { useEffect, useRef, useMemo } from 'react'
-import { View, Animated, StyleSheet, type ViewStyle, type DimensionValue } from 'react-native'
+import { useEffect, useRef, useMemo, useState } from 'react'
+import { View, Animated, Easing, StyleSheet, Platform, type LayoutChangeEvent, type ViewStyle, type DimensionValue } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius as radiusTokens } from '../../tokens/borders'
@@ -36,37 +36,36 @@ const SHAPE_RADIUS: Record<SkeletonShape, number> = {
   text: radiusTokens.xxs,
 }
 
+/** On web, native driver is not supported; use JS driver to avoid console warning. */
+const USE_NATIVE_DRIVER = Platform.OS !== 'web'
+
 // ============================================================================
-// Animation Hook
+// Animation Hooks
 // ============================================================================
 
 function usePulseAnimation(animation: SkeletonAnimation, duration: number) {
   const animValue = useRef(new Animated.Value(0)).current
 
   useEffect(() => {
-    if (animation === 'none') {
+    if (animation === 'none' || animation === 'wave') {
       animValue.setValue(0)
       return
     }
 
-    const animate = () => {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(animValue, {
-            toValue: 1,
-            duration: duration / 2,
-            useNativeDriver: true,
-          }),
-          Animated.timing(animValue, {
-            toValue: 0,
-            duration: duration / 2,
-            useNativeDriver: true,
-          }),
-        ])
-      ).start()
-    }
-
-    animate()
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(animValue, {
+          toValue: 1,
+          duration: duration / 2,
+          useNativeDriver: USE_NATIVE_DRIVER,
+        }),
+        Animated.timing(animValue, {
+          toValue: 0,
+          duration: duration / 2,
+          useNativeDriver: USE_NATIVE_DRIVER,
+        }),
+      ])
+    ).start()
 
     return () => {
       animValue.stopAnimation()
@@ -74,6 +73,35 @@ function usePulseAnimation(animation: SkeletonAnimation, duration: number) {
   }, [animation, duration, animValue])
 
   return animValue
+}
+
+function useShimmerAnimation(animation: SkeletonAnimation, duration: number) {
+  const animValue = useRef(new Animated.Value(0)).current
+  const [width, setWidth] = useState(0)
+
+  useEffect(() => {
+    if (animation !== 'wave' || width === 0) return
+
+    Animated.loop(
+      Animated.timing(animValue, {
+        toValue: 1,
+        duration,
+        easing: Easing.linear,
+        useNativeDriver: USE_NATIVE_DRIVER,
+      })
+    ).start()
+
+    return () => animValue.stopAnimation()
+  }, [animation, duration, animValue, width])
+
+  const translateX = animValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-width, width],
+  })
+
+  const onLayout = (e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width)
+
+  return { translateX, onLayout }
 }
 
 // ============================================================================
@@ -100,12 +128,13 @@ export function Skeleton({
   height = 20,
   shape = 'rectangle',
   borderRadius,
-  animation = 'pulse',
+  animation = 'wave',
   animationDuration = DEFAULT_ANIMATION_DURATION,
   style,
   testID,
 }: SkeletonProps): React.ReactElement {
-  const animValue = usePulseAnimation(animation, animationDuration)
+  const pulseValue = usePulseAnimation(animation, animationDuration)
+  const { translateX, onLayout } = useShimmerAnimation(animation, animationDuration)
 
   const computedRadius = borderRadius ?? SHAPE_RADIUS[shape]
 
@@ -120,16 +149,27 @@ export function Skeleton({
     [width, height, computedRadius]
   )
 
-  const animatedStyle = {
-    opacity: animation !== 'none' ? animValue.interpolate({
+  const pulseStyle = animation === 'pulse' ? {
+    opacity: pulseValue.interpolate({
       inputRange: [0, 1],
       outputRange: [1, 0.5],
-    }) : 1,
-  }
+    }),
+  } : undefined
 
   return (
-    <Animated.View style={[containerStyle, animatedStyle, style]} testID={testID}>
-      {/* Optional wave overlay could be added here for 'wave' animation */}
+    <Animated.View style={[containerStyle, pulseStyle, style]} onLayout={onLayout} testID={testID}>
+      {animation === 'wave' && (
+        <Animated.View
+          style={{
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            width: '40%',
+            backgroundColor: 'rgba(255, 255, 255, 0.55)',
+            transform: [{ translateX }],
+          }}
+        />
+      )}
     </Animated.View>
   )
 }
@@ -327,7 +367,7 @@ export function SkeletonBox({
       height={height}
       shape="rectangle"
       borderRadius={borderRadius}
-      animation={animated ? 'pulse' : 'none'}
+      animation={animated ? 'wave' : 'none'}
       style={style}
       testID={testID}
     />

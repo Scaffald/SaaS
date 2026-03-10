@@ -29,7 +29,7 @@ export function BarChart({
   const width = typeof widthProp === 'string' ? parseFloat(widthProp) || 229 : widthProp
 
   // Validate and filter data
-  const validatedData = data.filter((value) => {
+  const validatedData = (data ?? []).filter((value) => {
     if (!Number.isFinite(value)) {
       if (__DEV__) {
         console.warn('[BarChart] Invalid data value detected:', value)
@@ -40,7 +40,7 @@ export function BarChart({
   })
 
   if (validatedData.length === 0) {
-    if (__DEV__ && data.length > 0) {
+    if (__DEV__ && (data?.length ?? 0) > 0) {
       console.warn('[BarChart] All data values were invalid or filtered out')
     }
     return (

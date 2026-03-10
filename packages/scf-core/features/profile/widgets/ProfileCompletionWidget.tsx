@@ -1,10 +1,11 @@
 import { useProfileCompletion } from "@scf/core/features/dashboard/completion/useProfileCompletion";
-import { DashboardWidget } from "@scaffald/ui";
+import { DashboardWidget, useThemeContext } from "@scaffald/ui";
 import { CheckCircle, ChevronRight, Circle } from "lucide-react-native";
 import { useToast } from "@scaffald/ui";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Button, H4, ProgressBar, Text, Row, Stack } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import type { ProfileWidgetProps } from "./types";
 
 /**
@@ -23,6 +24,7 @@ export function ProfileCompletionWidget({
 }: ProfileWidgetProps) {
   const router = useRouter();
   const toast = useToast();
+  const { theme } = useThemeContext();
   const { completionData, isLoading } = useProfileCompletion();
 
   // Show toast prompts for incomplete sections
@@ -51,7 +53,7 @@ export function ProfileCompletionWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={16}>
-          <Text style={{ color: "#414e62" }}>Loading completion status...</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading completion status...</Text>
         </Stack>
       </DashboardWidget>
     );
@@ -71,7 +73,7 @@ export function ProfileCompletionWidget({
         <Row justify="space-between" align="center">
           <H4>Profile Completion</H4>
           {variant === "full" && (
-            <Text style={{ color: "#414e62" }}>
+            <Text style={{ color: colors.text[theme].secondary }}>
               {completionData.totalComplete} of {completionData.totalItems}{" "}
               complete
             </Text>
@@ -81,11 +83,11 @@ export function ProfileCompletionWidget({
         {/* Progress Bar */}
         <Stack gap={8}>
           <Row justify="space-between" align="center">
-            <Text style={{ color: "#414e62" }}>
+            <Text style={{ color: colors.text[theme].secondary }}>
               {completionData.completionPercentage}%
             </Text>
             {variant === "full" && (
-              <Text style={{ color: "#414e62" }}>
+              <Text style={{ color: colors.text[theme].secondary }}>
                 {completionData.completionPercentage < 100
                   ? "Keep going!"
                   : "Profile complete!"}
@@ -110,15 +112,15 @@ export function ProfileCompletionWidget({
             gap={12}
             padding="sm"
             borderRadius={12}
-            style={{ borderWidth: 1, borderColor: "#e2e8f0" }}
+            style={{ borderWidth: 1, borderColor: colors.border[theme].subtle }}
           >
-            <Text style={{ color: "#414e62" }}>Next Step</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Next Step</Text>
             <Row gap={8} align="center">
-              <Circle size={20} color="#414e62" />
+              <Circle size={20} color={colors.text[theme].secondary} />
               <Stack flex={1} gap={4}>
                 <Text>{nextIncompleteItem.title}</Text>
                 {nextIncompleteItem.description && (
-                  <Text style={{ color: "#414e62" }}>
+                  <Text style={{ color: colors.text[theme].secondary }}>
                     {nextIncompleteItem.description}
                   </Text>
                 )}
@@ -142,7 +144,7 @@ export function ProfileCompletionWidget({
         {/* Checklist (Full variant only) */}
         {variant === "full" && (
           <Stack gap={8}>
-            <Text style={{ color: "#414e62" }}>Sections</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Sections</Text>
             <Stack gap={8}>
               {completionData.items.map((item) => (
                 <Row
@@ -154,14 +156,14 @@ export function ProfileCompletionWidget({
                   style={{ opacity: item.complete ? 0.7 : 1 }}
                 >
                   {item.complete ? (
-                    <CheckCircle size={18} color="#16a34a" />
+                    <CheckCircle size={18} color={colors.fg[theme].success} />
                   ) : (
-                    <Circle size={18} color="#414e62" />
+                    <Circle size={18} color={colors.text[theme].secondary} />
                   )}
                   <Stack flex={1} gap={4}>
                     <Text>{item.title}</Text>
                     {item.description && (
-                      <Text style={{ color: "#414e62" }}>
+                      <Text style={{ color: colors.text[theme].secondary }}>
                         {item.description}
                       </Text>
                     )}

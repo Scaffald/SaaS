@@ -5,13 +5,13 @@
  */
 
 export const BRAND_COLORS = {
-  // Primary Colors
-  primary: '#8C6A43',
-  secondary: '#6F8B6D',
+  // Primary Colors (logo-aligned teal palette)
+  primary: '#239cb2',
+  secondary: '#2A7F8E',
 
   // Gradient Colors
-  gradientStart: '#B58E6C',
-  gradientEnd: '#8C6A43',
+  gradientStart: '#76EAFF',
+  gradientEnd: '#239CB2',
 
   // Alternative Gradients
   gradientAlt: {

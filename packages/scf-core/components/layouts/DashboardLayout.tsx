@@ -1,9 +1,12 @@
 import type { ReactNode } from 'react'
-import { ScrollView, StyleSheet } from 'react-native'
-import { Row, Stack } from '@scaffald/ui'
+import { ScrollView } from 'react-native'
+import { Grid, Row, Stack, useThemeContext, useResponsive } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { Breadcrumb, type BreadcrumbItemData } from '@scaffald/ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
+
+/** Golden ratio (φ) for column proportion: left ~61.8%, right ~38.2% */
+const GOLDEN_RATIO_TEMPLATE = 'minmax(300px, 1.618fr) minmax(300px, 1fr)'
 
 type DashboardLayoutProps = {
   rightContent?: ReactNode
@@ -14,6 +17,8 @@ type DashboardLayoutProps = {
   breadcrumbItems?: BreadcrumbItemData[]
   /** Whether to auto-generate breadcrumbs from route (default: true) */
   autoGenerateBreadcrumbs?: boolean
+  /** Expand content to full width (single column, no right panel) */
+  fullWidth?: boolean
 }
 
 export const DashboardLayout = ({
@@ -22,7 +27,15 @@ export const DashboardLayout = ({
   showBreadcrumb = true,
   breadcrumbItems,
   autoGenerateBreadcrumbs = true,
+  fullWidth = false,
 }: DashboardLayoutProps) => {
+  const { isDesktop } = useResponsive()
+  const { theme } = useThemeContext()
+  const contentPadding = isDesktop ? '2xl' : 'lg'
+  const verticalPadding = isDesktop ? '3xl' : 'md'
+  const columnGap = isDesktop ? 48 : 24
+  const columnTemplate = fullWidth ? '1fr' : GOLDEN_RATIO_TEMPLATE
+
   // Auto-generate breadcrumbs if enabled and no manual override
   const { breadcrumbs } = useBreadcrumbs({
     autoGenerate: autoGenerateBreadcrumbs && !breadcrumbItems,
@@ -35,28 +48,33 @@ export const DashboardLayout = ({
   // Calculate current index (last item is always active)
   const currentIndex = displayBreadcrumbs.length - 1
 
-  const _hasBothColumns = Boolean(leftContent) && Boolean(rightContent)
+  const bgColor = colors.bg[theme].subtle
 
   return (
-    <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
-      <Stack gap={12} paddingTop="sm" paddingBottom="lg">
+    <ScrollView
+      style={{ flex: 1, backgroundColor: bgColor }}
+      showsVerticalScrollIndicator={false}
+    >
+      <Stack gap={12} paddingTop={verticalPadding} paddingBottom={verticalPadding}>
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
-          <Row paddingHorizontal="xs" paddingTop="sm">
+          <Row paddingHorizontal={contentPadding}>
             <Breadcrumb items={displayBreadcrumbs} currentIndex={currentIndex} />
           </Row>
         )}
 
-        {/* Content Area - Responsive two-column or single-column layout */}
-        <Row gap={12}>
-          {leftContent && <Stack width="100%">{leftContent}</Stack>}
-          {rightContent && <Stack width="100%">{rightContent}</Stack>}
-        </Row>
+        {/* Content Area - Two-column golden ratio (lg+) or single column, min 300px per column */}
+        <Stack paddingHorizontal={contentPadding}>
+          <Grid
+            columns={{ base: 1, lg: columnTemplate }}
+            gap={columnGap}
+            rowGap={isDesktop ? 32 : 24}
+          >
+            {leftContent ? <Stack>{leftContent}</Stack> : null}
+            {rightContent ? <Stack>{rightContent}</Stack> : null}
+          </Grid>
+        </Stack>
       </Stack>
     </ScrollView>
   )
 }
-
-const styles = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: colors.gray[50] },
-})

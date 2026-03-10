@@ -15,6 +15,7 @@ import type {
   CardRadius,
   CardVariant,
 } from "./Card.types";
+import type { ResolvedThemeMode } from "../../tokens/colors";
 
 // ============================================================================
 // Types
@@ -65,25 +66,30 @@ const PADDING_MAP: Record<CardPadding, number> = {
   md: spacing[12],
   lg: spacing[16],
   xl: spacing[24],
+  '2xl': spacing[32],
 };
 
 const RADIUS_MAP: Record<CardRadius, number> = {
-  sm: borderRadius.s,
-  md: borderRadius.m,
-  lg: borderRadius.l,
-  xl: borderRadius.xl,
+  sm: borderRadius.s,    // 8
+  md: borderRadius.m,    // 10
+  lg: 32,                // bento large — was 12
+  xl: 40,                // bento XL — was 16
+  '2xl': borderRadius.xxxxl, // 48
+  '3xl': borderRadius.xxxxl, // 48
 };
 
 const SHADOW_MAP: Record<CardElevation, ShadowStyle> = {
   sm: shadows.s as ShadowStyle,
   md: shadows.m as ShadowStyle,
   lg: shadows.l as ShadowStyle,
+  soft: shadows.soft as ShadowStyle,
 };
 
 const BOX_SHADOW_MAP: Record<CardElevation, string> = {
   sm: boxShadows.s,
   md: boxShadows.m,
   lg: boxShadows.l,
+  soft: boxShadows.soft,
 };
 
 // ============================================================================
@@ -100,9 +106,13 @@ export function getCardStyles(
   elevation: CardElevation,
   isPressed: boolean,
   disabled: boolean,
+  theme: ResolvedThemeMode = 'light',
 ): CardStyleConfig {
+  // Light: white card surface. Dark: bg.dark.muted (#2f2820) so inputs (bg.dark.subtle)
+  // sit one shade darker — creating the inset effect the design requires.
+  const baseBg = theme === 'dark' ? colors.bg.dark.muted : colors.bg.light.default
   const baseStyle: ViewStyle = {
-    backgroundColor: colors.bg.light.default,
+    backgroundColor: baseBg,
     borderRadius: RADIUS_MAP[radius],
     padding: PADDING_MAP[padding],
     overflow: "hidden",
@@ -115,27 +125,38 @@ export function getCardStyles(
     case "elevated": {
       container = {
         ...baseStyle,
-        ...SHADOW_MAP[elevation],
+        // On web use boxShadow only to avoid "shadow* deprecated" console error
+        ...(Platform.OS === "web"
+          ? { boxShadow: BOX_SHADOW_MAP[elevation] }
+          : SHADOW_MAP[elevation]),
       };
-      // Add web-specific box-shadow
-      if (Platform.OS === "web") {
-        (container as Record<string, unknown>).boxShadow =
-          BOX_SHADOW_MAP[elevation];
-      }
       break;
     }
     case "outlined":
       container = {
         ...baseStyle,
         borderWidth: 1,
-        borderColor: colors.border.light.default,
+        borderColor: colors.border[theme].default,
       };
       break;
     case "filled":
       container = {
         ...baseStyle,
-        backgroundColor: colors.bg.light.subtle,
+        backgroundColor: colors.bg[theme].subtle,
       };
+      break;
+    case "glass":
+      container = {
+        ...baseStyle,
+        backgroundColor: 'rgba(251, 248, 243, 0.82)', // neutral[50] warm @ 82%
+        borderWidth: 1,
+        borderColor: 'rgba(237, 221, 201, 0.55)', // neutral[300]-ish @ 55%
+      };
+      // Web-only: add backdrop blur
+      if (Platform.OS === "web") {
+        (container as Record<string, unknown>).backdropFilter = 'blur(14px)';
+        (container as Record<string, unknown>).WebkitBackdropFilter = 'blur(14px)';
+      }
       break;
     default:
       container = baseStyle;

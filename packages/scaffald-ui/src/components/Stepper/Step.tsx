@@ -90,7 +90,7 @@ export function Step({
       baseStyles.push({
         backgroundColor: 'transparent',
         borderWidth: 1,
-        borderColor: isLight ? colors.border.light['200'] : colors.border.dark['200'],
+borderColor: isLight ? colors.border.light.default : colors.border.dark.default,
       })
     }
 

@@ -1,6 +1,6 @@
 import { ROUTES } from "@scf/core/constants/routes";
 import { usePreferencesWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
-import { Button, DashboardWidget, H4, LoadingState } from "@scaffald/ui";
+import { Button, DashboardWidget, H4, Skeleton, SkeletonForm } from "@scaffald/ui";
 import { useRouter } from "expo-router";
 import { Text, Row, Stack } from "@scaffald/ui";
 
@@ -24,7 +24,10 @@ export function PreferencesWidget({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <LoadingState message="Loading preferences..." />
+        <Stack gap={12}>
+          <Skeleton width={100} height={20} shape="text" />
+          <SkeletonForm fields={4} />
+        </Stack>
       </DashboardWidget>
     );
   }

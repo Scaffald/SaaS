@@ -14,8 +14,7 @@ import {
 import type { Mock } from "vitest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const mockUseQuery = vi.fn();
-const mockMutateAsync = vi.fn();
+const mockMutate = vi.fn();
 const mockToastShow = vi.fn();
 const mockInvalidateProfileQueries = vi.fn();
 
@@ -29,6 +28,32 @@ const isChecked = (element: HTMLElement) => {
   }
   return element.getAttribute("aria-checked") === "true";
 };
+
+let employmentData: Partial<EmploymentProfileFormData>;
+
+vi.mock("@scf/core/utils/profile-employment-sdk-hooks", () => ({
+  useEmployment: () => ({
+    data: employmentData,
+    isLoading: false,
+    isFetching: false,
+  }),
+  useUpdateEmploymentMutation: vi.fn(),
+  useEmploymentUpdateMutationWithSync: () => ({
+    mutate: (payload: Parameters<typeof mockMutate>[0]) => mockMutate(payload),
+    isPending: false,
+  }),
+}));
+
+vi.mock("lucide-react-native", () => ({
+  Flag: () => null,
+  MapPin: () => null,
+  Plane: () => null,
+  DollarSign: () => null,
+  Car: () => null,
+  Shield: () => null,
+  Calendar: () => null,
+  Check: () => null,
+}));
 
 vi.mock("../utils/profile-sync", () => ({
   invalidateProfileQueries: (...args: unknown[]) =>
@@ -47,17 +72,6 @@ vi.mock("@scaffald/ui", () => ({
   useToast: () => ({
     show: mockToastShow,
   }),
-}));
-
-vi.mock("lucide-react-native", () => ({
-  Flag: () => null,
-  MapPin: () => null,
-  Plane: () => null,
-  DollarSign: () => null,
-  Car: () => null,
-  Shield: () => null,
-  Calendar: () => null,
-  Check: () => null,
 }));
 
 vi.mock("@scaffald/ui", () => {
@@ -361,7 +375,66 @@ vi.mock("@scaffald/ui", () => {
     <View>{children}</View>
   );
 
-  const Checkbox = ({
+  const RangeSlider = ({
+    value = 25,
+    onValueChange,
+    min = 10,
+    max = 250,
+    step = 5,
+    disabled = false,
+  }: {
+    value?: number;
+    onValueChange?: (value: number) => void;
+    min?: number;
+    max?: number;
+    step?: number;
+    disabled?: boolean;
+    size?: string;
+  }) => (
+    <View>
+      <button
+        type="button"
+        role="slider"
+        aria-label="Travel slider"
+        aria-valuemin={min}
+        aria-valuemax={max}
+        aria-valuenow={value}
+        disabled={disabled}
+        onClick={() =>
+          onValueChange?.(Math.min(max, (value ?? min) + step))
+        }
+      >
+        <Text>{value} miles</Text>
+      </button>
+    </View>
+  );
+
+  const SettingsToggleCard = ({
+    title,
+    enabled,
+    onToggleChange,
+    disabled,
+  }: {
+    title?: string;
+    enabled?: boolean;
+    onToggleChange?: (checked: boolean) => void;
+    disabled?: boolean;
+    [key: string]: unknown;
+  }) => (
+    <button
+      type="button"
+      role="switch"
+      aria-label={title}
+      aria-checked={enabled}
+      disabled={disabled}
+      onClick={() => onToggleChange?.(!enabled)}
+    >
+      <Text>{title ?? ""}</Text>
+      <Text>{enabled ? "On" : "Off"}</Text>
+    </button>
+  );
+
+  const CheckboxComponent = ({
     accessibilityLabel,
     checked,
     onChange,
@@ -414,8 +487,17 @@ vi.mock("@scaffald/ui", () => {
     Input,
     H4: ({ children }: { children?: ReactNode }) => <Text>{children}</Text>,
     Spinner,
+    IconCircle: ({
+      icon: Icon,
+    }: {
+      icon: React.ComponentType<{ size?: number; color?: string }>;
+    }) => (
+      <View>{Icon ? <Icon size={20} color="#000" /> : null}</View>
+    ),
     Slider,
-    Checkbox,
+    RangeSlider,
+    SettingsToggleCard,
+    Checkbox: CheckboxComponent,
     Toggle,
     Label: ({ children }: { children?: ReactNode }) => <Text>{children}</Text>,
     ConfirmationModal: () => null,
@@ -450,99 +532,18 @@ vi.mock("@scaffald/ui", () => {
   };
 });
 
-let employmentData: Partial<EmploymentProfileFormData>;
-
-vi.mock("@scf/core/utils/api", async () => {
-  const actualModule = (await vi.importActual("@scf/core/utils/api")) as Record<
-    string,
-    unknown
-  >;
-
-  return {
-    ...actualModule,
-    api: {
-      profile: {
-        employment: {
-          getEmployment: {
-            useQuery: () => mockUseQuery(),
-          },
-          updateEmployment: {
-            useMutation: (options?: {
-              onMutate?: (
-                input: EmploymentProfileFormData
-              ) => Promise<void> | void;
-              onSuccess?: (
-                result: { success: boolean },
-                input: EmploymentProfileFormData,
-                context: unknown
-              ) => Promise<void> | void;
-              onError?: (
-                error: unknown,
-                input: EmploymentProfileFormData,
-                context: unknown
-              ) => Promise<void> | void;
-              onSettled?: (
-                result: { success: boolean } | undefined,
-                error: unknown
-              ) => Promise<void> | void;
-            }) => ({
-              mutateAsync: async (input: EmploymentProfileFormData) => {
-                if (options?.onMutate) {
-                  await options.onMutate(input);
-                }
-
-                try {
-                  const result = await mockMutateAsync(input);
-                  if (options?.onSuccess) {
-                    await options.onSuccess(result, input, undefined);
-                  }
-                  if (options?.onSettled) {
-                    await options.onSettled(result, undefined);
-                  }
-                  return result;
-                } catch (error) {
-                  if (options?.onError) {
-                    await options.onError(error, input, undefined);
-                  }
-                  if (options?.onSettled) {
-                    await options.onSettled(undefined, error);
-                  }
-                  throw error;
-                }
-              },
-              isLoading: false,
-            }),
-          },
-        },
-      },
-      useContext: () => ({
-        profile: {
-          employment: {
-            getEmployment: {
-              cancel: vi.fn(),
-              getData: vi.fn(() => employmentData),
-              setData: vi.fn(),
-              invalidate: vi.fn(),
-            },
-          },
-        },
-      }),
-    },
-  };
-});
-
-// Import after mocks to avoid hoisting issues
+// Import after mocks
 const {
   AVAILABILITY_OPTIONS,
   DRIVERS_LICENSE_OPTIONS,
   MILITARY_STATUS_OPTIONS,
-  profileEmploymentDefaults,
-} = await import("@scf/core/utils/api");
+  employmentProfileDefaults,
+} = await import("@scf/core/features/profile/config/employment-schema");
 const { ProfileEmploymentLeft } = await import("../profile-employment-left");
 
-// Initialize employmentData after imports
+// Initialize employmentData (used by useEmployment mock)
 employmentData = {
-  ...profileEmploymentDefaults,
+  ...employmentProfileDefaults,
 } as Partial<EmploymentProfileFormData>;
 
 const renderEmploymentForm = () => render(<ProfileEmploymentLeft />);
@@ -550,19 +551,13 @@ const renderEmploymentForm = () => render(<ProfileEmploymentLeft />);
 describe("ProfileEmploymentLeft", () => {
   beforeEach(() => {
     employmentData = {
-      ...profileEmploymentDefaults,
+      ...employmentProfileDefaults,
       open_to_travel: true,
       travel_distance_miles: 25,
       preferred_work_locations: [],
     } as Partial<EmploymentProfileFormData>;
 
-    mockUseQuery.mockImplementation(() => ({
-      data: employmentData,
-      isLoading: false,
-      isFetching: false,
-    }));
-
-    mockMutateAsync.mockResolvedValue({ success: true });
+    mockMutate.mockClear();
     mockToastShow.mockClear();
     mockInvalidateProfileQueries.mockClear();
   });
@@ -585,8 +580,12 @@ describe("ProfileEmploymentLeft", () => {
     press(residentSwitch);
     press(passportSwitch);
 
-    expect(isChecked(residentSwitch)).toBe(true);
-    expect(isChecked(passportSwitch)).toBe(true);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ us_resident: true })
+    );
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ us_passport: true })
+    );
   });
 
   it("preserves driver license selections when other toggles change", () => {
@@ -607,21 +606,26 @@ describe("ProfileEmploymentLeft", () => {
     }) as HTMLElement;
     press(residentSwitch);
 
-    expect(isChecked(classACheckbox)).toBe(true);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ drivers_license_classes: ["Class A"] })
+    );
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ us_resident: true })
+    );
   });
 
   it("maintains travel distance slider value when changed", () => {
-    const { getByRole, getByText } = renderEmploymentForm();
+    const { getByRole } = renderEmploymentForm();
 
     const slider = getByRole("slider", {
       name: /travel slider/i,
     }) as HTMLElement;
     expect(slider).toBeInstanceOf(HTMLElement);
 
-    // Slider should be visible (travel is always enabled)
     press(slider);
-    // Value should change
-    expect(getByText(/miles/i)).toBeInstanceOf(HTMLElement);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ travel_distance_miles: 30 })
+    );
   });
 
   it("displays the travel slider within the 10-250 mile range", () => {
@@ -669,54 +673,23 @@ describe("ProfileEmploymentLeft", () => {
     }) as HTMLElement;
     press(passportSwitch);
 
-    const driversSwitch = getByRole("switch", {
-      name: /driver/i,
-    }) as HTMLElement;
-    press(driversSwitch);
-
-    const classACheckbox = getByRole("checkbox", {
-      name: /class a/i,
-    }) as HTMLElement;
-    press(classACheckbox);
-
-    // Travel slider is always visible
-    const slider = getByRole("slider", {
-      name: /travel slider/i,
-    }) as HTMLElement;
-    press(slider);
-
-    mockMutateAsync.mockImplementation(
-      async (input: EmploymentProfileFormData) => {
-        const nextEmployment: EmploymentProfileFormData = {
-          ...input,
-        };
-        employmentData = nextEmployment;
-        return { success: true };
-      }
+    await waitFor(
+      () =>
+        expect(mockMutate).toHaveBeenCalledWith(
+          expect.objectContaining({ us_passport: true })
+        ),
+      { timeout: 1500 }
     );
 
-    const saveButton = getByRole("button", {
-      name: /save changes/i,
-    }) as HTMLButtonElement;
-    press(saveButton);
-
-    await waitFor(() => expect(mockMutateAsync).toHaveBeenCalledTimes(1), {
-      timeout: 1500,
-    });
-
+    // Simulate refetch with updated data
+    employmentData = {
+      ...employmentData,
+      us_passport: true,
+    };
     rerender(<ProfileEmploymentLeft />);
 
     expect(
-      isChecked(getByRole("switch", { name: /us resident/i }) as HTMLElement)
-    ).toBe(true);
-    expect(
       isChecked(getByRole("switch", { name: /us passport/i }) as HTMLElement)
-    ).toBe(true);
-    expect(
-      isChecked(getByRole("switch", { name: /driver/i }) as HTMLElement)
-    ).toBe(true);
-    expect(
-      isChecked(getByRole("checkbox", { name: /class a/i }) as HTMLElement)
     ).toBe(true);
   });
 
@@ -745,16 +718,13 @@ describe("ProfileEmploymentLeft", () => {
 
     const { getByRole } = renderEmploymentForm();
 
-    // Enable driver's license toggle
     const driversSwitch = getByRole("switch", {
       name: /driver/i,
     }) as HTMLElement;
     press(driversSwitch);
 
-    // Note: With mocks, form dirty state detection is limited
-    // This test verifies the component structure and that validation logic exists
-    // Full validation flow is tested in E2E tests
-    expect(mockMutateAsync).not.toHaveBeenCalled();
+    // With atomic save, expanding without selecting does not call mutate
+    expect(mockMutate).not.toHaveBeenCalled();
   });
 
   // Task 1: Multi-select field tests - Military Status
@@ -769,7 +739,6 @@ describe("ProfileEmploymentLeft", () => {
     press(militarySwitch);
     expect(isChecked(militarySwitch)).toBe(true);
 
-    // Select multiple military status options
     const activeDutyCheckbox = getByRole("checkbox", {
       name: /active duty/i,
     }) as HTMLElement;
@@ -780,8 +749,16 @@ describe("ProfileEmploymentLeft", () => {
     press(activeDutyCheckbox);
     press(veteranCheckbox);
 
-    expect(isChecked(activeDutyCheckbox)).toBe(true);
-    expect(isChecked(veteranCheckbox)).toBe(true);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        military_status: expect.arrayContaining(["Active Duty"]),
+      })
+    );
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        military_status: expect.arrayContaining(["Veteran"]),
+      })
+    );
   });
 
   it("preserves military status selections when other toggles change", () => {
@@ -802,7 +779,11 @@ describe("ProfileEmploymentLeft", () => {
     }) as HTMLElement;
     press(residentSwitch);
 
-    expect(isChecked(reserveCheckbox)).toBe(true);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        military_status: ["Reserve"],
+      })
+    );
   });
 
   it("clears military status selections when toggle is turned OFF", () => {
@@ -818,12 +799,18 @@ describe("ProfileEmploymentLeft", () => {
     }) as HTMLElement;
     press(nationalGuardCheckbox);
 
-    expect(isChecked(nationalGuardCheckbox)).toBe(true);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        military_status: ["National Guard"],
+      })
+    );
 
-    // Turn toggle OFF
     press(militarySwitch);
-    expect(isChecked(militarySwitch)).toBe(false);
-    // Checkbox should no longer be visible/checked when toggle is off
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        military_status: [],
+      })
+    );
   });
 
   it("auto-expands military status section when saved values exist", () => {
@@ -877,7 +864,6 @@ describe("ProfileEmploymentLeft", () => {
     press(availabilitySwitch);
     expect(isChecked(availabilitySwitch)).toBe(true);
 
-    // Select multiple availability options
     const partTimeCheckbox = getByRole("checkbox", {
       name: /part-time/i,
     }) as HTMLElement;
@@ -888,8 +874,16 @@ describe("ProfileEmploymentLeft", () => {
     press(partTimeCheckbox);
     press(fullTimeCheckbox);
 
-    expect(isChecked(partTimeCheckbox)).toBe(true);
-    expect(isChecked(fullTimeCheckbox)).toBe(true);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        availability: expect.arrayContaining(["Part-time"]),
+      })
+    );
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        availability: expect.arrayContaining(["Full-time"]),
+      })
+    );
   });
 
   it("preserves availability selections when other toggles change", () => {
@@ -910,7 +904,11 @@ describe("ProfileEmploymentLeft", () => {
     }) as HTMLElement;
     press(passportSwitch);
 
-    expect(isChecked(contractCheckbox)).toBe(true);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        availability: ["Contract"],
+      })
+    );
   });
 
   it("clears availability selections when toggle is turned OFF", () => {
@@ -926,11 +924,18 @@ describe("ProfileEmploymentLeft", () => {
     }) as HTMLElement;
     press(weekendCheckbox);
 
-    expect(isChecked(weekendCheckbox)).toBe(true);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        availability: ["Weekend"],
+      })
+    );
 
-    // Turn toggle OFF
     press(availabilitySwitch);
-    expect(isChecked(availabilitySwitch)).toBe(false);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        availability: [],
+      })
+    );
   });
 
   it("auto-expands availability section when saved values exist", () => {
@@ -983,7 +988,6 @@ describe("ProfileEmploymentLeft", () => {
   it("preserves sub-options when interacting with other multi-select fields", () => {
     const { getByRole } = renderEmploymentForm();
 
-    // Enable driver's license and select Class A
     const driversSwitch = getByRole("switch", {
       name: /driver/i,
     }) as HTMLElement;
@@ -993,7 +997,6 @@ describe("ProfileEmploymentLeft", () => {
     }) as HTMLElement;
     press(classACheckbox);
 
-    // Enable military status and select Active Duty
     const militarySwitch = getByRole("switch", {
       name: /military/i,
     }) as HTMLElement;
@@ -1003,7 +1006,6 @@ describe("ProfileEmploymentLeft", () => {
     }) as HTMLElement;
     press(activeDutyCheckbox);
 
-    // Enable availability and select Part-time
     const availabilitySwitch = getByRole("switch", {
       name: /available for work/i,
     }) as HTMLElement;
@@ -1013,10 +1015,15 @@ describe("ProfileEmploymentLeft", () => {
     }) as HTMLElement;
     press(partTimeCheckbox);
 
-    // All selections should persist
-    expect(isChecked(classACheckbox)).toBe(true);
-    expect(isChecked(activeDutyCheckbox)).toBe(true);
-    expect(isChecked(partTimeCheckbox)).toBe(true);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ drivers_license_classes: ["Class A"] })
+    );
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ military_status: ["Active Duty"] })
+    );
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ availability: ["Part-time"] })
+    );
   });
 
   // Task 2: Validation tests - VR1: Driver's license validation
@@ -1028,15 +1035,13 @@ describe("ProfileEmploymentLeft", () => {
 
     const { getByRole } = renderEmploymentForm();
 
-    // Enable toggle but don't select any classes
     const driversSwitch = getByRole("switch", {
       name: /driver/i,
     }) as HTMLElement;
     press(driversSwitch);
 
-    // Note: Full validation flow with form submission is tested in E2E tests
-    // This unit test verifies component structure and validation logic exists
-    expect(mockMutateAsync).not.toHaveBeenCalled();
+    // Expanding the section does not call mutate until user selects an option or collapses
+    expect(mockMutate).not.toHaveBeenCalled();
   });
 
   // Task 2: Validation tests - VR2: Travel distance validation
@@ -1044,24 +1049,15 @@ describe("ProfileEmploymentLeft", () => {
     employmentData = {
       ...employmentData,
       us_resident: true,
-      travel_distance_miles: undefined, // No travel distance
-    };
-
-    mockUseQuery.mockImplementation(() => ({
-      data: employmentData,
-      isLoading: false,
-      isFetching: false,
-    }));
+      travel_distance_miles: undefined,
+    } as Partial<EmploymentProfileFormData>;
 
     renderEmploymentForm();
 
-    // Note: Full validation flow is tested in E2E tests
-    // This unit test verifies component structure
-    expect(mockMutateAsync).not.toHaveBeenCalled();
+    // Atomic save: travel card validates before sending; component still renders
+    expect(mockMutate).not.toHaveBeenCalled();
   });
 
-  // Task 2: Validation tests - VR3: Residency status validation
-  // Note: Residency status is now optional, so submission should work without it
   it("allows submission when no residency status is selected (VR3)", async () => {
     employmentData = {
       ...employmentData,
@@ -1072,10 +1068,7 @@ describe("ProfileEmploymentLeft", () => {
 
     renderEmploymentForm();
 
-    // Note: Full validation flow is tested in E2E tests
-    // This unit test verifies that residency status is optional
-    // The form should render without errors when residency fields are undefined
-    expect(mockMutateAsync).not.toHaveBeenCalled();
+    expect(mockMutate).not.toHaveBeenCalled();
   });
 
   // Task 2: Validation tests - Hourly rate validation
@@ -1135,29 +1128,25 @@ describe("ProfileEmploymentLeft", () => {
     expect(locationCount.textContent).toContain("Locations: 3");
   });
 
-  // Task 2: Validation tests - Authorized countries (if implemented in UI)
-  // Note: This field may not be visible in the current UI, but validation should still work
   it("validates form submission with all required fields", async () => {
     employmentData = {
       ...employmentData,
-      us_resident: true,
+      us_resident: false,
       travel_distance_miles: 50,
     };
 
     const { getByRole } = renderEmploymentForm();
 
-    // Make form dirty by toggling a switch
     const residentSwitch = getByRole("switch", {
       name: /us resident/i,
     }) as HTMLElement;
     press(residentSwitch);
 
-    // Note: Full submission flow is tested in E2E tests
-    // This unit test verifies component structure
-    // The actual submission test is in the "shows saved values after a successful save" test
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ us_resident: true })
+    );
   });
 
-  // Task 3: Error handling tests
   it("handles network error on mutation failure", async () => {
     employmentData = {
       ...employmentData,
@@ -1166,11 +1155,10 @@ describe("ProfileEmploymentLeft", () => {
     };
 
     const networkError = new Error("Network request failed");
-    mockMutateAsync.mockRejectedValueOnce(networkError);
+    mockMutate.mockImplementation(() => {
+      throw networkError;
+    });
 
-    // Note: Full error handling flow is tested in E2E tests
-    // This unit test verifies error handling logic exists
-    // The actual error handling is tested in integration tests
     expect(networkError).toBeInstanceOf(Error);
   });
 
@@ -1183,11 +1171,10 @@ describe("ProfileEmploymentLeft", () => {
     employmentData = previousData;
 
     const networkError = new Error("Network error");
-    mockMutateAsync.mockRejectedValueOnce(networkError);
+    mockMutate.mockImplementation(() => {
+      throw networkError;
+    });
 
-    // Note: Full optimistic update rollback is tested in E2E tests
-    // This unit test verifies error handling logic exists
-    // The component's onError handler includes rollback logic
     expect(networkError).toBeInstanceOf(Error);
   });
 
@@ -1199,10 +1186,10 @@ describe("ProfileEmploymentLeft", () => {
     };
 
     const error = new Error("Failed to save employment preferences");
-    mockMutateAsync.mockRejectedValueOnce(error);
+    mockMutate.mockImplementation(() => {
+      throw error;
+    });
 
-    // Note: Full error toast flow is tested in E2E tests
-    // This unit test verifies error handling logic exists
     expect(error).toBeInstanceOf(Error);
   });
 
@@ -1220,19 +1207,13 @@ describe("ProfileEmploymentLeft", () => {
   });
 
   it("handles query error gracefully", () => {
-    mockUseQuery.mockImplementation(() => ({
-      data: undefined as EmploymentProfileFormData | undefined,
-      isLoading: false,
-      isFetching: false,
-      error: new Error("Failed to fetch employment data"),
-    }));
+    employmentData = undefined as unknown as Partial<EmploymentProfileFormData>;
 
-    // Form should still render (shows skeleton or empty state)
     expect(() => renderEmploymentForm()).not.toThrow();
   });
 
-  // Task 4: Form state management tests
-  it("tracks form dirty state correctly", () => {
+  // Task 4: Form state management tests (atomic save: no Save button)
+  it("calls mutate when toggles change", () => {
     employmentData = {
       ...employmentData,
       us_resident: false,
@@ -1240,20 +1221,14 @@ describe("ProfileEmploymentLeft", () => {
 
     const { getByRole } = renderEmploymentForm();
 
-    // Initially, form should not be dirty (matches saved data)
-    const saveButton = getByRole("button", {
-      name: /save changes/i,
-    }) as HTMLButtonElement;
-    expect(saveButton.getAttribute("aria-disabled")).toBe("true");
-
-    // Make a change
     const residentSwitch = getByRole("switch", {
       name: /us resident/i,
     }) as HTMLElement;
     press(residentSwitch);
 
-    // Form should now be dirty
-    // Note: In the mock, we can't easily test isDirty, but we can verify the button becomes enabled
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ us_resident: true })
+    );
   });
 
   it("resets form after successful save", async () => {
@@ -1264,40 +1239,24 @@ describe("ProfileEmploymentLeft", () => {
       travel_distance_miles: 75,
     };
 
-    mockMutateAsync.mockImplementation(
-      async (input: EmploymentProfileFormData) => {
-        employmentData = { ...input };
-        return { success: true };
-      }
-    );
-
     const { getByRole, rerender } = renderEmploymentForm();
 
-    // Make changes
     const passportSwitch = getByRole("switch", {
       name: /us passport/i,
     }) as HTMLElement;
     press(passportSwitch);
 
-    const saveButton = getByRole("button", {
-      name: /save changes/i,
-    }) as HTMLButtonElement;
-    press(saveButton);
+    await waitFor(
+      () =>
+        expect(mockMutate).toHaveBeenCalledWith(
+          expect.objectContaining({ us_passport: true })
+        ),
+      { timeout: 1500 }
+    );
 
-    await waitFor(() => expect(mockMutateAsync).toHaveBeenCalledTimes(1), {
-      timeout: 1500,
-    });
-
-    // After save, form should reset with new data
-    mockUseQuery.mockImplementation(() => ({
-      data: savedData,
-      isLoading: false,
-      isFetching: false,
-    }));
-
+    employmentData = savedData as Partial<EmploymentProfileFormData>;
     rerender(<ProfileEmploymentLeft />);
 
-    // Form should reflect saved data
     const updatedPassportSwitch = getByRole("switch", {
       name: /us passport/i,
     }) as HTMLElement;
@@ -1310,13 +1269,8 @@ describe("ProfileEmploymentLeft", () => {
       us_resident: true,
     };
 
-    mockUseQuery.mockImplementation(() => ({
-      data: testData,
-      isLoading: false,
-      isFetching: false,
-    }));
+    employmentData = testData as Partial<EmploymentProfileFormData>;
 
-    // Should render without infinite loop
     expect(() => renderEmploymentForm()).not.toThrow();
   });
 
@@ -1372,12 +1326,11 @@ describe("ProfileEmploymentLeft", () => {
     }) as HTMLElement;
     expect(slider).toBeInstanceOf(HTMLElement);
 
-    // Initial value should be 25
     getByText("25 miles");
-
-    // Change value
     press(slider);
-    getByText("30 miles");
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ travel_distance_miles: 30 })
+    );
   });
 
   it("allows all toggle combinations simultaneously", () => {
@@ -1399,19 +1352,19 @@ describe("ProfileEmploymentLeft", () => {
       name: /available for work/i,
     }) as HTMLElement;
 
-    // Enable all toggles
     press(residentSwitch);
     press(passportSwitch);
     press(driversSwitch);
     press(militarySwitch);
     press(availabilitySwitch);
 
-    // All should remain enabled
-    expect(isChecked(residentSwitch)).toBe(true);
-    expect(isChecked(passportSwitch)).toBe(true);
-    expect(isChecked(driversSwitch)).toBe(true);
-    expect(isChecked(militarySwitch)).toBe(true);
-    expect(isChecked(availabilitySwitch)).toBe(true);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ us_resident: true })
+    );
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ us_passport: true })
+    );
+    expect(mockMutate).toHaveBeenCalled();
   });
 
   it("handles complex form state with multiple fields", async () => {
@@ -1423,7 +1376,6 @@ describe("ProfileEmploymentLeft", () => {
 
     const { getByRole } = renderEmploymentForm();
 
-    // Enable driver's license and select classes
     const driversSwitch = getByRole("switch", {
       name: /driver/i,
     }) as HTMLElement;
@@ -1433,7 +1385,6 @@ describe("ProfileEmploymentLeft", () => {
     }) as HTMLElement;
     press(classACheckbox);
 
-    // Enable military and select status
     const militarySwitch = getByRole("switch", {
       name: /military/i,
     }) as HTMLElement;
@@ -1443,14 +1394,11 @@ describe("ProfileEmploymentLeft", () => {
     }) as HTMLElement;
     press(veteranCheckbox);
 
-    // All selections should persist
-    expect(isChecked(classACheckbox)).toBe(true);
-    expect(isChecked(veteranCheckbox)).toBe(true);
-
-    // Form should be submittable
-    const saveButton = getByRole("button", {
-      name: /save changes/i,
-    }) as HTMLButtonElement;
-    expect(saveButton).toBeInstanceOf(HTMLElement);
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ drivers_license_classes: ["Class A"] })
+    );
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ military_status: ["Veteran"] })
+    );
   });
 });

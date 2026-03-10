@@ -5,36 +5,16 @@ import type { Context } from '../context.ts'
 import { officeProcedure, protectedProcedure, t } from '../middleware.ts'
 
 /**
- * Log notification interaction to audit log
+ * Log notification interaction to audit log (no-op after forsured schema removal)
  */
 async function logNotificationAudit(
-  supabase: Context['supabase'],
-  userId: string,
-  action: string,
-  notificationIds: string[],
-  metadata?: Record<string, unknown>
+  _supabase: Context['supabase'],
+  _userId: string,
+  _action: string,
+  _notificationIds: string[],
+  _metadata?: Record<string, unknown>
 ) {
-  try {
-    // Insert into forsured.audit_log table
-    await supabase
-      .schema('forsured')
-      .from('audit_log')
-      .insert({
-        category: 'data_modification',
-        action: `notification_${action}`,
-        severity: 'low',
-        user_id: userId,
-        table_name: 'notifications',
-        operation: action.includes('delete') ? 'DELETE' : 'UPDATE',
-        metadata: {
-          notification_ids: notificationIds,
-          ...metadata,
-        },
-      } as never)
-  } catch (error) {
-    // Don't fail the main operation if audit logging fails
-    console.warn('[notifications] Failed to log audit event:', error)
-  }
+  // Audit logging to forsured.audit_log removed with forsured schema
 }
 
 const listInputSchema = z.object({

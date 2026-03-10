@@ -134,7 +134,7 @@ export function InputLeftSide({
   color = colors.icon.light.muted,
   style,
 }: InputLeftSideProps) {
-  const iconSize = 24
+  const iconSize = 16
 
   return (
     <View style={[{ justifyContent: 'flex-start' }, style]}>
@@ -197,7 +197,7 @@ export function InputRightSide({
   accessibilityLabel,
   style,
 }: InputRightSideProps) {
-  const iconSize = 20
+  const iconSize = 16
 
   const iconContent = Icon ? (
     <View style={{ width: iconSize, height: iconSize }}>

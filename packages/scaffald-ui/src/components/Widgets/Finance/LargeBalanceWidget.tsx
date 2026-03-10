@@ -20,6 +20,8 @@ import { LinearChart } from '../Charts'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { typographyVariants } from '../../../tokens/typography'
+import { useThemeContext } from '../../../theme'
+import type { ResolvedThemeMode } from '../../../tokens/colors'
 
 export interface LargeBalanceChartData {
   value: number
@@ -68,6 +70,8 @@ export function LargeBalanceWidget({
   chartData,
   style,
 }: LargeBalanceWidgetProps) {
+  const { theme } = useThemeContext()
+  const styles = getStyles(theme)
   return (
     <View style={[styles.container, style]}>
       {title && <Text style={styles.title}>{title}</Text>}
@@ -112,21 +116,22 @@ export function LargeBalanceWidget({
   )
 }
 
-const styles = StyleSheet.create({
+function getStyles(theme: ResolvedThemeMode) {
+  return StyleSheet.create({
   container: {
     flexDirection: 'column',
     gap: spacing[24],
     width: 769,
     minHeight: 581,
     padding: spacing[24],
-    backgroundColor: colors.bg.light.default,
+    backgroundColor: colors.bg[theme].default,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.border.light.default,
+    borderColor: colors.border[theme].default,
   },
   title: {
     ...typographyVariants.paragraphMMedium,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   balanceSection: {
     flexDirection: 'column',
@@ -134,7 +139,7 @@ const styles = StyleSheet.create({
   },
   amount: {
     ...typographyVariants.h4SemiBold,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   changeSection: {
     flexDirection: 'column',
@@ -168,3 +173,4 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 })
+}

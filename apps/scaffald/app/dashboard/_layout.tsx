@@ -2,15 +2,21 @@ import { ErrorBoundary } from '@scf/core/components/ErrorBoundary'
 import { ROUTES } from '@scf/core/constants/routes'
 import { DrawerLayout } from '@scf/core/features/drawer/DrawerLayout'
 import { useProtectedRoute } from '@scf/core/utils/auth/useProtectedRoute'
+import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { usePrerequisites } from '@scaffald/sdk/react'
 import { useRouter } from 'expo-router'
 import { Drawer } from 'expo-router/drawer'
-import { useEffect } from 'react'
-import { Spinner, Text, Stack } from '@scaffald/ui'
+import { useEffect, useRef } from 'react'
+import { StyleSheet } from 'react-native'
+import { Spinner, Text, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 export default function Layout() {
   const { isLoading, user } = useProtectedRoute()
+  const { session, isLoading: isSessionLoading } = useSessionContext()
+  const { theme } = useThemeContext()
   const router = useRouter()
+  const hasRedirectedToOnboardingRef = useRef(false)
 
   // Check prerequisites status - only run when we have a valid user
   // This prevents race conditions after DB resets when session is invalid
@@ -18,24 +24,35 @@ export default function Layout() {
     enabled: !!user, // Only run if user exists
   })
 
-  // Redirect to /onboarding if prerequisites incomplete
+  // Redirect to /onboarding once when prerequisites incomplete (avoids loop / double replace)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: router is stable; deps would cause re-runs on every route change
   useEffect(() => {
-    if (!isCheckingPrereqs && statusData && !statusData.isComplete) {
-      router.replace(ROUTES.ONBOARDING.path)
+    if (isCheckingPrereqs || !statusData || statusData.isComplete || hasRedirectedToOnboardingRef.current) {
+      return
     }
-  }, [statusData, isCheckingPrereqs, router])
+    hasRedirectedToOnboardingRef.current = true
+    router.replace(ROUTES.ONBOARDING.path)
+  }, [statusData, isCheckingPrereqs])
 
-  // Show loading state BEFORE rendering the drawer
-  if (isLoading || isCheckingPrereqs) {
-    return (
-      <Stack justify="center" align="center">
+  // Wait for session before rendering drawer so SDK has token and API calls don't 401
+  const sessionReady = !isSessionLoading && (user ? !!session?.access_token : true)
+
+  // Show loading overlay while auth/session/prereqs are pending.
+  // Keep DrawerLayout always mounted so the Drawer navigator never remounts — remounting
+  // fires all Drawer.Screen navigation effects simultaneously, causing the
+  // "Maximum update depth exceeded" crash.
+  const loadingOverlay =
+    isLoading || isCheckingPrereqs || !sessionReady ? (
+      <Stack
+        style={{ ...StyleSheet.absoluteFillObject, backgroundColor: colors.bg[theme].default }}
+        justify="center"
+        align="center"
+      >
         <Spinner size="lg" />
         <Text>Loading...</Text>
       </Stack>
-    )
-  }
+    ) : null
 
-  // Only render drawer once auth is confirmed
   return (
     <ErrorBoundary
       context={{
@@ -43,7 +60,7 @@ export default function Layout() {
         userId: user?.id,
       }}
     >
-      <DrawerLayout protectionComponent={null} hideDrawer={!statusData?.isComplete}>
+      <DrawerLayout protectionComponent={loadingOverlay} hideDrawer={!statusData?.isComplete}>
         <Drawer.Screen name="index" options={{ title: 'Dashboard' }} />
         <Drawer.Screen name="map/index" options={{ title: 'Map Search' }} />
         <Drawer.Screen name="workers/index" options={{ title: 'Search Workers' }} />

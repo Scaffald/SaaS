@@ -1,6 +1,6 @@
 import { useCalculateSoftSkillsMatch } from '@scf/core/utils/jobs-sdk-hooks'
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { Chip, DiscoverCard, extractPlainText } from '@scaffald/ui'
+import { Chip, DiscoverCard, extractPlainText, getIconSize } from '@scaffald/ui'
 import { Briefcase, Building2, Clock, DollarSign, MapPin } from 'lucide-react-native'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
@@ -233,7 +233,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
               <Text color="$gray11">{job.title}</Text>
               {job.organization && (
                 <Row gap={8} align="center">
-                  <Building2 size="md" color="$gray11" />
+                  <Building2 size={getIconSize('md')} color="$gray11" />
                   <Text color="$gray11">{job.organization.name}</Text>
                 </Row>
               )}
@@ -262,13 +262,13 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
           <Row gap={12} wrap>
             {job.location && (
               <Row gap={6} align="center">
-                <MapPin size="md" color="$gray11" />
+                <MapPin size={getIconSize('md')} color="$gray11" />
                 <Text color="$gray11">{job.location}</Text>
               </Row>
             )}
             {employmentType && (
               <Row gap={6} align="center">
-                <Briefcase size="md" color="$gray11" />
+                <Briefcase size={getIconSize('md')} color="$gray11" />
                 <Text color="$gray11">{employmentType}</Text>
               </Row>
             )}
@@ -288,7 +288,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
           <Row gap={12} align="center">
             {payRange && (
               <Row gap={6} align="center">
-                <DollarSign size="md" color="$green10" />
+                <DollarSign size={getIconSize('md')} color="$green10" />
                 <Text color="$green10">{payRange}</Text>
               </Row>
             )}
@@ -296,7 +296,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
 
           {postedTime && (
             <Row gap={6} align="center">
-              <Clock size="md" color="$gray11" />
+              <Clock size={getIconSize('md')} color="$gray11" />
               <Text color="$gray11">{postedTime}</Text>
             </Row>
           )}

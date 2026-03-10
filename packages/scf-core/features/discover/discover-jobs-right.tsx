@@ -9,7 +9,8 @@ import {
   RangeSlider,
   Row,
   ScrollView,
-  Spinner,
+  Skeleton,
+  SkeletonBox,
   Stack,
   Text,
 } from '@scaffald/ui'
@@ -99,11 +100,14 @@ export function DiscoverJobsRight({
 
   if (filtersLoading) {
     return (
-      <Stack flex={1} align="center" justify="center" padding="md">
-        <Spinner size="lg" color="primary" />
-        <Text style={{ marginTop: 8 }} color="secondary">
-          Loading filters...
-        </Text>
+      <Stack gap={16} padding="md">
+        <SkeletonBox width="100%" height={44} borderRadius={8} />
+        {[0, 1, 2].map((i) => (
+          <Stack key={i} gap={8}>
+            <Skeleton width={120} height={14} shape="text" />
+            <SkeletonBox width="100%" height={40} borderRadius={8} />
+          </Stack>
+        ))}
       </Stack>
     )
   }

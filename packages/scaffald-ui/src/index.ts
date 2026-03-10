@@ -679,6 +679,8 @@ export { FieldError } from "./components/FieldError";
 export type { FieldErrorProps } from "./components/FieldError";
 
 export { CancelIcon, CheckIcon, Icon, InfoIcon } from "./components/Icon";
+export { IconCircle } from "./components/IconCircle";
+export type { IconCircleProps } from "./components/IconCircle";
 export type {
   CancelIconProps,
   CheckIconProps,
@@ -1123,8 +1125,8 @@ export type {
 } from "./components/Chart";
 
 // Widget components
-export { DashboardWidget } from "./components/Widgets/DashboardWidget";
-export type { DashboardWidgetProps } from "./components/Widgets/DashboardWidget";
+export { DashboardWidget, DashboardWidgetHeader } from "./components/Widgets/DashboardWidget";
+export type { DashboardWidgetProps, DashboardWidgetHeaderProps } from "./components/Widgets/DashboardWidget";
 export { LegendIndicator } from "./components/Widgets/LegendIndicator";
 export type {
   LegendIndicatorProps,

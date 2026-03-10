@@ -64,7 +64,7 @@ export function Slider({
           disabled={disabled || slider.isDragging}
           hitSlop={{ top: 8, bottom: 8, left: 0, right: 0 }} // Increase touchable area
         >
-          <View style={styles.trackPressArea} pointerEvents="box-only" />
+          <View style={[styles.trackPressArea, { pointerEvents: 'box-only' }]} />
         </Pressable>
         <SliderTrack
           value={slider.isRange ? undefined : slider.currentValue}

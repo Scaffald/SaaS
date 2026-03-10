@@ -499,7 +499,7 @@ import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { forsured } from '../../../lib/supabase';
 import { nanoid } from 'nanoid';
 
-const INBOUND_EMAIL_DOMAIN = process.env.CONVERSATION_EMAIL_DOMAIN || 'chat.forsured.com';
+const INBOUND_EMAIL_DOMAIN = process.env.CONVERSATION_EMAIL_DOMAIN || 'chat.example.com';
 
 const ConversationTypeEnum = z.enum(['private_broker', 'cross_party']);
 const ConversationStatusEnum = z.enum(['active', 'archived']);
@@ -1102,7 +1102,7 @@ Create `apps/forsured-web/src/lib/email/conversationNotifications.ts`:
 import { sendEmail } from './emailConfig';
 import { forsured } from '../supabase';
 
-const APP_URL = process.env.VITE_APP_URL || 'https://app.forsured.com';
+const APP_URL = process.env.VITE_APP_URL || 'https://app.example.com';
 
 const CONFIDENTIALITY_FOOTER = `
   <p style="font-size: 12px; color: #666; margin-top: 24px; border-top: 1px solid #eee; padding-top: 12px;">
@@ -1600,7 +1600,7 @@ BEGIN
 
   -- Create a private broker conversation
   INSERT INTO forsured.conversations (id, task_id, organization_id, type, created_by_user_id, inbound_email_address, status)
-  VALUES (gen_random_uuid(), v_task_id, v_org_id, 'private_broker', v_contractor_id, 'conv-seed-private@chat.forsured.com', 'active')
+  VALUES (gen_random_uuid(), v_task_id, v_org_id, 'private_broker', v_contractor_id, 'conv-seed-private@chat.example.com', 'active')
   RETURNING id INTO v_conv_id;
 
   INSERT INTO forsured.conversation_participants (conversation_id, user_id, role_in_conversation, added_by_user_id)

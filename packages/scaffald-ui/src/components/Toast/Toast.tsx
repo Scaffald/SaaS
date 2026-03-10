@@ -5,7 +5,7 @@
 
 import type React from 'react'
 import { useEffect, useRef, useMemo, useCallback } from 'react'
-import { View, Pressable, Animated, StyleSheet, type ViewStyle } from 'react-native'
+import { View, Pressable, Animated, StyleSheet, Platform, type ViewStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
@@ -49,6 +49,9 @@ const DEFAULT_ICONS: Record<ToastVariant, string> = {
   error: '✕',
 }
 
+/** On web, native driver is not supported; use JS driver to avoid console warning. */
+const USE_NATIVE_DRIVER = Platform.OS !== 'web'
+
 // ============================================================================
 // Toast Component
 // ============================================================================
@@ -87,12 +90,12 @@ export function Toast({
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 200,
-        useNativeDriver: true,
+        useNativeDriver: USE_NATIVE_DRIVER,
       }),
       Animated.timing(translateAnim, {
         toValue: 0,
         duration: 200,
-        useNativeDriver: true,
+        useNativeDriver: USE_NATIVE_DRIVER,
       }),
     ]).start()
   }, [fadeAnim, translateAnim])
@@ -102,12 +105,12 @@ export function Toast({
       Animated.timing(fadeAnim, {
         toValue: 0,
         duration: 150,
-        useNativeDriver: true,
+        useNativeDriver: USE_NATIVE_DRIVER,
       }),
       Animated.timing(translateAnim, {
         toValue: -20,
         duration: 150,
-        useNativeDriver: true,
+        useNativeDriver: USE_NATIVE_DRIVER,
       }),
     ]).start(() => {
       onDismiss()

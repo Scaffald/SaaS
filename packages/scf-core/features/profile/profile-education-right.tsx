@@ -22,7 +22,7 @@ import {
 import { useToast } from "@scaffald/ui";
 import { useState } from "react";
 import { Button, H4, Spinner, Text, Row, Stack } from "@scaffald/ui";
-import { ProfileEmptyState } from "./components";
+import { ProfileEmptyState, ProfileSectionIntro } from "./components";
 import type { EducationEntry } from "./types/education";
 import { formatDateRange } from "./utils/date-formatting";
 
@@ -83,7 +83,12 @@ export function ProfileEducationRight({
   // Show loading state
   if (educationQuery.isPending) {
     return (
-      <DashboardWidget>
+      <Stack gap={16}>
+        <ProfileSectionIntro
+          title="Education"
+          description="Manage your education history. Add or edit entries in the left panel; they appear here once saved."
+        />
+        <DashboardWidget>
         <Stack align="center" justify="center" style={{ padding: 32 }} gap={16}>
           <Spinner size="lg" />
           <Text style={{ color: colors.text[theme].secondary }}>
@@ -91,23 +96,35 @@ export function ProfileEducationRight({
           </Text>
         </Stack>
       </DashboardWidget>
+      </Stack>
     );
   }
 
   // Show error state
   if (educationQuery.isError) {
     return (
-      <DashboardWidget>
+      <Stack gap={16}>
+        <ProfileSectionIntro
+          title="Education"
+          description="Manage your education history. Add or edit entries in the left panel; they appear here once saved."
+        />
+        <DashboardWidget>
         <Stack align="center" justify="center" style={{ padding: 32 }} gap={16}>
           <Text style={{ color: colors.error[500] }}>
             Failed to load education data
           </Text>
         </Stack>
       </DashboardWidget>
+      </Stack>
     );
   }
 
   return (
+    <Stack gap={16}>
+      <ProfileSectionIntro
+        title="Education"
+        description="Manage your education history. Add or edit entries in the left panel; they appear here once saved."
+      />
     <DashboardWidget>
       <H4>Saved Education</H4>
 
@@ -296,5 +313,6 @@ export function ProfileEducationRight({
         </Stack>
       )}
     </DashboardWidget>
+    </Stack>
   );
 }

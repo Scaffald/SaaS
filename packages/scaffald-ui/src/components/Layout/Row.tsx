@@ -76,7 +76,7 @@ export function Row({
   borderColor,
   style,
   ...viewProps
-}: RowProps) {
+}: RowProps & Record<string, unknown>) {
   const resolvedStyle: ViewStyle | undefined =
     borderWidth !== undefined || borderColor !== undefined
       ? { ...(style ?? {}), borderWidth, borderColor }

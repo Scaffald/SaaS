@@ -22,10 +22,10 @@ import {
   fontSize,
   lineHeight,
   letterSpacing,
-  fontFamily,
   fontWeight as fontWeightTokens,
 } from '../../tokens/typography'
 import { colors } from '../../tokens/colors'
+import { getFontFamily } from './Typography.styles'
 
 /**
  * Get typography values for a heading level
@@ -76,7 +76,7 @@ const getHeadingStyle = (
   const resolvedWeight = weight || defaultWeights[level]
 
   return {
-    fontFamily: serif ? fontFamily.serif : fontFamily.heading,
+    fontFamily: getFontFamily(resolvedWeight, serif),
     fontSize: sizes[level],
     fontWeight: fontWeightTokens[resolvedWeight],
     lineHeight: lineHeights[level],

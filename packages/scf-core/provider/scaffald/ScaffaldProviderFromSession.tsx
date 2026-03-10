@@ -40,6 +40,8 @@ export function ScaffaldProviderFromSession({ children }: { children: ReactNode 
     if (!baseUrl) {
       return { baseUrl: 'https://api.scaffald.com', apiKey: 'dummy' }
     }
+    // Use valid credentials whenever available, even while loading (e.g. initialSession).
+    // Only use dummy when we have no token and no anon key yet.
     const token = session?.access_token?.trim()
     if (token) {
       return { baseUrl, supabaseToken: token }

@@ -180,14 +180,11 @@ export function TeamCommentThread({
               style={{ width: "100%" }}
               onPress={() => void handleSubmit()}
               disabled={isSubmitting || commentBody.trim().length === 0}
+              loading={isSubmitting}
               accessibilityLabel="Post comment"
               accessibilityHint="Shares this comment with the team"
             >
-              {isSubmitting ? (
-                <Spinner size="sm" color="gray" />
-              ) : (
-                "Post comment"
-              )}
+              Post comment
             </Button>
           </Row>
         </Stack>

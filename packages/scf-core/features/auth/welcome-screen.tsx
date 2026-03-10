@@ -1,21 +1,132 @@
-import { useActiveWelcomeSlides } from '@scf/core/utils/cms-sdk-hooks'
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import type { WelcomeSlide } from '@scf/schemas'
 import {
   Onboarding,
   OnboardingStepContent,
+  Box,
   Stack,
-  Spinner,
-  ThemeProvider,
+  Text,
   type OnboardingStepInfo,
 } from '@scaffald/ui'
+import { ScaffaldLogo } from '@scf/core/assets'
 import { UserSearch, Share2, Sprout } from 'lucide-react-native'
-import type { ComponentType } from 'react'
+import type { FC } from 'react'
 
 interface WelcomeScreenProps {
   onOnboarded?: () => void
-  /** When true, shows single static branded panel (no carousel). Use in auth split layout. */
+  /** When true, shows dark branded panel with testimonial carousel (no onboarding controls). Use in auth split layout. */
   brandedPanel?: boolean
+}
+
+interface TestimonialSlide {
+  backgroundImage: string
+  quote: string
+  author: string
+  role: string
+  initials: string
+}
+
+const AUTH_TESTIMONIALS: TestimonialSlide[] = [
+  {
+    backgroundImage: 'https://images.pexels.com/photos/271667/pexels-photo-271667.jpeg',
+    quote: '"We\'re based in a rural area, two hours from the nearest city. Finding certified electricians or licensed plumbers used to mean cold calls and word-of-mouth — half the time they\'d show up unvetted. Scaffald changed that. Within a week we had three qualified candidates for a role we\'d been trying to fill for two months."',
+    author: 'Brian Carter',
+    role: 'Owner, Wizard Construction',
+    initials: 'BC',
+  },
+  {
+    backgroundImage: 'https://images.pexels.com/photos/574073/pexels-photo-574073.jpeg',
+    quote: '"Running multiple crews means sifting through a flood of applicants who don\'t have the certifications the job requires. Scaffald filters that noise instantly. Every profile we see is verified. We\'ve cut our sourcing time by more than half and our supervisors spend less time in HR and more time on site."',
+    author: 'Steve Stoddard',
+    role: 'Principal, Lighthouse Construction',
+    initials: 'SS',
+  },
+  {
+    backgroundImage: 'https://images.pexels.com/photos/1216589/pexels-photo-1216589.jpeg',
+    quote: '"Before Scaffald, hiring for a mid-size project took three to four weeks of back-and-forth, credential checks, and paperwork. Now we\'re putting people to work in under a week. Faster hiring means less project downtime, and less downtime means better margins — it compounds quickly."',
+    author: 'Stephanie Massei',
+    role: 'Owner, Massei Construction',
+    initials: 'SM',
+  },
+  {
+    backgroundImage: 'https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg',
+    quote: '"What struck me most is what this means for the workers themselves. These are skilled people — ironworkers, masons, certified welders — who had no way to properly market themselves. Scaffald gives them a real professional presence. They\'re not just a phone number in someone\'s contact list anymore."',
+    author: 'Anthony Bango',
+    role: 'Project Executive, Christman Construction',
+    initials: 'AB',
+  },
+  {
+    backgroundImage: 'https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg',
+    quote: '"Construction labor has been a black box for decades — job boards from the early internet era, informal networks that excluded outsiders. Scaffald is doing what LinkedIn did for white-collar professionals, but for an industry that represents a far larger share of the economy. This is a genuine category creator."',
+    author: 'Zach Servideo',
+    role: 'Managing Partner, Value Creation Labs',
+    initials: 'ZS',
+  },
+]
+
+const textShadow = {
+  textShadowColor: 'rgba(0, 0, 0, 0.75)',
+  textShadowOffset: { width: 0, height: 1 },
+  textShadowRadius: 3,
+}
+
+function AuthTestimonialContent({ quote, author, role }: Omit<TestimonialSlide, 'initials'>) {
+  return (
+    <Stack
+      flex={1}
+      justify="center"
+      align="center"
+      style={{ paddingHorizontal: 48, paddingVertical: 60 }}
+    >
+      {/* Logo + tagline */}
+      <Stack gap={12} align="center" style={{ marginBottom: 44 }}>
+        <ScaffaldLogo
+          width={180}
+          height={29}
+          primaryColor="#ffffff"
+          secondaryColor="rgba(255,255,255,0.7)"
+          gradientStart="#ffffff"
+          gradientEnd="rgba(255,255,255,0.85)"
+        />
+        <Text
+          style={{
+            color: 'rgba(255,255,255,0.72)',
+            fontSize: 17,
+            textAlign: 'center',
+            lineHeight: 25,
+            letterSpacing: 0.2,
+            ...textShadow,
+          }}
+        >
+          {'Find, hire, and manage skilled tradespeople.\nBuilt for skilled professionals.'}
+        </Text>
+      </Stack>
+
+      {/* Quote */}
+      <Text
+        style={{
+          color: '#ffffff',
+          fontSize: 18,
+          fontWeight: '500',
+          lineHeight: 28,
+          textAlign: 'center',
+          marginBottom: 28,
+          ...textShadow,
+        }}
+      >
+        {quote}
+      </Text>
+
+      {/* Author (no avatar) */}
+      <Stack gap={2} align="center">
+        <Text style={{ color: '#ffffff', fontWeight: '600', fontSize: 14, textAlign: 'center', ...textShadow }}>
+          {author}
+        </Text>
+        <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, textAlign: 'center', ...textShadow }}>
+          {role}
+        </Text>
+      </Stack>
+    </Stack>
+  )
 }
 
 const createDefaultSlides = (
@@ -55,52 +166,32 @@ const createDefaultSlides = (
 ]
 
 export const WelcomeScreen = ({ onOnboarded, brandedPanel = false }: WelcomeScreenProps = {}) => {
-  const { data, isLoading } = useActiveWelcomeSlides()
   const { t } = useTranslation()
 
-  if (isLoading) {
+  // Branded auth panel: dark testimonial carousel
+  if (brandedPanel) {
+    const testimonialSlides: OnboardingStepInfo[] = AUTH_TESTIMONIALS.map((slide) => ({
+      backgroundImage: slide.backgroundImage,
+      Content: (() => {
+        const s = slide
+        const ContentComponent: FC = () => <AuthTestimonialContent {...s} />
+        return ContentComponent
+      })(),
+    }))
+
     return (
-      <ThemeProvider>
-        <Stack flex={1} align="center" justify="center">
-          <Spinner size="lg" />
-        </Stack>
-      </ThemeProvider>
+      <Box flex={1}>
+        <Onboarding overlay="dark" autoSwipe showControls={false} steps={testimonialSlides} paginationStyle={{ marginBottom: 32 }} />
+      </Box>
     )
   }
 
-  const steps: OnboardingStepInfo[] =
-    data?.slides && data.slides.length > 0
-      ? data.slides.map((slide: WelcomeSlide) => {
-          const icons: Record<string, ComponentType<{ size?: number; color?: string }>> = {
-            UserSearch,
-            Share2,
-            Sprout,
-          }
-          const IconComponent = icons[slide.icon_name] ?? UserSearch
-
-          return {
-            backgroundImage: slide.background_image_url,
-            Content: () => (
-              <OnboardingStepContent
-                title={slide.title}
-                icon={IconComponent}
-                description={slide.description}
-              />
-            ),
-          }
-        })
-      : createDefaultSlides(t)
-
-  const stepsToShow = brandedPanel ? steps.slice(0, 1) : steps
+  // Standard onboarding flow (mobile)
+  const steps: OnboardingStepInfo[] = createDefaultSlides(t)
 
   return (
-    <ThemeProvider>
-      <Onboarding
-        autoSwipe={!brandedPanel}
-        onOnboarded={onOnboarded}
-        steps={stepsToShow}
-        staticMode={brandedPanel}
-      />
-    </ThemeProvider>
+    <Box flex={1}>
+      <Onboarding autoSwipe={true} onOnboarded={onOnboarded} steps={steps} />
+    </Box>
   )
 }

@@ -2,46 +2,49 @@
 
 This directory contains all seed data for development and testing environments. Seeds are separated by concern to make it easier to maintain and selectively apply data.
 
+## How seeding runs
+
+When you run `pnpm supa db reset`, Supabase applies all migrations and then runs **every `seeds/*.sql` file** in alphabetical order (see `config.toml` → `[db.seed]` → `sql_paths = ['./seeds/*.sql']`). There is no single `seed.sql` orchestrator; the glob runs each `.sql` file directly.
+
 ## Seed Files
 
-### Core Seeds (Run Automatically)
-- **`seed.sql`** - Main orchestrator file that runs all core seeds in order
-  - Runs automatically with `pnpm supa db reset`
-  - Imports modular seed files in correct dependency order
+### Core Seeds (run automatically on `pnpm supa db reset`)
 
-#### Modular Core Seeds (Imported by seed.sql)
-1. **`001_seed-industries.sql`** - 4 industries (Construction, Manufacturing, Transportation, Energy)
-2. **`002_seed-users.sql`** - 50 realistic users with full profiles, auth accounts, and geographic distribution
-3. **`003_seed-organizations.sql`** - 8 sample organizations across different locations
-4. **`004_seed-unicorn-org.sql`** - Unicorn organization and 3 initial jobs
-5. **`005_seed-ats-data.sql`** - Complete ATS testing data:
-   - 8 demo job postings across multiple organizations
-   - 18 candidate applications in various stages
-   - Application messages for communication tracking
-   - Applications distributed across all workflow statuses
+These files run in glob order when you run `pnpm supa db reset`:
+
+1. **`001_seed-industries.sql`** – 4 industries (Construction, Manufacturing, Transportation, Energy)
+2. **`002_seed-users.sql`** – 50 realistic users with full profiles, auth accounts, and geographic distribution
+3. **`002a_seed-api-test-user.sql`** – API test user for automation: `test@example.com` / `test123456` (used by `scripts/test-api-local.ts` and SDK integration tests)
+4. **`003_seed-organizations.sql`** – 8 sample organizations across different locations
+5. **`004_seed-unicorn-org.sql`** – Unicorn organization and 3 initial jobs
+
+**Disabled:** **`005_seed-ats-data.sql.disabled`** – ATS demo data (8 demo jobs, 18 applications, messages). Not run by default. To use it, rename to `005_seed-ats-data.sql` or run manually: `pnpm supa db seed --file seeds/005_seed-ats-data.sql`. See [Optional/Specialized Seeds](#optional-specialized-seeds-run-manually) for details.
 
 ### Optional/Specialized Seeds (Run Manually)
-- **`seed-affiliates.sql`** - Affiliate program partners (OSHA, NIMS, etc.)
-- **`seed-soft-skills.sql`** - Soft skills taxonomy (35 skills across 4 categories)
-- **`seed-test-users.sql`** - Three specific test users for manual testing
-- **`seed-super-admins.sql`** - Super admin role assignments for core team
-- **`seed-job-feeds.sql`** - External RSS job feed configurations
+- **`seed-affiliates.sql`** – Affiliate program partners (OSHA, NIMS, etc.)
+- **`seed-soft-skills.sql`** – Soft skills taxonomy (35 skills across 4 categories)
+- **`seed-test-users.sql`** – Three specific test users for manual testing
+- **`seed-super-admins.sql`** – Super admin role assignments for core team
+- **`seed-job-feeds.sql`** – External RSS job feed configurations
 
 ## Usage
 
 ### Using Supabase CLI (Recommended)
 ```bash
-# Seed all data (runs seed.sql automatically)
+# Run all core seeds (happens automatically on db reset)
+pnpm supa db reset
+
+# Run only SQL seeds without reset (re-run all seeds/*.sql)
 pnpm supa db seed
 
-# Seed specific file
+# Seed a specific file
 pnpm supa db seed --file seeds/seed-affiliates.sql
 ```
 
 ### Using psql
 ```bash
-# From project root
-psql $DATABASE_URL -f packages/supabase/seeds/seed.sql
+# From project root; run individual seed files as needed
+psql $DATABASE_URL -f packages/supabase/seeds/001_seed-industries.sql
 psql $DATABASE_URL -f packages/supabase/seeds/seed-affiliates.sql
 ```
 
@@ -59,16 +62,24 @@ pnpm --filter @app/supabase seed:csi
 
 ## Development Workflow
 
+### Seed for API testing
+
+Use this sequence to get a consistent database and run API tests:
+
+1. **Start Supabase** (if not already): `pnpm supa start`
+2. **Reset DB and run SQL seeds**: `pnpm supa db reset` (applies migrations and runs all `seeds/*.sql`)
+3. **Optional – TypeScript reference data**: `pnpm supa:seed` (CSI, jobs, O*NET, etc.). Only needed for tests that require O*NET, CSI, or external jobs.
+4. **Serve the API** (separate terminal): `pnpm supa functions serve api` (or see [API_TESTING_GUIDE](../../../docs/API_TESTING_GUIDE.md)) so smoke script and REST tests can hit the API.
+
+You can also use the helper script from repo root: `pnpm supa:seed:api` (or `./scripts/seed-for-api-testing.sh`). Use `FULL_SEED=1` to run the TypeScript seeder after reset.
+
 ### Initial Setup
 ```bash
 # Start Supabase
 pnpm supa start
 
-# Run migrations
+# Run migrations and all seeds/*.sql
 pnpm supa db reset
-
-# Seed database (seed.sql runs automatically)
-# No explicit seed command needed after reset
 ```
 
 ### Selective Seeding
@@ -88,31 +99,20 @@ pnpm supa db seed --file seeds/seed-test-users.sql
 
 ### Refreshing Data
 ```bash
-# Reset database and reseed everything
+# Reset database and rerun all seeds/*.sql
 pnpm supa db reset
 
-# Or manually reseed specific data
-pnpm supa db seed --file seeds/seed.sql
+# Or run only SQL seeds (no migration reset)
+pnpm supa db seed
 ```
 
 ## Seed Data Contents
 
-### seed.sql (Orchestrator)
-- Runs all core seed files in dependency order
-- Provides progress feedback during seeding
-- Shows optional seeds that can be run separately
-
-### seed-industries.sql
+### 001_seed-industries.sql
 - 4 base industries with descriptions
 - Construction, Manufacturing, Transportation, Energy
 
-### seed-organizations.sql
-- 8 sample organizations
-- Distributed across MI and OH
-- Includes geographic data (lat/lon)
-- Linked to industries
-
-### seed-users.sql (Largest file)
+### 002_seed-users.sql (largest file)
 - 50 unique realistic users with diverse:
   - Names, headlines, and specialties
   - Geographic distribution across 29 cities
@@ -126,7 +126,13 @@ pnpm supa db seed --file seeds/seed.sql
 - Industry assignments
 - Travel preferences and availability
 
-### 005_seed-ats-data.sql
+### 003_seed-organizations.sql
+- 8 sample organizations
+- Distributed across MI and OH
+- Includes geographic data (lat/lon)
+- Linked to industries
+
+### 005_seed-ats-data.sql (optional; file is disabled by default as 005_seed-ats-data.sql.disabled)
 - **8 Demo Jobs**: Various construction and trade positions across multiple organizations
   - Commercial Electrician, Licensed Plumber, Carpenter, Construction Project Manager
   - Site Supervisor, HVAC Technician, Heavy Equipment Operator, Safety Coordinator

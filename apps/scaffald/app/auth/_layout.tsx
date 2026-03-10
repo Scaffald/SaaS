@@ -1,32 +1,31 @@
-import { ScaffaldLogo } from '@scf/core/assets'
 import { useProtectedRoute } from '@scf/core/utils/auth/useProtectedRoute'
-import { Box, Text, ThemeProvider, ToastContainer, ToastProvider } from '@scaffald/ui'
+import { Box, Text, ToastContainer, ToastProvider } from '@scaffald/ui'
 import { Stack } from 'expo-router'
+import { View } from 'react-native'
+import { AuthFloatingToggles } from './_FloatingToggles'
 
 export default function Layout() {
   const { isLoading } = useProtectedRoute()
 
   if (isLoading) {
     return (
-      <ThemeProvider>
-        <Box align="center" justify="center">
-          <Text>Loading...</Text>
-        </Box>
-      </ThemeProvider>
+      <Box align="center" justify="center">
+        <Text>Loading...</Text>
+      </Box>
     )
   }
 
   return (
-    <ThemeProvider>
-      <ToastProvider>
+    <ToastProvider>
+      <View style={{ flex: 1 }}>
         <Stack
           screenOptions={{
-            headerTitle: () => <ScaffaldLogo width={140} height={23} />,
-            headerTitleAlign: 'center',
+            headerShown: false,
           }}
         />
-        <ToastContainer />
-      </ToastProvider>
-    </ThemeProvider>
+        <AuthFloatingToggles />
+      </View>
+      <ToastContainer />
+    </ToastProvider>
   )
 }

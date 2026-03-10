@@ -91,7 +91,7 @@ export function ToastContainer({
     : visibleToasts
 
   return (
-    <View style={[styles.container, positionStyle, style]} pointerEvents="box-none">
+    <View style={[styles.container, positionStyle, style, { pointerEvents: 'box-none' }]}>
       {orderedToasts.map((toast) => (
         <Toast
           key={toast.id}

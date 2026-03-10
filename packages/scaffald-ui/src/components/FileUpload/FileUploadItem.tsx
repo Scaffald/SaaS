@@ -94,7 +94,16 @@ export function FileUploadItem({
   }
 
   return (
-    <View style={[styles.container, style]}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: colors.bg[theme].default,
+          borderColor: colors.border[theme].default,
+        },
+        style,
+      ]}
+    >
       <View style={styles.row}>
         {/* File icon */}
         <View
@@ -188,10 +197,8 @@ export function FileUploadItem({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.bg.light.default,
     borderRadius: borderRadius.s,
     borderWidth: 1,
-    borderColor: colors.border.light['200'],
     padding: spacing[12],
   },
   row: {

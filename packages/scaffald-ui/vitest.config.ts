@@ -13,6 +13,10 @@ const packageConfig = {
     alias: [
       { find: 'react-native', replacement: 'react-native-web' },
       {
+        find: 'react-native-svg',
+        replacement: resolve(workspaceRoot, 'tests/infrastructure/vitest/mocks/react-native-svg.tsx'),
+      },
+      {
         find: '@scaffald/ui',
         replacement: resolve(packageRoot, 'src'),
       },
@@ -36,4 +40,6 @@ const packageConfig = {
   },
 }
 
-export default mergeConfig(baseConfig, packageConfig)
+const merged = mergeConfig(baseConfig, packageConfig)
+merged.test.include = ['packages/scaffald-ui/src/**/*.{test,spec}.{ts,tsx}']
+export default merged

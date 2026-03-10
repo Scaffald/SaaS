@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
   getAvatarUrl,
-  getCMSMediaUrl,
   getStorageUrl,
 } from '../supabase/storage'
 
@@ -62,18 +61,6 @@ describe('supabase storage helpers', () => {
     process.env.EXPO_PUBLIC_SUPABASE_URL = ''
     expect(getStorageUrl('bucket', 'file.png')).toBeNull()
     expect(errorSpy).toHaveBeenCalledWith('EXPO_PUBLIC_SUPABASE_URL is not set')
-  })
-
-  it('reuses storage helper for CMS media URLs', () => {
-    process.env.EXPO_PUBLIC_SUPABASE_URL = 'https://supabase.example.com'
-    expect(getCMSMediaUrl('slides/welcome.png')).toBe(
-      'https://supabase.example.com/storage/v1/object/public/cms-media/slides/welcome.png',
-    )
-  })
-
-  it('returns null for empty CMS media path', () => {
-    expect(getCMSMediaUrl('')).toBeNull()
-    expect(getCMSMediaUrl(null)).toBeNull()
   })
 })
 

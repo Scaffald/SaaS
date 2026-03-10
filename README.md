@@ -477,10 +477,10 @@ Please reference [Supabase's documentation](https://supabase.com/docs/guides/sel
 
 ### Supabase Development Commands
 
-- Start Supabase: `pnpm supa:start` (with environment variables loaded)
-- Stop Supabase: `pnpm supa:stop`
+- Start Supabase: `pnpm supa start` (or `pnpm supa:start:full` with env loaded)
+- Stop Supabase: `pnpm supa stop`
 - Restart Supabase: `pnpm supa:restart`
-- Check status: `pnpm supa:status`
+- Check status: `pnpm supa status`
 - Reset database: `pnpm supa:reset`
 - Generate types: `pnpm supa:generate` (local) or `pnpm supa:generate:remote`
 - Create migration: `pnpm supa:migration:new <name>`
@@ -488,7 +488,16 @@ Please reference [Supabase's documentation](https://supabase.com/docs/guides/sel
 - Open Studio: `pnpm supa:studio` (opens http://127.0.0.1:54323)
 - Open Mailpit: `pnpm supa:mailpit` (opens http://127.0.0.1:54324)
 
-**Important:** Always use `pnpm supa:start` instead of direct supabase commands to ensure environment variables are properly loaded.
+#### Local backend (two processes)
+
+The REST API and tRPC are served by Edge Functions in a **separate process**. For full local backend (no 404s on `/functions/v1/api/v1/...`):
+
+1. **Terminal 1:** `pnpm supa start` (or `pnpm supa:start:full`) — Supabase stack.
+2. **Terminal 2:** `pnpm supa:functions` — serves the `api` Edge Function and others. Leave running.
+
+**Verify:** `curl -s http://127.0.0.1:54321/functions/v1/api/health` should return `{"status":"ok",...}`. If you get 404, start the functions server (step 2). See [AGENTINFO.md](AGENTINFO.md) and troubleshooting guide section 5b.
+
+**Important:** Always use `pnpm supa start` (or `pnpm supa:start:full`) instead of direct supabase commands to ensure environment variables are properly loaded.
 
 NOTE: When using tRPC, even if you just want to develop on native, you need to have the web server running to be able to make tRPC requests.
 
@@ -607,62 +616,6 @@ The main apps are:
 - `supabase` Supabase files, migrations, types, etc. + [scripts](/supabase/README.md)
 
 Note that the main entry point for the Expo app is at `apps/expo/app/index.tsx`. For more on how Expo Router works, [check out their docs](https://docs.expo.dev/router/create-pages/).
-
-## Forsured Integration
-
-This monorepo includes **Forsured**, an insurance compliance platform that shares infrastructure with Scaffald.
-
-### Forsured Structure
-
-```
-apps/
-├── scaffald/          # Expo app (iOS, Android, Web) - port 8081
-└── forsured-web/      # Vite web app - port 5173
-
-packages/
-├── forsured/          # @unicornlove/forsured - Aggregate exports
-├── insurance/         # @unicornlove/insurance - Insurance components
-├── compliance/        # @unicornlove/compliance - Compliance components
-└── tasks/             # @unicornlove/tasks - Task management
-```
-
-### Development Commands
-
-```bash
-# Forsured development
-pnpm dev:forsured     # Start Vite dev server (port 5173)
-pnpm build:forsured   # Build for production
-pnpm test:forsured    # Run Forsured tests (2400+ tests)
-pnpm dev:all          # Run Scaffald + Forsured concurrently
-```
-
-### Database Schema
-
-Forsured uses separate database schemas that coexist with Scaffald:
-
-- **`core.*`** - Shared platform tables (users, organizations)
-- **`forsured.*`** - Insurance compliance tables (migrations 200-232)
-- **`data.*`, `onet.*`, `cms.*`** - Shared reference data
-
-### Forsured Database Client
-
-```typescript
-import { forsured, core } from '@scf/supabase/forsured-client';
-
-// Query insurance compliance data
-const policies = await forsured('insurance_policies').select('*');
-const tasks = await forsured('tasks').select('*').eq('project_id', id);
-
-// Query shared platform data
-const users = await core('users').select('*').eq('organization_id', orgId);
-```
-
-### Shared Dependencies
-
-Both applications share:
-- Supabase backend and authentication
-- UI components from `@unicornlove/ui`
-- Build tooling (Nx, Vitest, TypeScript)
 
 ## Route Naming Convention
 

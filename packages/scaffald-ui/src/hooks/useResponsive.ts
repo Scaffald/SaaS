@@ -28,8 +28,8 @@
  * ```
  */
 
-import { useState, useEffect, useCallback } from 'react'
-import { useWindowDimensions, Platform } from 'react-native'
+import { useSyncExternalStore, useCallback } from 'react'
+import { Platform, Dimensions } from 'react-native'
 import { breakpoints, getCurrentBreakpoint, type Breakpoint } from '../tokens/breakpoints'
 
 /**
@@ -84,61 +84,141 @@ export interface UseResponsiveReturn {
   below: (bp: Breakpoint) => boolean
 }
 
-/**
- * Select a value based on breakpoint, with inheritance
- */
-function selectValue<T>(
-  values: ResponsiveValue<T>,
-  width: number
-): T | undefined {
-  const breakpointOrder: (keyof ResponsiveValue<T>)[] = [
-    'xxl',
-    'xl',
-    'lg',
-    'md',
-    'sm',
-    'xs',
-    'base',
-  ]
+// ── Shared snapshot type ──────────────────────────────────────────────────────
 
-  // Find the first matching breakpoint value
-  for (const bp of breakpointOrder) {
+type Snapshot = { readonly width: number; readonly height: number }
+
+// ── Web singleton store ───────────────────────────────────────────────────────
+// One module-level store means ONE resize listener shared across ALL
+// useResponsive() instances. This prevents the per-instance useState/useEffect
+// cascade that triggers React's "Maximum update depth exceeded" error when
+// many Box/Stack/Grid components are mounted simultaneously.
+
+let _webSnapshot: Snapshot = { width: 0, height: 0 }
+const _webListeners = new Set<() => void>()
+
+function _readWebDimensions(): { width: number; height: number } {
+  if (typeof window === 'undefined') return { width: 1280, height: 900 }
+  if (window.visualViewport) {
+    return {
+      width: Math.round(window.visualViewport.width * window.visualViewport.scale),
+      height: Math.round(window.visualViewport.height * window.visualViewport.scale),
+    }
+  }
+  return {
+    width: window.document.documentElement.clientWidth,
+    height: window.innerHeight,
+  }
+}
+
+function _updateWebStore() {
+  const { width, height } = _readWebDimensions()
+  if (width !== _webSnapshot.width || height !== _webSnapshot.height) {
+    _webSnapshot = { width, height }
+    _webListeners.forEach((fn) => { fn() })
+  }
+}
+
+function _subscribeWeb(listener: () => void): () => void {
+  if (_webListeners.size === 0 && typeof window !== 'undefined') {
+    // Attach the single shared listener only on first subscriber
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', _updateWebStore)
+    } else {
+      window.addEventListener('resize', _updateWebStore)
+    }
+  }
+  _webListeners.add(listener)
+  return () => {
+    _webListeners.delete(listener)
+    if (_webListeners.size === 0 && typeof window !== 'undefined') {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', _updateWebStore)
+      } else {
+        window.removeEventListener('resize', _updateWebStore)
+      }
+    }
+  }
+}
+
+function _getWebSnapshot(): Snapshot {
+  return _webSnapshot
+}
+
+function _getServerSnapshot(): Snapshot {
+  return { width: 1280, height: 900 }
+}
+
+// Initialize web store immediately on module load
+if (Platform.OS === 'web' && typeof window !== 'undefined') {
+  const initial = _readWebDimensions()
+  _webSnapshot = initial
+}
+
+// ── Native singleton store ────────────────────────────────────────────────────
+
+let _nativeSnapshot: Snapshot = (() => {
+  if (Platform.OS !== 'web') {
+    const d = Dimensions.get('window')
+    return { width: d.width, height: d.height }
+  }
+  return { width: 0, height: 0 }
+})()
+
+const _nativeListeners = new Set<() => void>()
+let _nativeSubscription: ReturnType<typeof Dimensions.addEventListener> | null = null
+
+function _subscribeNative(listener: () => void): () => void {
+  if (_nativeListeners.size === 0) {
+    _nativeSubscription = Dimensions.addEventListener('change', ({ window: w }) => {
+      if (w.width !== _nativeSnapshot.width || w.height !== _nativeSnapshot.height) {
+        _nativeSnapshot = { width: w.width, height: w.height }
+        _nativeListeners.forEach((fn) => { fn() })
+      }
+    })
+  }
+  _nativeListeners.add(listener)
+  return () => {
+    _nativeListeners.delete(listener)
+    if (_nativeListeners.size === 0 && _nativeSubscription) {
+      _nativeSubscription.remove()
+      _nativeSubscription = null
+    }
+  }
+}
+
+function _getNativeSnapshot(): Snapshot {
+  return _nativeSnapshot
+}
+
+// ── Platform-selected store (stable module-level references) ─────────────────
+
+const _subscribe = Platform.OS === 'web' ? _subscribeWeb : _subscribeNative
+const _getSnapshot = Platform.OS === 'web' ? _getWebSnapshot : _getNativeSnapshot
+
+// ── Breakpoint helpers ────────────────────────────────────────────────────────
+
+function selectValue<T>(values: ResponsiveValue<T>, width: number): T | undefined {
+  const order: (keyof ResponsiveValue<T>)[] = ['xxl', 'xl', 'lg', 'md', 'sm', 'xs', 'base']
+  for (const bp of order) {
     if (values[bp] !== undefined) {
       if (bp === 'base') return values[bp]
       if (width >= breakpoints[bp as Breakpoint]) return values[bp]
     }
   }
-
   return values.base
 }
 
 /**
- * Hook for responsive design utilities
- * Uses useWindowDimensions for React Native compatibility
+ * Hook for responsive design utilities.
+ *
+ * Uses a module-level singleton store (not per-instance useState) so that all
+ * components share ONE resize event listener. This prevents the cascading
+ * setState pattern that exhausts React's nested-update limit when many layout
+ * primitives (Box/Stack/Grid) are mounted in the same tree.
  */
 export function useResponsive(): UseResponsiveReturn {
-  const dimensions = useWindowDimensions()
-
-  // For web, we can also listen to window resize events for better performance
-  const [width, setWidth] = useState(dimensions.width)
-  const [height, setHeight] = useState(dimensions.height)
-
-  useEffect(() => {
-    if (Platform.OS === 'web' && typeof window !== 'undefined') {
-      const handleResize = () => {
-        setWidth(window.innerWidth)
-        setHeight(window.innerHeight)
-      }
-
-      window.addEventListener('resize', handleResize)
-      handleResize() // Set initial value
-
-      return () => window.removeEventListener('resize', handleResize)
-    }
-    // For native, use the dimensions from useWindowDimensions
-    setWidth(dimensions.width)
-    setHeight(dimensions.height)
-  }, [dimensions.width, dimensions.height])
+  const { width, height } = useSyncExternalStore(_subscribe, _getSnapshot, _getServerSnapshot)
 
   const breakpoint = width >= breakpoints.xs ? getCurrentBreakpoint(width) : 'base'
   const isMobile = width < breakpoints.sm
@@ -146,37 +226,15 @@ export function useResponsive(): UseResponsiveReturn {
   const isDesktop = width >= breakpoints.lg
 
   const select = useCallback(
-    <T>(values: ResponsiveValue<T>): T | undefined => {
-      return selectValue(values, width)
-    },
+    <T>(values: ResponsiveValue<T>): T | undefined => selectValue(values, width),
     [width]
   )
 
-  const atLeast = useCallback(
-    (bp: Breakpoint): boolean => {
-      return width >= breakpoints[bp]
-    },
-    [width]
-  )
+  const atLeast = useCallback((bp: Breakpoint): boolean => width >= breakpoints[bp], [width])
 
-  const below = useCallback(
-    (bp: Breakpoint): boolean => {
-      return width < breakpoints[bp]
-    },
-    [width]
-  )
+  const below = useCallback((bp: Breakpoint): boolean => width < breakpoints[bp], [width])
 
-  return {
-    width,
-    height,
-    breakpoint,
-    isMobile,
-    isTablet,
-    isDesktop,
-    select,
-    atLeast,
-    below,
-  }
+  return { width, height, breakpoint, isMobile, isTablet, isDesktop, select, atLeast, below }
 }
 
 export type { Breakpoint }

@@ -18,7 +18,6 @@ import { documentsRouter } from "./documents.router.ts";
 import { applicationsRouter } from "./applications.router.ts";
 import { authRouter } from "./auth.router.ts";
 import { backgroundChecksRouter } from "./background-checks.router.ts";
-import { cmsRouter } from "./cms.router.ts";
 import { connectionsRouter } from "./connections.router.ts";
 import { employersRouter } from "./employers.router.ts";
 import { engagementRouter } from "./engagement.router.ts";
@@ -50,10 +49,6 @@ import { teamsRouter } from "./teams.router.ts";
 import { userProfileRouter } from "./user-profile.router.ts";
 import { workLogsRouter } from "./work-logs.router.ts";
 import { workersRouter } from "./workers.router.ts";
-import {
-  complianceDependenciesRouter,
-  complianceRequirementsRouter,
-} from "./compliance/index.ts";
 import { oauthRouter } from "./oauth.router.ts";
 
 /**
@@ -64,7 +59,6 @@ export const appRouter = t.router({
   profile: profileRouter,
   profileWizard: profileWizardRouter,
   auth: authRouter,
-  cms: cmsRouter,
   documents: documentsRouter,
   office: officeRouter,
   applications: applicationsRouter,
@@ -100,9 +94,6 @@ export const appRouter = t.router({
   apiKeys: apiKeysRouter,
   connections: connectionsRouter,
   profileViews: profileViewsRouter,
-  // Compliance routers
-  complianceRequirements: complianceRequirementsRouter,
-  complianceDependencies: complianceDependenciesRouter,
   // CCPA router
   ccpa: ccpaRouter,
   // OAuth router

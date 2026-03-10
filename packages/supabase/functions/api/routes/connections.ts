@@ -86,6 +86,29 @@ const connectionResponseSchema = z
   })
   .openapi('ConnectionResponse')
 
+/** Map core.users row (display_name) to API shape (first_name, last_name) */
+function mapUserToProfile(u: { id: string; display_name?: string | null; avatar_url?: string | null } | null): { id: string; first_name: string; last_name: string; avatar_url: string | null } | undefined {
+  if (!u) return undefined
+  const displayName = (u.display_name ?? '').trim() || 'Unknown'
+  const [first_name, ...rest] = displayName.split(/\s+/)
+  const last_name = rest.join(' ') || ''
+  return { id: u.id, first_name, last_name, avatar_url: u.avatar_url ?? null }
+}
+
+/** Map connection row (requester_user_id, addressee_user_id, requester, addressee) to API shape */
+function mapConnectionRow<T extends Record<string, unknown>>(row: T): Record<string, unknown> {
+  const r = row.requester as { id: string; display_name?: string | null; avatar_url?: string | null } | null
+  const a = row.addressee as { id: string; display_name?: string | null; avatar_url?: string | null } | null
+  return {
+    ...row,
+    requester_id: row.requester_user_id,
+    addressee_id: row.addressee_user_id,
+    updated_at: (row.decided_at ?? row.created_at) as string,
+    requester: mapUserToProfile(r),
+    addressee: mapUserToProfile(a),
+  }
+}
+
 // ============================================================================
 // Routes
 // ============================================================================
@@ -130,21 +153,22 @@ app.openapi(listConnectionsRoute, async (c) => {
   }
 
   // Get all accepted connections where user is either requester or addressee
-  const { data: connections, error } = await supabase
+  // core.connections uses requester_user_id/addressee_user_id and FKs to core.users
+  const { data: connectionsRaw, error } = await supabase
     .schema('core')
     .from('connections')
     .select(`
       id,
-      requester_id,
-      addressee_id,
+      requester_user_id,
+      addressee_user_id,
       status,
       created_at,
-      updated_at,
-      requester:user_profiles!connections_requester_id_fkey(id, first_name, last_name, avatar_url),
-      addressee:user_profiles!connections_addressee_id_fkey(id, first_name, last_name, avatar_url)
+      decided_at,
+      requester:users!connections_requester_user_id_fkey(id, display_name, avatar_url),
+      addressee:users!connections_addressee_user_id_fkey(id, display_name, avatar_url)
     `)
     .eq('status', 'accepted')
-    .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`)
+    .or(`requester_user_id.eq.${user.id},addressee_user_id.eq.${user.id}`)
     .order('created_at', { ascending: false })
 
   if (error) {
@@ -157,7 +181,9 @@ app.openapi(listConnectionsRoute, async (c) => {
     .from('connections')
     .select('*', { count: 'exact', head: true })
     .eq('status', 'accepted')
-    .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`)
+    .or(`requester_user_id.eq.${user.id},addressee_user_id.eq.${user.id}`)
+
+  const connections = (connectionsRaw || []).map((row) => mapConnectionRow(row as Record<string, unknown>))
 
   return c.json({
     data: connections || [],
@@ -204,35 +230,37 @@ app.openapi(getPendingRequestsRoute, async (c) => {
     return c.json({ error: 'Unauthorized' }, 401)
   }
 
-  // Get sent requests
-  const { data: sent, error: sentError } = await supabase
+  // Get sent requests (core.connections uses requester_user_id, users FK)
+  const { data: sentRaw, error: sentError } = await supabase
     .schema('core')
     .from('connections')
     .select(`
       id,
-      requester_id,
-      addressee_id,
+      requester_user_id,
+      addressee_user_id,
       status,
       created_at,
-      requester:user_profiles!connections_requester_id_fkey(id, first_name, last_name, avatar_url)
+      decided_at,
+      requester:users!connections_requester_user_id_fkey(id, display_name, avatar_url)
     `)
-    .eq('requester_id', user.id)
+    .eq('requester_user_id', user.id)
     .eq('status', 'pending')
     .order('created_at', { ascending: false })
 
   // Get received requests
-  const { data: received, error: receivedError } = await supabase
+  const { data: receivedRaw, error: receivedError } = await supabase
     .schema('core')
     .from('connections')
     .select(`
       id,
-      requester_id,
-      addressee_id,
+      requester_user_id,
+      addressee_user_id,
       status,
       created_at,
-      requester:user_profiles!connections_requester_id_fkey(id, first_name, last_name, avatar_url)
+      decided_at,
+      requester:users!connections_requester_user_id_fkey(id, display_name, avatar_url)
     `)
-    .eq('addressee_id', user.id)
+    .eq('addressee_user_id', user.id)
     .eq('status', 'pending')
     .order('created_at', { ascending: false })
 
@@ -243,6 +271,17 @@ app.openapi(getPendingRequestsRoute, async (c) => {
       500
     )
   }
+
+  const mapPendingRow = (row: Record<string, unknown>) => ({
+    id: row.id,
+    requester_id: row.requester_user_id,
+    addressee_id: row.addressee_user_id,
+    status: row.status,
+    created_at: row.created_at,
+    requester: mapUserToProfile(row.requester as { id: string; display_name?: string | null; avatar_url?: string | null } | null),
+  })
+  const sent = (sentRaw || []).map((row) => mapPendingRow(row as Record<string, unknown>))
+  const received = (receivedRaw || []).map((row) => mapPendingRow(row as Record<string, unknown>))
 
   return c.json({
     sent: (sent || []) as Record<string, unknown>[],
@@ -299,9 +338,9 @@ app.openapi(getConnectionStatusRoute, async (c) => {
   const { data: connection } = await supabase
     .schema('core')
     .from('connections')
-    .select('id, status, requester_id, addressee_id')
+    .select('id, status, requester_user_id, addressee_user_id')
     .or(
-      `and(requester_id.eq.${user.id},addressee_id.eq.${userId}),and(requester_id.eq.${userId},addressee_id.eq.${user.id})`
+      `and(requester_user_id.eq.${user.id},addressee_user_id.eq.${userId}),and(requester_user_id.eq.${userId},addressee_user_id.eq.${user.id})`
     )
     .maybeSingle()
 
@@ -314,7 +353,7 @@ app.openapi(getConnectionStatusRoute, async (c) => {
   }
 
   if (connection.status === 'pending') {
-    const isPendingSent = connection.requester_id === user.id
+    const isPendingSent = connection.requester_user_id === user.id
     return c.json({
       status: isPendingSent ? 'pending_sent' : 'pending_received',
       connectionId: connection.id,
@@ -391,7 +430,7 @@ app.openapi(sendConnectionRequestRoute, async (c) => {
     .from('connections')
     .select('id, status')
     .or(
-      `and(requester_id.eq.${user.id},addressee_id.eq.${targetUserId}),and(requester_id.eq.${targetUserId},addressee_id.eq.${user.id})`
+      `and(requester_user_id.eq.${user.id},addressee_user_id.eq.${targetUserId}),and(requester_user_id.eq.${targetUserId},addressee_user_id.eq.${user.id})`
     )
     .maybeSingle()
 
@@ -404,8 +443,8 @@ app.openapi(sendConnectionRequestRoute, async (c) => {
     .schema('core')
     .from('connections')
     .insert({
-      requester_id: user.id,
-      addressee_id: targetUserId,
+      requester_user_id: user.id,
+      addressee_user_id: targetUserId,
       status: 'pending',
     })
     .select()
@@ -485,7 +524,7 @@ app.openapi(acceptConnectionRoute, async (c) => {
   }
 
   // Only the addressee can accept
-  if (connection.addressee_id !== user.id) {
+  if (connection.addressee_user_id !== user.id) {
     return c.json({ error: 'Only the recipient can accept this request' }, 403)
   }
 
@@ -497,7 +536,7 @@ app.openapi(acceptConnectionRoute, async (c) => {
   const { data: updated, error } = await supabase
     .schema('core')
     .from('connections')
-    .update({ status: 'accepted', updated_at: new Date().toISOString() })
+    .update({ status: 'accepted', decided_at: new Date().toISOString() })
     .eq('id', id)
     .select()
     .single()
@@ -571,7 +610,7 @@ app.openapi(declineConnectionRoute, async (c) => {
   }
 
   // Only the addressee can decline
-  if (connection.addressee_id !== user.id) {
+  if (connection.addressee_user_id !== user.id) {
     return c.json({ error: 'Only the recipient can decline this request' }, 403)
   }
 
@@ -647,7 +686,7 @@ app.openapi(removeConnectionRoute, async (c) => {
   }
 
   // Only participants can remove
-  if (connection.requester_id !== user.id && connection.addressee_id !== user.id) {
+  if (connection.requester_user_id !== user.id && connection.addressee_user_id !== user.id) {
     return c.json({ error: 'Only connection participants can remove it' }, 403)
   }
 
@@ -723,7 +762,7 @@ app.openapi(cancelConnectionRoute, async (c) => {
   }
 
   // Only the requester can cancel
-  if (connection.requester_id !== user.id) {
+  if (connection.requester_user_id !== user.id) {
     return c.json({ error: 'Only the requester can cancel this request' }, 403)
   }
 

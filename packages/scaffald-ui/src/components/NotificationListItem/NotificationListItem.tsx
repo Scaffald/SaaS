@@ -89,7 +89,7 @@ export function NotificationListItem({
   const timestampTextStyles = getTimestampTextStyles(theme)
 
   const itemContent = (
-    <View style={[containerStyles, style]} pointerEvents="box-none">
+    <View style={[containerStyles, style, { pointerEvents: 'box-none' }]}>
       {/* Avatar */}
       {avatarSrc && (
         <View style={avatarContainerStyles}>

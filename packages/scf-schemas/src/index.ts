@@ -10,8 +10,6 @@
 
 // Application schemas
 export * from './applications/index.ts';
-// CMS schemas
-export * from './cms/welcome-slides.schema.ts';
 // Common schemas
 export * from './common/index.ts';
 // Feedback schemas

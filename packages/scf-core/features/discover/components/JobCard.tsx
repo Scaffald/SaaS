@@ -1,6 +1,5 @@
-import { DiscoverCard } from '@scaffald/ui'
+import { DiscoverCard, Button, Text, Row, Stack, getIconSize } from '@scaffald/ui'
 import { Briefcase, Building2, DollarSign, MapPin } from 'lucide-react-native'
-import { Button, Text, Row, Stack } from '@scaffald/ui'
 import type { JobMapPin } from '../hooks/useJobs'
 
 type JobCardProps = {
@@ -36,12 +35,12 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
       {/* Job Title and Organization */}
       <Stack gap={4}>
         <Row align="center" gap={8}>
-          <Briefcase size="md" color={isSelected ? '$yellow10' : '$color10'} />
+          <Briefcase size={getIconSize('md')} color={isSelected ? '$yellow10' : '$color10'} />
           <Text color={isSelected ? '$yellow11' : '$color12'}>{job.title}</Text>
         </Row>
         {job.organization_name && (
           <Row align="center" gap={6} marginLeft={24}>
-            <Building2 size="md" color="$gray11" />
+            <Building2 size={getIconSize('md')} color="$gray11" />
             <Text color="$gray11">{job.organization_name}</Text>
           </Row>
         )}
@@ -50,7 +49,7 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
       {/* Location */}
       {job.location && (
         <Row align="center" gap={6}>
-          <MapPin size="md" color={isSelected ? '$yellow10' : '$color10'} />
+          <MapPin size={getIconSize('md')} color={isSelected ? '$yellow10' : '$color10'} />
           <Text color="$gray11">{job.location}</Text>
         </Row>
       )}
@@ -86,7 +85,7 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
       {/* Salary Range */}
       {salaryRange && (
         <Row align="center" gap={6}>
-          <DollarSign size="md" color={isSelected ? '$yellow10' : '$green10'} />
+          <DollarSign size={getIconSize('md')} color={isSelected ? '$yellow10' : '$green10'} />
           <Text color="$green10">{salaryRange}</Text>
         </Row>
       )}

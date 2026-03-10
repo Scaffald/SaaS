@@ -52,6 +52,15 @@ const sizeConfig = {
 } as const
 
 /**
+ * Icon/loading indicator size per button size (from Figma).
+ * Use for start/end icons and loading indicator so they fit inside the button.
+ */
+export function getButtonIconSize(size: ButtonSize): number {
+  const validSize: ButtonSize = sizeConfig[size] ? size : 'md'
+  return sizeConfig[validSize].iconSize
+}
+
+/**
  * Get button styles based on variant, color, size, state, and theme
  */
 export function getButtonStyles(
@@ -72,7 +81,7 @@ export function getButtonStyles(
     minWidth: iconOnly ? sizeStyles.minWidth : undefined,
     paddingHorizontal: iconOnly ? 0 : sizeStyles.paddingHorizontal,
     paddingVertical: sizeStyles.paddingVertical,
-    borderRadius: borderRadius.m,
+    borderRadius: borderRadius.max,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -211,11 +220,13 @@ function getOutlineStyles(
   const colorMap = {
     gray: {
       border: disabled ? colors.border[theme].disabled : colors.gray[300],
-      text: disabled ? colors.text[theme].disabled : colors.gray[700],
-      icon: disabled ? colors.text[theme].disabled : colors.gray[700],
-      bg: colors.bg[theme].default,
-      hoverBg: theme === 'light' ? colors.gray[50] : colors.gray[900],
-      pressedBg: theme === 'light' ? colors.gray[100] : colors.gray[800],
+      // Dark: use light text so outline buttons (e.g. "Manage") are visible on dark backgrounds
+      text: disabled ? colors.text[theme].disabled : (theme === 'dark' ? colors.text.dark.primary : colors.gray[700]),
+      icon: disabled ? colors.text[theme].disabled : (theme === 'dark' ? colors.text.dark.primary : colors.gray[700]),
+      // Dark: same as input (bg.dark.subtle) so "Continue with Google/Apple" match input treatment
+      bg: theme === 'dark' ? colors.bg.dark.subtle : colors.bg[theme].default,
+      hoverBg: theme === 'light' ? colors.gray[50] : colors.bg.dark.default,
+      pressedBg: theme === 'light' ? colors.gray[100] : colors.bg.dark.default,
     },
     primary: {
       border: disabled ? colors.primary[200] : colors.primary[600],

@@ -1,8 +1,8 @@
 import { getChildRoutes } from '@scf/core/utils/navigation/routeHierarchy'
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { usePathname } from '@scf/core/utils/usePathname'
+import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { useWindowDimensions } from '@scaffald/ui'
 import { Tabs, type TabsProps } from '@scaffald/ui'
 
 export type ProfileTabsItem = {
@@ -57,9 +57,8 @@ export const ProfileTabs = ({
   ...tabsProps
 }: ProfileTabsProps) => {
   const pathname = usePathname()
+  const router = useRouter()
   const currentPath = pathname ?? ''
-  const { width } = useWindowDimensions()
-  const _isSmallScreen = width <= 800
   const { t } = useTranslation()
 
   // Get child routes for /dashboard/profile
@@ -117,11 +116,14 @@ export const ProfileTabs = ({
       onValueChange={handleValueChange}
       type="line"
       orientation="horizontal"
+      scrollable
       {...tabsProps}
     >
       {items.map((item) => (
         <Tabs.Item key={item.key} value={item.key}>
-          <Tabs.Trigger>{item.label}</Tabs.Trigger>
+          <Tabs.Trigger onPress={() => router.push(item.href)}>
+            {item.label}
+          </Tabs.Trigger>
         </Tabs.Item>
       ))}
     </Tabs>

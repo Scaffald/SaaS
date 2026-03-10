@@ -1,13 +1,13 @@
 {
   "actions": {
-    "cancel": "Cancel",
-    "close": "Close",
-    "continue": "Continue",
-    "save": "Save"
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "continue": "Continuer",
+    "save": "Enregistrer"
   },
-  "or": "Or",
+  "or": "Ou",
   "status": {
-    "error": "Something went wrong",
-    "loading": "Loading..."
+    "error": "Une erreur s’est produite",
+    "loading": "Chargement…"
   }
 }

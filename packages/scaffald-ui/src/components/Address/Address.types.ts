@@ -62,6 +62,10 @@ export interface AddressFormProps extends Omit<AddressAutocompleteProps, 'onChan
   onAddressSelect?: (address: AddressResult) => void
   onChange?: (value: string) => void
   fieldMapping?: { street?: string; city?: string; state?: string; zip?: string; country?: string }
+  /** When 'expand', manual fields are hidden by default behind an Expand button. When 'always', they are always visible (default). */
+  manualFieldsVariant?: 'always' | 'expand'
+  expandLabel?: string
+  collapseLabel?: string
 }
 
 export interface LocationListInputProps {

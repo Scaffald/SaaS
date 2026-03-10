@@ -6,7 +6,7 @@ export interface IconGoogleProps {
   color?: string
 }
 
-const GoogleLogo = ({ size = 24, color = 'black' }: IconGoogleProps) => {
+const GoogleLogo = ({ size = 16, color = 'black' }: IconGoogleProps) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
       <Path

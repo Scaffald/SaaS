@@ -5,9 +5,10 @@ import { Button } from '@scaffald/ui'
 interface ResendTimerProps {
   onComplete: () => void
   onResendClick: () => void
+  disabled?: boolean
 }
 
-export function ResendTimer({ onComplete, onResendClick }: ResendTimerProps) {
+export function ResendTimer({ onComplete, onResendClick, disabled = false }: ResendTimerProps) {
   const [isTimerActive, setIsTimerActive] = useState(false)
   const [seconds, setSeconds] = useState(30)
   const startTimeRef = useRef<number | null>(null)
@@ -59,6 +60,7 @@ export function ResendTimer({ onComplete, onResendClick }: ResendTimerProps) {
       <Button
         variant="text"
         onPress={handleResendClick}
+        disabled={disabled}
         style={{ alignSelf: 'center', width: 200 }}
         iconStart={RefreshCcw}
       >

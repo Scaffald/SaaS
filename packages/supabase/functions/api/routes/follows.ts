@@ -209,8 +209,7 @@ app.openapi(getFollowersRoute, async (c) => {
       follower_type,
       followee_id,
       followee_type,
-      created_at,
-      follower:user_profiles!follows_follower_id_fkey(id, first_name, last_name, avatar_url)
+      created_at
     `)
     .eq('followee_id', user.id)
     .eq('followee_type', 'user')
@@ -222,6 +221,30 @@ app.openapi(getFollowersRoute, async (c) => {
     return c.json({ error: 'Failed to fetch followers', message: error.message }, 500)
   }
 
+  // follows has no FK to user_profiles; fetch user display data from core.users
+  const withFollower = await (async () => {
+    if (!follows || follows.length === 0) return follows || []
+    const followerIds = [...new Set((follows as { follower_id: string }[]).map((f) => f.follower_id))]
+    const { data: users } = await supabase
+      .schema('core')
+      .from('users')
+      .select('id, display_name, avatar_url')
+      .in('id', followerIds)
+    const byId = new Map((users || []).map((u) => [u.id, u]))
+    return (follows as Record<string, unknown>[]).map((row) => {
+      const u = byId.get(row.follower_id as string)
+      const displayName = (u?.display_name ?? '').trim() || 'Unknown'
+      const [first_name, ...rest] = displayName.split(/\s+/)
+      const last_name = rest.join(' ') || ''
+      return {
+        ...row,
+        follower: u
+          ? { id: u.id, first_name, last_name, avatar_url: u.avatar_url ?? null }
+          : { id: row.follower_id, first_name: 'Unknown', last_name: '', avatar_url: null },
+      }
+    })
+  })()
+
   const { count } = await supabase
     .schema('core')
     .from('follows')
@@ -230,7 +253,7 @@ app.openapi(getFollowersRoute, async (c) => {
     .eq('followee_type', 'user')
 
   return c.json({
-    data: follows || [],
+    data: withFollower,
     total: count || 0,
   })
 })

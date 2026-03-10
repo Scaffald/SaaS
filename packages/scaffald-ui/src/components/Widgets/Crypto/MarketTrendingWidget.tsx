@@ -18,8 +18,12 @@ import { CryptoStockWidget } from './CryptoStockWidget'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { typographyVariants } from '../../../tokens/typography'
+import { useThemeContext } from '../../../theme'
+import type { ResolvedThemeMode } from '../../../tokens/colors'
 
 export function MarketTrendingWidget({ cryptocurrencies = [], style }: MarketTrendingWidgetProps) {
+  const { theme } = useThemeContext()
+  const styles = getStyles(theme)
   return (
     <View style={[styles.container, style]}>
       <Text style={styles.title}>Trending</Text>
@@ -46,29 +50,31 @@ export function MarketTrendingWidget({ cryptocurrencies = [], style }: MarketTre
   )
 }
 
-const styles = StyleSheet.create({
+function getStyles(theme: ResolvedThemeMode) {
+  return StyleSheet.create({
   container: {
     flexDirection: 'column',
     gap: spacing[12],
     width: 367,
     height: 236,
     padding: spacing[16],
-    backgroundColor: colors.bg.light.default,
+    backgroundColor: colors.bg[theme].default,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.border.light.default,
+    borderColor: colors.border[theme].default,
   },
   title: {
     ...typographyVariants.paragraphMMedium,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   scrollView: {
     flex: 1,
   },
   emptyText: {
     ...typographyVariants.paragraphSRegular,
-    color: colors.text.tertiary,
+    color: colors.text[theme].tertiary,
     textAlign: 'center',
     paddingVertical: spacing[24],
   },
 })
+}

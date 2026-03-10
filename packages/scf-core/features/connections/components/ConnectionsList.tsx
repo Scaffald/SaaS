@@ -5,7 +5,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { useToast } from '@scaffald/ui'
 import { Download, Trash2 } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
-import { Avatar, Button, Input, Spinner, Table, Text, Row, Stack } from '@scaffald/ui'
+import { Avatar, Button, Input, SkeletonList, Table, Text, Row, Stack } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 
 export function ConnectionsList() {
@@ -173,12 +173,7 @@ export function ConnectionsList() {
   )
 
   if (isLoading) {
-    return (
-      <Stack align="center" justify="center" paddingVertical={24} gap={8}>
-        <Spinner size="lg" />
-        <Text color="$gray11">Loading connections…</Text>
-      </Stack>
-    )
+    return <SkeletonList count={4} variant="profile" />
   }
 
   return (

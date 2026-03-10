@@ -11,10 +11,10 @@ import {
   fontSize,
   lineHeight,
   letterSpacing,
-  fontFamily,
   fontWeight as fontWeightTokens,
 } from '../../tokens/typography'
 import { colors } from '../../tokens/colors'
+import { getFontFamily } from './Typography.styles'
 
 /**
  * Resolve color prop to actual color value
@@ -56,7 +56,7 @@ export function Caption({
 }: CaptionProps) {
   const computedStyle = useMemo<TextStyle>(() => {
     return {
-      fontFamily: fontFamily.body,
+      fontFamily: getFontFamily(weight),
       fontSize: fontSize.xs, // 12px
       fontWeight: fontWeightTokens[weight],
       lineHeight: lineHeight.xs, // 16px

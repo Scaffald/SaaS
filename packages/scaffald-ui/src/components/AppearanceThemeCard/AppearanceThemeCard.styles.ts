@@ -28,8 +28,8 @@ export function getAppearanceThemeCardStyles(
         ? colors.gray[900]
         : colors.gray[100]
       : isLight
-        ? colors.border.light['200']
-        : colors.border.dark['200'],
+        ? colors.border.light.default
+        : colors.border.dark.default,
   }
 
   const preview: ViewStyle = {

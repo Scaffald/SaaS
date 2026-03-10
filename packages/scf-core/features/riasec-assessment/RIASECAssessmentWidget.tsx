@@ -1,6 +1,7 @@
 import { ROUTES } from "@scf/core/constants/routes";
 import { useRIASECStatus } from "@scf/core/utils/onet-sdk-hooks";
-import { Button, DashboardWidget, useThemeContext } from "@scaffald/ui";
+import { Button, DashboardWidget, DashboardWidgetHeader, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import { useRouter } from "expo-router";
 import { Spinner, Text, Stack } from "@scaffald/ui";
 
@@ -8,7 +9,7 @@ import { Spinner, Text, Stack } from "@scaffald/ui";
  * RIASECAssessmentWidget - Dashboard widget CTA for RIASEC Career Interests
  */
 export function RIASECAssessmentWidget() {
-  useThemeContext();
+  const { theme } = useThemeContext();
   const router = useRouter();
 
   const { data: status, isLoading } = useRIASECStatus();
@@ -18,7 +19,7 @@ export function RIASECAssessmentWidget() {
       <DashboardWidget>
         <Stack gap={10} align="center" paddingVertical={40}>
           <Spinner size="lg" color="primary" />
-          <Text color="$gray11">Loading...</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading...</Text>
         </Stack>
       </DashboardWidget>
     );
@@ -35,13 +36,11 @@ export function RIASECAssessmentWidget() {
   return (
     <DashboardWidget>
       <Stack gap={12}>
-        <Stack gap={8}>
-          <Text color="$gray11">Career Interests</Text>
-          <Text color="$gray11">
-            Rate your interest in 6 career dimensions to discover careers that
-            match your interests.
-          </Text>
-        </Stack>
+        <DashboardWidgetHeader title="Career Interests" />
+        <Text style={{ color: colors.text[theme].secondary }}>
+          Rate your interest in 6 career dimensions to discover careers that
+          match your interests.
+        </Text>
 
         <Button
           variant="filled"
@@ -52,7 +51,7 @@ export function RIASECAssessmentWidget() {
           Start Interest Assessment
         </Button>
 
-        <Text color="$gray11">Takes about 2-3 minutes</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Takes about 2-3 minutes</Text>
       </Stack>
     </DashboardWidget>
   );

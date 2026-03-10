@@ -24,6 +24,7 @@ import profileWidgetsRouter from "./routes/profile-widgets.ts";
 import profileCompletionRouter from "./routes/profile-completion.ts";
 import profileImportRouter from "./routes/profile-import.ts";
 import profileViewsRouter from "./routes/profile-views.ts";
+import symbolicateRouter from "./routes/symbolicate.ts";
 import backgroundChecksRouter from "./routes/background-checks.ts";
 import backgroundChecksAdminRouter from "./routes/background-checks-admin.ts";
 import inquiriesRouter from "./routes/inquiries.ts";
@@ -36,7 +37,6 @@ import employersRouter from "./routes/employers.ts";
 import onetRouter from "./routes/onet.ts";
 import workersRouter from "./routes/workers.ts";
 import personalityAssessmentRouter from "./routes/personality-assessment.ts";
-import cmsRouter from "./routes/cms.ts";
 import feedbackRouter from "./routes/feedback.ts";
 import officeJobsRouter from "./routes/office-jobs.ts";
 import officeOrganizationsRouter from "./routes/office-organizations.ts";
@@ -113,6 +113,8 @@ app.route("/v1/profiles/widgets", profileWidgetsRouter); // Profile widgets
 app.route("/v1/profiles/completion", profileCompletionRouter); // Profile completion tracking
 app.route("/v1/profiles/import", profileImportRouter); // Profile import
 app.route("/v1/profile-views", profileViewsRouter); // Profile views tracking
+app.route("/v1/symbolicate", symbolicateRouter); // Symbolicate stub (Expo/Metro; no-op)
+app.route("/symbolicate", symbolicateRouter); // Same stub for clients that call /api/symbolicate
 app.route("/v1/background-checks", backgroundChecksRouter);
 app.route("/v1/background-checks/admin", backgroundChecksAdminRouter); // Background checks
 app.route("/v1/inquiries", inquiriesRouter); // User inquiries
@@ -128,7 +130,6 @@ app.route("/v1/employers", employersRouter); // Employers
 app.route("/v1/onet", onetRouter); // O*NET data
 app.route("/v1/workers", workersRouter); // Workers discovery
 app.route("/v1/personality-assessment", personalityAssessmentRouter);
-app.route("/v1/cms", cmsRouter); // Personality assessments
 app.route("/v1/feedback", feedbackRouter); // User feedback (submit, upload-url)
 app.route("/v1/office/jobs", officeJobsRouter); // Office jobs list (office role)
 app.route("/v1/office/organizations", officeOrganizationsRouter); // Office organizations management (office role)
@@ -174,4 +175,27 @@ app.onError((err, c) => {
   );
 });
 
-Deno.serve(app.fetch);
+// Production: Kong forwards the full path /functions/v1/api/…
+// Local: Supabase edge runtime already strips /functions/v1/<fn>, leaving /api/…
+// Check longer prefix first so "/api" doesn't match when "/functions/v1/api" is present.
+const EDGE_FUNCTION_PATH_PREFIXES = ["/functions/v1/api", "/api"];
+
+function stripEdgeFunctionPathPrefix(req: Request): Request {
+  const url = new URL(req.url);
+  for (const prefix of EDGE_FUNCTION_PATH_PREFIXES) {
+    if (url.pathname === prefix || url.pathname.startsWith(prefix + "/")) {
+      url.pathname = url.pathname.slice(prefix.length) || "/";
+      return new Request(url, {
+        method: req.method,
+        headers: req.headers,
+        body: req.body,
+      });
+    }
+  }
+  return req;
+}
+
+Deno.serve((req) => {
+  const normalizedReq = stripEdgeFunctionPathPrefix(req);
+  return app.fetch(normalizedReq);
+});

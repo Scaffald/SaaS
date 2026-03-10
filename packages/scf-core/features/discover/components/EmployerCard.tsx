@@ -1,4 +1,4 @@
-import { DiscoverCard, extractPlainText } from '@scaffald/ui'
+import { DiscoverCard, extractPlainText, getIconSize } from '@scaffald/ui'
 import { Building2, ExternalLink, MapPin, Users } from 'lucide-react-native'
 import type { JSONContent } from '@tiptap/core'
 import { Text, Row, Stack } from '@scaffald/ui'
@@ -41,7 +41,7 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
         <Row justify="space-between" align="flex-start" gap={12}>
           <Stack flex={1} gap={8}>
             <Row align="center" gap={8}>
-              <Building2 size="lg" color="$blue10" />
+              <Building2 size={getIconSize('lg')} color="$blue10" />
               <Text color="$gray11">{employer.name}</Text>
             </Row>
 
@@ -62,21 +62,21 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
         <Stack gap={8}>
           {location && (
             <Row align="center" gap={8}>
-              <MapPin size="md" color="$gray11" />
+              <MapPin size={getIconSize('md')} color="$gray11" />
               <Text color="$gray11">{location}</Text>
             </Row>
           )}
 
           {employer.employee_count_range && (
             <Row align="center" gap={8}>
-              <Users size="md" color="$gray11" />
+              <Users size={getIconSize('md')} color="$gray11" />
               <Text color="$gray11">{employer.employee_count_range} employees</Text>
             </Row>
           )}
 
           {employer.website_url && (
             <Row align="center" gap={8}>
-              <ExternalLink size="md" color="$gray11" />
+              <ExternalLink size={getIconSize('md')} color="$gray11" />
               <Text color="$blue10">{employer.website_url.replace(/^https?:\/\//, '')}</Text>
             </Row>
           )}

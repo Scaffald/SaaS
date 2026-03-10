@@ -800,6 +800,69 @@ app.openapi(removeMemberRoute, async (c) => {
 // Invitation Routes
 // ============================================================================
 
+// GET /invitations/mine - List invitations for the current user
+const listMyInvitationsRoute = createRoute({
+  method: 'get',
+  path: '/invitations/mine',
+  summary: 'List my team invitations',
+  description: 'Returns invitations sent to the current user, optionally filtered by status.',
+  request: {
+    query: z.object({
+      status: z.enum(['pending', 'accepted', 'declined', 'cancelled']).optional(),
+    }),
+  },
+  responses: {
+    200: {
+      content: { 'application/json': { schema: teamInvitationsListResponseSchema } },
+      description: 'List of invitations for the current user',
+    },
+    401: {
+      content: { 'application/json': { schema: errorResponseSchema } },
+      description: 'Unauthorized',
+    },
+  },
+})
+
+app.openapi(listMyInvitationsRoute, async (c) => {
+  const supabase = c.get('supabase')
+  const user = c.get('user')
+  const query = c.req.valid('query')
+
+  if (!user) {
+    return c.json({ error: 'Unauthorized' }, 401)
+  }
+
+  try {
+    let queryBuilder = supabase
+      .schema('core')
+      .from('team_invitations')
+      .select('*')
+      .eq('invited_user_id', user.id)
+      .order('created_at', { ascending: false })
+
+    if (query.status) {
+      queryBuilder = queryBuilder.eq('status', query.status)
+    }
+
+    const { data, error } = await queryBuilder
+
+    if (error) {
+      return c.json({ error: 'Failed to fetch invitations', message: error.message }, 500)
+    }
+
+    return c.json({ invitations: data ?? [] })
+  } catch (err) {
+    console.error('Error listing my invitations:', err)
+    return c.json(
+      {
+        error: 'Internal server error',
+        message: err instanceof Error ? err.message : 'Unknown error',
+      },
+      500
+    )
+  }
+})
+
 // GET /:id/invitations - List team invitations
 const listInvitationsRoute = createRoute({
   method: 'get',

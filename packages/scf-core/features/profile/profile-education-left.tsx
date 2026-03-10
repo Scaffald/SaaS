@@ -1,10 +1,9 @@
-import { api } from "@scf/core/utils/api";
 import {
   useEducation,
   useEducationLevel,
-  useSaveEducationMutation,
+  useSaveEducationMutationWithSync,
 } from "@scf/core/utils/profile-education-sdk-hooks";
-import { useQueryClient } from "@tanstack/react-query";
+import { useSearchUniversities } from "@scf/core/utils/office-universities-sdk-hooks";
 import {
   Button,
   Checkbox,
@@ -21,7 +20,6 @@ import { colors } from "@scaffald/ui/tokens";
 import { UniversityAutocomplete } from "@scf/core/components/university";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDown, Plus, X } from "lucide-react-native";
-import { useToast } from "@scaffald/ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { View } from "react-native";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
@@ -46,38 +44,9 @@ import {
   educationProfileDefaults,
   educationProfileSchema,
 } from "./config";
-import type {
-  EducationEntry,
-  EducationEntryFormValues,
-} from "./types/education";
+import type { EducationEntry } from "./types/education";
 import { normalizeEducationEntry } from "./utils/education-entry";
-import { invalidateProfileQueries } from "./utils/profile-sync";
-import {
-  completeProfileSync,
-  failProfileSync,
-  resetProfileSyncError,
-  startProfileSync,
-  useAdaptiveProfileSync,
-} from "./utils/profile-sync-store";
-
-// API response types from tRPC router
-type EducationApiResponse = EducationEntry[];
-type EducationLevelApiResponse = { education_level: string | null };
-
-interface SaveEducationInput {
-  education_level?: string | null;
-  education_entries?: EducationEntryFormValues[];
-}
-
-interface SaveEducationContext {
-  previousEducation?: EducationApiResponse | undefined;
-  previousLevel?: EducationLevelApiResponse | undefined;
-}
-
-interface SaveEducationOutput {
-  success: boolean;
-  education_entries: EducationEntry[];
-}
+import { useAdaptiveProfileSync } from "./utils/profile-sync-store";
 
 // University type definition
 interface University {
@@ -124,10 +93,8 @@ export function ProfileEducationLeft({
   const [hiddenEntryIds, setHiddenEntryIds] = useState<Set<string>>(new Set());
   const originalDataRef = useRef<EducationProfileFormData | null>(null);
   const entryRefs = useRef<Record<string, HTMLElement | null>>({});
-  const toast = useToast();
   const syncStatus = useAdaptiveProfileSync(300);
   const isSyncing = syncStatus === "syncing";
-  const queryClient = useQueryClient();
 
   // Queries
   const educationQuery = useEducation();
@@ -135,85 +102,7 @@ export function ProfileEducationLeft({
   const educationEntries = (educationQuery.data ?? []) as EducationEntry[];
 
   // Mutations
-  const saveEducationMutation = useSaveEducationMutation({
-    async onMutate(input: SaveEducationInput): Promise<SaveEducationContext> {
-      resetProfileSyncError();
-      startProfileSync();
-      await Promise.all([
-        queryClient.cancelQueries({ queryKey: ["profiles", "education"] }),
-        queryClient.cancelQueries({
-          queryKey: ["profiles", "education", "level"],
-        }),
-      ]);
-
-      const previousEducation = queryClient.getQueryData<EducationApiResponse>([
-        "profiles",
-        "education",
-      ]);
-      const previousLevel = queryClient.getQueryData<EducationLevelApiResponse>(
-        ["profiles", "education", "level"]
-      );
-
-      // Type assertion needed because form data has required booleans but API allows null
-      // Form data is compatible but has slightly different optionality
-      queryClient.setQueryData(
-        ["profiles", "education"],
-        (input.education_entries ?? []) as EducationApiResponse
-      );
-      queryClient.setQueryData(["profiles", "education", "level"], {
-        education_level: input.education_level ?? null,
-      });
-
-      return {
-        previousEducation: previousEducation as
-          | EducationApiResponse
-          | undefined,
-        previousLevel: previousLevel as EducationLevelApiResponse | undefined,
-      };
-    },
-    onError: (
-      error: unknown,
-      _input: SaveEducationInput,
-      context?: SaveEducationContext
-    ) => {
-      console.error("Error saving education:", error);
-      if (context?.previousEducation) {
-        queryClient.setQueryData(
-          ["profiles", "education"],
-          context.previousEducation
-        );
-      }
-      if (context?.previousLevel) {
-        queryClient.setQueryData(
-          ["profiles", "education", "level"],
-          context.previousLevel
-        );
-      }
-      failProfileSync();
-      toast.show({
-        title: "Save Failed",
-        message:
-          error instanceof Error
-            ? error.message
-            : "Failed to save education entry. Please try again.",
-        variant: "error",
-      });
-    },
-    onSuccess: () => {
-      toast.show({
-        title: "Education Saved",
-        message: "Your education history has been updated successfully!",
-        variant: "success",
-      });
-    },
-    onSettled: (_data: SaveEducationOutput | undefined, error: unknown) => {
-      if (!error) {
-        completeProfileSync();
-      }
-      void invalidateProfileQueries(queryClient);
-    },
-    // Type assertion needed due to tRPC mutation callback type inference limitations
-  } as never);
+  const saveEducationMutation = useSaveEducationMutationWithSync();
 
   // University search state
   const [searchQuery, setSearchQuery] = useState("");
@@ -223,43 +112,15 @@ export function ProfileEducationLeft({
     Record<number, boolean>
   >({});
 
-  // University search query (only runs when query is valid). TODO: migrate to SDK
-  const searchUniversitiesQuery = (
-    api as unknown as {
-      office: {
-        universities: {
-          searchUniversities: {
-            useQuery: (
-              input: { query: string; country: string; limit: number },
-              opts?: { enabled?: boolean; placeholderData?: (prev: unknown) => unknown }
-            ) => {
-              data?: { universities?: unknown[] };
-              error?: Error | null;
-              isLoading: boolean;
-              isFetching: boolean;
-              refetch: () => void;
-            }
-          }
-        }
-      }
-    }
-  ).office.universities.searchUniversities.useQuery(
-      {
-        query: searchQuery,
-        country: "United States",
-        limit: 5,
-      },
-      {
-        enabled: searchQuery.length >= 3,
-        placeholderData: (previousData: unknown) => previousData,
-      }
-    ) as {
-      data?: { universities?: unknown[] };
-      error?: Error | null;
-      isLoading: boolean;
-      isFetching: boolean;
-      refetch: () => void;
-    };
+  // University search query (SDK). Only runs when query is valid.
+  const searchUniversitiesQuery = useSearchUniversities(
+    {
+      query: searchQuery,
+      country: "United States",
+      limit: 5,
+    },
+    { enabled: searchQuery.length >= 3 }
+  );
 
   // Handle search input changes
   const handleUniversitySearch = useCallback((query: string) => {

@@ -1,3 +1,4 @@
+import React from 'react'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { RIASECAssessmentWizard } from './RIASECAssessmentWizard'
@@ -20,6 +21,8 @@ vi.mock('@scaffald/ui', () => ({
   useToast: () => ({
     show: mockToastShow,
   }),
+  ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
+  useThemeContext: () => ({ theme: 'light' as const }),
 }))
 
 vi.mock('@scf/core/utils/api', () => ({
@@ -120,6 +123,9 @@ vi.mock('@scaffald/ui', async () => {
     Stack: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
       <div {...props}>{children}</div>
     ),
+    ThemeProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    useThemeContext: () => ({ theme: 'light' as const }),
+    useToast: () => ({ show: () => {} }),
   }
 })
 

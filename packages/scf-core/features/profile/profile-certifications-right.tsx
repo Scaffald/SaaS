@@ -5,6 +5,7 @@ import {
 } from "@scf/core/utils/profile-certifications-sdk-hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { getStorageUrl } from "@scf/core/utils/supabase/storage";
+import { ProfileSectionIntro } from "@scf/core/features/profile/components";
 import { Button, DashboardWidget, useThemeContext } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
 import {
@@ -181,7 +182,12 @@ export function ProfileCertificationsRight() {
 
   if (allCerts.length === 0) {
     return (
-      <DashboardWidget>
+      <Stack gap={16}>
+        <ProfileSectionIntro
+          title="Certifications"
+          description="Search and add certifications on the left. You can attach proof (file or URL) and manage them here."
+        />
+        <DashboardWidget>
         <Stack gap={16} align="center" paddingTop={32}>
           <Award size={48} color={colors.text[theme].secondary} />
           <Stack gap={8} align="center">
@@ -192,11 +198,17 @@ export function ProfileCertificationsRight() {
           </Stack>
         </Stack>
       </DashboardWidget>
+      </Stack>
     );
   }
 
   return (
-    <DashboardWidget>
+    <Stack gap={16}>
+      <ProfileSectionIntro
+        title="Certifications"
+        description="Search and add certifications on the left. You can attach proof (file or URL) and manage them here."
+      />
+      <DashboardWidget>
       <Stack gap={16}>
         <H4>Your Certifications</H4>
 
@@ -652,5 +664,6 @@ export function ProfileCertificationsRight() {
         </ScrollView>
       </Stack>
     </DashboardWidget>
+    </Stack>
   );
 }

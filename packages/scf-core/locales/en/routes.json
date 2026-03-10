@@ -3,7 +3,9 @@
     "confirm": "Confirm Account",
     "login": "Sign In",
     "success": "Success",
-    "verify": "Verify Email"
+    "verify": "Verify Email",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy"
   },
   "dashboard": {
     "applications": {

@@ -40,6 +40,11 @@ export interface CheckboxProps {
   disabled?: boolean
 
   /**
+   * Accessibility label for screen readers
+   */
+  accessibilityLabel?: string
+
+  /**
    * Whether the checkbox has an error state
    */
   error?: boolean

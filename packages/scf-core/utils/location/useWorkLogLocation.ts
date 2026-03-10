@@ -1,95 +1,25 @@
-import * as Location from 'expo-location'
 import { useCallback, useState } from 'react'
-import { Platform } from 'react-native'
 
-import {
-  LOCATION_PERMISSION_STATUS_VALUES,
-  type LocationPermissionStatus,
-  type WorkLogLocation,
-  type WorkLogLocationState,
-} from '@scf/schemas'
-
-const getDeviceType = () => {
-  if (Platform.OS === 'ios') {
-    return 'ios'
-  }
-
-  if (Platform.OS === 'android') {
-    return 'android'
-  }
-
-  return 'web'
-}
-
-type PermissionResponse = Location.LocationPermissionResponse
-
-const IOS_PERMISSION_MAP: Record<string, LocationPermissionStatus> = {
-  always: 'authorizedAlways',
-  whenInUse: 'authorizedWhenInUse',
-  none: 'denied',
-}
-
-const ANDROID_PERMISSION_GRANTED: Record<string, LocationPermissionStatus> = {
-  fine: 'grantedForeground',
-  coarse: 'granted',
-  none: 'denied',
-}
-
-const resolveLocationPermissionStatus = (
-  response: PermissionResponse
-): LocationPermissionStatus => {
-  if (response.ios?.scope) {
-    const mapped = IOS_PERMISSION_MAP[response.ios.scope]
-    if (mapped) {
-      return mapped
-    }
-  }
-
-  if (response.android?.accuracy) {
-    const mapped = ANDROID_PERMISSION_GRANTED[response.android.accuracy]
-    if (mapped) {
-      return mapped
-    }
-  }
-
-  switch (response.status) {
-    case Location.PermissionStatus.GRANTED:
-      return 'granted'
-    case Location.PermissionStatus.DENIED:
-      return 'denied'
-    default:
-      return 'notDetermined'
-  }
-}
-
-const isValidPermissionStatus = (
-  status: LocationPermissionStatus | null
-): status is LocationPermissionStatus => {
-  return status !== null && LOCATION_PERMISSION_STATUS_VALUES.includes(status)
-}
-
-const createWorkLogLocation = (
-  coords: Location.LocationObjectCoords,
-  timestamp: number,
-  permissionStatus: LocationPermissionStatus
-): WorkLogLocation => {
-  const accuracy =
-    typeof coords.accuracy === 'number' && Number.isFinite(coords.accuracy) ? coords.accuracy : null
-
-  return {
-    latitude: coords.latitude,
-    longitude: coords.longitude,
-    accuracyMeters: accuracy,
-    capturedAt: new Date(Number.isFinite(timestamp) ? timestamp : Date.now()).toISOString(),
-    deviceType: getDeviceType(),
-    permissionStatus,
-  }
-}
+import type { LocationPermissionStatus, WorkLogLocation, WorkLogLocationState } from '@scf/schemas'
 
 interface WorkLogLocationHook extends WorkLogLocationState {
   requestLocation: () => Promise<WorkLogLocation | null>
   checkPermissionStatus: () => Promise<LocationPermissionStatus>
 }
+
+const createWorkLogLocation = (
+  latitude: number,
+  longitude: number,
+  accuracy: number | null,
+  permissionStatus: LocationPermissionStatus
+): WorkLogLocation => ({
+  latitude,
+  longitude,
+  accuracyMeters: accuracy,
+  capturedAt: new Date().toISOString(),
+  deviceType: 'web',
+  permissionStatus,
+})
 
 export const useWorkLogLocation = (): WorkLogLocationHook => {
   const [state, setState] = useState<WorkLogLocationState>({
@@ -99,60 +29,54 @@ export const useWorkLogLocation = (): WorkLogLocationHook => {
     error: null,
   })
 
-  const checkPermissionStatus = useCallback(async () => {
+  const checkPermissionStatus = useCallback(async (): Promise<LocationPermissionStatus> => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      setState((prev) => ({ ...prev, permissionStatus: 'denied' }))
+      return 'denied'
+    }
     try {
-      const response = await Location.getForegroundPermissionsAsync()
-      const permissionStatus = resolveLocationPermissionStatus(response)
-      setState((prev) => ({
-        ...prev,
-        permissionStatus,
-      }))
-      return permissionStatus
-    } catch (error) {
-      setState((prev) => ({
-        ...prev,
-        permissionStatus: 'notDetermined',
-        error: error instanceof Error ? error.message : 'Failed to check permission status',
-      }))
-      return 'notDetermined'
+      await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 1 })
+      })
+      setState((prev) => ({ ...prev, permissionStatus: 'granted' }))
+      return 'granted'
+    } catch {
+      setState((prev) => ({ ...prev, permissionStatus: 'denied' }))
+      return 'denied'
     }
   }, [])
 
-  const requestLocation = useCallback(async () => {
-    setState((prev) => ({
-      ...prev,
-      isLoading: true,
-      error: null,
-    }))
+  const requestLocation = useCallback(async (): Promise<WorkLogLocation | null> => {
+    setState((prev) => ({ ...prev, isLoading: true, error: null }))
 
     try {
-      const permissionResponse = await Location.requestForegroundPermissionsAsync()
-      const permissionStatus = resolveLocationPermissionStatus(permissionResponse)
-
-      if (!isValidPermissionStatus(permissionStatus)) {
-        throw new Error('Unable to determine location permission status.')
+      if (typeof navigator === 'undefined' || !navigator.geolocation) {
+        throw new Error('Geolocation is not supported by this browser')
       }
 
-      if (!permissionResponse.granted) {
-        setState({
-          location: null,
-          permissionStatus,
-          isLoading: false,
-          error: null,
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 300000,
         })
-
-        return null
-      }
-
-      const position = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
       })
 
-      const location = createWorkLogLocation(position.coords, position.timestamp, permissionStatus)
+      const accuracy =
+        typeof position.coords.accuracy === 'number' && Number.isFinite(position.coords.accuracy)
+          ? position.coords.accuracy
+          : null
+
+      const location = createWorkLogLocation(
+        position.coords.latitude,
+        position.coords.longitude,
+        accuracy,
+        'granted'
+      )
 
       setState({
         location,
-        permissionStatus,
+        permissionStatus: 'granted',
         isLoading: false,
         error: null,
       })
@@ -160,13 +84,12 @@ export const useWorkLogLocation = (): WorkLogLocationHook => {
       return location
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to capture location.'
-
       setState((prev) => ({
         ...prev,
         isLoading: false,
         error: message,
+        permissionStatus: message.toLowerCase().includes('permission') ? 'denied' : null,
       }))
-
       return null
     }
   }, [])

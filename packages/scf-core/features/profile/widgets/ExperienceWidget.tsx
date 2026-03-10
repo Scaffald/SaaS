@@ -5,11 +5,15 @@ import {
   DashboardWidget,
   EmptyState,
   H4,
-  LoadingState,
+  Skeleton,
+  SkeletonAvatar,
+  SkeletonText,
+  useThemeContext,
 } from "@scaffald/ui";
 import { Briefcase } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { Separator, Text, Row, Stack } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import { formatDate } from "../utils/date-formatting";
 import type { ProfileWidgetProps } from "./types";
 import type { ExperienceWidgetEntry } from "@scaffald/sdk";
@@ -30,6 +34,7 @@ export function ExperienceWidget({
   variant = "full",
 }: ProfileWidgetProps) {
   const router = useRouter();
+  const { theme } = useThemeContext();
   const { data, isLoading, error, refetch, isFetching } = useExperienceWidget(
     { userId },
     {
@@ -40,7 +45,17 @@ export function ExperienceWidget({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <LoadingState message="Loading experience..." />
+        <Stack gap={12}>
+          <Row justify="space-between" align="center">
+            <Skeleton width={120} height={20} shape="text" />
+          </Row>
+          {[0, 1].map((i) => (
+            <Row key={i} gap={12} align="flex-start">
+              <SkeletonAvatar size={40} />
+              <SkeletonText lines={2} style={{ flex: 1 }} />
+            </Row>
+          ))}
+        </Stack>
       </DashboardWidget>
     );
   }
@@ -49,8 +64,8 @@ export function ExperienceWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text style={{ color: "#ef4444" }}>Failed to load experience</Text>
-          <Text style={{ color: "#414e62" }}>{error.message}</Text>
+          <Text style={{ color: colors.fg[theme].error }}>Failed to load experience</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
           <Button
             variant="filled"
             color="primary"
@@ -113,16 +128,16 @@ export function ExperienceWidget({
                   {/* Job Title & Company */}
                   <Stack gap={4}>
                     <Text>{exp.job_title}</Text>
-                    <Text style={{ color: "#414e62" }}>{exp.company_name}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>{exp.company_name}</Text>
                   </Stack>
 
                   {/* Duration */}
                   <Row gap={8} align="center">
-                    <Text style={{ color: "#414e62" }}>
+                    <Text style={{ color: colors.text[theme].secondary }}>
                       {formatDate(exp.start_date)}
                     </Text>
-                    <Text style={{ color: "#414e62" }}>-</Text>
-                    <Text style={{ color: "#414e62" }}>
+                    <Text style={{ color: colors.text[theme].secondary }}>-</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>
                       {exp.is_current ? "Present" : formatDate(exp.end_date)}
                     </Text>
                     {exp.is_current && (
@@ -131,12 +146,12 @@ export function ExperienceWidget({
                         paddingVertical={2}
                         borderRadius={8}
                         style={{
-                          backgroundColor: "#eff6ff",
+                          backgroundColor: colors.blue[50],
                           borderWidth: 1,
-                          borderColor: "#3b82f6",
+                          borderColor: colors.blue[500],
                         }}
                       >
-                        <Text style={{ color: "#1d4ed8" }}>Current</Text>
+                        <Text style={{ color: colors.blue[700] }}>Current</Text>
                       </Row>
                     )}
                   </Row>
@@ -145,24 +160,24 @@ export function ExperienceWidget({
                   {(exp.location || exp.employment_type || exp.is_remote) && (
                     <Row gap={8} wrap>
                       {exp.location && (
-                        <Text style={{ color: "#414e62" }}>
+                        <Text style={{ color: colors.text[theme].secondary }}>
                           📍 {exp.location}
                         </Text>
                       )}
                       {exp.employment_type && (
-                        <Text style={{ color: "#414e62" }}>
+                        <Text style={{ color: colors.text[theme].secondary }}>
                           • {exp.employment_type}
                         </Text>
                       )}
                       {exp.is_remote && (
-                        <Text style={{ color: "#414e62" }}>• Remote</Text>
+                        <Text style={{ color: colors.text[theme].secondary }}>• Remote</Text>
                       )}
                     </Row>
                   )}
 
                   {/* Description */}
                   {exp.description && !showCompact && (
-                    <Text style={{ color: "#414e62", lineHeight: 20 }}>
+                    <Text style={{ color: colors.text[theme].secondary, lineHeight: 20 }}>
                       {exp.description}
                     </Text>
                   )}
@@ -177,7 +192,7 @@ export function ExperienceWidget({
             {/* Show More link for compact view */}
             {showCompact && experiences.length > 3 && (
               <Text
-                style={{ color: "#3b82f6" }}
+                style={{ color: colors.blue[500] }}
                 onPress={() =>
                   router.push(ROUTES.DASHBOARD.PROFILE.EXPERIENCE.path)
                 }

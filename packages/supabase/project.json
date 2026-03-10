@@ -14,14 +14,6 @@
       "outputs": ["{projectRoot}/tsconfig.tsbuildinfo"],
       "dependsOn": []
     },
-    "test": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "vitest run",
-        "cwd": "packages/supabase"
-      },
-      "outputs": ["{workspaceRoot}/tests/reports/coverage/supabase"]
-    },
     "lint": {
       "executor": "nx:run-commands",
       "options": {

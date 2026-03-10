@@ -18,6 +18,8 @@ import type { ViewStyle } from 'react-native'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { typographyVariants } from '../../../tokens/typography'
+import { useThemeContext } from '../../../theme'
+import type { ResolvedThemeMode } from '../../../tokens/colors'
 
 export interface CurrencyConverterWidgetProps {
   /**
@@ -65,6 +67,8 @@ export function CurrencyConverterWidget({
   onAmountChange,
   style,
 }: CurrencyConverterWidgetProps) {
+  const { theme } = useThemeContext()
+  const styles = getStyles(theme)
   const amountValue = amount !== undefined ? (typeof amount === 'number' ? amount.toString() : amount) : ''
   const convertedValue =
     convertedAmount !== undefined
@@ -108,21 +112,22 @@ export function CurrencyConverterWidget({
   )
 }
 
-const styles = StyleSheet.create({
+function getStyles(theme: ResolvedThemeMode) {
+  return StyleSheet.create({
   container: {
     flexDirection: 'column',
     gap: spacing[16],
     width: 367,
     minHeight: 348,
     padding: spacing[16],
-    backgroundColor: colors.bg.light.default,
+    backgroundColor: colors.bg[theme].default,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.border.light.default,
+    borderColor: colors.border[theme].default,
   },
   title: {
     ...typographyVariants.paragraphMMedium,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
   },
   converterSection: {
     flexDirection: 'row',
@@ -141,22 +146,22 @@ const styles = StyleSheet.create({
   },
   currencyLabel: {
     ...typographyVariants.paragraphSMedium,
-    color: colors.text.secondary,
+    color: colors.text[theme].secondary,
   },
   amountInput: {
     ...typographyVariants.h5SemiBold,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
     padding: spacing[12],
-    backgroundColor: colors.bg.light.default,
+    backgroundColor: colors.bg[theme].default,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.border.light.default,
+    borderColor: colors.border[theme].default,
   },
   convertedAmount: {
     ...typographyVariants.h5SemiBold,
-    color: colors.text.primary,
+    color: colors.text[theme].primary,
     padding: spacing[12],
-    backgroundColor: colors.gray[100],
+    backgroundColor: colors.bg[theme].subtle,
     borderRadius: 8,
   },
   arrowContainer: {
@@ -164,11 +169,12 @@ const styles = StyleSheet.create({
   },
   arrow: {
     ...typographyVariants.paragraphLRegular,
-    color: colors.text.tertiary,
+    color: colors.text[theme].tertiary,
   },
   rateText: {
     ...typographyVariants.captionRegular,
-    color: colors.text.tertiary,
+    color: colors.text[theme].tertiary,
     textAlign: 'center',
   },
 })
+}

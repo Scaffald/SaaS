@@ -20,6 +20,8 @@ import type { CreditCardWidgetProps } from './FinanceWidget.types'
 import { colors } from '../../../tokens/colors'
 import { spacing } from '../../../tokens/spacing'
 import { typographyVariants } from '../../../tokens/typography'
+import { useThemeContext } from '../../../theme'
+import type { ResolvedThemeMode } from '../../../tokens/colors'
 
 export function CreditCardWidget({
   variant = 'Interactive - Credit Card',
@@ -31,6 +33,8 @@ export function CreditCardWidget({
   onPress,
   style,
 }: CreditCardWidgetProps) {
+  const { theme } = useThemeContext()
+  const styles = getStyles(theme)
   const showLimit = variant === 'Interactive - Credit Card - Limit On' && limit
 
   const content = (
@@ -56,7 +60,8 @@ export function CreditCardWidget({
   return content
 }
 
-const styles = StyleSheet.create({
+function getStyles(theme: ResolvedThemeMode) {
+  return StyleSheet.create({
   container: {
     flexDirection: 'column',
     gap: spacing[8],
@@ -71,23 +76,24 @@ const styles = StyleSheet.create({
   },
   cardType: {
     ...typographyVariants.captionMedium,
-    color: colors.text.tertiary,
+    color: colors.text[theme].tertiary,
   },
   cardNumber: {
     ...typographyVariants.paragraphMMedium,
-    color: colors.text.primary,
+    color: colors.text[theme].quaternary,
     letterSpacing: 2,
   },
   cardholderName: {
     ...typographyVariants.paragraphSRegular,
-    color: colors.text.secondary,
+    color: colors.text[theme].secondary,
   },
   balance: {
     ...typographyVariants.subtitleSemiBold,
-    color: colors.text.primary,
+    color: colors.text[theme].quaternary,
   },
   limit: {
     ...typographyVariants.captionRegular,
-    color: colors.text.tertiary,
+    color: colors.text[theme].tertiary,
   },
 })
+}

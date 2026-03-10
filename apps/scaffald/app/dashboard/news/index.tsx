@@ -1,132 +1,23 @@
 import { DashboardPage } from "@scf/core/features/dashboard/DashboardPage";
 import type { NewsItem } from "@scf/core/features/news";
 import { useAggregatedNews } from "@scf/core/features/news/hooks/useNewsFeed";
+import { useNewsIndustryResolution } from "@scf/core/features/news/hooks/useNewsIndustryResolution";
 import { redirect } from "@scf/core/utils/redirect";
-import { supabase } from "@scf/core/utils/supabase/client";
-import { AlertCircle, ExternalLink, RefreshCw } from "lucide-react-native";
-import {
-  Button,
-  spacing,
-  Paragraph,
-  Spinner,
-  Text,
-  Row,
-  Stack,
-} from "@scaffald/ui";
+import { AlertCircle, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react-native";
+import { Button, Row, Spinner, Stack, Text } from "@scaffald/ui";
 import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
-import { useEffect, useState, type ReactNode } from "react";
-import { Platform, Image, Pressable, StyleSheet, View } from "react-native";
+import { useMemo, useState } from "react";
+import { Image, Platform, Pressable, StyleSheet, View, type TextStyle, type ViewStyle } from "react-native";
 import { colors } from "@scaffald/ui/tokens";
 import { useThemeContext } from "@scaffald/ui";
 
 const FULL_PAGE_ITEM_COUNT = 40;
-const DEFAULT_INDUSTRY = "construction";
-
-// Simple NewsCard component (temporary inline replacement)
-interface NewsCardProps {
-  title: string;
-  description?: string;
-  image?: string;
-  footer?: ReactNode;
-  onPress?: () => void;
-  fullCardClickable?: boolean;
-  minHeight?: number;
-}
-
-const NewsCard = ({
-  title,
-  description,
-  image,
-  footer,
-  onPress,
-  fullCardClickable,
-  minHeight = 220,
-}: NewsCardProps) => {
-  const { theme } = useThemeContext();
-  const [imageError, setImageError] = useState(false);
-  const fallbackImage = `https://picsum.photos/800/600?random=${Math.floor(
-    Math.random() * 1000
-  )}`;
-  const imageSource = imageError ? fallbackImage : image || fallbackImage;
-
-  return (
-    <Pressable
-      onPress={fullCardClickable ? onPress : undefined}
-      style={({ pressed }) => [
-        styles.newsCard,
-        { minHeight, backgroundColor: colors.bg[theme].subtle },
-        pressed && styles.pressed,
-      ]}
-    >
-      <Image
-        source={{ uri: imageSource }}
-        style={styles.newsCardImage}
-        onError={() => setImageError(true)}
-      />
-      <View style={styles.newsCardOverlay} />
-      <Stack padding={spacing[6]} style={styles.newsCardContent}>
-        <Stack gap={spacing[4]}>
-          <Text size="lg" weight="bold" color={colors.text[theme].primary}>
-            {title}
-          </Text>
-          {description && (
-            <Text size="sm" color={colors.text[theme].secondary}>
-              {description}
-            </Text>
-          )}
-          {footer && (
-            <Row gap={spacing[4]} style={styles.newsCardFooter}>
-              {footer}
-            </Row>
-          )}
-        </Stack>
-      </Stack>
-    </Pressable>
-  );
-};
-
-const styles = StyleSheet.create({
-  newsCard: {
-    borderRadius: 16,
-    overflow: "hidden",
-    position: "relative",
-  },
-  newsCardImage: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: "100%",
-    height: "100%",
-  },
-  newsCardOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  newsCardContent: {
-    flex: 1,
-    justifyContent: "flex-end",
-    zIndex: 1,
-  },
-  newsCardFooter: {
-    alignItems: "center",
-  },
-  pressed: {
-    opacity: 0.8,
-  },
-});
 
 const formatTimeAgo = (date: Date) => {
   const diffMs = Date.now() - date.getTime();
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffDays = Math.floor(diffHours / 24);
-
   if (diffHours < 1) return "Just now";
   if (diffHours < 24) return `${diffHours}h ago`;
   if (diffDays === 1) return "1 day ago";
@@ -134,27 +25,333 @@ const formatTimeAgo = (date: Date) => {
   return date.toLocaleDateString();
 };
 
+const capitalise = (v?: string | null) =>
+  v ? v.charAt(0).toUpperCase() + v.slice(1) : "";
+
+type ArticleItem = NewsItem & { source?: string | null; category?: string | null };
+
+function toDate(d: Date | string): Date {
+  return d instanceof Date ? d : new Date(d as string);
+}
+
+// ── Featured article panel (left column) ──────────────────────────────────────
+function FeaturedPanel({
+  item,
+  index,
+  total,
+  onPrev,
+  onNext,
+  onOpen,
+}: {
+  item: ArticleItem;
+  index: number;
+  total: number;
+  onPrev: () => void;
+  onNext: () => void;
+  onOpen: () => void;
+}) {
+  const { theme } = useThemeContext();
+  const [imgError, setImgError] = useState(false);
+  const pubDate = toDate(item.pubDate);
+  const hasImage = !!item.image && !imgError;
+
+  return (
+    <Stack gap={0} style={{ flex: 1 }}>
+      {/* Image */}
+      {hasImage ? (
+        <View style={styles.featuredImageWrap}>
+          <Image
+            source={hasImage && item.image ? { uri: item.image } : undefined}
+            style={StyleSheet.absoluteFillObject}
+            resizeMode="cover"
+            onError={() => setImgError(true)}
+          />
+          <View style={[StyleSheet.absoluteFillObject, styles.imageOverlay]} />
+          {item.category ? (
+            <View style={styles.imageCategoryWrap}>
+              <Text style={styles.imageCategoryText}>
+                {capitalise(item.category).toUpperCase()}
+              </Text>
+            </View>
+          ) : null}
+        </View>
+      ) : item.category ? (
+        <View
+          style={[
+            styles.categoryPill,
+            { backgroundColor: colors.bg[theme].muted, alignSelf: "flex-start" },
+          ]}
+        >
+          <Text style={StyleSheet.flatten([styles.categoryPillText, { color: colors.text[theme].secondary }]) as TextStyle}>
+            {capitalise(item.category)}
+          </Text>
+        </View>
+      ) : null}
+
+      {/* Content */}
+      <Stack gap={12} style={styles.featuredContent}>
+        <Text
+          style={StyleSheet.flatten([styles.featuredTitle, { color: colors.text[theme].primary }]) as TextStyle}
+        >
+          {item.title}
+        </Text>
+
+        {item.description ? (
+          <>
+            <View style={{ height: 1, backgroundColor: colors.border[theme].default }} />
+            <Text
+              style={StyleSheet.flatten([styles.featuredDescription, { color: colors.text[theme].secondary }]) as TextStyle}
+            >
+              {item.description}
+            </Text>
+          </>
+        ) : null}
+
+        {/* Meta */}
+        <Row gap={8} align="center" wrap>
+          <Text style={StyleSheet.flatten([styles.metaText, { color: colors.text[theme].tertiary }]) as TextStyle}>
+            {formatTimeAgo(pubDate)}
+          </Text>
+          {item.readTime ? (
+            <Text style={StyleSheet.flatten([styles.metaText, { color: colors.text[theme].tertiary }]) as TextStyle}>
+              · {item.readTime}
+            </Text>
+          ) : null}
+          {item.source ? (
+            <Text
+              numberOfLines={1}
+              style={StyleSheet.flatten([styles.metaText, { color: colors.text[theme].tertiary }]) as TextStyle}
+            >
+              · {item.source}
+            </Text>
+          ) : null}
+        </Row>
+
+        {/* Read button */}
+        <Button variant="filled" color="primary" size="sm" onPress={onOpen}>
+          Read Article
+        </Button>
+
+        {/* Pagination */}
+        <Row align="center" justify="space-between" style={styles.pagination}>
+          <Pressable
+            onPress={onPrev}
+            disabled={index === 0}
+            style={({ pressed }) => [
+              styles.pageBtn,
+              { opacity: index === 0 ? 0.3 : pressed ? 0.6 : 1 },
+            ]}
+          >
+            <ChevronLeft size={18} color={colors.text[theme].secondary} />
+            <Text style={StyleSheet.flatten([styles.pageBtnText, { color: colors.text[theme].secondary }]) as TextStyle}>
+              Prev
+            </Text>
+          </Pressable>
+
+          <Text style={StyleSheet.flatten([styles.pageCount, { color: colors.text[theme].tertiary }]) as TextStyle}>
+            {index + 1} of {total}
+          </Text>
+
+          <Pressable
+            onPress={onNext}
+            disabled={index === total - 1}
+            style={({ pressed }) => [
+              styles.pageBtn,
+              { opacity: index === total - 1 ? 0.3 : pressed ? 0.6 : 1 },
+            ]}
+          >
+            <Text style={StyleSheet.flatten([styles.pageBtnText, { color: colors.text[theme].secondary }]) as TextStyle}>
+              Next
+            </Text>
+            <ChevronRight size={18} color={colors.text[theme].secondary} />
+          </Pressable>
+        </Row>
+      </Stack>
+    </Stack>
+  );
+}
+
+// ── Feed row (right column) ────────────────────────────────────────────────────
+function FeedRow({
+  item,
+  selected,
+  divider,
+  onPress,
+}: {
+  item: ArticleItem;
+  selected: boolean;
+  divider: boolean;
+  onPress: () => void;
+}) {
+  const { theme } = useThemeContext();
+  const [imgError, setImgError] = useState(false);
+  const pubDate = toDate(item.pubDate);
+  const hasImage = !!item.image && !imgError;
+
+  return (
+    <View>
+      {divider ? (
+        <View style={{ height: 1, backgroundColor: colors.border[theme].default }} />
+      ) : null}
+      <Pressable
+        onPress={onPress}
+        style={({ pressed }) => ({
+          opacity: pressed ? 0.7 : 1,
+        })}
+      >
+        <Row
+          gap={12}
+          align="flex-start"
+          style={StyleSheet.flatten([
+            styles.feedRow,
+            selected ? {
+              backgroundColor:
+                theme === "dark" ? colors.bg[theme].subtle : colors.blue[50],
+              borderRadius: 8,
+              paddingHorizontal: 8,
+              marginHorizontal: -8,
+            } : undefined,
+          ]) as ViewStyle}
+        >
+          {hasImage ? (
+            <Image
+              source={hasImage && item.image ? { uri: item.image } : undefined}
+              style={styles.feedThumb}
+              resizeMode="cover"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <View
+              style={StyleSheet.flatten([styles.feedThumb, { backgroundColor: colors.bg[theme].muted }]) as ViewStyle}
+            />
+          )}
+          <View style={{ flex: 1, gap: 3 }}>
+            <Text
+              numberOfLines={2}
+              style={StyleSheet.flatten([
+                styles.feedTitle,
+                {
+                  color: selected
+                    ? theme === "dark"
+                      ? colors.blue[300]
+                      : colors.blue[700]
+                    : colors.text[theme].primary,
+                  fontWeight: selected ? "600" : "500",
+                },
+              ]) as TextStyle}
+            >
+              {item.title}
+            </Text>
+            <Row gap={6} align="center">
+              <Text style={StyleSheet.flatten([styles.metaText, { color: colors.text[theme].tertiary }]) as TextStyle}>
+                {formatTimeAgo(pubDate)}
+              </Text>
+              {item.category ? (
+                <Text style={StyleSheet.flatten([styles.metaText, { color: colors.text[theme].tertiary }]) as TextStyle}>
+                  · {capitalise(item.category)}
+                </Text>
+              ) : null}
+            </Row>
+          </View>
+        </Row>
+      </Pressable>
+    </View>
+  );
+}
+
+// ── Styles ────────────────────────────────────────────────────────────────────
+const styles = StyleSheet.create({
+  featuredImageWrap: {
+    height: 260,
+    borderRadius: 12,
+    overflow: "hidden",
+    marginBottom: 20,
+  },
+  imageOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.3)",
+  },
+  imageCategoryWrap: {
+    position: "absolute",
+    bottom: 16,
+    left: 16,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    borderRadius: 6,
+  },
+  imageCategoryText: {
+    fontSize: 10,
+    fontWeight: "700",
+    color: "#fff",
+    letterSpacing: 0.8,
+  },
+  featuredContent: {
+    paddingBottom: 8,
+  },
+  featuredTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+    lineHeight: 30,
+  },
+  featuredDescription: {
+    fontSize: 15,
+    lineHeight: 26,
+  },
+  pagination: {
+    paddingTop: 4,
+  },
+  pageBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingVertical: 6,
+    paddingHorizontal: 4,
+  },
+  pageBtnText: {
+    fontSize: 13,
+  },
+  pageCount: {
+    fontSize: 13,
+  },
+  feedRow: {
+    paddingVertical: 12,
+  },
+  feedThumb: {
+    width: 60,
+    height: 60,
+    borderRadius: 6,
+    flexShrink: 0,
+  },
+  feedTitle: {
+    fontSize: 13,
+    lineHeight: 19,
+  },
+  categoryPill: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 5,
+  },
+  categoryPillText: {
+    fontSize: 11,
+    fontWeight: "500",
+  },
+  metaText: {
+    fontSize: 12,
+  },
+});
+
+// ── Page ──────────────────────────────────────────────────────────────────────
 export default function NewsPage() {
   const router = useRouter();
-  const [industryId, setIndustryId] = useState<string>("");
+  const { theme } = useThemeContext();
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  // Get industry ID from slug
-  useEffect(() => {
-    async function resolveIndustryId() {
-      const { data: industryData } = await supabase
-        .schema("core")
-        .from("industries")
-        .select("id")
-        .eq("slug", DEFAULT_INDUSTRY)
-        .single();
-
-      if (industryData?.id) {
-        setIndustryId(industryData.id);
-      }
-    }
-
-    void resolveIndustryId();
-  }, []);
+  const { effectiveIndustryId, isResolving: isResolvingIndustry } =
+    useNewsIndustryResolution({
+      industrySlug: "construction",
+      useUserIndustry: false,
+    });
 
   const {
     data: newsItems = [],
@@ -163,11 +360,25 @@ export default function NewsPage() {
     error,
     refetch,
   } = useAggregatedNews({
-    industryId,
+    industryId: effectiveIndustryId ?? "",
     maxTotalItems: FULL_PAGE_ITEM_COUNT,
+    enabled: !!effectiveIndustryId,
   });
 
-  const handleOpenArticle = async (article: NewsItem) => {
+  const items = useMemo(() => {
+    const raw = newsItems as unknown as ArticleItem[];
+    const seen = new Set<string>();
+    return raw.filter((item) => {
+      const key = item.link || item.id;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, [newsItems]);
+
+  const selectedItem = items[selectedIndex] ?? null;
+
+  const handleOpenArticle = async (article: { link: string }) => {
     try {
       if (Platform.OS === "web") {
         window.open(article.link, "_blank", "noopener,noreferrer");
@@ -180,112 +391,125 @@ export default function NewsPage() {
         });
       }
     } catch (browserError) {
-      console.warn(
-        "Failed to open article, using redirect fallback:",
-        browserError
-      );
+      console.warn("Failed to open article:", browserError);
       redirect(article.link);
     }
   };
 
-  const content = (
-    <Stack gap={16}>
-      <Stack gap={8}>
-        <Text color="gray">Industry News</Text>
-        <Paragraph size="lg" color="gray">
-          Curated headlines across construction, safety, technology, and
-          workforce development.
-        </Paragraph>
+  // Page header — shown in left column above the featured panel
+  const pageHeader = (
+    <Row align="center" justify="space-between" style={{ marginBottom: 24 }}>
+      <Stack gap={2}>
+        <Text
+          style={{ fontSize: 22, fontWeight: "700", color: colors.text[theme].primary }}
+        >
+          Industry News
+        </Text>
+        <Text style={{ fontSize: 13, color: colors.text[theme].secondary }}>
+          Curated construction headlines
+        </Text>
       </Stack>
-
       <Row gap={8}>
         <Button
           size="sm"
           variant="outline"
-          color="gray"
           iconStart={RefreshCw}
-          onPress={() => {
-            void refetch();
-          }}
+          onPress={() => void refetch()}
           disabled={isLoading}
         >
           Refresh
         </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          color="gray"
-          onPress={() => router.back()}
-        >
+        <Button size="sm" variant="outline" onPress={() => router.back()}>
           Back
         </Button>
       </Row>
+    </Row>
+  );
 
-      {isLoading && newsItems.length === 0 ? (
-        <Stack align="center" gap={12}>
-          <Spinner size="lg" color="primary" />
-          <Text color="gray">Loading latest news…</Text>
-        </Stack>
+  // States
+  const isSpinning = isResolvingIndustry || (isLoading && items.length === 0);
+
+  if (isSpinning || isError || (!isLoading && !isError && items.length === 0)) {
+    const leftContent = (
+      <Stack gap={0}>
+        {pageHeader}
+        {isSpinning ? (
+          <Stack align="center" gap={12} style={{ paddingVertical: 64 }}>
+            <Spinner size="lg" color="primary" />
+            <Text style={{ color: colors.text[theme].secondary }}>
+              Loading latest news…
+            </Text>
+          </Stack>
+        ) : isError ? (
+          <Stack align="center" gap={12} style={{ paddingVertical: 64 }}>
+            <AlertCircle size={32} color={colors.error[500]} />
+            <Text style={{ color: colors.text[theme].primary, textAlign: "center" }}>
+              Unable to load news at the moment.
+            </Text>
+            <Text style={{ color: colors.text[theme].secondary, textAlign: "center" }}>
+              {error?.message || "Please check your connection and try again."}
+            </Text>
+            <Button variant="filled" color="primary" size="sm" onPress={() => void refetch()}>
+              Retry
+            </Button>
+          </Stack>
+        ) : (
+          <Stack align="center" gap={12} style={{ paddingVertical: 64 }}>
+            <Text style={{ color: colors.text[theme].secondary }}>
+              No articles found. Check back soon.
+            </Text>
+          </Stack>
+        )}
+      </Stack>
+    );
+
+    return (
+      <DashboardPage
+        showBreadcrumb={false}
+        pageTitle="Industry News"
+        leftContent={leftContent}
+      />
+    );
+  }
+
+  // Two-column layout: featured reader (left) + feed (right)
+  const leftContent = (
+    <Stack gap={0}>
+      {pageHeader}
+      {selectedItem ? (
+        <FeaturedPanel
+          key={selectedItem.id}
+          item={selectedItem}
+          index={selectedIndex}
+          total={items.length}
+          onPrev={() => setSelectedIndex((i) => Math.max(0, i - 1))}
+          onNext={() => setSelectedIndex((i) => Math.min(items.length - 1, i + 1))}
+          onOpen={() => void handleOpenArticle(selectedItem)}
+        />
       ) : null}
+    </Stack>
+  );
 
-      {isError ? (
-        <Stack align="center" gap={12}>
-          <AlertCircle size={32} color="red" />
-          <Text color="red" style={{ textAlign: "center" }}>
-            Unable to load news at the moment.
-          </Text>
-          <Text color="gray" style={{ textAlign: "center" }}>
-            {error?.message || "Please check your connection and try again."}
-          </Text>
-          <Button
-            variant="filled"
-            color="primary"
-            size="sm"
-            onPress={() => {
-              void refetch();
-            }}
-          >
-            Retry
-          </Button>
-        </Stack>
-      ) : null}
-
-      {!isLoading && !isError && newsItems.length === 0 ? (
-        <Stack align="center" gap={12}>
-          <Text color="gray">No articles found</Text>
-          <Text color="gray" style={{ textAlign: "center" }}>
-            Please check again soon for more industry updates.
-          </Text>
-        </Stack>
-      ) : null}
-
-      <Stack gap={16}>
-        {newsItems.map((item) => {
-          const pubDate = item.pubDate instanceof Date ? item.pubDate : new Date(item.pubDate as string)
-          return (
-          <NewsCard
+  const rightContent = (
+    <Stack gap={0}>
+      <Row align="center" justify="space-between" style={{ marginBottom: 12 }}>
+        <Text style={{ fontSize: 14, fontWeight: "600", color: colors.text[theme].primary }}>
+          All Stories
+        </Text>
+        <Text style={{ fontSize: 12, color: colors.text[theme].tertiary }}>
+          {items.length} articles
+        </Text>
+      </Row>
+      <Stack>
+        {items.map((item, i) => (
+          <FeedRow
             key={item.id}
-            title={item.title ?? ''}
-            description={item.description}
-            image={item.image ?? undefined}
-            onPress={() => void handleOpenArticle({ id: item.id, title: item.title ?? '', description: item.description, link: item.link ?? '', pubDate, image: item.image ?? undefined, readTime: item.readTime })}
-            fullCardClickable
-            minHeight={220}
-            footer={
-              <Row gap={12} align="center">
-                <Text color="gray">{formatTimeAgo(pubDate)}</Text>
-                {item.readTime && (
-                  <>
-                    <Text color="gray">•</Text>
-                    <Text color="gray">{item.readTime}</Text>
-                  </>
-                )}
-                <ExternalLink size="lg" color="gray" />
-              </Row>
-            }
+            item={item}
+            selected={i === selectedIndex}
+            divider={i > 0}
+            onPress={() => setSelectedIndex(i)}
           />
-          )
-        })}
+        ))}
       </Stack>
     </Stack>
   );
@@ -294,7 +518,8 @@ export default function NewsPage() {
     <DashboardPage
       showBreadcrumb={false}
       pageTitle="Industry News"
-      leftContent={content}
+      leftContent={leftContent}
+      rightContent={rightContent}
     />
   );
 }

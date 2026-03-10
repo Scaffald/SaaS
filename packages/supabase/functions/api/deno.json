@@ -1,4 +1,5 @@
 {
+  "lock": false,
   "imports": {
     "hono": "npm:hono@^4.0.0",
     "hono/": "npm:hono@^4.0.0/",
@@ -6,7 +7,8 @@
     "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.39.0",
     "zod": "https://deno.land/x/zod@v3.22.4/mod.ts",
     "@hono/zod-validator": "npm:@hono/zod-validator@0.4.2",
-    "@scf/supabase/types": "../../types.ts"
+    "@scf/supabase/types": "../../types.ts",
+    "mammoth": "npm:mammoth@1.6.0"
   },
   "tasks": {
     "dev": "deno run --allow-all --watch index.ts",

@@ -1,0 +1,30 @@
+# Docker Compose Override for GoTrue Environment Variables
+# This file overrides the default GOTRUE_SITE_URL and GOTRUE_URI_ALLOW_LIST
+# to ensure magic links use the correct redirect URLs
+#
+# Supabase CLI will automatically merge this with the generated docker-compose.yml
+# See: https://docs.docker.com/compose/extends/
+#
+# Environment variables can be set in .env or .env.test:
+# - GOTRUE_SITE_URL (defaults to http://localhost:5173)
+# - GOTRUE_URI_ALLOW_LIST (defaults to common localhost URLs)
+# - APP_URL (alternative to GOTRUE_SITE_URL, will be used if GOTRUE_SITE_URL not set)
+
+version: '3.8'
+
+services:
+  auth:
+    # Use env_file to load .env.test when it exists (for test mode)
+    # Docker Compose will automatically load .env.test if it exists (skips with warning if missing)
+    # This ensures GoTrue container gets environment variables from .env.test
+    # Path is relative to this compose file location (packages/supabase/)
+    env_file:
+      - ../../.env.test  # Relative path from packages/supabase/ to project root
+    environment:
+      # Override site URL - reads from GOTRUE_SITE_URL env var, or APP_URL, or defaults to localhost:5173
+      # This ensures magic links use the correct redirect URL
+      # Priority: env_file (.env.test) > environment variable > default
+      GOTRUE_SITE_URL: "${GOTRUE_SITE_URL:-${APP_URL:-http://localhost:5173}}"
+      # Allow list of redirect URLs - reads from GOTRUE_URI_ALLOW_LIST env var or uses defaults
+      # Must include all URLs used in emailRedirectTo parameter
+      GOTRUE_URI_ALLOW_LIST: "${GOTRUE_URI_ALLOW_LIST:-http://localhost:5173,http://localhost:5173/auth/callback,http://127.0.0.1:5173,http://127.0.0.1:5173/auth/callback,http://127.0.0.1:8081}"

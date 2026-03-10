@@ -1,11 +1,39 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { useMyTeamInvitations, useRespondToTeamInvitation } from '@scaffald/sdk/react'
 import type { TeamInvitation } from '@scaffald/sdk'
-import { CheckCircle, Clock, Users, XCircle } from 'lucide-react-native'
+import { CheckCircle, Clock, XCircle } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Card, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Card, DashboardWidget, DashboardWidgetHeader, Separator, Skeleton, SkeletonBox, SkeletonText, Text, Row, Stack } from '@scaffald/ui'
+
+function TeamInvitationsWidgetSkeleton() {
+  return (
+    <Card padding="md" borderColor="$borderColor" borderWidth={1} backgroundColor="$color1" style={{ gap: 16 }}>
+      {/* Header */}
+      <Row justify="space-between" align="center">
+        <Row gap={8} align="center">
+          <Skeleton width={24} height={24} shape="circle" />
+          <Skeleton width={140} height={16} shape="text" />
+        </Row>
+        <SkeletonBox width={72} height={32} borderRadius={8} />
+      </Row>
+
+      {/* Invitation skeletons */}
+      {[0, 1].map((i) => (
+        <Card key={i} padding="md" borderWidth={1} borderColor="$borderColor" backgroundColor="$color1" style={{ gap: 12 }}>
+          <Row justify="space-between" align="center">
+            <SkeletonText lines={2} style={{ flex: 1 }} />
+            <Row gap={8} marginLeft={16}>
+              <SkeletonBox width={80} height={32} borderRadius={8} />
+              <SkeletonBox width={80} height={32} borderRadius={8} />
+            </Row>
+          </Row>
+        </Card>
+      ))}
+    </Card>
+  )
+}
 
 type InvitationRecord = TeamInvitation
 
@@ -109,8 +137,9 @@ export function TeamInvitationList({
                       setPendingId(null)
                     }
                   }}
+                  loading={isPending}
                 >
-                  {isPending ? <Spinner size="sm" color="gray" /> : 'Accept'}
+                  Accept
                 </Button>
               </Row>
             </Row>
@@ -163,7 +192,11 @@ export function TeamInvitationsWidget() {
   const topInvitations = invitations.slice(0, 3)
   const remainingCount = Math.max(invitations.length - topInvitations.length, 0)
 
-  if (!invitationsQuery.isLoading && invitations.length === 0) {
+  if (invitationsQuery.isLoading) {
+    return <TeamInvitationsWidgetSkeleton />
+  }
+
+  if (invitations.length === 0) {
     return null
   }
 
@@ -175,51 +208,35 @@ export function TeamInvitationsWidget() {
   }
 
   return (
-    <Card
-      padding="md"
-      borderColor="$borderColor"
-      borderWidth={1}
-      backgroundColor="$color1"
-      style={{ gap: 16 }}
-    >
-      <Row justify="space-between" align="center">
-        <Row gap={8} align="center">
-          <Users size="lg" />
-          <Text>Team invitations</Text>
-        </Row>
-        <Button
-          variant="outline"
-          size="sm"
-          onPress={() => router.push(ROUTES.DASHBOARD.TEAMS.INVITATIONS.path)}
-        >
-          Manage
-        </Button>
-      </Row>
+    <DashboardWidget gap={16}>
+      <DashboardWidgetHeader
+        title="Team invitations"
+        action={
+          <Button
+            variant="outline"
+            size="sm"
+            onPress={() => router.push(ROUTES.DASHBOARD.TEAMS.INVITATIONS.path)}
+          >
+            Manage
+          </Button>
+        }
+      />
 
-      {invitationsQuery.isLoading ? (
-        <Stack align="center" justify="center" paddingVertical={16} gap={8}>
-          <Spinner size="lg" />
-          <Text color="$gray11">Checking for invitations…</Text>
-        </Stack>
-      ) : (
+      <TeamInvitationList
+        invitations={topInvitations}
+        onRespond={handleRespond}
+        isProcessing={respondMutation.isPending}
+        showEmptyStateDescription={false}
+      />
+      {remainingCount > 0 ? (
         <>
-          <TeamInvitationList
-            invitations={topInvitations}
-            onRespond={handleRespond}
-            isProcessing={respondMutation.isPending}
-            showEmptyStateDescription={false}
-          />
-          {remainingCount > 0 ? (
-            <>
-              <Separator />
-              <Text color="$gray11">
-                {remainingCount} more invitation{remainingCount === 1 ? '' : 's'} waiting in your
-                inbox.
-              </Text>
-            </>
-          ) : null}
+          <Separator />
+          <Text color="$gray11">
+            {remainingCount} more invitation{remainingCount === 1 ? '' : 's'} waiting in your
+            inbox.
+          </Text>
         </>
-      )}
-    </Card>
+      ) : null}
+    </DashboardWidget>
   )
 }

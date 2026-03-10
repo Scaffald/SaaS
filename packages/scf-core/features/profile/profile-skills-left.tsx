@@ -7,7 +7,7 @@ import {
 } from '@scaffald/ui'
 import { Check } from 'lucide-react-native'
 import { useMemo } from 'react'
-import { Button, ScrollView, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Button, ScrollView, Separator, Text, Row, Stack } from '@scaffald/ui'
 import { InlineSkillSearch } from './components'
 import { SoftSkillsRatingForm } from './components/SoftSkillsRatingForm'
 import { useSaveStatus } from './hooks/useSaveStatus'
@@ -81,16 +81,6 @@ export function ProfileSkillsLeft() {
       <Stack gap={16}>
         <DashboardWidget>
           <Stack gap={16}>
-            {/* Header with Save Status Indicator */}
-            <Row justify="space-between" align="center" style={{ marginBottom: 8 }}>
-              <Stack flex={1} />
-              <SaveStatusIndicator
-                status={saveStatus}
-                lastSavedAt={lastSavedAt}
-                error={saveError}
-              />
-            </Row>
-
             {/* Industry Selector */}
             <Stack gap={8}>
               <ResponsiveSelect
@@ -136,23 +126,19 @@ export function ProfileSkillsLeft() {
             <Separator />
 
             {/* Save Button */}
-            <Row justify="flex-end" paddingTop={8}>
+            <Row justify="space-between" align="center" paddingTop={8}>
+              <SaveStatusIndicator
+                status={saveStatus}
+                lastSavedAt={lastSavedAt}
+                error={saveError}
+              />
               <Button
                 size="md"
                 onPress={handleForceSave}
                 disabled={saveButtonState === 'saving' || saveButtonState === 'saved'}
                 iconStart={saveButtonState === 'saved' ? Check : undefined}
               >
-                {saveButtonState === 'saving' ? (
-                  <Row gap={8} align="center">
-                    <Spinner size="sm" />
-                    <Text>Saving...</Text>
-                  </Row>
-                ) : saveButtonState === 'saved' ? (
-                  'Saved ✓'
-                ) : (
-                  'Save'
-                )}
+                {saveButtonState === 'saving' ? 'Saving…' : saveButtonState === 'saved' ? 'Saved ✓' : 'Save'}
               </Button>
             </Row>
 

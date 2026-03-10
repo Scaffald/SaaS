@@ -5,7 +5,7 @@
 
 import { View, Pressable, Text } from 'react-native'
 import type { TabTriggerProps } from './Tabs.types'
-import { useTabsContext } from './Tabs'
+import { useTabsContext } from './TabsContext'
 import { useTabItemContext } from './TabItem'
 import { getTabTriggerStyles } from './Tabs.styles'
 import { useThemeContext } from '../../theme'

@@ -14,16 +14,8 @@ ATTEMPT=0
 AUTH_CONTAINER=""
 while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
   # Try different container name patterns
-  if docker ps --format "{{.Names}}" | grep -q "supabase_auth_supabase"; then
-    AUTH_CONTAINER="supabase_auth_supabase"
-    echo "✅ Supabase auth container is running: $AUTH_CONTAINER"
-    break
-  elif docker ps --format "{{.Names}}" | grep -q "supabase_auth_packages"; then
-    AUTH_CONTAINER="supabase_auth_packages"
-    echo "✅ Supabase auth container is running: $AUTH_CONTAINER"
-    break
-  elif docker ps --format "{{.Names}}" | grep -q "supabase_auth_scf-supabase"; then
-    AUTH_CONTAINER="supabase_auth_scf-supabase"
+  if docker ps --format "{{.Names}}" | grep -q "supabase_auth_scaffald"; then
+    AUTH_CONTAINER="supabase_auth_scaffald"
     echo "✅ Supabase auth container is running: $AUTH_CONTAINER"
     break
   fi
@@ -102,7 +94,7 @@ if [ $? -eq 0 ]; then
 else
   echo "❌ Failed to recreate container. Trying Supabase CLI restart..."
   # Fallback: restart Supabase
-  cd packages/supabase || exit 1
+  cd packages || exit 1
   pnpx supabase stop > /dev/null 2>&1
   GOTRUE_SITE_URL="$GOTRUE_SITE_URL" \
   GOTRUE_URI_ALLOW_LIST="$GOTRUE_URI_ALLOW_LIST" \

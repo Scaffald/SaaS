@@ -1,0 +1,26 @@
+{
+  "name": "scaffald",
+  "targets": {
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo 'Root workspace project - linted via individual package configs'",
+        "cwd": "."
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo 'Root workspace project - packages tested via individual vitest configs'",
+        "cwd": "."
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo 'Root workspace project - typechecked via individual package configs'",
+        "cwd": "."
+      }
+    }
+  }
+}

@@ -150,8 +150,9 @@ export function OrganizationProjectPrivacySettings({
               updateMutation.isPending ||
               selectedVisibility === orgData?.default_project_location_visibility
             }
+            loading={updateMutation.isPending}
           >
-            {updateMutation.isPending ? <Spinner /> : 'Save Setting'}
+            Save Setting
           </Button>
         </Row>
       </Stack>

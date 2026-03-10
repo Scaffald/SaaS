@@ -18,7 +18,7 @@ export function useSocialAuthHandlers() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: process.env.EXPO_PUBLIC_URL,
+        redirectTo: `${process.env.EXPO_PUBLIC_URL}/auth/callback`,
       },
     });
     if (error) {
@@ -41,7 +41,7 @@ export function useSocialAuthHandlers() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "apple",
       options: {
-        redirectTo: process.env.EXPO_PUBLIC_URL,
+        redirectTo: `${process.env.EXPO_PUBLIC_URL}/auth/callback`,
       },
     });
     if (error) {

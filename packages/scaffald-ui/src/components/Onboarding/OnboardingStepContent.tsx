@@ -12,7 +12,9 @@ export const OnboardingStepContent: FC<OnboardingStepContentProps> = ({
   icon: Icon,
   title,
   description,
+  theme = 'light',
 }) => {
+  const isDark = theme === 'dark'
   return (
     <Stack
       align="center"
@@ -21,12 +23,12 @@ export const OnboardingStepContent: FC<OnboardingStepContentProps> = ({
       justify="center"
       style={{ maxWidth: 520, alignSelf: 'center' }}
     >
-      <Icon size={96} color={colors.gray[700]} />
+      <Icon size={96} color={isDark ? 'rgba(255,255,255,0.9)' : colors.gray[700]} />
       <H2
         style={{
           marginTop: 20,
           fontSize: 24,
-          color: colors.gray[900],
+          color: isDark ? '#ffffff' : colors.gray[900],
           textAlign: 'center',
         }}
       >
@@ -36,7 +38,7 @@ export const OnboardingStepContent: FC<OnboardingStepContentProps> = ({
         style={{
           marginTop: 16,
           textAlign: 'center',
-          color: colors.gray[700],
+          color: isDark ? 'rgba(255,255,255,0.7)' : colors.gray[700],
           lineHeight: 24,
         }}
       >

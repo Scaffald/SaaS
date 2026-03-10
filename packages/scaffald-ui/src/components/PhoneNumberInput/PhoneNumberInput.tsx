@@ -18,7 +18,10 @@ import { Row } from '../Layout'
 import { ResponsiveSelect } from '../ResponsiveSelect'
 import { Input } from '../Input'
 import { Label } from '../Typography'
+import { useThemeContext } from '../../theme'
+import { colors } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
+import { borderRadius } from '../../tokens/borders'
 import type { PhoneNumberInputProps } from './PhoneNumberInput.types'
 
 export function PhoneNumberInput({
@@ -32,6 +35,7 @@ export function PhoneNumberInput({
   label,
   testID,
 }: PhoneNumberInputProps) {
+  const { theme } = useThemeContext()
   const countries = countriesProp ?? getDefaultCountries()
   const [selectedCountry, setSelectedCountry] = useState<Country>(() => {
     const fromValue = value ? findCountryByValue(value, countries) : undefined
@@ -44,6 +48,7 @@ export function PhoneNumberInput({
   const countryOptions = countries.map((c) => ({
     value: c.code,
     label: `${c.flag} ${c.dialCode} ${c.name}`,
+    triggerLabel: `${c.flag} ${c.dialCode}`,
   }))
 
   const syncFromValue = useCallback(() => {
@@ -91,7 +96,7 @@ export function PhoneNumberInput({
     <Stack gap={spacing[2]} testID={testID}>
       {label ? <Label>{label}</Label> : null}
       <Row gap={spacing[2]} align="stretch">
-        <View style={{ width: 112, flexShrink: 0 }}>
+        <View style={{ flexShrink: 0 }}>
           <ResponsiveSelect
             value={selectedCountry.code}
             onValueChange={handleCountryChange}
@@ -100,6 +105,22 @@ export function PhoneNumberInput({
             placeholder={`${selectedCountry.flag} ${selectedCountry.dialCode}`}
             sheetTitle="Select country"
             showIndicator
+            triggerStyle={{
+              backgroundColor: colors.bg[theme].default,
+              borderWidth: 1,
+              borderColor: colors.border[theme].default,
+              borderRadius: borderRadius.m,
+              minHeight: 44,
+              paddingHorizontal: spacing[12],
+              paddingVertical: spacing[8],
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: spacing[8],
+            }}
+            triggerTextStyle={{
+              color: colors.text[theme].primary,
+            }}
           />
         </View>
         <View style={{ flex: 1, minWidth: 0 }}>

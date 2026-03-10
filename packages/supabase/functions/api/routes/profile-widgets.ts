@@ -76,12 +76,19 @@ app.openapi(generalInfoRoute, async (c) => {
 
   const { data, error } = await supabase
     .schema('core')
-    .from('user_profiles')
-    .select('*')
+    .from('users')
+    .select('id, username, slug, avatar_path, avatar_url, about, headline, display_name, industry_id, years_of_experience, open_to_work')
     .eq('id', targetUserId)
     .single()
 
   if (error) {
+    // No row found (e.g. profile not yet created) → 404 so frontend can show "Complete your profile"
+    if (error.code === 'PGRST116') {
+      return c.json(
+        { error: 'profile_not_found', message: 'Profile not found. Complete your profile to get started.' },
+        404
+      )
+    }
     return c.json({ error: 'Failed to fetch profile', message: error.message }, 500)
   }
 
@@ -275,7 +282,7 @@ app.openapi(skillsRoute, async (c) => {
     .from('user_skills')
     .select('*')
     .eq('user_id', targetUserId)
-    .in('taxonomy', ['csi', 'onet'])
+    .in('skill_taxonomy', ['csi', 'onet'])
 
   if (error) {
     return c.json({ error: 'Failed to fetch skills', message: error.message }, 500)
@@ -393,7 +400,7 @@ app.openapi(preferencesRoute, async (c) => {
 
   const { data, error } = await supabase
     .schema('core')
-    .from('user_preferences')
+    .from('preferences')
     .select('*')
     .eq('user_id', user.id)
     .single()
