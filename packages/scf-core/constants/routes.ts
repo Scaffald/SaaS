@@ -237,6 +237,12 @@ const ROUTES_CONFIG = {
         protected: true,
         exact: true,
       },
+      PRIVACY: {
+        path: '/dashboard/settings/privacy',
+        titleKey: 'routes.dashboard.settings.privacy',
+        protected: true,
+        exact: true,
+      },
     },
     DISCOVER: {
       MAP: {
@@ -619,6 +625,25 @@ const ROUTES_CONFIG = {
       INQUIRY: {
         path: '/office/applications/:applicationId/inquiry',
         titleKey: 'routes.office.applications.inquiry',
+        protected: true,
+        exact: true,
+      },
+    },
+    COMPLIANCE: {
+      path: '/office/compliance',
+      titleKey: 'routes.office.compliance.title',
+      protected: true,
+      exact: false,
+      icon: ShieldCheck,
+      EEO_REPORTS: {
+        path: '/office/compliance/eeo-reports',
+        titleKey: 'routes.office.compliance.eeoReports',
+        protected: true,
+        exact: true,
+      },
+      PROJECT_HIRING: {
+        path: '/office/compliance/project-hiring',
+        titleKey: 'routes.office.compliance.projectHiring',
         protected: true,
         exact: true,
       },

@@ -156,4 +156,20 @@ export const CMS_ACCORDION_SECTIONS: OfficeAccordionSection[] = [
       },
     ],
   },
+  {
+    key: "cms-compliance",
+    title: "Compliance & Reporting",
+    links: [
+      {
+        key: "compliance-eeo",
+        label: "EEO Reports",
+        href: ROUTES.OFFICE.COMPLIANCE.EEO_REPORTS.path,
+      },
+      {
+        key: "compliance-project-hiring",
+        label: "Project Hiring",
+        href: ROUTES.OFFICE.COMPLIANCE.PROJECT_HIRING.path,
+      },
+    ],
+  },
 ];
