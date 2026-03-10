@@ -31,8 +31,8 @@ export function DashboardWidget({
   return (
     <Card
       variant={elevated ? 'elevated' : 'surface'}
-      padding={isDesktop ? '2xl' : 'lg'}
-      radius={isDesktop ? 'lg' : 'md'}
+      padding="2xl"
+      radius="2xl"
       elevation={elevated ? 'soft' : 'soft'}
       style={style}
       testID={testID}

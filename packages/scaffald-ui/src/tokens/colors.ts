@@ -51,16 +51,16 @@
 export const colors = {
   // Brand Colors
   primary: {
-    50: '#e6fafd',
-    100: '#cdf6fd',
-    200: '#a4f0fe',
-    300: '#76eaff', // Logo light cyan
-    400: '#38d3ee',
-    500: '#239cb2', // Logo primary teal
-    600: '#2a7f8e', // Logo dark teal
-    700: '#23606b',
-    800: '#1c4249',
-    900: '#12272a',
+    50: '#e8f6f9',
+    100: '#bde9f0',
+    200: '#7fd1de',
+    300: '#3fb5c7',
+    400: '#1e96a8',
+    500: '#1d7282', // Default primary - rich deep logo teal
+    600: '#125b69',
+    700: '#034550', // Logo dark forest teal
+    800: '#022d38',
+    900: '#011d24',
   },
 
   neutral: {
@@ -417,7 +417,7 @@ export const colors = {
       muted: '#f1efeb', // gray[100] warm - For tertiary background elements (tooltips, badges)
       emphasis: '#e3dfd9', // gray[200] warm - Used for background elements requiring more visual emphasis
       active: '#cdc8c0', // gray[300] warm - Used for background elements currently active or hovered over
-      selected: '#e6fafd', // primary[50] teal - Used for background elements currently selected
+      selected: '#e8f6f9', // primary[50] teal - Used for background elements currently selected
       /** Drawer/sidebar nav active item background (comp blue-grey). Use with white text and icon. */
       drawerNavActive: '#5a778a',
       overlay: 'rgba(0, 0, 0, 0.5)', // Black 50 opacity - Used for overlay elements (modals, dialogs)
@@ -451,10 +451,10 @@ export const colors = {
       subtle: '#f1efeb', // gray[100] warm - Used for subtle borders providing delicate visual separation
       muted: '#cdc8c0', // gray[300] warm - Used for muted borders providing subtle visual separation
       emphasis: '#9e9790', // gray[400] warm - Used for borders requiring more visual emphasis
-      active: '#239cb2', // primary[500] teal - Used for borders currently active or hovered over
-      selected: '#239cb2', // primary[500] teal - Used for borders currently selected
+      active: '#1d7282', // primary[500] teal - Used for borders currently active or hovered over
+      selected: '#1d7282', // primary[500] teal - Used for borders currently selected
       disabled: '#e3dfd9', // gray[200] warm - Used for borders currently disabled
-      focus: '#239cb2', // primary[500] teal - Used for borders currently focused (input fields, buttons)
+      focus: '#1d7282', // primary[500] teal - Used for borders currently focused (input fields, buttons)
       error: '#b84f3b', // error[500] terracotta - Used for borders indicating an error state
       warning: '#9a6614', // warning[500] ochre - Used for borders indicating a warning state
       success: '#3a7d4c', // success[500] moss - Used for borders indicating a success state
@@ -465,10 +465,10 @@ export const colors = {
       subtle: '#3c352c', // gray[700] warm - Used for subtle borders
       muted: '#504940', // gray[600] warm - Used for muted borders
       emphasis: '#9e9790', // gray[400] warm - Used for borders requiring more visual emphasis
-      active: '#239cb2', // primary[500] teal - Used for borders currently active
-      selected: '#239cb2', // primary[500] teal - Used for borders currently selected
+      active: '#1d7282', // primary[500] teal - Used for borders currently active
+      selected: '#1d7282', // primary[500] teal - Used for borders currently selected
       disabled: '#3c352c', // gray[700] warm - Used for borders currently disabled
-      focus: '#239cb2', // primary[500] teal - Used for borders currently focused
+      focus: '#1d7282', // primary[500] teal - Used for borders currently focused
       error: '#b84f3b', // error[500] terracotta - Used for borders indicating an error state
       warning: '#9a6614', // warning[500] ochre - Used for borders indicating a warning state
       success: '#3a7d4c', // success[500] moss - Used for borders indicating a success state
@@ -477,7 +477,7 @@ export const colors = {
     // Backward compatibility aliases (reference light mode)
     // Note: 'light' alias removed - use border.light.subtle instead (conflicts with border.light object)
     default: '#e3dfd9', // Alias for border.light.default
-    focus: '#2a7f8e', // Alias for border.light.focus (primary[600] teal for backward compat)
+    focus: '#125b69', // Alias for border.light.focus (primary[600] teal for backward compat)
     error: '#963c2a', // Alias for border.light.error (error[600] terracotta for backward compat)
   },
 
@@ -489,8 +489,8 @@ export const colors = {
       subtle: '#3c352c', // gray[700] warm - Used for subtle foreground elements
       muted: '#6e6760', // gray[500] warm - Used for muted foreground elements
       emphasis: '#9e9790', // gray[400] warm - Used for foreground elements requiring more visual emphasis
-      active: '#239cb2', // primary[500] teal - Used for foreground elements currently active or hovered over
-      selected: '#239cb2', // primary[500] teal - Used for foreground elements currently selected
+      active: '#1d7282', // primary[500] teal - Used for foreground elements currently active or hovered over
+      selected: '#1d7282', // primary[500] teal - Used for foreground elements currently selected
       disabled: '#cdc8c0', // gray[300] warm - Used for foreground elements currently disabled
       error: '#b84f3b', // error[500] terracotta - Used for foreground elements indicating an error state
       warning: '#9a6614', // warning[500] ochre - Used for foreground elements indicating a warning state
@@ -502,8 +502,8 @@ export const colors = {
       subtle: '#e3dfd9', // gray[200] warm - Used for subtle foreground elements
       muted: '#9e9790', // gray[400] warm - Used for muted foreground elements
       emphasis: '#6e6760', // gray[500] warm - Used for foreground elements requiring more visual emphasis
-      active: '#239cb2', // primary[500] teal - Used for foreground elements currently active
-      selected: '#239cb2', // primary[500] teal - Used for foreground elements currently selected
+      active: '#1d7282', // primary[500] teal - Used for foreground elements currently active
+      selected: '#1d7282', // primary[500] teal - Used for foreground elements currently selected
       disabled: '#504940', // gray[600] warm - Used for foreground elements currently disabled
       error: '#b84f3b', // error[500] terracotta - Used for foreground elements indicating an error state
       warning: '#9a6614', // warning[500] ochre - Used for foreground elements indicating a warning state
@@ -520,8 +520,8 @@ export const colors = {
       subtle: '#3c352c', // gray[700] warm - Used for subtle icons
       muted: '#6e6760', // gray[500] warm - Used for muted icons
       emphasis: '#9e9790', // gray[400] warm - Used for icons requiring more visual emphasis
-      active: '#239cb2', // primary[500] teal - Used for icons currently active or hovered over
-      selected: '#239cb2', // primary[500] teal - Used for icons currently selected
+      active: '#1d7282', // primary[500] teal - Used for icons currently active or hovered over
+      selected: '#1d7282', // primary[500] teal - Used for icons currently selected
       disabled: '#cdc8c0', // gray[300] warm - Used for icons currently disabled
       error: '#b84f3b', // error[500] terracotta - Used for icons indicating an error state
       warning: '#9a6614', // warning[500] ochre - Used for icons indicating a warning state
@@ -533,8 +533,8 @@ export const colors = {
       subtle: '#e3dfd9', // gray[200] warm - Used for subtle icons
       muted: '#9e9790', // gray[400] warm - Used for muted icons
       emphasis: '#6e6760', // gray[500] warm - Used for icons requiring more visual emphasis
-      active: '#239cb2', // primary[500] teal - Used for icons currently active
-      selected: '#239cb2', // primary[500] teal - Used for icons currently selected
+      active: '#1d7282', // primary[500] teal - Used for icons currently active
+      selected: '#1d7282', // primary[500] teal - Used for icons currently selected
       disabled: '#504940', // gray[600] warm - Used for icons currently disabled
       error: '#b84f3b', // error[500] terracotta - Used for icons indicating an error state
       warning: '#9a6614', // warning[500] ochre - Used for icons indicating a warning state

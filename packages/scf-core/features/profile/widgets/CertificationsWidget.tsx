@@ -5,8 +5,7 @@ import {
   DashboardWidget,
   EmptyState,
   H4,
-  Skeleton,
-  SkeletonList,
+  LoadingState,
   useThemeContext,
 } from "@scaffald/ui";
 import { Award, CheckCircle } from "lucide-react-native";

@@ -6,9 +6,6 @@ import {
   DashboardWidget,
   H4,
   ResponsiveModal,
-  Skeleton,
-  SkeletonBox,
-  SkeletonList,
   useThemeContext,
 } from '@scaffald/ui'
 import { randomUUID } from 'expo-crypto'

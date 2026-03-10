@@ -64,9 +64,8 @@ export const Button = forwardRef<View, ButtonProps>(function Button({
     [color, variant, size, isDisabled, iconOnly, theme]
   )
 
-  const validSize: ButtonSize = size === 'sm' || size === 'md' || size === 'lg' ? size : 'md'
-  const iconSize = getButtonIconSize(validSize)
-  const loadingSize = iconSize
+  // Calculate icon size based on button size (16px for consistency with inputs)
+  const iconSize = 16
 
   return (
     <Pressable

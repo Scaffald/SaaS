@@ -236,22 +236,20 @@ export function ProfileSnapshotWidget() {
   return (
     <DashboardWidget>
       <Stack gap={24}>
-        {/* Header - Stitch: Profile + View Full Profile */}
-        <DashboardWidgetHeader
-          title="Profile"
-          action={
-            <Button
-              size="sm"
-              variant="text"
-              color="primary"
-              onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
-            >
-              View Full Profile
-            </Button>
-          }
-        />
+        {/* Header */}
+        <Row justify="space-between" align="center">
+          <H4>Profile</H4>
+          <Button
+            size="sm"
+            variant="text"
+            color="primary"
+            onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
+          >
+            View Full Profile
+          </Button>
+        </Row>
 
-        {/* Avatar & Name - Stitch: centered, larger avatar */}
+        {/* Avatar & Name Section */}
         <Stack gap={16} align="center">
           <Avatar
             size={80}
@@ -298,16 +296,13 @@ export function ProfileSnapshotWidget() {
 
         {/* Current Role - Stitch: centered label + role + company */}
         {currentRole && (
-          <Stack gap={4} align="center" style={{ marginBottom: 8 }}>
-            <Text
-              style={{
-                fontSize: 11,
-                textTransform: "uppercase",
-                letterSpacing: 1.5,
-                fontWeight: "700",
-                color: colors.text[theme].tertiary,
-              }}
-            >
+          <Stack
+            gap={4}
+            style={{ backgroundColor: colors.bg[theme].muted }}
+            padding="sm"
+            borderRadius={16}
+          >
+            <Text style={{ color: colors.text[theme].secondary }}>
               Current Role
             </Text>
             <Text style={{ fontWeight: "700", fontSize: 18, color: colors.text[theme].primary }}>
@@ -319,8 +314,11 @@ export function ProfileSnapshotWidget() {
           </Stack>
         )}
 
-        {/* Completion + Stats - Stitch: completion bar then 3-col stats */}
+        {/* Stats Grid */}
         <Stack gap={16}>
+          <Text style={{ textTransform: 'uppercase', letterSpacing: 1.5, fontSize: 11, fontWeight: '700', color: colors.text[theme].tertiary }}>Profile Stats</Text>
+
+          {/* Completion Bar */}
           <Stack gap={8}>
             <Row justify="space-between" align="center">
               <Text
@@ -344,134 +342,76 @@ export function ProfileSnapshotWidget() {
             </Row>
             <ProgressBarBase value={completion} color="primary" />
           </Stack>
-          <Row gap={12} wrap>
-            <Pressable
-              onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
-              {...skillsHover.hoverProps}
-              style={({ pressed }) => [
-                {
-                  flex: 1,
-                  minWidth: 80,
-                  padding: 16,
-                  borderRadius: 16,
-                  backgroundColor:
-                    skillsHover.isHovered || pressed
-                      ? colors.bg[theme].active
-                      : colors.bg[theme].muted,
-                },
-                pressed && { opacity: 0.9 },
-              ]}
-              accessibilityRole="button"
-              accessibilityLabel="Skills. Navigate to profile skills"
+
+          {/* Stats Row */}
+          <Row gap={10} wrap>
+            <Stack
+              gap={4}
+              flex={1}
+              minWidth={80}
+              style={{ backgroundColor: colors.bg[theme].muted }}
+              padding={16}
+              borderRadius={16}
+              align="center"
             >
-              <Stack gap={4} align="center">
-                <Text
-                  style={{
-                    fontSize: 24,
-                    fontWeight: "700",
-                    color: colors.text[theme].primary,
-                  }}
-                >
-                  {skills?.length ?? 0}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 11,
-                    textTransform: "uppercase",
-                    letterSpacing: 1,
-                    color: colors.text[theme].secondary,
-                  }}
-                >
-                  Skills
-                </Text>
-              </Stack>
-            </Pressable>
-            <Pressable
-              onPress={() =>
-                router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)
-              }
-              {...certsHover.hoverProps}
-              style={({ pressed }) => [
-                {
-                  flex: 1,
-                  minWidth: 80,
-                  padding: 16,
-                  borderRadius: 16,
-                  backgroundColor:
-                    certsHover.isHovered || pressed
-                      ? colors.bg[theme].active
-                      : colors.bg[theme].muted,
-                },
-                pressed && { opacity: 0.9 },
-              ]}
-              accessibilityRole="button"
-              accessibilityLabel="Certifications. Navigate to profile certifications"
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.blue[700] : colors.blue[300],
+                  fontSize: 24,
+                  fontWeight: '700',
+                }}
+              >
+                {skills?.length || 0}
+              </Text>
+              <Text style={{ color: colors.text[theme].secondary, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>
+                Skills
+              </Text>
+            </Stack>
+
+            <Stack
+              gap={4}
+              flex={1}
+              minWidth={80}
+              style={{ backgroundColor: colors.bg[theme].muted }}
+              padding={16}
+              borderRadius={16}
+              align="center"
             >
-              <Stack gap={4} align="center">
-                <Text
-                  style={{
-                    fontSize: 24,
-                    fontWeight: "700",
-                    color: colors.text[theme].primary,
-                  }}
-                >
-                  {certifications?.length ?? 0}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 11,
-                    textTransform: "uppercase",
-                    letterSpacing: 1,
-                    color: colors.text[theme].secondary,
-                  }}
-                >
-                  Certs
-                </Text>
-              </Stack>
-            </Pressable>
-            <Pressable
-              onPress={() =>
-                router.push(ROUTES.DASHBOARD.PROFILE.GENERAL.path)
-              }
-              {...yearsHover.hoverProps}
-              style={({ pressed }) => [
-                {
-                  flex: 1,
-                  minWidth: 80,
-                  padding: 16,
-                  borderRadius: 16,
-                  backgroundColor:
-                    yearsHover.isHovered || pressed
-                      ? colors.bg[theme].active
-                      : colors.bg[theme].muted,
-                },
-                pressed && { opacity: 0.9 },
-              ]}
-              accessibilityRole="button"
-              accessibilityLabel="Years of experience. Navigate to profile general"
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.green[700] : colors.green[300],
+                  fontSize: 24,
+                  fontWeight: '700',
+                }}
+              >
+                {certifications?.length || 0}
+              </Text>
+              <Text style={{ color: colors.text[theme].secondary, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Certs</Text>
+            </Stack>
+
+            <Stack
+              gap={4}
+              flex={1}
+              minWidth={80}
+              style={{ backgroundColor: colors.bg[theme].muted }}
+              padding={16}
+              borderRadius={16}
+              align="center"
             >
-              <Stack gap={4} align="center">
-                <Text
-                  style={{
-                    fontSize: 24,
-                    fontWeight: "700",
-                    color: colors.text[theme].primary,
-                  }}
-                >
-                  {formattedYearsOfExperience}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 11,
-                    textTransform: "uppercase",
-                    letterSpacing: 1,
-                    color: colors.text[theme].secondary,
-                  }}
-                >
-                  Years
-                </Text>
-              </Stack>
-            </Pressable>
+              <Text
+                style={{
+                  color:
+                    theme === "light" ? colors.blue[700] : colors.blue[300],
+                  fontSize: 24,
+                  fontWeight: '700',
+                }}
+              >
+                {formattedYearsOfExperience}
+              </Text>
+              <Text style={{ color: colors.text[theme].secondary, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Years</Text>
+            </Stack>
           </Row>
         </Stack>
 
@@ -479,15 +419,7 @@ export function ProfileSnapshotWidget() {
         {topSkills.length > 0 && (
           <Stack gap={8}>
             <Row justify="space-between" align="center">
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontWeight: "700",
-                  color: colors.text[theme].primary,
-                }}
-              >
-                Top Skills
-              </Text>
+              <Text style={{ textTransform: 'uppercase', letterSpacing: 1.5, fontSize: 11, fontWeight: '700', color: colors.text[theme].tertiary }}>Top Skills</Text>
               <Button
                 size="sm"
                 variant="text"

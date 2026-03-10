@@ -10,8 +10,8 @@ import {
   DashboardWidget,
   DashboardWidgetHeader,
   EmptyState,
-  Skeleton,
-  SkeletonBox,
+  H4,
+  LoadingState,
   useThemeContext,
 } from '@scaffald/ui'
 import { useRouter } from 'expo-router'

@@ -1,6 +1,6 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { useProtectedRoute } from '@scf/core/utils/auth/useProtectedRoute'
-import { usePrerequisites } from '@scaffald/sdk/react'
+import { usePrerequisitesCheck } from '@scf/core/utils/prerequisites-sdk-hooks'
 import { useRouter } from 'expo-router'
 import { Stack } from 'expo-router/stack'
 import { useEffect, useRef } from 'react'
@@ -13,8 +13,8 @@ export default function OnboardingLayout() {
   const { theme } = useThemeContext()
   const hasRedirectedToDashboardRef = useRef(false)
 
-  // Use same prerequisites hook as app index and dashboard so cache/invalidation is shared
-  const { data: statusData, isLoading: isCheckingPrereqs, isError, refetch } = usePrerequisites({
+  // Check prerequisites status - only run when we have a valid user
+  const { data: statusData, isLoading: isCheckingPrereqs } = usePrerequisitesCheck({
     enabled: !!user,
   })
 

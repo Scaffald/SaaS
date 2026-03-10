@@ -5,9 +5,7 @@ import {
   DashboardWidget,
   EmptyState,
   H4,
-  Skeleton,
-  SkeletonAvatar,
-  SkeletonText,
+  LoadingState,
   useThemeContext,
 } from "@scaffald/ui";
 import { GraduationCap } from "lucide-react-native";

@@ -1,4 +1,4 @@
-import { LegalDocumentLayout } from './components/_LegalDocumentLayout'
+import { LegalDocumentLayout } from './components/LegalDocumentLayout'
 import { Paragraph, Stack, useThemeContext } from '@scaffald/ui'
 import { colors, spacing } from '@scaffald/ui/tokens'
 

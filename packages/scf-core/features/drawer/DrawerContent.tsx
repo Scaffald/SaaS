@@ -3,7 +3,7 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { useThemeSetting } from '@scf/core/provider/theme/UniversalThemeProvider'
 import { useGeneralInfo } from '@scf/core/utils/profile-general-sdk-hooks'
 import { usePathname } from '@scf/core/utils/usePathname'
-import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
+import { supabase } from '@scf/core/utils/supabase/client'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
 import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
 import { useUser } from '@scf/core/utils/useUser'
@@ -19,10 +19,10 @@ import {
 } from 'lucide-react-native'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
-import { useCallback, useState, type ReactNode } from 'react'
-import { Platform, Pressable, ScrollView, type PressableStateCallbackType } from 'react-native'
+import { useCallback, type ReactNode } from 'react'
+import { Platform, Pressable, type PressableStateCallbackType } from 'react-native'
 import type { GestureResponderEvent } from 'react-native'
-import { Text, useResponsive, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { Text, useWindowDimensions, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { DrawerLink } from './DrawerLink'
 import { getDrawerItems } from './config'
@@ -67,11 +67,10 @@ export const DrawerContent = ({
   canCollapse = false,
   onToggleCollapse,
 }: DrawerContentProps) => {
-  const { width } = useResponsive()
+  const { width } = useWindowDimensions()
   const { theme } = useThemeContext()
   const pathname = normalizePath(usePathname())
   const router = useRouter()
-  const { clearAuth } = useSessionContext()
   const { resolvedTheme, set: setTheme } = useThemeSetting()
   const { user, profile } = useUser()
   const { hasOfficeRole } = useUserRoles()
@@ -120,14 +119,12 @@ export const DrawerContent = ({
 
   const handleLogoutPress = useCallback(async () => {
     try {
-      await clearAuth()
+      await supabase.auth.signOut()
       handleNavigate(pathname)
-      router.replace(ROUTES.AUTH.LOGIN.path)
     } catch (error) {
       console.error('Error signing out from drawer:', error)
-      router.replace(ROUTES.AUTH.LOGIN.path)
     }
-  }, [clearAuth, handleNavigate, pathname, router])
+  }, [handleNavigate, pathname])
 
   const drawerItems = getDrawerItems()
   const ThemeToggleIcon = resolvedTheme === 'dark' ? Sun : Moon
@@ -163,6 +160,10 @@ export const DrawerContent = ({
     backgroundColor: theme === 'dark'
       ? 'rgba(30, 25, 20, 0.92)'
       : 'rgba(251, 248, 243, 0.88)',
+    borderRightWidth: 1,
+    borderRightColor: theme === 'dark'
+      ? 'rgba(80, 73, 64, 0.4)'
+      : 'rgba(237, 221, 201, 0.5)',
     ...(Platform.OS === 'web' ? { backdropFilter: 'blur(14px)' } as object : {}),
   }
 
@@ -174,7 +175,7 @@ export const DrawerContent = ({
       paddingVertical={20}
       align={isCollapsed ? 'center' : 'stretch'}
     >
-      <Stack flex={1} gap={0} width="100%">
+      <Stack flex={1} justify="space-between" gap={20} width="100%">
         {!isSmall ? (
           <Row justify="center" align="center" gap={12} paddingTop={16} paddingBottom={8} width="100%">
             <ScaffaldLogo
@@ -194,15 +195,12 @@ export const DrawerContent = ({
           />
         ) : null}
 
-        <ScrollView
-          style={{ flex: 1 }}
-          contentContainerStyle={{
-            gap: 6,
-            paddingTop: 12,
-            paddingBottom: 8,
-            alignItems: isCollapsed ? 'center' : 'stretch',
-          }}
-          showsVerticalScrollIndicator={false}
+        <Stack
+          gap={4}
+          flex={1}
+          marginTop={12}
+          width="100%"
+          align={isCollapsed ? 'center' : 'stretch'}
         >
           {hasOfficeRole ? (
             <DrawerLink
@@ -221,18 +219,14 @@ export const DrawerContent = ({
               isCollapsed={isCollapsed}
             />
           ))}
-        </ScrollView>
+        </Stack>
 
         <Stack
           style={{
             paddingTop: 16,
-            paddingBottom: 4,
             borderTopWidth: 1,
             borderTopColor: colors.border[theme].default,
             width: '100%',
-            backgroundColor: theme === 'dark'
-              ? 'rgba(30, 25, 20, 0.97)'
-              : 'rgba(251, 248, 243, 0.97)',
           }}
           align={isCollapsed ? 'center' : 'stretch'}
         >
@@ -311,27 +305,20 @@ const DrawerProfileCard = ({
   onProfilePress,
 }: DrawerProfileCardProps) => {
   const { theme } = useThemeContext()
-  const [isHovered, setIsHovered] = useState(false)
   const avatarSize = 48
 
   return (
     <Pressable
       onPress={onProfilePress}
-      onHoverIn={() => setIsHovered(true)}
-      onHoverOut={() => setIsHovered(false)}
       style={({ pressed }) => ({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 12,
         padding: 12,
         borderRadius: 20,
-        backgroundColor: isHovered
-          ? theme === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.85)'
-          : theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.5)',
+        backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.5)',
         borderWidth: 1,
-        borderColor: isHovered
-          ? theme === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.9)'
-          : theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.6)',
+        borderColor: theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.6)',
         opacity: pressed ? 0.8 : 1,
       })}
     >
