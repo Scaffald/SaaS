@@ -44,7 +44,7 @@ CREATE TRIGGER trg_privacy_request_deadline
 -- Updated_at trigger
 CREATE TRIGGER trg_privacy_request_updated
   BEFORE UPDATE ON core.privacy_data_requests
-  FOR EACH ROW EXECUTE FUNCTION core.update_updated_at();
+  FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
 
 -- Opt-out preferences table
 CREATE TABLE IF NOT EXISTS core.privacy_opt_outs (
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS core.privacy_opt_outs (
 
 CREATE TRIGGER trg_opt_out_updated
   BEFORE UPDATE ON core.privacy_opt_outs
-  FOR EACH ROW EXECUTE FUNCTION core.update_updated_at();
+  FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_privacy_requests_user ON core.privacy_data_requests (user_id);
@@ -198,11 +198,11 @@ CREATE TABLE IF NOT EXISTS core.hiring_project_crew (
 -- Updated_at triggers
 CREATE TRIGGER trg_hiring_projects_updated
   BEFORE UPDATE ON core.hiring_projects
-  FOR EACH ROW EXECUTE FUNCTION core.update_updated_at();
+  FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
 
 CREATE TRIGGER trg_hiring_project_roles_updated
   BEFORE UPDATE ON core.hiring_project_roles
-  FOR EACH ROW EXECUTE FUNCTION core.update_updated_at();
+  FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_hiring_projects_org ON core.hiring_projects (organization_id);

@@ -35,7 +35,7 @@ interface SkillItem {
 interface SkillSuggestionsModalProps {
   visible: boolean
   onClose: () => void
-  onAddSkills: (skills: Array<{ name: string; proficiency: number; taxonomy: string }>) => void
+  onAddSkills: (skills: Array<{ name: string; onetCode: string; proficiency: number; taxonomy: string }>) => void
   existingSkillNames: string[]
   isAdding?: boolean
 }
@@ -149,6 +149,7 @@ export function SkillSuggestionsModal({
       .filter((s) => selectedSkills.has(s.name))
       .map((s) => ({
         name: s.name,
+        onetCode,
         proficiency: importanceToProficiency(s.level),
         taxonomy: 'onet',
       }))

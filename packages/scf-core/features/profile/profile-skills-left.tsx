@@ -51,11 +51,18 @@ export function ProfileSkillsLeft() {
 
   // Handle adding skills from O*NET suggestions
   const handleAddOnetSkills = useCallback(
-    async (skills: Array<{ name: string; proficiency: number; taxonomy: string }>) => {
+    async (skills: Array<{ name: string; onetCode: string; proficiency: number; taxonomy: string }>) => {
       setIsAddingOnetSkills(true)
       try {
         for (const skill of skills) {
-          await selectSkill(skill.name, skill.proficiency, skill.taxonomy)
+          // Pass O*NET code as skillId (stored in onet_occupation_id),
+          // and skill details with the display name for optimistic updates
+          await selectSkill(skill.onetCode, skill.proficiency, skill.taxonomy, {
+            id: skill.onetCode,
+            name: skill.name,
+            code: skill.onetCode,
+            depth: 0,
+          })
         }
         setShowSuggestionsModal(false)
       } catch (error) {

@@ -156,8 +156,13 @@ export function PrivacyDataScreen() {
   const setOptOut = useCCPASetOptOutMutation()
 
   const handleSubmitRequest = useCallback(() => {
-    submitRequest.mutate({ type: requestType })
-  }, [requestType, submitRequest])
+    submitRequest.mutate({
+      type: requestType,
+      ...(requestType === 'correction' && confirmText.trim()
+        ? { correctionDetails: confirmText.trim() }
+        : {}),
+    })
+  }, [requestType, confirmText, submitRequest])
 
   const handleOptOutToggle = useCallback(
     (category: CCPAOptOutCategory, currentValue: boolean) => {
@@ -186,12 +191,14 @@ export function PrivacyDataScreen() {
 
   const requests = myRequests?.requests ?? []
 
-  const optOutStatuses = optOuts?.optOuts ?? [
-    { category: 'sale' as const, opted_out: false, opted_out_at: null, source: 'default' as const },
-    { category: 'sharing' as const, opted_out: false, opted_out_at: null, source: 'default' as const },
-    { category: 'targeted_advertising' as const, opted_out: true, opted_out_at: '2026-02-15', source: 'user' as const },
-    { category: 'sensitive_data' as const, opted_out: true, opted_out_at: '2026-01-10', source: 'user' as const },
-  ]
+  // Always populate all known categories so toggles render even when the API
+  // returns only categories the user has already opted out of.
+  const ALL_OPT_OUT_CATEGORIES: CCPAOptOutCategory[] = ['sale', 'sharing', 'targeted_advertising', 'sensitive_data']
+  const apiOptOuts = optOuts?.optOuts ?? []
+  const optOutStatuses = ALL_OPT_OUT_CATEGORIES.map((category) => {
+    const existing = apiOptOuts.find((o) => o.category === category)
+    return existing ?? { category, opted_out: false, opted_out_at: null, source: 'default' as const }
+  })
 
   const optOutLabels: Record<string, { title: string; desc: string }> = {
     sale: { title: 'Sale of Personal Data', desc: 'Prevent your data from being sold to third parties' },
