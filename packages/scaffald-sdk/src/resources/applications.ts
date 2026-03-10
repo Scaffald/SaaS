@@ -26,6 +26,8 @@ export interface Application {
   applied_at: string
   updated_at: string
   score?: number
+  /** Source of hire — how the candidate found this job (Issue #91) */
+  source?: 'scaffald' | 'referral' | 'external_board' | 'social_media' | 'company_website' | 'other'
 }
 
 export interface CustomQuestionAnswer {
@@ -57,6 +59,8 @@ export interface CreateApplicationParams {
   is_complete?: boolean
   notes?: Record<string, unknown>
   metadata?: Record<string, unknown>
+  /** Source tracking — how the candidate found this job (Issue #91) */
+  source?: 'scaffald' | 'referral' | 'external_board' | 'social_media' | 'company_website' | 'other'
 }
 
 export interface UpdateApplicationParams {

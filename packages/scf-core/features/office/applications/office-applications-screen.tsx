@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react'
 import type { ApplicationStatus, MockApplication } from '../mock-data/ats-mock-data'
 import { ApplicationsFilters } from './components/ApplicationsFilters'
 import { ApplicationsKanbanBoard } from './components/ApplicationsKanbanBoard'
+import { ATSMetricsDashboard } from './components/ATSMetricsDashboard'
 import type { ApplicationsListItem } from './hooks/useApplications'
 import { useApplications } from './hooks/useApplications'
 import { colors } from '@scaffald/ui/tokens'
@@ -34,7 +35,7 @@ function formatPayRange(minCents?: number | null, maxCents?: number | null, type
 
 export const OfficeApplicationsScreen = () => {
   const { theme } = useThemeContext()
-  const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban')
+  const [viewMode, setViewMode] = useState<'kanban' | 'list' | 'metrics'>('kanban')
   const [filters, setFilters] = useState<{
     jobId: string | null
     status: ApplicationStatus | null
@@ -92,6 +93,7 @@ export const OfficeApplicationsScreen = () => {
         job_location?: string
         user_id?: string
         assigned_to?: string | null
+        source?: 'scaffald' | 'referral' | 'external_board' | 'social_media' | 'company_website' | 'other'
       }
       const jobInfo = a.job ?? null
       const assignments = jobInfo?.teamAssignments ?? []
@@ -117,6 +119,7 @@ export const OfficeApplicationsScreen = () => {
       return {
         id: a.id,
         status: statusMap[a.status] ?? 'new',
+        source: a.source,
         appliedAt: a.applied_at ?? a.updated_at,
         updatedAt: a.updated_at,
         score: a.application_score ?? 0,
@@ -247,6 +250,13 @@ export const OfficeApplicationsScreen = () => {
           >
             List
           </Button>
+          <Button
+            size="sm"
+            onPress={() => setViewMode('metrics')}
+            variant={viewMode === 'metrics' ? 'outline' : undefined}
+          >
+            Metrics
+          </Button>
         </Row>
       </Row>
 
@@ -256,6 +266,8 @@ export const OfficeApplicationsScreen = () => {
       {/* Content */}
       {viewMode === 'kanban' ? (
         <ApplicationsKanbanBoard applications={filteredApplications} />
+      ) : viewMode === 'metrics' ? (
+        <ATSMetricsDashboard applications={filteredApplications} isLoading={isLoading} />
       ) : (
         <Stack padding="md">
           <Text>List view coming soon...</Text>

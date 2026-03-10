@@ -1,6 +1,8 @@
 import { DashboardLayout } from '@scf/core/components/layouts'
 import { ROUTES } from '@scf/core/constants/routes'
 import { DiscoverJobDetailScreen } from '@scf/core/features/discover/discover-job-detail-screen'
+import { JobPostingJsonLd } from '@scf/core/features/discover/components/JobPostingJsonLd'
+import { JobSeoHead } from '@scf/core/features/discover/components/JobSeoHead'
 import { useJobBySlug } from '@scf/core/utils/useJobBySlug'
 import type { BreadcrumbItemData } from '@scaffald/ui'
 import { useLocalSearchParams } from 'expo-router'
@@ -69,7 +71,16 @@ export default function PublicJobDetailPage() {
   // Use existing job detail screen component
   const { left, right } = DiscoverJobDetailScreen({ jobId: jobData.id })
 
+  // Build canonical URL for SEO
+  const canonicalUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/jobs/${slug}`
+    : undefined
+
   return (
-    <DashboardLayout breadcrumbItems={breadcrumbItems} leftContent={left} rightContent={right} />
+    <>
+      <JobSeoHead job={jobData} canonicalUrl={canonicalUrl} />
+      <JobPostingJsonLd job={jobData} canonicalUrl={canonicalUrl} />
+      <DashboardLayout breadcrumbItems={breadcrumbItems} leftContent={left} rightContent={right} />
+    </>
   )
 }
