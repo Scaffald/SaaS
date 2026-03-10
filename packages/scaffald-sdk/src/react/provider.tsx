@@ -5,7 +5,7 @@ import { Scaffald } from '../client.js'
 import type { ScaffaldConfig } from '../config.js'
 
 export interface ScaffaldProviderProps {
-  config: ScaffaldConfig
+  config: ScaffaldConfig | null
   children: React.ReactNode
   queryClient?: QueryClient
 }
@@ -29,7 +29,7 @@ const ScaffaldContext = createContext<Scaffald | null>(null)
  * ```
  */
 export function ScaffaldProvider({ config, children, queryClient }: ScaffaldProviderProps) {
-  const client = useMemo(() => new Scaffald(config), [config])
+  const client = useMemo(() => (config ? new Scaffald(config) : null), [config])
 
   const defaultQueryClient = useMemo(
     () =>
