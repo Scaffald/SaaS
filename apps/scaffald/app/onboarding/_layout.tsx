@@ -14,7 +14,7 @@ export default function OnboardingLayout() {
   const hasRedirectedToDashboardRef = useRef(false)
 
   // Check prerequisites status - only run when we have a valid user
-  const { data: statusData, isLoading: isCheckingPrereqs } = usePrerequisitesCheck({
+  const { data: statusData, isLoading: isCheckingPrereqs, isError, refetch } = usePrerequisitesCheck({
     enabled: !!user,
   })
 
