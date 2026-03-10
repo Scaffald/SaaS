@@ -64,6 +64,8 @@ export interface MockApplication {
     assignedUserId?: string | null
   }
   status: ApplicationStatus
+  /** Source of how the candidate found/applied for this job (Issue #91) */
+  source?: 'scaffald' | 'referral' | 'external_board' | 'social_media' | 'company_website' | 'other'
   appliedAt: string
   updatedAt: string
   score: number

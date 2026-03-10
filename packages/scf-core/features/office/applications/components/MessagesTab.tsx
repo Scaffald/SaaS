@@ -1,5 +1,5 @@
 import { Send } from 'lucide-react-native'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Button, Card, Spinner, Text, TextArea, Row, Stack, useThemeContext } from '@scaffald/ui'
 import {
   useApplicationMessages,
@@ -8,9 +8,23 @@ import {
 import { useToast } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 import { colors } from '@scaffald/ui/tokens'
+import type { ApplicationStatus } from '../../mock-data/ats-mock-data'
+import { MessageTemplateSelector } from './MessageTemplateSelector'
+import { MessageTemplatesManager } from './MessageTemplatesManager'
+import type { MessageTemplate } from './message-templates'
+import { applyTemplateVariables } from './message-templates'
+import { useMessageTemplates } from '../hooks/useMessageTemplates'
 
 interface MessagesTabProps {
   applicationId: string
+  /** Current pipeline stage for template filtering */
+  applicationStatus?: ApplicationStatus
+  /** Candidate name for template variable substitution */
+  candidateName?: string
+  /** Job title for template variable substitution */
+  jobTitle?: string
+  /** Company name for template variable substitution */
+  companyName?: string
 }
 
 interface Message {
@@ -22,11 +36,45 @@ interface Message {
   isRead: boolean
 }
 
-export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
+export const MessagesTab = ({
+  applicationId,
+  applicationStatus = 'new',
+  candidateName = '',
+  jobTitle = '',
+  companyName = '',
+}: MessagesTabProps) => {
   const { theme } = useThemeContext()
   const [newMessage, setNewMessage] = useState('')
+  const [showTemplateManager, setShowTemplateManager] = useState(false)
   const toast = useToast()
   const queryClient = useQueryClient()
+
+  // Template management
+  const {
+    templates: allTemplates,
+    getTemplatesForStage,
+    createTemplate,
+    updateTemplate,
+    deleteTemplate,
+    incrementUsage,
+  } = useMessageTemplates()
+
+  const stageTemplates = getTemplatesForStage(applicationStatus)
+
+  const handleTemplateSelect = useCallback(
+    (template: MessageTemplate) => {
+      const filled = applyTemplateVariables(template.body, {
+        '{{candidateName}}': candidateName || 'Candidate',
+        '{{jobTitle}}': jobTitle || 'Position',
+        '{{companyName}}': companyName || 'Company',
+        '{{recruiterName}}': 'Recruiter',
+        '{{stageName}}': applicationStatus,
+      })
+      setNewMessage(filled)
+      incrementUsage(template.id)
+    },
+    [candidateName, jobTitle, companyName, applicationStatus, incrementUsage]
+  )
 
   // Fetch messages
   const { data: messagesData, isLoading, error } = useApplicationMessages(applicationId)
@@ -141,9 +189,32 @@ export const MessagesTab = ({ applicationId }: MessagesTabProps) => {
         )}
       </Stack>
 
+      {/* Template Manager (full screen overlay) */}
+      {showTemplateManager && (
+        <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle, minHeight: 400 }}>
+          <MessageTemplatesManager
+            templates={allTemplates}
+            onCreate={createTemplate}
+            onUpdate={updateTemplate}
+            onDelete={deleteTemplate}
+            onClose={() => setShowTemplateManager(false)}
+          />
+        </Card>
+      )}
+
       {/* Send Message */}
       <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Text style={{ marginBottom: 12 }}>Send Message</Text>
+
+        {/* Template Selector */}
+        <Stack style={{ marginBottom: 12 }}>
+          <MessageTemplateSelector
+            stage={applicationStatus}
+            templates={stageTemplates}
+            onSelect={handleTemplateSelect}
+            onManageTemplates={() => setShowTemplateManager(true)}
+          />
+        </Stack>
 
         <TextArea
           placeholder="Type your message..."
