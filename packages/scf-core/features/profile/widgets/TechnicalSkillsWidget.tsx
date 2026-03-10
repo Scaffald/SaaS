@@ -8,11 +8,13 @@ import {
   Skeleton,
   SkeletonBox,
   SkeletonGroup,
+  Text,
+  Row,
+  Stack,
   useThemeContext,
 } from "@scaffald/ui";
 import { CheckCircle } from "lucide-react-native";
 import { useRouter } from "expo-router";
-import { Text, Row, Stack } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
 import { getProficiencyLabel } from "../constants/proficiency-levels";
 import type { ProfileWidgetProps } from "./types";

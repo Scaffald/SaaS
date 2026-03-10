@@ -1,7 +1,5 @@
 import { useRef, useState } from 'react'
-import { Stack } from '@scaffald/ui'
 import { useDebounce } from '@scf/core/utils/useDebounce'
-import { DiscoverSearchBar } from './components/DiscoverSearchBar'
 import type { ResultListRef } from './components/ResultList'
 import { DiscoverWorkersLeft } from './discover-workers-left'
 import { DiscoverWorkersRight } from './discover-workers-right'
@@ -12,7 +10,7 @@ import { DiscoverWorkersRight } from './discover-workers-right'
  */
 export function DiscoverWorkersScreen() {
   const [searchQuery, setSearchQuery] = useState('')
-  const debouncedSearchQuery = useDebounce(searchQuery, 300)
+  const debouncedSearch = useDebounce(searchQuery, 300)
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
   const [minScore, setMinScore] = useState(0)
   const [selectedSkills, setSelectedSkills] = useState<string[]>([])
@@ -31,23 +29,18 @@ export function DiscoverWorkersScreen() {
 
   return {
     left: (
-      <Stack gap={16}>
-        <DiscoverSearchBar
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholder="Search by name, title, or location..."
-        />
-        <DiscoverWorkersLeft
-          searchQuery={debouncedSearchQuery}
-          selectedIndustries={selectedIndustries}
-          minScore={minScore}
-          selectedSkills={selectedSkills}
-          selectedCertifications={selectedCertifications}
-          selectedProfileId={selectedProfileId}
-          onSelect={handleSelect}
-          resultListRef={resultListRef}
-        />
-      </Stack>
+      <DiscoverWorkersLeft
+        searchQuery={debouncedSearch}
+        searchInputValue={searchQuery}
+        onSearchChange={setSearchQuery}
+        selectedIndustries={selectedIndustries}
+        minScore={minScore}
+        selectedSkills={selectedSkills}
+        selectedCertifications={selectedCertifications}
+        selectedProfileId={selectedProfileId}
+        onSelect={handleSelect}
+        resultListRef={resultListRef}
+      />
     ),
     right: (
       <DiscoverWorkersRight

@@ -109,7 +109,6 @@ pnpm check-deps           # Dependency consistency check
 
 **Comprehensive Validation (Phase 2):**
 - Before committing changes
-- Before marking BrainGrid tasks as COMPLETED
 - Before creating pull requests
 - Before marking work as done
 
@@ -119,41 +118,3 @@ pnpm check-deps           # Dependency consistency check
 - **Run affected checks often** - get fast feedback during development
 - **Run full checks before commit** - ensure nothing breaks elsewhere
 
-## BrainGrid Integration (CRITICAL)
-
-### Mandatory Task Status Updates
-**⚠️ NON-NEGOTIABLE**: When working on BrainGrid REQs and tasks, IMMEDIATELY update statuses using MCP tools. This is NOT optional.
-
-### Required Actions
-1. **Starting Task**: Mark as `IN_PROGRESS` via `mcp__braingrid__update_project_task`
-2. **Completing Task**: Mark as `COMPLETED` BEFORE committing code
-3. **Completing REQ**: Update requirement status when all tasks done
-4. **Creating Blockers**: File new REQ for issues found, add dependencies
-
-### Code Quality Requirements
-- **During Implementation**: Use `pnpm check:affected` for fast feedback while working on BrainGrid tasks
-- **Before Marking COMPLETED**: Run full `pnpm check && pnpm build` before updating task status to COMPLETED
-- **DO NOT bypass pre-completion checks** - Full validation is required before marking BrainGrid work as done
-
-### Quick Reference
-```bash
-# Read project ID
-cat .braingrid/project.json
-
-# Update task status (REQUIRED after completion)
-mcp__braingrid__update_project_task({
-  project_id: "...",
-  requirement_id: "REQ-XXX",
-  task_id: "...",
-  status: "COMPLETED"
-})
-
-# Update requirement status
-mcp__braingrid__update_project_requirement({
-  project_id: "...",
-  requirement_id: "REQ-XXX",
-  status: "COMPLETED"
-})
-```
-
-**CRITICAL**: Task status updates are paramount importance. Update BrainGrid BEFORE committing code.

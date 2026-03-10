@@ -39,7 +39,6 @@ pnpm check-deps           # Dependency consistency
 **When to use:**
 - Before committing changes
 - Before creating pull requests
-- Before marking BrainGrid tasks COMPLETED
 - Before merging branches
 - When work is "done"
 

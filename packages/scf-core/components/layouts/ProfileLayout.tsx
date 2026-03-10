@@ -1,12 +1,9 @@
 import type { ReactNode } from 'react'
 import { ScrollView, StyleSheet } from 'react-native'
-import { Row, Stack, useResponsive } from '@scaffald/ui'
-import { Breadcrumb, type BreadcrumbItemData } from '@scaffald/ui'
+import { Row, Stack, Breadcrumb, type BreadcrumbItemData, useResponsive } from '@scaffald/ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 import { ProfileTabs } from '../navigation/ProfileTabs'
 
-/** Golden ratio (φ) for column proportion: left ~61.8%, right ~38.2% */
-const GOLDEN_RATIO_TEMPLATE = 'minmax(300px, 1.618fr) minmax(300px, 1fr)'
 
 type ProfileLayoutProps = {
   rightContent?: ReactNode
@@ -31,9 +28,6 @@ export const ProfileLayout = ({
 }: ProfileLayoutProps) => {
   const { isDesktop } = useResponsive()
   const contentPadding = isDesktop ? '2xl' : 'lg'
-  const _verticalPadding = isDesktop ? '3xl' : 'sm'
-  const _columnGap = isDesktop ? 48 : 24
-  const _columnTemplate = rightContent ? GOLDEN_RATIO_TEMPLATE : '1fr'
 
   const { breadcrumbs } = useBreadcrumbs({
     autoGenerate: autoGenerateBreadcrumbs && !breadcrumbItems,

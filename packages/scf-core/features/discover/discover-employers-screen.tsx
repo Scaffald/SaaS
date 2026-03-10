@@ -1,8 +1,6 @@
 import { useEmployers } from '@scf/core/utils/employers-sdk-hooks'
 import { useDebounce } from '@scf/core/utils/useDebounce'
-import { Stack } from '@scaffald/ui'
 import { useMemo, useState } from 'react'
-import { DiscoverSearchBar } from './components/DiscoverSearchBar'
 import { DiscoverEmployersLeft } from './discover-employers-left'
 import { DiscoverEmployersRight } from './discover-employers-right'
 import { getAvailableIndustries, getSelectedIndustryCounts } from './utils/employerFilters'
@@ -38,7 +36,7 @@ function transformEmployerRecord(record: unknown): Employer | unknown {
  */
 export function DiscoverEmployersScreen() {
   const [searchQuery, setSearchQuery] = useState('')
-  const debouncedSearchQuery = useDebounce(searchQuery, 300)
+  const debouncedSearch = useDebounce(searchQuery, 300)
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
 
   // Fetch all employers (no filters) to build industry name-to-ID mapping
@@ -85,11 +83,11 @@ export function DiscoverEmployersScreen() {
     [selectedIndustries, industryNameToIdMap]
   )
 
-  // Fetch filtered employers from backend
-  const hasFilters = debouncedSearchQuery.trim().length > 0 || selectedIndustryIds.length > 0
+  // Fetch filtered employers from backend (uses debounced search to avoid rapid API calls)
+  const hasFilters = debouncedSearch.trim().length > 0 || selectedIndustryIds.length > 0
   const { data, isLoading: isLoadingFiltered } = useEmployers(
     {
-      search: debouncedSearchQuery.trim() || undefined,
+      search: debouncedSearch.trim() || undefined,
       industry: selectedIndustryIds.length > 0 ? selectedIndustryIds[0] : undefined,
     },
     {
@@ -118,14 +116,12 @@ export function DiscoverEmployersScreen() {
 
   return {
     left: (
-      <Stack gap={16}>
-        <DiscoverSearchBar
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholder="Search employers..."
-        />
-        <DiscoverEmployersLeft employers={employers} isLoading={isLoading} />
-      </Stack>
+      <DiscoverEmployersLeft
+        employers={employers}
+        isLoading={isLoading}
+        searchInputValue={searchQuery}
+        onSearchChange={setSearchQuery}
+      />
     ),
     right: (
       <DiscoverEmployersRight
