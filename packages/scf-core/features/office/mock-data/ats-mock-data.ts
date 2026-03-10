@@ -66,6 +66,15 @@ export interface MockApplication {
   status: ApplicationStatus
   /** Source of how the candidate found/applied for this job (Issue #91) */
   source?: 'scaffald' | 'referral' | 'external_board' | 'social_media' | 'company_website' | 'other'
+  /** Union status for union-aware hiring workflows (Issue #98) */
+  unionStatus?: {
+    isUnionMember: boolean
+    unionName?: string
+    localNumber?: string
+    membershipId?: string
+    journeymanStatus?: 'apprentice' | 'journeyman' | 'master'
+    prevailingWageEligible?: boolean
+  }
   appliedAt: string
   updatedAt: string
   score: number

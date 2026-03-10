@@ -28,6 +28,15 @@ export interface Application {
   score?: number
   /** Source of hire — how the candidate found this job (Issue #91) */
   source?: 'scaffald' | 'referral' | 'external_board' | 'social_media' | 'company_website' | 'other'
+  /** Union status for union-aware hiring (Issue #98) */
+  union_status?: {
+    is_union_member: boolean
+    union_name?: string
+    local_number?: string
+    membership_id?: string
+    journeyman_status?: 'apprentice' | 'journeyman' | 'master'
+    prevailing_wage_eligible?: boolean
+  }
 }
 
 export interface CustomQuestionAnswer {

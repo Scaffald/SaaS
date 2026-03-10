@@ -402,6 +402,18 @@ const ROUTES_CONFIG = {
         exact: true,
       },
     },
+    CAREER_EXPLORER: {
+      path: '/dashboard/career-explorer',
+      titleKey: 'routes.dashboard.careerExplorer.title',
+      protected: true,
+      exact: false,
+      DETAIL: {
+        path: '/dashboard/career-explorer/:onetCode',
+        titleKey: 'routes.dashboard.careerExplorer.detail',
+        protected: true,
+        exact: true,
+      },
+    },
     NEWS: {
       path: '/dashboard/news',
       titleKey: 'routes.dashboard.news',

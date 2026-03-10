@@ -94,6 +94,14 @@ export const OfficeApplicationsScreen = () => {
         user_id?: string
         assigned_to?: string | null
         source?: 'scaffald' | 'referral' | 'external_board' | 'social_media' | 'company_website' | 'other'
+        union_status?: {
+          is_union_member: boolean
+          union_name?: string
+          local_number?: string
+          membership_id?: string
+          journeyman_status?: 'apprentice' | 'journeyman' | 'master'
+          prevailing_wage_eligible?: boolean
+        }
       }
       const jobInfo = a.job ?? null
       const assignments = jobInfo?.teamAssignments ?? []
@@ -176,6 +184,16 @@ export const OfficeApplicationsScreen = () => {
           name: primaryTeamName ?? null,
           assignedUserId: a.assigned_to ?? null,
         },
+        unionStatus: a.union_status
+          ? {
+              isUnionMember: a.union_status.is_union_member,
+              unionName: a.union_status.union_name,
+              localNumber: a.union_status.local_number,
+              membershipId: a.union_status.membership_id,
+              journeymanStatus: a.union_status.journeyman_status,
+              prevailingWageEligible: a.union_status.prevailing_wage_eligible,
+            }
+          : undefined,
       }
     })
   }, [applications])
