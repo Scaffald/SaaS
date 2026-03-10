@@ -13,7 +13,7 @@ import {
   Avatar,
   Button,
   DashboardWidget,
-  DashboardWidgetHeader,
+  H4,
   ProgressBarBase,
   Row,
   Skeleton,
@@ -27,7 +27,6 @@ import {
 } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
 import { useRouter } from "expo-router";
-import { Pressable } from "react-native";
 
 /**
  * ProfileSnapshotWidget

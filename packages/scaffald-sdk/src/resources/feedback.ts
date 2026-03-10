@@ -22,7 +22,7 @@ export interface FeedbackSubmitParams {
 
 export interface FeedbackSubmitResponse {
   id: string
-  status: 'pending' | 'synced' | 'failed'
+  status: 'submitted'
   createdAt: string
 }
 

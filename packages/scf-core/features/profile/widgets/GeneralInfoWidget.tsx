@@ -5,7 +5,7 @@ import { useGeneralInfoWidget } from "@scf/core/utils/profile-widgets-sdk-hooks"
 import { useUserProfile } from "@scf/core/utils/user-profiles-sdk-hooks";
 import { useUser } from "@scf/core/utils/useUser";
 import { getAvatarUrl } from "@scf/core/utils/supabase/storage";
-import { DashboardWidget, LoadingState, ResponsiveModal, useThemeContext } from "@scaffald/ui";
+import { DashboardWidget, ResponsiveModal, Skeleton, SkeletonAvatar, SkeletonBox, SkeletonText, useThemeContext } from "@scaffald/ui";
 import { MessageSquarePlus } from "lucide-react-native";
 import { useState } from "react";
 import { Avatar, Button, Skeleton, SkeletonAvatar, SkeletonBox, SkeletonText, Text, Row, Stack } from "@scaffald/ui";
