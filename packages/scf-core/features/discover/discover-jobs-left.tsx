@@ -6,12 +6,15 @@ import {
 } from '@scf/core/utils/jobs-sdk-hooks'
 import { extractPlainText, SkeletonList } from '@scaffald/ui'
 import type { JSONContent } from '@tiptap/core'
-import { ScrollView, Text, Stack } from '@scaffald/ui'
+import { Search, X } from 'lucide-react-native'
+import { Button, Input, Row, ScrollView, Text, Stack } from '@scaffald/ui'
 import { type ExternalJob, ExternalJobCard } from './components/ExternalJobCard'
 import { type InternalJob, InternalJobCard } from './components/InternalJobCard'
 
 interface DiscoverJobsLeftProps {
   searchQuery: string
+  searchInputValue: string
+  onSearchChange: (query: string) => void
   selectedIndustries: string[]
   selectedJobTypes: string[]
   jobSource?: 'all' | 'internal' | 'external'
@@ -27,6 +30,8 @@ type MixedJob = { type: 'external'; job: ExternalJob } | { type: 'internal'; job
  */
 export function DiscoverJobsLeft({
   searchQuery,
+  searchInputValue,
+  onSearchChange,
   selectedIndustries,
   selectedJobTypes,
   jobSource = 'all',
@@ -184,60 +189,84 @@ export function DiscoverJobsLeft({
     return true
   })
 
-  // Handle soft skills assessment required state
-  if (shouldUseSoftSkillsMatch && softSkillsMatchData?.needsSelfAssessment) {
-    return (
-      <Stack flex={1} align="center" justify="center" padding="md" gap={12}>
-        <Text color="$gray11">Complete Your Assessment</Text>
-        <Text color="$gray11" style={{ textAlign: 'center' }}>
-          Complete your soft skills assessment to filter and sort jobs by match score.
-        </Text>
-      </Stack>
-    )
-  }
+  const renderContent = () => {
+    // Handle soft skills assessment required state
+    if (shouldUseSoftSkillsMatch && softSkillsMatchData?.needsSelfAssessment) {
+      return (
+        <Stack flex={1} align="center" justify="center" padding="md" gap={12}>
+          <Text color="$gray11">Complete Your Assessment</Text>
+          <Text color="$gray11" style={{ textAlign: 'center' }}>
+            Complete your soft skills assessment to filter and sort jobs by match score.
+          </Text>
+        </Stack>
+      )
+    }
 
-  if (isLoading) {
-    return (
-      <Stack flex={1} padding="md">
-        <SkeletonList count={5} gap={12} variant="job" />
-      </Stack>
-    )
-  }
+    if (isLoading) {
+      return (
+        <Stack flex={1} padding="md">
+          <SkeletonList count={5} gap={12} variant="job" />
+        </Stack>
+      )
+    }
 
-  if (filteredJobs.length === 0) {
+    if (filteredJobs.length === 0) {
+      return (
+        <Stack flex={1} align="center" justify="center" padding="md" gap={8}>
+          <Text color="$gray11">No jobs found</Text>
+          <Text color="$gray11">
+            {shouldUseSoftSkillsMatch
+              ? 'No jobs match your soft skills filter criteria'
+              : 'Try adjusting your filters or search query'}
+          </Text>
+        </Stack>
+      )
+    }
+
     return (
-      <Stack flex={1} align="center" justify="center" padding="md" gap={8}>
-        <Text color="$gray11">No jobs found</Text>
-        <Text color="$gray11">
-          {shouldUseSoftSkillsMatch
-            ? 'No jobs match your soft skills filter criteria'
-            : 'Try adjusting your filters or search query'}
-        </Text>
-      </Stack>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+        <Stack gap={12} padding="md">
+          <Text color="$gray11">
+            {filteredJobs.length} {filteredJobs.length === 1 ? 'Job' : 'Jobs'} Available
+          </Text>
+
+          {filteredJobs.map((item) => {
+            if (item.type === 'external') {
+              return <ExternalJobCard key={`external-${item.job.id}`} job={item.job} />
+            }
+            return (
+              <InternalJobCard
+                key={`internal-${item.job.id}`}
+                job={item.job}
+                hasApplied={appliedJobIds.has(item.job.id)}
+                applicationId={applicationIdByJobId.get(item.job.id)}
+              />
+            )
+          })}
+        </Stack>
+      </ScrollView>
     )
   }
 
   return (
-    <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-      <Stack gap={12} padding="md">
-        <Text color="$gray11">
-          {filteredJobs.length} {filteredJobs.length === 1 ? 'Job' : 'Jobs'} Available
-        </Text>
-
-        {filteredJobs.map((item) => {
-          if (item.type === 'external') {
-            return <ExternalJobCard key={`external-${item.job.id}`} job={item.job} />
-          }
-          return (
-            <InternalJobCard
-              key={`internal-${item.job.id}`}
-              job={item.job}
-              hasApplied={appliedJobIds.has(item.job.id)}
-              applicationId={applicationIdByJobId.get(item.job.id)}
-            />
-          )
-        })}
+    <Stack style={{ flex: 1, overflow: 'hidden' }}>
+      <Stack padding="md" paddingBottom={0}>
+        <Row gap={8} align="center">
+          <Input
+            style={{ flex: 1 }}
+            placeholder="Search jobs by title, company..."
+            value={searchInputValue}
+            onChangeText={onSearchChange}
+            iconStart={Search}
+          />
+          {searchInputValue.length > 0 && (
+            <Button size="sm" variant="outline" onPress={() => onSearchChange('')} iconStart={X}>
+              Clear
+            </Button>
+          )}
+        </Row>
       </Stack>
-    </ScrollView>
+      {renderContent()}
+    </Stack>
   )
 }

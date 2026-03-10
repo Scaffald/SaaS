@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { useDebounce } from '@scf/core/utils/useDebounce'
 import type { ResultListRef } from './components/ResultList'
 import { DiscoverWorkersLeft } from './discover-workers-left'
 import { DiscoverWorkersRight } from './discover-workers-right'
@@ -9,6 +10,7 @@ import { DiscoverWorkersRight } from './discover-workers-right'
  */
 export function DiscoverWorkersScreen() {
   const [searchQuery, setSearchQuery] = useState('')
+  const debouncedSearch = useDebounce(searchQuery, 300)
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
   const [minScore, setMinScore] = useState(0)
   const [selectedSkills, setSelectedSkills] = useState<string[]>([])
@@ -28,7 +30,9 @@ export function DiscoverWorkersScreen() {
   return {
     left: (
       <DiscoverWorkersLeft
-        searchQuery={searchQuery}
+        searchQuery={debouncedSearch}
+        searchInputValue={searchQuery}
+        onSearchChange={setSearchQuery}
         selectedIndustries={selectedIndustries}
         minScore={minScore}
         selectedSkills={selectedSkills}
@@ -40,7 +44,8 @@ export function DiscoverWorkersScreen() {
     ),
     right: (
       <DiscoverWorkersRight
-        onSearchChange={setSearchQuery}
+        searchQuery={searchQuery}
+        onClearSearch={() => setSearchQuery('')}
         onIndustriesChange={setSelectedIndustries}
         minScore={minScore}
         onMinScoreChange={setMinScore}

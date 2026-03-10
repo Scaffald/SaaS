@@ -10,13 +10,16 @@ import {
   DashboardWidget,
   DashboardWidgetHeader,
   EmptyState,
+  Separator,
   Skeleton,
   SkeletonBox,
+  Text,
+  Row,
+  Stack,
   useThemeContext,
 } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState, type FC } from 'react'
-import { Separator, Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import type { ProfileWidgetProps } from './types'
 

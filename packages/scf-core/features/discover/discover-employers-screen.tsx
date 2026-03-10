@@ -1,4 +1,5 @@
 import { useEmployers } from '@scf/core/utils/employers-sdk-hooks'
+import { useDebounce } from '@scf/core/utils/useDebounce'
 import { useMemo, useState } from 'react'
 import { DiscoverEmployersLeft } from './discover-employers-left'
 import { DiscoverEmployersRight } from './discover-employers-right'
@@ -35,6 +36,7 @@ function transformEmployerRecord(record: unknown): Employer | unknown {
  */
 export function DiscoverEmployersScreen() {
   const [searchQuery, setSearchQuery] = useState('')
+  const debouncedSearch = useDebounce(searchQuery, 300)
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
 
   // Fetch all employers (no filters) to build industry name-to-ID mapping
@@ -81,11 +83,11 @@ export function DiscoverEmployersScreen() {
     [selectedIndustries, industryNameToIdMap]
   )
 
-  // Fetch filtered employers from backend
-  const hasFilters = searchQuery.trim().length > 0 || selectedIndustryIds.length > 0
+  // Fetch filtered employers from backend (uses debounced search to avoid rapid API calls)
+  const hasFilters = debouncedSearch.trim().length > 0 || selectedIndustryIds.length > 0
   const { data, isLoading: isLoadingFiltered } = useEmployers(
     {
-      search: searchQuery.trim() || undefined,
+      search: debouncedSearch.trim() || undefined,
       industry: selectedIndustryIds.length > 0 ? selectedIndustryIds[0] : undefined,
     },
     {
@@ -113,14 +115,21 @@ export function DiscoverEmployersScreen() {
   }
 
   return {
-    left: <DiscoverEmployersLeft employers={employers} isLoading={isLoading} />,
+    left: (
+      <DiscoverEmployersLeft
+        employers={employers}
+        isLoading={isLoading}
+        searchInputValue={searchQuery}
+        onSearchChange={setSearchQuery}
+      />
+    ),
     right: (
       <DiscoverEmployersRight
         searchQuery={searchQuery}
         industries={availableIndustries}
         industryCounts={selectedIndustryCounts}
         selectedIndustries={selectedIndustries}
-        onSearchChange={setSearchQuery}
+        onClearSearch={() => setSearchQuery('')}
         onIndustriesChange={setSelectedIndustries}
         onClearFilters={handleClearFilters}
       />

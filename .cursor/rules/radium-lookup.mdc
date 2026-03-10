@@ -1,0 +1,27 @@
+---
+description: "Radium constraint docs — read before modifying documented feature areas"
+globs: ["**/*.tsx", "**/*.ts"]
+alwaysApply: false
+---
+
+# Radium Documentation System
+
+Before modifying code, check if the file belongs to a documented pillar and read the corresponding `.radium/` doc.
+
+## Pillar Lookup
+
+| Pillar | Doc | When to Read |
+|--------|-----|-------------|
+| @scaffald/ui | `.radium/scaffald-ui.md` | Editing UI components, tokens, or styles |
+| @scaffald/sdk | `.radium/scaffald-sdk.md` | Creating/editing SDK hooks or mutations |
+| Expo & Core App | `.radium/app-expo.md` | Editing app routes, layouts, or navigation |
+| Supabase & Backend | `.radium/supabase-backend.md` | Editing edge functions or migrations |
+| CI & Deployment | `.radium/ci-deployment.md` | Editing build config, CI, or dependencies |
+
+## Quick Constraint Reminders
+
+- **Color tokens**: `colors.bg[theme].default` NOT `colors.background[theme].default`
+- **SDK hooks**: Always accept `UseMutationOptions` and spread with `...options`
+- **Navigator wrappers**: NEVER conditionally render different wrappers around Stack/Drawer
+- **@hookform/resolvers**: Must be `~3.1.0`, not `5.x`
+- **Vitest 4**: Pool options are top-level, not nested in `poolOptions`

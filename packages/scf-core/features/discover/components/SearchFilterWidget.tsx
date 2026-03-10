@@ -25,6 +25,8 @@ export interface SearchFilterWidgetProps {
   wrapped?: boolean
   /** Custom active filters summary content. If provided, overrides the default search query display */
   activeFiltersContent?: React.ReactNode
+  /** Whether to show the search input section (default: true). Set to false when search is handled externally. */
+  showSearch?: boolean
 }
 
 /**
@@ -50,6 +52,7 @@ export function SearchFilterWidget({
   children,
   wrapped = true,
   activeFiltersContent,
+  showSearch = true,
 }: SearchFilterWidgetProps) {
   const headerSection = (
     <Stack gap={subtitle ? 8 : 4}>
@@ -105,7 +108,7 @@ export function SearchFilterWidget({
   const content = (
     <>
       {headerSection}
-      {searchSection}
+      {showSearch && searchSection}
       {children && (
         <>
           <Separator />
