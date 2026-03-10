@@ -247,8 +247,8 @@ Supabase Auth advisors reported: (1) Leaked password protection is disabled — 
 
 ## Remediation
 
-1. **Leaked password protection:** In Supabase Dashboard → Authentication → Settings (or Auth provider config), enable “Leaked password protection” / HaveIBeenPwned check. See [Password strength and leaked password protection](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
-2. **MFA:** Enable additional MFA methods (e.g. TOTP, phone) in Dashboard → Authentication → MFA / Providers. See [Auth MFA](https://supabase.com/docs/guides/auth/auth-mfa).
+1. **Leaked password protection:** Not available in `config.toml` (see [supabase/cli#4620](https://github.com/supabase/cli/issues/4620)). Enable in **Supabase Dashboard** → Authentication → Attack Protection / Password → “Leaked password protection”. See [Password strength and leaked password protection](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
+2. **MFA:** Can be configured in **config.toml** under `[auth.mfa]`, `[auth.mfa.totp]`, `[auth.mfa.phone]`, `[auth.mfa.web_authn]` (see [CLI config](https://supabase.com/docs/guides/cli/config)). For Dashboard: Authentication → MFA. See [Auth MFA](https://supabase.com/docs/guides/auth/auth-mfa).
 
 ## References
 
@@ -308,8 +308,8 @@ Track progress on Supabase Database Linter and Auth advisor findings. Each item 
 - [x] #172 — Set explicit search_path on database functions
 - [x] #173 — Move extensions out of public schema
 - [x] #174 — Tighten permissive RLS policies (USING/WITH CHECK true)
-- [ ] #175 — Harden Auth: leaked password protection and MFA
-- [ ] #176 — Add indexes for unindexed foreign keys
+- [x] #175 — Harden Auth: leaked password protection and MFA
+- [x] #176 — Add indexes for unindexed foreign keys
 
 Full issue text: see [.github/supabase-advisor-issues.md](.github/supabase-advisor-issues.md).
 

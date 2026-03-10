@@ -76,7 +76,26 @@ double_confirm_changes = true
 # If enabled, users need to confirm their email address before signing in.
 enable_confirmations = true
 
-# Use an external OAuth provider. The full list of providers are: `apple`, `azure`, `bitbucket`,
+# MFA (issue #175): configurable in config.toml. Leaked password (HIBP) is NOT in config.toml;
+# enable it in Dashboard → Auth → Attack Protection / Password (see supabase/cli#4620).
+[auth.mfa]
+max_enrolled_factors = 10
+
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true
+
+[auth.mfa.phone]
+enroll_enabled = false
+verify_enabled = false
+otp_length = 6
+max_frequency = "10s"
+
+[auth.mfa.web_authn]
+enroll_enabled = false
+verify_enabled = false
+
+# Use an external OAuth provider.
 # `discord`, `facebook`, `github`, `gitlab`, `google`, `keycloak`, `linkedin`, `notion`, `twitch`,
 # `twitter`, `slack`, `spotify`, `workos`, `zoom`.
 
