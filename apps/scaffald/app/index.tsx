@@ -1,7 +1,7 @@
 import { AUTH_ROUTES, ROUTES } from '@scf/core/constants/routes'
 import { continueOAuthFlowIfPending } from '@scf/core/features/oauth/utils/passthrough'
 import { supabase } from '@scf/core/utils/supabase/client'
-import { usePrerequisites } from '@scaffald/sdk/react'
+import { usePrerequisitesCheck } from '@scf/core/utils/prerequisites-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import { useLocalSearchParams, useRouter, useSegments } from 'expo-router'
 import { useEffect, useState } from 'react'
@@ -25,9 +25,8 @@ export default function RootIndex() {
   const [isRouterReady, setIsRouterReady] = useState(false)
 
   // Check prerequisites status for authenticated users
-  const { data: prereqStatus, isLoading: isCheckingPrereqs } = usePrerequisites({
+  const { data: prereqStatus, isLoading: isCheckingPrereqs } = usePrerequisitesCheck({
     enabled: !!user && !isVerifying, // Only check when user is authenticated and not verifying
-    staleTime: 60000, // Cache for 1 minute
   })
 
   // Check if router is ready

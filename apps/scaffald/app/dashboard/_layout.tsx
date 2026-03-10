@@ -3,7 +3,7 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { DrawerLayout } from '@scf/core/features/drawer/DrawerLayout'
 import { useProtectedRoute } from '@scf/core/utils/auth/useProtectedRoute'
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
-import { usePrerequisites } from '@scaffald/sdk/react'
+import { usePrerequisitesCheck } from '@scf/core/utils/prerequisites-sdk-hooks'
 import { useRouter } from 'expo-router'
 import { Drawer } from 'expo-router/drawer'
 import { useEffect, useRef } from 'react'
@@ -20,7 +20,7 @@ export default function Layout() {
 
   // Check prerequisites status - only run when we have a valid user
   // This prevents race conditions after DB resets when session is invalid
-  const { data: statusData, isLoading: isCheckingPrereqs } = usePrerequisites({
+  const { data: statusData, isLoading: isCheckingPrereqs } = usePrerequisitesCheck({
     enabled: !!user, // Only run if user exists
   })
 
