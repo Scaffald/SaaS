@@ -225,7 +225,6 @@ export function JobPostingJsonLd({ job, canonicalUrl }: JobPostingJsonLdProps) {
   return (
     <script
       type="application/ld+json"
-      // biome-ignore lint: needed for JSON-LD injection
       dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
     />
   )
