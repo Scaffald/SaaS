@@ -1,4 +1,4 @@
-import { Award, BadgeCheck, Search, X } from 'lucide-react-native'
+import { Award, BadgeCheck, X } from 'lucide-react-native'
 import { useState } from 'react'
 import {
   Button,
@@ -14,7 +14,8 @@ import {
 import { SearchFilterWidget } from './components/SearchFilterWidget'
 
 interface DiscoverWorkersRightProps {
-  onSearchChange: (query: string) => void
+  searchQuery: string
+  onClearSearch: () => void
   onIndustriesChange: (industries: string[]) => void
   minScore: number
   onMinScoreChange: (score: number) => void
@@ -26,10 +27,11 @@ interface DiscoverWorkersRightProps {
 
 /**
  * Discover Workers Right Component
- * Right panel content for the workers discovery page - displays search and filters
+ * Right panel content for the workers discovery page - displays filters
  */
 export function DiscoverWorkersRight({
-  onSearchChange,
+  searchQuery,
+  onClearSearch,
   onIndustriesChange,
   minScore,
   onMinScoreChange,
@@ -38,14 +40,8 @@ export function DiscoverWorkersRight({
   selectedCertifications,
   onCertificationsChange,
 }: DiscoverWorkersRightProps) {
-  const [searchQuery, setSearchQuery] = useState('')
   const [skillInput, setSkillInput] = useState('')
   const [certificationInput, setCertificationInput] = useState('')
-
-  const handleSearchChange = (value: string) => {
-    setSearchQuery(value)
-    onSearchChange(value)
-  }
 
   const handleAddSkill = () => {
     if (skillInput.trim() && !selectedSkills.includes(skillInput.trim())) {
@@ -70,10 +66,9 @@ export function DiscoverWorkersRight({
   }
 
   const handleClearFilters = () => {
-    setSearchQuery('')
+    onClearSearch()
     setSkillInput('')
     setCertificationInput('')
-    onSearchChange('')
     onIndustriesChange([])
     onMinScoreChange(0)
     onSkillsChange([])
@@ -120,17 +115,11 @@ export function DiscoverWorkersRight({
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
       <Stack gap={16} padding="md">
         <SearchFilterWidget
-          title="Search & Filter"
+          title="Filters"
           subtitle="Find skilled workers for your projects"
           searchQuery={searchQuery}
-          onSearchChange={handleSearchChange}
-          searchLabel={
-            <Row align="center" gap={8}>
-              <Search size={getIconSize('md')} />
-              <Text>Search</Text>
-            </Row>
-          }
-          searchPlaceholder="Search by name, title, or location..."
+          onSearchChange={() => {}}
+          showSearch={false}
           hasActiveFilters={hasActiveFilters}
           onClearFilters={handleClearFilters}
           wrapped={false}

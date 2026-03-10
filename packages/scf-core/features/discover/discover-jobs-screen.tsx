@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import { Stack } from '@scaffald/ui'
+import { useDebounce } from '@scf/core/utils/useDebounce'
+import { DiscoverSearchBar } from './components/DiscoverSearchBar'
 import { DiscoverJobsLeft } from './discover-jobs-left'
 import { DiscoverJobsRight } from './discover-jobs-right'
 
@@ -8,6 +11,7 @@ import { DiscoverJobsRight } from './discover-jobs-right'
  */
 export function DiscoverJobsScreen() {
   const [searchQuery, setSearchQuery] = useState('')
+  const debouncedSearchQuery = useDebounce(searchQuery, 300)
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
   const [selectedJobTypes, setSelectedJobTypes] = useState<string[]>([])
   const [jobSource, setJobSource] = useState<'all' | 'internal' | 'external'>('all')
@@ -16,18 +20,26 @@ export function DiscoverJobsScreen() {
 
   return {
     left: (
-      <DiscoverJobsLeft
-        searchQuery={searchQuery}
-        selectedIndustries={selectedIndustries}
-        selectedJobTypes={selectedJobTypes}
-        jobSource={jobSource}
-        minSoftSkillsMatch={minSoftSkillsMatch}
-        sortBy={sortBy}
-      />
+      <Stack gap={16}>
+        <DiscoverSearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search by title, company..."
+        />
+        <DiscoverJobsLeft
+          searchQuery={debouncedSearchQuery}
+          selectedIndustries={selectedIndustries}
+          selectedJobTypes={selectedJobTypes}
+          jobSource={jobSource}
+          minSoftSkillsMatch={minSoftSkillsMatch}
+          sortBy={sortBy}
+        />
+      </Stack>
     ),
     right: (
       <DiscoverJobsRight
-        onSearchChange={setSearchQuery}
+        searchQuery={searchQuery}
+        onClearSearch={() => setSearchQuery('')}
         onIndustriesChange={setSelectedIndustries}
         onJobTypesChange={setSelectedJobTypes}
         jobSource={jobSource}

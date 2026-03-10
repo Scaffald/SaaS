@@ -1,11 +1,10 @@
 import { useFilterOptions } from '@scf/core/utils/jobs-sdk-hooks'
 import { useSoftSkills } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { DashboardWidget, ResponsiveSelect } from '@scaffald/ui'
-import { ChevronsUpDown, Filter, Search, X } from 'lucide-react-native'
+import { ChevronsUpDown, Filter, X } from 'lucide-react-native'
 import { useState } from 'react'
 import {
   Button,
-  Input,
   RangeSlider,
   Row,
   ScrollView,
@@ -16,7 +15,8 @@ import {
 } from '@scaffald/ui'
 
 interface DiscoverJobsRightProps {
-  onSearchChange: (search: string) => void
+  searchQuery: string
+  onClearSearch: () => void
   onIndustriesChange: (industries: string[]) => void
   onJobTypesChange: (types: string[]) => void
   jobSource: 'all' | 'internal' | 'external'
@@ -32,7 +32,8 @@ interface DiscoverJobsRightProps {
  * Right panel content for the jobs discovery page - filters and search
  */
 export function DiscoverJobsRight({
-  onSearchChange,
+  searchQuery,
+  onClearSearch,
   onIndustriesChange,
   onJobTypesChange,
   jobSource,
@@ -42,7 +43,6 @@ export function DiscoverJobsRight({
   sortBy,
   onSortByChange,
 }: DiscoverJobsRightProps) {
-  const [searchQuery, setSearchQuery] = useState('')
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
   const [selectedJobTypes, setSelectedJobTypes] = useState<string[]>([])
 
@@ -56,11 +56,6 @@ export function DiscoverJobsRight({
     staleTime: 5 * 60 * 1000,
   })
   const hasSoftSkillsAssessment = (softSkillsData?.skills.length ?? 0) > 0
-
-  const handleSearchChange = (value: string) => {
-    setSearchQuery(value)
-    onSearchChange(value)
-  }
 
   const toggleIndustry = (industry: string) => {
     const newSelection = selectedIndustries.includes(industry)
@@ -81,12 +76,11 @@ export function DiscoverJobsRight({
   }
 
   const clearAllFilters = () => {
-    setSearchQuery('')
+    onClearSearch()
     setSelectedIndustries([])
     setSelectedJobTypes([])
     onMinSoftSkillsMatchChange(null)
     onSortByChange('relevance')
-    onSearchChange('')
     onIndustriesChange([])
     onJobTypesChange([])
   }
@@ -115,22 +109,6 @@ export function DiscoverJobsRight({
   return (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
       <Stack gap={16} padding="md">
-        {/* Search */}
-        <DashboardWidget>
-          <Stack gap={12}>
-            <Row align="center" justify="space-between">
-              <Text color="secondary">Search Jobs</Text>
-              <Search size={24} color="#737373" />
-            </Row>
-
-            <Input
-              placeholder="Search by title, company..."
-              value={searchQuery}
-              onChangeText={handleSearchChange}
-            />
-          </Stack>
-        </DashboardWidget>
-
         {/* Filters Header */}
         <DashboardWidget>
           <Row align="center" justify="space-between">
