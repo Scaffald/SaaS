@@ -63,7 +63,7 @@ jobs:
         run: pnpm test:contracts
 
       - name: Upload generated contracts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: generated-contracts
           path: tests/reports/contracts/generated
