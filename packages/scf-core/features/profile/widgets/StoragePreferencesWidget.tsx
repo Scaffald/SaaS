@@ -13,7 +13,7 @@ import { Button, DashboardWidget, H4, LoadingState, useThemeContext } from "@sca
 import type { ComponentType } from "react";
 import { useState, useEffect } from "react";
 import { Pressable } from "react-native";
-import { Text, Row, Stack } from "@scaffald/ui";
+import { Skeleton, SkeletonBox, Text, Row, Stack } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
 import { useQueryClient } from "@tanstack/react-query";
 import {

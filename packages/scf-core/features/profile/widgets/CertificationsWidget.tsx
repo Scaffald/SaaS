@@ -11,7 +11,7 @@ import {
 import { Award, CheckCircle } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { Linking } from "react-native";
-import { Separator, Text, Row, Stack } from "@scaffald/ui";
+import { Separator, Skeleton, SkeletonList, Text, Row, Stack } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
 import { formatDate } from "../utils/date-formatting";
 import type { ProfileWidgetProps } from "./types";

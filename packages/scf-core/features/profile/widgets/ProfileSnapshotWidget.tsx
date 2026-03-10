@@ -22,7 +22,7 @@ import {
   SkeletonText,
   Stack,
   Text,
-  useHoverState,
+  H4,
   useThemeContext,
 } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
@@ -39,10 +39,6 @@ export function ProfileSnapshotWidget() {
   const { theme } = useThemeContext();
   const router = useRouter();
   const { data: user } = useCurrentUser();
-
-  const skillsHover = useHoverState();
-  const certsHover = useHoverState();
-  const yearsHover = useHoverState();
 
   const {
     data: generalInfo,

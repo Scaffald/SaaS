@@ -1,79 +1,28 @@
 # CLAUDE.md
 
-> 🚨 **Canonical Source**: All project-specific context now lives in `AGENTINFO.md`. Read/update that file first; this profile only adds Claude-specific reminders.
+> **Canonical Source**: All project-specific context lives in `AGENTINFO.md`. Read/update that file first; this file adds Claude-specific guidance.
 
-**Maintaining AGENTINFO.md:**
-- When project-specific processes, structure, or standards change, update `AGENTINFO.md` immediately
-- Mirror every requirement from `AGENTINFO.md` (project structure, build/test commands, coding style, testing guidance, commit/PR standards, security/config, documentation)
-- When responding, cite the relevant sections of `AGENTINFO.md` rather than restating them—this avoids stale guidance
-- Do NOT duplicate project-specific information in this file or in `.cursor/rules/` - keep it in `AGENTINFO.md`
-- If you discover new constraints, update `AGENTINFO.md` instead of duplicating details here
+## Radium Docs (.radium/)
 
-## Overview
+Before modifying code in any area, **READ the corresponding pillar doc first**.
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository. For detailed project-specific information, see `AGENTINFO.md`.
+| Pillar | Doc | Top Constraint |
+|--------|-----|---------------|
+| @scaffald/ui | `.radium/scaffald-ui.md` | `colors.bg[theme]` not `colors.background[theme]` |
+| @scaffald/sdk | `.radium/scaffald-sdk.md` | Always spread `UseMutationOptions` |
+| Expo & Core App | `.radium/app-expo.md` | Never conditional-render navigator wrappers |
+| Supabase & Backend | `.radium/supabase-backend.md` | Migrations are sequential, never modified |
+| CI & Deployment | `.radium/ci-deployment.md` | `@hookform/resolvers` ~3.1.0 only |
 
-## BrainGrid Integration (CRITICAL)
+## Pre-Edit Checklist
 
-### Mandatory Task Status Updates
-
-**⚠️ NON-NEGOTIABLE REQUIREMENT**: When working on BrainGrid requirements and tasks, you MUST update statuses immediately upon completion using the BrainGrid MCP tools. This is not optional.
-
-### Required Workflow
-
-1. **Starting a Task**:
-   - Mark task status as `IN_PROGRESS` using `mcp__braingrid__update_project_task`
-   - Update task description with current status if needed
-
-2. **Completing a Task**:
-   - **IMMEDIATELY** mark task status as `COMPLETED` using `mcp__braingrid__update_project_task`
-   - Update requirement status if all tasks are complete using `mcp__braingrid__update_project_requirement`
-   - Do NOT commit code without updating BrainGrid statuses first
-
-3. **Blocking/Cancelled Tasks**:
-   - Mark task as `CANCELLED` with clear reason in description
-   - Create new REQ for blocking issues if needed
-   - Add blocking relationships using task dependencies
-
-### BrainGrid MCP Tools
-
-Always provide `project_id` (auto-detected from `.braingrid/project.json`):
-
-```bash
-# Read project config
-cat .braingrid/project.json
-
-# Update task status
-mcp__braingrid__update_project_task({
-  project_id: "...",
-  requirement_id: "REQ-XXX",
-  task_id: "...",
-  status: "COMPLETED"
-})
-
-# Update requirement status
-mcp__braingrid__update_project_requirement({
-  project_id: "...",
-  requirement_id: "REQ-XXX",
-  status: "COMPLETED"
-})
-
-# Create new requirement for blockers
-mcp__braingrid__create_project_requirement({
-  project_id: "...",
-  prompt: "Detailed description of issue found..."
-})
-```
-
-### Why This Matters
-
-- **Project visibility**: Team needs real-time status updates
-- **Blocking dependencies**: Other tasks may depend on completion status
-- **Effort tracking**: Accurate time estimates require completion data
-- **Developer handoff**: Next developer needs to know what's done
-- **Sprint planning**: Project managers rely on accurate status
-
-**REMEMBER**: Task status updates are of paramount importance. Update BrainGrid BEFORE committing code or marking work complete.
+Before modifying any file:
+1. Identify which pillar the file belongs to → read that `.radium/` doc
+2. Editing UI components or tokens? → `.radium/scaffald-ui.md`
+3. Creating/editing SDK hooks? → `.radium/scaffald-sdk.md`
+4. Editing app routes or layouts? → `.radium/app-expo.md`
+5. Editing edge functions or migrations? → `.radium/supabase-backend.md`
+6. Editing build config, CI, or dependencies? → `.radium/ci-deployment.md`
 
 ## References
 
