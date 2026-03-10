@@ -5,10 +5,12 @@ import {
   SavingModal,
   SkeletonForm,
 } from '@scaffald/ui'
-import { Check } from 'lucide-react-native'
-import { useMemo } from 'react'
+import { Check, Sparkles } from 'lucide-react-native'
+import { useCallback, useMemo, useState } from 'react'
 import { Button, ScrollView, Separator, Text, Row, Stack } from '@scaffald/ui'
+import { useUserSkillsMultiTaxonomy } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { InlineSkillSearch } from './components'
+import { SkillSuggestionsModal } from './components/SkillSuggestionsModal'
 import { SoftSkillsRatingForm } from './components/SoftSkillsRatingForm'
 import { useSaveStatus } from './hooks/useSaveStatus'
 import { useProfileSkillsContext } from './profile-skills-context'
@@ -32,6 +34,38 @@ export function ProfileSkillsLeft() {
     isAddingSkill,
     isRemovingSkill,
   } = useProfileSkillsContext()
+
+  // O*NET skill suggestions modal state
+  const [showSuggestionsModal, setShowSuggestionsModal] = useState(false)
+  const [isAddingOnetSkills, setIsAddingOnetSkills] = useState(false)
+
+  // Get existing skill names for deduplication in suggestions modal
+  const { data: userSkillsData } = useUserSkillsMultiTaxonomy()
+  const existingSkillNames = useMemo(
+    () =>
+      (userSkillsData?.skills || [])
+        .map((s) => (s.skill_details as { name?: string } | null)?.name || '')
+        .filter(Boolean),
+    [userSkillsData?.skills]
+  )
+
+  // Handle adding skills from O*NET suggestions
+  const handleAddOnetSkills = useCallback(
+    async (skills: Array<{ name: string; proficiency: number; taxonomy: string }>) => {
+      setIsAddingOnetSkills(true)
+      try {
+        for (const skill of skills) {
+          await selectSkill(skill.name, skill.proficiency, skill.taxonomy)
+        }
+        setShowSuggestionsModal(false)
+      } catch (error) {
+        console.error('Failed to add O*NET skills:', error)
+      } finally {
+        setIsAddingOnetSkills(false)
+      }
+    },
+    [selectSkill]
+  )
 
   // Use save status hook
   const {
@@ -125,6 +159,18 @@ export function ProfileSkillsLeft() {
 
             <Separator />
 
+            {/* Quick Add from O*NET */}
+            <Button
+              size="sm"
+              variant="outline"
+              iconStart={Sparkles}
+              onPress={() => setShowSuggestionsModal(true)}
+            >
+              Quick Add from O*NET
+            </Button>
+
+            <Separator />
+
             {/* Save Button */}
             <Row justify="space-between" align="center" paddingTop={8}>
               <SaveStatusIndicator
@@ -160,6 +206,15 @@ export function ProfileSkillsLeft() {
           <SoftSkillsRatingForm />
         </DashboardWidget>
       </Stack>
+
+      {/* O*NET Skill Suggestions Modal */}
+      <SkillSuggestionsModal
+        visible={showSuggestionsModal}
+        onClose={() => setShowSuggestionsModal(false)}
+        onAddSkills={handleAddOnetSkills}
+        existingSkillNames={existingSkillNames}
+        isAdding={isAddingOnetSkills}
+      />
     </ScrollView>
   )
 }

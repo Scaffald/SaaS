@@ -71,6 +71,7 @@
       "authentication": "Authentication Settings",
       "general": "General Settings",
       "notifications": "Notifications",
+      "privacy": "Privacy & Data",
       "security": "Security Settings",
       "title": "Settings"
     },
@@ -152,7 +153,16 @@
         "title": "Workers"
       }
     },
+    "compliance": {
+      "eeoReports": "EEO Reports",
+      "projectHiring": "Project Hiring",
+      "title": "Compliance"
+    },
     "notifications": "Notifications",
+    "oauthApps": {
+      "detail": "OAuth App Detail",
+      "title": "OAuth Apps"
+    },
     "payments": "Payment Analytics",
     "settings": {
       "geographic": "Geographic Settings",
