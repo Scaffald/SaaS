@@ -941,58 +941,6 @@ export type Database = {
       [_ in never]: never
     }
   }
-  cms: {
-    Tables: {
-      welcome_slides: {
-        Row: {
-          background_image_url: string
-          created_at: string
-          description: string
-          display_order: number
-          icon_name: string
-          id: string
-          is_active: boolean
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          background_image_url: string
-          created_at?: string
-          description: string
-          display_order: number
-          icon_name: string
-          id?: string
-          is_active?: boolean
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          background_image_url?: string
-          created_at?: string
-          description?: string
-          display_order?: number
-          icon_name?: string
-          id?: string
-          is_active?: boolean
-          title?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      [_ in never]: never
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   core: {
     Tables: {
       account_credits: {
@@ -11110,6 +11058,139 @@ export type Database = {
       [_ in never]: never
     }
   }
+  engagement: {
+    Tables: {
+      activity_events: {
+        Row: {
+          created_at: string
+          event_metadata: Json
+          event_type: string
+          id: string
+          occurred_at: string
+          target_id: string | null
+          target_type: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_metadata?: Json
+          event_type: string
+          id?: string
+          occurred_at?: string
+          target_id?: string | null
+          target_type?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_metadata?: Json
+          event_type?: string
+          id?: string
+          occurred_at?: string
+          target_id?: string | null
+          target_type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      connection_analytics: {
+        Row: {
+          connections_count: number
+          created_at: string
+          followers_count: number
+          following_count: number
+          last_profile_view_at: string | null
+          pending_received_count: number
+          pending_sent_count: number
+          profile_views_30d: number
+          profile_views_total: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          connections_count?: number
+          created_at?: string
+          followers_count?: number
+          following_count?: number
+          last_profile_view_at?: string | null
+          pending_received_count?: number
+          pending_sent_count?: number
+          profile_views_30d?: number
+          profile_views_total?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          connections_count?: number
+          created_at?: string
+          followers_count?: number
+          following_count?: number
+          last_profile_view_at?: string | null
+          pending_received_count?: number
+          pending_sent_count?: number
+          profile_views_30d?: number
+          profile_views_total?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profile_views: {
+        Row: {
+          created_at: string
+          id: string
+          metadata: Json
+          referrer_url: string | null
+          session_id: string | null
+          updated_at: string
+          viewed_at: string
+          viewed_user_id: string
+          viewer_industry_id: string | null
+          viewer_role_type: string | null
+          viewer_user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          referrer_url?: string | null
+          session_id?: string | null
+          updated_at?: string
+          viewed_at?: string
+          viewed_user_id: string
+          viewer_industry_id?: string | null
+          viewer_role_type?: string | null
+          viewer_user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          referrer_url?: string | null
+          session_id?: string | null
+          updated_at?: string
+          viewed_at?: string
+          viewed_user_id?: string
+          viewer_industry_id?: string | null
+          viewer_role_type?: string | null
+          viewer_user_id?: string | null
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   onet: {
     Tables: {
       abilities: {
@@ -15275,9 +15356,6 @@ export const Constants = {
       ],
     },
   },
-  cms: {
-    Enums: {},
-  },
   core: {
     Enums: {
       app_role: ["user", "moderator", "admin", "super_admin"],
@@ -15482,6 +15560,9 @@ export const Constants = {
     },
   },
   data: {
+    Enums: {},
+  },
+  engagement: {
     Enums: {},
   },
   onet: {
