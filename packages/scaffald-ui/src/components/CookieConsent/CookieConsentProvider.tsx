@@ -55,21 +55,9 @@ const DEFAULT_CATEGORIES: CookieConsentCategory[] = [
     defaultValue: true,
   },
   {
-    id: 'functional',
-    label: 'Functional',
-    description: 'Functional cookies help personalize the experience by remembering settings.',
-    defaultValue: false,
-  },
-  {
     id: 'performance',
     label: 'Performance & Analytics',
     description: 'Performance cookies let us understand usage patterns to improve reliability.',
-    defaultValue: false,
-  },
-  {
-    id: 'marketing',
-    label: 'Marketing',
-    description: 'Marketing cookies deliver relevant content and measure campaign performance.',
     defaultValue: false,
   },
 ]

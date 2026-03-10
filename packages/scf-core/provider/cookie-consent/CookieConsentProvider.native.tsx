@@ -42,8 +42,6 @@ const storageAdapter: CookieConsentStorage = {
 const CATEGORY_TO_CONSENT_TYPE: Record<string, string> = {
   'strictly-necessary': 'cookies_essential',
   performance: 'cookies_analytics',
-  marketing: 'cookies_marketing',
-  functional: 'data_collection',
 }
 
 async function recordConsentToDb(state: CookieConsentState) {

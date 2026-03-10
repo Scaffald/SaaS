@@ -7,8 +7,6 @@ import type { CookieConsentState } from '@scaffald/ui'
 const CATEGORY_TO_CONSENT_TYPE: Record<string, string> = {
   'strictly-necessary': 'cookies_essential',
   performance: 'cookies_analytics',
-  marketing: 'cookies_marketing',
-  functional: 'data_collection',
 }
 
 function getUserAgent(): string {
