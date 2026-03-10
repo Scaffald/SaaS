@@ -184,3 +184,8 @@ export function LegalDocumentLayout({
     </SafeAreaView>
   )
 }
+
+/** Default export for Expo Router (prevents "missing default export" warning). */
+export default function LegalDocumentLayoutRoute() {
+  return null
+}

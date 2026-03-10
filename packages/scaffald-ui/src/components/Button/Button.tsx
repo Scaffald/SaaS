@@ -89,8 +89,8 @@ export const Button = forwardRef<View, ButtonProps>(function Button({
       {loading ? (
         <View
           style={{
-            width: loadingSize,
-            height: loadingSize,
+            width: iconSize,
+            height: iconSize,
             alignItems: 'center',
             justifyContent: 'center',
             overflow: 'hidden',

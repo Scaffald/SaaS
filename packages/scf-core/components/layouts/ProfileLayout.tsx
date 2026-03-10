@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { ScrollView, StyleSheet } from 'react-native'
 import { Row, Stack, Breadcrumb, type BreadcrumbItemData, useResponsive } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 import { ProfileTabs } from '../navigation/ProfileTabs'
 
