@@ -65,6 +65,7 @@ export function usePublishedJobs(
     },
     enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000,
+    placeholderData: (previousData) => previousData,
   })
 }
 

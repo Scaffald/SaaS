@@ -129,7 +129,7 @@ export function DiscoverEmployersScreen() {
         industries={availableIndustries}
         industryCounts={selectedIndustryCounts}
         selectedIndustries={selectedIndustries}
-        onSearchChange={setSearchQuery}
+        onClearSearch={() => setSearchQuery('')}
         onIndustriesChange={setSelectedIndustries}
         onClearFilters={handleClearFilters}
       />

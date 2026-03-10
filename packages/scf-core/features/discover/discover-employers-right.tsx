@@ -7,34 +7,38 @@ interface DiscoverEmployersRightProps {
   industries: string[]
   industryCounts: Record<string, number>
   selectedIndustries: string[]
-  onSearchChange: (query: string) => void
+  onClearSearch: () => void
   onIndustriesChange: (industries: string[]) => void
   onClearFilters: () => void
 }
 
 /**
  * Discover Employers Right Component
- * Right panel content for the employers discovery page - displays search and filters
+ * Right panel content for the employers discovery page - displays filters
  */
 export function DiscoverEmployersRight({
   searchQuery,
   selectedIndustries,
-  onSearchChange,
+  onClearSearch,
   onClearFilters,
 }: DiscoverEmployersRightProps) {
   const hasActiveFilters = searchQuery.length > 0 || selectedIndustries.length > 0
+
+  const handleClearAll = () => {
+    onClearSearch()
+    onClearFilters()
+  }
 
   return (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
       <Stack gap={16} padding="md">
         <SearchFilterWidget
-          title="Search & Filter"
+          title="Filters"
           searchQuery={searchQuery}
-          onSearchChange={onSearchChange}
-          searchLabel="Find employers that match your interests"
-          searchPlaceholder="Search employers..."
+          onSearchChange={() => {}}
+          showSearch={false}
           hasActiveFilters={hasActiveFilters}
-          onClearFilters={onClearFilters}
+          onClearFilters={handleClearAll}
         />
         <AddOrganizationWidget />
       </Stack>

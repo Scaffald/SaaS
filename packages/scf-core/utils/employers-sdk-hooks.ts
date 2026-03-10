@@ -49,6 +49,7 @@ export function useEmployers(
       return client.employers.list(params)
     },
     enabled: !!client && (options?.enabled ?? true),
+    placeholderData: (previousData) => previousData,
     ...options,
   })
 }

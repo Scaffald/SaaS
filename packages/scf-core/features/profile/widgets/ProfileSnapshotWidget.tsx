@@ -22,7 +22,6 @@ import {
   SkeletonText,
   Stack,
   Text,
-  H4,
   useThemeContext,
 } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";

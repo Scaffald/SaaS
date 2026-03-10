@@ -3,18 +3,21 @@ import { useUserProfile } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import {
   Button,
+  Card,
   DashboardWidget,
   H4,
   ResponsiveModal,
   Skeleton,
   SkeletonBox,
   SkeletonList,
+  Text,
+  Row,
+  Stack,
   useThemeContext,
 } from '@scaffald/ui'
 import { randomUUID } from 'expo-crypto'
 import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from 'lucide-react-native'
 import { useState } from 'react'
-import { Card, Skeleton, SkeletonBox, SkeletonList, Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { ReviewWizard } from '../../reviews/components/ReviewWizard'
 import type { ProfileWidgetProps } from './types'

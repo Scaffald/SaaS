@@ -31,7 +31,8 @@ export function DiscoverJobsScreen() {
     ),
     right: (
       <DiscoverJobsRight
-        onSearchChange={setSearchQuery}
+        searchQuery={searchQuery}
+        onClearSearch={() => setSearchQuery('')}
         onIndustriesChange={setSelectedIndustries}
         onJobTypesChange={setSelectedJobTypes}
         jobSource={jobSource}

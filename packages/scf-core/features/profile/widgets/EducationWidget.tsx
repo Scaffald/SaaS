@@ -5,14 +5,17 @@ import {
   DashboardWidget,
   EmptyState,
   H4,
+  Separator,
   Skeleton,
   SkeletonAvatar,
   SkeletonText,
+  Text,
+  Row,
+  Stack,
   useThemeContext,
 } from "@scaffald/ui";
 import { GraduationCap } from "lucide-react-native";
 import { useRouter } from "expo-router";
-import { Separator, Skeleton, SkeletonAvatar, SkeletonText, Text, Row, Stack } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
 import { formatDate } from "../utils/date-formatting";
 import type { ProfileWidgetProps } from "./types";

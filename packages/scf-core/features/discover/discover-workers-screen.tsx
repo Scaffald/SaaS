@@ -44,7 +44,8 @@ export function DiscoverWorkersScreen() {
     ),
     right: (
       <DiscoverWorkersRight
-        onSearchChange={setSearchQuery}
+        searchQuery={searchQuery}
+        onClearSearch={() => setSearchQuery('')}
         onIndustriesChange={setSelectedIndustries}
         minScore={minScore}
         onMinScoreChange={setMinScore}
