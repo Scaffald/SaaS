@@ -5,10 +5,14 @@ import { OccupationAssessmentWidget } from '../occupation-assessment'
 import { ProfileSnapshotWidget, SoftSkillsComparisonWidget } from '../profile/widgets'
 import { RIASECAssessmentWidget } from '../riasec-assessment'
 import { MobileDashboardGreeting, MobileQuickActions } from './components'
+import { CareerRecommendationsWidget } from './widgets/CareerRecommendationsWidget'
+import { SkillsGapWidget } from './widgets/SkillsGapWidget'
+import { CareerPathWidget } from './widgets/CareerPathWidget'
+import { TechnologySkillsWidget } from './widgets/TechnologySkillsWidget'
 
 /**
  * Dashboard Index Left Component
- * Shows ProfileSnapshotWidget and assessment widgets
+ * Shows ProfileSnapshotWidget, assessment widgets, and career widgets (Issue #103)
  * Prerequisites are now enforced at the route level via /onboarding
  */
 export function DashboardIndexLeft() {
@@ -24,6 +28,11 @@ export function DashboardIndexLeft() {
       <IPIPAssessmentWidget />
       <RIASECAssessmentWidget />
       <OccupationAssessmentWidget />
+      {/* Career widgets (Issue #103) - shown after career assessment is complete */}
+      <CareerRecommendationsWidget />
+      <SkillsGapWidget />
+      <CareerPathWidget />
+      <TechnologySkillsWidget />
     </Stack>
   )
 }

@@ -17,6 +17,8 @@ import { CandidateProfileTab } from './CandidateProfileTab'
 import { InquiryTab } from './InquiryTab'
 import { MessagesTab } from './MessagesTab'
 import { NotesTab } from './NotesTab'
+import { ActivityFeedTab } from './ActivityFeedTab'
+import { UnionStatusBadge } from './UnionStatusBadge'
 import { colors } from '@scaffald/ui/tokens'
 
 // biome-ignore lint/suspicious/noExplicitAny: legacy inquiry record mapping
@@ -57,7 +59,7 @@ interface CandidateDetailModalProps {
 export const CandidateDetailModal = ({ application, open, onClose }: CandidateDetailModalProps) => {
   const { theme } = useThemeContext()
   const [activeTab, setActiveTab] = useState<
-    'profile' | 'application' | 'notes' | 'messages' | 'inquiry'
+    'profile' | 'application' | 'notes' | 'messages' | 'inquiry' | 'activity'
   >('profile')
   const organizationId = application?.organizationId ?? application?.job.organizationId ?? ''
   const workerUserId = application?.workerUserId ?? application?.candidate.id ?? ''
@@ -219,6 +221,11 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
         <Text style={{ opacity: 0.8 }}>Application Score</Text>
       </Stack>
 
+      {/* Union Status Badge (Issue #98) */}
+      {application.unionStatus && (
+        <UnionStatusBadge unionStatus={application.unionStatus} />
+      )}
+
       {/* Quick Actions */}
       <Row gap={8}>
         <Button color="success" style={{ flex: 1 }} size="md">
@@ -306,6 +313,9 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           <Tabs.Item value="messages">
             <Tabs.Trigger containerStyle={{ flex: 1 }}>Messages</Tabs.Trigger>
           </Tabs.Item>
+          <Tabs.Item value="activity">
+            <Tabs.Trigger containerStyle={{ flex: 1 }}>Activity</Tabs.Trigger>
+          </Tabs.Item>
           <Tabs.Item value="inquiry">
             <Tabs.Trigger containerStyle={{ flex: 1 }}>Inquiry</Tabs.Trigger>
           </Tabs.Item>
@@ -343,6 +353,12 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
         <Tabs.Content value="messages">
           <Stack paddingTop={16}>
             <MessagesTab applicationId={application.id} />
+          </Stack>
+        </Tabs.Content>
+
+        <Tabs.Content value="activity">
+          <Stack paddingTop={16}>
+            <ActivityFeedTab application={application} />
           </Stack>
         </Tabs.Content>
 
