@@ -67,7 +67,7 @@ import {
   trackApiKeyUsage,
 } from "./middleware/usage-tracker.ts";
 
-const app = new Hono().basePath("/api");
+const app = new Hono();
 
 // CORS middleware - handle preflight and add headers to all responses
 app.use("*", async (c, next) => {
