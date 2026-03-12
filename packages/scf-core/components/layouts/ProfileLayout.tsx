@@ -1,9 +1,20 @@
 import type { ReactNode } from 'react'
-import { ScrollView, StyleSheet } from 'react-native'
-import { Row, Stack, Breadcrumb, type BreadcrumbItemData, useResponsive } from '@scaffald/ui'
+import { ScrollView } from 'react-native'
+import {
+  Grid,
+  Row,
+  Stack,
+  Breadcrumb,
+  type BreadcrumbItemData,
+  useResponsive,
+  useThemeContext,
+} from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 import { ProfileTabs } from '../navigation/ProfileTabs'
 
+/** Golden ratio (φ) for column proportion: left ~61.8%, right ~38.2% */
+const GOLDEN_RATIO_TEMPLATE = 'minmax(300px, 1.618fr) minmax(300px, 1fr)'
 
 type ProfileLayoutProps = {
   rightContent?: ReactNode
@@ -27,7 +38,9 @@ export const ProfileLayout = ({
   autoGenerateBreadcrumbs = true,
 }: ProfileLayoutProps) => {
   const { isDesktop } = useResponsive()
+  const { theme } = useThemeContext()
   const contentPadding = isDesktop ? '2xl' : 'lg'
+  const columnGap = isDesktop ? 48 : 24
 
   const { breadcrumbs } = useBreadcrumbs({
     autoGenerate: autoGenerateBreadcrumbs && !breadcrumbItems,
@@ -36,9 +49,10 @@ export const ProfileLayout = ({
 
   const displayBreadcrumbs = breadcrumbItems || breadcrumbs
   const currentIndex = displayBreadcrumbs.length - 1
+  const bgColor = colors.bg[theme].subtle
 
   return (
-    <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+    <ScrollView style={{ flex: 1, backgroundColor: bgColor }} showsVerticalScrollIndicator={false}>
       <Stack gap={24} paddingTop="sm" paddingBottom="lg">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
@@ -53,16 +67,18 @@ export const ProfileLayout = ({
           </Stack>
         )}
 
-        {/* Content Area - Responsive two-column layout */}
-        <Row gap={24} paddingHorizontal="lg" paddingTop="sm">
-          <Stack width="100%">{leftContent}</Stack>
-          <Stack width="100%">{rightContent}</Stack>
-        </Row>
+        {/* Content Area - Two-column golden ratio (lg+) or single column */}
+        <Stack paddingHorizontal={contentPadding}>
+          <Grid
+            columns={{ base: 1, lg: GOLDEN_RATIO_TEMPLATE }}
+            gap={columnGap}
+            rowGap={isDesktop ? 32 : 24}
+          >
+            <Stack>{leftContent}</Stack>
+            {rightContent ? <Stack>{rightContent}</Stack> : null}
+          </Grid>
+        </Stack>
       </Stack>
     </ScrollView>
   )
 }
-
-const styles = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: '#f8f9f8' },
-})

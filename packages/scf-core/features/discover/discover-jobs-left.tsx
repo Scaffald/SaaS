@@ -86,15 +86,16 @@ export function DiscoverJobsLeft({
 
   // Create a set of job IDs user has applied to
   type ApplicationSummary = { job_id?: string | null; id?: string }
+  const applicationsList = (userApplications?.data ?? []) as ApplicationSummary[]
 
   const appliedJobIds = new Set<string>(
-    ((userApplications ?? []) as ApplicationSummary[])
+    applicationsList
       .map((application) => application.job_id)
       .filter((jobId): jobId is string => Boolean(jobId))
   )
 
   const applicationIdByJobId = new Map<string, string>()
-  for (const application of (userApplications ?? []) as ApplicationSummary[]) {
+  for (const application of applicationsList) {
     if (application.job_id && application.id) {
       applicationIdByJobId.set(application.job_id, application.id)
     }

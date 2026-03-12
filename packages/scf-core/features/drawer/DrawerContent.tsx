@@ -196,9 +196,9 @@ export const DrawerContent = ({
         ) : null}
 
         <Stack
-          gap={4}
+          gap={2}
           flex={1}
-          marginTop={12}
+          marginTop={8}
           width="100%"
           align={isCollapsed ? 'center' : 'stretch'}
         >

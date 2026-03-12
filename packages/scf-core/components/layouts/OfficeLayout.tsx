@@ -5,10 +5,13 @@ import { getChildRoutes } from '@scf/core/utils/navigation/routeHierarchy'
 import { usePathname } from '@scf/core/utils/usePathname'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
-import { useWindowDimensions, Row, Stack } from '@scaffald/ui'
+import { useWindowDimensions, Grid, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import type { StackProps } from '@scaffald/ui'
 import { Breadcrumb, type BreadcrumbItemData, Tabs } from '@scaffald/ui'
+
+/** Golden ratio (φ) for column proportion: left ~61.8%, right ~38.2% */
+const GOLDEN_RATIO_TEMPLATE = 'minmax(300px, 1.618fr) minmax(300px, 1fr)'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 
 type OfficeLayoutProps = {
@@ -78,7 +81,8 @@ export const OfficeLayout = ({
   const pathname = usePathname()
   const currentPath = pathname ?? ''
   const { width } = useWindowDimensions()
-  const _isSmallScreen = width <= 800
+  const isDesktop = width > 800
+  const columnGap = isDesktop ? 48 : 24
   const { t } = useTranslation()
 
   // Auto-generate breadcrumbs if enabled and no manual override
@@ -187,11 +191,6 @@ export const OfficeLayout = ({
 
   const hasLeftContent = Boolean(leftContent)
   const hasRightContent = Boolean(rightContent)
-  const _hasBothColumns = hasLeftContent && hasRightContent
-
-  const restContentProps = contentProps ?? {}
-  const restLeftContainerProps = leftContainerProps ?? {}
-  const restRightContainerProps = rightContainerProps ?? {}
 
   const handleTabChange = () => {
     // Navigation is handled by Link components in Tab
@@ -243,19 +242,17 @@ export const OfficeLayout = ({
           </>
         )}
 
-        {/* Content Area - Use programmatic responsive flexDirection */}
-        <Row gap={12} padding="sm" {...restContentProps}>
-          {hasLeftContent && (
-            <Stack minWidth="100%" width="100%" maxWidth="100%" {...restLeftContainerProps}>
-              {leftContent}
-            </Stack>
-          )}
-          {hasRightContent && (
-            <Stack minWidth="100%" width="100%" maxWidth="100%" {...restRightContainerProps}>
-              {rightContent}
-            </Stack>
-          )}
-        </Row>
+        {/* Content Area - Two-column golden ratio (lg+) or single column */}
+        <Stack paddingHorizontal="sm">
+          <Grid
+            columns={{ base: 1, lg: GOLDEN_RATIO_TEMPLATE }}
+            gap={columnGap}
+            rowGap={isDesktop ? 32 : 24}
+          >
+            {hasLeftContent ? <Stack {...(contentProps ?? {})} {...(leftContainerProps ?? {})}>{leftContent}</Stack> : null}
+            {hasRightContent ? <Stack {...(contentProps ?? {})} {...(rightContainerProps ?? {})}>{rightContent}</Stack> : null}
+          </Grid>
+        </Stack>
       </Stack>
     </ScrollView>
   )
