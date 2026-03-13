@@ -34,7 +34,25 @@ import {
   useCreateEvidenceMutation,
   useDeleteEvidenceMutation,
 } from '../../../utils/skill-analytics-sdk-hooks'
-import type { SkillEvidenceType, SkillEvidence } from '@scaffald/sdk'
+// Types defined locally until SDK dist is rebuilt (TS2614 workaround)
+type SkillEvidenceType = 'certification' | 'project' | 'review_excerpt' | 'work_log' | 'custom'
+
+interface SkillEvidence {
+  id: string
+  userId: string
+  softSkillId: string | null
+  skillTaxonomy: string | null
+  skillRefId: string | null
+  evidenceType: SkillEvidenceType
+  title: string
+  description: string | null
+  url: string | null
+  verified: boolean
+  verifiedBy: string | null
+  verifiedAt: string | null
+  createdAt: string
+  updatedAt: string
+}
 
 const EVIDENCE_TYPE_CONFIG: Record<
   SkillEvidenceType,

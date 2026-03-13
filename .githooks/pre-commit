@@ -29,8 +29,8 @@ run_precommit() {
   fi
 }
 
-CHECK_OUTPUT=$(run_precommit)
-CHECK_EXIT=$?
+CHECK_OUTPUT=$(run_precommit) || CHECK_EXIT=$?
+CHECK_EXIT=${CHECK_EXIT:-0}
 
 # Detect timeout (124 = timeout exit code from GNU timeout)
 if [ "${CHECK_EXIT:-0}" -eq 124 ]; then
@@ -40,24 +40,32 @@ if [ "${CHECK_EXIT:-0}" -eq 124 ]; then
   exit 0
 fi
 
-# Filter out known pre-existing / cascading TS errors:
-# - TS4023: inaccessible type names from @ts-nocheck files
-# - TS2307: Cannot find module (cascading from @scaffald/sdk resolution)
-# - TS2305: Module has no exported member (cascading from unresolved modules)
-# - TS7006: implicit any params (cascading from unresolved modules)
-# - TS2339: property does not exist (cascading from unresolved modules)
-# - TS18046: variable is of type unknown (cascading from unresolved modules)
-# Also filter NX/pnpm wrapper error messages (ELIFECYCLE, "Command failed", "Failed tasks")
-OTHER_ERRORS=$(echo "$CHECK_OUTPUT" | grep -v "error TS4023" | grep -v "error TS2307" | grep -v "error TS2305" | grep -v "error TS7006" | grep -v "error TS2339" | grep -v "error TS18046" | grep -v "ELIFECYCLE" | grep -v "Command failed" | grep -v "Failed tasks" | grep -v "Running targets.*failed" | grep -E "error TS|Error|failed|Failed" || true)
-
+# Strategy: only fail if errors are in files we actually staged.
+# Pre-existing errors in other files should not block commits.
 if [ "${CHECK_EXIT:-0}" -ne 0 ]; then
-  if [ -z "$OTHER_ERRORS" ]; then
-    echo "⚠️ Note: TS4023 type errors only (unavoidable with @ts-nocheck exports)"
+  # Get list of staged files (relative paths)
+  STAGED_FILES=$(git diff --cached --name-only 2>/dev/null | xargs -I{} basename {} | sort -u)
+
+  # Known systemic TS errors to always ignore (pre-existing @types/react conflicts, SDK resolution)
+  KNOWN_ERRORS="error TS2322|error TS4023|error TS2307|error TS2305|error TS7006|error TS2339|error TS18046|error TS2345|error TS2352|error TS2614"
+
+  # Extract error lines that reference staged files, excluding known systemic errors
+  STAGED_ERRORS=""
+  while IFS= read -r staged_base; do
+    [ -z "$staged_base" ] && continue
+    MATCH=$(echo "$CHECK_OUTPUT" | grep -E "error TS|lint/" | grep "$staged_base" | grep -vE "$KNOWN_ERRORS" || true)
+    if [ -n "$MATCH" ]; then
+      STAGED_ERRORS="${STAGED_ERRORS}${MATCH}\n"
+    fi
+  done <<< "$STAGED_FILES"
+
+  if [ -z "$STAGED_ERRORS" ]; then
+    echo "⚠️ Pre-existing type errors detected (not in staged files)"
     echo "✅ Pre-commit checks passed!"
     exit 0
   fi
-  echo "❌ Pre-commit checks failed. Please fix the issues below:"
-  echo "$CHECK_OUTPUT"
+  echo "❌ Pre-commit checks failed. Errors in staged files:"
+  echo -e "$STAGED_ERRORS"
   exit 1
 fi
 

@@ -58,7 +58,8 @@
       "options": {
         "testTargetName": "test",
         "buildTargetName": "build"
-      }
+      },
+      "exclude": ["apps/skills-map/**", "apps/trade-compass/**"]
     }
   ],
   "nxCloudAccessToken": "",

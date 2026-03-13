@@ -84,6 +84,7 @@ test-results.log
 
 # worktrees
 .worktrees/
+.claude/worktrees/
 
 # build artifacts
 **/dist/
@@ -108,3 +109,5 @@ static/
 # Supabase CLI symlinked migrations (root /supabase/), not packages/supabase/migrations/
 /supabase/migrations
 **/*.toml.bak
+apps/skills-map/
+apps/trade-compass/

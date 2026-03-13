@@ -5,6 +5,7 @@ import {
   Building2,
   ClipboardCheck,
   Map as MapIcon,
+  TrendingUp,
   User,
   Users,
 } from 'lucide-react-native'
@@ -69,6 +70,14 @@ export const generateDashboardDrawerItems = (): DrawerItemConfig[] => {
     href: ROUTES.DASHBOARD.PROFILE.path,
     routeKey: 'DASHBOARD_PROFILE',
     icon: User,
+  })
+
+  items.push({
+    key: 'skills-analytics',
+    titleKey: 'navigation.skillsAnalytics',
+    href: ROUTES.DASHBOARD.SKILLS_ANALYTICS.path,
+    routeKey: 'DASHBOARD_SKILLS_ANALYTICS',
+    icon: TrendingUp,
   })
 
   items.push({

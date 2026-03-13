@@ -82,10 +82,8 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
     setShowReviewModal(false)
   }
 
-  const handleReviewComplete = async () => {
-    // Show impact summary instead of immediately closing
-    setCompletedReviewId(`review-${Date.now()}`)
-    // Refetch reviews to update aggregates after new review submission
+  const handleReviewComplete = async (reviewId: string) => {
+    setCompletedReviewId(reviewId)
     await refetch()
   }
 
@@ -171,7 +169,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                 subjectId={userId || ''}
                 subjectName={profile?.name || 'this user'}
                 onCancel={handleCloseReview}
-                onComplete={handleReviewComplete}
+                onComplete={(id) => void handleReviewComplete(id)}
               />
             )}
           </ResponsiveModal>
@@ -397,7 +395,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
             subjectId={userId || ''}
             subjectName={profile?.name || 'this user'}
             onCancel={handleCloseReview}
-            onComplete={handleReviewComplete}
+            onComplete={(id) => void handleReviewComplete(id)}
           />
         </ResponsiveModal>
       )}

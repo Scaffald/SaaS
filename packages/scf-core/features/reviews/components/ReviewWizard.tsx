@@ -22,7 +22,7 @@ interface ReviewWizardProps {
   subjectId: string;
   subjectName: string;
   onCancel: () => void;
-  onComplete: () => void;
+  onComplete: (reviewId: string) => void;
 }
 
 // Mock soft skills - will be replaced with API data
@@ -185,7 +185,7 @@ export function ReviewWizard({
         console.warn("Failed to track review submission:", error);
       }
 
-      onComplete();
+      onComplete(reviewId);
     } catch (error) {
       console.error("Failed to submit review:", error);
     }
