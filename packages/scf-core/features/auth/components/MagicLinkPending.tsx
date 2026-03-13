@@ -4,10 +4,11 @@ import { translateError } from '@scf/core/utils/errors/translateError'
 import { getBaseUrl } from '@scf/core/utils/getBaseUrl'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import { CheckCircle2 } from 'lucide-react-native'
+import { ArrowLeft, CheckCircle2 } from 'lucide-react-native'
 import { router } from 'expo-router'
 import { useCallback, useState } from 'react'
-import { Box, Paragraph, Spinner, Stack, useThemeContext } from '@scaffald/ui'
+import { Pressable } from 'react-native'
+import { Box, Paragraph, Row, Spinner, Stack, useThemeContext } from '@scaffald/ui'
 import { colors, spacing } from '@scaffald/ui/tokens'
 
 import { CodeConfirmation } from './CodeConfirmation'
@@ -98,6 +99,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
       gap={spacing[20]}
       padding={spacing[20]}
       align="center"
+      justify="center"
       style={{ width: '100%', maxWidth: 440, flex: 1 }}
     >
       {codeEntered && (
@@ -153,6 +155,19 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
               {error}
             </Paragraph>
           )}
+
+          <Pressable
+            onPress={() => router.replace(ROUTES.AUTH.LOGIN.path)}
+            accessibilityRole="link"
+            accessibilityLabel={t('auth.verify.backToLogin')}
+          >
+            <Row gap={spacing[6]} align="center" justify="center" style={{ marginTop: spacing[8] }}>
+              <ArrowLeft size={16} color={colors.text[theme].tertiary} />
+              <Paragraph size="sm" style={{ color: colors.text[theme].tertiary }}>
+                {t('auth.verify.backToLogin')}
+              </Paragraph>
+            </Row>
+          </Pressable>
         </Stack>
 
         {code !== undefined && (

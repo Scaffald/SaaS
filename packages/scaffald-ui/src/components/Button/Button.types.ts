@@ -62,12 +62,14 @@ export interface ButtonProps extends Omit<PressableProps, 'style' | 'children'> 
   /**
    * Icon to display at the start
    */
-  iconStart?: React.ComponentType<{ size: number; color: string }>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  iconStart?: React.ComponentType<any>
 
   /**
    * Icon to display at the end
    */
-  iconEnd?: React.ComponentType<{ size: number; color: string }>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  iconEnd?: React.ComponentType<any>
 
   /**
    * Icon-only button (no text)

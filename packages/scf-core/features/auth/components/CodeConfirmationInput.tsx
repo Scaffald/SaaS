@@ -1,7 +1,8 @@
 import type { Control, UseFormSetValue } from 'react-hook-form'
 import { Controller } from 'react-hook-form'
-import { Input, useThemeContext } from '@scaffald/ui'
+import { useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { Platform, TextInput } from 'react-native'
 
 interface FormFields {
   [key: string]: string
@@ -41,7 +42,7 @@ export function CodeConfirmationInput({
       defaultValue=""
       control={control}
       rules={{ required: true, pattern: /^[0-9]$/ }}
-      render={({ fieldState: { invalid }, field: { value, onChange } }) => {
+      render={({ fieldState: { invalid }, field: { value, onChange, ref } }) => {
         const handleChange = (code: string) => {
           const digitsOnly = code.replace(/\D/g, '')
           if (digitsOnly.length >= codeSize) {
@@ -61,8 +62,18 @@ export function CodeConfirmationInput({
             }
           }
         }
+
+        const bgColor = invalid
+          ? theme === 'light'
+            ? colors.error[50]
+            : colors.error[900]
+          : value
+            ? colors.bg[theme].subtle
+            : colors.bg[theme].muted
+
         return (
-          <Input
+          <TextInput
+            ref={ref}
             value={value}
             maxLength={1}
             selectTextOnFocus
@@ -86,22 +97,23 @@ export function CodeConfirmationInput({
             textContentType="oneTimeCode"
             autoComplete="one-time-code"
             secureTextEntry={secureTextEntry}
-            style={{
-              borderRadius: 12,
-              width: 50,
-              aspectRatio: 1,
-              backgroundColor: invalid
-                ? theme === 'light'
-                  ? colors.error[50]
-                  : colors.error[900]
-                : value
-                  ? colors.bg[theme].subtle
-                  : colors.bg[theme].muted,
-            }}
-            contentStyle={{
-              textAlign: 'center',
-              fontSize: 24,
-            }}
+            style={[
+              {
+                width: 52,
+                height: 52,
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: invalid
+                  ? colors.border[theme].error
+                  : colors.border[theme].default,
+                backgroundColor: bgColor,
+                textAlign: 'center',
+                fontSize: 24,
+                lineHeight: 28,
+                color: colors.text[theme].primary,
+              },
+              Platform.OS === 'web' && ({ outlineStyle: 'none' } as object),
+            ]}
           />
         )
       }}

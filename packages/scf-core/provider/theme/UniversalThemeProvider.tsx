@@ -157,17 +157,18 @@ const InnerProvider = ({ children }: { children: ReactNode }) => {
   // that require theme context (like Background, Header, etc.)
   if (Platform.OS === 'web') {
     return (
-      <ThemeProvider value={navTheme}>
-        {children}
-      </ThemeProvider>
+      // biome-ignore lint/suspicious/noExplicitAny: React children type mismatch
+      <ThemeProvider value={navTheme}>{children as any}</ThemeProvider>
     )
   }
 
   // Native: also include status bar
   return (
+    // biome-ignore lint/suspicious/noExplicitAny: React children type mismatch
     <ThemeProvider value={navTheme}>
       <StatusBar style={resolvedTheme === 'dark' ? 'light' : 'dark'} hidden />
-      {children}
+      {/* biome-ignore lint/suspicious/noExplicitAny: React children type mismatch */}
+      {children as any}
     </ThemeProvider>
   )
 }

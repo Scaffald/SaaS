@@ -3,11 +3,11 @@ import { CommunityMembersPage } from '@scf/core/features/communities/CommunityMe
 import { useLocalSearchParams } from 'expo-router'
 
 export default function CommunityMembersScreen() {
-  const { slug } = useLocalSearchParams<{ slug: string }>()
+  const { slug = '' } = useLocalSearchParams<{ slug: string }>()
 
   return (
     <DashboardPage
-      leftContent={<CommunityMembersPage slug={slug!} />}
+      leftContent={<CommunityMembersPage slug={slug} />}
       showBreadcrumb={false}
       rightContent={null}
     />

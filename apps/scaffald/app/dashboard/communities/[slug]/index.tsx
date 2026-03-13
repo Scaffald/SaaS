@@ -3,11 +3,11 @@ import { CommunityFeedPage } from '@scf/core/features/communities/CommunityFeedP
 import { useLocalSearchParams } from 'expo-router'
 
 export default function CommunityDetailPage() {
-  const { slug } = useLocalSearchParams<{ slug: string }>()
+  const { slug = '' } = useLocalSearchParams<{ slug: string }>()
 
   return (
     <DashboardPage
-      leftContent={<CommunityFeedPage slug={slug!} />}
+      leftContent={<CommunityFeedPage slug={slug} />}
       showBreadcrumb={false}
       rightContent={null}
     />

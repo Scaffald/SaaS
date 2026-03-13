@@ -189,7 +189,8 @@ function ReanimatedPressable({
 
   return (
     <AnimatedComponent
-      ref={ref}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ref={ref as any}
       disabled={disabled}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}

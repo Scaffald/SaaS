@@ -3,11 +3,11 @@ import { PostDetailPage } from '@scf/core/features/communities/PostDetailPage'
 import { useLocalSearchParams } from 'expo-router'
 
 export default function PostDetailScreen() {
-  const { postId } = useLocalSearchParams<{ postId: string }>()
+  const { postId = '' } = useLocalSearchParams<{ postId: string }>()
 
   return (
     <DashboardPage
-      leftContent={<PostDetailPage postId={postId!} />}
+      leftContent={<PostDetailPage postId={postId} />}
       showBreadcrumb={false}
       rightContent={null}
     />

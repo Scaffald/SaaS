@@ -3,11 +3,11 @@ import { PostComposer } from '@scf/core/features/communities/components/PostComp
 import { useLocalSearchParams } from 'expo-router'
 
 export default function CreatePostScreen() {
-  const { slug } = useLocalSearchParams<{ slug: string }>()
+  const { slug = '' } = useLocalSearchParams<{ slug: string }>()
 
   return (
     <DashboardPage
-      leftContent={<PostComposer communitySlug={slug!} />}
+      leftContent={<PostComposer communitySlug={slug} />}
       showBreadcrumb={false}
       rightContent={null}
     />

@@ -75,11 +75,13 @@ export function getCheckboxColorConfig(
   disabled: boolean,
   theme: ThemeMode
 ) {
+  const uncheckedBg = theme === 'light' ? colors.white : 'transparent'
+
   // Error state overrides color choice
   if (error) {
     return {
       border: colors.border[theme].error,
-      background: isCheckedOrIndeterminate ? colors.error[600] : 'transparent',
+      background: isCheckedOrIndeterminate ? colors.error[600] : uncheckedBg,
       backgroundHover: isCheckedOrIndeterminate ? colors.error[700] : colors.error[50],
       iconColor: colors.white,
     }
@@ -97,7 +99,7 @@ export function getCheckboxColorConfig(
         ? disabled
           ? colors.primary[200]
           : colors.primary[600]
-        : 'transparent',
+        : uncheckedBg,
       backgroundHover: isCheckedOrIndeterminate ? colors.primary[700] : colors.gray[50],
       iconColor: colors.white,
     }
@@ -114,7 +116,7 @@ export function getCheckboxColorConfig(
       ? disabled
         ? colors.gray[200]
         : colors.gray[700]
-      : 'transparent',
+      : uncheckedBg,
     backgroundHover: isCheckedOrIndeterminate ? colors.gray[800] : colors.gray[50],
     iconColor: colors.white,
   }

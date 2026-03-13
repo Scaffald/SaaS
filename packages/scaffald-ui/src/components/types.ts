@@ -104,7 +104,9 @@ export type StyleVariant = 'filled' | 'outlined' | 'linear' | 'light' | 'blank'
  * Icon component type
  * Standard icon component interface that accepts size and color props
  */
-export type IconComponent = React.ComponentType<{ size: number; color: string }>
+// Loose icon type: accepts Lucide icons and other icon libraries without propTypes conflicts
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type IconComponent = React.ComponentType<any>
 
 /**
  * Common style prop types

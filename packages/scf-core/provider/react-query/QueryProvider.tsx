@@ -26,6 +26,7 @@ export const QueryClientProvider = ({ children }: { children: ReactNode }) => {
   })
 
   return (
-    <QueryClientProviderOG client={queryClient}>{children}</QueryClientProviderOG>
+    // biome-ignore lint/suspicious/noExplicitAny: React children type mismatch
+    <QueryClientProviderOG client={queryClient}>{children as any}</QueryClientProviderOG>
   )
 }

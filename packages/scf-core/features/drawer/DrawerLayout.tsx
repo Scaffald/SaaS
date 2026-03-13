@@ -158,7 +158,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
             color: colors.text[theme].primary,
           },
           drawerStyle: {
-            backgroundColor: colors.bg[theme].emphasis,
+            backgroundColor: isSmall ? colors.bg[theme].emphasis : colors.bg[theme].default,
             borderRightWidth: 0,
             borderRadius: 0,
             width: drawerWidth,

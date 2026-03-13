@@ -179,12 +179,14 @@ export interface TabTriggerProps extends Omit<PressableProps, 'style' | 'childre
   /**
    * Icon to display at the start of the tab
    */
-  iconStart?: React.ComponentType<{ size: number; color: string }>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  iconStart?: React.ComponentType<any>
 
   /**
    * Icon to display at the end of the tab
    */
-  iconEnd?: React.ComponentType<{ size: number; color: string }>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  iconEnd?: React.ComponentType<any>
 
   /**
    * Icon-only tab (no text)

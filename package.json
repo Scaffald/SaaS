@@ -211,7 +211,9 @@
       "tar@<=7.5.3": ">=7.5.4",
       "undici@>=7.0.0 <7.18.2": ">=7.21.0",
       "undici@<6.23.0": ">=6.23.0",
-      "vite@>=7.1.0 <=7.1.10": ">=7.1.11"
+      "vite@>=7.1.0 <=7.1.10": ">=7.1.11",
+      "@types/react": "19.2.7",
+      "@types/react-dom": "19.2.3"
     },
     "patchedDependencies": {
       "check-dependency-version-consistency": "patches/check-dependency-version-consistency.patch"

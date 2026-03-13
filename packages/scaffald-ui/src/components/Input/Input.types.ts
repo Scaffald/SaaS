@@ -78,12 +78,14 @@ export interface InputProps extends Omit<TextInputProps, "style"> {
   /**
    * Leading icon component
    */
-  iconStart?: React.ComponentType<{ size: number; color: string }>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  iconStart?: React.ComponentType<any>;
 
   /**
    * Trailing icon component (displayed on the right)
    */
-  iconEnd?: React.ComponentType<{ size: number; color: string }>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  iconEnd?: React.ComponentType<any>;
 
   /**
    * When provided with iconEnd, makes the trailing icon pressable (e.g. password visibility toggle)
