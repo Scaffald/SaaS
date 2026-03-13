@@ -1,8 +1,10 @@
+import { useMemo } from 'react'
 import { Button } from '@scaffald/ui'
 import type { MainColor } from 'luscher-test'
 import { useEffect, useState } from 'react'
 import { Pressable } from 'react-native'
-import { Text, Row, Stack } from '@scaffald/ui'
+import { AssessmentHeader, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { type Color, shuffleColors } from '../lib/luscher/utils'
 
 export interface LuscherTestStepProps {
@@ -22,21 +24,18 @@ export function LuscherTestStep({
   onSave,
   isLoading = false,
 }: LuscherTestStepProps) {
-  // Always shuffle colors randomly for display - reshuffle on every render/mount
-  const [colors, setColors] = useState<Color[]>(() => shuffleColors())
+  const { theme } = useThemeContext()
+
+  const [colorList, setColorList] = useState<Color[]>(() => shuffleColors())
   const [selectedOrder, setSelectedOrder] = useState<number[]>(initialChoices || [])
 
-  // Shuffle colors every time the component renders or step changes
   useEffect(() => {
-    // Always shuffle colors fresh - randomize every time
     const shuffled = shuffleColors()
     if (initialChoices.length === 0) {
-      // No previous choices - reset everything with fresh shuffle
-      setColors(shuffled)
+      setColorList(shuffled)
       setSelectedOrder([])
     } else {
-      // Has previous choices - shuffle but mark selected ones
-      setColors(
+      setColorList(
         shuffled.map((color) => ({
           ...color,
           selected: initialChoices.includes(color.value),
@@ -44,85 +43,106 @@ export function LuscherTestStep({
       )
       setSelectedOrder(initialChoices)
     }
-  }, [initialChoices]) // Reshuffle when initialChoices change
+  }, [initialChoices])
 
   const handleColorPress = (colorValue: MainColor) => {
     if (selectedOrder.includes(colorValue)) {
-      return // Already selected
+      return
     }
 
     const newOrder = [...selectedOrder, colorValue]
     setSelectedOrder(newOrder)
 
-    // Update color selection state - selected colors fade to 0 opacity
-    const updatedColors = colors.map((color) => ({
+    const updatedColors = colorList.map((color) => ({
       ...color,
       selected: newOrder.includes(color.value),
     }))
-    setColors(updatedColors)
+    setColorList(updatedColors)
 
-    // Auto-save when 8 colors are selected with fade animation
     if (newOrder.length === 8) {
-      // Small delay for fade animation before auto-advancing
       setTimeout(() => {
         onSave(newOrder)
-      }, 300)
+      }, 400)
     }
   }
 
   const isComplete = selectedOrder.length === 8
-  const remaining = 8 - selectedOrder.length
+
+  const chipLabel = isComplete ? 'All 8 selected' : `${selectedOrder.length} of 8`
+
+  const shadowStyle = useMemo(
+    () => ({
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: theme === 'dark' ? 0.3 : 0.12,
+      shadowRadius: 6,
+    }),
+    [theme]
+  )
 
   return (
     <Stack gap={24} maxWidth={800} width="100%" style={{ marginHorizontal: 'auto' }}>
-      <Stack gap={8} align="center">
-        <Text style={{ color: '#414e62', textAlign: 'center' }}>
-          {step === 'luscher1' ? 'First Color Test' : 'Second Color Test'}
-        </Text>
-        <Text style={{ color: '#414e62', textAlign: 'center' }}>
-          Click the colors in order based on what makes you feel the best.
-        </Text>
-        <Text style={{ color: '#414e62', textAlign: 'center' }}>
-          {isComplete
-            ? 'All 8 colors selected!'
-            : `Select ${remaining} more color${remaining > 1 ? 's' : ''}`}
-        </Text>
+      <Stack gap={12} align="center">
+        <AssessmentHeader
+          category={step === 'luscher1' ? 'Round 1' : 'Round 2'}
+          title={step === 'luscher1' ? 'First Color Selection' : 'Second Color Selection'}
+          subtitle="Click the colors in order based on what feels best to you right now."
+          align="center"
+        />
+        <Stack
+          style={{
+            paddingHorizontal: 12,
+            paddingVertical: 4,
+            borderRadius: 12,
+            backgroundColor: isComplete ? colors.primary[500] : colors.bg[theme].subtle,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 13,
+              fontWeight: '600',
+              color: isComplete ? '#fff' : colors.text[theme].secondary,
+            }}
+          >
+            {chipLabel}
+          </Text>
+        </Stack>
       </Stack>
 
-      {/* Color Grid: 2x4 on mobile, 4x2 on desktop */}
-      <Stack gap={12} width="100%">
-        <Row gap={12} wrap justify="center">
-          {colors.map((color) => {
-            const isSelected = selectedOrder.includes(color.value)
+      {/* Color Grid */}
+      <Row gap={12} wrap justify="center">
+        {colorList.map((color) => {
+          const isSelected = selectedOrder.includes(color.value)
 
-            return (
-              <Pressable
-                key={String(color.key)}
-                disabled={isSelected || isLoading}
-                onPress={() => !isSelected && handleColorPress(color.value)}
-                style={{ opacity: isSelected ? 0 : 1, maxWidth: 200, minWidth: 120 }}
-              >
-                <Stack
-                  width="100%"
-                  style={{
-                    aspectRatio: 1,
-                    backgroundColor: color.hex,
-                    borderRadius: 16,
-                    maxWidth: 200,
-                    maxHeight: 200,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 4,
-                  }}
-                  justify="center"
-                  align="center"
-                />
-              </Pressable>
-            )
-          })}
-        </Row>
-      </Stack>
+          return (
+            <Pressable
+              key={String(color.key)}
+              disabled={isSelected || isLoading}
+              onPress={() => !isSelected && handleColorPress(color.value)}
+              style={{
+                opacity: isSelected ? 0 : 1,
+                transform: [{ scale: isSelected ? 0.6 : 1 }],
+                maxWidth: 200,
+                minWidth: 120,
+              }}
+            >
+              <Stack
+                width="100%"
+                style={{
+                  aspectRatio: 1,
+                  backgroundColor: color.hex,
+                  borderRadius: 16,
+                  maxWidth: 200,
+                  maxHeight: 200,
+                  ...shadowStyle,
+                }}
+                justify="center"
+                align="center"
+              />
+            </Pressable>
+          )
+        })}
+      </Row>
 
       {/* Manual Save Button (if not auto-saved) */}
       {isComplete && !isLoading && (

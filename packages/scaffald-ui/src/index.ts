@@ -1281,6 +1281,22 @@ export type {
   SettingsTab,
 } from "./components/SettingsPageLayout";
 
+// Assessment components
+export {
+  AssessmentHeader,
+  AssessmentOptionCard,
+  AssessmentProgressBar,
+  AssessmentStepTransition,
+  TraitScoreCard,
+} from "./components/Assessment";
+export type {
+  AssessmentHeaderProps,
+  AssessmentOptionCardProps,
+  AssessmentProgressBarProps,
+  AssessmentStepTransitionProps,
+  TraitScoreCardProps,
+} from "./components/Assessment";
+
 // Note: Additional components will be exported here as they are implemented
 // Phase 1: Layout primitives (Box ✅, Stack ✅, Row ✅, Spacer ✅, Separator ✅)
 // Phase 2: Core components (Input ✅, Checkbox ✅, Radio ✅, Toggle ✅) - Button ✅

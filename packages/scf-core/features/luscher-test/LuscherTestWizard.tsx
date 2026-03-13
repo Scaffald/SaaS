@@ -8,8 +8,9 @@ import {
 } from '@scf/core/utils/personality-assessment-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { DashboardLayout } from '@scf/core/components/layouts'
-import { useToast } from '@scaffald/ui'
-import { useEffect, useState } from 'react'
+import { AssessmentProgressBar, useToast, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
+import { useEffect, useRef, useState } from 'react'
 import { Text, Stack } from '@scaffald/ui'
 import { CooldownStep, IntroductionStep, ResultsSidebar, ResultsStep } from './components'
 
@@ -21,12 +22,14 @@ type TestStep = 'intro' | 'luscher1' | 'cooldown' | 'luscher2' | 'results'
  */
 export function LuscherTestWizard() {
   const toast = useToast()
+  const { theme } = useThemeContext()
 
   const [currentStep, setCurrentStep] = useState<TestStep>('intro')
   const [luscher1Choices, setLuscher1Choices] = useState<number[]>([])
   const [luscher2Choices, setLuscher2Choices] = useState<number[]>([])
   const [diaryResponse, setDiaryResponse] = useState<string>('')
   const [cooldownEndTime, setCooldownEndTime] = useState<string>('')
+  const directionRef = useRef<1 | -1>(1)
 
   // Get assessment status and availability
   const { data: availabilityData, isLoading: isLoadingAvailability } = useLuscherTestAvailability()
@@ -37,11 +40,15 @@ export function LuscherTestWizard() {
   const queryClient = useQueryClient()
 
   const availability = availabilityData
-  const assessment = assessmentData?.data
+  // SDK type declares { data: AssessmentStatus } but API returns AssessmentStatus directly
+  const assessment = assessmentData
+    ? (assessmentData.data ?? (assessmentData as unknown as NonNullable<typeof assessmentData>['data']))
+    : undefined
 
   // Save Part 1 mutation
   const savePart1Mutation = useSaveLuscher1Mutation({
     onSuccess: async () => {
+      directionRef.current = 1
       // Fetch the updated assessment to get the cooldown_end_time from the database
       await queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
       const updated = (await queryClient.fetchQuery({
@@ -68,6 +75,7 @@ export function LuscherTestWizard() {
   // Save Part 2 mutation (completes test)
   const savePart2Mutation = useSaveLuscherTestSessionMutation({
     onSuccess: () => {
+      directionRef.current = 1
       // Invalidate all related queries
       queryClient.invalidateQueries({
         queryKey: ['personality-assessment', 'luscher', 'availability'],
@@ -133,6 +141,7 @@ export function LuscherTestWizard() {
   }, [assessment])
 
   const handleBegin = () => {
+    directionRef.current = 1
     setCurrentStep('luscher1')
     setLuscher1Choices([])
     setLuscher2Choices([])
@@ -145,6 +154,7 @@ export function LuscherTestWizard() {
   }
 
   const handleCooldownComplete = () => {
+    directionRef.current = 1
     setCurrentStep('luscher2')
   }
 
@@ -201,6 +211,7 @@ export function LuscherTestWizard() {
     currentStep !== 'results'
 
   const handlePrevious = () => {
+    directionRef.current = -1
     if (currentStep === 'luscher2') {
       setCurrentStep('luscher1')
     } else if (currentStep === 'luscher1') {
@@ -212,19 +223,22 @@ export function LuscherTestWizard() {
 
   const railContent = (
     <Stack gap={20} padding="xs">
-      <Stack gap={4}>
-        <Text color="$gray11">Weekly Pulse</Text>
-        <Text color="$gray11">Track your focus and readiness through five quick moments.</Text>
-      </Stack>
-
       {!showResultsSidebar && (
-        <AssessmentProgress
-          steps={steps}
-          currentStep={effectiveCurrentStep}
-          completedSteps={completedSteps}
-          completionScore={effectiveCompletionScore}
-          orientation="vertical"
-        />
+        <>
+          <Stack gap={4}>
+            <Text style={{ fontWeight: '600', color: colors.text[theme].primary }}>Weekly Pulse</Text>
+            <Text style={{ fontSize: 13, color: colors.text[theme].secondary, lineHeight: 20 }}>
+              Two rounds of color selection to capture how you're feeling this week.
+            </Text>
+          </Stack>
+          <AssessmentProgress
+            steps={steps}
+            currentStep={effectiveCurrentStep}
+            completedSteps={completedSteps}
+            completionScore={effectiveCompletionScore}
+            orientation="vertical"
+          />
+        </>
       )}
 
       {showResultsSidebar && (
@@ -245,7 +259,12 @@ export function LuscherTestWizard() {
       completedSteps={completedSteps}
       showHeader={false}
       showProgressIndicator={false}
+      animateTransitions
+      transitionDirection={directionRef.current}
     >
+      <Stack padding="md" paddingBottom="xs">
+        <AssessmentProgressBar value={effectiveCompletionScore} height={4} />
+      </Stack>
       {isCooldownResultsView ? (
         <ResultsStep
           feedbackMessage="You're showing signs of balanced focus — ideal for steady progress today."
@@ -295,5 +314,14 @@ export function LuscherTestWizard() {
     </AssessmentWizard>
   )
 
-  return <DashboardLayout leftContent={wizardContent} rightContent={railContent} />
+  return (
+    <DashboardLayout
+      leftContent={wizardContent}
+      rightContent={railContent}
+      breadcrumbItems={[
+        { label: 'Assessments', href: '/dashboard/assessments' },
+        { label: 'Weekly Pulse' },
+      ]}
+    />
+  )
 }
