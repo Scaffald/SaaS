@@ -883,5 +883,33 @@ export type {
   ProfileWizardCompleteParams,
 } from './resources/profile-wizard.js'
 
+export type {
+  SkillSnapshot,
+  SnapshotData,
+  SnapshotSummary,
+  SnapshotSoftSkillsData,
+  SkillSnapshotCategoryData,
+  ListSnapshotsParams,
+  ListSnapshotsResponse,
+  CreateSnapshotParams,
+  CreateSnapshotResponse,
+  TimelineDataPoint,
+  GetTimelineParams,
+  GetTimelineResponse,
+  SnapshotDiff,
+  CompareSnapshotsParams,
+  CompareSnapshotsResponse,
+  SkillEvidence,
+  SkillEvidenceType,
+  ListEvidenceParams,
+  ListEvidenceResponse,
+  CreateEvidenceParams,
+  CreateEvidenceResponse,
+  UpdateEvidenceParams,
+  UpdateEvidenceResponse,
+  DeleteEvidenceParams,
+  VerifyEvidenceParams,
+} from './resources/skill-analytics.js'
+
 import { Scaffald } from './client.js'
 export default Scaffald

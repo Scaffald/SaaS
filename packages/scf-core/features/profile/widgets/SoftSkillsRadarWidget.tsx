@@ -6,6 +6,7 @@ import {
   type SoftSkillCategory,
 } from "../components/SoftSkillsCategoryTabs";
 import type { SoftSkill } from "../components/SoftSkillsCategoryTabs";
+import { Pressable } from "react-native";
 import {
   Button,
   DashboardWidget,
@@ -14,12 +15,16 @@ import {
   Skeleton,
   SkeletonBox,
   ResponsiveModal,
+  useThemeContext,
 } from "@scaffald/ui";
-import { Download } from "lucide-react-native";
+import { RadarChart } from "@scaffald/ui/chart";
+import { colors } from "@scaffald/ui/tokens";
+import { BarChart3, Download } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { useToast } from "@scaffald/ui";
 import { useCallback, useMemo, useState, type FC } from "react";
 import { Separator, Text, Row, Stack } from "@scaffald/ui";
+import { useSoftSkillsComparison } from "@scf/core/utils/profile-skills-sdk-hooks";
 import type { ProfileWidgetProps } from "./types";
 
 /**
@@ -35,11 +40,14 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
 }) => {
   const router = useRouter();
   const toast = useToast();
+  const { theme } = useThemeContext();
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] =
     useState<SoftSkillCategory>("reliability");
   const [activeCategory, setActiveCategory] =
     useState<SoftSkillCategory>("reliability");
+
+  const [showPeerOverlay, setShowPeerOverlay] = useState(false);
 
   // Fetch soft skills data
   const {
@@ -49,6 +57,11 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
   } = useSoftSkills(userId ? { userId } : undefined, {
     enabled: !!userId,
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+
+  // Fetch peer comparison data for radar overlay
+  const { data: comparisonData } = useSoftSkillsComparison({
+    enabled: !!userId,
   });
 
   // Prepare skills for display
@@ -68,6 +81,35 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
         versionHistory: undefined, // Not needed for widget
       }));
   }, [data]);
+
+  // Build radar chart axes from category averages
+  const CATEGORY_LABELS: Record<string, string> = {
+    reliability: "Reliability",
+    collaboration: "Collaboration",
+    professionalism: "Professionalism",
+    technical: "Technical",
+  };
+
+  const radarAxes = useMemo(() => {
+    if (!data?.categoryAverages) return [];
+    const categories = Object.keys(CATEGORY_LABELS);
+    return categories.map((cat) => ({
+      label: CATEGORY_LABELS[cat],
+      value:
+        data.categoryAverages[cat as keyof typeof data.categoryAverages] ?? 0,
+      maxValue: 5,
+    }));
+  }, [data?.categoryAverages]);
+
+  const radarComparison = useMemo(() => {
+    if (!showPeerOverlay || !comparisonData?.peer) return undefined;
+    const categories = Object.keys(CATEGORY_LABELS);
+    return categories.map((cat) => ({
+      label: CATEGORY_LABELS[cat],
+      value:
+        comparisonData.peer?.[cat as keyof typeof comparisonData.peer] ?? 0,
+    }));
+  }, [showPeerOverlay, comparisonData?.peer]);
 
   // Handle export (placeholder for now)
   const handleExport = useCallback(() => {
@@ -144,6 +186,92 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
           </Row>
         </Row>
 
+        {/* Radar Chart */}
+        {radarAxes.length >= 3 && (
+          <>
+            <Stack align="center" paddingVertical={8}>
+              <RadarChart
+                axes={radarAxes}
+                comparison={radarComparison}
+                size={showCompact ? "sm" : "md"}
+                showLabels
+                showValues={!showCompact}
+              />
+            </Stack>
+
+            {/* Peer overlay toggle + legend */}
+            {comparisonData?.peer && (
+              <Row gap={12} justify="center" align="center">
+                <Pressable
+                  onPress={() => setShowPeerOverlay(!showPeerOverlay)}
+                  style={{
+                    paddingHorizontal: 10,
+                    paddingVertical: 4,
+                    borderRadius: 4,
+                    backgroundColor: showPeerOverlay
+                      ? colors.primary[50]
+                      : colors.bg[theme].subtle,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: "600",
+                      color: showPeerOverlay
+                        ? colors.primary[600]
+                        : colors.text[theme].secondary,
+                    }}
+                  >
+                    {showPeerOverlay ? "Self + Peer" : "Self Only"}
+                  </Text>
+                </Pressable>
+                {showPeerOverlay && (
+                  <Row gap={12}>
+                    <Row gap={4} align="center">
+                      <Stack
+                        style={{
+                          width: 10,
+                          height: 3,
+                          backgroundColor: colors.primary[500],
+                          borderRadius: 2,
+                        }}
+                      />
+                      <Text
+                        style={{
+                          fontSize: 11,
+                          color: colors.text[theme].tertiary,
+                        }}
+                      >
+                        Self
+                      </Text>
+                    </Row>
+                    <Row gap={4} align="center">
+                      <Stack
+                        style={{
+                          width: 10,
+                          height: 3,
+                          backgroundColor: colors.orange[500],
+                          borderRadius: 2,
+                        }}
+                      />
+                      <Text
+                        style={{
+                          fontSize: 11,
+                          color: colors.text[theme].tertiary,
+                        }}
+                      >
+                        Peer
+                      </Text>
+                    </Row>
+                  </Row>
+                )}
+              </Row>
+            )}
+
+            <Separator />
+          </>
+        )}
+
         {/* Category Tabs */}
         {skills.length > 0 && (
           <>
@@ -162,6 +290,20 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
             activeCategory={activeCategory}
             isLoading={false}
           />
+        )}
+
+        {/* View Full Analytics Link */}
+        {!showCompact && (
+          <Button
+            variant="text"
+            size="sm"
+            iconStart={BarChart3}
+            onPress={() =>
+              router.push(ROUTES.DASHBOARD.SKILLS_ANALYTICS.path)
+            }
+          >
+            View Full Analytics
+          </Button>
         )}
 
         {/* Drill-down Modal */}
