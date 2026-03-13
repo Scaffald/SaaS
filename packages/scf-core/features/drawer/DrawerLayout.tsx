@@ -19,6 +19,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { Pressable } from 'react-native'
 import { DrawerContent } from './DrawerContent'
 import { MobileBottomNav } from './MobileBottomNav'
+import { AccountSwitcher } from '@scf/core/features/dev/AccountSwitcher'
 import { ScaffaldLogo } from '@scf/core/assets'
 
 interface DrawerLayoutProps {
@@ -158,7 +159,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
             color: colors.text[theme].primary,
           },
           drawerStyle: {
-            backgroundColor: isSmall ? colors.bg[theme].emphasis : colors.bg[theme].default,
+            backgroundColor: colors.bg[theme].default,
             borderRightWidth: 0,
             borderRadius: 0,
             width: drawerWidth,
@@ -203,6 +204,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
         {children}
       </Drawer>
       {isSmall && <MobileBottomNav />}
+      <AccountSwitcher />
       {/* TODO: Uncomment this when we implement fully */}
       {/* {!hideDrawer ? <FeedbackWidget /> : null} */}
     </>

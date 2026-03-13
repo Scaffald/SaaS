@@ -8,6 +8,36 @@ import { colors } from '@scaffald/ui/tokens'
 import type { DrawerLinkProps } from './types'
 import { isActivePath } from './utils'
 
+/**
+ * Shared item style for all non-collapsed drawer links.
+ * We apply these on a View wrapper INSIDE Pressable because
+ * expo-router's `Link asChild` does not forward Pressable's
+ * dynamic style function to the rendered `<a>` on web.
+ */
+const itemStyle = (
+  active: boolean,
+  pressed: boolean,
+  theme: 'light' | 'dark',
+  activeBg: string,
+  borderRadius = 12,
+) => ({
+  flexDirection: 'row' as const,
+  alignItems: 'center' as const,
+  justifyContent: 'space-between' as const,
+  paddingHorizontal: 16,
+  paddingVertical: 10,
+  borderRadius,
+  width: '100%' as const,
+  alignSelf: 'stretch' as const,
+  backgroundColor: active
+    ? activeBg
+    : pressed
+      ? theme === 'dark'
+        ? colors.bg[theme].muted
+        : colors.bg[theme].emphasis
+      : 'transparent',
+})
+
 export const DrawerLink = ({
   item,
   pathname,
@@ -163,21 +193,25 @@ export const DrawerLink = ({
   if (collapsed && depth === 0) {
     return (
       <Link href={item.href} asChild>
-        <Pressable
-          style={({ pressed }) => ({
-            width: 56,
-            height: 56,
-            borderRadius: 32,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: active
-              ? activeBg
-              : pressed
-                ? colors.bg[theme].muted
-                : 'transparent',
-          })}
-        >
-          {renderIcon()}
+        <Pressable>
+          {({ pressed }) => (
+            <View
+              style={{
+                width: 56,
+                height: 56,
+                borderRadius: 32,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: active
+                  ? activeBg
+                  : pressed
+                    ? colors.bg[theme].muted
+                    : 'transparent',
+              }}
+            >
+              {renderIcon()}
+            </View>
+          )}
         </Pressable>
       </Link>
     )
@@ -186,177 +220,86 @@ export const DrawerLink = ({
   if (depth > 0) {
     return (
       <Link href={item.href} asChild>
-        <Pressable
-          style={({ pressed }: { pressed: boolean }) => ({
-            flexDirection: 'row',
-            alignItems: 'center',
-            borderRadius: 16,
-            columnGap: 12,
-            paddingHorizontal: 16,
-            paddingVertical: 10,
-            paddingLeft: 40,
-            position: 'relative',
-            backgroundColor: active ? activeBg : pressed ? colors.gray[50] : undefined,
-            flex: 1,
-          })}
-        >
-          {/* Tree vertical line */}
-          <View
-            style={{
-              position: 'absolute',
-              left: 20,
-              top: 0,
-              height: 20,
-              width: 1,
-              backgroundColor: colors.border[theme].default,
-            }}
-          />
-          {/* Tree horizontal line */}
-          <View
-            style={{
-              position: 'absolute',
-              left: 20,
-              top: 19,
-              width: 12,
-              height: 1,
-              backgroundColor: colors.border[theme].default,
-            }}
-          />
-          <Paragraph
-            size="md"
-            style={{
-              color: active ? activeFg : colors.text[theme].secondary,
-              fontWeight: active ? '600' : '400',
-              flex: 1,
-            }}
-          >
-            {title}
-          </Paragraph>
-          {item.isOnCooldown ? (
-            <Clock size="md" color={active ? activeFg : colors.info[600]} />
-          ) : item.isCompleted ? (
-            <Check size="md" color={active ? activeFg : colors.success[600]} />
-          ) : null}
+        <Pressable>
+          {({ pressed }) => (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                borderRadius: 16,
+                columnGap: 12,
+                paddingHorizontal: 16,
+                paddingVertical: 10,
+                paddingLeft: 40,
+                position: 'relative',
+                backgroundColor: active
+                  ? activeBg
+                  : pressed
+                    ? theme === 'dark'
+                      ? colors.bg[theme].muted
+                      : colors.gray[50]
+                    : undefined,
+                flex: 1,
+              }}
+            >
+              {/* Tree vertical line */}
+              <View
+                style={{
+                  position: 'absolute',
+                  left: 20,
+                  top: 0,
+                  height: 20,
+                  width: 1,
+                  backgroundColor: colors.border[theme].default,
+                }}
+              />
+              {/* Tree horizontal line */}
+              <View
+                style={{
+                  position: 'absolute',
+                  left: 20,
+                  top: 19,
+                  width: 12,
+                  height: 1,
+                  backgroundColor: colors.border[theme].default,
+                }}
+              />
+              <Paragraph
+                size="md"
+                style={{
+                  color: active ? activeFg : colors.text[theme].secondary,
+                  fontWeight: active ? '600' : '400',
+                  flex: 1,
+                }}
+              >
+                {title}
+              </Paragraph>
+              {item.isOnCooldown ? (
+                <Clock size="md" color={active ? activeFg : colors.info[600]} />
+              ) : item.isCompleted ? (
+                <Check size="md" color={active ? activeFg : colors.success[600]} />
+              ) : null}
+            </View>
+          )}
         </Pressable>
       </Link>
     )
   }
 
-  if (isManualExpandable) {
-    return (
-      <Stack flex={1}>
-        <Link href={item.href} asChild>
-          <Pressable
-            style={({ pressed }: { pressed: boolean }) => ({
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingHorizontal: 16,
-              paddingVertical: 10,
-              borderRadius: 16,
-              width: '100%',
-              alignSelf: 'stretch',
-              backgroundColor: active
-                ? activeBg
-                : pressed
-                  ? colors.gray[200]
-                  : 'transparent',
-            })}
-          >
-            {renderContent()}
-            {renderRightSide()}
-          </Pressable>
-        </Link>
-        {shouldShowSubItems && item.subItems && (
-          <Stack borderRadius={16} marginVertical={8} gap={8} flex={1}>
-            {item.subItems.map((subItem) => (
-              <DrawerLink
-                key={subItem.key}
-                item={subItem}
-                pathname={pathname}
-                depth={1}
-                onNavigate={onNavigate}
-                expandedItems={expandedItems}
-                onToggleExpanded={onToggleExpanded}
-                isCollapsed={collapsed}
-              />
-            ))}
-          </Stack>
-        )}
-      </Stack>
-    )
-  }
-
-  if (isAutoExpandable) {
-    return (
-      <Stack flex={1}>
-        <Link href={item.href} asChild>
-          <Pressable
-            style={({ pressed }: { pressed: boolean }) => ({
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingHorizontal: 16,
-              paddingVertical: 10,
-              borderRadius: 16,
-              width: '100%',
-              alignSelf: 'stretch',
-              backgroundColor: active
-                ? activeBg
-                : pressed
-                  ? colors.gray[200]
-                  : 'transparent',
-            })}
-          >
-            {renderContent()}
-            {renderRightSide()}
-          </Pressable>
-        </Link>
-        {shouldShowSubItems && item.subItems && (
-          <Stack borderRadius={16} marginVertical={8} gap={8} flex={1}>
-            {item.subItems.map((subItem) => (
-              <DrawerLink
-                key={subItem.key}
-                item={subItem}
-                pathname={pathname}
-                depth={1}
-                onNavigate={onNavigate}
-                expandedItems={expandedItems}
-                onToggleExpanded={onToggleExpanded}
-                isCollapsed={collapsed}
-              />
-            ))}
-          </Stack>
-        )}
-      </Stack>
-    )
-  }
-
-  if (item.subItems && item.subItems.length > 0) {
-    return (
-      <Stack flex={1}>
-        <Link href={item.href} asChild>
-          <Pressable
-            style={({ pressed }: { pressed: boolean }) => ({
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingHorizontal: 16,
-              paddingVertical: 10,
-              borderRadius: 16,
-              width: '100%',
-              alignSelf: 'stretch',
-              backgroundColor: active
-                ? activeBg
-                : pressed
-                  ? colors.gray[200]
-                  : 'transparent',
-            })}
-          >
-            {renderContent()}
-            {renderRightSide()}
-          </Pressable>
-        </Link>
+  // Helper to render a standard expandable item with sub-items
+  const renderExpandableItem = () => (
+    <Stack flex={1}>
+      <Link href={item.href} asChild>
+        <Pressable>
+          {({ pressed }) => (
+            <View style={itemStyle(active, pressed, theme, activeBg, 16)}>
+              {renderContent()}
+              {renderRightSide()}
+            </View>
+          )}
+        </Pressable>
+      </Link>
+      {shouldShowSubItems && item.subItems && (
         <Stack borderRadius={16} marginVertical={8} gap={8} flex={1}>
           {item.subItems.map((subItem) => (
             <DrawerLink
@@ -371,31 +314,32 @@ export const DrawerLink = ({
             />
           ))}
         </Stack>
-      </Stack>
-    )
+      )}
+    </Stack>
+  )
+
+  if (isManualExpandable) {
+    return renderExpandableItem()
   }
 
+  if (isAutoExpandable) {
+    return renderExpandableItem()
+  }
+
+  if (item.subItems && item.subItems.length > 0) {
+    return renderExpandableItem()
+  }
+
+  // Default: simple nav link
   return (
     <Link href={item.href} asChild>
-      <Pressable
-        style={({ pressed }: { pressed: boolean }) => ({
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingHorizontal: 16,
-          paddingVertical: 10,
-          borderRadius: 12,
-          width: '100%',
-          alignSelf: 'stretch',
-          backgroundColor: active
-            ? activeBg
-            : pressed
-              ? colors.gray[200]
-              : 'transparent',
-        })}
-      >
-        {renderContent()}
-        {renderRightSide()}
+      <Pressable>
+        {({ pressed }) => (
+          <View style={itemStyle(active, pressed, theme, activeBg)}>
+            {renderContent()}
+            {renderRightSide()}
+          </View>
+        )}
       </Pressable>
     </Link>
   )

@@ -110,12 +110,12 @@ export const UniversalThemeProvider = ({ children }: { children: ReactNode }) =>
 
 // Custom React Navigation themes that use our app's background colors.
 // DefaultTheme.colors.background is rgb(242,242,242) which shows up during overscroll —
-// we override it to match our subtle background so overscroll blends seamlessly.
+// we override it to match our default background so everything is seamless.
 const AppLightTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    background: colors.bg.light.emphasis,
+    background: colors.bg.light.default,
   },
 }
 
@@ -123,7 +123,7 @@ const AppDarkTheme = {
   ...DarkTheme,
   colors: {
     ...DarkTheme.colors,
-    background: colors.bg.dark.emphasis,
+    background: colors.bg.dark.default,
   },
 }
 
@@ -136,7 +136,7 @@ const InnerProvider = ({ children }: { children: ReactNode }) => {
       if (typeof document !== 'undefined') {
         document.documentElement.setAttribute('data-theme', resolvedTheme)
         // Match the app's background so overscroll bounce areas use the same color
-        const bg = resolvedTheme === 'dark' ? colors.bg.dark.emphasis : colors.bg.light.emphasis
+        const bg = resolvedTheme === 'dark' ? colors.bg.dark.default : colors.bg.light.default
         document.documentElement.style.backgroundColor = bg
         document.body.style.backgroundColor = bg
       }
