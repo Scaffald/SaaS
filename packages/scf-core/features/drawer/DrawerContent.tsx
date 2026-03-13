@@ -156,16 +156,22 @@ export const DrawerContent = ({
     </Pressable>
   )
 
-  const glassStyle = {
-    backgroundColor: theme === 'dark'
-      ? 'rgba(30, 25, 20, 0.92)'
-      : 'rgba(251, 248, 243, 0.88)',
-    borderRightWidth: 1,
-    borderRightColor: theme === 'dark'
-      ? 'rgba(80, 73, 64, 0.4)'
-      : 'rgba(237, 221, 201, 0.5)',
-    ...(Platform.OS === 'web' ? { backdropFilter: 'blur(14px)' } as object : {}),
-  }
+  // Persistent (large screen): plain bg matching main content, no glass/border
+  // Overlay (small screen): frosted glass with border for visual separation
+  const glassStyle = isSmall
+    ? {
+        backgroundColor: theme === 'dark'
+          ? 'rgba(30, 25, 20, 0.92)'
+          : 'rgba(251, 248, 243, 0.88)',
+        borderRightWidth: 1,
+        borderRightColor: theme === 'dark'
+          ? 'rgba(80, 73, 64, 0.4)'
+          : 'rgba(237, 221, 201, 0.5)',
+        ...(Platform.OS === 'web' ? { backdropFilter: 'blur(14px)' } as object : {}),
+      }
+    : {
+        backgroundColor: colors.bg[theme].default,
+      }
 
   return (
     <Stack
@@ -196,7 +202,7 @@ export const DrawerContent = ({
         ) : null}
 
         <Stack
-          gap={2}
+          gap={4}
           flex={1}
           marginTop={8}
           width="100%"
@@ -316,9 +322,9 @@ const DrawerProfileCard = ({
         gap: 12,
         padding: 12,
         borderRadius: 20,
-        backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.5)',
+        backgroundColor: colors.bg[theme].subtle,
         borderWidth: 1,
-        borderColor: theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.6)',
+        borderColor: colors.border[theme].subtle,
         opacity: pressed ? 0.8 : 1,
       })}
     >

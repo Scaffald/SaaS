@@ -18,11 +18,15 @@ const CATEGORY_TO_CONSENT_TYPE: Record<string, string> = {
 }
 
 async function recordConsentToDb(state: CookieConsentState) {
-  const { data: { session } } = await supabase.auth.getSession()
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
   if (!session?.user?.id) return
 
   const userAgent =
-    Platform.OS === 'web' && typeof navigator !== 'undefined' ? navigator.userAgent : `ReactNative/${Platform.OS}`
+    Platform.OS === 'web' && typeof navigator !== 'undefined'
+      ? navigator.userAgent
+      : `ReactNative/${Platform.OS}`
   const deviceType = Platform.OS === 'web' ? 'desktop' : 'mobile'
 
   const records = Object.entries(state.selections)

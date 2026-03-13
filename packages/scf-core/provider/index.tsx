@@ -49,8 +49,4 @@ const compose = (providers: FC<{ children: ReactNode }>[]) =>
     return Provider
   })
 
-const Providers = compose([
-  CookieConsentProvider,
-  ToastProvider,
-  QueryClientProvider,
-])
+const Providers = compose([CookieConsentProvider, ToastProvider, QueryClientProvider])

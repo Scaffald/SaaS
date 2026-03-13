@@ -39,7 +39,6 @@ import {
  * - Home address
  * - User types (worker/employer/customer)
  * - Primary industry
- * - Legal agreements
  *
  * @returns JSX element
  */
@@ -135,8 +134,6 @@ export default function OnboardingPage() {
       },
       user_types: statusData.data.user_types ?? [],
       industry_id: statusData.data.industry_id ?? "",
-      accepts_privacy_policy: statusData.data.accepts_privacy_policy ?? false,
-      accepts_terms_of_service: statusData.data.accepts_terms_of_service ?? false,
     };
 
     const prefillHash = JSON.stringify(prefillData);
@@ -353,129 +350,6 @@ export default function OnboardingPage() {
                 {errors.industry_id && (
                   <Text color="red">{errors.industry_id.message}</Text>
                 )}
-              </Stack>
-
-              <Separator />
-
-              {/* 5. Legal Agreements */}
-              <Stack gap={12}>
-                <Text>Legal Agreements *</Text>
-
-                {/* Privacy Policy */}
-                <Controller
-                  name="accepts_privacy_policy"
-                  control={control}
-                  render={({ field }) => (
-                    <Stack gap={8}>
-                      <Row gap={12} align="center">
-                        <Checkbox
-                          checked={field.value}
-                          onChange={(checked) => {
-                            // Use setValue with shouldValidate: false to prevent form-wide validation
-                            setValue("accepts_privacy_policy", checked, {
-                              shouldValidate: false,
-                            });
-                          }}
-                          size="md"
-                        />
-                        <Pressable
-                          onPress={() => {
-                            // Use setValue with shouldValidate: false to prevent form-wide validation
-                            setValue("accepts_privacy_policy", !field.value, {
-                              shouldValidate: false,
-                            });
-                          }}
-                          accessibilityRole="button"
-                          style={({ pressed }) => ({
-                            alignSelf: "flex-start",
-                            opacity: pressed ? 0.7 : 1,
-                          })}
-                        >
-                          <Text nativeID="checkbox-legal-privacy-policy-label">
-                            I accept the{" "}
-                            <Text
-                              color="blue"
-                              onPress={(event) => {
-                                event.stopPropagation?.();
-                                if (typeof window !== "undefined") {
-                                  window.open(
-                                    "https://scaffald.com/privacy",
-                                    "_blank"
-                                  );
-                                }
-                              }}
-                            >
-                              Privacy Policy
-                            </Text>
-                          </Text>
-                        </Pressable>
-                      </Row>
-                      {errors.accepts_privacy_policy && (
-                        <Text color="red">
-                          {errors.accepts_privacy_policy.message}
-                        </Text>
-                      )}
-                    </Stack>
-                  )}
-                />
-
-                {/* Terms of Service */}
-                <Controller
-                  name="accepts_terms_of_service"
-                  control={control}
-                  render={({ field }) => (
-                    <Stack gap={8}>
-                      <Row gap={12} align="center">
-                        <Checkbox
-                          checked={field.value}
-                          onChange={(checked) => {
-                            // Use setValue with shouldValidate: false to prevent form-wide validation
-                            setValue("accepts_terms_of_service", checked, {
-                              shouldValidate: false,
-                            });
-                          }}
-                          size="md"
-                        />
-                        <Pressable
-                          onPress={() => {
-                            // Use setValue with shouldValidate: false to prevent form-wide validation
-                            setValue("accepts_terms_of_service", !field.value, {
-                              shouldValidate: false,
-                            });
-                          }}
-                          accessibilityRole="button"
-                          style={({ pressed }) => ({
-                            alignSelf: "flex-start",
-                            opacity: pressed ? 0.7 : 1,
-                          })}
-                        >
-                          <Text nativeID="checkbox-legal-terms-of-service-label">
-                            I accept the{" "}
-                            <Text
-                              color="blue"
-                              onPress={(event) => {
-                                event.stopPropagation?.();
-                                if (typeof window !== "undefined") {
-                                  window.open(
-                                    "https://scaffald.com/terms",
-                                    "_blank"
-                                  );
-                                }
-                              }}
-                            >
-                              Terms of Service
-                            </Text>
-                          </Text>
-                        </Pressable>
-                      </Row>
-                      {errors.accepts_terms_of_service && (
-                        <Text color="red">
-                          {errors.accepts_terms_of_service.message}
-                        </Text>
-                      )}
-                    </Stack>
-                  )}
-                />
               </Stack>
 
               {/* Submit Button */}
