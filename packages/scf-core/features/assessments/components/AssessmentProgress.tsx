@@ -1,5 +1,6 @@
 import { Check } from 'lucide-react-native'
-import { Text, Row, Stack } from '@scaffald/ui'
+import { Text, Row, Stack, AssessmentProgressBar, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 export interface AssessmentStep {
   id: string
@@ -26,7 +27,15 @@ export function AssessmentProgress({
   completionScore,
   orientation = 'horizontal',
 }: AssessmentProgressProps) {
+  const { theme } = useThemeContext()
   const sortedSteps = [...steps].sort((a, b) => a.order - b.order)
+
+  const completedBg = colors.success[500]
+  const currentBg = colors.primary[500]
+  const inactiveBg = colors.bg[theme].subtle
+  const currentBorder = colors.primary[700]
+  const connectorActive = colors.primary[200]
+  const inactiveText = colors.text[theme].tertiary
 
   if (orientation === 'vertical') {
     return (
@@ -35,17 +44,8 @@ export function AssessmentProgress({
           <Stack gap={8}>
             <Text color="$gray11">Progress</Text>
             <Stack gap={4}>
-              <Row
-                height={8}
-                style={{ backgroundColor: '#e5e7eb', overflow: 'hidden', width: '100%' }}
-                borderRadius={10}
-              >
-                <Row
-                  height="100%"
-                  style={{ backgroundColor: '#3b82f6', width: `${completionScore}%` }}
-                />
-              </Row>
-              <Text color="$blue10" align="right">
+              <AssessmentProgressBar value={completionScore} height={8} />
+              <Text style={{ color: colors.primary[500], textAlign: 'right' }}>
                 {completionScore}%
               </Text>
             </Stack>
@@ -66,10 +66,10 @@ export function AssessmentProgress({
                 ? 'Completed'
                 : 'Pending'
             const statusColor = isCurrent
-              ? '$blue10'
+              ? colors.primary[500]
               : isCompleted || isPast
-                ? '$green10'
-                : '$color10'
+                ? colors.success[500]
+                : colors.text[theme].tertiary
 
             return (
               <Row key={step.id} gap={12} align="flex-start">
@@ -81,15 +81,15 @@ export function AssessmentProgress({
                     align="center"
                     justify="center"
                     style={{
-                      backgroundColor: isCompleted ? '#22c55e' : isCurrent ? '#3b82f6' : '#e5e7eb',
+                      backgroundColor: isCompleted ? completedBg : isCurrent ? currentBg : inactiveBg,
                       borderWidth: 2,
-                      borderColor: isCurrent ? '#1d4ed8' : 'transparent',
+                      borderColor: isCurrent ? currentBorder : 'transparent',
                     }}
                   >
                     {isCompleted ? (
                       <Check size={18} color="white" />
                     ) : (
-                      <Text color={isCurrent ? 'white' : '#6b7280'}>{index + 1}</Text>
+                      <Text color={isCurrent ? 'white' : inactiveText}>{index + 1}</Text>
                     )}
                   </Stack>
                   {!isLast && (
@@ -98,7 +98,7 @@ export function AssessmentProgress({
                         width: 2,
                         flexGrow: 1,
                         minHeight: 24,
-                        backgroundColor: isCompleted || isPast ? '#93c5fd' : '#e5e7eb',
+                        backgroundColor: isCompleted || isPast ? connectorActive : inactiveBg,
                         opacity: isCompleted || isPast ? 0.85 : 0.4,
                       }}
                     />
@@ -107,7 +107,7 @@ export function AssessmentProgress({
 
                 <Stack gap={4} flex={1}>
                   <Text color={isCurrent ? '$color12' : '$color11'}>{step.label}</Text>
-                  <Text color={statusColor}>{statusLabel}</Text>
+                  <Text style={{ color: statusColor }}>{statusLabel}</Text>
                 </Stack>
               </Row>
             )
@@ -124,18 +124,9 @@ export function AssessmentProgress({
         <Stack gap={8}>
           <Row justify="space-between" align="center">
             <Text color="$gray11">Progress</Text>
-            <Text color="$blue10">{completionScore}%</Text>
+            <Text style={{ color: colors.primary[500] }}>{completionScore}%</Text>
           </Row>
-          <Row
-            height={8}
-            style={{ backgroundColor: '#e5e7eb', overflow: 'hidden', width: '100%' }}
-            borderRadius={10}
-          >
-            <Row
-              height="100%"
-              style={{ backgroundColor: '#3b82f6', width: `${completionScore}%` }}
-            />
-          </Row>
+          <AssessmentProgressBar value={completionScore} height={8} />
         </Stack>
       )}
 
@@ -161,15 +152,15 @@ export function AssessmentProgress({
                 align="center"
                 justify="center"
                 style={{
-                  backgroundColor: isCompleted ? '#22c55e' : isCurrent ? '#3b82f6' : '#e5e7eb',
+                  backgroundColor: isCompleted ? completedBg : isCurrent ? currentBg : inactiveBg,
                   borderWidth: 2,
-                  borderColor: isCurrent ? '#1d4ed8' : 'transparent',
+                  borderColor: isCurrent ? currentBorder : 'transparent',
                 }}
               >
                 {isCompleted ? (
                   <Check size={24} color="white" />
                 ) : (
-                  <Text color={isCurrent ? 'white' : '#6b7280'}>{index + 1}</Text>
+                  <Text color={isCurrent ? 'white' : inactiveText}>{index + 1}</Text>
                 )}
               </Stack>
               <Text color={isCurrent ? '$color12' : '$color11'}>{step.label}</Text>

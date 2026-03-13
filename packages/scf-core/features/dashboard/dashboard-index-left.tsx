@@ -4,6 +4,7 @@ import { IPIPAssessmentWidget } from '../ipip-assessment'
 import { OccupationAssessmentWidget } from '../occupation-assessment'
 import { ProfileSnapshotWidget, SoftSkillsComparisonWidget } from '../profile/widgets'
 import { RIASECAssessmentWidget } from '../riasec-assessment'
+import { WeeklyPulseWidget } from '../luscher-test/components/WeeklyPulseWidget'
 import { MobileDashboardGreeting, MobileQuickActions } from './components'
 import { CareerRecommendationsWidget } from './widgets/CareerRecommendationsWidget'
 import { SkillsGapWidget } from './widgets/SkillsGapWidget'
@@ -25,6 +26,7 @@ export function DashboardIndexLeft() {
       <ProfileSnapshotWidget />
       <SoftSkillsComparisonWidget showCTA />
       <InquiryOverviewWidget />
+      <WeeklyPulseWidget />
       <IPIPAssessmentWidget />
       <RIASECAssessmentWidget />
       <OccupationAssessmentWidget />
