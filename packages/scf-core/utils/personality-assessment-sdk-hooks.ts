@@ -128,8 +128,9 @@ export function useSaveLuscher1Mutation(
     onSuccess: async (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'luscher-1'] })
-      // biome-ignore lint/suspicious/noExplicitAny: Safe callback invocation pattern
-      await (options?.onSuccess as any)?.(data, variables, context)
+      if (options?.onSuccess) {
+        (options.onSuccess as (...args: unknown[]) => void)(data, variables, context)
+      }
     },
   })
 }
@@ -151,8 +152,9 @@ export function useSaveIPIPProgressMutation(
     onSuccess: async (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'ipip'] })
-      // biome-ignore lint/suspicious/noExplicitAny: Safe callback invocation pattern
-      await (options?.onSuccess as any)?.(data, variables, context)
+      if (options?.onSuccess) {
+        (options.onSuccess as (...args: unknown[]) => void)(data, variables, context)
+      }
     },
   })
 }
@@ -174,8 +176,9 @@ export function useSaveLuscher2Mutation(
     onSuccess: async (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'luscher-2'] })
-      // biome-ignore lint/suspicious/noExplicitAny: Safe callback invocation pattern
-      await (options?.onSuccess as any)?.(data, variables, context)
+      if (options?.onSuccess) {
+        (options.onSuccess as (...args: unknown[]) => void)(data, variables, context)
+      }
     },
   })
 }
@@ -197,8 +200,9 @@ export function useUpdateCurrentStepMutation(
     ...options,
     onSuccess: async (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
-      // biome-ignore lint/suspicious/noExplicitAny: Safe callback invocation pattern
-      await (options?.onSuccess as any)?.(data, variables, context)
+      if (options?.onSuccess) {
+        (options.onSuccess as (...args: unknown[]) => void)(data, variables, context)
+      }
     },
   })
 }
@@ -220,8 +224,9 @@ export function useSaveLuscherTestSessionMutation(
     onSuccess: async (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'luscher'] })
-      // biome-ignore lint/suspicious/noExplicitAny: Safe callback invocation pattern
-      await (options?.onSuccess as any)?.(data, variables, context)
+      if (options?.onSuccess) {
+        (options.onSuccess as (...args: unknown[]) => void)(data, variables, context)
+      }
     },
   })
 }
@@ -243,8 +248,9 @@ export function useGenerateReportMutation(
     ...options,
     onSuccess: async (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: ['personality-assessment', 'status'] })
-      // biome-ignore lint/suspicious/noExplicitAny: Safe callback invocation pattern
-      await (options?.onSuccess as any)?.(data, variables, context)
+      if (options?.onSuccess) {
+        (options.onSuccess as (...args: unknown[]) => void)(data, variables, context)
+      }
     },
   })
 }
