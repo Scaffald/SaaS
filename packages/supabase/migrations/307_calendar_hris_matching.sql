@@ -96,19 +96,19 @@ CREATE TABLE IF NOT EXISTS core.scheduling_links (
 -- Triggers
 CREATE TRIGGER trg_calendar_connections_updated
   BEFORE UPDATE ON core.calendar_connections
-  FOR EACH ROW EXECUTE FUNCTION core.update_updated_at();
+  FOR EACH ROW EXECUTE FUNCTION core.update_updated_at_column();
 
 CREATE TRIGGER trg_interview_availability_updated
   BEFORE UPDATE ON core.interview_availability
-  FOR EACH ROW EXECUTE FUNCTION core.update_updated_at();
+  FOR EACH ROW EXECUTE FUNCTION core.update_updated_at_column();
 
 CREATE TRIGGER trg_interview_slots_updated
   BEFORE UPDATE ON core.interview_slots
-  FOR EACH ROW EXECUTE FUNCTION core.update_updated_at();
+  FOR EACH ROW EXECUTE FUNCTION core.update_updated_at_column();
 
 CREATE TRIGGER trg_interview_bookings_updated
   BEFORE UPDATE ON core.interview_bookings
-  FOR EACH ROW EXECUTE FUNCTION core.update_updated_at();
+  FOR EACH ROW EXECUTE FUNCTION core.update_updated_at_column();
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_calendar_connections_user ON core.calendar_connections (user_id);
@@ -211,11 +211,11 @@ CREATE TABLE IF NOT EXISTS core.hris_employee_mappings (
 -- Triggers
 CREATE TRIGGER trg_hris_connections_updated
   BEFORE UPDATE ON core.hris_connections
-  FOR EACH ROW EXECUTE FUNCTION core.update_updated_at();
+  FOR EACH ROW EXECUTE FUNCTION core.update_updated_at_column();
 
 CREATE TRIGGER trg_hris_employee_mappings_updated
   BEFORE UPDATE ON core.hris_employee_mappings
-  FOR EACH ROW EXECUTE FUNCTION core.update_updated_at();
+  FOR EACH ROW EXECUTE FUNCTION core.update_updated_at_column();
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_hris_connections_org ON core.hris_connections (organization_id);
@@ -269,7 +269,7 @@ CREATE TABLE IF NOT EXISTS core.background_check_events (
 -- Triggers
 CREATE TRIGGER trg_bg_check_providers_updated
   BEFORE UPDATE ON core.background_check_providers
-  FOR EACH ROW EXECUTE FUNCTION core.update_updated_at();
+  FOR EACH ROW EXECUTE FUNCTION core.update_updated_at_column();
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_bg_check_providers_org ON core.background_check_providers (organization_id);

@@ -188,4 +188,20 @@ ALTER TABLE core.oauth_user_consents ADD COLUMN IF NOT EXISTS expires_at TIMESTA
 
 COMMENT ON COLUMN core.oauth_user_consents.expires_at IS 'When the user consent expires (typically 90 days)';
 
+-- Drop existing status check constraint to add 'trusted' status
+ALTER TABLE core.oauth_apps DROP CONSTRAINT IF EXISTS oauth_apps_status_check;
+ALTER TABLE core.oauth_apps ADD CONSTRAINT oauth_apps_status_check
+  CHECK (status IN ('pending', 'active', 'trusted', 'suspended', 'revoked'));
+
+CREATE INDEX IF NOT EXISTS idx_oauth_apps_approved_by ON core.oauth_apps(approved_by);
+
+-- =========================================================
+-- Extend oauth_scopes table (RBAC integration)
+-- =========================================================
+ALTER TABLE core.oauth_scopes ADD COLUMN IF NOT EXISTS rbac_permissions TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];
+ALTER TABLE core.oauth_scopes ADD COLUMN IF NOT EXISTS requires_admin_approval BOOLEAN NOT NULL DEFAULT false;
+
+COMMENT ON COLUMN core.oauth_scopes.rbac_permissions IS 'Array of RBAC permission names this scope maps to';
+COMMENT ON COLUMN core.oauth_scopes.requires_admin_approval IS 'Whether this scope requires admin approval for apps';
+
 COMMIT;

@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS core.generic_invitations (
   invitee_user_id UUID REFERENCES core.users(id) ON DELETE SET NULL, -- Set when user signs up/accepts
 
   -- Project context (for project-based invitations)
-  project_id UUID, -- References forsured.projects(id) - not enforced due to cross-schema
+  project_id UUID, -- Optional project context for project-based invitations
 
   -- Referral tracking
   is_referral BOOLEAN DEFAULT true,  -- Track for referral credit
@@ -174,13 +174,9 @@ CREATE POLICY "invitation_rules_select_authenticated" ON core.invitation_rules
   USING (is_active = true);
 
 CREATE POLICY "invitation_rules_admin_all" ON core.invitation_rules
-  FOR ALL TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM forsured.user_profiles up
-      WHERE up.scaffald_user_id = auth.uid() AND up.user_type = 'admin'
-    )
-  );
+  FOR ALL TO service_role
+  USING (true)
+  WITH CHECK (true);
 
 -- generic_invitations: Users can see invitations they sent or received
 CREATE POLICY "generic_invitations_select_own" ON core.generic_invitations

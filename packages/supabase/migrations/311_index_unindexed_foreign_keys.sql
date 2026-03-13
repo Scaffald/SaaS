@@ -72,7 +72,6 @@ CREATE INDEX IF NOT EXISTS idx_organization_requests_reviewed_by_user_id ON core
 CREATE INDEX IF NOT EXISTS idx_organization_settings_created_by ON core.organization_settings (created_by);
 CREATE INDEX IF NOT EXISTS idx_organization_settings_updated_by ON core.organization_settings (updated_by);
 CREATE INDEX IF NOT EXISTS idx_organization_skills_csi_skill_id ON core.organization_skills (csi_skill_id);
-CREATE INDEX IF NOT EXISTS idx_organizations_default_payment_method ON core.organizations (default_payment_method);
 CREATE INDEX IF NOT EXISTS idx_organizations_industry_id ON core.organizations (industry_id);
 CREATE INDEX IF NOT EXISTS idx_organizations_owner_user_id ON core.organizations (owner_user_id);
 CREATE INDEX IF NOT EXISTS idx_payment_transactions_background_check_access_id ON core.payment_transactions (background_check_access_id);
@@ -141,7 +140,6 @@ CREATE INDEX IF NOT EXISTS idx_basic_interests_to_riasec_riasec_element_id ON on
 CREATE INDEX IF NOT EXISTS idx_dwa_reference_element_id ON onet.dwa_reference (element_id);
 CREATE INDEX IF NOT EXISTS idx_dwa_reference_iwa_id ON onet.dwa_reference (iwa_id);
 CREATE INDEX IF NOT EXISTS idx_education_training_experience_element_id ON onet.education_training_experience (element_id);
-CREATE INDEX IF NOT EXISTS idx_education_training_experience_element_id_scale_id_category ON onet.education_training_experience (element_id_scale_id_category);
 CREATE INDEX IF NOT EXISTS idx_education_training_experience_onetsoc_code ON onet.education_training_experience (onetsoc_code);
 CREATE INDEX IF NOT EXISTS idx_education_training_experience_scale_id ON onet.education_training_experience (scale_id);
 CREATE INDEX IF NOT EXISTS idx_emerging_tasks_onetsoc_code ON onet.emerging_tasks (onetsoc_code);
@@ -176,7 +174,6 @@ CREATE INDEX IF NOT EXISTS idx_skills_to_work_context_work_context_element_id ON
 CREATE INDEX IF NOT EXISTS idx_survey_booklet_locations_element_id ON onet.survey_booklet_locations (element_id);
 CREATE INDEX IF NOT EXISTS idx_survey_booklet_locations_scale_id ON onet.survey_booklet_locations (scale_id);
 CREATE INDEX IF NOT EXISTS idx_task_ratings_onetsoc_code ON onet.task_ratings (onetsoc_code);
-CREATE INDEX IF NOT EXISTS idx_task_ratings_scale_id_category ON onet.task_ratings (scale_id_category);
 CREATE INDEX IF NOT EXISTS idx_task_ratings_scale_id ON onet.task_ratings (scale_id);
 CREATE INDEX IF NOT EXISTS idx_task_ratings_task_id ON onet.task_ratings (task_id);
 CREATE INDEX IF NOT EXISTS idx_task_statements_onetsoc_code ON onet.task_statements (onetsoc_code);
@@ -191,7 +188,6 @@ CREATE INDEX IF NOT EXISTS idx_work_activities_element_id ON onet.work_activitie
 CREATE INDEX IF NOT EXISTS idx_work_activities_onetsoc_code ON onet.work_activities (onetsoc_code);
 CREATE INDEX IF NOT EXISTS idx_work_activities_scale_id ON onet.work_activities (scale_id);
 CREATE INDEX IF NOT EXISTS idx_work_context_element_id ON onet.work_context (element_id);
-CREATE INDEX IF NOT EXISTS idx_work_context_element_id_scale_id_category ON onet.work_context (element_id_scale_id_category);
 CREATE INDEX IF NOT EXISTS idx_work_context_onetsoc_code ON onet.work_context (onetsoc_code);
 CREATE INDEX IF NOT EXISTS idx_work_context_scale_id ON onet.work_context (scale_id);
 CREATE INDEX IF NOT EXISTS idx_work_context_categories_scale_id ON onet.work_context_categories (scale_id);

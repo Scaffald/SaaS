@@ -201,30 +201,40 @@ DECLARE
   v_previous_data JSONB;
   v_summary JSONB;
 BEGIN
-  -- Build snapshot_data from current user skill state
+  -- Build snapshot_data from current user skill state.
+  -- Categories: grouped subquery (category, average, count) then jsonb_object_agg
+  -- to avoid nested aggregates. Overall average from separate scalar subquery.
   SELECT jsonb_build_object(
     'soft_skills', COALESCE((
       SELECT jsonb_build_object(
-        'categories', jsonb_object_agg(
-          ss.category,
-          jsonb_build_object(
-            'average', ROUND(AVG(us.proficiency_level)::numeric, 2),
-            'count', COUNT(*)
-          )
+        'categories', COALESCE(
+          (SELECT jsonb_object_agg(cat.category, jsonb_build_object('average', cat.average, 'count', cat.count))
+           FROM (
+             SELECT ss.category,
+                    ROUND(AVG(us.proficiency_level)::numeric, 2) AS average,
+                    COUNT(*)::int AS count
+             FROM core.user_skills us
+             JOIN core.soft_skills ss ON ss.id = us.soft_skill_id
+             WHERE us.user_id = p_user_id
+               AND us.skill_taxonomy = 'soft_skills'
+             GROUP BY ss.category
+           ) cat),
+          '{}'::jsonb
         ),
-        'overall_average', ROUND(AVG(us.proficiency_level)::numeric, 2)
+        'overall_average', (
+          SELECT ROUND(AVG(us.proficiency_level)::numeric, 2)
+          FROM core.user_skills us
+          WHERE us.user_id = p_user_id
+            AND us.skill_taxonomy = 'soft_skills'
+        )
       )
-      FROM core.user_skills us
-      JOIN core.soft_skills ss ON ss.id = us.soft_skill_id
-      WHERE us.user_id = p_user_id
-        AND us.skill_taxonomy = 'soft_skills'
     ), '{}'::jsonb),
     'evidence_count', (
       SELECT COUNT(*) FROM core.skill_evidence WHERE user_id = p_user_id
     ),
     'review_count', (
       SELECT COUNT(*) FROM core.reviews
-      WHERE subject_type = 'user' AND subject_id = p_user_id::text
+      WHERE subject_type = 'user' AND subject_id = p_user_id
     )
   ) INTO v_snapshot_data;
 

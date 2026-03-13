@@ -1,6 +1,6 @@
--- Migration: Move auth_sessions and RPCs to public schema, then drop forsured schema
--- Purpose: Gut Forsured app; preserve OAuth cookie auth by moving session storage to public.
--- Depends on: 247_forsured_auth_sessions.sql (extensions and vault already set up)
+-- Migration: Create auth_sessions and RPCs in public schema
+-- Purpose: OAuth cookie auth with session storage in public schema.
+-- Supports vault (production) and pgcrypto (local dev) for token encryption.
 
 -- =============================================================================
 -- STEP 1: Create auth_sessions table in public
@@ -390,7 +390,5 @@ GRANT EXECUTE ON FUNCTION public.cleanup_expired_auth_sessions TO service_role;
 
 ALTER TABLE public.auth_sessions ENABLE ROW LEVEL SECURITY;
 
--- =============================================================================
--- STEP 3: Drop forsured schema and all its objects
--- =============================================================================
-DROP SCHEMA IF EXISTS forsured CASCADE;
+-- NOTE: forsured schema no longer exists in the migration chain.
+-- It was removed during migration consolidation (March 2026).
