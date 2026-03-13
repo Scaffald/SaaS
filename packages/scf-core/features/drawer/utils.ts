@@ -19,13 +19,13 @@ export const isActivePath = (pathname: string, href: string) => {
     return pathname === '/' || pathname === '/index'
   }
 
-  // Special case for dashboard: match exact path, /dashboard/index, or any dashboard child (e.g. /dashboard/news)
+  // Special case for dashboard: only active/expanded on /dashboard and /dashboard/news (not other children like profile, discover, etc.)
   const dashboardPath = ROUTES.DASHBOARD.path
   if (href === dashboardPath) {
     return (
       pathname === dashboardPath ||
       pathname === `${dashboardPath}/index` ||
-      pathname.startsWith(`${dashboardPath}/`)
+      pathname === ROUTES.DASHBOARD.NEWS.path
     )
   }
 
