@@ -283,6 +283,136 @@ FROM org_lookup o
 CROSS JOIN user_lookup u
 ON CONFLICT (slug) DO NOTHING;
 
+-- Job 4: Site Superintendent (closed – filled)
+WITH org_lookup AS (
+  SELECT id FROM core.organizations WHERE slug = 'unicorn'
+),
+user_lookup AS (
+  SELECT id FROM auth.users WHERE email = 'clay@unicorn.love'
+)
+INSERT INTO core.jobs (
+  organization_id,
+  created_by_user_id,
+  title,
+  description,
+  status,
+  employment_type,
+  remote_option,
+  position_level,
+  location,
+  address,
+  geo,
+  pay_range_min_cents,
+  pay_range_max_cents,
+  pay_range_type,
+  posted_at,
+  closes_at,
+  slug
+)
+SELECT 
+  o.id,
+  u.id,
+  'Site Superintendent',
+  jsonb_build_object(
+    'type', 'doc',
+    'content', jsonb_build_array(
+      jsonb_build_object(
+        'type', 'paragraph',
+        'content', jsonb_build_array(
+          jsonb_build_object('type', 'text', 'text', 'Oversee daily site operations, safety, and subcontractor coordination. This position has been filled.')
+        )
+      )
+    )
+  ),
+  'closed',
+  'full_time',
+  'on_site',
+  'Senior / Lead',
+  'Clare, MI',
+  jsonb_build_object(
+    'street', '123 Main Street',
+    'city', 'Clare',
+    'state', 'MI',
+    'zip', '48617',
+    'country', 'USA',
+    'latitude', 43.8197,
+    'longitude', -84.7697
+  ),
+  ST_SetSRID(ST_MakePoint(-84.7697, 43.8197), 4326)::geography,
+  9500000,
+  12500000,
+  'salary',
+  NOW() - INTERVAL '90 days',
+  NOW() - INTERVAL '14 days',
+  'site-superintendent-unicorn'
+FROM org_lookup o
+CROSS JOIN user_lookup u
+ON CONFLICT (slug) DO NOTHING;
+
+-- Job 5: Part-Time Estimator (open)
+WITH org_lookup AS (
+  SELECT id FROM core.organizations WHERE slug = 'unicorn'
+),
+user_lookup AS (
+  SELECT id FROM auth.users WHERE email = 'clay@unicorn.love'
+)
+INSERT INTO core.jobs (
+  organization_id,
+  created_by_user_id,
+  title,
+  description,
+  status,
+  employment_type,
+  remote_option,
+  position_level,
+  location,
+  address,
+  geo,
+  pay_range_min_cents,
+  pay_range_max_cents,
+  pay_range_type,
+  posted_at,
+  closes_at,
+  slug
+)
+SELECT 
+  o.id,
+  u.id,
+  'Part-Time Estimator',
+  jsonb_build_object(
+    'type', 'doc',
+    'content', jsonb_build_array(
+      jsonb_build_object(
+        'type', 'paragraph',
+        'content', jsonb_build_array(
+          jsonb_build_object('type', 'text', 'text', 'Support our pre-construction team with quantity takeoffs and cost estimates. Flexible part-time schedule, hybrid eligible.')
+        )
+      )
+    )
+  ),
+  'open',
+  'part_time',
+  'hybrid',
+  'Mid Level / Intermediate',
+  'Clare, MI / Remote',
+  jsonb_build_object(
+    'city', 'Clare',
+    'state', 'MI',
+    'country', 'USA',
+    'latitude', 43.8197,
+    'longitude', -84.7697
+  ),
+  ST_SetSRID(ST_MakePoint(-84.7697, 43.8197), 4326)::geography,
+  4500000,
+  6500000,
+  'salary',
+  NOW() - INTERVAL '2 days',
+  NOW() + INTERVAL '30 days',
+  'part-time-estimator-unicorn'
+FROM org_lookup o
+CROSS JOIN user_lookup u
+ON CONFLICT (slug) DO NOTHING;
+
 -- =========================================================
 -- Construction projects (for work logs)
 -- =========================================================
@@ -296,7 +426,7 @@ INSERT INTO core.construction_projects (
   is_archived,
   archived
 )
-SELECT o.id, o.id, p.name, p.project_number, p.status, p.description, false, false
+SELECT p.id, o.id, p.name, p.project_number, p.status, p.description, false, false
 FROM core.organizations o
 CROSS JOIN (VALUES
   ('b0000001-0000-4000-8000-000000000001'::uuid, 'HQ Renovation', 'UNI-HQ-001', 'active', 'Main office renovation and expansion'),
@@ -332,8 +462,8 @@ ON CONFLICT (slug) DO NOTHING;
 -- =========================================================
 -- Team members (assign @unicorn.love users to teams)
 -- =========================================================
-INSERT INTO core.team_members (team_id, user_id)
-SELECT t.id, u.id
+INSERT INTO core.team_members (team_id, user_id, role_id)
+SELECT t.id, u.id, t.default_role_id
 FROM core.teams t
 CROSS JOIN auth.users u
 WHERE t.slug IN ('unicorn-engineering', 'unicorn-operations', 'unicorn-hiring')
@@ -365,63 +495,16 @@ SELECT wl.id, u.id, wl.project_id, 'daily', wl.log_date,
   wl.tasks_completed,
   wl.status,
   wl.submitted_at,
-  wl.verified_by_user_id,
-  wl.verified_at,
-  'private'
-FROM (VALUES
-  ('c0000001-0000-4000-8000-000000000001'::uuid, 'b0000001-0000-4000-8000-000000000001'::uuid, (CURRENT_DATE - 20), 'Demolition and framing prep for north wing.', ARRAY['Remove drywall', 'Frame new partition']::text[], 'draft', NULL, NULL, NULL),
-  ('c0000002-0000-4000-8000-000000000002'::uuid, 'b0000001-0000-4000-8000-000000000001'::uuid, (CURRENT_DATE - 18), 'Electrical rough-in and panel work.', ARRAY['Run conduit', 'Install panel']::text[], 'pending_verification', (NOW() - INTERVAL '1 day'), NULL, NULL),
-  ('c0000003-0000-4000-8000-000000000003'::uuid, 'b0000002-0000-4000-8000-000000000002'::uuid, (CURRENT_DATE - 15), 'Foundation inspection and slab prep.', ARRAY['Site inspection', 'Formwork check']::text[], 'verified', (NOW() - INTERVAL '3 days'), (SELECT id FROM auth.users WHERE email = 'clay@unicorn.love' LIMIT 1), (NOW() - INTERVAL '2 days')),
-  ('c0000004-0000-4000-8000-000000000004'::uuid, 'b0000002-0000-4000-8000-000000000002'::uuid, (CURRENT_DATE - 12), 'Steel erection and welding.', ARRAY['Erect columns', 'Weld connections']::text[], 'verified', (NOW() - INTERVAL '2 days'), (SELECT id FROM auth.users WHERE email = 'clay@unicorn.love' LIMIT 1), (NOW() - INTERVAL '1 day')),
-  ('c0000005-0000-4000-8000-000000000005'::uuid, 'b0000003-0000-4000-8000-000000000003'::uuid, (CURRENT_DATE - 10), 'Drywall and taping.', ARRAY['Hang drywall', 'First coat']::text[], 'draft', NULL, NULL, NULL),
-  ('c0000006-0000-4000-8000-000000000006'::uuid, 'b0000003-0000-4000-8000-000000000003'::uuid, (CURRENT_DATE - 7), 'Paint and trim installation.', ARRAY['Prime walls', 'Install baseboard']::text[], 'pending_verification', (NOW() - INTERVAL '5 hours'), NULL, NULL),
-  ('c0000007-0000-4000-8000-000000000007'::uuid, 'b0000001-0000-4000-8000-000000000001'::uuid, (CURRENT_DATE - 5), 'Final punch list and cleanup.', ARRAY['Punch list', 'Site cleanup']::text[], 'verified', (NOW() - INTERVAL '1 day'), (SELECT id FROM auth.users WHERE email = 'zach@unicorn.love' LIMIT 1), (NOW() - INTERVAL '12 hours')),
-  ('c0000008-0000-4000-8000-000000000008'::uuid, 'b0000002-0000-4000-8000-000000000002'::uuid, (CURRENT_DATE - 2), 'HVAC and plumbing rough-in.', ARRAY['Ductwork', 'Pipe runs']::text[], 'verified', (NOW() - INTERVAL '12 hours'), (SELECT id FROM auth.users WHERE email = 'zach@unicorn.love' LIMIT 1), (NOW() - INTERVAL '6 hours'))
-) AS wl(id, project_id, log_date, work_description, tasks_completed, status, submitted_at, verified_by_user_id, verified_at)
-CROSS JOIN LATERAL (SELECT id FROM auth.users WHERE email ILIKE '%@unicorn.love' ORDER BY email LIMIT 1 OFFSET (ABS(hashtext(wl.id::text)) % 4)) u
-ON CONFLICT (id) DO NOTHING;
-
--- Fix work logs: assign user_id per row (LATERAL may not match 1:1). Use explicit user mapping.
--- Delete the insert above and do a simpler one with explicit user emails per row.
--- Actually the LATERAL subquery is wrong - we need one user per work log row. Let me use a simpler approach: hardcode user by row.
-DELETE FROM core.work_logs WHERE id IN (
-  'c0000001-0000-4000-8000-000000000001', 'c0000002-0000-4000-8000-000000000002',
-  'c0000003-0000-4000-8000-000000000003', 'c0000004-0000-4000-8000-000000000004',
-  'c0000005-0000-4000-8000-000000000005', 'c0000006-0000-4000-8000-000000000006',
-  'c0000007-0000-4000-8000-000000000007', 'c0000008-0000-4000-8000-000000000008'
-);
-
-INSERT INTO core.work_logs (
-  id,
-  user_id,
-  project_id,
-  entry_type,
-  log_date,
-  time_entries,
-  work_description,
-  tasks_completed,
-  status,
-  submitted_at,
-  verified_by_user_id,
-  verified_at,
-  visibility
-)
-SELECT wl.id, u.id, wl.project_id, 'daily', wl.log_date,
-  '[{"start": "09:00", "end": "17:00"}]'::jsonb,
-  wl.work_description,
-  wl.tasks_completed,
-  wl.status,
-  wl.submitted_at,
   verifier.id,
   wl.verified_at,
   'private'
 FROM (VALUES
-  ('c0000001-0000-4000-8000-000000000001'::uuid, 'b0000001-0000-4000-8000-000000000001'::uuid, (CURRENT_DATE - 20), 'Demolition and framing prep for north wing.', ARRAY['Remove drywall', 'Frame new partition']::text[], 'draft', NULL::timestamptz, NULL::timestamptz, 'clay@unicorn.love', NULL::timestamptz),
-  ('c0000002-0000-4000-8000-000000000002'::uuid, 'b0000001-0000-4000-8000-000000000001'::uuid, (CURRENT_DATE - 18), 'Electrical rough-in and panel work.', ARRAY['Run conduit', 'Install panel']::text[], 'pending_verification', (NOW() - INTERVAL '1 day'), NULL::timestamptz, 'zach@unicorn.love', NULL::timestamptz),
+  ('c0000001-0000-4000-8000-000000000001'::uuid, 'b0000001-0000-4000-8000-000000000001'::uuid, (CURRENT_DATE - 20), 'Demolition and framing prep for north wing.', ARRAY['Remove drywall', 'Frame new partition']::text[], 'draft', NULL::timestamptz, NULL::timestamptz, 'clay@unicorn.love', NULL),
+  ('c0000002-0000-4000-8000-000000000002'::uuid, 'b0000001-0000-4000-8000-000000000001'::uuid, (CURRENT_DATE - 18), 'Electrical rough-in and panel work.', ARRAY['Run conduit', 'Install panel']::text[], 'pending_verification', (NOW() - INTERVAL '1 day'), NULL::timestamptz, 'zach@unicorn.love', NULL),
   ('c0000003-0000-4000-8000-000000000003'::uuid, 'b0000002-0000-4000-8000-000000000002'::uuid, (CURRENT_DATE - 15), 'Foundation inspection and slab prep.', ARRAY['Site inspection', 'Formwork check']::text[], 'verified', (NOW() - INTERVAL '3 days'), (NOW() - INTERVAL '2 days'), 'marc@unicorn.love', 'clay@unicorn.love'),
   ('c0000004-0000-4000-8000-000000000004'::uuid, 'b0000002-0000-4000-8000-000000000002'::uuid, (CURRENT_DATE - 12), 'Steel erection and welding.', ARRAY['Erect columns', 'Weld connections']::text[], 'verified', (NOW() - INTERVAL '2 days'), (NOW() - INTERVAL '1 day'), 'clay@unicorn.love', 'zach@unicorn.love'),
-  ('c0000005-0000-4000-8000-000000000005'::uuid, 'b0000003-0000-4000-8000-000000000003'::uuid, (CURRENT_DATE - 10), 'Drywall and taping.', ARRAY['Hang drywall', 'First coat']::text[], 'draft', NULL::timestamptz, NULL::timestamptz, 'test@unicorn.love', NULL::timestamptz),
-  ('c0000006-0000-4000-8000-000000000006'::uuid, 'b0000003-0000-4000-8000-000000000003'::uuid, (CURRENT_DATE - 7), 'Paint and trim installation.', ARRAY['Prime walls', 'Install baseboard']::text[], 'pending_verification', (NOW() - INTERVAL '5 hours'), NULL::timestamptz, 'zach@unicorn.love', NULL::timestamptz),
+  ('c0000005-0000-4000-8000-000000000005'::uuid, 'b0000003-0000-4000-8000-000000000003'::uuid, (CURRENT_DATE - 10), 'Drywall and taping.', ARRAY['Hang drywall', 'First coat']::text[], 'draft', NULL::timestamptz, NULL::timestamptz, 'test@unicorn.love', NULL),
+  ('c0000006-0000-4000-8000-000000000006'::uuid, 'b0000003-0000-4000-8000-000000000003'::uuid, (CURRENT_DATE - 7), 'Paint and trim installation.', ARRAY['Prime walls', 'Install baseboard']::text[], 'pending_verification', (NOW() - INTERVAL '5 hours'), NULL::timestamptz, 'zach@unicorn.love', NULL),
   ('c0000007-0000-4000-8000-000000000007'::uuid, 'b0000001-0000-4000-8000-000000000001'::uuid, (CURRENT_DATE - 5), 'Final punch list and cleanup.', ARRAY['Punch list', 'Site cleanup']::text[], 'verified', (NOW() - INTERVAL '1 day'), (NOW() - INTERVAL '12 hours'), 'marc@unicorn.love', 'zach@unicorn.love'),
   ('c0000008-0000-4000-8000-000000000008'::uuid, 'b0000002-0000-4000-8000-000000000002'::uuid, (CURRENT_DATE - 2), 'HVAC and plumbing rough-in.', ARRAY['Ductwork', 'Pipe runs']::text[], 'verified', (NOW() - INTERVAL '12 hours'), (NOW() - INTERVAL '6 hours'), 'clay@unicorn.love', 'zach@unicorn.love')
 ) AS wl(id, project_id, log_date, work_description, tasks_completed, status, submitted_at, verified_at, user_email, verifier_email)

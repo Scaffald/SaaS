@@ -10,29 +10,17 @@ When you run `pnpm supa db reset`, Supabase applies all migrations and then runs
 
 ### Core Seeds (run automatically on `pnpm supa db reset`)
 
-<<<<<<< HEAD
 These files run in glob order when you run `pnpm supa db reset`:
 
 1. **`001_seed-industries.sql`** – 4 industries (Construction, Manufacturing, Transportation, Energy)
 2. **`002_seed-users.sql`** – 50 realistic users with full profiles, auth accounts, and geographic distribution
 3. **`002a_seed-api-test-user.sql`** – API test user for automation: `test@example.com` / `test123456` (used by `scripts/test-api-local.ts` and SDK integration tests)
 4. **`003_seed-organizations.sql`** – 8 sample organizations across different locations
-5. **`004_seed-unicorn-org.sql`** – Unicorn organization and 3 initial jobs
+5. **`004_seed-unicorn-org.sql`** – Unicorn organization (super-admin / employer demo): all `@unicorn.love` users are org members; includes 5 jobs, 3 construction projects, 3 teams, 8 work logs (mixed statuses), and platform/organization roles
+6. **`005_seed-demo-prerequisites.sql`** – Demo AccountSwitcher users with completed prerequisites (profiles, industry, preferences)
+7. **`006_seed-unicorn-ats.sql`** – Unicorn-only ATS demo: applications for Senior Software Engineer, Full Stack Developer, and Part-Time Estimator jobs (various workflow stages)
 
-**Disabled:** **`005_seed-ats-data.sql.disabled`** – ATS demo data (8 demo jobs, 18 applications, messages). Not run by default. To use it, rename to `005_seed-ats-data.sql` or run manually: `pnpm supa db seed --file seeds/005_seed-ats-data.sql`. See [Optional/Specialized Seeds](#optional-specialized-seeds-run-manually) for details.
-=======
-#### Modular Core Seeds (Imported by seed.sql)
-1. **`001_seed-industries.sql`** - 4 industries (Construction, Manufacturing, Transportation, Energy)
-2. **`002_seed-users.sql`** - 50 realistic users with full profiles, auth accounts, and geographic distribution
-3. **`002a_seed-api-test-user.sql`** - API test user for automation: `test@example.com` / `test123456` (used by `scripts/test-api-local.ts` and SDK integration tests)
-4. **`003_seed-organizations.sql`** - 8 sample organizations across different locations
-5. **`004_seed-unicorn-org.sql`** - Unicorn organization and 3 initial jobs
-6. **`005_seed-ats-data.sql`** - Complete ATS testing data:
-   - 8 demo job postings across multiple organizations
-   - 18 candidate applications in various stages
-   - Application messages for communication tracking
-   - Applications distributed across all workflow statuses
->>>>>>> bcccec207 (chore: SDK integration tests, supabase config, forsured-web updates, and infra cleanup)
+**Disabled:** **`005_seed-ats-data.sql.disabled`** – Legacy ATS demo (8 demo jobs across multiple orgs, 18 applications). Not run by default. To use it, rename and run manually via psql. See [Optional/Specialized Seeds](#optional-specialized-seeds-run-manually) for details.
 
 ### Optional/Specialized Seeds (Run Manually)
 - **`seed-affiliates.sql`** – Affiliate program partners (OSHA, NIMS, etc.)
@@ -145,6 +133,24 @@ pnpm supa db seed
 - Distributed across MI and OH
 - Includes geographic data (lat/lon)
 - Linked to industries
+
+### 004_seed-unicorn-org.sql (Unicorn organization demo)
+- **Unicorn** org (slug `unicorn`) owned by clay@unicorn.love; acts as super-admin and employer demo
+- **All @unicorn.love users** (zach, clay, marc, test) are org members (organization admin role) and have platform `super_admin`
+- **5 jobs**: Senior Software Engineer, Construction Project Manager, Full Stack Developer, Site Superintendent (closed), Part-Time Estimator
+- **3 construction projects**: HQ Renovation, Warehouse Build, Office Fit-Out (for work logs)
+- **3 teams**: Engineering, Operations, Hiring (all @unicorn.love users as members)
+- **8 work logs**: draft, pending_verification, and verified statuses across projects and users
+- Idempotent: safe to re-run `pnpm supa db reset`
+
+### 005_seed-demo-prerequisites.sql
+- Demo AccountSwitcher users with completed onboarding (profiles, address, geo, industry, user_types, prerequisites_completed_at)
+- Covers clay@unicorn.love, zach@unicorn.love, and four other demo users (e.g. brian.carter@wizardconstruction.com, marcus.rivera@example.test)
+
+### 006_seed-unicorn-ats.sql
+- Applications for Unicorn jobs only (Senior Software Engineer, Full Stack Developer, Part-Time Estimator)
+- Uses seeded worker users from 002; statuses: new, screen, interview, offer
+- Run automatically with core seeds
 
 ### 005_seed-ats-data.sql (optional; file is disabled by default as 005_seed-ats-data.sql.disabled)
 - **8 Demo Jobs**: Various construction and trade positions across multiple organizations
