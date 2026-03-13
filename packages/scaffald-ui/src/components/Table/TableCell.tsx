@@ -55,7 +55,7 @@ export function TableCell(props: TableCellProps) {
   const onPress = 'onPress' in props ? props.onPress : undefined
   
   // Extract pressableProps (all other props not explicitly handled)
-  const { type: _, align: __, width: ___, style: ____, textStyle: _____, onPress: ______, ...pressableProps } = props as any
+  const { type: _, align: __, width: ___, style: ____, textStyle: _____, onPress: ______, ...pressableProps } = props as Record<string, unknown>
 
   // Extract props that may not exist on all variants (using type guards)
   const state = 'state' in props ? props.state : 'default'
@@ -298,7 +298,7 @@ export function TableCell(props: TableCellProps) {
     return (
       <View style={[styles.container, style]}>
         <StatusIndicator
-          type={(statusType as any) || 'success'}
+          type={(statusType as 'success' | 'error' | 'caution' | 'in-progress' | 'undefined') || 'success'}
           variant={statusStyle || 'light'}
           label={statusLabel || ''}
         />

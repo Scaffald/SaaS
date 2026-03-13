@@ -266,7 +266,7 @@ export function WorkspaceMembersModal({
               <View style={localStyles.memberInfo}>
                 <Avatar
                   size={48}
-                  color={(member.avatarColor as any) || 'gray'}
+                  color={(member.avatarColor as 'gray' | 'primary' | 'info' | 'success' | 'warning' | 'error') || 'gray'}
                   src={member.avatar}
                   initials={!member.avatar ? initials : undefined}
                   alt={member.name}

@@ -44,7 +44,7 @@ export function SettingsToggleCard({
 
   const handlePress = () => {
     if (disabled) return
-    onPress?.(undefined as any)
+    onPress?.(undefined as unknown as import('react-native').GestureResponderEvent)
     onToggleChange?.(!enabled)
   }
 
