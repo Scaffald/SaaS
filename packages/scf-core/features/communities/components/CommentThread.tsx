@@ -1,9 +1,4 @@
 import { Text, Stack, Row, Avatar } from '@scaffald/ui'
-import { useQueryClient } from '@tanstack/react-query'
-import {
-  useDeleteCommentMutation,
-  usePinCommentMutation,
-} from '@scf/core/utils/communities-sdk-hooks'
 import { UpvoteButton } from './UpvoteButton'
 import type { CommunityComment } from '@scaffald/sdk/resources/community-comments'
 
@@ -13,21 +8,7 @@ interface Props {
   depth?: number
 }
 
-export function CommentThread({ comments, postId, depth = 0 }: Props) {
-  const queryClient = useQueryClient()
-
-  const _deleteComment = useDeleteCommentMutation({
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['communities', 'comments', postId] })
-    },
-  })
-
-  const _pinComment = usePinCommentMutation({
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['communities', 'comments', postId] })
-    },
-  })
-
+export function CommentThread({ comments }: Props) {
   // Group comments by parent
   const topLevel = comments.filter((c) => !c.parent_comment_id)
   const childrenMap = new Map<string, CommunityComment[]>()

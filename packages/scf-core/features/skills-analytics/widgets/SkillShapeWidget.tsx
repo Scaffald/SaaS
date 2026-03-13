@@ -78,7 +78,7 @@ export function SkillShapeWidget() {
     showComparison && comparisonData?.peer
       ? categories.map((cat) => ({
           label: CATEGORY_LABELS[cat],
-          value: comparisonData.peer![cat as keyof typeof comparisonData.peer] ?? 0,
+          value: comparisonData.peer?.[cat as keyof typeof comparisonData.peer] ?? 0,
         }))
       : undefined
 

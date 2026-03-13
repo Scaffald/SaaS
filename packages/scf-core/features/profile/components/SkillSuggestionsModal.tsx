@@ -154,7 +154,7 @@ export function SkillSuggestionsModal({
         taxonomy: 'onet',
       }))
     onAddSkills(toAdd)
-  }, [newSkills, selectedSkills, onAddSkills])
+  }, [newSkills, selectedSkills, onAddSkills, onetCode])
 
   const renderCategory = (category: 'skill' | 'ability' | 'knowledge', label: string) => {
     const items = newSkills.filter((s) => s.category === category)

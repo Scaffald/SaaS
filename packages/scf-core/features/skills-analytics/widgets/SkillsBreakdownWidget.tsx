@@ -14,7 +14,7 @@ import {
   Stack,
   useThemeContext,
 } from '@scaffald/ui'
-import { SparkLine, DeltaBadge } from '@scaffald/ui/chart'
+import { SparkLine } from '@scaffald/ui/chart'
 import { colors } from '@scaffald/ui/tokens'
 import { ChevronDown, ChevronRight, FileCheck } from 'lucide-react-native'
 import { useSoftSkills } from '../../../utils/profile-skills-sdk-hooks'

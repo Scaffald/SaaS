@@ -97,6 +97,12 @@ export function CodeConfirmationInput({
             textContentType="oneTimeCode"
             autoComplete="one-time-code"
             secureTextEntry={secureTextEntry}
+            {...(Platform.OS === 'web' && {
+              onPaste: (e: React.ClipboardEvent<HTMLInputElement>) => {
+                e.preventDefault()
+                handleChange(e.clipboardData.getData('text'))
+              },
+            } as object)}
             style={[
               {
                 width: 52,
