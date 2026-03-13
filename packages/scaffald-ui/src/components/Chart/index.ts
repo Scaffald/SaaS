@@ -33,6 +33,18 @@ export type { StackedBarChartProps, StackedBarChartData, StackedBarChartStack } 
 export { PopulationPyramid } from './PopulationPyramid'
 export type { PopulationPyramidProps, PopulationPyramidData } from './Chart.types'
 
+export { RadarChart } from './RadarChart'
+export type { RadarChartProps, RadarChartAxis } from './Chart.types'
+
+export { SparkLine } from './SparkLine'
+export type { SparkLineProps } from './Chart.types'
+
+export { DeltaBadge } from './DeltaBadge'
+export type { DeltaBadgeProps } from './Chart.types'
+
+export { ProgressRing } from './ProgressRing'
+export type { ProgressRingProps } from './Chart.types'
+
 export { Chart } from './Chart'
 export type { ChartProps } from './Chart.types'
 

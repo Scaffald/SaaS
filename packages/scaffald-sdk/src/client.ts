@@ -55,6 +55,7 @@ import { OfficeStorage } from './resources/office-storage.js'
 import { ProfileWizard } from './resources/profile-wizard.js'
 import { CCPA } from './resources/ccpa.js'
 import { Payments } from './resources/payments.js'
+import { SkillAnalytics } from './resources/skill-analytics.js'
 import { Communities } from './resources/communities.js'
 import { CommunityPosts } from './resources/community-posts.js'
 import { CommunityComments } from './resources/community-comments.js'
@@ -121,6 +122,7 @@ export class Scaffald {
   public readonly profileWizard: ProfileWizard
   public readonly ccpa: CCPA
   public readonly payments: Payments
+  public readonly skillAnalytics: SkillAnalytics
   public readonly communities: Communities
   public readonly communityPosts: CommunityPosts
   public readonly communityComments: CommunityComments
@@ -195,6 +197,7 @@ export class Scaffald {
     this.profileWizard = new ProfileWizard(this.http)
     this.ccpa = new CCPA(this.http)
     this.payments = new Payments(this.http)
+    this.skillAnalytics = new SkillAnalytics(this.http)
     this.communities = new Communities(this.http)
     this.communityPosts = new CommunityPosts(this.http)
     this.communityComments = new CommunityComments(this.http)

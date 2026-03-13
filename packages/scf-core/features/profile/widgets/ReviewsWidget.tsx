@@ -20,6 +20,7 @@ import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from 'lucide-re
 import { useState } from 'react'
 import { colors } from '@scaffald/ui/tokens'
 import { ReviewWizard } from '../../reviews/components/ReviewWizard'
+import { ReviewImpactSummary } from '../../reviews/components/ReviewImpactSummary'
 import type { ProfileWidgetProps } from './types'
 
 interface CategoryRating {
@@ -45,6 +46,7 @@ interface Review {
  */
 export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: ProfileWidgetProps) {
   const [showReviewModal, setShowReviewModal] = useState(false)
+  const [completedReviewId, setCompletedReviewId] = useState<string | null>(null)
   const { theme } = useThemeContext()
   const { user: currentUser } = useUser()
 
@@ -81,9 +83,15 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
   }
 
   const handleReviewComplete = async () => {
-    setShowReviewModal(false)
+    // Show impact summary instead of immediately closing
+    setCompletedReviewId(`review-${Date.now()}`)
     // Refetch reviews to update aggregates after new review submission
     await refetch()
+  }
+
+  const handleDismissImpact = () => {
+    setCompletedReviewId(null)
+    setShowReviewModal(false)
   }
 
   if (isLoading) {
@@ -151,12 +159,21 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
             title={`Review ${profile?.name || 'User'}`}
             size="lg"
           >
-            <ReviewWizard
-              subjectId={userId || ''}
-              subjectName={profile?.name || 'this user'}
-              onCancel={handleCloseReview}
-              onComplete={handleReviewComplete}
-            />
+            {completedReviewId ? (
+              <ReviewImpactSummary
+                subjectId={userId || ''}
+                subjectName={profile?.name || 'this user'}
+                reviewId={completedReviewId}
+                onDismiss={handleDismissImpact}
+              />
+            ) : (
+              <ReviewWizard
+                subjectId={userId || ''}
+                subjectName={profile?.name || 'this user'}
+                onCancel={handleCloseReview}
+                onComplete={handleReviewComplete}
+              />
+            )}
           </ResponsiveModal>
         )}
       </>

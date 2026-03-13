@@ -210,6 +210,12 @@ const ROUTES_CONFIG = {
         },
       },
     },
+    SKILLS_ANALYTICS: {
+      path: '/dashboard/skills-analytics',
+      titleKey: 'routes.dashboard.skillsAnalytics',
+      protected: true,
+      exact: true,
+    },
     SETTINGS: {
       path: '/dashboard/settings',
       titleKey: 'routes.dashboard.settings.title',

@@ -1,6 +1,17 @@
 import { AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react-native'
 import type { ReactNode } from 'react'
-import { Button, ScrollView, Skeleton, SkeletonBox, SkeletonText, Text, Row, Stack } from '@scaffald/ui'
+import {
+  AssessmentStepTransition,
+  Button,
+  ScrollView,
+  Skeleton,
+  SkeletonBox,
+  SkeletonText,
+  Text,
+  Row,
+  Stack,
+  useThemeContext,
+} from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { AssessmentProgress, type AssessmentStep } from './AssessmentProgress'
 
@@ -89,6 +100,19 @@ export interface AssessmentWizardProps {
    * Orientation of progress indicator when rendered internally
    */
   progressOrientation?: 'horizontal' | 'vertical'
+
+  /**
+   * Enable animated step transitions
+   * @default false
+   */
+  animateTransitions?: boolean
+
+  /**
+   * Direction of the step transition (1 = forward, -1 = backward)
+   * Only used when animateTransitions is true
+   * @default 1
+   */
+  transitionDirection?: 1 | -1
 }
 
 /**
@@ -113,7 +137,10 @@ export function AssessmentWizard({
   showHeader = true,
   showProgressIndicator,
   progressOrientation = 'horizontal',
+  animateTransitions = false,
+  transitionDirection = 1,
 }: AssessmentWizardProps) {
+  const { theme } = useThemeContext()
   const currentStepOrder = steps.find((s) => s.id === currentStep)?.order || 0
   const calculatedCompletedSteps = new Set(
     steps.filter((step) => step.order < currentStepOrder).map((step) => step.id)
@@ -180,7 +207,13 @@ export function AssessmentWizard({
       {/* Main Content */}
       <ScrollView style={{ flex: 1 }}>
         <Stack padding="md" gap={16}>
-          {children}
+          {animateTransitions ? (
+            <AssessmentStepTransition stepKey={currentStep} direction={transitionDirection}>
+              {children}
+            </AssessmentStepTransition>
+          ) : (
+            children
+          )}
         </Stack>
       </ScrollView>
 
@@ -188,7 +221,7 @@ export function AssessmentWizard({
       {(showPrevious || showNext) && (
         <Stack
           padding="md"
-          style={{ borderTopWidth: 1, borderTopColor: colors.gray[300] }}
+          style={{ borderTopWidth: 1, borderTopColor: colors.border[theme].default }}
         >
           <Row gap={12} justify="space-between">
             {showPrevious && (
