@@ -84,19 +84,6 @@
   "overrides": [
     {
       "includes": [
-        "**/packages/scf-core/features/profile/profile-skills-left.tsx",
-        "**/packages/supabase/functions/_shared/client-types.ts"
-      ],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noExplicitAny": "off"
-          }
-        }
-      }
-    },
-    {
-      "includes": [
         "**/packages/supabase/functions/**/*.ts",
         "**/packages/supabase/functions/**/*.tsx"
       ],
