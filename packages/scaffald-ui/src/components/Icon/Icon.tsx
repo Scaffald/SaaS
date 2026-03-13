@@ -13,13 +13,13 @@
 
 import { View } from 'react-native'
 import type { ViewStyle } from 'react-native'
-import type React from 'react'
+import type { IconComponent } from '../types'
 
 export interface IconProps {
   /**
    * Icon component to render (must accept size and color props)
    */
-  component: React.ComponentType<{ size: number; color: string }>
+  component: IconComponent
 
   /**
    * Icon size in pixels

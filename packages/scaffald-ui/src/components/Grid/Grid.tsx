@@ -71,7 +71,7 @@ export function Grid({
   alignContent,
   style,
   ...viewProps
-}: GridProps & Record<string, unknown>) {
+}: GridProps) {
   const { width: screenWidth } = useResponsive()
 
   const computedStyle = useMemo(() => {

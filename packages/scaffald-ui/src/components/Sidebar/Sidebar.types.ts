@@ -5,6 +5,7 @@
 import type { ViewStyle } from 'react-native'
 import type React from 'react'
 import type { IconComponent } from '../types'
+import type { WebViewStyle } from '../../utils/webStyles'
 
 /**
  * Sidebar theme variant

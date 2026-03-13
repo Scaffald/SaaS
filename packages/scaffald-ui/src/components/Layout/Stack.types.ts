@@ -1,19 +1,19 @@
 /**
  * Stack component types
  * Vertical flex container (Stack) types
- * Standalone props (no ViewProps extend) so consumers don't get strict index-signature inference.
+ * Extends ViewProps for native pass-through (testID, accessibilityLabel, etc.)
  */
 
 import type { ReactNode } from 'react'
-import type { ViewStyle } from 'react-native'
+import type { ViewProps, ViewStyle } from 'react-native'
 import type { GapValue, PaddingValue, SpacingValue, AlignItems, JustifyContent } from './Box.types'
 
 /**
  * Stack component props
  * Provides a vertical flex container with convenient layout props.
- * Pass-through native props (testID, accessibilityLabel, etc.) are accepted via rest.
+ * Extends ViewProps (minus style) so native props are properly typed.
  */
-export interface StackProps {
+export interface StackProps extends Omit<ViewProps, 'style'> {
   /** Child elements */
   children?: ReactNode
 

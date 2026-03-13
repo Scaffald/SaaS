@@ -9,7 +9,6 @@ import type { ThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
-import type { WebViewStyle } from '../../utils/webStyles'
 
 export interface SidebarFooterStyleConfig {
   container: ViewStyle
@@ -53,7 +52,7 @@ export function getSidebarFooterStyles(
     gap: spacing[4],
   }
 
-  const actionButton: WebViewStyle = {
+  const actionButton: ViewStyle = {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -62,13 +61,13 @@ export function getSidebarFooterStyles(
     paddingVertical: spacing[10],
     minWidth: 40,
     minHeight: 40,
-    ...(Platform.OS === 'web' && {
+    ...(Platform.OS === 'web' && ({
       transition: 'all 150ms ease-in-out',
       cursor: 'pointer',
       ':hover': {
         backgroundColor: isLight ? colors.bg.light.subtle : colors.bg.dark.subtle,
       },
-    }),
+    } as ViewStyle)),
   }
 
   const actionBadge: ViewStyle = {

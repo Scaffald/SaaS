@@ -36,7 +36,7 @@ export function GridItem({
   alignSelf,
   style,
   ...viewProps
-}: GridItemProps & Record<string, unknown>) {
+}: GridItemProps) {
   const styles = getGridItemStyles(
     colStart,
     colEnd,

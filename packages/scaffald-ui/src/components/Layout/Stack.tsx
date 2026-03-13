@@ -77,7 +77,7 @@ export function Stack({
   borderColor,
   style,
   ...viewProps
-}: StackProps & Record<string, unknown>) {
+}: StackProps) {
   const resolvedStyle: ViewStyle | undefined =
     borderWidth !== undefined || borderColor !== undefined
       ? { ...(style ?? {}), borderWidth, borderColor }

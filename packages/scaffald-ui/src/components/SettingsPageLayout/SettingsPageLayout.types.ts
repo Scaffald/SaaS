@@ -4,6 +4,7 @@
 
 import type { ViewStyle } from 'react-native'
 import type { ReactNode } from 'react'
+import type { IconComponent } from '../types'
 
 export interface SettingsTab {
   /**
@@ -19,7 +20,7 @@ export interface SettingsTab {
   /**
    * Tab icon component (optional)
    */
-  icon?: React.ComponentType<{ size: number; color: string }>
+  icon?: IconComponent
 
   /**
    * Whether the tab is disabled

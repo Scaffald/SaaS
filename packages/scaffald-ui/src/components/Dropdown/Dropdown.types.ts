@@ -4,6 +4,7 @@
  */
 
 import type { ViewStyle, TextStyle, PressableProps } from 'react-native'
+import type { IconComponent } from '../types'
 
 /**
  * Dropdown position variants
@@ -185,7 +186,7 @@ export interface DropdownItemProps extends Omit<PressableProps, 'style' | 'child
   /**
    * Leading icon component to display before text
    */
-  icon?: React.ComponentType<{ size: number; color: string }>
+  icon?: IconComponent
 
   /**
    * Avatar component to display before text (overrides icon if both provided)

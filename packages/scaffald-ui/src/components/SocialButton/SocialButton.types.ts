@@ -4,6 +4,7 @@
  */
 
 import type { ButtonProps } from '../Button/Button.types'
+import type { IconComponent } from '../types'
 
 /**
  * Social media brands
@@ -40,7 +41,7 @@ export interface SocialButtonProps
   /**
    * Custom icon component (overrides brand default)
    */
-  icon?: React.ComponentType<{ size: number; color: string }>
+  icon?: IconComponent
 }
 
 /**
@@ -49,5 +50,5 @@ export interface SocialButtonProps
 export interface BrandConfig {
   name: string
   defaultText: string
-  icon?: React.ComponentType<{ size: number; color: string }>
+  icon?: IconComponent
 }

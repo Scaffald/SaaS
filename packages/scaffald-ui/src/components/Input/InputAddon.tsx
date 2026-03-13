@@ -24,13 +24,13 @@
  * ```
  */
 
-import type React from 'react'
 import { View, Text, Pressable, type ViewStyle, type TextStyle } from 'react-native'
 import { spacing } from '../../tokens/spacing'
 import { colors } from '../../tokens/colors'
 import { typography } from '../../tokens/typography'
 import { borderRadius } from '../../tokens/borders'
 import { shadows } from '../../tokens/shadows'
+import type { IconComponent } from '../types'
 
 export interface InputExternalAddonProps {
   /**
@@ -106,7 +106,7 @@ export interface InputLeftSideProps {
   /**
    * Icon component to display
    */
-  icon?: React.ComponentType<{ size: number; color: string }>
+  icon?: IconComponent
 
   /**
    * Or text content
@@ -162,7 +162,7 @@ export interface InputRightSideProps {
   /**
    * Icon component to display
    */
-  icon?: React.ComponentType<{ size: number; color: string }>
+  icon?: IconComponent
 
   /**
    * Icon color

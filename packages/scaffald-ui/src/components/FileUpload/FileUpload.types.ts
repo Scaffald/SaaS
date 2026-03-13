@@ -4,6 +4,7 @@
  */
 
 import type { ViewStyle } from 'react-native'
+import type { IconComponent } from '../types'
 
 /**
  * File upload status
@@ -81,7 +82,7 @@ export interface FileUploadProps {
   /** Helper text below the message (e.g., "Max file size 1MB") */
   helperText?: string
   /** Custom icon component for drop zone */
-  icon?: React.ComponentType<{ size: number; color: string }>
+  icon?: IconComponent
   /** Empty state message */
   emptyMessage?: string
 
@@ -113,7 +114,7 @@ export interface FileUploadDropZoneProps {
   /** Called when drag leaves */
   onDragLeave?: () => void
   /** Custom icon component */
-  icon?: React.ComponentType<{ size: number; color: string }>
+  icon?: IconComponent
   /** Main message text */
   message?: string
   /** Helper text below message */

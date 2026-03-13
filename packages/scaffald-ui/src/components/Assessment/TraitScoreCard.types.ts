@@ -1,5 +1,5 @@
-import type { ComponentType } from 'react'
 import type { ViewStyle } from 'react-native'
+import type { IconComponent } from '../types'
 
 export interface TraitScoreCardProps {
   /**
@@ -16,7 +16,7 @@ export interface TraitScoreCardProps {
    * Optional icon component to display
    * Expected signature: (props: { size: number; color: string }) => ReactNode
    */
-  icon?: ComponentType<{ size: number; color: string }>
+  icon?: IconComponent
 
   /**
    * Accent color for the icon background tint and score bar

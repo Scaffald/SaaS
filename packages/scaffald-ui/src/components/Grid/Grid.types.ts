@@ -1,11 +1,11 @@
 /**
  * Grid component types
  * CSS Grid layout component for responsive layouts
- * Standalone props (no ViewProps extend) so consumers don't get strict index-signature inference.
+ * Extends ViewProps for native pass-through (testID, accessibilityLabel, etc.)
  */
 
 import type { ReactNode } from 'react'
-import type { ViewStyle } from 'react-native'
+import type { ViewProps, ViewStyle } from 'react-native'
 import type { ResponsiveValue } from '../../hooks/useResponsive'
 import type { GapValue } from '../Layout/Box.types'
 
@@ -29,7 +29,7 @@ export type GridTemplateRows = number | string
 /**
  * Grid component props
  */
-export interface GridProps {
+export interface GridProps extends Omit<ViewProps, 'style'> {
   /** Child elements */
   children?: ReactNode
 
@@ -85,7 +85,7 @@ export interface GridProps {
  * GridItem component props
  * Optional wrapper for grid items with placement control
  */
-export interface GridItemProps {
+export interface GridItemProps extends Omit<ViewProps, 'style'> {
   /** Child elements */
   children?: ReactNode
 

@@ -3,7 +3,7 @@
  */
 
 import type { ViewStyle, TextStyle, PressableProps } from 'react-native'
-import type React from 'react'
+import type { IconComponent } from '../types'
 
 export type ChipType = 'default' | 'icon' | 'avatar' | 'flag' | 'brand-icon' | 'crypto'
 export type ChipSize = 'sm' | 'md' | 'lg'
@@ -54,7 +54,7 @@ export interface ChipProps extends Omit<PressableProps, 'style' | 'children'> {
   /**
    * Icon component for icon type
    */
-  icon?: React.ComponentType<{ size: number; color: string }>
+  icon?: IconComponent
 
   /**
    * Avatar content for avatar type

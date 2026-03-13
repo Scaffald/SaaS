@@ -22,7 +22,8 @@
  */
 
 import { View, Text, ScrollView, Pressable } from 'react-native'
-import type { SettingsTeamTableProps, } from './SettingsTeamTable.types'
+import type { SettingsTeamTableProps } from './SettingsTeamTable.types'
+import type { IconComponent } from '../types'
 import { useThemeContext } from '../../theme'
 import { Checkbox } from '../Checkbox'
 import { Avatar } from '../Avatar'
@@ -436,7 +437,7 @@ function ActionButton({
   onPress,
   label,
 }: {
-  icon: React.ComponentType<{ size: number; color: string }>
+  icon: IconComponent
   color: string
   onPress: () => void
   label: string

@@ -1,11 +1,11 @@
 /**
  * Row component types
  * Horizontal flex container (Row) types
- * Standalone props (no ViewProps extend) so consumers don't get strict index-signature inference.
+ * Extends ViewProps for native pass-through (testID, accessibilityLabel, etc.)
  */
 
 import type { ReactNode } from 'react'
-import type { ViewStyle } from 'react-native'
+import type { ViewProps, ViewStyle } from 'react-native'
 import type {
   GapValue,
   PaddingValue,
@@ -18,9 +18,9 @@ import type {
 /**
  * Row component props
  * Provides a horizontal flex container with convenient layout props.
- * Pass-through native props (testID, accessibilityLabel, etc.) are accepted via rest.
+ * Extends ViewProps (minus style) so native props are properly typed.
  */
-export interface RowProps {
+export interface RowProps extends Omit<ViewProps, 'style'> {
   /** Child elements */
   children?: ReactNode
 

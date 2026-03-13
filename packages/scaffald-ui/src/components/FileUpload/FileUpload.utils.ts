@@ -14,6 +14,7 @@ import {
   FileSpreadsheet,
 } from 'lucide-react-native'
 import type { UploadedFile } from './FileUpload.types'
+import type { IconComponent } from '../types'
 
 /**
  * Validates a file against type and size restrictions
@@ -81,7 +82,7 @@ export function formatFileSize(bytes: number, decimals = 2): string {
  */
 export function getFileIcon(
   fileType: string
-): React.ComponentType<{ size: number; color: string }> {
+): IconComponent {
   const type = fileType.toLowerCase()
 
   // Image files

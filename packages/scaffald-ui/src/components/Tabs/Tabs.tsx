@@ -103,16 +103,17 @@ export function Tabs({
         childrenArray.forEach((itemChild) => {
           if (isValidElement(itemChild)) {
             const componentType = (itemChild as React.ReactElement).type
+            const componentFn = componentType as React.FC & { displayName?: string }
             if (
               componentType === TabTrigger ||
-              componentType?.displayName === 'TabTrigger' ||
-              componentType?.name === 'TabTrigger'
+              componentFn?.displayName === 'TabTrigger' ||
+              componentFn?.name === 'TabTrigger'
             ) {
               trigger = itemChild as React.ReactElement
             } else if (
               componentType === TabContent ||
-              componentType?.displayName === 'TabContent' ||
-              componentType?.name === 'TabContent'
+              componentFn?.displayName === 'TabContent' ||
+              componentFn?.name === 'TabContent'
             ) {
               content = itemChild as React.ReactElement
             }

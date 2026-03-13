@@ -4,6 +4,7 @@
  */
 
 import type { ViewStyle } from 'react-native'
+import type { IconComponent } from '../types'
 
 /**
  * Button group selection mode
@@ -37,7 +38,7 @@ export interface ButtonGroupItem {
   /**
    * Icon component
    */
-  icon?: React.ComponentType<{ size: number; color: string }>
+  icon?: IconComponent
 
   /**
    * Icon position

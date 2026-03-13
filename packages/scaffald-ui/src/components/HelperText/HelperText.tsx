@@ -15,6 +15,7 @@
 
 import React from 'react'
 import { View, Text, type ViewStyle, type TextStyle } from 'react-native'
+import type { IconComponent } from '../types'
 import { spacing } from '../../tokens/spacing'
 import { colors } from '../../tokens/colors'
 import { typography } from '../../tokens/typography'
@@ -44,7 +45,7 @@ export interface HelperTextProps {
   /**
    * Icon component to display (overrides default InfoIcon)
    */
-  icon?: React.ComponentType<{ size: number; color: string }> | React.ReactNode
+  icon?: IconComponent | React.ReactNode
 
   /**
    * Icon size in pixels
@@ -126,10 +127,10 @@ export function HelperText({
 
     // If icon is provided as component, render it
     if (icon && typeof icon === 'function') {
-      const IconComponent = icon as React.ComponentType<{ size: number; color: string }>
+      const IconComp = icon as IconComponent
       return (
         <View style={{ width: iconSize, height: iconSize }}>
-          <IconComponent size={iconSize} color={iconColor} />
+          <IconComp size={iconSize} color={iconColor} />
         </View>
       )
     }

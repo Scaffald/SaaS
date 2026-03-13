@@ -3,7 +3,7 @@
  */
 
 import type { ViewStyle, TextStyle } from 'react-native'
-import type React from 'react'
+import type { IconComponent } from '../types'
 
 export type SelectionCardType = 'checkbox' | 'radio' | 'toggle'
 export type SelectionCardLeadingType = 'featured-icon' | 'avatar' | 'payment' | 'brand' | 'custom'
@@ -61,7 +61,7 @@ export interface SelectionCardProps {
   /**
    * Icon component for featured-icon type
    */
-  icon?: React.ComponentType<{ size: number; color: string }>
+  icon?: IconComponent
 
   /**
    * Custom style for the card container

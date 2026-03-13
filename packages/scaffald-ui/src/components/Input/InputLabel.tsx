@@ -19,8 +19,8 @@
  * ```
  */
 
-import type React from 'react'
 import { View, Text, type ViewStyle, type TextStyle } from 'react-native'
+import type { IconComponent } from '../types'
 import { spacing } from '../../tokens/spacing'
 import { colors } from '../../tokens/colors'
 import { typography } from '../../tokens/typography'
@@ -61,7 +61,7 @@ export interface InputLabelProps {
   /**
    * Icon component (overrides default InfoIcon)
    */
-  icon?: React.ComponentType<{ size: number; color: string }>
+  icon?: IconComponent
 
   /**
    * @deprecated Use `showIcon` instead
@@ -71,7 +71,7 @@ export interface InputLabelProps {
   /**
    * @deprecated Use `icon` instead
    */
-  infoIcon?: React.ComponentType<{ size: number; color: string }>
+  infoIcon?: IconComponent
 
   /**
    * Custom container style

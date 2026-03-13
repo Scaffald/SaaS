@@ -5,6 +5,7 @@
 
 import type { ViewStyle } from 'react-native'
 import type React from 'react'
+import type { IconComponent } from '../types'
 import type { TableCellType } from './TableCell.types'
 import type { SortDirection } from './TableColumnHeader.types'
 import type { ExpandedTableRowVariant } from './ExpandedTableRow.types'
@@ -127,7 +128,7 @@ export interface TableHeaderAction {
   /**
    * Icon component (optional)
    */
-  icon?: React.ComponentType<{ size: number; color: string }>
+  icon?: IconComponent
 
   /**
    * Callback when button is pressed

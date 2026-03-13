@@ -20,8 +20,8 @@
  * ```
  */
 
-import type React from 'react'
 import type { ViewStyle, TextStyle } from 'react-native'
+import type { IconComponent } from '../types'
 import { HelperText } from '../HelperText'
 import type { HelperTextType } from '../HelperText'
 
@@ -48,7 +48,7 @@ export interface InputHelperTextProps {
   /**
    * Icon component to display (overrides default InfoIcon)
    */
-  icon?: React.ComponentType<{ size: number; color: string }>
+  icon?: IconComponent
 
   /**
    * @deprecated Use `type="error"` instead

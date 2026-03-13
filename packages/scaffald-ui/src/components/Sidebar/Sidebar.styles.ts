@@ -10,7 +10,6 @@ import type { ThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderWidth } from '../../tokens/borders'
 import type { SidebarVariant, SidebarStyleConfig } from './Sidebar.types'
-import type { WebViewStyle } from '../../utils/webStyles'
 
 /**
  * Get sidebar styles based on variant, theme, and collapsed state
@@ -35,14 +34,14 @@ export function getSidebarStyles(
   const activeColor = getActiveColor(variant)
 
   // Container styles
-  const container: WebViewStyle = {
+  const container: ViewStyle = {
     width,
     height: '100%',
     flexDirection: 'column',
     backgroundColor,
     borderRightWidth: borderWidth.thin,
     borderRightColor: isLight ? colors.border.light.default : colors.border.dark.default,
-    ...(Platform.OS === 'web' && {
+    ...(Platform.OS === 'web' && ({
       // Position based on mode
       position: mode === 'overlay' ? 'fixed' : 'fixed',
       top: 0,
@@ -58,7 +57,7 @@ export function getSidebarStyles(
       }),
       // Better overflow handling
       overflow: 'hidden',
-    }),
+    } as object)),
   }
 
   // Scroll view styles

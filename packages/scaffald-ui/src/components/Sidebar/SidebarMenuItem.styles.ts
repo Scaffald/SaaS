@@ -11,7 +11,6 @@ import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
 import type { SidebarItemType, SidebarItemState } from './Sidebar.types'
-import type { WebViewStyle, WebTextStyle } from '../../utils/webStyles'
 
 export interface SidebarMenuItemStyleConfig {
   item: ViewStyle
@@ -44,7 +43,7 @@ export function getSidebarMenuItemStyles(
   const isLight = theme === 'light'
 
   // Base item styles with improved aesthetics
-  const item: WebViewStyle = {
+  const item: ViewStyle = {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[12],
@@ -54,10 +53,10 @@ export function getSidebarMenuItemStyles(
     marginHorizontal: spacing[12],
     marginVertical: spacing[2],
     borderRadius: borderRadius.m,
-    ...(Platform.OS === 'web' && {
+    ...(Platform.OS === 'web' && ({
       transition: 'all 150ms cubic-bezier(0.4, 0, 0.2, 1)',
       cursor: 'pointer',
-    }),
+    } as ViewStyle)),
   }
 
   // Add background color based on state with improved colors
@@ -65,7 +64,7 @@ export function getSidebarMenuItemStyles(
     item.backgroundColor = activeColor
     // Add subtle shadow for active state
     if (Platform.OS === 'web') {
-      item.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)'
+      ;(item as any).boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)'
     }
   } else if (state === 'hover') {
     item.backgroundColor = isLight ? colors.bg.light.subtle : colors.bg.dark.subtle
@@ -90,7 +89,7 @@ export function getSidebarMenuItemStyles(
   }
 
   // Heading text styles
-  const headingText: WebTextStyle = {
+  const headingText: TextStyle = {
     fontFamily: typography.caption.fontFamily,
     fontSize: typography.caption.fontSize,
     fontWeight: typography.body.fontWeight,
@@ -128,7 +127,7 @@ export function getSidebarMenuItemStyles(
   }
 
   // Label styles
-  const label: WebTextStyle = {
+  const label: TextStyle = {
     fontFamily: typography.body.fontFamily,
     fontSize: typography.body.fontSize,
     fontWeight: typography.body.fontWeight,
@@ -137,12 +136,12 @@ export function getSidebarMenuItemStyles(
   }
 
   // Label with support text styles
-  const labelWithSupport: WebTextStyle = {
+  const labelWithSupport: TextStyle = {
     fontWeight: typography.bodyMedium.fontWeight,
   }
 
   // Supporting text styles
-  const supportingText: WebTextStyle = {
+  const supportingText: TextStyle = {
     fontFamily: typography.body.fontFamily,
     fontSize: typography.small.fontSize,
     fontWeight: typography.body.fontWeight,
@@ -173,7 +172,7 @@ export function getSidebarMenuItemStyles(
   }
 
   // Badge text styles
-  const badgeText: WebTextStyle = {
+  const badgeText: TextStyle = {
     fontFamily: typography.caption.fontFamily,
     fontSize: typography.caption.fontSize,
     fontWeight: typography.bodyMedium.fontWeight,
@@ -182,7 +181,7 @@ export function getSidebarMenuItemStyles(
   }
 
   // Count text styles
-  const countText: WebTextStyle = {
+  const countText: TextStyle = {
     fontFamily: typography.body.fontFamily,
     fontSize: typography.small.fontSize,
     fontWeight: typography.body.fontWeight,
@@ -199,7 +198,7 @@ export function getSidebarMenuItemStyles(
   }
 
   // CTA button text styles
-  const ctaButtonText: WebTextStyle = {
+  const ctaButtonText: TextStyle = {
     fontFamily: typography.bodyMedium.fontFamily,
     fontSize: typography.small.fontSize,
     fontWeight: typography.bodyMedium.fontWeight,
