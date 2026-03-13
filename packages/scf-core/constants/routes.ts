@@ -428,6 +428,50 @@ const ROUTES_CONFIG = {
       protected: true,
       exact: true,
     },
+    COMMUNITIES: {
+      path: '/dashboard/communities',
+      titleKey: 'routes.dashboard.communities.title',
+      protected: true,
+      exact: false,
+      BOOKMARKS: {
+        path: '/dashboard/communities/bookmarks',
+        titleKey: 'routes.dashboard.communities.bookmarks',
+        protected: true,
+        exact: true,
+      },
+      REPUTATION: {
+        path: '/dashboard/communities/reputation',
+        titleKey: 'routes.dashboard.communities.reputation',
+        protected: true,
+        exact: true,
+      },
+      DETAIL: {
+        path: '/dashboard/communities/:slug',
+        titleKey: 'routes.dashboard.communities.detail',
+        protected: true,
+        exact: false,
+        MEMBERS: {
+          path: '/dashboard/communities/:slug/members',
+          titleKey: 'routes.dashboard.communities.members',
+          protected: true,
+          exact: true,
+        },
+        POST: {
+          CREATE: {
+            path: '/dashboard/communities/:slug/post/create',
+            titleKey: 'routes.dashboard.communities.post.create',
+            protected: true,
+            exact: true,
+          },
+          DETAIL: {
+            path: '/dashboard/communities/:slug/post/:postId',
+            titleKey: 'routes.dashboard.communities.post.detail',
+            protected: true,
+            exact: true,
+          },
+        },
+      },
+    },
   },
 
   OFFICE: {
@@ -1161,4 +1205,15 @@ export const RouteBuilder = {
     buildPath(ROUTES.OFFICE.CMS.TEAMS.DETAIL.SETTINGS, { id: String(id) }),
   projectEdit: (id: string | number) =>
     buildPath(ROUTES.OFFICE.CMS.PROJECTS.DETAIL.EDIT, { id: String(id) }),
+  communitiesHub: () => ROUTES.DASHBOARD.COMMUNITIES.path,
+  communityDetail: (slug: string) =>
+    buildPath(ROUTES.DASHBOARD.COMMUNITIES.DETAIL, { slug }),
+  communityMembers: (slug: string) =>
+    buildPath(ROUTES.DASHBOARD.COMMUNITIES.DETAIL.MEMBERS, { slug }),
+  communityPostCreate: (slug: string) =>
+    buildPath(ROUTES.DASHBOARD.COMMUNITIES.DETAIL.POST.CREATE, { slug }),
+  communityPostDetail: (slug: string, postId: string) =>
+    buildPath(ROUTES.DASHBOARD.COMMUNITIES.DETAIL.POST.DETAIL, { slug, postId }),
+  communitiesBookmarks: () => ROUTES.DASHBOARD.COMMUNITIES.BOOKMARKS.path,
+  communitiesReputation: () => ROUTES.DASHBOARD.COMMUNITIES.REPUTATION.path,
 } as const

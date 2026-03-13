@@ -1,6 +1,7 @@
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { profileViewsHandlers } from './profile-views-handlers'
+import { communityHandlers } from './community-handlers'
 
 const BASE_URL = 'https://api.scaffald.com'
 
@@ -7556,4 +7557,4 @@ export const handlers = [
   ...profileViewsHandlers,
 ]
 
-export const server = setupServer(...handlers)
+export const server = setupServer(...handlers, ...communityHandlers)

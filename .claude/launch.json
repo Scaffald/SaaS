@@ -4,8 +4,9 @@
     {
       "name": "app",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "scaffald-app", "start"],
-      "port": 8081
+      "runtimeArgs": ["--filter", "scaffald-app", "start", "--", "--port", "8083"],
+      "port": 8083,
+      "autoPort": true
     },
     {
       "name": "supabase",

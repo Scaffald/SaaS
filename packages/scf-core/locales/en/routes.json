@@ -23,6 +23,17 @@
       "riasec": "Career Interests",
       "title": "Assessments"
     },
+    "communities": {
+      "bookmarks": "Bookmarks",
+      "detail": "Community",
+      "members": "Members",
+      "post": {
+        "create": "Create Post",
+        "detail": "Post Detail"
+      },
+      "reputation": "Reputation",
+      "title": "Communities"
+    },
     "connections": {
       "title": "Connections"
     },

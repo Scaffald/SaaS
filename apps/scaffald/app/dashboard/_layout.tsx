@@ -83,6 +83,9 @@ export default function Layout() {
         <Drawer.Screen name="work-logs/index" options={{ title: 'Work Logs' }} />
         <Drawer.Screen name="work-logs/create" options={{ title: 'New Work Log' }} />
         <Drawer.Screen name="work-logs/[workLogId]/index" options={{ title: 'Work Log Detail' }} />
+        <Drawer.Screen name="communities/index" options={{ title: 'Communities' }} />
+        <Drawer.Screen name="communities/bookmarks" options={{ title: 'Bookmarks' }} />
+        <Drawer.Screen name="communities/reputation" options={{ title: 'Scaffold Score' }} />
       </DrawerLayout>
     </ErrorBoundary>
   )
