@@ -70,25 +70,25 @@ const PADDING_MAP: Record<CardPadding, number> = {
 };
 
 const RADIUS_MAP: Record<CardRadius, number> = {
-  sm: borderRadius.s,    // 8
-  md: borderRadius.m,    // 10
-  lg: 32,                // bento large — was 12
-  xl: 40,                // bento XL — was 16
-  '2xl': borderRadius.xxxxl, // 48
-  '3xl': borderRadius.xxxxl, // 48
+  sm: borderRadius.m,      // 6
+  md: borderRadius.l,      // 8
+  lg: borderRadius.xxl,    // 12
+  xl: borderRadius.xxxl,   // 16
+  '2xl': 20,               // modest large
+  '3xl': borderRadius.xxxxl, // 24
 };
 
 const SHADOW_MAP: Record<CardElevation, ShadowStyle> = {
-  sm: shadows.s as ShadowStyle,
-  md: shadows.m as ShadowStyle,
-  lg: shadows.l as ShadowStyle,
+  sm: shadows.xs as ShadowStyle,
+  md: shadows.s as ShadowStyle,
+  lg: shadows.m as ShadowStyle,
   soft: shadows.soft as ShadowStyle,
 };
 
 const BOX_SHADOW_MAP: Record<CardElevation, string> = {
-  sm: boxShadows.s,
-  md: boxShadows.m,
-  lg: boxShadows.l,
+  sm: boxShadows.xs,
+  md: boxShadows.s,
+  lg: boxShadows.m,
   soft: boxShadows.soft,
 };
 

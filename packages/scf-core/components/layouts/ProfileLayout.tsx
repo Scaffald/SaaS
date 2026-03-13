@@ -49,7 +49,7 @@ export const ProfileLayout = ({
 
   const displayBreadcrumbs = breadcrumbItems || breadcrumbs
   const currentIndex = displayBreadcrumbs.length - 1
-  const bgColor = colors.bg[theme].subtle
+  const bgColor = colors.bg[theme].emphasis
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: bgColor }} showsVerticalScrollIndicator={false}>
