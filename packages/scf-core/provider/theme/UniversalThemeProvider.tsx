@@ -156,19 +156,14 @@ const InnerProvider = ({ children }: { children: ReactNode }) => {
   // This is needed because expo-router/drawer uses React Navigation components
   // that require theme context (like Background, Header, etc.)
   if (Platform.OS === 'web') {
-    return (
-      // biome-ignore lint/suspicious/noExplicitAny: React children type mismatch
-      <ThemeProvider value={navTheme}>{children as any}</ThemeProvider>
-    )
+    return <ThemeProvider value={navTheme}>{children as ReactNode}</ThemeProvider>
   }
 
   // Native: also include status bar
   return (
-    // biome-ignore lint/suspicious/noExplicitAny: React children type mismatch
     <ThemeProvider value={navTheme}>
       <StatusBar style={resolvedTheme === 'dark' ? 'light' : 'dark'} hidden />
-      {/* biome-ignore lint/suspicious/noExplicitAny: React children type mismatch */}
-      {children as any}
+      {children as ReactNode}
     </ThemeProvider>
   )
 }

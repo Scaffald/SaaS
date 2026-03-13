@@ -14,7 +14,6 @@ if (Platform.OS === 'web') {
 } else {
   // Native: Use AsyncStorage
   void import('react-native-url-polyfill/auto') // Required for React Native
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const AsyncStorage = require('@react-native-async-storage/async-storage')
     .default as AsyncStorageType
   storage = AsyncStorage
