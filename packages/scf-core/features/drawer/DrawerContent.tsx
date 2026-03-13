@@ -393,7 +393,7 @@ const DrawerProfileCard = ({
             accessibilityRole="button"
             accessibilityLabel="Edit profile"
           >
-            <Text style={[linkTextStyle, { color: colors.primary[500] }]}>Edit profile</Text>
+            <Text style={{ ...linkTextStyle, color: colors.primary[500] }}>Edit profile</Text>
           </Pressable>
           <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>|</Text>
           <Pressable
@@ -402,7 +402,7 @@ const DrawerProfileCard = ({
             accessibilityRole="button"
             accessibilityLabel="Log out"
           >
-            <Text style={[linkTextStyle, { color: colors.error[500] }]}>Logout</Text>
+            <Text style={{ ...linkTextStyle, color: colors.error[500] }}>Logout</Text>
           </Pressable>
         </Row>
       </Stack>

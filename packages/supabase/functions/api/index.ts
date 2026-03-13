@@ -201,7 +201,7 @@ const EDGE_FUNCTION_PATH_PREFIXES = ['/functions/v1/api', '/api']
 function stripEdgeFunctionPathPrefix(req: Request): Request {
   const url = new URL(req.url)
   for (const prefix of EDGE_FUNCTION_PATH_PREFIXES) {
-    if (url.pathname === prefix || url.pathname.startsWith(prefix + '/')) {
+    if (url.pathname === prefix || url.pathname.startsWith(`${prefix}/`)) {
       url.pathname = url.pathname.slice(prefix.length) || '/'
       return new Request(url, {
         method: req.method,

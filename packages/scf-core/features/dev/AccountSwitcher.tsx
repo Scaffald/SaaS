@@ -188,12 +188,12 @@ export function AccountSwitcher() {
           backgroundColor: isOpen
             ? colors.bg[theme].default
             : pressed
-              ? colors.fg[theme].primary
-              : colors.fg[theme].primary,
+              ? colors.fg[theme].default
+              : colors.fg[theme].default,
           alignItems: 'center',
           justifyContent: 'center',
           borderWidth: 1,
-          borderColor: isOpen ? colors.border[theme].default : colors.fg[theme].primary,
+          borderColor: isOpen ? colors.border[theme].default : colors.fg[theme].default,
           ...Platform.select({
             web: {
               boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
@@ -212,7 +212,7 @@ export function AccountSwitcher() {
         {isOpen ? (
           <X size={22} color={colors.text[theme].secondary} />
         ) : (
-          <Users size={22} color={colors.text[theme].inverse} />
+          <Users size={22} color={colors.text[theme].quaternary} />
         )}
       </Pressable>
     </View>

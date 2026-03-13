@@ -222,10 +222,13 @@ async function moderateImages(
 async function updatePostModeration(
   postId: string,
   result: ModerationResult,
-  authHeader: string
+  _authHeader: string
 ) {
-  const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-  const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')
+  const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+  if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required')
+  }
 
   const supabase = createClient(supabaseUrl, supabaseServiceKey)
 

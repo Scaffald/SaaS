@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { Pressable } from 'react-native'
 import { Text, Stack, Row, Input, Avatar, Button, Spinner } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import type { Href } from 'expo-router'
@@ -49,20 +50,25 @@ export function AllCommunitiesList() {
       ) : (
         <Stack gap={8}>
           {filtered.map((community: Community) => (
-            <Row
+            <Pressable
               key={community.id}
-              align="center"
-              gap={12}
-              style={{
-                padding: 16,
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: '#e5e5e5',
-                cursor: 'pointer',
-              }}
               onPress={() => router.push(RouteBuilder.communityDetail(community.slug) as Href)}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.9 : 1,
+              })}
             >
-              <Avatar src={community.icon_url ?? undefined} initials={community.name[0]} size={48} />
+              <Row
+                align="center"
+                gap={12}
+                style={{
+                  padding: 16,
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: '#e5e5e5',
+                  cursor: 'pointer',
+                }}
+              >
+                <Avatar src={community.icon_url ?? undefined} initials={community.name[0]} size={48} />
               <Stack style={{ flex: 1 }} gap={4}>
                 <Text style={{ fontWeight: '600', fontSize: 16 }}>{community.name}</Text>
                 {community.description && (
@@ -88,7 +94,8 @@ export function AllCommunitiesList() {
               >
                 Join
               </Button>
-            </Row>
+              </Row>
+            </Pressable>
           ))}
         </Stack>
       )}

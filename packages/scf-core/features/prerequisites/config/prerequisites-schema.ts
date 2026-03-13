@@ -42,6 +42,10 @@ export const prerequisitesSchema = z.object({
 
   // Primary industry required
   industry_id: z.string().min(1, 'Please select your primary industry'),
+
+  // Required for API completion
+  accepts_privacy_policy: z.boolean(),
+  accepts_terms_of_service: z.boolean(),
 })
 
 export type PrerequisitesFormData = z.infer<typeof prerequisitesSchema>
@@ -63,4 +67,6 @@ export const prerequisitesDefaults: PrerequisitesFormData = {
   },
   user_types: [],
   industry_id: '',
+  accepts_privacy_policy: false,
+  accepts_terms_of_service: false,
 }

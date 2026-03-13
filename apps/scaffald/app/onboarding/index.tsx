@@ -134,6 +134,8 @@ export default function OnboardingPage() {
       },
       user_types: statusData.data.user_types ?? [],
       industry_id: statusData.data.industry_id ?? "",
+      accepts_privacy_policy: prerequisitesDefaults.accepts_privacy_policy,
+      accepts_terms_of_service: prerequisitesDefaults.accepts_terms_of_service,
     };
 
     const prefillHash = JSON.stringify(prefillData);
