@@ -16,6 +16,10 @@ export {
   SmallCircleChart,
   StackedBarChart,
   PopulationPyramid,
+  RadarChart,
+  SparkLine,
+  DeltaBadge,
+  ProgressRing,
   Chart,
 } from './components/Chart'
 
@@ -33,6 +37,11 @@ export type {
   StackedBarChartStack,
   PopulationPyramidProps,
   PopulationPyramidData,
+  RadarChartProps,
+  RadarChartAxis,
+  SparkLineProps,
+  DeltaBadgeProps,
+  ProgressRingProps,
   ChartProps,
   ChartDataPoint,
   ChartSeries,

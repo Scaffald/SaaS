@@ -446,6 +446,175 @@ export interface PopulationPyramidProps {
 }
 
 /**
+ * Radar chart axis definition
+ */
+export interface RadarChartAxis {
+  /**
+   * Axis label text
+   */
+  label: string
+
+  /**
+   * Current value on this axis
+   */
+  value: number
+
+  /**
+   * Maximum value for this axis (defaults to 5)
+   * @default 5
+   */
+  maxValue?: number
+}
+
+/**
+ * RadarChart props
+ */
+export interface RadarChartProps {
+  /**
+   * Axes definitions with labels and values
+   * Minimum 3 axes required
+   */
+  axes: RadarChartAxis[]
+
+  /**
+   * Optional second dataset for overlay comparison (e.g. peer vs self)
+   */
+  comparison?: Array<{ label: string; value: number }>
+
+  /**
+   * Chart size
+   * @default 'md'
+   */
+  size?: 'sm' | 'md' | 'lg'
+
+  /**
+   * Color scheme
+   * @default 'primary'
+   */
+  colorScheme?: ChartColorScheme
+
+  /**
+   * Show axis labels outside the chart
+   * @default true
+   */
+  showLabels?: boolean
+
+  /**
+   * Show numeric values next to labels
+   * @default false
+   */
+  showValues?: boolean
+
+  /**
+   * Custom chart style
+   */
+  style?: ViewStyle
+}
+
+/**
+ * SparkLine props
+ */
+export interface SparkLineProps {
+  /**
+   * Sequential data values
+   */
+  data: number[]
+
+  /**
+   * Optional trend override
+   */
+  trend?: 'up' | 'down' | 'stable'
+
+  /**
+   * Chart width
+   * @default 64
+   */
+  width?: number
+
+  /**
+   * Chart height
+   * @default 24
+   */
+  height?: number
+
+  /**
+   * Line color (auto-selected based on trend if omitted)
+   */
+  color?: string
+
+  /**
+   * Custom style
+   */
+  style?: ViewStyle
+}
+
+/**
+ * DeltaBadge props
+ */
+export interface DeltaBadgeProps {
+  /**
+   * Current value
+   */
+  current: number
+
+  /**
+   * Previous value to compare against
+   */
+  previous: number
+
+  /**
+   * Display format
+   * - 'absolute': raw difference (e.g. +0.8)
+   * - 'percentage': percentage change (e.g. +15%)
+   * - 'rating': fixed decimal for ratings (e.g. +0.4)
+   * @default 'absolute'
+   */
+  format?: 'absolute' | 'percentage' | 'rating'
+
+  /**
+   * Badge size
+   * @default 'sm'
+   */
+  size?: 'sm' | 'md'
+
+  /**
+   * Custom style
+   */
+  style?: ViewStyle
+}
+
+/**
+ * ProgressRing props
+ */
+export interface ProgressRingProps {
+  /**
+   * Progress value (0-100)
+   */
+  value: number
+
+  /**
+   * Label text below the percentage
+   */
+  label?: string
+
+  /**
+   * Ring size
+   * @default 'md'
+   */
+  size?: 'sm' | 'md' | 'lg'
+
+  /**
+   * Ring color
+   */
+  color?: string
+
+  /**
+   * Custom style
+   */
+  style?: ViewStyle
+}
+
+/**
  * Chart component props (main chart with grid and axes)
  */
 export interface ChartProps {

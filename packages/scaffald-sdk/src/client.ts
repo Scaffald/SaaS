@@ -55,6 +55,7 @@ import { OfficeStorage } from './resources/office-storage.js'
 import { ProfileWizard } from './resources/profile-wizard.js'
 import { CCPA } from './resources/ccpa.js'
 import { Payments } from './resources/payments.js'
+import { SkillAnalytics } from './resources/skill-analytics.js'
 
 export class Scaffald {
   private http: HttpClient
@@ -113,6 +114,7 @@ export class Scaffald {
   public readonly profileWizard: ProfileWizard
   public readonly ccpa: CCPA
   public readonly payments: Payments
+  public readonly skillAnalytics: SkillAnalytics
 
   constructor(config: ScaffaldConfig) {
     if (!config.apiKey && !config.accessToken && !config.supabaseToken) {
@@ -179,6 +181,7 @@ export class Scaffald {
     this.profileWizard = new ProfileWizard(this.http)
     this.ccpa = new CCPA(this.http)
     this.payments = new Payments(this.http)
+    this.skillAnalytics = new SkillAnalytics(this.http)
   }
 
   getRateLimitInfo(): RateLimitInfo | undefined {
