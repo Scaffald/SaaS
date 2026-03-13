@@ -94,7 +94,7 @@ export function TableColumnHeader({
       {...(Platform.OS === 'web' && sortable && {
         onMouseEnter: () => setIsHovered(true),
         onMouseLeave: () => setIsHovered(false),
-      } as any)}
+      } as object)}
       onPress={sortable ? handleSort : undefined}
       style={({ pressed }) => [
         styles.container,

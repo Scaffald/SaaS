@@ -243,7 +243,7 @@ export function Sheet({
           {...(Platform.OS === 'web' && {
             role: 'dialog',
             'aria-modal': 'true',
-          } as any)}
+          } as object)}
           accessible={true}
           accessibilityRole="alert"
           accessibilityViewIsModal={true}

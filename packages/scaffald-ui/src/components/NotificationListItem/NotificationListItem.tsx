@@ -197,7 +197,7 @@ export function NotificationListItem({
       {...(Platform.OS === 'web' && {
         onMouseEnter: () => setInternalHovered(true),
         onMouseLeave: () => setInternalHovered(false),
-      } as any)}
+      } as object)}
       style={({ pressed }) => [
         pressed && Platform.OS !== 'web' && styles.pressed,
       ]}

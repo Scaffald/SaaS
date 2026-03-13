@@ -663,7 +663,7 @@ export function ListItem(props: ListItemProps) {
         {...(Platform.OS === 'web' && {
           onMouseEnter: () => {},
           onMouseLeave: () => {},
-        } as any)}
+        } as object)}
         accessibilityLabel={accessibilityLabel}
         accessibilityRole="button"
       >

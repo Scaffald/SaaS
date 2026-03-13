@@ -110,7 +110,7 @@ export function SaaSNavigation({
     return (
       <View
         style={[containerStyles, { minHeight: 72, paddingVertical: spacing[0] }, style]}
-        {...({ accessibilityRole: 'navigation' } as any)}
+        {...({ accessibilityRole: 'navigation' } as object)}
         accessibilityLabel={accessibilityLabel || 'Footer navigation'}
       >
         <Text style={[titleStyles, titleStyle]}>{pageTitle || ''}</Text>
@@ -123,7 +123,7 @@ export function SaaSNavigation({
     return (
       <View
         style={[containerStyles, { minHeight: 76, paddingVertical: spacing[0] }, style]}
-        {...({ accessibilityRole: 'navigation' } as any)}
+        {...({ accessibilityRole: 'navigation' } as object)}
         accessibilityLabel={accessibilityLabel || 'Onboarding navigation'}
       >
         {showPageTitle && pageTitle && <Text style={[titleStyles, titleStyle]}>{pageTitle}</Text>}
@@ -136,7 +136,7 @@ export function SaaSNavigation({
     return (
       <View
         style={[containerStyles, { minHeight: 72, paddingVertical: spacing[0] }, style]}
-        {...({ accessibilityRole: 'navigation' } as any)}
+        {...({ accessibilityRole: 'navigation' } as object)}
         accessibilityLabel={accessibilityLabel || 'Navigation links'}
       >
         {showPageTitle && pageTitle && <Text style={[titleStyles, titleStyle]}>{pageTitle}</Text>}
@@ -149,7 +149,7 @@ export function SaaSNavigation({
     return (
       <View
         style={[containerStyles, { minHeight: 138, paddingVertical: spacing[0] }, style]}
-        {...({ accessibilityRole: 'navigation' } as any)}
+        {...({ accessibilityRole: 'navigation' } as object)}
         accessibilityLabel={accessibilityLabel || 'Finance banking navigation'}
       >
         {showFeaturedIcon && FeaturedIcon && (
@@ -195,7 +195,7 @@ export function SaaSNavigation({
   const mainNavigationContent = (
     <View
       style={[containerStyles, style]}
-      {...({ accessibilityRole: 'navigation' } as any)}
+      {...({ accessibilityRole: 'navigation' } as object)}
       accessibilityLabel={accessibilityLabel || 'Main navigation'}
     >
       {/* Left section: Icon + Content */}

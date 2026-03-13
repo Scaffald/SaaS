@@ -64,7 +64,7 @@ export function getSidebarMenuItemStyles(
     item.backgroundColor = activeColor
     // Add subtle shadow for active state
     if (Platform.OS === 'web') {
-      ;(item as any).boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)'
+      Object.assign(item, { boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' })
     }
   } else if (state === 'hover') {
     item.backgroundColor = isLight ? colors.bg.light.subtle : colors.bg.dark.subtle

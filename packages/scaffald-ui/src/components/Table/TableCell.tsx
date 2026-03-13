@@ -254,7 +254,7 @@ export function TableCell(props: TableCellProps) {
         {...(Platform.OS === 'web' && onPress && {
           onMouseEnter: () => setIsHovered(true),
           onMouseLeave: () => setIsHovered(false),
-        } as any)}
+        } as object)}
         onPress={onPress}
         style={({ pressed }) => [
           styles.container,
@@ -431,7 +431,7 @@ export function TableCell(props: TableCellProps) {
       {...(Platform.OS === 'web' && onPress && {
         onMouseEnter: () => setIsHovered(true),
         onMouseLeave: () => setIsHovered(false),
-      } as any)}
+      } as object)}
       onPress={onPress}
       style={({ pressed }) => [
         styles.container,

@@ -226,8 +226,8 @@ export function Sidebar({
               role: 'navigation',
               'aria-label': 'Main navigation',
               'aria-expanded': !effectiveCollapsed,
-            } as any))}
-          accessibilityRole="navigation"
+            } as object))}
+          {...({ accessibilityRole: 'navigation' } as object)}
           accessibilityLabel="Main navigation sidebar"
         >
           {/* Header with optional hamburger */}

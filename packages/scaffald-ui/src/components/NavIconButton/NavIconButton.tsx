@@ -111,7 +111,7 @@ export function NavIconButton({
       {...(Platform.OS === 'web' && {
         onMouseEnter: () => setInternalHovered(true),
         onMouseLeave: () => setInternalHovered(false),
-      } as any)}
+      } as object)}
       style={({ pressed }) => [
         styles.pressable,
         pressed && Platform.OS !== 'web' && styles.pressed,

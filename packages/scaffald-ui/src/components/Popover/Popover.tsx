@@ -404,7 +404,7 @@ export function Popover({
             onLayout={handlePopoverLayout}
             {...(Platform.OS === 'web' && {
               role: 'dialog',
-            } as any)}
+            } as object)}
           >
             {/* Arrow */}
             {showArrow && arrowStyle && <View style={arrowStyle} />}

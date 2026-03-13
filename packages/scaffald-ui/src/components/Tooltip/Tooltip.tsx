@@ -393,7 +393,7 @@ export function Tooltip({
           childRef.current = node
         }
       },
-    } as any)
+    } as object)
   }, [children, handleMouseEnter, handleMouseLeave])
 
   return (
@@ -434,7 +434,7 @@ export function Tooltip({
               {...(Platform.OS === 'web' && {
                 onMouseEnter: handleTooltipMouseEnter,
                 onMouseLeave: handleTooltipMouseLeave,
-              } as any)}
+              } as object)}
             >
               {/* Arrow - positioned above content for down, below for up, etc */}
               {arrowPosition !== 'none' && (

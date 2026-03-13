@@ -251,7 +251,7 @@ export function SidebarMenuItem({
           onMouseLeave: () => setIsHovered(false),
           id: id,
           'data-value': value,
-        } as any))}
+        } as object))}
       style={({ pressed }) => [
         pressed &&
           !disabled &&
