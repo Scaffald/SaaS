@@ -8,11 +8,13 @@ import { useState, useCallback } from 'react'
 import { Pressable, View, Text, ScrollView, Platform } from 'react-native'
 
 const DEMO_ACCOUNTS = [
-  { label: 'Clay (Admin)', email: 'clay@unicorn.love', role: 'Platform Admin' },
-  { label: 'Brian Carter', email: 'brian.carter@wizardconstruction.com', role: 'Employer' },
-  { label: 'Marcus Rivera', email: 'marcus.rivera@example.test', role: 'Plumber' },
-  { label: 'Jake Hendricks', email: 'jake.hendricks@example.test', role: 'Electrician' },
-  { label: 'Carlos Gutierrez', email: 'carlos.gutierrez@example.test', role: 'Carpenter' },
+  { label: 'Clay (Admin)', email: 'clay@unicorn.love', role: 'Platform Admin', seeded: true },
+  { label: 'Zach Servideo', email: 'zach@unicorn.love', role: 'Platform Admin', seeded: true },
+  { label: 'Luke Bloxham', email: 'bloxhambuilding@gmail.com', role: 'Worker', seeded: true },
+  { label: 'Brian Carter', email: 'brian.carter@wizardconstruction.com', role: 'Employer', seeded: true },
+  { label: 'Marcus Rivera', email: 'marcus.rivera@example.test', role: 'Plumber', seeded: true },
+  { label: 'Jake Hendricks', email: 'jake.hendricks@example.test', role: 'Electrician', seeded: true },
+  { label: 'Carlos Gutierrez', email: 'carlos.gutierrez@example.test', role: 'Carpenter', seeded: true },
 ] as const
 
 const DEMO_PASSWORD = 'password123'
@@ -125,11 +127,12 @@ export function AccountSwitcher() {
             {DEMO_ACCOUNTS.map((account) => {
               const isCurrent = account.email === currentEmail
               const isSwitching = switching === account.email
+              const isDisabled = !account.seeded || isSwitching
               return (
                 <Pressable
                   key={account.email}
                   onPress={() => handleSwitch(account.email)}
-                  disabled={isSwitching}
+                  disabled={isDisabled}
                   style={({ pressed }) => ({
                     paddingHorizontal: 16,
                     paddingVertical: 12,
@@ -141,6 +144,7 @@ export function AccountSwitcher() {
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'space-between',
+                    opacity: account.seeded ? 1 : 0.4,
                   })}
                 >
                   <View style={{ flex: 1, marginRight: 8 }}>
@@ -160,7 +164,7 @@ export function AccountSwitcher() {
                         marginTop: 1,
                       }}
                     >
-                      {account.role}
+                      {account.seeded ? account.role : `${account.role} (not seeded)`}
                     </Text>
                   </View>
                   {isSwitching ? (
@@ -182,14 +186,14 @@ export function AccountSwitcher() {
           height: 48,
           borderRadius: 24,
           backgroundColor: isOpen
-            ? colors.bg[theme].subtle
+            ? colors.bg[theme].default
             : pressed
-              ? colors.bg[theme].muted
-              : colors.bg[theme].primary,
+              ? colors.fg[theme].primary
+              : colors.fg[theme].primary,
           alignItems: 'center',
           justifyContent: 'center',
           borderWidth: 1,
-          borderColor: isOpen ? colors.border[theme].default : 'transparent',
+          borderColor: isOpen ? colors.border[theme].default : colors.fg[theme].primary,
           ...Platform.select({
             web: {
               boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
