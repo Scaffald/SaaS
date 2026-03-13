@@ -141,7 +141,7 @@ export function GeneralInfoWidget({
     setShowReviewModal(false);
   };
 
-  const handleReviewComplete = async () => {
+  const handleReviewComplete = async (_reviewId: string) => {
     setShowReviewModal(false);
   };
 

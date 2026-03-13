@@ -77,7 +77,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
     setShowReviewModal(false);
   };
 
-  const handleReviewComplete = () => {
+  const handleReviewComplete = (_reviewId: string) => {
     setShowReviewModal(false);
     // Reviews component will automatically refetch when modal closes
   };

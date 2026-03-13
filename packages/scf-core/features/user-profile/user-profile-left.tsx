@@ -59,7 +59,7 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
     setShowReviewModal(false);
   };
 
-  const handleReviewComplete = () => {
+  const handleReviewComplete = (_reviewId: string) => {
     setShowReviewModal(false);
     // Refresh reviews data
     // TODO: Invalidate queries to refresh reviews
