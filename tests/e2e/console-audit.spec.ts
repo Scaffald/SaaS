@@ -48,6 +48,8 @@ const DASHBOARD_ROUTES = [
   '/dashboard/settings',
   '/dashboard/teams',
   '/dashboard/news',
+  '/org',
+  '/org/invitations',
   '/communities',
   '/communities/connections',
 ]

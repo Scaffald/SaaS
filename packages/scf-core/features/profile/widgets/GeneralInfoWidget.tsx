@@ -4,6 +4,7 @@ import { ReviewWizard } from "@scf/core/features/reviews/components/ReviewWizard
 import { useGeneralInfoWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
 import { useUserProfile } from "@scf/core/utils/user-profiles-sdk-hooks";
 import { useUser } from "@scf/core/utils/useUser";
+import { openPublicProfileInNewTab } from "@scf/core/utils/publicProfileUrl";
 import { getAvatarUrl } from "@scf/core/utils/supabase/storage";
 import {
   Avatar,
@@ -44,6 +45,7 @@ interface GeneralInfoWidgetProps extends ProfileWidgetProps {
 export function GeneralInfoWidget({
   userId,
   variant = "full",
+  showEdit = false,
   showButtons = false,
   isOwnProfile = false,
 }: GeneralInfoWidgetProps) {
@@ -150,9 +152,22 @@ export function GeneralInfoWidget({
       <DashboardWidget>
         <Stack gap={12}>
           {/* Header with Action Buttons */}
-          {showButtons && (
+          {(showButtons || (showEdit && data.slug)) && (
             <Row justify="flex-end" align="center" marginBottom={8}>
               <Row gap={8} wrap justify="flex-end">
+                {showEdit && data.slug ? (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    color="primary"
+                    onPress={() => {
+                      const s = data.slug
+                      if (s) openPublicProfileInNewTab(s)
+                    }}
+                  >
+                    <Text>View public profile</Text>
+                  </Button>
+                ) : null}
                 <ConnectionFollowButtonsInline
                   targetUserId={userId || ""}
                   isOwnProfile={isOwnProfile}

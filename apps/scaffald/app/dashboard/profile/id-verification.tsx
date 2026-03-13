@@ -1,16 +1,16 @@
-import { ROUTES } from '@scf/core/constants/routes'
-import { IdVerificationContent, IdVerificationRight } from '@scf/core/features/id-verification'
-import { ProfilePage } from '@scf/core/features/profile/ProfilePage'
+/**
+ * Redirect: ID Verification was renamed to Verification.
+ * Old path /dashboard/profile/id-verification → /dashboard/profile/verification
+ */
 
-export default function IdVerificationScreen() {
-  return (
-    <ProfilePage
-      breadcrumbs={[
-        { route: ROUTES.DASHBOARD.PROFILE },
-        { route: ROUTES.DASHBOARD.PROFILE.ID_VERIFICATION },
-      ]}
-      leftContent={<IdVerificationContent />}
-      rightContent={<IdVerificationRight />}
-    />
-  )
+import { ROUTES } from '@scf/core/constants/routes'
+import { useRouter } from 'expo-router'
+import { useEffect } from 'react'
+
+export default function IdVerificationRedirect() {
+  const router = useRouter()
+  useEffect(() => {
+    router.replace(ROUTES.DASHBOARD.PROFILE.ID_VERIFICATION.path)
+  }, [router])
+  return null
 }

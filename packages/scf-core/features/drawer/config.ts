@@ -1,11 +1,11 @@
 import { ROUTES } from '@scf/core/constants/routes'
+import type { OrganizationMembership } from '@scf/core/utils/useOrganizations'
 import {
   AlertTriangle,
   BarChart3,
   Bookmark,
   Briefcase,
   Building2,
-  Calendar,
   ClipboardCheck,
   CreditCard,
   Database,
@@ -132,35 +132,7 @@ export const generateDashboardDrawerItems = (): DrawerItemConfig[] => {
     ],
   })
 
-  // Teams - expandable with second-tier (invitations)
-  items.push({
-    key: 'teams',
-    titleKey: ROUTES.DASHBOARD.TEAMS.titleKey,
-    href: ROUTES.DASHBOARD.TEAMS.path,
-    routeKey: 'DASHBOARD_TEAMS',
-    icon: Users,
-    isExpandable: true,
-    expandOnActive: true,
-    subItems: [
-      { key: 'teams-index', titleKey: ROUTES.DASHBOARD.TEAMS.titleKey, href: ROUTES.DASHBOARD.TEAMS.path },
-      { key: 'teams-invitations', titleKey: ROUTES.DASHBOARD.TEAMS.INVITATIONS.titleKey, href: ROUTES.DASHBOARD.TEAMS.INVITATIONS.path },
-    ],
-  })
-
-  // Work logs - expandable with second-tier (create)
-  items.push({
-    key: 'work-logs',
-    titleKey: ROUTES.DASHBOARD.WORK_LOGS.titleKey,
-    href: ROUTES.DASHBOARD.WORK_LOGS.path,
-    routeKey: 'DASHBOARD_WORK_LOGS',
-    icon: Calendar,
-    isExpandable: true,
-    expandOnActive: true,
-    subItems: [
-      { key: 'work-logs-index', titleKey: ROUTES.DASHBOARD.WORK_LOGS.titleKey, href: ROUTES.DASHBOARD.WORK_LOGS.path },
-      { key: 'work-logs-create', titleKey: ROUTES.DASHBOARD.WORK_LOGS.CREATE.titleKey, href: ROUTES.DASHBOARD.WORK_LOGS.CREATE.path },
-    ],
-  })
+  // Teams and Work Logs are only under My Organizations (org-scoped); no top-level items here.
 
   // Assessments - expandable with second-tier (pulse, ipip, riasec, occupation)
   items.push({
@@ -242,9 +214,65 @@ export const getCommunitiesDrawerItems = (): DrawerItemConfig[] => [
 ]
 
 /**
- * Get drawer items for the drawer menu
- * @returns Array of drawer item configurations
+ * Build the "My Organizations" drawer item with nested orgs and their Teams/Logs.
+ * Only include when memberships.length > 0. Dedupe by organization_id.
  */
-export const getDrawerItems = (): DrawerItemConfig[] => {
-  return generateDashboardDrawerItems()
+export const buildMyOrganizationsDrawerItem = (
+  memberships: OrganizationMembership[]
+): DrawerItemConfig | null => {
+  const seen = new Set<string>()
+  const orgs = memberships.filter((m) => {
+    if (seen.has(m.organization_id)) return false
+    seen.add(m.organization_id)
+    return true
+  })
+  if (orgs.length === 0) return null
+  return {
+    key: 'my-organizations',
+    titleKey: ROUTES.ORG.titleKey,
+    href: ROUTES.ORG.path,
+    routeKey: 'ORG',
+    icon: Building2,
+    isExpandable: true,
+    expandOnActive: true,
+    subItems: [
+      {
+        key: 'org-invitations',
+        titleKey: ROUTES.ORG.INVITATIONS.titleKey,
+        href: ROUTES.ORG.INVITATIONS.path,
+      },
+      ...orgs.map((m) => ({
+        key: `org-${m.organization_slug}`,
+        title: m.organization_name,
+        href: `/org/${m.organization_slug}`,
+        isExpandable: true,
+        expandOnActive: true,
+        subItems: [
+          {
+            key: `org-${m.organization_slug}-teams`,
+            titleKey: ROUTES.DASHBOARD.TEAMS.titleKey,
+            href: `/org/${m.organization_slug}/teams`,
+          },
+          {
+            key: `org-${m.organization_slug}-logs`,
+            titleKey: ROUTES.ORG.DETAIL.LOGS.titleKey,
+            href: `/org/${m.organization_slug}/logs`,
+          },
+        ],
+      })),
+    ],
+  }
+}
+
+/**
+ * Get drawer items for the drawer menu
+ * @param memberships - Optional org memberships; when present and non-empty, "My Organizations" is inserted before Profile
+ */
+export const getDrawerItems = (memberships?: OrganizationMembership[]): DrawerItemConfig[] => {
+  const items = generateDashboardDrawerItems()
+  const myOrgs = memberships?.length ? buildMyOrganizationsDrawerItem(memberships) : null
+  if (!myOrgs) return items
+  const profileIndex = items.findIndex((i) => i.key === 'profile')
+  const insertAt = profileIndex >= 0 ? profileIndex : items.length
+  return [...items.slice(0, insertAt), myOrgs, ...items.slice(insertAt)]
 }

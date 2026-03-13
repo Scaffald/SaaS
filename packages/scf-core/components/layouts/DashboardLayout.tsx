@@ -48,7 +48,9 @@ export const DashboardLayout = ({
   // Calculate current index (last item is always active)
   const currentIndex = displayBreadcrumbs.length - 1
 
-  const bgColor = colors.bg[theme].emphasis
+  // Guard against undefined/invalid theme (e.g. before ThemeProvider resolves or when theme is 'system')
+  const resolvedTheme = theme === 'dark' ? 'dark' : 'light'
+  const bgColor = colors.bg[resolvedTheme].emphasis
 
   return (
     <ScrollView

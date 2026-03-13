@@ -403,7 +403,7 @@ export default function NewsPage() {
         <Text
           style={{ fontSize: 22, fontWeight: "700", color: colors.text[theme].primary }}
         >
-          Industry News
+          News
         </Text>
         <Text style={{ fontSize: 13, color: colors.text[theme].secondary }}>
           Curated construction headlines
@@ -466,7 +466,7 @@ export default function NewsPage() {
     return (
       <DashboardPage
         showBreadcrumb={false}
-        pageTitle="Industry News"
+        pageTitle="News"
         leftContent={leftContent}
       />
     );
@@ -517,7 +517,7 @@ export default function NewsPage() {
   return (
     <DashboardPage
       showBreadcrumb={false}
-      pageTitle="Industry News"
+      pageTitle="News"
       leftContent={leftContent}
       rightContent={rightContent}
     />

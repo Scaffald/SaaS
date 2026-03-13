@@ -29,6 +29,7 @@ app.openapi(
         page: z.coerce.number().optional(),
         pageSize: z.coerce.number().optional(),
         projectId: z.string().uuid().optional(),
+        organizationId: z.string().uuid().optional(),
         dateFrom: z.string().optional(),
         dateTo: z.string().optional(),
       }),
@@ -54,7 +55,7 @@ app.openapi(
   async (c) => {
     const supabase = c.get('supabase')
     const user = c.get('user')
-    const { page = 1, pageSize = 20, projectId } = c.req.valid('query')
+    const { page = 1, pageSize = 20, projectId, organizationId } = c.req.valid('query')
 
     if (!user) {
       return c.json({ error: 'Unauthorized' }, 401)
@@ -64,6 +65,31 @@ app.openapi(
 
     if (projectId) {
       query = query.eq('project_id', projectId)
+    }
+
+    if (organizationId) {
+      const { data: memberships } = await supabase
+        .schema('public')
+        .from('v_organization_memberships')
+        .select('organization_id')
+        .eq('user_id', user.id)
+      const orgIds = new Set(
+        (memberships ?? []).map((m) => m.organization_id).filter((id): id is string => typeof id === 'string')
+      )
+      if (!orgIds.has(organizationId)) {
+        return c.json({ error: 'Forbidden', message: 'You do not have access to the requested organization.' }, 403)
+      }
+      const { data: projectRows } = await supabase
+        .schema('core')
+        .from('construction_projects')
+        .select('id')
+        .eq('organization_id', organizationId)
+      const projectIds = (projectRows ?? []).map((p) => (typeof p.id === 'string' ? p.id : String(p.id)))
+      if (projectIds.length > 0) {
+        query = query.in('project_id', projectIds)
+      } else {
+        query = query.eq('project_id', '00000000-0000-0000-0000-000000000000')
+      }
     }
 
     const offset = (page - 1) * pageSize

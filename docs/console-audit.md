@@ -35,7 +35,7 @@
 | /dashboard/assessments/riasec | dashboard | 0 | 1 | 4 | Yes |
 | /dashboard/assessments/occupation | dashboard | 0 | 1 | 4 | Yes |
 | /dashboard/settings | dashboard | 0 | 1 | 5 | Yes |
-| /dashboard/organizations | dashboard | 0 | 1 | 3 | Yes |
+| /dashboard/employers/create | dashboard | 0 | 1 | 3 | Yes |
 | /dashboard/teams | dashboard | 0 | 1 | 4 | Yes |
 | /dashboard/news | dashboard | 0 | 1 | 4 | Yes |
 | /dashboard/connections | dashboard | 0 | 1 | 5 | Yes |
@@ -149,7 +149,7 @@
 
 - "textShadow*" style props are deprecated. Use "textShadow".
 
-### /dashboard/organizations
+### /dashboard/employers/create
 
 - "textShadow*" style props are deprecated. Use "textShadow".
 

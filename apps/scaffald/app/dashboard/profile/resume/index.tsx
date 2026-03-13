@@ -1,5 +1,6 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { ProfilePage } from '@scf/core/features/profile/ProfilePage'
+import { ImportReviewScreen } from '@scf/core/features/profile-import/components/ImportReviewScreen'
 import {
   ResumeImportWidget,
   ResumeUploadButton,
@@ -8,7 +9,7 @@ import {
 import { useHasUploadedResume } from '@scf/core/utils/resume-sdk-hooks'
 import { useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
-import { Button, Paragraph, Row, Spinner, Stack, Text } from '@scaffald/ui'
+import { Button, Paragraph, Row, Separator, Spinner, Stack, Text } from '@scaffald/ui'
 
 function ResumeImportContent() {
   const router = useRouter()
@@ -96,7 +97,22 @@ export default function ResumeImportPage() {
         { route: ROUTES.DASHBOARD.PROFILE },
         { route: ROUTES.DASHBOARD.PROFILE.RESUME },
       ]}
-      leftContent={<ResumeImportContent />}
+      leftContent={
+        <Stack gap={32}>
+          <ResumeImportContent />
+          <Separator />
+          <Stack gap={12} paddingHorizontal={16}>
+            <Text size="xl" weight="bold">
+              Review Imported Data
+            </Text>
+            <Paragraph size="md" color="gray">
+              Edit and confirm experience, education, skills, and other details parsed from your
+              resume before saving to your profile.
+            </Paragraph>
+            <ImportReviewScreen />
+          </Stack>
+        </Stack>
+      }
       rightContent={null}
     />
   )

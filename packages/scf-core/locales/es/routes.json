@@ -101,6 +101,12 @@
   "onboarding": {
     "title": "Empezar"
   },
+  "org": {
+    "title": "Mis organizaciones",
+    "detail": "Organización",
+    "logs": "Registros",
+    "invitations": "Invitaciones"
+  },
   "communities": {
     "title": "Communities",
     "connections": {

@@ -39,6 +39,7 @@ export const ProfileLayout = ({
 }: ProfileLayoutProps) => {
   const { isDesktop } = useResponsive()
   const { theme } = useThemeContext()
+  const resolvedTheme = theme === 'dark' ? 'dark' : 'light'
   const contentPadding = isDesktop ? '2xl' : 'lg'
   const columnGap = isDesktop ? 48 : 24
 
@@ -49,7 +50,7 @@ export const ProfileLayout = ({
 
   const displayBreadcrumbs = breadcrumbItems || breadcrumbs
   const currentIndex = displayBreadcrumbs.length - 1
-  const bgColor = colors.bg[theme].emphasis
+  const bgColor = colors.bg[resolvedTheme].emphasis
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: bgColor }} showsVerticalScrollIndicator={false}>

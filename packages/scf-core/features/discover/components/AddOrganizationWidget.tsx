@@ -139,7 +139,7 @@ export function AddOrganizationWidget() {
           request={submittedRequest}
           onAddDetails={() =>
             router.push({
-              pathname: ROUTES.DASHBOARD.ORGANIZATIONS.CREATE.path,
+              pathname: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.CREATE.path,
               params: {
                 name: submittedRequest.name ?? trimmedQuery,
                 slug: submittedRequest.slug,

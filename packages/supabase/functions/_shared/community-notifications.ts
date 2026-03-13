@@ -40,7 +40,7 @@ export async function notifyPostComment(
     message: `${opts.commenterName} commented on "${opts.postTitle}"`,
     preview: opts.commentPreview?.slice(0, 100) || undefined,
     cta_label: 'View Post',
-    cta_url: `/dashboard/communities/${opts.communitySlug}/post/${opts.postId}`,
+    cta_url: `/communities/${opts.communitySlug}/post/${opts.postId}`,
     metadata: {
       post_id: opts.postId,
       commenter_id: opts.commenterId,
@@ -70,7 +70,7 @@ export async function notifyPostRating(
     title: 'New rating on your post',
     message: `${opts.raterName} rated "${opts.postTitle}" ${opts.baseRating}/5 stars`,
     cta_label: 'View Post',
-    cta_url: `/dashboard/communities/${opts.communitySlug}/post/${opts.postId}`,
+    cta_url: `/communities/${opts.communitySlug}/post/${opts.postId}`,
     metadata: {
       post_id: opts.postId,
       rater_id: opts.raterId,
@@ -100,7 +100,7 @@ export async function notifyReputationChange(
       title: 'Scaffold Score Updated',
       message: `Your score ${direction} by ${Math.abs(opts.delta)} to ${opts.newScore}. ${opts.reason}`,
       cta_label: 'View Score',
-      cta_url: '/dashboard/communities/reputation',
+      cta_url: '/communities/reputation',
       metadata: {
         delta: opts.delta,
         new_score: opts.newScore,
@@ -129,7 +129,7 @@ export async function notifyKarmaReceived(
     title: 'You received karma!',
     message: `${opts.giverName} gifted you ${opts.amount} karma${opts.message ? `: "${opts.message}"` : ''}`,
     cta_label: 'View Score',
-    cta_url: '/dashboard/communities/reputation',
+    cta_url: '/communities/reputation',
     metadata: {
       giver_id: opts.giverId,
       amount: opts.amount,
@@ -156,7 +156,7 @@ export async function notifyFollowedUserPost(
     title: 'New post from someone you follow',
     message: `${opts.authorName} published "${opts.postTitle}"`,
     cta_label: 'View Post',
-    cta_url: `/dashboard/communities/${opts.communitySlug}/post/${opts.postId}`,
+    cta_url: `/communities/${opts.communitySlug}/post/${opts.postId}`,
     metadata: {
       post_id: opts.postId,
       author_id: opts.authorId,

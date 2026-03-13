@@ -40,6 +40,8 @@ export type DrawerLinkProps = {
   // Optional for drawer close functionality if needed
   onNavigate?: (href: string, event: GestureResponderEvent) => void
   isCollapsed?: boolean
+  /** Whether this is the last sub-item (controls tree line termination) */
+  isLastSubItem?: boolean
 }
 
 /**

@@ -1,7 +1,7 @@
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { BookmarksPage } from '@scf/core/features/communities/BookmarksPage'
 
-export default function BookmarksScreen() {
+export default function CommunitiesBookmarksScreen() {
   return (
     <DashboardPage
       leftContent={<BookmarksPage />}

@@ -1,4 +1,4 @@
-import { ROUTES, buildPath } from "@scf/core/constants/routes";
+import { ROUTES, RouteBuilder, buildPath } from "@scf/core/constants/routes";
 import { formatDate } from "@scf/core/features/profile/utils/date-formatting";
 import { useWorkLogs } from "@scf/core/utils/work-logs-sdk-hooks";
 import {
@@ -31,17 +31,27 @@ import { getStatusColor, getStatusLabel } from "../utils/status-formatting";
 
 type IconRenderer = typeof Activity;
 
-export function WorkLogListScreen() {
+export type WorkLogListScreenProps = {
+  /** When set, list is scoped to this organization and create/detail links use org routes */
+  organizationId?: string;
+  orgSlug?: string;
+};
+
+export function WorkLogListScreen({ organizationId, orgSlug }: WorkLogListScreenProps = {}) {
   const router = useRouter();
   const { theme } = useThemeContext();
 
   const listQuery = useWorkLogs(
-    {},
+    organizationId ? { organizationId } : {},
     {
       staleTime: 30_000,
       refetchOnMount: "always",
     }
   );
+
+  const createPath = orgSlug ? RouteBuilder.orgLogsCreate(orgSlug) : ROUTES.DASHBOARD.WORK_LOGS.CREATE.path;
+  const detailPath = (workLogId: string) =>
+    orgSlug ? RouteBuilder.orgLogDetail(orgSlug, workLogId) : buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId });
 
   const {
     offlineWorkLogs,
@@ -97,7 +107,7 @@ export function WorkLogListScreen() {
           <Button
             size="md"
             iconStart={Plus}
-            onPress={() => router.push(ROUTES.DASHBOARD.WORK_LOGS.CREATE.path)}
+            onPress={() => router.push(createPath)}
           >
             New Work Log
           </Button>
@@ -167,7 +177,7 @@ export function WorkLogListScreen() {
           </Stack>
         ) : items.length === 0 ? (
           <EmptyState
-            onCreate={() => router.push(ROUTES.DASHBOARD.WORK_LOGS.CREATE.path)}
+            onCreate={() => router.push(createPath)}
           />
         ) : (
           <Stack gap={12} paddingBottom={24}>
@@ -175,13 +185,7 @@ export function WorkLogListScreen() {
               <Card
                 key={item.id}
                 style={{ borderWidth: 1 }}
-                onPress={() =>
-                  router.push(
-                    buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, {
-                      workLogId: item.id,
-                    })
-                  )
-                }
+                onPress={() => router.push(detailPath(item.id))}
               >
                 <Stack gap={12} style={{ padding: 8 }}>
                   <Row justify="space-between" align="center">
@@ -268,11 +272,7 @@ export function WorkLogListScreen() {
                       size="sm"
                       variant="outline"
                       onPress={() =>
-                        router.push(
-                          buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, {
-                            workLogId: item.id,
-                          })
-                        )
+                        router.push(detailPath(item.id))
                       }
                     >
                       View Details

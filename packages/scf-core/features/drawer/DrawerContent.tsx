@@ -1,16 +1,16 @@
 import { ScaffaldLogo } from '@scf/core/assets'
 import { ROUTES } from '@scf/core/constants/routes'
 import { useThemeSetting } from '@scf/core/provider/theme/UniversalThemeProvider'
-import { useGeneralInfo } from '@scf/core/utils/profile-general-sdk-hooks'
+import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { usePathname } from '@scf/core/utils/usePathname'
+import { openPublicProfileInNewTab } from '@scf/core/utils/publicProfileUrl'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
 import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
 import { useUser } from '@scf/core/utils/useUser'
 import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 import {
-  Building2,
-  LogOut,
+  ExternalLink,
   Moon,
   PanelLeftClose,
   PanelRightClose,
@@ -20,21 +20,16 @@ import {
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import { useCallback, type ReactNode } from 'react'
-import { Platform, Pressable, type PressableStateCallbackType } from 'react-native'
+import { Platform, Pressable, ScrollView, type PressableStateCallbackType } from 'react-native'
 import type { GestureResponderEvent } from 'react-native'
 import { Text, useWindowDimensions, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { useOrganizations } from '@scf/core/utils/useOrganizations'
 import { DrawerLink } from './DrawerLink'
-import { getDrawerItems } from './config'
-import type { DrawerItemConfig } from './types'
+import { getDrawerItems, generateOfficeDrawerItem } from './config'
 import { normalizePath } from './utils'
 
-const OFFICE_DRAWER_ITEM: DrawerItemConfig = {
-  key: 'office',
-  title: 'Office',
-  href: ROUTES.OFFICE.path,
-  icon: Building2,
-}
+const OFFICE_DRAWER_ITEM = generateOfficeDrawerItem()
 
 export type DrawerContentProps = DrawerContentComponentProps & {
   /**
@@ -74,15 +69,20 @@ export const DrawerContent = ({
   const { resolvedTheme, set: setTheme } = useThemeSetting()
   const { user, profile } = useUser()
   const { hasOfficeRole } = useUserRoles()
-  const { data: generalProfile } = useGeneralInfo({
+  const { data: generalInfo } = useGeneralInfoWidget(undefined, {
     staleTime: 5 * 60 * 1000,
   })
+  const { data: orgMemberships } = useOrganizations()
+  const drawerItems = getDrawerItems(orgMemberships ?? undefined)
   const isSmall = width < 1024
 
   const displayName =
-    generalProfile?.first_name && generalProfile?.last_name
-      ? `${generalProfile.first_name} ${generalProfile.last_name}`.trim()
-      : (user?.email ?? 'User')
+    generalInfo?.display_name?.trim() ||
+    (generalInfo?.privateData?.first_name && generalInfo?.privateData?.last_name
+      ? `${generalInfo.privateData.first_name} ${generalInfo.privateData.last_name}`.trim()
+      : '') ||
+    user?.email ||
+    'User'
   const avatarUri =
     getAvatarUrl(profile?.avatar_path) ??
     (typeof user?.user_metadata?.avatar_url === 'string' ? user.user_metadata.avatar_url : null)
@@ -126,7 +126,6 @@ export const DrawerContent = ({
     }
   }, [handleNavigate, pathname])
 
-  const drawerItems = getDrawerItems()
   const ThemeToggleIcon = resolvedTheme === 'dark' ? Sun : Moon
   const themeToggleLabel =
     resolvedTheme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'
@@ -197,16 +196,20 @@ export const DrawerContent = ({
             displayName={displayName}
             avatarUri={avatarUri}
             fallbackInitial={fallbackInitial}
-            onProfilePress={handleProfilePress}
+            slug={generalInfo?.slug ?? undefined}
+            onEditProfilePress={handleProfilePress}
+            onLogoutPress={handleLogoutPress}
           />
         ) : null}
 
-        <Stack
-          gap={4}
-          flex={1}
-          marginTop={8}
-          width="100%"
-          align={isCollapsed ? 'center' : 'stretch'}
+        <ScrollView
+          style={{ flex: 1, marginTop: 8 }}
+          contentContainerStyle={{
+            gap: 4,
+            width: '100%',
+            alignItems: isCollapsed ? 'center' : 'stretch',
+          }}
+          showsVerticalScrollIndicator={false}
         >
           {hasOfficeRole ? (
             <DrawerLink
@@ -225,7 +228,7 @@ export const DrawerContent = ({
               isCollapsed={isCollapsed}
             />
           ))}
-        </Stack>
+        </ScrollView>
 
         <Stack
           style={{
@@ -243,9 +246,6 @@ export const DrawerContent = ({
               </FooterActionButton>
               <FooterActionButton label={themeToggleLabel} onPress={handleThemeToggle}>
                 <ThemeToggleIcon size={footerIconSize} color={colors.icon[theme].default} />
-              </FooterActionButton>
-              <FooterActionButton label="Sign out" onPress={handleLogoutPress}>
-                <LogOut size={footerIconSize} color={colors.error[500]} />
               </FooterActionButton>
               {canCollapse && onToggleCollapse ? (
                 <FooterActionButton
@@ -274,9 +274,6 @@ export const DrawerContent = ({
               <FooterActionButton label={themeToggleLabel} onPress={handleThemeToggle}>
                 <ThemeToggleIcon size={footerIconSize} color={colors.icon[theme].default} />
               </FooterActionButton>
-              <FooterActionButton label="Sign out" onPress={handleLogoutPress}>
-                <LogOut size={footerIconSize} color={colors.error[500]} />
-              </FooterActionButton>
               {canCollapse && onToggleCollapse ? (
                 <FooterActionButton
                   label={isCollapsed ? 'Expand navigation' : 'Collapse navigation'}
@@ -301,32 +298,63 @@ type DrawerProfileCardProps = {
   displayName: string
   avatarUri: string | null
   fallbackInitial: string
-  onProfilePress: () => void
+  slug?: string | null
+  onEditProfilePress: () => void
+  onLogoutPress: () => void
+}
+
+const nameTextStyle = (theme: 'light' | 'dark') => ({
+  color: theme === 'dark' ? colors.gray[100] : colors.gray[900],
+  fontWeight: '700' as const,
+  fontSize: 15,
+  letterSpacing: -0.3,
+})
+
+const linkTextStyle = {
+  fontWeight: '600' as const,
+  fontSize: 12,
 }
 
 const DrawerProfileCard = ({
   displayName,
   avatarUri,
   fallbackInitial,
-  onProfilePress,
+  slug,
+  onEditProfilePress,
+  onLogoutPress,
 }: DrawerProfileCardProps) => {
   const { theme } = useThemeContext()
   const avatarSize = 48
 
-  return (
+  const handlePublicProfilePress = useCallback(() => {
+    if (slug) openPublicProfileInNewTab(slug)
+  }, [slug])
+
+  const nameContent = slug ? (
     <Pressable
-      onPress={onProfilePress}
-      style={({ pressed }) => ({
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
+      onPress={handlePublicProfilePress}
+      style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}
+      accessibilityRole="link"
+      accessibilityLabel="View public profile"
+    >
+      <Text style={nameTextStyle(theme)}>{displayName}</Text>
+      <ExternalLink size={14} color={colors.primary[500]} />
+    </Pressable>
+  ) : (
+    <Text style={nameTextStyle(theme)}>{displayName}</Text>
+  )
+
+  return (
+    <Row
+      align="center"
+      gap={12}
+      style={{
         padding: 12,
         borderRadius: 20,
         backgroundColor: colors.bg[theme].subtle,
         borderWidth: 1,
         borderColor: colors.border[theme].subtle,
-        opacity: pressed ? 0.8 : 1,
-      })}
+      }}
     >
       {avatarUri ? (
         <Stack
@@ -356,30 +384,28 @@ const DrawerProfileCard = ({
           <Text style={{ color: colors.white, fontWeight: '700', fontSize: 18 }}>{fallbackInitial}</Text>
         </Stack>
       )}
-
-      <Stack flex={1} gap={2}>
-        <Text
-          style={{
-            color: theme === 'dark' ? colors.gray[100] : colors.gray[900],
-            fontWeight: '700',
-            fontSize: 15,
-            letterSpacing: -0.3,
-          }}
-        >
-          {displayName}
-        </Text>
-        <Text
-          style={{
-            color: colors.primary[500],
-            fontWeight: '600',
-            fontSize: 11,
-            textTransform: 'uppercase',
-            letterSpacing: 0.8,
-          }}
-        >
-          View Profile
-        </Text>
+      <Stack flex={1} gap={6}>
+        {nameContent}
+        <Row align="center" gap={4}>
+          <Pressable
+            onPress={onEditProfilePress}
+            style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
+            accessibilityRole="button"
+            accessibilityLabel="Edit profile"
+          >
+            <Text style={[linkTextStyle, { color: colors.primary[500] }]}>Edit profile</Text>
+          </Pressable>
+          <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>|</Text>
+          <Pressable
+            onPress={onLogoutPress}
+            style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
+            accessibilityRole="button"
+            accessibilityLabel="Log out"
+          >
+            <Text style={[linkTextStyle, { color: colors.error[500] }]}>Logout</Text>
+          </Pressable>
+        </Row>
       </Stack>
-    </Pressable>
+    </Row>
   )
 }

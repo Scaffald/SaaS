@@ -106,6 +106,7 @@ const listWorkLogsInputSchema = z.object({
     .min(1)
     .optional(),
   projectId: z.string().uuid().optional(),
+  organizationId: z.string().uuid().optional(),
   dateFrom: z
     .string()
     .regex(DATE_ONLY_REGEX, 'Invalid date format. Expected YYYY-MM-DD.')
@@ -2275,6 +2276,34 @@ export const workLogsRouter = t.router({
 
     if (input.projectId) {
       query = query.eq('project_id', input.projectId)
+    }
+
+    if (input.organizationId) {
+      const { data: memberships } = await supabase
+        .schema('public')
+        .from('v_organization_memberships')
+        .select('organization_id')
+        .eq('user_id', user.id)
+      const orgIds = new Set(
+        (memberships ?? []).map((m) => m.organization_id).filter((id): id is string => typeof id === 'string')
+      )
+      if (!orgIds.has(input.organizationId)) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'You do not have access to the requested organization.',
+        })
+      }
+      const { data: projectRows } = await supabase
+        .schema('core')
+        .from('construction_projects')
+        .select('id')
+        .eq('organization_id', input.organizationId)
+      const projectIds = (projectRows ?? []).map((p) => (typeof p.id === 'string' ? p.id : String(p.id)))
+      if (projectIds.length > 0) {
+        query = query.in('project_id', projectIds)
+      } else {
+        query = query.in('project_id', ['00000000-0000-0000-0000-000000000000'])
+      }
     }
 
     if (input.dateFrom) {

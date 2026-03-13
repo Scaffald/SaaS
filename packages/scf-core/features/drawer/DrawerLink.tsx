@@ -15,10 +15,10 @@ import { isActivePath } from './utils'
  * dynamic style function to the rendered `<a>` on web.
  */
 const itemStyle = (
-  active: boolean,
+  _active: boolean,
   pressed: boolean,
-  theme: 'light' | 'dark',
-  activeBg: string,
+  resolvedTheme: 'light' | 'dark',
+  _activeBg: string,
   borderRadius = 12,
 ) => ({
   flexDirection: 'row' as const,
@@ -29,13 +29,11 @@ const itemStyle = (
   borderRadius,
   width: '100%' as const,
   alignSelf: 'stretch' as const,
-  backgroundColor: active
-    ? activeBg
-    : pressed
-      ? theme === 'dark'
-        ? colors.bg[theme].muted
-        : colors.bg[theme].emphasis
-      : 'transparent',
+  backgroundColor: pressed
+    ? resolvedTheme === 'dark'
+      ? colors.bg[resolvedTheme].muted
+      : colors.bg[resolvedTheme].emphasis
+    : 'transparent',
 })
 
 export const DrawerLink = ({
@@ -46,17 +44,20 @@ export const DrawerLink = ({
   expandedItems,
   onToggleExpanded,
   isCollapsed,
+  isLastSubItem = false,
 }: DrawerLinkProps) => {
   const collapsed = isCollapsed ?? false
   const active = isActivePath(pathname, item.href)
   const Icon = item.icon
   const hasSubItems = Boolean(item.subItems?.length)
-  // Always show sub-items when they exist
-  const shouldShowSubItems = hasSubItems
+  // Show sub-items when they exist; gate behind route match when expandOnActive is set
+  const isRouteActive = isActivePath(pathname, item.href)
+  const shouldShowSubItems = hasSubItems && (!item.expandOnActive || isRouteActive)
   const isManualExpandable = item.isExpandable && !item.expandOnActive
   const isAutoExpandable = item.isExpandable && item.expandOnActive
   const { t } = useTranslation()
   const { theme } = useThemeContext()
+  const resolvedTheme = theme === 'dark' ? 'dark' : 'light'
 
   const resolveTitle = useCallback(() => {
     if (item.titleKey) {
@@ -68,21 +69,24 @@ export const DrawerLink = ({
 
   const title = useMemo(() => resolveTitle(), [resolveTitle])
 
-  // Active: teal-tinted light bg + teal text (matches bento comp)
-  const activeBg = colors.bg[theme].selected
-  const activeFg = theme === 'dark' ? colors.primary[300] : colors.primary[600]
+  // Primary text/icon for active and hover; no background on parent items
+  const activeFg = resolvedTheme === 'dark' ? colors.primary[300] : colors.primary[600]
+  const activeBg = colors.bg[resolvedTheme].selected
 
-  const renderIcon = useCallback(() => {
+  const renderIcon = useCallback((hovered = false) => {
     if (!Icon) return null
+    const isHighlighted = active || hovered
     return (
       <Icon
         size={22}
-        color={active ? activeFg : colors.icon[theme].default}
+        color={isHighlighted ? activeFg : colors.icon[resolvedTheme].default}
       />
     )
-  }, [Icon, active, theme, activeFg])
+  }, [Icon, active, resolvedTheme, activeFg])
 
-  const renderContent = useCallback(() => {
+  const renderContent = useCallback((hovered = false) => {
+    const isHighlighted = active || hovered
+
     const iconWrapper = (
       <Row
         align="center"
@@ -91,14 +95,10 @@ export const DrawerLink = ({
         height={collapsed ? 48 : 24}
         borderRadius={collapsed ? 32 : 0}
         style={{
-          backgroundColor: collapsed
-            ? active
-              ? activeBg
-              : colors.bg[theme].subtle
-            : 'transparent',
+          backgroundColor: collapsed && !active ? colors.bg[resolvedTheme].subtle : 'transparent',
         }}
       >
-        {renderIcon()}
+        {renderIcon(hovered)}
       </Row>
     )
 
@@ -112,8 +112,8 @@ export const DrawerLink = ({
         <Paragraph
           size="md"
           style={{
-            color: active ? activeFg : colors.text[theme].primary,
-            fontWeight: active ? '600' : '400',
+            color: isHighlighted ? activeFg : colors.text[resolvedTheme].primary,
+            fontWeight: active ? '700' : '400',
             flex: 1,
           }}
         >
@@ -121,7 +121,7 @@ export const DrawerLink = ({
         </Paragraph>
       </Row>
     )
-  }, [active, activeBg, collapsed, renderIcon, theme, title, activeFg])
+  }, [active, collapsed, renderIcon, resolvedTheme, title, activeFg])
 
   const renderRightSide = useCallback(() => {
     if (collapsed) {
@@ -148,11 +148,11 @@ export const DrawerLink = ({
           </Row>
         )}
         {!item.isExpandable && item.hasChevron && (
-          <ChevronRight size="md" color={active ? activeFg : colors.icon[theme].subtle} />
+          <ChevronRight size="md" color={active ? activeFg : colors.icon[resolvedTheme].subtle} />
         )}
       </Row>
     )
-  }, [active, collapsed, item.badge, item.hasChevron, item.isExpandable, theme, activeFg])
+  }, [active, collapsed, item.badge, item.hasChevron, item.isExpandable, resolvedTheme, activeFg])
 
   if (collapsed && depth > 0) {
     return null
@@ -202,11 +202,7 @@ export const DrawerLink = ({
                 borderRadius: 32,
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: active
-                  ? activeBg
-                  : pressed
-                    ? colors.bg[theme].muted
-                    : 'transparent',
+                backgroundColor: pressed ? colors.bg[resolvedTheme].muted : 'transparent',
               }}
             >
               {renderIcon()}
@@ -217,70 +213,122 @@ export const DrawerLink = ({
     )
   }
 
+  // Depth > 0 and has subItems: render as expandable with indent so third-level (Teams, Logs) can nest
+  if (depth > 0 && hasSubItems && (isAutoExpandable || isManualExpandable)) {
+    const baseLeft = 44 + (depth - 1) * 20
+    return (
+      <Stack>
+        <Link href={item.href} asChild>
+          <Pressable>
+            {({ hovered }: { pressed: boolean; hovered?: boolean }) => {
+              const isHighlighted = active || hovered
+              return (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    columnGap: 8,
+                    paddingVertical: 8,
+                    paddingLeft: baseLeft,
+                    paddingRight: 12,
+                    position: 'relative',
+                  }}
+                >
+                  <Paragraph
+                    size="sm"
+                    style={{
+                      color: isHighlighted ? activeFg : colors.text[resolvedTheme].secondary,
+                      fontWeight: active ? '700' : '400',
+                      flex: 1,
+                    }}
+                  >
+                    {title}
+                  </Paragraph>
+                </View>
+              )
+            }}
+          </Pressable>
+        </Link>
+        {shouldShowSubItems && item.subItems && (
+          <Stack marginTop={0}>
+            {item.subItems.map((subItem, index) => (
+              <DrawerLink
+                key={subItem.key}
+                item={subItem}
+                pathname={pathname}
+                depth={(depth ?? 0) + 1}
+                onNavigate={onNavigate}
+                expandedItems={expandedItems}
+                onToggleExpanded={onToggleExpanded}
+                isCollapsed={collapsed}
+                isLastSubItem={index === (item.subItems?.length ?? 0) - 1}
+              />
+            ))}
+          </Stack>
+        )}
+      </Stack>
+    )
+  }
+
   if (depth > 0) {
     return (
       <Link href={item.href} asChild>
         <Pressable>
-          {({ pressed }) => (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                borderRadius: 16,
-                columnGap: 12,
-                paddingHorizontal: 16,
-                paddingVertical: 10,
-                paddingLeft: 40,
-                position: 'relative',
-                backgroundColor: active
-                  ? activeBg
-                  : pressed
-                    ? theme === 'dark'
-                      ? colors.bg[theme].muted
-                      : colors.gray[50]
-                    : undefined,
-                flex: 1,
-              }}
-            >
-              {/* Tree vertical line */}
+          {({ hovered }: { pressed: boolean; hovered?: boolean }) => {
+            const isHighlighted = active || hovered
+            const leftPad = 44 + (Math.max(0, depth - 1)) * 20
+            return (
               <View
                 style={{
-                  position: 'absolute',
-                  left: 20,
-                  top: 0,
-                  height: 20,
-                  width: 1,
-                  backgroundColor: colors.border[theme].default,
-                }}
-              />
-              {/* Tree horizontal line */}
-              <View
-                style={{
-                  position: 'absolute',
-                  left: 20,
-                  top: 19,
-                  width: 12,
-                  height: 1,
-                  backgroundColor: colors.border[theme].default,
-                }}
-              />
-              <Paragraph
-                size="md"
-                style={{
-                  color: active ? activeFg : colors.text[theme].secondary,
-                  fontWeight: active ? '600' : '400',
-                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  columnGap: 8,
+                  paddingVertical: 8,
+                  paddingLeft: leftPad,
+                  paddingRight: 12,
+                  position: 'relative',
                 }}
               >
-                {title}
-              </Paragraph>
-              {item.isOnCooldown ? (
-                <Clock size="md" color={active ? activeFg : colors.info[600]} />
-              ) : item.isCompleted ? (
-                <Check size="md" color={active ? activeFg : colors.success[600]} />
-              ) : null}
-            </View>
-          )}
+                {/* Tree vertical line — full height for continuity, half for last item */}
+                <View
+                  style={{
+                    position: 'absolute',
+                    left: leftPad - 18,
+                    top: 0,
+                    bottom: isLastSubItem ? '50%' : 0,
+                    width: 1,
+                    backgroundColor: colors.border[resolvedTheme].default,
+                  }}
+                />
+                {/* Tree horizontal branch */}
+                <View
+                  style={{
+                    position: 'absolute',
+                    left: leftPad - 18,
+                    top: '50%',
+                    width: 10,
+                    height: 1,
+                    backgroundColor: colors.border[resolvedTheme].default,
+                  }}
+                />
+                <Paragraph
+                  size="sm"
+                  style={{
+                    color: isHighlighted ? activeFg : colors.text[resolvedTheme].secondary,
+                    fontWeight: active ? '700' : '400',
+                    flex: 1,
+                  }}
+                >
+                  {title}
+                </Paragraph>
+                {item.isOnCooldown ? (
+                  <Clock size="md" color={active ? activeFg : colors.info[600]} />
+                ) : item.isCompleted ? (
+                  <Check size="md" color={active ? activeFg : colors.success[600]} />
+                ) : null}
+              </View>
+            )
+          }}
         </Pressable>
       </Link>
     )
@@ -288,20 +336,20 @@ export const DrawerLink = ({
 
   // Helper to render a standard expandable item with sub-items
   const renderExpandableItem = () => (
-    <Stack flex={1}>
+    <Stack>
       <Link href={item.href} asChild>
         <Pressable>
-          {({ pressed }) => (
-            <View style={itemStyle(active, pressed, theme, activeBg, 16)}>
-              {renderContent()}
+          {({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => (
+            <View style={itemStyle(active, pressed, resolvedTheme, activeBg, 16)}>
+              {renderContent(hovered)}
               {renderRightSide()}
             </View>
           )}
         </Pressable>
       </Link>
       {shouldShowSubItems && item.subItems && (
-        <Stack borderRadius={16} marginVertical={8} gap={8} flex={1}>
-          {item.subItems.map((subItem) => (
+        <Stack marginTop={0}>
+          {item.subItems.map((subItem, index) => (
             <DrawerLink
               key={subItem.key}
               item={subItem}
@@ -311,6 +359,7 @@ export const DrawerLink = ({
               expandedItems={expandedItems}
               onToggleExpanded={onToggleExpanded}
               isCollapsed={collapsed}
+              isLastSubItem={index === (item.subItems?.length ?? 0) - 1}
             />
           ))}
         </Stack>
@@ -334,9 +383,9 @@ export const DrawerLink = ({
   return (
     <Link href={item.href} asChild>
       <Pressable>
-        {({ pressed }) => (
-          <View style={itemStyle(active, pressed, theme, activeBg)}>
-            {renderContent()}
+        {({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => (
+          <View style={itemStyle(active, pressed, resolvedTheme, activeBg)}>
+            {renderContent(hovered)}
             {renderRightSide()}
           </View>
         )}

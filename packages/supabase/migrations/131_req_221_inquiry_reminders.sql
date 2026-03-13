@@ -223,7 +223,7 @@ BEGIN
             'You have a pending inquiry that needs your attention.'
         END,
         'View Inquiry',
-        '/dashboard/applications/' || v_inquiry.application_id || '/inquiry',
+        '/dashboard/jobs/applications/' || v_inquiry.application_id || '/inquiry',
         jsonb_build_object(
           'inquiry_id', v_inquiry.inquiry_id,
           'application_id', v_inquiry.application_id,

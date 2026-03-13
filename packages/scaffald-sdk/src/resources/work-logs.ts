@@ -138,6 +138,7 @@ export interface ListWorkLogsParams {
   pageSize?: number
   statuses?: WorkLogStatus[]
   projectId?: string
+  organizationId?: string
   dateFrom?: string
   dateTo?: string
   search?: string

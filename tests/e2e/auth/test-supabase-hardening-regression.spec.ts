@@ -382,7 +382,7 @@ test.describe('Supabase Hardening Regression — Protected Routes', () => {
     await signInAndInject(page)
 
     const consoleErrors = await collectConsoleErrors(page, async () => {
-      await page.goto('/dashboard/connections', { waitUntil: 'domcontentloaded' })
+      await page.goto('/communities/connections', { waitUntil: 'domcontentloaded' })
       await page.waitForTimeout(1500)
     })
 

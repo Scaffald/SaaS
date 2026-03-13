@@ -1,47 +1,48 @@
-import { ROUTES } from "@scf/core/constants/routes";
-import { DashboardPage } from "@scf/core/features/dashboard/DashboardPage";
-import { InquiryViewCandidate } from "@scf/core/features/inquiries/components/InquiryViewCandidate";
-import { useInquiryByApplication } from "@scf/core/utils/inquiries-sdk-hooks";
-import { Text, Stack, Spinner } from "@scaffald/ui";
-import { useLocalSearchParams } from "expo-router";
-import type { ReactElement } from "react";
+import { ROUTES } from '@scf/core/constants/routes'
+import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
+import { InquiryViewCandidate } from '@scf/core/features/inquiries/components/InquiryViewCandidate'
+import { useInquiryByApplication } from '@scf/core/utils/inquiries-sdk-hooks'
+import { Text, Stack, Spinner } from '@scaffald/ui'
+import { useLocalSearchParams } from 'expo-router'
+import type { ReactElement } from 'react'
 
 export default function DashboardApplicationInquiryRoute() {
-  const { applicationId } = useLocalSearchParams<{ applicationId?: string }>();
+  const { applicationId } = useLocalSearchParams<{ applicationId?: string }>()
   const applicationParam =
-    typeof applicationId === "string" ? applicationId : "";
-  const enabled = applicationParam.length > 0;
+    typeof applicationId === 'string' ? applicationId : ''
+  const enabled = applicationParam.length > 0
 
   const { data, isLoading, error } = useInquiryByApplication(applicationParam, {
     enabled,
-  });
+  })
 
   const breadcrumbs = [
-    { route: ROUTES.DASHBOARD.APPLICATIONS },
-    { route: ROUTES.DASHBOARD.APPLICATIONS.INQUIRY },
-  ];
+    { route: ROUTES.DASHBOARD.DISCOVER.JOBS },
+    { route: ROUTES.DASHBOARD.DISCOVER.JOBS.APPLICATIONS },
+    { route: ROUTES.DASHBOARD.DISCOVER.JOBS.APPLICATIONS.INQUIRY },
+  ]
 
-  let content: ReactElement;
+  let content: ReactElement
 
   if (!enabled) {
     content = (
       <Stack align="center" justify="center" padding={16}>
         <Text color="gray">Missing application ID</Text>
       </Stack>
-    );
+    )
   } else if (isLoading) {
     content = (
       <Stack align="center" justify="center" padding={16} gap={8}>
         <Spinner size="lg" />
         <Text>Loading inquiry...</Text>
       </Stack>
-    );
+    )
   } else if (error || !data || !data.inquiry) {
     content = (
       <Stack align="center" justify="center" padding={16} gap={8}>
         <Text color="red">Unable to load inquiry</Text>
       </Stack>
-    );
+    )
   } else {
     content = (
       <Stack gap={16} padding={16}>
@@ -50,8 +51,8 @@ export default function DashboardApplicationInquiryRoute() {
           inquiryId={data.inquiry.id as string}
         />
       </Stack>
-    );
+    )
   }
 
-  return <DashboardPage breadcrumbs={breadcrumbs} leftContent={content} />;
+  return <DashboardPage breadcrumbs={breadcrumbs} leftContent={content} />
 }

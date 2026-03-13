@@ -1,4 +1,4 @@
-import { ROUTES, buildPath } from '@scf/core/constants/routes'
+import { ROUTES } from '@scf/core/constants/routes'
 import {
   useFollowers,
   usePendingConnections,
@@ -6,6 +6,8 @@ import {
   useDeclineConnectionMutation,
 } from '@scf/core/utils/engagement-sdk-hooks'
 import { useProfileViews, useViewAnalytics } from '@scf/core/utils/profile-views-sdk-hooks'
+import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
+import { openPublicProfileInNewTab } from '@scf/core/utils/publicProfileUrl'
 import {
   Avatar,
   Button,
@@ -153,6 +155,7 @@ export function ProfileActivityWidget() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const { theme } = useThemeContext()
+  const { data: generalInfo } = useGeneralInfoWidget(undefined, { staleTime: 5 * 60 * 1000 })
 
   const { data: profileViewsData, isLoading: viewsLoading } = useProfileViews({ limit: 10 })
   const profileViewsList = profileViewsData?.views ?? []
@@ -193,7 +196,24 @@ export function ProfileActivityWidget() {
 
   return (
     <DashboardWidget gap={0}>
-      <DashboardWidgetHeader title="Activity" />
+      <DashboardWidgetHeader
+        title="Activity"
+        action={
+          generalInfo?.slug ? (
+            <Button
+              variant="text"
+              color="primary"
+              size="sm"
+              onPress={() => {
+                const s = generalInfo?.slug
+                if (s) openPublicProfileInNewTab(s)
+              }}
+            >
+              View public profile
+            </Button>
+          ) : undefined
+        }
+      />
 
       {/* ── 30-Day analytics banner ── */}
       {viewAnalytics && (
@@ -258,7 +278,7 @@ export function ProfileActivityWidget() {
                 variant="text"
                 color="primary"
                 size="sm"
-                onPress={() => router.push(buildPath(ROUTES.DASHBOARD.CONNECTIONS, {}))}
+                onPress={() => router.push(ROUTES.COMMUNITIES.CONNECTIONS.path)}
               >
                 View All
               </Button>
@@ -357,7 +377,7 @@ export function ProfileActivityWidget() {
               variant="text"
               color="primary"
               size="sm"
-              onPress={() => router.push(buildPath(ROUTES.DASHBOARD.CONNECTIONS, {}))}
+              onPress={() => router.push(ROUTES.COMMUNITIES.CONNECTIONS.path)}
             >
               Manage
             </Button>

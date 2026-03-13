@@ -299,7 +299,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
             size="sm"
             iconStart={BarChart3}
             onPress={() =>
-              router.push(ROUTES.DASHBOARD.SKILLS_ANALYTICS.path)
+              router.push(ROUTES.DASHBOARD.ASSESSMENTS.path)
             }
           >
             View Full Analytics

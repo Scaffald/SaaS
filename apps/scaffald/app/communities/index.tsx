@@ -1,7 +1,7 @@
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { CommunitiesHubPage } from '@scf/core/features/communities/CommunitiesHubPage'
 
-export default function DashboardCommunitiesIndexPage() {
+export default function CommunitiesIndexPage() {
   return (
     <DashboardPage
       leftContent={<CommunitiesHubPage />}

@@ -1,5 +1,6 @@
 import { ROUTES } from "@scf/core/constants/routes";
 import { useCurrentUser } from "@scf/core/utils/profile-general-sdk-hooks";
+import { openPublicProfileInNewTab } from "@scf/core/utils/publicProfileUrl";
 import {
   useGeneralInfoWidget,
   useExperienceWidget,
@@ -231,16 +232,31 @@ export function ProfileSnapshotWidget() {
     <DashboardWidget>
       <Stack gap={24}>
         {/* Header */}
-        <Row justify="space-between" align="center">
+        <Row justify="space-between" align="center" wrap>
           <H4>Profile</H4>
-          <Button
-            size="sm"
-            variant="text"
-            color="primary"
-            onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
-          >
-            View Full Profile
-          </Button>
+          <Row gap={8} wrap>
+            {generalInfo.slug ? (
+              <Button
+                size="sm"
+                variant="text"
+                color="primary"
+                onPress={() => {
+                  const s = generalInfo.slug
+                  if (s) openPublicProfileInNewTab(s)
+                }}
+              >
+                View public profile
+              </Button>
+            ) : null}
+            <Button
+              size="sm"
+              variant="text"
+              color="primary"
+              onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
+            >
+              View Full Profile
+            </Button>
+          </Row>
         </Row>
 
         {/* Avatar & Name Section */}

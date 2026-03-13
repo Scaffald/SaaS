@@ -50,7 +50,7 @@ export interface OrganizationCardProps {
  *   employeeCount={500}
  *   isSelected={selected === "org-1"
  *   onSelect={setSelected}
- *   onViewDetails={() => router.push(ROUTES.DASHBOARD.ORGANIZATIONS.path)}
+ *   onViewDetails={() => router.push(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path)}
  * />
  * ```
  */

@@ -124,26 +124,11 @@ export const OfficeLayout = ({
     href: string
   }
 
-  const tabItems = useMemo<TabItem[]>(
-    () =>
-      topLevelRoutes.map((route: RouteConfig) => ({
-        key: route.path,
-        label: t(route.titleKey),
-        href: route.path,
-      })),
-    [t, topLevelRoutes]
-  )
-
   const activeTopRoute = useMemo(() => {
     return (
       topLevelRoutes.find((route) => isPathActive(currentPath, route.path)) ?? topLevelRoutes[0]
     )
   }, [currentPath, topLevelRoutes])
-
-  const activeTabValue = useMemo(() => {
-    const activeItem = tabItems.find((item: TabItem) => isPathActive(currentPath, item.href))
-    return activeItem?.key ?? tabItems[0]?.key ?? ''
-  }, [currentPath, tabItems])
 
   const secondaryTabItems = useMemo<TabItem[]>(() => {
     if (!activeTopRoute) {
@@ -206,40 +191,22 @@ export const OfficeLayout = ({
           </Row>
         )}
 
-        {/* Tabs Navigation - Top-level office routes */}
-        {tabItems.length > 0 && (
-          <>
-            <Row paddingHorizontal="sm">
-              <Tabs
-                value={activeTabValue}
-                onValueChange={handleTabChange}
-                type="line"
-                orientation="horizontal"
-              >
-                {tabItems.map((item: TabItem) => (
-                  <Tabs.Item key={item.key} value={item.key}>
-                    <Tabs.Trigger>{item.label}</Tabs.Trigger>
-                  </Tabs.Item>
-                ))}
-              </Tabs>
-            </Row>
-            {secondaryTabItems.length > 0 && (
-              <Row paddingHorizontal="sm">
-                <Tabs
-                  value={activeSecondaryValue}
-                  onValueChange={handleTabChange}
-                  type="default"
-                  orientation="horizontal"
-                >
-                  {secondaryTabItems.map((item: TabItem) => (
-                    <Tabs.Item key={item.key} value={item.key}>
-                      <Tabs.Trigger>{item.label}</Tabs.Trigger>
-                    </Tabs.Item>
-                  ))}
-                </Tabs>
-              </Row>
-            )}
-          </>
+        {/* Secondary Tabs - sub-section tabs for CMS/ATS (Workers, Jobs, etc.) */}
+        {secondaryTabItems.length > 0 && (
+          <Row paddingHorizontal="sm">
+            <Tabs
+              value={activeSecondaryValue}
+              onValueChange={handleTabChange}
+              type="default"
+              orientation="horizontal"
+            >
+              {secondaryTabItems.map((item: TabItem) => (
+                <Tabs.Item key={item.key} value={item.key}>
+                  <Tabs.Trigger>{item.label}</Tabs.Trigger>
+                </Tabs.Item>
+              ))}
+            </Tabs>
+          </Row>
         )}
 
         {/* Content Area - Two-column golden ratio (lg+) or single column */}

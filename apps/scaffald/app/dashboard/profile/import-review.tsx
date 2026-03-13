@@ -1,16 +1,16 @@
-import { ROUTES } from '@scf/core/constants/routes'
-import { ProfilePage } from '@scf/core/features/profile/ProfilePage'
-import { ImportReviewScreen } from '@scf/core/features/profile-import/components/ImportReviewScreen'
+/**
+ * Redirect: Import Review was merged into Resumé.
+ * Old links to /dashboard/profile/import-review go to the resume page.
+ */
 
-export default function ProfileImportReviewPage() {
-  return (
-    <ProfilePage
-      breadcrumbs={[
-        { route: ROUTES.DASHBOARD.PROFILE },
-        { route: ROUTES.DASHBOARD.PROFILE.IMPORT_REVIEW },
-      ]}
-      leftContent={<ImportReviewScreen />}
-      rightContent={null}
-    />
-  )
+import { ROUTES } from '@scf/core/constants/routes'
+import { useRouter } from 'expo-router'
+import { useEffect } from 'react'
+
+export default function ImportReviewRedirect() {
+  const router = useRouter()
+  useEffect(() => {
+    router.replace(ROUTES.DASHBOARD.PROFILE.RESUME.path)
+  }, [router])
+  return null
 }

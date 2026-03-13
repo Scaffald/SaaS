@@ -19,10 +19,14 @@ export const isActivePath = (pathname: string, href: string) => {
     return pathname === '/' || pathname === '/index'
   }
 
-  // Special case for dashboard: only match exact path or /dashboard/index
+  // Special case for dashboard: match exact path, /dashboard/index, or any dashboard child (e.g. /dashboard/news)
   const dashboardPath = ROUTES.DASHBOARD.path
   if (href === dashboardPath) {
-    return pathname === dashboardPath || pathname === `${dashboardPath}/index`
+    return (
+      pathname === dashboardPath ||
+      pathname === `${dashboardPath}/index` ||
+      pathname.startsWith(`${dashboardPath}/`)
+    )
   }
 
   // Special case for office: match exact path or child paths
@@ -33,6 +37,52 @@ export const isActivePath = (pathname: string, href: string) => {
       pathname === `${officePath}/index` ||
       pathname.startsWith(`${officePath}/`)
     )
+  }
+
+  // Special case for communities: match exact path or child paths
+  const communitiesPath = ROUTES.COMMUNITIES.path
+  if (href === communitiesPath) {
+    return (
+      pathname === communitiesPath ||
+      pathname === `${communitiesPath}/index` ||
+      pathname.startsWith(`${communitiesPath}/`)
+    )
+  }
+
+  // Special case for assessments: also match career-explorer (nav sibling under Assessments)
+  const assessmentsPath = ROUTES.DASHBOARD.ASSESSMENTS.path
+  if (href === assessmentsPath) {
+    return (
+      pathname === assessmentsPath ||
+      pathname === `${assessmentsPath}/index` ||
+      pathname.startsWith(`${assessmentsPath}/`) ||
+      pathname === ROUTES.DASHBOARD.CAREER_EXPLORER.path ||
+      pathname.startsWith(`${ROUTES.DASHBOARD.CAREER_EXPLORER.path}/`)
+    )
+  }
+
+  // Special case for employers: match /dashboard/employers and children (e.g. /dashboard/employers/create, /dashboard/employers/:id)
+  const employersPath = ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path
+  if (href === employersPath) {
+    return (
+      pathname === employersPath ||
+      pathname.startsWith(`${employersPath}/`)
+    )
+  }
+
+  // My Organizations: match /org and any child (/org/invitations, /org/:slug, /org/:slug/teams, etc.)
+  const orgPath = ROUTES.ORG.path
+  if (href === orgPath) {
+    return (
+      pathname === orgPath ||
+      pathname === `${orgPath}/index` ||
+      pathname.startsWith(`${orgPath}/`)
+    )
+  }
+
+  // Org-scoped hrefs like /org/invitations or /org/:slug or /org/:slug/teams
+  if (href.startsWith(`${orgPath}/`)) {
+    return pathname === href || pathname.startsWith(`${href}/`)
   }
 
   return pathname === href || pathname.startsWith(`${href}/`)

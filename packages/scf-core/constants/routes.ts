@@ -135,6 +135,56 @@ const ROUTES_CONFIG = {
     exact: true,
   },
 
+  /** My Organizations - org-scoped teams and logs (visible when user has org memberships) */
+  ORG: {
+    path: '/org',
+    titleKey: 'routes.org.title',
+    protected: true,
+    exact: false,
+    INVITATIONS: {
+      path: '/org/invitations',
+      titleKey: 'routes.org.invitations',
+      protected: true,
+      exact: true,
+    },
+    DETAIL: {
+      path: '/org/:slug',
+      titleKey: 'routes.org.detail',
+      protected: true,
+      exact: false,
+      TEAMS: {
+        path: '/org/:slug/teams',
+        titleKey: 'routes.dashboard.teams.title',
+        protected: true,
+        exact: false,
+        DETAIL: {
+          path: '/org/:slug/teams/:teamId',
+          titleKey: 'routes.dashboard.teams.detail',
+          protected: true,
+          exact: true,
+        },
+      },
+      LOGS: {
+        path: '/org/:slug/logs',
+        titleKey: 'routes.org.logs',
+        protected: true,
+        exact: false,
+        CREATE: {
+          path: '/org/:slug/logs/create',
+          titleKey: 'routes.dashboard.workLogs.create',
+          protected: true,
+          exact: true,
+        },
+        DETAIL: {
+          path: '/org/:slug/logs/:workLogId',
+          titleKey: 'routes.dashboard.workLogs.detail',
+          protected: true,
+          exact: true,
+        },
+      },
+    },
+  },
+
   DASHBOARD: {
     path: '/dashboard',
     titleKey: 'routes.dashboard.title',
@@ -1270,4 +1320,15 @@ export const RouteBuilder = {
   communitiesReputation: () => ROUTES.COMMUNITIES.REPUTATION.path,
   /** Public profile URL path for a given slug */
   publicProfile: (slug: string) => `/u/${slug}`,
+  /** My Organizations */
+  orgIndex: () => ROUTES.ORG.path,
+  orgInvitations: () => ROUTES.ORG.INVITATIONS.path,
+  orgDetail: (slug: string) => buildPath(ROUTES.ORG.DETAIL, { slug }),
+  orgTeams: (slug: string) => buildPath(ROUTES.ORG.DETAIL.TEAMS, { slug }),
+  orgTeamDetail: (slug: string, teamId: string | number) =>
+    buildPath(ROUTES.ORG.DETAIL.TEAMS.DETAIL, { slug, teamId: String(teamId) }),
+  orgLogs: (slug: string) => buildPath(ROUTES.ORG.DETAIL.LOGS, { slug }),
+  orgLogsCreate: (slug: string) => buildPath(ROUTES.ORG.DETAIL.LOGS.CREATE, { slug }),
+  orgLogDetail: (slug: string, workLogId: string) =>
+    buildPath(ROUTES.ORG.DETAIL.LOGS.DETAIL, { slug, workLogId }),
 } as const

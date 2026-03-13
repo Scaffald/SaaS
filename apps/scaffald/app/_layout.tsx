@@ -31,8 +31,10 @@ function ThemeBridge({ children }: { children: ReactNode }) {
   const handleThemeChange = useCallback((theme: string) => {
     onChangeThemeRef.current?.(theme)
   }, [])
+  // Scaffald-ui tokens only have colors.bg.light / colors.bg.dark; never pass 'system' or undefined
+  const themeForUI: ResolvedThemeMode = resolvedTheme === 'dark' ? 'dark' : 'light'
   return (
-    <ThemeProvider theme={resolvedTheme as ResolvedThemeMode} onThemeChange={handleThemeChange}>
+    <ThemeProvider theme={themeForUI} onThemeChange={handleThemeChange}>
       {children}
     </ThemeProvider>
   )
@@ -114,6 +116,18 @@ export default function DashboardLayout() {
                   />
                   <Stack.Screen
                     name="dashboard"
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="communities"
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="org"
                     options={{
                       headerShown: false,
                     }}

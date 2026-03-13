@@ -58,7 +58,7 @@ export function InquiryOverviewWidget() {
             size="sm"
             onPress={() =>
               router.push(
-                buildPath(ROUTES.DASHBOARD.APPLICATIONS.INQUIRY, { applicationId: application.id })
+                buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS.APPLICATIONS.INQUIRY, { applicationId: application.id })
               )
             }
           >

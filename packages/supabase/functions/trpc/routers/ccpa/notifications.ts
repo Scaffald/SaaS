@@ -127,8 +127,8 @@ function getNotificationContent(
 } {
   const requestTypeLabel = REQUEST_TYPE_LABELS[request.requestType] ?? request.requestType
   const baseUrl = Deno.env.get('PUBLIC_APP_URL') ?? 'https://scaffald.com'
-  const privacyDashboardUrl = `${baseUrl}/settings/privacy`
-  const requestUrl = `${baseUrl}/settings/privacy/requests/${request.requestId}`
+  const privacyDashboardUrl = `${baseUrl}/dashboard/settings`
+  const requestUrl = `${baseUrl}/dashboard/settings`
 
   switch (type) {
     case CCPA_NOTIFICATION_TYPES.REQUEST_SUBMITTED:

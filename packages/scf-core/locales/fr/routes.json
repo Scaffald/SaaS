@@ -101,6 +101,12 @@
   "onboarding": {
     "title": "Commencer"
   },
+  "org": {
+    "title": "Mes organisations",
+    "detail": "Organisation",
+    "logs": "Journaux",
+    "invitations": "Invitations"
+  },
   "communities": {
     "title": "Communities",
     "connections": {
