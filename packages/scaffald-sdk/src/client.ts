@@ -56,6 +56,14 @@ import { ProfileWizard } from './resources/profile-wizard.js'
 import { CCPA } from './resources/ccpa.js'
 import { Payments } from './resources/payments.js'
 import { SkillAnalytics } from './resources/skill-analytics.js'
+import { Communities } from './resources/communities.js'
+import { CommunityPosts } from './resources/community-posts.js'
+import { CommunityComments } from './resources/community-comments.js'
+import { CommunityRatings } from './resources/community-ratings.js'
+import { CommunityInteractions } from './resources/community-interactions.js'
+import { CommunityReputation } from './resources/community-reputation.js'
+import { CommunitySkills } from './resources/community-skills.js'
+import { OfficeCommunities } from './resources/office-communities.js'
 
 export class Scaffald {
   private http: HttpClient
@@ -115,6 +123,14 @@ export class Scaffald {
   public readonly ccpa: CCPA
   public readonly payments: Payments
   public readonly skillAnalytics: SkillAnalytics
+  public readonly communities: Communities
+  public readonly communityPosts: CommunityPosts
+  public readonly communityComments: CommunityComments
+  public readonly communityRatings: CommunityRatings
+  public readonly communityInteractions: CommunityInteractions
+  public readonly communityReputation: CommunityReputation
+  public readonly communitySkills: CommunitySkills
+  public readonly officeCommunities: OfficeCommunities
 
   constructor(config: ScaffaldConfig) {
     if (!config.apiKey && !config.accessToken && !config.supabaseToken) {
@@ -182,6 +198,14 @@ export class Scaffald {
     this.ccpa = new CCPA(this.http)
     this.payments = new Payments(this.http)
     this.skillAnalytics = new SkillAnalytics(this.http)
+    this.communities = new Communities(this.http)
+    this.communityPosts = new CommunityPosts(this.http)
+    this.communityComments = new CommunityComments(this.http)
+    this.communityRatings = new CommunityRatings(this.http)
+    this.communityInteractions = new CommunityInteractions(this.http)
+    this.communityReputation = new CommunityReputation(this.http)
+    this.communitySkills = new CommunitySkills(this.http)
+    this.officeCommunities = new OfficeCommunities(this.http)
   }
 
   getRateLimitInfo(): RateLimitInfo | undefined {

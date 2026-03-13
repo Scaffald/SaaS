@@ -1,0 +1,90 @@
+import { useState, useMemo } from 'react'
+import { Text, Stack, Row, Input, Avatar, Spinner } from '@scaffald/ui'
+import { useCommunity, useCommunityMembers } from '@scf/core/utils/communities-sdk-hooks'
+
+interface Props {
+  slug: string
+}
+
+export function CommunityMembersPage({ slug }: Props) {
+  const [searchTerm, setSearchTerm] = useState('')
+  const { data: communityData } = useCommunity(slug)
+  const community = communityData?.data
+
+  const { data: membersData, isLoading } = useCommunityMembers(community?.id, {
+    limit: 100,
+  })
+
+  const members = membersData?.data ?? []
+
+  const filtered = useMemo(() => {
+    if (!searchTerm.trim()) return members
+    const lower = searchTerm.toLowerCase()
+    return members.filter(
+      (m) =>
+        m.display_name?.toLowerCase().includes(lower) || m.headline?.toLowerCase().includes(lower)
+    )
+  }, [members, searchTerm])
+
+  return (
+    <Stack gap={16}>
+      <Stack gap={4}>
+        <Text style={{ fontSize: 20, fontWeight: '600' }}>{community?.name} Members</Text>
+        <Text color="$gray11">{membersData?.total ?? 0} members</Text>
+      </Stack>
+
+      <Input placeholder="Search members..." value={searchTerm} onChangeText={setSearchTerm} />
+
+      {isLoading ? (
+        <Stack align="center" style={{ paddingVertical: 40 }}>
+          <Spinner />
+        </Stack>
+      ) : filtered.length === 0 ? (
+        <Stack align="center" style={{ paddingVertical: 40 }}>
+          <Text color="$gray11">No members found</Text>
+        </Stack>
+      ) : (
+        <Stack gap={8}>
+          {filtered.map((member) => (
+              <Row
+                key={member.id}
+                align="center"
+                gap={12}
+                style={{
+                  padding: 12,
+                  borderRadius: 8,
+                  borderWidth: 1,
+                  borderColor: '#e5e5e5',
+                }}
+              >
+                <Avatar
+                  src={member.avatar_url ?? undefined}
+                  initials={member.display_name?.[0] || '?'}
+                  size={32}
+                />
+                <Stack style={{ flex: 1 }} gap={2}>
+                  <Row align="center" gap={8}>
+                    <Text style={{ fontWeight: '600' }}>{member.display_name || 'Anonymous'}</Text>
+                    {member.is_verified && (
+                      <Stack
+                        style={{
+                          paddingHorizontal: 6,
+                          paddingVertical: 1,
+                          borderRadius: 4,
+                          backgroundColor: '#dcfce7',
+                        }}
+                      >
+                        <Text style={{ fontSize: 11, fontWeight: '500', color: '#16a34a' }}>Verified</Text>
+                      </Stack>
+                    )}
+                  </Row>
+                  {member.headline && <Text color="$gray11">{member.headline}</Text>}
+                </Stack>
+              </Row>
+            )
+          )}
+        </Stack>
+      )}
+    </Stack>
+  )
+}

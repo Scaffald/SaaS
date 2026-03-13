@@ -1,0 +1,171 @@
+import { useState } from 'react'
+import { Text, Stack, Row, Separator, Spinner, Button, Input } from '@scaffald/ui'
+import { useQueryClient } from '@tanstack/react-query'
+import {
+  useScaffoldScore,
+  useReputationHistory,
+  useGiftKarmaMutation,
+} from '@scf/core/utils/communities-sdk-hooks'
+import { ScaffoldScoreBadge } from './components/ScaffoldScoreBadge'
+
+export function ReputationDashboardPage() {
+  const queryClient = useQueryClient()
+  const { data: scoreData, isLoading: isScoreLoading } = useScaffoldScore()
+  const { data: historyData, isLoading: isHistoryLoading } = useReputationHistory({ limit: 50 })
+
+  const score = scoreData?.data
+  const events = historyData?.data ?? []
+
+  // Karma gifting state
+  const [giftReceiverId, setGiftReceiverId] = useState('')
+  const [giftAmount, setGiftAmount] = useState('')
+  const [giftMessage, setGiftMessage] = useState('')
+
+  const giftKarma = useGiftKarmaMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['communities', 'reputation'] })
+      setGiftReceiverId('')
+      setGiftAmount('')
+      setGiftMessage('')
+    },
+  })
+
+  if (isScoreLoading) {
+    return (
+      <Stack align="center" justify="center" style={{ minHeight: 200 }}>
+        <Spinner size="lg" />
+      </Stack>
+    )
+  }
+
+  return (
+    <Stack gap={24}>
+      {/* Score Overview */}
+      <Stack gap={8}>
+        <Text style={{ fontSize: 24, fontWeight: '700' }}>Scaffold Score</Text>
+        <Text color="$gray11">
+          Your reputation in the Scaffold community. Earn points by contributing quality content.
+        </Text>
+      </Stack>
+
+      {score && (
+        <Row gap={24} style={{ flexWrap: 'wrap' }}>
+          <Stack align="center" gap={4}>
+            <ScaffoldScoreBadge score={score.score} size={80} />
+            <Text style={{ fontWeight: '600' }}>Score</Text>
+          </Stack>
+          <Stack gap={4}>
+            <Row gap={8}>
+              <Text color="$gray11">Karma Bank:</Text>
+              <Text style={{ fontWeight: '600' }}>{score.karma_bank}</Text>
+            </Row>
+            <Row gap={8}>
+              <Text color="$gray11">Total Earned:</Text>
+              <Text style={{ fontWeight: '600' }}>{score.total_earned}</Text>
+            </Row>
+            <Row gap={8}>
+              <Text color="$gray11">Total Spent:</Text>
+              <Text style={{ fontWeight: '600' }}>{score.total_spent}</Text>
+            </Row>
+          </Stack>
+        </Row>
+      )}
+
+      <Separator />
+
+      {/* Gift Karma */}
+      <Stack gap={12}>
+        <Text style={{ fontSize: 18, fontWeight: '600' }}>Gift Karma</Text>
+        <Text color="$gray11">
+          Send karma to community members who helped you. Max 10 per gift, 5 gifts per day.
+        </Text>
+        <Row gap={8} style={{ flexWrap: 'wrap' }}>
+          <Input
+            placeholder="User ID"
+            value={giftReceiverId}
+            onChangeText={setGiftReceiverId}
+            style={{ flex: 2, minWidth: 200 }}
+          />
+          <Input
+            placeholder="Amount (1-10)"
+            value={giftAmount}
+            onChangeText={setGiftAmount}
+            keyboardType="numeric"
+            style={{ flex: 1, minWidth: 100 }}
+          />
+        </Row>
+        <Input placeholder="Optional message" value={giftMessage} onChangeText={setGiftMessage} />
+        <Button
+          variant="filled"
+          size="sm"
+          onPress={() =>
+            giftKarma.mutate({
+              receiver_id: giftReceiverId,
+              amount: parseInt(giftAmount, 10) || 1,
+              message: giftMessage || undefined,
+            })
+          }
+          disabled={!giftReceiverId || !giftAmount || giftKarma.isPending}
+        >
+          Send Karma
+        </Button>
+      </Stack>
+
+      <Separator />
+
+      {/* Reputation History */}
+      <Stack gap={12}>
+        <Text style={{ fontSize: 18, fontWeight: '600' }}>History ({historyData?.total ?? 0})</Text>
+        {isHistoryLoading ? (
+          <Stack align="center" style={{ paddingVertical: 24 }}>
+            <Spinner />
+          </Stack>
+        ) : events.length === 0 ? (
+          <Text color="$gray11">No reputation events yet.</Text>
+        ) : (
+          <Stack gap={4}>
+            {events.map(
+              (event: {
+                id: string
+                reason?: string | null
+                action: string
+                created_at: string
+                delta: number
+              }) => (
+                <Row
+                  key={event.id}
+                  align="center"
+                  justify="space-between"
+                  style={{
+                    paddingVertical: 8,
+                    paddingHorizontal: 12,
+                    borderBottomWidth: 1,
+                    borderBottomColor: '#f0f0f0',
+                  }}
+                >
+                  <Stack style={{ flex: 1 }} gap={2}>
+                    <Text style={{ fontSize: 14 }}>
+                      {event.reason || event.action.replace(/_/g, ' ')}
+                    </Text>
+                    <Text color="$gray11" style={{ fontSize: 12 }}>
+                      {new Date(event.created_at).toLocaleDateString()}
+                    </Text>
+                  </Stack>
+                  <Text
+                    style={{
+                      fontWeight: '700',
+                      color: event.delta > 0 ? '#16a34a' : '#dc2626',
+                    }}
+                  >
+                    {event.delta > 0 ? '+' : ''}
+                    {event.delta}
+                  </Text>
+                </Row>
+              )
+            )}
+          </Stack>
+        )}
+      </Stack>
+    </Stack>
+  )
+}

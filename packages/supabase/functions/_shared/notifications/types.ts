@@ -74,6 +74,18 @@ export const NOTIFICATION_TYPES = [
   'connection.request',
   'connection.accepted',
   'policy.renewal',
+  'inquiry.sent',
+  'inquiry.comment_added',
+  'inquiry.fully_accepted',
+  'inquiry.section_accepted',
+  'inquiry.capability_answered',
+  'inquiry.updated',
+  'community.post_comment',
+  'community.post_rating',
+  'community.reputation_change',
+  'community.new_follower',
+  'community.followed_user_post',
+  'community.karma_received',
 ] as const
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number]
 

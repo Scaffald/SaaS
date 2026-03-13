@@ -9,6 +9,8 @@ import {
   SkillsWidget,
   WorkLogPortfolioWidget,
 } from "@scf/core/features/profile/widgets";
+import { PublishedPostsGallery } from "@scf/core/features/communities/components/PublishedPostsGallery";
+import { ProfileScaffoldScore } from "@scf/core/features/communities/components/ProfileScaffoldScore";
 import { useAuth } from "@scf/core/provider/auth/useAuth";
 import { useProfileBySlug } from "@scf/core/utils/profile-general-sdk-hooks";
 import { useRecordViewMutation } from "@scf/core/utils/profile-views-sdk-hooks";
@@ -153,6 +155,7 @@ export default function PublicUserProfilePage() {
             <ExperienceWidget userId={profileData.id} showEdit={false} />
           )}
           <WorkLogPortfolioWidget userId={profileData.id} />
+          <PublishedPostsGallery userId={profileData.id} />
           {visibility.education && (
             <EducationWidget userId={profileData.id} showEdit={false} />
           )}
@@ -160,6 +163,7 @@ export default function PublicUserProfilePage() {
       }
       rightContent={
         <Stack gap={16}>
+          <ProfileScaffoldScore userId={profileData.id} />
           {visibility.skills && (
             <SkillsWidget userId={profileData.id} showEdit={false} />
           )}
