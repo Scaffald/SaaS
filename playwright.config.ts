@@ -25,10 +25,11 @@ export default defineConfig({
     "**/test-supabase-hardening-regression.spec.ts", // Supabase hardening regression
   ],
 
-  // Exclude debug/exploration files permanently
+  // Exclude debug/exploration/example files permanently
   testIgnore: [
     "**/debug-*.spec.ts",
     "**/explore-*.spec.ts",
+    "**/example-*.spec.ts",
     "**/*.js", // Skip JS files (only TS tests)
   ],
 

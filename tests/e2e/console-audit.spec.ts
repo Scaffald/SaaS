@@ -36,8 +36,6 @@ const DASHBOARD_ROUTES = [
   '/dashboard/jobs',
   '/dashboard/employers',
   '/dashboard/employers/create',
-  '/dashboard/employers/organizations',
-  '/dashboard/employers/organizations/create',
   '/dashboard/work-logs',
   '/dashboard/work-logs/create',
   '/dashboard/assessments',
