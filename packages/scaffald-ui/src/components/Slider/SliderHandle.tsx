@@ -3,11 +3,12 @@
  * Draggable handle for the slider with states
  */
 
-import { View, StyleSheet, Platform } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import type { ViewStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { useThemeContext } from '../../theme'
 import type { SliderColor, SliderHandleState } from './Slider.types'
+import { webStyle } from '../../utils/webStyles'
 
 export interface SliderHandleProps {
   /**
@@ -71,23 +72,13 @@ export function SliderHandle({
     backgroundColor: colors.white,
   }
 
-  const webStyle = Platform.OS === 'web'
-    ? ({
-        cursor: disabled ? 'not-allowed' : 'pointer',
-        userSelect: 'none',
-      } as any)
-    : {}
+  const webHandleStyle = webStyle({
+    cursor: disabled ? 'not-allowed' : 'pointer',
+    userSelect: 'none',
+  })
 
   return (
-    <View
-      style={[
-        styles.handle,
-        baseStyle,
-        disabled && styles.disabled,
-        webStyle,
-        style,
-      ]}
-    />
+    <View style={[styles.handle, baseStyle, disabled && styles.disabled, webHandleStyle, style]} />
   )
 }
 
@@ -100,4 +91,3 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
 })
-

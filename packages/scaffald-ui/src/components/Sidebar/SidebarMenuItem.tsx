@@ -69,7 +69,13 @@ export function SidebarMenuItem({
   const activeBackgroundColor = activeColor || '#000000'
 
   // Get styles from factory function
-  const styles = getSidebarMenuItemStyles(type, actualState, theme, collapsed, activeBackgroundColor)
+  const styles = getSidebarMenuItemStyles(
+    type,
+    actualState,
+    theme,
+    collapsed,
+    activeBackgroundColor
+  )
 
   // Handle item types that don't need interactive rendering
   if (type === 'heading') {
@@ -83,7 +89,6 @@ export function SidebarMenuItem({
   if (type === 'divider') {
     return <View style={[styles.dividerContainer, style]} />
   }
-
 
   const iconSize = 20
 
@@ -161,11 +166,7 @@ export function SidebarMenuItem({
 
     if (type === 'cta' && buttonText && !collapsed) {
       trailingItems.push(
-        <Pressable
-          key="button"
-          onPress={onPress}
-          style={styles.ctaButton}
-        >
+        <Pressable key="button" onPress={onPress} style={styles.ctaButton}>
           <Text style={styles.ctaButtonText}>{buttonText}</Text>
         </Pressable>
       )
@@ -220,9 +221,7 @@ export function SidebarMenuItem({
     <>
       {itemContent}
       {/* Submenu items */}
-      {expanded && !collapsed && children && (
-        <View style={styles.submenu}>{children}</View>
-      )}
+      {expanded && !collapsed && children && <View style={styles.submenu}>{children}</View>}
     </>
   )
 
@@ -231,7 +230,8 @@ export function SidebarMenuItem({
     return wrappedContent
   }
 
-  const accessibilityLabel = label || ((type as SidebarItemType) === 'heading' ? 'Heading' : 'Menu item')
+  const accessibilityLabel =
+    label || ((type as SidebarItemType) === 'heading' ? 'Heading' : 'Menu item')
   const accessibilityRole = (type as SidebarItemType) === 'heading' ? 'text' : 'button'
   const accessibilityState = {
     disabled,
@@ -245,25 +245,28 @@ export function SidebarMenuItem({
       disabled={disabled}
       onPressIn={() => !disabled && setIsHovered(true)}
       onPressOut={() => setIsHovered(false)}
-      {...(Platform.OS === 'web' && {
-        onMouseEnter: () => !disabled && setIsHovered(true),
-        onMouseLeave: () => setIsHovered(false),
-        id: id,
-        'data-value': value,
-      } as any)}
+      {...(Platform.OS === 'web' &&
+        ({
+          onMouseEnter: () => !disabled && setIsHovered(true),
+          onMouseLeave: () => setIsHovered(false),
+          id: id,
+          'data-value': value,
+        } as any))}
       style={({ pressed }) => [
-        pressed && !disabled && actualState !== 'active' && {
-          opacity: 0.8,
-        },
+        pressed &&
+          !disabled &&
+          actualState !== 'active' && {
+            opacity: 0.8,
+          },
       ]}
       accessibilityRole={accessibilityRole}
       accessibilityLabel={accessibilityLabel}
       accessibilityState={accessibilityState}
-      accessibilityHint={showExpandIcon ? (expanded ? 'Collapse submenu' : 'Expand submenu') : undefined}
+      accessibilityHint={
+        showExpandIcon ? (expanded ? 'Collapse submenu' : 'Expand submenu') : undefined
+      }
     >
       {wrappedContent}
     </Pressable>
   )
 }
-
-

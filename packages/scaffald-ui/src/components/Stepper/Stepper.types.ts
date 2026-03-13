@@ -154,4 +154,3 @@ export interface StepperProps {
    */
   stepStyle?: ViewStyle
 }
-

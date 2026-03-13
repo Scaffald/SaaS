@@ -101,12 +101,15 @@ export type InteractiveState = 'default' | 'hover' | 'focused' | 'disabled' | 'e
 export type StyleVariant = 'filled' | 'outlined' | 'linear' | 'light' | 'blank'
 
 /**
+ * Standard icon props (covers Lucide and similar icon libraries)
+ */
+export type IconProps = { size?: number; color?: string; strokeWidth?: number }
+
+/**
  * Icon component type
  * Standard icon component interface that accepts size and color props
  */
-// Loose icon type: accepts Lucide icons and other icon libraries without propTypes conflicts
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type IconComponent = React.ComponentType<any>
+export type IconComponent = React.ComponentType<IconProps>
 
 /**
  * Common style prop types
@@ -192,4 +195,3 @@ export interface HelperTextProps extends BaseComponentProps {
  * Theme mode
  */
 export type ThemeMode = 'light' | 'dark'
-

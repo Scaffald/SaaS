@@ -47,4 +47,3 @@ export function ArrowRightIcon({ size = 20, color = '#637083' }: ArrowRightIconP
     </Svg>
   )
 }
-

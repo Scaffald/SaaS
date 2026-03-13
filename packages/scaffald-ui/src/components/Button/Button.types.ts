@@ -4,6 +4,7 @@
  */
 
 import type { ViewStyle, TextStyle, PressableProps } from 'react-native'
+import type { IconComponent } from '../types'
 
 /**
  * Button color variants
@@ -62,14 +63,12 @@ export interface ButtonProps extends Omit<PressableProps, 'style' | 'children'> 
   /**
    * Icon to display at the start
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  iconStart?: React.ComponentType<any>
+  iconStart?: IconComponent
 
   /**
    * Icon to display at the end
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  iconEnd?: React.ComponentType<any>
+  iconEnd?: IconComponent
 
   /**
    * Icon-only button (no text)

@@ -30,4 +30,3 @@ export type {
   SidebarKeyboardOptions,
   FooterActionTooltip,
 } from './Sidebar.types'
-

@@ -9,6 +9,7 @@ import type { ThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
+import type { WebViewStyle } from '../../utils/webStyles'
 
 export interface SidebarHeaderStyleConfig {
   container: ViewStyle
@@ -36,13 +37,13 @@ export function getSidebarHeaderStyles(
     borderBottomColor: isLight ? colors.border.light.subtle : colors.border.dark.subtle,
   }
 
-  const logoContainer: ViewStyle = {
+  const logoContainer: WebViewStyle = {
     flex: 1,
     alignItems: collapsed ? 'center' : 'flex-start',
     justifyContent: 'center',
     ...(Platform.OS === 'web' && {
       transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1)',
-    } as any),
+    }),
   }
 
   const title: TextStyle = {
@@ -53,14 +54,14 @@ export function getSidebarHeaderStyles(
     color: isLight ? colors.text.light.primary : colors.text.dark.primary,
   }
 
-  const collapseButton: ViewStyle = {
+  const collapseButton: WebViewStyle = {
     width: 32,
     height: 32,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: borderRadius.s,
     ...(Platform.OS === 'web' && {
-      cursor: 'pointer' as any,
+      cursor: 'pointer',
     }),
   }
 

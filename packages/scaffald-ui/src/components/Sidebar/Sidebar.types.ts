@@ -349,11 +349,13 @@ export interface SidebarHeaderProps {
 /**
  * Tooltip configuration for footer actions
  */
-export type FooterActionTooltip = string | {
-  content: string
-  position?: 'up-center' | 'up-left' | 'up-right' | 'down-center' | 'down-left' | 'down-right'
-  delay?: number
-}
+export type FooterActionTooltip =
+  | string
+  | {
+      content: string
+      position?: 'up-center' | 'up-left' | 'up-right' | 'down-center' | 'down-left' | 'down-right'
+      delay?: number
+    }
 
 /**
  * Sidebar footer props
@@ -480,4 +482,3 @@ export interface SidebarItemGroupProps {
    */
   style?: ViewStyle
 }
-

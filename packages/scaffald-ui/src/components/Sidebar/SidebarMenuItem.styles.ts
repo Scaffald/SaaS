@@ -11,6 +11,7 @@ import { spacing } from '../../tokens/spacing'
 import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
 import type { SidebarItemType, SidebarItemState } from './Sidebar.types'
+import type { WebViewStyle, WebTextStyle } from '../../utils/webStyles'
 
 export interface SidebarMenuItemStyleConfig {
   item: ViewStyle
@@ -43,7 +44,7 @@ export function getSidebarMenuItemStyles(
   const isLight = theme === 'light'
 
   // Base item styles with improved aesthetics
-  const item: ViewStyle = {
+  const item: WebViewStyle = {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[12],
@@ -56,7 +57,7 @@ export function getSidebarMenuItemStyles(
     ...(Platform.OS === 'web' && {
       transition: 'all 150ms cubic-bezier(0.4, 0, 0.2, 1)',
       cursor: 'pointer',
-    } as any),
+    }),
   }
 
   // Add background color based on state with improved colors
@@ -89,10 +90,10 @@ export function getSidebarMenuItemStyles(
   }
 
   // Heading text styles
-  const headingText: TextStyle = {
+  const headingText: WebTextStyle = {
     fontFamily: typography.caption.fontFamily,
     fontSize: typography.caption.fontSize,
-    fontWeight: typography.body.fontWeight as any,
+    fontWeight: typography.body.fontWeight,
     lineHeight: typography.caption.lineHeight,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -127,24 +128,24 @@ export function getSidebarMenuItemStyles(
   }
 
   // Label styles
-  const label: TextStyle = {
+  const label: WebTextStyle = {
     fontFamily: typography.body.fontFamily,
     fontSize: typography.body.fontSize,
-    fontWeight: typography.body.fontWeight as any,
+    fontWeight: typography.body.fontWeight,
     lineHeight: typography.body.lineHeight,
     color: getTextColor(),
   }
 
   // Label with support text styles
-  const labelWithSupport: TextStyle = {
-    fontWeight: typography.bodyMedium.fontWeight as any,
+  const labelWithSupport: WebTextStyle = {
+    fontWeight: typography.bodyMedium.fontWeight,
   }
 
   // Supporting text styles
-  const supportingText: TextStyle = {
+  const supportingText: WebTextStyle = {
     fontFamily: typography.body.fontFamily,
     fontSize: typography.small.fontSize,
-    fontWeight: typography.body.fontWeight as any,
+    fontWeight: typography.body.fontWeight,
     lineHeight: typography.small.lineHeight,
     color:
       state === 'active'
@@ -172,19 +173,19 @@ export function getSidebarMenuItemStyles(
   }
 
   // Badge text styles
-  const badgeText: TextStyle = {
+  const badgeText: WebTextStyle = {
     fontFamily: typography.caption.fontFamily,
     fontSize: typography.caption.fontSize,
-    fontWeight: typography.bodyMedium.fontWeight as any,
+    fontWeight: typography.bodyMedium.fontWeight,
     color: colors.white,
     lineHeight: 16,
   }
 
   // Count text styles
-  const countText: TextStyle = {
+  const countText: WebTextStyle = {
     fontFamily: typography.body.fontFamily,
     fontSize: typography.small.fontSize,
-    fontWeight: typography.body.fontWeight as any,
+    fontWeight: typography.body.fontWeight,
     lineHeight: typography.small.lineHeight,
     color: getTextColor(),
   }
@@ -198,10 +199,10 @@ export function getSidebarMenuItemStyles(
   }
 
   // CTA button text styles
-  const ctaButtonText: TextStyle = {
+  const ctaButtonText: WebTextStyle = {
     fontFamily: typography.bodyMedium.fontFamily,
     fontSize: typography.small.fontSize,
-    fontWeight: typography.bodyMedium.fontWeight as any,
+    fontWeight: typography.bodyMedium.fontWeight,
     color: colors.white,
   }
 

@@ -98,7 +98,7 @@ export function SliderTrack({
       // Range slider: fill between min and max of range
       const rangeMin = Math.max(min, Math.min(max, range[0]))
       const rangeMax = Math.max(min, Math.min(max, range[1]))
-      
+
       const leftPercent = ((rangeMin - min) / (max - min)) * 100
       const widthPercent = ((rangeMax - rangeMin) / (max - min)) * 100
 
@@ -170,4 +170,3 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.max, // Fully rounded
   },
 })
-

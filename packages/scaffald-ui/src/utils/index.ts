@@ -24,3 +24,6 @@ export {
   isResponsiveValue,
   resolveResponsiveValues,
 } from './responsive'
+
+export { webStyle } from './webStyles'
+export type { WebViewStyle, WebTextStyle } from './webStyles'

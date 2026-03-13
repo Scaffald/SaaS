@@ -43,21 +43,24 @@ fi
 # Strategy: only fail if errors are in files we actually staged.
 # Pre-existing errors in other files should not block commits.
 if [ "${CHECK_EXIT:-0}" -ne 0 ]; then
-  # Get list of staged files (relative paths)
-  STAGED_FILES=$(git diff --cached --name-only 2>/dev/null | xargs -I{} basename {} | sort -u)
+  # Get list of staged files (full relative paths for precise matching)
+  STAGED_PATHS=$(git diff --cached --name-only 2>/dev/null)
 
   # Known systemic TS errors to always ignore (pre-existing @types/react conflicts, SDK resolution)
   KNOWN_ERRORS="error TS2322|error TS4023|error TS2307|error TS2305|error TS7006|error TS2339|error TS18046|error TS2345|error TS2352|error TS2614"
 
   # Extract error lines that reference staged files, excluding known systemic errors
+  # Uses path-segment matching to avoid false positives (e.g. Sidebar.tsx matching InquiryHelpSidebar.tsx)
   STAGED_ERRORS=""
-  while IFS= read -r staged_base; do
-    [ -z "$staged_base" ] && continue
-    MATCH=$(echo "$CHECK_OUTPUT" | grep -E "error TS|lint/" | grep "$staged_base" | grep -vE "$KNOWN_ERRORS" || true)
+  while IFS= read -r staged_path; do
+    [ -z "$staged_path" ] && continue
+    # Try matching by the last two path segments (dir/file) for precision
+    staged_dir_file=$(echo "$staged_path" | rev | cut -d'/' -f1-2 | rev)
+    MATCH=$(echo "$CHECK_OUTPUT" | grep -E "error TS|lint/" | grep -F "$staged_dir_file" | grep -vE "$KNOWN_ERRORS" || true)
     if [ -n "$MATCH" ]; then
       STAGED_ERRORS="${STAGED_ERRORS}${MATCH}\n"
     fi
-  done <<< "$STAGED_FILES"
+  done <<< "$STAGED_PATHS"
 
   if [ -z "$STAGED_ERRORS" ]; then
     echo "⚠️ Pre-existing type errors detected (not in staged files)"

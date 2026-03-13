@@ -30,6 +30,7 @@ import type { SidebarProps, SidebarContextValue, SidebarMode } from './Sidebar.t
 import { useThemeContext } from '../../theme'
 import { getSidebarStyles } from './Sidebar.styles'
 import { useResponsive } from '../../hooks/useResponsive'
+import { webStyle } from '../../utils/webStyles'
 
 // Sidebar context
 const SidebarContext = createContext<SidebarContextValue | null>(null)
@@ -52,7 +53,8 @@ function matchesShortcut(event: KeyboardEvent, shortcut: string): boolean {
 
   const keyMatch = event.key.toLowerCase() === key
   const ctrlMatch = modifiers.includes('ctrl') ? event.ctrlKey : !event.ctrlKey
-  const metaMatch = modifiers.includes('cmd') || modifiers.includes('meta') ? event.metaKey : !event.metaKey
+  const metaMatch =
+    modifiers.includes('cmd') || modifiers.includes('meta') ? event.metaKey : !event.metaKey
   const shiftMatch = modifiers.includes('shift') ? event.shiftKey : !event.shiftKey
   const altMatch = modifiers.includes('alt') ? event.altKey : !event.altKey
 
@@ -96,12 +98,15 @@ export function Sidebar({
   // In overlay mode on mobile, default to collapsed
   const effectiveCollapsed = mode === 'overlay' && isMobile ? true : collapsed
 
-  const handleCollapseChange = useCallback((newCollapsed: boolean) => {
-    if (!isControlled) {
-      setInternalCollapsed(newCollapsed)
-    }
-    onCollapseChange?.(newCollapsed)
-  }, [isControlled, onCollapseChange])
+  const handleCollapseChange = useCallback(
+    (newCollapsed: boolean) => {
+      if (!isControlled) {
+        setInternalCollapsed(newCollapsed)
+      }
+      onCollapseChange?.(newCollapsed)
+    },
+    [isControlled, onCollapseChange]
+  )
 
   const toggleCollapsed = useCallback(() => {
     handleCollapseChange(!collapsed)
@@ -172,11 +177,11 @@ export function Sidebar({
           justifyContent: 'center',
           backgroundColor: theme === 'light' ? '#fff' : '#1f2937',
           borderRadius: 8,
-          ...(Platform.OS === 'web' && {
+          ...webStyle({
             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
             transition: `left ${animationDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`,
             cursor: 'pointer',
-          } as any),
+          }),
         }}
         accessibilityRole="button"
         accessibilityLabel={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
@@ -193,18 +198,22 @@ export function Sidebar({
         {mode === 'overlay' && !effectiveCollapsed && Platform.OS === 'web' && (
           <Pressable
             onPress={handleOverlayBackdropPress}
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              zIndex: 999,
-              ...(animated && {
-                transition: `opacity ${animationDuration}ms ease-in-out`,
+            style={[
+              {
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                zIndex: 999,
+              },
+              webStyle({
+                position: 'fixed',
+                ...(animated && {
+                  transition: `opacity ${animationDuration}ms ease-in-out`,
+                }),
               }),
-            } as any}
+            ]}
             accessibilityRole="button"
             accessibilityLabel="Close sidebar"
           />
@@ -212,11 +221,12 @@ export function Sidebar({
 
         <View
           style={[styles.container, style]}
-          {...(Platform.OS === 'web' && {
-            role: 'navigation',
-            'aria-label': 'Main navigation',
-            'aria-expanded': !effectiveCollapsed,
-          } as any)}
+          {...(Platform.OS === 'web' &&
+            ({
+              role: 'navigation',
+              'aria-label': 'Main navigation',
+              'aria-expanded': !effectiveCollapsed,
+            } as any))}
           accessibilityRole="navigation"
           accessibilityLabel="Main navigation sidebar"
         >
@@ -236,12 +246,12 @@ export function Sidebar({
                     alignItems: 'center',
                     justifyContent: 'center',
                     borderRadius: 6,
-                    ...(Platform.OS === 'web' && {
+                    ...webStyle({
                       cursor: 'pointer',
                       ':hover': {
                         backgroundColor: theme === 'light' ? '#f3f4f6' : '#374151',
                       },
-                    } as any),
+                    }),
                   }}
                   accessibilityRole="button"
                   accessibilityLabel={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
@@ -262,11 +272,7 @@ export function Sidebar({
           </ScrollView>
 
           {/* Footer - always at bottom */}
-          {footer && (
-            <View style={styles.footerContainer}>
-              {footer}
-            </View>
-          )}
+          {footer && <View style={styles.footerContainer}>{footer}</View>}
         </View>
       </SidebarContext.Provider>
 

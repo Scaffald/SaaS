@@ -45,20 +45,13 @@ export function SidebarHeader({
       {logo && <View style={styles.logoContainer}>{logo}</View>}
 
       {/* Title (optional) */}
-      {!collapsed && title && (
-        <Text style={styles.title}>
-          {title}
-        </Text>
-      )}
+      {!collapsed && title && <Text style={styles.title}>{title}</Text>}
 
       {/* Collapse toggle button */}
       {showCollapseButton && onCollapse && !collapsed && (
         <Pressable
           onPress={onCollapse}
-          style={({ pressed }) => [
-            styles.collapseButton,
-            pressed && { opacity: 0.7 },
-          ]}
+          style={({ pressed }) => [styles.collapseButton, pressed && { opacity: 0.7 }]}
           accessibilityRole="button"
           accessibilityLabel={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
@@ -72,4 +65,3 @@ export function SidebarHeader({
     </View>
   )
 }
-

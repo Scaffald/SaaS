@@ -5,6 +5,7 @@
 
 import type { ReactNode } from 'react'
 import type { ViewStyle, TextStyle, PressableProps } from 'react-native'
+import type { IconComponent } from '../types'
 
 /**
  * Tab type variants
@@ -179,14 +180,12 @@ export interface TabTriggerProps extends Omit<PressableProps, 'style' | 'childre
   /**
    * Icon to display at the start of the tab
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  iconStart?: React.ComponentType<any>
+  iconStart?: IconComponent
 
   /**
    * Icon to display at the end of the tab
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  iconEnd?: React.ComponentType<any>
+  iconEnd?: IconComponent
 
   /**
    * Icon-only tab (no text)
@@ -349,4 +348,3 @@ export interface TabStyleConfig {
    */
   iconColor: string
 }
-

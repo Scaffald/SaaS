@@ -97,10 +97,14 @@ export interface ReanimatedModule {
   withSpring: WithSpring
   withTiming: WithTiming
   Easing: EasingFunctions
+  // biome-ignore lint/suspicious/noExplicitAny: Reanimated layout animation types are complex and not fully typed
   LinearTransition: any
+  // biome-ignore lint/suspicious/noExplicitAny: Reanimated enter animation type
   FadeIn: any
+  // biome-ignore lint/suspicious/noExplicitAny: Reanimated exit animation type
   FadeOut: any
   default?: {
+    // biome-ignore lint/suspicious/noExplicitAny: Reanimated Animated.View accepts any view props
     View: React.ComponentType<any>
     createAnimatedComponent: <T>(component: T) => T
   }
@@ -111,7 +115,6 @@ export interface ReanimatedModule {
  */
 function tryLoadReanimated(): ReanimatedModule | null {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const Reanimated = require('react-native-reanimated') as ReanimatedModule
     return Reanimated
   } catch {
@@ -135,15 +138,17 @@ export const useAnimatedStyle: UseAnimatedStyle | null = reanimated?.useAnimated
 export const withSpring: WithSpring | null = reanimated?.withSpring ?? null
 export const withTiming: WithTiming | null = reanimated?.withTiming ?? null
 export const Easing: EasingFunctions | null = reanimated?.Easing ?? null
+// biome-ignore lint/suspicious/noExplicitAny: Reanimated layout animation type
 export const LinearTransition: any = reanimated?.LinearTransition ?? null
+// biome-ignore lint/suspicious/noExplicitAny: Reanimated enter animation type
 export const FadeIn: any = reanimated?.FadeIn ?? null
+// biome-ignore lint/suspicious/noExplicitAny: Reanimated exit animation type
 export const FadeOut: any = reanimated?.FadeOut ?? null
 
 /**
  * Get Reanimated's Animated.View component
  */
-export const ReanimatedView: React.ComponentType<unknown> | null =
-  reanimated?.default?.View ?? null
+export const ReanimatedView: React.ComponentType<unknown> | null = reanimated?.default?.View ?? null
 
 /**
  * Create an animated component using Reanimated

@@ -7,13 +7,9 @@ import { View, ActivityIndicator, StyleSheet, Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import type { SpinnerProps } from './Spinner.types'
 import { useThemeContext } from '../../theme'
+import { webStyle } from '../../utils/webStyles'
 
-export function Spinner({
-  size = 'md',
-  color = 'primary',
-  style,
-  visible = true,
-}: SpinnerProps) {
+export function Spinner({ size = 'md', color = 'primary', style, visible = true }: SpinnerProps) {
   const { theme } = useThemeContext()
   const isLight = theme === 'light'
 
@@ -100,9 +96,8 @@ export function Spinner({
               borderTopColor: 'transparent',
               borderRightColor: 'transparent',
               borderRadius: spinnerSize / 2,
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              animation: 'spin 1s linear infinite',
-            } as any,
+            },
+            webStyle({ animation: 'spin 1s linear infinite' }),
           ]}
         />
       </View>
@@ -136,4 +131,3 @@ const styles = StyleSheet.create({
     borderRadius: 9999,
   },
 })
-

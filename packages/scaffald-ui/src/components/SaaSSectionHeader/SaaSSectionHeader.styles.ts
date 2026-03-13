@@ -67,7 +67,10 @@ export function getFeaturedIconStyles(_theme: ThemeMode = 'light'): ViewStyle {
     justifyContent: 'center',
   }
   if (Platform.OS === 'web') {
-    return { ...base, boxShadow: '0 0 0 3px rgba(242, 244, 247, 1), 0 0 0 2px rgba(255, 255, 255, 1)' }
+    return {
+      ...base,
+      boxShadow: '0 0 0 3px rgba(242, 244, 247, 1), 0 0 0 2px rgba(255, 255, 255, 1)',
+    }
   }
   return {
     ...base,

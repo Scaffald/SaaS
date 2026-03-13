@@ -13,6 +13,7 @@ import { typography } from '../../tokens/typography'
 import type { StepProps } from './Stepper.types'
 import { CheckIcon } from './StepperIcons'
 import { useThemeContext } from '../../theme'
+import { webStyle } from '../../utils/webStyles'
 
 export function Step({
   status,
@@ -39,11 +40,12 @@ export function Step({
     if (interactive && !disabled) {
       // Add web-only styles for interactivity
       if (Platform.OS === 'web') {
-        baseStyles.push({
-          cursor: 'pointer',
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          transition: 'opacity 0.2s ease',
-        } as any)
+        baseStyles.push(
+          webStyle({
+            cursor: 'pointer',
+            transition: 'opacity 0.2s ease',
+          })
+        )
       }
       if (isHovered) {
         baseStyles.push({
@@ -90,7 +92,7 @@ export function Step({
       baseStyles.push({
         backgroundColor: 'transparent',
         borderWidth: 1,
-borderColor: isLight ? colors.border.light.default : colors.border.dark.default,
+        borderColor: isLight ? colors.border.light.default : colors.border.dark.default,
       })
     }
 
@@ -233,4 +235,3 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
 })
-

@@ -41,6 +41,7 @@ import { spacing } from '../../tokens/spacing'
 import { Text, Caption } from '../Typography'
 import { Label } from '../Typography'
 import { Spinner } from '../Spinner'
+import { webStyle } from '../../utils/webStyles'
 
 // ============================================================================
 // SearchSelect Component
@@ -71,7 +72,7 @@ export function SearchSelect({
   testID,
 }: SearchSelectProps) {
   const { theme } = useThemeContext()
-  
+
   const select = useSearchSelect({
     options,
     value,
@@ -113,7 +114,9 @@ export function SearchSelect({
           />
         ) : (
           <RNText
-            style={select.displayText ? styles.displayText : [styles.displayText, styles.placeholder]}
+            style={
+              select.displayText ? styles.displayText : [styles.displayText, styles.placeholder]
+            }
             numberOfLines={1}
           >
             {select.displayText || placeholder}
@@ -200,10 +203,7 @@ export function SearchSelect({
 
       {/* Helper/Error text */}
       {(errorMessage || helperText) && (
-        <Caption
-          color={hasError ? 'error' : 'secondary'}
-          style={styles.helperText}
-        >
+        <Caption color={hasError ? 'error' : 'secondary'} style={styles.helperText}>
           {errorMessage || helperText}
         </Caption>
       )}
@@ -265,9 +265,7 @@ function OptionItem({
           )}
         </View>
       </View>
-      {isSelected && (
-        <Text style={styles.checkmark}>{multiple ? '☑' : '✓'}</Text>
-      )}
+      {isSelected && <Text style={styles.checkmark}>{multiple ? '☑' : '✓'}</Text>}
     </Pressable>
   )
 }
@@ -304,15 +302,13 @@ function getStyles(
       alignItems: 'center',
       justifyContent: 'space-between',
       paddingHorizontal: config.paddingHorizontal,
-      backgroundColor: disabled
-        ? colors.bg[theme].muted
-        : colors.bg[theme].default,
+      backgroundColor: disabled ? colors.bg[theme].muted : colors.bg[theme].default,
       borderWidth: borderWidth.thin,
       borderColor: hasError
         ? colors.error[500]
         : isOpen
-        ? colors.primary[500]
-        : colors.border[theme].default,
+          ? colors.primary[500]
+          : colors.border[theme].default,
       borderRadius: borderRadius.s,
       opacity: disabled ? 0.6 : 1,
     },
@@ -321,9 +317,7 @@ function getStyles(
       height: '100%',
       fontSize: config.fontSize,
       color: colors.text[theme].primary,
-      ...Platform.select({
-        web: { outlineStyle: 'none' } as any,
-      }),
+      ...webStyle({ outlineStyle: 'none' }),
     },
     displayText: {
       flex: 1,
@@ -348,7 +342,7 @@ function getStyles(
     },
     backdrop: {
       ...StyleSheet.absoluteFillObject,
-      position: 'fixed' as any,
+      ...webStyle({ position: 'fixed' }),
       top: 0,
       left: 0,
       right: 0,
@@ -366,9 +360,9 @@ function getStyles(
       borderRadius: borderRadius.s,
       zIndex: 1000,
       ...Platform.select({
-        web: {
+        web: webStyle({
           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-        } as any,
+        }),
         default: {
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 4 },
@@ -400,11 +394,7 @@ function getStyles(
   })
 }
 
-function getOptionStyles(
-  theme: 'light' | 'dark',
-  isSelected: boolean,
-  disabled?: boolean
-) {
+function getOptionStyles(theme: 'light' | 'dark', isSelected: boolean, disabled?: boolean) {
   return StyleSheet.create({
     option: {
       flexDirection: 'row',
@@ -412,9 +402,7 @@ function getOptionStyles(
       justifyContent: 'space-between',
       paddingHorizontal: spacing[12],
       paddingVertical: spacing[10],
-      backgroundColor: isSelected
-        ? colors.bg[theme].subtle
-        : colors.bg[theme].default,
+      backgroundColor: isSelected ? colors.bg[theme].subtle : colors.bg[theme].default,
       opacity: disabled ? 0.5 : 1,
     },
     optionContent: {

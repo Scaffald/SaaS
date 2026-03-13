@@ -29,9 +29,7 @@ export function invariant(
   componentName?: string
 ): asserts condition {
   if (!condition) {
-    const prefix = componentName
-      ? `[beyond-ui/${componentName}]`
-      : '[beyond-ui]'
+    const prefix = componentName ? `[beyond-ui/${componentName}]` : '[beyond-ui]'
 
     // In development, throw with full message
     if (process.env.NODE_ENV !== 'production') {
@@ -53,17 +51,10 @@ export function invariant(
  * @param message - Warning message to display
  * @param componentName - Optional component name for better context
  */
-export function warning(
-  condition: unknown,
-  message: string,
-  componentName?: string
-): void {
+export function warning(condition: unknown, message: string, componentName?: string): void {
   if (process.env.NODE_ENV !== 'production' && !condition) {
-    const prefix = componentName
-      ? `[beyond-ui/${componentName}]`
-      : '[beyond-ui]'
+    const prefix = componentName ? `[beyond-ui/${componentName}]` : '[beyond-ui]'
 
-    // eslint-disable-next-line no-console
     console.warn(`${prefix} Warning: ${message}`)
   }
 }
@@ -80,11 +71,7 @@ export function warning(
  */
 const shownDeprecations = new Set<string>()
 
-export function deprecated(
-  feature: string,
-  replacement: string,
-  componentName?: string
-): void {
+export function deprecated(feature: string, replacement: string, componentName?: string): void {
   if (process.env.NODE_ENV !== 'production') {
     const key = `${componentName || ''}:${feature}`
 
@@ -94,13 +81,8 @@ export function deprecated(
     }
     shownDeprecations.add(key)
 
-    const prefix = componentName
-      ? `[beyond-ui/${componentName}]`
-      : '[beyond-ui]'
+    const prefix = componentName ? `[beyond-ui/${componentName}]` : '[beyond-ui]'
 
-    // eslint-disable-next-line no-console
-    console.warn(
-      `${prefix} Deprecation: "${feature}" is deprecated. Use "${replacement}" instead.`
-    )
+    console.warn(`${prefix} Deprecation: "${feature}" is deprecated. Use "${replacement}" instead.`)
   }
 }

@@ -13,4 +13,3 @@ export type {
   SliderHandleState,
 } from './Slider.types'
 export type { RangeSliderProps, RangeSliderSize } from './RangeSlider.types'
-

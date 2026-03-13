@@ -44,8 +44,12 @@ export function Slider({
 
   // Calculate handle positions
   const handlePosition = slider.isRange ? undefined : slider.calculatePosition(slider.currentValue)
-  const handleStartPosition = slider.isRange ? slider.calculatePosition(slider.currentRange[0]) : undefined
-  const handleEndPosition = slider.isRange ? slider.calculatePosition(slider.currentRange[1]) : undefined
+  const handleStartPosition = slider.isRange
+    ? slider.calculatePosition(slider.currentRange[0])
+    : undefined
+  const handleEndPosition = slider.isRange
+    ? slider.calculatePosition(slider.currentRange[1])
+    : undefined
 
   // Determine handle state
   const handleState = slider.isDragging ? 'active' : 'default'
@@ -204,4 +208,3 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 })
-

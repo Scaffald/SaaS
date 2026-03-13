@@ -48,7 +48,6 @@ export interface GestureHandlerModule {
 
 function tryLoadGestureHandler(): GestureHandlerModule | null {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require('react-native-gesture-handler') as GestureHandlerModule
   } catch {
     return null

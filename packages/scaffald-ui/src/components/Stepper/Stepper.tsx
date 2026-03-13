@@ -112,4 +112,3 @@ const styles = StyleSheet.create({
     flexShrink: 0, // Prevent separators from shrinking
   },
 })
-

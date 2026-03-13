@@ -37,18 +37,13 @@ export function SidebarItemGroup({
   return (
     <View style={[styles.container, style]}>
       {/* Divider */}
-      {showDivider && (
-        <View style={styles.divider} />
-      )}
+      {showDivider && <View style={styles.divider} />}
 
       {/* Heading */}
-      {heading && !collapsed && (
-        <SidebarMenuItem type="heading" label={heading} />
-      )}
+      {heading && !collapsed && <SidebarMenuItem type="heading" label={heading} />}
 
       {/* Group content */}
       <View style={styles.content}>{children}</View>
     </View>
   )
 }
-

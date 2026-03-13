@@ -62,12 +62,7 @@ export function SidebarWidget({
     if (type === 'progress-horizontal' || type === 'progress-vertical') {
       return (
         <View style={[styles.collapsedContainer, style]}>
-          <View
-            style={[
-              styles.collapsedProgressIndicator,
-              { width: `${progressValue}%` },
-            ]}
-          />
+          <View style={[styles.collapsedProgressIndicator, { width: `${progressValue}%` }]} />
         </View>
       )
     }
@@ -80,23 +75,14 @@ export function SidebarWidget({
       <View style={[styles.progressHorizontalContainer, style]}>
         {/* Top row: Label and arrow */}
         <View style={styles.progressHeader}>
-          <Pressable
-            onPress={onButtonPress}
-            style={styles.labelButton}
-          >
-            <Text style={styles.progressLabel}>
-              {label}
-            </Text>
+          <Pressable onPress={onButtonPress} style={styles.labelButton}>
+            <Text style={styles.progressLabel}>{label}</Text>
             <ChevronRight size={16} color={styles.iconColor} />
           </Pressable>
         </View>
 
         {/* Value text */}
-        {valueText && (
-          <Text style={styles.valueText}>
-            {valueText}
-          </Text>
-        )}
+        {valueText && <Text style={styles.valueText}>{valueText}</Text>}
 
         {/* Progress bar */}
         <ProgressBar
@@ -117,9 +103,7 @@ export function SidebarWidget({
       <View style={[styles.progressVerticalContainer, style]}>
         {/* Top row: Label and indicator */}
         <View style={styles.progressHeader}>
-          <Text style={styles.progressLabel}>
-            {label}
-          </Text>
+          <Text style={styles.progressLabel}>{label}</Text>
           <ProgressBar
             value={progressValue}
             orientation="vertical"
@@ -131,11 +115,7 @@ export function SidebarWidget({
         </View>
 
         {/* Value text */}
-        {valueText && (
-          <Text style={styles.valueText}>
-            {valueText}
-          </Text>
-        )}
+        {valueText && <Text style={styles.valueText}>{valueText}</Text>}
       </View>
     )
   }
@@ -152,10 +132,7 @@ export function SidebarWidget({
           {message || ''}
         </HelperText>
         {buttonText && (
-          <Pressable
-            onPress={onButtonPress}
-            style={styles.upgradeButton}
-          >
+          <Pressable onPress={onButtonPress} style={styles.upgradeButton}>
             <Text style={styles.upgradeButtonText}>{buttonText}</Text>
           </Pressable>
         )}
@@ -175,10 +152,7 @@ export function SidebarWidget({
           {message || ''}
         </HelperText>
         {buttonText && (
-          <Pressable
-            onPress={onButtonPress}
-            style={styles.upgradeButton}
-          >
+          <Pressable onPress={onButtonPress} style={styles.upgradeButton}>
             <Text style={styles.upgradeButtonText}>{buttonText}</Text>
           </Pressable>
         )}
@@ -188,4 +162,3 @@ export function SidebarWidget({
 
   return null
 }
-

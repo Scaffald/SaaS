@@ -43,6 +43,7 @@
  */
 
 import { View, Text, StyleSheet } from 'react-native'
+import { webStyle } from '../../utils/webStyles'
 import type { SaaSNavigationProps } from './SaaSNavigation.types'
 import {
   getContainerStyles,
@@ -125,9 +126,7 @@ export function SaaSNavigation({
         {...({ accessibilityRole: 'navigation' } as any)}
         accessibilityLabel={accessibilityLabel || 'Onboarding navigation'}
       >
-        {showPageTitle && pageTitle && (
-          <Text style={[titleStyles, titleStyle]}>{pageTitle}</Text>
-        )}
+        {showPageTitle && pageTitle && <Text style={[titleStyles, titleStyle]}>{pageTitle}</Text>}
       </View>
     )
   }
@@ -140,9 +139,7 @@ export function SaaSNavigation({
         {...({ accessibilityRole: 'navigation' } as any)}
         accessibilityLabel={accessibilityLabel || 'Navigation links'}
       >
-        {showPageTitle && pageTitle && (
-          <Text style={[titleStyles, titleStyle]}>{pageTitle}</Text>
-        )}
+        {showPageTitle && pageTitle && <Text style={[titleStyles, titleStyle]}>{pageTitle}</Text>}
       </View>
     )
   }
@@ -151,11 +148,7 @@ export function SaaSNavigation({
   if (variant === 'finance-banking') {
     return (
       <View
-        style={[
-          containerStyles,
-          { minHeight: 138, paddingVertical: spacing[0] },
-          style,
-        ]}
+        style={[containerStyles, { minHeight: 138, paddingVertical: spacing[0] }, style]}
         {...({ accessibilityRole: 'navigation' } as any)}
         accessibilityLabel={accessibilityLabel || 'Finance banking navigation'}
       >
@@ -164,9 +157,9 @@ export function SaaSNavigation({
             style={[
               featuredIconStyles,
               // Web: Use CSS gradient background
-              typeof window !== 'undefined' && {
+              webStyle({
                 background: 'linear-gradient(180deg, #f9fafb 0%, #f2f4f7 100%)',
-              } as any,
+              }),
             ]}
           >
             <FeaturedIcon size={20} color={colors.icon[theme].default} />
@@ -211,9 +204,9 @@ export function SaaSNavigation({
           style={[
             featuredIconStyles,
             // Web: Use CSS gradient background
-            typeof window !== 'undefined' && {
+            webStyle({
               background: 'linear-gradient(180deg, #f9fafb 0%, #f2f4f7 100%)',
-            } as any,
+            }),
           ]}
         >
           <FeaturedIcon size={20} color={colors.icon[theme].default} />

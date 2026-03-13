@@ -37,7 +37,13 @@ export interface BreadcrumbProps extends Omit<StepperProps, 'steps' | 'currentSt
  * Breadcrumb component - a semantic variant of Stepper for navigation
  * By default, Breadcrumb is interactive (clickable) for navigation use cases
  */
-export function Breadcrumb({ items, currentIndex, interactive = true, ...stepperProps }: BreadcrumbProps) {
-  return <Stepper steps={items} currentStep={currentIndex} interactive={interactive} {...stepperProps} />
+export function Breadcrumb({
+  items,
+  currentIndex,
+  interactive = true,
+  ...stepperProps
+}: BreadcrumbProps) {
+  return (
+    <Stepper steps={items} currentStep={currentIndex} interactive={interactive} {...stepperProps} />
+  )
 }
-

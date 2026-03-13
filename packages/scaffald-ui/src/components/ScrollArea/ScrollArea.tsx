@@ -23,15 +23,16 @@
  */
 
 import { useCallback, useRef } from 'react'
-import {
-  ScrollView,
-  StyleSheet,
-  Platform,
+import { ScrollView, StyleSheet, Platform } from 'react-native'
+import type {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  ScrollView as RNScrollView,
 } from 'react-native'
-import type { NativeScrollEvent, NativeSyntheticEvent, ScrollView as RNScrollView } from 'react-native'
 import type { ScrollAreaProps } from './ScrollArea.types'
 import { useThemeContext } from '../../theme'
 import { colors } from '../../tokens/colors'
+import { webStyle } from '../../utils/webStyles'
 
 export function ScrollArea({
   children,
@@ -79,15 +80,13 @@ export function ScrollArea({
         let hasReached = false
 
         if (isVertical) {
-          const distanceFromEnd =
-            contentSize.height - layoutMeasurement.height - contentOffset.y
+          const distanceFromEnd = contentSize.height - layoutMeasurement.height - contentOffset.y
           const threshold = contentSize.height * onEndReachedThreshold
           hasReached = distanceFromEnd <= threshold
         }
 
         if (isHorizontal && !hasReached) {
-          const distanceFromEnd =
-            contentSize.width - layoutMeasurement.width - contentOffset.x
+          const distanceFromEnd = contentSize.width - layoutMeasurement.width - contentOffset.x
           const threshold = contentSize.width * onEndReachedThreshold
           hasReached = distanceFromEnd <= threshold
         }
@@ -171,11 +170,10 @@ function getStyles(
       }),
     },
     webScrollbar: Platform.select({
-      web: {
-        // Custom scrollbar styling for web
+      web: webStyle({
         scrollbarWidth: 'thin',
         scrollbarColor: `${colors.border[theme].default} transparent`,
-      } as any,
+      }),
       default: {},
     }),
   })
@@ -196,9 +194,6 @@ export function scrollTo(
   })
 }
 
-export function scrollToEnd(
-  ref: React.RefObject<RNScrollView>,
-  animated = true
-) {
+export function scrollToEnd(ref: React.RefObject<RNScrollView>, animated = true) {
   ref.current?.scrollToEnd({ animated })
 }

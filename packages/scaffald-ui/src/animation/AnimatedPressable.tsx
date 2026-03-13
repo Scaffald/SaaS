@@ -149,15 +149,12 @@ function ReanimatedPressable({
   const scale = useSharedValueAsserted(1)
   const config = springConfigs[springConfig || 'press']
 
-  const animatedStyle = useAnimatedStyleAsserted(
-    () => {
-      'worklet'
-      return {
-        transform: [{ scale: scale.value }],
-      }
-    },
-    [scale]
-  )
+  const animatedStyle = useAnimatedStyleAsserted(() => {
+    'worklet'
+    return {
+      transform: [{ scale: scale.value }],
+    }
+  }, [scale])
 
   const pressScaleValue = pressScale ?? 0.95
 
@@ -189,7 +186,7 @@ function ReanimatedPressable({
 
   return (
     <AnimatedComponent
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // biome-ignore lint/suspicious/noExplicitAny: Reanimated animated ref type mismatch
       ref={ref as any}
       disabled={disabled}
       onPressIn={handlePressIn}

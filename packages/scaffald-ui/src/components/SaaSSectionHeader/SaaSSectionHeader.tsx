@@ -41,6 +41,7 @@
  */
 
 import { View, Text, StyleSheet } from 'react-native'
+import { webStyle } from '../../utils/webStyles'
 import type { SaaSSectionHeaderProps } from './SaaSSectionHeader.types'
 import { colors } from '../../tokens/colors'
 import {
@@ -115,9 +116,9 @@ export function SaaSSectionHeader({
               style={[
                 featuredIconStyles,
                 // Web: Use CSS gradient background
-                typeof window !== 'undefined' && {
+                webStyle({
                   background: 'linear-gradient(180deg, #f9fafb 0%, #f2f4f7 100%)',
-                } as any,
+                }),
               ]}
             >
               <FeaturedIcon size={20} color={colors.icon[theme].default} />
@@ -170,7 +171,10 @@ export function SaaSSectionHeader({
         {variant === 'time-period' && timePeriodOptions.length > 0 && (
           <View style={getTimePeriodContainerStyles()}>
             <Dropdown
-              trigger={timePeriodOptions.find((opt) => opt.value === selectedTimePeriod)?.label || 'Select period'}
+              trigger={
+                timePeriodOptions.find((opt) => opt.value === selectedTimePeriod)?.label ||
+                'Select period'
+              }
               onOpenChange={() => {}}
             >
               <DropdownSection>

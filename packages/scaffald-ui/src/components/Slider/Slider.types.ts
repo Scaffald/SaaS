@@ -2,7 +2,7 @@
  * Slider component types
  */
 
-import type { ViewStyle, } from 'react-native'
+import type { ViewStyle } from 'react-native'
 
 export type SliderColor = 'primary' | 'gray'
 export type SliderIndicatorPosition = 'top' | 'bottom' | 'none'
@@ -99,4 +99,3 @@ export interface SliderProps {
    */
   tooltipStyle?: ViewStyle
 }
-

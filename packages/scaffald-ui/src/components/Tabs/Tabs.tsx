@@ -36,7 +36,7 @@
 
 import { Children, isValidElement, cloneElement } from 'react'
 import { View, ScrollView } from 'react-native'
-import type { TabsProps } from './Tabs.types'
+import type { TabsProps, TabItemProps } from './Tabs.types'
 import { getTabsStyles, getTabListStyles } from './Tabs.styles'
 import { useThemeContext } from '../../theme'
 import { TabsContext } from './TabsContext'
@@ -63,7 +63,7 @@ export function Tabs({
   containerStyle,
 }: TabsProps) {
   const { theme } = useThemeContext()
-  
+
   const tabs = useTabs({
     value,
     defaultValue,
@@ -93,8 +93,8 @@ export function Tabs({
 
     Children.forEach(children, (child) => {
       if (isValidElement(child)) {
-        const itemValue = (child.props as any).value
-        const itemChildren = (child.props as any).children
+        const itemValue = (child.props as TabItemProps).value
+        const itemChildren = (child.props as TabItemProps).children
         const childrenArray = Children.toArray(itemChildren)
 
         let trigger: React.ReactElement | null = null
@@ -102,7 +102,7 @@ export function Tabs({
 
         childrenArray.forEach((itemChild) => {
           if (isValidElement(itemChild)) {
-            const componentType = (itemChild as any).type
+            const componentType = (itemChild as React.ReactElement).type
             if (
               componentType === TabTrigger ||
               componentType?.displayName === 'TabTrigger' ||
@@ -149,7 +149,7 @@ export function Tabs({
                 return cloneElement(item.fullItem, {
                   key: item.value || `trigger-${index}`,
                   children: item.trigger,
-                } as any)
+                } as Partial<TabItemProps>)
               })}
             </ScrollView>
           ) : (
@@ -158,7 +158,7 @@ export function Tabs({
                 return cloneElement(item.fullItem, {
                   key: item.value || `trigger-${index}`,
                   children: item.trigger,
-                } as any)
+                } as Partial<TabItemProps>)
               })}
             </View>
           )}
@@ -169,7 +169,7 @@ export function Tabs({
               return cloneElement(item.fullItem, {
                 key: `content-${item.value || index}`,
                 children: item.content,
-              } as any)
+              } as Partial<TabItemProps>)
             })}
           </View>
         </View>
@@ -184,4 +184,3 @@ export function Tabs({
     </TabsContext.Provider>
   )
 }
-

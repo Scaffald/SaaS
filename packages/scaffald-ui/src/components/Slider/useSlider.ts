@@ -34,9 +34,7 @@ export function useSlider({
 
   // Get current value(s)
   const currentValue = isControlled ? (valueProp ?? min) : internalValue
-  const currentRange: [number, number] = isControlled
-    ? (rangeProp ?? [min, max])
-    : internalRange
+  const currentRange: [number, number] = isControlled ? (rangeProp ?? [min, max]) : internalRange
 
   // Track layout state
   const [trackWidth, setTrackWidth] = useState(0)
@@ -85,7 +83,8 @@ export function useSlider({
     (event: GestureResponderEvent | React.MouseEvent) => {
       if (disabled || trackWidth === 0) return
 
-      const pageX = 'nativeEvent' in event ? event.nativeEvent.pageX : (event as React.MouseEvent).pageX
+      const pageX =
+        'nativeEvent' in event ? event.nativeEvent.pageX : (event as React.MouseEvent).pageX
 
       trackRef.current?.measureInWindow((trackX) => {
         const relativeX = pageX - trackX
@@ -127,7 +126,21 @@ export function useSlider({
         }
       })
     },
-    [disabled, trackWidth, calculateValue, isRange, currentRange, min, max, step, isControlled, onRangeChange, onValueChange, clampValue, haptics]
+    [
+      disabled,
+      trackWidth,
+      calculateValue,
+      isRange,
+      currentRange,
+      min,
+      max,
+      step,
+      isControlled,
+      onRangeChange,
+      onValueChange,
+      clampValue,
+      haptics,
+    ]
   )
 
   // Handle drag start
@@ -182,7 +195,21 @@ export function useSlider({
         }
       })
     },
-    [disabled, trackWidth, calculateValue, isRange, currentRange, min, max, step, isControlled, onRangeChange, onValueChange, clampValue, isDragging]
+    [
+      disabled,
+      trackWidth,
+      calculateValue,
+      isRange,
+      currentRange,
+      min,
+      max,
+      step,
+      isControlled,
+      onRangeChange,
+      onValueChange,
+      clampValue,
+      isDragging,
+    ]
   )
 
   // Handle drag end
@@ -213,9 +240,18 @@ export function useSlider({
   )
 
   // PanResponders for each handle
-  const singleHandlePanResponder = useMemo(() => createHandlePanResponder('single'), [createHandlePanResponder])
-  const startHandlePanResponder = useMemo(() => createHandlePanResponder('start'), [createHandlePanResponder])
-  const endHandlePanResponder = useMemo(() => createHandlePanResponder('end'), [createHandlePanResponder])
+  const singleHandlePanResponder = useMemo(
+    () => createHandlePanResponder('single'),
+    [createHandlePanResponder]
+  )
+  const startHandlePanResponder = useMemo(
+    () => createHandlePanResponder('start'),
+    [createHandlePanResponder]
+  )
+  const endHandlePanResponder = useMemo(
+    () => createHandlePanResponder('end'),
+    [createHandlePanResponder]
+  )
 
   // PanResponder for track (click to jump)
   const trackPanResponder = useMemo(

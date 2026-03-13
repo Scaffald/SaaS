@@ -14,14 +14,21 @@ function getWebStorage(): Storage | null {
   return null
 }
 
-let asyncStorageModule: { default: { getItem: (k: string) => Promise<string | null>; setItem: (k: string, v: string) => Promise<void> } } | null = null
+let asyncStorageModule: {
+  default: {
+    getItem: (k: string) => Promise<string | null>
+    setItem: (k: string, v: string) => Promise<void>
+  }
+} | null = null
 
 function getAsyncStorage() {
   if (asyncStorageModule) return asyncStorageModule.default
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports -- optional native dependency
     asyncStorageModule = require('@react-native-async-storage/async-storage') as {
-      default: { getItem: (k: string) => Promise<string | null>; setItem: (k: string, v: string) => Promise<void> }
+      default: {
+        getItem: (k: string) => Promise<string | null>
+        setItem: (k: string, v: string) => Promise<void>
+      }
     }
     return asyncStorageModule.default
   } catch {

@@ -53,24 +53,28 @@ export function SidebarFooter({
           <View style={styles.actions}>
             {actions.map((action) => {
               // Determine tooltip configuration
-              const tooltipConfig = typeof action.tooltip === 'string'
-                ? { content: action.tooltip, position: 'down-center' as const, delay: 200 }
-                : action.tooltip
-                ? { content: action.tooltip.content, position: action.tooltip.position || 'down-center' as const, delay: action.tooltip.delay || 200 }
-                : null
+              const tooltipConfig =
+                typeof action.tooltip === 'string'
+                  ? { content: action.tooltip, position: 'down-center' as const, delay: 200 }
+                  : action.tooltip
+                    ? {
+                        content: action.tooltip.content,
+                        position: action.tooltip.position || ('down-center' as const),
+                        delay: action.tooltip.delay || 200,
+                      }
+                    : null
 
               const actionButton = (
                 <Pressable
                   key={action.id}
                   onPress={action.onPress}
-                  style={({ pressed }) => [
-                    styles.actionButton,
-                    pressed && { opacity: 0.7 },
-                  ]}
+                  style={({ pressed }) => [styles.actionButton, pressed && { opacity: 0.7 }]}
                   accessibilityRole="button"
                   accessibilityLabel={action.label || action.id}
                 >
-                  <View style={{ width: actionIconSize, height: actionIconSize, position: 'relative' }}>
+                  <View
+                    style={{ width: actionIconSize, height: actionIconSize, position: 'relative' }}
+                  >
                     <action.icon size={actionIconSize} color={styles.iconColor} />
                     {action.badge !== undefined && action.badge > 0 && (
                       <View
@@ -118,24 +122,16 @@ export function SidebarFooter({
       {/* User profile section */}
       {user && (
         <View style={styles.userSection}>
-          {user.avatar && (
-            <View style={styles.avatarContainer}>{user.avatar}</View>
-          )}
+          {user.avatar && <View style={styles.avatarContainer}>{user.avatar}</View>}
           {!collapsed && (
             <View style={styles.userInfo}>
               {user.name && (
-                <Text
-                  style={styles.userName}
-                  numberOfLines={1}
-                >
+                <Text style={styles.userName} numberOfLines={1}>
                   {user.name}
                 </Text>
               )}
               {user.email && (
-                <Text
-                  style={styles.userEmail}
-                  numberOfLines={1}
-                >
+                <Text style={styles.userEmail} numberOfLines={1}>
                   {user.email}
                 </Text>
               )}
@@ -146,4 +142,3 @@ export function SidebarFooter({
     </View>
   )
 }
-
