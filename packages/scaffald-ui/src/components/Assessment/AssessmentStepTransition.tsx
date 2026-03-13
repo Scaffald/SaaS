@@ -103,6 +103,8 @@ function ReanimatedStepTransition({
   const opacity = useSharedValueAsserted(1)
   const [displayKey, setDisplayKey] = useState(stepKey)
   const [displayChildren, setDisplayChildren] = useState(children)
+  const exitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pendingStepKeyRef = useRef<string | null>(null)
 
   const durationMs = timingConfigs.normal.duration
 
@@ -119,7 +121,14 @@ function ReanimatedStepTransition({
       return
     }
 
+    // Cancel any pending transition so an older timeout cannot overwrite display state
+    if (exitTimeoutRef.current != null) {
+      clearTimeout(exitTimeoutRef.current)
+      exitTimeoutRef.current = null
+    }
+
     const dir = direction ?? 1
+    pendingStepKeyRef.current = stepKey
 
     // Slide out current content
     translateX.value = withTimingAsserted(
@@ -136,7 +145,10 @@ function ReanimatedStepTransition({
 
     // After exit, mount new content and slide in
     const exitDuration = durationMs * 0.4
-    setTimeout(() => {
+    exitTimeoutRef.current = setTimeout(() => {
+      exitTimeoutRef.current = null
+      // Only apply if this transition is still the current one (guard against stale callback)
+      if (pendingStepKeyRef.current !== stepKey) return
       setDisplayKey(stepKey)
       setDisplayChildren(children)
       prevKeyRef.current = stepKey
@@ -151,6 +163,13 @@ function ReanimatedStepTransition({
         opacity.value = withTimingAsserted(1, { duration: durationMs * 0.6 })
       })
     }, exitDuration)
+
+    return () => {
+      if (exitTimeoutRef.current != null) {
+        clearTimeout(exitTimeoutRef.current)
+        exitTimeoutRef.current = null
+      }
+    }
   }, [stepKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Update children if step hasn't changed (e.g., state updates within step)

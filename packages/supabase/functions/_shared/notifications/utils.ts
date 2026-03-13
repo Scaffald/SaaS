@@ -16,6 +16,7 @@ import {
   NotificationPreferencesRow,
   NotificationRow,
   NotificationSupabaseClient,
+  NotificationType,
 } from './types.ts'
 
 type ChannelEnabledMap = Record<NotificationChannel, boolean>
@@ -619,9 +620,16 @@ export async function getDeviceTokens(
   }))
 }
 
+// Accept NotificationType (our runtime union) rather than the stale DB enum for `type`.
+// This avoids TS2322 when community notification types exist in NOTIFICATION_TYPES but
+// haven't been regenerated into database.types.ts yet.
+type InsertPayload = Omit<Partial<Database['core']['Tables']['notifications']['Insert']>, 'type'> & {
+  type?: NotificationType
+}
+
 export async function insertNotification(
   supabase: NotificationSupabaseClient,
-  payload: Partial<Database['core']['Tables']['notifications']['Insert']>,
+  payload: InsertPayload,
   dedupeKey?: string | null
 ): Promise<NotificationRow | null> {
   if (!payload.user_id || !payload.title || !payload.message || !payload.type) {
@@ -632,7 +640,7 @@ export async function insertNotification(
     user_id: payload.user_id,
     title: payload.title,
     message: payload.message,
-    type: payload.type,
+    type: payload.type as Database['core']['Enums']['notification_type'],
     severity: payload.severity ?? 'info',
     preview: payload.preview ?? null,
     body: toJson(payload.body ?? {}, {}),
