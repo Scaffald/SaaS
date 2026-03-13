@@ -48,7 +48,7 @@ export const DashboardLayout = ({
   // Calculate current index (last item is always active)
   const currentIndex = displayBreadcrumbs.length - 1
 
-  const bgColor = colors.bg[theme].subtle
+  const bgColor = colors.bg[theme].emphasis
 
   return (
     <ScrollView

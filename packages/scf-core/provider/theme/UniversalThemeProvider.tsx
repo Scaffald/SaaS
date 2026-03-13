@@ -115,7 +115,7 @@ const AppLightTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    background: colors.bg.light.subtle,
+    background: colors.bg.light.emphasis,
   },
 }
 
@@ -123,7 +123,7 @@ const AppDarkTheme = {
   ...DarkTheme,
   colors: {
     ...DarkTheme.colors,
-    background: colors.bg.dark.subtle,
+    background: colors.bg.dark.emphasis,
   },
 }
 
@@ -136,7 +136,7 @@ const InnerProvider = ({ children }: { children: ReactNode }) => {
       if (typeof document !== 'undefined') {
         document.documentElement.setAttribute('data-theme', resolvedTheme)
         // Match the app's background so overscroll bounce areas use the same color
-        const bg = resolvedTheme === 'dark' ? colors.bg.dark.subtle : colors.bg.light.subtle
+        const bg = resolvedTheme === 'dark' ? colors.bg.dark.emphasis : colors.bg.light.emphasis
         document.documentElement.style.backgroundColor = bg
         document.body.style.backgroundColor = bg
       }
