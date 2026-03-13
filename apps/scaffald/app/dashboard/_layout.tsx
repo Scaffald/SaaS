@@ -15,6 +15,7 @@ export default function Layout() {
   const { isLoading, user } = useProtectedRoute()
   const { session, isLoading: isSessionLoading } = useSessionContext()
   const { theme } = useThemeContext()
+  const resolvedTheme = theme === 'dark' ? 'dark' : 'light'
   const router = useRouter()
   const hasRedirectedToOnboardingRef = useRef(false)
 
@@ -44,7 +45,7 @@ export default function Layout() {
   const loadingOverlay =
     isLoading || isCheckingPrereqs || !sessionReady ? (
       <Stack
-        style={{ ...StyleSheet.absoluteFillObject, backgroundColor: colors.bg[theme].default }}
+        style={{ ...StyleSheet.absoluteFillObject, backgroundColor: colors.bg[resolvedTheme].default }}
         justify="center"
         align="center"
       >
@@ -68,8 +69,34 @@ export default function Layout() {
         <Drawer.Screen name="employers/index" options={{ title: 'Search Employers' }} />
         <Drawer.Screen name="employers/[id]/index" options={{ title: 'Employer Profile' }} />
         <Drawer.Screen name="jobs/index" options={{ title: 'Search Jobs' }} />
+        <Drawer.Screen name="jobs/[id]" options={{ title: 'Job Detail' }} />
+        <Drawer.Screen name="jobs/applications/index" options={{ title: 'Applications' }} />
+        <Drawer.Screen
+          name="jobs/applications/[applicationId]/inquiry"
+          options={{ title: 'Inquiry' }}
+        />
         <Drawer.Screen name="users/[id]/index" options={{ title: 'User Profile' }} />
         <Drawer.Screen name="profile" options={{ title: 'Profile' }} />
+        <Drawer.Screen name="profile/general/index" options={{ title: 'General' }} />
+        <Drawer.Screen name="profile/employment/index" options={{ title: 'Employment' }} />
+        <Drawer.Screen name="profile/skills/index" options={{ title: 'Skills' }} />
+        <Drawer.Screen name="profile/certifications/index" options={{ title: 'Certifications' }} />
+        <Drawer.Screen name="profile/education/index" options={{ title: 'Education' }} />
+        <Drawer.Screen name="profile/experience/index" options={{ title: 'Experience' }} />
+        <Drawer.Screen name="profile/verification" options={{ title: 'Verification' }} />
+        <Drawer.Screen name="profile/resume/index" options={{ title: 'Resumé' }} />
+        <Drawer.Screen name="profile/resume/review" options={{ title: 'Resume Review' }} />
+        <Drawer.Screen name="profile/background-check/index" options={{ title: 'Background Checks' }} />
+        <Drawer.Screen name="profile/background-check/initiate" options={{ title: 'Start Background Check' }} />
+        <Drawer.Screen name="profile/background-check/[checkId]/dispute" options={{ title: 'Dispute' }} />
+        <Drawer.Screen name="settings/index" options={{ title: 'Settings' }} />
+        <Drawer.Screen name="employers/create" options={{ title: 'Create Employer' }} />
+        <Drawer.Screen name="employers/organizations/index" options={{ title: 'Organizations' }} />
+        <Drawer.Screen name="employers/organizations/create" options={{ title: 'Request Organization' }} />
+        <Drawer.Screen name="news/index" options={{ title: 'News' }} />
+        <Drawer.Screen name="career-explorer/index" options={{ title: 'Career Explorer' }} />
+        <Drawer.Screen name="career-explorer/[onetCode]" options={{ title: 'Occupation Detail' }} />
+        <Drawer.Screen name="assessments/index" options={{ title: 'Assessments' }} />
         <Drawer.Screen name="assessments/pulse/index" options={{ title: 'Weekly Pulse' }} />
         <Drawer.Screen
           name="assessments/ipip/index"
@@ -80,16 +107,11 @@ export default function Layout() {
           name="assessments/occupation/index"
           options={{ title: 'Occupation Preferences' }}
         />
-        <Drawer.Screen
-          name="skills-analytics/index"
-          options={{ title: 'Skills Analytics' }}
-        />
+        <Drawer.Screen name="teams/index" options={{ title: 'Teams' }} />
+        <Drawer.Screen name="teams/invitations" options={{ title: 'Team Invitations' }} />
         <Drawer.Screen name="work-logs/index" options={{ title: 'Work Logs' }} />
         <Drawer.Screen name="work-logs/create" options={{ title: 'New Work Log' }} />
         <Drawer.Screen name="work-logs/[workLogId]/index" options={{ title: 'Work Log Detail' }} />
-        <Drawer.Screen name="communities/index" options={{ title: 'Communities' }} />
-        <Drawer.Screen name="communities/bookmarks" options={{ title: 'Bookmarks' }} />
-        <Drawer.Screen name="communities/reputation" options={{ title: 'Scaffold Score' }} />
       </DrawerLayout>
     </ErrorBoundary>
   )

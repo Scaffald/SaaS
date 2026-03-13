@@ -112,12 +112,26 @@ const ROUTES_CONFIG = {
       protected: false,
       exact: true,
     },
+    CALLBACK: {
+      path: '/auth/callback',
+      titleKey: 'routes.auth.callback',
+      protected: false,
+      exact: true,
+    },
   },
 
   ONBOARDING: {
     path: '/onboarding',
     titleKey: 'routes.onboarding.title',
     protected: true,
+    exact: true,
+  },
+
+  /** Public profile by slug - /u/:slug (no auth) */
+  PUBLIC_PROFILE: {
+    path: '/u/:slug',
+    titleKey: 'routes.publicProfile',
+    protected: false,
     exact: true,
   },
 
@@ -131,6 +145,12 @@ const ROUTES_CONFIG = {
       titleKey: 'routes.dashboard.profile.title',
       protected: true,
       exact: false,
+      OVERVIEW: {
+        path: '/dashboard/profile',
+        titleKey: 'routes.dashboard.profile.overview',
+        protected: true,
+        exact: true,
+      },
       GENERAL: {
         path: '/dashboard/profile/general',
         titleKey: 'routes.dashboard.profile.general',
@@ -174,8 +194,8 @@ const ROUTES_CONFIG = {
         exact: true,
       },
       ID_VERIFICATION: {
-        path: '/dashboard/profile/id-verification',
-        titleKey: 'routes.dashboard.profile.idVerification',
+        path: '/dashboard/profile/verification',
+        titleKey: 'routes.dashboard.profile.verification',
         protected: true,
         exact: true,
       },
@@ -209,12 +229,6 @@ const ROUTES_CONFIG = {
           exact: true,
         },
       },
-    },
-    SKILLS_ANALYTICS: {
-      path: '/dashboard/skills-analytics',
-      titleKey: 'routes.dashboard.skillsAnalytics',
-      protected: true,
-      exact: true,
     },
     SETTINGS: {
       path: '/dashboard/settings',
@@ -251,6 +265,12 @@ const ROUTES_CONFIG = {
         protected: true,
         exact: true,
       },
+      AUTHORIZED_APPS: {
+        path: '/dashboard/settings/authorized-apps',
+        titleKey: 'routes.dashboard.settings.authorizedApps',
+        protected: true,
+        exact: true,
+      },
     },
     DISCOVER: {
       MAP: {
@@ -282,6 +302,18 @@ const ROUTES_CONFIG = {
           protected: true,
           exact: true,
         },
+        ORGANIZATIONS: {
+          path: '/dashboard/employers/organizations',
+          titleKey: 'routes.dashboard.organizations.title',
+          protected: true,
+          exact: false,
+          CREATE: {
+            path: '/dashboard/employers/organizations/create',
+            titleKey: 'routes.dashboard.organizations.create',
+            protected: true,
+            exact: true,
+          },
+        },
         DETAIL: {
           path: '/dashboard/employers/:id',
           titleKey: 'routes.dashboard.discover.employers.detail',
@@ -300,18 +332,18 @@ const ROUTES_CONFIG = {
           protected: true,
           exact: true,
         },
-      },
-    },
-    ORGANIZATIONS: {
-      path: '/dashboard/organizations',
-      titleKey: 'routes.dashboard.organizations.title',
-      protected: true,
-      exact: true,
-      CREATE: {
-        path: '/dashboard/organizations/create',
-        titleKey: 'routes.dashboard.organizations.create',
-        protected: true,
-        exact: true,
+        APPLICATIONS: {
+          path: '/dashboard/jobs/applications',
+          titleKey: 'routes.dashboard.applications.title',
+          protected: true,
+          exact: false,
+          INQUIRY: {
+            path: '/dashboard/jobs/applications/:applicationId/inquiry',
+            titleKey: 'routes.dashboard.applications.inquiry',
+            protected: true,
+            exact: true,
+          },
+        },
       },
     },
     TEAMS: {
@@ -350,24 +382,6 @@ const ROUTES_CONFIG = {
         exact: true,
       },
     },
-    APPLICATIONS: {
-      path: '/dashboard/applications',
-      titleKey: 'routes.dashboard.applications.title',
-      protected: true,
-      exact: false,
-      INQUIRY: {
-        path: '/dashboard/applications/:applicationId/inquiry',
-        titleKey: 'routes.dashboard.applications.inquiry',
-        protected: true,
-        exact: true,
-      },
-    },
-    CONNECTIONS: {
-      path: '/dashboard/connections',
-      titleKey: 'routes.dashboard.connections.title',
-      protected: true,
-      exact: true,
-    },
     USER: {
       path: '/dashboard/users/:userId',
       titleKey: 'routes.dashboard.user',
@@ -379,6 +393,12 @@ const ROUTES_CONFIG = {
       titleKey: 'routes.dashboard.assessments.title',
       protected: true,
       exact: false,
+      ANALYTICS: {
+        path: '/dashboard/assessments',
+        titleKey: 'routes.dashboard.assessments.analytics',
+        protected: true,
+        exact: true,
+      },
       LUSCHER: {
         path: '/dashboard/assessments/pulse',
         titleKey: 'routes.dashboard.assessments.luscher',
@@ -434,47 +454,54 @@ const ROUTES_CONFIG = {
       protected: true,
       exact: true,
     },
-    COMMUNITIES: {
-      path: '/dashboard/communities',
-      titleKey: 'routes.dashboard.communities.title',
+  },
+
+  COMMUNITIES: {
+    path: '/communities',
+    titleKey: 'routes.communities.title',
+    protected: true,
+    exact: false,
+    CONNECTIONS: {
+      path: '/communities/connections',
+      titleKey: 'routes.communities.connections.title',
+      protected: true,
+      exact: true,
+    },
+    BOOKMARKS: {
+      path: '/communities/bookmarks',
+      titleKey: 'routes.communities.bookmarks',
+      protected: true,
+      exact: true,
+    },
+    REPUTATION: {
+      path: '/communities/reputation',
+      titleKey: 'routes.communities.reputation',
+      protected: true,
+      exact: true,
+    },
+    DETAIL: {
+      path: '/communities/:slug',
+      titleKey: 'routes.communities.detail',
       protected: true,
       exact: false,
-      BOOKMARKS: {
-        path: '/dashboard/communities/bookmarks',
-        titleKey: 'routes.dashboard.communities.bookmarks',
+      MEMBERS: {
+        path: '/communities/:slug/members',
+        titleKey: 'routes.communities.members',
         protected: true,
         exact: true,
       },
-      REPUTATION: {
-        path: '/dashboard/communities/reputation',
-        titleKey: 'routes.dashboard.communities.reputation',
-        protected: true,
-        exact: true,
-      },
-      DETAIL: {
-        path: '/dashboard/communities/:slug',
-        titleKey: 'routes.dashboard.communities.detail',
-        protected: true,
-        exact: false,
-        MEMBERS: {
-          path: '/dashboard/communities/:slug/members',
-          titleKey: 'routes.dashboard.communities.members',
+      POST: {
+        CREATE: {
+          path: '/communities/:slug/post/create',
+          titleKey: 'routes.communities.post.create',
           protected: true,
           exact: true,
         },
-        POST: {
-          CREATE: {
-            path: '/dashboard/communities/:slug/post/create',
-            titleKey: 'routes.dashboard.communities.post.create',
-            protected: true,
-            exact: true,
-          },
-          DETAIL: {
-            path: '/dashboard/communities/:slug/post/:postId',
-            titleKey: 'routes.dashboard.communities.post.detail',
-            protected: true,
-            exact: true,
-          },
+        DETAIL: {
+          path: '/communities/:slug/post/:postId',
+          titleKey: 'routes.communities.post.detail',
+          protected: true,
+          exact: true,
         },
       },
     },
@@ -677,6 +704,24 @@ const ROUTES_CONFIG = {
       SELF_SCHEDULE: {
         path: '/office/ats/self-schedule',
         titleKey: 'routes.office.ats.selfSchedule',
+        protected: true,
+        exact: true,
+      },
+      METRICS: {
+        path: '/office/ats/metrics',
+        titleKey: 'routes.office.ats.metrics',
+        protected: true,
+        exact: true,
+      },
+    },
+    COMMUNITIES: {
+      path: '/office/communities',
+      titleKey: 'routes.office.communities.title',
+      protected: true,
+      exact: false,
+      VERIFICATION: {
+        path: '/office/communities/verification',
+        titleKey: 'routes.office.communities.verification',
         protected: true,
         exact: true,
       },
@@ -1211,15 +1256,18 @@ export const RouteBuilder = {
     buildPath(ROUTES.OFFICE.CMS.TEAMS.DETAIL.SETTINGS, { id: String(id) }),
   projectEdit: (id: string | number) =>
     buildPath(ROUTES.OFFICE.CMS.PROJECTS.DETAIL.EDIT, { id: String(id) }),
-  communitiesHub: () => ROUTES.DASHBOARD.COMMUNITIES.path,
+  communitiesHub: () => ROUTES.COMMUNITIES.path,
+  communitiesConnections: () => ROUTES.COMMUNITIES.CONNECTIONS.path,
   communityDetail: (slug: string) =>
-    buildPath(ROUTES.DASHBOARD.COMMUNITIES.DETAIL, { slug }),
+    buildPath(ROUTES.COMMUNITIES.DETAIL, { slug }),
   communityMembers: (slug: string) =>
-    buildPath(ROUTES.DASHBOARD.COMMUNITIES.DETAIL.MEMBERS, { slug }),
+    buildPath(ROUTES.COMMUNITIES.DETAIL.MEMBERS, { slug }),
   communityPostCreate: (slug: string) =>
-    buildPath(ROUTES.DASHBOARD.COMMUNITIES.DETAIL.POST.CREATE, { slug }),
+    buildPath(ROUTES.COMMUNITIES.DETAIL.POST.CREATE, { slug }),
   communityPostDetail: (slug: string, postId: string) =>
-    buildPath(ROUTES.DASHBOARD.COMMUNITIES.DETAIL.POST.DETAIL, { slug, postId }),
-  communitiesBookmarks: () => ROUTES.DASHBOARD.COMMUNITIES.BOOKMARKS.path,
-  communitiesReputation: () => ROUTES.DASHBOARD.COMMUNITIES.REPUTATION.path,
+    buildPath(ROUTES.COMMUNITIES.DETAIL.POST.DETAIL, { slug, postId }),
+  communitiesBookmarks: () => ROUTES.COMMUNITIES.BOOKMARKS.path,
+  communitiesReputation: () => ROUTES.COMMUNITIES.REPUTATION.path,
+  /** Public profile URL path for a given slug */
+  publicProfile: (slug: string) => `/u/${slug}`,
 } as const

@@ -35,6 +35,9 @@ const DASHBOARD_ROUTES = [
   '/dashboard/workers',
   '/dashboard/jobs',
   '/dashboard/employers',
+  '/dashboard/employers/create',
+  '/dashboard/employers/organizations',
+  '/dashboard/employers/organizations/create',
   '/dashboard/work-logs',
   '/dashboard/work-logs/create',
   '/dashboard/assessments',
@@ -43,10 +46,10 @@ const DASHBOARD_ROUTES = [
   '/dashboard/assessments/riasec',
   '/dashboard/assessments/occupation',
   '/dashboard/settings',
-  '/dashboard/organizations',
   '/dashboard/teams',
   '/dashboard/news',
-  '/dashboard/connections',
+  '/communities',
+  '/communities/connections',
 ]
 
 /** Dynamic dashboard routes (require valid IDs). Audit manually with real IDs or add test fixture IDs. */

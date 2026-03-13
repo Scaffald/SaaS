@@ -1,16 +1,16 @@
 /**
  * Redirect: Organizations merged under Employers.
- * /dashboard/organizations → /dashboard/employers/organizations
+ * /dashboard/organizations/create → /dashboard/employers/organizations/create
  */
 
 import { ROUTES } from '@scf/core/constants/routes'
 import { useRouter } from 'expo-router'
 import { useEffect } from 'react'
 
-export default function OrganizationsRedirect() {
+export default function OrganizationsCreateRedirect() {
   const router = useRouter()
   useEffect(() => {
-    router.replace(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.ORGANIZATIONS.path)
+    router.replace(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.ORGANIZATIONS.CREATE.path)
   }, [router])
   return null
 }

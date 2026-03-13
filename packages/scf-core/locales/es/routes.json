@@ -1,5 +1,7 @@
 {
+  "publicProfile": "Perfil público",
   "auth": {
+    "callback": "Auth Callback",
     "confirm": "Confirm Account",
     "login": "Sign In",
     "success": "Success",
@@ -13,6 +15,7 @@
       "title": "Applications"
     },
     "assessments": {
+      "analytics": "Análisis",
       "ipip": {
         "results": "Assessment Results",
         "shared": "Shared Assessment",
@@ -23,10 +26,15 @@
       "riasec": "Career Interests",
       "title": "Assessments"
     },
+    "careerExplorer": {
+      "detail": "Occupation Detail",
+      "title": "Career Explorer"
+    },
     "discover": {
       "employers": {
         "create": "Create Employer",
         "detail": "Employer Details",
+        "myEmployers": "Mis empleadores",
         "title": "Employers"
       },
       "jobs": {
@@ -39,12 +47,13 @@
         "title": "Workers"
       }
     },
-    "news": "Industry News",
+    "news": "News",
     "organizations": {
       "create": "Request Organization",
       "title": "Organizations"
     },
     "profile": {
+      "overview": "Resumen",
       "backgroundCheck": {
         "dispute": "Dispute Background Check",
         "initiate": "Start Background Check",
@@ -56,6 +65,7 @@
       "experience": "Experience",
       "general": "General",
       "idVerification": "ID Verification",
+      "verification": "Verificación",
       "importReview": "Import Review",
       "resume": {
         "review": "Resume Review",
@@ -66,8 +76,10 @@
     },
     "settings": {
       "authentication": "Authentication Settings",
+      "authorizedApps": "Authorized Apps",
       "general": "General Settings",
       "notifications": "Notifications",
+      "privacy": "Privacy & Data",
       "security": "Security Settings",
       "title": "Settings"
     },
@@ -76,6 +88,7 @@
       "invitations": "Team Invitations",
       "title": "Teams"
     },
+    "home": "Inicio",
     "title": "Dashboard",
     "user": "User Profile",
     "workLogs": {
@@ -87,6 +100,20 @@
   "home": "Home",
   "onboarding": {
     "title": "Empezar"
+  },
+  "communities": {
+    "title": "Communities",
+    "connections": {
+      "title": "Connections"
+    },
+    "bookmarks": "Bookmarks",
+    "reputation": "Reputation",
+    "detail": "Community",
+    "members": "Members",
+    "post": {
+      "create": "Create Post",
+      "detail": "Post Detail"
+    }
   },
   "office": {
     "applications": {
@@ -101,7 +128,14 @@
       },
       "detail": "Application Detail",
       "idVerifications": "ID Verifications",
+      "metrics": "ATS Metrics",
+      "scheduling": "Interview Scheduling",
+      "selfSchedule": "Self-Schedule",
       "title": "ATS"
+    },
+    "communities": {
+      "title": "Communities",
+      "verification": "Community Verification"
     },
     "cms": {
       "jobs": {
