@@ -42,6 +42,7 @@ import {
   Stack,
   useThemeContext,
 } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
 import { PhotoGallery } from "../components/PhotoGallery";
 import { getStatusColor, getStatusLabel } from "../utils/status-formatting";
@@ -540,8 +541,12 @@ export function WorkLogDetailScreen() {
                 </Stack>
                 <Text
                   style={{
-                    backgroundColor: isVerified ? "#dcfce7" : "#fef9c3",
-                    color: isVerified ? "#166534" : "#854d0e",
+                    backgroundColor: isVerified
+                      ? (theme === "dark" ? colors.green[900] : colors.green[100])
+                      : (theme === "dark" ? colors.yellow[900] : colors.yellow[100]),
+                    color: isVerified
+                      ? (theme === "dark" ? colors.green[300] : colors.green[700])
+                      : (theme === "dark" ? colors.yellow[300] : colors.yellow[700]),
                     paddingHorizontal: 12,
                     paddingVertical: 4,
                     borderRadius: 16,
@@ -631,7 +636,7 @@ export function WorkLogDetailScreen() {
                       paddingHorizontal: 12,
                       paddingVertical: 4,
                       borderRadius: 16,
-                      backgroundColor: "#f1f5f9",
+                      backgroundColor: colors.bg[theme].muted,
                     }}
                   >
                     {skill}

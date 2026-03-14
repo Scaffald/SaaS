@@ -1,5 +1,5 @@
 import type { AppRouter } from '@scf/supabase/client-types'
-import { DiscoverCard, useThemeContext } from '@scaffald/ui'
+import { Card, useThemeContext } from '@scaffald/ui'
 import {
   Briefcase,
   Building2,
@@ -13,6 +13,13 @@ import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import {
+  jobPalette,
+  textSmall,
+  textCaption,
+  MetricRow,
+  Pill,
+} from '@scf/core/components/ui'
 
 type JobListOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
 type Job = JobListOutput['jobs'][number]
@@ -88,124 +95,101 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
   )?.team
   const teamName = primaryTeam?.name || job.team?.name || null
 
+  const pal = jobPalette[theme]
+
   return (
-    <DiscoverCard variant="warning" isSelected={isSelected} onPress={onPress} padding="md" gap={12}>
-      {/* Header: Title and Status */}
-      <Row justify="space-between" align="flex-start" gap={12}>
-        <Stack gap={8} flex={1}>
-          <Row align="center" gap={8} wrap>
-            <Briefcase
-              size={18}
-              color={isSelected ? theme === "light" ? colors.yellow[700] : colors.yellow[300] : colors.text[theme].tertiary}
-            />
-            <Text
-              style={{
-                flex: 1,
-                color: isSelected ? theme === "light" ? colors.yellow[700] : colors.yellow[300] : colors.text[theme].primary,
-              }}
-            >
-              {job.title}
-            </Text>
-          </Row>
-          {job.organization && (
-            <Row align="center" gap={6} style={{ marginLeft: 28 }}>
-              <Building2 size={20} color={colors.text[theme].secondary} />
-              <Text style={{ color: colors.text[theme].secondary }}>{job.organization.name}</Text>
+    <Card
+      pressable={!!onPress}
+      onPress={onPress}
+      padding="md"
+      variant={isSelected ? 'elevated' : 'surface'}
+      style={[isSelected && { borderColor: pal.selectedBorder, borderWidth: 1 }]}
+    >
+      <Stack gap={12}>
+        {/* Header: Title and Status */}
+        <Row justify="space-between" align="flex-start" gap={12}>
+          <Stack gap={8} flex={1}>
+            <Row align="center" gap={8} wrap>
+              <Briefcase
+                size={18}
+                color={isSelected ? pal.accent : colors.text[theme].tertiary}
+              />
+              <Text
+                style={{
+                  flex: 1,
+                  fontWeight: '600',
+                  fontSize: 15,
+                  color: isSelected ? pal.accent : colors.text[theme].primary,
+                }}
+              >
+                {job.title}
+              </Text>
             </Row>
+            {job.organization && (
+              <MetricRow icon={Building2} text={job.organization.name} theme={theme} />
+            )}
+          </Stack>
+          <Pill
+            label={getStatusLabel(job.status)}
+            bgColor={statusColors.backgroundColor}
+            textColor={statusColors.text}
+          />
+        </Row>
+
+        {/* Metrics Row */}
+        <Row gap={8} wrap>
+          {applicationCount !== undefined && (
+            <MetricItem
+              icon={<Users size={16} />}
+              label="Applications"
+              value={applicationCount.toString()}
+            />
           )}
-        </Stack>
-        <Row
-          style={{
-            paddingHorizontal: 8,
-            paddingVertical: 4,
-            borderRadius: 12,
-            backgroundColor: statusColors.backgroundColor,
-            borderWidth: 1,
-            borderColor: statusColors.border,
-          }}
-        >
-          <Text style={{ color: statusColors.text }}>
-            {getStatusLabel(job.status)}
-          </Text>
+          {teamName && (
+            <MetricItem icon={<Briefcase size={16} />} label="Team" value={teamName} />
+          )}
+          {postedDate && (
+            <MetricItem icon={<Calendar size={16} />} label="Posted" value={postedDate} />
+          )}
+          {job.created_by && (
+            <MetricItem
+              icon={<User size={16} />}
+              label="Created by"
+              value={job.created_by.display_name || job.created_by.username || 'Unknown'}
+            />
+          )}
         </Row>
-      </Row>
 
-      {/* Metrics Row */}
-      <Row gap={12} wrap>
-        {applicationCount !== undefined && (
-          <MetricItem
-            icon={<Users size={20} />}
-            label="Applications"
-            value={applicationCount.toString()}
-          />
-        )}
-        {teamName && (
-          <MetricItem icon={<Briefcase size={20} />} label="Team" value={teamName} />
-        )}
-        {postedDate && (
-          <MetricItem icon={<Calendar size={20} />} label="Posted" value={postedDate} />
-        )}
-        {job.created_by && (
-          <MetricItem
-            icon={<User size={20} />}
-            label="Created by"
-            value={job.created_by.display_name || job.created_by.username || 'Unknown'}
-          />
-        )}
-      </Row>
-
-      {/* Details Row */}
-      <Row gap={12} wrap>
-        {job.location && (
-          <Row align="center" gap={6}>
-            <MapPin size={20} color={colors.text[theme].secondary} />
-            <Text style={{ color: colors.text[theme].secondary }}>{job.location}</Text>
-          </Row>
-        )}
-        {job.remote_option && (
-          <Text
-            style={{
-              color: colors.text[theme].secondary,
-              backgroundColor: colors.bg[theme].muted,
-              paddingHorizontal: 8,
-              paddingVertical: 4,
-              borderRadius: 8,
-            }}
-          >
-            {job.remote_option.replace('_', ' ').toUpperCase()}
-          </Text>
-        )}
-        {job.employment_type && (
-          <Text
-            style={{
-              color: colors.text[theme].secondary,
-              backgroundColor: colors.bg[theme].muted,
-              paddingHorizontal: 8,
-              paddingVertical: 4,
-              borderRadius: 8,
-            }}
-          >
-            {job.employment_type.replace('_', ' ').toUpperCase()}
-          </Text>
-        )}
-      </Row>
-
-      {/* Pay Range */}
-      {payRange && (
-        <Row align="center" gap={6}>
-          <DollarSign size={20} color={theme === "light" ? colors.green[700] : colors.green[300]} />
-          <Text style={{ color: theme === "light" ? colors.green[700] : colors.green[300] }}>{payRange}</Text>
+        {/* Details Row */}
+        <Row gap={8} wrap>
+          {job.location && <MetricRow icon={MapPin} text={job.location} theme={theme} />}
+          {job.remote_option && (
+            <Pill
+              label={job.remote_option.replace('_', ' ').toUpperCase()}
+              bgColor={colors.bg[theme].muted}
+              textColor={colors.text[theme].secondary}
+            />
+          )}
+          {job.employment_type && (
+            <Pill
+              label={job.employment_type.replace('_', ' ').toUpperCase()}
+              bgColor={colors.bg[theme].muted}
+              textColor={colors.text[theme].secondary}
+            />
+          )}
         </Row>
-      )}
 
-      {/* Footer: Created date if not posted */}
-      {!postedDate && createdDate && (
-        <Row align="center" gap={6}>
-          <Calendar size={16} color={colors.text[theme].secondary} />
-          <Text style={{ color: colors.text[theme].secondary }}>Created {createdDate}</Text>
-        </Row>
-      )}
-    </DiscoverCard>
+        {/* Pay Range */}
+        {payRange && (
+          <MetricRow icon={DollarSign} text={payRange} color={colors.success[500]} theme={theme} />
+        )}
+
+        {/* Footer: Created date if not posted */}
+        {!postedDate && createdDate && (
+          <MetricRow icon={Calendar} text={`Created ${createdDate}`} theme={theme} />
+        )}
+      </Stack>
+    </Card>
   )
 }
 
@@ -213,21 +197,23 @@ function MetricItem({ icon, label, value }: { icon: ReactNode; label: string; va
   const { theme } = useThemeContext()
   return (
     <Row
-      gap={8}
+      gap={6}
       align="center"
-      borderWidth={1}
-      borderColor={colors.border[theme].default}
-      borderRadius={12}
-      paddingHorizontal={8}
-      paddingVertical={4}
-      style={{ backgroundColor: colors.bg[theme].muted }}
+      style={{
+        borderWidth: 1,
+        borderColor: colors.border[theme].default,
+        borderRadius: 8,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        backgroundColor: colors.bg[theme].muted,
+      }}
     >
       {icon}
       <Stack gap={0}>
-        <Text style={{ color: colors.text[theme].secondary, textTransform: 'uppercase' }}>
+        <Text style={{ ...textCaption, color: colors.text[theme].tertiary, textTransform: 'uppercase' }}>
           {label}
         </Text>
-        <Text style={{ color: colors.text[theme].secondary }}>{value}</Text>
+        <Text style={{ ...textSmall, color: colors.text[theme].secondary }}>{value}</Text>
       </Stack>
     </Row>
   )
