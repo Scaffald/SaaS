@@ -1,7 +1,8 @@
-import { DiscoverCard, extractPlainText, getIconSize } from '@scaffald/ui'
 import { Building2, ExternalLink, MapPin, Users } from 'lucide-react-native'
 import type { JSONContent } from '@tiptap/core'
-import { Text, Row, Stack } from '@scaffald/ui'
+import { Card, Text, Stack, extractPlainText, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
+import { orgPalette, textSmall, CardHeader, MetricRow } from '@scf/core/components/ui'
 
 export interface Employer {
   id: string
@@ -28,60 +29,64 @@ interface EmployerCardProps {
 }
 
 /**
- * Employer Card Component
- * Displays employer information in a card format
+ * Employer Card — uses shared card primitives for consistency.
+ * Header: purple icon + name + industry
+ * Metrics: location, employee count, website
  */
 export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
-  const location = employer.address?.street || employer.address?.zipCode || 'Location not specified'
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+  const pal = orgPalette[t]
+
+  const location = employer.address?.street || employer.address?.zipCode || null
+
+  const descriptionText = employer.description
+    ? typeof employer.description === 'string'
+      ? employer.description
+      : extractPlainText(employer.description as JSONContent)
+    : null
 
   return (
-    <DiscoverCard onPress={() => onViewDetails(employer)}>
+    <Card pressable onPress={() => onViewDetails(employer)} padding="md" variant="surface">
       <Stack gap={12}>
-        {/* Header */}
-        <Row justify="space-between" align="flex-start" gap={12}>
-          <Stack flex={1} gap={8}>
-            <Row align="center" gap={8}>
-              <Building2 size={getIconSize('lg')} color="$blue10" />
-              <Text color="$gray11">{employer.name}</Text>
-            </Row>
-
-            {employer.industries && <Text color="$blue10">{employer.industries.name}</Text>}
-          </Stack>
-        </Row>
+        <CardHeader
+          icon={Building2}
+          iconBg={pal.iconBg}
+          iconColor={pal.iconFg}
+          title={employer.name}
+          subtitle={employer.industries?.name}
+          theme={t}
+        />
 
         {/* Description */}
-        {employer.description && (
-          <Text color="$gray11">
-            {typeof employer.description === 'string'
-              ? employer.description
-              : extractPlainText(employer.description as JSONContent)}
+        {descriptionText && (
+          <Text style={{ ...textSmall, color: colors.text[t].secondary }} numberOfLines={3}>
+            {descriptionText}
           </Text>
         )}
 
-        {/* Details */}
-        <Stack gap={8}>
-          {location && (
-            <Row align="center" gap={8}>
-              <MapPin size={getIconSize('md')} color="$gray11" />
-              <Text color="$gray11">{location}</Text>
-            </Row>
-          )}
+        {/* Metrics */}
+        <Stack gap={6}>
+          {location && <MetricRow icon={MapPin} text={location} theme={t} />}
 
           {employer.employee_count_range && (
-            <Row align="center" gap={8}>
-              <Users size={getIconSize('md')} color="$gray11" />
-              <Text color="$gray11">{employer.employee_count_range} employees</Text>
-            </Row>
+            <MetricRow
+              icon={Users}
+              text={`${employer.employee_count_range} employees`}
+              theme={t}
+            />
           )}
 
           {employer.website_url && (
-            <Row align="center" gap={8}>
-              <ExternalLink size={getIconSize('md')} color="$gray11" />
-              <Text color="$blue10">{employer.website_url.replace(/^https?:\/\//, '')}</Text>
-            </Row>
+            <MetricRow
+              icon={ExternalLink}
+              text={employer.website_url.replace(/^https?:\/\//, '')}
+              color={colors.primary[500]}
+              theme={t}
+            />
           )}
         </Stack>
       </Stack>
-    </DiscoverCard>
+    </Card>
   )
 }

@@ -1,8 +1,18 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { DiscoverCard } from '@scaffald/ui'
+import { Card, Button, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { Building2, Clock, DollarSign, MapPin } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Button, Separator, Text, Row, Stack } from '@scaffald/ui'
+import { Image, View } from 'react-native'
+import {
+  jobPalette,
+  textSmall,
+  textCaption,
+  iconCircleStyle,
+  CardHeader,
+  MetricRow,
+  Pill,
+} from '@scf/core/components/ui'
 
 export interface ExternalJob {
   id: string
@@ -35,166 +45,139 @@ interface ExternalJobCardProps {
   job: ExternalJob
 }
 
+function formatRelativeDate(dateString?: string): string | null {
+  if (!dateString) return null
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+  if (diffDays === 0) return 'Today'
+  if (diffDays === 1) return 'Yesterday'
+  if (diffDays < 7) return `${diffDays} days ago`
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`
+  return date.toLocaleDateString()
+}
+
+function formatCompensation(job: ExternalJob): string | null {
+  const currency = job.compensation_currency || 'USD'
+  const symbol = currency === 'USD' ? '$' : currency
+
+  if (job.compensation_min && job.compensation_max) {
+    return `${symbol}${job.compensation_min.toLocaleString()} - ${symbol}${job.compensation_max.toLocaleString()}`
+  }
+  if (job.compensation_min) {
+    return `${symbol}${job.compensation_min.toLocaleString()}+`
+  }
+  return null
+}
+
 export function ExternalJobCard({ job }: ExternalJobCardProps) {
   const router = useRouter()
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return null
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffMs = now.getTime() - date.getTime()
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+  const pal = jobPalette[t]
 
-    if (diffDays === 0) return 'Today'
-    if (diffDays === 1) return 'Yesterday'
-    if (diffDays < 7) return `${diffDays} days ago`
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`
-    return date.toLocaleDateString()
-  }
-
-  const formatCompensation = () => {
-    const currency = job.compensation_currency || 'USD'
-    const symbol = currency === 'USD' ? '$' : currency
-
-    if (job.compensation_min && job.compensation_max) {
-      return `${symbol}${job.compensation_min.toLocaleString()} - ${symbol}${job.compensation_max.toLocaleString()}`
-    }
-    if (job.compensation_min) {
-      return `${symbol}${job.compensation_min.toLocaleString()}+`
-    }
-    return null
-  }
-
-  const compensation = formatCompensation()
-  const postedDate = formatDate(job.posted_date)
+  const compensation = formatCompensation(job)
+  const postedDate = formatRelativeDate(job.posted_date)
   const primaryIndustry = job.industries?.[0]?.industry_name
 
   return (
-    <DiscoverCard
-      variant={job.featured ? 'info' : 'neutral'}
-      isSelected={job.featured}
-      interactive={false}
+    <Card
+      pressable
+      onPress={() =>
+        router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS.DETAIL, { id: job.id }))
+      }
       padding="md"
-      gap={12}
+      variant={job.featured ? 'elevated' : 'surface'}
     >
-      {/* Header */}
-      <Row gap={12} align="flex-start">
-        {job.company_logo ? (
-          <Stack
-            width={48}
-            height={48}
-            borderRadius={8}
-            backgroundColor="$color3"
-            align="center"
-            justify="center"
-            style={{ overflow: 'hidden' }}
-          >
-            <img
-              src={job.company_logo}
-              alt={job.company_name || 'Company'}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+      <Stack gap={12}>
+        {/* Header */}
+        <Row gap={12} align="center">
+          {job.company_logo ? (
+            <View
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: 12,
+                overflow: 'hidden',
+                backgroundColor: colors.gray[t === 'dark' ? 700 : 100],
+              }}
+            >
+              <Image
+                source={{ uri: job.company_logo }}
+                style={{ width: 48, height: 48 }}
+                resizeMode="cover"
+              />
+            </View>
+          ) : (
+            <View style={iconCircleStyle(48, pal.iconBg)}>
+              <Building2 size={22} color={pal.iconFg} />
+            </View>
+          )}
+
+          <Stack flex={1} gap={2}>
+            <Text style={{ fontWeight: '600', fontSize: 15 }} numberOfLines={2}>
+              {job.title}
+            </Text>
+            {job.company_name && (
+              <Text
+                style={{ ...textSmall, color: colors.text[t].tertiary }}
+                numberOfLines={1}
+              >
+                {job.company_name}
+              </Text>
+            )}
+          </Stack>
+
+          {job.featured && (
+            <Pill
+              label="FEATURED"
+              bgColor={colors.primary[t === 'dark' ? 800 : 50]}
+              textColor={colors.primary[t === 'dark' ? 200 : 700]}
             />
-          </Stack>
-        ) : (
-          <Stack
-            width={48}
-            height={48}
-            borderRadius={8}
-            backgroundColor="$blue4"
-            align="center"
-            justify="center"
-          >
-            <Building2 size={24} color="$blue10" />
-          </Stack>
+          )}
+        </Row>
+
+        {/* Meta Info */}
+        <Row gap={8} wrap>
+          {job.job_location && <MetricRow icon={MapPin} text={job.job_location} theme={t} />}
+          {job.job_type && <MetricRow icon={Clock} text={job.job_type} theme={t} />}
+          {compensation && (
+            <MetricRow icon={DollarSign} text={compensation} color={colors.success[500]} theme={t} />
+          )}
+        </Row>
+
+        {/* Description */}
+        {job.description && (
+          <Text style={{ ...textSmall, color: colors.text[t].secondary }} numberOfLines={3}>
+            {job.description}
+          </Text>
         )}
 
-        <Stack flex={1} gap={4}>
-          <Text color="$gray11">{job.title}</Text>
-          {job.company_name && <Text color="$gray11">{job.company_name}</Text>}
-        </Stack>
-
-        {job.featured && (
-          <Stack
-            paddingHorizontal={8}
-            paddingVertical={4}
-            borderRadius={8}
-            backgroundColor="$blue5"
-          >
-            <Text color="$blue11">FEATURED</Text>
-          </Stack>
-        )}
-      </Row>
-
-      {/* Meta Info */}
-      <Row gap={16} wrap>
-        {job.job_location && (
-          <Row gap={8} align="center">
-            <MapPin size="md" color="$gray11" />
-            <Text color="$gray11">{job.job_location}</Text>
+        {/* Tags */}
+        {(primaryIndustry || job.job_category) && (
+          <Row gap={6} wrap>
+            {primaryIndustry && (
+              <Pill label={primaryIndustry} bgColor={pal.pillBg} textColor={pal.pillText} />
+            )}
+            {job.job_category && (
+              <Pill
+                label={job.job_category}
+                bgColor={colors.bg[t].muted}
+                textColor={colors.text[t].tertiary}
+              />
+            )}
           </Row>
         )}
 
-        {job.job_type && (
-          <Row gap={8} align="center">
-            <Clock size="md" color="$gray11" />
-            <Text color="$gray11">{job.job_type}</Text>
+        {/* Posted date */}
+        {postedDate && (
+          <Row justify="flex-end">
+            <Text style={{ ...textCaption, color: colors.text[t].disabled }}>{postedDate}</Text>
           </Row>
         )}
-
-        {compensation && (
-          <Row gap={8} align="center">
-            <DollarSign size="md" color="$gray11" />
-            <Text color="$gray11">{compensation}</Text>
-          </Row>
-        )}
-
-        {postedDate && <Text color="$gray11">{postedDate}</Text>}
-      </Row>
-
-      {/* Description */}
-      {job.description && (
-        <Text color="$gray11" ellipsizeMode="tail">
-          {job.description}
-        </Text>
-      )}
-
-      {/* Tags */}
-      <Row gap={8} wrap>
-        {primaryIndustry && (
-          <Stack
-            paddingHorizontal={8}
-            paddingVertical={4}
-            borderRadius={8}
-            backgroundColor="$blue3"
-          >
-            <Text color="$blue11">{primaryIndustry}</Text>
-          </Stack>
-        )}
-        {job.job_category && (
-          <Stack
-            paddingHorizontal={8}
-            paddingVertical={4}
-            borderRadius={8}
-            backgroundColor="$color3"
-          >
-            <Text color="$gray11">{job.job_category}</Text>
-          </Stack>
-        )}
-      </Row>
-
-      <Separator />
-
-      {/* Actions */}
-      <Row gap={8} justify="flex-end">
-        <Button
-          size="sm"
-          color="primary"
-          onPress={() =>
-            router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS.DETAIL, { id: job.id }))
-          }
-        >
-          View Details
-        </Button>
-      </Row>
-    </DiscoverCard>
+      </Stack>
+    </Card>
   )
 }
