@@ -62,10 +62,7 @@ UNI-Construct/
 │   ├── scf-schemas/           # Zod schemas
 │   ├── scf-trpc/              # tRPC routers (internal API)
 │   ├── supabase/              # Database + Edge Functions
-│   ├── beyond-ui/             # @unicornlove/beyond-ui - UI components
-│   ├── insurance/             # Insurance components
-│   ├── compliance/            # Compliance features
-│   └── tasks/                 # Task management
+│   └── beyond-ui/             # @unicornlove/beyond-ui - UI components
 │
 └── examples/
     └── integration-test/      # SDK integration tests

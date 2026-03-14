@@ -4,25 +4,21 @@
   "private": true,
   "exports": {
     "./client-types": "./client-types.ts",
-    "./forsured-client": "./forsured-client.ts",
     "./functions/_shared/client-types": "./functions/_shared/client-types.ts",
     "./functions/_shared/schemas": "./functions/_shared/schemas/index.ts",
     "./functions/_shared/types": "./functions/_shared/types.ts",
-    "./seeds/forsured": "./seeds/forsured/index.ts",
-    "./seeds/forsured/test-ids": "./seeds/forsured/test-ids.ts",
     "./types": "./types.ts"
   },
   "scripts": {
     "convert-onet": "pnpx tsx scripts/convert-onet-sql.ts",
     "download-onet": "pnpx tsx scripts/download-onet.ts",
     "seed": "pnpx tsx scripts/seed-all.ts",
-    "seed:forsured": "pnpx tsx seeds/forsured/seed-forsured.ts",
     "seed:news-feeds": "pnpx tsx scripts/seed-news-feeds.ts",
     "seed:news-import": "pnpx tsx scripts/trigger-news-import.ts",
     "seed:onet": "pnpx tsx scripts/seed-onet.ts",
     "seed:universities": "pnpx tsx scripts/seed-universities.ts",
-    "test:endpoints": "bash functions/trpc/__tests__/run-tests.sh",
     "test:api:rest:suite": "deno test --allow-all --no-check --config=functions/api/deno.json functions/api/__tests__/routes/*.test.ts functions/api/__tests__/integration/*.test.ts",
+    "test:endpoints": "bash functions/trpc/__tests__/run-tests.sh",
     "test:permissions": "pnpx tsx scripts/test-external-jobs-permissions.ts"
   },
   "dependencies": {
