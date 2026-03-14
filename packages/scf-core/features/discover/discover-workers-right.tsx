@@ -10,7 +10,9 @@ import {
   Stack,
   Text,
   getIconSize,
+  useThemeContext,
 } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { SearchFilterWidget } from './components/SearchFilterWidget'
 
 interface DiscoverWorkersRightProps {
@@ -40,6 +42,8 @@ export function DiscoverWorkersRight({
   selectedCertifications,
   onCertificationsChange,
 }: DiscoverWorkersRightProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [skillInput, setSkillInput] = useState('')
   const [certificationInput, setCertificationInput] = useState('')
 
@@ -86,26 +90,26 @@ export function DiscoverWorkersRight({
     <Stack gap={8}>
       {searchQuery && (
         <Row gap={8} align="center">
-          <Text color="$gray11">Search:</Text>
-          <Text color="$blue10">{searchQuery}</Text>
+          <Text color={colors.text[t].secondary}>Search:</Text>
+          <Text color={t === 'dark' ? colors.blue[300] : colors.blue[600]}>{searchQuery}</Text>
         </Row>
       )}
       {minScore > 0 && (
         <Row gap={8} align="center">
-          <Text color="$gray11">Min Score:</Text>
-          <Text color="$blue10">{minScore}</Text>
+          <Text color={colors.text[t].secondary}>Min Score:</Text>
+          <Text color={t === 'dark' ? colors.blue[300] : colors.blue[600]}>{minScore}</Text>
         </Row>
       )}
       {selectedSkills.length > 0 && (
         <Row gap={8} align="center" wrap>
-          <Text color="$gray11">Skills:</Text>
-          <Text color="$blue10">{selectedSkills.length}</Text>
+          <Text color={colors.text[t].secondary}>Skills:</Text>
+          <Text color={t === 'dark' ? colors.blue[300] : colors.blue[600]}>{selectedSkills.length}</Text>
         </Row>
       )}
       {selectedCertifications.length > 0 && (
         <Row gap={8} align="center" wrap>
-          <Text color="$gray11">Certs:</Text>
-          <Text color="$green10">{selectedCertifications.length}</Text>
+          <Text color={colors.text[t].secondary}>Certs:</Text>
+          <Text color={t === 'dark' ? colors.green[300] : colors.green[600]}>{selectedCertifications.length}</Text>
         </Row>
       )}
     </Stack>
@@ -147,8 +151,8 @@ export function DiscoverWorkersRight({
           {/* Skills Filter */}
           <Stack gap={12}>
             <Row align="center" gap={8}>
-              <Award size={getIconSize('md')} color="$gray11" />
-              <Text color="$gray11">Skills</Text>
+              <Award size={getIconSize('md')} color={colors.text[t].secondary} />
+              <Text color={colors.text[t].secondary}>Skills</Text>
             </Row>
 
             <Row gap={8}>
@@ -169,16 +173,16 @@ export function DiscoverWorkersRight({
                 {selectedSkills.map((skill) => (
                   <Row
                     key={skill}
-                    backgroundColor="$blue3"
+                    backgroundColor={colors.bg[t].muted}
                     paddingHorizontal={8}
                     paddingVertical={4}
                     borderRadius={12}
                     gap={4}
                     align="center"
                   >
-                    <Text color="$blue11">{skill}</Text>
+                    <Text color={t === 'dark' ? colors.blue[300] : colors.blue[600]}>{skill}</Text>
                     <Button size="sm" variant="text" onPress={() => handleRemoveSkill(skill)}>
-                      <X size={16} color="#1d4ed8" />
+                      <X size={16} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
                     </Button>
                   </Row>
                 ))}
@@ -191,8 +195,8 @@ export function DiscoverWorkersRight({
           {/* Certifications Filter */}
           <Stack gap={12}>
             <Row align="center" gap={8}>
-              <BadgeCheck size={getIconSize('md')} color="$gray11" />
-              <Text color="$gray11">Certifications</Text>
+              <BadgeCheck size={getIconSize('md')} color={colors.text[t].secondary} />
+              <Text color={colors.text[t].secondary}>Certifications</Text>
             </Row>
 
             <Row gap={8}>
@@ -217,16 +221,16 @@ export function DiscoverWorkersRight({
                 {selectedCertifications.map((cert) => (
                   <Row
                     key={cert}
-                    backgroundColor="$green3"
+                    backgroundColor={colors.bg[t].muted}
                     paddingHorizontal={8}
                     paddingVertical={4}
                     borderRadius={12}
                     gap={4}
                     align="center"
                   >
-                    <Text color="$green11">{cert}</Text>
+                    <Text color={t === 'dark' ? colors.green[300] : colors.green[600]}>{cert}</Text>
                     <Button size="sm" variant="text" onPress={() => handleRemoveCertification(cert)}>
-                      <X size={16} color="#22c55e" />
+                      <X size={16} color={t === 'dark' ? colors.green[300] : colors.green[600]} />
                     </Button>
                   </Row>
                 ))}

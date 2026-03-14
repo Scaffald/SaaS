@@ -1,6 +1,7 @@
 import { memo, useMemo } from 'react'
 import { Platform } from 'react-native'
-import { Button, ScrollView, Switch, Text, TextArea, Row, Stack } from '@scaffald/ui'
+import { Button, ScrollView, Switch, Text, TextArea, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 import type { ConsentDetails } from '../hooks/useBackgroundCheckForm'
 
@@ -26,6 +27,8 @@ export const ConsentStep = memo(function ConsentStep({
   onChange,
   onContinue,
 }: ConsentStepProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const canContinue = consent.acceptsDisclosure && consent.signature.trim().length > 1
 
   const signaturePlaceholder = useMemo(() => {
@@ -37,8 +40,8 @@ export const ConsentStep = memo(function ConsentStep({
   return (
     <Stack gap={16} flex={1}>
       <Stack gap={8}>
-        <Text color="$gray11">Consent & Disclosures</Text>
-        <Text color="$gray11">
+        <Text color={colors.text[t].secondary}>Consent & Disclosures</Text>
+        <Text color={colors.text[t].secondary}>
           Please review the disclosure and confirm your consent to continue with the background
           check.
         </Text>
@@ -46,14 +49,14 @@ export const ConsentStep = memo(function ConsentStep({
 
       <ScrollView style={{ flex: 1 }}>
         <Stack gap={16} paddingBottom={24}>
-          <Stack gap={8} backgroundColor="$color2" padding="md" borderRadius={16}>
-            <Text color="$gray11">FCRA Disclosure</Text>
-            <Text color="$gray11">{FCRA_DISCLOSURE.trim()}</Text>
+          <Stack gap={8} backgroundColor={colors.bg[t].muted} padding="md" borderRadius={16}>
+            <Text color={colors.text[t].secondary}>FCRA Disclosure</Text>
+            <Text color={colors.text[t].secondary}>{FCRA_DISCLOSURE.trim()}</Text>
           </Stack>
 
-          <Stack gap={8} backgroundColor="$color2" padding="md" borderRadius={16}>
-            <Text color="$gray11">Summary of Rights</Text>
-            <Text color="$gray11">{SUMMARY_OF_RIGHTS.trim()}</Text>
+          <Stack gap={8} backgroundColor={colors.bg[t].muted} padding="md" borderRadius={16}>
+            <Text color={colors.text[t].secondary}>Summary of Rights</Text>
+            <Text color={colors.text[t].secondary}>{SUMMARY_OF_RIGHTS.trim()}</Text>
           </Stack>
 
           <Stack gap={12}>
@@ -67,11 +70,11 @@ export const ConsentStep = memo(function ConsentStep({
                   })
                 }}
               />
-              <Text color="$gray11">I have read and authorize the background check.</Text>
+              <Text color={colors.text[t].secondary}>I have read and authorize the background check.</Text>
             </Row>
 
             <Stack gap={8}>
-              <Text color="$gray11">Electronic Signature</Text>
+              <Text color={colors.text[t].secondary}>Electronic Signature</Text>
               <TextArea
                 value={consent.signature}
                 onChangeText={(value) =>
@@ -89,7 +92,7 @@ export const ConsentStep = memo(function ConsentStep({
                 placeholder={signaturePlaceholder}
                 autoCapitalize="words"
               />
-              <Text color="$gray11">
+              <Text color={colors.text[t].secondary}>
                 Type your full name as it appears on government-issued identification.
               </Text>
             </Stack>

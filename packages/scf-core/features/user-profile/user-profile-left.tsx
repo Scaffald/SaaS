@@ -6,7 +6,8 @@ import {
   useUserEducation,
 } from "@scf/core/utils/user-profiles-sdk-hooks";
 import { useUser } from "@scf/core/utils/useUser";
-import { ResponsiveModal } from "@scaffald/ui";
+import { ResponsiveModal, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import { AlertTriangle, CheckCircle } from "lucide-react-native";
 import { useState } from "react";
 import { Button, ScrollView, Spinner, Text, Row, Stack } from "@scaffald/ui";
@@ -32,6 +33,8 @@ interface UserProfileLeftProps {
  */
 export function UserProfileLeft({ userId }: UserProfileLeftProps) {
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const { theme } = useThemeContext();
+  const t = theme === 'dark' ? 'dark' : 'light';
   const { user: currentUser } = useUser();
   const syncStatus = useAdaptiveProfileSync(300);
 
@@ -69,7 +72,7 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
     return (
       <Stack flex={1} align="center" justify="center" paddingVertical={40}>
         <Spinner size="lg" color="primary" />
-        <Text style={{ marginTop: 16, color: "$gray11" }}>
+        <Text style={{ marginTop: 16, color: colors.text[t].secondary }}>
           Loading profile...
         </Text>
       </Stack>
@@ -79,7 +82,7 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
   if (!profile) {
     return (
       <Stack flex={1} align="center" justify="center" paddingVertical={40}>
-        <Text color="$red10">Profile not found</Text>
+        <Text color={t === 'dark' ? colors.error[300] : colors.error[600]}>Profile not found</Text>
       </Stack>
     );
   }
@@ -96,17 +99,17 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
               borderWidth={1}
               backgroundColor={
                 syncStatus === "syncing"
-                  ? "$blue3"
+                  ? (t === 'dark' ? colors.blue[900] : colors.blue[50])
                   : syncStatus === "error"
-                  ? "$red3"
-                  : "$green3"
+                  ? (t === 'dark' ? colors.error[900] : colors.error[50])
+                  : (t === 'dark' ? colors.green[900] : colors.green[50])
               }
               borderColor={
                 syncStatus === "syncing"
-                  ? "$blue6"
+                  ? (t === 'dark' ? colors.blue[700] : colors.blue[200])
                   : syncStatus === "error"
-                  ? "$red7"
-                  : "$green6"
+                  ? (t === 'dark' ? colors.error[700] : colors.error[300])
+                  : (t === 'dark' ? colors.green[700] : colors.green[200])
               }
               gap={4}
               style={{ maxWidth: 200 }}
@@ -115,17 +118,17 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
                 {syncStatus === "syncing" ? (
                   <Spinner size="sm" color="primary" />
                 ) : syncStatus === "error" ? (
-                  <AlertTriangle size="md" color="$red10" />
+                  <AlertTriangle size="md" color={t === 'dark' ? colors.error[300] : colors.error[600]} />
                 ) : (
-                  <CheckCircle size="md" color="$green10" />
+                  <CheckCircle size="md" color={t === 'dark' ? colors.green[300] : colors.green[600]} />
                 )}
                 <Text
                   color={
                     syncStatus === "syncing"
-                      ? "$blue11"
+                      ? (t === 'dark' ? colors.blue[300] : colors.blue[600])
                       : syncStatus === "error"
-                      ? "$red11"
-                      : "$green11"
+                      ? (t === 'dark' ? colors.error[300] : colors.error[600])
+                      : (t === 'dark' ? colors.green[300] : colors.green[600])
                   }
                 >
                   {syncStatus === "syncing"

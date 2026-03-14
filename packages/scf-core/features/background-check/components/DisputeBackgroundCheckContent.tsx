@@ -4,7 +4,8 @@ import { AlertTriangle } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo } from 'react'
-import { Button, Separator, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Separator, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useDispute } from '../hooks/useDispute'
 import { DisputeForm } from './DisputeForm'
 import { DisputeStatusTracker } from './DisputeStatusTracker'
@@ -28,6 +29,9 @@ export function DisputeBackgroundCheckContent({
   onClose,
   renderHeaderAction,
 }: DisputeBackgroundCheckContentProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   const {
     form,
     reasonOptions,
@@ -76,7 +80,7 @@ export function DisputeBackgroundCheckContent({
       <Row justify="space-between" align="center">
         <Stack gap={4}>
           <Text>Dispute background check</Text>
-          <Text color="$gray11">
+          <Text color={colors.text[t].secondary}>
             Flag inaccurate information so our compliance team can investigate.
           </Text>
         </Stack>
@@ -94,17 +98,17 @@ export function DisputeBackgroundCheckContent({
 
       {check ? (
         <>
-          <Stack gap={8} backgroundColor="$color3" padding="sm" borderRadius={16}>
+          <Stack gap={8} backgroundColor={colors.bg[t].muted} padding="sm" borderRadius={16}>
             <Row gap={8} align="center">
-              <AlertTriangle size={18} color="$yellow10" />
-              <Text color="$gray11">{statusMeta?.label ?? 'Background check'}</Text>
+              <AlertTriangle size={18} color={t === 'dark' ? colors.yellow[300] : colors.yellow[600]} />
+              <Text color={colors.text[t].secondary}>{statusMeta?.label ?? 'Background check'}</Text>
             </Row>
-            <Text color="$gray11">
-              Package: <Text color="$gray11">{summaryPackage}</Text>
+            <Text color={colors.text[t].secondary}>
+              Package: <Text color={colors.text[t].secondary}>{summaryPackage}</Text>
             </Text>
-            <Text color="$gray11">Completed: {formatDate(check.completed_at)}</Text>
-            <Text color="$gray11">Expires: {formatDate(check.expires_at)}</Text>
-            <Text color="$gray11">
+            <Text color={colors.text[t].secondary}>Completed: {formatDate(check.completed_at)}</Text>
+            <Text color={colors.text[t].secondary}>Expires: {formatDate(check.expires_at)}</Text>
+            <Text color={colors.text[t].secondary}>
               Disputes should focus on factual inaccuracies, missing context, or mismatched records.
             </Text>
           </Stack>
@@ -133,7 +137,7 @@ export function DisputeBackgroundCheckContent({
         </>
       ) : (
         <Stack gap={12} align="center" paddingVertical={24}>
-          <Text color="$gray11">Select a background check to review dispute information.</Text>
+          <Text color={colors.text[t].secondary}>Select a background check to review dispute information.</Text>
         </Stack>
       )}
     </Stack>

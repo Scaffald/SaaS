@@ -6,7 +6,8 @@
  * showing what types of personal information are collected
  */
 
-import { Text, Row, Stack } from '@scaffald/ui'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 /**
  * CCPA data category type
@@ -81,13 +82,16 @@ const CATEGORY_METADATA: Record<CCPACategory, Omit<CategoryInfo, 'hasData' | 're
  * Single category card component
  */
 function CategoryCard({ info }: { info: CategoryInfo }) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   return (
     <Stack
       padding="md"
-      backgroundColor="$color2"
+      backgroundColor={colors.bg[t].muted}
       borderRadius={12}
       borderWidth={1}
-      borderColor={info.hasData ? '$green6' : '$borderColor'}
+      borderColor={info.hasData ? (t === 'dark' ? colors.green[300] : colors.green[600]) : colors.border[t].default}
       gap={8}
       flex={1}
       minWidth={280}
@@ -95,21 +99,21 @@ function CategoryCard({ info }: { info: CategoryInfo }) {
       <Row justify="space-between" align="center">
         <Text>{info.name}</Text>
         {info.hasData ? (
-          <Row backgroundColor="$green3" paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
-            <Text color="$green11">{info.recordCount || 0} records</Text>
+          <Row backgroundColor={t === 'dark' ? `${colors.green[300]}20` : `${colors.green[600]}15`} paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
+            <Text color={t === 'dark' ? colors.green[300] : colors.green[600]}>{info.recordCount || 0} records</Text>
           </Row>
         ) : (
-          <Row backgroundColor="$color4" paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
-            <Text color="$gray11">No data</Text>
+          <Row backgroundColor={colors.bg[t].muted} paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
+            <Text color={colors.text[t].secondary}>No data</Text>
           </Row>
         )}
       </Row>
 
-      <Text color="$gray11">{info.description}</Text>
+      <Text color={colors.text[t].secondary}>{info.description}</Text>
 
       <Stack gap={4} marginTop={4}>
-        <Text color="$gray11">Examples:</Text>
-        <Text color="$gray11">{info.examples.join(' • ')}</Text>
+        <Text color={colors.text[t].secondary}>Examples:</Text>
+        <Text color={colors.text[t].secondary}>{info.examples.join(' • ')}</Text>
       </Stack>
     </Stack>
   )
@@ -122,6 +126,9 @@ function CategoryCard({ info }: { info: CategoryInfo }) {
  * the user has stored in the system.
  */
 export function DataCategorySummary({ categories }: DataCategorySummaryProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   // Build category info with actual data
   const categoryInfos: CategoryInfo[] = (Object.keys(CATEGORY_METADATA) as CCPACategory[]).map(
     (categoryKey) => {
@@ -142,8 +149,8 @@ export function DataCategorySummary({ categories }: DataCategorySummaryProps) {
   return (
     <Stack gap={16}>
       {/* Summary banner */}
-      <Row padding="sm" backgroundColor="$blue2" borderRadius={12} gap={8} align="center">
-        <Text color="$blue11">
+      <Row padding="sm" backgroundColor={t === 'dark' ? `${colors.blue[300]}15` : `${colors.blue[600]}10`} borderRadius={12} gap={8} align="center">
+        <Text color={t === 'dark' ? colors.blue[300] : colors.blue[600]}>
           We collect data in {categoriesWithData} of 6 CCPA categories. View details below.
         </Text>
       </Row>

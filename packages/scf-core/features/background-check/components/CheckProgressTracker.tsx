@@ -1,6 +1,7 @@
 import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
 import { memo, useMemo } from 'react'
-import { ProgressBarBase, Separator, Text, Row, Stack } from '@scaffald/ui'
+import { ProgressBarBase, Separator, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 import {
   type BackgroundCheckDetail,
@@ -42,6 +43,9 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
   completedAt,
   expiresAt,
 }: CheckProgressTrackerProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   const normalizedComponents = useMemo<ComponentStatusRecord[]>(() => {
     if (!Array.isArray(componentStatuses)) return []
     const result: ComponentStatusRecord[] = []
@@ -94,7 +98,7 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
   }, [statusHistory])
 
   const statusMeta = getStatusMetadata(status)
-  const _statusColors = getStatusToneColors(statusMeta.tone)
+  const _statusColors = getStatusToneColors(statusMeta.tone, t)
   const progress = getStatusProgress(
     status,
     normalizedComponents.map((component) => ({ status: component.status }))
@@ -104,16 +108,16 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
     <Stack gap={16}>
       <Stack gap={8}>
         <Row justify="space-between" align="center">
-          <Text color="$gray11">Overall progress</Text>
-          <Text color="$gray11">{progress}%</Text>
+          <Text color={colors.text[t].secondary}>Overall progress</Text>
+          <Text color={colors.text[t].secondary}>{progress}%</Text>
         </Row>
         <ProgressBarBase value={progress} color="primary" />
-        <Text color="$gray11">{statusMeta.description}</Text>
+        <Text color={colors.text[t].secondary}>{statusMeta.description}</Text>
       </Stack>
 
       {normalizedComponents.length > 0 && (
         <Stack gap={8}>
-          <Text color="$gray11">Component status</Text>
+          <Text color={colors.text[t].secondary}>Component status</Text>
           <Stack gap={8}>
             {normalizedComponents.map((component) => {
               const componentStatusMeta =
@@ -121,23 +125,23 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
                   ? getStatusMetadata(component.status as BackgroundCheckStatus)
                   : null
               const componentColors = componentStatusMeta
-                ? getStatusToneColors(componentStatusMeta.tone)
-                : getStatusToneColors('neutral')
+                ? getStatusToneColors(componentStatusMeta.tone, t)
+                : getStatusToneColors('neutral', t)
               return (
                 <Row
                   key={component.id}
                   justify="space-between"
                   align="center"
                   padding="sm"
-                  backgroundColor="$color2"
+                  backgroundColor={colors.bg[t].muted}
                   borderRadius={12}
                   borderWidth={1}
-                  borderColor="$borderColor"
+                  borderColor={colors.border[t].default}
                 >
                   <Stack gap={4} flex={1}>
-                    <Text color="$gray11">{component.label}</Text>
+                    <Text color={colors.text[t].secondary}>{component.label}</Text>
                     {component.completedAt && (
-                      <Text color="$gray11">Completed {formatDate(component.completedAt)}</Text>
+                      <Text color={colors.text[t].secondary}>Completed {formatDate(component.completedAt)}</Text>
                     )}
                   </Stack>
                   {componentStatusMeta && (
@@ -161,39 +165,39 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
 
       {normalizedHistory.length > 0 && (
         <Stack gap={8}>
-          <Text color="$gray11">Recent activity</Text>
+          <Text color={colors.text[t].secondary}>Recent activity</Text>
           <Stack gap={8}>
             {normalizedHistory.map((entry, index) => {
               const historyMeta = getStatusMetadata(entry.status as BackgroundCheckStatus)
-              const colors = getStatusToneColors(historyMeta.tone)
+              const toneColors = getStatusToneColors(historyMeta.tone, t)
               return (
                 <Row key={`${entry.status}-${index}`} gap={12} align="center">
                   <Stack width={10} align="center">
                   <Stack
                     width={2}
                     flex={1}
-                    backgroundColor="$color5"
+                    backgroundColor={colors.border[t].default}
                     style={{ opacity: index === normalizedHistory.length - 1 ? 0 : 1 }}
                   />
                   </Stack>
                   <Stack
                     flex={1}
                     padding="sm"
-                    backgroundColor="$color2"
+                    backgroundColor={toneColors.background}
                     borderRadius={12}
                     borderWidth={1}
-                    borderColor="$borderColor"
+                    borderColor={toneColors.border}
                     gap={4}
                   >
-                    <Text color={colors.text}>{historyMeta.label}</Text>
+                    <Text color={toneColors.text}>{historyMeta.label}</Text>
                     <Row gap={8} align="center">
                       {entry.occurredAt && (
-                        <Text color="$gray11">{formatDate(entry.occurredAt)}</Text>
+                        <Text color={colors.text[t].secondary}>{formatDate(entry.occurredAt)}</Text>
                       )}
                       {entry.actor && (
                         <>
                           <Separator orientation="vertical" />
-                          <Text color="$gray11">{entry.actor}</Text>
+                          <Text color={colors.text[t].secondary}>{entry.actor}</Text>
                         </>
                       )}
                     </Row>
@@ -206,14 +210,14 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
       )}
 
       <Stack gap={8}>
-        <Text color="$gray11">Key dates</Text>
+        <Text color={colors.text[t].secondary}>Key dates</Text>
         <Stack gap={4}>
-          <Text color="$gray11">Started: {formatDate(createdAt)}</Text>
+          <Text color={colors.text[t].secondary}>Started: {formatDate(createdAt)}</Text>
           {estimatedCompletionDate && (
-            <Text color="$gray11">Estimated completion: {formatDate(estimatedCompletionDate)}</Text>
+            <Text color={colors.text[t].secondary}>Estimated completion: {formatDate(estimatedCompletionDate)}</Text>
           )}
-          {completedAt && <Text color="$gray11">Completed: {formatDate(completedAt)}</Text>}
-          {expiresAt && <Text color="$gray11">Expires: {formatDate(expiresAt)}</Text>}
+          {completedAt && <Text color={colors.text[t].secondary}>Completed: {formatDate(completedAt)}</Text>}
+          {expiresAt && <Text color={colors.text[t].secondary}>Expires: {formatDate(expiresAt)}</Text>}
         </Stack>
       </Stack>
     </Stack>

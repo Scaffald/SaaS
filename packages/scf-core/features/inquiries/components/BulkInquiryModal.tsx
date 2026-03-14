@@ -15,7 +15,9 @@ import {
   Stack,
   ProgressBarBase,
   TextArea,
+  useThemeContext,
 } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast } from '@scaffald/ui'
 import { useState } from 'react'
@@ -40,6 +42,8 @@ const WORK_SCHEDULE_OPTIONS = [
 ] as const
 
 export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryModalProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const toast = useToast()
   const [showResults, setShowResults] = useState(false)
   const [bulkResults, setBulkResults] = useState<{
@@ -159,34 +163,34 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
         <SheetContent scrollable>
           <Stack gap={16} padding="md">
             {/* Summary */}
-            <Stack gap={12} padding="md" backgroundColor="$color2" borderRadius={16}>
+            <Stack gap={12} padding="md" style={{ backgroundColor: colors.bg[t].muted }} borderRadius={16}>
               <Row gap={8} align="center">
-                <Text color="$green10">✓ {bulkResults.successful} Successful</Text>
+                <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[600] }}>✓ {bulkResults.successful} Successful</Text>
               </Row>
               {bulkResults.failed > 0 && (
                 <Row gap={8} align="center">
-                  <Text color="$red10">✗ {bulkResults.failed} Failed</Text>
+                  <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>✗ {bulkResults.failed} Failed</Text>
                 </Row>
               )}
-              <Text color="$gray11">Total: {bulkResults.total} candidates</Text>
+              <Text style={{ color: colors.text[t].secondary }}>Total: {bulkResults.total} candidates</Text>
             </Stack>
 
             {/* Failed details */}
             {bulkResults.failed > 0 && (
               <Stack gap={8}>
-                <Text color="$red10">Failed Inquiries</Text>
+                <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>Failed Inquiries</Text>
                 {bulkResults.results
                   .filter((r) => !r.success)
                   .map((result) => (
                     <Stack
                       key={result.applicationId}
                       padding="sm"
-                      backgroundColor="$red2"
+                      style={{ backgroundColor: t === 'dark' ? colors.error[900] : colors.error[50] }}
                       borderRadius={12}
                       gap={4}
                     >
                       <Text>Application: {result.applicationId}</Text>
-                      <Text color="$red11">{result.error || 'Unknown error'}</Text>
+                      <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>{result.error || 'Unknown error'}</Text>
                     </Stack>
                   ))}
               </Stack>
@@ -218,17 +222,17 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                   <Stack gap={24} padding="md">
                     {/* Header */}
                     <Stack gap={8}>
-                      <Text color="$gray11">
+                      <Text style={{ color: colors.text[t].secondary }}>
                         The same inquiry will be sent to all selected candidates
                       </Text>
                     </Stack>
 
                     {/* Progress indicator */}
                     {isSubmitting && (
-                      <Stack gap={8} padding="md" backgroundColor="$blue2" borderRadius={16}>
+                      <Stack gap={8} padding="md" style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50] }} borderRadius={16}>
                         <Text>Sending inquiries...</Text>
                         <ProgressBarBase value={75} />
-                        <Text color="$gray11">
+                        <Text style={{ color: colors.text[t].secondary }}>
                           Please wait while we send inquiries to all candidates
                         </Text>
                       </Stack>
@@ -278,7 +282,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                               />
                             )}
                           />
-                          <Text color="$gray11">Non-negotiable</Text>
+                          <Text style={{ color: colors.text[t].secondary }}>Non-negotiable</Text>
                         </Row>
                       </Stack>
 
@@ -418,7 +422,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
 
               {/* Help Sidebar */}
               <Stack
-                style={{ width: 300, padding: 16, backgroundColor: '$color2', borderLeftWidth: 1, borderLeftColor: '$borderColor' }}
+                style={{ width: 300, padding: 16, backgroundColor: colors.bg[t].muted, borderLeftWidth: 1, borderLeftColor: colors.border[t].default }}
               >
                 <InquiryHelpSidebar />
               </Stack>

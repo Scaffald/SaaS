@@ -5,7 +5,8 @@ import type {
 } from '@scf/core/features/personality-assessment/lib/ipip'
 import { ChevronDown, ChevronUp } from 'lucide-react-native'
 import { memo, useState } from 'react'
-import { Button, ProgressBar, Text, Row, Stack } from '@scaffald/ui'
+import { Button, ProgressBar, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { DOMAIN_NAMES } from '../utils/domainGrouping'
 import { FacetList } from './FacetList'
 
@@ -27,6 +28,8 @@ export const DomainCard = memo(function DomainCard({
   narrative,
   isComplete,
 }: DomainCardProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [isExpanded, setIsExpanded] = useState(false)
 
   const domainName = DOMAIN_NAMES[domain]
@@ -38,17 +41,17 @@ export const DomainCard = memo(function DomainCard({
       <Stack
         gap={12}
         padding="md"
-        backgroundColor="$color2"
+        backgroundColor={colors.bg[t].muted}
         borderRadius={16}
         borderWidth={1}
-        borderColor="$borderColor"
+        borderColor={colors.border[t].default}
         style={{ opacity: 0.6 }}
       >
         <Row justify="space-between" align="center">
-          <Text color="$gray11">{domainName}</Text>
-          <Text color="$gray11">Incomplete</Text>
+          <Text color={colors.text[t].secondary}>{domainName}</Text>
+          <Text color={colors.text[t].secondary}>Incomplete</Text>
         </Row>
-        <Text color="$gray11">
+        <Text color={colors.text[t].secondary}>
           Complete {domainName} questions to unlock your results for this domain.
         </Text>
       </Stack>
@@ -61,30 +64,30 @@ export const DomainCard = memo(function DomainCard({
     <Stack
       gap={12}
       padding="md"
-      backgroundColor="$color2"
+      backgroundColor={colors.bg[t].muted}
       borderRadius={16}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[t].default}
     >
       {/* Domain Header */}
       <Row justify="space-between" align="center">
         <Stack gap={4} flex={1}>
-          <Text color="$gray11">{domainName}</Text>
-          <Text color="$gray11">{narrative?.summary || ''}</Text>
+          <Text color={colors.text[t].secondary}>{domainName}</Text>
+          <Text color={colors.text[t].secondary}>{narrative?.summary || ''}</Text>
         </Stack>
         <Stack align="flex-end" gap={4}>
           <Text
             color={
               classification === 'high'
-                ? '$green10'
+                ? t === 'dark' ? colors.green[300] : colors.green[600]
                 : classification === 'low'
-                  ? '$blue10'
-                  : '$gray10'
+                  ? t === 'dark' ? colors.blue[300] : colors.blue[600]
+                  : colors.text[t].secondary
             }
           >
             {classification.toUpperCase()}
           </Text>
-          <Text color="$gray11">{Math.round(percentage)}%</Text>
+          <Text color={colors.text[t].secondary}>{Math.round(percentage)}%</Text>
         </Stack>
       </Row>
 
@@ -92,7 +95,7 @@ export const DomainCard = memo(function DomainCard({
       <ProgressBar value={percentage} />
 
       {/* Domain Result Text */}
-      {domainResult && <Text color="$gray11">{domainResult.text}</Text>}
+      {domainResult && <Text color={colors.text[t].secondary}>{domainResult.text}</Text>}
 
       {/* Expand/Collapse Button */}
       {score?.facet && narrative?.facets && (

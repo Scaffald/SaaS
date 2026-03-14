@@ -1,5 +1,6 @@
 import { useInquiryHistory } from '@scf/core/utils/inquiries-sdk-hooks'
-import { Text, Row, Stack } from '@scaffald/ui'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import type { ReactNode } from 'react'
 import { AlertCircle, Check, Edit3, FileText, MessageSquare, Send } from 'lucide-react-native'
 import { useMemo } from 'react'
@@ -32,23 +33,23 @@ interface AuditLogEntry {
   } | null
 }
 
-const getEventColor = (eventType: EventType): string => {
+const getEventColor = (eventType: EventType, t: 'light' | 'dark'): string => {
   switch (eventType) {
     case 'inquiry_created':
     case 'inquiry_sent':
-      return '$blue9'
+      return t === 'dark' ? colors.blue[300] : colors.blue[600]
     case 'section_accepted':
-      return '$green9'
+      return t === 'dark' ? colors.green[300] : colors.green[600]
     case 'comment_added':
-      return '$purple9'
+      return t === 'dark' ? colors.purple[300] : colors.purple[600]
     case 'inquiry_edited':
-      return '$orange9'
+      return t === 'dark' ? colors.orange[300] : colors.orange[600]
     case 'status_changed':
-      return '$yellow9'
+      return t === 'dark' ? colors.yellow[300] : colors.yellow[600]
     case 'capability_answered':
-      return '$cyan9'
+      return t === 'dark' ? colors.cyan[300] : colors.cyan[600]
     default:
-      return '$gray9'
+      return colors.text[t].tertiary
   }
 }
 
@@ -131,6 +132,8 @@ const formatTimestamp = (timestamp: string): string => {
 
 export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProps) {
   const { data: history, isLoading, error } = useInquiryHistory(inquiryId)
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
 
   const sortedHistory = useMemo(() => {
     if (!history) return []
@@ -149,7 +152,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
   if (error) {
     return (
       <Stack padding="md" align="center" gap={16}>
-        <Text color="$red10">Failed to load history</Text>
+        <Text color={t === 'dark' ? colors.error[300] : colors.error[600]}>Failed to load history</Text>
       </Stack>
     )
   }
@@ -157,7 +160,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
   if (!sortedHistory || sortedHistory.length === 0) {
     return (
       <Stack padding="md" align="center" gap={16}>
-        <Text color="$gray11">No history available</Text>
+        <Text color={colors.text[t].secondary}>No history available</Text>
       </Stack>
     )
   }
@@ -174,7 +177,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
       <Stack gap={8}>
         {sortedHistory.map((event, index) => {
           const EventIcon = getEventIcon(event.event_type as EventType)
-          const eventColor = getEventColor(event.event_type as EventType)
+          const eventColor = getEventColor(event.event_type as EventType, t)
           const isLast = index === sortedHistory.length - 1
 
           return (
@@ -191,7 +194,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
                 >
                   <EventIcon size={16} color="white" />
                 </Stack>
-                {!isLast && <Stack flex={1} width={2} backgroundColor="$gray5" height={40} />}
+                {!isLast && <Stack flex={1} width={2} backgroundColor={colors.border[t].default} height={40} />}
               </Stack>
 
               {/* Event details */}
@@ -203,16 +206,16 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
                     initials={actorDisplayName(event.actor as AuditLogEntry['actor']).charAt(0).toUpperCase()}
                   />
                   <Text>{actorDisplayName(event.actor as AuditLogEntry['actor'])}</Text>
-                  <Text color="$gray11">{formatEventType(event.event_type as EventType)}</Text>
+                  <Text color={colors.text[t].secondary}>{formatEventType(event.event_type as EventType)}</Text>
                 </Row>
 
-                <Text color="$gray11">{formatTimestamp(event.created_at as string)}</Text>
+                <Text color={colors.text[t].secondary}>{formatTimestamp(event.created_at as string)}</Text>
 
                 {/* Event-specific details */}
                 {event.event_data
                   ? ((): ReactNode => {
                       const msg = formatEventData(event.event_type as EventType, event.event_data as Record<string, unknown>)
-                      return msg != null ? <Text color="$gray11" style={{ marginTop: 4 }}>{msg}</Text> : null
+                      return msg != null ? <Text color={colors.text[t].secondary} style={{ marginTop: 4 }}>{msg}</Text> : null
                     })()
                   : null}
               </Stack>

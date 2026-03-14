@@ -1,5 +1,6 @@
 import { Fragment } from "react";
-import { Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { Spinner, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
 import type {
   ResumeMergeStrategy,
@@ -31,11 +32,13 @@ export function MergeComparisonView({
   sections,
   isLoading = false,
 }: MergeComparisonViewProps) {
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
   if (isLoading) {
     return (
       <Row gap={8} align="center">
         <Spinner size="sm" />
-        <Text color="$gray11">Loading current profile data…</Text>
+        <Text color={colors.text[t].secondary}>Loading current profile data…</Text>
       </Row>
     );
   }
@@ -44,7 +47,7 @@ export function MergeComparisonView({
     return (
       <Stack gap={8}>
         <Text>Nothing to review</Text>
-        <Text color="$gray11">
+        <Text color={colors.text[t].secondary}>
           We didn't detect any changes to compare. You can still finish the
           wizard to exit.
         </Text>
@@ -60,8 +63,8 @@ export function MergeComparisonView({
           gap={12}
           padding="sm"
           borderWidth={1}
-          borderColor="$color6"
-          backgroundColor="$color2"
+          borderColor={colors.border[t].default}
+          backgroundColor={colors.bg[t].muted}
           borderRadius={16}
         >
           <Row justify="space-between" align="center" gap={8} wrap>
@@ -69,7 +72,7 @@ export function MergeComparisonView({
             <StrategyPill strategy={section.strategy} />
           </Row>
 
-          {section.notes ? <Text color="$gray11">{section.notes}</Text> : null}
+          {section.notes ? <Text color={colors.text[t].secondary}>{section.notes}</Text> : null}
 
           <Row gap={16} wrap>
             <SummaryColumn
@@ -97,22 +100,24 @@ function SummaryColumn({
   items: string[];
   highlight?: boolean;
 }) {
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
   return (
     <Stack
       gap={8}
       flex={1}
       padding="xs"
-      backgroundColor={highlight ? "$blue3" : "transparent"}
+      backgroundColor={highlight ? (t === 'dark' ? colors.blue[900] : colors.blue[100]) : "transparent"}
       borderRadius={12}
       style={{ minWidth: 220 }}
     >
       <Text>{title}</Text>
       {items.length === 0 ? (
-        <Text color="$gray11">No data</Text>
+        <Text color={colors.text[t].secondary}>No data</Text>
       ) : (
         items.map((item, index) => (
           <Fragment key={`${title}-${index}-${item}`}>
-            <Text color="$gray11">{item}</Text>
+            <Text color={colors.text[t].secondary}>{item}</Text>
           </Fragment>
         ))
       )}
@@ -121,6 +126,8 @@ function SummaryColumn({
 }
 
 function StrategyPill({ strategy }: { strategy: ResumeMergeStrategy }) {
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
   return (
     <Stack
       paddingHorizontal={12}
@@ -128,19 +135,19 @@ function StrategyPill({ strategy }: { strategy: ResumeMergeStrategy }) {
       borderRadius={12}
       backgroundColor={
         strategy === "replace"
-          ? "$red3"
+          ? (t === 'dark' ? colors.error[900] : colors.error[100])
           : strategy === "append"
-          ? "$blue3"
-          : "$gray3"
+          ? (t === 'dark' ? colors.blue[900] : colors.blue[100])
+          : colors.bg[t].muted
       }
     >
       <Text
         color={
           strategy === "replace"
-            ? "$red11"
+            ? (t === 'dark' ? colors.error[300] : colors.error[600])
             : strategy === "append"
-            ? "$blue11"
-            : "$color11"
+            ? (t === 'dark' ? colors.blue[300] : colors.blue[600])
+            : colors.text[t].secondary
         }
       >
         {STRATEGY_LABELS[strategy]}

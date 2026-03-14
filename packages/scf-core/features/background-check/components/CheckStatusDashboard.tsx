@@ -4,7 +4,8 @@ import { RefreshCcw, ShieldCheck } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Platform } from 'react-native'
-import { Button, ScrollView, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Button, ScrollView, Separator, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 import { CheckStatusCard } from './CheckStatusCard'
 import { DisputeBackgroundCheckDialog } from './DisputeBackgroundCheckDialog'
@@ -22,6 +23,8 @@ const FILTER_DEFINITIONS: Array<{ label: string; value: FilterValue }> = [
 
 export function CheckStatusDashboard() {
   const router = useRouter()
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [activeFilter, setActiveFilter] = useState<FilterValue>('active')
   const [selectedCheckId, setSelectedCheckId] = useState<string | null>(null)
   const [disputeCheck, setDisputeCheck] = useState<BackgroundCheckSummary | null>(null)
@@ -84,20 +87,20 @@ export function CheckStatusDashboard() {
   }
 
   return (
-    <Stack flex={1} backgroundColor="$background">
+    <Stack flex={1} backgroundColor={colors.bg[t].default}>
       <ScrollView style={{ flex: 1 }}>
         <Stack gap={16} paddingHorizontal={16} paddingBottom={24}>
           <Stack
             gap={12}
             padding="md"
-            backgroundColor="$background"
-            style={{ borderBottomWidth: 1, borderBottomColor: '$borderColor' }}
+            backgroundColor={colors.bg[t].default}
+            style={{ borderBottomWidth: 1, borderBottomColor: colors.border[t].default }}
           >
             <Row gap={12} align="center">
-              <ShieldCheck size={28} color="$blue10" />
+              <ShieldCheck size={28} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
               <Stack gap={4}>
-                <Text color="$gray11">Background check dashboard</Text>
-                <Text color="$gray11">
+                <Text color={colors.text[t].secondary}>Background check dashboard</Text>
+                <Text color={colors.text[t].secondary}>
                   Track your screenings, monitor progress, and manage who can see your results.
                 </Text>
               </Stack>
@@ -126,7 +129,7 @@ export function CheckStatusDashboard() {
           {checksQuery.isLoading && (
             <Stack gap={8} align="center" paddingVertical={24}>
               <Spinner size="lg" color="gray" />
-              <Text color="$gray11">Loading your background checks…</Text>
+              <Text color={colors.text[t].secondary}>Loading your background checks…</Text>
             </Stack>
           )}
 
@@ -134,12 +137,12 @@ export function CheckStatusDashboard() {
             <Stack
               gap={12}
               padding="md"
-              backgroundColor="$color2"
+              backgroundColor={colors.bg[t].muted}
               borderRadius={16}
               borderWidth={1}
-              borderColor="$borderColor"
+              borderColor={colors.border[t].default}
             >
-              <Text color="$gray11">
+              <Text color={colors.text[t].secondary}>
                 We couldn't load your background checks. Please try again.
               </Text>
               <Button
@@ -157,12 +160,12 @@ export function CheckStatusDashboard() {
             <Stack
               gap={12}
               padding="md"
-              backgroundColor="$color2"
+              backgroundColor={colors.bg[t].muted}
               borderRadius={16}
               borderWidth={1}
-              borderColor="$borderColor"
+              borderColor={colors.border[t].default}
             >
-              <Text color="$gray11">No background checks found for this filter.</Text>
+              <Text color={colors.text[t].secondary}>No background checks found for this filter.</Text>
               <Button size="sm" color="primary" onPress={handleStartNewCheck}>
                 Start a background check
               </Button>
@@ -188,13 +191,13 @@ export function CheckStatusDashboard() {
           <Stack
             gap={8}
             padding="sm"
-            backgroundColor="$color2"
+            backgroundColor={colors.bg[t].muted}
             borderRadius={16}
             borderWidth={1}
-            borderColor="$borderColor"
+            borderColor={colors.border[t].default}
           >
-            <Text color="$gray11">Need a new screening?</Text>
-            <Text color="$gray11">
+            <Text color={colors.text[t].secondary}>Need a new screening?</Text>
+            <Text color={colors.text[t].secondary}>
               Start a new background check whenever you need to refresh your credentials.
             </Text>
             <Button size="sm" color="primary" onPress={handleStartNewCheck}>

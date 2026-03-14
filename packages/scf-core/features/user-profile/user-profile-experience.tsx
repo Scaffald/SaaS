@@ -1,5 +1,6 @@
 import { Briefcase, Calendar, MapPin } from "lucide-react-native";
-import { Card, Text, Row, Stack } from "@scaffald/ui";
+import { Card, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
 interface Experience {
   id: string;
@@ -19,6 +20,9 @@ interface UserProfileExperienceProps {
 export function UserProfileExperience({
   experience,
 }: UserProfileExperienceProps) {
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
+
   const formatDate = (dateString: string | null) => {
     if (!dateString) return null;
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -31,26 +35,26 @@ export function UserProfileExperience({
     <Card elevate bordered>
       <Stack gap={16} padding="lg">
         <Row gap={8} align="center">
-          <Briefcase size={24} color="$blue10" />
-          <Text color="$gray11">Work Experience</Text>
+          <Briefcase size={24} color={t === "dark" ? colors.blue[300] : colors.blue[600]} />
+          <Text color={colors.text[t].secondary}>Work Experience</Text>
         </Row>
 
         <Stack gap={12}>
           {experience.map((exp) => (
-            <Card key={exp.id} bordered backgroundColor="$color2">
+            <Card key={exp.id} bordered backgroundColor={colors.bg[t].muted}>
               <Stack gap={12} padding="md">
                 <Stack gap={4}>
-                  <Text color="$gray11">{exp.job_title}</Text>
+                  <Text color={colors.text[t].secondary}>{exp.job_title}</Text>
                   {exp.company_name && (
-                    <Text color="$gray11">{exp.company_name}</Text>
+                    <Text color={colors.text[t].secondary}>{exp.company_name}</Text>
                   )}
                 </Stack>
 
                 <Row gap={12} wrap>
                   {(exp.start_date || exp.end_date) && (
                     <Row gap={8} align="center">
-                      <Calendar size="md" color="$gray11" />
-                      <Text color="$gray11">
+                      <Calendar size="md" color={colors.text[t].secondary} />
+                      <Text color={colors.text[t].secondary}>
                         {formatDate(exp.start_date)} -{" "}
                         {exp.is_current ? "Present" : formatDate(exp.end_date)}
                       </Text>
@@ -58,14 +62,14 @@ export function UserProfileExperience({
                   )}
                   {exp.location && (
                     <Row gap={8} align="center">
-                      <MapPin size="md" color="$gray11" />
-                      <Text color="$gray11">{exp.location}</Text>
+                      <MapPin size="md" color={colors.text[t].secondary} />
+                      <Text color={colors.text[t].secondary}>{exp.location}</Text>
                     </Row>
                   )}
                 </Row>
 
                 {exp.description && (
-                  <Text color="$gray11" style={{ lineHeight: 20 }}>
+                  <Text color={colors.text[t].secondary} style={{ lineHeight: 20 }}>
                     {exp.description}
                   </Text>
                 )}

@@ -7,7 +7,8 @@ import {
 } from "lucide-react-native";
 import { memo } from "react";
 import { Alert } from "react-native";
-import { Button, Separator, Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { Button, Separator, Spinner, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import { useDispute } from "../hooks/useDispute";
 import { CheckProgressTracker } from "./CheckProgressTracker";
 import { DisputeStatusTracker } from "./DisputeStatusTracker";
@@ -42,6 +43,9 @@ export const ResultsViewer = memo(function ResultsViewer({
   onClose,
   onRequestDispute,
 }: ResultsViewerProps) {
+  const { theme } = useThemeContext();
+  const t = theme === 'dark' ? 'dark' : 'light';
+
   const getCheckQuery = useBackgroundCheck(checkId || undefined, {
     enabled: Boolean(checkId),
   });
@@ -61,14 +65,14 @@ export const ResultsViewer = memo(function ResultsViewer({
       <Stack
         gap={12}
         padding="md"
-        backgroundColor="$background"
+        backgroundColor={colors.bg[t].default}
         borderRadius={16}
         borderWidth={1}
-        borderColor="$borderColor"
+        borderColor={colors.border[t].default}
       >
         <Row gap={8} align="center">
           <Spinner size="sm" color="gray" />
-          <Text color="$gray11">Loading background check details…</Text>
+          <Text color={colors.text[t].secondary}>Loading background check details…</Text>
         </Row>
       </Stack>
     );
@@ -88,14 +92,14 @@ export const ResultsViewer = memo(function ResultsViewer({
       <Stack
         gap={12}
         padding="md"
-        backgroundColor="$background"
+        backgroundColor={colors.bg[t].default}
         borderRadius={16}
         borderWidth={1}
-        borderColor="$borderColor"
+        borderColor={colors.border[t].default}
       >
         <Row gap={8} align="center">
-          <AlertTriangle size={18} color="$red10" />
-          <Text color="$red11">
+          <AlertTriangle size={18} color={t === 'dark' ? colors.error[300] : colors.error[600]} />
+          <Text color={t === 'dark' ? colors.error[300] : colors.error[600]}>
             We couldn't load your background check details. Try again.
           </Text>
         </Row>
@@ -110,7 +114,7 @@ export const ResultsViewer = memo(function ResultsViewer({
     );
   }
   const statusMeta = getStatusMetadata(detail.status);
-  const statusColors = getStatusToneColors(statusMeta.tone);
+  const statusColors = getStatusToneColors(statusMeta.tone, t);
 
   let completedAtFromHistory: string | null = null;
   if (Array.isArray(detail.status_history)) {
@@ -134,14 +138,14 @@ export const ResultsViewer = memo(function ResultsViewer({
     <Stack
       gap={16}
       padding="md"
-      backgroundColor="$background"
+      backgroundColor={colors.bg[t].default}
       borderRadius={16}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[t].default}
     >
       <Row justify="space-between" align="center">
         <Stack gap={4}>
-          <Text color="$gray11">
+          <Text color={colors.text[t].secondary}>
             {summary?.package?.display_name ?? "Background check results"}
           </Text>
           <Row gap={8} align="center">
@@ -155,7 +159,7 @@ export const ResultsViewer = memo(function ResultsViewer({
             >
               <Text color={statusColors.text}>{statusMeta.label}</Text>
             </Stack>
-            <Text color="$gray11">
+            <Text color={colors.text[t].secondary}>
               Last updated {formatDate(detail.updated_at)}
             </Text>
           </Row>
@@ -190,13 +194,13 @@ export const ResultsViewer = memo(function ResultsViewer({
         <Stack
           gap={8}
           padding="sm"
-          backgroundColor="$color2"
+          backgroundColor={colors.bg[t].muted}
           borderRadius={16}
           borderWidth={1}
-          borderColor="$borderColor"
+          borderColor={colors.border[t].default}
         >
-          <Text color="$gray11">Notice something inaccurate?</Text>
-          <Text color="$gray11">
+          <Text color={colors.text[t].secondary}>Notice something inaccurate?</Text>
+          <Text color={colors.text[t].secondary}>
             Submit a dispute so our compliance team can review and correct any
             issues.
           </Text>
@@ -217,8 +221,8 @@ export const ResultsViewer = memo(function ResultsViewer({
 
       {detail.summary != null && (
         <Stack gap={8}>
-          <Text color="$gray11">Summary</Text>
-          <Text color="$gray11">
+          <Text color={colors.text[t].secondary}>Summary</Text>
+          <Text color={colors.text[t].secondary}>
             {String(
               typeof detail.summary === "string"
                 ? detail.summary
@@ -230,8 +234,8 @@ export const ResultsViewer = memo(function ResultsViewer({
 
       {detail.findings && (
         <Stack gap={8}>
-          <Text color="$gray11">Findings</Text>
-          <Text color="$gray11">
+          <Text color={colors.text[t].secondary}>Findings</Text>
+          <Text color={colors.text[t].secondary}>
             {JSON.stringify(detail.findings, null, 2)}
           </Text>
         </Stack>
@@ -239,7 +243,7 @@ export const ResultsViewer = memo(function ResultsViewer({
 
       <Stack gap={12}>
         <Row justify="space-between" align="center">
-          <Text color="$gray11">Documents</Text>
+          <Text color={colors.text[t].secondary}>Documents</Text>
           <Button
             size="sm"
             variant="outline"
@@ -256,7 +260,7 @@ export const ResultsViewer = memo(function ResultsViewer({
           </Button>
         </Row>
         {documents.length === 0 ? (
-          <Text color="$gray11">No documents uploaded yet.</Text>
+          <Text color={colors.text[t].secondary}>No documents uploaded yet.</Text>
         ) : (
           <Stack gap={8}>
             {documents.map((document: BackgroundCheckDocument) => (
@@ -265,14 +269,14 @@ export const ResultsViewer = memo(function ResultsViewer({
                 justify="space-between"
                 align="center"
                 padding="sm"
-                backgroundColor="$color2"
+                backgroundColor={colors.bg[t].muted}
                 borderRadius={12}
                 borderWidth={1}
-                borderColor="$borderColor"
+                borderColor={colors.border[t].default}
               >
                 <Stack gap={4}>
-                  <Text color="$gray11">{document.file_name}</Text>
-                  <Text color="$gray11">
+                  <Text color={colors.text[t].secondary}>{document.file_name}</Text>
+                  <Text color={colors.text[t].secondary}>
                     Uploaded {formatDate(document.uploaded_at)}
                   </Text>
                 </Stack>

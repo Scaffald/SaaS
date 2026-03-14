@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { Button, ScrollView, Separator, Text, Row, Stack } from "@scaffald/ui";
+import { Button, ScrollView, Separator, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
 import { useBackgroundCheckForm } from "../hooks/useBackgroundCheckForm";
 import { ConsentStep } from "./ConsentStep";
@@ -31,6 +32,9 @@ export function BackgroundCheckWizard() {
     confirmPaymentSession,
     isCreatingPaymentSession,
   } = useBackgroundCheckForm();
+
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
 
   const requiredDocuments = useMemo(() => {
     const raw = (
@@ -106,8 +110,8 @@ export function BackgroundCheckWizard() {
         return (
           <Stack gap={16} flex={1}>
             <Stack gap={8}>
-              <Text color="$gray11">Background Check Submitted</Text>
-              <Text color="$gray11">
+              <Text color={colors.text[t].secondary}>Background Check Submitted</Text>
+              <Text color={colors.text[t].secondary}>
                 We've started your background check request. We'll notify you
                 when results are ready.
               </Text>
@@ -115,21 +119,21 @@ export function BackgroundCheckWizard() {
 
             <Stack
               gap={8}
-              backgroundColor="$color2"
+              backgroundColor={colors.bg[t].muted}
               padding="md"
               borderRadius={16}
             >
-              <Text color="$gray11">Summary</Text>
-              <Text color="$gray11">
+              <Text color={colors.text[t].secondary}>Summary</Text>
+              <Text color={colors.text[t].secondary}>
                 Package: {selectedPackage?.display_name ?? "Pending"}
               </Text>
-              <Text color="$gray11">
+              <Text color={colors.text[t].secondary}>
                 Cost: $
                 {state.payment.costCents
                   ? (state.payment.costCents / 100).toFixed(2)
                   : "—"}
               </Text>
-              <Text color="$gray11">Payment: {state.payment.paidBy}</Text>
+              <Text color={colors.text[t].secondary}>Payment: {state.payment.paidBy}</Text>
             </Stack>
 
             <Button
@@ -147,16 +151,16 @@ export function BackgroundCheckWizard() {
   };
 
   return (
-    <Stack flex={1} backgroundColor="$background">
+    <Stack flex={1} backgroundColor={colors.bg[t].default}>
       <Stack
         padding="md"
         gap={12}
-        style={{ borderBottomWidth: 1, borderBottomColor: "$borderColor" }}
-        backgroundColor="$background"
+        style={{ borderBottomWidth: 1, borderBottomColor: colors.border[t].default }}
+        backgroundColor={colors.bg[t].default}
       >
         <Stack gap={4}>
-          <Text color="$gray11">Initiate Background Check</Text>
-          <Text color="$gray11">
+          <Text color={colors.text[t].secondary}>Initiate Background Check</Text>
+          <Text color={colors.text[t].secondary}>
             Complete the steps below to start your background check.
           </Text>
         </Stack>
@@ -166,11 +170,11 @@ export function BackgroundCheckWizard() {
 
       {submitError && (
         <Stack
-          backgroundColor="$red3"
+          backgroundColor={t === 'dark' ? colors.error[900] : colors.error[50]}
           padding="sm"
-          style={{ borderBottomWidth: 1, borderBottomColor: "$red7" }}
+          style={{ borderBottomWidth: 1, borderBottomColor: t === 'dark' ? colors.error[400] : colors.error[300] }}
         >
-          <Text color="$red11">
+          <Text color={t === 'dark' ? colors.error[300] : colors.error[600]}>
             We couldn't submit your background check: {submitError.message}
           </Text>
         </Stack>
@@ -184,7 +188,7 @@ export function BackgroundCheckWizard() {
 
       <Separator />
 
-      <Row padding="md" justify="space-between" backgroundColor="$background">
+      <Row padding="md" justify="space-between" backgroundColor={colors.bg[t].default}>
         <Button
           size="md"
           disabled={currentStepIndex === 0 || currentStep === "confirmation"}
@@ -193,7 +197,7 @@ export function BackgroundCheckWizard() {
           Back
         </Button>
         {currentStep !== "confirmation" && (
-          <Text color="$gray11">
+          <Text color={colors.text[t].secondary}>
             Step {currentStepIndex + 1} of {steps.length}
           </Text>
         )}

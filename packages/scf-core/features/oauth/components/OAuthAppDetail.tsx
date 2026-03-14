@@ -18,7 +18,9 @@ import {
   ModalHeader,
   ModalActions,
   Input,
+  useThemeContext,
 } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useState } from 'react'
 import {
   useAdminOAuthAppDetail,
@@ -36,6 +38,8 @@ interface OAuthAppDetailProps {
 
 export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
   const router = useRouter()
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [selectedScopes, setSelectedScopes] = useState<string[]>([])
   const [trustLevel, setTrustLevel] = useState<'active' | 'trusted'>('active')
   const [rejectReason, setRejectReason] = useState('')
@@ -189,7 +193,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
           <Text size="lg">Application Details</Text>
 
           <Stack gap={8}>
-            <Text size="sm" color="$gray11">
+            <Text size="sm" color={colors.text[t].secondary}>
               Description
             </Text>
             <Paragraph size="sm">{app.description || 'No description provided'}</Paragraph>
@@ -198,7 +202,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
           <Separator />
 
           <Stack gap={8}>
-            <Text size="sm" color="$gray11">
+            <Text size="sm" color={colors.text[t].secondary}>
               Client ID
             </Text>
             <Text size="sm" mono data-testid="oauth-app-client-id">
@@ -207,20 +211,20 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
           </Stack>
 
           <Stack gap={8}>
-            <Text size="sm" color="$gray11">
+            <Text size="sm" color={colors.text[t].secondary}>
               Homepage URL
             </Text>
-            <Text size="sm" color="$blue10">
+            <Text size="sm" color={t === 'dark' ? colors.blue[300] : colors.blue[600]}>
               {app.homepage_url || 'Not provided'}
             </Text>
           </Stack>
 
           {app.privacy_policy_url && (
             <Stack gap={8}>
-              <Text size="sm" color="$gray11">
+              <Text size="sm" color={colors.text[t].secondary}>
                 Privacy Policy URL
               </Text>
-              <Text size="sm" color="$blue10">
+              <Text size="sm" color={t === 'dark' ? colors.blue[300] : colors.blue[600]}>
                 {app.privacy_policy_url}
               </Text>
             </Stack>
@@ -228,10 +232,10 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
 
           {app.terms_of_service_url && (
             <Stack gap={8}>
-              <Text size="sm" color="$gray11">
+              <Text size="sm" color={colors.text[t].secondary}>
                 Terms of Service URL
               </Text>
-              <Text size="sm" color="$blue10">
+              <Text size="sm" color={t === 'dark' ? colors.blue[300] : colors.blue[600]}>
                 {app.terms_of_service_url}
               </Text>
             </Stack>
@@ -240,14 +244,14 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
           <Separator />
 
           <Stack gap={8}>
-            <Text size="sm" color="$gray11">
+            <Text size="sm" color={colors.text[t].secondary}>
               Owner Email
             </Text>
             <Text size="sm">{app.owner_email || 'Not provided'}</Text>
           </Stack>
 
           <Stack gap={8}>
-            <Text size="sm" color="$gray11">
+            <Text size="sm" color={colors.text[t].secondary}>
               Created
             </Text>
             <Text size="sm">{new Date(app.created_at).toLocaleString()}</Text>
@@ -255,7 +259,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
 
           {app.approved_at && (
             <Stack gap={8}>
-              <Text size="sm" color="$gray11">
+              <Text size="sm" color={colors.text[t].secondary}>
                 Approved
               </Text>
               <Text size="sm">{new Date(app.approved_at).toLocaleString()}</Text>
@@ -276,7 +280,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
                 <Text
                   size="sm"
                   mono
-                  color="$blue10"
+                  color={t === 'dark' ? colors.blue[300] : colors.blue[600]}
                   data-testid={`oauth-app-redirect-uri-${index}`}
                 >
                   {uri}
@@ -307,7 +311,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
               ))}
             </Row>
           ) : (
-            <Paragraph size="sm" color="$gray11" data-testid="oauth-app-no-scopes">
+            <Paragraph size="sm" color={colors.text[t].secondary} data-testid="oauth-app-no-scopes">
               No scopes approved yet
             </Paragraph>
           )}
@@ -342,7 +346,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
                       />
                       <Stack flex={1}>
                         <Text size="sm">{scope.display_name}</Text>
-                        <Text size="sm" color="$gray11">
+                        <Text size="sm" color={colors.text[t].secondary}>
                           {scope.description}
                         </Text>
                       </Stack>
@@ -370,7 +374,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
                     Trusted
                   </Button>
                 </Row>
-                <Paragraph size="sm" color="$gray11">
+                <Paragraph size="sm" color={colors.text[t].secondary}>
                   {trustLevel === 'active'
                     ? 'Active apps require user consent for each authorization'
                     : 'Trusted apps can skip the consent screen'}

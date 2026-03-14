@@ -4,7 +4,8 @@ import { usePublicWorkLogsFeed } from "@scf/core/utils/work-logs-sdk-hooks";
 import { ShieldCheck } from "lucide-react-native";
 import { useMemo } from "react";
 import { Image } from "react-native";
-import { Card, Paragraph, Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { Card, Paragraph, Spinner, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
 interface WorkLogPortfolioWidgetProps {
   userId: string;
@@ -13,6 +14,9 @@ interface WorkLogPortfolioWidgetProps {
 export function WorkLogPortfolioWidget({
   userId,
 }: WorkLogPortfolioWidgetProps) {
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
+
   const { data, isLoading } = usePublicWorkLogsFeed(
     userId ? { userId, limit: 12 } : undefined,
     {
@@ -56,11 +60,11 @@ export function WorkLogPortfolioWidget({
   }, [workLogs]);
 
   return (
-    <Card borderColor="$color6" borderWidth={1}>
+    <Card borderColor={colors.border[t].default} borderWidth={1}>
       <Stack gap={16} padding="md">
         <Stack gap={8}>
           <Text>Verified work history</Text>
-          <Paragraph color="$gray11">
+          <Paragraph color={colors.text[t].secondary}>
             Recent verified work logs selected by this worker. Projects appear
             here only when the worker has chosen to share them publicly.
           </Paragraph>
@@ -69,10 +73,10 @@ export function WorkLogPortfolioWidget({
         {isLoading ? (
           <Row gap={8} align="center">
             <Spinner size="sm" />
-            <Text color="$gray11">Loading work history…</Text>
+            <Text color={colors.text[t].secondary}>Loading work history…</Text>
           </Row>
         ) : workLogs.length === 0 ? (
-          <Paragraph color="$gray11">
+          <Paragraph color={colors.text[t].secondary}>
             No verified work logs are currently visible on this profile.
           </Paragraph>
         ) : (
@@ -115,20 +119,20 @@ export function WorkLogPortfolioWidget({
                 <Stack
                   key={group.id}
                   borderWidth={1}
-                  borderColor="$color6"
+                  borderColor={colors.border[t].default}
                   borderRadius={16}
                   paddingHorizontal={12}
                   paddingVertical={12}
                   gap={12}
-                  backgroundColor="$color2"
+                  backgroundColor={colors.bg[t].subtle}
                 >
                   <Row align="center" justify="space-between">
                     <Stack gap={4}>
                       <Text>{group.projectName ?? "Project"}</Text>
                       {group.organizationName ? (
-                        <Text color="$gray11">{group.organizationName}</Text>
+                        <Text color={colors.text[t].secondary}>{group.organizationName}</Text>
                       ) : null}
-                      <Text color="$gray11">{dateLabel}</Text>
+                      <Text color={colors.text[t].secondary}>{dateLabel}</Text>
                     </Stack>
                     <Row
                       gap={8}
@@ -136,10 +140,10 @@ export function WorkLogPortfolioWidget({
                       paddingHorizontal={8}
                       paddingVertical={4}
                       borderRadius={16}
-                      backgroundColor="$green4"
+                      backgroundColor={t === 'dark' ? colors.green[900] : colors.green[50]}
                     >
-                      <ShieldCheck size="md" color="$green11" />
-                      <Text color="$green11">Verified by Scaffald</Text>
+                      <ShieldCheck size="md" color={t === 'dark' ? colors.green[300] : colors.green[600]} />
+                      <Text color={t === 'dark' ? colors.green[300] : colors.green[600]}>Verified by Scaffald</Text>
                     </Row>
                   </Row>
 
@@ -172,16 +176,16 @@ export function WorkLogPortfolioWidget({
                               flex={1}
                               align="center"
                               justify="center"
-                              backgroundColor="$color3"
+                              backgroundColor={colors.bg[t].muted}
                             >
-                              <Text color="$gray11">Photo unavailable</Text>
+                              <Text color={colors.text[t].secondary}>Photo unavailable</Text>
                             </Stack>
                           )}
                         </Card>
                       ))}
                     </Row>
                   ) : (
-                    <Paragraph color="$gray11">
+                    <Paragraph color={colors.text[t].secondary}>
                       No photos were shared for this project.
                     </Paragraph>
                   )}

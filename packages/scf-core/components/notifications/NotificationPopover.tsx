@@ -20,7 +20,9 @@ import {
   type TextProps,
   Row,
   Stack,
+  useThemeContext,
 } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
 export interface NotificationItem {
   id: string;
@@ -45,14 +47,22 @@ export interface NotificationItem {
 
 type ButtonRef = ElementRef<typeof Button>;
 
-const SEVERITY_PILL_STYLES = {
-  critical: { backgroundColor: "$red4", color: "$red11" },
-  important: { backgroundColor: "$yellow4", color: "$yellow11" },
-  info: { backgroundColor: "$blue4", color: "$blue11" },
-} as const satisfies Record<
-  NotificationItem["severity"],
-  { backgroundColor: StackProps["backgroundColor"]; color: TextProps["color"] }
->;
+function getSeverityPillStyles(t: 'light' | 'dark') {
+  return {
+    critical: {
+      backgroundColor: t === 'dark' ? colors.error[800] : colors.error[50],
+      color: t === 'dark' ? colors.error[300] : colors.error[600],
+    },
+    important: {
+      backgroundColor: t === 'dark' ? colors.yellow[800] : colors.yellow[50],
+      color: t === 'dark' ? colors.yellow[300] : colors.yellow[600],
+    },
+    info: {
+      backgroundColor: t === 'dark' ? colors.blue[800] : colors.blue[50],
+      color: t === 'dark' ? colors.blue[300] : colors.blue[600],
+    },
+  } as const;
+}
 
 interface PillProps {
   label: string;
@@ -60,10 +70,12 @@ interface PillProps {
   color: TextProps["color"];
 }
 
-const CHANNEL_PILL_STYLE = {
-  backgroundColor: "$color3",
-  color: "$color11",
-} as const satisfies Pick<PillProps, "backgroundColor" | "color">;
+function getChannelPillStyle(t: 'light' | 'dark') {
+  return {
+    backgroundColor: colors.bg[t].muted,
+    color: colors.text[t].primary,
+  } as const;
+}
 
 function Pill({ label, backgroundColor, color }: PillProps) {
   return (
@@ -152,14 +164,14 @@ function getNotificationIcon(severity: NotificationItem["severity"]) {
 /**
  * Get notification color based on type
  */
-function getNotificationColor(severity: NotificationItem["severity"]) {
+function getNotificationColor(severity: NotificationItem["severity"], t: 'light' | 'dark') {
   switch (severity) {
     case "critical":
-      return "$red10";
+      return t === 'dark' ? colors.error[300] : colors.error[600];
     case "important":
-      return "$orange10";
+      return t === 'dark' ? colors.orange[300] : colors.orange[600];
     default:
-      return "$blue10";
+      return t === 'dark' ? colors.blue[300] : colors.blue[600];
   }
 }
 
@@ -178,6 +190,10 @@ export function NotificationPopover({
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const triggerRef = useRef<ButtonRef>(null);
+  const { theme } = useThemeContext();
+  const t = theme === 'dark' ? 'dark' : 'light' as const;
+  const severityPillStyles = getSeverityPillStyles(t);
+  const channelPillStyle = getChannelPillStyle(t);
 
   // Separate notifications into unread and read
   const unreadNotifications = notifications.filter((n) => !n.read);
@@ -271,10 +287,10 @@ export function NotificationPopover({
                   <Row
                     padding="sm"
                     paddingHorizontal="md"
-                    backgroundColor="$color2"
+                    backgroundColor={colors.bg[t].subtle}
                     style={{
                       borderBottomWidth: 1,
-                      borderBottomColor: "var(--color-border)",
+                      borderBottomColor: colors.border[t].default,
                     }}
                   >
                     <Text color="gray">
@@ -287,7 +303,7 @@ export function NotificationPopover({
                         notification.severity
                       );
                       const iconColor = getNotificationColor(
-                        notification.severity
+                        notification.severity, t
                       );
 
                       return (
@@ -299,9 +315,9 @@ export function NotificationPopover({
                               handleNotificationClick(notification)
                             }
                             style={{
-                              backgroundColor: "var(--color-3)",
+                              backgroundColor: colors.bg[t].muted,
                               borderWidth: 1,
-                              borderColor: "var(--color-5)",
+                              borderColor: colors.border[t].default,
                               borderRadius: 0,
                             }}
                             accessibilityLabel={`${notification.title}. ${
@@ -322,7 +338,7 @@ export function NotificationPopover({
                                   <Stack
                                     width={6}
                                     height={6}
-                                    backgroundColor="$blue9"
+                                    backgroundColor={t === 'dark' ? colors.blue[400] : colors.blue[500]}
                                     borderRadius={8}
                                     style={{ marginTop: 4 }}
                                   />
@@ -337,12 +353,12 @@ export function NotificationPopover({
                                   <Pill
                                     label={notification.severity.toUpperCase()}
                                     backgroundColor={
-                                      SEVERITY_PILL_STYLES[
+                                      severityPillStyles[
                                         notification.severity
                                       ].backgroundColor
                                     }
                                     color={
-                                      SEVERITY_PILL_STYLES[
+                                      severityPillStyles[
                                         notification.severity
                                       ].color
                                     }
@@ -351,9 +367,9 @@ export function NotificationPopover({
                                     <Pill
                                       label={notification.channels.join(", ")}
                                       backgroundColor={
-                                        CHANNEL_PILL_STYLE.backgroundColor
+                                        channelPillStyle.backgroundColor
                                       }
-                                      color={CHANNEL_PILL_STYLE.color}
+                                      color={channelPillStyle.color}
                                     />
                                   )}
                                 </Row>
@@ -374,7 +390,7 @@ export function NotificationPopover({
                           </Card>
                           {index < unreadNotifications.length - 1 && (
                             <Separator
-                              style={{ backgroundColor: "var(--color-border)" }}
+                              style={{ backgroundColor: colors.border[t].default }}
                             />
                           )}
                         </Stack>
@@ -388,7 +404,7 @@ export function NotificationPopover({
               {unreadNotifications.length > 0 &&
                 readNotifications.length > 0 && (
                   <Separator
-                    style={{ backgroundColor: "var(--color-border)" }}
+                    style={{ backgroundColor: colors.border[t].default }}
                   />
                 )}
 
@@ -398,10 +414,10 @@ export function NotificationPopover({
                   <Row
                     padding="sm"
                     paddingHorizontal="md"
-                    backgroundColor="$color2"
+                    backgroundColor={colors.bg[t].subtle}
                     style={{
                       borderBottomWidth: 1,
-                      borderBottomColor: "var(--color-border)",
+                      borderBottomColor: colors.border[t].default,
                     }}
                   >
                     <Text color="gray">Read</Text>
@@ -412,7 +428,7 @@ export function NotificationPopover({
                         notification.severity
                       );
                       const iconColor = getNotificationColor(
-                        notification.severity
+                        notification.severity, t
                       );
 
                       return (
@@ -424,7 +440,7 @@ export function NotificationPopover({
                               handleNotificationClick(notification)
                             }
                             style={{
-                              backgroundColor: "var(--color-2)",
+                              backgroundColor: colors.bg[t].subtle,
                               borderWidth: 0,
                               borderRadius: 0,
                               opacity: 0.7,
@@ -447,12 +463,12 @@ export function NotificationPopover({
                                   <Pill
                                     label={notification.severity.toUpperCase()}
                                     backgroundColor={
-                                      SEVERITY_PILL_STYLES[
+                                      severityPillStyles[
                                         notification.severity
                                       ].backgroundColor
                                     }
                                     color={
-                                      SEVERITY_PILL_STYLES[
+                                      severityPillStyles[
                                         notification.severity
                                       ].color
                                     }
@@ -461,9 +477,9 @@ export function NotificationPopover({
                                     <Pill
                                       label={notification.channels.join(", ")}
                                       backgroundColor={
-                                        CHANNEL_PILL_STYLE.backgroundColor
+                                        channelPillStyle.backgroundColor
                                       }
-                                      color={CHANNEL_PILL_STYLE.color}
+                                      color={channelPillStyle.color}
                                     />
                                   )}
                                 </Row>
@@ -484,7 +500,7 @@ export function NotificationPopover({
                           </Card>
                           {index < readNotifications.length - 1 && (
                             <Separator
-                              style={{ backgroundColor: "var(--color-border)" }}
+                              style={{ backgroundColor: colors.border[t].default }}
                             />
                           )}
                         </Stack>
@@ -529,7 +545,7 @@ export function NotificationPopover({
               position: "absolute",
               top: -4,
               right: -4,
-              backgroundColor: "var(--red-9)",
+              backgroundColor: t === 'dark' ? colors.error[400] : colors.error[500],
               borderRadius: 8,
               paddingHorizontal: 4,
               paddingVertical: 4,

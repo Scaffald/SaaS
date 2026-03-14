@@ -4,7 +4,8 @@ import { useQueryClient } from '@tanstack/react-query'
 import { AlertCircle, RefreshCcw } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Button, Tabs, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Tabs, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useIPIPResults } from '../hooks/useIPIPResults'
 import { ChartView } from './ChartView'
 import { NarrativeView } from './NarrativeView'
@@ -15,6 +16,8 @@ import { ShareResults } from './ShareResults'
  */
 export function IPIPResultsPage() {
   const router = useRouter()
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const results = useIPIPResults()
   const [activeTab, setActiveTab] = useState<'narrative' | 'chart'>('narrative')
   const queryClient = useQueryClient()
@@ -39,7 +42,7 @@ export function IPIPResultsPage() {
   if (results.isLoading) {
     return (
       <Stack gap={16} padding={32} align="center" aria-live="polite">
-        <Text color="$gray11">Loading your results...</Text>
+        <Text color={colors.text[t].secondary}>Loading your results...</Text>
       </Stack>
     )
   }
@@ -53,9 +56,9 @@ export function IPIPResultsPage() {
   if (results.error && !results.hasPartialResults) {
     return (
       <Stack gap={16} padding={32} align="center" accessibilityLiveRegion="assertive">
-        <AlertCircle size="sm" color="$red10" />
-        <Text color="$red10">Error Loading Results</Text>
-        <Text color="$gray11" align="center">
+        <AlertCircle size="sm" color={t === 'dark' ? colors.error[300] : colors.error[600]} />
+        <Text color={t === 'dark' ? colors.error[300] : colors.error[600]}>Error Loading Results</Text>
+        <Text color={colors.text[t].secondary} align="center">
           {results.error.message || 'Unable to load your assessment results. Please try again.'}
         </Text>
         <Row gap={12}>
@@ -74,8 +77,8 @@ export function IPIPResultsPage() {
   if (!results.scores && results.completedDomains === 0 && !results.isLoading) {
     return (
       <Stack gap={16} padding={32} align="center">
-        <Text color="$gray11">No Results Yet</Text>
-        <Text color="$gray11" align="center">
+        <Text color={colors.text[t].secondary}>No Results Yet</Text>
+        <Text color={colors.text[t].secondary} align="center">
           Complete the IPIP assessment to see your personality results.
         </Text>
         <Button onPress={() => router.push(ROUTES.DASHBOARD.ASSESSMENTS.IPIP.path)}>
@@ -92,8 +95,8 @@ export function IPIPResultsPage() {
     <Stack gap={24} width="100%" padding="md" style={{ maxWidth: 1000, alignSelf: 'center' }}>
       {/* Header */}
       <Stack gap={8}>
-        <Text color="$gray11">Your Personality Results</Text>
-        <Text color="$gray11">
+        <Text color={colors.text[t].secondary}>Your Personality Results</Text>
+        <Text color={colors.text[t].secondary}>
           Discover your Big Five personality traits and how they shape your work style.
         </Text>
       </Stack>
@@ -113,9 +116,9 @@ export function IPIPResultsPage() {
         <Tabs.Content value="narrative">
           <Stack
             padding="md"
-            backgroundColor="$color1"
+            backgroundColor={colors.bg[t].default}
             borderWidth={1}
-            borderColor="$borderColor"
+            borderColor={colors.border[t].default}
             style={{ borderBottomLeftRadius: 16, borderBottomRightRadius: 16 }}
           >
             <NarrativeView
@@ -131,9 +134,9 @@ export function IPIPResultsPage() {
         <Tabs.Content value="chart">
           <Stack
             padding="md"
-            backgroundColor="$color1"
+            backgroundColor={colors.bg[t].default}
             borderWidth={1}
-            borderColor="$borderColor"
+            borderColor={colors.border[t].default}
             style={{ borderBottomLeftRadius: 16, borderBottomRightRadius: 16 }}
           >
             <ChartView
@@ -160,16 +163,16 @@ export function IPIPResultsPage() {
         <Stack
           gap={8}
           padding="md"
-          backgroundColor="$yellow2"
+          backgroundColor={colors.bg[t].muted}
           borderRadius={16}
           borderWidth={1}
-          borderColor="$yellow7"
+          borderColor={colors.border[t].default}
         >
           <Row align="center" gap={8}>
-            <AlertCircle size="sm" color="$yellow11" />
-            <Text color="$yellow11">Partial Data Available</Text>
+            <AlertCircle size="sm" color={t === 'dark' ? colors.yellow[300] : colors.yellow[600]} />
+            <Text color={t === 'dark' ? colors.yellow[300] : colors.yellow[600]}>Partial Data Available</Text>
           </Row>
-          <Text color="$yellow10">
+          <Text color={t === 'dark' ? colors.yellow[300] : colors.yellow[600]}>
             Some results may be incomplete. {results.scoringError && 'Scoring calculation failed. '}
             {results.normalizationError && 'Score normalization failed. '}
             {results.narrativeError && 'Narrative content unavailable. '}

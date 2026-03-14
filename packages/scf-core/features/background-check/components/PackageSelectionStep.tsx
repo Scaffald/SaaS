@@ -1,7 +1,8 @@
 import type { AppRouter } from '@scf/supabase/client-types'
 import type { inferRouterOutputs } from '@trpc/server'
 import { memo } from 'react'
-import { Button, Card, ScrollView, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Card, ScrollView, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type BackgroundCheckPackage = RouterOutputs['backgroundChecks']['listPackages'][number]
@@ -31,12 +32,15 @@ const PackageCard = memo(function PackageCard({
   isSelected: boolean
   onSelect: () => void
 }) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   return (
     <Card
       elevate
       bordered
-      backgroundColor={isSelected ? '$blue3' : '$background'}
-      borderColor={isSelected ? '$blue8' : '$borderColor'}
+      backgroundColor={isSelected ? (t === 'dark' ? colors.blue[900] : colors.blue[100]) : colors.bg[t].default}
+      borderColor={isSelected ? (t === 'dark' ? colors.blue[300] : colors.blue[600]) : colors.border[t].default}
       borderWidth={2}
       radius="lg"
       padding="md"
@@ -44,22 +48,22 @@ const PackageCard = memo(function PackageCard({
       onPress={onSelect}
     >
       <Stack gap={8}>
-        <Text color="$gray11">{pkg.display_name}</Text>
-        <Text color="$gray11">{pkg.description}</Text>
+        <Text color={colors.text[t].secondary}>{pkg.display_name}</Text>
+        <Text color={colors.text[t].secondary}>{pkg.description}</Text>
         <Row gap={12} align="center">
-          <Text color="$gray11">{formatCurrency(pkg.retail_cost_cents)}</Text>
-          <Text color="$gray11">Platform cost: {formatCurrency(pkg.platform_cost_cents)}</Text>
+          <Text color={colors.text[t].secondary}>{formatCurrency(pkg.retail_cost_cents)}</Text>
+          <Text color={colors.text[t].secondary}>Platform cost: {formatCurrency(pkg.platform_cost_cents)}</Text>
         </Row>
         <Stack gap={4}>
-          <Text color="$gray11">Components</Text>
+          <Text color={colors.text[t].secondary}>Components</Text>
           {pkg.components?.length ? (
             pkg.components.map((component: BackgroundCheckPackage['components'][number]) => (
-              <Text key={component.id} color="$gray11">
+              <Text key={component.id} color={colors.text[t].secondary}>
                 • {component.display_name}
               </Text>
             ))
           ) : (
-            <Text color="$gray11">Component list coming soon</Text>
+            <Text color={colors.text[t].secondary}>Component list coming soon</Text>
           )}
         </Stack>
       </Stack>
@@ -74,13 +78,15 @@ export const PackageSelectionStep = memo(function PackageSelectionStep({
   isLoading,
   onContinue,
 }: PackageSelectionStepProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const hasSelection = Boolean(selectedPackageId)
 
   return (
     <Stack gap={16} flex={1}>
       <Stack gap={8}>
-        <Text color="$gray11">Choose a background check package</Text>
-        <Text color="$gray11">
+        <Text color={colors.text[t].secondary}>Choose a background check package</Text>
+        <Text color={colors.text[t].secondary}>
           Select the screening package that best fits your role. You can review the included
           components and pricing before continuing.
         </Text>
@@ -88,9 +94,9 @@ export const PackageSelectionStep = memo(function PackageSelectionStep({
 
       <ScrollView style={{ flex: 1 }}>
         <Stack gap={12} paddingBottom={24}>
-          {isLoading && <Text color="$gray11">Loading packages…</Text>}
+          {isLoading && <Text color={colors.text[t].secondary}>Loading packages…</Text>}
           {!isLoading && (!packages || packages.length === 0) && (
-            <Text color="$gray11">Packages will be available soon. Please check back later.</Text>
+            <Text color={colors.text[t].secondary}>Packages will be available soon. Please check back later.</Text>
           )}
           {packages?.map((pkg) => (
             <PackageCard

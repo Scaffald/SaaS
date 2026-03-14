@@ -1,7 +1,7 @@
 import { Briefcase, Building2, Clock, DollarSign, MapPin } from 'lucide-react-native'
 import type { ComponentRef } from 'react'
 import { forwardRef, memo } from 'react'
-import { Paragraph, Text, Row } from '@scaffald/ui'
+import { Paragraph, Text, Row, useThemeContext } from '@scaffald/ui'
 import {
   CardActions,
   CardBadges,
@@ -11,6 +11,7 @@ import {
   type BadgeConfig,
   type MetadataItem,
 } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 /**
  * Job card organization data
@@ -149,6 +150,8 @@ export const JobCard = memo(
       },
       forwardedRef
     ) => {
+      const { theme } = useThemeContext()
+      const t = theme === 'dark' ? 'dark' : 'light'
       const payRange = formatPayRange(payRangeMin, payRangeMax, payRangeType)
       const employment = formatEmploymentType(employmentType)
       const postedTime = formatRelativeTime(postedAt)
@@ -159,7 +162,7 @@ export const JobCard = memo(
       if (location) {
         metadataItems.push({
           key: 'location',
-          icon: <MapPin size="md" color={isSelected ? '$color1' : '$color10'} />,
+          icon: <MapPin size="md" color={isSelected ? colors.text[t].inverse : colors.text[t].secondary} />,
           label: location,
         })
       }
@@ -167,7 +170,7 @@ export const JobCard = memo(
       if (employment) {
         metadataItems.push({
           key: 'employment',
-          icon: <Briefcase size="md" color={isSelected ? '$color1' : '$color10'} />,
+          icon: <Briefcase size="md" color={isSelected ? colors.text[t].inverse : colors.text[t].secondary} />,
           label: employment,
         })
       }
@@ -175,7 +178,7 @@ export const JobCard = memo(
       if (postedTime) {
         metadataItems.push({
           key: 'posted',
-          icon: <Clock size="md" color={isSelected ? '$color1' : '$color9'} />,
+          icon: <Clock size="md" color={isSelected ? colors.text[t].inverse : colors.text[t].tertiary} />,
           label: postedTime,
         })
       }
@@ -185,14 +188,14 @@ export const JobCard = memo(
         ...certifications.slice(0, 3).map((cert) => ({
           key: cert.id,
           label: cert.name,
-          backgroundColor: '$red10',
-          color: '$color1',
+          backgroundColor: t === 'dark' ? colors.error[300] : colors.error[600],
+          color: colors.text[t].inverse,
         })),
         ...skills.slice(0, 2).map((skill) => ({
           key: skill.id,
           label: skill.name,
-          backgroundColor: '$blue8',
-          color: '$color1',
+          backgroundColor: t === 'dark' ? colors.blue[300] : colors.blue[600],
+          color: colors.text[t].inverse,
         })),
       ]
 
@@ -206,8 +209,8 @@ export const JobCard = memo(
             onSelect
               ? {
                   enabled: true,
-                  selectedBorderColor: '$blue7',
-                  selectedBgColor: '$blue2',
+                  selectedBorderColor: t === 'dark' ? colors.blue[400] : colors.blue[500],
+                  selectedBgColor: colors.bg[t].muted,
                   selectedShadow: '0 4px 8px rgba(35, 156, 178, 0.2)',
                 }
               : undefined
@@ -223,18 +226,18 @@ export const JobCard = memo(
                 <>
                   {hasApplied && (
                     <Row
-                      backgroundColor="$green9"
+                      backgroundColor={t === 'dark' ? colors.green[300] : colors.green[600]}
                       paddingHorizontal={8}
                       paddingVertical={4}
                       borderRadius={8}
                     >
-                      <Text color="$green1">Applied</Text>
+                      <Text color={colors.text[t].inverse}>Applied</Text>
                     </Row>
                   )}
                   {organization && (
                     <Row gap={8} align="center">
-                      <Building2 size="lg" color={isSelected ? '$color1' : '$color11'} />
-                      <Text color={isSelected ? '$color1' : '$color11'}>{organization.name}</Text>
+                      <Building2 size="lg" color={isSelected ? colors.text[t].inverse : colors.text[t].primary} />
+                      <Text color={isSelected ? colors.text[t].inverse : colors.text[t].primary}>{organization.name}</Text>
                     </Row>
                   )}
                 </>
@@ -246,12 +249,12 @@ export const JobCard = memo(
           {remoteOption && (
             <Row gap={8}>
               <Row
-                backgroundColor="$blue8"
+                backgroundColor={t === 'dark' ? colors.blue[300] : colors.blue[600]}
                 paddingHorizontal={8}
                 paddingVertical={4}
                 borderRadius={8}
               >
-                <Text color="white">
+                <Text color={colors.text[t].inverse}>
                   {remoteOption === 'on_site'
                     ? 'On-site'
                     : remoteOption === 'hybrid'
@@ -264,7 +267,7 @@ export const JobCard = memo(
 
           {/* Description */}
           {description && (
-            <Paragraph size="sm" color={isSelected ? '$color1' : '$color11'}>
+            <Paragraph size="sm" color={isSelected ? colors.text[t].inverse : colors.text[t].primary}>
               {description}
             </Paragraph>
           )}
@@ -277,8 +280,8 @@ export const JobCard = memo(
           {/* Pay range */}
           {payRange && (
             <Row gap={6} align="center">
-              <DollarSign size="lg" color="$green10" />
-              <Text color="$green10">{payRange}</Text>
+              <DollarSign size="lg" color={t === 'dark' ? colors.green[300] : colors.green[600]} />
+              <Text color={t === 'dark' ? colors.green[300] : colors.green[600]}>{payRange}</Text>
             </Row>
           )}
 

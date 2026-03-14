@@ -1,4 +1,5 @@
 import type { AppRouter } from '@scf/supabase/client-types'
+import { colors } from '@scaffald/ui/tokens'
 import type { inferRouterOutputs } from '@trpc/server'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
@@ -213,18 +214,38 @@ export function getStatusCategory(
   return 'other'
 }
 
-export function getStatusToneColors(tone: StatusTone) {
+export function getStatusToneColors(tone: StatusTone, t: 'light' | 'dark' = 'light') {
   switch (tone) {
     case 'info':
-      return { background: '$blue3', border: '$blue7', text: '$blue11' } as const
+      return {
+        background: t === 'dark' ? colors.blue[900] : colors.blue[50],
+        border: t === 'dark' ? colors.blue[700] : colors.blue[300],
+        text: t === 'dark' ? colors.blue[300] : colors.blue[700],
+      }
     case 'success':
-      return { background: '$green3', border: '$green8', text: '$green11' } as const
+      return {
+        background: t === 'dark' ? colors.green[900] : colors.green[50],
+        border: t === 'dark' ? colors.green[700] : colors.green[300],
+        text: t === 'dark' ? colors.green[300] : colors.green[700],
+      }
     case 'warning':
-      return { background: '$yellow3', border: '$yellow8', text: '$yellow11' } as const
+      return {
+        background: t === 'dark' ? colors.yellow[900] : colors.yellow[50],
+        border: t === 'dark' ? colors.yellow[700] : colors.yellow[300],
+        text: t === 'dark' ? colors.yellow[300] : colors.yellow[700],
+      }
     case 'danger':
-      return { background: '$red3', border: '$red8', text: '$red11' } as const
+      return {
+        background: t === 'dark' ? colors.error[900] : colors.error[50],
+        border: t === 'dark' ? colors.error[700] : colors.error[300],
+        text: t === 'dark' ? colors.error[300] : colors.error[700],
+      }
     default:
-      return { background: '$color3', border: '$color6', text: '$color11' } as const
+      return {
+        background: colors.bg[t].muted,
+        border: colors.border[t].default,
+        text: colors.text[t].primary,
+      }
   }
 }
 

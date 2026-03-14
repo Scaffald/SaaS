@@ -4,7 +4,8 @@ import {
   UploadSurface,
 } from "@scaffald/ui";
 import { Camera, ImagePlus, UploadCloud } from "lucide-react-native";
-import { useToast } from "@scaffald/ui";
+import { useToast, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import { randomUUID } from "expo-crypto";
 import { useCallback, useMemo, useState } from "react";
 import { Platform } from "react-native";
@@ -51,6 +52,8 @@ export interface PhotoUploadProps {
 }
 
 export function PhotoUpload({ workLogId }: PhotoUploadProps) {
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
   const toast = useToast();
   const {
     isReady,
@@ -222,15 +225,15 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
     <Stack gap={16}>
       <Stack
         borderWidth={1}
-        borderColor="$borderColor"
+        borderColor={colors.border[t].default}
         borderRadius={16}
         padding="md"
         gap={12}
-        backgroundColor="$color2"
+        backgroundColor={colors.bg[t].muted}
       >
         <Stack gap={8}>
           <Text>Work Log Photos</Text>
-          <Text color="$gray11">
+          <Text color={colors.text[t].secondary}>
             Add up to {maxPhotos} photos documenting your work. Individual files
             must be 2MB or less.
           </Text>
@@ -239,7 +242,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
         <Stack gap={8}>
           <Row justify="space-between" align="center">
             <Text>Storage Usage</Text>
-            <Text color="$gray11">
+            <Text color={colors.text[t].secondary}>
               {formatStorageSummary(
                 storageUsage.usedBytes,
                 storageUsage.limitBytes
@@ -249,7 +252,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
           <View
             style={{
               height: 10,
-              backgroundColor: "#e2e8f0",
+              backgroundColor: colors.bg[t].muted,
               borderRadius: 16,
               overflow: "hidden",
             }}
@@ -258,7 +261,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
               style={{
                 height: "100%",
                 width: `${usagePercent}%`,
-                backgroundColor: usagePercent > 90 ? "#ef4444" : "#3b82f6",
+                backgroundColor: usagePercent > 90 ? (t === "dark" ? colors.error[300] : colors.error[600]) : (t === "dark" ? colors.blue[300] : colors.blue[600]),
               }}
             />
           </View>
@@ -267,15 +270,15 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
         {!isReady ? (
           <Stack
             borderWidth={1}
-            borderColor="$orange8"
-            backgroundColor="$orange2"
+            borderColor={t === "dark" ? colors.orange[700] : colors.orange[300]}
+            backgroundColor={t === "dark" ? colors.orange[900] : colors.orange[50]}
             borderRadius={16}
             paddingHorizontal={12}
             paddingVertical={8}
             gap={8}
           >
-            <Text color="$orange11">Draft not yet saved</Text>
-            <Text color="$orange11">
+            <Text color={t === "dark" ? colors.orange[300] : colors.orange[600]}>Draft not yet saved</Text>
+            <Text color={t === "dark" ? colors.orange[300] : colors.orange[600]}>
               Photos can be added after the work log draft is saved. Keep
               filling out the form and we&apos;ll enable uploads automatically.
             </Text>
@@ -335,10 +338,10 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                   <Stack
                     {...(getRootProps() as Record<string, unknown>)}
                     padding="md"
-                    backgroundColor={isDragActive ? "$blue3" : "$color1"}
+                    backgroundColor={isDragActive ? (t === "dark" ? colors.blue[900] : colors.blue[50]) : colors.bg[t].default}
                     borderRadius={16}
                     borderWidth={2}
-                    borderColor={isDragActive ? "$blue9" : "$borderColor"}
+                    borderColor={isDragActive ? (t === "dark" ? colors.blue[400] : colors.blue[500]) : colors.border[t].default}
                     style={{ borderStyle: "dashed" }}
                     align="center"
                     justify="center"
@@ -352,10 +355,10 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                     ) : null}
                     <ImagePlus
                       size={32}
-                      color={isDragActive ? "$blue11" : "$color10"}
+                      color={isDragActive ? (t === "dark" ? colors.blue[300] : colors.blue[600]) : colors.text[t].secondary}
                     />
                     <Text>Drag and drop photos here</Text>
-                    <Text color="$gray11">
+                    <Text color={colors.text[t].secondary}>
                       or tap below to browse your device
                     </Text>
                   </Stack>
@@ -388,11 +391,11 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
 
             {(isUploading || uploadProgress > 0) && (
               <Stack gap={8}>
-                <Text color="$gray11">Upload progress</Text>
+                <Text color={colors.text[t].secondary}>Upload progress</Text>
                 <View
                   style={{
                     height: 8,
-                    backgroundColor: "#e2e8f0",
+                    backgroundColor: colors.bg[t].muted,
                     borderRadius: 16,
                     overflow: "hidden",
                   }}
@@ -401,7 +404,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                     style={{
                       height: "100%",
                       width: `${uploadProgress}%`,
-                      backgroundColor: "#3b82f6",
+                      backgroundColor: t === "dark" ? colors.blue[300] : colors.blue[600],
                     }}
                   />
                 </View>
@@ -411,13 +414,13 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
             {uploadError ? (
               <Stack
                 borderWidth={1}
-                borderColor="$red8"
-                backgroundColor="$red3"
+                borderColor={t === "dark" ? colors.error[700] : colors.error[300]}
+                backgroundColor={t === "dark" ? colors.error[900] : colors.error[50]}
                 borderRadius={16}
                 paddingHorizontal={12}
                 paddingVertical={8}
               >
-                <Text color="$red11">{uploadError}</Text>
+                <Text color={t === "dark" ? colors.error[300] : colors.error[600]}>{uploadError}</Text>
               </Stack>
             ) : null}
           </Stack>

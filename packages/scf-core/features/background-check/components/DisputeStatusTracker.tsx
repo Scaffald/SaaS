@@ -10,6 +10,7 @@ import {
   Row,
   Stack,
   colors,
+  useThemeContext,
 } from '@scaffald/ui'
 
 import type { BackgroundCheckDispute } from '../hooks/useDispute'
@@ -81,6 +82,9 @@ export function DisputeStatusTracker({
   isLoading,
   onRefresh,
 }: DisputeStatusTrackerProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   const latestDispute = disputes.length > 0 ? disputes[0] : null
 
   const pendingCount = useMemo(
@@ -95,7 +99,7 @@ export function DisputeStatusTracker({
     return (
       <Stack gap={8} align="center" paddingVertical={16}>
         <Spinner size="sm" color="gray" />
-        <Text color="$gray11">Loading dispute history…</Text>
+        <Text color={colors.text[t].secondary}>Loading dispute history…</Text>
       </Stack>
     )
   }
@@ -103,15 +107,15 @@ export function DisputeStatusTracker({
   if (!latestDispute) {
     return (
       <Card
-        backgroundColor="$color2"
-        borderColor="$borderColor"
+        backgroundColor={colors.bg[t].muted}
+        borderColor={colors.border[t].default}
         borderWidth={1}
         radius="lg"
         padding="sm"
         style={{ gap: 8 }}
       >
-        <Text color="$gray11">No disputes filed yet</Text>
-        <Text color="$gray11">
+        <Text color={colors.text[t].secondary}>No disputes filed yet</Text>
+        <Text color={colors.text[t].secondary}>
           If you notice any inaccuracies in your results, you can submit a dispute for review.
         </Text>
       </Card>
@@ -124,7 +128,7 @@ export function DisputeStatusTracker({
   return (
     <Stack gap={12}>
       <Row justify="space-between" align="center">
-        <Text color="$gray11">Dispute status</Text>
+        <Text color={colors.text[t].secondary}>Dispute status</Text>
         <Button
           size="sm"
           variant="outline"
@@ -154,17 +158,17 @@ export function DisputeStatusTracker({
       </Stack>
 
       <Card
-        backgroundColor="$color2"
-        borderColor="$borderColor"
+        backgroundColor={colors.bg[t].muted}
+        borderColor={colors.border[t].default}
         borderWidth={1}
         radius="lg"
         padding="sm"
         style={{ gap: 12 }}
       >
-        <Text color="$gray11">Dispute history</Text>
+        <Text color={colors.text[t].secondary}>Dispute history</Text>
 
         {pendingCount > 0 ? (
-          <Text color="$gray11">
+          <Text color={colors.text[t].secondary}>
             {pendingCount} dispute{pendingCount === 1 ? '' : 's'} currently awaiting review.
           </Text>
         ) : null}
@@ -178,8 +182,8 @@ export function DisputeStatusTracker({
             return (
               <Stack
                 key={dispute.id}
-                backgroundColor="$background"
-                borderColor="$borderColor"
+                backgroundColor={colors.bg[t].default}
+                borderColor={colors.border[t].default}
                 borderWidth={1}
                 borderRadius={12}
                 paddingHorizontal={12}
@@ -187,16 +191,16 @@ export function DisputeStatusTracker({
                 gap={4}
               >
                 <Row gap={8} align="center" wrap>
-                  <Text color="$gray11">{meta.label}</Text>
+                  <Text color={colors.text[t].secondary}>{meta.label}</Text>
                   <Text color={toneColors.text}>
                     {formatDate(dispute.created_at)}
                     {dispute.resolved_at ? ` • ${formatDate(dispute.resolved_at)}` : ''}
                   </Text>
                 </Row>
-                <Text color="$gray11">Reason: {dispute.dispute_reason}</Text>
-                <Text color="$gray11">{dispute.dispute_details}</Text>
+                <Text color={colors.text[t].secondary}>Reason: {dispute.dispute_reason}</Text>
+                <Text color={colors.text[t].secondary}>{dispute.dispute_details}</Text>
                 {dispute.resolution ? (
-                  <Text color="$gray11">
+                  <Text color={colors.text[t].secondary}>
                     Resolution: {dispute.resolution}
                     {dispute.resolution_notes ? ` — ${dispute.resolution_notes}` : ''}
                   </Text>
