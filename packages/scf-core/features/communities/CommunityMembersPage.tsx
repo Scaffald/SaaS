@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
-import { Text, Stack, Row, Input, Avatar, Spinner } from '@scaffald/ui'
+import { Text, Stack, Row, Input, Avatar, Spinner, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useCommunity, useCommunityMembers } from '@scf/core/utils/communities-sdk-hooks'
 
 interface Props {
@@ -7,6 +8,8 @@ interface Props {
 }
 
 export function CommunityMembersPage({ slug }: Props) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [searchTerm, setSearchTerm] = useState('')
   const { data: communityData } = useCommunity(slug)
   const community = communityData?.data
@@ -30,7 +33,7 @@ export function CommunityMembersPage({ slug }: Props) {
     <Stack gap={16}>
       <Stack gap={4}>
         <Text style={{ fontSize: 20, fontWeight: '600' }}>{community?.name} Members</Text>
-        <Text color="$gray11">{membersData?.total ?? 0} members</Text>
+        <Text style={{ color: colors.text[t].secondary }}>{membersData?.total ?? 0} members</Text>
       </Stack>
 
       <Input placeholder="Search members..." value={searchTerm} onChangeText={setSearchTerm} />
@@ -41,7 +44,7 @@ export function CommunityMembersPage({ slug }: Props) {
         </Stack>
       ) : filtered.length === 0 ? (
         <Stack align="center" style={{ paddingVertical: 40 }}>
-          <Text color="$gray11">No members found</Text>
+          <Text style={{ color: colors.text[t].secondary }}>No members found</Text>
         </Stack>
       ) : (
         <Stack gap={8}>
@@ -78,7 +81,7 @@ export function CommunityMembersPage({ slug }: Props) {
                       </Stack>
                     )}
                   </Row>
-                  {member.headline && <Text color="$gray11">{member.headline}</Text>}
+                  {member.headline && <Text style={{ color: colors.text[t].secondary }}>{member.headline}</Text>}
                 </Stack>
               </Row>
             )

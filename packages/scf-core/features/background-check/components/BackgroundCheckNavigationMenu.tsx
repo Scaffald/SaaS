@@ -1,5 +1,6 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { DashboardWidget, Text, Row, Stack } from '@scaffald/ui'
+import { DashboardWidget, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { ArrowRight } from 'lucide-react-native'
 import { Link, usePathname } from 'expo-router'
 
@@ -33,12 +34,14 @@ const BACKGROUND_CHECK_NAV_ITEMS: BackgroundCheckNavItem[] = [
 
 export function BackgroundCheckNavigationMenu() {
   const pathname = usePathname()
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light' as const
 
   return (
     <DashboardWidget gap={16}>
       <Stack gap={4}>
-        <Text color="$gray11">Background Check Tools</Text>
-        <Text color="$gray11">Switch between related workflows and management tools.</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Background Check Tools</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Switch between related workflows and management tools.</Text>
       </Stack>
 
       <Stack gap={8}>
@@ -58,17 +61,19 @@ export function BackgroundCheckNavigationMenu() {
                 gap={8}
                 borderRadius={16}
                 borderWidth={1}
-                borderColor={isActive ? '$blue7' : '$color6'}
-                backgroundColor={isActive ? '$blue4' : '$color2'}
+                style={{
+                  borderColor: isActive ? (t === 'dark' ? colors.blue[700] : colors.blue[300]) : colors.border[t].default,
+                  backgroundColor: isActive ? (t === 'dark' ? colors.blue[900] : colors.blue[50]) : colors.bg[t].muted,
+                }}
               >
                 <Stack gap={4}>
-                  <Text color={isActive ? '$blue12' : '$color12'}>{item.title}</Text>
-                  <Text color={isActive ? '$blue11' : '$color10'}>{item.description}</Text>
+                  <Text style={{ color: isActive ? (t === 'dark' ? colors.blue[100] : colors.blue[900]) : colors.text[t].primary }}>{item.title}</Text>
+                  <Text style={{ color: isActive ? (t === 'dark' ? colors.blue[300] : colors.blue[600]) : colors.text[t].secondary }}>{item.description}</Text>
                 </Stack>
 
                 <Row gap={8} align="center">
-                  <Text color={isActive ? '$blue12' : '$color11'}>View workspace</Text>
-                  <ArrowRight size="md" color={isActive ? '$blue11' : '$color10'} />
+                  <Text style={{ color: isActive ? (t === 'dark' ? colors.blue[100] : colors.blue[900]) : colors.text[t].primary }}>View workspace</Text>
+                  <ArrowRight size="md" color={isActive ? (t === 'dark' ? colors.blue[300] : colors.blue[600]) : colors.text[t].secondary} />
                 </Row>
               </Stack>
             </Link>

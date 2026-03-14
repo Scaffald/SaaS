@@ -3,7 +3,8 @@ import { AddressAutocomplete } from '@scaffald/ui'
 import { createMapboxGeocodingProvider } from '@scf/core/utils/mapbox-geocoding-provider'
 import { List, RotateCcw } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
-import { Button, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { FilterDropdown } from './FilterDropdown'
 
 type MapFilterBarProps = {
@@ -68,6 +69,8 @@ export const MapFilterBar = ({
   onResultsPress,
   onReset,
 }: MapFilterBarProps) => {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [searchQuery, setSearchQuery] = useState('')
 
   // Validate API key
@@ -93,8 +96,7 @@ export const MapFilterBar = ({
       paddingVertical={10}
       gap={10}
       align="center"
-      backgroundColor="$background"
-      style={{ borderBottomWidth: 1, borderBottomColor: '$borderColor' }}
+      style={{ backgroundColor: colors.bg[t].default, borderBottomWidth: 1, borderBottomColor: colors.border[t].default }}
     >
       {/* Search Input */}
       {tokenValidation.valid && mapboxToken ? (
@@ -118,17 +120,16 @@ export const MapFilterBar = ({
         <Stack
           flex={1}
           minWidth={200}
-          backgroundColor="$background"
+          style={{ backgroundColor: colors.bg[t].default, borderColor: t === 'dark' ? colors.error[400] : colors.error[500] }}
           padding="sm"
           borderRadius={16}
           borderWidth={1}
-          borderColor="$red8"
           gap={8}
         >
           <Row align="center" gap={8}>
-            <Text color="$red10">Map Search Unavailable</Text>
+            <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>Map Search Unavailable</Text>
           </Row>
-          <Text color="$gray11">{tokenValidation.error}</Text>
+          <Text style={{ color: colors.text[t].secondary }}>{tokenValidation.error}</Text>
         </Stack>
       )}
 

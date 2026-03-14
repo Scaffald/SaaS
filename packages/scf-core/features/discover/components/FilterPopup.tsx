@@ -1,4 +1,5 @@
-import { Switch } from '@scaffald/ui'
+import { Switch, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { ChevronDown, ChevronRight, X } from 'lucide-react-native'
 import { useState } from 'react'
 import { Button, Label, ScrollView, Text, Row, Stack } from '@scaffald/ui'
@@ -55,6 +56,9 @@ export const FilterPopup = ({
   onShowOrganizationsChange,
   onShowJobsChange,
 }: FilterPopupProps) => {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   // Track which accordion sections are expanded (currently only 'show' section exists)
   const [openSections, setOpenSections] = useState<Set<AccordionSection>>(new Set(['show']))
 
@@ -107,16 +111,16 @@ export const FilterPopup = ({
         height={250}
         flex={1}
         borderWidth={1}
-        borderColor="$borderColor"
-        backgroundColor="$background"
-        borderRadius={16}
         style={{
+          borderColor: colors.border[t].default,
+          backgroundColor: colors.bg[t].default,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.15,
           shadowRadius: 12,
           overflow: 'hidden',
         }}
+        borderRadius={16}
       >
             {/* Header */}
             <Row
@@ -124,7 +128,7 @@ export const FilterPopup = ({
               paddingVertical={12}
               justify="space-between"
               align="center"
-              style={{ borderBottomWidth: 1, borderBottomColor: '$borderColor' }}
+              style={{ borderBottomWidth: 1, borderBottomColor: colors.border[t].default }}
             >
               <Text>Filters</Text>
               <Button size="sm" variant="outline" onPress={onClose} iconStart={X} />
@@ -168,7 +172,7 @@ export const FilterPopup = ({
                             }
                           />
                         </Row>
-                        <Text color="$gray11" style={{ paddingLeft: 4 }}>
+                        <Text style={{ color: colors.text[t].secondary, paddingLeft: 4 }}>
                           Show worker profiles on the map
                         </Text>
                       </Stack>
@@ -189,7 +193,7 @@ export const FilterPopup = ({
                             }
                           />
                         </Row>
-                        <Text color="$gray11" style={{ paddingLeft: 4 }}>
+                        <Text style={{ color: colors.text[t].secondary, paddingLeft: 4 }}>
                           Show employer organizations on the map
                         </Text>
                       </Stack>
@@ -204,7 +208,7 @@ export const FilterPopup = ({
                             accessibilityLabel={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
                           />
                         </Row>
-                        <Text color="$gray11" style={{ paddingLeft: 4 }}>
+                        <Text style={{ color: colors.text[t].secondary, paddingLeft: 4 }}>
                           Show job openings on the map
                         </Text>
                       </Stack>
@@ -220,7 +224,7 @@ export const FilterPopup = ({
               paddingVertical={12}
               gap={8}
               justify="flex-end"
-              style={{ borderTopWidth: 1, borderTopColor: '$borderColor' }}
+              style={{ borderTopWidth: 1, borderTopColor: colors.border[t].default }}
             >
               <Button size="sm" variant="outline" onPress={onClose}>
                 <Text>Close</Text>

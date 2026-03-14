@@ -1,5 +1,6 @@
 import { BadgeCheck, Calendar } from 'lucide-react-native'
-import { Card, Text, Row, Stack } from '@scaffald/ui'
+import { Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 export interface UserProfileCertification {
   id: string
@@ -14,6 +15,9 @@ interface UserProfileCertificationsProps {
 }
 
 export function UserProfileCertifications({ certifications }: UserProfileCertificationsProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light' as const
+
   const formatDate = (dateString: string | null) => {
     if (!dateString) return null
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -26,22 +30,22 @@ export function UserProfileCertifications({ certifications }: UserProfileCertifi
     <Card elevate bordered>
       <Stack gap={16} padding="lg">
         <Row gap={8} align="center">
-          <BadgeCheck size={24} color="$blue10" />
-          <Text color="$gray11">Certifications</Text>
+          <BadgeCheck size={24} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
+          <Text style={{ color: colors.text[t].secondary }}>Certifications</Text>
         </Row>
 
         <Stack gap={12}>
           {certifications.map((cert) => (
-            <Card key={cert.id} bordered backgroundColor="$color2">
+            <Card key={cert.id} bordered style={{ backgroundColor: colors.bg[t].muted }}>
               <Stack gap={8} padding="md">
-                <Text color="$gray11">{cert.name}</Text>
+                <Text style={{ color: colors.text[t].secondary }}>{cert.name}</Text>
                 {cert.issuing_organization && (
-                  <Text color="$gray11">{cert.issuing_organization}</Text>
+                  <Text style={{ color: colors.text[t].secondary }}>{cert.issuing_organization}</Text>
                 )}
                 {(cert.issue_date || cert.expiration_date) && (
                   <Row gap={8} align="center">
-                    <Calendar size="md" color="$gray11" />
-                    <Text color="$gray11">
+                    <Calendar size="md" color={colors.text[t].secondary} />
+                    <Text style={{ color: colors.text[t].secondary }}>
                       {cert.issue_date && `Issued ${formatDate(cert.issue_date)}`}
                       {cert.issue_date && cert.expiration_date && ' • '}
                       {cert.expiration_date && `Expires ${formatDate(cert.expiration_date)}`}

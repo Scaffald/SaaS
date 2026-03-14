@@ -1,4 +1,5 @@
-import { Button, Text, ToggleSwitch, Row, Stack } from '@scaffald/ui'
+import { Button, Text, ToggleSwitch, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { Check, X } from 'lucide-react-native'
 import { useState } from 'react'
 
@@ -13,6 +14,8 @@ export function CapabilityQuestionInput({
   value,
   onChange,
 }: CapabilityQuestionInputProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [localValue, setLocalValue] = useState<boolean | undefined>(value)
 
   const handleValueChange = (newValue: boolean) => {
@@ -45,7 +48,7 @@ export function CapabilityQuestionInput({
       </Row>
       {/* Alternative: Toggle Switch */}
       <Row justify="space-between" align="center" marginTop={8}>
-        <Text color="$gray11">Toggle answer</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Toggle answer</Text>
         <ToggleSwitch checked={localValue ?? false} onChange={handleValueChange} />
       </Row>
     </Stack>

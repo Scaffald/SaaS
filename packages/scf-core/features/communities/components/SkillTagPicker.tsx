@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
-import { Text, Stack, Row, Input, Button } from '@scaffald/ui'
+import { Text, Stack, Row, Input, Button, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useSkillSearch } from '@scf/core/utils/communities-sdk-hooks'
 import type { CommunitySkill } from '@scaffald/sdk/resources/community-skills'
 
@@ -10,6 +11,8 @@ interface Props {
 }
 
 export function SkillTagPicker({ communityId, selectedTags, onTagsChange }: Props) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [query, setQuery] = useState('')
 
   const { data: searchResults } = useSkillSearch(
@@ -96,7 +99,7 @@ export function SkillTagPicker({ communityId, selectedTags, onTagsChange }: Prop
             >
               <Row gap={8}>
                 <Text style={{ fontSize: 13 }}>{skill.name}</Text>
-                <Text color="$gray11" style={{ fontSize: 11 }}>
+                <Text style={{ fontSize: 11, color: colors.text[t].secondary }}>
                   Tier {skill.tier}
                 </Text>
               </Row>

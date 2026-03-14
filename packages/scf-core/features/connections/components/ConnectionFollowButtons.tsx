@@ -12,7 +12,8 @@ import { Card } from '@scaffald/ui'
 import { CheckCircle2, Loader2, UserCheck, UserMinus, UserPlus, X } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useMemo } from 'react'
-import { Button, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useQueryClient } from '@tanstack/react-query'
 
 interface ConnectionFollowButtonsProps {
@@ -29,6 +30,8 @@ export function ConnectionFollowButtons({
   targetUserId,
   isOwnProfile = false,
 }: ConnectionFollowButtonsProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const toast = useToast()
   const queryClient = useQueryClient()
 
@@ -239,8 +242,8 @@ export function ConnectionFollowButtons({
       <Card>
         <Stack gap={12} align="center" paddingVertical={12}>
           <Row gap={8} align="center">
-            <Loader2 size="md" color="$gray11" />
-            <Text color="$gray11">Loading connection status...</Text>
+            <Loader2 size="md" color={colors.text[t].secondary} />
+            <Text style={{ color: colors.text[t].secondary }}>Loading connection status...</Text>
           </Row>
         </Stack>
       </Card>

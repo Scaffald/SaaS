@@ -8,7 +8,8 @@ import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@scaffald/ui'
+import { ResponsiveSelect, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { Button, Label, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 import { getStatusMetadata } from '../components/status.utils'
@@ -72,6 +73,9 @@ const mapCheckToRow = (check: OrganizationCheckSummary): CheckRow => {
 }
 
 export function OrganizationBackgroundChecksPage() {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   const router = useRouter()
   const [selectedOrganizationId, setSelectedOrganizationId] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
@@ -131,9 +135,9 @@ export function OrganizationBackgroundChecksPage() {
           header: 'Worker',
           cell: ({ row }: CellContext<CheckRow, unknown>) => (
             <Stack>
-              <Text color="$gray11">{row.original.workerName}</Text>
+              <Text style={{ color: colors.text[t].secondary }}>{row.original.workerName}</Text>
               {row.original.workerEmail ? (
-                <Text color="$gray11">{row.original.workerEmail}</Text>
+                <Text style={{ color: colors.text[t].secondary }}>{row.original.workerEmail}</Text>
               ) : null}
             </Stack>
           ),
@@ -187,14 +191,14 @@ export function OrganizationBackgroundChecksPage() {
           ),
         },
       ] satisfies ColumnDef<CheckRow, unknown>[],
-    []
+    [t]
   )
 
   if (isLoadingOrganizations) {
     return (
       <Stack flex={1} align="center" justify="center" gap={8}>
         <Spinner size="lg" />
-        <Text color="$gray11">Loading organizations…</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Loading organizations…</Text>
       </Stack>
     )
   }
@@ -202,8 +206,8 @@ export function OrganizationBackgroundChecksPage() {
   if (!organizations.length) {
     return (
       <Stack flex={1} align="center" justify="center" gap={12} paddingHorizontal={16}>
-        <Text color="$gray11">No organizations available</Text>
-        <Text color="$gray11" style={{ textAlign: 'center' }}>
+        <Text style={{ color: colors.text[t].secondary }}>No organizations available</Text>
+        <Text style={{ color: colors.text[t].secondary, textAlign: 'center' }}>
           Create an organization before managing background checks.
         </Text>
       </Stack>
@@ -278,8 +282,8 @@ export function OrganizationBackgroundChecksPage() {
         />
       ) : (
         <Stack flex={1} padding="md" gap={12} align="center" justify="center">
-          <Text color="$gray11">Select an organization to view background checks</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[t].secondary }}>Select an organization to view background checks</Text>
+          <Text style={{ color: colors.text[t].secondary }}>
             Choose an organization above to manage screening requests and results.
           </Text>
         </Stack>

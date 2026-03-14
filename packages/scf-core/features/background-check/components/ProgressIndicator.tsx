@@ -1,5 +1,6 @@
 import { memo } from 'react'
-import { Text, Row, Stack } from '@scaffald/ui'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 import type { BackgroundCheckWizardStep } from '../hooks/useBackgroundCheckForm'
 
@@ -20,6 +21,8 @@ export const ProgressIndicator = memo(function ProgressIndicator({
   steps,
   currentStep,
 }: ProgressIndicatorProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const currentIndex = steps.indexOf(currentStep)
 
   return (
@@ -27,7 +30,7 @@ export const ProgressIndicator = memo(function ProgressIndicator({
       {steps.map((step, index) => {
         const isCompleted = index < currentIndex
         const isActive = index === currentIndex
-        const variant = isActive ? '$color10' : isCompleted ? '$green9' : '$color6'
+        const variant = isActive ? colors.primary[500] : isCompleted ? colors.success[500] : colors.bg[t].muted
 
         return (
           <Stack key={step} align="center" gap={4}>
@@ -36,14 +39,14 @@ export const ProgressIndicator = memo(function ProgressIndicator({
               height={36}
               backgroundColor={variant}
               borderWidth={2}
-              borderColor={isActive ? '$color12' : '$color7'}
+              borderColor={isActive ? colors.text[t].primary : colors.border[t].default}
               borderRadius={18}
               align="center"
               justify="center"
             >
-              <Text color="$gray11">{index + 1}</Text>
+              <Text style={{ color: colors.text[t].secondary }}>{index + 1}</Text>
             </Stack>
-            <Text color={isActive ? '$color12' : '$color10'}>{STEP_LABELS[step]}</Text>
+            <Text style={{ color: isActive ? colors.text[t].primary : colors.primary[500] }}>{STEP_LABELS[step]}</Text>
           </Stack>
         )
       })}

@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Text, Stack, Row, Separator, Spinner, Button, Input } from '@scaffald/ui'
+import { Text, Stack, Row, Separator, Spinner, Button, Input, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   useScaffoldScore,
@@ -9,6 +10,9 @@ import {
 import { ScaffoldScoreBadge } from './components/ScaffoldScoreBadge'
 
 export function ReputationDashboardPage() {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   const queryClient = useQueryClient()
   const { data: scoreData, isLoading: isScoreLoading } = useScaffoldScore()
   const { data: historyData, isLoading: isHistoryLoading } = useReputationHistory({ limit: 50 })
@@ -43,7 +47,7 @@ export function ReputationDashboardPage() {
       {/* Score Overview */}
       <Stack gap={8}>
         <Text style={{ fontSize: 24, fontWeight: '700' }}>Scaffold Score</Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[t].secondary }}>
           Your reputation in the Scaffold community. Earn points by contributing quality content.
         </Text>
       </Stack>
@@ -56,15 +60,15 @@ export function ReputationDashboardPage() {
           </Stack>
           <Stack gap={4}>
             <Row gap={8}>
-              <Text color="$gray11">Karma Bank:</Text>
+              <Text style={{ color: colors.text[t].secondary }}>Karma Bank:</Text>
               <Text style={{ fontWeight: '600' }}>{score.karma_bank}</Text>
             </Row>
             <Row gap={8}>
-              <Text color="$gray11">Total Earned:</Text>
+              <Text style={{ color: colors.text[t].secondary }}>Total Earned:</Text>
               <Text style={{ fontWeight: '600' }}>{score.total_earned}</Text>
             </Row>
             <Row gap={8}>
-              <Text color="$gray11">Total Spent:</Text>
+              <Text style={{ color: colors.text[t].secondary }}>Total Spent:</Text>
               <Text style={{ fontWeight: '600' }}>{score.total_spent}</Text>
             </Row>
           </Stack>
@@ -76,7 +80,7 @@ export function ReputationDashboardPage() {
       {/* Gift Karma */}
       <Stack gap={12}>
         <Text style={{ fontSize: 18, fontWeight: '600' }}>Gift Karma</Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[t].secondary }}>
           Send karma to community members who helped you. Max 10 per gift, 5 gifts per day.
         </Text>
         <Row gap={8} style={{ flexWrap: 'wrap' }}>
@@ -121,7 +125,7 @@ export function ReputationDashboardPage() {
             <Spinner />
           </Stack>
         ) : events.length === 0 ? (
-          <Text color="$gray11">No reputation events yet.</Text>
+          <Text style={{ color: colors.text[t].secondary }}>No reputation events yet.</Text>
         ) : (
           <Stack gap={4}>
             {events.map(
@@ -140,21 +144,23 @@ export function ReputationDashboardPage() {
                     paddingVertical: 8,
                     paddingHorizontal: 12,
                     borderBottomWidth: 1,
-                    borderBottomColor: '#f0f0f0',
+                    borderBottomColor: colors.border[t].default,
                   }}
                 >
                   <Stack style={{ flex: 1 }} gap={2}>
                     <Text style={{ fontSize: 14 }}>
                       {event.reason || event.action.replace(/_/g, ' ')}
                     </Text>
-                    <Text color="$gray11" style={{ fontSize: 12 }}>
+                    <Text style={{ color: colors.text[t].secondary, fontSize: 12 }}>
                       {new Date(event.created_at).toLocaleDateString()}
                     </Text>
                   </Stack>
                   <Text
                     style={{
                       fontWeight: '700',
-                      color: event.delta > 0 ? '#16a34a' : '#dc2626',
+                      color: event.delta > 0
+                        ? (t === 'dark' ? colors.green[300] : colors.green[600])
+                        : (t === 'dark' ? colors.red[300] : colors.red[600]),
                     }}
                   >
                     {event.delta > 0 ? '+' : ''}

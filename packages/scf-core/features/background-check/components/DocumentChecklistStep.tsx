@@ -1,5 +1,6 @@
 import { memo, useMemo } from 'react'
-import { Button, Card, Checkbox, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Card, Checkbox, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 import type { DocumentDraft } from '../hooks/useBackgroundCheckForm'
 
@@ -16,6 +17,9 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
   onToggleDocument,
   onContinue,
 }: DocumentChecklistStepProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   const fulfilledDocuments = useMemo(() => {
     return new Set(documents.map((doc) => doc.documentType))
   }, [documents])
@@ -28,8 +32,8 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
   return (
     <Stack gap={16} flex={1}>
       <Stack gap={8}>
-        <Text color="$gray11">Upload required documents</Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[t].secondary }}>Upload required documents</Text>
+        <Text style={{ color: colors.text[t].secondary }}>
           Provide clear copies of each requested document. Depending on your package, this might
           include government ID, SSN card, or driving history.
         </Text>
@@ -45,7 +49,11 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
                 bordered
                 radius="lg"
                 padding="sm"
-                backgroundColor={isChecked ? '$green3' : '$color2'}
+                style={{
+                  backgroundColor: isChecked
+                    ? (t === 'dark' ? colors.green[900] : colors.green[50])
+                    : colors.bg[t].muted,
+                }}
               >
                 <Row align="center" gap={12}>
                   <Checkbox
@@ -54,8 +62,8 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
                     onChange={(checked) => onToggleDocument(docType, Boolean(checked))}
                     labelElement={
                       <Stack gap={4} flex={1}>
-                        <Text color="$gray11">{docType.replace(/_/g, ' ')}</Text>
-                        <Text color="$gray11">
+                        <Text style={{ color: colors.text[t].secondary }}>{docType.replace(/_/g, ' ')}</Text>
+                        <Text style={{ color: colors.text[t].secondary }}>
                           Upload a clear photo or PDF of your {docType.replace(/_/g, ' ')}.
                         </Text>
                       </Stack>
@@ -66,8 +74,8 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
             )
           })
         ) : (
-          <Card bordered radius="lg" padding="sm" backgroundColor="$color2">
-            <Text color="$gray11">No documents are required for this package.</Text>
+          <Card bordered radius="lg" padding="sm" style={{ backgroundColor: colors.bg[t].muted }}>
+            <Text style={{ color: colors.text[t].secondary }}>No documents are required for this package.</Text>
           </Card>
         )}
       </Stack>

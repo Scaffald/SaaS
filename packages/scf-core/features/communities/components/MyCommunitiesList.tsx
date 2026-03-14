@@ -1,11 +1,14 @@
 import { Pressable } from 'react-native'
-import { Text, Stack, Row, Avatar, Spinner } from '@scaffald/ui'
+import { Text, Stack, Row, Avatar, Spinner, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import type { Href } from 'expo-router'
 import { RouteBuilder } from '@scf/core/constants/routes'
 import { useMyCommunities } from '@scf/core/utils/communities-sdk-hooks'
 
 export function MyCommunitiesList() {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const router = useRouter()
   const { data, isLoading } = useMyCommunities()
   const memberships = data?.data ?? []
@@ -21,7 +24,7 @@ export function MyCommunitiesList() {
   if (memberships.length === 0) {
     return (
       <Stack align="center" style={{ paddingVertical: 40 }}>
-        <Text color="$gray11">You haven't joined any communities yet.</Text>
+        <Text style={{ color: colors.text[t].secondary }}>You haven't joined any communities yet.</Text>
       </Stack>
     )
   }
@@ -68,7 +71,7 @@ export function MyCommunitiesList() {
                   </Stack>
                 )}
               </Row>
-              <Text color="$gray11" style={{ fontSize: 12 }}>
+              <Text style={{ fontSize: 12, color: colors.text[t].secondary }}>
                 Joined {new Date(item.joined_at).toLocaleDateString()}
               </Text>
             </Stack>

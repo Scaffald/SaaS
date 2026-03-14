@@ -4,7 +4,8 @@
  * are pass-through components (Modal handles overlay and container internally).
  */
 
-import { Modal, Button, Text } from '@scaffald/ui'
+import { Modal, Button, Text, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import type { ReactNode } from 'react'
 import { cloneElement, Fragment, createContext, useContext, isValidElement } from 'react'
 import { View } from 'react-native'
@@ -46,15 +47,19 @@ function DialogContent({
 }
 
 function DialogTitle({ children }: { children?: ReactNode }) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   return (
-    <Text color="$gray11" style={{ fontWeight: '600', fontSize: 18 }}>
+    <Text style={{ fontWeight: '600', fontSize: 18, color: colors.text[t].secondary }}>
       {children}
     </Text>
   )
 }
 
 function DialogDescription({ children }: { children?: ReactNode }) {
-  return <Text color="$gray11">{children}</Text>
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+  return <Text style={{ color: colors.text[t].secondary }}>{children}</Text>
 }
 
 function DialogClose({

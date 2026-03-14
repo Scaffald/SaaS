@@ -1,12 +1,15 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { useCurrentIdVerification } from '@scf/core/utils/id-verification-sdk-hooks'
-import { Button, DashboardWidget } from '@scaffald/ui'
+import { Button, DashboardWidget, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
 import { Text, Stack } from '@scaffald/ui'
 import { IdVerificationBadge } from './IdVerificationBadge'
 
 export function IdVerificationWidget() {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const router = useRouter()
   const badgeQuery = useCurrentIdVerification(undefined, { staleTime: 60 * 1000 })
 
@@ -15,14 +18,14 @@ export function IdVerificationWidget() {
   return (
     <DashboardWidget>
       <Stack gap={12}>
-        <Text color="$gray11">Identity verification</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Identity verification</Text>
         <IdVerificationBadge
           status={status.badgeStatus}
           badgeExpiresAt={status.badgeExpiresAt}
           muted={status.muted}
           size="md"
         />
-        {status.caption && <Text color="$gray11">{status.caption}</Text>}
+        {status.caption && <Text style={{ color: colors.text[t].secondary }}>{status.caption}</Text>}
 
         <Button
           size="sm"

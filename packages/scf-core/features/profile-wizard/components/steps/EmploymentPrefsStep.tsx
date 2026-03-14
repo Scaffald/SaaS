@@ -3,7 +3,8 @@ import { ResponsiveSelect } from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { Input, Paragraph, Text, Row, Stack } from '@scaffald/ui'
+import { Input, Paragraph, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { z } from 'zod'
 import type { EmploymentPreferencesStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
@@ -63,6 +64,9 @@ export function EmploymentPrefsStep({
   onSkip,
   onStepStateChange,
 }: WizardStepComponentProps<'preferences'>) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   const {
     control,
     handleSubmit,
@@ -127,7 +131,7 @@ export function EmploymentPrefsStep({
     <Stack gap={16}>
       <Stack gap={8}>
         <Text>Share your work preferences</Text>
-        <Paragraph color="$gray11">
+        <Paragraph style={{ color: colors.text[t].secondary }}>
           Help employers match you with the right opportunities by adding where, how, and when you
           prefer to work.
         </Paragraph>

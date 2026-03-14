@@ -1,5 +1,6 @@
 import { List, RotateCcw, Search, SlidersHorizontal } from 'lucide-react-native'
-import { Button, Row } from '@scaffald/ui'
+import { Button, Row, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type FilterBarProps = {
   onSearchPress?: () => void
@@ -26,6 +27,8 @@ export const FilterBar = ({
   searchActive = false,
   filterActive = false,
 }: FilterBarProps) => {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   return (
     <Row
       align="center"
@@ -33,7 +36,6 @@ export const FilterBar = ({
       style={{ position: 'absolute', bottom: 16, left: 0, zIndex: 50 }}
     >
       <Row
-        backgroundColor="$background"
         paddingHorizontal={12}
         paddingVertical={8}
         borderRadius={12}
@@ -41,8 +43,9 @@ export const FilterBar = ({
         align="center"
         justify="center"
         borderWidth={2}
-        borderColor="$borderColor"
+        borderColor={colors.border[t].default}
         style={{
+          backgroundColor: colors.bg[t].default,
           opacity: 0.95,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 4 },

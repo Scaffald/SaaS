@@ -2,7 +2,8 @@ import { formatDate } from '@scf/core/features/profile/utils/date-formatting'
 import { DashboardWidget } from '@scaffald/ui'
 import { AlertTriangle, Eye, RefreshCcw } from 'lucide-react-native'
 import { memo, useMemo } from 'react'
-import { Button, ProgressBarBase, Text, Row, Stack } from '@scaffald/ui'
+import { Button, ProgressBarBase, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 import {
   type BackgroundCheckSummary,
@@ -28,8 +29,11 @@ export const CheckStatusCard = memo(function CheckStatusCard({
   onRenew,
   onDispute,
 }: CheckStatusCardProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light' as const
+
   const statusMeta = getStatusMetadata(check.status)
-  const statusColors = getStatusToneColors(statusMeta.tone)
+  const statusColors = getStatusToneColors(statusMeta.tone, t)
   const progress = getStatusProgress(check.status)
   const expirationWarning = shouldShowExpirationWarning(check.expires_at)
   const expired = hasExpired(check.expires_at)
@@ -56,10 +60,10 @@ export const CheckStatusCard = memo(function CheckStatusCard({
       <Stack gap={16}>
         <Row justify="space-between" align="flex-start" gap={16} wrap>
           <Stack gap={4} flex={1}>
-            <Text color="$gray11">{packageLabel}</Text>
-            <Text color="$gray11">Started {formatDate(check.created_at)}</Text>
+            <Text style={{ color: colors.text[t].secondary }}>{packageLabel}</Text>
+            <Text style={{ color: colors.text[t].secondary }}>Started {formatDate(check.created_at)}</Text>
             {estimatedCompletion && (
-              <Text color="$gray11">Est. completion {formatDate(estimatedCompletion)}</Text>
+              <Text style={{ color: colors.text[t].secondary }}>Est. completion {formatDate(estimatedCompletion)}</Text>
             )}
           </Stack>
 
@@ -78,8 +82,8 @@ export const CheckStatusCard = memo(function CheckStatusCard({
             </Row>
             {check.expires_at && (
               <Row align="center" gap={8}>
-                {expirationWarning && <AlertTriangle size="md" color="$yellow10" />}
-                <Text color={expirationWarning ? '$yellow10' : '$color10'}>
+                {expirationWarning && <AlertTriangle size="md" color={t === 'dark' ? colors.yellow[300] : colors.yellow[600]} />}
+                <Text style={{ color: expirationWarning ? (t === 'dark' ? colors.yellow[300] : colors.yellow[600]) : colors.text[t].secondary }}>
                   {expired
                     ? `Expired ${formatDate(check.expires_at)}`
                     : `Expires ${formatDate(check.expires_at)}${
@@ -95,11 +99,11 @@ export const CheckStatusCard = memo(function CheckStatusCard({
 
         <Stack gap={8}>
           <Row justify="space-between" align="center">
-            <Text color="$gray11">Progress</Text>
-            <Text color="$gray11">{progress}%</Text>
+            <Text style={{ color: colors.text[t].secondary }}>Progress</Text>
+            <Text style={{ color: colors.text[t].secondary }}>{progress}%</Text>
           </Row>
           <ProgressBarBase value={progress} color="primary" />
-          <Text color="$gray11">{statusMeta.description}</Text>
+          <Text style={{ color: colors.text[t].secondary }}>{statusMeta.description}</Text>
         </Stack>
 
         <Row gap={8} wrap>

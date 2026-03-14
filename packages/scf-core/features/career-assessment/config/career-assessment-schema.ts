@@ -26,7 +26,7 @@ export const RIASEC_DIMENSIONS = [
     description: 'I enjoy working with tools, machines, or building things',
     detailedDescription:
       'Realistic people like work activities that include practical, hands-on problems and solutions. They like working with plants, animals, and physical materials like wood, tools, and machinery.',
-    color: '$blue9',
+    color: '#0091ff',
   },
   {
     key: 'investigative' as const,
@@ -34,7 +34,7 @@ export const RIASEC_DIMENSIONS = [
     description: 'I like solving puzzles and analyzing complex problems',
     detailedDescription:
       'Investigative people like work activities that have to do with ideas and thinking rather than physical activity. They like to search for facts and figure out problems mentally.',
-    color: '$purple9',
+    color: '#8e4ec6',
   },
   {
     key: 'artistic' as const,
@@ -42,7 +42,7 @@ export const RIASEC_DIMENSIONS = [
     description: 'I express myself through creative work and artistic activities',
     detailedDescription:
       'Artistic people like work activities that deal with the artistic side of things, such as forms, designs, and patterns. They like self-expression and prefer situations where work can be done without following a clear set of rules.',
-    color: '$pink9',
+    color: '#d6409f',
   },
   {
     key: 'social' as const,
@@ -50,7 +50,7 @@ export const RIASEC_DIMENSIONS = [
     description: 'I prefer working with people and helping others',
     detailedDescription:
       'Social people like work activities that involve helping people, teaching, or providing service to others. They prefer to talk through problems rather than working alone.',
-    color: '$green9',
+    color: '#30a46c',
   },
   {
     key: 'enterprising' as const,
@@ -58,7 +58,7 @@ export const RIASEC_DIMENSIONS = [
     description: 'I enjoy leading projects and influencing others',
     detailedDescription:
       'Enterprising people like work activities that involve starting up and carrying out projects, especially in business. They like persuading and leading people and making decisions.',
-    color: '$orange9',
+    color: '#f76b15',
   },
   {
     key: 'conventional' as const,
@@ -66,7 +66,7 @@ export const RIASEC_DIMENSIONS = [
     description: 'I like organizing information and following detailed procedures',
     detailedDescription:
       'Conventional people like work activities that follow set procedures and routines. They prefer working with data and detail rather than with ideas.',
-    color: '$yellow9',
+    color: '#f5d90a',
   },
 ] as const
 

@@ -4,7 +4,8 @@ import { useDismissNudgeMutation } from '@scf/core/utils/profile-completion-sdk-
 import { Sheet, SheetContent, SheetHeader } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Button, Text, Stack } from '@scaffald/ui'
+import { Button, Text, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import type { PersonalizedBenefit } from '../hooks/useCompletionNudges'
 import { useCompletionNudges } from '../hooks/useCompletionNudges'
 import type { CompletionStatus } from '../hooks/useCompletionStatus'
@@ -258,6 +259,9 @@ const ProfileCompletionWizardSheet = memo(function ProfileCompletionWizardSheet(
   onUploadResume,
   onViewProfile,
 }: ProfileCompletionWizardSheetProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   return (
     <Sheet
       visible={open}
@@ -278,7 +282,7 @@ const ProfileCompletionWizardSheet = memo(function ProfileCompletionWizardSheet(
       <SheetContent>
         <Stack padding="md" gap={16} flex={1}>
           <Stack gap={8}>
-            <Text color="$gray11">We'll auto-save as you go. You can exit anytime.</Text>
+            <Text style={{ color: colors.text[t].secondary }}>We'll auto-save as you go. You can exit anytime.</Text>
           </Stack>
           {open ? (
             <ProfileWizard

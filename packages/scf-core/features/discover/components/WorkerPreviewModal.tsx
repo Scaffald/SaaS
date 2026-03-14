@@ -41,7 +41,8 @@ import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
 import { Image as RNImage } from 'react-native'
-import { Button, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Separator, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface WorkerPreviewModalProps {
   userId: string | null
@@ -106,6 +107,8 @@ type EducationEntry = {
  * Shows a quick preview of a worker's profile with option to view full profile
  */
 export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreviewModalProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const router = useRouter()
   const toast = useToast()
   const { session } = useAuth()
@@ -381,8 +384,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 width={96}
                 height={96}
                 borderRadius={10}
-                backgroundColor="$color3"
-                style={{ overflow: 'hidden' }}
+                style={{ overflow: 'hidden', backgroundColor: colors.bg[t].muted }}
               >
                 <RNImage
                   source={{ uri: profile.avatar_url }}
@@ -396,9 +398,9 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 width={96}
                 height={96}
                 borderRadius={10}
-                backgroundColor="$blue4"
                 align="center"
                 justify="center"
+                style={{ backgroundColor: t === 'light' ? '#d5efff' : '#113264' }}
               >
                 <User size={48} color="#0ea5e9" />
               </Stack>
@@ -517,9 +519,8 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                           <Stack
                             width={100}
                             height={8}
-                            backgroundColor="$color4"
                             borderRadius={8}
-                            style={{ overflow: 'hidden' }}
+                            style={{ overflow: 'hidden', backgroundColor: colors.bg[t].muted }}
                           >
                             <Stack
                               flex={1}

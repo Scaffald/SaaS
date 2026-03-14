@@ -1,6 +1,7 @@
 import { Table, type TableColumn, type TableRowData } from '@scaffald/ui'
 import { useMemo } from 'react'
-import { Button, Card, H4, Paragraph, Separator, Spinner, Text, Row } from '@scaffald/ui'
+import { Button, Card, H4, Paragraph, Separator, Spinner, Text, Row, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import {
   useDocumentDownloadUrl,
   useDocumentUploadSession,
@@ -13,6 +14,8 @@ type OrganizationDocumentsPanelProps = {
 }
 
 export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocumentsPanelProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const { data: documentsResponse, isLoading } = useOrganizationDocuments(organizationId)
   const { data: folders } = useOrganizationFolders(organizationId)
   const downloadMutation = useDocumentDownloadUrl()
@@ -41,7 +44,7 @@ export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocum
       render: (_value, row) => (
         <>
           <Text>{String(row.name ?? '')}</Text>
-          <Paragraph color="$gray11">{String(row.category ?? '')}</Paragraph>
+          <Paragraph style={{ color: colors.text[t].secondary }}>{String(row.category ?? '')}</Paragraph>
         </>
       ),
     },
@@ -108,7 +111,7 @@ export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocum
       {isLoading ? (
         <Spinner />
       ) : documents.length === 0 ? (
-        <Paragraph color="$gray11">No documents uploaded yet.</Paragraph>
+        <Paragraph style={{ color: colors.text[t].secondary }}>No documents uploaded yet.</Paragraph>
       ) : (
         <Table
           columns={columns}

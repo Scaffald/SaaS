@@ -10,12 +10,15 @@ import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { Button, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 /**
  * OccupationAssessmentWizard - Standalone wizard for Occupation Preferences
  */
 export function OccupationAssessmentWizard() {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const router = useRouter()
   const toast = useToast()
 
@@ -99,7 +102,7 @@ export function OccupationAssessmentWizard() {
         <Stack gap={12}>
           <Stack gap={4}>
             <Text>Current Occupation (Optional)</Text>
-            <Text color="$gray11">What is your current or most recent job?</Text>
+            <Text style={{ color: colors.text[t].secondary }}>What is your current or most recent job?</Text>
           </Stack>
           <OccupationSearch
             value={currentOccupation}
@@ -113,7 +116,7 @@ export function OccupationAssessmentWizard() {
         <Stack gap={12}>
           <Stack gap={4}>
             <Text>Target Occupations (Optional)</Text>
-            <Text color="$gray11">What occupations are you interested in pursuing?</Text>
+            <Text style={{ color: colors.text[t].secondary }}>What occupations are you interested in pursuing?</Text>
           </Stack>
           {targetOccupations.map((occupation, index) => (
             <Row key={`target-occupation-${index}-${occupation || 'empty'}`} gap={8} align="center">

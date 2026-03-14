@@ -11,13 +11,16 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
-import { Button, Text, Stack } from '@scaffald/ui'
+import { Button, Text, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { DOMAIN_NAMES, getCompletedDomainsCount } from './utils/domainGrouping'
 
 /**
  * IPIPAssessmentWizard - Standalone wizard for IPIP
  */
 export function IPIPAssessmentWizard() {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const router = useRouter()
   const toast = useToast()
   const [completedDomain, setCompletedDomain] = useState<IPIPDomain | null>(null)
@@ -111,11 +114,11 @@ export function IPIPAssessmentWizard() {
           style={{ maxWidth: 800, alignSelf: 'center' }}
         >
           <Stack gap={16} align="center">
-            <Text color="$green10">✓ {DOMAIN_NAMES[completedDomain]} Complete!</Text>
-            <Text color="$gray11" align="center">
+            <Text style={{ color: colors.success[500] }}>✓ {DOMAIN_NAMES[completedDomain]} Complete!</Text>
+            <Text style={{ color: colors.text[t].secondary, textAlign: 'center' }}>
               You've completed {completedDomains} of 5 domains
             </Text>
-            <Text color="$gray11" align="center">
+            <Text style={{ color: colors.text[t].secondary, textAlign: 'center' }}>
               Great progress! You're {Math.round((completedDomains / 5) * 100)}% done with the
               assessment.
             </Text>

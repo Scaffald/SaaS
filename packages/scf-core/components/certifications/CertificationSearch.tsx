@@ -1,7 +1,8 @@
 import { Award, Search } from 'lucide-react-native'
 import { useEffect, useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
-import { Card, Input, Text, Row, Stack } from '@scaffald/ui'
+import { Card, Input, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface Certification {
   id: string
@@ -34,6 +35,8 @@ export function CertificationSearch({
   isLoading = false,
   selectedIds = [],
 }: CertificationSearchProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [searchQuery, setSearchQuery] = useState('')
   const [showResults, setShowResults] = useState(false)
   const [debouncedSearch, setDebouncedSearch] = useState('')
@@ -108,12 +111,12 @@ export function CertificationSearch({
   // Depth badge component
   const DepthBadge = ({ depth }: { depth: number }) => {
     const labels = ['Top Level', 'Category', 'Certification']
-    const colors: Array<'$blue9' | '$green9' | '$purple9' | '$gray9'> = [
-      '$blue9',
-      '$green9',
-      '$purple9',
+    const badgeColors = [
+      t === 'dark' ? colors.blue[300] : colors.blue[600],
+      t === 'dark' ? colors.green[300] : colors.green[600],
+      t === 'dark' ? colors.purple[300] : colors.purple[600],
     ]
-    const bgColor = (colors[depth] || '$gray9') as '$blue9' | '$green9' | '$purple9' | '$gray9'
+    const bgColor = badgeColors[depth] || colors.text[t].tertiary
     return (
       <Row
         style={{
@@ -125,7 +128,7 @@ export function CertificationSearch({
           borderColor: bgColor,
         }}
       >
-        <Text color="$background">{labels[depth] || `Depth ${depth}`}</Text>
+        <Text style={{ color: colors.bg[t].default }}>{labels[depth] || `Depth ${depth}`}</Text>
       </Row>
     )
   }
@@ -166,23 +169,23 @@ export function CertificationSearch({
           <ScrollView style={{ height: 400 }}>
             {isLoading ? (
               <Stack padding="md" align="center" gap={8}>
-                <Text color="gray">Searching...</Text>
+                <Text style={{ color: colors.text[t].secondary }}>Searching...</Text>
               </Stack>
             ) : filteredResults.length === 0 ? (
               <Stack padding="md" align="center" gap={8}>
                 {searchQuery.length > 0 ? (
                   <>
-                    <Search size={32} color="gray" />
-                    <Text color="gray">No certifications found</Text>
-                    <Text color="gray" style={{ textAlign: 'center' }}>
+                    <Search size={32} color={colors.text[t].secondary} />
+                    <Text style={{ color: colors.text[t].secondary }}>No certifications found</Text>
+                    <Text style={{ color: colors.text[t].secondary, textAlign: 'center' }}>
                       Try a different search term
                     </Text>
                   </>
                 ) : (
                   <>
-                    <Search size={32} color="gray" />
-                    <Text color="gray">Type to search certifications</Text>
-                    <Text color="gray" style={{ textAlign: 'center' }}>
+                    <Search size={32} color={colors.text[t].secondary} />
+                    <Text style={{ color: colors.text[t].secondary }}>Type to search certifications</Text>
+                    <Text style={{ color: colors.text[t].secondary, textAlign: 'center' }}>
                       Search for certifications like "OSHA" or "First Aid"
                     </Text>
                   </>
@@ -196,16 +199,16 @@ export function CertificationSearch({
                     <Row
                       style={{
                         padding: 12,
-                        backgroundColor: '$color3',
+                        backgroundColor: colors.bg[t].muted,
                         borderBottomWidth: 1,
-                        borderColor: '$borderColor',
+                        borderColor: colors.border[t].default,
                       }}
                       align="center"
                       gap={8}
                       testID="cert-search-section-depth0"
                     >
-                      <Award size="lg" color="gray" />
-                      <Text color="gray">Top Level Categories</Text>
+                      <Award size="lg" color={colors.text[t].secondary} />
+                      <Text style={{ color: colors.text[t].secondary }}>Top Level Categories</Text>
                     </Row>
                     {groupedResults.depth0.map((cert) => (
                       <Card
@@ -216,7 +219,7 @@ export function CertificationSearch({
                           borderRadius: 0,
                           borderWidth: 0,
                           borderBottomWidth: 1,
-                          borderColor: '$borderColor',
+                          borderColor: colors.border[t].default,
                           cursor: 'pointer',
                         }}
                         onPress={() => handleSelect(cert)}
@@ -227,7 +230,7 @@ export function CertificationSearch({
                             <Text style={{ flex: 1 }}>{cert.title}</Text>
                             <DepthBadge depth={cert.depth} />
                           </Row>
-                          {cert.description && <Text color="gray">{cert.description}</Text>}
+                          {cert.description && <Text style={{ color: colors.text[t].secondary }}>{cert.description}</Text>}
                         </Stack>
                       </Card>
                     ))}
@@ -240,16 +243,16 @@ export function CertificationSearch({
                     <Row
                       style={{
                         padding: 12,
-                        backgroundColor: '$color3',
+                        backgroundColor: colors.bg[t].muted,
                         borderBottomWidth: 1,
-                        borderColor: '$borderColor',
+                        borderColor: colors.border[t].default,
                       }}
                       align="center"
                       gap={8}
                       testID="cert-search-section-depth1"
                     >
-                      <Award size="lg" color="gray" />
-                      <Text color="gray">
+                      <Award size="lg" color={colors.text[t].secondary} />
+                      <Text style={{ color: colors.text[t].secondary }}>
                         {parentId === 'none'
                           ? 'Categories'
                           : `${getParentTitle(parentId)} > Categories`}
@@ -264,7 +267,7 @@ export function CertificationSearch({
                           borderRadius: 0,
                           borderWidth: 0,
                           borderBottomWidth: 1,
-                          borderColor: '$borderColor',
+                          borderColor: colors.border[t].default,
                           cursor: 'pointer',
                         }}
                         onPress={() => handleSelect(cert)}
@@ -275,7 +278,7 @@ export function CertificationSearch({
                             <Text style={{ flex: 1 }}>{cert.title}</Text>
                             <DepthBadge depth={cert.depth} />
                           </Row>
-                          {cert.description && <Text color="gray">{cert.description}</Text>}
+                          {cert.description && <Text style={{ color: colors.text[t].secondary }}>{cert.description}</Text>}
                         </Stack>
                       </Card>
                     ))}
@@ -288,16 +291,16 @@ export function CertificationSearch({
                     <Row
                       style={{
                         padding: 12,
-                        backgroundColor: '$color3',
+                        backgroundColor: colors.bg[t].muted,
                         borderBottomWidth: 1,
-                        borderColor: '$borderColor',
+                        borderColor: colors.border[t].default,
                       }}
                       align="center"
                       gap={8}
                       testID="cert-search-section-depth2"
                     >
-                      <Award size="lg" color="gray" />
-                      <Text color="gray">
+                      <Award size="lg" color={colors.text[t].secondary} />
+                      <Text style={{ color: colors.text[t].secondary }}>
                         {parentId === 'none'
                           ? 'Specific Certifications'
                           : `${getParentTitle(parentId)} > Certifications`}
@@ -318,7 +321,7 @@ export function CertificationSearch({
                             borderRadius: 0,
                             borderWidth: 0,
                             borderBottomWidth: 1,
-                            borderColor: '$borderColor',
+                            borderColor: colors.border[t].default,
                             cursor: 'pointer',
                           }}
                           onPress={() => handleSelect(cert)}
@@ -328,11 +331,11 @@ export function CertificationSearch({
                             <Row gap={8} align="center" style={{ flexWrap: 'wrap' }}>
                               <Stack style={{ flex: 1 }} gap={4}>
                                 <Text>{cert.title}</Text>
-                                {cert.parent_title && <Text color="gray">{hierarchyPath}</Text>}
+                                {cert.parent_title && <Text style={{ color: colors.text[t].secondary }}>{hierarchyPath}</Text>}
                               </Stack>
                               <DepthBadge depth={cert.depth} />
                             </Row>
-                            {cert.description && <Text color="gray">{cert.description}</Text>}
+                            {cert.description && <Text style={{ color: colors.text[t].secondary }}>{cert.description}</Text>}
                           </Stack>
                         </Card>
                       )

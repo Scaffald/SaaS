@@ -3,7 +3,8 @@
  * Admin OAuth app list
  */
 
-import { Button, Card, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useState } from 'react'
 import { useRouter } from 'expo-router'
 import { useAdminOAuthApps } from '@scf/core/utils/oauth-sdk-hooks'
@@ -12,6 +13,8 @@ import { ROUTES } from '@scf/core/constants/routes'
 type AppStatus = 'all' | 'pending' | 'active' | 'trusted' | 'suspended' | 'revoked'
 
 export function OAuthAppList() {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const router = useRouter()
   const [statusFilter, setStatusFilter] = useState<AppStatus>('all')
   const [searchQuery] = useState('')
@@ -25,7 +28,7 @@ export function OAuthAppList() {
     <Stack flex={1} gap={16}>
       <Stack gap={8}>
         <Text size="2xl">OAuth Applications</Text>
-        <Text size="sm" color="$gray11">
+        <Text size="sm" style={{ color: colors.text[t].secondary }}>
           Manage and approve OAuth applications
         </Text>
       </Stack>
@@ -53,10 +56,10 @@ export function OAuthAppList() {
                 <Text size="md" data-testid="oauth-app-name">
                   {app.display_name}
                 </Text>
-                <Text size="sm" color="$gray11" data-testid="oauth-app-description">
+                <Text size="sm" style={{ color: colors.text[t].secondary }} data-testid="oauth-app-description">
                   {app.description}
                 </Text>
-                <Text size="sm" color="$gray11" data-testid="oauth-app-metadata">
+                <Text size="sm" style={{ color: colors.text[t].secondary }} data-testid="oauth-app-metadata">
                   Status: {app.status} | Created: {new Date(app.created_at).toLocaleDateString()}
                 </Text>
               </Stack>

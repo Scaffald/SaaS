@@ -1,4 +1,5 @@
-import { Text, Stack } from '@scaffald/ui'
+import { Text, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { StarRating } from './StarRating'
 
 interface ReviewStepCategoryRatingProps {
@@ -16,11 +17,13 @@ export function ReviewStepCategoryRating({
   rating,
   onChange,
 }: ReviewStepCategoryRatingProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text color="$gray11">{title}</Text>
-        <Text color="$gray11">{description}</Text>
+        <Text style={{ color: colors.text[t].secondary }}>{title}</Text>
+        <Text style={{ color: colors.text[t].secondary }}>{description}</Text>
       </Stack>
 
       {/* Category Rating */}

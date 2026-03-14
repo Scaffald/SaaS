@@ -1,4 +1,5 @@
-import { Text, Stack } from '@scaffald/ui'
+import { Text, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { StarRating } from './StarRating'
 
 // Mock skills data - will be replaced with real data from API
@@ -14,11 +15,13 @@ interface ReviewStep1SkillsProps {
 }
 
 export function ReviewStep1Skills({ ratings, onChange }: ReviewStep1SkillsProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text color="$gray11">Technical Skills</Text>
-        <Text color="$gray11">How would you rate this person's technical skills?</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Technical Skills</Text>
+        <Text style={{ color: colors.text[t].secondary }}>How would you rate this person's technical skills?</Text>
       </Stack>
 
       {/* Skills List */}

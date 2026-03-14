@@ -4,9 +4,10 @@ import {
   usePublishedJobs,
   useUserApplications,
 } from '@scf/core/utils/jobs-sdk-hooks'
-import { extractPlainText, SkeletonList } from '@scaffald/ui'
+import { extractPlainText, SkeletonList, useThemeContext } from '@scaffald/ui'
 import type { JSONContent } from '@tiptap/core'
 import { ScrollView, Text, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { type ExternalJob, ExternalJobCard } from './components/ExternalJobCard'
 import { type InternalJob, InternalJobCard } from './components/InternalJobCard'
 
@@ -33,6 +34,8 @@ export function DiscoverJobsLeft({
   minSoftSkillsMatch,
   sortBy,
 }: DiscoverJobsLeftProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   // Check if soft skills filter is active
   const useSoftSkillsFilter =
     (minSoftSkillsMatch !== null && minSoftSkillsMatch !== undefined && minSoftSkillsMatch > 0) ||
@@ -190,8 +193,8 @@ export function DiscoverJobsLeft({
     if (shouldUseSoftSkillsMatch && softSkillsMatchData?.needsSelfAssessment) {
       return (
         <Stack flex={1} align="center" justify="center" padding="md" gap={12}>
-          <Text color="$gray11">Complete Your Assessment</Text>
-          <Text color="$gray11" style={{ textAlign: 'center' }}>
+          <Text style={{ color: colors.text[t].secondary }}>Complete Your Assessment</Text>
+          <Text style={{ color: colors.text[t].secondary, textAlign: 'center' }}>
             Complete your soft skills assessment to filter and sort jobs by match score.
           </Text>
         </Stack>
@@ -209,8 +212,8 @@ export function DiscoverJobsLeft({
     if (filteredJobs.length === 0) {
       return (
         <Stack flex={1} align="center" justify="center" padding="md" gap={8}>
-          <Text color="$gray11">No jobs found</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[t].secondary }}>No jobs found</Text>
+          <Text style={{ color: colors.text[t].secondary }}>
             {shouldUseSoftSkillsMatch
               ? 'No jobs match your soft skills filter criteria'
               : 'Try adjusting your filters or search query'}
@@ -222,7 +225,7 @@ export function DiscoverJobsLeft({
     return (
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         <Stack gap={12} padding="md">
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[t].secondary }}>
             {filteredJobs.length} {filteredJobs.length === 1 ? 'Job' : 'Jobs'} Available
           </Text>
 

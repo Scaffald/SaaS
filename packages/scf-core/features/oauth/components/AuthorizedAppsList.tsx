@@ -15,12 +15,15 @@ import {
   ModalHeader,
   ModalActions,
   Separator,
+  useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useState } from 'react'
 import { useUserConsents, useRevokeConsentMutation } from '@scf/core/utils/oauth-sdk-hooks'
 
 export function AuthorizedAppsList() {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [revokeAppId, setRevokeAppId] = useState<string | null>(null)
 
   const consentsQuery = useUserConsents()
@@ -47,7 +50,7 @@ export function AuthorizedAppsList() {
       {/* Header */}
       <Stack gap={8}>
         <Text size="2xl">Authorized Applications</Text>
-        <Paragraph size="sm" color="$gray11">
+        <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
           These apps have access to your Scaffald account. You can revoke access at any time.
         </Paragraph>
       </Stack>
@@ -68,7 +71,7 @@ export function AuthorizedAppsList() {
                     <Stack
                       width={64}
                       height={64}
-                      style={{ borderRadius: 8, overflow: 'hidden', backgroundColor: colors.gray[200] }}
+                      style={{ borderRadius: 8, overflow: 'hidden', backgroundColor: colors.bg[t].muted }}
                     >
                       <img
                         src={app.logo_url}
@@ -87,7 +90,7 @@ export function AuthorizedAppsList() {
                       {app?.description && (
                         <Paragraph
                           size="sm"
-                          color="$gray11"
+                          style={{ color: colors.text[t].secondary }}
                           data-testid="authorized-app-description"
                         >
                           {app.description}
@@ -96,7 +99,7 @@ export function AuthorizedAppsList() {
                       {app?.homepage_url && (
                         <Text
                           size="sm"
-                          color="$blue10"
+                          style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}
                           data-testid="authorized-app-homepage"
                         >
                           {app.homepage_url}
@@ -112,10 +115,10 @@ export function AuthorizedAppsList() {
                       <Stack gap={4}>
                         {consent.granted_scopes.map((scope) => (
                           <Row key={scope} gap={8} align="center">
-                            <Text size="sm" color="$gray11">
+                            <Text size="sm" style={{ color: colors.text[t].secondary }}>
                               •
                             </Text>
-                            <Text size="sm" color="$gray11">
+                            <Text size="sm" style={{ color: colors.text[t].secondary }}>
                               {scope}
                             </Text>
                           </Row>
@@ -125,12 +128,12 @@ export function AuthorizedAppsList() {
 
                     {/* Metadata */}
                     <Stack gap={4}>
-                      <Text size="sm" color="$gray11">
-                        Authorized on {grantedAt.toLocaleDateString()}
+                      <Text size="sm" style={{ color: colors.text[t].secondary }}>
+                        {`Authorized on ${grantedAt.toLocaleDateString()}`}
                       </Text>
                       {expiresAt && (
-                        <Text size="sm" color="$gray11">
-                          Expires on {expiresAt.toLocaleDateString()}
+                        <Text size="sm" style={{ color: colors.text[t].secondary }}>
+                          {`Expires on ${expiresAt.toLocaleDateString()}`}
                         </Text>
                       )}
                     </Stack>
@@ -153,7 +156,7 @@ export function AuthorizedAppsList() {
         <Card padding="xl" data-testid="no-authorized-apps">
           <Stack gap={12} align="center">
             <Text size="lg">No Authorized Apps</Text>
-            <Paragraph size="sm" color="$gray11" align="center">
+            <Paragraph size="sm" style={{ color: colors.text[t].secondary }} align="center">
               You haven't authorized any third-party applications to access your account yet.
             </Paragraph>
           </Stack>

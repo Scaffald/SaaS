@@ -1,4 +1,5 @@
-import { Text, Row, Stack } from '@scaffald/ui'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface ComparisonFieldProps {
   label: string
@@ -8,18 +9,20 @@ interface ComparisonFieldProps {
 }
 
 export function ComparisonField({ label, value, isDifferent, description }: ComparisonFieldProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   return (
     <Stack
-      backgroundColor={isDifferent ? '$yellow2' : 'transparent'}
+      backgroundColor={isDifferent ? colors.bg[t].muted : 'transparent'}
       padding="xs"
       borderRadius={8}
       gap={4}
     >
       <Row justify="space-between" align="center">
-        <Text color="$gray11">{label}</Text>
-        <Text color={isDifferent ? '$yellow11' : '$color12'}>{value}</Text>
+        <Text style={{ color: colors.text[t].secondary }}>{label}</Text>
+        <Text style={{ color: isDifferent ? colors.text[t].secondary : colors.text[t].primary }}>{value}</Text>
       </Row>
-      {description && <Text color="$gray11">{description}</Text>}
+      {description && <Text style={{ color: colors.text[t].secondary }}>{description}</Text>}
     </Stack>
   )
 }

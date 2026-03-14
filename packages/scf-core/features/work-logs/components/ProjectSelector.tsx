@@ -1,7 +1,8 @@
 import { ResponsiveSelect } from "@scaffald/ui";
 import { AlertCircle, RefreshCw } from "lucide-react-native";
 import { memo, useMemo } from "react";
-import { Button, Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { Button, Spinner, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
 export interface ProjectSelectorOrganization {
   id: string;
@@ -47,6 +48,9 @@ export const ProjectSelector = memo(function ProjectSelector({
   disabled = false,
   helperText,
 }: ProjectSelectorProps) {
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
+
   const filteredProjects = useMemo(() => {
     if (!organizationFilter) {
       return projects;
@@ -64,7 +68,7 @@ export const ProjectSelector = memo(function ProjectSelector({
 
       {hasMultipleOrganizations && (
         <Stack gap={4}>
-          <Text color="$gray11">Organization</Text>
+          <Text style={{ color: colors.text[t].secondary }}>Organization</Text>
           <ResponsiveSelect
             value={organizationFilter ?? "all"}
             onValueChange={(nextValue) => {
@@ -88,7 +92,7 @@ export const ProjectSelector = memo(function ProjectSelector({
       )}
 
       <Stack gap={4}>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[t].secondary }}>
           Select a project to associate with this work log.
         </Text>
         <ResponsiveSelect
@@ -115,15 +119,17 @@ export const ProjectSelector = memo(function ProjectSelector({
         <Row
           gap={8}
           align="center"
-          backgroundColor="$red3"
-          borderColor="$red6"
-          borderWidth={1}
           borderRadius={12}
           paddingHorizontal={12}
           paddingVertical={8}
+          style={{
+            backgroundColor: t === "dark" ? colors.error[900] : colors.error[50],
+            borderColor: colors.border[t].default,
+            borderWidth: 1,
+          }}
         >
-          <AlertCircle size="md" color="$red10" />
-          <Text style={{ flex: 1 }} color="$red10">
+          <AlertCircle size="md" color={t === "dark" ? colors.error[300] : colors.error[600]} />
+          <Text style={{ flex: 1, color: t === "dark" ? colors.error[300] : colors.error[600] }}>
             {error}
           </Text>
           {onRetry && (
@@ -138,10 +144,10 @@ export const ProjectSelector = memo(function ProjectSelector({
         </Row>
       )}
 
-      {helperText && <Text color="$gray11">{helperText}</Text>}
+      {helperText && <Text style={{ color: colors.text[t].secondary }}>{helperText}</Text>}
 
       {!isLoading && !error && filteredProjects.length === 0 && (
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[t].secondary }}>
           No projects available for the selected organization.
         </Text>
       )}

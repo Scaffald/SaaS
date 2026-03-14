@@ -1,7 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Input, Paragraph, Text, TextArea, Row, Stack } from "@scaffald/ui";
+import { Input, Paragraph, Text, TextArea, Row, Stack, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import { z } from "zod";
 import type { GeneralInfoStepData } from "../../hooks/useProfileWizard";
 import { StepNavigation } from "../StepNavigation";
@@ -33,6 +34,8 @@ export function GeneralInfoStep({
   onSkip,
   onStepStateChange,
 }: WizardStepComponentProps<"general">) {
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
   const {
     control,
     handleSubmit,
@@ -92,7 +95,7 @@ export function GeneralInfoStep({
     <Stack gap={16}>
       <Stack gap={8}>
         <Text>Tell us about yourself</Text>
-        <Paragraph color="$gray11">
+        <Paragraph style={{ color: colors.text[t].secondary }}>
           Add a friendly introduction. This helps employers quickly understand
           who you are and what you bring to the table.
         </Paragraph>
@@ -115,7 +118,7 @@ export function GeneralInfoStep({
             )}
           />
           {errors.firstName && (
-            <Text color="$red10">{errors.firstName.message}</Text>
+            <Text style={{ color: t === "dark" ? colors.error[300] : colors.error[600] }}>{errors.firstName.message}</Text>
           )}
         </Stack>
 
@@ -135,7 +138,7 @@ export function GeneralInfoStep({
             )}
           />
           {errors.lastName && (
-            <Text color="$red10">{errors.lastName.message}</Text>
+            <Text style={{ color: t === "dark" ? colors.error[300] : colors.error[600] }}>{errors.lastName.message}</Text>
           )}
         </Stack>
       </Row>
@@ -155,7 +158,7 @@ export function GeneralInfoStep({
           )}
         />
         {errors.headline && (
-          <Text color="$red10">{errors.headline.message}</Text>
+          <Text style={{ color: t === "dark" ? colors.error[300] : colors.error[600] }}>{errors.headline.message}</Text>
         )}
       </Stack>
 
@@ -174,8 +177,8 @@ export function GeneralInfoStep({
             />
           )}
         />
-        <Text color="$gray11">
-          Keep it short and friendly—1-2 sentences is perfect.
+        <Text style={{ color: colors.text[t].secondary }}>
+          Keep it short and friendly\u20141-2 sentences is perfect.
         </Text>
       </Stack>
 

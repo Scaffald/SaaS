@@ -2,7 +2,8 @@ import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useUserProfilePreview } from '@scf/core/utils/user-profiles-sdk-hooks'
 import { getStorageUrl } from '@scf/core/utils/supabase/storage'
 import { ExternalLink, MapPin, User, X } from 'lucide-react-native'
-import { useToast } from '@scaffald/ui'
+import { useThemeContext, useToast } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import { Avatar, Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
@@ -39,6 +40,8 @@ export function UserProfilePanel({
 }: UserProfilePanelProps) {
   const router = useRouter()
   const toast = useToast()
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light' as const
 
   // Fetch lightweight preview data
   const { data: preview, isLoading } = useUserProfilePreview(userId ?? undefined, {
@@ -116,12 +119,12 @@ export function UserProfilePanel({
 
             {/* Name and Title */}
             <Stack flex={1} gap={4}>
-              <Text color="$gray11">{preview.displayName}</Text>
-              {preview.headline && <Text color="$gray11">{preview.headline}</Text>}
+              <Text style={{ color: colors.text[t].secondary }}>{preview.displayName}</Text>
+              {preview.headline && <Text style={{ color: colors.text[t].secondary }}>{preview.headline}</Text>}
               {preview.location && (
                 <Row gap={4} align="center" marginTop={4}>
-                  <MapPin size="md" color="$gray11" />
-                  <Text color="$gray11">{preview.location}</Text>
+                  <MapPin size="md" color={colors.text[t].secondary} />
+                  <Text style={{ color: colors.text[t].secondary }}>{preview.location}</Text>
                 </Row>
               )}
             </Stack>
@@ -137,12 +140,11 @@ export function UserProfilePanel({
                 {topSkills.slice(0, 3).map((skill) => (
                   <Stack
                     key={skill.csiSkillId || skill.onetOccupationId || skill.taxonomy}
-                    backgroundColor="$color3"
+                    style={{ backgroundColor: colors.bg[t].muted, borderColor: colors.border[t].default }}
                     paddingHorizontal={8}
                     paddingVertical={4}
                     borderRadius={12}
                     borderWidth={1}
-                    borderColor="$borderColor"
                   >
                     <Text color="secondary">
                       Skill {skill.proficiency > 0 ? `(${skill.proficiency})` : ''}
@@ -151,12 +153,11 @@ export function UserProfilePanel({
                 ))}
                 {topSkills.length > 3 && (
                   <Stack
-                    backgroundColor="$color3"
+                    style={{ backgroundColor: colors.bg[t].muted, borderColor: colors.border[t].default }}
                     paddingHorizontal={8}
                     paddingVertical={4}
                     borderRadius={12}
                     borderWidth={1}
-                    borderColor="$borderColor"
                   >
                     <Text color="secondary">+{topSkills.length - 3} more</Text>
                   </Stack>

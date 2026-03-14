@@ -4,7 +4,8 @@ import {
 } from '@scf/core/utils/inquiries-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import type { InquirySectionName } from '@scf/schemas'
-import { Button, Input, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Input, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { MessageSquare, Send } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useMemo, useState } from 'react'
@@ -27,6 +28,8 @@ export function InquiryCommentThread({
   sectionName,
   comments,
 }: InquiryCommentThreadProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const toast = useToast()
   const { user: currentUser } = useUser()
   const [newComment, setNewComment] = useState('')
@@ -121,10 +124,16 @@ export function InquiryCommentThread({
                 key={comment.id}
                 gap={12}
                 padding="sm"
-                backgroundColor={isUnread ? '$blue2' : '$color2'}
                 borderRadius={12}
-                borderWidth={1}
-                borderColor={isUnread ? '$blue9' : '$borderColor'}
+                style={{
+                  backgroundColor: isUnread
+                    ? (t === 'dark' ? colors.blue[900] : colors.blue[50])
+                    : colors.bg[t].muted,
+                  borderWidth: 1,
+                  borderColor: isUnread
+                    ? (t === 'dark' ? colors.blue[300] : colors.blue[600])
+                    : colors.border[t].default,
+                }}
               >
                 <Avatar
                   size={32}
@@ -132,10 +141,10 @@ export function InquiryCommentThread({
                 />
                 <Stack flex={1} gap={4}>
                   <Row justify="space-between" align="center">
-                    <Text color="$gray11">{isFromCurrentUser ? 'You' : 'Organization'}</Text>
-                    <Text color="$gray11">{formatTimestamp(comment.created_at)}</Text>
+                    <Text style={{ color: colors.text[t].secondary }}>{isFromCurrentUser ? 'You' : 'Organization'}</Text>
+                    <Text style={{ color: colors.text[t].secondary }}>{formatTimestamp(comment.created_at)}</Text>
                   </Row>
-                  <Text color="$gray11">{comment.content}</Text>
+                  <Text style={{ color: colors.text[t].secondary }}>{comment.content}</Text>
                   {isUnread && (
                     <Stack style={{ marginTop: 4 }}>
                       <Button
@@ -156,10 +165,16 @@ export function InquiryCommentThread({
 
       {/* Unread Indicator */}
       {unreadComments.length > 0 && (
-        <Row align="center" gap={8} padding="xs" backgroundColor="$blue2" borderRadius={12}>
-          <MessageSquare size="md" color="$blue10" />
-          <Text color="$blue11">
-            {unreadComments.length} new comment{unreadComments.length > 1 ? 's' : ''}
+        <Row
+          align="center"
+          gap={8}
+          padding="xs"
+          borderRadius={12}
+          style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50] }}
+        >
+          <MessageSquare size="md" color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
+          <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>
+            {`${unreadComments.length} new comment${unreadComments.length > 1 ? 's' : ''}`}
           </Text>
         </Row>
       )}

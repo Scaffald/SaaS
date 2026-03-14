@@ -1,4 +1,5 @@
-import { Text, Stack, Row, Avatar } from '@scaffald/ui'
+import { Text, Stack, Row, Avatar, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { Pressable } from 'react-native'
 import { StarRating } from './StarRating'
 import type { CommunityPost } from '@scaffald/sdk/resources/community-posts'
@@ -9,6 +10,9 @@ interface Props {
 }
 
 export function PostCard({ post, onPress }: Props) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   return (
     <Pressable onPress={onPress}>
       <Stack
@@ -17,7 +21,7 @@ export function PostCard({ post, onPress }: Props) {
           padding: 16,
           borderRadius: 12,
           borderWidth: 1,
-          borderColor: '#e5e5e5',
+          borderColor: colors.border[t].default,
         }}
       >
         {/* Author row */}
@@ -37,15 +41,15 @@ export function PostCard({ post, onPress }: Props) {
               borderRadius: 4,
               backgroundColor:
                 post.post_type === 'showcase'
-                  ? '#dbeafe'
+                  ? (t === 'dark' ? colors.blue[900] : colors.blue[100])
                   : post.post_type === 'critique'
-                    ? '#fef3c7'
-                    : '#f3f4f6',
+                    ? (t === 'dark' ? colors.amber[900] : colors.amber[100])
+                    : colors.bg[t].muted,
             }}
           >
             <Text style={{ fontSize: 11, fontWeight: '500' }}>{post.post_type}</Text>
           </Stack>
-          <Text color="$gray11" style={{ fontSize: 12, marginLeft: 'auto' }}>
+          <Text style={{ color: colors.text[t].secondary, fontSize: 12, marginLeft: 'auto' }}>
             {new Date(post.created_at).toLocaleDateString()}
           </Text>
         </Row>
@@ -54,7 +58,7 @@ export function PostCard({ post, onPress }: Props) {
         <Text style={{ fontWeight: '600', fontSize: 16 }}>{post.title}</Text>
 
         {/* Body preview */}
-        <Text color="$gray11" numberOfLines={2}>
+        <Text numberOfLines={2} style={{ color: colors.text[t].secondary }}>
           {post.body}
         </Text>
 
@@ -65,11 +69,11 @@ export function PostCard({ post, onPress }: Props) {
               height: 180,
               borderRadius: 8,
               overflow: 'hidden',
-              backgroundColor: '#f5f5f5',
+              backgroundColor: colors.bg[t].muted,
             }}
           >
             {/* Image would render here */}
-            <Text color="$gray11" style={{ padding: 8, fontSize: 12 }}>
+            <Text style={{ color: colors.text[t].secondary, padding: 8, fontSize: 12 }}>
               {post.media_thumbnails.length} media
             </Text>
           </Stack>
@@ -77,16 +81,16 @@ export function PostCard({ post, onPress }: Props) {
 
         {/* Stats row */}
         <Row align="center" gap={16}>
-          <Text color="$gray11" style={{ fontSize: 13 }}>
+          <Text style={{ color: colors.text[t].secondary, fontSize: 13 }}>
             {post.upvote_count} upvotes
           </Text>
-          <Text color="$gray11" style={{ fontSize: 13 }}>
+          <Text style={{ color: colors.text[t].secondary, fontSize: 13 }}>
             {post.comment_count} comments
           </Text>
           {post.rating_count > 0 && (
             <Row align="center" gap={4}>
               <StarRating value={post.rating_avg ?? 0} readonly size={14} />
-              <Text color="$gray11" style={{ fontSize: 13 }}>
+              <Text style={{ color: colors.text[t].secondary, fontSize: 13 }}>
                 ({post.rating_count})
               </Text>
             </Row>
@@ -98,10 +102,10 @@ export function PostCard({ post, onPress }: Props) {
                 paddingHorizontal: 8,
                 paddingVertical: 2,
                 borderRadius: 4,
-                backgroundColor: '#dcfce7',
+                backgroundColor: t === 'dark' ? colors.green[900] : colors.green[100],
               }}
             >
-              <Text style={{ fontSize: 11, fontWeight: '500', color: '#16a34a' }}>Published</Text>
+              <Text style={{ fontSize: 11, fontWeight: '500', color: t === 'dark' ? colors.green[300] : colors.green[600] }}>Published</Text>
             </Stack>
           )}
         </Row>

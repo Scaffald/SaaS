@@ -1,4 +1,5 @@
-import { ScrollView, Text, Row, Stack } from '@scaffald/ui'
+import { ScrollView, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 import type { ResolvedWorkLogPhoto, WorkLogPhotoType } from '../types/photos'
 import { PhotoCard } from './PhotoCard'
@@ -20,19 +21,22 @@ export function PhotoGallery({
   onToggleVisibility,
   onDelete,
 }: PhotoGalleryProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   if (!photos.length) {
     return (
       <Stack
         borderWidth={1}
-        borderColor="$borderColor"
+        borderColor={colors.border[t].default}
         borderRadius={16}
         paddingHorizontal={16}
         paddingVertical={20}
-        backgroundColor="$color2"
+        backgroundColor={colors.bg[t].muted}
         gap={8}
       >
         <Text>Photo Gallery</Text>
-        <Text color="$gray11">No photos have been uploaded yet.</Text>
+        <Text style={{ color: colors.text[t].secondary }}>No photos have been uploaded yet.</Text>
       </Stack>
     )
   }

@@ -282,7 +282,11 @@ function TeamBadge({ name, isPrimary }: { name: string; isPrimary: boolean }) {
       ? colors.blue[300]
       : colors.blue[700]
     : colors.border[theme].default;
-  const textColor = isPrimary ? "$blue11" : colors.text[theme].secondary;
+  const textColor = isPrimary
+    ? theme === "light"
+      ? colors.blue[700]
+      : colors.blue[300]
+    : colors.text[theme].secondary;
 
   return (
     <Row

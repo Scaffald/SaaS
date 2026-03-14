@@ -3,7 +3,8 @@ import { useDebounce } from '@scf/core/utils/useDebounce'
 import type { OfficeUser } from '@scaffald/sdk'
 import { useEffect, useState } from 'react'
 import { Pressable } from 'react-native'
-import { Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Input, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 export interface UserSearchProps {
   value?: string // user ID
@@ -43,6 +44,8 @@ export function UserSearch({
   error,
   disabled = false,
 }: UserSearchProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedUserName, setSelectedUserName] = useState('')
   const [showResults, setShowResults] = useState(false)
@@ -228,7 +231,7 @@ export function UserSearch({
         </Stack>
       )}
 
-      {error && <Text color="$red10">{error}</Text>}
+      {error && <Text style={{ color: colors.fg[t].error }}>{error}</Text>}
     </Stack>
   )
 }

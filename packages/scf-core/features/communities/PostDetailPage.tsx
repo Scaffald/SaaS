@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { ScrollView } from 'react-native'
-import { Text, Stack, Row, Button, Spinner, Separator, Avatar, Input } from '@scaffald/ui'
+import { Text, Stack, Row, Button, Spinner, Separator, Avatar, Input, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   usePost,
@@ -20,6 +21,8 @@ interface Props {
 }
 
 export function PostDetailPage({ postId }: Props) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const queryClient = useQueryClient()
   const [commentBody, setCommentBody] = useState('')
 
@@ -75,12 +78,12 @@ export function PostDetailPage({ postId }: Props) {
             />
             <Stack>
               <Text style={{ fontWeight: '600' }}>{post.author?.display_name || 'Anonymous'}</Text>
-              <Text color="$gray11" style={{ fontSize: 12 }}>
+              <Text style={{ color: colors.text[t].secondary, fontSize: 12 }}>
                 {new Date(post.created_at).toLocaleDateString()}
               </Text>
             </Stack>
             <Stack style={{ marginLeft: 'auto' }}>
-              <Text color="$gray11" style={{ fontSize: 12, textTransform: 'capitalize' }}>
+              <Text style={{ color: colors.text[t].secondary, fontSize: 12, textTransform: 'capitalize' }}>
                 {post.post_type}
               </Text>
             </Stack>
@@ -99,11 +102,11 @@ export function PostDetailPage({ postId }: Props) {
                     height: 300,
                     borderRadius: 12,
                     overflow: 'hidden',
-                    backgroundColor: '#f0f0f0',
+                    backgroundColor: colors.bg[t].muted,
                   }}
                 >
                   {/* Image component would go here - using placeholder for cross-platform */}
-                  <Text color="$gray11" style={{ padding: 8 }}>
+                  <Text style={{ color: colors.text[t].secondary, padding: 8 }}>
                     Media {i + 1}
                   </Text>
                 </Stack>
@@ -120,11 +123,11 @@ export function PostDetailPage({ postId }: Props) {
             count={post.upvote_count}
             hasUpvoted={post.has_upvoted ?? false}
           />
-          <Text color="$gray11">{post.comment_count} comments</Text>
+          <Text style={{ color: colors.text[t].secondary }}>{post.comment_count} comments</Text>
           {summary && summary.rating_count > 0 && (
             <Row align="center" gap={4}>
               <StarRating value={summary.rating_avg ?? 0} readonly size={16} />
-              <Text color="$gray11">({summary.rating_count})</Text>
+              <Text style={{ color: colors.text[t].secondary }}>({summary.rating_count})</Text>
             </Row>
           )}
           <Stack style={{ marginLeft: 'auto' }}>
@@ -179,7 +182,7 @@ export function PostDetailPage({ postId }: Props) {
             </Stack>
           ) : comments.length === 0 ? (
             <Stack align="center" style={{ paddingVertical: 24 }}>
-              <Text color="$gray11">No comments yet. Be the first!</Text>
+              <Text style={{ color: colors.text[t].secondary }}>No comments yet. Be the first!</Text>
             </Stack>
           ) : (
             <CommentThread comments={comments} postId={postId} />

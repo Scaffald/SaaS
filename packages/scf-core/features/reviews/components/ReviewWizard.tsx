@@ -7,7 +7,8 @@ import {
 import { useTrackEngagementMutation } from "@scf/core/utils/engagement-sdk-hooks";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { Button, Card, Text, Row, Stack } from "@scaffald/ui";
+import { Button, Card, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import { useReviewAutoSave } from "../hooks/useReviewAutoSave";
 import { useReviewDraft } from "../hooks/useReviewDraft";
 import { ReviewProgress } from "./ReviewProgress";
@@ -46,6 +47,8 @@ export function ReviewWizard({
   onCancel,
   onComplete,
 }: ReviewWizardProps) {
+  const { theme } = useThemeContext();
+  const t = theme === 'dark' ? 'dark' : 'light';
   const totalSteps = 8;
   const [reviewId, setReviewId] = useState<string | null>(null);
   const [isCreatingDraft, setIsCreatingDraft] = useState(false);
@@ -202,7 +205,7 @@ export function ReviewWizard({
           justify="center"
           align="center"
         >
-          <Text color="$gray11">Preparing review form...</Text>
+          <Text style={{ color: colors.text[t].secondary }}>Preparing review form...</Text>
         </Stack>
       </Card>
     );
@@ -215,10 +218,10 @@ export function ReviewWizard({
         currentStep={reviewDraft.currentStep}
         totalSteps={totalSteps}
       />
-      <Text color="$gray11">Reviewing {subjectName}</Text>
+      <Text style={{ color: colors.text[t].secondary }}>Reviewing {subjectName}</Text>
 
       {/* Step Content */}
-      <Card backgroundColor="$color2" bordered>
+      <Card backgroundColor={colors.bg[t].muted} bordered>
         <Stack padding="lg" minHeight={400} gap={16}>
           {/* Step 1: Technical Skills Rating */}
           {reviewDraft.currentStep === 1 && (
@@ -342,7 +345,7 @@ export function ReviewWizard({
 
       {/* Auto-save Indicator */}
       <Row justify="center">
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[t].secondary }}>
           {reviewDraft.hasUnsavedChanges
             ? "💾 Saving..."
             : "✓ All changes saved"}

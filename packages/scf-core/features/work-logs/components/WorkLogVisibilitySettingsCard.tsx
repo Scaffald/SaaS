@@ -18,6 +18,7 @@ import {
   Stack,
   useThemeContext,
 } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import type { WorkLogListItem } from "@scaffald/sdk";
 import { getStatusColor, getStatusLabel } from "../utils/status-formatting";
 
@@ -26,6 +27,7 @@ export function WorkLogVisibilitySettingsCard() {
   const toast = useToast();
   const queryClient = useQueryClient();
   const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
 
   const listQuery = useWorkLogs(
     {
@@ -58,7 +60,7 @@ export function WorkLogVisibilitySettingsCard() {
     <DashboardWidget>
       <Stack gap={12}>
         <Text>Work log profile visibility</Text>
-        <Paragraph color="$gray11">
+        <Paragraph style={{ color: colors.text[t].secondary }}>
           Choose which verified work logs appear on your public profile. Manage
           individual entries and jump directly to the detailed view for more
           options.
@@ -67,10 +69,10 @@ export function WorkLogVisibilitySettingsCard() {
         {listQuery.isLoading ? (
           <Row gap={8} align="center">
             <Spinner size="sm" />
-            <Text color="$gray11">Loading work logs…</Text>
+            <Text style={{ color: colors.text[t].secondary }}>Loading work logs…</Text>
           </Row>
         ) : items.length === 0 ? (
-          <Paragraph color="$gray11">
+          <Paragraph style={{ color: colors.text[t].secondary }}>
             Create and verify a work log to manage its public visibility.
           </Paragraph>
         ) : (
@@ -81,18 +83,20 @@ export function WorkLogVisibilitySettingsCard() {
               return (
                 <Stack
                   key={item.id}
-                  borderWidth={1}
-                  borderColor="$color6"
                   borderRadius={16}
                   paddingHorizontal={12}
                   paddingVertical={12}
                   gap={12}
-                  backgroundColor="$color2"
+                  style={{
+                    borderWidth: 1,
+                    borderColor: colors.border[t].default,
+                    backgroundColor: colors.bg[t].muted,
+                  }}
                 >
                   <Row justify="space-between" align="center">
                     <Stack gap={4} flex={1}>
                       <Text>{"Work Log"}</Text>
-                      <Text color="$gray11">
+                      <Text style={{ color: colors.text[t].secondary }}>
                         {item.log_date
                           ? formatDate(item.log_date)
                           : "Date not recorded"}
@@ -106,7 +110,7 @@ export function WorkLogVisibilitySettingsCard() {
                   <Row justify="space-between" align="center" gap={16}>
                     <Stack gap={4} flex={1}>
                       <Text>Show on public profile</Text>
-                      <Paragraph color="$gray11">
+                      <Paragraph style={{ color: colors.text[t].secondary }}>
                         Only verified logs can be shown publicly. Disable to
                         hide this entry.
                       </Paragraph>
@@ -136,7 +140,7 @@ export function WorkLogVisibilitySettingsCard() {
                   <Row justify="space-between" align="center" gap={16}>
                     <Stack gap={4} flex={1}>
                       <Text>Show date on profile</Text>
-                      <Paragraph color="$gray11">
+                      <Paragraph style={{ color: colors.text[t].secondary }}>
                         Display the logged date alongside this entry on your
                         public profile.
                       </Paragraph>

@@ -16,7 +16,9 @@ import {
   Text,
   Row,
   Stack,
+  useThemeContext,
 } from "@scaffald/ui";
+import { colors } from '@scaffald/ui/tokens'
 import {
   useOrganizationSettings,
   useOrganizationStorageUsage,
@@ -144,6 +146,8 @@ type OrganizationSettingsPanelProps = {
 export function OrganizationSettingsPanel({
   organizationId,
 }: OrganizationSettingsPanelProps) {
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
   const { data: settings, isLoading } = useOrganizationSettings(organizationId);
   const usage = useOrganizationStorageUsage(organizationId);
   const updateMutation = useUpdateOrganizationSettings();
@@ -184,7 +188,7 @@ export function OrganizationSettingsPanel({
         <Row justify="space-between" align="center">
           <H4>Organization Settings</H4>
           {usage.data ? (
-            <Text color="$gray11">
+            <Text style={{ color: colors.text[t].secondary }}>
               {(usage.data.percentUsed ?? 0).toFixed(1)}% storage used (
               {usage.data.documentCount} docs)
             </Text>

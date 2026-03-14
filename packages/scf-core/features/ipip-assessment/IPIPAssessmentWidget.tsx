@@ -17,6 +17,7 @@ import { DOMAIN_NAMES, DOMAIN_ORDER, getCompletedDomainsCount } from './utils/do
  */
 export function IPIPAssessmentWidget() {
   const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const router = useRouter()
 
   const { data: statusData, isLoading } = useIPIPStatus()
@@ -73,10 +74,10 @@ export function IPIPAssessmentWidget() {
           <Stack
             gap={8}
             padding="sm"
-            backgroundColor="$color2"
+            style={{ backgroundColor: colors.bg[t].muted }}
             borderRadius={12}
             borderWidth={1}
-            borderColor="$borderColor"
+            borderColor={colors.border[t].default}
           >
             <Row justify="space-between" align="center">
               <Stack gap={4} flex={1}>

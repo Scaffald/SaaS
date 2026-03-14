@@ -3,7 +3,8 @@ import type {
   IPIPResultFacets,
 } from '@scf/core/features/personality-assessment/lib/ipip'
 import { memo } from 'react'
-import { Text, Row, Stack } from '@scaffald/ui'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 export interface FacetListProps {
   facets: Record<string, IPIPFacetScore>
@@ -14,6 +15,9 @@ export interface FacetListProps {
  * FacetList - Displays 6 facets for a domain with scores and narratives
  */
 export const FacetList = memo(function FacetList({ facets, facetNarratives }: FacetListProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   const facetKeys = Object.keys(facets).sort()
 
   return (
@@ -32,26 +36,29 @@ export const FacetList = memo(function FacetList({ facets, facetNarratives }: Fa
             key={facetKey}
             gap={8}
             padding="sm"
-            backgroundColor="$color2"
+            style={{
+              backgroundColor: colors.bg[t].muted,
+              borderWidth: 1,
+              borderColor: colors.border[t].default,
+            }}
             borderRadius={12}
-            borderWidth={1}
-            borderColor="$borderColor"
           >
             <Row justify="space-between" align="center">
-              <Text color="$gray11">{facetNarrative.title || facetKey}</Text>
+              <Text style={{ color: colors.text[t].secondary }}>{facetNarrative.title || facetKey}</Text>
               <Text
-                color={
-                  facetScore.result === 'high'
-                    ? '$green10'
-                    : facetScore.result === 'low'
-                      ? '$blue10'
-                      : '$gray10'
-                }
+                style={{
+                  color:
+                    facetScore.result === 'high'
+                      ? t === 'dark' ? colors.green[300] : colors.green[600]
+                      : facetScore.result === 'low'
+                        ? t === 'dark' ? colors.blue[300] : colors.blue[600]
+                        : colors.text[t].secondary,
+                }}
               >
                 {facetScore.result.toUpperCase()}
               </Text>
             </Row>
-            {facetNarrative.text && <Text color="$gray11">{facetNarrative.text}</Text>}
+            {facetNarrative.text && <Text style={{ color: colors.text[t].secondary }}>{facetNarrative.text}</Text>}
           </Stack>
         )
       })}

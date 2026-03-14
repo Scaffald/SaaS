@@ -1,5 +1,6 @@
 import { X } from 'lucide-react-native'
-import { Button, Text, Row } from '@scaffald/ui'
+import { Button, Text, Row, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface CertificationChipProps {
   certification: {
@@ -19,11 +20,14 @@ export function CertificationChip({
   onRemove,
   disabled = false,
 }: CertificationChipProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   return (
     <Row
       style={{
-        backgroundColor: '#dbeafe',
-        borderColor: '#60a5fa',
+        backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[100],
+        borderColor: t === 'dark' ? colors.blue[500] : colors.blue[400],
         borderWidth: 1,
         borderRadius: 8,
         paddingHorizontal: 12,
@@ -32,7 +36,7 @@ export function CertificationChip({
         alignItems: 'center',
       }}
     >
-      <Text color="$blue11">{certification.title}</Text>
+      <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[700] }}>{certification.title}</Text>
       <Button
         size="sm"
         variant="text"

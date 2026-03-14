@@ -1,6 +1,7 @@
 import { Star } from 'lucide-react-native'
 import { Pressable } from 'react-native'
-import { Text, Row, Stack } from '@scaffald/ui'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface StarRatingProps {
   label: string
@@ -10,9 +11,11 @@ interface StarRatingProps {
 }
 
 export function StarRating({ label, value, onChange, readonly = false }: StarRatingProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   return (
     <Stack gap={8}>
-      <Text color="$gray11">{label}</Text>
+      <Text style={{ color: colors.text[t].secondary }}>{label}</Text>
       <Row gap={8} align="center">
         {[1, 2, 3, 4, 5].map((star) => (
           <Pressable
@@ -20,7 +23,7 @@ export function StarRating({ label, value, onChange, readonly = false }: StarRat
             onPress={readonly ? undefined : () => onChange(star)}
             disabled={readonly}
           >
-            <Star size={32} color="$yellow10" fill={star <= value ? '$yellow10' : 'transparent'} />
+            <Star size={32} color={colors.yellow[500]} fill={star <= value ? colors.yellow[500] : 'transparent'} />
           </Pressable>
         ))}
         <Text style={{ color: '#414e62', marginLeft: 8 }}>

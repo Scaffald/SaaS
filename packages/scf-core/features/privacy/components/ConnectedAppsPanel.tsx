@@ -6,7 +6,8 @@
  * with options to view permissions and revoke access
  */
 
-import { Text, Row, Stack, Button } from "@scaffald/ui";
+import { Text, Row, Stack, Button, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
 /**
  * Connected app structure
@@ -147,13 +148,15 @@ function AppCard({
   onRevoke?: (appId: string) => void;
   onViewDetails?: (appId: string) => void;
 }) {
+  const { theme } = useThemeContext();
+  const t = theme === 'dark' ? 'dark' : 'light';
   return (
     <Stack
       padding="md"
-      backgroundColor="$color2"
+      backgroundColor={colors.bg[t].muted}
       borderRadius={12}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[t].default}
       gap={12}
     >
       {/* App header */}
@@ -234,13 +237,15 @@ function AppCard({
  * Empty state component
  */
 function EmptyState() {
+  const { theme } = useThemeContext();
+  const t = theme === 'dark' ? 'dark' : 'light';
   return (
     <Stack
       padding="xl"
-      backgroundColor="$color2"
+      backgroundColor={colors.bg[t].muted}
       borderRadius={12}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[t].default}
       align="center"
       gap={8}
     >

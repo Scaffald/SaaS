@@ -367,13 +367,13 @@ export const SoftSkillsRatingForm: FC = () => {
             width={80}
             height={80}
             borderRadius={12}
-            backgroundColor="$green2"
+            backgroundColor={theme === 'light' ? colors.success[50] : colors.success[900]}
             borderWidth={2}
-            borderColor="$green9"
+            borderColor={colors.success[500]}
             align="center"
             justify="center"
           >
-            <CheckCircle2 size={48} color="$green10" />
+            <CheckCircle2 size={48} color={colors.success[500]} />
           </Stack>
 
           <Stack gap={8} align="center">

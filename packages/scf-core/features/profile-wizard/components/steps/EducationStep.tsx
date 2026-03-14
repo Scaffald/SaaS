@@ -3,7 +3,8 @@ import { MonthYearPicker } from "../../../profile/components/MonthYearPicker";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Input, Paragraph, Text, Row, Stack } from "@scaffald/ui";
+import { Input, Paragraph, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
+import { colors } from '@scaffald/ui/tokens'
 import { z } from "zod";
 import type { EducationStepData } from "../../hooks/useProfileWizard";
 import { StepNavigation } from "../StepNavigation";
@@ -37,6 +38,9 @@ export function EducationStep({
   onSkip,
   onStepStateChange,
 }: WizardStepComponentProps<"education">) {
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
+
   const {
     control,
     handleSubmit,
@@ -87,7 +91,7 @@ export function EducationStep({
     <Stack gap={16}>
       <Stack gap={8}>
         <Text>Highest education</Text>
-        <Paragraph color="$gray11">
+        <Paragraph style={{ color: colors.text[t].secondary }}>
           Add your latest degree or training program. This section is optional
           but strengthens your profile.
         </Paragraph>

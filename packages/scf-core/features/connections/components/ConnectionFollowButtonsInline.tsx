@@ -11,7 +11,8 @@ import {
 import { CheckCircle2, Loader2, UserCheck, UserMinus, UserPlus, X } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useMemo } from 'react'
-import { Button, Text, Row } from '@scaffald/ui'
+import { Button, Text, Row, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useQueryClient } from '@tanstack/react-query'
 
 type SizeToken = '$3' | '$4' | '$5'
@@ -33,6 +34,8 @@ export function ConnectionFollowButtonsInline({
   isOwnProfile = false,
   size = '$4',
 }: ConnectionFollowButtonsInlineProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const toast = useToast()
   const queryClient = useQueryClient()
   const buttonSize = SIZE_TO_BUTTON[size ?? '$4']
@@ -242,8 +245,8 @@ export function ConnectionFollowButtonsInline({
   if (isLoading) {
     return (
       <Row gap={8} align="center">
-        <Loader2 size="md" color="$gray11" />
-        <Text color="$gray11">Loading...</Text>
+        <Loader2 size="md" color={colors.text[t].secondary} />
+        <Text style={{ color: colors.text[t].secondary }}>Loading...</Text>
       </Row>
     )
   }

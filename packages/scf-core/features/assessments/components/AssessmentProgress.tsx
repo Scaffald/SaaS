@@ -42,7 +42,7 @@ export function AssessmentProgress({
       <Stack gap={20} width="100%">
         {completionScore !== undefined && (
           <Stack gap={8}>
-            <Text color="$gray11">Progress</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Progress</Text>
             <Stack gap={4}>
               <AssessmentProgressBar value={completionScore} height={8} />
               <Text style={{ color: colors.primary[500], textAlign: 'right' }}>
@@ -106,7 +106,7 @@ export function AssessmentProgress({
                 </Stack>
 
                 <Stack gap={4} flex={1}>
-                  <Text color={isCurrent ? '$color12' : '$color11'}>{step.label}</Text>
+                  <Text style={{ color: isCurrent ? colors.text[theme].primary : colors.text[theme].secondary }}>{step.label}</Text>
                   <Text style={{ color: statusColor }}>{statusLabel}</Text>
                 </Stack>
               </Row>
@@ -123,7 +123,7 @@ export function AssessmentProgress({
       {completionScore !== undefined && (
         <Stack gap={8}>
           <Row justify="space-between" align="center">
-            <Text color="$gray11">Progress</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Progress</Text>
             <Text style={{ color: colors.primary[500] }}>{completionScore}%</Text>
           </Row>
           <AssessmentProgressBar value={completionScore} height={8} />
@@ -163,7 +163,7 @@ export function AssessmentProgress({
                   <Text color={isCurrent ? 'white' : inactiveText}>{index + 1}</Text>
                 )}
               </Stack>
-              <Text color={isCurrent ? '$color12' : '$color11'}>{step.label}</Text>
+              <Text style={{ color: isCurrent ? colors.text[theme].primary : colors.text[theme].secondary }}>{step.label}</Text>
             </Row>
           )
         })}

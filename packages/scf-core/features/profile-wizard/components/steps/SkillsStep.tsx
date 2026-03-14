@@ -22,7 +22,9 @@ import {
   Text,
   Row,
   Stack,
+  useThemeContext,
 } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import type { SkillEntry, SkillsStepData } from "../../hooks/useProfileWizard";
 import { StepNavigation } from "../StepNavigation";
 import type { WizardStepComponentProps } from "./types";
@@ -47,6 +49,9 @@ export function SkillsStep({
   onSkip,
   onStepStateChange,
 }: WizardStepComponentProps<"skills">) {
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
+
   const [skills, setSkills] = useState<SkillEntry[]>(initialData?.skills ?? []);
   const searchResultsRef = useRef<
     Map<string, ParentSkill & { taxonomy: SkillEntry["taxonomy"] }>
@@ -204,7 +209,7 @@ export function SkillsStep({
     <Stack gap={16}>
       <Stack gap={8}>
         <Text>Spotlight your strengths</Text>
-        <Paragraph color="$gray11">
+        <Paragraph style={{ color: colors.text[t].secondary }}>
           Add 3-5 core skills that best represent your expertise. Recruiters use
           these to match you with opportunities.
         </Paragraph>
@@ -215,9 +220,9 @@ export function SkillsStep({
           Selected Skills ({skills.length}/{MAX_SKILLS})
         </Text>
         {skills.length === 0 ? (
-          <Card bordered backgroundColor="$color2">
+          <Card bordered style={{ backgroundColor: colors.bg[t].muted }}>
             <CardHeader>
-              <Paragraph color="$gray11">
+              <Paragraph style={{ color: colors.text[t].secondary }}>
                 Start by selecting your signature skills. We recommend adding at
                 least three.
               </Paragraph>
@@ -226,13 +231,13 @@ export function SkillsStep({
         ) : (
           <Stack gap={8}>
             {skills.map((skill) => (
-              <Card key={skill.id} bordered backgroundColor="$color2">
+              <Card key={skill.id} bordered style={{ backgroundColor: colors.bg[t].muted }}>
                 <CardHeader>
                   <Stack gap={8}>
                     <Row justify="space-between" align="center">
                       <Stack gap={4}>
                         <Text>{skill.name}</Text>
-                        <Text color="$gray11">
+                        <Text style={{ color: colors.text[t].secondary }}>
                           {skill.taxonomy.toUpperCase()} • Proficiency{" "}
                           {skill.proficiency}/5
                         </Text>
@@ -252,7 +257,7 @@ export function SkillsStep({
             ))}
           </Stack>
         )}
-        <Paragraph id={guidanceId} color="$gray11" aria-live="polite">
+        <Paragraph id={guidanceId} style={{ color: colors.text[t].secondary }} aria-live="polite">
           {guidance}
         </Paragraph>
       </Stack>
@@ -265,7 +270,7 @@ export function SkillsStep({
           isSearching={searchParentSkillsMutation.isPending}
         />
         {skills.length >= MAX_SKILLS && (
-          <Paragraph color="$gray11" aria-live="polite">
+          <Paragraph style={{ color: colors.text[t].secondary }} aria-live="polite">
             You&apos;ve reached the maximum of {MAX_SKILLS} skills for the quick
             wizard. You can add more later from your full profile.
           </Paragraph>

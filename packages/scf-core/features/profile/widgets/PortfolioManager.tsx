@@ -26,7 +26,8 @@ import type { JSONContent } from "@tiptap/core";
 import { useCallback, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Image } from "react-native";
-import { H4, Input, Text, Row, Stack } from "@scaffald/ui";
+import { H4, Input, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import {
   ProfileFormPanel,
   ProfileResultCard,
@@ -180,6 +181,8 @@ const parsePortfolioItems = (data: unknown): PortfolioItem[] => {
  * @param variant - Display variant (always 'full' for manager)
  */
 export function PortfolioManager({ userId }: ProfileWidgetProps) {
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
   const toast = useToast();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
@@ -438,7 +441,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
 
         {!isEditing ? (
           <Stack gap={12}>
-            <Text color="$gray11">
+            <Text style={{ color: colors.text[t].secondary }}>
               Add projects, work samples, or achievements to showcase your
               skills and experience.
             </Text>
@@ -590,7 +593,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                   <Stack gap={8}>
                     <Text>{item.title}</Text>
                     {item.description && (
-                      <Text color="$gray11">
+                      <Text style={{ color: colors.text[t].secondary }}>
                         {getDescriptionPreview(item.description)}
                       </Text>
                     )}

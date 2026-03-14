@@ -1,7 +1,8 @@
 import { X } from 'lucide-react-native'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Pressable } from 'react-native'
-import { Button, Card, Input, ScrollView, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Card, Input, ScrollView, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import type { ParentSkill } from '../../types/profile-skills-types'
 
 // Local debounce hook to avoid dependency issues
@@ -44,6 +45,8 @@ export function SimpleSkillAutocomplete({
   placeholder = 'Search for a skill...',
   existingSkillIds = [],
 }: SimpleSkillAutocompleteProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [results, setResults] = useState<ParentSkill[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const debouncedValue = useDebounceValue(value, 300)
@@ -146,7 +149,7 @@ export function SimpleSkillAutocomplete({
               {isLoading || isSearching ? (
                 <Stack padding="md" align="center" justify="center">
                   <Spinner size="sm" />
-                  <Text color="$gray11" style={{ marginTop: 8 }}>
+                  <Text style={{ color: colors.text[t].secondary, marginTop: 8 }}>
                     Searching...
                   </Text>
                 </Stack>
@@ -157,7 +160,7 @@ export function SimpleSkillAutocomplete({
                     <Pressable
                       key={skill.id}
                       onPress={() => handleSelect(skill)}
-                      style={{ opacity: isExisting ? 0.6 : 1, borderBottomWidth: 1, borderBottomColor: '$borderColor' }}
+                      style={{ opacity: isExisting ? 0.6 : 1, borderBottomWidth: 1, borderBottomColor: colors.border[t].default }}
                     >
                     <Stack
                       padding="sm"
@@ -165,9 +168,9 @@ export function SimpleSkillAutocomplete({
                       <Row justify="space-between" align="center">
                         <Stack flex={1}>
                           <Text>{skill.name}</Text>
-                          {skill.code && <Text color="$gray11">{skill.code}</Text>}
+                          {skill.code && <Text style={{ color: colors.text[t].secondary }}>{skill.code}</Text>}
                         </Stack>
-                        {isExisting && <Text color="$blue9">Added</Text>}
+                        {isExisting && <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>Added</Text>}
                       </Row>
                     </Stack>
                     </Pressable>
@@ -175,7 +178,7 @@ export function SimpleSkillAutocomplete({
                 })
               ) : (
                 <Stack padding="md" align="center">
-                  <Text color="$gray11">No skills found</Text>
+                  <Text style={{ color: colors.text[t].secondary }}>No skills found</Text>
                 </Stack>
               )}
             </Stack>

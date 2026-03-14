@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Pressable } from 'react-native'
-import { Text, Stack, Row, Input, Avatar, Button, Spinner } from '@scaffald/ui'
+import { Text, Stack, Row, Input, Avatar, Button, Spinner, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import type { Href } from 'expo-router'
 import { RouteBuilder } from '@scf/core/constants/routes'
@@ -9,6 +10,8 @@ import { useQueryClient } from '@tanstack/react-query'
 import type { Community } from '@scaffald/sdk/resources/communities'
 
 export function AllCommunitiesList() {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [searchTerm, setSearchTerm] = useState('')
   const router = useRouter()
   const queryClient = useQueryClient()
@@ -45,7 +48,7 @@ export function AllCommunitiesList() {
 
       {filtered.length === 0 ? (
         <Stack align="center" style={{ paddingVertical: 40 }}>
-          <Text color="$gray11">No communities found</Text>
+          <Text style={{ color: colors.text[t].secondary }}>No communities found</Text>
         </Stack>
       ) : (
         <Stack gap={8}>
@@ -72,15 +75,15 @@ export function AllCommunitiesList() {
               <Stack style={{ flex: 1 }} gap={4}>
                 <Text style={{ fontWeight: '600', fontSize: 16 }}>{community.name}</Text>
                 {community.description && (
-                  <Text color="$gray11" numberOfLines={2}>
+                  <Text style={{ color: colors.text[t].secondary }} numberOfLines={2}>
                     {community.description}
                   </Text>
                 )}
                 <Row gap={12}>
-                  <Text color="$gray11" style={{ fontSize: 12 }}>
+                  <Text style={{ color: colors.text[t].secondary, fontSize: 12 }}>
                     {community.member_count} members
                   </Text>
-                  <Text color="$gray11" style={{ fontSize: 12 }}>
+                  <Text style={{ color: colors.text[t].secondary, fontSize: 12 }}>
                     {community.post_count} posts
                   </Text>
                 </Row>

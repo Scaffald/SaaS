@@ -1,6 +1,7 @@
 import { ExternalLink, Link as LinkIcon, Upload, X } from 'lucide-react-native'
 import { type ChangeEvent, useState } from 'react'
-import { Button, Card, Input, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Card, Input, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface CertificationProofCardProps {
   certificationTitle: string
@@ -23,6 +24,8 @@ export function CertificationProofCard({
   onRemoveProof,
   onClose,
 }: CertificationProofCardProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [mode, setMode] = useState<'file' | 'url'>(proofType || 'url')
   const [urlInput, setUrlInput] = useState(proofValue || '')
   const [uploading, setUploading] = useState(false)
@@ -59,7 +62,7 @@ export function CertificationProofCard({
   }
 
   return (
-    <Card padding="md" elevation="sm" style={{ borderWidth: 1, borderColor: '$gray6' }}>
+    <Card padding="md" elevation="sm" style={{ borderWidth: 1, borderColor: colors.border[t].default }}>
       <Stack gap={16}>
         <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
           <Text>Add Proof</Text>
@@ -68,7 +71,7 @@ export function CertificationProofCard({
           </Button>
         </Row>
 
-        <Text color="$gray11">{certificationTitle}</Text>
+        <Text style={{ color: colors.text[t].secondary }}>{certificationTitle}</Text>
 
         <Row gap={8}>
           <Button
@@ -121,14 +124,14 @@ export function CertificationProofCard({
               style={{ display: 'none' }}
               onChange={handleFileSelect}
             />
-            <Text color="$gray11" style={{ textAlign: 'center' }}>
+            <Text style={{ color: colors.text[t].secondary, textAlign: 'center' }}>
               Accepted formats: PDF, JPG, PNG
             </Text>
           </Stack>
         )}
 
         {proofValue && (
-          <Stack gap={8} style={{ paddingTop: 12, borderTopWidth: 1, borderColor: '$gray6' }}>
+          <Stack gap={8} style={{ paddingTop: 12, borderTopWidth: 1, borderColor: colors.border[t].default }}>
             <Text>Current Proof</Text>
             <Row gap={8} style={{ alignItems: 'center' }}>
               <Button

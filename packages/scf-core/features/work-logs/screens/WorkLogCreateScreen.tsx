@@ -2,11 +2,14 @@ import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { ScrollView } from 'react-native'
-import { Button, Separator, Text, Stack } from '@scaffald/ui'
+import { Button, Separator, Text, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 import { WorkLogForm } from '../components/WorkLogForm'
 
 export function WorkLogCreateScreen() {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const router = useRouter()
   const toast = useToast()
 
@@ -15,7 +18,7 @@ export function WorkLogCreateScreen() {
       <Stack padding="md" gap={16}>
         <Stack gap={4}>
           <Text>Record work log</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[t].secondary }}>
             Document the work performed today, capture time entries, tasks, and skills used.
           </Text>
         </Stack>

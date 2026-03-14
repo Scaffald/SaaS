@@ -185,7 +185,7 @@ export function PrerequisiteWidget() {
                     )}
                   />
                   {errors.first_name && (
-                    <Text color="$red10">{errors.first_name.message}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>{errors.first_name.message}</Text>
                   )}
                 </Stack>
 
@@ -204,7 +204,7 @@ export function PrerequisiteWidget() {
                     )}
                   />
                   {errors.last_name && (
-                    <Text color="$red10">{errors.last_name.message}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>{errors.last_name.message}</Text>
                   )}
                 </Stack>
               </Row>
@@ -232,7 +232,7 @@ export function PrerequisiteWidget() {
                 }
               />
               {errors.address && (
-                <Text color="$red10">
+                <Text style={{ color: colors.text[theme].secondary }}>
                   {errors.address.street?.message ||
                     errors.address.city?.message ||
                     errors.address.state?.message ||
@@ -302,7 +302,7 @@ export function PrerequisiteWidget() {
                 )}
               />
               {errors.user_types && (
-                <Text color="$red10">{errors.user_types.message}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>{errors.user_types.message}</Text>
               )}
             </Stack>
 
@@ -345,7 +345,7 @@ export function PrerequisiteWidget() {
                 )}
               />
               {errors.industry_id && (
-                <Text color="$red10">{errors.industry_id.message}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>{errors.industry_id.message}</Text>
               )}
             </Stack>
 

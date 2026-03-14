@@ -1,10 +1,11 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { useEmployer } from '@scf/core/utils/employers-sdk-hooks'
-import { DashboardWidget, extractPlainText } from '@scaffald/ui'
+import { DashboardWidget, extractPlainText, useThemeContext } from '@scaffald/ui'
 import { ArrowLeft, Building2, ExternalLink, MapPin, Users } from 'lucide-react-native'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
 import { Button, Separator, Skeleton, SkeletonAvatar, SkeletonBox, SkeletonText, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type DiscoverEmployerDetailLeftProps = {
   employerId: string
@@ -15,6 +16,8 @@ type DiscoverEmployerDetailLeftProps = {
  * Displays the primary organization information within the dashboard layout.
  */
 export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetailLeftProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const router = useRouter()
 
   const {
@@ -71,7 +74,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
     return (
       <DashboardWidget>
         <Stack align="center" justify="center" padding={32} gap={12}>
-          <Text color="$red10">Employer not found</Text>
+          <Text style={{ color: colors.text[t].secondary }}>Employer not found</Text>
           <Button
             onPress={() => {
               // Try to go back, fallback to employers list if no history
@@ -115,7 +118,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
           Back
         </Button>
         <Row align="center" gap={8} flex={1}>
-          <Building2 size={24} color="$blue10" />
+          <Building2 size={24} color={colors.text[t].primary} />
           <Text>{employer.name}</Text>
         </Row>
       </Row>
@@ -137,7 +140,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
       {employer.description && (
         <Stack gap={8}>
           <Text>About</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[t].secondary }}>
             {typeof employer.description === 'string'
               ? employer.description
               : extractPlainText(employer.description as JSONContent)}
@@ -176,7 +179,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
 
       {/* Additional Info */}
       <Stack gap={8}>
-        <Text color="$gray11">Created: {new Date(employer.created_at).toLocaleDateString()}</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Created: {new Date(employer.created_at).toLocaleDateString()}</Text>
       </Stack>
     </DashboardWidget>
   )

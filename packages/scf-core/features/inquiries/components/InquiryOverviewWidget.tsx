@@ -43,10 +43,10 @@ export function InquiryOverviewWidget() {
           key={application.id}
           padding="sm"
           gap={8}
-          backgroundColor="$background"
+          style={{ backgroundColor: colors.bg[theme].default }}
           borderRadius={12}
           borderWidth={1}
-          borderColor="$borderColor"
+          borderColor={colors.border[theme].default}
         >
           <Text style={{ color: colors.text[theme].primary }}>
             {application.job?.title ?? 'Role'}

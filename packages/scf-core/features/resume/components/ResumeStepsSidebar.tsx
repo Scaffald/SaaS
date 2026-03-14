@@ -1,11 +1,15 @@
 import { AssessmentProgress } from '@scf/core/features/assessments'
 import { useMemo } from 'react'
-import { Text, Stack } from '@scaffald/ui'
+import { Text, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 import { useResumeWizardContext } from '../context/ResumeWizardProvider'
 
 export function ResumeStepsSidebar() {
   const wizard = useResumeWizardContext()
+
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
 
   if (!wizard) {
     return null
@@ -47,7 +51,7 @@ export function ResumeStepsSidebar() {
     <Stack gap={20} padding="xs">
       <Stack gap={4}>
         <Text>Resume Steps</Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[t].secondary }}>
           Keep track of each resume section as you merge data into your profile.
         </Text>
       </Stack>

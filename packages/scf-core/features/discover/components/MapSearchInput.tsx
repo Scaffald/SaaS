@@ -1,9 +1,10 @@
 import { createMapboxGeocodingProvider } from '@scf/core/utils/mapbox-geocoding-provider'
 import type { AddressResult } from '@scaffald/ui'
-import { AddressAutocomplete } from '@scaffald/ui'
+import { AddressAutocomplete, useThemeContext } from '@scaffald/ui'
 import { AlertCircle } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
 import { Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type MapSearchInputProps = {
   isVisible: boolean
@@ -51,6 +52,8 @@ export const MapSearchInput = ({
   onLocationSelect,
   railVisible: _railVisible = false,
 }: MapSearchInputProps) => {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [searchQuery, setSearchQuery] = useState('')
 
   // Validate API key
@@ -104,18 +107,18 @@ export const MapSearchInput = ({
                 shadowOpacity: 0.15,
                 shadowRadius: 12,
               }}
-              backgroundColor="$background"
+              backgroundColor={colors.bg[t].default}
               padding="md"
               borderRadius={32}
               borderWidth={1}
-              borderColor="$red8"
+              borderColor={colors.border[t].default}
               gap={8}
             >
               <Row align="center" gap={8}>
-                <AlertCircle size={18} color="$red10" />
-                <Text color="$red10">Map Search Unavailable</Text>
+                <AlertCircle size={18} color={colors.text[t].secondary} />
+                <Text style={{ color: colors.text[t].secondary }}>Map Search Unavailable</Text>
               </Row>
-              <Text color="$gray11">{tokenValidation.error}</Text>
+              <Text style={{ color: colors.text[t].secondary }}>{tokenValidation.error}</Text>
         </Stack>
       )}
     </Row>

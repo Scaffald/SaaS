@@ -12,7 +12,9 @@ import {
   SkeletonBox,
   Stack,
   Text,
+  useThemeContext,
 } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface DiscoverJobsRightProps {
   searchQuery: string
@@ -43,6 +45,8 @@ export function DiscoverJobsRight({
   sortBy,
   onSortByChange,
 }: DiscoverJobsRightProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
   const [selectedJobTypes, setSelectedJobTypes] = useState<string[]>([])
 
@@ -189,7 +193,7 @@ export function DiscoverJobsRight({
         {JOB_TYPES.length > 0 && (
           <DashboardWidget>
             <Stack gap={12}>
-              <Text color="$gray11">Job Type ({JOB_TYPES.length})</Text>
+              <Text style={{ color: colors.text[t].secondary }}>Job Type ({JOB_TYPES.length})</Text>
 
               <Stack gap={8}>
                 {JOB_TYPES.map((type: string) => {

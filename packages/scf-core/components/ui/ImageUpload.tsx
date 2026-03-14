@@ -3,8 +3,9 @@ import { getStorageUrl } from '@scf/core/utils/supabase/storage'
 import { AlertCircle, Image as ImageIcon, Trash2, Upload } from 'lucide-react-native'
 import { type ChangeEvent, useCallback, useRef, useState } from 'react'
 import { Platform } from 'react-native'
-import { Button, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { useFilePicker } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import * as ImagePicker from 'expo-image-picker'
 import { Image } from 'react-native'
 
@@ -64,6 +65,8 @@ export function ImageUpload({
   label,
   helperText,
 }: ImageUploadProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [error, setError] = useState<string>()
@@ -431,9 +434,9 @@ export function ImageUpload({
               align="center"
               justify="center"
               borderRadius={16}
-              backgroundColor="$blue3"
+              backgroundColor={t === 'light' ? colors.info[100] : colors.info[900]}
             >
-              {isUploading ? <Spinner size="lg" /> : <ImageIcon size={32} color="$blue10" />}
+              {isUploading ? <Spinner size="lg" /> : <ImageIcon size={32} color={colors.info[500]} />}
             </Stack>
 
             {/* Text */}
@@ -483,8 +486,8 @@ export function ImageUpload({
       {/* Error Message */}
       {error && (
         <Row gap={8} align="center" padding={8} style={{ backgroundColor: '#fee2e2', borderRadius: 12 }}>
-          <AlertCircle size="lg" color="$red10" />
-          <Text color="$red10" style={{ flex: 1 }}>
+          <AlertCircle size="lg" color={colors.error[500]} />
+          <Text style={{ color: colors.error[500], flex: 1 }}>
             {error}
           </Text>
         </Row>

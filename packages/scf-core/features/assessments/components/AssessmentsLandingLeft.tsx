@@ -1,6 +1,7 @@
 import type { RouteConfig } from '@scf/core/constants/routes'
 import { ROUTES } from '@scf/core/constants/routes'
-import { Button, DashboardWidget, gap, Text, Stack } from '@scaffald/ui'
+import { Button, DashboardWidget, gap, Text, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 
 type AssessmentLandingCard = {
@@ -53,6 +54,8 @@ const ASSESSMENT_LANDING_CARDS: AssessmentLandingCard[] = [
 
 export const AssessmentsLandingLeft = () => {
   const router = useRouter()
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
 
   return (
     <Stack gap={gap.lg}>
@@ -61,8 +64,8 @@ export const AssessmentsLandingLeft = () => {
           <DashboardWidget key={key} gap={gap.md}>
             <Stack gap={gap.sm}>
               <Stack gap={gap.xs}>
-                <Text color="$gray11">{title}</Text>
-                <Text color="$gray11">{description}</Text>
+                <Text style={{ color: colors.text[t].secondary }}>{title}</Text>
+                <Text style={{ color: colors.text[t].secondary }}>{description}</Text>
               </Stack>
 
               <Button
@@ -75,7 +78,7 @@ export const AssessmentsLandingLeft = () => {
                 {ctaLabel}
               </Button>
 
-              {estimatedTime ? <Text color="$gray11">{estimatedTime}</Text> : null}
+              {estimatedTime ? <Text style={{ color: colors.text[t].secondary }}>{estimatedTime}</Text> : null}
             </Stack>
           </DashboardWidget>
         )

@@ -3,6 +3,7 @@ import {
   useSaveCareerAssessmentMutation,
 } from '@scf/core/utils/onet-sdk-hooks'
 import { Button, DashboardWidget, gap, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast } from '@scaffald/ui'
 import { useState } from 'react'
@@ -27,7 +28,9 @@ import {
  * @returns JSX element
  */
 export function CareerAssessmentWidget() {
-  useThemeContext()
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   const [isSubmitting, setIsSubmitting] = useState(false)
   const toast = useToast()
 
@@ -87,7 +90,7 @@ export function CareerAssessmentWidget() {
       <DashboardWidget>
         <Stack gap={gap.sm} align="center" paddingVertical={40}>
           <Spinner size="lg" color="gray" />
-          <Text color="$gray11">Loading...</Text>
+          <Text style={{ color: colors.text[t].secondary }}>Loading...</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -102,8 +105,8 @@ export function CareerAssessmentWidget() {
     <DashboardWidget>
       <Stack gap={gap.md}>
         <Stack gap={gap.xs}>
-          <Text color="$gray11">Career Assessment</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[t].secondary }}>Career Assessment</Text>
+          <Text style={{ color: colors.text[t].secondary }}>
             Take a quick assessment to help us recommend jobs that match your interests and skills
           </Text>
         </Stack>
@@ -129,7 +132,7 @@ export function CareerAssessmentWidget() {
         <Stack gap={12}>
           <Stack gap={4}>
             <Text>Current Occupation (Optional)</Text>
-            <Text color="$gray11">What is your current or most recent job?</Text>
+            <Text style={{ color: colors.text[t].secondary }}>What is your current or most recent job?</Text>
           </Stack>
           <Controller
             name="current_occupation_code"
@@ -144,7 +147,7 @@ export function CareerAssessmentWidget() {
             )}
           />
           {errors.current_occupation_code && (
-            <Text color="$red10">{errors.current_occupation_code.message}</Text>
+            <Text style={{ color: t === 'dark' ? colors.red[300] : colors.red[600] }}>{errors.current_occupation_code.message}</Text>
           )}
         </Stack>
 
@@ -161,7 +164,7 @@ export function CareerAssessmentWidget() {
           Complete Assessment
         </Button>
 
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[t].secondary }}>
           This assessment takes about 2 minutes and helps us recommend careers that fit your
           interests
         </Text>

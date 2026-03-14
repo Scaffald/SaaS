@@ -1,4 +1,5 @@
-import { Text, Stack, Row, Avatar } from '@scaffald/ui'
+import { Text, Stack, Row, Avatar, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { UpvoteButton } from './UpvoteButton'
 import type { CommunityComment } from '@scaffald/sdk/resources/community-comments'
 
@@ -9,6 +10,8 @@ interface Props {
 }
 
 export function CommentThread({ comments }: Props) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   // Group comments by parent
   const topLevel = comments.filter((c) => !c.parent_comment_id)
   const childrenMap = new Map<string, CommunityComment[]>()
@@ -52,7 +55,7 @@ export function CommentThread({ comments }: Props) {
             <Text style={{ fontSize: 11, fontWeight: '500' }}>Pinned</Text>
           </Stack>
         )}
-        <Text color="$gray11" style={{ fontSize: 12 }}>
+        <Text style={{ fontSize: 12, color: colors.text[t].secondary }}>
           {new Date(comment.created_at).toLocaleDateString()}
         </Text>
       </Row>

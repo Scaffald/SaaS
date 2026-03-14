@@ -1,5 +1,6 @@
 import { Pressable } from 'react-native'
-import { Text, Row } from '@scaffald/ui'
+import { Text, Row, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface Props {
   value: number
@@ -10,12 +11,14 @@ interface Props {
 }
 
 export function StarRating({ value, onChange, readonly = false, size = 20, label }: Props) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const stars = [1, 2, 3, 4, 5]
 
   return (
     <Row align="center" gap={4}>
       {label && (
-        <Text color="$gray11" style={{ fontSize: 13, marginRight: 4 }}>
+        <Text style={{ fontSize: 13, marginRight: 4, color: colors.text[t].secondary }}>
           {label}
         </Text>
       )}
@@ -32,7 +35,7 @@ export function StarRating({ value, onChange, readonly = false, size = 20, label
         </Pressable>
       ))}
       {readonly && value > 0 && (
-        <Text color="$gray11" style={{ fontSize: size * 0.65, marginLeft: 2 }}>
+        <Text style={{ fontSize: size * 0.65, marginLeft: 2, color: colors.text[t].secondary }}>
           {value.toFixed(1)}
         </Text>
       )}

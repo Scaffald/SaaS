@@ -1,6 +1,7 @@
 import { PaymentIntentForm } from '@scf/core/features/payments/components/PaymentIntentForm'
 import { memo, useEffect } from 'react'
-import { Button, Text, Stack } from '@scaffald/ui'
+import { Button, Text, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 import type { PaymentDetails } from '../hooks/useBackgroundCheckForm'
 
@@ -42,6 +43,9 @@ export const PaymentStep = memo(function PaymentStep({
   onCreatePaymentSession,
   onPaymentSuccess,
 }: PaymentStepProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light' as const
+
   useEffect(() => {
     if (payment.paidBy !== 'worker') {
       onUpdatePayment({ paidBy: 'worker' })
@@ -53,24 +57,24 @@ export const PaymentStep = memo(function PaymentStep({
   return (
     <Stack gap={16} flex={1}>
       <Stack gap={8}>
-        <Text color="$gray11">Payment & Authorization</Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[t].secondary }}>Payment & Authorization</Text>
+        <Text style={{ color: colors.text[t].secondary }}>
           Pay for your screening securely with Stripe. Charges are non-refundable and required
           before we can submit your background check.
         </Text>
       </Stack>
 
-      <Stack gap={8} backgroundColor="$color2" padding="md" borderRadius={16}>
-        <Text color="$gray11">Total Due</Text>
-        <Text color="$gray11">{formatCurrency(payment.costCents)}</Text>
-        <Text color="$gray11">
+      <Stack gap={8} style={{ backgroundColor: colors.bg[t].muted }} padding="md" borderRadius={16}>
+        <Text style={{ color: colors.text[t].secondary }}>Total Due</Text>
+        <Text style={{ color: colors.text[t].secondary }}>{formatCurrency(payment.costCents)}</Text>
+        <Text style={{ color: colors.text[t].secondary }}>
           Package: {selectedPackage?.display_name ?? 'Select a package to continue'}
         </Text>
       </Stack>
 
       {submitError && (
-        <Stack backgroundColor="$red3" padding="sm" borderRadius={12}>
-          <Text color="$red11">{submitError.message}</Text>
+        <Stack style={{ backgroundColor: t === 'dark' ? colors.error[900] : colors.error[50] }} padding="sm" borderRadius={12}>
+          <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>{submitError.message}</Text>
         </Stack>
       )}
 

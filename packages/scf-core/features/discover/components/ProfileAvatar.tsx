@@ -1,6 +1,7 @@
 import { Image } from 'react-native'
 import { Building } from 'lucide-react-native'
-import { Text, Row, Stack } from '@scaffald/ui'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { getInitials } from '../utils/getInitials'
 
 type ProfileAvatarProps = {
@@ -20,6 +21,8 @@ export const ProfileAvatar = ({
   size = 48,
   isOrganization = false,
 }: ProfileAvatarProps) => {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const initials = getInitials(name)
 
   // Generate a consistent color based on the name
@@ -35,14 +38,14 @@ export const ProfileAvatar = ({
 
   // Map index to color
   const bgColors = [
-    '$blue10',
-    '$green10',
-    '$blue10',
-    '$red10',
-    '$pink10',
-    '$red10',
-    '$yellow10',
-    '$color10',
+    t === 'dark' ? colors.blue[300] : colors.blue[600],
+    t === 'dark' ? colors.green[300] : colors.green[600],
+    t === 'dark' ? colors.blue[300] : colors.blue[600],
+    t === 'dark' ? colors.error[300] : colors.error[600],
+    t === 'dark' ? colors.pink[300] : colors.pink[600],
+    t === 'dark' ? colors.error[300] : colors.error[600],
+    t === 'dark' ? colors.yellow[300] : colors.yellow[600],
+    colors.text[t].primary,
   ]
   const bgColor = bgColors[colorIndex]
 
@@ -53,9 +56,7 @@ export const ProfileAvatar = ({
         width={size}
         height={size}
         borderRadius={12}
-        borderWidth={1}
-        borderColor="$borderColor"
-        style={{ overflow: 'hidden' }}
+        style={{ overflow: 'hidden', borderWidth: 1, borderColor: colors.border[t].default }}
       >
         <Image source={{ uri: avatarUrl }} style={{ width: size, height: size }} resizeMode="cover" />
       </Row>
@@ -68,16 +69,14 @@ export const ProfileAvatar = ({
       width={size}
       height={size}
       borderRadius={12}
-      backgroundColor={bgColor}
+      style={{ backgroundColor: bgColor, borderWidth: 1, borderColor: colors.border[t].default }}
       align="center"
       justify="center"
-      borderWidth={1}
-      borderColor="$borderColor"
     >
       {isOrganization ? (
         <Building size={Math.round(size * 0.5) as 16 | 20 | 24} color="white" />
       ) : (
-        <Text color="white">{initials}</Text>
+        <Text style={{ color: 'white' }}>{initials}</Text>
       )}
     </Stack>
   )

@@ -15,13 +15,17 @@ import {
   Text,
   Row,
   Stack,
+  useThemeContext,
 } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type InquiryReminderSettingsProps = {
   organizationId: string
 }
 
 export function InquiryReminderSettings({ organizationId }: InquiryReminderSettingsProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const toast = useToast()
   const { data: settings, isLoading } = useOrganizationReminderSettings(organizationId, {
     enabled: !!organizationId,
@@ -76,7 +80,7 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
             <Row align="center" justify="space-between" gap={12}>
               <Stack style={{ flex: 1 }} gap={4}>
                 <Text>Send automatic reminders</Text>
-                <Text color="$gray11">
+                <Text style={{ color: colors.text[t].secondary }}>
                   Automatically remind candidates to respond to pending inquiries
                 </Text>
               </Stack>
@@ -102,7 +106,7 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
                   placeholder="3"
                   maxLength={2}
                 />
-                <Text color="$gray11">
+                <Text style={{ color: colors.text[t].secondary }}>
                   Candidates will receive a reminder {reminderDays} day{reminderDays !== 1 ? 's' : ''}{' '}
                   after an inquiry is sent if they haven't responded. Reminders are limited to once
                   every 3 days.

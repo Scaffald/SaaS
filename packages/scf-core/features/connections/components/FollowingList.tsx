@@ -2,13 +2,16 @@ import { useFollowing, useUnfollowUserMutation } from '@scf/core/utils/engagemen
 import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import type { Follow } from '@scaffald/sdk/resources/follows'
 import type { ColumnDef } from '@tanstack/react-table'
-import { useToast } from '@scaffald/ui'
+import { useToast, useThemeContext } from '@scaffald/ui'
 import { UserMinus } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
 import { Avatar, Button, Input, SkeletonList, Table, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useQueryClient } from '@tanstack/react-query'
 
 export function FollowingList() {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [searchTerm, setSearchTerm] = useState('')
   const queryClient = useQueryClient()
   const toast = useToast()
@@ -84,7 +87,7 @@ export function FollowingList() {
         header: 'Following Since',
         cell: ({ row }) => {
           const date = row.original.created_at
-          return <Text color="$gray11">{date ? new Date(date).toLocaleDateString() : '-'}</Text>
+          return <Text style={{ color: colors.text[t].secondary }}>{date ? new Date(date).toLocaleDateString() : '-'}</Text>
         },
       },
       {
@@ -106,7 +109,7 @@ export function FollowingList() {
         },
       },
     ],
-    [unfollowMutation.isPending, handleUnfollow]
+    [t, unfollowMutation.isPending, handleUnfollow]
   )
 
   const tableColumns = useMemo(
@@ -130,16 +133,16 @@ export function FollowingList() {
         <Stack
           gap={12}
           borderWidth={1}
-          borderColor="$borderColor"
+          borderColor={colors.border[t].default}
           borderRadius={16}
           padding="md"
-          backgroundColor="$color2"
+          backgroundColor={colors.bg[t].muted}
           align="center"
           justify="center"
           style={{ minHeight: 300 }}
         >
           <Text>Not following anyone yet</Text>
-          <Text color="$gray11" style={{ textAlign: 'center' }}>
+          <Text style={{ color: colors.text[t].secondary, textAlign: 'center' }}>
             {searchTerm
               ? 'No users match your search.'
               : "You're not following anyone yet. Discover workers and start following them."}

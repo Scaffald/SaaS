@@ -1,4 +1,5 @@
-import { Text, Row, Stack } from '@scaffald/ui'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import type { TagData } from '../types'
 
 interface TagCloudProps {
@@ -13,6 +14,8 @@ interface TagCloudProps {
  * Used for showing strengths and areas for improvement from reviews
  */
 export function TagCloud({ title, tags, variant, maxTags = 20 }: TagCloudProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   if (!tags || tags.length === 0) {
     return null
   }
@@ -28,12 +31,12 @@ export function TagCloud({ title, tags, variant, maxTags = 20 }: TagCloudProps) 
     return 1 + normalized * 2 // Range: 1-3
   }
 
-  const bgColor = variant === 'strength' ? '$green3' : '$red3'
-  const textColor = variant === 'strength' ? '$green11' : '$red11'
+  const bgColor = variant === 'strength' ? (t === 'light' ? colors.success[100] : colors.success[900]) : (t === 'light' ? colors.error[100] : colors.error[900])
+  const textColor = variant === 'strength' ? colors.success[500] : colors.error[500]
 
   return (
     <Stack gap={12}>
-      <Text color="$gray11">{title}</Text>
+      <Text style={{ color: colors.text[t].secondary }}>{title}</Text>
       <Row gap={8} wrap>
         {displayTags.map((tag) => {
           const relativeSize = getRelativeSize(tag.count)
@@ -47,7 +50,7 @@ export function TagCloud({ title, tags, variant, maxTags = 20 }: TagCloudProps) 
               paddingVertical={6}
               borderRadius={12}
             >
-              <Text color={textColor}>
+              <Text style={{ color: textColor }}>
                 {tag.name} ({tag.count})
               </Text>
             </Row>

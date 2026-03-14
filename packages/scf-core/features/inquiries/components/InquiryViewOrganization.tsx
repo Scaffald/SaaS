@@ -1,7 +1,8 @@
 import { useInquiryByApplication } from '@scf/core/utils/inquiries-sdk-hooks'
 import { useInquirySubscription } from '@scf/core/utils/supabase/useInquirySubscription'
 import type { InquirySectionName } from '@scf/schemas'
-import { ScrollView, Separator, Text, Row, Stack } from '@scaffald/ui'
+import { ScrollView, Separator, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { Check } from 'lucide-react-native'
 import { type ReactNode, useMemo } from 'react'
 import { Card } from '@scaffald/ui'
@@ -53,6 +54,9 @@ interface InquirySectionRecord {
 }
 
 function AcceptanceBadge({ acceptedBy, acceptedAt }: AcceptanceBadgeProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   if (!acceptedBy) return null
 
   const formatDate = (dateStr: string | null | undefined) => {
@@ -66,7 +70,7 @@ function AcceptanceBadge({ acceptedBy, acceptedAt }: AcceptanceBadgeProps) {
 
   return (
     <Row
-      backgroundColor="$green9"
+      style={{ backgroundColor: t === 'dark' ? colors.green[300] : colors.green[600] }}
       paddingHorizontal={12}
       paddingVertical={6}
       borderRadius={24}
@@ -74,7 +78,7 @@ function AcceptanceBadge({ acceptedBy, acceptedAt }: AcceptanceBadgeProps) {
       gap={8}
     >
       <Check size="md" color="white" />
-      <Text color="white">Accepted on {formatDate(acceptedAt)}</Text>
+      <Text style={{ color: 'white' }}>{`Accepted on ${formatDate(acceptedAt)}`}</Text>
     </Row>
   )
 }
@@ -85,6 +89,9 @@ export function InquiryViewOrganization({
   candidateName: providedCandidateName,
   jobTitle: providedJobTitle,
 }: InquiryViewOrganizationProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   // Subscribe to real-time updates for this inquiry
   useInquirySubscription(inquiryId)
 
@@ -101,7 +108,7 @@ export function InquiryViewOrganization({
   if (error || !data || !data.inquiry) {
     return (
       <Stack padding="md" align="center" gap={16}>
-        <Text color="$red10">Failed to load inquiry</Text>
+        <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>Failed to load inquiry</Text>
       </Stack>
     )
   }
@@ -162,8 +169,8 @@ export function InquiryViewOrganization({
   const jobTitle = providedJobTitle || 'Job'
 
   const NonNegotiableBadge = () => (
-    <Row backgroundColor="$gray3" paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
-      <Text color="$gray11">Non-negotiable</Text>
+    <Row style={{ backgroundColor: colors.bg[t].muted, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 }}>
+      <Text style={{ color: colors.text[t].secondary }}>Non-negotiable</Text>
     </Row>
   )
 
@@ -177,7 +184,7 @@ export function InquiryViewOrganization({
     negotiable: boolean
   }) => (
     <Row justify="space-between" align="center">
-      <Text color="$gray11">{label}</Text>
+      <Text style={{ color: colors.text[t].secondary }}>{label}</Text>
       <Row align="center" gap={8}>
         <Text>{value || 'Not specified'}</Text>
         {!negotiable && <NonNegotiableBadge />}
@@ -232,7 +239,7 @@ export function InquiryViewOrganization({
         <Row justify="space-between" align="center">
           <Text>Inquiry</Text>
         </Row>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[t].secondary }}>
           {candidateName} - {jobTitle}
         </Text>
 
@@ -337,8 +344,8 @@ export function InquiryViewOrganization({
           )}
           {inquiry.additional_notes && (
             <Stack gap={8}>
-              <Text color="$gray11">Additional notes</Text>
-              <Text color="$gray11">{inquiry.additional_notes}</Text>
+              <Text style={{ color: colors.text[t].secondary }}>Additional notes</Text>
+              <Text style={{ color: colors.text[t].secondary }}>{inquiry.additional_notes}</Text>
             </Stack>
           )}
         </InquirySection>

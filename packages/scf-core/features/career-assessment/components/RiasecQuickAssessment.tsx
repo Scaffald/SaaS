@@ -1,4 +1,5 @@
-import { Slider, Text, Row, Stack } from '@scaffald/ui'
+import { Slider, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { RIASEC_DIMENSIONS, type RiasecScores } from '../config/career-assessment-schema'
 
 interface RiasecQuickAssessmentProps {
@@ -22,6 +23,9 @@ export function RiasecQuickAssessment({
   onChange,
   disabled = false,
 }: RiasecQuickAssessmentProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   const handleSliderChange = (key: keyof RiasecScores, newValue: number) => {
     onChange({
       ...value,
@@ -32,8 +36,8 @@ export function RiasecQuickAssessment({
   return (
     <Stack gap={16} width="100%">
       <Stack gap={8}>
-        <Text color="$gray11">Rate Your Interests</Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[t].secondary }}>Rate Your Interests</Text>
+        <Text style={{ color: colors.text[t].secondary }}>
           Move the sliders to indicate how much you agree with each statement (1 = Disagree, 5 =
           Strongly Agree)
         </Text>
@@ -44,22 +48,20 @@ export function RiasecQuickAssessment({
           <Row gap={12} align="center">
             <Stack style={{ flex: 1 }} gap={4}>
               <Text>{dimension.label}</Text>
-              <Text color="$gray11">{dimension.description}</Text>
+              <Text style={{ color: colors.text[t].secondary }}>{dimension.description}</Text>
             </Stack>
             <Row
               width={60}
               height={32}
               align="center"
-              borderWidth={1}
-              borderColor="$borderColor"
-              paddingHorizontal={8}
+              style={{ borderWidth: 1, borderColor: colors.border[t].default, paddingHorizontal: 8 }}
             >
               <Text>{value[dimension.key]}</Text>
             </Row>
           </Row>
 
           <Row align="center" gap={12}>
-            <Text color="$gray11" style={{ width: 20 }}>
+            <Text style={{ color: colors.text[t].secondary, width: 20 }}>
               1
             </Text>
             <Stack style={{ flex: 1 }}>
@@ -72,16 +74,18 @@ export function RiasecQuickAssessment({
                 disabled={disabled}
               />
             </Stack>
-            <Text color="$gray11" style={{ width: 20 }}>
+            <Text style={{ color: colors.text[t].secondary, width: 20 }}>
               5
             </Text>
           </Row>
         </Stack>
       ))}
 
-      <Stack gap={8} padding="sm" borderWidth={1} borderColor="$blue6">
-        <Text color="$blue11">💡 What is RIASEC?</Text>
-        <Text color="$blue11">
+      <Stack gap={8} padding="sm" style={{ borderWidth: 1, borderColor: t === 'dark' ? colors.blue[800] : colors.blue[200] }}>
+        <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>
+          What is RIASEC?
+        </Text>
+        <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>
           RIASEC (Holland Codes) is a career interest model that helps match your personality to
           compatible occupations. Your scores help us recommend careers that align with your natural
           interests and work style.

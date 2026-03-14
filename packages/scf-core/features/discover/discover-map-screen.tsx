@@ -8,6 +8,7 @@ import {
   Switch,
   type ViewportBounds,
 } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { MapAdapter } from './components/map'
 import { captureEvent } from '@scf/core/utils/analytics/client'
 import {
@@ -50,6 +51,8 @@ type HoverCardTrigger = 'click'
 const MAP_RECENTER_DELAY_MS = 360
 
 export const DiscoverMapScreen = () => {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   // Use window dimensions for conditional rendering
   // Breakpoint: 800px (small/medium layout)
   // Native mobile is always treated as small screen
@@ -635,7 +638,7 @@ export const DiscoverMapScreen = () => {
           mobileListActive ? (
             <Stack
               flex={1}
-              backgroundColor="$background"
+              style={{ backgroundColor: colors.bg[t].default }}
               paddingHorizontal={12}
               paddingVertical={12}
             >
@@ -798,6 +801,7 @@ const MobileSearchHeader = ({
   onFiltersPress,
 }: MobileSearchHeaderProps) => {
   const { theme } = useThemeContext()
+  const tMobile = theme === 'dark' ? 'dark' : 'light' as const
   const borderColor = theme === 'dark' ? 'rgba(80, 73, 64, 0.3)' : 'rgba(237, 221, 201, 0.5)'
   const tokenValidation = useMemo(() => validateMapboxToken(mapboxToken), [mapboxToken])
 
@@ -844,16 +848,14 @@ const MobileSearchHeader = ({
       ) : (
         <Stack
           flex={1}
-          backgroundColor="$background"
+          style={{ backgroundColor: colors.bg[tMobile].default, borderColor: tMobile === 'dark' ? colors.error[300] : colors.error[600], flexShrink: 1 }}
           padding="sm"
           borderRadius={16}
           borderWidth={1}
-          borderColor="$red8"
           gap={8}
-          style={{ flexShrink: 1 }}
         >
-          <Text color="$red10">Map Search Unavailable</Text>
-          <Text color="$gray11">{tokenValidation.error}</Text>
+          <Text style={{ color: tMobile === 'dark' ? colors.error[300] : colors.error[600] }}>Map Search Unavailable</Text>
+          <Text style={{ color: colors.text[tMobile].secondary }}>{tokenValidation.error}</Text>
         </Stack>
       )}
 
@@ -1005,21 +1007,24 @@ type FilterToggleProps = {
   onValueChange: (value: boolean) => void
 }
 
-const FilterToggle = ({ label, description, value, onValueChange }: FilterToggleProps) => (
-  <Stack
-    gap={8}
-    backgroundColor="$color2"
-    padding="sm"
-    borderRadius={16}
-    borderWidth={1}
-    borderColor="$borderColor"
-  >
-    <Row justify="space-between" align="center" gap={8}>
-      <Text>{label}</Text>
-      <Switch checked={value} onChange={onValueChange} accessibilityLabel={label} />
-    </Row>
-    <Text color="$gray11">{description}</Text>
-  </Stack>
-)
+const FilterToggle = ({ label, description, value, onValueChange }: FilterToggleProps) => {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light' as const
+  return (
+    <Stack
+      gap={8}
+      style={{ backgroundColor: colors.bg[t].muted, borderColor: colors.border[t].default }}
+      padding="sm"
+      borderRadius={16}
+      borderWidth={1}
+    >
+      <Row justify="space-between" align="center" gap={8}>
+        <Text>{label}</Text>
+        <Switch checked={value} onChange={onValueChange} accessibilityLabel={label} />
+      </Row>
+      <Text style={{ color: colors.text[t].secondary }}>{description}</Text>
+    </Stack>
+  )
+}
 
 export default DiscoverMapScreen

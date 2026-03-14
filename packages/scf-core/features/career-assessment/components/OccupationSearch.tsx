@@ -4,7 +4,8 @@ import { useSearchOccupations } from '@scf/core/utils/onet-sdk-hooks'
 import type { Occupation as SDKOccupation } from '@scaffald/sdk'
 import { useEffect, useRef, useState } from 'react'
 import { Pressable } from 'react-native'
-import { Input, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { Input, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface OccupationSearchProps {
   value?: string
@@ -36,6 +37,8 @@ export function OccupationSearch({
   placeholder = 'Search for your occupation...',
   disabled = false,
 }: OccupationSearchProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTitle, setSelectedTitle] = useState('')
   const [showResults, setShowResults] = useState(false)
@@ -175,7 +178,7 @@ export function OccupationSearch({
                 <Row padding="sm" gap={8} style={{ cursor: 'pointer' }}>
                   <Stack style={{ flex: 1 }} gap={4}>
                     <Text>{title}</Text>
-                    <Text color="$gray11">{onetCode}</Text>
+                    <Text style={{ color: colors.text[t].secondary }}>{onetCode}</Text>
                   </Stack>
                 </Row>
               </Pressable>
@@ -200,7 +203,7 @@ export function OccupationSearch({
             zIndex: 1000,
           }}
         >
-          <Text color="$red10">
+          <Text style={{ color: colors.error[t === 'light' ? 700 : 300] }}>
             {queryError.message || 'Unable to load occupations. Please try again.'}
           </Text>
         </Stack>
@@ -222,7 +225,7 @@ export function OccupationSearch({
             zIndex: 1000,
           }}
         >
-          <Text color="$gray11">No occupations found for "{debouncedSearch}"</Text>
+          <Text style={{ color: colors.text[t].secondary }}>No occupations found for "{debouncedSearch}"</Text>
         </Stack>
       )}
     </Stack>

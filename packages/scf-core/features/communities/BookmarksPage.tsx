@@ -1,6 +1,7 @@
 import { useMemo, useCallback } from 'react'
 import { FlatList } from 'react-native'
-import { Text, Stack, Spinner } from '@scaffald/ui'
+import { Text, Stack, Spinner, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import type { Href } from 'expo-router'
 import { useBookmarks } from '@scf/core/utils/communities-sdk-hooks'
@@ -8,6 +9,8 @@ import { RouteBuilder } from '@scf/core/constants/routes'
 import { PostCard } from './components/PostCard'
 
 export function BookmarksPage() {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const router = useRouter()
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useBookmarks()
 
@@ -21,7 +24,7 @@ export function BookmarksPage() {
     <Stack gap={16}>
       <Stack gap={4}>
         <Text style={{ fontSize: 20, fontWeight: '600' }}>Bookmarks</Text>
-        <Text color="$gray11">Posts you've saved for later.</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Posts you've saved for later.</Text>
       </Stack>
 
       {isLoading ? (
@@ -30,7 +33,7 @@ export function BookmarksPage() {
         </Stack>
       ) : posts.length === 0 ? (
         <Stack align="center" style={{ paddingVertical: 40 }}>
-          <Text color="$gray11">No bookmarks yet</Text>
+          <Text style={{ color: colors.text[t].secondary }}>No bookmarks yet</Text>
         </Stack>
       ) : (
         <FlatList

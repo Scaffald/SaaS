@@ -14,7 +14,9 @@ import {
   Text,
   Row,
   Stack,
+  useThemeContext,
 } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { Image } from 'react-native'
 import { useState } from 'react'
 
@@ -47,6 +49,8 @@ export function ConsentScreen({
   onAuthorize,
   onDeny,
 }: ConsentScreenProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const { user } = useUser()
   const [rememberConsent, setRememberConsent] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -113,7 +117,7 @@ export function ConsentScreen({
             <Stack flex={1} gap={4}>
               <Text size="2xl">{app.name} wants to access your Scaffald account</Text>
               {app.description && (
-                <Paragraph size="sm" color="$gray11">
+                <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
                   {app.description}
                 </Paragraph>
               )}
@@ -142,7 +146,7 @@ export function ConsentScreen({
         <Separator />
 
         <Stack gap={8}>
-          <Text size="sm" color="$gray11">
+          <Text size="sm" style={{ color: colors.text[t].secondary }}>
             Authorizing as {user?.email}
           </Text>
           <Checkbox
@@ -165,7 +169,7 @@ export function ConsentScreen({
 
         {(app.privacy_policy_url || app.terms_of_service_url) && (
           <Stack gap={4}>
-            <Text size="sm" color="$gray11" style={{ textAlign: 'center' }}>
+            <Text size="sm" style={{ color: colors.text[t].secondary, textAlign: 'center' }}>
               <a
                 href={app.privacy_policy_url}
                 target="_blank"
@@ -189,6 +193,8 @@ export function ConsentScreen({
 }
 
 function ScopePermissionItem({ scope }: { scope: string }) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   // Map scope to human-readable description
   const scopeDescriptions: Record<string, string> = {
     openid: 'Verify your identity',
@@ -211,7 +217,7 @@ function ScopePermissionItem({ scope }: { scope: string }) {
       <Text size="sm">•</Text>
       <Stack flex={1}>
         <Text size="sm">{description}</Text>
-        <Text size="sm" color="$gray11">
+        <Text size="sm" style={{ color: colors.text[t].secondary }}>
           {scope}
         </Text>
       </Stack>

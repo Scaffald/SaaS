@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { FlatList } from 'react-native'
-import { Text, Stack, Row, Button, Spinner, Separator } from '@scaffald/ui'
+import { Text, Stack, Row, Button, Spinner, Separator, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import type { Href } from 'expo-router'
 import { RouteBuilder } from '@scf/core/constants/routes'
@@ -18,6 +19,8 @@ interface Props {
 }
 
 export function CommunityFeedPage({ slug }: Props) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const router = useRouter()
   const queryClient = useQueryClient()
   const { data: communityData, isLoading: isCommunityLoading } = useCommunity(slug)
@@ -74,7 +77,7 @@ export function CommunityFeedPage({ slug }: Props) {
         <Row align="center" justify="space-between">
           <Stack gap={2}>
             <Text style={{ fontSize: 24, fontWeight: '700' }}>{community.name}</Text>
-            <Text color="$gray11">{community.description}</Text>
+            <Text style={{ color: colors.text[t].secondary }}>{community.description}</Text>
           </Stack>
           {community.is_member ? (
             <Row gap={8}>
@@ -104,9 +107,9 @@ export function CommunityFeedPage({ slug }: Props) {
           )}
         </Row>
         <Row gap={16}>
-          <Text color="$gray11">{community.member_count} members</Text>
-          <Text color="$gray11">{community.post_count} posts</Text>
-          {community.is_verified && <Text color="$green11">Verified</Text>}
+          <Text style={{ color: colors.text[t].secondary }}>{community.member_count} members</Text>
+          <Text style={{ color: colors.text[t].secondary }}>{community.post_count} posts</Text>
+          {community.is_verified && <Text style={{ color: colors.text[t].primary }}>Verified</Text>}
         </Row>
       </Stack>
 
@@ -119,7 +122,7 @@ export function CommunityFeedPage({ slug }: Props) {
         </Stack>
       ) : posts.length === 0 ? (
         <Stack gap={12} align="center" justify="center" style={{ minHeight: 200, padding: 24 }}>
-          <Text color="$gray11">No posts yet</Text>
+          <Text style={{ color: colors.text[t].secondary }}>No posts yet</Text>
           {community.is_member && (
             <Button
               variant="filled"

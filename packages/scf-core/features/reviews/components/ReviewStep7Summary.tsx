@@ -1,4 +1,5 @@
-import { Text, TextArea, Stack } from '@scaffald/ui'
+import { Text, TextArea, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface ReviewStep7SummaryProps {
   comment: string
@@ -6,11 +7,13 @@ interface ReviewStep7SummaryProps {
 }
 
 export function ReviewStep7Summary({ comment, onChange }: ReviewStep7SummaryProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text color="$gray11">Summary (Optional)</Text>
-        <Text color="$gray11">Add any additional comments about working with this person</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Summary (Optional)</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Add any additional comments about working with this person</Text>
       </Stack>
 
       {/* Text Area */}

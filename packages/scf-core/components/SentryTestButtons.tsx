@@ -1,5 +1,6 @@
 import { captureException, captureMessage } from '@scf/core/utils/sentry'
-import { Button, Text, Stack } from '@scaffald/ui'
+import { Button, Text, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 /**
  * Test buttons for verifying Sentry integration
@@ -15,6 +16,8 @@ import { Button, Text, Stack } from '@scaffald/ui'
  * These buttons should only be used in development builds and removed before production.
  */
 export function SentryTestButtons() {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const testJSError = () => {
     try {
       throw new Error('Test JavaScript Error - Sentry Integration Test')
@@ -50,7 +53,7 @@ export function SentryTestButtons() {
   return (
     <Stack gap={12} padding={16}>
       <Text>Sentry Integration Tests</Text>
-      <Text color="$gray11">
+      <Text style={{ color: colors.text[t].secondary }}>
         Use these buttons to verify Sentry is capturing errors correctly. Check your Sentry
         dashboard after clicking.
       </Text>
@@ -77,7 +80,7 @@ export function SentryTestButtons() {
         </Button>
       </Stack>
 
-      <Text color="$gray10" style={{ marginTop: 12 }}>
+      <Text style={{ marginTop: 12, color: colors.text[t].secondary }}>
         ⚠️ Remove these test buttons before production deployment
       </Text>
     </Stack>

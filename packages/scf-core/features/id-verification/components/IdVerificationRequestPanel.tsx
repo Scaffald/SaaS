@@ -14,7 +14,8 @@ import { useToast } from '@scaffald/ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
 import { ResponsiveSelect } from '@scaffald/ui'
-import { Button, Input, Label, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Input, Label, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useQueryClient } from '@tanstack/react-query'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
@@ -44,6 +45,8 @@ export function IdVerificationRequestPanel({
   selectedOrganizationId,
   onOrganizationChange,
 }: IdVerificationRequestPanelProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const toast = useToast()
   const queryClient = useQueryClient()
 
@@ -170,10 +173,10 @@ export function IdVerificationRequestPanel({
   const workerPlaceholder = workersQuery.isLoading ? 'Loading workers…' : 'Select worker'
 
   return (
-    <Stack gap={16} padding="md" borderWidth={1} borderColor="$borderColor" borderRadius={16}>
+    <Stack gap={16} padding="md" borderRadius={16} style={{ borderWidth: 1, borderColor: colors.border[t].default }}>
       <Stack gap={4}>
-        <Text color="$gray11">Trigger Verification</Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[t].secondary }}>Trigger Verification</Text>
+        <Text style={{ color: colors.text[t].secondary }}>
           Collect payment and generate a Persona inquiry on behalf of an organization.
         </Text>
       </Stack>
@@ -260,7 +263,7 @@ export function IdVerificationRequestPanel({
         </Button>
       ) : null}
 
-      {paymentError ? <Text color="$red11">{paymentError}</Text> : null}
+      {paymentError ? <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>{paymentError}</Text> : null}
 
       {paymentSession?.clientSecret ? (
         <PaymentIntentForm
@@ -289,12 +292,12 @@ export function IdVerificationRequestPanel({
         </Button>
       ) : null}
 
-      <Stack gap={8} backgroundColor="$color2" padding="sm" borderRadius={16}>
+      <Stack gap={8} padding="sm" borderRadius={16} style={{ backgroundColor: colors.bg[t].muted }}>
         <Row gap={8} align="center">
-          <ShieldCheck size="md" color="$gray11" />
-          <Text color="$gray11">What happens next?</Text>
+          <ShieldCheck size="md" color={colors.text[t].secondary} />
+          <Text style={{ color: colors.text[t].secondary }}>What happens next?</Text>
         </Row>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[t].secondary }}>
           After payment succeeds we automatically create a Persona inquiry using the worker&apos;s
           profile details. They receive an email and in-app notification with a secure link to
           upload their government ID. Most verifications finish within minutes.

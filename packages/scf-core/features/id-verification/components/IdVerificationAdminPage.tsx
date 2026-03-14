@@ -17,6 +17,7 @@ import {
   Text,
   Row,
   Stack,
+  useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
@@ -74,6 +75,8 @@ export function IdVerificationAdminPage({
   selectedOrganizationId,
   onOrganizationChange,
 }: IdVerificationAdminPageProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
   const [searchValue, setSearchValue] = useState('')
   const debouncedSearch = useDebounce(searchValue, 400)
@@ -115,9 +118,9 @@ export function IdVerificationAdminPage({
         header: 'Worker',
         cell: ({ row }: CellContext<IdVerificationListItem, unknown>) => (
           <Stack>
-            <Text color="$gray11">{row.original.workerName}</Text>
+            <Text style={{ color: colors.text[t].secondary }}>{row.original.workerName}</Text>
             {row.original.workerEmail ? (
-              <Text color="$gray11">{row.original.workerEmail}</Text>
+              <Text style={{ color: colors.text[t].secondary }}>{row.original.workerEmail}</Text>
             ) : null}
           </Stack>
         ),
@@ -130,7 +133,7 @@ export function IdVerificationAdminPage({
           const badgeKey = row.original.badgeStatus as Exclude<StatusFilter, 'all'>
           const meta = STATUS_META[badgeKey]
           if (!meta) {
-            return <Text color="$gray11">{row.original.badgeStatus}</Text>
+            return <Text style={{ color: colors.text[t].secondary }}>{row.original.badgeStatus}</Text>
           }
           return (
             <Text
@@ -205,7 +208,7 @@ export function IdVerificationAdminPage({
           formatCurrency(row.original.priceCents ?? 0),
       },
     ]
-  }, [])
+  }, [t])
 
   const handleOrganizationChange = (value: string) => {
     if (value === '__all__') {
@@ -244,22 +247,20 @@ export function IdVerificationAdminPage({
             <Card
               key={item.label}
               padding="sm"
-              style={{ flex: 1, minWidth: 200, borderColor: colors.gray[200], borderWidth: 1 }}
+              style={{ flex: 1, minWidth: 200, borderColor: colors.border[t].default, borderWidth: 1 }}
             >
-              <Text style={{ color: colors.gray[600] }}>{item.label}</Text>
+              <Text style={{ color: colors.text[t].tertiary }}>{item.label}</Text>
               <Text style={{ color: item.color }}>{item.value}</Text>
             </Card>
           ))}
         </Row>
 
         <Stack gap={8}>
-          <Text color="$gray11">Badge status filter</Text>
+          <Text style={{ color: colors.text[t].secondary }}>Badge status filter</Text>
           <Row
-            backgroundColor={colors.gray[50]}
+            style={{ backgroundColor: colors.bg[t].subtle, borderColor: colors.border[t].default, overflow: 'hidden' }}
             borderRadius={16}
             borderWidth={1}
-            borderColor={colors.gray[200]}
-            style={{ overflow: 'hidden' }}
           >
             <Tabs
               value={statusFilter}
@@ -275,7 +276,7 @@ export function IdVerificationAdminPage({
         </Stack>
 
         <Stack gap={8}>
-          <Text color="$gray11">Organization</Text>
+          <Text style={{ color: colors.text[t].secondary }}>Organization</Text>
           <ResponsiveSelect
             value={selectedOrganizationId ?? '__all__'}
             onValueChange={handleOrganizationChange}
@@ -297,7 +298,7 @@ export function IdVerificationAdminPage({
           {isLoadingOrganizations ? (
             <Row gap={8} align="center">
               <Spinner size="sm" />
-              <Text color="$gray11">Loading organizations…</Text>
+              <Text style={{ color: colors.text[t].secondary }}>Loading organizations…</Text>
             </Row>
           ) : null}
         </Stack>

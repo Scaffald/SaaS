@@ -79,7 +79,7 @@ const getStatusColors = (
     bg: theme === "light" ? colors.error[50] : colors.error[900],
     text: theme === "light" ? colors.error[700] : colors.error[300],
   },
-  cancelled: { bg: "$color4", text: colors.text[theme].secondary },
+  cancelled: { bg: colors.bg[theme].muted, text: colors.text[theme].secondary },
   appealed: {
     bg: theme === "light" ? colors.yellow[50] : colors.yellow[900],
     text: theme === "light" ? colors.yellow[700] : colors.yellow[300],
@@ -92,7 +92,7 @@ const getStatusColors = (
 const getPriorityColors = (
   theme: "light" | "dark"
 ): Record<string, { bg: string; text: string }> => ({
-  low: { bg: "$color4", text: colors.text[theme].secondary },
+  low: { bg: colors.bg[theme].muted, text: colors.text[theme].secondary },
   medium: {
     bg: theme === "light" ? colors.yellow[50] : colors.yellow[900],
     text: theme === "light" ? colors.yellow[700] : colors.yellow[300],

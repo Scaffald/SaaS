@@ -2,11 +2,14 @@ import { useFollowers } from '@scf/core/utils/engagement-sdk-hooks'
 import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
-import { Avatar, Input, SkeletonList, Table, Text, Row, Stack } from '@scaffald/ui'
+import { Avatar, Input, SkeletonList, Table, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 import type { Follow } from '@scaffald/sdk/resources/follows'
 
 export function FollowersList() {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [searchTerm, setSearchTerm] = useState('')
 
   const { data: followersResponse, isLoading } = useFollowers()
@@ -55,11 +58,11 @@ export function FollowersList() {
         header: 'Following Since',
         cell: ({ row }) => {
           const date = row.original.created_at
-          return <Text color="$gray11">{date ? new Date(date).toLocaleDateString() : '-'}</Text>
+          return <Text style={{ color: colors.text[t].secondary }}>{date ? new Date(date).toLocaleDateString() : '-'}</Text>
         },
       },
     ],
-    []
+    [t]
   )
 
   const tableColumns = useMemo(
@@ -83,16 +86,16 @@ export function FollowersList() {
         <Stack
           gap={12}
           borderWidth={1}
-          borderColor="$borderColor"
+          borderColor={colors.border[t].default}
           borderRadius={16}
           padding="md"
-          backgroundColor="$color2"
+          backgroundColor={colors.bg[t].muted}
           align="center"
           justify="center"
           style={{ minHeight: 300 }}
         >
           <Text>No followers yet</Text>
-          <Text color="$gray11" style={{ textAlign: 'center' }}>
+          <Text style={{ color: colors.text[t].secondary, textAlign: 'center' }}>
             {searchTerm
               ? 'No followers match your search.'
               : "You don't have any followers yet. Build your profile to attract followers."}

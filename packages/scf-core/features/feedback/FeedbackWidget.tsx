@@ -17,6 +17,7 @@ import {
   UploadSurface,
   Row,
   Stack,
+  useThemeContext,
 } from '@scaffald/ui'
 import { Image } from 'expo-image'
 import { MessageCircle } from 'lucide-react-native'
@@ -45,6 +46,8 @@ function toScreenshotSource(selection: UploadSelection): FeedbackScreenshotSourc
 }
 
 export function FeedbackWidget() {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [isModalOpen, setIsModalOpen] = useState(false)
   const context = useFeedbackContext()
   const { form, characterCount, isBelowMinimum, screenshot, setScreenshot, reset } =
@@ -114,13 +117,10 @@ export function FeedbackWidget() {
             marginTop={8}
             paddingHorizontal={12}
             paddingVertical={8}
-            backgroundColor="$yellow4"
-            borderWidth={1}
-            borderColor="$yellow6"
             borderRadius={12}
-            style={{ maxWidth: 220 }}
+            style={{ backgroundColor: t === 'dark' ? colors.yellow[800] : colors.yellow[100], borderWidth: 1, borderColor: t === 'dark' ? colors.yellow[600] : colors.yellow[400], maxWidth: 220 }}
           >
-            <Text color="$yellow10">
+            <Text style={{ color: t === 'dark' ? colors.yellow[300] : colors.yellow[600] }}>
               {pendingCount === 1
                 ? "1 submission will sync when you're online."
                 : `${pendingCount} submissions will sync when you're online.`}
@@ -137,7 +137,7 @@ export function FeedbackWidget() {
       >
         <ScrollView showsVerticalScrollIndicator={false}>
           <Stack gap={16} paddingHorizontal={8} paddingVertical={8}>
-            <Paragraph color="$gray11">{INSTRUCTIONS}</Paragraph>
+            <Paragraph style={{ color: colors.text[t].secondary }}>{INSTRUCTIONS}</Paragraph>
 
             <Stack gap={8}>
               <Text>Feedback Type</Text>
@@ -196,7 +196,7 @@ export function FeedbackWidget() {
                       : undefined)
                   }
                 />
-                <Text color={isBelowMinimum ? '$red9' : '$color9'}>
+                <Text style={{ color: isBelowMinimum ? colors.error[t === 'dark' ? 400 : 500] : colors.text[t].tertiary }}>
                   {formatCharacterCounter(characterCount)}
                 </Text>
               </Row>
@@ -224,13 +224,13 @@ export function FeedbackWidget() {
                     style={{
                       borderWidth: 1,
                       borderStyle: 'dashed',
-                      backgroundColor: colors.gray[50],
-                      borderColor: isDragActive ? colors.info[200] : colors.gray[200],
+                      backgroundColor: colors.bg[t].subtle,
+                      borderColor: isDragActive ? colors.border[t].info : colors.border[t].default,
                     }}
                   >
                     <input {...getInputProps()} />
                     <Text>{isProcessing ? 'Processing...' : 'Drag & drop a screenshot'}</Text>
-                    <Text style={{ color: colors.gray[500] }}>
+                    <Text style={{ color: colors.text[t].tertiary }}>
                       Accepted formats: PNG, JPG, JPEG, GIF, WebP (max 5MB)
                     </Text>
                     <Stack style={{ marginTop: 8 }}>
@@ -246,7 +246,7 @@ export function FeedbackWidget() {
                 <Stack
                   marginTop={12}
                   borderWidth={1}
-                  borderColor={colors.gray[200]}
+                  borderColor={colors.border[t].default}
                   borderRadius={16}
                   style={{ overflow: 'hidden' }}
                 >
@@ -262,14 +262,14 @@ export function FeedbackWidget() {
                     paddingVertical={8}
                     align="center"
                     justify="space-between"
-                    backgroundColor="$color2"
+                    style={{ backgroundColor: colors.bg[t].muted }}
                     gap={8}
                   >
                     <Stack flex={1}>
                       <Text>
                         {screenshot.kind === 'web' ? screenshot.file.name : screenshot.name}
                       </Text>
-                      <Text style={{ color: colors.gray[500] }}>
+                      <Text style={{ color: colors.text[t].tertiary }}>
                         {screenshot.kind === 'web'
                           ? screenshot.file.type || 'image'
                           : screenshot.mimeType}
@@ -287,9 +287,9 @@ export function FeedbackWidget() {
 
             <Row align="center" justify="space-between" gap={12}>
               <Stack gap={4}>
-                <Text style={{ color: colors.gray[500] }}>Captured context:</Text>
-                <Text style={{ color: colors.gray[500] }}>{context.pageUrl}</Text>
-                <Text style={{ color: colors.gray[500] }}>
+                <Text style={{ color: colors.text[t].tertiary }}>Captured context:</Text>
+                <Text style={{ color: colors.text[t].tertiary }}>{context.pageUrl}</Text>
+                <Text style={{ color: colors.text[t].tertiary }}>
                   {context.browserName
                     ? `${context.browserName} ${context.browserVersion ?? ''}`.trim()
                     : context.userAgent}

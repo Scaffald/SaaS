@@ -13,19 +13,19 @@ export const CONFIDENCE_BADGES: Record<ConfidenceLevel, ConfidenceBadgeConfig> =
       level: "high",
       label: "High Confidence",
       description: "Looks great—feel free to import as-is.",
-      colorToken: "$green9",
+      colorToken: "#30a46c",
     },
     medium: {
       level: "medium",
       label: "Review Suggested",
       description: "We recommend double-checking before importing.",
-      colorToken: "$yellow9",
+      colorToken: "#f5d90a",
     },
     low: {
       level: "low",
       label: "Needs Review",
       description: "Please confirm or edit the details before importing.",
-      colorToken: "$red9",
+      colorToken: "#e5484d",
     },
   };
 

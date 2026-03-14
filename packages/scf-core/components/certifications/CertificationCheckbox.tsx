@@ -1,5 +1,6 @@
 import { Link } from 'lucide-react-native'
-import { Button, Checkbox, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Checkbox, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface Certification {
   id: string
@@ -28,6 +29,9 @@ export function CertificationCheckbox({
   onAddProof,
   disabled = false,
 }: CertificationCheckboxProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   return (
     <Stack gap={8}>
       <Row gap={12} style={{ alignItems: 'flex-start' }}>
@@ -35,7 +39,7 @@ export function CertificationCheckbox({
 
         <Stack style={{ flex: 1 }} gap={4}>
           <Text>{certification.title}</Text>
-          {certification.description && <Text color="$gray11">{certification.description}</Text>}
+          {certification.description && <Text style={{ color: colors.text[t].secondary }}>{certification.description}</Text>}
         </Stack>
 
         {checked && onAddProof && (

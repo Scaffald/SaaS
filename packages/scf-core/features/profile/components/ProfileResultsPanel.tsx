@@ -1,6 +1,7 @@
 import { DashboardWidget } from '@scaffald/ui'
 import type { ComponentType, ReactNode } from 'react'
-import { ScrollView, Spinner, Text, Stack, type StackProps } from '@scaffald/ui'
+import { ScrollView, Spinner, Text, Stack, type StackProps, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface ProfileResultsPanelProps extends StackProps {
   /** Child content for results */
@@ -46,6 +47,9 @@ export function ProfileResultsPanel({
   showScrollbar = false,
   ...props
 }: ProfileResultsPanelProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   return (
     <ScrollView showsVerticalScrollIndicator={showScrollbar}>
       <DashboardWidget>
@@ -59,7 +63,7 @@ export function ProfileResultsPanel({
             </Stack>
           ) : isEmpty ? (
             <Stack align="center" justify="center" padding={32} gap={12}>
-              {EmptyIcon && <EmptyIcon size={48} color="$gray11" />}
+              {EmptyIcon && <EmptyIcon size={48} color={colors.text[t].secondary} />}
               <Text style={{ color: '#414e62', textAlign: 'center' }}>
                 {emptyMessage || 'No items added yet'}
               </Text>

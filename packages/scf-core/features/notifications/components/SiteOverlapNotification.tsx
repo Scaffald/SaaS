@@ -1,7 +1,8 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { AlertTriangle, MapPin, MessageSquare, X } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { Button, Card, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 export interface SiteOverlapNotificationProps {
   notificationId: string
@@ -29,6 +30,8 @@ export function SiteOverlapNotification({
   onDismiss,
 }: SiteOverlapNotificationProps) {
   const router = useRouter()
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
 
   const handleRequestSurveyData = async () => {
     // TODO: Implement message sending to project owners
@@ -52,23 +55,23 @@ export function SiteOverlapNotification({
   }
 
   return (
-    <Card padding="md" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={2}>
+    <Card padding="md" style={{ backgroundColor: t === 'dark' ? colors.yellow[900] : colors.yellow[50], borderColor: t === 'dark' ? colors.yellow[600] : colors.yellow[300], borderWidth: 2 }}>
       <Stack gap={16}>
         <Row gap={12} align="flex-start">
-          <AlertTriangle size={24} color="$yellow11" />
+          <AlertTriangle size={24} color={t === 'dark' ? colors.yellow[300] : colors.yellow[700]} />
           <Stack flex={1} gap={8}>
-            <Text color="$yellow11">Site Overlap Detected</Text>
-            <Text color="$gray11">
+            <Text style={{ color: t === 'dark' ? colors.yellow[300] : colors.yellow[700] }}>Site Overlap Detected</Text>
+            <Text style={{ color: colors.text[t].secondary }}>
               Site boundaries overlap by {overlapPercent}% (threshold: {threshold}%)
             </Text>
             <Row gap={8} wrap>
-              <Card padding="sm" backgroundColor="$yellow3" radius="md">
+              <Card padding="sm" style={{ backgroundColor: t === 'dark' ? colors.yellow[800] : colors.yellow[100], borderRadius: 8 }}>
                 <Row gap={8} align="center">
                   <MapPin size={24} />
                   <Text>Site 1: {siteId.slice(0, 8)}...</Text>
                 </Row>
               </Card>
-              <Card padding="sm" backgroundColor="$yellow3" radius="md">
+              <Card padding="sm" style={{ backgroundColor: t === 'dark' ? colors.yellow[800] : colors.yellow[100], borderRadius: 8 }}>
                 <Row gap={8} align="center">
                   <MapPin size={24} />
                   <Text>Site 2: {overlappingSiteId.slice(0, 8)}...</Text>

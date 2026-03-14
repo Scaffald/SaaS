@@ -1,5 +1,6 @@
 import { memo } from 'react'
-import { Input, Text, TextArea, Row, Stack } from '@scaffald/ui'
+import { Input, Text, TextArea, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { toConfidenceLevel } from '../utils/importConfidence'
 import { ConfidenceBadge } from './ConfidenceBadge'
 
@@ -16,7 +17,7 @@ export interface EditableFieldProps {
   required?: boolean
 }
 
-export const EditableField = memo(function EditableField({
+export const EditableField = memo(function EditableFieldInner({
   label,
   value,
   fieldType = 'text',
@@ -26,6 +27,8 @@ export const EditableField = memo(function EditableField({
   error,
   required = false,
 }: EditableFieldProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const confidenceLevel = toConfidenceLevel(confidenceScore)
   const inputValue = value ?? ''
 
@@ -50,7 +53,7 @@ export const EditableField = memo(function EditableField({
         <Input value={inputValue} onChangeText={onChange} placeholder={placeholder} />
       )}
 
-      {error && <Text color="$red10">{error}</Text>}
+      {error && <Text style={{ color: colors.fg[t].error }}>{error}</Text>}
     </Stack>
   )
 })

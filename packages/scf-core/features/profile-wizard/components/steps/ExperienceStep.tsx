@@ -3,7 +3,8 @@ import { MonthYearPicker } from "../../../profile/components/MonthYearPicker";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Input, Paragraph, Text, Row, Stack } from "@scaffald/ui";
+import { Input, Paragraph, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import { z } from "zod";
 import type { ExperienceStepData } from "../../hooks/useProfileWizard";
 import { StepNavigation } from "../StepNavigation";
@@ -39,6 +40,9 @@ export function ExperienceStep({
   onSkip,
   onStepStateChange,
 }: WizardStepComponentProps<"experience">) {
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
+
   const {
     control,
     handleSubmit,
@@ -86,7 +90,7 @@ export function ExperienceStep({
     <Stack gap={16}>
       <Stack gap={8}>
         <Text>Add your latest experience</Text>
-        <Paragraph color="$gray11">
+        <Paragraph style={{ color: colors.text[t].secondary }}>
           Showcase your most recent role. You can add more later in your full
           profile.
         </Paragraph>
@@ -106,7 +110,7 @@ export function ExperienceStep({
           )}
         />
         {errors.jobTitle && (
-          <Text color="$red10">{errors.jobTitle.message}</Text>
+          <Text style={{ color: colors.error[500] }}>{errors.jobTitle.message}</Text>
         )}
       </Stack>
 
@@ -124,7 +128,7 @@ export function ExperienceStep({
           )}
         />
         {errors.companyName && (
-          <Text color="$red10">{errors.companyName.message}</Text>
+          <Text style={{ color: colors.error[500] }}>{errors.companyName.message}</Text>
         )}
       </Stack>
 

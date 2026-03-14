@@ -10,7 +10,9 @@ import {
   Text,
   Row,
   Stack,
+  useThemeContext,
 } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import { MonthYearPicker } from "../../../profile/components/MonthYearPicker";
 import type {
   CertificationEntry,
@@ -29,6 +31,8 @@ export function CertificationsStep({
   onSkip,
   onStepStateChange,
 }: WizardStepComponentProps<"certifications">) {
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
   const [certifications, setCertifications] = useState<CertificationEntry[]>(
     initialData?.certifications ?? []
   );
@@ -114,28 +118,28 @@ export function CertificationsStep({
     <Stack gap={16}>
       <Stack gap={8}>
         <Text>Add certifications & licenses</Text>
-        <Paragraph id={guidanceId} color="$gray11" aria-live="polite">
+        <Paragraph id={guidanceId} style={{ color: colors.text[t].secondary }} aria-live="polite">
           {helperCopy}
         </Paragraph>
       </Stack>
 
       <Stack gap={12}>
         {certifications.map((cert) => (
-          <Card key={cert.id ?? cert.name} bordered backgroundColor="$color2">
+          <Card key={cert.id ?? cert.name} bordered style={{ backgroundColor: colors.bg[t].muted }}>
             <CardHeader>
               <Stack gap={8}>
                 <Row justify="space-between" align="center">
                   <Stack gap={4}>
                     <Text>{cert.name}</Text>
-                    {cert.issuer && <Text color="$gray11">{cert.issuer}</Text>}
+                    {cert.issuer && <Text style={{ color: colors.text[t].secondary }}>{cert.issuer}</Text>}
                     <Row gap={8}>
                       {cert.issuedOn && (
-                        <Text color="$gray11">
+                        <Text style={{ color: colors.text[t].secondary }}>
                           Issued {formatDisplayDate(cert.issuedOn)}
                         </Text>
                       )}
                       {cert.expiresOn && (
-                        <Text color="$gray11">
+                        <Text style={{ color: colors.text[t].secondary }}>
                           • Expires {formatDisplayDate(cert.expiresOn)}
                         </Text>
                       )}

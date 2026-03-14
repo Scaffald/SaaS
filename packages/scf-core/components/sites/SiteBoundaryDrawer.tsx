@@ -1,7 +1,8 @@
 import type { MapCoordinate } from '@scaffald/ui'
 import { Edit3, Plus, Trash2 } from 'lucide-react-native'
 import { useEffect, useRef, useState } from 'react'
-import { Button, Card, Input, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Card, Input, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 /** Polygon boundary as array of [lng, lat] coordinates */
 export type Boundary = MapCoordinate[]
@@ -53,6 +54,9 @@ export function SiteBoundaryDrawer({
   center = [-84.5555, 42.7325],
   zoom: _zoom = 12,
 }: SiteBoundaryDrawerProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light' as const
+
   const [coordinates, setCoordinates] = useState<Boundary>(boundary)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const mapContainerRef = useRef<HTMLDivElement>(null)
@@ -103,9 +107,9 @@ export function SiteBoundaryDrawer({
           {/* Map Container - TODO: Integrate Mapbox GL Draw */}
           <Card
             padding="md"
-            style={{ backgroundColor: '$gray2', minHeight: 400, borderRadius: 16 }}
+            style={{ backgroundColor: colors.bg[t].muted, minHeight: 400, borderRadius: 16 }}
           >
-            <Text color="$gray10" style={{ textAlign: 'center' }}>
+            <Text style={{ color: colors.text[t].tertiary, textAlign: 'center' }}>
               Map display with interactive polygon drawing coming soon.
               {'\n'}
               This will use Mapbox GL Draw for click-to-add-point functionality.
@@ -115,7 +119,7 @@ export function SiteBoundaryDrawer({
               style={{
                 width: '100%',
                 height: '400px',
-                backgroundColor: '#f0f0f0',
+                backgroundColor: colors.bg[t].muted,
                 borderRadius: '8px',
               }}
             />
@@ -125,9 +129,9 @@ export function SiteBoundaryDrawer({
           {areaSqft > 0 && (
             <Card
               padding="md"
-              style={{ backgroundColor: '$blue2', borderColor: '$blue8', borderWidth: 1 }}
+              style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50], borderColor: t === 'dark' ? colors.blue[700] : colors.blue[300], borderWidth: 1 }}
             >
-              <Text color="$blue11">
+              <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>
                 Calculated Area: {areaSqft.toLocaleString(undefined, { maximumFractionDigits: 2 })}{' '}
                 sq ft
               </Text>
@@ -138,18 +142,18 @@ export function SiteBoundaryDrawer({
           <Stack gap={8}>
             <Text>Boundary Coordinates</Text>
             {coordinates.length === 0 ? (
-              <Text color="$gray10">No points added yet. Click "Add Point" to start drawing.</Text>
+              <Text style={{ color: colors.text[t].tertiary }}>No points added yet. Click "Add Point" to start drawing.</Text>
             ) : (
               <Stack gap={8}>
                 {coordinates.map((coord: MapCoordinate, index: number) => (
                   <Card
                     key={`${coord[0]}-${coord[1]}-${index}`}
                     padding="sm"
-                    style={{ backgroundColor: '$gray2' }}
+                    style={{ backgroundColor: colors.bg[t].muted }}
                   >
                     <Row gap={8} align="center" justify="space-between">
                       <Row gap={8} style={{ flex: 1 }}>
-                        <Text color="$gray10">Point {index + 1}:</Text>
+                        <Text style={{ color: colors.text[t].tertiary }}>Point {index + 1}:</Text>
                         {editingIndex === index ? (
                           <Row gap={8} style={{ flex: 1 }}>
                             <Input
@@ -206,7 +210,7 @@ export function SiteBoundaryDrawer({
           {coordinates.length > 0 && (
             <Button
               color="error"
-              style={{ backgroundColor: '$red9' }}
+              style={{ backgroundColor: t === 'dark' ? colors.error[400] : colors.error[500] }}
               onPress={() => {
                 setCoordinates([])
                 onBoundaryChange?.([])

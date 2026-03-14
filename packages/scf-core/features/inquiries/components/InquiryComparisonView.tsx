@@ -1,5 +1,6 @@
 import { useMultipleInquiries } from '@scf/core/utils/inquiries-sdk-hooks'
-import { Button, ScrollView, Text, Row, Stack } from '@scaffald/ui'
+import { Button, ScrollView, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useMemo } from 'react'
 import { ComparisonColumn, type InquiryComparisonRecord } from './ComparisonColumn'
 
@@ -14,6 +15,8 @@ export function InquiryComparisonView({
   onClose,
   onRemoveInquiry,
 }: InquiryComparisonViewProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const { data, isLoading, error } = useMultipleInquiries(inquiryIds)
   const inquiries = data as InquiryComparisonRecord[] | undefined
 
@@ -100,7 +103,7 @@ export function InquiryComparisonView({
   if (error || !inquiries || inquiries.length === 0) {
     return (
       <Stack padding="md" align="center" gap={16}>
-        <Text color="$red10">Failed to load inquiries for comparison</Text>
+        <Text style={{ color: colors.error[500] }}>Failed to load inquiries for comparison</Text>
         {onClose && (
           <Button variant="outline" onPress={onClose}>
             Close
@@ -116,11 +119,11 @@ export function InquiryComparisonView({
       <Row justify="space-between" align="center">
         <Stack gap={4}>
           <Text>Compare Inquiries</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[t].secondary }}>
             Comparing {inquiries.length} candidate{inquiries.length !== 1 ? 's' : ''}
           </Text>
           {summary && summary.uniqueStatuses.size > 1 && (
-            <Text color="$gray11">
+            <Text style={{ color: colors.text[t].secondary }}>
               Highlighted rows indicate differing terms between candidates.
             </Text>
           )}

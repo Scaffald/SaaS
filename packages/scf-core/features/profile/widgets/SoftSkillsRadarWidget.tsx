@@ -41,6 +41,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
   const router = useRouter();
   const toast = useToast();
   const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] =
     useState<SoftSkillCategory>("reliability");
@@ -134,8 +135,8 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text color="$red10">Failed to load soft skills</Text>
-          <Text color="$gray11">{error.message}</Text>
+          <Text style={{ color: t === 'light' ? colors.error[700] : colors.error[300] }}>Failed to load soft skills</Text>
+          <Text style={{ color: colors.text[t].secondary }}>{error.message}</Text>
         </Stack>
       </DashboardWidget>
     );

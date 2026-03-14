@@ -7,10 +7,11 @@ import {
 import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import type { ConnectionRequest } from '@scaffald/sdk/resources/connections'
 import type { ColumnDef } from '@tanstack/react-table'
-import { useToast } from '@scaffald/ui'
+import { useToast, useThemeContext } from '@scaffald/ui'
 import { CheckCircle2, X } from 'lucide-react-native'
 import { useCallback, useMemo } from 'react'
 import { Avatar, Button, Separator, SkeletonList, Table, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useQueryClient } from '@tanstack/react-query'
 
 type PendingRequest = ConnectionRequest & { type: 'sent' }
@@ -18,6 +19,8 @@ type ReceivedRequest = ConnectionRequest & { type: 'received' }
 type RequestRow = PendingRequest | ReceivedRequest
 
 export function PendingRequestsList() {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const queryClient = useQueryClient()
   const toast = useToast()
 
@@ -135,7 +138,7 @@ export function PendingRequestsList() {
               />
               <Stack gap={4}>
                 <Text>{name}</Text>
-                <Text color="$gray11">{request.type === 'sent' ? 'Sent' : 'Received'}</Text>
+                <Text style={{ color: colors.text[t].secondary }}>{request.type === 'sent' ? 'Sent' : 'Received'}</Text>
               </Stack>
             </Row>
           )
@@ -146,7 +149,7 @@ export function PendingRequestsList() {
         header: 'Date',
         cell: ({ row }) => {
           const date = row.original.created_at
-          return <Text color="$gray11">{date ? new Date(date).toLocaleDateString() : '-'}</Text>
+          return <Text style={{ color: colors.text[t].secondary }}>{date ? new Date(date).toLocaleDateString() : '-'}</Text>
         },
       },
       {
@@ -193,6 +196,7 @@ export function PendingRequestsList() {
       },
     ],
     [
+      t,
       acceptMutation.isPending,
       declineMutation.isPending,
       cancelMutation.isPending,
@@ -219,16 +223,16 @@ export function PendingRequestsList() {
       <Stack
         gap={12}
         borderWidth={1}
-        borderColor="$borderColor"
+        borderColor={colors.border[t].default}
         borderRadius={16}
         padding="md"
-        backgroundColor="$color2"
+        backgroundColor={colors.bg[t].muted}
         align="center"
         justify="center"
         style={{ minHeight: 300 }}
       >
         <Text>No pending requests</Text>
-        <Text color="$gray11" style={{ textAlign: 'center' }}>
+        <Text style={{ color: colors.text[t].secondary, textAlign: 'center' }}>
           You don't have any pending connection requests. Send connection requests to build your
           network.
         </Text>

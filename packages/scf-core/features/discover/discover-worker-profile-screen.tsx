@@ -15,7 +15,8 @@ import type { ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
 import type { DimensionValue } from 'react-native'
 import { Animated, Easing, Platform } from 'react-native'
-import { Text, Row, Stack } from '@scaffald/ui'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 const SHIMMER_WIDTH = 220
 
@@ -200,6 +201,8 @@ function createSkeletonLayout(): DiscoverWorkerProfileScreenResult {
 export function DiscoverWorkerProfileScreen({
   userId,
 }: DiscoverWorkerProfileScreenOptions): DiscoverWorkerProfileScreenResult {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const safeUserId = typeof userId === 'string' ? userId : null
   const { session } = useSessionContext()
   const currentUserId = session?.user?.id
@@ -221,8 +224,8 @@ export function DiscoverWorkerProfileScreen({
     const errorWidget = (
       <DashboardWidget>
         <Stack align="center" justify="center" gap={8} paddingVertical={32}>
-          <Text color="$red10">Worker not found</Text>
-          <Text color="$gray11">Select a worker from the list to view their profile.</Text>
+          <Text style={{ color: colors.text[t].secondary }}>Worker not found</Text>
+          <Text style={{ color: colors.text[t].secondary }}>Select a worker from the list to view their profile.</Text>
         </Stack>
       </DashboardWidget>
     )
@@ -244,8 +247,8 @@ export function DiscoverWorkerProfileScreen({
     const unavailableWidget = (
       <DashboardWidget>
         <Stack align="center" justify="center" gap={8} paddingVertical={32}>
-          <Text color="$red10">Profile unavailable</Text>
-          <Text color="$gray11" style={{ textAlign: 'center' }}>
+          <Text style={{ color: colors.text[t].secondary }}>Profile unavailable</Text>
+          <Text style={{ color: colors.text[t].secondary, textAlign: 'center' }}>
             We couldn&apos;t load this worker profile. Please try another worker.
           </Text>
         </Stack>

@@ -1,7 +1,8 @@
 import { Popover, Switch } from '@scaffald/ui'
 import { ChevronDown, SlidersHorizontal } from 'lucide-react-native'
 import { useMemo, useState } from 'react'
-import { Button, Label, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Label, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type FilterDropdownProps = {
   showWorkers?: boolean
@@ -32,6 +33,8 @@ export const FilterDropdown = ({
   onShowOrganizationsChange,
   onShowJobsChange,
 }: FilterDropdownProps) => {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [isOpen, setIsOpen] = useState(false)
 
   // Calculate how many filter types are currently active
@@ -63,7 +66,7 @@ export const FilterDropdown = ({
               accessibilityLabel={showWorkers ? 'Showing workers on map' : 'Hiding workers on map'}
             />
           </Row>
-          <Text color="$gray11" style={{ paddingLeft: 4 }}>
+          <Text style={{ paddingLeft: 4, color: colors.text[t].secondary }}>
             Show worker profiles on the map
           </Text>
         </Stack>
@@ -82,7 +85,7 @@ export const FilterDropdown = ({
               }
             />
           </Row>
-          <Text color="$gray11" style={{ paddingLeft: 4 }}>
+          <Text style={{ paddingLeft: 4, color: colors.text[t].secondary }}>
             Show employer organizations on the map
           </Text>
         </Stack>
@@ -97,7 +100,7 @@ export const FilterDropdown = ({
               accessibilityLabel={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
             />
           </Row>
-          <Text color="$gray11" style={{ paddingLeft: 4 }}>
+          <Text style={{ paddingLeft: 4, color: colors.text[t].secondary }}>
             Show job openings on the map
           </Text>
         </Stack>

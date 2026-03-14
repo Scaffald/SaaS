@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { ScrollView } from 'react-native'
-import { Text, Stack, Row, Button, Input, Separator } from '@scaffald/ui'
+import { Text, Stack, Row, Button, Input, Separator, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import { useQueryClient } from '@tanstack/react-query'
 import {
@@ -27,6 +28,8 @@ const POST_TYPES: { value: PostType; label: string; description: string }[] = [
 ]
 
 export function PostComposer({ communitySlug }: Props) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const router = useRouter()
   const queryClient = useQueryClient()
   const { data: communityData } = useCommunity(communitySlug)
@@ -71,7 +74,7 @@ export function PostComposer({ communitySlug }: Props) {
       <Stack gap={20}>
         <Stack gap={4}>
           <Text style={{ fontSize: 24, fontWeight: '700' }}>Create Post</Text>
-          <Text color="$gray11">Share with the {community?.name || ''} community</Text>
+          <Text style={{ color: colors.text[t].secondary }}>Share with the {community?.name || ''} community</Text>
         </Stack>
 
         {/* Post Type Selector */}
@@ -89,8 +92,8 @@ export function PostComposer({ communitySlug }: Props) {
               </Button>
             ))}
           </Row>
-          <Text color="$gray11" style={{ fontSize: 13 }}>
-            {POST_TYPES.find((t) => t.value === postType)?.description}
+          <Text style={{ color: colors.text[t].secondary, fontSize: 13 }}>
+            {POST_TYPES.find((pt) => pt.value === postType)?.description}
           </Text>
         </Stack>
 
@@ -129,7 +132,7 @@ export function PostComposer({ communitySlug }: Props) {
         {/* Skill Tags */}
         <Stack gap={4}>
           <Text style={{ fontWeight: '600' }}>Skill Tags</Text>
-          <Text color="$gray11" style={{ fontSize: 13 }}>
+          <Text style={{ color: colors.text[t].secondary, fontSize: 13 }}>
             Tag relevant skills to help others find your post
           </Text>
           <SkillTagPicker
@@ -154,7 +157,7 @@ export function PostComposer({ communitySlug }: Props) {
                 borderColor: '#ccc',
               }}
             >
-              <Text color="$gray11">Tap to upload images or video</Text>
+              <Text style={{ color: colors.text[t].secondary }}>Tap to upload images or video</Text>
             </Stack>
           </Stack>
         )}
