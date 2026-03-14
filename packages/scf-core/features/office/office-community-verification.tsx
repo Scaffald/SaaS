@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { ScrollView } from 'react-native'
-import { Text, Stack, Row, Card, Button, Input, H4, Spinner } from '@scaffald/ui'
+import { Text, Stack, Row, Card, Button, Input, H4, Spinner, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   useVerificationQueue,
@@ -10,6 +11,8 @@ import {
 import type { PendingVerification } from '@scaffald/sdk/resources/office-communities'
 
 export function OfficeCommunityVerificationScreen() {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const queryClient = useQueryClient()
   const { data, isLoading, error } = useVerificationQueue({ limit: 50 })
   const [processingIds, setProcessingIds] = useState<Set<string>>(new Set())
@@ -69,7 +72,7 @@ export function OfficeCommunityVerificationScreen() {
     return (
       <Stack align="center" justify="center" style={{ minHeight: 300 }}>
         <Spinner size="lg" />
-        <Text color="$gray11">Loading verification queue...</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Loading verification queue...</Text>
       </Stack>
     )
   }
@@ -77,7 +80,7 @@ export function OfficeCommunityVerificationScreen() {
   if (error) {
     return (
       <Stack align="center" justify="center" style={{ minHeight: 300 }}>
-        <Text color="$red10">Failed to load verification queue</Text>
+        <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>Failed to load verification queue</Text>
       </Stack>
     )
   }
@@ -92,7 +95,7 @@ export function OfficeCommunityVerificationScreen() {
               paddingHorizontal: 8,
               paddingVertical: 2,
               borderRadius: 4,
-              backgroundColor: '#f3f4f6',
+              backgroundColor: colors.bg[t].muted,
             }}
           >
             <Text style={{ fontSize: 12, fontWeight: '500' }}>{total} pending</Text>
@@ -102,7 +105,7 @@ export function OfficeCommunityVerificationScreen() {
         {queue.length === 0 ? (
           <Card variant="outlined">
             <Stack align="center" style={{ padding: 32 }}>
-              <Text color="$gray11">No pending verification requests</Text>
+              <Text style={{ color: colors.text[t].secondary }}>No pending verification requests</Text>
             </Stack>
           </Card>
         ) : (
@@ -150,6 +153,8 @@ function VerificationCard({
   onConfirmReject: () => void
   onRejectReasonChange: (val: string) => void
 }) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const vd = item.verification_data
 
   return (
@@ -162,7 +167,7 @@ function VerificationCard({
               {item.display_name || 'Unknown User'}
             </Text>
             {item.email && (
-              <Text color="$gray11" style={{ fontSize: 12 }}>
+              <Text style={{ color: colors.text[t].secondary, fontSize: 12 }}>
                 {item.email}
               </Text>
             )}
@@ -172,7 +177,7 @@ function VerificationCard({
               paddingHorizontal: 8,
               paddingVertical: 2,
               borderRadius: 4,
-              backgroundColor: '#dbeafe',
+              backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[100],
             }}
           >
             <Text style={{ fontSize: 12, fontWeight: '500' }}>{item.community_name}</Text>
@@ -184,37 +189,37 @@ function VerificationCard({
           gap={8}
           style={{
             padding: 12,
-            backgroundColor: '#f8f9fa',
+            backgroundColor: colors.bg[t].muted,
             borderRadius: 8,
           }}
         >
           <Text style={{ fontWeight: '500', fontSize: 13 }}>License Information</Text>
           <Row gap={24}>
             <Stack gap={2}>
-              <Text color="$gray11" style={{ fontSize: 11 }}>
+              <Text style={{ color: colors.text[t].secondary, fontSize: 11 }}>
                 State
               </Text>
               <Text style={{ fontSize: 14, fontWeight: '500' }}>{vd?.state || 'N/A'}</Text>
             </Stack>
             <Stack gap={2}>
-              <Text color="$gray11" style={{ fontSize: 11 }}>
+              <Text style={{ color: colors.text[t].secondary, fontSize: 11 }}>
                 License #
               </Text>
               <Text style={{ fontSize: 14, fontWeight: '500' }}>{vd?.license_number || 'N/A'}</Text>
             </Stack>
             <Stack gap={2}>
-              <Text color="$gray11" style={{ fontSize: 11 }}>
+              <Text style={{ color: colors.text[t].secondary, fontSize: 11 }}>
                 Type
               </Text>
               <Text style={{ fontSize: 14, fontWeight: '500' }}>{vd?.license_type || 'N/A'}</Text>
             </Stack>
           </Row>
-          <Text color="$gray11" style={{ fontSize: 11 }}>
+          <Text style={{ color: colors.text[t].secondary, fontSize: 11 }}>
             Submitted: {vd?.submitted_at ? new Date(vd.submitted_at).toLocaleDateString() : 'N/A'}
           </Text>
         </Stack>
 
-        <Text color="$gray11" style={{ fontSize: 11 }}>
+        <Text style={{ color: colors.text[t].secondary, fontSize: 11 }}>
           Joined: {new Date(item.joined_at).toLocaleDateString()}
         </Text>
 
