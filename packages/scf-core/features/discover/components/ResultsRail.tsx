@@ -1,8 +1,8 @@
 import { X } from 'lucide-react-native'
 import type { RefObject } from 'react'
 import { memo } from 'react'
-import { Platform } from 'react-native'
 import { Button, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { frostedGlassStyle } from '@scf/core/components/ui'
 import type { JobMapPin } from '../hooks/useJobs'
 import type { OrganizationMapPin } from '../hooks/useOrganizations'
 import type { TalentProfile } from '../types'
@@ -18,6 +18,8 @@ interface ResultsRailProps {
   isLoading?: boolean
   resultListRef?: RefObject<ResultListRef | null>
   onClose?: () => void
+  /** Called when a card is hovered (web only). Pass null on hover end. */
+  onCardHover?: (id: string | null) => void
 }
 
 const RAIL_WIDTH = 380
@@ -32,17 +34,12 @@ export const ResultsRail = memo(function ResultsRail({
   isLoading,
   resultListRef,
   onClose,
+  onCardHover,
 }: ResultsRailProps) {
   const { theme } = useThemeContext()
   const totalResults = (profiles?.length ?? 0) + (organizations?.length ?? 0) + (jobs?.length ?? 0)
 
-  const frostedBg = theme === 'dark'
-    ? 'rgba(30, 25, 20, 0.82)'
-    : 'rgba(251, 248, 243, 0.78)'
-
-  const borderColor = theme === 'dark'
-    ? 'rgba(80, 73, 64, 0.3)'
-    : 'rgba(237, 221, 201, 0.5)'
+  const borderColor = theme === 'dark' ? 'rgba(80, 73, 64, 0.3)' : 'rgba(237, 221, 201, 0.5)'
 
   return (
     <Stack
@@ -58,15 +55,11 @@ export const ResultsRail = memo(function ResultsRail({
         borderLeftWidth: 1,
         borderColor,
         zIndex: 10,
-        backgroundColor: frostedBg,
+        ...frostedGlassStyle(theme),
         transform: [{ translateX: isVisible ? 0 : RAIL_WIDTH }],
         // @ts-expect-error web-only CSS properties
         transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         boxShadow: isVisible ? '-4px 0 20px rgba(0,0,0,0.10)' : 'none',
-        ...(Platform.OS === 'web' ? {
-          backdropFilter: 'blur(20px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-        } : {}),
       }}
     >
       {/* Header */}
@@ -105,6 +98,7 @@ export const ResultsRail = memo(function ResultsRail({
           selectedId={selectedId}
           onSelect={onSelect}
           isLoading={isLoading}
+          onCardHover={onCardHover}
         />
       </Stack>
     </Stack>

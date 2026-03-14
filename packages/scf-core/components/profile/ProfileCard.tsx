@@ -3,44 +3,18 @@ import type { ComponentRef } from 'react'
 import { forwardRef, memo } from 'react'
 import { Image, View } from 'react-native'
 import { Card, Text, Row, Stack, Separator, useThemeContext } from '@scaffald/ui'
-
-// Brand-aligned color tokens (warm stone + primary teal)
-const T = {
-  light: {
-    avatarBg: '#e8f6f9',       // primary.50
-    avatarIcon: '#1d7282',     // primary.500
-    scoreBg: '#e8f6f9',        // primary.50
-    scoreText: '#1d7282',      // primary.500
-    rate: '#1d7282',           // primary.500
-    meta: '#6e6760',           // gray.500
-    metaDot: '#cdc8c0',        // gray.300
-    subtitle: '#6e6760',       // gray.500
-    skillBg: '#f1efeb',        // gray.100
-    skillText: '#504940',      // gray.600
-    certBg: '#e8f6f9',         // primary.50
-    certText: '#034550',       // primary.700
-    selectedBorder: '#1e96a8', // primary.400
-    placeholderBg: '#f1efeb',  // gray.100
-    overflow: '#9e9790',       // gray.400
-  },
-  dark: {
-    avatarBg: '#022d38',       // primary.800
-    avatarIcon: '#3fb5c7',     // primary.300
-    scoreBg: '#022d38',        // primary.800
-    scoreText: '#3fb5c7',      // primary.300
-    rate: '#3fb5c7',           // primary.300
-    meta: '#9e9790',           // gray.400
-    metaDot: '#504940',        // gray.600
-    subtitle: '#9e9790',       // gray.400
-    skillBg: '#3c352c',        // gray.700
-    skillText: '#cdc8c0',      // gray.300
-    certBg: '#022d38',         // primary.800
-    certText: '#7fd1de',       // primary.200
-    selectedBorder: '#3fb5c7', // primary.300
-    placeholderBg: '#3c352c',  // gray.700
-    overflow: '#6e6760',       // gray.500
-  },
-} as const
+import { colors } from '@scaffald/ui/tokens'
+import {
+  workerPalette,
+  badgeToneColors,
+  textSmall,
+  textCaption,
+  pillStyle,
+  iconCircleStyle,
+  MetricDot,
+  Pill,
+  OverflowCount,
+} from '@scf/core/components/ui'
 
 export interface ProfileBadge {
   id: string
@@ -87,13 +61,11 @@ export const ProfileCard = memo(
       forwardedRef
     ) => {
       const { theme } = useThemeContext()
-      const c = T[theme === 'dark' ? 'dark' : 'light']
+      const t = theme === 'dark' ? 'dark' : 'light'
+      const pal = workerPalette[t]
       const isCompact = variant === 'compact'
 
-      const metricParts: string[] = []
-      if (experienceYears) metricParts.push(`${experienceYears} yrs`)
-      if (hourlyRate) metricParts.push(`$${hourlyRate}/hr`)
-      if (locationLabel) metricParts.push(locationLabel)
+      const hasMetrics = (experienceYears ?? 0) > 0 || (hourlyRate ?? 0) > 0 || !!locationLabel
 
       return (
         <View ref={forwardedRef}>
@@ -102,12 +74,7 @@ export const ProfileCard = memo(
             onPress={onPress ? () => onPress(id) : undefined}
             padding="md"
             variant={isSelected ? 'elevated' : 'surface'}
-            style={[
-              isSelected && {
-                borderColor: c.selectedBorder,
-                borderWidth: 1,
-              },
-            ]}
+            style={[isSelected && { borderColor: pal.selectedBorder, borderWidth: 1 }]}
           >
             <Stack gap={isCompact ? 10 : 12}>
               {/* Header: Avatar + Name + Score */}
@@ -119,7 +86,7 @@ export const ProfileCard = memo(
                       height: isCompact ? 44 : 48,
                       borderRadius: isCompact ? 22 : 12,
                       overflow: 'hidden',
-                      backgroundColor: c.placeholderBg,
+                      backgroundColor: colors.gray[t === 'dark' ? 700 : 100],
                     }}
                   >
                     <Image
@@ -130,16 +97,9 @@ export const ProfileCard = memo(
                   </View>
                 ) : (
                   <View
-                    style={{
-                      width: isCompact ? 44 : 48,
-                      height: isCompact ? 44 : 48,
-                      borderRadius: isCompact ? 22 : 12,
-                      backgroundColor: c.avatarBg,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
+                    style={iconCircleStyle(isCompact ? 44 : 48, pal.iconBg, isCompact ? 22 : 12)}
                   >
-                    <User size={isCompact ? 20 : 22} color={c.avatarIcon} />
+                    <User size={isCompact ? 20 : 22} color={pal.iconFg} />
                   </View>
                 )}
 
@@ -152,7 +112,7 @@ export const ProfileCard = memo(
                   </Text>
                   {title && (
                     <Text
-                      style={{ fontSize: 13, color: c.subtitle }}
+                      style={{ ...textSmall, color: colors.text[t].tertiary }}
                       numberOfLines={isCompact ? 1 : 2}
                     >
                       {title}
@@ -163,7 +123,7 @@ export const ProfileCard = memo(
                 {score != null && score > 0 && (
                   <View
                     style={{
-                      backgroundColor: c.scoreBg,
+                      backgroundColor: pal.iconBg,
                       borderRadius: 8,
                       paddingHorizontal: 8,
                       paddingVertical: 4,
@@ -172,8 +132,8 @@ export const ProfileCard = memo(
                       gap: 4,
                     }}
                   >
-                    <Star size={12} color={c.scoreText} />
-                    <Text style={{ fontSize: 12, fontWeight: '700', color: c.scoreText }}>
+                    <Star size={12} color={pal.accent} />
+                    <Text style={{ ...textCaption, fontWeight: '700', color: pal.accent }}>
                       {score}
                     </Text>
                   </View>
@@ -181,34 +141,31 @@ export const ProfileCard = memo(
               </Row>
 
               {/* Metrics row */}
-              {metricParts.length > 0 && (
+              {hasMetrics && (
                 <Row gap={6} align="center" wrap>
                   {experienceYears != null && experienceYears > 0 && (
                     <>
-                      <Clock3 size={14} color={c.meta} />
-                      <Text style={{ fontSize: 13, color: c.meta }}>
+                      <Clock3 size={14} color={colors.text[t].tertiary} />
+                      <Text style={{ ...textSmall, color: colors.text[t].tertiary }}>
                         {experienceYears} yrs
                       </Text>
                     </>
                   )}
                   {hourlyRate != null && hourlyRate > 0 && (
                     <>
-                      {experienceYears != null && experienceYears > 0 && (
-                        <Text style={{ fontSize: 13, color: c.metaDot }}>·</Text>
-                      )}
-                      <DollarSign size={14} color={c.rate} />
-                      <Text style={{ fontSize: 13, color: c.rate }}>${hourlyRate}/hr</Text>
+                      {experienceYears != null && experienceYears > 0 && <MetricDot theme={t} />}
+                      <DollarSign size={14} color={pal.accent} />
+                      <Text style={{ ...textSmall, color: pal.accent }}>${hourlyRate}/hr</Text>
                     </>
                   )}
                   {locationLabel && (
                     <>
-                      {(experienceYears != null && experienceYears > 0) ||
-                      (hourlyRate != null && hourlyRate > 0) ? (
-                        <Text style={{ fontSize: 13, color: c.metaDot }}>·</Text>
-                      ) : null}
-                      <MapPin size={14} color={c.meta} />
+                      {((experienceYears ?? 0) > 0 || (hourlyRate ?? 0) > 0) && (
+                        <MetricDot theme={t} />
+                      )}
+                      <MapPin size={14} color={colors.text[t].tertiary} />
                       <Text
-                        style={{ fontSize: 13, color: c.meta, flex: 1 }}
+                        style={{ ...textSmall, color: colors.text[t].tertiary, flex: 1 }}
                         numberOfLines={1}
                       >
                         {locationLabel}
@@ -219,115 +176,78 @@ export const ProfileCard = memo(
               )}
 
               {/* --- Full variant only below --- */}
-              {!isCompact && (badges.length > 0 || skills.length > 0 || certifications.length > 0) && (
-                <>
-                  <Separator />
+              {!isCompact &&
+                (badges.length > 0 || skills.length > 0 || certifications.length > 0) && (
+                  <>
+                    <Separator />
 
-                  {badges.length > 0 && (
-                    <Row gap={6} wrap>
-                      {badges.slice(0, 3).map((badge) => (
-                        <Row
-                          key={badge.id}
-                          align="center"
-                          gap={4}
-                          style={{
-                            paddingHorizontal: 8,
-                            paddingVertical: 3,
-                            borderRadius: 6,
-                            backgroundColor:
-                              badge.tone === 'success'
-                                ? '#dcfce7'
-                                : badge.tone === 'warning'
-                                  ? '#fef9c3'
-                                  : '#fee2e2',
-                          }}
-                        >
-                          {badge.tone === 'success' ? (
-                            <BadgeCheck size={14} color="#16a34a" />
-                          ) : (
-                            <Award size={14} color={badge.tone === 'warning' ? '#ca8a04' : '#dc2626'} />
-                          )}
-                          <Text
-                            style={{
-                              fontSize: 12,
-                              color:
-                                badge.tone === 'success'
-                                  ? '#16a34a'
-                                  : badge.tone === 'warning'
-                                    ? '#ca8a04'
-                                    : '#dc2626',
-                            }}
-                          >
-                            {badge.label}
-                          </Text>
-                        </Row>
-                      ))}
-                      {badges.length > 3 && (
-                        <Text style={{ fontSize: 12, color: c.overflow, alignSelf: 'center' }}>
-                          +{badges.length - 3}
-                        </Text>
-                      )}
-                    </Row>
-                  )}
+                    {badges.length > 0 && (
+                      <Row gap={6} wrap>
+                        {badges.slice(0, 3).map((badge) => {
+                          const tone = badgeToneColors[badge.tone]
+                          return (
+                            <Row
+                              key={badge.id}
+                              align="center"
+                              gap={4}
+                              style={{ ...pillStyle, backgroundColor: tone.bg }}
+                            >
+                              {badge.tone === 'success' ? (
+                                <BadgeCheck size={14} color={tone.icon} />
+                              ) : (
+                                <Award size={14} color={tone.icon} />
+                              )}
+                              <Text style={{ ...textCaption, color: tone.text }}>
+                                {badge.label}
+                              </Text>
+                            </Row>
+                          )
+                        })}
+                        {badges.length > 3 && <OverflowCount count={badges.length - 3} theme={t} />}
+                      </Row>
+                    )}
 
-                  {(skills.length > 0 || certifications.length > 0) && (
-                    <Row gap={4} wrap>
-                      {certifications.slice(0, 2).map((cert) => (
-                        <View
-                          key={cert}
-                          style={{
-                            backgroundColor: c.certBg,
-                            paddingHorizontal: 8,
-                            paddingVertical: 3,
-                            borderRadius: 6,
-                          }}
-                        >
-                          <Text style={{ fontSize: 12, color: c.certText }}>{cert}</Text>
-                        </View>
-                      ))}
-                      {skills.slice(0, 3).map((skill) => (
-                        <View
-                          key={skill}
-                          style={{
-                            backgroundColor: c.skillBg,
-                            paddingHorizontal: 8,
-                            paddingVertical: 3,
-                            borderRadius: 6,
-                          }}
-                        >
-                          <Text style={{ fontSize: 12, color: c.skillText }}>{skill}</Text>
-                        </View>
-                      ))}
-                      {certifications.length + skills.length > 5 && (
-                        <Text style={{ fontSize: 12, color: c.overflow, alignSelf: 'center' }}>
-                          +{certifications.length + skills.length - 5}
-                        </Text>
-                      )}
-                    </Row>
-                  )}
-                </>
-              )}
+                    {(skills.length > 0 || certifications.length > 0) && (
+                      <Row gap={4} wrap>
+                        {certifications.slice(0, 2).map((cert) => (
+                          <Pill
+                            key={cert}
+                            label={cert}
+                            bgColor={pal.pillBg}
+                            textColor={pal.pillText}
+                          />
+                        ))}
+                        {skills.slice(0, 3).map((skill) => (
+                          <Pill
+                            key={skill}
+                            label={skill}
+                            bgColor={pal.tagBg}
+                            textColor={pal.tagText}
+                          />
+                        ))}
+                        {certifications.length + skills.length > 5 && (
+                          <OverflowCount
+                            count={certifications.length + skills.length - 5}
+                            theme={t}
+                          />
+                        )}
+                      </Row>
+                    )}
+                  </>
+                )}
 
               {isCompact && skills.length > 0 && (
                 <Row gap={4} wrap>
                   {skills.slice(0, 3).map((skill) => (
-                    <View
+                    <Pill
                       key={skill}
-                      style={{
-                        backgroundColor: c.skillBg,
-                        paddingHorizontal: 8,
-                        paddingVertical: 3,
-                        borderRadius: 6,
-                      }}
-                    >
-                      <Text style={{ fontSize: 11, color: c.skillText }}>{skill}</Text>
-                    </View>
+                      label={skill}
+                      bgColor={pal.tagBg}
+                      textColor={pal.tagText}
+                      compact
+                    />
                   ))}
-                  {skills.length > 3 && (
-                    <Text style={{ fontSize: 11, color: c.overflow, alignSelf: 'center' }}>
-                      +{skills.length - 3}
-                    </Text>
-                  )}
+                  {skills.length > 3 && <OverflowCount count={skills.length - 3} theme={t} />}
                 </Row>
               )}
             </Stack>

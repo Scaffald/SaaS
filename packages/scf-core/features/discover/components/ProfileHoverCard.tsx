@@ -19,6 +19,18 @@ import {
   Users,
 } from 'lucide-react-native'
 import { Button, Separator, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
+import {
+  workerPalette,
+  orgPalette,
+  jobPalette,
+  textSmall,
+  iconCircleStyle,
+  CardHeader,
+  MetricRow,
+  Pill,
+  OverflowCount,
+} from '@scf/core/components/ui'
 import type { JobMapPin } from '../hooks/useJobs'
 
 type ViewWithMouseProps = ViewProps & {
@@ -43,7 +55,8 @@ function formatPayRange(job: JobMapPin): string | null {
     const dollars = cents / 100
     return dollars >= 1000 ? `$${(dollars / 1000).toFixed(0)}k` : `$${dollars.toFixed(0)}`
   }
-  const type = job.pay_range_type === 'hourly' ? '/hr' : job.pay_range_type === 'annual' ? '/yr' : ''
+  const type =
+    job.pay_range_type === 'hourly' ? '/hr' : job.pay_range_type === 'annual' ? '/yr' : ''
   if (job.pay_range_min_cents && job.pay_range_max_cents) {
     return `${fmt(job.pay_range_min_cents)} – ${fmt(job.pay_range_max_cents)}${type}`
   }
@@ -52,22 +65,10 @@ function formatPayRange(job: JobMapPin): string | null {
   return null
 }
 
-function MetricRow({ icon: Icon, text, color = '#6e6760' }: { icon: typeof MapPin; text: string; color?: string }) {
-  return (
-    <Row gap={8} align="center">
-      <Icon size={16} color={color} />
-      <Text style={{ fontSize: 13, color }}>{text}</Text>
-    </Row>
-  )
-}
-
-function WorkerPreview({
-  pinId,
-  visible,
-}: {
-  pinId: string
-  visible: boolean
-}) {
+function WorkerPreview({ pinId, visible }: { pinId: string; visible: boolean }) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+  const pal = workerPalette[t]
   const { data: worker, isLoading } = useUserProfilePreview(pinId, {
     enabled: visible,
   })
@@ -86,18 +87,32 @@ function WorkerPreview({
       {/* Header */}
       <Row gap={12} align="center">
         {avatarUrl ? (
-          <View style={{ width: 48, height: 48, borderRadius: 12, overflow: 'hidden', backgroundColor: '#f1efeb' }}>
-            <Image source={{ uri: avatarUrl }} style={{ width: 48, height: 48 }} resizeMode="cover" />
+          <View
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: 12,
+              overflow: 'hidden',
+              backgroundColor: colors.gray[t === 'dark' ? 700 : 100],
+            }}
+          >
+            <Image
+              source={{ uri: avatarUrl }}
+              style={{ width: 48, height: 48 }}
+              resizeMode="cover"
+            />
           </View>
         ) : (
-          <View style={{ width: 48, height: 48, borderRadius: 12, backgroundColor: '#e8f6f9', alignItems: 'center', justifyContent: 'center' }}>
-            <User size={22} color="#1d7282" />
+          <View style={iconCircleStyle(48, pal.iconBg)}>
+            <User size={22} color={pal.iconFg} />
           </View>
         )}
         <Stack flex={1} gap={2}>
           <Text style={{ fontSize: 15, fontWeight: '600' }}>{worker.displayName}</Text>
           {worker.headline && (
-            <Text style={{ fontSize: 13, color: '#6e6760' }} numberOfLines={1}>{worker.headline}</Text>
+            <Text style={{ ...textSmall, color: colors.text[t].tertiary }} numberOfLines={1}>
+              {worker.headline}
+            </Text>
           )}
         </Stack>
       </Row>
@@ -106,7 +121,7 @@ function WorkerPreview({
 
       {/* Metrics */}
       <Stack gap={6}>
-        {worker.location && <MetricRow icon={MapPin} text={worker.location} />}
+        {worker.location && <MetricRow icon={MapPin} text={worker.location} theme={t} />}
       </Stack>
 
       {/* Skills */}
@@ -115,17 +130,15 @@ function WorkerPreview({
           <Separator />
           <Row gap={4} wrap>
             {worker.topSkills.slice(0, 3).map((skill: (typeof worker.topSkills)[0], i: number) => (
-              <View
+              <Pill
                 key={skill.csiSkillId || skill.onetOccupationId || skill.taxonomy || `s-${i}`}
-                style={{ backgroundColor: '#e8f6f9', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 }}
-              >
-                <Text style={{ fontSize: 12, color: '#034550' }}>{skill.taxonomy || 'Skill'}</Text>
-              </View>
+                label={skill.taxonomy || 'Skill'}
+                bgColor={pal.pillBg}
+                textColor={pal.pillText}
+              />
             ))}
             {worker.topSkills.length > 3 && (
-              <Text style={{ fontSize: 12, color: '#9e9790', alignSelf: 'center' }}>
-                +{worker.topSkills.length - 3}
-              </Text>
+              <OverflowCount count={worker.topSkills.length - 3} theme={t} />
             )}
           </Row>
         </>
@@ -147,13 +160,10 @@ function WorkerPreview({
   )
 }
 
-function OrganizationPreview({
-  pinId,
-  visible,
-}: {
-  pinId: string
-  visible: boolean
-}) {
+function OrganizationPreview({ pinId, visible }: { pinId: string; visible: boolean }) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+  const pal = orgPalette[t]
   const { data: org, isLoading } = useOrganization(pinId, { enabled: visible })
   const jobsCountQuery = useOrganizationOpenJobsCount(pinId, { enabled: visible })
   const jobsCount: number = (() => {
@@ -176,37 +186,33 @@ function OrganizationPreview({
 
   return (
     <Stack gap={10}>
-      {/* Header */}
-      <Row gap={12} align="center">
-        <View style={{ width: 48, height: 48, borderRadius: 12, backgroundColor: '#f5f0ff', alignItems: 'center', justifyContent: 'center' }}>
-          <Building2 size={22} color="#7c3aed" />
-        </View>
-        <Stack flex={1} gap={2}>
-          <Text style={{ fontSize: 15, fontWeight: '600' }}>{org.name}</Text>
-          {industryName && (
-            <Text style={{ fontSize: 13, color: '#6e6760' }} numberOfLines={1}>{industryName}</Text>
-          )}
-        </Stack>
-      </Row>
+      <CardHeader
+        icon={Building2}
+        iconBg={pal.iconBg}
+        iconColor={pal.iconFg}
+        title={org.name}
+        subtitle={industryName}
+        theme={t}
+      />
 
       <Separator />
 
       {/* Metrics */}
       <Stack gap={6}>
-        {location && <MetricRow icon={MapPin} text={location} />}
-        {employeeRange && <MetricRow icon={Users} text={employeeRange} />}
+        {location && <MetricRow icon={MapPin} text={location} theme={t} />}
+        {employeeRange && <MetricRow icon={Users} text={employeeRange} theme={t} />}
         {jobsCount > 0 && (
           <MetricRow
             icon={Briefcase}
             text={`${jobsCount} open ${jobsCount === 1 ? 'job' : 'jobs'}`}
-            color="#16a34a"
+            color={colors.green[600]}
+            theme={t}
           />
         )}
       </Stack>
 
       <Separator />
 
-      {/* CTA */}
       <Button
         size="sm"
         variant="filled"
@@ -221,50 +227,45 @@ function OrganizationPreview({
 }
 
 function JobPreview({ job }: { job: JobMapPin }) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+  const jPal = jobPalette[t]
   const payRange = formatPayRange(job)
-  const tags = [job.employment_type, job.remote_option].filter(Boolean)
+  const tags = [job.employment_type, job.remote_option].filter(Boolean) as string[]
 
   return (
     <Stack gap={10}>
-      {/* Header */}
-      <Row gap={12} align="center">
-        <View style={{ width: 48, height: 48, borderRadius: 12, backgroundColor: '#fdf5e6', alignItems: 'center', justifyContent: 'center' }}>
-          <Briefcase size={22} color="#9a6614" />
-        </View>
-        <Stack flex={1} gap={2}>
-          <Text style={{ fontSize: 15, fontWeight: '600' }} numberOfLines={1}>{job.title}</Text>
-          {job.organization_name && (
-            <Text style={{ fontSize: 13, color: '#6e6760' }} numberOfLines={1}>{job.organization_name}</Text>
-          )}
-        </Stack>
-      </Row>
+      <CardHeader
+        icon={Briefcase}
+        iconBg={jPal.iconBg}
+        iconColor={jPal.iconFg}
+        title={job.title}
+        subtitle={job.organization_name}
+        theme={t}
+      />
 
       <Separator />
 
       {/* Metrics */}
       <Stack gap={6}>
-        {job.location && <MetricRow icon={MapPin} text={job.location} />}
-        {payRange && <MetricRow icon={DollarSign} text={payRange} color="#9a6614" />}
+        {job.location && <MetricRow icon={MapPin} text={job.location} theme={t} />}
+        {payRange && <MetricRow icon={DollarSign} text={payRange} color={jPal.accent} theme={t} />}
         {tags.length > 0 && (
           <Row gap={6} align="center">
-            <Tag size={16} color="#6e6760" />
-            <Text style={{ fontSize: 13, color: '#6e6760' }}>{tags.join(' · ')}</Text>
+            <Tag size={16} color={colors.text[t].tertiary} />
+            <Text style={{ ...textSmall, color: colors.text[t].tertiary }}>{tags.join(' · ')}</Text>
           </Row>
         )}
-        {job.position_level && (
-          <MetricRow icon={Users} text={job.position_level} />
-        )}
+        {job.position_level && <MetricRow icon={Users} text={job.position_level} theme={t} />}
       </Stack>
 
       <Separator />
 
-      {/* CTA */}
       <Button
         size="sm"
         variant="filled"
         color="primary"
         onPress={() => {
-          // Navigate to job detail - use organization route if available
           const url = job.organization_id
             ? buildPath(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.DETAIL, { id: job.organization_id })
             : '#'
@@ -279,10 +280,12 @@ function JobPreview({ job }: { job: JobMapPin }) {
 }
 
 function LoadingState() {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   return (
     <Stack align="center" paddingVertical={20} gap={8}>
       <Spinner size="sm" color="primary" />
-      <Text style={{ fontSize: 13, color: '#9e9790' }}>Loading...</Text>
+      <Text style={{ ...textSmall, color: colors.text[t].disabled }}>Loading...</Text>
     </Stack>
   )
 }
@@ -297,17 +300,16 @@ export function ProfileHoverCard({
   jobData,
 }: ProfileHoverCardProps) {
   const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   if (!visible || !pinId || !pinType) return null
-
-  const isDark = theme === 'dark'
 
   return (
     <ViewWithMouse
       style={{
         position: 'absolute',
-        backgroundColor: isDark ? '#2f2820' : '#fbf8f3',
+        backgroundColor: colors.bg[t].subtle,
         borderWidth: 1,
-        borderColor: isDark ? '#504940' : '#e3dfd9',
+        borderColor: colors.border[t].default,
         borderRadius: 16,
         padding: 16,
         minWidth: 280,
@@ -327,7 +329,7 @@ export function ProfileHoverCard({
       {pinType === 'job' && jobData && <JobPreview job={jobData} />}
       {pinType === 'job' && !jobData && (
         <Stack align="center" paddingVertical={16}>
-          <Text style={{ fontSize: 13, color: '#9e9790' }}>Job data unavailable</Text>
+          <Text style={{ ...textSmall, color: colors.text[t].disabled }}>Job data unavailable</Text>
         </Stack>
       )}
     </ViewWithMouse>

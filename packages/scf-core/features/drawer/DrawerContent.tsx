@@ -24,6 +24,7 @@ import { Platform, Pressable, ScrollView, type PressableStateCallbackType } from
 import type { GestureResponderEvent } from 'react-native'
 import { Text, useWindowDimensions, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { frostedGlassStyle } from '@scf/core/components/ui'
 import { useOrganizations } from '@scf/core/utils/useOrganizations'
 import { DrawerLink } from './DrawerLink'
 import { getDrawerItems, generateOfficeDrawerItem } from './config'
@@ -156,21 +157,15 @@ export const DrawerContent = ({
   )
 
   // Both persistent (large screen) and overlay (small screen) use frosted glass
-  const glassStyle = Platform.OS === 'web'
-    ? {
-        backgroundColor: theme === 'dark'
-          ? 'rgba(30, 25, 20, 0.85)'
-          : 'rgba(251, 248, 243, 0.75)',
-        borderRightWidth: 1,
-        borderRightColor: theme === 'dark'
-          ? 'rgba(80, 73, 64, 0.3)'
-          : 'rgba(237, 221, 201, 0.4)',
-        backdropFilter: 'blur(20px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-      } as object
-    : {
-        backgroundColor: colors.bg[theme].default,
-      }
+  const glassStyle = {
+    ...frostedGlassStyle(theme),
+    ...(Platform.OS === 'web'
+      ? {
+          borderRightWidth: 1,
+          borderRightColor: theme === 'dark' ? 'rgba(80, 73, 64, 0.3)' : 'rgba(237, 221, 201, 0.4)',
+        }
+      : {}),
+  }
 
   return (
     <Stack
@@ -182,7 +177,14 @@ export const DrawerContent = ({
     >
       <Stack flex={1} justify="space-between" gap={20} width="100%">
         {!isSmall ? (
-          <Row justify="center" align="center" gap={12} paddingTop={16} paddingBottom={8} width="100%">
+          <Row
+            justify="center"
+            align="center"
+            gap={12}
+            paddingTop={16}
+            paddingBottom={8}
+            width="100%"
+          >
             <ScaffaldLogo
               height={isCollapsed ? 30 : 40}
               width={isCollapsed ? 30 : 160}
@@ -333,7 +335,12 @@ const DrawerProfileCard = ({
   const nameContent = slug ? (
     <Pressable
       onPress={handlePublicProfilePress}
-      style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1, flexDirection: 'row', alignItems: 'center', gap: 4 })}
+      style={({ pressed }) => ({
+        opacity: pressed ? 0.8 : 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+      })}
       accessibilityRole="link"
       accessibilityLabel="View public profile"
     >
@@ -368,7 +375,11 @@ const DrawerProfileCard = ({
             justifyContent: 'center',
           }}
         >
-          <Image source={{ uri: avatarUri }} contentFit="cover" style={{ width: avatarSize, height: avatarSize }} />
+          <Image
+            source={{ uri: avatarUri }}
+            contentFit="cover"
+            style={{ width: avatarSize, height: avatarSize }}
+          />
         </Stack>
       ) : (
         <Stack
@@ -381,7 +392,9 @@ const DrawerProfileCard = ({
             borderRadius: 14,
           }}
         >
-          <Text style={{ color: colors.white, fontWeight: '700', fontSize: 18 }}>{fallbackInitial}</Text>
+          <Text style={{ color: colors.white, fontWeight: '700', fontSize: 18 }}>
+            {fallbackInitial}
+          </Text>
         </Stack>
       )}
       <Stack flex={1} gap={6}>

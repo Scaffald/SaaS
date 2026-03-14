@@ -1,8 +1,9 @@
-import { Card, Text, Row, Stack, Separator } from '@scaffald/ui'
+import { Card, Row, Separator, Stack, useThemeContext } from '@scaffald/ui'
 import { Briefcase, DollarSign, MapPin } from 'lucide-react-native'
 import type { ComponentRef } from 'react'
 import { forwardRef, memo } from 'react'
 import { View } from 'react-native'
+import { jobPalette, CardHeader, MetricRow, Pill } from '@scf/core/components/ui'
 import type { JobMapPin } from '../hooks/useJobs'
 
 type JobCardProps = {
@@ -26,16 +27,23 @@ function formatSalary(minCents?: number, maxCents?: number, type?: string): stri
 }
 
 /**
- * Job Card — consistent with ProfileCard layout.
+ * Job Card — uses shared card primitives for consistency.
  * Header: icon + title + org name
  * Metrics: location, pay, tags
  */
 export const JobCard = memo(
   forwardRef<ComponentRef<typeof View>, JobCardProps>(
     ({ job, isSelected = false, onPress, variant = 'compact' }, ref) => {
+      const { theme } = useThemeContext()
+      const t = theme === 'dark' ? 'dark' : 'light'
+      const pal = jobPalette[t]
       const isCompact = variant === 'compact'
-      const salaryRange = formatSalary(job.pay_range_min_cents, job.pay_range_max_cents, job.pay_range_type)
-      const tags = [job.employment_type, job.remote_option].filter(Boolean)
+      const salaryRange = formatSalary(
+        job.pay_range_min_cents,
+        job.pay_range_max_cents,
+        job.pay_range_type
+      )
+      const tags = [job.employment_type, job.remote_option].filter(Boolean) as string[]
 
       return (
         <View ref={ref}>
@@ -44,55 +52,24 @@ export const JobCard = memo(
             onPress={onPress}
             padding="md"
             variant={isSelected ? 'elevated' : 'surface'}
-            style={[isSelected && { borderColor: '#d97706', borderWidth: 1 }]}
+            style={[isSelected && { borderColor: pal.selectedBorder, borderWidth: 1 }]}
           >
             <Stack gap={isCompact ? 10 : 12}>
-              {/* Header: Icon + Title + Org */}
-              <Row gap={12} align="center">
-                <View
-                  style={{
-                    width: isCompact ? 44 : 48,
-                    height: isCompact ? 44 : 48,
-                    borderRadius: 12,
-                    backgroundColor: '#fdf5e6',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Briefcase size={isCompact ? 20 : 22} color="#9a6614" />
-                </View>
-                <Stack flex={1} gap={2}>
-                  <Text
-                    style={{ fontWeight: '600', fontSize: isCompact ? 14 : 15 }}
-                    numberOfLines={1}
-                  >
-                    {job.title}
-                  </Text>
-                  {job.organization_name && (
-                    <Text style={{ fontSize: 13, color: '#6e6760' }} numberOfLines={1}>
-                      {job.organization_name}
-                    </Text>
-                  )}
-                </Stack>
-              </Row>
+              <CardHeader
+                icon={Briefcase}
+                iconBg={pal.iconBg}
+                iconColor={pal.iconFg}
+                title={job.title}
+                subtitle={job.organization_name}
+                compact={isCompact}
+                theme={t}
+              />
 
-              {/* Metrics row */}
-              <Row gap={6} align="center" wrap>
-                {job.location && (
-                  <>
-                    <MapPin size={14} color="#6e6760" />
-                    <Text style={{ fontSize: 13, color: '#6e6760', flex: 1 }} numberOfLines={1}>
-                      {job.location}
-                    </Text>
-                  </>
-                )}
-              </Row>
+              {/* Metrics */}
+              {job.location && <MetricRow icon={MapPin} text={job.location} theme={t} flex />}
 
               {salaryRange && (
-                <Row gap={6} align="center">
-                  <DollarSign size={14} color="#9a6614" />
-                  <Text style={{ fontSize: 13, color: '#9a6614' }}>{salaryRange}</Text>
-                </Row>
+                <MetricRow icon={DollarSign} text={salaryRange} color={pal.accent} theme={t} />
               )}
 
               {/* Tags */}
@@ -101,49 +78,29 @@ export const JobCard = memo(
                   <Separator />
                   <Row gap={4} wrap>
                     {tags.map((tag) => (
-                      <View
-                        key={tag}
-                        style={{
-                          backgroundColor: '#fdf5e6',
-                          paddingHorizontal: 8,
-                          paddingVertical: 3,
-                          borderRadius: 6,
-                        }}
-                      >
-                        <Text style={{ fontSize: 12, color: '#92400e' }}>{tag}</Text>
-                      </View>
+                      <Pill key={tag} label={tag} bgColor={pal.pillBg} textColor={pal.pillText} />
                     ))}
                     {job.position_level && (
-                      <View
-                        style={{
-                          backgroundColor: '#f3f4f6',
-                          paddingHorizontal: 8,
-                          paddingVertical: 3,
-                          borderRadius: 6,
-                        }}
-                      >
-                        <Text style={{ fontSize: 12, color: '#4b5563' }}>{job.position_level}</Text>
-                      </View>
+                      <Pill
+                        label={job.position_level}
+                        bgColor={pal.iconBg}
+                        textColor={pal.pillText}
+                      />
                     )}
                   </Row>
                 </>
               )}
 
-              {/* Compact tags */}
               {isCompact && tags.length > 0 && (
                 <Row gap={4} wrap>
                   {tags.map((tag) => (
-                    <View
+                    <Pill
                       key={tag}
-                      style={{
-                        backgroundColor: '#fdf5e6',
-                        paddingHorizontal: 8,
-                        paddingVertical: 3,
-                        borderRadius: 6,
-                      }}
-                    >
-                      <Text style={{ fontSize: 11, color: '#92400e' }}>{tag}</Text>
-                    </View>
+                      label={tag}
+                      bgColor={pal.pillBg}
+                      textColor={pal.pillText}
+                      compact
+                    />
                   ))}
                 </Row>
               )}
