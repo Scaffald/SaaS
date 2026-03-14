@@ -23,6 +23,7 @@ import {
   ScrollView,
   Tabs,
   Text,
+  useThemeContext,
   useWindowDimensions,
   Row,
   Stack,
@@ -187,6 +188,9 @@ export const DiscoverMapScreen = () => {
           selected: job.id === selectedProfileId,
           pinType: 'job' as const,
           type: 'job' as const,
+          hourlyRate: job.pay_range_min_cents
+            ? Math.round(job.pay_range_min_cents / 100)
+            : undefined,
         }))
       : []
 
@@ -793,6 +797,8 @@ const MobileSearchHeader = ({
   onLocationSelect,
   onFiltersPress,
 }: MobileSearchHeaderProps) => {
+  const { theme } = useThemeContext()
+  const borderColor = theme === 'dark' ? 'rgba(80, 73, 64, 0.3)' : 'rgba(237, 221, 201, 0.5)'
   const tokenValidation = useMemo(() => validateMapboxToken(mapboxToken), [mapboxToken])
 
   const handleAddressSelect = useCallback(
@@ -816,7 +822,7 @@ const MobileSearchHeader = ({
         gap: 12,
         backgroundColor: 'transparent',
         borderBottomWidth: 1,
-        borderBottomColor: '#e5e7eb',
+        borderBottomColor: borderColor,
         alignItems: 'center',
       }}
     >
@@ -869,19 +875,24 @@ type MobileViewToggleBarProps = {
 }
 
 const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarProps) => {
+  const { theme } = useThemeContext()
+  const isDark = theme === 'dark'
+  const bgColor = isDark ? 'rgba(30, 28, 25, 0.92)' : 'rgba(242, 244, 247, 0.92)'
+  const activeBg = isDark ? '#2a2825' : '#ffffff'
+
   return (
     <Row
       style={{
         position: 'absolute',
-        bottom: 12,
+        bottom: 68,
         left: 12,
         right: 12,
-        backgroundColor: '#f2f4f7',
+        backgroundColor: bgColor,
         borderRadius: 24,
         padding: 4,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: -2 },
-        shadowOpacity: 0.15,
+        shadowOpacity: isDark ? 0.4 : 0.15,
         shadowRadius: 12,
         zIndex: 60,
         gap: 8,
@@ -897,14 +908,14 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
           <Tabs.Trigger
             containerStyle={{
               flex: 1,
-              backgroundColor: activeView === 'map' ? '#ffffff' : 'transparent',
+              backgroundColor: activeView === 'map' ? activeBg : 'transparent',
               borderRadius: 20,
               paddingHorizontal: 16,
               paddingVertical: 12,
             }}
           >
             <Row align="center" justify="center" gap={8}>
-              <MapIcon size="md" />
+              <MapIcon size={18} />
               <Text>Map</Text>
             </Row>
           </Tabs.Trigger>
@@ -913,14 +924,14 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
           <Tabs.Trigger
             containerStyle={{
               flex: 1,
-              backgroundColor: activeView === 'list' ? '#ffffff' : 'transparent',
+              backgroundColor: activeView === 'list' ? activeBg : 'transparent',
               borderRadius: 20,
               paddingHorizontal: 16,
               paddingVertical: 12,
             }}
           >
             <Row align="center" justify="center" gap={8}>
-              <ListIcon size="md" />
+              <ListIcon size={18} />
               <Text>List</Text>
             </Row>
           </Tabs.Trigger>
