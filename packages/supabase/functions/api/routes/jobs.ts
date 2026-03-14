@@ -168,12 +168,15 @@ app.openapi(getJobsRoute, async (c) => {
   const supabase = c.get('supabase')
   const query = c.req.valid('query')
 
+  // Map 'published' to 'open' for backward compatibility (DB uses 'open' not 'published')
+  const dbStatus = query.status === 'published' ? 'open' : query.status
+
   // Build query
   let dbQuery = supabase
     .schema('core')
     .from('jobs')
     .select('*', { count: 'exact' })
-    .eq('status', query.status)
+    .eq('status', dbStatus)
     .range(query.offset, query.offset + query.limit - 1)
     .order('created_at', { ascending: false })
 
@@ -913,7 +916,7 @@ app.openapi(getSimilarJobsRoute, async (c) => {
     .schema('core')
     .from('jobs')
     .select('*')
-    .eq('status', 'published')
+    .eq('status', 'open')
     .neq('id', id)
     .or(
       `organization_id.eq.${sourceJob.organization_id},employment_type.eq.${sourceJob.employment_type}`
@@ -979,7 +982,7 @@ app.openapi(getFilterOptionsRoute, async (c) => {
       .schema('core')
       .from('jobs')
       .select('employment_type')
-      .eq('status', 'published')
+      .eq('status', 'open')
       .not('employment_type', 'is', null)
 
     if (employmentError) throw employmentError
@@ -989,7 +992,7 @@ app.openapi(getFilterOptionsRoute, async (c) => {
       .schema('core')
       .from('jobs')
       .select('location')
-      .eq('status', 'published')
+      .eq('status', 'open')
       .not('location', 'is', null)
 
     if (locationError) throw locationError
@@ -999,7 +1002,7 @@ app.openapi(getFilterOptionsRoute, async (c) => {
       .schema('core')
       .from('jobs')
       .select('remote_option')
-      .eq('status', 'published')
+      .eq('status', 'open')
       .not('remote_option', 'is', null)
 
     if (remoteError) throw remoteError

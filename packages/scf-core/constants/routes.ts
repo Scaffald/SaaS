@@ -352,18 +352,6 @@ const ROUTES_CONFIG = {
           protected: true,
           exact: true,
         },
-        ORGANIZATIONS: {
-          path: '/dashboard/employers/organizations',
-          titleKey: 'routes.dashboard.organizations.title',
-          protected: true,
-          exact: false,
-          CREATE: {
-            path: '/dashboard/employers/organizations/create',
-            titleKey: 'routes.dashboard.organizations.create',
-            protected: true,
-            exact: true,
-          },
-        },
         DETAIL: {
           path: '/dashboard/employers/:id',
           titleKey: 'routes.dashboard.discover.employers.detail',

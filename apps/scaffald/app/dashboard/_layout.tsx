@@ -91,8 +91,6 @@ export default function Layout() {
         <Drawer.Screen name="profile/background-check/[checkId]/dispute" options={{ title: 'Dispute' }} />
         <Drawer.Screen name="settings/index" options={{ title: 'Settings' }} />
         <Drawer.Screen name="employers/create" options={{ title: 'Create Employer' }} />
-        <Drawer.Screen name="employers/organizations/index" options={{ title: 'Organizations' }} />
-        <Drawer.Screen name="employers/organizations/create" options={{ title: 'Request Organization' }} />
         <Drawer.Screen name="news/index" options={{ title: 'News' }} />
         <Drawer.Screen name="career-explorer/index" options={{ title: 'Career Explorer' }} />
         <Drawer.Screen name="career-explorer/[onetCode]" options={{ title: 'Occupation Detail' }} />

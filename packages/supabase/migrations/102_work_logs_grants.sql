@@ -29,6 +29,10 @@ GRANT ALL ON TABLE core.work_log_audit_log TO service_role;
 GRANT SELECT, UPDATE ON TABLE core.user_storage_usage TO authenticated;
 GRANT ALL ON TABLE core.user_storage_usage TO service_role;
 
+-- Construction projects (needed for org-scoped work log queries)
+GRANT SELECT ON TABLE core.construction_projects TO authenticated;
+GRANT ALL ON TABLE core.construction_projects TO service_role;
+
 COMMIT;
 
 

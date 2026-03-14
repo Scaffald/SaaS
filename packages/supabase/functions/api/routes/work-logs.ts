@@ -4,7 +4,14 @@
  */
 
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
+import { createClient } from '@supabase/supabase-js'
 import { authMiddleware } from '../middleware/auth.ts'
+
+function getServiceClient() {
+  const url = Deno.env.get('SUPABASE_URL') ?? ''
+  const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+  return createClient(url, key)
+}
 
 const app = new OpenAPIHono()
 app.use('*', authMiddleware)
@@ -61,35 +68,45 @@ app.openapi(
       return c.json({ error: 'Unauthorized' }, 401)
     }
 
-    let query = supabase.schema('core').from('work_logs').select('*', { count: 'exact' }).eq('user_id', user.id)
+    let query = supabase.schema('core').from('work_logs').select('*', { count: 'exact' })
 
     if (projectId) {
       query = query.eq('project_id', projectId)
     }
 
     if (organizationId) {
+      // Check the user is a member of this organization
       const { data: memberships } = await supabase
-        .schema('public')
-        .from('v_organization_memberships')
-        .select('organization_id')
+        .schema('core')
+        .from('role_assignments')
+        .select('scope_org_id')
         .eq('user_id', user.id)
+        .not('scope_org_id', 'is', null)
       const orgIds = new Set(
-        (memberships ?? []).map((m) => m.organization_id).filter((id): id is string => typeof id === 'string')
+        (memberships ?? []).map((m) => m.scope_org_id).filter((id): id is string => typeof id === 'string')
       )
       if (!orgIds.has(organizationId)) {
         return c.json({ error: 'Forbidden', message: 'You do not have access to the requested organization.' }, 403)
       }
-      const { data: projectRows } = await supabase
+      // Use service client to bypass RLS for org admin view
+      const adminClient = getServiceClient()
+      const { data: projectRows, error: projError } = await adminClient
         .schema('core')
         .from('construction_projects')
         .select('id')
         .eq('organization_id', organizationId)
+      if (projError) console.error('[work-logs] project query error:', projError)
       const projectIds = (projectRows ?? []).map((p) => (typeof p.id === 'string' ? p.id : String(p.id)))
+      // Rebuild query with service client to see all org members' logs
+      query = adminClient.schema('core').from('work_logs').select('*', { count: 'exact' })
       if (projectIds.length > 0) {
         query = query.in('project_id', projectIds)
       } else {
         query = query.eq('project_id', '00000000-0000-0000-0000-000000000000')
       }
+    } else {
+      // No org filter — show only user's own logs
+      query = query.eq('user_id', user.id)
     }
 
     const offset = (page - 1) * pageSize

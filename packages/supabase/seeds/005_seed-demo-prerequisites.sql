@@ -57,7 +57,7 @@ SELECT
   '', '', '', ''
 FROM (VALUES
   -- Brian Carter – Employer at Wizard Construction (Detroit, MI)
-  ('22222222-2222-2222-2222-222222222201', 'brian.carter@wizardconstruction.com', 'Brian Carter', 'Brian', 'Carter', '', 'Detroit, Michigan, United States'),
+  ('22222222-2222-2222-2222-222222222201', 'brian.carter@wizard.construction', 'Brian Carter', 'Brian', 'Carter', '', 'Detroit, Michigan, United States'),
   -- Marcus Rivera – Plumber (Grand Rapids, MI)
   ('22222222-2222-2222-2222-222222222202', 'marcus.rivera@example.test', 'Marcus Rivera', 'Marcus', 'Rivera', '', 'Grand Rapids, Michigan, United States'),
   -- Jake Hendricks – Electrician (Ann Arbor, MI)
@@ -129,7 +129,7 @@ WITH demo_profiles AS (
      -70.8800, 42.5584),
 
     -- Brian Carter – Detroit, MI
-    ('brian.carter@wizardconstruction.com',
+    ('brian.carter@wizard.construction',
      'Brian', 'Carter',
      '{"street":"500 Griswold Street","city":"Detroit","state":"MI","zip":"48226","country":"United States"}'::jsonb,
      -83.0458, 42.3314),
@@ -173,7 +173,7 @@ JOIN auth.users au ON au.email IN (
   'clay@unicorn.love',
   'zach@unicorn.love',
   'bloxhambuilding@gmail.com',
-  'brian.carter@wizardconstruction.com',
+  'brian.carter@wizard.construction',
   'marcus.rivera@example.test',
   'jake.hendricks@example.test',
   'carlos.gutierrez@example.test'
@@ -192,7 +192,7 @@ WITH demo_prefs AS (
     -- Luke: worker
     ('bloxhambuilding@gmail.com',     ARRAY['worker']),
     -- Brian: employer
-    ('brian.carter@wizardconstruction.com', ARRAY['employer']),
+    ('brian.carter@wizard.construction', ARRAY['employer']),
     -- Workers: Marcus, Jake, Carlos
     ('marcus.rivera@example.test',    ARRAY['worker']),
     ('jake.hendricks@example.test',   ARRAY['worker']),

@@ -290,6 +290,9 @@ CREATE POLICY ra_insert ON core.review_aspects
 CREATE POLICY profile_own_select ON core.profile
   FOR SELECT TO authenticated
   USING (auth.uid() = user_id);
+CREATE POLICY profile_public_read ON core.profile
+  FOR SELECT TO authenticated
+  USING (true);
 CREATE POLICY profile_own_insert ON core.profile
   FOR INSERT TO authenticated
   WITH CHECK (auth.uid() = user_id);

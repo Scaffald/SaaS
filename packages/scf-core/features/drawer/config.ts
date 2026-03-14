@@ -70,8 +70,6 @@ export const generateDashboardDrawerItems = (): DrawerItemConfig[] => {
     subItems: [
       { key: 'employers-index', titleKey: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.titleKey, href: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path },
       { key: 'employers-create', titleKey: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.CREATE.titleKey, href: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.CREATE.path },
-      { key: 'employers-organizations', titleKey: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.ORGANIZATIONS.titleKey, href: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.ORGANIZATIONS.path },
-      { key: 'employers-organizations-create', titleKey: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.ORGANIZATIONS.CREATE.titleKey, href: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.ORGANIZATIONS.CREATE.path },
     ],
   })
 

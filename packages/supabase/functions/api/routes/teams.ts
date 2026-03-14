@@ -5,11 +5,12 @@
  */
 
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { authMiddleware } from '../middleware/auth.ts'
+import { authMiddleware, addSupabaseAdminForUser } from '../middleware/auth.ts'
 
 const app = new OpenAPIHono()
 
 app.use('*', authMiddleware)
+app.use('*', addSupabaseAdminForUser)
 
 // ============================================================================
 // Schemas
@@ -562,7 +563,7 @@ app.openapi(listMembersRoute, async (c) => {
       .select(
         `id, team_id, user_id, role_id, status, joined_at, invited_by, removed_at, metadata, created_at,
          role:team_roles(id, key, name),
-         user:users(id, display_name, username, avatar_path)`
+         user:users!team_members_user_id_fkey(id, display_name, username, avatar_path)`
       )
       .eq('team_id', id)
       .neq('status', 'removed')

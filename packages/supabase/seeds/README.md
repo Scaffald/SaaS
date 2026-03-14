@@ -19,6 +19,8 @@ These files run in glob order when you run `pnpm supa db reset`:
 5. **`004_seed-unicorn-org.sql`** – Unicorn organization (super-admin / employer demo): all `@unicorn.love` users are org members; includes 5 jobs, 3 construction projects, 3 teams, 8 work logs (mixed statuses), and platform/organization roles
 6. **`005_seed-demo-prerequisites.sql`** – Demo AccountSwitcher users with completed prerequisites (profiles, industry, preferences)
 7. **`006_seed-unicorn-ats.sql`** – Unicorn-only ATS demo: applications for Senior Software Engineer, Full Stack Developer, and Part-Time Estimator jobs (various workflow stages)
+8. **`007_seed-wizard-org.sql`** – Wizard Construction organization demo: 7 `@wizard.construction` users, 5 jobs, 3 construction projects, 3 teams, 8 work logs, roles and prerequisites
+9. **`008_seed-cross-org-demo.sql`** – Cross-organization interactions: 5 applications between orgs, 4 connections, 3 reviews, "Construction Pros" community with posts/comments, 5 portfolio items, notifications
 
 **Disabled:** **`005_seed-ats-data.sql.disabled`** – Legacy ATS demo (8 demo jobs across multiple orgs, 18 applications). Not run by default. To use it, rename and run manually via psql. See [Optional/Specialized Seeds](#optional-specialized-seeds-run-manually) for details.
 
@@ -151,6 +153,27 @@ pnpm supa db seed
 - Applications for Unicorn jobs only (Senior Software Engineer, Full Stack Developer, Part-Time Estimator)
 - Uses seeded worker users from 002; statuses: new, screen, interview, offer
 - Run automatically with core seeds
+
+### 007_seed-wizard-org.sql (Wizard Construction organization demo)
+- **Wizard Construction** org (slug `wizard-construction`) owned by brian.carter@wizard.construction; acts as second employer demo org alongside Unicorn
+- **7 @wizard.construction users**: Brian Carter (President), Sarah Mitchell (PM), Derek Johnson (Foreman), Maria Gonzalez (Estimator), Tyler Brooks (Apprentice), Ron Mitchell (Safety Officer), James Okafor (Superintendent)
+- **5 jobs**: Commercial Electrician, Plumbing Foreman, Safety Coordinator, Heavy Equipment Operator, HVAC Technician (closed)
+- **3 construction projects**: Detroit Metro Office Complex, Ann Arbor University Dormitory, Dearborn Industrial Retrofit
+- **3 teams**: Field Operations, Safety & Compliance, Estimating & Pre-Con (all users as members)
+- **8 work logs**: draft, pending_verification, and verified statuses across projects
+- **Roles**: brian.carter, sarah.mitchell, maria.gonzalez, ron.mitchell as org admins; all users have platform office role
+- **Prerequisites**: All users have completed onboarding (industry, profiles, user_types)
+- User IDs: `33333333-3333-3333-3333-33333333330X`
+- All users share password: `password123`
+
+### 008_seed-cross-org-demo.sql (Cross-organization interactions)
+- **5 cross-org applications**: Workers applying across Unicorn ↔ Wizard (statuses: new, screen, interview)
+- **4 connections**: 2 accepted (Brian↔Clay, Sarah↔Zach), 2 pending (Derek↔Marcus, Maria↔Jake)
+- **3 reviews**: Cross-org peer reviews and recommendations
+- **Community**: "Construction Pros" community with 8 verified members from both orgs, 4 published posts (2 showcase, 2 advice), 3 comments
+- **5 portfolio items**: Project showcases from both Unicorn and Wizard users
+- **6 notifications**: Application received + connection request notifications
+- Depends on seeds 004, 005, 006, 007
 
 ### 005_seed-ats-data.sql (optional; file is disabled by default as 005_seed-ats-data.sql.disabled)
 - **8 Demo Jobs**: Various construction and trade positions across multiple organizations

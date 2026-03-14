@@ -153,7 +153,7 @@ const REPUTATION = {
 
 const getCommunityFeedRoute = createRoute({
   method: 'get',
-  path: '/posts/feed/{communityId}',
+  path: '/feed/{communityId}',
   tags: ['Community Posts'],
   summary: 'Community feed',
   description: 'Get posts in a community (members only for unpublished)',
@@ -231,7 +231,7 @@ app.openapi(getCommunityFeedRoute, async (c) => {
 
 const getPublishedFeedRoute = createRoute({
   method: 'get',
-  path: '/posts/published',
+  path: '/published',
   tags: ['Community Posts'],
   summary: 'Published feed',
   description: 'Cross-community published posts (public portfolio posts)',
@@ -295,7 +295,7 @@ app.openapi(getPublishedFeedRoute, async (c) => {
 
 const getUserPostsRoute = createRoute({
   method: 'get',
-  path: '/posts/user/{userId}',
+  path: '/user/{userId}',
   tags: ['Community Posts'],
   summary: 'User portfolio posts',
   description: 'Get published posts for a user (public portfolio)',
@@ -361,7 +361,7 @@ app.openapi(getUserPostsRoute, async (c) => {
 
 const createPostRoute = createRoute({
   method: 'post',
-  path: '/posts/{communityId}',
+  path: '/{communityId}',
   tags: ['Community Posts'],
   summary: 'Create post',
   description: 'Create a new community post (draft)',
@@ -465,7 +465,7 @@ app.openapi(createPostRoute, async (c) => {
 
 const getPostRoute = createRoute({
   method: 'get',
-  path: '/posts/{postId}',
+  path: '/{postId}',
   tags: ['Community Posts'],
   summary: 'Get post',
   description: 'Get a single post by ID',
@@ -517,7 +517,7 @@ app.openapi(getPostRoute, async (c) => {
 
 const updatePostRoute = createRoute({
   method: 'patch',
-  path: '/posts/{postId}',
+  path: '/{postId}',
   tags: ['Community Posts'],
   summary: 'Update post',
   description: 'Update a draft post',
@@ -592,7 +592,7 @@ app.openapi(updatePostRoute, async (c) => {
 
 const submitPostRoute = createRoute({
   method: 'post',
-  path: '/posts/{postId}/submit',
+  path: '/{postId}/submit',
   tags: ['Community Posts'],
   summary: 'Submit post',
   description: 'Submit a draft post for AI moderation',
@@ -738,7 +738,7 @@ app.openapi(submitPostRoute, async (c) => {
 
 const publishPostRoute = createRoute({
   method: 'post',
-  path: '/posts/{postId}/publish',
+  path: '/{postId}/publish',
   tags: ['Community Posts'],
   summary: 'Publish to profile',
   description: 'Publish a critique post to your public profile (after receiving feedback)',
@@ -859,7 +859,7 @@ app.openapi(publishPostRoute, async (c) => {
 
 const unpublishPostRoute = createRoute({
   method: 'post',
-  path: '/posts/{postId}/unpublish',
+  path: '/{postId}/unpublish',
   tags: ['Community Posts'],
   summary: 'Unpublish from profile',
   description: 'Remove a post from your public profile (costs reputation)',
@@ -931,7 +931,7 @@ app.openapi(unpublishPostRoute, async (c) => {
 
 const deletePostRoute = createRoute({
   method: 'delete',
-  path: '/posts/{postId}',
+  path: '/{postId}',
   tags: ['Community Posts'],
   summary: 'Delete post',
   description: 'Soft-delete a post (costs significant reputation)',
