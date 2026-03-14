@@ -155,19 +155,19 @@ export const DrawerContent = ({
     </Pressable>
   )
 
-  // Persistent (large screen): plain bg matching main content, no glass/border
-  // Overlay (small screen): frosted glass with border for visual separation
-  const glassStyle = isSmall
+  // Both persistent (large screen) and overlay (small screen) use frosted glass
+  const glassStyle = Platform.OS === 'web'
     ? {
         backgroundColor: theme === 'dark'
-          ? 'rgba(30, 25, 20, 0.92)'
-          : 'rgba(251, 248, 243, 0.88)',
+          ? 'rgba(30, 25, 20, 0.85)'
+          : 'rgba(251, 248, 243, 0.75)',
         borderRightWidth: 1,
         borderRightColor: theme === 'dark'
-          ? 'rgba(80, 73, 64, 0.4)'
-          : 'rgba(237, 221, 201, 0.5)',
-        ...(Platform.OS === 'web' ? { backdropFilter: 'blur(14px)' } as object : {}),
-      }
+          ? 'rgba(80, 73, 64, 0.3)'
+          : 'rgba(237, 221, 201, 0.4)',
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+      } as object
     : {
         backgroundColor: colors.bg[theme].default,
       }

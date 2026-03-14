@@ -1,67 +1,72 @@
-import { Award, BadgeCheck, Clock3, DollarSign, Star } from 'lucide-react-native'
-import type { ComponentRef, ReactNode } from 'react'
+import { Award, BadgeCheck, Clock3, DollarSign, MapPin, Star, User } from 'lucide-react-native'
+import type { ComponentRef } from 'react'
 import { forwardRef, memo } from 'react'
-import { Paragraph, Text, Row, useWindowDimensions } from '@scaffald/ui'
-import {
-  CardBadges,
-  CardHeader,
-  CardMetadata,
-  SelectableCard,
-  type BadgeConfig,
-  type MetadataItem,
-} from '@scaffald/ui'
+import { Image, View } from 'react-native'
+import { Card, Text, Row, Stack, Separator, useThemeContext } from '@scaffald/ui'
 
-/**
- * Profile card badge configuration
- */
+// Brand-aligned color tokens (warm stone + primary teal)
+const T = {
+  light: {
+    avatarBg: '#e8f6f9',       // primary.50
+    avatarIcon: '#1d7282',     // primary.500
+    scoreBg: '#e8f6f9',        // primary.50
+    scoreText: '#1d7282',      // primary.500
+    rate: '#1d7282',           // primary.500
+    meta: '#6e6760',           // gray.500
+    metaDot: '#cdc8c0',        // gray.300
+    subtitle: '#6e6760',       // gray.500
+    skillBg: '#f1efeb',        // gray.100
+    skillText: '#504940',      // gray.600
+    certBg: '#e8f6f9',         // primary.50
+    certText: '#034550',       // primary.700
+    selectedBorder: '#1e96a8', // primary.400
+    placeholderBg: '#f1efeb',  // gray.100
+    overflow: '#9e9790',       // gray.400
+  },
+  dark: {
+    avatarBg: '#022d38',       // primary.800
+    avatarIcon: '#3fb5c7',     // primary.300
+    scoreBg: '#022d38',        // primary.800
+    scoreText: '#3fb5c7',      // primary.300
+    rate: '#3fb5c7',           // primary.300
+    meta: '#9e9790',           // gray.400
+    metaDot: '#504940',        // gray.600
+    subtitle: '#9e9790',       // gray.400
+    skillBg: '#3c352c',        // gray.700
+    skillText: '#cdc8c0',      // gray.300
+    certBg: '#022d38',         // primary.800
+    certText: '#7fd1de',       // primary.200
+    selectedBorder: '#3fb5c7', // primary.300
+    placeholderBg: '#3c352c',  // gray.700
+    overflow: '#6e6760',       // gray.500
+  },
+} as const
+
 export interface ProfileBadge {
   id: string
   label: string
   tone: 'success' | 'warning' | 'danger'
 }
 
-/**
- * Profile card props
- */
 export interface ProfileCardProps {
   id: string
   name: string
-  title: string
+  title?: string
   score?: number
   experienceYears?: number
   hourlyRate?: number
   locationLabel?: string
+  avatarUrl?: string | null
   badges?: ProfileBadge[]
   certifications?: string[]
   skills?: string[]
   isSelected?: boolean
-  onSelect: (id: string) => void
-  avatar?: ReactNode
+  onPress?: (id: string) => void
+  variant?: 'compact' | 'full'
 }
 
-/**
- * ProfileCard - Displays worker/candidate profile information
- *
- * Based on the ResultCard gold standard with selection states,
- * hover effects, and comprehensive profile data display.
- *
- * @example
- * ```tsx
- * <ProfileCard
- *   id="profile-1"
- *   name="John Doe"
- *   title="Senior Engineer"
- *   score={95}
- *   experienceYears={8}
- *   hourlyRate={125}
- *   locationLabel="San Francisco, CA"
- *   isSelected={selected === "profile-1"
- *   onSelect={setSelected}
- * />
- * ```
- */
 export const ProfileCard = memo(
-  forwardRef<ComponentRef<typeof SelectableCard>, ProfileCardProps>(
+  forwardRef<ComponentRef<typeof View>, ProfileCardProps>(
     (
       {
         id,
@@ -71,175 +76,263 @@ export const ProfileCard = memo(
         experienceYears,
         hourlyRate,
         locationLabel,
+        avatarUrl,
         badges = [],
         certifications = [],
         skills = [],
         isSelected = false,
-        onSelect,
-        avatar,
+        onPress,
+        variant = 'full',
       },
       forwardedRef
     ) => {
-      // Use window dimensions for text truncation behavior
-      // Breakpoint: 800px (small/medium layout)
-      const dimensions = useWindowDimensions()
-      const titleNumberOfLines = dimensions.width <= 800 ? 3 : 2
-      // Build metadata items
-      const metadataItems: MetadataItem[] = []
+      const { theme } = useThemeContext()
+      const c = T[theme === 'dark' ? 'dark' : 'light']
+      const isCompact = variant === 'compact'
 
-      if (experienceYears) {
-        metadataItems.push({
-          key: 'experience',
-          icon: <Clock3 size="md" color={isSelected ? '$color1' : '$color10'} />,
-          label: `${experienceYears} years`,
-        })
-      }
-
-      if (hourlyRate) {
-        metadataItems.push({
-          key: 'rate',
-          icon: <DollarSign size="md" color={isSelected ? '$color1' : '$color10'} />,
-          label: `$${hourlyRate}/hr`,
-        })
-      }
-
-      if (locationLabel) {
-        metadataItems.push({
-          key: 'location',
-          icon: <Award size="md" color={isSelected ? '$color1' : '$color10'} />,
-          label: locationLabel,
-        })
-      }
-
-      // Build badge configs for profile badges
-      const profileBadgeConfigs: BadgeConfig[] = badges.slice(0, 3).map((badge) => ({
-        key: badge.id,
-        label: badge.label,
-        backgroundColor:
-          badge.tone === 'success' ? '$green3' : badge.tone === 'warning' ? '$yellow3' : '$red3',
-        color:
-          badge.tone === 'success' ? '$green11' : badge.tone === 'warning' ? '$yellow11' : '$red11',
-        icon:
-          badge.tone === 'success' ? (
-            <BadgeCheck size="sm" color="$green11" />
-          ) : (
-            <Award size="sm" color={badge.tone === 'warning' ? '$yellow11' : '$red11'} />
-          ),
-      }))
-
-      // Add overflow indicator if needed
-      if (badges.length > 3) {
-        profileBadgeConfigs.push({
-          key: 'overflow',
-          label: `+${badges.length - 3} more`,
-          backgroundColor: 'transparent',
-          color: isSelected ? '$color1' : '$color10',
-        })
-      }
-
-      // Build badge configs for skills and certifications
-      const skillBadges: BadgeConfig[] = [
-        ...certifications.slice(0, 2).map((cert, idx) => ({
-          key: `cert-${idx}`,
-          label: cert,
-          backgroundColor: 'transparent',
-          color: '$color1',
-        })),
-        ...skills.slice(0, 3).map((skill, idx) => ({
-          key: `skill-${idx}`,
-          label: skill,
-          backgroundColor: 'transparent',
-          color: '$color1',
-        })),
-      ]
-
-      const totalSkillsAndCerts = certifications.length + skills.length
-      const displayedSkillsAndCerts = 5
-      if (totalSkillsAndCerts > displayedSkillsAndCerts) {
-        skillBadges.push({
-          key: 'skills-overflow',
-          label: `+${totalSkillsAndCerts - displayedSkillsAndCerts} more`,
-          backgroundColor: 'transparent',
-          color: '$color11',
-        })
-      }
+      const metricParts: string[] = []
+      if (experienceYears) metricParts.push(`${experienceYears} yrs`)
+      if (hourlyRate) metricParts.push(`$${hourlyRate}/hr`)
+      if (locationLabel) metricParts.push(locationLabel)
 
       return (
-        <SelectableCard
-          ref={forwardedRef}
-          id={id}
-          isSelected={isSelected}
-          onPress={() => onSelect(id)}
-          selection={{
-            enabled: true,
-            selectedBorderColor: '$blue7',
-            selectedBgColor: '$blue2',
-            selectedShadow: '0 4px 8px rgba(35, 156, 178, 0.2)',
-          }}
-        >
-          {/* Header with score badge */}
-          <Row justify="space-between" align="center">
-            <CardHeader title={name} action={avatar} children={undefined} />
-            {score && (
-              <Row
-                align="center"
-                gap={4}
-                backgroundColor="$blue3"
-                borderRadius={16}
-                paddingHorizontal={8}
-                paddingVertical={4}
-              >
-                <Star size="sm" color="$blue11" />
-                <Text color="$blue11">{score}</Text>
-              </Row>
-            )}
-          </Row>
-
-          {/* Title/Role */}
-          <Paragraph
-            size="sm"
-            color={isSelected ? '$color1' : '$color11'}
-            numberOfLines={titleNumberOfLines}
+        <View ref={forwardedRef}>
+          <Card
+            pressable={!!onPress}
+            onPress={onPress ? () => onPress(id) : undefined}
+            padding="md"
+            variant={isSelected ? 'elevated' : 'surface'}
+            style={[
+              isSelected && {
+                borderColor: c.selectedBorder,
+                borderWidth: 1,
+              },
+            ]}
           >
-            {title}
-          </Paragraph>
-
-          {/* Metadata */}
-          {metadataItems.length > 0 && (
-            <CardMetadata items={metadataItems} isSelected={isSelected} />
-          )}
-
-          {/* Profile badges (certifications, achievements, etc.) */}
-          {profileBadgeConfigs.length > 0 && (
-            <Row gap={4} wrap>
-              {profileBadgeConfigs.map((badgeConfig) => (
-                <Row
-                  key={badgeConfig.key}
-                  align="center"
-                  gap={4}
-                  paddingHorizontal={4}
-                  paddingVertical={2}
-                  borderRadius={32}
-                  backgroundColor={badgeConfig.backgroundColor}
-                >
-                  {badgeConfig.icon}
-                  <Text
-                    color={
-                      badgeConfig.color as typeof badgeConfig.color extends string
-                        ? typeof badgeConfig.color
-                        : never
-                    }
+            <Stack gap={isCompact ? 10 : 12}>
+              {/* Header: Avatar + Name + Score */}
+              <Row gap={12} align="center">
+                {avatarUrl ? (
+                  <View
+                    style={{
+                      width: isCompact ? 44 : 48,
+                      height: isCompact ? 44 : 48,
+                      borderRadius: isCompact ? 22 : 12,
+                      overflow: 'hidden',
+                      backgroundColor: c.placeholderBg,
+                    }}
                   >
-                    {badgeConfig.label}
-                  </Text>
-                </Row>
-              ))}
-            </Row>
-          )}
+                    <Image
+                      source={{ uri: avatarUrl }}
+                      style={{ width: '100%', height: '100%' }}
+                      resizeMode="cover"
+                    />
+                  </View>
+                ) : (
+                  <View
+                    style={{
+                      width: isCompact ? 44 : 48,
+                      height: isCompact ? 44 : 48,
+                      borderRadius: isCompact ? 22 : 12,
+                      backgroundColor: c.avatarBg,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <User size={isCompact ? 20 : 22} color={c.avatarIcon} />
+                  </View>
+                )}
 
-          {/* Skills and certifications */}
-          {skillBadges.length > 0 && <CardBadges badges={skillBadges} />}
-        </SelectableCard>
+                <Stack flex={1} gap={2}>
+                  <Text
+                    style={{ fontWeight: '600', fontSize: isCompact ? 14 : 15 }}
+                    numberOfLines={1}
+                  >
+                    {name}
+                  </Text>
+                  {title && (
+                    <Text
+                      style={{ fontSize: 13, color: c.subtitle }}
+                      numberOfLines={isCompact ? 1 : 2}
+                    >
+                      {title}
+                    </Text>
+                  )}
+                </Stack>
+
+                {score != null && score > 0 && (
+                  <View
+                    style={{
+                      backgroundColor: c.scoreBg,
+                      borderRadius: 8,
+                      paddingHorizontal: 8,
+                      paddingVertical: 4,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 4,
+                    }}
+                  >
+                    <Star size={12} color={c.scoreText} />
+                    <Text style={{ fontSize: 12, fontWeight: '700', color: c.scoreText }}>
+                      {score}
+                    </Text>
+                  </View>
+                )}
+              </Row>
+
+              {/* Metrics row */}
+              {metricParts.length > 0 && (
+                <Row gap={6} align="center" wrap>
+                  {experienceYears != null && experienceYears > 0 && (
+                    <>
+                      <Clock3 size={14} color={c.meta} />
+                      <Text style={{ fontSize: 13, color: c.meta }}>
+                        {experienceYears} yrs
+                      </Text>
+                    </>
+                  )}
+                  {hourlyRate != null && hourlyRate > 0 && (
+                    <>
+                      {experienceYears != null && experienceYears > 0 && (
+                        <Text style={{ fontSize: 13, color: c.metaDot }}>·</Text>
+                      )}
+                      <DollarSign size={14} color={c.rate} />
+                      <Text style={{ fontSize: 13, color: c.rate }}>${hourlyRate}/hr</Text>
+                    </>
+                  )}
+                  {locationLabel && (
+                    <>
+                      {(experienceYears != null && experienceYears > 0) ||
+                      (hourlyRate != null && hourlyRate > 0) ? (
+                        <Text style={{ fontSize: 13, color: c.metaDot }}>·</Text>
+                      ) : null}
+                      <MapPin size={14} color={c.meta} />
+                      <Text
+                        style={{ fontSize: 13, color: c.meta, flex: 1 }}
+                        numberOfLines={1}
+                      >
+                        {locationLabel}
+                      </Text>
+                    </>
+                  )}
+                </Row>
+              )}
+
+              {/* --- Full variant only below --- */}
+              {!isCompact && (badges.length > 0 || skills.length > 0 || certifications.length > 0) && (
+                <>
+                  <Separator />
+
+                  {badges.length > 0 && (
+                    <Row gap={6} wrap>
+                      {badges.slice(0, 3).map((badge) => (
+                        <Row
+                          key={badge.id}
+                          align="center"
+                          gap={4}
+                          style={{
+                            paddingHorizontal: 8,
+                            paddingVertical: 3,
+                            borderRadius: 6,
+                            backgroundColor:
+                              badge.tone === 'success'
+                                ? '#dcfce7'
+                                : badge.tone === 'warning'
+                                  ? '#fef9c3'
+                                  : '#fee2e2',
+                          }}
+                        >
+                          {badge.tone === 'success' ? (
+                            <BadgeCheck size={14} color="#16a34a" />
+                          ) : (
+                            <Award size={14} color={badge.tone === 'warning' ? '#ca8a04' : '#dc2626'} />
+                          )}
+                          <Text
+                            style={{
+                              fontSize: 12,
+                              color:
+                                badge.tone === 'success'
+                                  ? '#16a34a'
+                                  : badge.tone === 'warning'
+                                    ? '#ca8a04'
+                                    : '#dc2626',
+                            }}
+                          >
+                            {badge.label}
+                          </Text>
+                        </Row>
+                      ))}
+                      {badges.length > 3 && (
+                        <Text style={{ fontSize: 12, color: c.overflow, alignSelf: 'center' }}>
+                          +{badges.length - 3}
+                        </Text>
+                      )}
+                    </Row>
+                  )}
+
+                  {(skills.length > 0 || certifications.length > 0) && (
+                    <Row gap={4} wrap>
+                      {certifications.slice(0, 2).map((cert) => (
+                        <View
+                          key={cert}
+                          style={{
+                            backgroundColor: c.certBg,
+                            paddingHorizontal: 8,
+                            paddingVertical: 3,
+                            borderRadius: 6,
+                          }}
+                        >
+                          <Text style={{ fontSize: 12, color: c.certText }}>{cert}</Text>
+                        </View>
+                      ))}
+                      {skills.slice(0, 3).map((skill) => (
+                        <View
+                          key={skill}
+                          style={{
+                            backgroundColor: c.skillBg,
+                            paddingHorizontal: 8,
+                            paddingVertical: 3,
+                            borderRadius: 6,
+                          }}
+                        >
+                          <Text style={{ fontSize: 12, color: c.skillText }}>{skill}</Text>
+                        </View>
+                      ))}
+                      {certifications.length + skills.length > 5 && (
+                        <Text style={{ fontSize: 12, color: c.overflow, alignSelf: 'center' }}>
+                          +{certifications.length + skills.length - 5}
+                        </Text>
+                      )}
+                    </Row>
+                  )}
+                </>
+              )}
+
+              {isCompact && skills.length > 0 && (
+                <Row gap={4} wrap>
+                  {skills.slice(0, 3).map((skill) => (
+                    <View
+                      key={skill}
+                      style={{
+                        backgroundColor: c.skillBg,
+                        paddingHorizontal: 8,
+                        paddingVertical: 3,
+                        borderRadius: 6,
+                      }}
+                    >
+                      <Text style={{ fontSize: 11, color: c.skillText }}>{skill}</Text>
+                    </View>
+                  ))}
+                  {skills.length > 3 && (
+                    <Text style={{ fontSize: 11, color: c.overflow, alignSelf: 'center' }}>
+                      +{skills.length - 3}
+                    </Text>
+                  )}
+                </Row>
+              )}
+            </Stack>
+          </Card>
+        </View>
       )
     }
   )

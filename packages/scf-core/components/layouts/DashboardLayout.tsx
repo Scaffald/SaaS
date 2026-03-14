@@ -11,6 +11,8 @@ const GOLDEN_RATIO_TEMPLATE = 'minmax(300px, 1.618fr) minmax(300px, 1fr)'
 type DashboardLayoutProps = {
   rightContent?: ReactNode
   leftContent?: ReactNode
+  /** Full-width header rendered above the grid (search bars, filter toolbars, etc.) */
+  headerContent?: ReactNode
   /** Whether to show breadcrumb navigation (default: true) */
   showBreadcrumb?: boolean
   /** Manual breadcrumb items to override auto-generation */
@@ -24,6 +26,7 @@ type DashboardLayoutProps = {
 export const DashboardLayout = ({
   rightContent,
   leftContent,
+  headerContent,
   showBreadcrumb = true,
   breadcrumbItems,
   autoGenerateBreadcrumbs = true,
@@ -31,9 +34,9 @@ export const DashboardLayout = ({
 }: DashboardLayoutProps) => {
   const { isDesktop } = useResponsive()
   const { theme } = useThemeContext()
-  const contentPadding = isDesktop ? '2xl' : 'lg'
-  const verticalPadding = isDesktop ? '3xl' : 'md'
-  const columnGap = isDesktop ? 48 : 24
+  const contentPadding = isDesktop ? 'xl' : 'lg'
+  const verticalPadding = isDesktop ? 'xl' : 'md'
+  const columnGap = isDesktop ? 36 : 20
   const columnTemplate = fullWidth ? '1fr' : GOLDEN_RATIO_TEMPLATE
 
   // Auto-generate breadcrumbs if enabled and no manual override
@@ -63,6 +66,11 @@ export const DashboardLayout = ({
           <Row paddingHorizontal={contentPadding}>
             <Breadcrumb items={displayBreadcrumbs} currentIndex={currentIndex} />
           </Row>
+        )}
+
+        {/* Header — full-width search/filter toolbar */}
+        {headerContent && (
+          <Stack paddingHorizontal={contentPadding}>{headerContent}</Stack>
         )}
 
         {/* Content Area - Two-column golden ratio (lg+) or single column, min 300px per column */}

@@ -2,7 +2,7 @@ import { EmptyState, ErrorState, SkeletonList } from '@scaffald/ui'
 import { Search } from 'lucide-react-native'
 import { forwardRef, memo, useImperativeHandle, useMemo, useRef } from 'react'
 import { Platform } from 'react-native'
-import { ScrollView, Text, Row, Stack } from '@scaffald/ui'
+import { ScrollView, Stack } from '@scaffald/ui'
 import type { JobMapPin } from '../hooks/useJobs'
 import type { OrganizationMapPin } from '../hooks/useOrganizations'
 import type { TalentProfile } from '../types'
@@ -152,23 +152,14 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
     }
 
     return (
-      <Stack flex={1} gap={12} width="100%" style={{ overflow: 'hidden' }}>
-        <Row
-          justify="space-between"
-          align="center"
-          flexShrink={0}
-          paddingTop={12}
-          paddingHorizontal={12}
-        >
-          <Text>{allResults.length} results</Text>
-        </Row>
+      <Stack flex={1} gap={8} width="100%" style={{ overflow: 'hidden' }}>
         <ScrollView
           ref={scrollViewRef}
           showsVerticalScrollIndicator
           renderToHardwareTextureAndroid
           style={{ flex: 1, width: '100%' }}
         >
-          <Stack gap={12} paddingBottom={24} width="100%">
+          <Stack gap={8} paddingVertical={8} paddingBottom={24} width="100%">
             {allResults.length === 0 ? (
               <EmptyState
                 icon={Search}
@@ -194,6 +185,7 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
                     />
                   ) : (
                     <JobCard
+                      ref={(ref) => registerCardRef(result.id, ref)}
                       job={result}
                       isSelected={result.id === selectedId}
                       onPress={() => onSelect(result.id)}

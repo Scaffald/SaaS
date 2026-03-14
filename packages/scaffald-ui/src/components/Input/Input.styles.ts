@@ -45,7 +45,7 @@ export function getInputStyles(
   const baseInputContainer: ViewStyle = {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 44, // Standard input height from Figma
+    minHeight: 40,
     paddingHorizontal: spacing[12],
     paddingVertical: spacing[8],
     borderRadius: borderRadius.m,
@@ -54,14 +54,14 @@ export function getInputStyles(
     gap: spacing[8],
   }
 
-  // Base input text styles
+  // Base input text styles — slightly smaller than body (14px vs 16px) for compact UI
   const baseInputText: TextStyle = {
-    ...typography.body,
+    ...typography.small,
     flex: 1,
     color: colors.text[resolvedTheme].primary,
-    padding: 0, // Remove default padding
+    padding: 0,
     margin: 0,
-    letterSpacing: 0, // Convert string to number for React Native
+    letterSpacing: 0,
   }
 
   // Base label styles

@@ -28,6 +28,10 @@ export function Slider({
   handleStyle,
   tooltipStyle,
 }: SliderProps) {
+  // Derive handle size from custom style or default (16px)
+  const handleHeight = (handleStyle?.height as number) ?? 16
+  const handleWidth = (handleStyle?.width as number) ?? 16
+  const halfHandle = Math.max(handleHeight, handleWidth) / 2
   const slider = useSlider({
     value,
     range,
@@ -58,7 +62,7 @@ export function Slider({
     <View style={[styles.container, style]}>
       <View
         ref={slider.trackRef}
-        style={styles.trackContainer}
+        style={[styles.trackContainer, { height: Math.max(16, handleHeight) }]}
         onLayout={slider.handleTrackLayout}
         {...(slider.trackPanResponder?.panHandlers ?? {})}
       >
@@ -90,6 +94,8 @@ export function Slider({
                 styles.handleContainer,
                 {
                   left: handleStartPosition,
+                  marginTop: -halfHandle,
+                  marginLeft: -halfHandle,
                 },
               ]}
               {...(slider.startHandlePanResponder?.panHandlers ?? {})}
@@ -121,6 +127,8 @@ export function Slider({
                 styles.handleContainer,
                 {
                   left: handleEndPosition,
+                  marginTop: -halfHandle,
+                  marginLeft: -halfHandle,
                 },
               ]}
               {...(slider.endHandlePanResponder?.panHandlers ?? {})}
@@ -152,6 +160,8 @@ export function Slider({
               styles.handleContainer,
               {
                 left: handlePosition,
+                marginTop: -halfHandle,
+                marginLeft: -halfHandle,
               },
             ]}
             {...(slider.singleHandlePanResponder?.panHandlers ?? {})}
@@ -190,18 +200,15 @@ const styles = StyleSheet.create({
   trackContainer: {
     position: 'relative',
     width: '100%',
-    height: 16, // Space for handle (16px) to extend above/below track (4px)
     justifyContent: 'center',
     alignItems: 'flex-start',
   },
   handleContainer: {
     position: 'absolute',
     top: '50%',
-    marginTop: -8, // Half of handle size (16px / 2) to center vertically
-    marginLeft: -8, // Half of handle size to center horizontally at position
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 10, // Ensure handles are above track
+    zIndex: 10,
   },
   trackPressArea: {
     flex: 1,

@@ -1,7 +1,6 @@
 import {
   AddressAutocomplete,
   type AddressResult,
-  MapContainer,
   type MapContainerRef,
   Sheet,
   SheetContent,
@@ -9,6 +8,7 @@ import {
   Switch,
   type ViewportBounds,
 } from '@scaffald/ui'
+import { MapAdapter } from './components/map'
 import { captureEvent } from '@scf/core/utils/analytics/client'
 import {
   List as ListIcon,
@@ -87,7 +87,7 @@ export const DiscoverMapScreen = () => {
 
   // Hover state management
   const [activePinId, setActivePinId] = useState<string | null>(null)
-  const [activePinType, setActivePinType] = useState<'worker' | 'organization' | null>(null)
+  const [activePinType, setActivePinType] = useState<'worker' | 'organization' | 'job' | null>(null)
   const [hoverCardVisible, setHoverCardVisible] = useState(false)
   const [hoverCardPosition, setHoverCardPosition] = useState<{ x: number; y: number } | undefined>(
     undefined
@@ -281,16 +281,19 @@ export const DiscoverMapScreen = () => {
   }, [])
 
   const getPinType = useCallback(
-    (pinId: string): 'worker' | 'organization' | null => {
+    (pinId: string): 'worker' | 'organization' | 'job' | null => {
       if (talentProfiles.some((p) => p.id === pinId)) {
         return 'worker'
       }
       if (organizations.some((o) => o.id === pinId)) {
         return 'organization'
       }
+      if (jobs.some((j) => j.id === pinId)) {
+        return 'job'
+      }
       return null
     },
-    [talentProfiles, organizations]
+    [talentProfiles, organizations, jobs]
   )
 
   const updateHoverCardPosition = useCallback((pinId: string) => {
@@ -372,7 +375,7 @@ export const DiscoverMapScreen = () => {
   const showHoverCardForPin = useCallback(
     (
       pinId: string,
-      pinType: 'worker' | 'organization',
+      pinType: 'worker' | 'organization' | 'job',
       options: { trigger: HoverCardTrigger; forceCenter?: boolean } = { trigger: 'click' }
     ) => {
       setActivePinId(pinId)
@@ -407,6 +410,24 @@ export const DiscoverMapScreen = () => {
       }
     },
     [isSmallScreen, maybeCenterPinForHoverCard, updateHoverCardPosition]
+  )
+
+  // Handle pin hover — show hover card without selecting
+  const handlePinHover = useCallback(
+    (pinId: string | null) => {
+      if (Platform.OS !== 'web' || isSmallScreen) return
+      if (!pinId) {
+        clearHoverState()
+        return
+      }
+      // Don't re-trigger if already showing this pin
+      if (activePinId === pinId && hoverCardVisible) return
+      const pinType = getPinType(pinId)
+      if (pinType) {
+        showHoverCardForPin(pinId, pinType, { trigger: 'click' })
+      }
+    },
+    [activePinId, clearHoverState, getPinType, hoverCardVisible, isSmallScreen, showHoverCardForPin]
   )
 
   // Handle pin click - focus corresponding card
@@ -625,7 +646,7 @@ export const DiscoverMapScreen = () => {
               />
             </Stack>
           ) : (
-            <MapContainer
+            <MapAdapter
               ref={mapRef}
               pins={mapPins}
               center={mapCenter}
@@ -633,6 +654,7 @@ export const DiscoverMapScreen = () => {
               radius={state.lastSearchLocation ? 50 : undefined}
               centerLocation={state.lastSearchLocation?.coordinates}
               onPinPress={handleMarkerPress}
+              onPinHover={handlePinHover}
               onViewportChange={handleViewportChange}
               onMapReady={handleMapReady}
               onClustersChange={handleClustersChange}
@@ -642,7 +664,7 @@ export const DiscoverMapScreen = () => {
           )
         ) : (
           <>
-            <MapContainer
+            <MapAdapter
               ref={mapRef}
               pins={mapPins}
               center={mapCenter}
@@ -650,6 +672,7 @@ export const DiscoverMapScreen = () => {
               radius={state.lastSearchLocation ? 50 : undefined}
               centerLocation={state.lastSearchLocation?.coordinates}
               onPinPress={handleMarkerPress}
+              onPinHover={handlePinHover}
               onViewportChange={handleViewportChange}
               onMapReady={handleMapReady}
               onClustersChange={handleClustersChange}
@@ -670,6 +693,7 @@ export const DiscoverMapScreen = () => {
               }}
               isLoading={isLoading}
               resultListRef={resultListRef}
+              onClose={() => updateResultsRailVisible(false)}
             />
           </>
         )}
@@ -682,6 +706,7 @@ export const DiscoverMapScreen = () => {
           pinType={activePinType}
           visible={hoverCardVisible}
           position={hoverCardPosition}
+          jobData={activePinType === 'job' && activePinId ? jobs.find((j) => j.id === activePinId) ?? null : null}
         />
       )}
 

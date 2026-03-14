@@ -1,99 +1,158 @@
-import { DiscoverCard, Button, Text, Row, Stack, getIconSize } from '@scaffald/ui'
-import { Briefcase, Building2, DollarSign, MapPin } from 'lucide-react-native'
+import { Card, Text, Row, Stack, Separator } from '@scaffald/ui'
+import { Briefcase, DollarSign, MapPin } from 'lucide-react-native'
+import type { ComponentRef } from 'react'
+import { forwardRef, memo } from 'react'
+import { View } from 'react-native'
 import type { JobMapPin } from '../hooks/useJobs'
 
 type JobCardProps = {
   job: JobMapPin
   isSelected?: boolean
   onPress?: () => void
+  variant?: 'compact' | 'full'
+}
+
+function formatSalary(minCents?: number, maxCents?: number, type?: string): string | null {
+  if (!minCents && !maxCents) return null
+  const fmt = (cents: number) => {
+    const dollars = cents / 100
+    return dollars >= 1000 ? `$${(dollars / 1000).toFixed(0)}k` : `$${dollars.toFixed(0)}`
+  }
+  const suffix = type === 'hourly' ? '/hr' : type === 'annual' || type === 'salary' ? '/yr' : ''
+  if (minCents && maxCents) return `${fmt(minCents)} – ${fmt(maxCents)}${suffix}`
+  if (minCents) return `${fmt(minCents)}+${suffix}`
+  if (maxCents) return `Up to ${fmt(maxCents)}${suffix}`
+  return null
 }
 
 /**
- * Job Card Component for Map Results
- * Displays job information in the results rail
+ * Job Card — consistent with ProfileCard layout.
+ * Header: icon + title + org name
+ * Metrics: location, pay, tags
  */
-export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
-  // Format salary range
-  const formatSalary = (minCents?: number, maxCents?: number, type?: string) => {
-    if (!minCents || !maxCents) return null
+export const JobCard = memo(
+  forwardRef<ComponentRef<typeof View>, JobCardProps>(
+    ({ job, isSelected = false, onPress, variant = 'compact' }, ref) => {
+      const isCompact = variant === 'compact'
+      const salaryRange = formatSalary(job.pay_range_min_cents, job.pay_range_max_cents, job.pay_range_type)
+      const tags = [job.employment_type, job.remote_option].filter(Boolean)
 
-    const min = (minCents / 100).toLocaleString()
-    const max = (maxCents / 100).toLocaleString()
-    const typeLabel = type === 'hourly' ? '/hr' : type === 'salary' ? '/yr' : ''
+      return (
+        <View ref={ref}>
+          <Card
+            pressable={!!onPress}
+            onPress={onPress}
+            padding="md"
+            variant={isSelected ? 'elevated' : 'surface'}
+            style={[isSelected && { borderColor: '#d97706', borderWidth: 1 }]}
+          >
+            <Stack gap={isCompact ? 10 : 12}>
+              {/* Header: Icon + Title + Org */}
+              <Row gap={12} align="center">
+                <View
+                  style={{
+                    width: isCompact ? 44 : 48,
+                    height: isCompact ? 44 : 48,
+                    borderRadius: 12,
+                    backgroundColor: '#fdf5e6',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Briefcase size={isCompact ? 20 : 22} color="#9a6614" />
+                </View>
+                <Stack flex={1} gap={2}>
+                  <Text
+                    style={{ fontWeight: '600', fontSize: isCompact ? 14 : 15 }}
+                    numberOfLines={1}
+                  >
+                    {job.title}
+                  </Text>
+                  {job.organization_name && (
+                    <Text style={{ fontSize: 13, color: '#6e6760' }} numberOfLines={1}>
+                      {job.organization_name}
+                    </Text>
+                  )}
+                </Stack>
+              </Row>
 
-    return `$${min} - $${max}${typeLabel}`
-  }
+              {/* Metrics row */}
+              <Row gap={6} align="center" wrap>
+                {job.location && (
+                  <>
+                    <MapPin size={14} color="#6e6760" />
+                    <Text style={{ fontSize: 13, color: '#6e6760', flex: 1 }} numberOfLines={1}>
+                      {job.location}
+                    </Text>
+                  </>
+                )}
+              </Row>
 
-  const salaryRange = formatSalary(
-    job.pay_range_min_cents,
-    job.pay_range_max_cents,
-    job.pay_range_type
+              {salaryRange && (
+                <Row gap={6} align="center">
+                  <DollarSign size={14} color="#9a6614" />
+                  <Text style={{ fontSize: 13, color: '#9a6614' }}>{salaryRange}</Text>
+                </Row>
+              )}
+
+              {/* Tags */}
+              {!isCompact && tags.length > 0 && (
+                <>
+                  <Separator />
+                  <Row gap={4} wrap>
+                    {tags.map((tag) => (
+                      <View
+                        key={tag}
+                        style={{
+                          backgroundColor: '#fdf5e6',
+                          paddingHorizontal: 8,
+                          paddingVertical: 3,
+                          borderRadius: 6,
+                        }}
+                      >
+                        <Text style={{ fontSize: 12, color: '#92400e' }}>{tag}</Text>
+                      </View>
+                    ))}
+                    {job.position_level && (
+                      <View
+                        style={{
+                          backgroundColor: '#f3f4f6',
+                          paddingHorizontal: 8,
+                          paddingVertical: 3,
+                          borderRadius: 6,
+                        }}
+                      >
+                        <Text style={{ fontSize: 12, color: '#4b5563' }}>{job.position_level}</Text>
+                      </View>
+                    )}
+                  </Row>
+                </>
+              )}
+
+              {/* Compact tags */}
+              {isCompact && tags.length > 0 && (
+                <Row gap={4} wrap>
+                  {tags.map((tag) => (
+                    <View
+                      key={tag}
+                      style={{
+                        backgroundColor: '#fdf5e6',
+                        paddingHorizontal: 8,
+                        paddingVertical: 3,
+                        borderRadius: 6,
+                      }}
+                    >
+                      <Text style={{ fontSize: 11, color: '#92400e' }}>{tag}</Text>
+                    </View>
+                  ))}
+                </Row>
+              )}
+            </Stack>
+          </Card>
+        </View>
+      )
+    }
   )
+)
 
-  return (
-    <DiscoverCard variant="warning" isSelected={isSelected} onPress={onPress}>
-      {/* Job Title and Organization */}
-      <Stack gap={4}>
-        <Row align="center" gap={8}>
-          <Briefcase size={getIconSize('md')} color={isSelected ? '$yellow10' : '$color10'} />
-          <Text color={isSelected ? '$yellow11' : '$color12'}>{job.title}</Text>
-        </Row>
-        {job.organization_name && (
-          <Row align="center" gap={6} marginLeft={24}>
-            <Building2 size={getIconSize('md')} color="$gray11" />
-            <Text color="$gray11">{job.organization_name}</Text>
-          </Row>
-        )}
-      </Stack>
-
-      {/* Location */}
-      {job.location && (
-        <Row align="center" gap={6}>
-          <MapPin size={getIconSize('md')} color={isSelected ? '$yellow10' : '$color10'} />
-          <Text color="$gray11">{job.location}</Text>
-        </Row>
-      )}
-
-      {/* Employment Type and Level */}
-      <Row gap={8} wrap>
-        {job.employment_type && (
-          <Text
-            color="$gray11"
-            style={{ backgroundColor: '$color3', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 }}
-          >
-            {job.employment_type.replace('_', ' ').toUpperCase()}
-          </Text>
-        )}
-        {job.remote_option && (
-          <Text
-            color="$gray11"
-            style={{ backgroundColor: '$color3', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 }}
-          >
-            {job.remote_option.replace('_', ' ').toUpperCase()}
-          </Text>
-        )}
-        {job.position_level && (
-          <Text
-            color="$gray11"
-            style={{ backgroundColor: '$color3', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 }}
-          >
-            {job.position_level}
-          </Text>
-        )}
-      </Row>
-
-      {/* Salary Range */}
-      {salaryRange && (
-        <Row align="center" gap={6}>
-          <DollarSign size={getIconSize('md')} color={isSelected ? '$yellow10' : '$green10'} />
-          <Text color="$green10">{salaryRange}</Text>
-        </Row>
-      )}
-
-      {/* View Details Button */}
-      <Button size="sm" variant="outline" color={isSelected ? 'primary' : 'gray'}>
-        View Details
-      </Button>
-    </DiscoverCard>
-  )
-}
+JobCard.displayName = 'JobCard'

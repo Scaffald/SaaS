@@ -90,8 +90,8 @@ export const MapFilterBar = ({
     <Row
       width="100%"
       paddingHorizontal={16}
-      paddingVertical={12}
-      gap={12}
+      paddingVertical={10}
+      gap={10}
       align="center"
       backgroundColor="$background"
       style={{ borderBottomWidth: 1, borderBottomColor: '$borderColor' }}
