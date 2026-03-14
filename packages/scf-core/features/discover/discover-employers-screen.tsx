@@ -1,6 +1,7 @@
 import { useEmployers } from '@scf/core/utils/employers-sdk-hooks'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { useMemo, useState } from 'react'
+import { DiscoverHeader } from './components/DiscoverHeader'
 import { DiscoverEmployersLeft } from './discover-employers-left'
 import { DiscoverEmployersRight } from './discover-employers-right'
 import { getAvailableIndustries, getSelectedIndustryCounts } from './utils/employerFilters'
@@ -114,13 +115,23 @@ export function DiscoverEmployersScreen() {
     setSelectedIndustries([])
   }
 
+  const hasActiveFilters = searchQuery.length > 0 || selectedIndustries.length > 0
+
   return {
+    header: (
+      <DiscoverHeader
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+        placeholder="Search employers..."
+        resultCount={employers.length}
+        resultLabel={employers.length === 1 ? 'Employer' : 'Employers'}
+        onReset={hasActiveFilters ? handleClearFilters : undefined}
+      />
+    ),
     left: (
       <DiscoverEmployersLeft
         employers={employers}
         isLoading={isLoading}
-        searchInputValue={searchQuery}
-        onSearchChange={setSearchQuery}
       />
     ),
     right: (

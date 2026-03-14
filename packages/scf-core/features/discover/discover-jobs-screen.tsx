@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useDebounce } from '@scf/core/utils/useDebounce'
+import { DiscoverHeader } from './components/DiscoverHeader'
 import { DiscoverJobsLeft } from './discover-jobs-left'
 import { DiscoverJobsRight } from './discover-jobs-right'
 
@@ -16,12 +17,35 @@ export function DiscoverJobsScreen() {
   const [minSoftSkillsMatch, setMinSoftSkillsMatch] = useState<number | null>(null)
   const [sortBy, setSortBy] = useState<'relevance' | 'match_score'>('relevance')
 
+  const handleReset = () => {
+    setSearchQuery('')
+    setSelectedIndustries([])
+    setSelectedJobTypes([])
+    setJobSource('all')
+    setMinSoftSkillsMatch(null)
+    setSortBy('relevance')
+  }
+
+  const hasFilters =
+    searchQuery.length > 0 ||
+    selectedIndustries.length > 0 ||
+    selectedJobTypes.length > 0 ||
+    jobSource !== 'all' ||
+    (minSoftSkillsMatch !== null && minSoftSkillsMatch > 0) ||
+    sortBy !== 'relevance'
+
   return {
+    header: (
+      <DiscoverHeader
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+        placeholder="Search jobs by title, company..."
+        onReset={hasFilters ? handleReset : undefined}
+      />
+    ),
     left: (
       <DiscoverJobsLeft
         searchQuery={debouncedSearch}
-        searchInputValue={searchQuery}
-        onSearchChange={setSearchQuery}
         selectedIndustries={selectedIndustries}
         selectedJobTypes={selectedJobTypes}
         jobSource={jobSource}

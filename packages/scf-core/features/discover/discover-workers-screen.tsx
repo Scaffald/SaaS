@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { useDebounce } from '@scf/core/utils/useDebounce'
+import { DiscoverHeader } from './components/DiscoverHeader'
 import type { ResultListRef } from './components/ResultList'
 import { DiscoverWorkersLeft } from './discover-workers-left'
 import { DiscoverWorkersRight } from './discover-workers-right'
@@ -21,18 +22,38 @@ export function DiscoverWorkersScreen() {
 
   const handleSelect = (id: string) => {
     setSelectedProfileId(id)
-    // Optionally scroll to the selected profile
     setTimeout(() => {
       resultListRef.current?.scrollToCard(id)
     }, 100)
   }
 
+  const handleReset = () => {
+    setSearchQuery('')
+    setSelectedIndustries([])
+    setMinScore(0)
+    setSelectedSkills([])
+    setSelectedCertifications([])
+  }
+
+  const hasFilters =
+    searchQuery.length > 0 ||
+    selectedIndustries.length > 0 ||
+    minScore > 0 ||
+    selectedSkills.length > 0 ||
+    selectedCertifications.length > 0
+
   return {
+    header: (
+      <DiscoverHeader
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+        placeholder="Search by name, title, or location..."
+        onReset={hasFilters ? handleReset : undefined}
+      />
+    ),
     left: (
       <DiscoverWorkersLeft
         searchQuery={debouncedSearch}
-        searchInputValue={searchQuery}
-        onSearchChange={setSearchQuery}
         selectedIndustries={selectedIndustries}
         minScore={minScore}
         selectedSkills={selectedSkills}

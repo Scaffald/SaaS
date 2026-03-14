@@ -21,6 +21,8 @@ export interface MapContainerRef {
   centerOnPin?: (id: string, opts?: { preserveZoom?: boolean }) => void
   getPinScreenCoordinates?: (id: string) => { x: number; y: number } | undefined
   getContainerRect?: () => DOMRect | undefined
+  /** Highlight a pin on the map (e.g. when hovering a card in the sidebar). Pass null to clear. */
+  highlightPin?: (id: string | null) => void
 }
 
 /** MapContainer: wrapper for map content; actual map is provided by app or adapter */

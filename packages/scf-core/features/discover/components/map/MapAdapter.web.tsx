@@ -285,6 +285,30 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
           if (!mapContainerRef.current) return undefined
           return mapContainerRef.current.getBoundingClientRect()
         },
+        highlightPin: (pinId: string | null) => {
+          const map = mapRef.current
+          if (!map) return
+          const source = map.getSource('highlighted-pin-ring') as mapboxgl.GeoJSONSource | undefined
+          if (!source) return
+          if (!pinId) {
+            try { source.setData({ type: 'FeatureCollection', features: [] }) } catch { /* */ }
+            return
+          }
+          const pin = latestPinsRef.current.find((p) => p.id === pinId)
+          if (!pin) return
+          const [lng, lat] = pin.coordinate
+          if (!isValidCoord(lng, lat)) return
+          try {
+            source.setData({
+              type: 'FeatureCollection',
+              features: [{
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: pin.coordinate },
+                properties: { id: pin.id },
+              }],
+            })
+          } catch { /* */ }
+        },
       }),
       []
     )
@@ -457,6 +481,24 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
             layout: { 'icon-image': 'pulsing-dot', 'icon-size': 0.5 },
           })
 
+          // Highlight ring for hovered cards (sidebar → map)
+          map.addSource('highlighted-pin-ring', {
+            type: 'geojson',
+            data: { type: 'FeatureCollection', features: [] },
+          })
+          map.addLayer({
+            id: 'highlighted-pin-ring-layer',
+            type: 'circle',
+            source: 'highlighted-pin-ring',
+            paint: {
+              'circle-radius': 18,
+              'circle-color': 'transparent',
+              'circle-stroke-width': 3,
+              'circle-stroke-color': pinColorsRef.current.worker,
+              'circle-stroke-opacity': 0.8,
+            },
+          })
+
           // Viewport change tracking (debounced 500ms)
           const handleViewportChangeDebounced = () => {
             if (viewportChangeTimeoutRef.current) {
@@ -618,6 +660,28 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
             type: 'symbol',
             source: 'selected-pin-pulse',
             layout: { 'icon-image': 'pulsing-dot', 'icon-size': 0.5 },
+          })
+        }
+
+        // Re-add highlight ring
+        if (!map.getSource('highlighted-pin-ring')) {
+          map.addSource('highlighted-pin-ring', {
+            type: 'geojson',
+            data: { type: 'FeatureCollection', features: [] },
+          })
+        }
+        if (!map.getLayer('highlighted-pin-ring-layer')) {
+          map.addLayer({
+            id: 'highlighted-pin-ring-layer',
+            type: 'circle',
+            source: 'highlighted-pin-ring',
+            paint: {
+              'circle-radius': 18,
+              'circle-color': 'transparent',
+              'circle-stroke-width': 3,
+              'circle-stroke-color': pinColorsRef.current.worker,
+              'circle-stroke-opacity': 0.8,
+            },
           })
         }
 
@@ -864,6 +928,7 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
             ...pointLayerIds,
             ...avatarLayerIds,
             'selected-pin-pulse-layer',
+            'highlighted-pin-ring-layer',
           ],
         })
         if (features.length === 0) {

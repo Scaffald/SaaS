@@ -1,15 +1,12 @@
 import { useAuth } from '@scf/core/provider/auth/useAuth'
-import { Search, X } from 'lucide-react-native'
 import { type RefObject, useMemo } from 'react'
-import { Button, Input, Row, Stack } from '@scaffald/ui'
+import { Stack } from '@scaffald/ui'
 import type { ResultListRef } from './components/ResultList'
 import { ResultList } from './components/ResultList'
 import { useTalentProfiles } from './hooks/useTalentProfiles'
 
 interface DiscoverWorkersLeftProps {
   searchQuery: string
-  searchInputValue: string
-  onSearchChange: (query: string) => void
   selectedIndustries: string[]
   minScore: number
   selectedSkills: string[]
@@ -25,8 +22,6 @@ interface DiscoverWorkersLeftProps {
  */
 export function DiscoverWorkersLeft({
   searchQuery,
-  searchInputValue,
-  onSearchChange,
   selectedIndustries: _selectedIndustries,
   minScore,
   selectedSkills,
@@ -87,22 +82,6 @@ export function DiscoverWorkersLeft({
 
   return (
     <Stack style={{ flex: 1, overflow: 'hidden' }}>
-      <Stack padding="md" paddingBottom={0}>
-        <Row gap={8} align="center">
-          <Input
-            style={{ flex: 1 }}
-            placeholder="Search by name, title, or location..."
-            value={searchInputValue}
-            onChangeText={onSearchChange}
-            iconStart={Search}
-          />
-          {searchInputValue.length > 0 && (
-            <Button size="sm" variant="outline" onPress={() => onSearchChange('')} iconStart={X}>
-              Clear
-            </Button>
-          )}
-        </Row>
-      </Stack>
       <ResultList
         ref={resultListRef}
         profiles={filteredProfiles}

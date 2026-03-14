@@ -24,6 +24,8 @@ type ResultListProps = {
   isLoading?: boolean
   error?: Error | null
   onRetry?: () => void
+  /** Called when a card is hovered (web only). Pass null on hover end. */
+  onCardHover?: (id: string | null) => void
 }
 
 export interface ResultListRef {
@@ -32,7 +34,7 @@ export interface ResultListRef {
 
 const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
   (
-    { profiles, organizations = [], jobs = [], selectedId, onSelect, isLoading, error, onRetry },
+    { profiles, organizations = [], jobs = [], selectedId, onSelect, isLoading, error, onRetry, onCardHover },
     ref
   ) => {
     const scrollViewRef = useRef<ScrollView>(null)
@@ -168,7 +170,12 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
               />
             ) : (
               allResults.map((result) => (
-                <Stack key={result.id}>
+                <Stack
+                  key={result.id}
+                  // @ts-expect-error web-only mouse events
+                  onMouseEnter={Platform.OS === 'web' && onCardHover ? () => onCardHover(result.id) : undefined}
+                  onMouseLeave={Platform.OS === 'web' && onCardHover ? () => onCardHover(null) : undefined}
+                >
                   {result.type === 'profile' ? (
                     <ResultCard
                       ref={(ref) => registerCardRef(result.id, ref)}

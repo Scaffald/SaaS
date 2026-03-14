@@ -694,6 +694,7 @@ export const DiscoverMapScreen = () => {
               isLoading={isLoading}
               resultListRef={resultListRef}
               onClose={() => updateResultsRailVisible(false)}
+              onCardHover={(id) => mapRef.current?.highlightPin?.(id)}
             />
           </>
         )}
