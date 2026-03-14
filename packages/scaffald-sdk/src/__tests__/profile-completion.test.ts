@@ -38,47 +38,4 @@ describe('ProfileCompletion Resource', () => {
       expect(Array.isArray(result.benefits)).toBe(true)
     })
   })
-
-  // TODO: Implement these methods in ProfileCompletion resource
-  describe.skip('getSection', () => {
-    it('should get specific section details', async () => {
-      // const result = await client.profileCompletion.getSection('work_experience')
-      // expect(result.data).toBeDefined()
-    })
-  })
-
-  describe.skip('getMissingSections', () => {
-    it('should get incomplete sections', async () => {
-      // const result = await client.profileCompletion.getMissingSections()
-      // expect(result.data).toBeDefined()
-    })
-  })
-
-  describe.skip('getSuggestions', () => {
-    it('should get completion suggestions', async () => {
-      // const result = await client.profileCompletion.getSuggestions()
-      // expect(result.data).toBeDefined()
-    })
-  })
-
-  describe.skip('getWeighting', () => {
-    it('should get section weighting configuration', async () => {
-      // const result = await client.profileCompletion.getWeighting()
-      // expect(result.data).toBeDefined()
-    })
-  })
-
-  describe.skip('recalculate', () => {
-    it('should trigger recalculation of completion score', async () => {
-      // const result = await client.profileCompletion.recalculate()
-      // expect(result.data).toBeDefined()
-    })
-  })
-
-  describe.skip('getHistory', () => {
-    it('should get completion history over time', async () => {
-      // const result = await client.profileCompletion.getHistory()
-      // expect(result.data).toBeDefined()
-    })
-  })
 })

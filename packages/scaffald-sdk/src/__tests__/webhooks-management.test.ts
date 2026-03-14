@@ -271,22 +271,6 @@ describe('Webhooks Management Resource', () => {
       expect(result).toBeDefined()
       expect(result.data).toBeDefined()
     })
-
-    // Skipping detailed array tests - the endpoint returns data but structure needs verification
-    it.skip('should include job events', async () => {
-      const result = await client.webhooks.eventTypes()
-      expect(result.data).toBeDefined()
-    })
-
-    it.skip('should include application events', async () => {
-      const result = await client.webhooks.eventTypes()
-      expect(result.data).toBeDefined()
-    })
-
-    it.skip('should have proper labels', async () => {
-      const result = await client.webhooks.eventTypes()
-      expect(result.data).toBeDefined()
-    })
   })
 
   describe('Error Handling', () => {

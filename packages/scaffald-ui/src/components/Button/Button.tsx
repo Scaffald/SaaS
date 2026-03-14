@@ -33,7 +33,7 @@
 
 import { forwardRef, useMemo } from 'react'
 import { Pressable, Text, View, ActivityIndicator, Platform } from 'react-native'
-import type { ButtonProps, ButtonSize } from './Button.types'
+import type { ButtonProps } from './Button.types'
 import { getButtonStyles, getButtonIconSize } from './Button.styles'
 import { useThemeContext } from '../../theme'
 import { useInteractiveState } from '../../hooks/useInteractiveState'

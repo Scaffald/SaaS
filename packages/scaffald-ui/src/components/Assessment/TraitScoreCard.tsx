@@ -64,7 +64,7 @@ export function TraitScoreCard({
         borderRadius: borderRadius.m,
         alignItems: 'center' as const,
         justifyContent: 'center' as const,
-        backgroundColor: accentColor + '1A', // 10% opacity
+        backgroundColor: `${accentColor}1A`, // 10% opacity
       },
       traitName: {
         fontSize: fontSize.md,

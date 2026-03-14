@@ -39,14 +39,17 @@ export interface AnimatedViewProps extends ViewProps {
   /**
    * Optional Reanimated layout transition
    */
+  // biome-ignore lint/suspicious/noExplicitAny: Reanimated types are optional dependency
   layout?: any
   /**
    * Optional Reanimated entering animation
    */
+  // biome-ignore lint/suspicious/noExplicitAny: Reanimated types are optional dependency
   entering?: any
   /**
    * Optional Reanimated exiting animation
    */
+  // biome-ignore lint/suspicious/noExplicitAny: Reanimated types are optional dependency
   exiting?: any
 }
 
@@ -63,6 +66,7 @@ export const AnimatedView = forwardRef<View, AnimatedViewProps>(
 
     // Use Reanimated's Animated.View
     // Cast is needed because Reanimated's View has slightly different props signature
+    // biome-ignore lint/suspicious/noExplicitAny: cast needed for optional Reanimated dependency
     const AnimatedComponent = ReanimatedViewComponent as any
     return (
       <AnimatedComponent 

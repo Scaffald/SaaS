@@ -44,41 +44,6 @@ describe('Employers Resource', () => {
     })
   })
 
-  // TODO: Implement search() method in Employers resource
-  describe.skip('search', () => {
-    it('should search employers by query', async () => {
-      // const result = await client.employers.search({ query: 'Acme' })
-      // expect(result.data).toBeDefined()
-    })
-
-    it('should handle empty search results', async () => {
-      // const result = await client.employers.search({ query: 'nonexistent' })
-      // expect(result.data).toBeDefined()
-    })
-
-    it('should combine search with filters', async () => {
-      // const result = await client.employers.search({
-      //   query: 'tech',
-      //   industry: 'Technology',
-      //   verified: true,
-      // })
-      // expect(result.data).toBeDefined()
-    })
-  })
-
-  // TODO: Implement getVerificationStatus() method in Employers resource
-  describe.skip('getVerificationStatus', () => {
-    it('should get employer verification status', async () => {
-      // const result = await client.employers.getVerificationStatus('emp_123')
-      // expect(result.data).toBeDefined()
-    })
-
-    it('should handle unverified employer', async () => {
-      // const result = await client.employers.getVerificationStatus('emp_456')
-      // expect(result.data).toBeDefined()
-    })
-  })
-
   describe('error handling', () => {
     it('should handle not found error', async () => {
       await expect(client.employers.getById({ id: 'invalid_id' })).rejects.toThrow()

@@ -108,6 +108,7 @@ function ReanimatedStepTransition({
 
   const durationMs = timingConfigs.normal.duration
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: transition should only trigger on stepKey change
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false
@@ -132,7 +133,7 @@ function ReanimatedStepTransition({
 
     // Slide out current content
     translateX.value = withTimingAsserted(
-      -dir * distance!,
+      -dir * distance,
       { duration: durationMs * 0.4 },
       (finished) => {
         'worklet'
@@ -154,7 +155,7 @@ function ReanimatedStepTransition({
       prevKeyRef.current = stepKey
 
       // Start from offset position
-      translateX.value = dir * distance!
+      translateX.value = dir * distance
       opacity.value = 0
 
       // Slide in
@@ -170,7 +171,7 @@ function ReanimatedStepTransition({
         exitTimeoutRef.current = null
       }
     }
-  }, [stepKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [stepKey])
 
   // Update children if step hasn't changed (e.g., state updates within step)
   useEffect(() => {

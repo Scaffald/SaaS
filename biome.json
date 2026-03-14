@@ -29,7 +29,9 @@
       "!!**/packages/supabase/email-templates/**",
       "!!packages/insurance/**",
       "!!packages/compliance/**",
-      "!!packages/tasks/**"
+      "!!packages/tasks/**",
+      "!!**/storybook-static",
+      "!!**/docs-site/.docusaurus"
     ]
   },
   "formatter": {
