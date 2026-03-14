@@ -23,6 +23,7 @@ import {
   Stack,
   useThemeContext,
 } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
 import { useOfflineWorkLogs } from "../hooks/useOfflineWorkLogs";
 import { useWorkLogSync } from "../hooks/useWorkLogSync";
@@ -40,6 +41,7 @@ export type WorkLogListScreenProps = {
 export function WorkLogListScreen({ organizationId, orgSlug }: WorkLogListScreenProps = {}) {
   const router = useRouter();
   const { theme } = useThemeContext();
+  const t = theme === 'dark' ? 'dark' : 'light';
 
   const listQuery = useWorkLogs(
     organizationId ? { organizationId } : {},
@@ -99,7 +101,7 @@ export function WorkLogListScreen({ organizationId, orgSlug }: WorkLogListScreen
         <Row justify="space-between" align="center">
           <Stack gap={4}>
             <Text>Work Logs</Text>
-            <Text style={{ color: "#414e62" }}>
+            <Text style={{ color: colors.text[t].secondary }}>
               Track and review your daily work history, collaborate with
               teammates, and manage verification.
             </Text>
@@ -116,19 +118,19 @@ export function WorkLogListScreen({ organizationId, orgSlug }: WorkLogListScreen
         {hasOfflineQueue && (
           <Card
             style={{
-              backgroundColor: "#fef3c7",
-              borderColor: "#fbbf24",
+              backgroundColor: t === 'dark' ? colors.yellow[900] : colors.yellow[50],
+              borderColor: t === 'dark' ? colors.yellow[700] : colors.yellow[300],
               borderWidth: 1,
             }}
           >
             <Stack gap={12} style={{ padding: 8 }}>
               <Row gap={12} align="center">
-                <CloudOff color="#b45309" />
+                <CloudOff color={t === 'dark' ? colors.yellow[300] : colors.yellow[700]} />
                 <Stack gap={4} flex={1}>
-                  <Text style={{ color: "#92400e" }}>
+                  <Text style={{ color: t === 'dark' ? colors.yellow[300] : colors.yellow[800] }}>
                     Offline drafts ready to sync
                   </Text>
-                  <Text style={{ color: "#92400e" }}>
+                  <Text style={{ color: t === 'dark' ? colors.yellow[300] : colors.yellow[800] }}>
                     {offlineWorkLogs.length} draft
                     {offlineWorkLogs.length === 1 ? "" : "s"} will sync once you
                     are back online.
@@ -191,7 +193,7 @@ export function WorkLogListScreen({ organizationId, orgSlug }: WorkLogListScreen
                   <Row justify="space-between" align="center">
                     <Stack gap={4}>
                       <Text>{"Work Log"}</Text>
-                      <Text style={{ color: "#414e62" }}>
+                      <Text style={{ color: colors.text[t].secondary }}>
                         {item.log_date
                           ? formatDate(item.log_date)
                           : "No date recorded"}
@@ -209,15 +211,17 @@ export function WorkLogListScreen({ organizationId, orgSlug }: WorkLogListScreen
                         paddingVertical: 4,
                         borderRadius: 12,
                         backgroundColor:
-                          item.visibility === "public" ? "#dcfce7" : "#f3f4f6",
+                          item.visibility === "public"
+                            ? (t === 'dark' ? colors.green[900] : colors.green[100])
+                            : colors.bg[t].muted,
                       }}
                     >
                       <Text
                         style={{
                           color:
                             item.visibility === "public"
-                              ? "#16a34a"
-                              : "#414e62",
+                              ? (t === 'dark' ? colors.green[400] : colors.green[600])
+                              : colors.text[t].secondary,
                         }}
                       >
                         {item.visibility === "public" ? "Public" : "Private"}
@@ -229,10 +233,10 @@ export function WorkLogListScreen({ organizationId, orgSlug }: WorkLogListScreen
                           paddingHorizontal: 8,
                           paddingVertical: 4,
                           borderRadius: 12,
-                          backgroundColor: "#dbeafe",
+                          backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[100],
                         }}
                       >
-                        <Text style={{ color: "#1d4ed8" }}>On profile</Text>
+                        <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[700] }}>On profile</Text>
                       </Stack>
                     )}
                   </Row>
@@ -256,13 +260,13 @@ export function WorkLogListScreen({ organizationId, orgSlug }: WorkLogListScreen
                   </Row>
 
                   {item.work_description && (
-                    <Text style={{ color: "#414e62" }}>
+                    <Text style={{ color: colors.text[t].secondary }}>
                       {item.work_description}
                     </Text>
                   )}
 
                   <Row justify="space-between" align="center">
-                    <Text style={{ color: "#414e62" }}>
+                    <Text style={{ color: colors.text[t].secondary }}>
                       Updated{" "}
                       {item.updated_at
                         ? formatDate(item.updated_at)
@@ -306,6 +310,8 @@ function AnalyticsBanner({
   totalHours,
   statusSummary,
 }: AnalyticsBannerProps) {
+  const { theme } = useThemeContext();
+  const t = theme === 'dark' ? 'dark' : 'light';
   return (
     <Card style={{ borderWidth: 1 }}>
       <Stack gap={12} style={{ padding: 8 }}>
@@ -328,7 +334,7 @@ function AnalyticsBanner({
                 label="Verified"
                 value={String(statusSummary?.verified.count ?? 0)}
                 subtitle={`${(statusSummary?.verified.hours ?? 0).toFixed(1)}h`}
-                color="#16a34a"
+                color={t === 'dark' ? colors.green[400] : colors.green[600]}
               />
               <SummaryTile
                 label="Needs Attention"
@@ -340,7 +346,7 @@ function AnalyticsBanner({
                   (statusSummary?.pending_verification.hours ?? 0) +
                   (statusSummary?.disputed.hours ?? 0)
                 ).toFixed(1)}h`}
-                color="#ea580c"
+                color={t === 'dark' ? colors.warning[400] : colors.warning[600]}
               />
             </Row>
           </Stack>
@@ -358,15 +364,17 @@ interface SummaryTileProps {
 }
 
 function SummaryTile({ label, value, subtitle, color }: SummaryTileProps) {
+  const { theme } = useThemeContext();
+  const t = theme === 'dark' ? 'dark' : 'light';
   return (
     <Stack
       style={{ borderRadius: 16, paddingHorizontal: 16, paddingVertical: 12 }}
       gap={4}
       flexShrink={0}
     >
-      <Text style={{ color: "#414e62" }}>{label}</Text>
+      <Text style={{ color: colors.text[t].secondary }}>{label}</Text>
       <Text style={color ? { color } : undefined}>{value}</Text>
-      {subtitle && <Text style={{ color: "#414e62" }}>{subtitle}</Text>}
+      {subtitle && <Text style={{ color: colors.text[t].secondary }}>{subtitle}</Text>}
     </Stack>
   );
 }
@@ -382,15 +390,17 @@ function MetricPill({
   label,
   value,
 }: MetricPillProps) {
+  const { theme } = useThemeContext();
+  const t = theme === 'dark' ? 'dark' : 'light';
   return (
     <Row
       style={{ borderRadius: 16, paddingHorizontal: 12, paddingVertical: 8 }}
       gap={8}
       align="center"
     >
-      <IconComponent size="md" color="#414e62" />
+      <IconComponent size="md" color={colors.text[t].tertiary} />
       <Text>{value}</Text>
-      <Text style={{ color: "#414e62" }}>{label}</Text>
+      <Text style={{ color: colors.text[t].secondary }}>{label}</Text>
     </Row>
   );
 }
@@ -400,6 +410,8 @@ interface EmptyStateProps {
 }
 
 function EmptyState({ onCreate }: EmptyStateProps) {
+  const { theme } = useThemeContext();
+  const t = theme === 'dark' ? 'dark' : 'light';
   return (
     <Card style={{ borderWidth: 1 }}>
       <Stack
@@ -410,7 +422,7 @@ function EmptyState({ onCreate }: EmptyStateProps) {
         <Text>No work logs yet</Text>
         <Text
           style={{
-            color: "#414e62",
+            color: colors.text[t].secondary,
             textAlign: "center",
             paddingHorizontal: 24,
           }}

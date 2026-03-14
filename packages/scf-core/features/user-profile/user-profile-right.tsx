@@ -9,7 +9,7 @@ import {
 import { useUserProfile } from "@scf/core/utils/user-profiles-sdk-hooks";
 import { getAvatarUrl } from "@scf/core/utils/supabase/storage";
 import { useUser } from "@scf/core/utils/useUser";
-import { DashboardWidget, ResponsiveModal } from "@scaffald/ui";
+import { DashboardWidget, ResponsiveModal, useThemeContext } from "@scaffald/ui";
 import { useState } from "react";
 import {
   Avatar,
@@ -20,6 +20,7 @@ import {
   Row,
   Stack,
 } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import { CertificationsWidget } from "../profile/widgets/CertificationsWidget";
 import { ExperienceWidget } from "../profile/widgets/ExperienceWidget";
 import { SkillsWidget } from "../profile/widgets/SkillsWidget";
@@ -37,6 +38,8 @@ interface UserProfileRightProps {
 export function UserProfileRight({ userId }: UserProfileRightProps) {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const { user: currentUser } = useUser();
+  const { theme } = useThemeContext();
+  const t = theme;
 
   const { data: profile } = useUserProfile(userId);
 
@@ -132,7 +135,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
           {loadingGeneral ? (
             <Stack gap={16} align="center" paddingVertical={32}>
               <Spinner size="lg" />
-              <Text style={{ color: "#414e62" }}>Loading profile...</Text>
+              <Text style={{ color: colors.text[t].secondary }}>Loading profile...</Text>
             </Stack>
           ) : generalInfo ? (
             <Stack gap={16}>
@@ -155,7 +158,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                   <Text>{displayName}</Text>
                   {generalInfo.headline && (
                     <Stack align="center">
-                      <Text style={{ color: "#414e62" }}>
+                      <Text style={{ color: colors.text[t].secondary }}>
                         {generalInfo.headline}
                       </Text>
                     </Stack>
@@ -166,15 +169,15 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                 {generalInfo.open_to_work && (
                   <Row
                     style={{
-                      backgroundColor: "#f0fdf4",
+                      backgroundColor: t === 'dark' ? colors.green[900] : colors.green[50],
                       paddingHorizontal: 12,
                       paddingVertical: 6,
                       borderRadius: 20,
                       borderWidth: 1,
-                      borderColor: "#bbf7d0",
+                      borderColor: t === 'dark' ? colors.green[700] : colors.green[200],
                     }}
                   >
-                    <Text style={{ color: "#16a34a" }}>Open to Work</Text>
+                    <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[600] }}>Open to Work</Text>
                   </Row>
                 )}
               </Stack>
@@ -184,14 +187,14 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                 <Stack
                   gap={4}
                   style={{
-                    backgroundColor: "#f8fafc",
+                    backgroundColor: colors.bg[t].muted,
                     padding: 8,
                     borderRadius: 12,
                   }}
                 >
-                  <Text style={{ color: "#414e62" }}>Current Role</Text>
+                  <Text style={{ color: colors.text[t].secondary }}>Current Role</Text>
                   <Text>{currentRole.job_title as string}</Text>
-                  <Text style={{ color: "#414e62" }}>
+                  <Text style={{ color: colors.text[t].secondary }}>
                     {currentRole.company_name as string}
                   </Text>
                 </Stack>
@@ -204,7 +207,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                 {/* Completion Bar */}
                 <Stack gap={8}>
                   <Row justify="space-between">
-                    <Text style={{ color: "#414e62" }}>Completion</Text>
+                    <Text style={{ color: colors.text[t].secondary }}>Completion</Text>
                     <Text>{completion}%</Text>
                   </Row>
                   <ProgressBar value={completion} color="success" />
@@ -217,16 +220,16 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                     flex={1}
                     minWidth={80}
                     style={{
-                      backgroundColor: "#f8fafc",
+                      backgroundColor: colors.bg[t].muted,
                       padding: 8,
                       borderRadius: 12,
                     }}
                     align="center"
                   >
-                    <Text style={{ color: "#2563eb" }}>
+                    <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>
                       {skills?.length || 0}
                     </Text>
-                    <Text style={{ color: "#414e62" }}>Skills</Text>
+                    <Text style={{ color: colors.text[t].secondary }}>Skills</Text>
                   </Stack>
 
                   <Stack
@@ -234,16 +237,16 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                     flex={1}
                     minWidth={80}
                     style={{
-                      backgroundColor: "#f8fafc",
+                      backgroundColor: colors.bg[t].muted,
                       padding: 8,
                       borderRadius: 12,
                     }}
                     align="center"
                   >
-                    <Text style={{ color: "#16a34a" }}>
+                    <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[600] }}>
                       {certifications?.length || 0}
                     </Text>
-                    <Text style={{ color: "#414e62" }}>Certs</Text>
+                    <Text style={{ color: colors.text[t].secondary }}>Certs</Text>
                   </Stack>
 
                   <Stack
@@ -251,16 +254,16 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                     flex={1}
                     minWidth={80}
                     style={{
-                      backgroundColor: "#f8fafc",
+                      backgroundColor: colors.bg[t].muted,
                       padding: 8,
                       borderRadius: 12,
                     }}
                     align="center"
                   >
-                    <Text style={{ color: "#414e62" }}>
+                    <Text style={{ color: colors.text[t].secondary }}>
                       {formattedYearsOfExperience}
                     </Text>
-                    <Text style={{ color: "#414e62" }}>Years</Text>
+                    <Text style={{ color: colors.text[t].secondary }}>Years</Text>
                   </Stack>
                 </Row>
               </Stack>
@@ -283,16 +286,18 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                         <Row
                           key={skill.id}
                           style={{
-                            backgroundColor: "#f1f5f9",
+                            backgroundColor: colors.bg[t].muted,
                             paddingHorizontal: 10,
                             paddingVertical: 6,
                             borderRadius: 8,
                             borderWidth: 1,
-                            borderColor: skill.verified ? "#86efac" : "#e2e8f0",
+                            borderColor: skill.verified
+                              ? (t === 'dark' ? colors.green[700] : colors.green[200])
+                              : colors.border[t].default,
                           }}
                         >
                           {skill.verified && (
-                            <Text style={{ color: "#16a34a", marginRight: 4 }}>
+                            <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[600], marginRight: 4 }}>
                               ✓
                             </Text>
                           )}

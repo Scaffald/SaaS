@@ -26,7 +26,7 @@ import {
   UserPlus,
   X,
 } from 'lucide-react-native'
-import { useToast } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useMemo } from 'react'
 import { Image } from 'react-native'
 import { useQueryClient } from '@tanstack/react-query'
@@ -36,6 +36,8 @@ import {
   Card,
   Text,
   useWindowDimensions,
+  useToast,
+  useThemeContext,
   Row,
   Stack,
 } from '@scaffald/ui'
@@ -83,6 +85,8 @@ export function UserProfileHeaderEnhanced({
   const isMobile = width < 768
   const toast = useToast()
   const queryClient = useQueryClient()
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
 
   // Connection and follow status hooks (only for other users' profiles)
   const connectionStatus = useConnectionStatus(isOwnProfile ? null : profile.id)
@@ -308,7 +312,7 @@ export function UserProfileHeaderEnhanced({
   return (
     <Card variant="elevated" style={{ overflow: 'hidden' }} padding="none">
       {/* Banner Section */}
-      <Stack style={{ position: 'relative', height: bannerHeight, backgroundColor: '#e2e8f0' }}>
+      <Stack style={{ position: 'relative', height: bannerHeight, backgroundColor: colors.bg[t].muted }}>
         {bannerUrl ? (
           <Image
             source={{ uri: bannerUrl }}
@@ -317,7 +321,7 @@ export function UserProfileHeaderEnhanced({
           />
         ) : (
           <Stack
-            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#bfdbfe' }}
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[200] }}
           />
         )}
 
@@ -344,23 +348,23 @@ export function UserProfileHeaderEnhanced({
         <Row gap={16} align="flex-start" justify="space-between" wrap>
           <Stack flex={1} gap={8} minWidth={200}>
             {/* Name */}
-            <Text style={{ color: '#414e62' }}>{profile.name || 'User'}</Text>
+            <Text style={{ color: colors.text[t].secondary }}>{profile.name || 'User'}</Text>
 
             {/* Headline */}
-            {profile.headline && <Text style={{ color: '#414e62' }}>{profile.headline}</Text>}
+            {profile.headline && <Text style={{ color: colors.text[t].secondary }}>{profile.headline}</Text>}
 
             {/* Industry and Location */}
             <Row gap={12} wrap align="center">
               {profile.industry_name && (
                 <Row gap={8} align="center">
-                  <Briefcase size={16} color="#414e62" />
-                  <Text style={{ color: '#414e62' }}>{profile.industry_name}</Text>
+                  <Briefcase size={16} color={colors.text[t].tertiary} />
+                  <Text style={{ color: colors.text[t].secondary }}>{profile.industry_name}</Text>
                 </Row>
               )}
               {profile.location && (
                 <Row gap={8} align="center">
-                  <MapPin size={16} color="#414e62" />
-                  <Text style={{ color: '#414e62' }}>{profile.location}</Text>
+                  <MapPin size={16} color={colors.text[t].tertiary} />
+                  <Text style={{ color: colors.text[t].secondary }}>{profile.location}</Text>
                 </Row>
               )}
             </Row>
@@ -486,19 +490,19 @@ export function UserProfileHeaderEnhanced({
           gap={12}
           wrap
           paddingTop={8}
-          style={{ borderTopWidth: 1, borderTopColor: '#e2e8f0' }}
+          style={{ borderTopWidth: 1, borderTopColor: colors.border[t].default }}
         >
           {/* Scaffald Score */}
           {profile.gamified_score !== null && (
             <Row
-              style={{ backgroundColor: '#eff6ff', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 16, borderWidth: 1, borderColor: '#bfdbfe' }}
+              style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50], paddingHorizontal: 16, paddingVertical: 8, borderRadius: 16, borderWidth: 1, borderColor: t === 'dark' ? colors.blue[700] : colors.blue[200] }}
               gap={8}
               align="center"
             >
-              <Star size={24} color="#2563eb" />
+              <Star size={24} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
               <Stack>
-                <Text style={{ color: '#1d4ed8' }}>{profile.gamified_score}</Text>
-                <Text style={{ color: '#2563eb' }}>Scaffald Score</Text>
+                <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[700] }}>{profile.gamified_score}</Text>
+                <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>Scaffald Score</Text>
               </Stack>
             </Row>
           )}
@@ -510,10 +514,10 @@ export function UserProfileHeaderEnhanced({
               align="center"
               paddingHorizontal={12}
               paddingVertical={8}
-              style={{ backgroundColor: '#f8fafc', borderRadius: 12 }}
+              style={{ backgroundColor: colors.bg[t].subtle, borderRadius: 12 }}
             >
-              <Award size={18} color="#414e62" />
-              <Text style={{ color: '#414e62' }}>{formattedYears} years experience</Text>
+              <Award size={18} color={colors.text[t].tertiary} />
+              <Text style={{ color: colors.text[t].secondary }}>{formattedYears} years experience</Text>
             </Row>
           )}
 
@@ -524,19 +528,19 @@ export function UserProfileHeaderEnhanced({
               align="center"
               paddingHorizontal={12}
               paddingVertical={8}
-              style={{ backgroundColor: '#f8fafc', borderRadius: 12 }}
+              style={{ backgroundColor: colors.bg[t].subtle, borderRadius: 12 }}
             >
-              <DollarSign size={18} color="#414e62" />
-              <Text style={{ color: '#414e62' }}>{formatHourlyRate(profile.hourly_rate_cents)}</Text>
+              <DollarSign size={18} color={colors.text[t].tertiary} />
+              <Text style={{ color: colors.text[t].secondary }}>{formatHourlyRate(profile.hourly_rate_cents)}</Text>
             </Row>
           )}
 
           {/* Open to Work Badge */}
           {profile.open_to_work && (
             <Row
-              style={{ paddingHorizontal: 12, paddingVertical: 8, backgroundColor: '#f0fdf4', borderRadius: 12, borderWidth: 1, borderColor: '#bbf7d0' }}
+              style={{ paddingHorizontal: 12, paddingVertical: 8, backgroundColor: t === 'dark' ? colors.green[900] : colors.green[50], borderRadius: 12, borderWidth: 1, borderColor: t === 'dark' ? colors.green[700] : colors.green[200] }}
             >
-              <Text style={{ color: '#15803d' }}>✓ Available for Work</Text>
+              <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[600] }}>✓ Available for Work</Text>
             </Row>
           )}
         </Row>

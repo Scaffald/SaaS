@@ -10,7 +10,8 @@ import {
 } from "lucide-react-native";
 import { randomUUID } from "expo-crypto";
 import { useEffect, useRef } from "react";
-import { Button, Card, Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { Button, Card, Spinner, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
 interface CategoryRating {
   category: string;
@@ -36,6 +37,8 @@ export function UserProfileReviews({
 }: UserProfileReviewsProps) {
   const { session } = useAuth();
   const currentUserId = session?.user?.id;
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
   const hasTrackedViewRef = useRef(false); // Track if we've already recorded a view for this component mount
 
   // Track review view for engagement analytics
@@ -103,7 +106,7 @@ export function UserProfileReviews({
           minHeight={400}
         >
           <Spinner size="lg" />
-          <Text color="$gray11">Loading reviews...</Text>
+          <Text style={{ color: colors.text[t].secondary }}>Loading reviews...</Text>
         </Stack>
       </Card>
     );
@@ -115,8 +118,8 @@ export function UserProfileReviews({
         <Stack gap={16} padding="lg">
           <Row justify="space-between" align="center">
             <Row gap={8} align="center">
-              <Star size={24} color="$blue10" fill="$blue10" />
-              <Text color="$gray11">Reviews & Ratings</Text>
+              <Star size={24} color={t === "dark" ? colors.blue[300] : colors.blue[600]} fill={t === "dark" ? colors.blue[300] : colors.blue[600]} />
+              <Text style={{ color: colors.text[t].secondary }}>Reviews & Ratings</Text>
             </Row>
             {onLeaveReview && (
               <Button
@@ -130,9 +133,9 @@ export function UserProfileReviews({
             )}
           </Row>
           <Stack align="center" justify="center" minHeight={200} gap={12}>
-            <Text color="$gray11">No reviews yet</Text>
+            <Text style={{ color: colors.text[t].secondary }}>No reviews yet</Text>
             <Stack align="center">
-              <Text color="$gray11">
+              <Text style={{ color: colors.text[t].secondary }}>
                 Be the first to leave a review for this user
               </Text>
             </Stack>
@@ -182,8 +185,8 @@ export function UserProfileReviews({
         {/* Header with Leave Review Button */}
         <Row justify="space-between" align="center">
           <Row gap={8} align="center">
-            <Star size={24} color="$blue10" fill="$blue10" />
-            <Text color="$gray11">Reviews & Ratings</Text>
+            <Star size={24} color={t === "dark" ? colors.blue[300] : colors.blue[600]} fill={t === "dark" ? colors.blue[300] : colors.blue[600]} />
+            <Text style={{ color: colors.text[t].secondary }}>Reviews & Ratings</Text>
           </Row>
           {onLeaveReview && (
             <Button
@@ -198,26 +201,26 @@ export function UserProfileReviews({
         </Row>
 
         {/* Rating Summary */}
-        <Card bordered backgroundColor="$color2">
+        <Card bordered style={{ backgroundColor: colors.bg[t].subtle }}>
           <Stack gap={12} padding="md">
             <Row gap={16} align="center">
               <Stack align="center">
-                <Text color="$gray11">{overallRating.toFixed(1)}</Text>
+                <Text style={{ color: colors.text[t].secondary }}>{overallRating.toFixed(1)}</Text>
                 <Row gap={4}>
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={randomUUID()}
                       size="md"
-                      color="$yellow10"
+                      color={t === "dark" ? colors.yellow[300] : colors.yellow[600]}
                       fill={
                         i < Math.floor(overallRating)
-                          ? "$yellow10"
+                          ? (t === "dark" ? colors.yellow[300] : colors.yellow[600])
                           : "transparent"
                       }
                     />
                   ))}
                 </Row>
-                <Text color="$gray11">
+                <Text style={{ color: colors.text[t].secondary }}>
                   {totalReviews} {totalReviews === 1 ? "review" : "reviews"}
                 </Text>
               </Stack>
@@ -227,8 +230,7 @@ export function UserProfileReviews({
                   {Object.entries(avgByCategory).map(([category, data]) => (
                     <Row key={category} gap={8} align="center">
                       <Text
-                        color="$gray11"
-                        style={{ width: 100, textTransform: "capitalize" }}
+                        style={{ width: 100, textTransform: "capitalize", color: colors.text[t].secondary }}
                       >
                         {category}
                       </Text>
@@ -236,17 +238,17 @@ export function UserProfileReviews({
                         flex={1}
                         style={{
                           height: 6,
-                          backgroundColor: "$color3",
+                          backgroundColor: colors.bg[t].muted,
                           borderRadius: 8,
                           overflow: "hidden",
                         }}
                       >
                         <Row
                           width={`${(data.sum / data.count / 5) * 100}%`}
-                          backgroundColor="$yellow10"
+                          style={{ backgroundColor: t === "dark" ? colors.yellow[300] : colors.yellow[600] }}
                         />
                       </Row>
-                      <Text color="$gray11" style={{ width: 30 }}>
+                      <Text style={{ width: 30, color: colors.text[t].secondary }}>
                         {(data.sum / data.count).toFixed(1)}
                       </Text>
                     </Row>
@@ -262,22 +264,22 @@ export function UserProfileReviews({
                 align="center"
                 paddingHorizontal={12}
                 paddingVertical={8}
-                backgroundColor="$green3"
+                style={{ backgroundColor: t === "dark" ? colors.green[900] : colors.green[100] }}
                 borderRadius={12}
               >
-                <ThumbsUp size="md" color="$green11" />
-                <Text color="$green11">{recommendCount} Recommend</Text>
+                <ThumbsUp size="md" color={t === "dark" ? colors.green[300] : colors.green[600]} />
+                <Text style={{ color: t === "dark" ? colors.green[300] : colors.green[600] }}>{recommendCount} Recommend</Text>
               </Row>
               <Row
                 gap={8}
                 align="center"
                 paddingHorizontal={12}
                 paddingVertical={8}
-                backgroundColor="$red3"
+                style={{ backgroundColor: t === "dark" ? colors.rose[900] : colors.rose[100] }}
                 borderRadius={12}
               >
-                <ThumbsDown size="md" color="$red11" />
-                <Text color="$red11">{notRecommendCount} Don't Recommend</Text>
+                <ThumbsDown size="md" color={t === "dark" ? colors.rose[300] : colors.rose[600]} />
+                <Text style={{ color: t === "dark" ? colors.rose[300] : colors.rose[600] }}>{notRecommendCount} Don't Recommend</Text>
               </Row>
             </Row>
           </Stack>
@@ -285,28 +287,28 @@ export function UserProfileReviews({
 
         {/* Reviews List */}
         <Stack gap={12}>
-          <Text color="$gray11">Reviews ({totalReviews})</Text>
+          <Text style={{ color: colors.text[t].secondary }}>Reviews ({totalReviews})</Text>
           {reviews.map((review: Review) => (
-            <Card key={review.id} bordered backgroundColor="$color2">
+            <Card key={review.id} bordered style={{ backgroundColor: colors.bg[t].subtle }}>
               <Stack gap={12} padding="md">
                 <Row justify="space-between" align="flex-start">
                   <Stack gap={4}>
                     <Row gap={8} align="center">
-                      <Text color="$gray11">Anonymous Reviewer</Text>
+                      <Text style={{ color: colors.text[t].secondary }}>Anonymous Reviewer</Text>
                       <Row
                         gap={4}
                         align="center"
                         paddingHorizontal={8}
                         paddingVertical={2}
-                        backgroundColor="$blue3"
+                        style={{ backgroundColor: t === "dark" ? colors.blue[900] : colors.blue[100] }}
                         borderRadius={8}
                       >
-                        <Shield size="sm" color="$blue11" />
-                        <Text color="$blue11">VERIFIED</Text>
+                        <Shield size="sm" color={t === "dark" ? colors.blue[300] : colors.blue[600]} />
+                        <Text style={{ color: t === "dark" ? colors.blue[300] : colors.blue[600] }}>VERIFIED</Text>
                       </Row>
                     </Row>
                   </Stack>
-                  <Text color="$gray11">
+                  <Text style={{ color: colors.text[t].secondary }}>
                     {new Date(review.created_at).toLocaleDateString()}
                   </Text>
                 </Row>
@@ -325,10 +327,10 @@ export function UserProfileReviews({
                           <Star
                             key={randomUUID()}
                             size="md"
-                            color="$yellow10"
+                            color={t === "dark" ? colors.yellow[300] : colors.yellow[600]}
                             fill={
                               i < Math.floor(avgRating)
-                                ? "$yellow10"
+                                ? (t === "dark" ? colors.yellow[300] : colors.yellow[600])
                                 : "transparent"
                             }
                           />
@@ -339,7 +341,7 @@ export function UserProfileReviews({
 
                 {/* Comment */}
                 {review.comment && (
-                  <Text color="$gray11">{review.comment}</Text>
+                  <Text style={{ color: colors.text[t].secondary }}>{review.comment}</Text>
                 )}
 
                 {/* Recommendation */}
@@ -347,13 +349,13 @@ export function UserProfileReviews({
                   <Row gap={8} align="center">
                     {review.reaction === 1 ? (
                       <>
-                        <ThumbsUp size="md" color="$green11" />
-                        <Text color="$green11">Recommends this person</Text>
+                        <ThumbsUp size="md" color={t === "dark" ? colors.green[300] : colors.green[600]} />
+                        <Text style={{ color: t === "dark" ? colors.green[300] : colors.green[600] }}>Recommends this person</Text>
                       </>
                     ) : (
                       <>
-                        <ThumbsDown size="md" color="$red11" />
-                        <Text color="$red11">Does not recommend</Text>
+                        <ThumbsDown size="md" color={t === "dark" ? colors.rose[300] : colors.rose[600]} />
+                        <Text style={{ color: t === "dark" ? colors.rose[300] : colors.rose[600] }}>Does not recommend</Text>
                       </>
                     )}
                   </Row>

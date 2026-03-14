@@ -20,7 +20,9 @@ import {
   Text,
   Row,
   Stack,
+  useThemeContext,
 } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { Info } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -148,6 +150,8 @@ export function InquiryCreateForm({
           // No-op for edit mode - save draft not applicable
         }
 
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const toast = useToast()
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
   const [saveTemplateOpen, setSaveTemplateOpen] = useState(false)
@@ -424,12 +428,14 @@ export function InquiryCreateForm({
           <Text>{label}</Text>
           {isAutoFilled && (
             <Row
-              paddingHorizontal={8}
-              paddingVertical={4}
-              backgroundColor="$green3"
-              borderRadius={8}
+              style={{
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                backgroundColor: `${colors.success[500]}18`,
+                borderRadius: 8,
+              }}
             >
-              <Text color="$green11">Auto-filled</Text>
+              <Text style={{ color: colors.success[600] }}>Auto-filled</Text>
             </Row>
           )}
         </Row>
@@ -451,14 +457,16 @@ export function InquiryCreateForm({
                   gap={12}
                   padding="sm"
                   borderWidth={1}
-                  borderColor="$borderColor"
-                  backgroundColor="$background"
-                  borderRadius={16}
+                  style={{
+                    borderColor: colors.border[t].default,
+                    backgroundColor: colors.bg[t].default,
+                    borderRadius: 16,
+                  }}
                 >
                   <Row justify="space-between" align="center" gap={12}>
                     <Stack>
                       <Text>Templates</Text>
-                      <Text color="$gray11">Reuse saved inquiry terms for this organization.</Text>
+                      <Text style={{ color: colors.text[t].secondary }}>Reuse saved inquiry terms for this organization.</Text>
                     </Stack>
                     <Row gap={8}>
                       <Button
@@ -504,9 +512,9 @@ export function InquiryCreateForm({
                     </Button>
                   </Row>
 
-                  {isTemplatesLoading && <Text color="$gray11">Loading templates…</Text>}
+                  {isTemplatesLoading && <Text style={{ color: colors.text[t].secondary }}>Loading templates…</Text>}
                   {!isTemplatesLoading && templates.length === 0 && (
-                    <Text color="$gray11">
+                    <Text style={{ color: colors.text[t].secondary }}>
                       Save templates to quickly reuse standard employment terms.
                     </Text>
                   )}
@@ -518,23 +526,25 @@ export function InquiryCreateForm({
                     gap={12}
                     padding="sm"
                     borderWidth={1}
-                    borderColor="$borderColor"
-                    backgroundColor="$background"
-                    borderRadius={16}
+                    style={{
+                      borderColor: colors.border[t].default,
+                      backgroundColor: colors.bg[t].default,
+                      borderRadius: 16,
+                    }}
                   >
                     <Row justify="space-between" align="center" gap={12}>
                       <Stack gap={4} style={{ flex: 1 }}>
                         <Text>Smart defaults</Text>
                         {isSmartDefaultsLoading ? (
-                          <Text color="$gray11">Loading job-based recommendations…</Text>
+                          <Text style={{ color: colors.text[t].secondary }}>Loading job-based recommendations…</Text>
                         ) : smartDefaultsFieldCount > 0 ? (
-                          <Text color="$gray11">
+                          <Text style={{ color: colors.text[t].secondary }}>
                             {smartDefaultsApplied
                               ? `Applied ${smartDefaultsFieldCount} field${smartDefaultsFieldCount === 1 ? '' : 's'} from ${smartDefaultsSourceDescription}.`
                               : `Prefill ${smartDefaultsFieldCount} field${smartDefaultsFieldCount === 1 ? '' : 's'} from ${smartDefaultsSourceDescription}.`}
                           </Text>
                         ) : (
-                          <Text color="$gray11">No defaults available for this job yet.</Text>
+                          <Text style={{ color: colors.text[t].secondary }}>No defaults available for this job yet.</Text>
                         )}
                       </Stack>
                       <Row gap={8}>
@@ -558,12 +568,14 @@ export function InquiryCreateForm({
                         {smartDefaultsFieldLabels.map((label) => (
                           <Stack
                             key={label}
-                            paddingHorizontal={8}
-                            paddingVertical={4}
-                            backgroundColor="$gray3"
-                            borderRadius={12}
+                            style={{
+                              paddingHorizontal: 8,
+                              paddingVertical: 4,
+                              backgroundColor: colors.bg[t].muted,
+                              borderRadius: 12,
+                            }}
                           >
-                            <Text color="$gray11">{label}</Text>
+                            <Text style={{ color: colors.text[t].secondary }}>{label}</Text>
                           </Stack>
                         ))}
                       </Row>
@@ -615,7 +627,7 @@ export function InquiryCreateForm({
                           />
                         )}
                       />
-                      <Text color="$gray11">Non-negotiable</Text>
+                      <Text style={{ color: colors.text[t].secondary }}>Non-negotiable</Text>
                     </Row>
                   </Stack>
 
@@ -657,7 +669,7 @@ export function InquiryCreateForm({
                           />
                         )}
                       />
-                      <Text color="$gray11">Non-negotiable</Text>
+                      <Text style={{ color: colors.text[t].secondary }}>Non-negotiable</Text>
                     </Row>
                   </Stack>
 
@@ -713,7 +725,7 @@ export function InquiryCreateForm({
                           )}
                         />
                         {errors.workingHoursStart && (
-                          <Text color="$red10">{errors.workingHoursStart.message}</Text>
+                          <Text style={{ color: colors.error[500] }}>{errors.workingHoursStart.message}</Text>
                         )}
                       </Stack>
                       <Stack gap={8} style={{ flex: 1 }}>
@@ -729,7 +741,7 @@ export function InquiryCreateForm({
                           )}
                         />
                         {errors.workingHoursEnd && (
-                          <Text color="$red10">{errors.workingHoursEnd.message}</Text>
+                          <Text style={{ color: colors.error[500] }}>{errors.workingHoursEnd.message}</Text>
                         )}
                       </Stack>
                     </Row>
@@ -745,7 +757,7 @@ export function InquiryCreateForm({
                           />
                         )}
                       />
-                      <Text color="$gray11">Non-negotiable</Text>
+                      <Text style={{ color: colors.text[t].secondary }}>Non-negotiable</Text>
                     </Row>
                   </Stack>
 
@@ -794,7 +806,7 @@ export function InquiryCreateForm({
                           />
                         )}
                       />
-                      <Text color="$gray11">Non-negotiable</Text>
+                      <Text style={{ color: colors.text[t].secondary }}>Non-negotiable</Text>
                     </Row>
                   </Stack>
 
@@ -816,7 +828,7 @@ export function InquiryCreateForm({
                                 {...getDateInputProps()}
                               />
                               {errors.employmentStartDate && (
-                                <Text color="$red10">{errors.employmentStartDate.message}</Text>
+                                <Text style={{ color: colors.error[500] }}>{errors.employmentStartDate.message}</Text>
                               )}
                             </>
                           )}
@@ -834,12 +846,12 @@ export function InquiryCreateForm({
                                 {...getDateInputProps()}
                               />
                               {errors.employmentEndDate && (
-                                <Text color="$red10">{errors.employmentEndDate.message}</Text>
+                                <Text style={{ color: colors.error[500] }}>{errors.employmentEndDate.message}</Text>
                               )}
                             </>
                           )}
                         />
-                        <Text color="$gray11">End date is not mandatory</Text>
+                        <Text style={{ color: colors.text[t].secondary }}>End date is not mandatory</Text>
                       </Stack>
                     </Row>
                     <Row align="center" gap={8}>
@@ -854,7 +866,7 @@ export function InquiryCreateForm({
                           />
                         )}
                       />
-                      <Text color="$gray11">Non-negotiable</Text>
+                      <Text style={{ color: colors.text[t].secondary }}>Non-negotiable</Text>
                     </Row>
                   </Stack>
                 </Stack>
@@ -909,11 +921,11 @@ export function InquiryCreateForm({
                           />
                         </Row>
                         {errors.rateMinCents && (
-                          <Text color="$red10">{errors.rateMinCents.message}</Text>
+                          <Text style={{ color: colors.error[500] }}>{errors.rateMinCents.message}</Text>
                         )}
                       </Stack>
                       <Stack gap={8} style={{ flex: 1 }}>
-                        <Text color="$gray11">to</Text>
+                        <Text style={{ color: colors.text[t].secondary }}>to</Text>
                         <Row align="center" gap={4}>
                           <Text>$</Text>
                           <Controller
@@ -934,11 +946,11 @@ export function InquiryCreateForm({
                           />
                         </Row>
                         {errors.rateMaxCents && (
-                          <Text color="$red10">{errors.rateMaxCents.message}</Text>
+                          <Text style={{ color: colors.error[500] }}>{errors.rateMaxCents.message}</Text>
                         )}
                       </Stack>
                     </Row>
-                    <Text color="$gray11">Add a range or a single rate</Text>
+                    <Text style={{ color: colors.text[t].secondary }}>Add a range or a single rate</Text>
                     <Row align="center" gap={8}>
                       <Controller
                         control={control}
@@ -951,7 +963,7 @@ export function InquiryCreateForm({
                           />
                         )}
                       />
-                      <Text color="$gray11">Non-negotiable</Text>
+                      <Text style={{ color: colors.text[t].secondary }}>Non-negotiable</Text>
                     </Row>
                   </Stack>
                 </Stack>
@@ -1086,7 +1098,7 @@ export function InquiryCreateForm({
                       )}
                     />
                     {errors.additionalNotes && (
-                      <Text color="$red10">{errors.additionalNotes.message}</Text>
+                      <Text style={{ color: colors.error[500] }}>{errors.additionalNotes.message}</Text>
                     )}
                   </Stack>
                 </Stack>
@@ -1097,8 +1109,12 @@ export function InquiryCreateForm({
             <Row
               gap={12}
               padding="md"
-              backgroundColor="$background"
-              style={{ borderTopWidth: 1, borderTopColor: '$borderColor', justifyContent: 'flex-end' }}
+              style={{
+                backgroundColor: colors.bg[t].default,
+                borderTopWidth: 1,
+                borderTopColor: colors.border[t].default,
+                justifyContent: 'flex-end',
+              }}
             >
               {onCancel && (
                 <Button variant="outline" onPress={onCancel} disabled={isSubmitting}>
@@ -1125,7 +1141,7 @@ export function InquiryCreateForm({
 
           {/* Help Sidebar */}
           <Stack
-            style={{ width: 300, padding: 16, backgroundColor: '$color2', borderLeftWidth: 1, borderLeftColor: '$borderColor' }}
+            style={{ width: 300, padding: 16, backgroundColor: colors.bg[t].subtle, borderLeftWidth: 1, borderLeftColor: colors.border[t].default }}
           >
             <InquiryHelpSidebar />
           </Stack>
@@ -1143,7 +1159,7 @@ export function InquiryCreateForm({
         />
         <SheetContent scrollable={false}>
           <Stack gap={16} padding="md">
-            <Text color="$gray11">Capture the current inquiry terms as a reusable template.</Text>
+            <Text style={{ color: colors.text[t].secondary }}>Capture the current inquiry terms as a reusable template.</Text>
             <Stack gap={8}>
               <Text>Template name</Text>
               <Input
@@ -1192,7 +1208,7 @@ export function InquiryCreateForm({
         />
         <SheetContent scrollable>
           {templates.length === 0 ? (
-            <Text color="$gray11">No templates saved yet. Create one from the inquiry form.</Text>
+            <Text style={{ color: colors.text[t].secondary }}>No templates saved yet. Create one from the inquiry form.</Text>
           ) : (
             <Stack gap={12} paddingVertical={8}>
               {templateList.map((template) => {
@@ -1205,17 +1221,19 @@ export function InquiryCreateForm({
                     padding="sm"
                     gap={8}
                     borderWidth={1}
-                    borderColor="$borderColor"
-                    borderRadius={16}
-                    backgroundColor="$background"
+                    style={{
+                      borderColor: colors.border[t].default,
+                      borderRadius: 16,
+                      backgroundColor: colors.bg[t].default,
+                    }}
                   >
                     <Row gap={12} align="center" justify="space-between">
                       <Stack style={{ flex: 1 }} gap={4}>
                         <Text>{template.name}</Text>
                         {template.description && (
-                          <Text color="$gray11">{template.description}</Text>
+                          <Text style={{ color: colors.text[t].secondary }}>{template.description}</Text>
                         )}
-                        <Text color="$gray11">
+                        <Text style={{ color: colors.text[t].secondary }}>
                           {usageCount} use{usageCount === 1 ? '' : 's'} ·{' '}
                           {lastUsedAt ? new Date(lastUsedAt).toLocaleDateString() : 'Never used'}
                         </Text>

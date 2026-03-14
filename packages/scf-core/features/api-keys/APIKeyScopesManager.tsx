@@ -16,7 +16,9 @@ import {
   Row,
   Stack,
   Checkbox,
+  useThemeContext,
 } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { AlertCircle, CheckCircle, Info, Lock, Shield, XCircle } from 'lucide-react-native'
 
 export interface APIKeyScopesManagerProps {
@@ -105,6 +107,8 @@ export function APIKeyScopesManager({
   apiKey,
   onUpdateScopes,
 }: APIKeyScopesManagerProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [selectedScopes, setSelectedScopes] = useState<string[]>(apiKey.scopes)
   const [isUpdating, setIsUpdating] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -194,11 +198,11 @@ export function APIKeyScopesManager({
             {!apiKey.is_active && (
               <Card
                 padding="sm"
-                style={{ backgroundColor: '$orange2', borderColor: '$orange6', borderWidth: 1 }}
+                style={{ backgroundColor: t === 'dark' ? colors.orange[900] : colors.orange[50], borderColor: t === 'dark' ? colors.orange[700] : colors.orange[300], borderWidth: 1 }}
               >
                 <Row align="center" gap={8}>
-                  <AlertCircle size="lg" color="$orange11" />
-                  <Paragraph color="$orange11">
+                  <AlertCircle size="lg" color={t === 'dark' ? colors.orange[300] : colors.orange[600]} />
+                  <Paragraph style={{ color: t === 'dark' ? colors.orange[300] : colors.orange[600] }}>
                     This API key is revoked. Updating scopes will not re-activate it.
                   </Paragraph>
                 </Row>
@@ -210,13 +214,13 @@ export function APIKeyScopesManager({
             {/* Info Card */}
             <Card
               padding="sm"
-              style={{ backgroundColor: '$blue2', borderColor: '$blue6', borderWidth: 1 }}
+              style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50], borderColor: t === 'dark' ? colors.blue[700] : colors.blue[300], borderWidth: 1 }}
             >
               <Row align="flex-start" gap={12}>
-                <Info size={24} color="$blue11" />
+                <Info size={24} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
                 <Stack flex={1} gap={8}>
-                  <Paragraph color="$blue11">Permission Scopes</Paragraph>
-                  <Paragraph size="sm" color="$blue11">
+                  <Paragraph style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>Permission Scopes</Paragraph>
+                  <Paragraph size="sm" style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>
                     Scopes control what your API key can access. Grant only the minimum permissions
                     needed for your use case (principle of least privilege).
                   </Paragraph>
@@ -229,7 +233,7 @@ export function APIKeyScopesManager({
                 {/* Read Permissions */}
                 <Stack gap={12}>
                   <Row align="center" gap={8}>
-                    <Shield size="lg" color="$green10" />
+                    <Shield size="lg" color={t === 'dark' ? colors.green[300] : colors.green[600]} />
                     <H4>Read Permissions</H4>
                   </Row>
                   <Stack gap={8}>
@@ -240,8 +244,8 @@ export function APIKeyScopesManager({
                         pressable
                         onPress={() => toggleScope(scope.id)}
                         style={{
-                          backgroundColor: selectedScopes.includes(scope.id) ? '$green2' : '$gray2',
-                          borderColor: selectedScopes.includes(scope.id) ? '$green6' : '$gray6',
+                          backgroundColor: selectedScopes.includes(scope.id) ? (t === 'dark' ? colors.green[900] : colors.green[50]) : colors.bg[t].muted,
+                          borderColor: selectedScopes.includes(scope.id) ? (t === 'dark' ? colors.green[700] : colors.green[300]) : colors.border[t].default,
                           borderWidth: 1,
                         }}
                       >
@@ -252,25 +256,25 @@ export function APIKeyScopesManager({
                           />
                           <Stack flex={1} gap={8}>
                             <Paragraph>{scope.label}</Paragraph>
-                            <Paragraph size="sm" color="$gray11">
+                            <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
                               {scope.description}
                             </Paragraph>
                             {scope.requires && scope.requires.length > 0 && (
                               <Row align="center" gap={8} wrap>
-                                <Paragraph size="sm" color="$gray11">
+                                <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
                                   Requires:
                                 </Paragraph>
                                 {scope.requires.map((req) => (
                                   <Card
                                     key={req}
                                     style={{
-                                      backgroundColor: '$gray4',
+                                      backgroundColor: colors.bg[t].muted,
                                       paddingHorizontal: 8,
                                       paddingVertical: 4,
                                       borderRadius: 8,
                                     }}
                                   >
-                                    <Paragraph size="sm" color="$gray11" style={{ fontFamily: '$mono' }}>
+                                    <Paragraph size="sm" style={{ color: colors.text[t].secondary, fontFamily: 'monospace' }}>
                                       {req}
                                     </Paragraph>
                                   </Card>
@@ -287,7 +291,7 @@ export function APIKeyScopesManager({
                 {/* Write Permissions */}
                 <Stack gap={12}>
                   <Row align="center" gap={8}>
-                    <Lock size="lg" color="$orange10" />
+                    <Lock size="lg" color={t === 'dark' ? colors.orange[300] : colors.orange[600]} />
                     <H4>Write Permissions</H4>
                   </Row>
                   <Stack gap={8}>
@@ -298,8 +302,8 @@ export function APIKeyScopesManager({
                         pressable
                         onPress={() => toggleScope(scope.id)}
                         style={{
-                          backgroundColor: selectedScopes.includes(scope.id) ? '$orange2' : '$gray2',
-                          borderColor: selectedScopes.includes(scope.id) ? '$orange6' : '$gray6',
+                          backgroundColor: selectedScopes.includes(scope.id) ? (t === 'dark' ? colors.orange[900] : colors.orange[50]) : colors.bg[t].muted,
+                          borderColor: selectedScopes.includes(scope.id) ? (t === 'dark' ? colors.orange[700] : colors.orange[300]) : colors.border[t].default,
                           borderWidth: 1,
                         }}
                       >
@@ -310,21 +314,21 @@ export function APIKeyScopesManager({
                           />
                           <Stack flex={1} gap={8}>
                             <Paragraph>{scope.label}</Paragraph>
-                            <Paragraph size="sm" color="$gray11">
+                            <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
                               {scope.description}
                             </Paragraph>
                             {scope.warning && (
                               <Card
                                 padding="sm"
                                 style={{
-                                  backgroundColor: '$orange2',
-                                  borderColor: '$orange6',
+                                  backgroundColor: t === 'dark' ? colors.orange[900] : colors.orange[50],
+                                  borderColor: t === 'dark' ? colors.orange[700] : colors.orange[300],
                                   borderWidth: 1,
                                 }}
                               >
                                 <Row align="flex-start" gap={8}>
-                                  <AlertCircle size={20} color="$orange11" />
-                                  <Paragraph size="sm" color="$orange11" style={{ flex: 1 }}>
+                                  <AlertCircle size={20} color={t === 'dark' ? colors.orange[300] : colors.orange[600]} />
+                                  <Paragraph size="sm" style={{ color: t === 'dark' ? colors.orange[300] : colors.orange[600], flex: 1 }}>
                                     {scope.warning}
                                   </Paragraph>
                                 </Row>
@@ -332,20 +336,20 @@ export function APIKeyScopesManager({
                             )}
                             {scope.requires && scope.requires.length > 0 && (
                               <Row align="center" gap={8} wrap>
-                                <Paragraph size="sm" color="$gray11">
+                                <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
                                   Requires:
                                 </Paragraph>
                                 {scope.requires.map((req) => (
                                   <Card
                                     key={req}
                                     style={{
-                                      backgroundColor: '$gray4',
+                                      backgroundColor: colors.bg[t].muted,
                                       paddingHorizontal: 8,
                                       paddingVertical: 4,
                                       borderRadius: 8,
                                     }}
                                   >
-                                    <Paragraph size="sm" color="$gray11" style={{ fontFamily: '$mono' }}>
+                                    <Paragraph size="sm" style={{ color: colors.text[t].secondary, fontFamily: 'monospace' }}>
                                       {req}
                                     </Paragraph>
                                   </Card>
@@ -361,14 +365,14 @@ export function APIKeyScopesManager({
               </Stack>
 
             {/* Summary */}
-            <Card padding="sm" style={{ backgroundColor: '$gray3' }}>
+            <Card padding="sm" style={{ backgroundColor: colors.bg[t].muted }}>
               <Stack gap={8}>
-                <Paragraph size="sm" color="$gray11">
+                <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
                   Selected Permissions
                 </Paragraph>
                 <Row gap={8} wrap>
                   {selectedScopes.length === 0 ? (
-                    <Paragraph size="sm" color="$gray11">
+                    <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
                       No permissions selected
                     </Paragraph>
                   ) : (
@@ -376,13 +380,13 @@ export function APIKeyScopesManager({
                       <Card
                         key={scope}
                         style={{
-                          backgroundColor: '$blue3',
+                          backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[100],
                           paddingHorizontal: 8,
                           paddingVertical: 4,
                           borderRadius: 8,
                         }}
                       >
-                        <Paragraph size="sm" color="$blue11">
+                        <Paragraph size="sm" style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>
                           {scope}
                         </Paragraph>
                       </Card>
@@ -397,25 +401,25 @@ export function APIKeyScopesManager({
               <Card
                 padding="sm"
                 style={{
-                  backgroundColor: '$yellow2',
-                  borderColor: '$yellow6',
+                  backgroundColor: t === 'dark' ? colors.yellow[900] : colors.yellow[50],
+                  borderColor: t === 'dark' ? colors.yellow[700] : colors.yellow[300],
                   borderWidth: 1,
                 }}
               >
                 <Stack gap={8}>
-                  <Paragraph color="$yellow11">Pending Changes</Paragraph>
+                  <Paragraph style={{ color: t === 'dark' ? colors.yellow[300] : colors.yellow[600] }}>Pending Changes</Paragraph>
                   {getAddedScopes().length > 0 && (
                     <Row gap={8} align="center">
-                      <CheckCircle size="md" color="$green11" />
-                      <Paragraph size="sm" color="$gray11">
+                      <CheckCircle size="md" color={t === 'dark' ? colors.green[300] : colors.green[600]} />
+                      <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
                         Adding: {getAddedScopes().join(', ')}
                       </Paragraph>
                     </Row>
                   )}
                   {getRemovedScopes().length > 0 && (
                     <Row gap={8} align="center">
-                      <XCircle size="md" color="$red11" />
-                      <Paragraph size="sm" color="$gray11">
+                      <XCircle size="md" color={t === 'dark' ? colors.rose[300] : colors.rose[600]} />
+                      <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
                         Removing: {getRemovedScopes().join(', ')}
                       </Paragraph>
                     </Row>
@@ -429,14 +433,14 @@ export function APIKeyScopesManager({
               <Card
                 padding="sm"
                 style={{
-                  backgroundColor: '$red2',
-                  borderColor: '$red6',
+                  backgroundColor: t === 'dark' ? colors.rose[900] : colors.rose[50],
+                  borderColor: t === 'dark' ? colors.rose[700] : colors.rose[300],
                   borderWidth: 1,
                 }}
               >
                 <Row align="center" gap={8}>
-                  <AlertCircle size={24} color="$red11" />
-                  <Paragraph color="$red11" style={{ flex: 1 }}>
+                  <AlertCircle size={24} color={t === 'dark' ? colors.rose[300] : colors.rose[600]} />
+                  <Paragraph style={{ color: t === 'dark' ? colors.rose[300] : colors.rose[600], flex: 1 }}>
                     {error}
                   </Paragraph>
                 </Row>
@@ -448,14 +452,14 @@ export function APIKeyScopesManager({
               <Card
                 padding="sm"
                 style={{
-                  backgroundColor: '$green2',
-                  borderColor: '$green6',
+                  backgroundColor: t === 'dark' ? colors.green[900] : colors.green[50],
+                  borderColor: t === 'dark' ? colors.green[700] : colors.green[300],
                   borderWidth: 1,
                 }}
               >
                 <Row align="center" gap={8}>
-                  <CheckCircle size="lg" color="$green11" />
-                  <Paragraph color="$green11">Scopes updated successfully!</Paragraph>
+                  <CheckCircle size="lg" color={t === 'dark' ? colors.green[300] : colors.green[600]} />
+                  <Paragraph style={{ color: t === 'dark' ? colors.green[300] : colors.green[600] }}>Scopes updated successfully!</Paragraph>
                 </Row>
               </Card>
             )}

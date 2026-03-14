@@ -10,7 +10,8 @@
 
 import { useState } from "react";
 import { Pressable } from "react-native";
-import { Button, Text, Row, Stack, Spinner } from "@scaffald/ui";
+import { Button, Text, Row, Stack, Spinner, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import { useCCPASubmitRequestMutation } from "@scf/core/utils/ccpa-sdk-hooks";
 
 /**
@@ -45,14 +46,14 @@ const REQUEST_TYPE_INFO: Record<
     description:
       "Request a copy of all personal information we have collected about you. This includes your profile information, documents, activities, and any other data associated with your account.",
     confirmText: "Submit Export Request",
-    buttonColor: "#2563eb",
+    buttonColor: "primary",
   },
   deletion: {
     title: "Request Data Deletion",
     description:
       "Request the deletion of your personal information. Please note that some information may be retained for legal, regulatory, or business purposes as permitted under CCPA.",
     confirmText: "Submit Deletion Request",
-    buttonColor: "#ef4444",
+    buttonColor: "error",
     warning:
       "This action cannot be undone. Some data may be anonymized rather than deleted due to retention requirements. Financial and compliance records may be retained for up to 7 years.",
   },
@@ -61,7 +62,7 @@ const REQUEST_TYPE_INFO: Record<
     description:
       "Request correction of inaccurate personal information. Please describe what information is incorrect and what the correct information should be.",
     confirmText: "Submit Correction Request",
-    buttonColor: "#9333ea",
+    buttonColor: "secondary",
   },
 };
 
@@ -120,34 +121,39 @@ function Checkbox({
   label: string;
   description?: string;
 }) {
+  const { theme } = useThemeContext();
   return (
     <Pressable onPress={() => onChange(!checked)}>
       <Row
         padding="sm"
-        backgroundColor={checked ? "#dbeafe" : "#f9fafb"}
-        borderRadius={8}
-        borderWidth={1}
-        borderColor={checked ? "#93c5fd" : "#e5e7eb"}
+        style={{
+          backgroundColor: checked ? colors.bg[theme].primary : colors.bg[theme].subtle,
+          borderRadius: 8,
+          borderWidth: 1,
+          borderColor: checked ? colors.border[theme].primary : colors.border[theme].default,
+        }}
         gap={12}
         align="flex-start"
       >
         <Stack
           width={20}
           height={20}
-          borderRadius={4}
-          borderWidth={2}
-          borderColor={checked ? "#2563eb" : "#9ca3af"}
-          backgroundColor={checked ? "#2563eb" : "transparent"}
+          style={{
+            borderRadius: 4,
+            borderWidth: 2,
+            borderColor: checked ? colors.fg[theme].primary : colors.border[theme].muted,
+            backgroundColor: checked ? colors.fg[theme].primary : "transparent",
+            marginTop: 2,
+          }}
           align="center"
           justify="center"
-          style={{ marginTop: 2 }}
         >
-          {checked && <Text style={{ color: "white" }}>✓</Text>}
+          {checked && <Text style={{ color: colors.text[theme].inverse }}>✓</Text>}
         </Stack>
         <Stack flex={1} gap={4}>
           <Text>{label}</Text>
           {description && (
-            <Text style={{ color: "#414e62" }}>{description}</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>{description}</Text>
           )}
         </Stack>
       </Row>
@@ -169,40 +175,47 @@ function RadioButton({
   label: string;
   description?: string;
 }) {
+  const { theme } = useThemeContext();
   return (
     <Pressable onPress={onSelect}>
       <Row
         padding="sm"
-        backgroundColor={selected ? "#dbeafe" : "#f9fafb"}
-        borderRadius={8}
-        borderWidth={1}
-        borderColor={selected ? "#93c5fd" : "#e5e7eb"}
+        style={{
+          backgroundColor: selected ? colors.bg[theme].primary : colors.bg[theme].subtle,
+          borderRadius: 8,
+          borderWidth: 1,
+          borderColor: selected ? colors.border[theme].primary : colors.border[theme].default,
+        }}
         gap={12}
         align="flex-start"
       >
         <Stack
           width={20}
           height={20}
-          borderRadius={10}
-          borderWidth={2}
-          borderColor={selected ? "#2563eb" : "#9ca3af"}
+          style={{
+            borderRadius: 10,
+            borderWidth: 2,
+            borderColor: selected ? colors.fg[theme].primary : colors.border[theme].muted,
+            marginTop: 2,
+          }}
           align="center"
           justify="center"
-          style={{ marginTop: 2 }}
         >
           {selected && (
             <Stack
               width={10}
               height={10}
-              borderRadius={5}
-              backgroundColor="#2563eb"
+              style={{
+                borderRadius: 5,
+                backgroundColor: colors.fg[theme].primary,
+              }}
             />
           )}
         </Stack>
         <Stack flex={1} gap={4}>
           <Text>{label}</Text>
           {description && (
-            <Text style={{ color: "#414e62" }}>{description}</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>{description}</Text>
           )}
         </Stack>
       </Row>
@@ -218,6 +231,7 @@ export function DataRequestForm({
   onCancel,
   initialType = "export",
 }: DataRequestFormProps) {
+  const { theme } = useThemeContext();
   const [requestType, setRequestType] = useState<DataRequestType>(initialType);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [correctionDetails, _setCorrectionDetails] = useState("");
@@ -265,15 +279,17 @@ export function DataRequestForm({
         <Stack
           width={80}
           height={80}
-          borderRadius={40}
-          backgroundColor="#dcfce7"
+          style={{
+            borderRadius: 40,
+            backgroundColor: colors.bg[theme].success,
+          }}
           align="center"
           justify="center"
         >
-          <Text style={{ color: "#16a34a" }}>✓</Text>
+          <Text style={{ color: colors.text[theme].success }}>✓</Text>
         </Stack>
         <Text style={{ textAlign: "center" }}>Request Submitted</Text>
-        <Text style={{ color: "#414e62", textAlign: "center" }}>
+        <Text style={{ color: colors.text[theme].secondary, textAlign: "center" }}>
           Your{" "}
           {requestType === "export"
             ? "data export"
@@ -283,7 +299,7 @@ export function DataRequestForm({
           request has been submitted. We will process your request within 45
           days as required by CCPA.
         </Text>
-        <Text style={{ color: "#414e62", textAlign: "center" }}>
+        <Text style={{ color: colors.text[theme].secondary, textAlign: "center" }}>
           You will receive email updates about the status of your request.
         </Text>
         <Button onPress={onCancel} style={{ marginTop: 16 }}>
@@ -298,7 +314,7 @@ export function DataRequestForm({
       {/* Header */}
       <Stack gap={8}>
         <Text>{typeInfo.title}</Text>
-        <Text style={{ color: "#414e62" }}>{typeInfo.description}</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>{typeInfo.description}</Text>
       </Stack>
 
       {/* Step 1: Select Request Type */}
@@ -353,20 +369,22 @@ export function DataRequestForm({
 
           {requestType === "correction" ? (
             <Stack gap={8}>
-              <Text style={{ color: "#414e62" }}>
+              <Text style={{ color: colors.text[theme].secondary }}>
                 Please describe what information is incorrect and what the
                 correct information should be:
               </Text>
               <Stack
-                style={{ minHeight: 150 }}
+                style={{
+                  minHeight: 150,
+                  backgroundColor: colors.bg[theme].subtle,
+                  borderRadius: 8,
+                  borderWidth: 1,
+                  borderColor: colors.border[theme].default,
+                }}
                 padding="sm"
-                backgroundColor="$color2"
-                borderRadius={8}
-                borderWidth={1}
-                borderColor="$borderColor"
               >
                 <Text
-                  style={{ color: correctionDetails ? "#111827" : "#9ca3af" }}
+                  style={{ color: correctionDetails ? colors.text[theme].primary : colors.text[theme].muted }}
                 >
                   {correctionDetails || "Enter correction details here..."}
                 </Text>
@@ -412,13 +430,15 @@ export function DataRequestForm({
           {/* Summary */}
           <Stack
             padding="sm"
-            backgroundColor="$color2"
-            borderRadius={8}
+            style={{
+              backgroundColor: colors.bg[theme].subtle,
+              borderRadius: 8,
+            }}
             gap={8}
           >
             <Text>Request Type: {REQUEST_TYPE_INFO[requestType].title}</Text>
             {requestType !== "correction" && (
-              <Text style={{ color: "#414e62" }}>
+              <Text style={{ color: colors.text[theme].secondary }}>
                 Categories:{" "}
                 {selectedCategories.length === DATA_CATEGORIES.length
                   ? "All categories"
@@ -435,18 +455,26 @@ export function DataRequestForm({
           {typeInfo.warning && (
             <Row
               padding="sm"
-              backgroundColor="#fef2f2"
-              borderRadius={8}
-              borderWidth={1}
-              borderColor="#fca5a5"
+              style={{
+                backgroundColor: colors.bg[theme].error,
+                borderRadius: 8,
+                borderWidth: 1,
+                borderColor: colors.border[theme].error,
+              }}
             >
-              <Text style={{ color: "#ef4444" }}>⚠️ {typeInfo.warning}</Text>
+              <Text style={{ color: colors.text[theme].error }}>⚠️ {typeInfo.warning}</Text>
             </Row>
           )}
 
           {/* Processing time info */}
-          <Row padding="sm" backgroundColor="#dbeafe" borderRadius={8}>
-            <Text style={{ color: "#2563eb" }}>
+          <Row
+            padding="sm"
+            style={{
+              backgroundColor: colors.bg[theme].info,
+              borderRadius: 8,
+            }}
+          >
+            <Text style={{ color: colors.text[theme].info }}>
               Your request will be processed within 45 days as required by CCPA.
               You will receive email notifications about the status of your
               request.

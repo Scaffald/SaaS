@@ -6,7 +6,8 @@
  * with status, dates, and download links
  */
 
-import { Text, Row, Stack, Button } from "@scaffald/ui";
+import { Text, Row, Stack, Button, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
 /**
  * Request status type
@@ -52,15 +53,34 @@ interface RequestHistoryTableProps {
 }
 
 /**
- * Status badge colors
+ * Status badge colors (theme-aware)
  */
-const STATUS_COLORS: Record<RequestStatus, { bg: string; text: string }> = {
-  pending: { bg: "#fef9c3", text: "#854d0e" },
-  processing: { bg: "#dbeafe", text: "#1d4ed8" },
-  completed: { bg: "#dcfce7", text: "#15803d" },
-  failed: { bg: "#fef2f2", text: "#ef4444" },
-  cancelled: { bg: "#f3f4f6", text: "#374151" },
-};
+function getStatusColors(
+  t: "light" | "dark"
+): Record<RequestStatus, { bg: string; text: string }> {
+  return {
+    pending: {
+      bg: t === "dark" ? colors.yellow[900] : colors.yellow[100],
+      text: t === "dark" ? colors.yellow[300] : colors.yellow[700],
+    },
+    processing: {
+      bg: t === "dark" ? colors.blue[900] : colors.blue[100],
+      text: t === "dark" ? colors.blue[300] : colors.blue[700],
+    },
+    completed: {
+      bg: t === "dark" ? colors.green[900] : colors.green[100],
+      text: t === "dark" ? colors.green[300] : colors.green[700],
+    },
+    failed: {
+      bg: t === "dark" ? colors.red[900] : colors.red[100],
+      text: t === "dark" ? colors.red[300] : colors.red[500],
+    },
+    cancelled: {
+      bg: t === "dark" ? colors.gray[800] : colors.gray[100],
+      text: t === "dark" ? colors.gray[300] : colors.gray[600],
+    },
+  };
+}
 
 /**
  * Request type labels
@@ -91,15 +111,17 @@ function formatDate(dateString: string): string {
  * Status badge component
  */
 function StatusBadge({ status }: { status: RequestStatus }) {
-  const colors = STATUS_COLORS[status];
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
+  const statusColors = getStatusColors(t)[status];
   return (
     <Row
-      backgroundColor={colors.bg}
+      backgroundColor={statusColors.bg}
       paddingHorizontal={8}
       paddingVertical={4}
       borderRadius={8}
     >
-      <Text style={{ color: colors.text, textTransform: "capitalize" }}>
+      <Text style={{ color: statusColors.text, textTransform: "capitalize" }}>
         {status}
       </Text>
     </Row>
@@ -118,6 +140,8 @@ function RequestRow({
   onDownload?: (requestId: string) => void;
   onCancel?: (requestId: string) => void;
 }) {
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
   const canDownload =
     request.status === "completed" &&
     request.type === "export" &&
@@ -127,37 +151,37 @@ function RequestRow({
   return (
     <Row
       padding="sm"
-      backgroundColor="$color2"
+      backgroundColor={colors.bg[t].default}
       borderRadius={8}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[t].default}
       align="center"
       gap={16}
       wrap
     >
       {/* Type */}
       <Stack flex={1} minWidth={120}>
-        <Text style={{ color: "#414e62" }}>Type</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Type</Text>
         <Text>{TYPE_LABELS[request.type]}</Text>
       </Stack>
 
       {/* Status */}
       <Stack minWidth={100}>
-        <Text style={{ color: "#414e62" }}>Status</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Status</Text>
         <StatusBadge status={request.status} />
       </Stack>
 
       {/* Submitted Date */}
       <Stack flex={1} minWidth={140}>
-        <Text style={{ color: "#414e62" }}>Submitted</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Submitted</Text>
         <Text>{formatDate(request.created_at)}</Text>
       </Stack>
 
       {/* Completed Date */}
       <Stack flex={1} minWidth={140}>
-        <Text style={{ color: "#414e62" }}>Completed</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Completed</Text>
         <Text>
-          {request.completed_at ? formatDate(request.completed_at) : "—"}
+          {request.completed_at ? formatDate(request.completed_at) : "\u2014"}
         </Text>
       </Stack>
 
@@ -186,18 +210,22 @@ function RequestRow({
  * Empty state component
  */
 function EmptyState() {
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
   return (
     <Stack
       padding="xl"
-      backgroundColor="$color2"
+      backgroundColor={colors.bg[t].default}
       borderRadius={12}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[t].default}
       align="center"
       gap={8}
     >
-      <Text style={{ color: "#414e62" }}>No privacy requests yet</Text>
-      <Text style={{ color: "#414e62", textAlign: "center" }}>
+      <Text style={{ color: colors.text[t].secondary }}>
+        No privacy requests yet
+      </Text>
+      <Text style={{ color: colors.text[t].secondary, textAlign: "center" }}>
         When you submit a data export, deletion, or other privacy request, it
         will appear here so you can track its status.
       </Text>
@@ -215,6 +243,9 @@ export function RequestHistoryTable({
   onDownload,
   onCancel,
 }: RequestHistoryTableProps) {
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
+
   if (!requests || requests.length === 0) {
     return <EmptyState />;
   }
@@ -223,15 +254,25 @@ export function RequestHistoryTable({
     <Stack gap={8}>
       {/* Header row */}
       <Row padding="sm" gap={16}>
-        <Text style={{ flex: 1, color: "#414e62", minWidth: 120 }}>Type</Text>
-        <Text style={{ color: "#414e62", minWidth: 100 }}>Status</Text>
-        <Text style={{ flex: 1, color: "#414e62", minWidth: 140 }}>
+        <Text style={{ flex: 1, color: colors.text[t].secondary, minWidth: 120 }}>
+          Type
+        </Text>
+        <Text style={{ color: colors.text[t].secondary, minWidth: 100 }}>
+          Status
+        </Text>
+        <Text style={{ flex: 1, color: colors.text[t].secondary, minWidth: 140 }}>
           Submitted
         </Text>
-        <Text style={{ flex: 1, color: "#414e62", minWidth: 140 }}>
+        <Text style={{ flex: 1, color: colors.text[t].secondary, minWidth: 140 }}>
           Completed
         </Text>
-        <Text style={{ color: "#414e62", minWidth: 120, textAlign: "right" }}>
+        <Text
+          style={{
+            color: colors.text[t].secondary,
+            minWidth: 120,
+            textAlign: "right",
+          }}
+        >
           Actions
         </Text>
       </Row>
@@ -247,7 +288,7 @@ export function RequestHistoryTable({
       ))}
 
       {/* Info text */}
-      <Text style={{ color: "#414e62", marginTop: 8 }}>
+      <Text style={{ color: colors.text[t].tertiary, marginTop: 8 }}>
         Data export requests are processed within 45 days as required by CCPA.
         Completed exports are available for download for 30 days.
       </Text>

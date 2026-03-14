@@ -6,7 +6,8 @@ import { useEmployment } from "@scf/core/utils/profile-employment-sdk-hooks";
 import { useEducation } from "@scf/core/utils/profile-education-sdk-hooks";
 import { useUserCertificationTree } from "@scf/core/utils/profile-certifications-sdk-hooks";
 import { useUserSkillsMultiTaxonomy } from "@scf/core/utils/profile-skills-sdk-hooks";
-import { Button } from "@scaffald/ui";
+import { Button, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import {
   AlertCircle,
   CheckCircle2,
@@ -110,6 +111,8 @@ const OPENAI_DISABLED_MESSAGE =
   "Resume parsing is disabled because the OpenAI API key is not configured. Please fill in this section manually.";
 
 export function ResumeWizard({ resumeId }: ResumeWizardProps) {
+  const { theme } = useThemeContext();
+  const t = theme === 'dark' ? 'dark' : 'light';
   const router = useRouter();
   const wizardController = useResumeWizardContext();
   const {
@@ -514,7 +517,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     return (
       <Stack align="center" justify="center" flex={1} gap={12}>
         <Spinner size="lg" />
-        <Text style={{ color: "#414e62" }}>
+        <Text style={{ color: colors.text[t].secondary }}>
           Loading resume import wizard...
         </Text>
       </Stack>
@@ -525,8 +528,8 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     return (
       <Stack align="center" justify="center" flex={1} gap={12}>
         <AlertCircle size={32} />
-        <Text style={{ color: "#ef4444" }}>Wizard session not found</Text>
-        <Text style={{ color: "#414e62" }}>
+        <Text style={{ color: colors.red[500] }}>Wizard session not found</Text>
+        <Text style={{ color: colors.text[t].secondary }}>
           Please upload your resume again to kick off the import flow.
         </Text>
       </Stack>
@@ -607,7 +610,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     <Stack flex={1} gap={16}>
       <Stack gap={8}>
         <Text>Resume Import</Text>
-        <Text style={{ color: "#414e62" }}>
+        <Text style={{ color: colors.text[t].secondary }}>
           Review each section parsed from your resume. Make edits or skip
           sections you don't want to import.
         </Text>
@@ -616,13 +619,13 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       {hasExistingProfileData ? (
         <Stack
           gap={8}
-          style={{ backgroundColor: "#dbeafe", borderRadius: 16 }}
+          style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[100], borderRadius: 16 }}
           padding="sm"
         >
-          <Text style={{ color: "#2563eb" }}>
+          <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>
             Merge resume with existing profile data
           </Text>
-          <Text style={{ color: "#2563eb" }}>
+          <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>
             We found previously saved information. Choose how each section
             merges to avoid overwriting details you want to keep.
           </Text>
@@ -632,16 +635,16 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       {mergedErrors && mergedErrors.length > 0 && (
         <Stack
           gap={8}
-          style={{ backgroundColor: "#fef9c3", borderRadius: 16 }}
+          style={{ backgroundColor: t === 'dark' ? colors.yellow[900] : colors.yellow[100], borderRadius: 16 }}
           padding="sm"
         >
-          <Text style={{ color: "#92400e" }}>
+          <Text style={{ color: t === 'dark' ? colors.yellow[300] : colors.yellow[700] }}>
             We couldn't parse everything in this section.
           </Text>
           {mergedErrors.map((error) => (
             <Text
               key={`${error.section}-${error.message}`}
-              style={{ color: "#92400e" }}
+              style={{ color: t === 'dark' ? colors.yellow[300] : colors.yellow[700] }}
             >
               {error.message}
             </Text>
@@ -721,7 +724,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     return (
       <Stack gap={16}>
         <Text>General Information</Text>
-        <Text style={{ color: "#414e62" }}>
+        <Text style={{ color: colors.text[t].secondary }}>
           Update your basic profile details. We only update the fields you
           confirm.
         </Text>
@@ -913,7 +916,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     return (
       <Stack gap={16}>
         <Text>Employment Preferences</Text>
-        <Text style={{ color: "#414e62" }}>
+        <Text style={{ color: colors.text[t].secondary }}>
           Tell us about your ideal working conditions. We'll update your profile
           with these preferences.
         </Text>
@@ -1004,7 +1007,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     return (
       <Stack gap={16}>
         <Text>Review & Confirm</Text>
-        <Text style={{ color: "#414e62" }}>
+        <Text style={{ color: colors.text[t].secondary }}>
           All set! When you finish, we'll save the confirmed details to your
           profile. You can always make further edits from the profile sections
           later on.
@@ -1015,14 +1018,14 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         />
         <Stack
           gap={8}
-          style={{ backgroundColor: "#dcfce7", borderRadius: 16 }}
+          style={{ backgroundColor: t === 'dark' ? colors.green[900] : colors.green[100], borderRadius: 16 }}
           padding="sm"
         >
           <Row gap={8} align="center">
             <CheckCircle2 />
-            <Text style={{ color: "#16a34a" }}>Ready to finalize</Text>
+            <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[700] }}>Ready to finalize</Text>
           </Row>
-          <Text style={{ color: "#16a34a" }}>
+          <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[700] }}>
             Click "Finish Import" to exit the wizard and continue updating your
             profile.
           </Text>
@@ -1033,13 +1036,15 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
 }
 
 function EmptyState({ message }: { message: string }) {
+  const { theme } = useThemeContext();
+  const t = theme === 'dark' ? 'dark' : 'light';
   return (
     <Stack
       gap={8}
-      style={{ backgroundColor: "#f2f4f7", borderRadius: 16 }}
+      style={{ backgroundColor: t === 'dark' ? colors.gray[800] : colors.gray[100], borderRadius: 16 }}
       padding="sm"
     >
-      <Text style={{ color: "#414e62" }}>{message}</Text>
+      <Text style={{ color: colors.text[t].secondary }}>{message}</Text>
     </Stack>
   );
 }
@@ -1057,14 +1062,16 @@ function SelectableCard({
   subtitle?: string;
   details?: string[];
 }) {
+  const { theme } = useThemeContext();
+  const t = theme === 'dark' ? 'dark' : 'light';
   return (
     <Stack
       gap={8}
       padding="sm"
       style={{
         borderWidth: 1,
-        borderColor: checked ? "#3b82f6" : "#e4e7ec",
-        backgroundColor: checked ? "#dbeafe" : "#ffffff",
+        borderColor: checked ? colors.blue[500] : colors.border[t].default,
+        backgroundColor: checked ? (t === 'dark' ? colors.blue[900] : colors.blue[100]) : colors.bg[t].default,
         borderRadius: 16,
       }}
     >
@@ -1077,14 +1084,14 @@ function SelectableCard({
         <Stack gap={4} flex={1}>
           <Text>{title}</Text>
           {subtitle ? (
-            <Text style={{ color: "#414e62" }}>{subtitle}</Text>
+            <Text style={{ color: colors.text[t].secondary }}>{subtitle}</Text>
           ) : null}
         </Stack>
       </Row>
       {!!details?.length && (
         <Stack gap={4} style={{ paddingLeft: 16 }}>
           {details.map((detail) => (
-            <Text key={detail} style={{ color: "#414e62" }}>
+            <Text key={detail} style={{ color: colors.text[t].secondary }}>
               • {detail}
             </Text>
           ))}
@@ -1133,6 +1140,8 @@ function MergeStrategySelector({
   existingCount: number;
   disabled?: boolean;
 }) {
+  const { theme } = useThemeContext();
+  const t = theme === 'dark' ? 'dark' : 'light';
   const hasExistingData = existingCount > 0;
   const options: Array<{
     value: ResumeMergeStrategy;
@@ -1169,7 +1178,7 @@ function MergeStrategySelector({
   return (
     <Stack
       gap={8}
-      style={{ backgroundColor: "#f9fafb", borderRadius: 16 }}
+      style={{ backgroundColor: t === 'dark' ? colors.gray[800] : colors.gray[50], borderRadius: 16 }}
       padding="sm"
     >
       <Text>Merge strategy</Text>
@@ -1182,14 +1191,14 @@ function MergeStrategySelector({
             disabled={disabled || option.disabled}
             onPress={() => onChange(section, option.value)}
             style={{
-              borderColor: strategy === option.value ? "#3b82f6" : "#e4e7ec",
+              borderColor: strategy === option.value ? colors.blue[500] : colors.border[t].default,
               backgroundColor:
-                strategy === option.value ? "#dbeafe" : "#ffffff",
+                strategy === option.value ? (t === 'dark' ? colors.blue[900] : colors.blue[100]) : colors.bg[t].default,
             }}
           >
             <Stack gap={4} align="flex-start">
               <Text>{option.label}</Text>
-              <Text style={{ color: "#414e62" }}>{option.description}</Text>
+              <Text style={{ color: colors.text[t].secondary }}>{option.description}</Text>
             </Stack>
           </Button>
         ))}
