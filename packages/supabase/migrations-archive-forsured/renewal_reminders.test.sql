@@ -1,9 +1,16 @@
 -- =========================================================
--- Integration Tests: Renewal Reminders
+-- ARCHIVED: Integration Tests: Renewal Reminders
+-- This file requires the forsured schema (forsured.* tables and
+-- forsured.send_renewal_reminders()). Do NOT run in current CI;
+-- the forsured schema was removed from the migration chain.
+-- =========================================================
+--
+-- Original location: packages/supabase/tests/integration/renewal_reminders.test.sql
 -- Tests forsured.send_renewal_reminders() cron function
 -- and forsured.handle_policy_renewal_update() trigger
 --
--- Run: PGPASSWORD=postgres psql -h 127.0.0.1 -p 54322 -U postgres -d postgres -f this_file.sql
+-- Run (only if forsured schema exists):
+--   PGPASSWORD=postgres psql -h 127.0.0.1 -p 54322 -U postgres -d postgres -f this_file.sql
 -- Requires: migration 313_renewal_reminders.sql applied
 -- =========================================================
 

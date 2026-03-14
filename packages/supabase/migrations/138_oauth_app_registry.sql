@@ -286,10 +286,11 @@ VALUES
 ON CONFLICT (scope) DO NOTHING;
 
 -- =========================================================
--- Seed Data: Forsured OAuth App
--- Using a placeholder client_secret_hash - this should be regenerated in production
--- The hash below is for 'forsured_dev_secret_CHANGE_IN_PRODUCTION'
--- Generated with: bcrypt.hash('forsured_dev_secret_CHANGE_IN_PRODUCTION', 10)
+-- Seed Data: Forsured OAuth App (legacy/deprecated)
+-- The Forsured companion app is no longer active; this row is kept for
+-- backward compatibility if any external system still references it.
+-- Using a placeholder client_secret_hash - regenerate in production if needed.
+-- Original hash was for 'forsured_dev_secret_CHANGE_IN_PRODUCTION'
 -- =========================================================
 INSERT INTO core.oauth_apps (
   name,
