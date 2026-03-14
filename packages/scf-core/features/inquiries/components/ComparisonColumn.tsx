@@ -1,6 +1,6 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import type { AppRouter } from '@scf/supabase/client-types'
-import { Button, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { Check, MessageSquare } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
@@ -32,6 +32,7 @@ export function ComparisonColumn({
   canRemove = false,
   onRemove,
 }: ComparisonColumnProps) {
+  const { theme } = useThemeContext()
   const router = useRouter()
   const sections: InquiryComparisonRecord['sections'] = inquiryData.sections ?? []
   const comments: InquiryComparisonRecord['comments'] = inquiryData.comments ?? []
@@ -128,11 +129,11 @@ export function ComparisonColumn({
     <Stack
       width={width}
       gap={12}
-      backgroundColor="$background"
+      backgroundColor={colors.bg[theme].default}
       padding="md"
       borderRadius={16}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
     >
       {/* Candidate Header */}
       <Stack gap={8}>
@@ -144,7 +145,7 @@ export function ComparisonColumn({
           />
           <Stack flex={1}>
             <Text>{candidateName}</Text>
-            {jobTitle && <Text color="$gray11">{jobTitle}</Text>}
+            {jobTitle && <Text color={colors.text[theme].secondary}>{jobTitle}</Text>}
           </Stack>
           {canRemove && onRemove && (
             <Button
@@ -171,7 +172,7 @@ export function ComparisonColumn({
             return (
               <Row
                 key={sectionName}
-                backgroundColor={status.accepted ? '$green3' : '$gray3'}
+                backgroundColor={status.accepted ? colors.success[50] : colors.bg[theme].muted}
                 paddingHorizontal={8}
                 paddingVertical={4}
                 borderRadius={8}
@@ -179,15 +180,15 @@ export function ComparisonColumn({
                 gap={4}
               >
                 {status.accepted ? (
-                  <Check size="sm" color="$green11" />
+                  <Check size="sm" color={colors.fg[theme].success} />
                 ) : (
-                  <Text color="$gray11">○</Text>
+                  <Text color={colors.text[theme].tertiary}>○</Text>
                 )}
-                <Text color={status.accepted ? '$green11' : '$gray11'}>{sectionName}</Text>
+                <Text color={status.accepted ? colors.fg[theme].success : colors.text[theme].tertiary}>{sectionName}</Text>
                 {commentCount > 0 && (
                   <Row align="center" gap={4}>
-                    <MessageSquare size={10} color="$blue11" />
-                    <Text color="$blue11">{commentCount}</Text>
+                    <MessageSquare size={10} color={colors.fg[theme].info} />
+                    <Text color={colors.fg[theme].info}>{commentCount}</Text>
                   </Row>
                 )}
               </Row>
@@ -251,14 +252,14 @@ export function ComparisonColumn({
         />
         {getSectionStatus('employment').accepted && (
           <Row align="center" gap={4} marginTop={4}>
-            <Check size="md" color="$green11" />
-            <Text color="$green11">Accepted</Text>
+            <Check size="md" color={colors.fg[theme].success} />
+            <Text color={colors.fg[theme].success}>Accepted</Text>
           </Row>
         )}
         {getCommentCount('employment') > 0 && (
           <Row align="center" gap={4} marginTop={4}>
-            <MessageSquare size="md" color="$blue11" />
-            <Text color="$blue11">
+            <MessageSquare size="md" color={colors.fg[theme].info} />
+            <Text color={colors.fg[theme].info}>
               {getCommentCount('employment')} comment
               {getCommentCount('employment') !== 1 ? 's' : ''}
             </Text>
@@ -283,14 +284,14 @@ export function ComparisonColumn({
         />
         {getSectionStatus('compensation').accepted && (
           <Row align="center" gap={4} marginTop={4}>
-            <Check size="md" color="$green11" />
-            <Text color="$green11">Accepted</Text>
+            <Check size="md" color={colors.fg[theme].success} />
+            <Text color={colors.fg[theme].success}>Accepted</Text>
           </Row>
         )}
         {getCommentCount('compensation') > 0 && (
           <Row align="center" gap={4} marginTop={4}>
-            <MessageSquare size="md" color="$blue11" />
-            <Text color="$blue11">
+            <MessageSquare size="md" color={colors.fg[theme].info} />
+            <Text color={colors.fg[theme].info}>
               {getCommentCount('compensation')} comment
               {getCommentCount('compensation') !== 1 ? 's' : ''}
             </Text>
@@ -318,14 +319,14 @@ export function ComparisonColumn({
           ))}
           {getSectionStatus('capabilities').accepted && (
             <Row align="center" gap={4} marginTop={4}>
-              <Check size="md" color="$green11" />
-              <Text color="$green11">Accepted</Text>
+              <Check size="md" color={colors.fg[theme].success} />
+              <Text color={colors.fg[theme].success}>Accepted</Text>
             </Row>
           )}
           {getCommentCount('capabilities') > 0 && (
             <Row align="center" gap={4} marginTop={4}>
-              <MessageSquare size="md" color="$blue11" />
-              <Text color="$blue11">
+              <MessageSquare size="md" color={colors.fg[theme].info} />
+              <Text color={colors.fg[theme].info}>
                 {getCommentCount('capabilities')} comment
                 {getCommentCount('capabilities') !== 1 ? 's' : ''}
               </Text>
@@ -410,24 +411,26 @@ const statusColors: Record<string, string> = {
 }
 
 function StatusBadge({ label }: { label: string }) {
+  const { theme } = useThemeContext()
   return (
     <Row
       paddingHorizontal={8}
       paddingVertical={4}
-      backgroundColor="$color3"
+      backgroundColor={colors.bg[theme].muted}
       borderRadius={12}
       align="center"
       gap={4}
     >
-      <Text color={statusColors[label] ?? '$color11'}>{label.replace(/_/g, ' ')}</Text>
+      <Text color={statusColors[label] ?? colors.text[theme].primary}>{label.replace(/_/g, ' ')}</Text>
     </Row>
   )
 }
 
 function SubtleBadge({ label }: { label: string }) {
+  const { theme } = useThemeContext()
   return (
-    <Row paddingHorizontal={8} paddingVertical={4} backgroundColor="$color2" borderRadius={12}>
-      <Text color="$gray11">{label}</Text>
+    <Row paddingHorizontal={8} paddingVertical={4} backgroundColor={colors.bg[theme].subtle} borderRadius={12}>
+      <Text color={colors.text[theme].secondary}>{label}</Text>
     </Row>
   )
 }

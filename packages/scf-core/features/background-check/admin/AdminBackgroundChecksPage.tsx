@@ -13,7 +13,8 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { ResponsiveSelect } from '@scaffald/ui'
-import { Button, Card, Spinner, Tabs, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Card, Spinner, Tabs, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 import {
   BACKGROUND_CHECK_STATUSES,
@@ -88,6 +89,9 @@ export function AdminBackgroundChecksPage() {
   const [auditSearch, setAuditSearch] = useState('')
   const [selectedCheck, setSelectedCheck] = useState<AdminCheckSummary | null>(null)
   const [selectedDispute, setSelectedDispute] = useState<AdminDisputeSummary | null>(null)
+
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
 
   const checksQuery = useAdminChecks(
     { status: statusFilter === 'all' ? undefined : statusFilter },
@@ -181,6 +185,7 @@ export function AdminBackgroundChecksPage() {
     })
   }, [disputeRows, searchQuery])
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: theme-aware colors used in render cells
   const checkColumns: ColumnDef<CheckRow>[] = useMemo(
     () => [
       {
@@ -188,9 +193,9 @@ export function AdminBackgroundChecksPage() {
         header: 'Worker',
         cell: ({ row }) => (
           <Stack>
-            <Text color="$gray11">{row.original.workerName}</Text>
+            <Text style={{ color: colors.text[t].secondary }}>{row.original.workerName}</Text>
             {row.original.workerEmail ? (
-              <Text color="$gray11">{row.original.workerEmail}</Text>
+              <Text style={{ color: colors.text[t].secondary }}>{row.original.workerEmail}</Text>
             ) : null}
           </Stack>
         ),
@@ -238,6 +243,7 @@ export function AdminBackgroundChecksPage() {
     []
   )
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: theme-aware colors used in render cells
   const disputeColumns: ColumnDef<DisputeRow>[] = useMemo(
     () => [
       {
@@ -245,9 +251,9 @@ export function AdminBackgroundChecksPage() {
         header: 'Worker',
         cell: ({ row }) => (
           <Stack>
-            <Text color="$gray11">{row.original.workerName}</Text>
+            <Text style={{ color: colors.text[t].secondary }}>{row.original.workerName}</Text>
             {row.original.workerEmail ? (
-              <Text color="$gray11">{row.original.workerEmail}</Text>
+              <Text style={{ color: colors.text[t].secondary }}>{row.original.workerEmail}</Text>
             ) : null}
           </Stack>
         ),
@@ -305,7 +311,7 @@ export function AdminBackgroundChecksPage() {
     return (
       <Stack flex={1} align="center" justify="center" gap={8}>
         <Spinner size="lg" />
-        <Text color="$gray11">Verifying admin access…</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Verifying admin access…</Text>
       </Stack>
     )
   }
@@ -313,8 +319,8 @@ export function AdminBackgroundChecksPage() {
   if (!isAdmin) {
     return (
       <Stack flex={1} align="center" justify="center" gap={12} paddingHorizontal={16}>
-        <Text color="$gray11">Admin access required</Text>
-        <Text color="$gray11" style={{ textAlign: 'center' }}>
+        <Text style={{ color: colors.text[t].secondary }}>Admin access required</Text>
+        <Text style={{ color: colors.text[t].secondary, textAlign: 'center' }}>
           Background check review tools are restricted to compliance administrators. Contact an
           administrator if you believe this is an error.
         </Text>
@@ -330,11 +336,11 @@ export function AdminBackgroundChecksPage() {
   }
 
   return (
-    <Stack flex={1} backgroundColor="$background">
+    <Stack flex={1} style={{ backgroundColor: colors.bg[t].default }}>
       <Stack padding="md" gap={16}>
         <Stack gap={8}>
-          <Text color="$gray11">Background check administration</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[t].secondary }}>Background check administration</Text>
+          <Text style={{ color: colors.text[t].secondary }}>
             Review in-progress screenings, resolve disputes, and keep results compliant.
           </Text>
         </Stack>
@@ -342,41 +348,34 @@ export function AdminBackgroundChecksPage() {
         <Row gap={12} wrap>
           <Card
             padding="sm"
-            backgroundColor="$color2"
+            style={{ backgroundColor: colors.bg[t].subtle, borderColor: colors.border[t].default, flexGrow: 1, flexBasis: 160 }}
             borderWidth={1}
-            borderColor="$borderColor"
-            style={{ flexGrow: 1, flexBasis: 160 }}
           >
-            <Text color="$gray11">Active reviews</Text>
-            <Text color="$gray11">{summaryStats.underReview}</Text>
+            <Text style={{ color: colors.text[t].secondary }}>Active reviews</Text>
+            <Text style={{ color: colors.text[t].secondary }}>{summaryStats.underReview}</Text>
           </Card>
           <Card
             padding="sm"
-            backgroundColor="$color2"
+            style={{ backgroundColor: colors.bg[t].subtle, borderColor: colors.border[t].default, flexGrow: 1, flexBasis: 160 }}
             borderWidth={1}
-            borderColor="$borderColor"
-            style={{ flexGrow: 1, flexBasis: 160 }}
           >
-            <Text color="$gray11">Pending disputes</Text>
-            <Text color="$gray11">{summaryStats.pendingDisputes}</Text>
+            <Text style={{ color: colors.text[t].secondary }}>Pending disputes</Text>
+            <Text style={{ color: colors.text[t].secondary }}>{summaryStats.pendingDisputes}</Text>
           </Card>
           <Card
             padding="sm"
-            backgroundColor="$color2"
+            style={{ backgroundColor: colors.bg[t].subtle, borderColor: colors.border[t].default, flexGrow: 1, flexBasis: 160 }}
             borderWidth={1}
-            borderColor="$borderColor"
-            style={{ flexGrow: 1, flexBasis: 160 }}
           >
-            <Text color="$gray11">Total checks in view</Text>
-            <Text color="$gray11">{summaryStats.total}</Text>
+            <Text style={{ color: colors.text[t].secondary }}>Total checks in view</Text>
+            <Text style={{ color: colors.text[t].secondary }}>{summaryStats.total}</Text>
           </Card>
         </Row>
 
         <Row
           gap={12}
           paddingHorizontal={8}
-          backgroundColor="$background"
-          style={{ borderBottomWidth: 1, borderBottomColor: '#e4e7ec' }}
+          style={{ backgroundColor: colors.bg[t].default, borderBottomWidth: 1, borderBottomColor: colors.border[t].default }}
         >
           <Tabs
             value={activeTab}
@@ -388,7 +387,7 @@ export function AdminBackgroundChecksPage() {
               <Tabs.Trigger
                 containerStyle={{
                   borderBottomWidth: activeTab === 'checks' ? 2 : 0,
-                  borderBottomColor: '#3b82f6',
+                  borderBottomColor: colors.fg[t].primary,
                   paddingHorizontal: 12,
                   paddingVertical: 8,
                 }}
@@ -400,7 +399,7 @@ export function AdminBackgroundChecksPage() {
               <Tabs.Trigger
                 containerStyle={{
                   borderBottomWidth: activeTab === 'disputes' ? 2 : 0,
-                  borderBottomColor: '#3b82f6',
+                  borderBottomColor: colors.fg[t].primary,
                   paddingHorizontal: 12,
                   paddingVertical: 8,
                 }}
@@ -412,7 +411,7 @@ export function AdminBackgroundChecksPage() {
               <Tabs.Trigger
                 containerStyle={{
                   borderBottomWidth: activeTab === 'metrics' ? 2 : 0,
-                  borderBottomColor: '#3b82f6',
+                  borderBottomColor: colors.fg[t].primary,
                   paddingHorizontal: 12,
                   paddingVertical: 8,
                 }}
@@ -424,7 +423,7 @@ export function AdminBackgroundChecksPage() {
               <Tabs.Trigger
                 containerStyle={{
                   borderBottomWidth: activeTab === 'catalog' ? 2 : 0,
-                  borderBottomColor: '#3b82f6',
+                  borderBottomColor: colors.fg[t].primary,
                   paddingHorizontal: 12,
                   paddingVertical: 8,
                 }}
@@ -436,7 +435,7 @@ export function AdminBackgroundChecksPage() {
               <Tabs.Trigger
                 containerStyle={{
                   borderBottomWidth: activeTab === 'audit' ? 2 : 0,
-                  borderBottomColor: '#3b82f6',
+                  borderBottomColor: colors.fg[t].primary,
                   paddingHorizontal: 12,
                   paddingVertical: 8,
                 }}

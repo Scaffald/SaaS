@@ -1,8 +1,9 @@
 import { ROUTES } from "@scf/core/constants/routes";
 import { usePreferencesWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
-import { Button, DashboardWidget, H4, Skeleton, SkeletonForm } from "@scaffald/ui";
+import { Button, DashboardWidget, H4, Skeleton, SkeletonForm, useThemeContext } from "@scaffald/ui";
 import { useRouter } from "expo-router";
 import { Text, Row, Stack } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
 /**
  * PreferencesWidget
@@ -16,6 +17,7 @@ export function PreferencesWidget({
 }: {
   showEdit?: boolean;
 }) {
+  const { theme } = useThemeContext();
   const router = useRouter();
   const { data, isLoading, error } = usePreferencesWidget({
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
@@ -36,8 +38,8 @@ export function PreferencesWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text color="$red10">Failed to load preferences</Text>
-          <Text color="$gray11">{error.message}</Text>
+          <Text color={colors.fg[theme].error}>Failed to load preferences</Text>
+          <Text color={colors.text[theme].secondary}>{error.message}</Text>
         </Stack>
       </DashboardWidget>
     );
@@ -47,7 +49,7 @@ export function PreferencesWidget({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Text color="$gray11">No preferences data available</Text>
+          <Text color={colors.text[theme].secondary}>No preferences data available</Text>
         </Stack>
       </DashboardWidget>
     );
@@ -89,7 +91,7 @@ export function PreferencesWidget({
           {data.availability && typeof data.availability === "string" && (
             <Stack gap={8}>
               <Text>Availability</Text>
-              <Text color="$gray11" style={{ textTransform: "capitalize" }}>
+              <Text color={colors.text[theme].secondary} style={{ textTransform: "capitalize" }}>
                 {data.availability.replace("_", " ")}
               </Text>
             </Stack>
@@ -99,7 +101,7 @@ export function PreferencesWidget({
           {data.career_level && typeof data.career_level === "string" && (
             <Stack gap={8}>
               <Text>Career Level</Text>
-              <Text color="$gray11" style={{ textTransform: "capitalize" }}>
+              <Text color={colors.text[theme].secondary} style={{ textTransform: "capitalize" }}>
                 {data.career_level.replace("_", " ")}
               </Text>
             </Stack>
@@ -109,7 +111,7 @@ export function PreferencesWidget({
           {data.hourly_rate_cents && (
             <Stack gap={8}>
               <Text>Hourly Rate</Text>
-              <Text color="$gray11">
+              <Text color={colors.text[theme].secondary}>
                 {formatCurrency(data.hourly_rate_cents)}
               </Text>
             </Stack>
@@ -125,14 +127,14 @@ export function PreferencesWidget({
                   {data.preferred_work_locations.map((location: string) => (
                     <Row
                       key={location}
-                      backgroundColor="$blue2"
+                      backgroundColor={colors.info[50]}
                       paddingHorizontal={12}
                       paddingVertical={6}
                       borderRadius={12}
                       borderWidth={1}
-                      borderColor="$blue7"
+                      borderColor={colors.border[theme].info}
                     >
-                      <Text color="$blue11">{location}</Text>
+                      <Text color={colors.fg[theme].info}>{location}</Text>
                     </Row>
                   ))}
                 </Row>
@@ -144,13 +146,13 @@ export function PreferencesWidget({
             <Stack gap={8}>
               <Text>Travel</Text>
               <Row gap={8} align="center">
-                <Text color="$gray11">
+                <Text color={colors.text[theme].secondary}>
                   {data.open_to_travel
                     ? "Willing to travel"
                     : "Not willing to travel"}
                 </Text>
                 {data.travel_distance_miles && (
-                  <Text color="$gray11">
+                  <Text color={colors.text[theme].secondary}>
                     • Up to {data.travel_distance_miles} miles
                   </Text>
                 )}
@@ -168,19 +170,19 @@ export function PreferencesWidget({
               <Text>Work Authorization</Text>
               <Stack gap={4}>
                 {data.us_resident !== null && (
-                  <Text color="$gray11">
+                  <Text color={colors.text[theme].secondary}>
                     {data.us_resident ? "✓" : "✗"} US Resident
                   </Text>
                 )}
                 {data.us_passport !== null && (
-                  <Text color="$gray11">
+                  <Text color={colors.text[theme].secondary}>
                     {data.us_passport ? "✓" : "✗"} US Passport
                   </Text>
                 )}
                 {data.authorized_countries &&
                   Array.isArray(data.authorized_countries) &&
                   data.authorized_countries.length > 0 && (
-                    <Text color="$gray11">
+                    <Text color={colors.text[theme].secondary}>
                       Authorized: {formatArray(data.authorized_countries)}
                     </Text>
                   )}
@@ -198,14 +200,14 @@ export function PreferencesWidget({
                   {data.drivers_license_classes.map((license: string) => (
                     <Row
                       key={license}
-                      backgroundColor="$blue2"
+                      backgroundColor={colors.info[50]}
                       paddingHorizontal={12}
                       paddingVertical={6}
                       borderRadius={12}
                       borderWidth={1}
-                      borderColor="$blue7"
+                      borderColor={colors.border[theme].info}
                     >
-                      <Text color="$blue11">Class {license}</Text>
+                      <Text color={colors.fg[theme].info}>Class {license}</Text>
                     </Row>
                   ))}
                 </Row>
@@ -218,14 +220,14 @@ export function PreferencesWidget({
               <Text>Military Service</Text>
               <Stack gap={4}>
                 {data.veteran !== null && (
-                  <Text color="$gray11">
+                  <Text color={colors.text[theme].secondary}>
                     {data.veteran ? "Veteran" : "Not a veteran"}
                   </Text>
                 )}
                 {data.military_status &&
                   typeof data.military_status === "string" && (
                     <Text
-                      color="$gray11"
+                      color={colors.text[theme].secondary}
                       style={{ textTransform: "capitalize" }}
                     >
                       Status: {data.military_status.replace("_", " ")}

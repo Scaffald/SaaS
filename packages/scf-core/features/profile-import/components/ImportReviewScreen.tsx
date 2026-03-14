@@ -24,7 +24,9 @@ import {
   Text,
   Row,
   Stack,
+  useThemeContext,
 } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import { useImportData } from "../hooks/useImportData";
 import { toConfidenceLevel } from "../utils/importConfidence";
 import { ConfidenceBadge } from "./ConfidenceBadge";
@@ -36,6 +38,7 @@ interface SelectedState {
 }
 
 export function ImportReviewScreen() {
+  const { theme } = useThemeContext();
   const { importData, metadata, isLoading, isError, refetch } = useImportData();
   const [selectedItems, setSelectedItems] = useState<SelectedState>({});
   const [activeSection, setActiveSection] = useState<string>("experience");
@@ -125,8 +128,8 @@ export function ImportReviewScreen() {
   if (isLoading) {
     return (
       <Stack gap={16} padding="md" align="center">
-        <Loader2 size={32} color="$gray11" />
-        <Text color="$gray11">Retrieving imported data...</Text>
+        <Loader2 size={32} color={colors.text[theme].secondary} />
+        <Text style={{ color: colors.text[theme].secondary }}>Retrieving imported data...</Text>
       </Stack>
     );
   }
@@ -134,9 +137,9 @@ export function ImportReviewScreen() {
   if (isError || !importData) {
     return (
       <Stack gap={12} padding="md" align="center">
-        <FileWarning size={32} color="$red10" />
-        <Text color="$red11">We couldn't load your import data</Text>
-        <Text color="$gray11">
+        <FileWarning size={32} color={colors.fg[theme].error} />
+        <Text style={{ color: colors.fg[theme].error }}>We couldn't load your import data</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>
           Please retry. If the issue persists, try uploading your resume again.
         </Text>
         <Button size="md" onPress={() => refetch()}>
@@ -311,16 +314,16 @@ export function ImportReviewScreen() {
 
   return (
     <Stack gap={16} padding="md">
-      <Card bordered backgroundColor="$color2">
+      <Card bordered style={{ backgroundColor: colors.bg[theme].subtle }}>
         <CardHeader>
           <Stack gap={12}>
             <Row gap={12} align="flex-start" wrap>
-              <Info size="lg" color="$blue10" />
+              <Info size="lg" color={colors.icon[theme].info} />
               <Stack flex={1} gap={8}>
                 <Row gap={8} align="center">
                   <H5>Imported data overview</H5>
                 </Row>
-                <Paragraph color="$gray11">
+                <Paragraph style={{ color: colors.text[theme].secondary }}>
                   Review and confirm the details we extracted. You can import
                   everything, bring over a subset, or clear the import and start
                   again.
@@ -331,33 +334,34 @@ export function ImportReviewScreen() {
                       size="md"
                       color={
                         expiresInLabel?.status === "expired"
-                          ? "$red10"
-                          : "$blue10"
+                          ? colors.fg[theme].error
+                          : colors.icon[theme].info
                       }
                     />
                     <Text
-                      color={
-                        expiresInLabel?.status === "expired"
-                          ? "$red10"
-                          : "$color11"
-                      }
+                      style={{
+                        color:
+                          expiresInLabel?.status === "expired"
+                            ? colors.fg[theme].error
+                            : colors.text[theme].secondary,
+                      }}
                     >
                       {expiresInLabel?.label ?? "Expires 24 hours after upload"}
                     </Text>
                   </Row>
                   {storedAtLabel && (
-                    <Text color="$gray11">Uploaded {storedAtLabel}</Text>
+                    <Text style={{ color: colors.text[theme].secondary }}>Uploaded {storedAtLabel}</Text>
                   )}
-                  <Text color="$gray11">
+                  <Text style={{ color: colors.text[theme].secondary }}>
                     Source:{" "}
-                    <Text color="$gray11">
+                    <Text style={{ color: colors.text[theme].secondary }}>
                       {metadata?.source === "json"
                         ? "JSON export"
                         : "Resume upload"}
                     </Text>
                   </Text>
-                  <Text color="$gray11">
-                    Items detected: <Text color="$gray11">{totalItems}</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>
+                    Items detected: <Text style={{ color: colors.text[theme].secondary }}>{totalItems}</Text>
                   </Text>
                 </Row>
               </Stack>
@@ -368,7 +372,7 @@ export function ImportReviewScreen() {
 
       <Stack gap={8}>
         <Text>Review Imported Data</Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Select the items you'd like to import. We'll highlight anything that
           might need attention.
         </Text>
@@ -385,9 +389,9 @@ export function ImportReviewScreen() {
       <ScrollView style={{ flex: 1 }}>
         <Stack gap={12} marginTop={12}>
           {currentSection?.items.length === 0 && (
-            <Card bordered padding="md" backgroundColor="$color2">
+            <Card bordered padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
               <CardHeader>
-                <Text color="$gray11">
+                <Text style={{ color: colors.text[theme].secondary }}>
                   No items were detected for this section.
                 </Text>
               </CardHeader>
@@ -404,7 +408,7 @@ export function ImportReviewScreen() {
               <Card
                 bordered
                 key={item.id}
-                backgroundColor={isSelected ? "$color3" : "$background"}
+                style={{ backgroundColor: isSelected ? colors.bg[theme].selected : colors.bg[theme].default }}
               >
                 <CardHeader>
                   <Stack gap={12}>
@@ -502,11 +506,11 @@ export function ImportReviewScreen() {
           </Button>
         </Row>
         <Row gap={12} align="center" wrap>
-          <Text color="$gray11" aria-live="polite">
+          <Text style={{ color: colors.text[theme].secondary }} aria-live="polite">
             Selected {selectedCount} of {totalItems}
           </Text>
           {isImporting && (
-            <Text color="$gray11" aria-live="assertive">
+            <Text style={{ color: colors.text[theme].secondary }} aria-live="assertive">
               Importing {importProgress.completed} of {importProgress.total}...
             </Text>
           )}

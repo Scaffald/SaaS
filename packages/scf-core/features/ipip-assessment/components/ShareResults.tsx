@@ -5,9 +5,10 @@ import {
 import { useQueryClient } from '@tanstack/react-query'
 import { copyToClipboard } from '@scf/core/utils/clipboard'
 import { Calendar, Copy, Lock, Share2, X } from 'lucide-react-native'
-import { useToast } from '@scaffald/ui'
+import { useToast, useThemeContext } from '@scaffald/ui'
 import { useMemo, useState } from 'react'
 import { Button, Separator, Switch, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 export interface ShareResultsProps {
   isComplete: boolean
@@ -18,6 +19,7 @@ export interface ShareResultsProps {
  * ShareResults - Component for sharing IPIP assessment results with privacy controls
  */
 export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps) {
+  const { theme } = useThemeContext()
   const toast = useToast()
   const queryClient = useQueryClient()
   const [shareLink, setShareLink] = useState<string | null>(null)
@@ -135,17 +137,17 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
       <Stack
         gap={12}
         padding="md"
-        backgroundColor="$color2"
+        backgroundColor={colors.bg[theme].subtle}
         borderRadius={16}
         borderWidth={1}
-        borderColor="$borderColor"
+        borderColor={colors.border[theme].default}
         aria-live="polite"
       >
         <Row align="center" gap={8}>
-          <Lock size="sm" color="$gray11" />
-          <Text color="$gray11">Complete Assessment to Share</Text>
+          <Lock size="sm" color={colors.text[theme].secondary} />
+          <Text style={{ color: colors.text[theme].secondary }}>Complete Assessment to Share</Text>
         </Row>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Finish all 120 questions to generate a shareable link to your personality results.
         </Text>
       </Stack>
@@ -156,17 +158,17 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
     <Stack
       gap={16}
       padding="md"
-      backgroundColor="$color2"
+      backgroundColor={colors.bg[theme].subtle}
       borderRadius={16}
       borderWidth={1}
-      borderColor="$borderColor"
+      borderColor={colors.border[theme].default}
     >
       <Stack gap={8}>
         <Row align="center" gap={8}>
-          <Share2 size="sm" color="$gray11" />
-          <Text color="$gray11">Share Your Results</Text>
+          <Share2 size="sm" color={colors.text[theme].secondary} />
+          <Text style={{ color: colors.text[theme].secondary }}>Share Your Results</Text>
         </Row>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Create a shareable link to your personality assessment results. You control what's visible
           and can revoke access at any time.
         </Text>
@@ -174,18 +176,18 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
 
       {/* Privacy Controls */}
       <Stack gap={12}>
-        <Text color="$gray11">Privacy Settings</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Privacy Settings</Text>
 
         <Row
           justify="space-between"
           align="center"
           padding="sm"
-          backgroundColor="$color1"
+          backgroundColor={colors.bg[theme].default}
           borderRadius={12}
         >
           <Stack flex={1} gap={4}>
-            <Text color="$gray11">Include Archetype</Text>
-            <Text color="$gray11">Show your personality archetype classification</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Include Archetype</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Show your personality archetype classification</Text>
           </Stack>
           <Switch
             checked={includeArchetype}
@@ -199,12 +201,12 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
           justify="space-between"
           align="center"
           padding="sm"
-          backgroundColor="$color1"
+          backgroundColor={colors.bg[theme].default}
           borderRadius={12}
         >
           <Stack flex={1} gap={4}>
-            <Text color="$gray11">Include Domain Scores</Text>
-            <Text color="$gray11">Show Big Five domain scores and percentages</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Include Domain Scores</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>Show Big Five domain scores and percentages</Text>
           </Stack>
           <Switch
             checked={includeScores}
@@ -221,8 +223,8 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
       {!shareLink ? (
         <Stack gap={12}>
           <Stack gap={8}>
-            <Text color="$gray11">Expiration (Optional)</Text>
-            <Text color="$gray11">
+            <Text style={{ color: colors.text[theme].secondary }}>Expiration (Optional)</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>
               Set how many days until the link expires (1-365 days). Leave empty for no expiration.
             </Text>
             <Row gap={8} align="center">
@@ -273,19 +275,18 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
         </Stack>
       ) : (
         <Stack gap={12} aria-live="polite">
-          <Text color="$gray11">Your Share Link</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Your Share Link</Text>
           <Row
             gap={8}
             align="center"
             padding="sm"
-            backgroundColor="$color1"
+            backgroundColor={colors.bg[theme].default}
             borderRadius={12}
             borderWidth={1}
-            borderColor="$borderColor"
+            borderColor={colors.border[theme].default}
           >
             <Text
-              style={{ flex: 1, fontFamily: 'monospace' }}
-              color="$gray11"
+              style={{ flex: 1, fontFamily: 'monospace', color: colors.text[theme].secondary }}
               data-testid="share-link-url"
             >
               {shareLink}
@@ -304,7 +305,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
               Revoke
             </Button>
           </Row>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Anyone with this link can view your results. You can revoke it at any time.
           </Text>
         </Stack>
@@ -317,24 +318,24 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
           <Stack
             gap={8}
             padding="sm"
-            backgroundColor="$yellow2"
+            backgroundColor={theme === 'light' ? colors.yellow[50] : colors.yellow[900]}
             borderRadius={12}
             borderWidth={1}
-            borderColor="$yellow7"
+            borderColor={theme === 'light' ? colors.yellow[200] : colors.yellow[700]}
             aria-live="polite"
           >
             <Row align="center" gap={8}>
-              <Calendar size="sm" color="$yellow11" />
-              <Text color="$yellow11">Retake Available Soon</Text>
+              <Calendar size="sm" color={theme === 'light' ? colors.yellow[700] : colors.yellow[300]} />
+              <Text style={{ color: theme === 'light' ? colors.yellow[700] : colors.yellow[300] }}>Retake Available Soon</Text>
             </Row>
-            <Text color="$yellow10">
+            <Text style={{ color: theme === 'light' ? colors.yellow[600] : colors.yellow[400] }}>
               You can retake the IPIP assessment in{' '}
               {cooldownInfo.daysRemaining > 0
                 ? `${cooldownInfo.daysRemaining} day${cooldownInfo.daysRemaining !== 1 ? 's' : ''}`
                 : `${cooldownInfo.hoursRemaining} hour${cooldownInfo.hoursRemaining !== 1 ? 's' : ''}`}
               . This cooldown period ensures accurate results.
             </Text>
-            <Text color="$yellow9">
+            <Text style={{ color: theme === 'light' ? colors.yellow[500] : colors.yellow[400] }}>
               Available: {cooldownInfo.availableDate.toLocaleDateString()}{' '}
               {cooldownInfo.availableDate.toLocaleTimeString()}
             </Text>

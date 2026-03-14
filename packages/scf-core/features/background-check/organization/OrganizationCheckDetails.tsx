@@ -2,7 +2,8 @@ import { useBackgroundCheck } from "@scf/core/utils/background-checks-sdk-hooks"
 import { RefreshCcw, X } from "lucide-react-native";
 import { useMemo } from "react";
 import { Platform } from "react-native";
-import { Button, Separator, Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { Button, Separator, Spinner, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import { getStatusMetadata } from "../components/status.utils";
 
 type OrganizationCheckSummary = {
@@ -57,6 +58,9 @@ export function OrganizationCheckDetails({
   summary,
   onClose,
 }: OrganizationCheckDetailsProps) {
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
+
   const checkQuery = useBackgroundCheck(checkId || undefined);
 
   type CheckDetailExtended = typeof checkQuery.data & {
@@ -79,14 +83,13 @@ export function OrganizationCheckDetails({
   return (
     <Stack
       borderWidth={1}
-      borderColor="$borderColor"
       borderRadius={24}
       padding="md"
       gap={12}
-      backgroundColor="$color2"
+      style={{ borderColor: colors.border[t].default, backgroundColor: colors.bg[t].subtle }}
     >
       <Row justify="space-between" align="center">
-        <Text color="$gray11">Background Check Details</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Background Check Details</Text>
         <Row gap={8}>
           <Button
             size="sm"
@@ -106,13 +109,13 @@ export function OrganizationCheckDetails({
       {checkQuery.isLoading ? (
         <Stack gap={8} align="center" paddingVertical={16}>
           <Spinner size="lg" />
-          <Text color="$gray11">Loading background check details…</Text>
+          <Text style={{ color: colors.text[t].secondary }}>Loading background check details…</Text>
         </Stack>
       ) : null}
 
       {checkQuery.isError ? (
-        <Stack gap={8} padding="sm" backgroundColor="$color3" borderRadius={16}>
-          <Text color="$gray11">
+        <Stack gap={8} padding="sm" style={{ backgroundColor: colors.bg[t].muted }} borderRadius={16}>
+          <Text style={{ color: colors.text[t].secondary }}>
             We couldn't load the background check details. Please try again.
           </Text>
           <Button
@@ -130,7 +133,7 @@ export function OrganizationCheckDetails({
       {!checkQuery.isLoading && !checkQuery.isError && (detail || summary) ? (
         <Stack gap={12}>
           <Stack gap={4}>
-            <Text color="$gray11">Overview</Text>
+            <Text style={{ color: colors.text[t].secondary }}>Overview</Text>
             <Separator />
           </Stack>
 
@@ -201,8 +204,8 @@ export function OrganizationCheckDetails({
 
           {detail?.summary ? (
             <Stack gap={8}>
-              <Text color="$gray11">Summary</Text>
-              <Text color="$gray11">
+              <Text style={{ color: colors.text[t].secondary }}>Summary</Text>
+              <Text style={{ color: colors.text[t].secondary }}>
                 {typeof detail.summary === "string"
                   ? detail.summary
                   : JSON.stringify(detail.summary)}
@@ -212,8 +215,8 @@ export function OrganizationCheckDetails({
 
           {detail?.findings ? (
             <Stack gap={8}>
-              <Text color="$gray11">Findings</Text>
-              <Text color="$gray11">
+              <Text style={{ color: colors.text[t].secondary }}>Findings</Text>
+              <Text style={{ color: colors.text[t].secondary }}>
                 {typeof detail.findings === "string"
                   ? detail.findings
                   : JSON.stringify(detail.findings, null, 2)}
@@ -223,16 +226,16 @@ export function OrganizationCheckDetails({
 
           {componentStatuses.length > 0 ? (
             <Stack gap={8}>
-              <Text color="$gray11">Component Statuses</Text>
+              <Text style={{ color: colors.text[t].secondary }}>Component Statuses</Text>
               <Stack gap={8}>
                 {componentStatuses.map((component, index) => (
                   <Stack
                     key={`${component.check_type_id ?? index}`}
                     padding="sm"
-                    backgroundColor="$color3"
+                    style={{ backgroundColor: colors.bg[t].muted }}
                     borderRadius={16}
                   >
-                    <Text color="$gray11">
+                    <Text style={{ color: colors.text[t].secondary }}>
                       {(component.check_type_id as string | undefined)?.slice(
                         0,
                         8
@@ -268,10 +271,10 @@ export function OrganizationCheckDetails({
 
           {detail?.metadata ? (
             <Stack gap={8}>
-              <Text color="$gray11">Metadata</Text>
+              <Text style={{ color: colors.text[t].secondary }}>Metadata</Text>
               <Text
-                color="$gray11"
                 style={{
+                  color: colors.text[t].secondary,
                   fontFamily: "monospace",
                   ...(Platform.OS === "web" && { whiteSpace: "pre-wrap" }),
                 }}
@@ -292,10 +295,12 @@ interface InfoRowProps {
 }
 
 function InfoRow({ label, value }: InfoRowProps) {
+  const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light";
   return (
     <Row gap={8} justify="space-between" wrap>
-      <Text color="$gray11">{label}</Text>
-      <Text color="$gray11">{value}</Text>
+      <Text style={{ color: colors.text[t].secondary }}>{label}</Text>
+      <Text style={{ color: colors.text[t].secondary }}>{value}</Text>
     </Row>
   );
 }

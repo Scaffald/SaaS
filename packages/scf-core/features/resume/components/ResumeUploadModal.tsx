@@ -2,8 +2,8 @@ import {
   useUploadResumeMutation,
   useParseResumeMutation,
 } from "@scf/core/utils/resume-sdk-hooks";
-import { FileUpload, ResponsiveModal } from "@scaffald/ui";
-import { namedSpacing } from "@scaffald/ui/tokens";
+import { FileUpload, ResponsiveModal, useThemeContext } from "@scaffald/ui";
+import { colors, namedSpacing } from "@scaffald/ui/tokens";
 import {
   AlertCircle,
   CheckCircle2,
@@ -60,6 +60,7 @@ export function ResumeUploadModal({
   onOpenChange,
   onUploadComplete,
 }: ResumeUploadModalProps) {
+  const { theme } = useThemeContext();
   const toast = useToast();
   const queryClient = useQueryClient();
   const uploadResumeMutation = useUploadResumeMutation();
@@ -115,12 +116,12 @@ export function ResumeUploadModal({
 
   const progressColor = useMemo(() => {
     if (status === "error") {
-      return "$red9";
+      return colors.error[500];
     }
     if (status === "success") {
-      return "$green9";
+      return colors.success[500];
     }
-    return "$blue9";
+    return colors.info[500];
   }, [status]);
 
   const progressLabel = useMemo(() => {
@@ -372,7 +373,7 @@ export function ResumeUploadModal({
       size="md"
     >
       <Stack gap={namedSpacing.md}>
-        <Paragraph color="$gray11">
+        <Paragraph color={colors.text[theme].secondary}>
           Upload a PDF or Word document under 1MB. We'll extract your
           experience, education, skills, and preferences so you can confirm the
           details before saving them to your profile.
@@ -412,16 +413,16 @@ export function ResumeUploadModal({
               Choose File
             </Button>
             {fileName ? (
-              <Text color="$gray11">Selected file: {fileName}</Text>
+              <Text color={colors.text[theme].secondary}>Selected file: {fileName}</Text>
             ) : (
-              <Text color="$gray11">
+              <Text color={colors.text[theme].secondary}>
                 Supported formats: PDF, DOC, DOCX. Maximum size: 1MB.
               </Text>
             )}
             {status === "error" && errorMessage ? (
               <Row gap={8} align="center">
-                <AlertCircle color="$red10" size={18} />
-                <Text color="$red10">{errorMessage}</Text>
+                <AlertCircle color={colors.fg[theme].error} size={18} />
+                <Text color={colors.fg[theme].error}>{errorMessage}</Text>
               </Row>
             ) : null}
           </Stack>
@@ -430,13 +431,13 @@ export function ResumeUploadModal({
         {shouldShowProgressIndicators && progressValue > 0 && (
           <Stack
             gap={8}
-            backgroundColor="$color2"
+            backgroundColor={colors.bg[theme].subtle}
             padding="sm"
             borderRadius={12}
           >
             <Stack
               height={8}
-              backgroundColor="$color4"
+              backgroundColor={colors.bg[theme].emphasis}
               borderRadius={16}
               style={{ overflow: "hidden" }}
             >
@@ -448,13 +449,13 @@ export function ResumeUploadModal({
             </Stack>
             <Row gap={8} align="center">
               {status === "success" ? (
-                <CheckCircle2 color="$green10" size={18} />
+                <CheckCircle2 color={colors.fg[theme].success} size={18} />
               ) : status === "error" ? (
-                <AlertCircle color="$red10" size={18} />
+                <AlertCircle color={colors.fg[theme].error} size={18} />
               ) : (
                 <Spinner size="sm" color="primary" />
               )}
-              <Text color={status === "error" ? "$red11" : "$color11"}>
+              <Text color={status === "error" ? colors.error[600] : colors.text[theme].primary}>
                 {progressLabel ?? "Processing resume..."}
               </Text>
             </Row>
@@ -465,12 +466,12 @@ export function ResumeUploadModal({
           <Row
             gap={12}
             align="center"
-            backgroundColor="$green3"
+            backgroundColor={colors.success[50]}
             padding="sm"
             borderRadius={12}
           >
-            <CheckCircle2 color="$green10" size="lg" />
-            <Text color="$green11">
+            <CheckCircle2 color={colors.fg[theme].success} size="lg" />
+            <Text color={colors.success[600]}>
               Resume uploaded successfully. Redirecting...
             </Text>
           </Row>
@@ -480,12 +481,12 @@ export function ResumeUploadModal({
           <Row
             gap={12}
             align="center"
-            backgroundColor="$red3"
+            backgroundColor={colors.error[50]}
             padding="sm"
             borderRadius={12}
           >
-            <AlertCircle color="$red10" size="lg" />
-            <Text color="$red11">{errorMessage}</Text>
+            <AlertCircle color={colors.fg[theme].error} size="lg" />
+            <Text color={colors.error[600]}>{errorMessage}</Text>
           </Row>
         )}
 

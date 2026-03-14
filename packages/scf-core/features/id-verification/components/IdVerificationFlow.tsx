@@ -7,7 +7,7 @@ import {
 } from '@scf/core/utils/id-verification-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import { AlertCircle } from 'lucide-react-native'
-import { useToast } from '@scaffald/ui'
+import { useToast, useThemeContext } from '@scaffald/ui'
 import { formatDistanceToNow } from 'date-fns'
 import { useEffect, useMemo, useState } from 'react'
 import { Button, Card, ScrollView, Spinner, Text, Row, Stack } from '@scaffald/ui'
@@ -50,6 +50,7 @@ const formatDuration = (value?: string | null) => {
 export function IdVerificationContent() {
   const { user } = useUser()
   const toast = useToast()
+  const { theme } = useThemeContext()
 
   const pricingQuery = useIdVerificationPricing({ staleTime: 5 * 60 * 1000 })
   const currentVerificationQuery = useCurrentIdVerification(undefined, { staleTime: 60 * 1000 })
@@ -76,7 +77,7 @@ export function IdVerificationContent() {
 
   const selectedPricing = pricingOptions.find((row) => row.id === selectedPricingId) ?? null
 
-  const statusCard = renderStatusCard(currentVerificationQuery)
+  const statusCard = renderStatusCard(currentVerificationQuery, theme)
 
   const handleCreatePaymentSession = async () => {
     if (!user) {
@@ -146,14 +147,14 @@ export function IdVerificationContent() {
       <Card padding="md" bordered>
         <Stack gap={8}>
           <Text>Why verify your identity?</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Verified profiles are highlighted across search, inquiries, and background checks,
             giving organizations confidence that you are who you say you are.
           </Text>
           <Stack gap={4} marginTop={8}>
-            <Text color="$gray11">• Badge displayed on your profile and worker cards</Text>
-            <Text color="$gray11">• Valid for 6 months with automated reminders</Text>
-            <Text color="$gray11">• Powered by Persona, the same provider used by banks</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>• Badge displayed on your profile and worker cards</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>• Valid for 6 months with automated reminders</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>• Powered by Persona, the same provider used by banks</Text>
           </Stack>
         </Stack>
       </Card>
@@ -185,28 +186,29 @@ export function IdVerificationContent() {
 }
 
 export function IdVerificationRight() {
+  const { theme } = useThemeContext()
   return (
     <Stack gap={16}>
       <Card padding="md" bordered>
         <Stack gap={8}>
           <Text>What happens after payment?</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             We automatically create a Persona inquiry using your Scaffald profile details. You'll
             receive an email and in-app notification with a secure link to upload your government ID
             and selfie. Most verifications finish within a few minutes.
           </Text>
           <Stack gap={4}>
-            <Text color="$gray11">1. Complete the Persona flow on web or mobile</Text>
-            <Text color="$gray11">2. Persona confirms the authenticity of your ID</Text>
-            <Text color="$gray11">3. Your badge updates instantly across the platform</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>1. Complete the Persona flow on web or mobile</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>2. Persona confirms the authenticity of your ID</Text>
+            <Text style={{ color: colors.text[theme].secondary }}>3. Your badge updates instantly across the platform</Text>
           </Stack>
         </Stack>
       </Card>
 
-      <Card padding="md" bordered backgroundColor="$blue2" borderColor="$blue6">
+      <Card padding="md" bordered style={{ backgroundColor: colors.info[50], borderColor: colors.border[theme].info }}>
         <Stack gap={8}>
-          <Text color="$blue12">Need help?</Text>
-          <Text color="$blue11">
+          <Text style={{ color: colors.info[700] }}>Need help?</Text>
+          <Text style={{ color: colors.info[600] }}>
             Email support@scaffald.com if you run into issues with Persona, need an invoice, or want
             to request a bulk verification plan for your organization.
           </Text>
@@ -217,8 +219,9 @@ export function IdVerificationRight() {
 }
 
 export function IdVerificationFlow() {
+  const { theme } = useThemeContext()
   return (
-    <Stack flex={1} backgroundColor="$background">
+    <Stack flex={1} style={{ backgroundColor: colors.bg[theme].default }}>
       <ScrollView style={{ flex: 1 }}>
         <Stack gap={16} paddingHorizontal={16} paddingBottom={32}>
           <IdVerificationContent />
@@ -229,14 +232,15 @@ export function IdVerificationFlow() {
 }
 
 function renderStatusCard(
-  queryReturn: ReturnType<typeof useCurrentIdVerification>
+  queryReturn: ReturnType<typeof useCurrentIdVerification>,
+  theme: 'light' | 'dark'
 ) {
   if (queryReturn.isLoading) {
     return (
       <Card padding="md" bordered>
         <Stack gap={8}>
           <IdVerificationBadge status={null} muted size="md" />
-          <Text color="$gray11">Loading your verification badge…</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading your verification badge…</Text>
         </Stack>
       </Card>
     )
@@ -244,10 +248,10 @@ function renderStatusCard(
 
   if (queryReturn.isError) {
     return (
-      <Card padding="md" bordered backgroundColor="$red2" borderColor="$red6">
+      <Card padding="md" bordered style={{ backgroundColor: colors.error[50], borderColor: colors.border[theme].error }}>
         <Stack gap={8}>
-          <Text color="$red12">Unable to load badge</Text>
-          <Text color="$red11">
+          <Text style={{ color: colors.error[700] }}>Unable to load badge</Text>
+          <Text style={{ color: colors.fg[theme].error }}>
             {queryReturn.error?.message ?? 'Please refresh to try loading your verification badge.'}
           </Text>
         </Stack>
@@ -269,7 +273,7 @@ function renderStatusCard(
       <Card padding="md" bordered>
         <Stack gap={8}>
           <IdVerificationBadge status={null} muted size="md" />
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Purchase a verification to unlock the "Verified Identity" badge on your profile.
           </Text>
         </Stack>
@@ -284,7 +288,7 @@ function renderStatusCard(
           status={badge.badgeStatus as 'active' | 'expired' | 'revoked'}
           badgeExpiresAt={badge.badgeExpiresAt}
         />
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           {badge.badgeStatus === 'active'
             ? `Valid until ${formatDate(badge.badgeExpiresAt ?? '')} (${formatDuration(
                 badge.badgeExpiresAt ?? ''
@@ -293,7 +297,7 @@ function renderStatusCard(
               ? `Expired on ${formatDate(badge.badgeExpiresAt ?? '')}`
               : 'Contact support to resolve revocation.'}
         </Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Verified on {formatDate(badge.verifiedAt ?? '')} • Level:{' '}
           {badge.verificationLevel ?? 'N/A'}
         </Text>
@@ -315,12 +319,14 @@ function PricingSection({
   onSelectPlan,
   isLoading,
 }: PricingSectionProps) {
+  const { theme } = useThemeContext()
+
   if (isLoading) {
     return (
       <Card padding="md" bordered>
         <Stack gap={8} align="center">
           <Spinner size="sm" />
-          <Text color="$gray11">Loading verification options…</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>Loading verification options…</Text>
         </Stack>
       </Card>
     )
@@ -328,10 +334,10 @@ function PricingSection({
 
   if (pricingOptions.length === 0) {
     return (
-      <Card padding="md" bordered backgroundColor="$color2" borderColor="$borderColor">
+      <Card padding="md" bordered style={{ backgroundColor: colors.bg[theme].subtle, borderColor: colors.border[theme].default }}>
         <Stack gap={8}>
           <Text>Verification temporarily unavailable</Text>
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[theme].secondary }}>
             Pricing hasn't been published yet. Check back soon or contact support@scaffald.com.
           </Text>
         </Stack>
@@ -350,7 +356,7 @@ function PricingSection({
               key={plan.id}
               padding="md"
               bordered
-              style={{ backgroundColor: isActive ? colors.info[50] : undefined, borderColor: isActive ? colors.info[400] : colors.gray[200] }}
+              style={{ backgroundColor: isActive ? colors.info[50] : undefined, borderColor: isActive ? colors.info[400] : colors.border[theme].default }}
               onPress={() => onSelectPlan(plan.id)}
             >
               <Stack gap={8}>
@@ -358,7 +364,7 @@ function PricingSection({
                   <Text>{plan.name}</Text>
                   <Text>{formatCurrency(plan.priceCents)}</Text>
                 </Row>
-                {plan.description && <Text color="$gray11">{plan.description}</Text>}
+                {plan.description && <Text style={{ color: colors.text[theme].secondary }}>{plan.description}</Text>}
                 <Button
                   size="sm"
                   color={isActive ? 'primary' : undefined}
@@ -397,11 +403,13 @@ function PaymentSection({
   onResetSession,
   onPaymentSuccess,
 }: PaymentSectionProps) {
+  const { theme } = useThemeContext()
+
   return (
     <Stack gap={12}>
       <Stack gap={4}>
         <Text>Secure payment</Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Charges are non-refundable and processed via Stripe. Your badge will update immediately
           after Persona confirms your identity.
         </Text>
@@ -411,14 +419,11 @@ function PaymentSection({
         <Stack
           gap={8}
           padding="sm"
-          backgroundColor="$red2"
-          borderColor="$red6"
-          borderWidth={1}
-          borderRadius={16}
+          style={{ backgroundColor: colors.error[50], borderColor: colors.border[theme].error, borderWidth: 1, borderRadius: 16 }}
         >
           <Row gap={8} align="center">
-            <AlertCircle size={18} color="$red11" />
-            <Text color="$red11">{requestError}</Text>
+            <AlertCircle size={18} color={colors.fg[theme].error} />
+            <Text style={{ color: colors.fg[theme].error }}>{requestError}</Text>
           </Row>
         </Stack>
       )}

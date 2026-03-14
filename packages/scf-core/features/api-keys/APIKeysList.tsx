@@ -14,7 +14,9 @@ import {
   Spinner,
   Row,
   Stack,
+  useThemeContext,
 } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { Copy, Key, MoreVertical, Plus, Trash2 } from 'lucide-react-native'
 import { format } from 'date-fns'
 
@@ -47,6 +49,7 @@ export function APIKeysList({
   onViewUsage,
   onManageScopes,
 }: APIKeysListProps) {
+  const { theme } = useThemeContext()
   const [copiedKeyId, setCopiedKeyId] = useState<string | null>(null)
 
   const copyToClipboard = (text: string, keyId: string) => {
@@ -58,13 +61,13 @@ export function APIKeysList({
   const getRateLimitBadgeColor = (tier: string) => {
     switch (tier) {
       case 'free':
-        return '$gray10'
+        return colors.gray[500]
       case 'pro':
-        return '$blue10'
+        return colors.blue[500]
       case 'enterprise':
-        return '$purple10'
+        return colors.purple[500]
       default:
-        return '$gray10'
+        return colors.gray[500]
     }
   }
 
@@ -85,7 +88,7 @@ export function APIKeysList({
     return (
       <Stack flex={1} justify="center" align="center" padding="xl">
         <Spinner size="lg" color="primary" />
-        <Paragraph style={{ marginTop: 16 }} color="$gray11">
+        <Paragraph style={{ marginTop: 16 }} color={colors.text[theme].tertiary}>
           Loading API keys...
         </Paragraph>
       </Stack>
@@ -98,7 +101,7 @@ export function APIKeysList({
       <Row justify="space-between" align="center">
         <Stack gap={8}>
           <H2>API Keys</H2>
-          <Paragraph color="$gray11">
+          <Paragraph color={colors.text[theme].tertiary}>
             Manage API keys for third-party integrations and SDK access
           </Paragraph>
         </Stack>
@@ -113,10 +116,10 @@ export function APIKeysList({
       {keys.length === 0 ? (
         <Card padding="lg" variant="outlined">
           <Stack align="center" gap={16} padding="xl">
-            <Key size={48} color="$gray9" />
+            <Key size={48} color={colors.icon[theme].muted} />
             <Stack align="center" gap={8}>
               <H4>No API Keys</H4>
-              <Paragraph color="$gray11" align="center">
+              <Paragraph color={colors.text[theme].tertiary} align="center">
                 Create your first API key to start using the Scaffald SDK
               </Paragraph>
             </Stack>
@@ -138,13 +141,13 @@ export function APIKeysList({
                       {!key.is_active && (
                         <Card
                           style={{
-                            backgroundColor: '$red3',
+                            backgroundColor: colors.error[100],
                             paddingHorizontal: 8,
                             paddingVertical: 4,
                             borderRadius: 8,
                           }}
                         >
-                          <Paragraph size="sm" color="$red11">
+                          <Paragraph size="sm" color={colors.fg[theme].error}>
                             REVOKED
                           </Paragraph>
                         </Card>
@@ -155,13 +158,13 @@ export function APIKeysList({
                     <Row align="center" gap={8}>
                       <Card
                         style={{
-                          backgroundColor: '$gray3',
+                          backgroundColor: colors.bg[theme].muted,
                           paddingHorizontal: 12,
                           paddingVertical: 8,
                           borderRadius: 12,
                         }}
                       >
-                        <Paragraph size="sm" style={{ fontFamily: '$mono' }}>
+                        <Paragraph size="sm" style={{ fontFamily: 'monospace' }}>
                           {key.key_prefix}
                         </Paragraph>
                       </Card>
@@ -184,7 +187,7 @@ export function APIKeysList({
                 <Row gap={16} wrap>
                   {/* Rate Limit Tier */}
                   <Stack gap={4}>
-                    <Paragraph size="sm" color="$gray11">
+                    <Paragraph size="sm" color={colors.text[theme].tertiary}>
                       Rate Limit
                     </Paragraph>
                     <Card
@@ -195,7 +198,7 @@ export function APIKeysList({
                         borderRadius: 8,
                       }}
                     >
-                      <Paragraph size="sm" color="$gray12">
+                      <Paragraph size="sm" color={colors.text[theme].primary}>
                         {key.rate_limit_tier.toUpperCase()} -{' '}
                         {getRateLimitDescription(key.rate_limit_tier)}
                       </Paragraph>
@@ -204,7 +207,7 @@ export function APIKeysList({
 
                   {/* Scopes */}
                   <Stack gap={4} flex={1}>
-                    <Paragraph size="sm" color="$gray11">
+                    <Paragraph size="sm" color={colors.text[theme].tertiary}>
                       Scopes
                     </Paragraph>
                     <Row gap={8} wrap>
@@ -212,13 +215,13 @@ export function APIKeysList({
                         <Card
                           key={scope}
                           style={{
-                            backgroundColor: '$blue3',
+                            backgroundColor: colors.blue[200],
                             paddingHorizontal: 8,
                             paddingVertical: 4,
                             borderRadius: 8,
                           }}
                         >
-                          <Paragraph size="sm" color="$blue11">
+                          <Paragraph size="sm" color={colors.blue[700]}>
                             {scope}
                           </Paragraph>
                         </Card>
@@ -228,7 +231,7 @@ export function APIKeysList({
 
                   {/* Last Used */}
                   <Stack gap={4}>
-                    <Paragraph size="sm" color="$gray11">
+                    <Paragraph size="sm" color={colors.text[theme].tertiary}>
                       Last Used
                     </Paragraph>
                     <Paragraph size="sm">
@@ -240,7 +243,7 @@ export function APIKeysList({
 
                   {/* Created */}
                   <Stack gap={4}>
-                    <Paragraph size="sm" color="$gray11">
+                    <Paragraph size="sm" color={colors.text[theme].tertiary}>
                       Created
                     </Paragraph>
                     <Paragraph size="sm">
@@ -251,10 +254,10 @@ export function APIKeysList({
                   {/* Expires */}
                   {key.expires_at && (
                     <Stack gap={4}>
-                      <Paragraph size="sm" color="$gray11">
+                      <Paragraph size="sm" color={colors.text[theme].tertiary}>
                         Expires
                       </Paragraph>
-                      <Paragraph size="sm" color="$orange11">
+                      <Paragraph size="sm" color={colors.fg[theme].warning}>
                         {format(new Date(key.expires_at), 'MMM d, yyyy')}
                       </Paragraph>
                     </Stack>

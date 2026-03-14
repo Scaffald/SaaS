@@ -19,7 +19,9 @@ import {
   Row,
   Stack,
   Checkbox,
+  useThemeContext,
 } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { AlertCircle, CheckCircle, Copy } from 'lucide-react-native'
 import { format, addMonths } from 'date-fns'
 
@@ -112,6 +114,7 @@ const EXPIRATION_OPTIONS = [
 ]
 
 export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateModalProps) {
+  const { theme } = useThemeContext()
   // Form state
   const [step, setStep] = useState<'configure' | 'created'>('configure')
   const [keyName, setKeyName] = useState('')
@@ -190,7 +193,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
       <ModalContent>
         {step === 'configure' ? (
           <Stack gap={16}>
-            <Paragraph color="$gray11">
+            <Paragraph color={colors.text[theme].tertiary}>
               Create a new API key to access the Scaffald API programmatically
             </Paragraph>
 
@@ -208,7 +211,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                   onChangeText={setKeyName}
                   disabled={isCreating}
                 />
-                <Paragraph size="sm" color="$gray11">
+                <Paragraph size="sm" color={colors.text[theme].tertiary}>
                   A descriptive name to identify this key
                 </Paragraph>
               </Stack>
@@ -219,7 +222,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
 
                 {/* Read Permissions */}
                 <Stack gap={8}>
-                  <Paragraph size="sm" color="$gray12">
+                  <Paragraph size="sm" color={colors.text[theme].primary}>
                     Read Permissions
                   </Paragraph>
                   {AVAILABLE_SCOPES.filter((s) => s.category === 'read').map((scope) => (
@@ -230,11 +233,11 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                       onPress={() => toggleScope(scope.id)}
                       style={{
                         backgroundColor: selectedScopes.includes(scope.id)
-                          ? 'var(--blue-2)'
-                          : 'var(--gray-2)',
+                          ? colors.blue[100]
+                          : colors.bg[theme].muted,
                         borderColor: selectedScopes.includes(scope.id)
-                          ? 'var(--blue-6)'
-                          : 'var(--gray-6)',
+                          ? colors.blue[600]
+                          : colors.border[theme].default,
                         borderWidth: 1,
                       }}
                     >
@@ -245,7 +248,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                         />
                         <Stack flex={1} gap={4}>
                           <Paragraph>{scope.label}</Paragraph>
-                          <Paragraph size="sm" color="$gray11">
+                          <Paragraph size="sm" color={colors.text[theme].tertiary}>
                             {scope.description}
                           </Paragraph>
                         </Stack>
@@ -256,7 +259,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
 
                 {/* Write Permissions */}
                 <Stack gap={8}>
-                  <Paragraph size="sm" color="$gray12">
+                  <Paragraph size="sm" color={colors.text[theme].primary}>
                     Write Permissions
                   </Paragraph>
                   {AVAILABLE_SCOPES.filter((s) => s.category === 'write').map((scope) => (
@@ -267,11 +270,11 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                       onPress={() => toggleScope(scope.id)}
                       style={{
                         backgroundColor: selectedScopes.includes(scope.id)
-                          ? 'var(--blue-2)'
-                          : 'var(--gray-2)',
+                          ? colors.blue[100]
+                          : colors.bg[theme].muted,
                         borderColor: selectedScopes.includes(scope.id)
-                          ? 'var(--blue-6)'
-                          : 'var(--gray-6)',
+                          ? colors.blue[600]
+                          : colors.border[theme].default,
                         borderWidth: 1,
                       }}
                     >
@@ -282,7 +285,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                         />
                         <Stack flex={1} gap={4}>
                           <Paragraph>{scope.label}</Paragraph>
-                          <Paragraph size="sm" color="$gray11">
+                          <Paragraph size="sm" color={colors.text[theme].tertiary}>
                             {scope.description}
                           </Paragraph>
                         </Stack>
@@ -291,7 +294,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                   ))}
                 </Stack>
 
-                <Paragraph size="sm" color="$gray11">
+                <Paragraph size="sm" color={colors.text[theme].tertiary}>
                   Selected: {selectedScopes.length} permission
                   {selectedScopes.length !== 1 ? 's' : ''}
                 </Paragraph>
@@ -314,7 +317,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                     </Button>
                   ))}
                 </Row>
-                <Paragraph size="sm" color="$gray11">
+                <Paragraph size="sm" color={colors.text[theme].tertiary}>
                   {expirationDays
                     ? `Key will expire on ${format(addMonths(new Date(), expirationDays / 30), 'MMM d, yyyy')}`
                     : 'Key will never expire (not recommended for production)'}
@@ -326,14 +329,14 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                 <Card
                   padding="sm"
                   style={{
-                    backgroundColor: 'var(--red-2)',
-                    borderColor: 'var(--red-6)',
+                    backgroundColor: colors.error[50],
+                    borderColor: colors.border[theme].error,
                     borderWidth: 1,
                   }}
                 >
                   <Row align="center" gap={8}>
-                    <AlertCircle size="lg" color="$red11" />
-                    <Paragraph color="$red11">{error}</Paragraph>
+                    <AlertCircle size="lg" color={colors.fg[theme].error} />
+                    <Paragraph color={colors.fg[theme].error}>{error}</Paragraph>
                   </Row>
                 </Card>
               )}
@@ -343,11 +346,11 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
           <Stack gap={16}>
             {/* Success Header */}
             <Stack align="center" gap={12}>
-              <Card padding="md" style={{ backgroundColor: 'var(--green-3)', borderRadius: 8 }}>
-                <CheckCircle size={48} color="$green11" />
+              <Card padding="md" style={{ backgroundColor: colors.success[100], borderRadius: 8 }}>
+                <CheckCircle size={48} color={colors.fg[theme].success} />
               </Card>
               <H3>API Key Created!</H3>
-              <Paragraph color="$gray11" style={{ textAlign: 'center' }}>
+              <Paragraph color={colors.text[theme].tertiary} style={{ textAlign: 'center' }}>
                 Your API key has been created successfully
               </Paragraph>
             </Stack>
@@ -358,16 +361,16 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
             <Card
               padding="md"
               style={{
-                backgroundColor: 'var(--orange-2)',
-                borderColor: 'var(--orange-6)',
+                backgroundColor: colors.orange[100],
+                borderColor: colors.border[theme].warning,
                 borderWidth: 1,
               }}
             >
               <Row align="flex-start" gap={12}>
-                <AlertCircle size={20} color="$orange11" />
+                <AlertCircle size={20} color={colors.fg[theme].warning} />
                 <Stack flex={1} gap={8}>
-                  <Paragraph color="$orange11">Save Your API Key Now</Paragraph>
-                  <Paragraph size="sm" color="$orange11">
+                  <Paragraph color={colors.fg[theme].warning}>Save Your API Key Now</Paragraph>
+                  <Paragraph size="sm" color={colors.fg[theme].warning}>
                     This is the only time you'll see the full key. Make sure to copy it and store it
                     securely. If you lose it, you'll need to create a new one.
                   </Paragraph>
@@ -378,9 +381,9 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
             {/* API Key Display */}
             <Stack gap={12}>
               <Label>API Key</Label>
-              <Card padding="md" style={{ backgroundColor: 'var(--gray-3)', borderRadius: 16 }}>
+              <Card padding="md" style={{ backgroundColor: colors.bg[theme].muted, borderRadius: 16 }}>
                 <Stack gap={12}>
-                  <Paragraph color="$gray12" style={{ fontFamily: 'monospace' as const }}>
+                  <Paragraph color={colors.text[theme].primary} style={{ fontFamily: 'monospace' as const }}>
                     {createdKey?.key}
                   </Paragraph>
                   <Button
@@ -397,14 +400,14 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
 
             {/* Key Details */}
             <Stack gap={8}>
-              <Paragraph size="sm" color="$gray11">
+              <Paragraph size="sm" color={colors.text[theme].tertiary}>
                 Name
               </Paragraph>
               <Paragraph>{createdKey?.name}</Paragraph>
             </Stack>
 
             <Stack gap={8}>
-              <Paragraph size="sm" color="$gray11">
+              <Paragraph size="sm" color={colors.text[theme].tertiary}>
                 Permissions
               </Paragraph>
               <Row gap={8} wrap>
@@ -413,11 +416,11 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                     key={scope}
                     padding="sm"
                     style={{
-                      backgroundColor: 'var(--blue-3)',
+                      backgroundColor: colors.blue[200],
                       borderRadius: 8,
                     }}
                   >
-                    <Paragraph size="sm" color="$blue11">
+                    <Paragraph size="sm" color={colors.blue[700]}>
                       {scope}
                     </Paragraph>
                   </Card>
@@ -427,10 +430,10 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
 
             {createdKey?.expires_at && (
               <Stack gap={8}>
-                <Paragraph size="sm" color="$gray11">
+                <Paragraph size="sm" color={colors.text[theme].tertiary}>
                   Expires
                 </Paragraph>
-                <Paragraph color="$orange11">
+                <Paragraph color={colors.fg[theme].warning}>
                   {format(new Date(createdKey.expires_at), 'MMM d, yyyy')}
                 </Paragraph>
               </Stack>
@@ -440,17 +443,17 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
             <Card
               padding="md"
               style={{
-                backgroundColor: 'var(--blue-2)',
-                borderColor: 'var(--blue-6)',
+                backgroundColor: colors.blue[100],
+                borderColor: colors.blue[600],
                 borderWidth: 1,
               }}
             >
               <Stack gap={8}>
-                <Paragraph color="$blue11">Next Steps</Paragraph>
-                <Paragraph size="sm" color="$blue11">
+                <Paragraph color={colors.blue[700]}>Next Steps</Paragraph>
+                <Paragraph size="sm" color={colors.blue[700]}>
                   Check out our SDK documentation to learn how to use your API key:
                 </Paragraph>
-                <Paragraph size="sm" color="$blue11" style={{ fontFamily: 'monospace' }}>
+                <Paragraph size="sm" color={colors.blue[700]} style={{ fontFamily: 'monospace' }}>
                   packages/scaffald-sdk/docs/getting-started.md
                 </Paragraph>
               </Stack>
