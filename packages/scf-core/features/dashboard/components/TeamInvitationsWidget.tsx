@@ -5,11 +5,14 @@ import { CheckCircle, Clock, XCircle } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Card, DashboardWidget, DashboardWidgetHeader, Separator, Skeleton, SkeletonBox, SkeletonText, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Card, DashboardWidget, DashboardWidgetHeader, Separator, Skeleton, SkeletonBox, SkeletonText, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 function TeamInvitationsWidgetSkeleton() {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   return (
-    <Card padding="md" borderColor="$borderColor" borderWidth={1} backgroundColor="$color1" style={{ gap: 16 }}>
+    <Card padding="md" style={{ borderColor: colors.border[t].default, borderWidth: 1, backgroundColor: colors.bg[t].default, gap: 16 }}>
       {/* Header */}
       <Row justify="space-between" align="center">
         <Row gap={8} align="center">
@@ -21,7 +24,7 @@ function TeamInvitationsWidgetSkeleton() {
 
       {/* Invitation skeletons */}
       {[0, 1].map((i) => (
-        <Card key={i} padding="md" borderWidth={1} borderColor="$borderColor" backgroundColor="$color1" style={{ gap: 12 }}>
+        <Card key={i} padding="md" style={{ borderWidth: 1, borderColor: colors.border[t].default, backgroundColor: colors.bg[t].default, gap: 12 }}>
           <Row justify="space-between" align="center">
             <SkeletonText lines={2} style={{ flex: 1 }} />
             <Row gap={8} marginLeft={16}>
@@ -50,21 +53,20 @@ export function TeamInvitationList({
   isProcessing = false,
   showEmptyStateDescription = true,
 }: TeamInvitationListProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [pendingId, setPendingId] = useState<string | null>(null)
 
   if (!invitations.length) {
     return (
       <Stack
         gap={8}
-        borderWidth={1}
-        borderColor="$borderColor"
-        borderRadius={16}
+        style={{ borderWidth: 1, borderColor: colors.border[t].default, borderRadius: 16, backgroundColor: colors.bg[t].muted }}
         padding="md"
-        backgroundColor="$color2"
       >
         <Text>No pending invitations</Text>
         {showEmptyStateDescription ? (
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[t].secondary }}>
             You&apos;re all caught up. New invitations will appear here for quick review.
           </Text>
         ) : null}
@@ -89,17 +91,15 @@ export function TeamInvitationList({
             key={invitation.id}
             padding="md"
             borderWidth={1}
-            borderColor="$borderColor"
-            backgroundColor="$color1"
-            style={{ gap: 12 }}
+            style={{ borderColor: colors.border[t].default, backgroundColor: colors.bg[t].default, gap: 12 }}
           >
             <Row justify="space-between" align="center">
               <Stack gap={4} flex={1}>
                 <Text>{teamName}</Text>
-                <Text color="$gray11">{organizationName}</Text>
+                <Text style={{ color: colors.text[t].secondary }}>{organizationName}</Text>
                 <Row gap={8} align="center" marginTop={8}>
-                  <Clock size="md" color="$gray11" />
-                  <Text color="$gray11">
+                  <Clock size="md" color={colors.text[t].tertiary} />
+                  <Text style={{ color: colors.text[t].secondary }}>
                     Sent {sentAt ?? 'recently'}
                     {expiresAt ? ` · Expires ${expiresAt}` : null}
                   </Text>
@@ -151,6 +151,8 @@ export function TeamInvitationList({
 }
 
 export function TeamInvitationsWidget() {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const router = useRouter()
   const toast = useToast()
 
@@ -231,7 +233,7 @@ export function TeamInvitationsWidget() {
       {remainingCount > 0 ? (
         <>
           <Separator />
-          <Text color="$gray11">
+          <Text style={{ color: colors.text[t].secondary }}>
             {remainingCount} more invitation{remainingCount === 1 ? '' : 's'} waiting in your
             inbox.
           </Text>
