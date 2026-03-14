@@ -135,6 +135,82 @@ function truncateLabel(text: string, maxLen: number): string {
   return `${text.slice(0, maxLen - 1)}…`
 }
 
+// --- Capsule Pin Image Generator ---
+
+const CAPSULE_HEIGHT = 28
+const CAPSULE_PADDING_X = 10
+const CAPSULE_FONT = 'bold 12px "DIN Offc Pro", "Inter", system-ui, sans-serif'
+const CAPSULE_SCALE = 2 // retina
+
+/**
+ * Generates a pill/capsule-shaped canvas image for a map pin.
+ * Returns { canvas, width, height } for use with map.addImage().
+ */
+function createCapsulePin(
+  label: string,
+  bgColor: string,
+  textColor = '#ffffff',
+  borderColor = 'rgba(255,255,255,0.9)',
+): { canvas: HTMLCanvasElement; width: number; height: number } {
+  const scale = CAPSULE_SCALE
+  const h = CAPSULE_HEIGHT * scale
+  const padX = CAPSULE_PADDING_X * scale
+  const radius = h / 2
+
+  // Measure text width
+  const measureCanvas = document.createElement('canvas')
+  const measureCtx = measureCanvas.getContext('2d')
+  if (!measureCtx) return { canvas: measureCanvas, width: 0, height: 0 }
+  measureCtx.font = CAPSULE_FONT.replace('12px', `${12 * scale}px`)
+  const textWidth = measureCtx.measureText(label).width
+
+  const w = Math.ceil(textWidth + padX * 2)
+  const totalW = Math.max(w, h) // Ensure at least circular for short labels
+
+  const canvas = document.createElement('canvas')
+  canvas.width = totalW
+  canvas.height = h
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return { canvas, width: totalW, height: h }
+
+  // Draw pill shape with shadow
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.25)'
+  ctx.shadowBlur = 4 * scale
+  ctx.shadowOffsetY = 2 * scale
+
+  ctx.beginPath()
+  ctx.moveTo(radius, 0)
+  ctx.lineTo(totalW - radius, 0)
+  ctx.arc(totalW - radius, radius, radius, -Math.PI / 2, Math.PI / 2)
+  ctx.lineTo(radius, h)
+  ctx.arc(radius, radius, radius, Math.PI / 2, (3 * Math.PI) / 2)
+  ctx.closePath()
+  ctx.fillStyle = bgColor
+  ctx.fill()
+
+  // Border
+  ctx.shadowColor = 'transparent'
+  ctx.lineWidth = 1.5 * scale
+  ctx.strokeStyle = borderColor
+  ctx.stroke()
+
+  // Text
+  ctx.font = CAPSULE_FONT.replace('12px', `${12 * scale}px`)
+  ctx.fillStyle = textColor
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillText(label, totalW / 2, h / 2 + 0.5 * scale)
+
+  return { canvas, width: totalW, height: h }
+}
+
+/**
+ * Generate a unique capsule image ID from pin type and label text.
+ */
+function capsuleImageId(type: MapPinCategory, label: string, theme: string): string {
+  return `capsule-${type}-${theme}-${label.replace(/[^a-zA-Z0-9$/]/g, '_')}`
+}
+
 function ensurePulsingDotImage(map: mapboxgl.Map) {
   if (map.hasImage('pulsing-dot')) {
     map.removeImage('pulsing-dot')
@@ -233,6 +309,7 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
     const markersRef = useRef(new Map<string, mapboxgl.Marker>())
     const avatarImageCacheRef = useRef(new Map<string, { url: string; borderColor: string }>())
     const loadingAvatarIdsRef = useRef(new Set<string>())
+    const capsuleImageCacheRef = useRef(new Set<string>())
     const cardMarkerRef = useRef<mapboxgl.Marker | null>(null)
     const centerMarkerRef = useRef<mapboxgl.Marker | null>(null)
     const [isMapReady, setIsMapReady] = useState(false)
@@ -400,17 +477,17 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
               paint: { 'text-color': '#0f172a' },
             })
 
+            // Capsule pin layer — pill-shaped images with embedded labels
             map.addLayer({
               id: pointLayerId,
-              type: 'circle',
+              type: 'symbol',
               source: sourceId,
-              filter: ['all', ['!', ['has', 'point_count']], ['!', ['has', 'avatarImageId']]],
-              paint: {
-                'circle-color': pinColorsRef.current[type],
-                'circle-radius': type === 'worker' ? 10 : 6,
-                'circle-stroke-width': 2,
-                'circle-stroke-color': '#fff',
-                'circle-emissive-strength': 1,
+              filter: ['all', ['!', ['has', 'point_count']], ['has', 'capsuleImageId'], ['!', ['has', 'avatarImageId']]],
+              layout: {
+                'icon-image': ['get', 'capsuleImageId'],
+                'icon-size': 1,
+                'icon-allow-overlap': true,
+                'icon-anchor': 'center',
               },
             })
 
@@ -430,44 +507,24 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
               })
             }
 
-            // Label layer — score inside worker dots, name/pay below org/job dots
-            map.addLayer(
-              type === 'worker'
-                ? {
-                    id: labelLayerId,
-                    type: 'symbol',
-                    source: sourceId,
-                    filter: ['all', ['!', ['has', 'point_count']], ['!', ['has', 'avatarImageId']], ['has', 'score']],
-                    layout: {
-                      'text-field': ['get', 'score'],
-                      'text-font': ['DIN Offc Pro Bold', 'Arial Unicode MS Bold'],
-                      'text-size': 10,
-                      'text-allow-overlap': true,
-                    },
-                    paint: {
-                      'text-color': '#ffffff',
-                    },
-                  }
-                : {
-                    id: labelLayerId,
-                    type: 'symbol',
-                    source: sourceId,
-                    filter: ['all', ['!', ['has', 'point_count']], ['has', 'label']],
-                    layout: {
-                      'text-field': ['get', 'label'],
-                      'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Regular'],
-                      'text-size': 11,
-                      'text-offset': [0, 1.4],
-                      'text-anchor': 'top',
-                      'text-max-width': 8,
-                    },
-                    paint: {
-                      'text-color': pinColorsRef.current[type],
-                      'text-halo-color': themeMode === 'dark' ? '#1a1a1a' : '#ffffff',
-                      'text-halo-width': 1.5,
-                    },
-                  }
-            )
+            // Fallback label layer for pins without capsule images
+            map.addLayer({
+              id: labelLayerId,
+              type: 'symbol',
+              source: sourceId,
+              filter: ['all', ['!', ['has', 'point_count']], ['!', ['has', 'capsuleImageId']], ['!', ['has', 'avatarImageId']]],
+              layout: {
+                'text-field': type === 'worker' ? ['get', 'score'] : ['get', 'label'],
+                'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Regular'],
+                'text-size': 11,
+                'text-allow-overlap': true,
+              },
+              paint: {
+                'text-color': pinColorsRef.current[type],
+                'text-halo-color': themeMode === 'dark' ? '#1a1a1a' : '#ffffff',
+                'text-halo-width': 1.5,
+              },
+            })
           }
 
           // Register cluster click handlers
@@ -664,17 +721,17 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
           }
 
           if (!map.getLayer(pointLayerId)) {
+            // Capsule pin layer — pill-shaped images with embedded labels
             map.addLayer({
               id: pointLayerId,
-              type: 'circle',
+              type: 'symbol',
               source: sourceId,
-              filter: ['all', ['!', ['has', 'point_count']], ['!', ['has', 'avatarImageId']]],
-              paint: {
-                'circle-color': pinColorsRef.current[type],
-                'circle-radius': type === 'worker' ? 10 : 6,
-                'circle-stroke-width': 2,
-                'circle-stroke-color': '#fff',
-                'circle-emissive-strength': 1,
+              filter: ['all', ['!', ['has', 'point_count']], ['has', 'capsuleImageId'], ['!', ['has', 'avatarImageId']]],
+              layout: {
+                'icon-image': ['get', 'capsuleImageId'],
+                'icon-size': 1,
+                'icon-allow-overlap': true,
+                'icon-anchor': 'center',
               },
             })
           }
@@ -696,45 +753,29 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
           }
 
           if (!map.getLayer(labelLayerId)) {
-            map.addLayer(
-              type === 'worker'
-                ? {
-                    id: labelLayerId,
-                    type: 'symbol',
-                    source: sourceId,
-                    filter: ['all', ['!', ['has', 'point_count']], ['!', ['has', 'avatarImageId']], ['has', 'score']],
-                    layout: {
-                      'text-field': ['get', 'score'],
-                      'text-font': ['DIN Offc Pro Bold', 'Arial Unicode MS Bold'],
-                      'text-size': 10,
-                      'text-allow-overlap': true,
-                    },
-                    paint: {
-                      'text-color': '#ffffff',
-                    },
-                  }
-                : {
-                    id: labelLayerId,
-                    type: 'symbol',
-                    source: sourceId,
-                    filter: ['all', ['!', ['has', 'point_count']], ['has', 'label']],
-                    layout: {
-                      'text-field': ['get', 'label'],
-                      'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Regular'],
-                      'text-size': 11,
-                      'text-offset': [0, 1.4],
-                      'text-anchor': 'top',
-                      'text-max-width': 8,
-                    },
-                    paint: {
-                      'text-color': pinColorsRef.current[type],
-                      'text-halo-color': themeMode === 'dark' ? '#1a1a1a' : '#ffffff',
-                      'text-halo-width': 1.5,
-                    },
-                  }
-            )
+            // Fallback label layer
+            map.addLayer({
+              id: labelLayerId,
+              type: 'symbol',
+              source: sourceId,
+              filter: ['all', ['!', ['has', 'point_count']], ['!', ['has', 'capsuleImageId']], ['!', ['has', 'avatarImageId']]],
+              layout: {
+                'text-field': type === 'worker' ? ['get', 'score'] : ['get', 'label'],
+                'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Regular'],
+                'text-size': 11,
+                'text-allow-overlap': true,
+              },
+              paint: {
+                'text-color': pinColorsRef.current[type],
+                'text-halo-color': themeMode === 'dark' ? '#1a1a1a' : '#ffffff',
+                'text-halo-width': 1.5,
+              },
+            })
           }
         }
+
+        // Clear capsule image cache (images lost on style change)
+        capsuleImageCacheRef.current.clear()
 
         // Re-add pulsing dot
         ensurePulsingDotImage(map)
@@ -878,12 +919,63 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
               if (pin.score != null) {
                 baseProperties.score = String(pin.score)
               }
+              // Worker capsule: show score
+              if (pin.score != null && !pin.avatarUrl) {
+                const capsuleLabel = String(pin.score)
+                const imgId = capsuleImageId(type, capsuleLabel, themeMode)
+                baseProperties.capsuleImageId = imgId
+                if (!capsuleImageCacheRef.current.has(imgId) && !map.hasImage(imgId)) {
+                  const { canvas, width, height } = createCapsulePin(
+                    capsuleLabel,
+                    pinColorsRef.current[type],
+                  )
+                  const ctx = canvas.getContext('2d')
+                  if (ctx) {
+                    try {
+                      map.addImage(imgId, ctx.getImageData(0, 0, width, height), { pixelRatio: CAPSULE_SCALE })
+                      capsuleImageCacheRef.current.add(imgId)
+                    } catch { /* ignore */ }
+                  }
+                }
+              }
             } else if (type === 'organization') {
-              baseProperties.label = truncateLabel(pin.title ?? '', 14)
+              const capsuleLabel = truncateLabel(pin.title ?? '', 14)
+              baseProperties.label = capsuleLabel
+              const imgId = capsuleImageId(type, capsuleLabel, themeMode)
+              baseProperties.capsuleImageId = imgId
+              if (!capsuleImageCacheRef.current.has(imgId) && !map.hasImage(imgId)) {
+                const { canvas, width, height } = createCapsulePin(
+                  capsuleLabel,
+                  pinColorsRef.current[type],
+                )
+                const ctx = canvas.getContext('2d')
+                if (ctx) {
+                  try {
+                    map.addImage(imgId, ctx.getImageData(0, 0, width, height), { pixelRatio: CAPSULE_SCALE })
+                    capsuleImageCacheRef.current.add(imgId)
+                  } catch { /* ignore */ }
+                }
+              }
             } else if (type === 'job') {
-              baseProperties.label = pin.hourlyRate
+              const capsuleLabel = pin.hourlyRate
                 ? `$${pin.hourlyRate}/hr`
                 : truncateLabel(pin.title ?? '', 12)
+              baseProperties.label = capsuleLabel
+              const imgId = capsuleImageId(type, capsuleLabel, themeMode)
+              baseProperties.capsuleImageId = imgId
+              if (!capsuleImageCacheRef.current.has(imgId) && !map.hasImage(imgId)) {
+                const { canvas, width, height } = createCapsulePin(
+                  capsuleLabel,
+                  pinColorsRef.current[type],
+                )
+                const ctx = canvas.getContext('2d')
+                if (ctx) {
+                  try {
+                    map.addImage(imgId, ctx.getImageData(0, 0, width, height), { pixelRatio: CAPSULE_SCALE })
+                    capsuleImageCacheRef.current.add(imgId)
+                  } catch { /* ignore */ }
+                }
+              }
             }
             return {
               type: 'Feature',
@@ -1015,7 +1107,7 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
       } catch (error) {
         logger.error('Error updating markers', error)
       }
-    }, [pins, isMapReady])
+    }, [pins, isMapReady, themeMode])
 
     // --- Handle empty map clicks (deselect) ---
     useEffect(() => {
