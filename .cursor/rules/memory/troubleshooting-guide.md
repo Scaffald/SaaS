@@ -404,7 +404,7 @@ If every backend call to `http://127.0.0.1:54321/functions/v1/api/v1/...` return
   1. In one terminal: `pnpm supa start` (or ensure it’s already running with `pnpm supa status`).
   2. In a second terminal: `pnpm supa:functions` (serves the `api` function and others).
   3. Verify: `curl -s http://127.0.0.1:54321/functions/v1/api/health` should return `{"status":"ok",...}` with HTTP 200.
-- **Forsured (Vite)**: Ensure `VITE_SUPABASE_URL` (e.g. `http://127.0.0.1:54321`) is set so the app uses `/functions/v1/api` as the API base. For Expo/Scaffald, use `EXPO_PUBLIC_SCAFFALD_API_URL=http://127.0.0.1:54321/functions/v1/api` or `EXPO_PUBLIC_SUPABASE_URL` so the SDK appends `/functions/v1/api`.
+- **Web (Vite/other)**: Set `VITE_SUPABASE_URL` (e.g. `http://127.0.0.1:54321`) so the app uses `/functions/v1/api` as the API base. **Scaffald (Expo)** is the supported app; use `EXPO_PUBLIC_SCAFFALD_API_URL=http://127.0.0.1:54321/functions/v1/api` or `EXPO_PUBLIC_SUPABASE_URL` so the SDK appends `/functions/v1/api`.
 
 ### 6. CORS on /v1/prerequisites/check (or other SDK endpoints)
 If you see "No 'Access-Control-Allow-Origin' header" when fetching `http://127.0.0.1:54321/v1/...` from `http://localhost:8081`:
