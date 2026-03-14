@@ -9,7 +9,7 @@
 
 ## Context
 
-We are migrating from tRPC to RESTful API across 58 routers (~400 endpoints) used by 3 client applications (Expo app, Scaffald app, Forsured Web).
+We are migrating from tRPC to RESTful API across 58 routers (~400 endpoints). Scaffald is the supported client app; Forsured Web is deprecated/archived.
 
 **Challenges**:
 1. **Zero Downtime**: Cannot afford service interruption

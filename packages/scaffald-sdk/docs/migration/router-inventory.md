@@ -556,11 +556,9 @@ Each router is scored based on:
 - Skills Multi-Taxonomy (354 LOC, ~6 endpoints)
 - Profile Wizard (247 LOC, ~5 endpoints)
 
-### Forsured-Specific Routers (Decision Pending)
-- 17 routers in `apps/forsured-web/src/server/api/routers/`
-- ~3,000 LOC total
-- ~40 endpoints estimated
-- **Decision**: Migrate to shared REST or keep as tRPC?
+### Forsured-Specific Routers (Archived)
+- Forsured Web is deprecated/archived; Scaffald is the supported app.
+- The 17 routers that were in `apps/forsured-web/src/server/api/routers/` are no longer in active use; migration decision deferred.
 
 ---
 
@@ -625,7 +623,7 @@ Each router is scored based on:
 1. **Large Routers**: 6 routers >3,000 LOC require extra time and testing
 2. **Third-Party Integrations**: Stripe, background checks, ID verification need thorough testing
 3. **Compliance-Critical**: CCPA, background checks, account deletion require legal review
-4. **Forsured-Specific**: Decision needed on whether to migrate or keep tRPC
+4. **Forsured-Specific**: Forsured Web is archived; no active migration for its routers
 5. **Real-Time Features**: Notifications may benefit from WebSocket support in REST
 6. **SDK Enhancements**: Complex routers may require specialized SDK methods
 

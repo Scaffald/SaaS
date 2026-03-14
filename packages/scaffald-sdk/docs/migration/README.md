@@ -25,7 +25,7 @@ This document outlines the strategy for migrating from tRPC to RESTful API acros
 
 **Scope**:
 - **58 tRPC routers** (~44,000 lines of code)
-- **3 client applications** (Expo/React Native, Forsured Web, Scaffald)
+- **Client applications**: Scaffald (Expo/React Native) is the supported app. Forsured Web is deprecated/archived.
 - **~400 API endpoints** to be created
 - **22-week timeline** (5.5 months)
 
@@ -517,9 +517,8 @@ See [MIGRATION-TRACKING.md](../MIGRATION-TRACKING.md#risks--issues) for live ris
 - React: React Query for data fetching
 
 **Client Apps**:
-- Expo/React Native: Metro bundler
-- Forsured Web: Next.js
-- Scaffald: Remix
+- Scaffald (Expo/React Native): Metro bundler — supported app
+- Forsured Web: deprecated/archived
 
 ### B. File Locations
 
@@ -527,8 +526,8 @@ See [MIGRATION-TRACKING.md](../MIGRATION-TRACKING.md#risks--issues) for live ris
 **tRPC**: `packages/supabase/functions/trpc/`
 **SDK**: `packages/scaffald-sdk/`
 **Expo App**: `packages/scf-core/`
-**Forsured Web**: `apps/forsured-web/`
-**Scaffald**: `apps/scaffald/`
+**Scaffald**: `apps/scaffald/` (supported)
+**Forsured Web**: archived; was `apps/forsured-web/`
 
 ### C. Glossary
 

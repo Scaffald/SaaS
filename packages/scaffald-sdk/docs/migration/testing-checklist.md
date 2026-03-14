@@ -54,9 +54,9 @@ This document defines the comprehensive testing requirements for each REST endpo
 **Coverage**: Critical user paths in production-like environment
 
 **Tools**:
-- Expo App: Detox
-- Scaffald: Playwright/Cypress
-- Forsured Web: Playwright/Cypress
+- Scaffald (Expo): Detox
+- Scaffald (web): Playwright/Cypress
+- Forsured Web: archived
 
 **Location**: `packages/supabase/functions/api/__tests__/e2e/`
 
@@ -391,11 +391,8 @@ For **each endpoint**, create tests covering:
    - [ ] Apply to job (quick apply)
    - [ ] Check application status
 
-### Forsured Web
-1. **Employer Workflows**:
-   - [ ] Post new job
-   - [ ] Review applications
-   - [ ] Manage team members
+### Forsured Web (archived)
+Forsured Web is deprecated; no active E2E checklist. Employer workflows are covered by Scaffald app.
 
 ---
 
@@ -501,9 +498,9 @@ pnpm test:watch
 cd apps/scaffald
 pnpm detox test
 
-# Web (Playwright)
-cd apps/forsured-web
-pnpm playwright test
+# Web (Playwright) — use Scaffald web build
+cd apps/scaffald
+pnpm web:build && pnpm playwright test
 ```
 
 ### Test Environment Setup

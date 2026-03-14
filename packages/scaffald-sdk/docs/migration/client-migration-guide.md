@@ -10,9 +10,9 @@
 This guide provides step-by-step instructions for migrating client applications from tRPC to the RESTful API using the `@scaffald/sdk`.
 
 **Affected Apps**:
-1. Expo/React Native App (`packages/scf-core/`)
-2. Scaffald App (`apps/scaffald/`)
-3. Forsured Web App (`apps/forsured-web/`)
+1. Scaffald App (`apps/scaffald/`) — supported (Expo/React Native)
+2. Expo/React Native shared code (`packages/scf-core/`)
+3. Forsured Web — deprecated/archived (was `apps/forsured-web/`)
 
 ---
 
@@ -46,7 +46,7 @@ const data = useREST
 **For all apps**:
 ```bash
 # From monorepo root
-cd packages/scf-core  # or apps/scaffald, apps/forsured-web
+cd packages/scf-core  # or apps/scaffald
 pnpm add @scaffald/sdk@workspace:*
 ```
 

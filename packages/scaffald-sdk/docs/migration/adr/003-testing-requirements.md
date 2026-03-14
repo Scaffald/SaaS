@@ -161,12 +161,12 @@ Deno.test("Magic link signup flow", async () => {
 - ✅ User onboarding (Expo app)
 - ✅ Job search and apply (All apps)
 - ✅ Profile management (Expo app)
-- ✅ Employer workflows (Forsured Web)
+- ✅ Employer workflows (Scaffald; Forsured Web archived)
 
 **Tools**:
 - Expo: Detox (config: `apps/scaffald/.detoxrc.js`)
 - Scaffald: Playwright or Cypress
-- Forsured Web: Playwright or Cypress
+- Web (Scaffald): Playwright or Cypress; Forsured Web archived
 
 **Example Test** (Detox):
 ```typescript
