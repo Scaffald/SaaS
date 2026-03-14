@@ -110,7 +110,8 @@ export class CommunityPosts extends Resource {
   }
 
   async create(params: CreatePostParams): Promise<{ data: CommunityPost }> {
-    return this.post<{ data: CommunityPost }>('/v1/communities/posts', params)
+    const { community_id, ...body } = params
+    return this.post<{ data: CommunityPost }>(`/v1/communities/posts/${community_id}`, body)
   }
 
   async update(postId: string, params: UpdatePostParams): Promise<{ data: CommunityPost }> {

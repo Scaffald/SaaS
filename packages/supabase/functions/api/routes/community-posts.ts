@@ -60,7 +60,7 @@ const createPostSchema = z.object({
   post_type: z.enum(['advice', 'critique', 'showcase']),
   title: z.string().min(1).max(200),
   body: z.string().max(5000).optional(),
-  media_urls: z.array(z.string()).min(1),
+  media_urls: z.array(z.string()).optional().default([]),
   skill_tags: z.array(z.string().uuid()).optional().default([]),
 })
 
@@ -419,9 +419,10 @@ app.openapi(createPostRoute, async (c) => {
     return c.json({ error: 'Must be verified to post. Submit your license for verification.' }, 403)
   }
 
-  // Validate media required
-  if (!body.media_urls || body.media_urls.length === 0) {
-    return c.json({ error: 'At least one media item (photo or video) is required' }, 400)
+  // Validate media required for showcase and critique post types
+  if ((body.post_type === 'showcase' || body.post_type === 'critique') &&
+      (!body.media_urls || body.media_urls.length === 0)) {
+    return c.json({ error: 'At least one media item (photo or video) is required for showcase and critique posts' }, 400)
   }
 
   // Auto-expand skill tags with ancestors
@@ -445,7 +446,7 @@ app.openapi(createPostRoute, async (c) => {
       status: 'draft',
       title: body.title,
       body: body.body || null,
-      media_urls: body.media_urls,
+      media_urls: body.media_urls || [],
       skill_tags: expandedTags,
     })
     .select()
@@ -641,8 +642,9 @@ app.openapi(submitPostRoute, async (c) => {
     return c.json({ error: 'Can only submit draft posts' }, 400)
   }
 
-  if (!existing.media_urls || existing.media_urls.length === 0) {
-    return c.json({ error: 'At least one media item is required' }, 400)
+  if ((existing.post_type === 'showcase' || existing.post_type === 'critique') &&
+      (!existing.media_urls || existing.media_urls.length === 0)) {
+    return c.json({ error: 'At least one media item is required for showcase and critique posts' }, 400)
   }
 
   // AI Moderation stub — auto-approve for now (Phase 3 will implement real moderation)
