@@ -72,6 +72,7 @@ const PIN_SOURCE_CONFIGS: Record<
     clusterCountLayerId: string
     pointLayerId: string
     avatarLayerId?: string
+    labelLayerId: string
     clusterIdOffset: number
   }
 > = {
@@ -81,6 +82,7 @@ const PIN_SOURCE_CONFIGS: Record<
     clusterCountLayerId: 'worker-cluster-count',
     pointLayerId: 'worker-unclustered',
     avatarLayerId: 'worker-avatar-layer',
+    labelLayerId: 'worker-score-label',
     clusterIdOffset: 0,
   },
   organization: {
@@ -88,6 +90,7 @@ const PIN_SOURCE_CONFIGS: Record<
     clusterLayerId: 'organization-clusters',
     clusterCountLayerId: 'organization-cluster-count',
     pointLayerId: 'organization-unclustered',
+    labelLayerId: 'organization-label',
     clusterIdOffset: 1_000_000,
   },
   job: {
@@ -95,6 +98,7 @@ const PIN_SOURCE_CONFIGS: Record<
     clusterLayerId: 'job-clusters',
     clusterCountLayerId: 'job-cluster-count',
     pointLayerId: 'job-unclustered',
+    labelLayerId: 'job-label',
     clusterIdOffset: 2_000_000,
   },
 }
@@ -104,6 +108,7 @@ const pointLayerIds = PIN_TYPE_ORDER.map((type) => PIN_SOURCE_CONFIGS[type].poin
 const avatarLayerIds = PIN_TYPE_ORDER.map((type) => PIN_SOURCE_CONFIGS[type].avatarLayerId).filter(
   (id): id is string => Boolean(id)
 )
+const labelLayerIds = PIN_TYPE_ORDER.map((type) => PIN_SOURCE_CONFIGS[type].labelLayerId)
 const layerToPinType = PIN_TYPE_ORDER.reduce<Record<string, MapPinCategory>>((acc, type) => {
   const config = PIN_SOURCE_CONFIGS[type]
   acc[config.clusterLayerId] = type
@@ -111,6 +116,7 @@ const layerToPinType = PIN_TYPE_ORDER.reduce<Record<string, MapPinCategory>>((ac
   if (config.avatarLayerId) {
     acc[config.avatarLayerId] = type
   }
+  acc[config.labelLayerId] = type
   return acc
 }, {})
 
@@ -123,6 +129,11 @@ const AVATAR_BORDER_WIDTH = 6
 type PinColorMap = Record<MapPinCategory, string>
 
 // --- Helpers ---
+
+function truncateLabel(text: string, maxLen: number): string {
+  if (text.length <= maxLen) return text
+  return `${text.slice(0, maxLen - 1)}…`
+}
 
 function ensurePulsingDotImage(map: mapboxgl.Map) {
   if (map.hasImage('pulsing-dot')) {
@@ -349,7 +360,7 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
 
           // Add sources and layers for each pin type
           for (const type of PIN_TYPE_ORDER) {
-            const { sourceId, clusterLayerId, clusterCountLayerId, pointLayerId, avatarLayerId } =
+            const { sourceId, clusterLayerId, clusterCountLayerId, pointLayerId, avatarLayerId, labelLayerId } =
               PIN_SOURCE_CONFIGS[type]
 
             map.addSource(sourceId, {
@@ -396,7 +407,7 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
               filter: ['all', ['!', ['has', 'point_count']], ['!', ['has', 'avatarImageId']]],
               paint: {
                 'circle-color': pinColorsRef.current[type],
-                'circle-radius': 6,
+                'circle-radius': type === 'worker' ? 10 : 6,
                 'circle-stroke-width': 2,
                 'circle-stroke-color': '#fff',
                 'circle-emissive-strength': 1,
@@ -418,6 +429,45 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
                 },
               })
             }
+
+            // Label layer — score inside worker dots, name/pay below org/job dots
+            map.addLayer(
+              type === 'worker'
+                ? {
+                    id: labelLayerId,
+                    type: 'symbol',
+                    source: sourceId,
+                    filter: ['all', ['!', ['has', 'point_count']], ['!', ['has', 'avatarImageId']], ['has', 'score']],
+                    layout: {
+                      'text-field': ['get', 'score'],
+                      'text-font': ['DIN Offc Pro Bold', 'Arial Unicode MS Bold'],
+                      'text-size': 10,
+                      'text-allow-overlap': true,
+                    },
+                    paint: {
+                      'text-color': '#ffffff',
+                    },
+                  }
+                : {
+                    id: labelLayerId,
+                    type: 'symbol',
+                    source: sourceId,
+                    filter: ['all', ['!', ['has', 'point_count']], ['has', 'label']],
+                    layout: {
+                      'text-field': ['get', 'label'],
+                      'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Regular'],
+                      'text-size': 11,
+                      'text-offset': [0, 1.4],
+                      'text-anchor': 'top',
+                      'text-max-width': 8,
+                    },
+                    paint: {
+                      'text-color': pinColorsRef.current[type],
+                      'text-halo-color': themeMode === 'dark' ? '#1a1a1a' : '#ffffff',
+                      'text-halo-width': 1.5,
+                    },
+                  }
+            )
           }
 
           // Register cluster click handlers
@@ -451,7 +501,7 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
           }
 
           // Register point click/hover handlers
-          const interactivePointLayers = [...pointLayerIds, ...avatarLayerIds]
+          const interactivePointLayers = [...pointLayerIds, ...avatarLayerIds, ...labelLayerIds]
           for (const layerId of interactivePointLayers) {
             map.on('click', layerId, (e) => {
               const pinId = e.features?.[0]?.properties?.id
@@ -567,7 +617,7 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
         applyStandardStyleConfig(map, themeMode, mapStyle)
 
         for (const type of PIN_TYPE_ORDER) {
-          const { sourceId, clusterLayerId, clusterCountLayerId, pointLayerId, avatarLayerId } =
+          const { sourceId, clusterLayerId, clusterCountLayerId, pointLayerId, avatarLayerId, labelLayerId } =
             PIN_SOURCE_CONFIGS[type]
 
           if (!map.getSource(sourceId)) {
@@ -621,7 +671,7 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
               filter: ['all', ['!', ['has', 'point_count']], ['!', ['has', 'avatarImageId']]],
               paint: {
                 'circle-color': pinColorsRef.current[type],
-                'circle-radius': 6,
+                'circle-radius': type === 'worker' ? 10 : 6,
                 'circle-stroke-width': 2,
                 'circle-stroke-color': '#fff',
                 'circle-emissive-strength': 1,
@@ -643,6 +693,46 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
                 'icon-allow-overlap': true,
               },
             })
+          }
+
+          if (!map.getLayer(labelLayerId)) {
+            map.addLayer(
+              type === 'worker'
+                ? {
+                    id: labelLayerId,
+                    type: 'symbol',
+                    source: sourceId,
+                    filter: ['all', ['!', ['has', 'point_count']], ['!', ['has', 'avatarImageId']], ['has', 'score']],
+                    layout: {
+                      'text-field': ['get', 'score'],
+                      'text-font': ['DIN Offc Pro Bold', 'Arial Unicode MS Bold'],
+                      'text-size': 10,
+                      'text-allow-overlap': true,
+                    },
+                    paint: {
+                      'text-color': '#ffffff',
+                    },
+                  }
+                : {
+                    id: labelLayerId,
+                    type: 'symbol',
+                    source: sourceId,
+                    filter: ['all', ['!', ['has', 'point_count']], ['has', 'label']],
+                    layout: {
+                      'text-field': ['get', 'label'],
+                      'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Regular'],
+                      'text-size': 11,
+                      'text-offset': [0, 1.4],
+                      'text-anchor': 'top',
+                      'text-max-width': 8,
+                    },
+                    paint: {
+                      'text-color': pinColorsRef.current[type],
+                      'text-halo-color': themeMode === 'dark' ? '#1a1a1a' : '#ffffff',
+                      'text-halo-width': 1.5,
+                    },
+                  }
+            )
           }
         }
 
@@ -781,8 +871,19 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
               availability: pin.availability,
               organization: pin.organization,
             }
-            if (type === 'worker' && pin.avatarUrl) {
-              baseProperties.avatarImageId = `${AVATAR_IMAGE_PREFIX}-${pin.id}`
+            if (type === 'worker') {
+              if (pin.avatarUrl) {
+                baseProperties.avatarImageId = `${AVATAR_IMAGE_PREFIX}-${pin.id}`
+              }
+              if (pin.score != null) {
+                baseProperties.score = String(pin.score)
+              }
+            } else if (type === 'organization') {
+              baseProperties.label = truncateLabel(pin.title ?? '', 14)
+            } else if (type === 'job') {
+              baseProperties.label = pin.hourlyRate
+                ? `$${pin.hourlyRate}/hr`
+                : truncateLabel(pin.title ?? '', 12)
             }
             return {
               type: 'Feature',
@@ -927,6 +1028,7 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
             ...clusterLayerIds,
             ...pointLayerIds,
             ...avatarLayerIds,
+            ...labelLayerIds,
             'selected-pin-pulse-layer',
             'highlighted-pin-ring-layer',
           ],

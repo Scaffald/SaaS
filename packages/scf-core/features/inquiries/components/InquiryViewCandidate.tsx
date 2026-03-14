@@ -5,7 +5,8 @@ import {
 } from '@scf/core/utils/inquiries-sdk-hooks'
 import { useInquirySubscription } from '@scf/core/utils/supabase/useInquirySubscription'
 import type { InquirySectionName } from '@scf/schemas'
-import { Button, Input, ScrollView, Separator, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Input, ScrollView, Separator, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { Check, ChevronDown, ChevronUp, MessageSquare } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useEffect, useMemo, useState } from 'react'
@@ -34,6 +35,7 @@ interface InquiryViewCandidateProps {
 }
 
 export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCandidateProps) {
+  const { theme } = useThemeContext()
   const toast = useToast()
 
   // Subscribe to real-time updates for this inquiry
@@ -157,7 +159,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
   if (error || !data || !data.inquiry) {
     return (
       <Stack padding="md" align="center" gap={16}>
-        <Text color="$red10">Failed to load inquiry</Text>
+        <Text style={{ color: colors.error[500] }}>Failed to load inquiry</Text>
       </Stack>
     )
   }
@@ -374,7 +376,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
     return (
       <Row justify="space-between" align="center">
         <Text>{label}</Text>
-        <Text color="$gray11">{text}</Text>
+        <Text style={{ color: colors.text[theme].tertiary }}>{text}</Text>
       </Row>
     )
   }
@@ -397,33 +399,33 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
           align="center"
           justify="space-between"
           padding="sm"
-          backgroundColor="$color2"
+          style={{ backgroundColor: colors.bg[theme].subtle }}
           borderRadius={12}
         >
         <Row align="center" gap={8} style={{ flex: 1 }}>
           {isExpanded ? (
-            <ChevronUp size="md" color="$gray11" />
+            <ChevronUp size="md" color={colors.text[theme].tertiary} />
           ) : (
-            <ChevronDown size="md" color="$gray11" />
+            <ChevronDown size="md" color={colors.text[theme].tertiary} />
           )}
           <Text>{title}</Text>
           {isAccepted && (
             <Row
-              backgroundColor="$green3"
+              style={{ backgroundColor: colors.success[100] }}
               paddingHorizontal={8}
               paddingVertical={4}
               borderRadius={8}
               align="center"
               gap={4}
             >
-              <Check size="sm" color="$green11" />
-              <Text color="$green11">Accepted</Text>
+              <Check size="sm" color={colors.success[700]} />
+              <Text style={{ color: colors.success[700] }}>Accepted</Text>
             </Row>
           )}
           {commentCount > 0 && (
             <Row align="center" gap={4}>
-              <MessageSquare size="md" color="$gray11" />
-              <Text color="$gray11">{commentCount}</Text>
+              <MessageSquare size="md" color={colors.text[theme].tertiary} />
+              <Text style={{ color: colors.text[theme].tertiary }}>{commentCount}</Text>
             </Row>
           )}
           </Row>
@@ -433,8 +435,8 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
   }
 
   const NonNegotiableBadge = () => (
-    <Row backgroundColor="$gray3" paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
-      <Text color="$gray11">Non-negotiable</Text>
+    <Row style={{ backgroundColor: colors.bg[theme].muted }} paddingHorizontal={8} paddingVertical={4} borderRadius={8}>
+      <Text style={{ color: colors.text[theme].tertiary }}>Non-negotiable</Text>
     </Row>
   )
 
@@ -442,17 +444,16 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
     <ScrollView>
       <Stack gap={16} padding="md">
         {/* Progress Indicator */}
-          <Stack gap={8} padding="md" backgroundColor="$blue2" borderRadius={16}>
+          <Stack gap={8} padding="md" style={{ backgroundColor: colors.info[50] }} borderRadius={16}>
           <Row justify="space-between" align="center">
             <Text>Inquiry Progress</Text>
-            <Text color="$blue11">
+            <Text style={{ color: colors.info[600] }}>
               {acceptedSections}/{totalSections}
             </Text>
           </Row>
-          <Stack style={{ height: 8, overflow: 'hidden', borderRadius: 10 }} backgroundColor="$color3">
+          <Stack style={{ height: 8, overflow: 'hidden', borderRadius: 10, backgroundColor: colors.bg[theme].muted }}>
             <Stack
-              style={{ height: '100%', width: `${progress}%` }}
-              backgroundColor="$blue9"
+              style={{ height: '100%', width: `${progress}%`, backgroundColor: colors.info[500] }}
             />
           </Stack>
         </Stack>
@@ -469,10 +470,9 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
             <Stack
               gap={8}
               padding="sm"
-              backgroundColor="$background"
+              style={{ backgroundColor: colors.bg[theme].default, borderColor: colors.border[theme].default }}
               borderRadius={12}
               borderWidth={1}
-              borderColor="$borderColor"
             >
               <DetailRow label="Role" value={jobTitleDisplay} />
               <DetailRow label="Organization" value={jobOrganizationName} />
@@ -496,10 +496,9 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
             <Stack
               gap={8}
               padding="sm"
-              backgroundColor="$background"
+              style={{ backgroundColor: colors.bg[theme].default, borderColor: colors.border[theme].default }}
               borderRadius={12}
               borderWidth={1}
-              borderColor="$borderColor"
             >
               {applicationInfo ? (
                 <Stack gap={8}>
@@ -517,7 +516,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                   <DetailRow label="Stage changed" value={stageChangedDisplay} />
                 </Stack>
               ) : (
-                <Text color="$gray11">Application metadata is unavailable.</Text>
+                <Text style={{ color: colors.text[theme].tertiary }}>Application metadata is unavailable.</Text>
               )}
             </Stack>
           )}
@@ -540,10 +539,9 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
             <Stack
               gap={12}
               padding="sm"
-              backgroundColor="$background"
+              style={{ backgroundColor: colors.bg[theme].default, borderColor: colors.border[theme].default }}
               borderRadius={12}
               borderWidth={1}
-              borderColor="$borderColor"
             >
               {/* Employment Terms */}
               <Stack gap={8}>
@@ -638,12 +636,11 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               {sections.find((s) => s.section_name === 'employment')?.accepted_by && (
                 <Stack
                   padding="sm"
-                  backgroundColor="$green2"
+                  style={{ backgroundColor: colors.success[50], borderColor: colors.border[theme].success }}
                   borderRadius={12}
                   borderWidth={1}
-                  borderColor="$green9"
                 >
-                  <Text color="$green11">
+                  <Text style={{ color: colors.success[700] }}>
                     ✓ You accepted the employment terms on{' '}
                     {formatDate(sections.find((s) => s.section_name === 'employment')?.accepted_at)}
                   </Text>
@@ -667,10 +664,9 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
             <Stack
               gap={12}
               padding="sm"
-              backgroundColor="$background"
+              style={{ backgroundColor: colors.bg[theme].default, borderColor: colors.border[theme].default }}
               borderRadius={12}
               borderWidth={1}
-              borderColor="$borderColor"
             >
               {/* Rate Display */}
               <Row justify="space-between" align="center">
@@ -707,12 +703,11 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               {sections.find((s) => s.section_name === 'compensation')?.accepted_by && (
                 <Stack
                   padding="sm"
-                  backgroundColor="$green2"
+                  style={{ backgroundColor: colors.success[50], borderColor: colors.border[theme].success }}
                   borderRadius={12}
                   borderWidth={1}
-                  borderColor="$green9"
                 >
-                  <Text color="$green11">
+                  <Text style={{ color: colors.success[700] }}>
                     ✓ You accepted the compensation terms on{' '}
                     {formatDate(
                       sections.find((s) => s.section_name === 'compensation')?.accepted_at
@@ -738,10 +733,9 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
             <Stack
               gap={12}
               padding="sm"
-              backgroundColor="$background"
+              style={{ backgroundColor: colors.bg[theme].default, borderColor: colors.border[theme].default }}
               borderRadius={12}
               borderWidth={1}
-              borderColor="$borderColor"
             >
               {/* Endurance Requirement */}
               {inv.endurance_required && (
@@ -834,12 +828,11 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               {sections.find((s) => s.section_name === 'capabilities')?.accepted_by && (
                 <Stack
                   padding="sm"
-                  backgroundColor="$green2"
+                  style={{ backgroundColor: colors.success[50], borderColor: colors.border[theme].success }}
                   borderRadius={12}
                   borderWidth={1}
-                  borderColor="$green9"
                 >
-                  <Text color="$green11">
+                  <Text style={{ color: colors.success[700] }}>
                     ✓ You accepted the capabilities terms on{' '}
                     {formatDate(
                       sections.find((s) => s.section_name === 'capabilities')?.accepted_at
@@ -863,10 +856,9 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
             <Stack
               gap={12}
               padding="sm"
-              backgroundColor="$background"
+              style={{ backgroundColor: colors.bg[theme].default, borderColor: colors.border[theme].default }}
               borderRadius={12}
               borderWidth={1}
-              borderColor="$borderColor"
             >
               {/* Other Terms */}
               <Stack gap={8}>
@@ -895,7 +887,7 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
                 {inv.additional_notes && (
                   <Stack gap={8}>
                     <Text>Additional notes</Text>
-                    <Text color="$gray11">{inv.additional_notes}</Text>
+                    <Text style={{ color: colors.text[theme].tertiary }}>{inv.additional_notes}</Text>
                   </Stack>
                 )}
               </Stack>
@@ -924,12 +916,11 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               {sections.find((s) => s.section_name === 'other')?.accepted_by && (
                 <Stack
                   padding="sm"
-                  backgroundColor="$green2"
+                  style={{ backgroundColor: colors.success[50], borderColor: colors.border[theme].success }}
                   borderRadius={12}
                   borderWidth={1}
-                  borderColor="$green9"
                 >
-                  <Text color="$green11">
+                  <Text style={{ color: colors.success[700] }}>
                     ✓ You accepted the other terms on{' '}
                     {formatDate(sections.find((s) => s.section_name === 'other')?.accepted_at)}
                   </Text>

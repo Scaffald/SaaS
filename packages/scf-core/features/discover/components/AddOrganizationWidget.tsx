@@ -2,7 +2,8 @@ import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useEmployers } from '@scf/core/utils/employers-sdk-hooks'
 import { useCreateOrganizationRequestMutation } from '@scf/core/utils/organizations-sdk-hooks'
 import { useDebounce } from '@scf/core/utils/useDebounce'
-import { DashboardWidget } from '@scaffald/ui'
+import { DashboardWidget, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import {
   AlertTriangle,
   ArrowRight,
@@ -26,6 +27,8 @@ const MIN_QUERY_LENGTH = 2
 export function AddOrganizationWidget() {
   const router = useRouter()
   const toast = useToast()
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [organizationName, setOrganizationName] = useState('')
   const debouncedQuery = useDebounce(organizationName, 300)
   const trimmedQuery = debouncedQuery.trim()
@@ -110,17 +113,17 @@ export function AddOrganizationWidget() {
     <DashboardWidget gap={16}>
       <Stack gap={8}>
         <Row gap={8} align="center">
-          <Building2 size={getIconSize('lg')} color="$blue10" />
-          <Text color="$gray11">Add an Organization</Text>
+          <Building2 size={getIconSize('lg')} color={colors.fg[t].active} />
+          <Text style={{ color: colors.text[t].secondary }}>Add an Organization</Text>
         </Row>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[t].secondary }}>
           Enter the organization name to check if we already have it. You can continue to the
           creation flow once we confirm it&apos;s new.
         </Text>
       </Stack>
 
       <Stack gap={8}>
-        <Label htmlFor="add-organization-name" color="$gray11">
+        <Label htmlFor="add-organization-name" style={{ color: colors.text[t].secondary }}>
           Organization Name
         </Label>
         <Input
@@ -149,8 +152,8 @@ export function AddOrganizationWidget() {
         />
       ) : isFetching || isLoading ? (
         <Row gap={8} align="center">
-          <Loader2 size={getIconSize('md')} color="$blue10" />
-          <Text color="$gray11">Checking for existing organizations...</Text>
+          <Loader2 size={getIconSize('md')} color={colors.fg[t].active} />
+          <Text style={{ color: colors.text[t].secondary }}>Checking for existing organizations...</Text>
         </Row>
       ) : (
         <StatusSummary
@@ -170,8 +173,8 @@ export function AddOrganizationWidget() {
       >
         {isSubmitting ? (
           <Row gap={8} align="center">
-            <Loader2 size={getIconSize('md')} color="$gray11" />
-            <Text color="$gray11">Submitting...</Text>
+            <Loader2 size={getIconSize('md')} color={colors.text[t].secondary} />
+            <Text style={{ color: colors.text[t].secondary }}>Submitting...</Text>
           </Row>
         ) : submittedRequest ? (
           'Request Submitted'
@@ -196,9 +199,11 @@ function StatusSummary({
   matchingEmployers,
   candidateSlug,
 }: StatusSummaryProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   if (!isQueryReady) {
     return (
-      <Text color="$gray11">
+      <Text style={{ color: colors.text[t].secondary }}>
         Enter at least {MIN_QUERY_LENGTH} characters to check for duplicates.
       </Text>
     )
@@ -208,15 +213,15 @@ function StatusSummary({
     return (
       <Stack gap={12}>
         <Row gap={8} align="center">
-          <AlertTriangle size={getIconSize('md')} color="$yellow10" />
-          <Text color="$yellow10">We found existing organizations that match your search.</Text>
+          <AlertTriangle size={getIconSize('md')} color={colors.fg[t].warning} />
+          <Text style={{ color: colors.fg[t].warning }}>We found existing organizations that match your search.</Text>
         </Row>
         <Stack gap={8}>
           {matchingEmployers.map((employer) => (
             <DuplicateLink key={employer.id} id={employer.id} name={employer.name || 'Unknown'} />
           ))}
         </Stack>
-        <Text color="$gray11">Review the existing organization before creating a new one.</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Review the existing organization before creating a new one.</Text>
       </Stack>
     )
   }
@@ -224,10 +229,10 @@ function StatusSummary({
   return (
     <Stack gap={8}>
       <Row gap={8} align="center">
-        <CheckCircle2 size={getIconSize('md')} color="$green10" />
-        <Text color="$green10">This name looks available.</Text>
+        <CheckCircle2 size={getIconSize('md')} color={colors.fg[t].success} />
+        <Text style={{ color: colors.fg[t].success }}>This name looks available.</Text>
       </Row>
-      <Text color="$gray11">
+      <Text style={{ color: colors.text[t].secondary }}>
         We&apos;ll use the slug <Text>{candidateSlug}</Text> when you create the organization.
       </Text>
     </Stack>
@@ -241,6 +246,8 @@ type DuplicateLinkProps = {
 
 function DuplicateLink({ id, name }: DuplicateLinkProps) {
   const router = useRouter()
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
 
   return (
     <Button
@@ -250,7 +257,7 @@ function DuplicateLink({ id, name }: DuplicateLinkProps) {
       iconEnd={ArrowRight}
     >
       <Stack flex={1}>
-        <Text color="$gray11">{name}</Text>
+        <Text style={{ color: colors.text[t].secondary }}>{name}</Text>
       </Stack>
     </Button>
   )
@@ -267,13 +274,15 @@ type SubmissionSummaryProps = {
 }
 
 function SubmissionSummary({ request, onAddDetails }: SubmissionSummaryProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   return (
     <Stack gap={8}>
       <Row gap={8} align="center">
-        <CheckCircle2 size={getIconSize('md')} color="$green10" />
-        <Text color="$green10">Request submitted for {request.name}</Text>
+        <CheckCircle2 size={getIconSize('md')} color={colors.fg[t].success} />
+        <Text style={{ color: colors.fg[t].success }}>Request submitted for {request.name}</Text>
       </Row>
-      <Text color="$gray11">
+      <Text style={{ color: colors.text[t].secondary }}>
         We&apos;ll review <Text>{request.slug}</Text> and notify you once it&apos;s approved. You
         can keep browsing employers while we take a look.
       </Text>

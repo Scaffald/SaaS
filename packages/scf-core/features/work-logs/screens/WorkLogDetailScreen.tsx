@@ -308,7 +308,7 @@ export function WorkLogDetailScreen() {
     return (
       <Stack flex={1} justify="center" align="center" gap={12}>
         <Spinner size="lg" />
-        <Text color="$gray11">Loading work log…</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>Loading work log…</Text>
       </Stack>
     );
   }
@@ -317,7 +317,7 @@ export function WorkLogDetailScreen() {
     return (
       <Stack flex={1} justify="center" align="center" gap={12} padding="md">
         <Text>Work log not found</Text>
-        <Paragraph color="$gray11" style={{ textAlign: "center" }}>
+        <Paragraph style={{ color: colors.text[theme].secondary, textAlign: "center" }}>
           This work log may have been deleted or you no longer have access.
         </Paragraph>
         <Button
@@ -437,7 +437,7 @@ export function WorkLogDetailScreen() {
           <Row justify="space-between" align="center">
             <Stack gap={4} flex={1}>
               <Text>{project?.name ?? "Work Log"}</Text>
-              <Text color="$gray11">
+              <Text style={{ color: colors.text[theme].secondary }}>
                 Logged{" "}
                 {workLog.log_date
                   ? formatDate(workLog.log_date)
@@ -458,7 +458,7 @@ export function WorkLogDetailScreen() {
           </Text>
         </Stack>
 
-        <Card borderColor="$color6" borderWidth={1}>
+        <Card style={{ borderColor: colors.border[theme].default, borderWidth: 1 }}>
           <Stack gap={12} padding="sm">
             <Text>Summary</Text>
             <Row gap={16} wrap>
@@ -481,21 +481,21 @@ export function WorkLogDetailScreen() {
             <Separator />
             <Stack gap={8}>
               <Text>Description</Text>
-              <Paragraph color="$gray11">
+              <Paragraph style={{ color: colors.text[theme].secondary }}>
                 {workLog.work_description || "No description provided."}
               </Paragraph>
             </Stack>
           </Stack>
         </Card>
 
-        <Card borderColor="$color6" borderWidth={1}>
+        <Card style={{ borderColor: colors.border[theme].default, borderWidth: 1 }}>
           <Stack gap={12} padding="sm">
             <Text>Profile visibility</Text>
-            <Paragraph color="$gray11">
+            <Paragraph style={{ color: colors.text[theme].secondary }}>
               Control how this work log appears on your public profile.
             </Paragraph>
             {!isVerified && (
-              <Paragraph color="$orange10">
+              <Paragraph style={{ color: theme === 'dark' ? colors.yellow[300] : colors.yellow[600] }}>
                 This work log must be verified before it can be shared publicly.
               </Paragraph>
             )}
@@ -503,7 +503,7 @@ export function WorkLogDetailScreen() {
               <Row justify="space-between" align="center" gap={16}>
                 <Stack gap={4} flex={1}>
                   <Text>Show on public profile</Text>
-                  <Paragraph color="$gray11">
+                  <Paragraph style={{ color: colors.text[theme].secondary }}>
                     Display this work log on your public profile. Only verified
                     work is eligible.
                   </Paragraph>
@@ -518,7 +518,7 @@ export function WorkLogDetailScreen() {
               <Row justify="space-between" align="center" gap={16}>
                 <Stack gap={4} flex={1}>
                   <Text>Show date on profile</Text>
-                  <Paragraph color="$gray11">
+                  <Paragraph style={{ color: colors.text[theme].secondary }}>
                     When enabled, the logged date is shown on your public
                     profile.
                   </Paragraph>
@@ -533,7 +533,7 @@ export function WorkLogDetailScreen() {
               <Row justify="space-between" align="center">
                 <Stack gap={4}>
                   <Text>Verification status</Text>
-                  <Paragraph color="$gray11">
+                  <Paragraph style={{ color: colors.text[theme].secondary }}>
                     {isVerified
                       ? 'Verified entries display a "Verified by Scaffald" badge on your public profile.'
                       : "Awaiting verification. Visibility controls unlock once this log is verified."}
@@ -559,7 +559,7 @@ export function WorkLogDetailScreen() {
               <Row justify="space-between" align="center">
                 <Stack gap={4}>
                   <Text>Current visibility</Text>
-                  <Paragraph color="$gray11">
+                  <Paragraph style={{ color: colors.text[theme].secondary }}>
                     {isPublicVisibility
                       ? "This work log is set to public visibility."
                       : "This work log is currently private."}
@@ -570,18 +570,18 @@ export function WorkLogDetailScreen() {
           </Stack>
         </Card>
 
-        <Card borderColor="$color6" borderWidth={1}>
+        <Card style={{ borderColor: colors.border[theme].default, borderWidth: 1 }}>
           <Stack gap={12} padding="sm">
             <Text>Time entries</Text>
             <Stack gap={8}>
               {timeEntryItems.length === 0 ? (
-                <Paragraph color="$gray11">No time entries recorded.</Paragraph>
+                <Paragraph style={{ color: colors.text[theme].secondary }}>No time entries recorded.</Paragraph>
               ) : (
                 timeEntryItems.map((entry) => (
                   <Row
                     key={entry.key}
                     justify="space-between"
-                    backgroundColor="$color3"
+                    style={{ backgroundColor: colors.bg[theme].muted }}
                     paddingHorizontal={12}
                     paddingVertical={8}
                     borderRadius={16}
@@ -589,7 +589,7 @@ export function WorkLogDetailScreen() {
                     <Text>
                       {entry.start}–{entry.end}
                     </Text>
-                    <Text color="$gray11">
+                    <Text style={{ color: colors.text[theme].secondary }}>
                       {computeEntryHours(entry.start, entry.end)}h
                     </Text>
                   </Row>
@@ -599,11 +599,11 @@ export function WorkLogDetailScreen() {
           </Stack>
         </Card>
 
-        <Card borderColor="$color6" borderWidth={1}>
+        <Card style={{ borderColor: colors.border[theme].default, borderWidth: 1 }}>
           <Stack gap={12} padding="sm">
             <Text>Tasks completed</Text>
             {taskItems.length === 0 ? (
-              <Paragraph color="$gray11">
+              <Paragraph style={{ color: colors.text[theme].secondary }}>
                 No tasks recorded for this entry.
               </Paragraph>
             ) : (
@@ -611,7 +611,7 @@ export function WorkLogDetailScreen() {
                 {taskItems.map((task) => (
                   <Row
                     key={task.key}
-                    backgroundColor="$color3"
+                    style={{ backgroundColor: colors.bg[theme].muted }}
                     paddingHorizontal={12}
                     paddingVertical={8}
                     borderRadius={16}
@@ -624,7 +624,7 @@ export function WorkLogDetailScreen() {
             <Separator />
             <Text>Skills used</Text>
             {skillNames.length === 0 ? (
-              <Paragraph color="$gray11">
+              <Paragraph style={{ color: colors.text[theme].secondary }}>
                 No skills associated with this log.
               </Paragraph>
             ) : (
@@ -648,7 +648,7 @@ export function WorkLogDetailScreen() {
         </Card>
 
         {photos.length > 0 && (
-          <Card borderColor="$color6" borderWidth={1}>
+          <Card style={{ borderColor: colors.border[theme].default, borderWidth: 1 }}>
             <Stack gap={12} padding="sm">
               <Text>Photos</Text>
               <PhotoGallery
@@ -684,7 +684,7 @@ export function WorkLogDetailScreen() {
           </Card>
         )}
 
-        <Card borderColor="$color6" borderWidth={1}>
+        <Card style={{ borderColor: colors.border[theme].default, borderWidth: 1 }}>
           <Stack gap={12} padding="sm">
             <Row justify="space-between" align="center">
               <Text>Collaborators</Text>
@@ -697,13 +697,13 @@ export function WorkLogDetailScreen() {
                 Refresh
               </Button>
             </Row>
-            <Paragraph color="$gray11">
+            <Paragraph style={{ color: colors.text[theme].secondary }}>
               Share this work log with teammates to give them edit or view
               access.
             </Paragraph>
             <Stack gap={8}>
               {collaborators.length === 0 ? (
-                <Paragraph color="$gray11">No collaborators yet.</Paragraph>
+                <Paragraph style={{ color: colors.text[theme].secondary }}>No collaborators yet.</Paragraph>
               ) : (
                 collaborators.map((collaborator) => (
                   <CollaboratorRow
@@ -763,7 +763,7 @@ export function WorkLogDetailScreen() {
           </Stack>
         </Card>
 
-        <Card borderColor="$color6" borderWidth={1}>
+        <Card style={{ borderColor: colors.border[theme].default, borderWidth: 1 }}>
           <Stack gap={12} padding="sm">
             <Row justify="space-between" align="center">
               <Text>Conversation</Text>
@@ -778,7 +778,7 @@ export function WorkLogDetailScreen() {
             </Row>
             <Stack gap={12}>
               {conversation.length === 0 ? (
-                <Paragraph color="$gray11">
+                <Paragraph style={{ color: colors.text[theme].secondary }}>
                   No messages yet. Start the conversation to give additional
                   context.
                 </Paragraph>
@@ -813,10 +813,10 @@ export function WorkLogDetailScreen() {
           </Stack>
         </Card>
 
-        <Card borderColor="$color6" borderWidth={1}>
+        <Card style={{ borderColor: colors.border[theme].default, borderWidth: 1 }}>
           <Stack gap={12} padding="sm">
             <Text>Exports</Text>
-            <Paragraph color="$gray11">
+            <Paragraph style={{ color: colors.text[theme].secondary }}>
               Generate a shareable export for reporting or offline records.
               Links expire after ten minutes.
             </Paragraph>
@@ -873,19 +873,20 @@ function SummaryMetric({
   label,
   value,
 }: SummaryMetricProps) {
+  const { theme } = useThemeContext();
   return (
     <Row
-      backgroundColor="$color3"
+      style={{ backgroundColor: colors.bg[theme].muted }}
       paddingHorizontal={12}
       paddingVertical={8}
       borderRadius={16}
       gap={8}
       align="center"
     >
-      <IconComponent size="md" color="currentColor" />
+      <IconComponent size="md" color={colors.icon[theme].default} />
       <Stack gap={4}>
         <Text>{value}</Text>
-        <Text color="$gray11">{label}</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>{label}</Text>
       </Stack>
     </Row>
   );
@@ -904,6 +905,7 @@ function CollaboratorRow({
   onTogglePermission,
   onRemove,
 }: CollaboratorRowProps) {
+  const { theme } = useThemeContext();
   const displayName =
     (collaborator?.user?.display_name as string) ??
     (collaborator?.user?.username as string) ??
@@ -912,10 +914,10 @@ function CollaboratorRow({
   const permission = collaborator.permission_level ?? "view";
 
   return (
-    <Card borderWidth={1} borderColor="$color6">
+    <Card style={{ borderWidth: 1, borderColor: colors.border[theme].default }}>
       <Stack gap={8} padding="sm">
         <Text>{displayName}</Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           Permission: {permission === "edit" ? "Can edit" : "View only"}
         </Text>
         <Row gap={8}>
@@ -944,22 +946,23 @@ function CollaboratorRow({
 
 interface ConversationEntryProps {
   entry: ConversationEntryRecord;
-  currentUserId: string;
 }
 
-function ConversationEntry({ entry, currentUserId }: ConversationEntryProps) {
+function ConversationEntry({ entry }: ConversationEntryProps) {
+  const { theme } = useThemeContext();
   const authorName =
     (entry.user?.display_name as string) ??
     (entry.user?.username as string) ??
     "Collaborator";
-  const isOwner = entry.user_id === currentUserId;
   const isSystemMessage = entry.is_system_message === true;
 
   return (
     <Stack
-      backgroundColor={
-        isSystemMessage ? "$color4" : isOwner ? "$color3" : "$color2"
-      }
+      style={{
+        backgroundColor: isSystemMessage
+          ? colors.bg[theme].subtle
+          : colors.bg[theme].muted,
+      }}
       paddingHorizontal={12}
       paddingVertical={8}
       borderRadius={16}
@@ -967,7 +970,7 @@ function ConversationEntry({ entry, currentUserId }: ConversationEntryProps) {
     >
       <Row justify="space-between">
         <Text>{authorName}</Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[theme].secondary }}>
           {entry.created_at ? formatDate(entry.created_at) : ""}
         </Text>
       </Row>

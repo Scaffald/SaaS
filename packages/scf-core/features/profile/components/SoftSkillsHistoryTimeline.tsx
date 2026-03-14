@@ -1,8 +1,9 @@
 import { useSoftSkillsHistory, useSoftSkills } from '@scf/core/utils/profile-skills-sdk-hooks'
 import { Calendar, TrendingUp } from 'lucide-react-native'
-import { Button } from '@scaffald/ui'
+import { Button, useThemeContext } from '@scaffald/ui'
 import { useMemo, useState, type FC } from 'react'
 import { ScrollView, Separator, Spinner, Text, Row, Stack } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import type { SoftSkillCategory } from './SoftSkillsCategoryTabs'
 
 interface SoftSkillsHistoryTimelineProps {
@@ -16,6 +17,8 @@ interface SoftSkillsHistoryTimelineProps {
  * the ability to view radar charts and compare versions.
  */
 export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ userId }) => {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [selectedVersion, setSelectedVersion] = useState<number | null>(null)
 
   // Fetch version history
@@ -119,7 +122,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
     return (
       <Stack gap={16} align="center" justify="center" padding="md">
         <Spinner size="lg" color="primary" />
-        <Text color="$gray11">Loading version history...</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Loading version history...</Text>
       </Stack>
     )
   }
@@ -127,8 +130,8 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
   if (error) {
     return (
       <Stack gap={8} padding="md">
-        <Text color="$red11">Error loading history</Text>
-        <Text color="$gray11">{error.message || 'Failed to load version history'}</Text>
+        <Text style={{ color: colors.text[t].error }}>Error loading history</Text>
+        <Text style={{ color: colors.text[t].secondary }}>{error.message || 'Failed to load version history'}</Text>
       </Stack>
     )
   }
@@ -136,8 +139,8 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
   if (versions.length === 0) {
     return (
       <Stack gap={8} padding="md" align="center">
-        <Text color="$gray11">No History Yet</Text>
-        <Text color="$gray11" style={{ textAlign: 'center' }}>
+        <Text style={{ color: colors.text[t].secondary }}>No History Yet</Text>
+        <Text style={{ color: colors.text[t].secondary, textAlign: 'center' }}>
           Complete your first soft skills assessment to start tracking your progress over time.
         </Text>
       </Stack>
@@ -147,31 +150,30 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
   if (versions.length === 1) {
     return (
       <Stack gap={12} padding="md">
-        <Text color="$gray11">Assessment History</Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[t].secondary }}>Assessment History</Text>
+        <Text style={{ color: colors.text[t].secondary }}>
           This is your first assessment. Complete another assessment to see progression tracking.
         </Text>
         <Stack
           gap={8}
           padding="sm"
-          backgroundColor="$blue2"
           borderRadius={12}
           borderWidth={1}
-          borderColor="$blue7"
+          style={{ backgroundColor: colors.bg[t].info, borderColor: colors.border[t].info }}
         >
           <Row gap={8} align="center">
-            <Calendar size="md" color="$blue10" />
-            <Text color="$blue11">Version {versions[0].version}</Text>
+            <Calendar size="md" color={colors.fg[t].info} />
+            <Text style={{ color: colors.text[t].info }}>Version {versions[0].version}</Text>
             {versions[0].selfAssessedAt && (
-              <Text color="$blue10">• {formatDate(versions[0].selfAssessedAt)}</Text>
+              <Text style={{ color: colors.fg[t].info }}>• {formatDate(versions[0].selfAssessedAt)}</Text>
             )}
           </Row>
           {currentVersionData && (
             <Stack gap={8}>
               {currentVersionData.map((item) => (
                 <Row key={item.label} gap={8} align="center" justify="space-between">
-                  <Text color="$blue11">{item.label}</Text>
-                  <Text color="$blue11">{item.value}</Text>
+                  <Text style={{ color: colors.text[t].info }}>{item.label}</Text>
+                  <Text style={{ color: colors.text[t].info }}>{item.value}</Text>
                 </Row>
               ))}
             </Stack>
@@ -184,8 +186,8 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
   return (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
       <Stack gap={16} padding="md">
-        <Text color="$gray11">Assessment History</Text>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[t].secondary }}>Assessment History</Text>
+        <Text style={{ color: colors.text[t].secondary }}>
           View your soft skills assessments over time and track your progress.
         </Text>
 
@@ -206,10 +208,12 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                   <Stack
                     gap={12}
                     padding="md"
-                    backgroundColor={isSelected ? '$blue2' : isCurrent ? '$green2' : '$color2'}
+                    style={{
+                      backgroundColor: isSelected ? colors.bg[t].info : isCurrent ? colors.bg[t].success : colors.bg[t].muted,
+                      borderColor: isSelected ? colors.border[t].info : isCurrent ? colors.border[t].success : colors.border[t].default,
+                    }}
                     borderRadius={16}
                     borderWidth={2}
-                    borderColor={isSelected ? '$blue9' : isCurrent ? '$green9' : '$borderColor'}
                   >
                     <Row align="center" justify="space-between" wrap gap={8}>
                       <Row gap={12} align="center">
@@ -217,18 +221,18 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                           width={40}
                           height={40}
                           borderRadius={12}
-                          backgroundColor={isCurrent ? '$green9' : '$blue9'}
+                          style={{ backgroundColor: isCurrent ? colors.fg[t].success : colors.fg[t].info }}
                           align="center"
                           justify="center"
                         >
-                          <Text color="$gray11">V{version.version}</Text>
+                          <Text style={{ color: colors.text[t].inverse }}>V{version.version}</Text>
                         </Stack>
                         <Stack gap={4}>
                           <Row gap={8} align="center">
-                            <Text color="$gray11">
+                            <Text style={{ color: colors.text[t].secondary }}>
                               Version {version.version}
                               {isCurrent && (
-                                <Text color="$green11" style={{ marginLeft: 8 }}>
+                                <Text style={{ color: colors.text[t].success, marginLeft: 8 }}>
                                   (Current)
                                 </Text>
                               )}
@@ -236,8 +240,8 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                           </Row>
                           {version.selfAssessedAt && (
                             <Row gap={8} align="center">
-                              <Calendar size="md" color="$gray11" />
-                              <Text color="$gray11">
+                              <Calendar size="md" color={colors.icon[t].secondary} />
+                              <Text style={{ color: colors.text[t].secondary }}>
                                 {formatDate(version.selfAssessedAt)}
                                 {daysAgo && ` • ${daysAgo}`}
                               </Text>
@@ -245,17 +249,17 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                           )}
                         </Stack>
                       </Row>
-                      {isSelected && <TrendingUp size="lg" color="$blue10" />}
+                      {isSelected && <TrendingUp size="lg" color={colors.fg[t].info} />}
                     </Row>
 
                     {/* Category Averages */}
                     <Row gap={12} wrap>
                       {Object.entries(version.categoryAverages).map(([category, average]) => (
                         <Stack key={category} gap={4} style={{ minWidth: 120 }}>
-                          <Text color="$gray11" style={{ textTransform: 'capitalize' }}>
+                          <Text style={{ color: colors.text[t].secondary, textTransform: 'capitalize' }}>
                             {category}
                           </Text>
-                          <Text color="$gray11">{average.toFixed(1)}/5</Text>
+                          <Text style={{ color: colors.text[t].secondary }}>{average.toFixed(1)}/5</Text>
                         </Stack>
                       ))}
                     </Row>
@@ -265,12 +269,12 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                       <>
                         <Separator />
                         <Stack gap={8} align="center">
-                          <Text color="$blue11">Version {version.version} Radar Chart</Text>
+                          <Text style={{ color: colors.text[t].info }}>Version {version.version} Radar Chart</Text>
                           <Stack gap={8}>
                             {selectedVersionData.map((item) => (
                               <Row key={item.label} gap={8} align="center" justify="space-between">
-                                <Text color="$blue11">{item.label}</Text>
-                                <Text color="$blue11">{item.value}</Text>
+                                <Text style={{ color: colors.text[t].info }}>{item.label}</Text>
+                                <Text style={{ color: colors.text[t].info }}>{item.value}</Text>
                               </Row>
                             ))}
                           </Stack>
@@ -283,7 +287,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                       <>
                         <Separator />
                         <Stack gap={12} align="center">
-                          <Text color="$gray11">
+                          <Text style={{ color: colors.text[t].secondary }}>
                             Comparison: Version {version.version} vs Current (Version{' '}
                             {currentVersion})
                           </Text>
@@ -293,10 +297,10 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                               <Stack gap={8}>
                                 {selectedVersionData.map((item, i) => (
                                   <Row key={item.label} gap={8} align="center" justify="space-between">
-                                    <Text color="$blue11">{item.label}</Text>
+                                    <Text style={{ color: colors.text[t].info }}>{item.label}</Text>
                                     <Row gap={8}>
-                                      <Text color="$blue9">V{version.version}: {item.value}</Text>
-                                      <Text color="$green9">Current: {currentVersionData[i]?.value ?? '-'}</Text>
+                                      <Text style={{ color: colors.fg[t].info }}>V{version.version}: {item.value}</Text>
+                                      <Text style={{ color: colors.fg[t].success }}>Current: {currentVersionData[i]?.value ?? '-'}</Text>
                                     </Row>
                                   </Row>
                                 ))}
@@ -307,12 +311,12 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                           {/* Legend */}
                           <Row gap={16} align="center" justify="center" paddingVertical={8}>
                             <Row gap={8} align="center">
-                              <Stack width={20} height={3} backgroundColor="$blue9" />
-                              <Text color="$gray11">Version {version.version}</Text>
+                              <Stack width={20} height={3} style={{ backgroundColor: colors.fg[t].info }} />
+                              <Text style={{ color: colors.text[t].secondary }}>Version {version.version}</Text>
                             </Row>
                             <Row gap={8} align="center">
-                              <Stack width={20} height={3} backgroundColor="$green9" />
-                              <Text color="$gray11">Current</Text>
+                              <Stack width={20} height={3} style={{ backgroundColor: colors.fg[t].success }} />
+                              <Text style={{ color: colors.text[t].secondary }}>Current</Text>
                             </Row>
                           </Row>
                         </Stack>
@@ -324,7 +328,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                 {/* Timeline Connector */}
                 {index < versions.length - 1 && (
                   <Stack align="center" paddingVertical={8}>
-                    <Stack width={2} height={20} backgroundColor="$borderColor" />
+                    <Stack width={2} height={20} style={{ backgroundColor: colors.border[t].default }} />
                   </Stack>
                 )}
               </Stack>

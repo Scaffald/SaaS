@@ -1,5 +1,6 @@
 import type { ProfileWizardStepId } from "@scf/supabase/client-types";
-import { DashboardWidget } from "@scaffald/ui";
+import { DashboardWidget, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 import { LinearGradient } from "expo-linear-gradient";
 import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react-native";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -25,23 +26,43 @@ export interface EnhancedProfileCompletionWidgetProps {
   isStatusLoading: boolean;
 }
 
-const PROGRESS_GRADIENTS: Array<{
-  threshold: number;
-  colors: [string, string];
-}> = [
-  { threshold: 25, colors: ["#ef4444", "#dc2626"] },
-  { threshold: 50, colors: ["#f97316", "#ea580c"] },
-  { threshold: 75, colors: ["#eab308", "#ca8a04"] },
-  { threshold: 100, colors: ["#22c55e", "#16a34a"] },
-];
+function buildProgressGradients(
+  t: "light" | "dark"
+): Array<{ threshold: number; colors: [string, string] }> {
+  return [
+    {
+      threshold: 25,
+      colors: [colors.error[t === "dark" ? 300 : 400], colors.error[500]],
+    },
+    {
+      threshold: 50,
+      colors: [colors.orange[500], colors.orange[600]],
+    },
+    {
+      threshold: 75,
+      colors: [
+        t === "dark" ? colors.yellow[300] : colors.yellow[500],
+        t === "dark" ? colors.yellow[400] : colors.yellow[600],
+      ],
+    },
+    {
+      threshold: 100,
+      colors: [colors.green[500], colors.green[600]],
+    },
+  ];
+}
 
-function resolveProgressGradient(percentage: number): [string, string] {
-  for (const gradient of PROGRESS_GRADIENTS) {
+function resolveProgressGradient(
+  percentage: number,
+  t: "light" | "dark"
+): [string, string] {
+  const gradients = buildProgressGradients(t);
+  for (const gradient of gradients) {
     if (percentage <= gradient.threshold) {
       return gradient.colors;
     }
   }
-  return PROGRESS_GRADIENTS[PROGRESS_GRADIENTS.length - 1].colors;
+  return gradients[gradients.length - 1].colors;
 }
 
 const _suggestionFallbackStyle: ViewStyle = { minHeight: 64 };
@@ -62,6 +83,7 @@ export const EnhancedProfileCompletionWidget = memo(
     isStatusLoading,
   }: EnhancedProfileCompletionWidgetProps) {
     console.log("onOpenImport", onOpenImport);
+    const { theme: t } = useThemeContext();
     const showCarouselControls = hasMultipleBenefits && totalBenefits > 1;
     const benefitDotIndices = useMemo(
       () => Array.from({ length: totalBenefits }, (_, idx) => idx),
@@ -119,7 +141,7 @@ export const EnhancedProfileCompletionWidget = memo(
       return (
         <DashboardWidget>
           <Stack gap={16} align="center" paddingVertical={24}>
-            <Text style={{ color: "#414e62" }}>
+            <Text style={{ color: colors.text[t].secondary }}>
               Loading profile insights...
             </Text>
           </Stack>
@@ -132,7 +154,8 @@ export const EnhancedProfileCompletionWidget = memo(
     }
 
     const gradient = resolveProgressGradient(
-      completionStatus.completionPercentage
+      completionStatus.completionPercentage,
+      t
     );
     const headline =
       completionStatus.completionPercentage < 25
@@ -149,14 +172,14 @@ export const EnhancedProfileCompletionWidget = memo(
       <DashboardWidget>
         <Stack gap={16}>
           <Stack gap={8}>
-            <Text style={{ color: "#414e62" }}>Profile Progress</Text>
+            <Text style={{ color: colors.text[t].secondary }}>Profile Progress</Text>
             <Text>{headline}</Text>
           </Stack>
 
           <Stack gap={12}>
             <Row justify="space-between" align="center">
               <Text>{completionStatus.completionPercentage}%</Text>
-              <Text style={{ color: "#414e62" }}>
+              <Text style={{ color: colors.text[t].secondary }}>
                 {completionStatus.incompleteSections.length} sections remaining
               </Text>
             </Row>
@@ -178,7 +201,7 @@ export const EnhancedProfileCompletionWidget = memo(
               <Stack gap={12}>
                 <Row justify="space-between" align="center">
                   <Row gap={8} align="center">
-                    <Sparkles size={20} color="#3b82f6" />
+                    <Sparkles size={20} color={colors.blue[500]} />
                     <Text>Profile Suggestion</Text>
                   </Row>
 
@@ -219,7 +242,7 @@ export const EnhancedProfileCompletionWidget = memo(
                   >
                     {isBenefitLoading ? (
                       <Stack gap={4} onLayout={handleSuggestionLayout}>
-                        <Text style={{ color: "#414e62" }}>
+                        <Text style={{ color: colors.text[t].secondary }}>
                           Gathering personalized suggestions…
                         </Text>
                       </Stack>
@@ -229,13 +252,13 @@ export const EnhancedProfileCompletionWidget = memo(
                         gap={4}
                         onLayout={handleSuggestionLayout}
                       >
-                        <Text style={{ color: "#414e62" }}>
+                        <Text style={{ color: colors.text[t].secondary }}>
                           {currentBenefit.title}
                         </Text>
-                        <Text style={{ color: "#414e62" }}>
+                        <Text style={{ color: colors.text[t].secondary }}>
                           {currentBenefit.description}
                         </Text>
-                        <Text style={{ color: "#414e62" }}>
+                        <Text style={{ color: colors.text[t].secondary }}>
                           Suggested section:{" "}
                           {(() => {
                             try {
@@ -261,7 +284,7 @@ export const EnhancedProfileCompletionWidget = memo(
                       </Stack>
                     ) : (
                       <Stack gap={4} onLayout={handleSuggestionLayout}>
-                        <Text style={{ color: "#414e62" }}>
+                        <Text style={{ color: colors.text[t].secondary }}>
                           Stay on track by finishing your remaining sections.
                           We'll surface targeted ideas here once more data is
                           available.
@@ -294,8 +317,8 @@ export const EnhancedProfileCompletionWidget = memo(
                               borderRadius: 999,
                               backgroundColor:
                                 dotIndex === currentBenefitIndex
-                                  ? "#3b82f6"
-                                  : "#9ca3af",
+                                  ? colors.blue[500]
+                                  : colors.gray[400],
                               opacity:
                                 dotIndex === currentBenefitIndex ? 1 : 0.4,
                             }}

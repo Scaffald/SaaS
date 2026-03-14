@@ -36,7 +36,7 @@ export const eventSchemas = {
     url: z.string().nullable().optional(),
   }),
   map_profile_hover_card_opened: z.object({
-    pin_type: z.enum(['worker', 'organization']),
+    pin_type: z.enum(['worker', 'organization', 'job']),
     recentered: z.boolean(),
     trigger: z.literal('click'),
     viewport: z.enum(['desktop', 'mobile']),

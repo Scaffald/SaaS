@@ -6,7 +6,8 @@ import {
   MessageSquare,
   Star,
 } from "lucide-react-native";
-import { Button, Card, Text, Row, Stack } from "@scaffald/ui";
+import { Button, Card, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
 interface UserProfileHeaderProps {
   profile: {
@@ -34,6 +35,7 @@ export function UserProfileHeader({
   onLeaveReview,
   canLeaveReview,
 }: UserProfileHeaderProps) {
+  const { theme } = useThemeContext();
   const formatHourlyRate = (cents: number | null) => {
     if (!cents) return null;
     const dollars = cents / 100;
@@ -64,8 +66,7 @@ export function UserProfileHeader({
                 width={120}
                 height={120}
                 borderRadius={60}
-                style={{ overflow: "hidden" }}
-                backgroundColor="$color3"
+                style={{ overflow: "hidden", backgroundColor: colors.bg[theme].muted }}
               >
                 <img
                   src={profile.avatar_url}
@@ -78,24 +79,24 @@ export function UserProfileHeader({
                 width={120}
                 height={120}
                 borderRadius={60}
-                backgroundColor="$blue4"
+                style={{ backgroundColor: theme === 'light' ? colors.blue[100] : colors.blue[800] }}
                 align="center"
                 justify="center"
               >
-                <Text color="$blue10">{profile.name?.charAt(0) || "?"}</Text>
+                <Text style={{ color: theme === 'light' ? colors.blue[600] : colors.blue[400] }}>{profile.name?.charAt(0) || "?"}</Text>
               </Stack>
             )}
 
             {/* Name and Headline */}
             <Stack flex={1} gap={8} minWidth={200}>
-              <Text color="$gray11">{profile.name}</Text>
+              <Text style={{ color: colors.text[theme].secondary }}>{profile.name}</Text>
               {profile.headline && (
-                <Text color="$gray11">{profile.headline}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>{profile.headline}</Text>
               )}
               {profile.industry_name && (
                 <Row gap={8} align="center">
-                  <Briefcase size={18} color="$gray11" />
-                  <Text color="$gray11">{profile.industry_name}</Text>
+                  <Briefcase size={18} color={colors.text[theme].secondary} />
+                  <Text style={{ color: colors.text[theme].secondary }}>{profile.industry_name}</Text>
                 </Row>
               )}
             </Stack>
@@ -103,19 +104,21 @@ export function UserProfileHeader({
             {/* Scaffald Score */}
             {profile.gamified_score !== null && (
               <Row
-                backgroundColor="$blue2"
+                style={{
+                  backgroundColor: theme === 'light' ? colors.blue[50] : colors.blue[900],
+                  borderWidth: 2,
+                  borderColor: theme === 'light' ? colors.blue[300] : colors.blue[700],
+                }}
                 paddingHorizontal={20}
                 paddingVertical={12}
                 borderRadius={16}
                 gap={8}
                 align="center"
-                borderWidth={2}
-                borderColor="$blue6"
               >
-                <Star size={32} color="$blue10" fill="$blue10" />
+                <Star size={32} color={theme === 'light' ? colors.blue[600] : colors.blue[400]} fill={theme === 'light' ? colors.blue[600] : colors.blue[400]} />
                 <Stack>
-                  <Text color="$blue11">{profile.gamified_score}</Text>
-                  <Text color="$blue10">Scaffald Score</Text>
+                  <Text style={{ color: theme === 'light' ? colors.blue[700] : colors.blue[300] }}>{profile.gamified_score}</Text>
+                  <Text style={{ color: theme === 'light' ? colors.blue[600] : colors.blue[400] }}>Scaffald Score</Text>
                 </Stack>
               </Row>
             )}
@@ -142,11 +145,11 @@ export function UserProfileHeader({
               align="center"
               paddingHorizontal={12}
               paddingVertical={8}
-              backgroundColor="$color2"
+              style={{ backgroundColor: colors.bg[theme].muted }}
               borderRadius={12}
             >
-              <MapPin size={18} color="$gray11" />
-              <Text color="$gray11">{profile.location}</Text>
+              <MapPin size={18} color={colors.text[theme].secondary} />
+              <Text style={{ color: colors.text[theme].secondary }}>{profile.location}</Text>
             </Row>
           )}
 
@@ -156,11 +159,11 @@ export function UserProfileHeader({
               align="center"
               paddingHorizontal={12}
               paddingVertical={8}
-              backgroundColor="$color2"
+              style={{ backgroundColor: colors.bg[theme].muted }}
               borderRadius={12}
             >
-              <Award size={18} color="$gray11" />
-              <Text color="$gray11">{formattedYears} years experience</Text>
+              <Award size={18} color={colors.text[theme].secondary} />
+              <Text style={{ color: colors.text[theme].secondary }}>{formattedYears} years experience</Text>
             </Row>
           )}
 
@@ -170,11 +173,11 @@ export function UserProfileHeader({
               align="center"
               paddingHorizontal={12}
               paddingVertical={8}
-              backgroundColor="$color2"
+              style={{ backgroundColor: colors.bg[theme].muted }}
               borderRadius={12}
             >
-              <DollarSign size={18} color="$gray11" />
-              <Text color="$gray11">
+              <DollarSign size={18} color={colors.text[theme].secondary} />
+              <Text style={{ color: colors.text[theme].secondary }}>
                 {formatHourlyRate(profile.hourly_rate_cents)}
               </Text>
             </Row>
@@ -184,10 +187,10 @@ export function UserProfileHeader({
             <Row
               paddingHorizontal={12}
               paddingVertical={8}
-              backgroundColor="$green3"
+              style={{ backgroundColor: theme === 'light' ? colors.green[50] : colors.green[900] }}
               borderRadius={12}
             >
-              <Text color="$green11">✓ Available for Work</Text>
+              <Text style={{ color: theme === 'light' ? colors.green[700] : colors.green[300] }}>✓ Available for Work</Text>
             </Row>
           )}
         </Row>
