@@ -787,7 +787,6 @@ export function WorkLogDetailScreen() {
                   <ConversationEntry
                     key={entry.id}
                     entry={entry}
-                    currentUserId={workLog.user_id}
                   />
                 ))
               )}
