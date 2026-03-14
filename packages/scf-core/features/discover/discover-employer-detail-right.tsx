@@ -19,7 +19,8 @@ import { BellPlus, Briefcase, CheckCircle2, Loader2, Network, UserPlus } from 'l
 import { useToast } from '@scaffald/ui'
 import { useMemo } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { Button, Separator, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Separator, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 type OrganizationIdentifier = { organizationId: string }
 
@@ -53,6 +54,8 @@ type DiscoverEmployerDetailRightProps = {
  * Renders engagement CTAs for an employer, including follow and employment claim actions.
  */
 export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDetailRightProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const toast = useToast()
   const queryClient = useQueryClient()
 
@@ -324,10 +327,10 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
     <DashboardWidget gap={16}>
       <Stack gap={8}>
         <Row gap={8} align="center">
-          <Network size={18} color="$blue10" />
-          <Text color="$gray11">Stay Connected</Text>
+          <Network size={18} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
+          <Text style={{ color: colors.text[t].secondary }}>Stay Connected</Text>
         </Row>
-        <Text color="$gray11">
+        <Text style={{ color: colors.text[t].secondary }}>
           Follow {organizationName} to get updates or claim your role to link your profile to the
           team.
         </Text>
@@ -337,8 +340,8 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
 
       {isLoading ? (
         <Row gap={8} align="center">
-          <Loader2 size="md" color="$blue10" />
-          <Text color="$gray11">Loading organization context...</Text>
+          <Loader2 size="md" color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
+          <Text style={{ color: colors.text[t].secondary }}>Loading organization context...</Text>
         </Row>
       ) : (
         <OrganizationSnapshot
@@ -375,7 +378,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
 
       <Stack gap={8}>
         <Row gap={8} align="center">
-          <BellPlus size={20} color="#737373" />
+          <BellPlus size={20} color={colors.text[t].tertiary} />
           <Text color="secondary">What happens next?</Text>
         </Row>
         <Text color="secondary">
@@ -401,14 +404,16 @@ function OrganizationSnapshot({
   openJobs,
   jobsLoading,
 }: OrganizationSnapshotProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   return (
     <Stack gap={8}>
       <Row gap={8} align="center">
-        <CheckCircle2 size="md" color="$green10" />
-        <Text color="$green10">{name}</Text>
+        <CheckCircle2 size="md" color={t === 'dark' ? colors.green[300] : colors.green[600]} />
+        <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[600] }}>{name}</Text>
       </Row>
-      {createdAt && <Text color="$gray11">Onboarded {createdAt}</Text>}
-      <Text color="$gray11">
+      {createdAt && <Text style={{ color: colors.text[t].secondary }}>Onboarded {createdAt}</Text>}
+      <Text style={{ color: colors.text[t].secondary }}>
         {jobsLoading
           ? 'Checking open roles...'
           : typeof openJobs === 'number'
