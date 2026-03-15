@@ -474,7 +474,7 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
                 'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
                 'text-size': 12,
               },
-              paint: { 'text-color': '#0f172a' },
+              paint: { 'text-color': themeMode === 'dark' ? '#ffffff' : '#0f172a' },
             })
 
             // Capsule pin layer — pill-shaped images with embedded labels
@@ -716,7 +716,7 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
                 'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
                 'text-size': 12,
               },
-              paint: { 'text-color': '#0f172a' },
+              paint: { 'text-color': themeMode === 'dark' ? '#ffffff' : '#0f172a' },
             })
           }
 
@@ -902,7 +902,7 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
           const source = map.getSource(
             PIN_SOURCE_CONFIGS[type].sourceId
           ) as mapboxgl.GeoJSONSource | null
-          if (!source) return
+          if (!source) continue
 
           const features: GeoJSON.Feature<GeoJSON.Point>[] = pinsByType[type].map((pin) => {
             const baseProperties: Record<string, unknown> = {
@@ -1027,7 +1027,7 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
               for (const type of PIN_TYPE_ORDER) {
                 const sourceId = PIN_SOURCE_CONFIGS[type].sourceId
                 const pinsSource = map.getSource(sourceId) as mapboxgl.GeoJSONSource | null
-                if (!pinsSource) return
+                if (!pinsSource) continue
 
                 try {
                   const sourceFeatures = map.querySourceFeatures(sourceId, {
@@ -1069,7 +1069,7 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
                 if (!source) {
                   processedClusters++
                   finishIfDone()
-                  return
+                  continue
                 }
 
                 source.getClusterLeaves(clusterId, Number.MAX_SAFE_INTEGER, 0, (err, leaves) => {

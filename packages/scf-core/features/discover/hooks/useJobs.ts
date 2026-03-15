@@ -63,17 +63,9 @@ export const buildJobsQuery = (options: UseJobsOptions = {}) => {
     }
 
     // Type guard: ensure jobs is an array
-    if (!Array.isArray(jobs)) {
-      console.log('No jobs found in database')
+    if (!Array.isArray(jobs) || jobs.length === 0) {
       return []
     }
-
-    if (jobs.length === 0) {
-      console.log('No jobs found in database')
-      return []
-    }
-
-    console.log(`Found ${jobs.length} jobs from database`)
 
     // Transform to JobMapPin format and filter by viewport bounds if provided
     const filtered = jobs

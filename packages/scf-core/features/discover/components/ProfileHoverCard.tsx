@@ -17,6 +17,7 @@ import {
   Tag,
   User,
   Users,
+  X,
 } from 'lucide-react-native'
 import { Button, Separator, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
@@ -46,6 +47,7 @@ interface ProfileHoverCardProps {
   position?: { x: number; y: number }
   onHoverCardEnter?: () => void
   onHoverCardLeave?: () => void
+  onClose?: () => void
   jobData?: JobMapPin | null
 }
 
@@ -266,10 +268,8 @@ function JobPreview({ job }: { job: JobMapPin }) {
         variant="filled"
         color="primary"
         onPress={() => {
-          const url = job.organization_id
-            ? buildPath(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.DETAIL, { id: job.organization_id })
-            : '#'
-          if (url !== '#') window.open(url, '_blank', 'noopener,noreferrer')
+          const url = buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS.DETAIL, { id: job.id })
+          window.open(url, '_blank', 'noopener,noreferrer')
         }}
         iconEnd={ExternalLink}
       >
@@ -297,6 +297,7 @@ export function ProfileHoverCard({
   position,
   onHoverCardEnter,
   onHoverCardLeave,
+  onClose,
   jobData,
 }: ProfileHoverCardProps) {
   const { theme } = useThemeContext()
@@ -324,6 +325,17 @@ export function ProfileHoverCard({
       onMouseEnter={onHoverCardEnter}
       onMouseLeave={onHoverCardLeave}
     >
+      {onClose && (
+        <View style={{ position: 'absolute', top: 8, right: 8, zIndex: 1 }}>
+          <Button
+            size="sm"
+            variant="text"
+            iconStart={X}
+            onPress={onClose}
+            aria-label="Close"
+          />
+        </View>
+      )}
       {pinType === 'worker' && <WorkerPreview pinId={pinId} visible={visible} />}
       {pinType === 'organization' && <OrganizationPreview pinId={pinId} visible={visible} />}
       {pinType === 'job' && jobData && <JobPreview job={jobData} />}

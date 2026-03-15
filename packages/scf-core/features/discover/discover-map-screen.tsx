@@ -13,6 +13,7 @@ import { MapAdapter } from './components/map'
 import { captureEvent } from '@scf/core/utils/analytics/client'
 import {
   List as ListIcon,
+  Locate,
   Map as MapIcon,
   RotateCcw,
   SlidersHorizontal,
@@ -22,6 +23,7 @@ import { Platform, View } from 'react-native'
 import {
   Button,
   ScrollView,
+  Spinner,
   Tabs,
   Text,
   useThemeContext,
@@ -64,7 +66,7 @@ export const DiscoverMapScreen = () => {
   const layoutRef = useRef<View>(null)
 
   // Location functionality
-  const { location } = useUserLocation()
+  const { location, requestLocation } = useUserLocation()
 
   // Map state from context (persisted)
   const { state, updateSearchLocation, updateFilters, updateResultsRailVisible, clearState } =
@@ -155,7 +157,6 @@ export const DiscoverMapScreen = () => {
           coordinate: profile.coordinates,
           title: profile.name,
           subtitle: profile.title,
-          metric: `e ${profile.score}`,
           score: profile.score,
           hourlyRate: profile.hourlyRate,
           badges: profile.badges,
@@ -593,6 +594,23 @@ export const DiscoverMapScreen = () => {
     setMobileViewMode(value === 'list' ? 'list' : 'map')
   }, [])
 
+  const isDataLoading = (isLoading && showWorkers) || (isLoadingOrgs && showOrganizations) || (isLoadingJobs && showJobs)
+
+  const handleMyLocation = useCallback(async () => {
+    try {
+      const loc = await requestLocation()
+      if (loc) {
+        handleLocationSelect({
+          longitude: loc.longitude,
+          latitude: loc.latitude,
+          label: 'My Location',
+        })
+      }
+    } catch {
+      // Permission denied or unavailable — silently ignored
+    }
+  }, [requestLocation, handleLocationSelect])
+
   const mobileListActive = isSmallScreen && mobileViewMode === 'list'
 
   const handleMobileResultSelect = useCallback((id: string) => {
@@ -653,39 +671,53 @@ export const DiscoverMapScreen = () => {
               />
             </Stack>
           ) : (
-            <MapAdapter
-              ref={mapRef}
-              pins={mapPins}
-              center={mapCenter}
-              zoom={7}
-              radius={state.lastSearchLocation ? 50 : undefined}
-              centerLocation={state.lastSearchLocation?.coordinates}
-              onPinPress={handleMarkerPress}
-              onPinHover={handlePinHover}
-              onViewportChange={handleViewportChange}
-              onMapReady={handleMapReady}
-              onClustersChange={handleClustersChange}
-              pinStates={pinStates}
-              style={{ flex: 1 }}
-            />
+            <View style={{ flex: 1, position: 'relative' }}>
+              <MapAdapter
+                ref={mapRef}
+                pins={mapPins}
+                center={mapCenter}
+                zoom={7}
+                radius={state.lastSearchLocation ? 50 : undefined}
+                centerLocation={state.lastSearchLocation?.coordinates}
+                onPinPress={handleMarkerPress}
+                onPinHover={handlePinHover}
+                onViewportChange={handleViewportChange}
+                onMapReady={handleMapReady}
+                onClustersChange={handleClustersChange}
+                pinStates={pinStates}
+                style={{ flex: 1 }}
+              />
+              {isDataLoading && <MapLoadingOverlay theme={t} />}
+              <MyLocationButton onPress={handleMyLocation} theme={t} />
+              {state.lastSearchLocation?.label && (
+                <SearchLocationLabel label={state.lastSearchLocation.label} theme={t} />
+              )}
+            </View>
           )
         ) : (
           <>
-            <MapAdapter
-              ref={mapRef}
-              pins={mapPins}
-              center={mapCenter}
-              zoom={7}
-              radius={state.lastSearchLocation ? 50 : undefined}
-              centerLocation={state.lastSearchLocation?.coordinates}
-              onPinPress={handleMarkerPress}
-              onPinHover={handlePinHover}
-              onViewportChange={handleViewportChange}
-              onMapReady={handleMapReady}
-              onClustersChange={handleClustersChange}
-              pinStates={pinStates}
-              style={{ flex: 1 }}
-            />
+            <View style={{ flex: 1, position: 'relative' }}>
+              <MapAdapter
+                ref={mapRef}
+                pins={mapPins}
+                center={mapCenter}
+                zoom={7}
+                radius={state.lastSearchLocation ? 50 : undefined}
+                centerLocation={state.lastSearchLocation?.coordinates}
+                onPinPress={handleMarkerPress}
+                onPinHover={handlePinHover}
+                onViewportChange={handleViewportChange}
+                onMapReady={handleMapReady}
+                onClustersChange={handleClustersChange}
+                pinStates={pinStates}
+                style={{ flex: 1 }}
+              />
+              {isDataLoading && <MapLoadingOverlay theme={t} />}
+              <MyLocationButton onPress={handleMyLocation} theme={t} />
+              {state.lastSearchLocation?.label && (
+                <SearchLocationLabel label={state.lastSearchLocation.label} theme={t} />
+              )}
+            </View>
             <ResultsRail
               isVisible={showRail}
               profiles={visibleProfiles}
@@ -698,7 +730,7 @@ export const DiscoverMapScreen = () => {
                   mapRef.current.centerOnPin(id)
                 }
               }}
-              isLoading={isLoading}
+              isLoading={isLoading || isLoadingOrgs || isLoadingJobs}
               resultListRef={resultListRef}
               onClose={() => updateResultsRailVisible(false)}
               onCardHover={(id) => mapRef.current?.highlightPin?.(id)}
@@ -715,6 +747,7 @@ export const DiscoverMapScreen = () => {
           visible={hoverCardVisible}
           position={hoverCardPosition}
           jobData={activePinType === 'job' && activePinId ? jobs.find((j) => j.id === activePinId) ?? null : null}
+          onClose={clearHoverState}
         />
       )}
 
@@ -1026,5 +1059,80 @@ const FilterToggle = ({ label, description, value, onValueChange }: FilterToggle
     </Stack>
   )
 }
+
+const MapLoadingOverlay = ({ theme }: { theme: 'light' | 'dark' }) => (
+  <View
+    style={{
+      position: 'absolute',
+      top: 12,
+      right: 12,
+      backgroundColor: theme === 'dark' ? 'rgba(30, 28, 25, 0.85)' : 'rgba(255, 255, 255, 0.85)',
+      borderRadius: 12,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      zIndex: 20,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    }}
+  >
+    <Spinner size="sm" color="primary" />
+    <Text style={{ fontSize: 13, color: colors.text[theme].secondary }}>Loading...</Text>
+  </View>
+)
+
+const MyLocationButton = ({ onPress, theme }: { onPress: () => void; theme: 'light' | 'dark' }) => (
+  <View
+    style={{
+      position: 'absolute',
+      bottom: 16,
+      right: 16,
+      zIndex: 20,
+    }}
+  >
+    <Button
+      size="md"
+      variant="outline"
+      iconStart={Locate}
+      onPress={onPress}
+      aria-label="Go to my location"
+      style={{
+        backgroundColor: theme === 'dark' ? 'rgba(30, 28, 25, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 6,
+      }}
+    />
+  </View>
+)
+
+const SearchLocationLabel = ({ label, theme }: { label: string; theme: 'light' | 'dark' }) => (
+  <View
+    style={{
+      position: 'absolute',
+      top: 12,
+      left: 60,
+      backgroundColor: theme === 'dark' ? 'rgba(30, 28, 25, 0.85)' : 'rgba(255, 255, 255, 0.85)',
+      borderRadius: 20,
+      paddingHorizontal: 14,
+      paddingVertical: 6,
+      zIndex: 20,
+      maxWidth: 240,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.08,
+      shadowRadius: 3,
+    }}
+  >
+    <Text style={{ fontSize: 13, color: colors.text[theme].secondary }} numberOfLines={1}>
+      {label}
+    </Text>
+  </View>
+)
 
 export default DiscoverMapScreen

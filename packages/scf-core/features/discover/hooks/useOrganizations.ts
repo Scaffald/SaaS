@@ -55,11 +55,8 @@ export const useOrganizations = (options: UseOrganizationsOptions = {}) => {
       }
 
       if (!organizations || organizations.length === 0) {
-        console.log('No organizations found in database')
         return []
       }
-
-      console.log(`Found ${organizations.length} organizations from database`)
 
       // Transform to OrganizationMapPin format and filter by viewport bounds if provided
       const filtered = organizations
