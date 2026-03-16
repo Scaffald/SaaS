@@ -37,7 +37,8 @@ export const DashboardLayout = ({
   const contentPadding = isDesktop ? 'xl' : 'lg'
   const verticalPadding = isDesktop ? 'xl' : 'md'
   const columnGap = isDesktop ? 36 : 20
-  const columnTemplate = fullWidth ? '1fr' : GOLDEN_RATIO_TEMPLATE
+  const hasRightContent = rightContent != null
+  const columnTemplate = fullWidth || !hasRightContent ? '1fr' : GOLDEN_RATIO_TEMPLATE
 
   // Auto-generate breadcrumbs if enabled and no manual override
   const { breadcrumbs } = useBreadcrumbs({

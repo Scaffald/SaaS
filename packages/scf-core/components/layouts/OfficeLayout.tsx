@@ -212,7 +212,7 @@ export const OfficeLayout = ({
         {/* Content Area - Two-column golden ratio (lg+) or single column */}
         <Stack paddingHorizontal="sm">
           <Grid
-            columns={{ base: 1, lg: GOLDEN_RATIO_TEMPLATE }}
+            columns={{ base: 1, lg: hasRightContent ? GOLDEN_RATIO_TEMPLATE : '1fr' }}
             gap={columnGap}
             rowGap={isDesktop ? 32 : 24}
           >

@@ -40,6 +40,7 @@ export const ProfileLayout = ({
   const { isDesktop } = useResponsive()
   const { theme } = useThemeContext()
   const resolvedTheme = theme === 'dark' ? 'dark' : 'light'
+  const hasRightContent = rightContent != null
   const contentPadding = isDesktop ? '2xl' : 'lg'
   const columnGap = isDesktop ? 48 : 24
 
@@ -71,7 +72,7 @@ export const ProfileLayout = ({
         {/* Content Area - Two-column golden ratio (lg+) or single column */}
         <Stack paddingHorizontal={contentPadding}>
           <Grid
-            columns={{ base: 1, lg: GOLDEN_RATIO_TEMPLATE }}
+            columns={{ base: 1, lg: hasRightContent ? GOLDEN_RATIO_TEMPLATE : '1fr' }}
             gap={columnGap}
             rowGap={isDesktop ? 32 : 24}
           >

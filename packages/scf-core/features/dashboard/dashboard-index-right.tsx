@@ -3,6 +3,7 @@ import {
   TeamInvitationsWidget,
 } from '@scf/core/features/dashboard/components'
 import { NewsWidget } from '@scf/core/features/news'
+import { CommunityActivityWidget } from '@scf/core/features/communities'
 import { DashboardWidget } from '@scaffald/ui'
 import { Text, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
@@ -82,6 +83,7 @@ export function DashboardIndexRight() {
         ) : null}
       </DashboardWidget>
       <TeamInvitationsWidget />
+      <CommunityActivityWidget maxItems={3} />
       <NewsWidget industry="construction" maxItems={6} />
     </Stack>
   )
