@@ -75,6 +75,7 @@ export default function Layout() {
           name="jobs/applications/[applicationId]/inquiry"
           options={{ title: 'Inquiry' }}
         />
+        <Drawer.Screen name="jobs/my-listings/index" options={{ title: 'My Listings' }} />
         <Drawer.Screen name="users/[id]/index" options={{ title: 'User Profile' }} />
         <Drawer.Screen name="profile" options={{ title: 'Profile' }} />
         <Drawer.Screen name="profile/general/index" options={{ title: 'General' }} />
@@ -91,6 +92,20 @@ export default function Layout() {
         <Drawer.Screen name="profile/background-check/[checkId]/dispute" options={{ title: 'Dispute' }} />
         <Drawer.Screen name="settings/index" options={{ title: 'Settings' }} />
         <Drawer.Screen name="employers/create" options={{ title: 'Create Employer' }} />
+        <Drawer.Screen name="employers/invitations" options={{ title: 'Invitations' }} />
+        <Drawer.Screen name="employers/org/index" options={{ title: 'My Organizations' }} />
+        <Drawer.Screen name="employers/org/[slug]/index" options={{ title: 'Organization' }} />
+        <Drawer.Screen name="employers/org/[slug]/teams/index" options={{ title: 'Teams' }} />
+        <Drawer.Screen
+          name="employers/org/[slug]/teams/[teamId]/index"
+          options={{ title: 'Team Detail' }}
+        />
+        <Drawer.Screen name="employers/org/[slug]/logs/index" options={{ title: 'Logs' }} />
+        <Drawer.Screen name="employers/org/[slug]/logs/create" options={{ title: 'New Log' }} />
+        <Drawer.Screen
+          name="employers/org/[slug]/logs/[workLogId]/index"
+          options={{ title: 'Log Detail' }}
+        />
         <Drawer.Screen name="news/index" options={{ title: 'News' }} />
         <Drawer.Screen name="career-explorer/index" options={{ title: 'Career Explorer' }} />
         <Drawer.Screen name="career-explorer/[onetCode]" options={{ title: 'Occupation Detail' }} />

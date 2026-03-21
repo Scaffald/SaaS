@@ -1,23 +1,17 @@
-import { CheckStatusDashboard } from '@scf/core/features/background-check'
-import { Stack as ExpoStack } from 'expo-router'
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Stack } from '@scaffald/ui'
+/**
+ * Redirect: Background Check was merged into Verification.
+ * Old links to /dashboard/profile/background-check go to the verification page.
+ * Note: Nested routes (initiate, dispute) remain functional.
+ */
 
-export default function BackgroundCheckDashboardScreen() {
-  const insets = useSafeAreaInsets()
+import { ROUTES } from '@scf/core/constants/routes'
+import { useRouter } from 'expo-router'
+import { useEffect } from 'react'
 
-  return (
-    <>
-      <ExpoStack.Screen
-        options={{
-          headerShown: false,
-        }}
-      />
-      <SafeAreaView style={{ flex: 1, paddingTop: insets.top }}>
-        <Stack>
-          <CheckStatusDashboard />
-        </Stack>
-      </SafeAreaView>
-    </>
-  )
+export default function BackgroundCheckRedirect() {
+  const router = useRouter()
+  useEffect(() => {
+    router.replace(ROUTES.DASHBOARD.PROFILE.ID_VERIFICATION.path)
+  }, [router])
+  return null
 }

@@ -47,7 +47,7 @@ export const DrawerLink = ({
   isLastSubItem = false,
 }: DrawerLinkProps) => {
   const collapsed = isCollapsed ?? false
-  const active = isActivePath(pathname, item.href)
+  const active = isActivePath(pathname, item.href, item.exact)
   const Icon = item.icon
   const hasSubItems = Boolean(item.subItems?.length)
   // Show sub-items when they exist; gate behind route match when expandOnActive is set
@@ -215,7 +215,7 @@ export const DrawerLink = ({
 
   // Depth > 0 and has subItems: render as expandable with indent so third-level (Teams, Logs) can nest
   if (depth > 0 && hasSubItems && (isAutoExpandable || isManualExpandable)) {
-    const baseLeft = 44 + (depth - 1) * 20
+    const baseLeft = 54 + (depth - 1) * 20
     return (
       <Stack>
         <Link href={item.href} asChild>
@@ -276,7 +276,7 @@ export const DrawerLink = ({
         <Pressable>
           {({ hovered }: { pressed: boolean; hovered?: boolean }) => {
             const isHighlighted = active || hovered
-            const leftPad = 44 + (Math.max(0, depth - 1)) * 20
+            const leftPad = 54 + (Math.max(0, depth - 1)) * 20
             return (
               <View
                 style={{

@@ -24,6 +24,8 @@ export type DrawerItemConfig = {
    * allowing the parent to act as a normal navigational link instead of relying on manual toggles.
    */
   expandOnActive?: boolean
+  /** When true, the item is only highlighted when the path matches exactly (no prefix matching) */
+  exact?: boolean
   isCompleted?: boolean // Shows checkmark icon when true
   isOnCooldown?: boolean // Shows clock icon when true (overrides checkmark)
 }

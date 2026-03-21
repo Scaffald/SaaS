@@ -1,5 +1,9 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { ProfilePage } from '@scf/core/features/profile/ProfilePage'
+import { ProfileEmploymentLeft } from '@scf/core/features/profile/profile-employment-left'
+import { ProfileEmploymentRight } from '@scf/core/features/profile/profile-employment-right'
+import { ProfileGeneralLeft } from '@scf/core/features/profile/profile-general-left'
+import { ProfileGeneralRight } from '@scf/core/features/profile/profile-general-right'
 import { ImportReviewScreen } from '@scf/core/features/profile-import/components/ImportReviewScreen'
 import {
   ResumeImportWidget,
@@ -9,7 +13,17 @@ import {
 import { useHasUploadedResume } from '@scf/core/utils/resume-sdk-hooks'
 import { useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
-import { Button, Paragraph, Row, Separator, Spinner, Stack, Text } from '@scaffald/ui'
+import {
+  Accordion,
+  Button,
+  Paragraph,
+  Row,
+  Separator,
+  Spinner,
+  Stack,
+  Text,
+  useResponsive,
+} from '@scaffald/ui'
 
 function ResumeImportContent() {
   const router = useRouter()
@@ -86,34 +100,68 @@ function ResumeImportContent() {
           <ResumeImportWidget />
         </Stack>
       )}
+
+      <Separator />
+
+      <Stack gap={12}>
+        <Text size="xl" weight="bold">
+          Review Imported Data
+        </Text>
+        <Paragraph size="md" color="gray">
+          Edit and confirm experience, education, skills, and other details parsed from your resume
+          before saving to your profile.
+        </Paragraph>
+        <ImportReviewScreen />
+      </Stack>
     </Stack>
   )
 }
 
-export default function ResumeImportPage() {
+export default function ResumeProfilePage() {
+  const { isDesktop } = useResponsive()
+
+  const leftContent = (
+    <Accordion mode="multiple" defaultValue={['general', 'employment', 'resume']}>
+      <Accordion.Item value="general">
+        <Accordion.Trigger>General Information</Accordion.Trigger>
+        <Accordion.Content>
+          <ProfileGeneralLeft />
+          {!isDesktop && <ProfileGeneralRight />}
+        </Accordion.Content>
+      </Accordion.Item>
+
+      <Accordion.Item value="employment">
+        <Accordion.Trigger>Employment Preferences</Accordion.Trigger>
+        <Accordion.Content>
+          <ProfileEmploymentLeft />
+          {!isDesktop && <ProfileEmploymentRight />}
+        </Accordion.Content>
+      </Accordion.Item>
+
+      <Accordion.Item value="resume">
+        <Accordion.Trigger>Resume Import</Accordion.Trigger>
+        <Accordion.Content>
+          <ResumeImportContent />
+        </Accordion.Content>
+      </Accordion.Item>
+    </Accordion>
+  )
+
+  const rightContent = isDesktop ? (
+    <Stack gap={24}>
+      <ProfileGeneralRight />
+      <ProfileEmploymentRight />
+    </Stack>
+  ) : null
+
   return (
     <ProfilePage
       breadcrumbs={[
         { route: ROUTES.DASHBOARD.PROFILE },
         { route: ROUTES.DASHBOARD.PROFILE.RESUME },
       ]}
-      leftContent={
-        <Stack gap={32}>
-          <ResumeImportContent />
-          <Separator />
-          <Stack gap={12} paddingHorizontal={16}>
-            <Text size="xl" weight="bold">
-              Review Imported Data
-            </Text>
-            <Paragraph size="md" color="gray">
-              Edit and confirm experience, education, skills, and other details parsed from your
-              resume before saving to your profile.
-            </Paragraph>
-            <ImportReviewScreen />
-          </Stack>
-        </Stack>
-      }
-      rightContent={null}
+      leftContent={leftContent}
+      rightContent={rightContent}
     />
   )
 }

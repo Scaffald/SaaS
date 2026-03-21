@@ -73,7 +73,7 @@ export default function OrgTeamsIndexPage() {
         <Stack gap={12} padding={16}>
           <Text>No teams yet</Text>
           <Text color="gray">
-            This organization has no teams yet, or you don’t have access. Accept an invitation to join a team.
+            This organization has no teams yet, or you don't have access. Accept an invitation to join a team.
           </Text>
           <Button size="md" variant="outline" onPress={() => router.push(RouteBuilder.orgInvitations())}>
             View invitations

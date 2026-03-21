@@ -15,7 +15,7 @@ export default function OrgLogsIndexPage() {
         leftContent={
           <Stack padding={16} gap={12}>
             <Text color="red">Organization not found</Text>
-            <Text color="gray">You don’t have access to this organization or it doesn’t exist.</Text>
+            <Text color="gray">You don't have access to this organization or it doesn't exist.</Text>
           </Stack>
         }
         rightContent={null}

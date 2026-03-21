@@ -11,7 +11,6 @@ import {
   Database,
   FileText,
   Link,
-  Map as MapIcon,
   ShieldCheck,
   User,
   Users,
@@ -19,10 +18,46 @@ import {
 import type { DrawerItemConfig } from './types'
 
 /**
+ * Build per-organization sub-items for the Employers drawer group.
+ * Each org expands to show Teams and Logs.
+ */
+const buildOrgSubItems = (memberships: OrganizationMembership[]): DrawerItemConfig[] => {
+  const seen = new Set<string>()
+  return memberships
+    .filter((m) => {
+      if (seen.has(m.organization_id)) return false
+      seen.add(m.organization_id)
+      return true
+    })
+    .map((m) => ({
+      key: `org-${m.organization_slug}`,
+      title: m.organization_name,
+      href: `/dashboard/employers/org/${m.organization_slug}`,
+      isExpandable: true,
+      expandOnActive: true,
+      subItems: [
+        {
+          key: `org-${m.organization_slug}-teams`,
+          titleKey: ROUTES.DASHBOARD.TEAMS.titleKey,
+          href: `/dashboard/employers/org/${m.organization_slug}/teams`,
+        },
+        {
+          key: `org-${m.organization_slug}-logs`,
+          titleKey: ROUTES.ORG.DETAIL.LOGS.titleKey,
+          href: `/dashboard/employers/org/${m.organization_slug}/logs`,
+        },
+      ],
+    }))
+}
+
+/**
  * Generates drawer items dynamically from dashboard routes
+ * @param memberships - Optional org memberships; when present, orgs are nested under Employers
  * @returns Array of drawer item configurations
  */
-export const generateDashboardDrawerItems = (): DrawerItemConfig[] => {
+export const generateDashboardDrawerItems = (
+  memberships?: OrganizationMembership[]
+): DrawerItemConfig[] => {
   const items: DrawerItemConfig[] = []
 
   // Dashboard - expandable with News subnav
@@ -35,85 +70,12 @@ export const generateDashboardDrawerItems = (): DrawerItemConfig[] => {
     isExpandable: true,
     expandOnActive: true,
     subItems: [
-      { key: 'dashboard-index', titleKey: 'routes.dashboard.home', href: ROUTES.DASHBOARD.path },
+      { key: 'dashboard-index', titleKey: 'routes.dashboard.home', href: ROUTES.DASHBOARD.path, exact: true },
       { key: 'dashboard-news', titleKey: ROUTES.DASHBOARD.NEWS.titleKey, href: ROUTES.DASHBOARD.NEWS.path },
     ],
   })
 
-  // Map - top-level item
-  items.push({
-    key: 'map',
-    titleKey: 'navigation.discoverMap',
-    href: ROUTES.DASHBOARD.DISCOVER.MAP.path,
-    routeKey: 'DASHBOARD_DISCOVER_MAP',
-    icon: MapIcon,
-  })
-
-  // Workers - top-level item
-  items.push({
-    key: 'workers',
-    titleKey: 'navigation.discoverWorkers',
-    href: ROUTES.DASHBOARD.DISCOVER.WORKERS.path,
-    routeKey: 'DASHBOARD_DISCOVER_WORKERS',
-    icon: Users,
-  })
-
-  // Employers - expandable with create
-  items.push({
-    key: 'employers',
-    titleKey: 'navigation.discoverEmployers',
-    href: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path,
-    routeKey: 'DASHBOARD_DISCOVER_EMPLOYERS',
-    icon: Building2,
-    isExpandable: true,
-    expandOnActive: true,
-    subItems: [
-      { key: 'employers-index', titleKey: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.titleKey, href: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path },
-      { key: 'employers-create', titleKey: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.CREATE.titleKey, href: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.CREATE.path },
-    ],
-  })
-
-  // Jobs - expandable with applications
-  items.push({
-    key: 'jobs',
-    titleKey: 'navigation.discoverJobs',
-    href: ROUTES.DASHBOARD.DISCOVER.JOBS.path,
-    routeKey: 'DASHBOARD_DISCOVER_JOBS',
-    icon: Briefcase,
-    isExpandable: true,
-    expandOnActive: true,
-    subItems: [
-      { key: 'jobs-index', titleKey: ROUTES.DASHBOARD.DISCOVER.JOBS.titleKey, href: ROUTES.DASHBOARD.DISCOVER.JOBS.path },
-      { key: 'jobs-applications', titleKey: ROUTES.DASHBOARD.DISCOVER.JOBS.APPLICATIONS.titleKey, href: ROUTES.DASHBOARD.DISCOVER.JOBS.APPLICATIONS.path },
-    ],
-  })
-
-  // Profile - expandable with Overview + all tier-1 (tabs)
-  items.push({
-    key: 'profile',
-    titleKey: ROUTES.DASHBOARD.PROFILE.titleKey,
-    href: ROUTES.DASHBOARD.PROFILE.path,
-    routeKey: 'DASHBOARD_PROFILE',
-    icon: User,
-    isExpandable: true,
-    expandOnActive: true,
-    subItems: [
-      { key: 'profile-overview', titleKey: ROUTES.DASHBOARD.PROFILE.OVERVIEW.titleKey, href: ROUTES.DASHBOARD.PROFILE.OVERVIEW.path },
-      { key: 'profile-general', titleKey: ROUTES.DASHBOARD.PROFILE.GENERAL.titleKey, href: ROUTES.DASHBOARD.PROFILE.GENERAL.path },
-      { key: 'profile-employment', titleKey: ROUTES.DASHBOARD.PROFILE.EMPLOYMENT.titleKey, href: ROUTES.DASHBOARD.PROFILE.EMPLOYMENT.path },
-      { key: 'profile-skills', titleKey: ROUTES.DASHBOARD.PROFILE.SKILLS.titleKey, href: ROUTES.DASHBOARD.PROFILE.SKILLS.path },
-      { key: 'profile-certifications', titleKey: ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.titleKey, href: ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path },
-      { key: 'profile-education', titleKey: ROUTES.DASHBOARD.PROFILE.EDUCATION.titleKey, href: ROUTES.DASHBOARD.PROFILE.EDUCATION.path },
-      { key: 'profile-experience', titleKey: ROUTES.DASHBOARD.PROFILE.EXPERIENCE.titleKey, href: ROUTES.DASHBOARD.PROFILE.EXPERIENCE.path },
-      { key: 'profile-id-verification', titleKey: ROUTES.DASHBOARD.PROFILE.ID_VERIFICATION.titleKey, href: ROUTES.DASHBOARD.PROFILE.ID_VERIFICATION.path },
-      { key: 'profile-resume', titleKey: ROUTES.DASHBOARD.PROFILE.RESUME.titleKey, href: ROUTES.DASHBOARD.PROFILE.RESUME.path },
-      { key: 'profile-background-check', titleKey: ROUTES.DASHBOARD.PROFILE.BACKGROUND_CHECK.titleKey, href: ROUTES.DASHBOARD.PROFILE.BACKGROUND_CHECK.path },
-    ],
-  })
-
-  // Settings: not in main nav; use drawer footer link to /dashboard/settings
-
-  // Communities - expandable (top-level /communities section); full drawer nav shown on /communities like /office
+  // Communities - expandable (top-level /communities section)
   items.push({
     key: 'communities',
     titleKey: ROUTES.COMMUNITIES.titleKey,
@@ -123,14 +85,70 @@ export const generateDashboardDrawerItems = (): DrawerItemConfig[] => {
     isExpandable: true,
     expandOnActive: true,
     subItems: [
-      { key: 'communities-hub', titleKey: ROUTES.COMMUNITIES.titleKey, href: ROUTES.COMMUNITIES.path },
+      { key: 'communities-hub', titleKey: ROUTES.COMMUNITIES.titleKey, href: ROUTES.COMMUNITIES.path, exact: true },
       { key: 'communities-connections', titleKey: ROUTES.COMMUNITIES.CONNECTIONS.titleKey, href: ROUTES.COMMUNITIES.CONNECTIONS.path },
       { key: 'communities-bookmarks', titleKey: ROUTES.COMMUNITIES.BOOKMARKS.titleKey, href: ROUTES.COMMUNITIES.BOOKMARKS.path },
       { key: 'communities-reputation', titleKey: ROUTES.COMMUNITIES.REPUTATION.titleKey, href: ROUTES.COMMUNITIES.REPUTATION.path },
     ],
   })
 
-  // Teams and Work Logs are only under My Organizations (org-scoped); no top-level items here.
+  // Workers - expandable with Search and Map
+  items.push({
+    key: 'workers',
+    titleKey: 'navigation.discoverWorkers',
+    href: ROUTES.DASHBOARD.DISCOVER.WORKERS.path,
+    routeKey: 'DASHBOARD_DISCOVER_WORKERS',
+    icon: Users,
+    isExpandable: true,
+    expandOnActive: true,
+    subItems: [
+      { key: 'workers-index', titleKey: 'navigation.workersList', href: ROUTES.DASHBOARD.DISCOVER.WORKERS.path, exact: true },
+      { key: 'workers-map', titleKey: 'navigation.discoverMap', href: ROUTES.DASHBOARD.DISCOVER.MAP.path },
+    ],
+  })
+
+  // Employers - expandable with Search, Create, Join, and per-org sub-items
+  const employerSubItems: DrawerItemConfig[] = [
+    { key: 'employers-index', titleKey: 'navigation.employersList', href: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path, exact: true },
+    { key: 'employers-create', titleKey: 'navigation.employersCreate', href: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.CREATE.path },
+    { key: 'employers-join', titleKey: 'navigation.employersJoin', href: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.INVITATIONS.path },
+    ...buildOrgSubItems(memberships ?? []),
+  ]
+
+  items.push({
+    key: 'employers',
+    titleKey: 'navigation.discoverEmployers',
+    href: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path,
+    routeKey: 'DASHBOARD_DISCOVER_EMPLOYERS',
+    icon: Building2,
+    isExpandable: true,
+    expandOnActive: true,
+    subItems: employerSubItems,
+  })
+
+  // Jobs - expandable with applications and optional My Listings
+  const jobSubItems: DrawerItemConfig[] = [
+    { key: 'jobs-index', titleKey: ROUTES.DASHBOARD.DISCOVER.JOBS.titleKey, href: ROUTES.DASHBOARD.DISCOVER.JOBS.path, exact: true },
+    { key: 'jobs-applications', titleKey: ROUTES.DASHBOARD.DISCOVER.JOBS.APPLICATIONS.titleKey, href: ROUTES.DASHBOARD.DISCOVER.JOBS.APPLICATIONS.path },
+  ]
+  if (memberships && memberships.length > 0) {
+    jobSubItems.push({
+      key: 'jobs-my-listings',
+      titleKey: 'navigation.jobsMyListings',
+      href: ROUTES.DASHBOARD.DISCOVER.JOBS.MY_LISTINGS.path,
+    })
+  }
+
+  items.push({
+    key: 'jobs',
+    titleKey: 'navigation.discoverJobs',
+    href: ROUTES.DASHBOARD.DISCOVER.JOBS.path,
+    routeKey: 'DASHBOARD_DISCOVER_JOBS',
+    icon: Briefcase,
+    isExpandable: true,
+    expandOnActive: true,
+    subItems: jobSubItems,
+  })
 
   // Assessments - expandable with second-tier (pulse, ipip, riasec, occupation)
   items.push({
@@ -150,6 +168,26 @@ export const generateDashboardDrawerItems = (): DrawerItemConfig[] => {
       { key: 'assessments-career-explorer', titleKey: ROUTES.DASHBOARD.CAREER_EXPLORER.titleKey, href: ROUTES.DASHBOARD.CAREER_EXPLORER.path },
     ],
   })
+
+  // Profile - expandable with Overview + all tier-1 (tabs)
+  items.push({
+    key: 'profile',
+    titleKey: ROUTES.DASHBOARD.PROFILE.titleKey,
+    href: ROUTES.DASHBOARD.PROFILE.path,
+    routeKey: 'DASHBOARD_PROFILE',
+    icon: User,
+    isExpandable: true,
+    expandOnActive: true,
+    subItems: [
+      { key: 'profile-overview', titleKey: ROUTES.DASHBOARD.PROFILE.OVERVIEW.titleKey, href: ROUTES.DASHBOARD.PROFILE.OVERVIEW.path, exact: true },
+      { key: 'profile-resume', titleKey: ROUTES.DASHBOARD.PROFILE.RESUME.titleKey, href: ROUTES.DASHBOARD.PROFILE.RESUME.path },
+      { key: 'profile-skills', titleKey: ROUTES.DASHBOARD.PROFILE.SKILLS.titleKey, href: ROUTES.DASHBOARD.PROFILE.SKILLS.path },
+      { key: 'profile-experience', titleKey: ROUTES.DASHBOARD.PROFILE.EXPERIENCE.titleKey, href: ROUTES.DASHBOARD.PROFILE.EXPERIENCE.path },
+      { key: 'profile-verification', titleKey: ROUTES.DASHBOARD.PROFILE.ID_VERIFICATION.titleKey, href: ROUTES.DASHBOARD.PROFILE.ID_VERIFICATION.path },
+    ],
+  })
+
+  // Settings: not in main nav; use drawer footer link to /dashboard/settings
 
   return items
 }
@@ -187,6 +225,7 @@ export const getCommunitiesDrawerItems = (): DrawerItemConfig[] => [
     href: ROUTES.COMMUNITIES.path,
     routeKey: 'COMMUNITIES',
     icon: Bookmark,
+    exact: true,
   },
   {
     key: 'communities-connections',
@@ -212,65 +251,9 @@ export const getCommunitiesDrawerItems = (): DrawerItemConfig[] => [
 ]
 
 /**
- * Build the "My Organizations" drawer item with nested orgs and their Teams/Logs.
- * Only include when memberships.length > 0. Dedupe by organization_id.
- */
-export const buildMyOrganizationsDrawerItem = (
-  memberships: OrganizationMembership[]
-): DrawerItemConfig | null => {
-  const seen = new Set<string>()
-  const orgs = memberships.filter((m) => {
-    if (seen.has(m.organization_id)) return false
-    seen.add(m.organization_id)
-    return true
-  })
-  if (orgs.length === 0) return null
-  return {
-    key: 'my-organizations',
-    titleKey: ROUTES.ORG.titleKey,
-    href: ROUTES.ORG.path,
-    routeKey: 'ORG',
-    icon: Building2,
-    isExpandable: true,
-    expandOnActive: true,
-    subItems: [
-      {
-        key: 'org-invitations',
-        titleKey: ROUTES.ORG.INVITATIONS.titleKey,
-        href: ROUTES.ORG.INVITATIONS.path,
-      },
-      ...orgs.map((m) => ({
-        key: `org-${m.organization_slug}`,
-        title: m.organization_name,
-        href: `/org/${m.organization_slug}`,
-        isExpandable: true,
-        expandOnActive: true,
-        subItems: [
-          {
-            key: `org-${m.organization_slug}-teams`,
-            titleKey: ROUTES.DASHBOARD.TEAMS.titleKey,
-            href: `/org/${m.organization_slug}/teams`,
-          },
-          {
-            key: `org-${m.organization_slug}-logs`,
-            titleKey: ROUTES.ORG.DETAIL.LOGS.titleKey,
-            href: `/org/${m.organization_slug}/logs`,
-          },
-        ],
-      })),
-    ],
-  }
-}
-
-/**
  * Get drawer items for the drawer menu
- * @param memberships - Optional org memberships; when present and non-empty, "My Organizations" is inserted before Profile
+ * @param memberships - Optional org memberships; orgs are nested under the Employers group
  */
 export const getDrawerItems = (memberships?: OrganizationMembership[]): DrawerItemConfig[] => {
-  const items = generateDashboardDrawerItems()
-  const myOrgs = memberships?.length ? buildMyOrganizationsDrawerItem(memberships) : null
-  if (!myOrgs) return items
-  const profileIndex = items.findIndex((i) => i.key === 'profile')
-  const insertAt = profileIndex >= 0 ? profileIndex : items.length
-  return [...items.slice(0, insertAt), myOrgs, ...items.slice(insertAt)]
+  return generateDashboardDrawerItems(memberships)
 }

@@ -1,20 +1,16 @@
-import { ROUTES } from '@scf/core/constants/routes'
-import { ProfileCertificationsHighlightProvider } from '@scf/core/features/profile/profile-certifications-highlight-context'
-import { ProfilePage } from '@scf/core/features/profile/ProfilePage'
-import { ProfileCertificationsLeft } from '@scf/core/features/profile/profile-certifications-left'
-import { ProfileCertificationsRight } from '@scf/core/features/profile/profile-certifications-right'
+/**
+ * Redirect: Certifications was merged into Skills.
+ * Old links to /dashboard/profile/certifications go to the skills page.
+ */
 
-export default function ProfileCertificationsPage() {
-  return (
-    <ProfileCertificationsHighlightProvider>
-      <ProfilePage
-        breadcrumbs={[
-          { route: ROUTES.DASHBOARD.PROFILE },
-          { route: ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS },
-        ]}
-        leftContent={<ProfileCertificationsLeft />}
-        rightContent={<ProfileCertificationsRight />}
-      />
-    </ProfileCertificationsHighlightProvider>
-  )
+import { ROUTES } from '@scf/core/constants/routes'
+import { useRouter } from 'expo-router'
+import { useEffect } from 'react'
+
+export default function CertificationsRedirect() {
+  const router = useRouter()
+  useEffect(() => {
+    router.replace(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
+  }, [router])
+  return null
 }

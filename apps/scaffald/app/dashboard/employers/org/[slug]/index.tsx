@@ -32,7 +32,7 @@ export default function OrgDetailPage() {
         leftContent={
           <Stack padding={16} gap={12}>
             <Text color="red">Organization not found</Text>
-            <Text color="gray">You don’t have access to this organization or it doesn’t exist.</Text>
+            <Text color="gray">You don't have access to this organization or it doesn't exist.</Text>
             <Button size="md" variant="outline" onPress={() => router.push(RouteBuilder.orgIndex())}>
               Back to My Organizations
             </Button>

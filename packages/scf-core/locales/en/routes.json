@@ -53,6 +53,7 @@
       },
       "jobs": {
         "detail": "Job Details",
+        "myListings": "My Listings",
         "title": "Jobs"
       },
       "map": "Map",

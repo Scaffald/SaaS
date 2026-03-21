@@ -1,17 +1,16 @@
-import { ROUTES } from '@scf/core/constants/routes'
-import { ProfilePage } from '@scf/core/features/profile/ProfilePage'
-import { ProfileEmploymentLeft } from '@scf/core/features/profile/profile-employment-left'
-import { ProfileEmploymentRight } from '@scf/core/features/profile/profile-employment-right'
+/**
+ * Redirect: Employment was merged into Resumé.
+ * Old links to /dashboard/profile/employment go to the resume page.
+ */
 
-export default function ProfileEmploymentPage() {
-  return (
-    <ProfilePage
-      breadcrumbs={[
-        { route: ROUTES.DASHBOARD.PROFILE },
-        { route: ROUTES.DASHBOARD.PROFILE.EMPLOYMENT },
-      ]}
-      leftContent={<ProfileEmploymentLeft />}
-      rightContent={<ProfileEmploymentRight />}
-    />
-  )
+import { ROUTES } from '@scf/core/constants/routes'
+import { useRouter } from 'expo-router'
+import { useEffect } from 'react'
+
+export default function EmploymentRedirect() {
+  const router = useRouter()
+  useEffect(() => {
+    router.replace(ROUTES.DASHBOARD.PROFILE.RESUME.path)
+  }, [router])
+  return null
 }

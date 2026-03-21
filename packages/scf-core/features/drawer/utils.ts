@@ -14,7 +14,11 @@ export const normalizePath = (value: string) => {
   return normalized.endsWith('/') ? normalized.slice(0, -1) : normalized
 }
 
-export const isActivePath = (pathname: string, href: string) => {
+export const isActivePath = (pathname: string, href: string, exact?: boolean) => {
+  if (exact) {
+    return pathname === href || pathname === `${href}/index`
+  }
+
   if (href === '/') {
     return pathname === '/' || pathname === '/index'
   }
@@ -61,6 +65,18 @@ export const isActivePath = (pathname: string, href: string) => {
     )
   }
 
+  // Special case for workers: also match /dashboard/map (nav sibling under Workers)
+  const workersPath = ROUTES.DASHBOARD.DISCOVER.WORKERS.path
+  if (href === workersPath) {
+    return (
+      pathname === workersPath ||
+      pathname === `${workersPath}/index` ||
+      pathname.startsWith(`${workersPath}/`) ||
+      pathname === ROUTES.DASHBOARD.DISCOVER.MAP.path ||
+      pathname.startsWith(`${ROUTES.DASHBOARD.DISCOVER.MAP.path}/`)
+    )
+  }
+
   // Special case for employers: match /dashboard/employers and children (e.g. /dashboard/employers/create, /dashboard/employers/:id)
   const employersPath = ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path
   if (href === employersPath) {
@@ -68,21 +84,6 @@ export const isActivePath = (pathname: string, href: string) => {
       pathname === employersPath ||
       pathname.startsWith(`${employersPath}/`)
     )
-  }
-
-  // My Organizations: match /org and any child (/org/invitations, /org/:slug, /org/:slug/teams, etc.)
-  const orgPath = ROUTES.ORG.path
-  if (href === orgPath) {
-    return (
-      pathname === orgPath ||
-      pathname === `${orgPath}/index` ||
-      pathname.startsWith(`${orgPath}/`)
-    )
-  }
-
-  // Org-scoped hrefs like /org/invitations or /org/:slug or /org/:slug/teams
-  if (href.startsWith(`${orgPath}/`)) {
-    return pathname === href || pathname.startsWith(`${href}/`)
   }
 
   return pathname === href || pathname.startsWith(`${href}/`)

@@ -10,6 +10,10 @@
   "discoverJobs": "Trabajos",
   "discoverMap": "Mapa",
   "discoverWorkers": "Trabajadores",
+  "employersCreate": "Crear",
+  "employersJoin": "Unirse",
+  "jobsMyListings": "Mis Publicaciones",
+  "employersList": "Buscar",
   "notifications": "Notificaciones",
   "office": "Oficina",
   "officeApplications": "Solicitudes",
@@ -22,11 +26,10 @@
   "officeUniversities": "Gestionar universidades",
   "officeUsers": "Gestionar usuarios",
   "profile": "Perfil",
-  "profileCertifications": "Certificaciones",
-  "profileEducation": "Educación",
-  "profileEmployment": "Empleo",
   "profileExperience": "Experiencia",
-  "profileGeneral": "General",
+  "profileResume": "Currículum",
   "profileSkills": "Habilidades",
-  "settings": "Configuración"
+  "profileVerification": "Verificación",
+  "settings": "Configuración",
+  "workersList": "Buscar"
 }

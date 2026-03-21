@@ -11,7 +11,6 @@ import {
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
-import { ProfileTabs } from '../navigation/ProfileTabs'
 
 /** Golden ratio (φ) for column proportion: left ~61.8%, right ~38.2% */
 const GOLDEN_RATIO_TEMPLATE = 'minmax(300px, 1.618fr) minmax(300px, 1fr)'
@@ -19,8 +18,6 @@ const GOLDEN_RATIO_TEMPLATE = 'minmax(300px, 1.618fr) minmax(300px, 1fr)'
 type ProfileLayoutProps = {
   rightContent?: ReactNode
   leftContent: ReactNode
-  /** Whether to show tab navigation (default: true) */
-  showTabs?: boolean
   /** Whether to show breadcrumb navigation (default: true) */
   showBreadcrumb?: boolean
   /** Manual breadcrumb items to override auto-generation */
@@ -32,7 +29,6 @@ type ProfileLayoutProps = {
 export const ProfileLayout = ({
   rightContent,
   leftContent,
-  showTabs = true,
   showBreadcrumb = false,
   breadcrumbItems,
   autoGenerateBreadcrumbs = true,
@@ -61,12 +57,6 @@ export const ProfileLayout = ({
           <Row paddingHorizontal={contentPadding}>
             <Breadcrumb items={displayBreadcrumbs} currentIndex={currentIndex} />
           </Row>
-        )}
-
-        {showTabs && (
-          <Stack paddingHorizontal={contentPadding}>
-            <ProfileTabs />
-          </Stack>
         )}
 
         {/* Content Area - Two-column golden ratio (lg+) or single column */}
