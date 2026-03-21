@@ -10,7 +10,9 @@ import {
   Text,
   Row,
   Stack,
+  useThemeContext,
 } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
 import type { ResolvedWorkLogPhoto, WorkLogPhotoType } from "../types/photos";
 
@@ -72,6 +74,7 @@ export function PhotoCard({
   onToggleVisibility,
   onDelete,
 }: PhotoCardProps) {
+  const { theme } = useThemeContext();
   const [isEditingCaption, setIsEditingCaption] = useState(false);
   const [captionDraft, setCaptionDraft] = useState(photo.caption ?? "");
   const [isSavingCaption, setIsSavingCaption] = useState(false);
@@ -149,7 +152,7 @@ export function PhotoCard({
     <Stack
       style={{
         borderWidth: 1,
-        borderColor: "#e2e8f0",
+        borderColor: colors.border[theme].default,
         borderRadius: 16,
         overflow: "hidden",
       }}
@@ -202,7 +205,7 @@ export function PhotoCard({
       <Stack gap={12} style={{ padding: 8 }}>
         <Row align="center" justify="space-between" gap={12}>
           <Row gap={8} align="center">
-            <Tag size="md" color="#414e62" />
+            <Tag size="md" color={colors.fg[theme].subtle} />
             <Text>{typeOption?.label ?? "Uncategorized"}</Text>
           </Row>
           <Row gap={8}>
@@ -217,7 +220,7 @@ export function PhotoCard({
                 {photo.showOnProfile ? "Public" : "Private"}
               </Button>
             ) : (
-              <Text style={{ color: "#414e62" }}>
+              <Text style={{ color: colors.text[theme].secondary }}>
                 {photo.showOnProfile
                   ? "Visible on profile"
                   : "Hidden from profile"}
@@ -273,7 +276,7 @@ export function PhotoCard({
               <Text
                 style={{
                   flex: 1,
-                  color: photo.caption ? undefined : "#414e62",
+                  color: photo.caption ? undefined : colors.text[theme].secondary,
                 }}
               >
                 {photo.caption ?? "No caption provided."}
@@ -290,7 +293,7 @@ export function PhotoCard({
             </Row>
           ) : (
             <Text
-              style={{ flex: 1, color: photo.caption ? undefined : "#414e62" }}
+              style={{ flex: 1, color: photo.caption ? undefined : colors.text[theme].secondary }}
             >
               {photo.caption ?? "No caption provided."}
             </Text>
@@ -320,7 +323,7 @@ export function PhotoCard({
               }))}
             />
           ) : (
-            <Text style={{ color: "#414e62" }}>
+            <Text style={{ color: colors.text[theme].secondary }}>
               {typeOption?.label ?? "Uncategorized"}
             </Text>
           )}
@@ -330,16 +333,16 @@ export function PhotoCard({
 
         <Stack gap={4}>
           <Text>Details</Text>
-          <Text style={{ color: "#414e62" }}>
+          <Text style={{ color: colors.text[theme].secondary }}>
             Size: {formatBytes(photo.fileSizeBytes)}
           </Text>
           {photo.takenAt ? (
-            <Text style={{ color: "#414e62" }}>
+            <Text style={{ color: colors.text[theme].secondary }}>
               Taken: {formatDate(photo.takenAt) ?? "Unknown"}
             </Text>
           ) : null}
           {photo.createdAt ? (
-            <Text style={{ color: "#414e62" }}>
+            <Text style={{ color: colors.text[theme].secondary }}>
               Uploaded: {formatDate(photo.createdAt) ?? "Unknown"}
             </Text>
           ) : null}

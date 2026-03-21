@@ -147,7 +147,7 @@ export function CareerAssessmentWidget() {
             )}
           />
           {errors.current_occupation_code && (
-            <Text style={{ color: t === 'dark' ? colors.red[300] : colors.red[600] }}>{errors.current_occupation_code.message}</Text>
+            <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>{errors.current_occupation_code.message}</Text>
           )}
         </Stack>
 

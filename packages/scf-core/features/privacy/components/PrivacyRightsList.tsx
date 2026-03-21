@@ -6,7 +6,7 @@
  * and links to exercise each right
  */
 
-import { Text, Row, Stack } from '@scaffald/ui'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 /**
@@ -77,8 +77,8 @@ const CCPA_RIGHTS: PrivacyRight[] = [
  * Action type to color mapping
  */
 const ACTION_COLORS: Record<string, string> = {
-  export: '#2563eb',
-  delete: '#ef4444',
+  export: colors.info[600],
+  delete: colors.error[600],
   optout: colors.orange[600],
   correct: colors.purple[600],
   info: colors.gray[600],
@@ -100,13 +100,14 @@ function RightCard({
     }
   }
 
+  const { theme } = useThemeContext()
   return (
     <Stack
       padding="md"
-      backgroundColor={colors.bg.light.subtle}
+      backgroundColor={colors.bg[theme].subtle}
       borderRadius={12}
       borderWidth={1}
-      borderColor={colors.border.light.default}
+      borderColor={colors.border[theme].default}
       gap={12}
     >
       <Row gap={8} align="center">
@@ -114,7 +115,7 @@ function RightCard({
         <Text>{right.title}</Text>
       </Row>
 
-      <Text style={{ color: '#414e62', lineHeight: 16 }}>
+      <Text style={{ color: colors.text[theme].secondary, lineHeight: 16 }}>
         {right.description}
       </Text>
 
@@ -156,7 +157,7 @@ export function PrivacyRightsList({ onAction }: PrivacyRightsListProps) {
         borderRadius={8}
         marginTop={8}
       >
-        <Text style={{ color: '#414e62' }}>
+        <Text style={{ color: colors.text.light.secondary }}>
           These rights are provided under the California Consumer Privacy Act (CCPA) and California
           Privacy Rights Act (CPRA). To exercise any of these rights, you can use the quick actions
           at the top of this page or contact our Privacy Team.

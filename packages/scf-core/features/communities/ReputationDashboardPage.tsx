@@ -160,7 +160,7 @@ export function ReputationDashboardPage() {
                       fontWeight: '700',
                       color: event.delta > 0
                         ? (t === 'dark' ? colors.green[300] : colors.green[600])
-                        : (t === 'dark' ? colors.red[300] : colors.red[600]),
+                        : (t === 'dark' ? colors.error[300] : colors.error[600]),
                     }}
                   >
                     {event.delta > 0 ? '+' : ''}

@@ -528,7 +528,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     return (
       <Stack align="center" justify="center" flex={1} gap={12}>
         <AlertCircle size={32} />
-        <Text style={{ color: colors.red[500] }}>Wizard session not found</Text>
+        <Text style={{ color: colors.error[500] }}>Wizard session not found</Text>
         <Text style={{ color: colors.text[t].secondary }}>
           Please upload your resume again to kick off the import flow.
         </Text>

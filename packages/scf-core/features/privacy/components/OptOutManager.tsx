@@ -11,7 +11,7 @@
 
 import { useState, useEffect } from "react";
 import { Pressable } from "react-native";
-import { Button, Text, Row, Stack, Spinner } from "@scaffald/ui";
+import { Button, Text, Row, Stack, Spinner, useThemeContext } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
 import type { CCPAOptOutStatus } from "@scaffald/sdk";
 import {
@@ -137,6 +137,7 @@ function OptOutRow({
   onToggle: (category: OptOutCategory, optOut: boolean) => void;
   isPending: boolean;
 }) {
+  const { theme } = useThemeContext();
   const info = CATEGORY_INFO[category];
   const isOptedOut = status?.opted_out ?? false;
   const isGPCOptOut = status?.source === "gpc";
@@ -144,16 +145,16 @@ function OptOutRow({
   return (
     <Stack
       padding="md"
-      backgroundColor={colors.bg.light.subtle}
+      backgroundColor={colors.bg[theme].subtle}
       borderRadius={12}
       borderWidth={1}
-      borderColor={colors.border.light.default}
+      borderColor={colors.border[theme].default}
       gap={12}
     >
       <Row justify="space-between" align="flex-start">
         <Stack flex={1} gap={4} marginRight={16}>
           <Text>{info.title}</Text>
-          <Text style={{ color: colors.text.light.secondary }}>
+          <Text style={{ color: colors.text[theme].secondary }}>
             {info.description}
           </Text>
         </Stack>
@@ -166,7 +167,7 @@ function OptOutRow({
           />
           <Text
             style={{
-              color: isOptedOut ? "#16a34a" : colors.text.light.tertiary,
+              color: isOptedOut ? colors.success[600] : colors.text[theme].tertiary,
             }}
           >
             {isOptedOut ? "Opted Out" : "Opted In"}
@@ -177,7 +178,7 @@ function OptOutRow({
       {/* Status info */}
       {status?.opted_out_at != null && (
         <Row gap={8} align="center">
-          <Text style={{ color: colors.text.light.secondary }}>
+          <Text style={{ color: colors.text[theme].secondary }}>
             {isGPCOptOut ? "Via GPC signal" : "Manual opt-out"} on{" "}
             {formatDate(status.opted_out_at)}
           </Text>
@@ -195,7 +196,7 @@ function OptOutRow({
       )}
 
       {/* Legal basis */}
-      <Text style={{ color: colors.text.light.secondary }}>
+      <Text style={{ color: colors.text[theme].secondary }}>
         Legal basis: {info.legalBasis}
       </Text>
     </Stack>
@@ -206,6 +207,7 @@ function OptOutRow({
  * Opt-Out Manager Component
  */
 export function OptOutManager({ onClose }: OptOutManagerProps) {
+  const { theme } = useThemeContext();
   const [hasGPC, setHasGPC] = useState(false);
   const [pendingCategory, setPendingCategory] = useState<OptOutCategory | null>(
     null
@@ -260,10 +262,10 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
   if (error) {
     return (
       <Stack padding="md" gap={16} align="center">
-        <Text style={{ color: "#ef4444" }}>
+        <Text style={{ color: colors.error[600] }}>
           Error loading opt-out preferences
         </Text>
-        <Text style={{ color: "#414e62" }}>{error.message}</Text>
+        <Text style={{ color: colors.text[theme].secondary }}>{error.message}</Text>
         <Button onPress={() => refetch()} variant="outline">
           Retry
         </Button>
@@ -276,7 +278,7 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
       {/* Header */}
       <Stack gap={8}>
         <Text>Manage Opt-Out Preferences</Text>
-        <Text style={{ color: "#414e62" }}>
+        <Text style={{ color: colors.text[theme].secondary }}>
           Control how your personal information is used and shared. Your choices
           here are protected under the California Consumer Privacy Act (CCPA).
         </Text>
@@ -379,11 +381,11 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
       {/* Non-discrimination notice */}
       <Stack
         padding="sm"
-        backgroundColor={colors.bg.light.muted}
+        backgroundColor={colors.bg[theme].muted}
         borderRadius={8}
         marginTop={8}
       >
-        <Text style={{ color: "#414e62" }}>
+        <Text style={{ color: colors.text[theme].secondary }}>
           <Text>Non-Discrimination Notice:</Text> We will not discriminate
           against you for exercising any of your privacy rights. You will
           receive the same service and pricing regardless of your privacy
@@ -394,17 +396,17 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
       {/* Info about processing */}
       <Stack gap={8} marginTop={8}>
         <Text>How Opt-Outs Work</Text>
-        <Text style={{ color: "#414e62" }}>
+        <Text style={{ color: colors.text[theme].secondary }}>
           • Opt-out preferences take effect immediately
         </Text>
-        <Text style={{ color: "#414e62" }}>
+        <Text style={{ color: colors.text[theme].secondary }}>
           • We will not sell or share your data with third parties while you are
           opted out
         </Text>
-        <Text style={{ color: "#414e62" }}>
+        <Text style={{ color: colors.text[theme].secondary }}>
           • You can change your preferences at any time
         </Text>
-        <Text style={{ color: "#414e62" }}>
+        <Text style={{ color: colors.text[theme].secondary }}>
           • If you use GPC, your opt-out will be automatically applied across
           all participating sites
         </Text>

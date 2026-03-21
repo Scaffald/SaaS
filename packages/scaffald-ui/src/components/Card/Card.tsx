@@ -226,7 +226,8 @@ export function CardFooter({
   align = 'right',
   style,
 }: CardFooterProps): React.ReactElement {
-  const styles = useStyles(getCardFooterStyles, [align] as const)
+  const { theme } = useThemeContext()
+  const styles = useStyles(getCardFooterStyles, [align, theme] as const)
   return (
     <View style={[styles.footer, style]}>
       <View style={styles.footerInner}>{children}</View>

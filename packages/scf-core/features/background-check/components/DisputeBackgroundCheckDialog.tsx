@@ -4,7 +4,8 @@ import { AlertTriangle } from 'lucide-react-native'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo } from 'react'
 import { DialogCompound as Dialog } from '@scf/core/components/ui/DialogCompound'
-import { Button, Separator, Text, Row, Stack } from '@scaffald/ui'
+import { Button, Separator, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useDispute } from '../hooks/useDispute'
 import { DisputeForm } from './DisputeForm'
 import { DisputeStatusTracker } from './DisputeStatusTracker'
@@ -26,6 +27,7 @@ export function DisputeBackgroundCheckDialog({
   onOpenChange,
   onSubmitted,
 }: DisputeBackgroundCheckDialogProps) {
+  const { theme } = useThemeContext()
   const {
     form,
     reasonOptions,
@@ -93,15 +95,15 @@ export function DisputeBackgroundCheckDialog({
             {check ? (
               <Stack gap={8} style={{ borderRadius: 16, padding: 8 }}>
                 <Row gap={8} align="center">
-                  <AlertTriangle size={18} color="#b45309" />
-                  <Text style={{ color: '#414e62' }}>{statusMeta?.label ?? 'Background check'}</Text>
+                  <AlertTriangle size={18} color={colors.warning[700]} />
+                  <Text style={{ color: colors.text[theme].secondary }}>{statusMeta?.label ?? 'Background check'}</Text>
                 </Row>
-                <Text style={{ color: '#414e62' }}>
-                  Package: <Text style={{ color: '#414e62' }}>{summaryPackage}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>
+                  Package: <Text style={{ color: colors.text[theme].secondary }}>{summaryPackage}</Text>
                 </Text>
-                <Text style={{ color: '#414e62' }}>Completed: {formatDate(check.completed_at)}</Text>
-                <Text style={{ color: '#414e62' }}>Expires: {formatDate(check.expires_at)}</Text>
-                <Text style={{ color: '#414e62' }}>
+                <Text style={{ color: colors.text[theme].secondary }}>Completed: {formatDate(check.completed_at)}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>Expires: {formatDate(check.expires_at)}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>
                   Disputes should focus on factual inaccuracies, missing context, or mismatched
                   records.
                 </Text>
@@ -134,7 +136,7 @@ export function DisputeBackgroundCheckDialog({
               </>
             ) : (
               <Stack gap={12} align="center" style={{ paddingVertical: 24 }}>
-                <Text style={{ color: '#414e62' }}>
+                <Text style={{ color: colors.text[theme].secondary }}>
                   Select a background check to review dispute information.
                 </Text>
               </Stack>

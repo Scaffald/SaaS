@@ -99,12 +99,12 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
 
   const statusColor =
     app.status === 'active' || app.status === 'trusted'
-      ? '#22c55e'
+      ? colors.success[500]
       : app.status === 'pending'
-        ? '#eab308'
+        ? colors.warning[500]
         : app.status === 'suspended'
-          ? '#f97316'
-          : '#ef4444'
+          ? colors.warning[500]
+          : colors.error[600]
 
   function handleApprove() {
     approveApp.mutate({
@@ -145,7 +145,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
             </Chip>
             {app.requires_approval && isPending && (
               <Chip
-                style={{ backgroundColor: '#3b82f6' }}
+                style={{ backgroundColor: colors.info[600] }}
                 textStyle={{ color: 'white' }}
                 data-testid="oauth-app-requires-approval"
               >
@@ -302,8 +302,8 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
               {app.allowed_scopes.map((scope) => (
                 <Chip
                   key={scope}
-                  style={{ backgroundColor: '#dbeafe', paddingHorizontal: 8, paddingVertical: 4 }}
-                  textStyle={{ color: '#1d4ed8' }}
+                  style={{ backgroundColor: t === 'dark' ? colors.info[900] : colors.info[100], paddingHorizontal: 8, paddingVertical: 4 }}
+                  textStyle={{ color: colors.info[700] }}
                   data-testid={`oauth-app-scope-${scope}`}
                 >
                   {scope}

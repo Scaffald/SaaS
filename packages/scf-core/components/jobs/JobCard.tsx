@@ -162,7 +162,7 @@ export const JobCard = memo(
       if (location) {
         metadataItems.push({
           key: 'location',
-          icon: <MapPin size="md" color={isSelected ? colors.text[t].inverse : colors.text[t].secondary} />,
+          icon: <MapPin size="md" color={isSelected ? colors.text[t].quaternary : colors.text[t].secondary} />,
           label: location,
         })
       }
@@ -170,7 +170,7 @@ export const JobCard = memo(
       if (employment) {
         metadataItems.push({
           key: 'employment',
-          icon: <Briefcase size="md" color={isSelected ? colors.text[t].inverse : colors.text[t].secondary} />,
+          icon: <Briefcase size="md" color={isSelected ? colors.text[t].quaternary : colors.text[t].secondary} />,
           label: employment,
         })
       }
@@ -178,7 +178,7 @@ export const JobCard = memo(
       if (postedTime) {
         metadataItems.push({
           key: 'posted',
-          icon: <Clock size="md" color={isSelected ? colors.text[t].inverse : colors.text[t].tertiary} />,
+          icon: <Clock size="md" color={isSelected ? colors.text[t].quaternary : colors.text[t].tertiary} />,
           label: postedTime,
         })
       }
@@ -189,13 +189,13 @@ export const JobCard = memo(
           key: cert.id,
           label: cert.name,
           backgroundColor: t === 'dark' ? colors.error[300] : colors.error[600],
-          color: colors.text[t].inverse,
+          color: colors.text[t].quaternary,
         })),
         ...skills.slice(0, 2).map((skill) => ({
           key: skill.id,
           label: skill.name,
           backgroundColor: t === 'dark' ? colors.blue[300] : colors.blue[600],
-          color: colors.text[t].inverse,
+          color: colors.text[t].quaternary,
         })),
       ]
 
@@ -231,13 +231,13 @@ export const JobCard = memo(
                       paddingVertical={4}
                       borderRadius={8}
                     >
-                      <Text color={colors.text[t].inverse}>Applied</Text>
+                      <Text color={colors.text[t].quaternary}>Applied</Text>
                     </Row>
                   )}
                   {organization && (
                     <Row gap={8} align="center">
-                      <Building2 size="lg" color={isSelected ? colors.text[t].inverse : colors.text[t].primary} />
-                      <Text color={isSelected ? colors.text[t].inverse : colors.text[t].primary}>{organization.name}</Text>
+                      <Building2 size="lg" color={isSelected ? colors.text[t].quaternary : colors.text[t].primary} />
+                      <Text color={isSelected ? colors.text[t].quaternary : colors.text[t].primary}>{organization.name}</Text>
                     </Row>
                   )}
                 </>
@@ -254,7 +254,7 @@ export const JobCard = memo(
                 paddingVertical={4}
                 borderRadius={8}
               >
-                <Text color={colors.text[t].inverse}>
+                <Text color={colors.text[t].quaternary}>
                   {remoteOption === 'on_site'
                     ? 'On-site'
                     : remoteOption === 'hybrid'
@@ -267,7 +267,7 @@ export const JobCard = memo(
 
           {/* Description */}
           {description && (
-            <Paragraph size="sm" color={isSelected ? colors.text[t].inverse : colors.text[t].primary}>
+            <Paragraph size="sm" color={isSelected ? colors.text[t].quaternary : colors.text[t].primary}>
               {description}
             </Paragraph>
           )}

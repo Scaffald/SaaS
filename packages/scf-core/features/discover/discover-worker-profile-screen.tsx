@@ -42,6 +42,8 @@ function SkeletonBlock({
   width?: number | string
   radius?: number
 }) {
+  const { theme: skeletonTheme } = useThemeContext()
+  const skeletonT = skeletonTheme === 'dark' ? 'dark' as const : 'light' as const
   const shimmer = useRef(new Animated.Value(0)).current
 
   useEffect(() => {
@@ -71,7 +73,7 @@ function SkeletonBlock({
       style={{
         position: 'relative',
         overflow: 'hidden',
-        backgroundColor: '#e4e7ec',
+        backgroundColor: colors.border[skeletonT].default,
         height,
         width: (width ?? '100%') as DimensionValue,
         borderRadius: radius,

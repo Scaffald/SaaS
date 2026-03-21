@@ -1,6 +1,6 @@
 import { Pressable } from 'react-native'
 import { CheckCircle2, Circle } from 'lucide-react-native'
-import { Text, Row, Stack } from '@scaffald/ui'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 interface Skill {
@@ -28,16 +28,18 @@ export function ReviewStepCategoryTags({
   onToggleStrength,
   onToggleImprovement,
 }: ReviewStepCategoryTagsProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text style={{ color: '#414e62' }}>{title}</Text>
-        <Text style={{ color: '#414e62' }}>{description}</Text>
+        <Text style={{ color: colors.text[t].secondary }}>{title}</Text>
+        <Text style={{ color: colors.text[t].secondary }}>{description}</Text>
       </Stack>
 
       {/* Strengths Section */}
       <Stack gap={12}>
-        <Text style={{ color: '#16a34a' }}>✓ Strengths</Text>
+        <Text style={{ color: colors.success[600] }}>✓ Strengths</Text>
         <Row gap={8} wrap>
           {skills.map((skill) => {
             const isSelected = strengths.includes(skill.id)
@@ -71,7 +73,7 @@ export function ReviewStepCategoryTags({
 
       {/* Areas to Improve Section */}
       <Stack gap={12}>
-        <Text style={{ color: '#ef4444' }}>→ Areas to Improve</Text>
+        <Text style={{ color: colors.error[600] }}>→ Areas to Improve</Text>
         <Row gap={8} wrap>
           {skills.map((skill) => {
             const isSelected = improvements.includes(skill.id)
@@ -104,7 +106,7 @@ export function ReviewStepCategoryTags({
       </Stack>
 
       {/* Helper Text */}
-      <Text style={{ color: '#414e62', fontStyle: 'italic' }}>
+      <Text style={{ color: colors.text[t].secondary, fontStyle: 'italic' }}>
         Select multiple items for each category. Items can only be in one category.
       </Text>
     </Stack>

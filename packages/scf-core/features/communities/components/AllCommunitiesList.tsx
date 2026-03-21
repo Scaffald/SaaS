@@ -67,7 +67,7 @@ export function AllCommunitiesList() {
                   padding: 16,
                   borderRadius: 12,
                   borderWidth: 1,
-                  borderColor: '#e5e5e5',
+                  borderColor: colors.border[t].default,
                   cursor: 'pointer',
                 }}
               >

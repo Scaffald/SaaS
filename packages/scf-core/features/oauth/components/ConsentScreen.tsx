@@ -111,7 +111,7 @@ export function ConsentScreen({
             {app.logo_url && (
               <Image
                 source={{ uri: app.logo_url }}
-                style={{ width: 64, height: 64, borderRadius: 8, backgroundColor: '#f2f4f7' }}
+                style={{ width: 64, height: 64, borderRadius: 8, backgroundColor: colors.bg[t].subtle }}
               />
             )}
             <Stack flex={1} gap={4}>

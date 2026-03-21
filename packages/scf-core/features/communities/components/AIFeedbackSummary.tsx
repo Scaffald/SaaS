@@ -1,23 +1,25 @@
-import { Text, Stack } from '@scaffald/ui'
+import { Text, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 interface Props {
   summary: string
 }
 
 export function AIFeedbackSummary({ summary }: Props) {
+  const { theme } = useThemeContext()
   return (
     <Stack
       gap={8}
       style={{
         padding: 16,
         borderRadius: 12,
-        backgroundColor: '#f0f9ff',
+        backgroundColor: theme === 'dark' ? colors.info[900] : colors.info[50],
         borderWidth: 1,
-        borderColor: '#bae6fd',
+        borderColor: colors.info[200],
       }}
     >
-      <Text style={{ fontWeight: '600', fontSize: 14, color: '#0369a1' }}>AI Feedback Summary</Text>
-      <Text style={{ color: '#0c4a6e', lineHeight: 20 }}>{summary}</Text>
+      <Text style={{ fontWeight: '600', fontSize: 14, color: colors.info[700] }}>AI Feedback Summary</Text>
+      <Text style={{ color: colors.info[700], lineHeight: 20 }}>{summary}</Text>
     </Stack>
   )
 }

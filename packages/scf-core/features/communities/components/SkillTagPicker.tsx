@@ -51,7 +51,7 @@ export function SkillTagPicker({ communityId, selectedTags, onTagsChange }: Prop
                 paddingHorizontal: 8,
                 paddingVertical: 4,
                 borderRadius: 4,
-                backgroundColor: '#dbeafe',
+                backgroundColor: t === 'dark' ? colors.info[900] : colors.info[100],
               }}
             >
               <Row align="center" gap={4}>
@@ -78,7 +78,7 @@ export function SkillTagPicker({ communityId, selectedTags, onTagsChange }: Prop
         <Stack
           style={{
             borderWidth: 1,
-            borderColor: '#e5e5e5',
+            borderColor: colors.border[t].default,
             borderRadius: 8,
             maxHeight: 200,
             overflow: 'hidden',
@@ -93,7 +93,7 @@ export function SkillTagPicker({ communityId, selectedTags, onTagsChange }: Prop
               style={{
                 borderRadius: 0,
                 borderBottomWidth: 1,
-                borderBottomColor: '#f0f0f0',
+                borderBottomColor: colors.border[t].subtle,
                 justifyContent: 'flex-start',
               }}
             >

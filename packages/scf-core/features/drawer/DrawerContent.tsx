@@ -156,21 +156,26 @@ export const DrawerContent = ({
     </Pressable>
   )
 
-  // Both persistent (large screen) and overlay (small screen) use frosted glass
-  const glassStyle = {
-    ...frostedGlassStyle(theme),
-    ...(Platform.OS === 'web'
-      ? {
-          borderRightWidth: 1,
-          borderRightColor: theme === 'dark' ? 'rgba(80, 73, 64, 0.3)' : 'rgba(237, 221, 201, 0.4)',
-        }
-      : {}),
-  }
+  // Mobile overlay: frosted glass with border. Tablet+: transparent (inherits content bg).
+  const drawerBgStyle = isSmall
+    ? {
+        ...frostedGlassStyle(theme),
+        ...(Platform.OS === 'web'
+          ? {
+              borderRightWidth: 1,
+              borderRightColor:
+                theme === 'dark' ? 'rgba(80, 73, 64, 0.3)' : 'rgba(237, 221, 201, 0.4)',
+            }
+          : {}),
+      }
+    : {
+        backgroundColor: 'transparent',
+      }
 
   return (
     <Stack
       flex={1}
-      style={glassStyle}
+      style={drawerBgStyle}
       paddingHorizontal={isCollapsed ? 8 : 24}
       paddingVertical={20}
       align={isCollapsed ? 'center' : 'stretch'}

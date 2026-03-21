@@ -130,7 +130,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
   if (error) {
     return (
       <Stack gap={8} padding="md">
-        <Text style={{ color: colors.text[t].error }}>Error loading history</Text>
+        <Text style={{ color: colors.error[600] }}>Error loading history</Text>
         <Text style={{ color: colors.text[t].secondary }}>{error.message || 'Failed to load version history'}</Text>
       </Stack>
     )
@@ -159,11 +159,11 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
           padding="sm"
           borderRadius={12}
           borderWidth={1}
-          style={{ backgroundColor: colors.bg[t].info, borderColor: colors.border[t].info }}
+          style={{ backgroundColor: t === 'dark' ? colors.info[900] : colors.info[50], borderColor: colors.border[t].info }}
         >
           <Row gap={8} align="center">
             <Calendar size="md" color={colors.fg[t].info} />
-            <Text style={{ color: colors.text[t].info }}>Version {versions[0].version}</Text>
+            <Text style={{ color: colors.info[600] }}>Version {versions[0].version}</Text>
             {versions[0].selfAssessedAt && (
               <Text style={{ color: colors.fg[t].info }}>• {formatDate(versions[0].selfAssessedAt)}</Text>
             )}
@@ -172,8 +172,8 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
             <Stack gap={8}>
               {currentVersionData.map((item) => (
                 <Row key={item.label} gap={8} align="center" justify="space-between">
-                  <Text style={{ color: colors.text[t].info }}>{item.label}</Text>
-                  <Text style={{ color: colors.text[t].info }}>{item.value}</Text>
+                  <Text style={{ color: colors.info[600] }}>{item.label}</Text>
+                  <Text style={{ color: colors.info[600] }}>{item.value}</Text>
                 </Row>
               ))}
             </Stack>
@@ -209,7 +209,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                     gap={12}
                     padding="md"
                     style={{
-                      backgroundColor: isSelected ? colors.bg[t].info : isCurrent ? colors.bg[t].success : colors.bg[t].muted,
+                      backgroundColor: isSelected ? (t === 'dark' ? colors.info[900] : colors.info[50]) : isCurrent ? (t === 'dark' ? colors.success[900] : colors.success[50]) : colors.bg[t].muted,
                       borderColor: isSelected ? colors.border[t].info : isCurrent ? colors.border[t].success : colors.border[t].default,
                     }}
                     borderRadius={16}
@@ -225,14 +225,14 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                           align="center"
                           justify="center"
                         >
-                          <Text style={{ color: colors.text[t].inverse }}>V{version.version}</Text>
+                          <Text style={{ color: t === 'dark' ? '#16110d' : '#ffffff' }}>V{version.version}</Text>
                         </Stack>
                         <Stack gap={4}>
                           <Row gap={8} align="center">
                             <Text style={{ color: colors.text[t].secondary }}>
                               Version {version.version}
                               {isCurrent && (
-                                <Text style={{ color: colors.text[t].success, marginLeft: 8 }}>
+                                <Text style={{ color: colors.success[600], marginLeft: 8 }}>
                                   (Current)
                                 </Text>
                               )}
@@ -240,7 +240,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                           </Row>
                           {version.selfAssessedAt && (
                             <Row gap={8} align="center">
-                              <Calendar size="md" color={colors.icon[t].secondary} />
+                              <Calendar size="md" color={colors.icon[t].subtle} />
                               <Text style={{ color: colors.text[t].secondary }}>
                                 {formatDate(version.selfAssessedAt)}
                                 {daysAgo && ` • ${daysAgo}`}
@@ -269,12 +269,12 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                       <>
                         <Separator />
                         <Stack gap={8} align="center">
-                          <Text style={{ color: colors.text[t].info }}>Version {version.version} Radar Chart</Text>
+                          <Text style={{ color: colors.info[600] }}>Version {version.version} Radar Chart</Text>
                           <Stack gap={8}>
                             {selectedVersionData.map((item) => (
                               <Row key={item.label} gap={8} align="center" justify="space-between">
-                                <Text style={{ color: colors.text[t].info }}>{item.label}</Text>
-                                <Text style={{ color: colors.text[t].info }}>{item.value}</Text>
+                                <Text style={{ color: colors.info[600] }}>{item.label}</Text>
+                                <Text style={{ color: colors.info[600] }}>{item.value}</Text>
                               </Row>
                             ))}
                           </Stack>
@@ -297,7 +297,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                               <Stack gap={8}>
                                 {selectedVersionData.map((item, i) => (
                                   <Row key={item.label} gap={8} align="center" justify="space-between">
-                                    <Text style={{ color: colors.text[t].info }}>{item.label}</Text>
+                                    <Text style={{ color: colors.info[600] }}>{item.label}</Text>
                                     <Row gap={8}>
                                       <Text style={{ color: colors.fg[t].info }}>V{version.version}: {item.value}</Text>
                                       <Text style={{ color: colors.fg[t].success }}>Current: {currentVersionData[i]?.value ?? '-'}</Text>

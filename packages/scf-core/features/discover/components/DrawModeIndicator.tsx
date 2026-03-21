@@ -25,7 +25,7 @@ export function DrawModeIndicator({ isActive }: DrawModeIndicatorProps) {
         backgroundColor: t === 'dark' ? colors.blue[700] : colors.blue[500],
       }}
     >
-      <Text style={{ color: '#ffffff' }}>🖊️ Draw Mode Active - Draw on the map to select an area</Text>
+      <Text style={{ color: colors.white }}>Draw Mode Active - Draw on the map to select an area</Text>
     </Stack>
   )
 }

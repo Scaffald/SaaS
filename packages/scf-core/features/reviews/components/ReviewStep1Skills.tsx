@@ -37,7 +37,7 @@ export function ReviewStep1Skills({ ratings, onChange }: ReviewStep1SkillsProps)
       </Stack>
 
       {/* Helper Text */}
-      <Text style={{ color: '#414e62', fontStyle: 'italic' }}>
+      <Text style={{ color: colors.text[t].secondary, fontStyle: 'italic' }}>
         Rate each skill from 1-5 stars based on their proficiency level
       </Text>
     </Stack>

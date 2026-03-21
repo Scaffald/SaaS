@@ -26,7 +26,7 @@ export function StarRating({ label, value, onChange, readonly = false }: StarRat
             <Star size={32} color={colors.yellow[500]} fill={star <= value ? colors.yellow[500] : 'transparent'} />
           </Pressable>
         ))}
-        <Text style={{ color: '#414e62', marginLeft: 8 }}>
+        <Text style={{ color: colors.text[t].secondary, marginLeft: 8 }}>
           {value}/5
         </Text>
       </Row>

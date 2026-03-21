@@ -4,7 +4,8 @@ import type {
   SoftSkill,
   SoftSkillCategory,
 } from '@scf/core/features/profile/components/SoftSkillsCategoryTabs'
-import { Card, Text, Row, Stack } from '@scaffald/ui'
+import { Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 
 export interface SoftSkillsRadarGridProps {
   skills: SoftSkill[]
@@ -47,6 +48,9 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
   isLoading = false,
   onSkillPress,
 }) => {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
+
   // Filter skills by active category
   const filteredSkills = useMemo(() => {
     return skills.filter((skill) => skill.category === activeCategory)
@@ -63,10 +67,10 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
               style={{
                 width: '100%',
                 height: 200,
-                backgroundColor: '#e4e4e7',
+                backgroundColor: colors.border[t].default,
                 borderRadius: 16,
                 borderWidth: 1,
-                borderColor: '#a1a1aa',
+                borderColor: colors.border[t].subtle,
               }}
             >
               {/* Skeleton loader */}

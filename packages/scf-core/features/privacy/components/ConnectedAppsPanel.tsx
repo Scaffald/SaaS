@@ -37,32 +37,35 @@ interface ConnectedAppsPanelProps {
 /**
  * Permission badge colors based on sensitivity
  */
-const PERMISSION_COLORS: Record<string, { bg: string; text: string }> = {
-  read: { bg: "#dbeafe", text: "#1d4ed8" },
-  write: { bg: "#fed7aa", text: "#c2410c" },
-  delete: { bg: "#fef2f2", text: "#ef4444" },
-  default: { bg: "#f3f4f6", text: "#374151" },
-};
+function getPermissionColors(theme: 'light' | 'dark'): Record<string, { bg: string; text: string }> {
+  return {
+    read: { bg: theme === 'dark' ? colors.info[900] : colors.info[100], text: colors.info[700] },
+    write: { bg: theme === 'dark' ? colors.warning[900] : colors.warning[100], text: colors.warning[700] },
+    delete: { bg: theme === 'dark' ? colors.error[900] : colors.error[50], text: colors.error[600] },
+    default: { bg: colors.bg[theme].subtle, text: colors.text[theme].secondary },
+  };
+}
 
 /**
  * Get color for permission type
  */
-function getPermissionColor(permission: string): { bg: string; text: string } {
+function getPermissionColor(permission: string, theme: 'light' | 'dark'): { bg: string; text: string } {
+  const permColors = getPermissionColors(theme);
   const lowerPerm = permission.toLowerCase();
   if (lowerPerm.includes("delete") || lowerPerm.includes("remove")) {
-    return PERMISSION_COLORS.delete;
+    return permColors.delete;
   }
   if (
     lowerPerm.includes("write") ||
     lowerPerm.includes("create") ||
     lowerPerm.includes("update")
   ) {
-    return PERMISSION_COLORS.write;
+    return permColors.write;
   }
   if (lowerPerm.includes("read") || lowerPerm.includes("view")) {
-    return PERMISSION_COLORS.read;
+    return permColors.read;
   }
-  return PERMISSION_COLORS.default;
+  return permColors.default;
 }
 
 /**
@@ -98,15 +101,17 @@ function formatRelativeTime(dateString: string): string {
  * Permission badge
  */
 function PermissionBadge({ permission }: { permission: string }) {
-  const colors = getPermissionColor(permission);
+  const { theme } = useThemeContext();
+  const t = theme === 'dark' ? 'dark' : 'light';
+  const permColor = getPermissionColor(permission, t);
   return (
     <Row
-      backgroundColor={colors.bg}
+      backgroundColor={permColor.bg}
       paddingHorizontal={8}
       paddingVertical={4}
       borderRadius={8}
     >
-      <Text style={{ color: colors.text }}>{permission}</Text>
+      <Text style={{ color: permColor.text }}>{permission}</Text>
     </Row>
   );
 }
@@ -115,6 +120,8 @@ function PermissionBadge({ permission }: { permission: string }) {
  * App icon placeholder
  */
 function AppIconPlaceholder({ name }: { name: string }) {
+  const { theme } = useThemeContext();
+  const t = theme === 'dark' ? 'dark' : 'light';
   const initials = name
     .split(" ")
     .map((word) => word[0])
@@ -127,11 +134,11 @@ function AppIconPlaceholder({ name }: { name: string }) {
       width={48}
       height={48}
       borderRadius={12}
-      backgroundColor="#f3f4f6"
+      backgroundColor={colors.bg[t].subtle}
       align="center"
       justify="center"
     >
-      <Text style={{ color: "#414e62" }}>{initials}</Text>
+      <Text style={{ color: colors.text[t].secondary }}>{initials}</Text>
     </Stack>
   );
 }
@@ -165,7 +172,7 @@ function AppCard({
         <Stack flex={1} gap={4}>
           <Text>{app.app_name}</Text>
           {app.description && (
-            <Text style={{ color: "#414e62" }}>{app.description}</Text>
+            <Text style={{ color: colors.text[t].secondary }}>{app.description}</Text>
           )}
         </Stack>
       </Row>
@@ -173,12 +180,12 @@ function AppCard({
       {/* Connection info */}
       <Row gap={16} wrap>
         <Stack gap={4}>
-          <Text style={{ color: "#414e62" }}>Connected</Text>
+          <Text style={{ color: colors.text[t].secondary }}>Connected</Text>
           <Text>{formatDate(app.connected_at)}</Text>
         </Stack>
         {app.last_accessed_at && (
           <Stack gap={4}>
-            <Text style={{ color: "#414e62" }}>Last Access</Text>
+            <Text style={{ color: colors.text[t].secondary }}>Last Access</Text>
             <Text>{formatRelativeTime(app.last_accessed_at)}</Text>
           </Stack>
         )}
@@ -186,19 +193,19 @@ function AppCard({
 
       {/* Permissions */}
       <Stack gap={8}>
-        <Text style={{ color: "#414e62" }}>Permissions</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Permissions</Text>
         <Row gap={4} wrap>
           {app.permissions.slice(0, 5).map((permission) => (
             <PermissionBadge key={permission} permission={permission} />
           ))}
           {app.permissions.length > 5 && (
             <Row
-              backgroundColor="#f3f4f6"
+              backgroundColor={colors.bg[t].subtle}
               paddingHorizontal={8}
               paddingVertical={4}
               borderRadius={8}
             >
-              <Text style={{ color: "#414e62" }}>
+              <Text style={{ color: colors.text[t].secondary }}>
                 +{app.permissions.length - 5} more
               </Text>
             </Row>
@@ -208,8 +215,8 @@ function AppCard({
 
       {/* Data categories */}
       <Stack gap={8}>
-        <Text style={{ color: "#414e62" }}>Data Categories Accessed</Text>
-        <Text style={{ color: "#414e62" }}>
+        <Text style={{ color: colors.text[t].secondary }}>Data Categories Accessed</Text>
+        <Text style={{ color: colors.text[t].secondary }}>
           {app.data_categories.join(" • ")}
         </Text>
       </Stack>
@@ -249,8 +256,8 @@ function EmptyState() {
       align="center"
       gap={8}
     >
-      <Text style={{ color: "#414e62" }}>No Connected Applications</Text>
-      <Text style={{ color: "#414e62", textAlign: "center" }}>
+      <Text style={{ color: colors.text[t].secondary }}>No Connected Applications</Text>
+      <Text style={{ color: colors.text[t].secondary, textAlign: "center" }}>
         When you connect third-party applications to your account, they will
         appear here so you can manage their access to your data.
       </Text>
@@ -268,6 +275,8 @@ export function ConnectedAppsPanel({
   onRevoke,
   onViewDetails,
 }: ConnectedAppsPanelProps) {
+  const { theme } = useThemeContext();
+  const t = theme === 'dark' ? 'dark' : 'light';
   if (!apps || apps.length === 0) {
     return <EmptyState />;
   }
@@ -277,12 +286,12 @@ export function ConnectedAppsPanel({
       {/* Summary */}
       <Row
         padding="sm"
-        backgroundColor="#fff7ed"
+        backgroundColor={t === 'dark' ? colors.warning[900] : colors.warning[50]}
         borderRadius={12}
         gap={8}
         align="center"
       >
-        <Text style={{ color: "#c2410c" }}>
+        <Text style={{ color: colors.warning[700] }}>
           {apps.length} application{apps.length === 1 ? "" : "s"} currently have
           access to your data. You can revoke access at any time.
         </Text>
@@ -299,7 +308,7 @@ export function ConnectedAppsPanel({
       ))}
 
       {/* Info text */}
-      <Text style={{ color: "#414e62", marginTop: 8 }}>
+      <Text style={{ color: colors.text[t].secondary, marginTop: 8 }}>
         Revoking access will immediately prevent the application from accessing
         your data. Some applications may require you to re-authorize access to
         restore functionality.

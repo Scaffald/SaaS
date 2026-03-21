@@ -117,7 +117,7 @@ export function DiscoverJobsRight({
         <DashboardWidget>
           <Row align="center" justify="space-between">
             <Row align="center" gap={8}>
-              <Filter size={24} color="#737373" />
+              <Filter size={24} color={colors.text[t].tertiary} />
               <Text color="secondary">Filters</Text>
             </Row>
 
@@ -257,7 +257,7 @@ export function DiscoverJobsRight({
           <DashboardWidget>
             <Stack gap={12}>
               <Row align="center" gap={8}>
-                <ChevronsUpDown size={18} color="#737373" />
+                <ChevronsUpDown size={18} color={colors.text[t].tertiary} />
                 <Text color="secondary">Sort By</Text>
               </Row>
 

@@ -24,12 +24,12 @@ export const AssessmentsLayout = ({
   const resolvedTheme = theme === 'dark' ? 'dark' : 'light'
   const hasRightContent = rightContent != null
   const contentPadding = isDesktop ? '2xl' : 'lg'
-  const columnGap = isDesktop ? 48 : 24
+  const columnGap = isDesktop ? 44 : 24
   const bgColor = colors.bg[resolvedTheme].emphasis
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: bgColor }} showsVerticalScrollIndicator={false}>
-      <Stack gap={12} paddingTop="sm" paddingBottom="lg">
+      <Stack gap={20} paddingTop="sm" paddingBottom="lg">
         {showTabs && (
           <Stack marginHorizontal={28} marginTop={12}>
             <AssessmentsTabs />
@@ -41,7 +41,7 @@ export const AssessmentsLayout = ({
           <Grid
             columns={{ base: 1, lg: hasRightContent ? GOLDEN_RATIO_TEMPLATE : '1fr' }}
             gap={columnGap}
-            rowGap={isDesktop ? 32 : 24}
+            rowGap={isDesktop ? 40 : 28}
           >
             {leftContent ? <Stack>{leftContent}</Stack> : null}
             {rightContent ? <Stack>{rightContent}</Stack> : null}

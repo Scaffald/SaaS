@@ -25,7 +25,7 @@ export function ReviewStep7Summary({ comment, onChange }: ReviewStep7SummaryProp
       />
 
       {/* Helper Text */}
-      <Text style={{ color: '#414e62', fontStyle: 'italic' }}>
+      <Text style={{ color: colors.text[t].secondary, fontStyle: 'italic' }}>
         This field is optional. You can skip it or add details about your experience working
         together.
       </Text>

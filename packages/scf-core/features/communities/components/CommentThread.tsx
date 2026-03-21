@@ -31,7 +31,7 @@ export function CommentThread({ comments }: Props) {
         paddingLeft: level * 24,
         paddingVertical: 8,
         borderBottomWidth: 1,
-        borderBottomColor: '#f0f0f0',
+        borderBottomColor: colors.border[t].subtle,
       }}
     >
       <Row align="center" gap={8}>
@@ -49,7 +49,7 @@ export function CommentThread({ comments }: Props) {
               paddingHorizontal: 6,
               paddingVertical: 1,
               borderRadius: 4,
-              backgroundColor: '#dbeafe',
+              backgroundColor: t === 'dark' ? colors.info[900] : colors.info[100],
             }}
           >
             <Text style={{ fontSize: 11, fontWeight: '500' }}>Pinned</Text>

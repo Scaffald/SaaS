@@ -33,7 +33,7 @@ export const SoftSkillsMatchIndicator: FC<SoftSkillsMatchIndicatorProps> = ({
       ) : userRating !== null && userRating > 0 ? (
         <AlertCircle size={18} color={t === 'dark' ? colors.yellow[300] : colors.yellow[600]} />
       ) : (
-        <XCircle size={18} color={t === 'dark' ? colors.red[300] : colors.red[600]} />
+        <XCircle size={18} color={t === 'dark' ? colors.error[300] : colors.error[600]} />
       )}
 
       {/* Skill Info */}

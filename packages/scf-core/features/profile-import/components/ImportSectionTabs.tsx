@@ -1,5 +1,6 @@
 import { memo } from "react";
-import { Tabs, Row } from "@scaffald/ui";
+import { Tabs, Row, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
 export interface ImportSectionTab {
   id: string;
@@ -18,14 +19,15 @@ export const ImportSectionTabs = memo(function ImportSectionTabs({
   activeSection,
   onSectionChange,
 }: ImportSectionTabsProps) {
+  const { theme } = useThemeContext();
   return (
     <Row
       gap={12}
       paddingHorizontal={8}
       style={{
         borderBottomWidth: 1,
-        borderBottomColor: "#e4e7ec",
-        backgroundColor: "#ffffff",
+        borderBottomColor: colors.border[theme].default,
+        backgroundColor: colors.bg[theme].default,
       }}
     >
       <Tabs value={activeSection} onValueChange={onSectionChange}>
@@ -34,7 +36,7 @@ export const ImportSectionTabs = memo(function ImportSectionTabs({
             <Tabs.Trigger
               containerStyle={{
                 borderBottomWidth: activeSection === section.id ? 2 : 0,
-                borderBottomColor: "#2563eb",
+                borderBottomColor: colors.info[600],
                 paddingHorizontal: 12,
                 paddingVertical: 8,
               }}

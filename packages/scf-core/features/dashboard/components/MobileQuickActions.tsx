@@ -19,8 +19,8 @@ export function MobileQuickActions() {
         onPress={() => router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS, {}))}
         style={{
           flex: 1,
-          backgroundColor: colors.fg[theme].default,
-          borderRadius: 16,
+          backgroundColor: theme === 'dark' ? colors.bg.dark.muted : colors.fg.light.default,
+          borderRadius: 20,
           padding: 16,
           height: 88,
           justifyContent: 'space-between',
@@ -38,7 +38,7 @@ export function MobileQuickActions() {
         style={{
           flex: 1,
           backgroundColor: colors.bg[theme].default,
-          borderRadius: 16,
+          borderRadius: 20,
           padding: 16,
           height: 88,
           justifyContent: 'space-between',

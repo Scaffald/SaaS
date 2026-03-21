@@ -70,12 +70,12 @@ const PADDING_MAP: Record<CardPadding, number> = {
 };
 
 const RADIUS_MAP: Record<CardRadius, number> = {
-  sm: borderRadius.m,      // 6
-  md: borderRadius.l,      // 8
-  lg: borderRadius.xxl,    // 12
-  xl: borderRadius.xxxl,   // 16
-  '2xl': 20,               // modest large
-  '3xl': borderRadius.xxxxl, // 24
+  sm: borderRadius.l,      // 8
+  md: borderRadius.xxl,    // 12
+  lg: borderRadius.xxxl,   // 16
+  xl: 20,                  // large
+  '2xl': borderRadius.xxxxl, // 24
+  '3xl': 32,               // extra large
 };
 
 const SHADOW_MAP: Record<CardElevation, ShadowStyle> = {
@@ -136,7 +136,7 @@ export function getCardStyles(
       container = {
         ...baseStyle,
         borderWidth: 1,
-        borderColor: colors.border[theme].default,
+        borderColor: colors.border[theme].subtle,
       };
       break;
     case "filled":
@@ -148,9 +148,13 @@ export function getCardStyles(
     case "glass":
       container = {
         ...baseStyle,
-        backgroundColor: 'rgba(251, 248, 243, 0.82)', // neutral[50] warm @ 82%
+        backgroundColor: theme === 'dark'
+          ? 'rgba(30, 25, 20, 0.85)'   // gray[800] warm @ 85%
+          : 'rgba(251, 248, 243, 0.82)', // neutral[50] warm @ 82%
         borderWidth: 1,
-        borderColor: 'rgba(237, 221, 201, 0.55)', // neutral[300]-ish @ 55%
+        borderColor: theme === 'dark'
+          ? 'rgba(80, 73, 64, 0.3)'     // gray[600] warm @ 30%
+          : 'rgba(237, 221, 201, 0.55)', // neutral[300]-ish @ 55%
       };
       // Web-only: add backdrop blur
       if (Platform.OS === "web") {
@@ -223,6 +227,7 @@ export function getCardContentStyles(
  */
 export function getCardFooterStyles(
   align: "left" | "center" | "right" | "space-between",
+  theme: ResolvedThemeMode = 'light',
 ): CardFooterStyleConfig {
   const alignMap: Record<string, ViewStyle["justifyContent"]> = {
     left: "flex-start",
@@ -236,7 +241,7 @@ export function getCardFooterStyles(
       padding: spacing[16],
       paddingTop: spacing[8],
       borderTopWidth: 1,
-      borderTopColor: colors.border.light.subtle,
+      borderTopColor: colors.border[theme].subtle,
     },
     footerInner: {
       flexDirection: "row",

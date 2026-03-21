@@ -38,7 +38,7 @@ export const ProfileLayout = ({
   const resolvedTheme = theme === 'dark' ? 'dark' : 'light'
   const hasRightContent = rightContent != null
   const contentPadding = isDesktop ? '2xl' : 'lg'
-  const columnGap = isDesktop ? 48 : 24
+  const columnGap = isDesktop ? 44 : 24
 
   const { breadcrumbs } = useBreadcrumbs({
     autoGenerate: autoGenerateBreadcrumbs && !breadcrumbItems,
@@ -64,7 +64,7 @@ export const ProfileLayout = ({
           <Grid
             columns={{ base: 1, lg: hasRightContent ? GOLDEN_RATIO_TEMPLATE : '1fr' }}
             gap={columnGap}
-            rowGap={isDesktop ? 32 : 24}
+            rowGap={isDesktop ? 40 : 28}
           >
             <Stack>{leftContent}</Stack>
             {rightContent ? <Stack>{rightContent}</Stack> : null}

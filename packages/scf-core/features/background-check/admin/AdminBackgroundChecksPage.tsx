@@ -387,7 +387,7 @@ export function AdminBackgroundChecksPage() {
               <Tabs.Trigger
                 containerStyle={{
                   borderBottomWidth: activeTab === 'checks' ? 2 : 0,
-                  borderBottomColor: colors.fg[t].primary,
+                  borderBottomColor: colors.fg[t].default,
                   paddingHorizontal: 12,
                   paddingVertical: 8,
                 }}
@@ -399,7 +399,7 @@ export function AdminBackgroundChecksPage() {
               <Tabs.Trigger
                 containerStyle={{
                   borderBottomWidth: activeTab === 'disputes' ? 2 : 0,
-                  borderBottomColor: colors.fg[t].primary,
+                  borderBottomColor: colors.fg[t].default,
                   paddingHorizontal: 12,
                   paddingVertical: 8,
                 }}
@@ -411,7 +411,7 @@ export function AdminBackgroundChecksPage() {
               <Tabs.Trigger
                 containerStyle={{
                   borderBottomWidth: activeTab === 'metrics' ? 2 : 0,
-                  borderBottomColor: colors.fg[t].primary,
+                  borderBottomColor: colors.fg[t].default,
                   paddingHorizontal: 12,
                   paddingVertical: 8,
                 }}
@@ -423,7 +423,7 @@ export function AdminBackgroundChecksPage() {
               <Tabs.Trigger
                 containerStyle={{
                   borderBottomWidth: activeTab === 'catalog' ? 2 : 0,
-                  borderBottomColor: colors.fg[t].primary,
+                  borderBottomColor: colors.fg[t].default,
                   paddingHorizontal: 12,
                   paddingVertical: 8,
                 }}
@@ -435,7 +435,7 @@ export function AdminBackgroundChecksPage() {
               <Tabs.Trigger
                 containerStyle={{
                   borderBottomWidth: activeTab === 'audit' ? 2 : 0,
-                  borderBottomColor: colors.fg[t].primary,
+                  borderBottomColor: colors.fg[t].default,
                   paddingHorizontal: 12,
                   paddingVertical: 8,
                 }}

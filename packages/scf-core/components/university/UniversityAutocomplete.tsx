@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Input, Text, Stack, Spinner } from '@scaffald/ui'
-import { Pressable, ScrollView, StyleSheet } from 'react-native'
+import { Input, Text, Stack, Spinner, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
+import { Pressable, ScrollView } from 'react-native'
 
 export interface University {
   id: string
@@ -47,6 +48,8 @@ export function UniversityAutocomplete({
   inputValue: controlledInputValue,
   onInputChange,
 }: UniversityAutocompleteProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   const [isOpen, setIsOpen] = useState(false)
   const [inputValue, setInputValue] = useState(value)
   const isControlled = controlledInputValue !== undefined
@@ -99,7 +102,24 @@ export function UniversityAutocomplete({
         style={{ flex: 1 }}
       />
       {showDropdown && (
-        <Stack style={styles.dropdown}>
+        <Stack style={{
+          position: 'absolute',
+          top: '100%',
+          left: 0,
+          right: 0,
+          marginTop: 4,
+          maxHeight: 250,
+          backgroundColor: colors.bg[t].default,
+          borderRadius: 8,
+          borderWidth: 1,
+          borderColor: colors.border[t].default,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          elevation: 3,
+          zIndex: 1000,
+        }}>
           {loading ? (
             <Stack padding="md" align="center">
               <Spinner size="sm" />
@@ -111,12 +131,15 @@ export function UniversityAutocomplete({
               </Text>
             </Stack>
           ) : (
-            <ScrollView style={styles.resultsList} keyboardShouldPersistTaps="handled">
+            <ScrollView style={{ maxHeight: 220 }} keyboardShouldPersistTaps="handled">
               {results.map((uni) => (
                 <Pressable
                   key={uni.id}
                   onPress={() => handleSelect(uni)}
-                  style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
+                  style={({ pressed }) => [
+                    { paddingHorizontal: 12, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: colors.bg[t].subtle },
+                    pressed && { backgroundColor: colors.bg[t].subtle },
+                  ]}
                 >
                   <Stack gap={2}>
                     <Text size="sm">{uni.name}</Text>
@@ -136,38 +159,8 @@ export function UniversityAutocomplete({
   )
 }
 
-const styles = StyleSheet.create({
+const styles = {
   container: {
-    position: 'relative',
+    position: 'relative' as const,
   },
-  dropdown: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
-    marginTop: 4,
-    maxHeight: 250,
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#e4e4e7',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    zIndex: 1000,
-  },
-  resultsList: {
-    maxHeight: 220,
-  },
-  option: {
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f4f4f5',
-  },
-  optionPressed: {
-    backgroundColor: '#f4f4f5',
-  },
-})
+}

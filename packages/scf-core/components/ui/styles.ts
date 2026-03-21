@@ -90,11 +90,14 @@ export const jobPalette = {
 } as const
 
 /** Badge tone colors for success / warning / danger pills */
-export const badgeToneColors = {
-  success: { bg: colors.green[100], text: colors.green[600], icon: colors.green[600] },
-  warning: { bg: colors.yellow[100], text: colors.yellow[600], icon: colors.yellow[600] },
-  danger: { bg: colors.rose[100], text: colors.rose[600], icon: colors.rose[600] },
-} as const
+export function badgeToneColors(theme: ResolvedThemeMode) {
+  const isDark = theme === 'dark'
+  return {
+    success: { bg: isDark ? colors.green[900] : colors.green[100], text: isDark ? colors.green[300] : colors.green[600], icon: isDark ? colors.green[300] : colors.green[600] },
+    warning: { bg: isDark ? colors.yellow[900] : colors.yellow[100], text: isDark ? colors.yellow[300] : colors.yellow[600], icon: isDark ? colors.yellow[300] : colors.yellow[600] },
+    danger: { bg: isDark ? colors.rose[900] : colors.rose[100], text: isDark ? colors.rose[300] : colors.rose[600], icon: isDark ? colors.rose[300] : colors.rose[600] },
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Semantic text colors (theme-aware convenience)

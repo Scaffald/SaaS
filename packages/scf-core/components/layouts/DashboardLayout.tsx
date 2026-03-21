@@ -36,7 +36,7 @@ export const DashboardLayout = ({
   const { theme } = useThemeContext()
   const contentPadding = isDesktop ? 'xl' : 'lg'
   const verticalPadding = isDesktop ? 'xl' : 'md'
-  const columnGap = isDesktop ? 36 : 20
+  const columnGap = isDesktop ? 44 : 24
   const hasRightContent = rightContent != null
   const columnTemplate = fullWidth || !hasRightContent ? '1fr' : GOLDEN_RATIO_TEMPLATE
 
@@ -61,7 +61,7 @@ export const DashboardLayout = ({
       style={{ flex: 1, backgroundColor: bgColor }}
       showsVerticalScrollIndicator={false}
     >
-      <Stack gap={12} paddingTop={verticalPadding} paddingBottom={verticalPadding}>
+      <Stack gap={20} paddingTop={verticalPadding} paddingBottom={verticalPadding}>
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
           <Row paddingHorizontal={contentPadding}>
@@ -79,7 +79,7 @@ export const DashboardLayout = ({
           <Grid
             columns={{ base: 1, lg: columnTemplate }}
             gap={columnGap}
-            rowGap={isDesktop ? 32 : 24}
+            rowGap={isDesktop ? 40 : 28}
           >
             {leftContent ? <Stack>{leftContent}</Stack> : null}
             {rightContent ? <Stack>{rightContent}</Stack> : null}

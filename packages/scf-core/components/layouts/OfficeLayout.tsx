@@ -82,7 +82,7 @@ export const OfficeLayout = ({
   const currentPath = pathname ?? ''
   const { width } = useWindowDimensions()
   const isDesktop = width > 800
-  const columnGap = isDesktop ? 48 : 24
+  const columnGap = isDesktop ? 44 : 24
   const { t } = useTranslation()
 
   // Auto-generate breadcrumbs if enabled and no manual override
@@ -183,7 +183,7 @@ export const OfficeLayout = ({
 
   return (
     <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
-      <Stack gap={12} paddingTop="sm" paddingBottom="lg">
+      <Stack gap={20} paddingTop="sm" paddingBottom="lg">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
           <Row paddingHorizontal="sm" paddingTop="sm">
@@ -214,7 +214,7 @@ export const OfficeLayout = ({
           <Grid
             columns={{ base: 1, lg: hasRightContent ? GOLDEN_RATIO_TEMPLATE : '1fr' }}
             gap={columnGap}
-            rowGap={isDesktop ? 32 : 24}
+            rowGap={isDesktop ? 40 : 28}
           >
             {hasLeftContent ? <Stack {...(contentProps ?? {})} {...(leftContainerProps ?? {})}>{leftContent}</Stack> : null}
             {hasRightContent ? <Stack {...(contentProps ?? {})} {...(rightContainerProps ?? {})}>{rightContent}</Stack> : null}

@@ -11,7 +11,7 @@
  */
 
 import { useState } from "react";
-import { Button, ScrollView, Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { Button, ScrollView, Spinner, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
 import {
   useCCPADataSummary,
@@ -31,6 +31,7 @@ import { ConnectedAppsPanel } from "./components/ConnectedAppsPanel";
  * Main Privacy Dashboard component
  */
 export function PrivacyDashboard() {
+  const { theme } = useThemeContext();
   const [_showRequestForm, setShowRequestForm] = useState(false);
   const [_showOptOutManager, setShowOptOutManager] = useState(false);
 
@@ -65,10 +66,10 @@ export function PrivacyDashboard() {
   if (hasError) {
     return (
       <Stack padding="md" gap={16} align="center" justify="center" flex={1}>
-        <Text style={{ color: "#ef4444" }}>
+        <Text style={{ color: colors.error[600] }}>
           Error Loading Privacy Dashboard
         </Text>
-        <Text style={{ color: "#414e62", textAlign: "center" }}>
+        <Text style={{ color: colors.text[theme].secondary, textAlign: "center" }}>
           {dataError?.message || historyError?.message || appsError?.message}
         </Text>
         <Button onPress={() => window.location.reload()} variant="outline">
@@ -88,7 +89,7 @@ export function PrivacyDashboard() {
         {/* Page Header */}
         <Stack gap={8}>
           <Text>Privacy & Data</Text>
-          <Text style={{ color: "#414e62" }}>
+          <Text style={{ color: colors.text[theme].secondary }}>
             Manage your privacy settings, view your data, and exercise your
             California Consumer Privacy Act (CCPA) rights.
           </Text>
@@ -98,10 +99,10 @@ export function PrivacyDashboard() {
         <Stack
           gap={16}
           padding="md"
-          backgroundColor={colors.bg.light.subtle}
+          backgroundColor={colors.bg[theme].subtle}
           borderRadius={16}
           borderWidth={1}
-          borderColor={colors.border.light.default}
+          borderColor={colors.border[theme].default}
         >
           <Text>Quick Actions</Text>
           <Row gap={12} wrap>
@@ -135,7 +136,7 @@ export function PrivacyDashboard() {
               borderRadius={8}
               align="center"
             >
-              <Text style={{ color: "#2563eb" }}>
+              <Text style={{ color: colors.info[600] }}>
                 Your browser&apos;s Global Privacy Control signal has been
                 detected and honored. You have been automatically opted out of
                 the sale and sharing of your personal information.
@@ -147,7 +148,7 @@ export function PrivacyDashboard() {
         {/* Data Categories Summary */}
         <Stack gap={12}>
           <Text>Your Data Categories</Text>
-          <Text style={{ color: "#414e62" }}>
+          <Text style={{ color: colors.text[theme].secondary }}>
             Categories of personal information we collect about you
           </Text>
           {isLoading ? (
@@ -168,7 +169,7 @@ export function PrivacyDashboard() {
         {/* CCPA Rights */}
         <Stack gap={12}>
           <Text>Your Privacy Rights</Text>
-          <Text style={{ color: "#414e62" }}>
+          <Text style={{ color: colors.text[theme].secondary }}>
             Under the California Consumer Privacy Act (CCPA), you have the
             following rights
           </Text>
@@ -178,7 +179,7 @@ export function PrivacyDashboard() {
         {/* Request History */}
         <Stack gap={12}>
           <Text>Request History</Text>
-          <Text style={{ color: "#414e62" }}>
+          <Text style={{ color: colors.text[theme].secondary }}>
             Your privacy request history and their status
           </Text>
           {isLoading ? (
@@ -198,7 +199,7 @@ export function PrivacyDashboard() {
         {/* Connected Apps */}
         <Stack gap={12}>
           <Text>Connected Applications</Text>
-          <Text style={{ color: "#414e62" }}>
+          <Text style={{ color: colors.text[theme].secondary }}>
             Third-party applications that have access to your data
           </Text>
           {isLoading ? (
@@ -219,27 +220,27 @@ export function PrivacyDashboard() {
         <Stack
           gap={12}
           padding="md"
-          backgroundColor={colors.bg.light.subtle}
+          backgroundColor={colors.bg[theme].subtle}
           borderRadius={16}
           borderWidth={1}
-          borderColor={colors.border.light.default}
+          borderColor={colors.border[theme].default}
         >
           <Text>Additional Resources</Text>
           <Stack gap={8}>
             <Text
-              style={{ color: "#2563eb" }}
+              style={{ color: colors.info[600] }}
               onPress={() => window.open("/privacy-policy", "_blank")}
             >
               Read our full Privacy Policy
             </Text>
             <Text
-              style={{ color: "#2563eb" }}
+              style={{ color: colors.info[600] }}
               onPress={() => window.open("/terms", "_blank")}
             >
               Terms of Service
             </Text>
             <Text
-              style={{ color: "#2563eb" }}
+              style={{ color: colors.info[600] }}
               onPress={() =>
                 window.open("https://oag.ca.gov/privacy/ccpa", "_blank")
               }
@@ -251,10 +252,10 @@ export function PrivacyDashboard() {
 
         {/* Contact Info */}
         <Stack gap={8} paddingBottom={24}>
-          <Text style={{ color: "#414e62" }}>
+          <Text style={{ color: colors.text[theme].secondary }}>
             Questions about your privacy? Contact our Privacy Team at{" "}
             <Text
-              style={{ color: "#2563eb" }}
+              style={{ color: colors.info[600] }}
               onPress={() => window.open("mailto:privacy@scaffald.com")}
             >
               privacy@scaffald.com

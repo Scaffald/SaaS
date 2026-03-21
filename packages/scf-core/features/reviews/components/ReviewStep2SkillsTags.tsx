@@ -1,6 +1,6 @@
 import { Pressable } from 'react-native'
 import { CheckCircle2, Circle } from 'lucide-react-native'
-import { Text, Row, Stack } from '@scaffald/ui'
+import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 // Mock soft skills - will be replaced with real data from API
@@ -26,16 +26,18 @@ export function ReviewStep2SkillsTags({
   onToggleStrength,
   onToggleImprovement,
 }: ReviewStep2SkillsTagsProps) {
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
   return (
     <Stack gap={16}>
       <Stack gap={8}>
-        <Text style={{ color: '#414e62' }}>Technical Skills - Details</Text>
-        <Text style={{ color: '#414e62' }}>Select their key strengths and areas to improve</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Technical Skills - Details</Text>
+        <Text style={{ color: colors.text[t].secondary }}>Select their key strengths and areas to improve</Text>
       </Stack>
 
       {/* Strengths Section */}
       <Stack gap={12}>
-        <Text style={{ color: '#16a34a' }}>✓ Strengths</Text>
+        <Text style={{ color: colors.success[600] }}>✓ Strengths</Text>
         <Row gap={8} wrap>
           {MOCK_SOFT_SKILLS.map((skill) => {
             const isSelected = strengths.includes(skill.id)
@@ -69,7 +71,7 @@ export function ReviewStep2SkillsTags({
 
       {/* Areas to Improve Section */}
       <Stack gap={12}>
-        <Text style={{ color: '#ef4444' }}>→ Areas to Improve</Text>
+        <Text style={{ color: colors.error[600] }}>→ Areas to Improve</Text>
         <Row gap={8} wrap>
           {MOCK_SOFT_SKILLS.map((skill) => {
             const isSelected = improvements.includes(skill.id)
@@ -102,7 +104,7 @@ export function ReviewStep2SkillsTags({
       </Stack>
 
       {/* Helper Text */}
-      <Text style={{ color: '#414e62', fontStyle: 'italic' }}>
+      <Text style={{ color: colors.text[t].secondary, fontStyle: 'italic' }}>
         Select multiple skills for each category. Skills can only be in one category.
       </Text>
     </Stack>

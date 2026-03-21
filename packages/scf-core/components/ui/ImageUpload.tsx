@@ -357,7 +357,7 @@ export function ImageUpload({
       <Stack
         style={{
           borderWidth: 2,
-          borderColor: isDragActive ? '#3b82f6' : error ? '#ef4444' : '#e4e4e7',
+          borderColor: isDragActive ? colors.info[600] : error ? colors.error[600] : colors.border[t].default,
           borderStyle: isDragActive ? 'solid' : 'dashed',
           borderRadius: 16,
           opacity: disabled ? 0.5 : 1,
@@ -378,7 +378,7 @@ export function ImageUpload({
                   height: 200,
                   borderRadius: 16,
                   borderWidth: 1,
-                  borderColor: '#e4e4e7',
+                  borderColor: colors.border[t].default,
                 }}
                 resizeMode="contain"
               />
@@ -390,7 +390,7 @@ export function ImageUpload({
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    backgroundColor: '#ffffff',
+                    backgroundColor: colors.bg[t].default,
                     opacity: 0.8,
                   }}
                   align="center"
@@ -485,7 +485,7 @@ export function ImageUpload({
 
       {/* Error Message */}
       {error && (
-        <Row gap={8} align="center" padding={8} style={{ backgroundColor: '#fee2e2', borderRadius: 12 }}>
+        <Row gap={8} align="center" padding={8} style={{ backgroundColor: t === 'dark' ? colors.error[900] : colors.error[50], borderRadius: 12 }}>
           <AlertCircle size="lg" color={colors.error[500]} />
           <Text style={{ color: colors.error[500], flex: 1 }}>
             {error}

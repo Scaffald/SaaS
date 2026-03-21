@@ -400,9 +400,9 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 borderRadius={10}
                 align="center"
                 justify="center"
-                style={{ backgroundColor: t === 'light' ? '#d5efff' : '#113264' }}
+                style={{ backgroundColor: t === 'light' ? colors.info[100] : colors.info[900] }}
               >
-                <User size={48} color="#0ea5e9" />
+                <User size={48} color={colors.info[500]} />
               </Stack>
             )}
 
@@ -422,7 +422,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 borderWidth={1}
                 style={{ backgroundColor: 'var(--color-blue-2)', borderColor: 'var(--color-blue-5)' }}
               >
-                <Star size={24} color="#0ea5e9" fill="#0ea5e9" />
+                <Star size={24} color={colors.info[500]} fill={colors.info[500]} />
                 <Text style={{ color: 'var(--color-blue-11)' }}>{profile.gamified_score}</Text>
                 <Text color="primary">Scaffald Score</Text>
               </Row>
@@ -453,7 +453,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 null
             ) !== null && (
               <Row gap={8} align="center">
-                <Award size={18} color="#737373" />
+                <Award size={18} color={colors.icon[t].subtle} />
                 <Text color="secondary">
                   {resolveYearsOfExperience(
                     (profile as { calculatedYearsOfExperience?: number }).calculatedYearsOfExperience ??
@@ -615,7 +615,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
               <Separator />
               <Stack gap={8}>
                 <Row align="center" gap={8}>
-                  <GraduationCap size={18} color="#737373" />
+                  <GraduationCap size={18} color={colors.icon[t].subtle} />
                   <Text color="secondary">Education</Text>
                 </Row>
                 <Stack gap={8}>

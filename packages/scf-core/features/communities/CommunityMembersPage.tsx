@@ -57,7 +57,7 @@ export function CommunityMembersPage({ slug }: Props) {
                   padding: 12,
                   borderRadius: 8,
                   borderWidth: 1,
-                  borderColor: '#e5e5e5',
+                  borderColor: colors.border[t].default,
                 }}
               >
                 <Avatar
@@ -74,10 +74,10 @@ export function CommunityMembersPage({ slug }: Props) {
                           paddingHorizontal: 6,
                           paddingVertical: 1,
                           borderRadius: 4,
-                          backgroundColor: '#dcfce7',
+                          backgroundColor: t === 'dark' ? colors.success[900] : colors.success[100],
                         }}
                       >
-                        <Text style={{ fontSize: 11, fontWeight: '500', color: '#16a34a' }}>Verified</Text>
+                        <Text style={{ fontSize: 11, fontWeight: '500', color: colors.success[600] }}>Verified</Text>
                       </Stack>
                     )}
                   </Row>

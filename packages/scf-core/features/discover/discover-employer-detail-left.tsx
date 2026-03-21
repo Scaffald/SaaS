@@ -130,7 +130,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
         <Stack gap={8}>
           <Text>Industry</Text>
           <Row align="center" gap={8}>
-            <Users size={20} color="#737373" />
+            <Users size={20} color={colors.text[t].tertiary} />
             <Text color="secondary">{employer.industry}</Text>
           </Row>
         </Stack>
@@ -152,7 +152,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
       {employer.location && (
         <Stack gap={8}>
           <Row align="center" gap={8}>
-            <MapPin size={18} color="#737373" />
+            <MapPin size={18} color={colors.text[t].tertiary} />
             <Text>Location</Text>
           </Row>
           <Text color="secondary">{employer.location}</Text>

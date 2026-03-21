@@ -184,7 +184,7 @@ export const ProfileCard = memo(
                     {badges.length > 0 && (
                       <Row gap={6} wrap>
                         {badges.slice(0, 3).map((badge) => {
-                          const tone = badgeToneColors[badge.tone]
+                          const tone = badgeToneColors(t)[badge.tone]
                           return (
                             <Row
                               key={badge.id}

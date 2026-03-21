@@ -170,7 +170,9 @@ function AdverseImpactBadge({ ratio }: { ratio: number }) {
         paddingHorizontal: 8,
         paddingVertical: 2,
         borderRadius: 10,
-        backgroundColor: isFlagged ? '#fef2f2' : '#f0fdf4',
+        backgroundColor: isFlagged
+          ? (theme === 'dark' ? colors.error[900] : colors.error[50])
+          : (theme === 'dark' ? colors.success[900] : colors.success[50]),
       }}
     >
       <Text

@@ -84,7 +84,7 @@ function DataCategoryCard({
           width: 8,
           height: 8,
           borderRadius: 4,
-          backgroundColor: hasData ? '#3b82f6' : colors.bg[theme].muted,
+          backgroundColor: hasData ? colors.info[600] : colors.bg[theme].muted,
         }}
       />
       <Stack flex={1}>
@@ -101,7 +101,7 @@ function DataCategoryCard({
         <Text style={{ fontSize: 12, color: colors.text[theme].secondary }}>{description}</Text>
       </Stack>
       {hasData ? (
-        <CheckCircle size={16} color="#3b82f6" />
+        <CheckCircle size={16} color={colors.info[600]} />
       ) : (
         <XCircle size={16} color={colors.icon[theme].muted} />
       )}
@@ -110,11 +110,12 @@ function DataCategoryCard({
 }
 
 function RequestStatusBadge({ status }: { status: string }) {
+  const { theme: badgeTheme } = useThemeContext()
   const statusConfig: Record<string, { bg: string; text: string; label: string }> = {
-    pending: { bg: '#fef3c7', text: '#92400e', label: 'Pending' },
-    processing: { bg: '#dbeafe', text: '#1e40af', label: 'Processing' },
-    completed: { bg: '#d1fae5', text: '#065f46', label: 'Completed' },
-    denied: { bg: '#fee2e2', text: '#991b1b', label: 'Denied' },
+    pending: { bg: badgeTheme === 'dark' ? colors.warning[900] : colors.warning[50], text: colors.warning[700], label: 'Pending' },
+    processing: { bg: badgeTheme === 'dark' ? colors.info[900] : colors.info[100], text: colors.info[700], label: 'Processing' },
+    completed: { bg: badgeTheme === 'dark' ? colors.success[900] : colors.success[100], text: colors.success[700], label: 'Completed' },
+    denied: { bg: badgeTheme === 'dark' ? colors.error[900] : colors.error[50], text: colors.error[800], label: 'Denied' },
   }
   const config = statusConfig[status] ?? statusConfig.pending
   return (
@@ -276,7 +277,7 @@ export function PrivacyDataScreen() {
           <Row gap={12} style={{ flexWrap: 'wrap' }}>
             <Card padding="md" style={{ flex: 1, minWidth: 200, backgroundColor: colors.bg[theme].default }}>
               <Stack gap={8} align="center">
-                <Download size={24} color="#3b82f6" />
+                <Download size={24} color={colors.info[600]} />
                 <Text style={{ fontWeight: '600', color: colors.text[theme].primary }}>Export Data</Text>
                 <Text style={{ fontSize: 12, color: colors.text[theme].secondary, textAlign: 'center' }}>
                   Download a copy of all your personal data
@@ -289,7 +290,7 @@ export function PrivacyDataScreen() {
 
             <Card padding="md" style={{ flex: 1, minWidth: 200, backgroundColor: colors.bg[theme].default }}>
               <Stack gap={8} align="center">
-                <Trash2 size={24} color="#ef4444" />
+                <Trash2 size={24} color={colors.error[600]} />
                 <Text style={{ fontWeight: '600', color: colors.text[theme].primary }}>Delete Data</Text>
                 <Text style={{ fontSize: 12, color: colors.text[theme].secondary, textAlign: 'center' }}>
                   Request permanent deletion of your data
@@ -302,7 +303,7 @@ export function PrivacyDataScreen() {
 
             <Card padding="md" style={{ flex: 1, minWidth: 200, backgroundColor: colors.bg[theme].default }}>
               <Stack gap={8} align="center">
-                <ShieldCheck size={24} color="#10b981" />
+                <ShieldCheck size={24} color={colors.success[500]} />
                 <Text style={{ fontWeight: '600', color: colors.text[theme].primary }}>Correct Data</Text>
                 <Text style={{ fontSize: 12, color: colors.text[theme].secondary, textAlign: 'center' }}>
                   Request corrections to inaccurate data

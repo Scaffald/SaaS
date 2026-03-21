@@ -2,7 +2,8 @@ import { MinusCircle } from "lucide-react-native";
 import { memo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { Platform } from "react-native";
-import { Button, Input, Text, Row, Stack } from "@scaffald/ui";
+import { Button, Input, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
+import { colors } from "@scaffald/ui/tokens";
 
 import type { CreateWorkLogInput } from "@scf/schemas";
 
@@ -31,6 +32,7 @@ export const TimeEntryInput = memo(function TimeEntryInput({
   onRemove,
   disableRemove = false,
 }: TimeEntryInputProps) {
+  const { theme } = useThemeContext();
   const {
     control,
     formState: { errors },
@@ -41,7 +43,7 @@ export const TimeEntryInput = memo(function TimeEntryInput({
   return (
     <Stack
       borderWidth={1}
-      style={{ borderColor: "#e2e8f0", borderRadius: 16, padding: 8 }}
+      style={{ borderColor: colors.border[theme].default, borderRadius: 16, padding: 8 }}
       gap={8}
     >
       <Row gap={12} align="center">
@@ -61,7 +63,7 @@ export const TimeEntryInput = memo(function TimeEntryInput({
             )}
           />
           {rowError?.start?.message && (
-            <Text style={{ color: "#ef4444" }}>{rowError.start.message}</Text>
+            <Text style={{ color: colors.error[600] }}>{rowError.start.message}</Text>
           )}
         </Stack>
 
@@ -81,7 +83,7 @@ export const TimeEntryInput = memo(function TimeEntryInput({
             )}
           />
           {rowError?.end?.message && (
-            <Text style={{ color: "#ef4444" }}>{rowError.end.message}</Text>
+            <Text style={{ color: colors.error[600] }}>{rowError.end.message}</Text>
           )}
         </Stack>
 
@@ -97,7 +99,7 @@ export const TimeEntryInput = memo(function TimeEntryInput({
       </Row>
 
       {typeof rowError?.message === "string" && (
-        <Text style={{ color: "#ef4444" }}>{rowError.message}</Text>
+        <Text style={{ color: colors.error[600] }}>{rowError.message}</Text>
       )}
     </Stack>
   );

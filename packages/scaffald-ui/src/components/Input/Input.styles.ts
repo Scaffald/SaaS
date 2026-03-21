@@ -48,7 +48,7 @@ export function getInputStyles(
     minHeight: 40,
     paddingHorizontal: spacing[12],
     paddingVertical: spacing[8],
-    borderRadius: borderRadius.m,
+    borderRadius: borderRadius.xxl,
     backgroundColor: inputDefaultBg,
     borderWidth: 1,
     gap: spacing[8],
@@ -113,7 +113,7 @@ export function getInputStyles(
   }
 
   // Line type has no border radius
-  const inputBorderRadius = type === 'line' ? borderRadius.none : borderRadius.m
+  const inputBorderRadius = type === 'line' ? borderRadius.none : borderRadius.xxl
 
   const inputContainer: ViewStyle = {
     ...baseInputContainer,
@@ -146,8 +146,8 @@ export function getInputStyles(
         borderColor,
         paddingHorizontal: spacing[12],
         paddingVertical: spacing[8],
-        borderTopLeftRadius: borderRadius.m,
-        borderBottomLeftRadius: borderRadius.m,
+        borderTopLeftRadius: borderRadius.xxl,
+        borderBottomLeftRadius: borderRadius.xxl,
         borderTopRightRadius: borderRadius.none,
         borderBottomRightRadius: borderRadius.none,
         minHeight: 44,

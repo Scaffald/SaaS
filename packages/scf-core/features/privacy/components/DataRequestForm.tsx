@@ -127,10 +127,10 @@ function Checkbox({
       <Row
         padding="sm"
         style={{
-          backgroundColor: checked ? colors.bg[theme].primary : colors.bg[theme].subtle,
+          backgroundColor: checked ? colors.bg[theme].selected : colors.bg[theme].subtle,
           borderRadius: 8,
           borderWidth: 1,
-          borderColor: checked ? colors.border[theme].primary : colors.border[theme].default,
+          borderColor: checked ? colors.border[theme].active : colors.border[theme].default,
         }}
         gap={12}
         align="flex-start"
@@ -141,14 +141,14 @@ function Checkbox({
           style={{
             borderRadius: 4,
             borderWidth: 2,
-            borderColor: checked ? colors.fg[theme].primary : colors.border[theme].muted,
-            backgroundColor: checked ? colors.fg[theme].primary : "transparent",
+            borderColor: checked ? colors.fg[theme].active : colors.border[theme].muted,
+            backgroundColor: checked ? colors.fg[theme].active : "transparent",
             marginTop: 2,
           }}
           align="center"
           justify="center"
         >
-          {checked && <Text style={{ color: colors.text[theme].inverse }}>✓</Text>}
+          {checked && <Text style={{ color: '#ffffff' }}>✓</Text>}
         </Stack>
         <Stack flex={1} gap={4}>
           <Text>{label}</Text>
@@ -181,10 +181,10 @@ function RadioButton({
       <Row
         padding="sm"
         style={{
-          backgroundColor: selected ? colors.bg[theme].primary : colors.bg[theme].subtle,
+          backgroundColor: selected ? colors.bg[theme].selected : colors.bg[theme].subtle,
           borderRadius: 8,
           borderWidth: 1,
-          borderColor: selected ? colors.border[theme].primary : colors.border[theme].default,
+          borderColor: selected ? colors.border[theme].active : colors.border[theme].default,
         }}
         gap={12}
         align="flex-start"
@@ -195,7 +195,7 @@ function RadioButton({
           style={{
             borderRadius: 10,
             borderWidth: 2,
-            borderColor: selected ? colors.fg[theme].primary : colors.border[theme].muted,
+            borderColor: selected ? colors.fg[theme].active : colors.border[theme].muted,
             marginTop: 2,
           }}
           align="center"
@@ -207,7 +207,7 @@ function RadioButton({
               height={10}
               style={{
                 borderRadius: 5,
-                backgroundColor: colors.fg[theme].primary,
+                backgroundColor: colors.fg[theme].active,
               }}
             />
           )}
@@ -281,12 +281,12 @@ export function DataRequestForm({
           height={80}
           style={{
             borderRadius: 40,
-            backgroundColor: colors.bg[theme].success,
+            backgroundColor: theme === 'dark' ? colors.success[900] : colors.success[100],
           }}
           align="center"
           justify="center"
         >
-          <Text style={{ color: colors.text[theme].success }}>✓</Text>
+          <Text style={{ color: theme === 'dark' ? colors.success[300] : colors.success[600] }}>✓</Text>
         </Stack>
         <Text style={{ textAlign: "center" }}>Request Submitted</Text>
         <Text style={{ color: colors.text[theme].secondary, textAlign: "center" }}>
@@ -384,7 +384,7 @@ export function DataRequestForm({
                 padding="sm"
               >
                 <Text
-                  style={{ color: correctionDetails ? colors.text[theme].primary : colors.text[theme].muted }}
+                  style={{ color: correctionDetails ? colors.text[theme].primary : colors.text[theme].tertiary }}
                 >
                   {correctionDetails || "Enter correction details here..."}
                 </Text>
@@ -456,13 +456,13 @@ export function DataRequestForm({
             <Row
               padding="sm"
               style={{
-                backgroundColor: colors.bg[theme].error,
+                backgroundColor: theme === 'dark' ? colors.error[900] : colors.error[50],
                 borderRadius: 8,
                 borderWidth: 1,
                 borderColor: colors.border[theme].error,
               }}
             >
-              <Text style={{ color: colors.text[theme].error }}>⚠️ {typeInfo.warning}</Text>
+              <Text style={{ color: theme === 'dark' ? colors.error[300] : colors.error[600] }}>⚠️ {typeInfo.warning}</Text>
             </Row>
           )}
 
@@ -470,11 +470,11 @@ export function DataRequestForm({
           <Row
             padding="sm"
             style={{
-              backgroundColor: colors.bg[theme].info,
+              backgroundColor: theme === 'dark' ? colors.info[900] : colors.info[50],
               borderRadius: 8,
             }}
           >
-            <Text style={{ color: colors.text[theme].info }}>
+            <Text style={{ color: colors.info[600] }}>
               Your request will be processed within 45 days as required by CCPA.
               You will receive email notifications about the status of your
               request.

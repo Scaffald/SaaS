@@ -72,8 +72,8 @@ function getStatusColors(
       text: t === "dark" ? colors.green[300] : colors.green[700],
     },
     failed: {
-      bg: t === "dark" ? colors.red[900] : colors.red[100],
-      text: t === "dark" ? colors.red[300] : colors.red[500],
+      bg: t === "dark" ? colors.error[900] : colors.error[100],
+      text: t === "dark" ? colors.error[300] : colors.error[500],
     },
     cancelled: {
       bg: t === "dark" ? colors.gray[800] : colors.gray[100],

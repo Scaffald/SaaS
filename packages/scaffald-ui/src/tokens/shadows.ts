@@ -145,13 +145,13 @@ export const shadows = {
     // For React Native, consider using border-based focus indicators.
   },
 
-  // Soft wide-diffused shadow - matches comp's "0 4px 20px -2px rgba(0,0,0,0.05)"
-  // Lighter and more airy than shadow-m; ideal for profile/dashboard cards
+  // Soft wide-diffused shadow - lighter and more airy than shadow-m
+  // Wide diffusion creates a floating, open feel for dashboard/profile cards
   soft: {
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 20,
     elevation: 3,
   },
 
@@ -232,8 +232,8 @@ export const boxShadows = {
   // Double shadow creates an outline ring: Outer error ring (4px spread) + Inner white ring (2px spread)
   focusError: '0 0 0 4px rgba(229, 142, 128, 1), 0 0 0 2px rgba(255, 255, 255, 1)', // error[300] terracotta outer, white inner
 
-  // Soft wide-diffused shadow - matches comp's card shadow
-  soft: '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+  // Soft wide-diffused shadow - wide diffusion for floating card feel
+  soft: '0 2px 24px -4px rgba(0, 0, 0, 0.04)',
 
   // Legacy aliases for backward compatibility
   sm: '0 1px 3px 0 rgba(22, 17, 13, 0.078)', // Matches shadow-s

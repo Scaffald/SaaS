@@ -141,9 +141,9 @@ export function UserSearch({
         align="center"
         style={{
           borderWidth: 1,
-          borderColor: error ? '#ef4444' : '#e4e4e7',
+          borderColor: error ? colors.error[600] : colors.border[t].default,
           borderRadius: 16,
-          backgroundColor: '#ffffff',
+          backgroundColor: colors.bg[t].default,
           paddingHorizontal: 12,
           paddingVertical: 8,
         }}
@@ -174,9 +174,9 @@ export function UserSearch({
             right: 0,
             marginTop: 4,
             borderWidth: 1,
-            borderColor: '#e4e4e7',
+            borderColor: colors.border[t].default,
             borderRadius: 12,
-            backgroundColor: '#ffffff',
+            backgroundColor: colors.bg[t].default,
             maxHeight: 300,
             overflow: 'scroll',
             zIndex: 1000,
@@ -220,9 +220,9 @@ export function UserSearch({
             right: 0,
             marginTop: 4,
             borderWidth: 1,
-            borderColor: '#e4e4e7',
+            borderColor: colors.border[t].default,
             borderRadius: 12,
-            backgroundColor: '#ffffff',
+            backgroundColor: colors.bg[t].default,
             zIndex: 1000,
           }}
           padding="sm"
