@@ -1,0 +1,70 @@
+---
+sidebar_position: 0
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# SettingsSectionHeader
+
+SettingsSectionHeader component from Scaffald UI component library.
+
+## Import
+
+```tsx
+import { SettingsSectionHeader } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <SettingsSectionHeader title="Account" description="Manage your account settings" />
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/SettingsSectionHeader/SettingsSectionHeader.tsx) for the complete props API.
+
+### Common Props
+
+All SettingsSectionHeader components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Variants
+
+See component props for available variants.
+
+## Examples
+
+### Multiple Headers
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={24}>
+    <SettingsSectionHeader title="Account" description="Manage your account settings" />
+    <SettingsSectionHeader title="Security" description="Password and authentication options" />
+    <SettingsSectionHeader title="Notifications" description="Configure your notification preferences" />
+  </Stack>
+</ThemeProvider>`} />
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+- Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+No related components.
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

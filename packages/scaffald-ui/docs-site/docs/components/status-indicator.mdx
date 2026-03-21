@@ -1,0 +1,88 @@
+---
+sidebar_position: 0
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# StatusIndicator
+
+StatusIndicator component from Scaffald UI component library.
+
+## Import
+
+```tsx
+import { StatusIndicator } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Row gap={12}>
+    <StatusIndicator type="success" />
+    <StatusIndicator type="warning" />
+    <StatusIndicator type="error" />
+    <StatusIndicator type="info" />
+  </Row>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/StatusIndicator/StatusIndicator.tsx) for the complete props API.
+
+### Common Props
+
+All StatusIndicator components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Variants
+
+See component props for available variants.
+
+## Examples
+
+### With Labels
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={8}>
+    <Row gap={8} style={{alignItems: 'center'}}>
+      <StatusIndicator type="success" />
+      <Text>Online</Text>
+    </Row>
+    <Row gap={8} style={{alignItems: 'center'}}>
+      <StatusIndicator type="warning" />
+      <Text>Away</Text>
+    </Row>
+    <Row gap={8} style={{alignItems: 'center'}}>
+      <StatusIndicator type="error" />
+      <Text>Offline</Text>
+    </Row>
+    <Row gap={8} style={{alignItems: 'center'}}>
+      <StatusIndicator type="info" />
+      <Text>Busy</Text>
+    </Row>
+  </Stack>
+</ThemeProvider>`} />
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+- Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+No related components.
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

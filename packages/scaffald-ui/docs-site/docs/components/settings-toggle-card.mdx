@@ -1,0 +1,70 @@
+---
+sidebar_position: 0
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# SettingsToggleCard
+
+SettingsToggleCard component from Scaffald UI component library.
+
+## Import
+
+```tsx
+import { SettingsToggleCard } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <SettingsToggleCard title="Email Notifications" description="Receive email updates" />
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/SettingsToggleCard/SettingsToggleCard.tsx) for the complete props API.
+
+### Common Props
+
+All SettingsToggleCard components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Variants
+
+See component props for available variants.
+
+## Examples
+
+### Multiple Toggle Cards
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={12}>
+    <SettingsToggleCard title="Email Notifications" description="Receive email updates" />
+    <SettingsToggleCard title="Push Notifications" description="Receive push notifications on your device" />
+    <SettingsToggleCard title="SMS Alerts" description="Receive text message alerts" />
+  </Stack>
+</ThemeProvider>`} />
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+- Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+No related components.
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

@@ -1,0 +1,47 @@
+---
+sidebar_position: 36
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Icon
+
+Vector icon component powered by Lucide icons. Themeable and accessible with 1000+ icons available.
+
+## Import
+
+```tsx
+import { Icon, CheckIcon, InfoIcon, CancelIcon } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Row gap={16} style={{alignItems: 'center'}}>
+    <CheckIcon size={24} />
+    <InfoIcon size={24} />
+    <CancelIcon size={24} />
+  </Row>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Icon/Icon.tsx) for the complete props API.
+
+### Common Props
+
+- `size` - Icon size in pixels
+- `color` - Icon color (uses theme tokens)
+
+## Accessibility
+
+- Screen reader compatible with accessibilityLabel
+- Decorative icons hidden from screen readers
+
+## Related Components
+
+- [Button](./button) - Buttons with icon support
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

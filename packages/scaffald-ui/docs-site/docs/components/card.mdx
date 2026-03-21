@@ -1,0 +1,93 @@
+---
+sidebar_position: 31
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Card
+
+Container component for grouping related content. Supports headers, footers, and various visual styles.
+
+## Import
+
+```tsx
+import { Card } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Card variant="elevated" padding="lg" style={{maxWidth: 350}}>
+    <CardHeader title="Card Title" subtitle="Card subtitle" />
+    <CardContent>
+      <Text>This is the card content area. You can put any content here.</Text>
+    </CardContent>
+    <CardFooter>
+      <Button variant="filled" color="primary" size="sm">Action</Button>
+    </CardFooter>
+  </Card>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Card/Card.tsx) for the complete props API.
+
+### Common Props
+
+All Card components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Variants
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={16}>
+    <Card variant="elevated" padding="md">
+      <Text weight="bold">Elevated Card</Text>
+      <Text>With shadow elevation</Text>
+    </Card>
+    <Card variant="outlined" padding="md">
+      <Text weight="bold">Outlined Card</Text>
+      <Text>With border</Text>
+    </Card>
+    <Card variant="filled" padding="md">
+      <Text weight="bold">Filled Card</Text>
+      <Text>With background fill</Text>
+    </Card>
+  </Stack>
+</ThemeProvider>`} />
+
+## Examples
+
+### Advanced Usage
+
+```tsx
+// Example implementation
+<Card variant="default">
+  Example content
+</Card>
+```
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+- Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+- [Container](./container)
+- [Divider](./divider)
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

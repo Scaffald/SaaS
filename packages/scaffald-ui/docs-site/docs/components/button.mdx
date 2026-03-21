@@ -1,0 +1,108 @@
+---
+sidebar_position: 1
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Button
+
+Interactive button component with multiple variants and sizes. Supports icons, loading states, and accessibility features.
+
+## Import
+
+```tsx
+import { Button } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Button variant="filled" color="primary" onPress={() => alert('Pressed!')}>
+    Click Me
+  </Button>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Button/Button.tsx) for the complete props API.
+
+### Common Props
+
+All Button components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Variants
+
+### Visual Variants
+
+- `filled` (default) - Solid background button
+- `outline` - Outlined button with transparent background
+- `ghost` - Minimal button with no background
+- `text` - Text-only button
+
+### Sizes
+
+- `sm` - Small button
+- `md` (default) - Medium button
+- `lg` - Large button
+
+### Loading state
+
+Use the `loading` prop to show a loading indicator inside the button. The indicator is sized to fit the button (sm/md/lg). This matches the pattern used on onboarding and other forms.
+
+**Do not** put a `<Spinner>` or other large indicator in the button's children—that can overflow the button. Use the `loading` prop instead.
+
+If you don't see loading indicator updates after changing the UI package, rebuild it (`pnpm nx run @scaffald/ui:build`) or restart the dev server so the app picks up the latest build.
+
+```tsx
+<Button loading>Saving</Button>
+<Button loading variant="filled" color="primary">Submit</Button>
+```
+
+## Examples
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={12}>
+    <Row gap={12} style={{flexWrap: 'wrap'}}>
+      <Button variant="filled" color="primary">Filled</Button>
+      <Button variant="outline" color="primary">Outline</Button>
+      <Button variant="light" color="primary">Light</Button>
+      <Button variant="text" color="primary">Text</Button>
+    </Row>
+    <Row gap={12} style={{flexWrap: 'wrap'}}>
+      <Button size="sm" variant="filled" color="primary">Small</Button>
+      <Button size="md" variant="filled" color="primary">Medium</Button>
+      <Button size="lg" variant="filled" color="primary">Large</Button>
+    </Row>
+    <Row gap={12}>
+      <Button loading variant="filled" color="primary">Loading</Button>
+      <Button disabled variant="filled" color="primary">Disabled</Button>
+    </Row>
+  </Stack>
+</ThemeProvider>`} />
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+- Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+- [Link](./link)
+- [IconButton](./iconbutton)
+- [ButtonGroup](./buttongroup)
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

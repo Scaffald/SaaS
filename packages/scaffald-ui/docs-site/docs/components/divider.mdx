@@ -1,0 +1,44 @@
+---
+sidebar_position: 104
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Divider
+
+Visual separator between content sections for improved readability and structure.
+
+## Import
+
+```tsx
+import { Separator } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={8}>
+    <Text>Above</Text>
+    <Separator />
+    <Text>Below</Text>
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Separator/Separator.tsx) for the complete props API.
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+
+## Related Components
+
+- [Spacer](./spacer)
+- [Stack](./stack)
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

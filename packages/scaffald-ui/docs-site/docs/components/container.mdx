@@ -1,0 +1,42 @@
+---
+sidebar_position: 102
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Container
+
+Responsive container with max-width constraints for centering and containing page content.
+
+## Import
+
+```tsx
+import { Box, Text } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Box style={{maxWidth: 600, padding: 16, backgroundColor: '#f0f0f0'}}>
+    <Text>Container content</Text>
+  </Box>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Box/Box.tsx) for the complete props API.
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+
+## Related Components
+
+- [Stack](./stack)
+- [Row](./row)
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

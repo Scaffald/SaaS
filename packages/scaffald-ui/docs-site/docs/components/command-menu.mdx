@@ -1,0 +1,71 @@
+---
+sidebar_position: 0
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# CommandMenu
+
+A searchable command palette for quick navigation and action execution, similar to VS Code's command palette or Spotlight.
+
+## Import
+
+```tsx
+import { CommandMenu } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Text>CommandMenu renders a searchable command palette overlay. Trigger it with a keyboard shortcut (e.g., Ctrl+K). See props documentation for usage.</Text>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/CommandMenu/CommandMenu.tsx) for the complete props API.
+
+### Common Props
+
+All CommandMenu components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Examples
+
+```tsx
+// Full CommandMenu implementation
+<CommandMenu
+  open={isOpen}
+  onClose={() => setIsOpen(false)}
+  placeholder="Type a command or search..."
+>
+  <CommandMenuItem label="Go to Dashboard" icon="home" />
+  <CommandMenuItem label="Settings" icon="settings" />
+  <CommandMenuItem label="Log out" icon="log-out" />
+</CommandMenu>
+```
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+- Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+- [CommandMenuItem](./command-menu-item)
+- [CommandMenuFooter](./command-menu-footer)
+- [CommandShortcut](./command-shortcut)
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

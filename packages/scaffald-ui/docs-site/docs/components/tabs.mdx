@@ -1,0 +1,83 @@
+---
+sidebar_position: 17
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Tabs
+
+Tabbed navigation component with multiple visual variants. Supports horizontal and vertical orientations.
+
+## Import
+
+```tsx
+import { Tabs } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Tabs defaultValue="tab1">
+    <Tabs.Item value="tab1">
+      <Tabs.Trigger><Text>Tab 1</Text></Tabs.Trigger>
+      <Tabs.Content><Text>Content for Tab 1</Text></Tabs.Content>
+    </Tabs.Item>
+    <Tabs.Item value="tab2">
+      <Tabs.Trigger><Text>Tab 2</Text></Tabs.Trigger>
+      <Tabs.Content><Text>Content for Tab 2</Text></Tabs.Content>
+    </Tabs.Item>
+    <Tabs.Item value="tab3">
+      <Tabs.Trigger><Text>Tab 3</Text></Tabs.Trigger>
+      <Tabs.Content><Text>Content for Tab 3</Text></Tabs.Content>
+    </Tabs.Item>
+  </Tabs>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Tabs/Tabs.tsx) for the complete props API.
+
+### Common Props
+
+All Tabs components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Variants
+
+See component props for available variants.
+
+## Examples
+
+### With Content
+
+```tsx
+// Example implementation
+<Tabs variant="default">
+  Example content
+</Tabs>
+```
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+- Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+- [Breadcrumbs](./breadcrumbs)
+- [Pagination](./pagination)
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

@@ -1,0 +1,74 @@
+---
+sidebar_position: 0
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# CommandShortcut
+
+Displays keyboard shortcut badges, commonly used within command menus and tooltips.
+
+## Import
+
+```tsx
+import { CommandShortcut } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <CommandShortcut keys={['Ctrl', 'K']} />
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/CommandShortcut/CommandShortcut.tsx) for the complete props API.
+
+### Common Props
+
+All CommandShortcut components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Examples
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={12}>
+    <Row gap={8} style={{alignItems: 'center'}}>
+      <Text>Search</Text>
+      <CommandShortcut keys={['Ctrl', 'K']} />
+    </Row>
+    <Row gap={8} style={{alignItems: 'center'}}>
+      <Text>Save</Text>
+      <CommandShortcut keys={['Ctrl', 'S']} />
+    </Row>
+    <Row gap={8} style={{alignItems: 'center'}}>
+      <Text>Undo</Text>
+      <CommandShortcut keys={['Ctrl', 'Z']} />
+    </Row>
+  </Stack>
+</ThemeProvider>`} />
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+- Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+- [CommandMenu](./command-menu)
+- [CommandMenuItem](./command-menu-item)
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

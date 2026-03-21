@@ -1,0 +1,76 @@
+---
+sidebar_position: 0
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Checklist
+
+Interactive checklist component for displaying a list of tasks or items with completion states.
+
+## Import
+
+```tsx
+import { Checklist } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Checklist
+    items={[
+      { id: '1', label: 'Set up your profile', completed: true },
+      { id: '2', label: 'Connect your account', completed: true },
+      { id: '3', label: 'Invite team members', completed: false },
+      { id: '4', label: 'Complete onboarding', completed: false },
+    ]}
+  />
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Checklist/Checklist.tsx) for the complete props API.
+
+### Common Props
+
+All Checklist components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Examples
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={16}>
+    <Text style={{fontWeight: 'bold'}}>Getting Started</Text>
+    <Checklist
+      items={[
+        { id: '1', label: 'Create account', completed: true },
+        { id: '2', label: 'Verify email', completed: true },
+        { id: '3', label: 'Set preferences', completed: false },
+      ]}
+    />
+  </Stack>
+</ThemeProvider>`} />
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+- Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+No related components.
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

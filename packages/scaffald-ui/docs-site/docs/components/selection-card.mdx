@@ -1,0 +1,52 @@
+---
+sidebar_position: 0
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# SelectionCard
+
+A card component for making selections, supporting radio and checkbox modes.
+
+## Import
+
+```tsx
+import { SelectionCard } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={12} style={{maxWidth: 350}}>
+    <SelectionCard title="Option A" description="First option" type="radio" selected />
+    <SelectionCard title="Option B" description="Second option" type="radio" />
+    <SelectionCard title="Option C" description="Third option" type="radio" />
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/SelectionCard/SelectionCard.tsx) for the complete props API.
+
+### Common Props
+
+- `title` - Card title text
+- `description` - Supporting description
+- `type` - `'radio' | 'checkbox'` - Selection mode
+- `selected` - Whether the card is selected
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+
+## Related Components
+
+- [Card](./card)
+- [Radio](./radio)
+- [Checkbox](./checkbox)
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

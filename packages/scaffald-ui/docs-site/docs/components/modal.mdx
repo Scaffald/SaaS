@@ -1,0 +1,76 @@
+---
+sidebar_position: 24
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Modal
+
+Overlay dialog component for focused interactions. Includes backdrop, animations, and focus management.
+
+## Import
+
+```tsx
+import { Modal } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={12} style={{padding: 16, borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 12, maxWidth: 400, backgroundColor: '#fff'}}>
+    <Text size="lg" weight="bold">Modal Preview</Text>
+    <Text>This shows what modal content looks like. In real usage, Modal renders as an overlay.</Text>
+    <Row gap={8} style={{justifyContent: 'flex-end'}}>
+      <Button variant="outline">Cancel</Button>
+      <Button variant="filled" color="primary">Confirm</Button>
+    </Row>
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Modal/Modal.tsx) for the complete props API.
+
+### Common Props
+
+All Modal components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Variants
+
+See component props for available variants.
+
+## Examples
+
+### Confirmation Dialog
+
+```tsx
+// Example implementation
+<Modal variant="default">
+  Example content
+</Modal>
+```
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+- Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+No related components.
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

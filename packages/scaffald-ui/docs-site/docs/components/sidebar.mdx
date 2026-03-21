@@ -1,0 +1,76 @@
+---
+sidebar_position: 0
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Sidebar
+
+Sidebar component from Scaffald UI component library.
+
+## Import
+
+```tsx
+import { Sidebar, SidebarHeader, SidebarMenuItem } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack style={{borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 8, maxWidth: 280, padding: 0, overflow: 'hidden'}}>
+    <SidebarHeader title="My App" />
+    <Stack gap={0}>
+      <SidebarMenuItem label="Dashboard" active />
+      <SidebarMenuItem label="Settings" />
+      <SidebarMenuItem label="Profile" />
+    </Stack>
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Sidebar/Sidebar.tsx) for the complete props API.
+
+### Common Props
+
+All Sidebar components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Variants
+
+See component props for available variants.
+
+## Examples
+
+### Advanced Usage
+
+```tsx
+// Example implementation
+<Sidebar variant="default">
+  Example content
+</Sidebar>
+```
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+- Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+No related components.
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

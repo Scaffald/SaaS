@@ -1,0 +1,81 @@
+---
+sidebar_position: 0
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# CryptoAssetCard
+
+Card component displaying cryptocurrency asset information including price, change, and holdings.
+
+## Import
+
+```tsx
+import { CryptoAssetCard } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <CryptoAssetCard
+    name="Bitcoin"
+    symbol="BTC"
+    price="$43,250.00"
+    change="+2.4%"
+    changeDirection="up"
+  />
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/CryptoAssetCard/CryptoAssetCard.tsx) for the complete props API.
+
+### Common Props
+
+All CryptoAssetCard components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Examples
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={12}>
+    <CryptoAssetCard
+      name="Bitcoin"
+      symbol="BTC"
+      price="$43,250.00"
+      change="+2.4%"
+      changeDirection="up"
+    />
+    <CryptoAssetCard
+      name="Ethereum"
+      symbol="ETH"
+      price="$2,280.50"
+      change="-1.2%"
+      changeDirection="down"
+    />
+  </Stack>
+</ThemeProvider>`} />
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+- Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+- [CryptoWalletLayout](./crypto-wallet-layout)
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

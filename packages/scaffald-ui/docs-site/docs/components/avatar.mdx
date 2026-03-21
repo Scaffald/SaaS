@@ -1,0 +1,83 @@
+---
+sidebar_position: 34
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Avatar
+
+User profile image component with fallback initials. Supports different sizes and shapes.
+
+## Import
+
+```tsx
+import { Avatar } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Row gap={12} style={{alignItems: 'center'}}>
+    <Avatar initials="JD" size={48} color="primary" />
+    <Avatar initials="AB" size={48} color="success" />
+    <Avatar initials="XY" size={48} color="error" />
+  </Row>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Avatar/Avatar.tsx) for the complete props API.
+
+### Common Props
+
+All Avatar components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Variants
+
+See component props for available variants.
+
+## Examples
+
+### Sizes and Status
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={16}>
+    <Row gap={8} style={{alignItems: 'center'}}>
+      <Avatar initials="SM" size={24} />
+      <Avatar initials="MD" size={40} />
+      <Avatar initials="LG" size={56} />
+      <Avatar initials="XL" size={80} />
+    </Row>
+    <Row gap={8}>
+      <Avatar initials="ON" size={48} status="online" color="primary" />
+      <Avatar initials="OF" size={48} status="offline" color="gray" />
+      <Avatar initials="BU" size={48} status="busy" color="error" />
+      <Avatar initials="AW" size={48} status="away" color="warning" />
+    </Row>
+  </Stack>
+</ThemeProvider>`} />
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+- Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+No related components.
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

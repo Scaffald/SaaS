@@ -1,0 +1,45 @@
+---
+sidebar_position: 115
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Spacer
+
+Flexible spacing component for adding consistent gaps between elements.
+
+## Import
+
+```tsx
+import { Spacer } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack>
+    <Text>Above</Text>
+    <Spacer size={24} />
+    <Text>Below (24px gap)</Text>
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Spacer/Spacer.tsx) for the complete props API.
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+
+## Related Components
+
+- [Stack](./stack)
+- [Row](./row)
+- [Separator](./divider)
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

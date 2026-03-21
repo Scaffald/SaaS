@@ -1,0 +1,72 @@
+---
+sidebar_position: 8
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Slider
+
+Range input component for numeric values. Supports steps and custom formatting.
+
+## Import
+
+```tsx
+import { Slider, RangeSlider } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={16} style={{maxWidth: 300}}>
+    <Slider value={50} />
+    <RangeSlider value={[25, 75]} />
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Slider/Slider.tsx) for the complete props API.
+
+### Common Props
+
+All Slider components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Variants
+
+See component props for available variants.
+
+## Examples
+
+### With Steps
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={16} style={{maxWidth: 300}}>
+    <Slider value={50} step={10} />
+    <Slider value={25} min={0} max={100} />
+  </Stack>
+</ThemeProvider>`} />
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+- Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+No related components.
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

@@ -1,0 +1,67 @@
+---
+sidebar_position: 0
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# AppearanceThemeCard
+
+Theme selection card for switching between light and dark appearance modes.
+
+## Import
+
+```tsx
+import { AppearanceThemeCard } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Row gap={12}>
+    <AppearanceThemeCard variant="light" />
+    <AppearanceThemeCard variant="dark" />
+  </Row>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/AppearanceThemeCard/AppearanceThemeCard.tsx) for the complete props API.
+
+### Common Props
+
+All AppearanceThemeCard components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Examples
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Row gap={12} style={{flexWrap: 'wrap'}}>
+    <AppearanceThemeCard variant="light" selected />
+    <AppearanceThemeCard variant="dark" />
+    <AppearanceThemeCard variant="system" />
+  </Row>
+</ThemeProvider>`} />
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+- Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+No related components.
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

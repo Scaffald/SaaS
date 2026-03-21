@@ -1,0 +1,85 @@
+---
+sidebar_position: 0
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Chart
+
+SVG-based charting component for data visualization. Supports line, bar, area, and pie charts.
+
+## Import
+
+```tsx
+import { Chart } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Text>Charts render SVG-based visualizations. See props documentation for configuration.</Text>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Chart/Chart.tsx) for the complete props API.
+
+### Common Props
+
+All Chart components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Variants
+
+See component props for available variants.
+
+## Examples
+
+```tsx
+// Line chart example
+<Chart
+  type="line"
+  data={[
+    { x: 'Jan', y: 10 },
+    { x: 'Feb', y: 25 },
+    { x: 'Mar', y: 18 },
+    { x: 'Apr', y: 32 },
+  ]}
+  width={400}
+  height={200}
+/>
+
+// Bar chart example
+<Chart
+  type="bar"
+  data={[
+    { label: 'Q1', value: 120 },
+    { label: 'Q2', value: 180 },
+    { label: 'Q3', value: 150 },
+  ]}
+/>
+```
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+- Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+No related components.
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

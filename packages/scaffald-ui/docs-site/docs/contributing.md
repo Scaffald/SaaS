@@ -16,7 +16,7 @@ Thank you for your interest in contributing to **@scaffald/ui**. This document c
 
 ### Design tokens
 
-- **Use tokens for all visual values.** Colors, spacing, typography, borders, and shadows must come from `src/tokens/` (see [ARCHITECTURE.md](./ARCHITECTURE.md) and [STYLING_GUIDE.md](./STYLING_GUIDE.md)).
+- **Use tokens for all visual values.** Colors, spacing, typography, borders, and shadows must come from `src/tokens/` (see [ARCHITECTURE.md](https://github.com/Scaffald/ui/blob/main/ARCHITECTURE.md) and [STYLING_GUIDE.md](https://github.com/Scaffald/ui/blob/main/STYLING_GUIDE.md)).
 - Do not add hardcoded hex colors or magic numbers; add or reuse tokens instead.
 
 ### React and TypeScript
@@ -55,9 +55,9 @@ Thank you for your interest in contributing to **@scaffald/ui**. This document c
 
 ## Docs and architecture
 
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)** – Design principles, package structure, styling, tokens, accessibility.
-- **[STYLING_GUIDE.md](./STYLING_GUIDE.md)** – How to use tokens and style factories.
-- **[docs/API_CONVENTIONS.md](./docs/API_CONVENTIONS.md)** – Prop naming and API consistency.
+- **[ARCHITECTURE.md](https://github.com/Scaffald/ui/blob/main/ARCHITECTURE.md)** – Design principles, package structure, styling, tokens, accessibility.
+- **[STYLING_GUIDE.md](https://github.com/Scaffald/ui/blob/main/STYLING_GUIDE.md)** – How to use tokens and style factories.
+- **[docs/API_CONVENTIONS.md](https://github.com/Scaffald/ui/blob/main/docs/API_CONVENTIONS.md)** – Prop naming and API consistency.
 - Migrating from the legacy UI package: see docs and ARCHITECTURE for tokens and component mapping.
 
 If you have questions, open an issue or reach out to the maintainers.

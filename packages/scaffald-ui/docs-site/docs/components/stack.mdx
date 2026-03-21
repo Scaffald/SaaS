@@ -1,0 +1,45 @@
+---
+sidebar_position: 116
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Stack
+
+Vertical layout component with configurable spacing between children.
+
+## Import
+
+```tsx
+import { Stack } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={12}>
+    <Text>First</Text>
+    <Text>Second</Text>
+    <Text>Third</Text>
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Stack/Stack.tsx) for the complete props API.
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+
+## Related Components
+
+- [Row](./row)
+- [Grid](./grid)
+- [Spacer](./spacer)
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

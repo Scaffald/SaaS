@@ -1,0 +1,73 @@
+---
+sidebar_position: 0
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Input
+
+Input component from Scaffald UI component library.
+
+## Import
+
+```tsx
+import { Input } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={16} style={{maxWidth: 400}}>
+    <Input label="Email" placeholder="you@example.com" />
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Input/Input.tsx) for the complete props API.
+
+### Common Props
+
+All Input components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Variants
+
+See component props for available variants.
+
+## Examples
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={16} style={{maxWidth: 400}}>
+    <Input label="Name" placeholder="John Doe" />
+    <Input label="Email" placeholder="you@example.com" required />
+    <Input label="Password" placeholder="Enter password" secureTextEntry />
+    <Input label="Website" externalAddon="https://" placeholder="example.com" />
+    <Input label="Error State" error errorMessage="This field is required" />
+    <Input label="Disabled" disabled value="Cannot edit" />
+  </Stack>
+</ThemeProvider>`} />
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+- Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+No related components.
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

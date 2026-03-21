@@ -1,0 +1,46 @@
+---
+sidebar_position: 108
+---
+
+# Image
+
+Optimized image component for displaying local and remote images with proper sizing and caching.
+
+:::note
+Images in Scaffald UI use React Native's built-in Image component directly.
+:::
+
+## Import
+
+```tsx
+import { Image } from 'react-native';
+```
+
+## Basic Usage
+
+```tsx
+<Image
+  source={{ uri: 'https://example.com/photo.jpg' }}
+  style={{ width: 200, height: 200, borderRadius: 8 }}
+  resizeMode="cover"
+/>
+```
+
+## Props
+
+See the React Native [Image documentation](https://reactnative.dev/docs/image) for the complete props API.
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+
+## Related Components
+
+- [Avatar](./avatar)
+- [Card](./card)
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

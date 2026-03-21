@@ -1,0 +1,41 @@
+---
+sidebar_position: 0
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# HelperText
+
+Displays supplementary text below form fields to guide user input.
+
+## Import
+
+```tsx
+import { HelperText } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={12} style={{maxWidth: 400}}>
+    <HelperText>Passwords must be at least 8 characters</HelperText>
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/HelperText/HelperText.tsx) for the complete props API.
+
+## Accessibility
+
+- Screen reader compatible
+- ARIA attributes included
+
+## Related Components
+
+- [Input](./input)
+- [FieldError](./field-error)
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

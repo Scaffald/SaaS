@@ -1,0 +1,68 @@
+---
+sidebar_position: 0
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# DatePickerDay
+
+Individual day cell component used within the DatePicker calendar grid. Handles selection state, today highlight, and disabled states.
+
+## Import
+
+```tsx
+import { DatePickerDay } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Text>DatePickerDay renders an individual day cell within the DatePicker calendar grid. It handles selection, today highlighting, and disabled states. Use the higher-level DatePicker for most use cases.</Text>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/DatePickerDay/DatePickerDay.tsx) for the complete props API.
+
+### Common Props
+
+All DatePickerDay components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Examples
+
+```tsx
+// Individual day cells (typically rendered by DatePickerBase)
+<Row gap={4}>
+  <DatePickerDay day={14} />
+  <DatePickerDay day={15} selected />
+  <DatePickerDay day={16} today />
+  <DatePickerDay day={17} disabled />
+</Row>
+```
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+- Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+- [DatePicker](./date-picker)
+- [DatePickerBase](./date-picker-base)
+- [DatePickerHeader](./date-picker-header)
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

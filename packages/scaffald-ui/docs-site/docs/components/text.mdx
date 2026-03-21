@@ -1,0 +1,44 @@
+---
+sidebar_position: 117
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Text
+
+Base text component with support for size, weight, and color variants.
+
+## Import
+
+```tsx
+import { Text } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={8}>
+    <Text size="lg" weight="bold">Large Bold</Text>
+    <Text size="md">Medium Regular</Text>
+    <Text size="sm" color="secondary">Small Secondary</Text>
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Text/Text.tsx) for the complete props API.
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+
+## Related Components
+
+- [Heading](./heading)
+- [Caption](./heading) - Small text component
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

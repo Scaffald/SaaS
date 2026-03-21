@@ -1,0 +1,69 @@
+---
+sidebar_position: 0
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# CryptoWalletLayout
+
+Full-page layout component for cryptocurrency wallet views, composing header, balance, asset list, and action sections.
+
+## Import
+
+```tsx
+import { CryptoWalletLayout } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Text>CryptoWalletLayout is a full-page layout component that composes wallet header, balance display, asset list, and action buttons. It requires wallet data props for rendering. See props documentation for configuration.</Text>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/CryptoWalletLayout/CryptoWalletLayout.tsx) for the complete props API.
+
+### Common Props
+
+All CryptoWalletLayout components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Examples
+
+```tsx
+// Full wallet layout
+<CryptoWalletLayout
+  balance="$12,450.00"
+  assets={[
+    { name: 'Bitcoin', symbol: 'BTC', price: '$43,250', change: '+2.4%' },
+    { name: 'Ethereum', symbol: 'ETH', price: '$2,280', change: '-1.2%' },
+  ]}
+  onSend={() => navigate('/send')}
+  onReceive={() => navigate('/receive')}
+/>
+```
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+- Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+- [CryptoAssetCard](./crypto-asset-card)
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

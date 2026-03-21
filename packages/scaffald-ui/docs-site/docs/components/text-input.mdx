@@ -1,0 +1,45 @@
+---
+sidebar_position: 118
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# TextInput
+
+Single-line text input component with label and placeholder support.
+
+:::note
+TextInput is exported as `Input` in @scaffald/ui.
+:::
+
+## Import
+
+```tsx
+import { Input } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Input label="Email" placeholder="you@example.com" />
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Input/Input.tsx) for the complete props API.
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+
+## Related Components
+
+- [Input](./input)
+- [TextArea](./textarea)
+- [PhoneNumberInput](./phone-number-input)
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

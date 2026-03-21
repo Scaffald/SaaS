@@ -1,0 +1,49 @@
+---
+sidebar_position: 0
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# FileUpload
+
+Drag-and-drop file upload component with progress tracking and file type validation.
+
+## Import
+
+```tsx
+import { FileUpload, FileUploadDropZone, FileUploadList } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={12} style={{maxWidth: 400}}>
+    <Text weight="bold">File Upload</Text>
+    <Text>The FileUpload component provides a drag-and-drop zone with file list management. See the props documentation for configuration options.</Text>
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/FileUpload/FileUpload.tsx) for the complete props API.
+
+## Sub-components
+
+- `FileUploadDropZone` - Drag-and-drop target area
+- `FileUploadList` - List of uploaded files
+- `FileUploadItem` - Individual file item
+- `FileUploadProgress` - Upload progress indicator
+
+## Accessibility
+
+- Keyboard accessible drop zone
+- Screen reader announcements for upload status
+
+## Related Components
+
+- [Button](./button)
+- [ProgressBar](./progress-bar)
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

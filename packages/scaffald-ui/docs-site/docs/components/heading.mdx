@@ -1,0 +1,43 @@
+---
+sidebar_position: 106
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Heading
+
+Semantic heading levels h1-h6 for structuring content hierarchy.
+
+## Import
+
+```tsx
+import { Heading, H1, H2, H3 } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={8}>
+    <H1>Heading 1</H1>
+    <H2>Heading 2</H2>
+    <H3>Heading 3</H3>
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Heading/Heading.tsx) for the complete props API.
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+
+## Related Components
+
+- [Text](./text)
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

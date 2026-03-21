@@ -1,0 +1,76 @@
+---
+sidebar_position: 23
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Toast
+
+Toast component from Scaffald UI component library.
+
+## Import
+
+```tsx
+import { Toast } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+> Toast notifications are imperative and difficult to demo in a static preview. The examples below use Alert components to illustrate the visual styles.
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={12}>
+    <Alert variant="success">Toast: Operation completed!</Alert>
+    <Alert variant="error">Toast: Something went wrong</Alert>
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Toast/Toast.tsx) for the complete props API.
+
+### Common Props
+
+All Toast components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Variants
+
+See component props for available variants.
+
+## Examples
+
+### All Variants
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={12}>
+    <Alert variant="success">Success: Changes saved</Alert>
+    <Alert variant="error">Error: Failed to save</Alert>
+    <Alert variant="warning">Warning: Unsaved changes</Alert>
+    <Alert variant="info">Info: New update available</Alert>
+  </Stack>
+</ThemeProvider>`} />
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+- Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+No related components.
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

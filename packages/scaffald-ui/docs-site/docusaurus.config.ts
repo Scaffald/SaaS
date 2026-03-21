@@ -23,6 +23,10 @@ const config: Config = {
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
 
+  markdown: {
+    parseFrontMatter: undefined,
+  },
+
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],

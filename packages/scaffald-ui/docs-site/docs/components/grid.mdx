@@ -1,0 +1,76 @@
+---
+sidebar_position: 16
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Grid
+
+Grid component from Scaffald UI component library.
+
+## Import
+
+```tsx
+import { Grid, GridItem } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Grid columns={3} gap={12}>
+    <GridItem><Card variant="outlined" padding="md"><Text>Item 1</Text></Card></GridItem>
+    <GridItem><Card variant="outlined" padding="md"><Text>Item 2</Text></Card></GridItem>
+    <GridItem><Card variant="outlined" padding="md"><Text>Item 3</Text></Card></GridItem>
+    <GridItem><Card variant="outlined" padding="md"><Text>Item 4</Text></Card></GridItem>
+    <GridItem><Card variant="outlined" padding="md"><Text>Item 5</Text></Card></GridItem>
+    <GridItem><Card variant="outlined" padding="md"><Text>Item 6</Text></Card></GridItem>
+  </Grid>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Grid/Grid.tsx) for the complete props API.
+
+### Common Props
+
+All Grid components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Variants
+
+See component props for available variants.
+
+## Examples
+
+### Advanced Usage
+
+```tsx
+// Example implementation
+<Grid variant="default">
+  Example content
+</Grid>
+```
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+- Focus management
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.{semantic}.{theme}.{variant}`
+- Spacing: `spacing.*`
+- Typography: `typography.*`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+No related components.
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

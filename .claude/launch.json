@@ -3,9 +3,16 @@
   "configurations": [
     {
       "name": "scaffald-web",
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "scaffald-app", "web"],
+      "runtimeExecutable": "/bin/bash",
+      "runtimeArgs": ["-c", "export NVM_DIR=\"$HOME/.nvm\"; . \"$NVM_DIR/nvm.sh\"; pnpm --filter scaffald-app web"],
       "port": 8081,
+      "autoPort": false
+    },
+    {
+      "name": "ui-docs",
+      "runtimeExecutable": "/bin/bash",
+      "runtimeArgs": ["-c", "export NVM_DIR=\"$HOME/.nvm\"; . \"$NVM_DIR/nvm.sh\"; cd packages/scaffald-ui/docs-site && npx docusaurus start --port 3333"],
+      "port": 3333,
       "autoPort": false
     }
   ]

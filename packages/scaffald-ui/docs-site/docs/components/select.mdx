@@ -1,0 +1,47 @@
+---
+sidebar_position: 114
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# Select
+
+Dropdown selection component for choosing from a list of options.
+
+## Import
+
+```tsx
+import { ResponsiveSelect } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <ResponsiveSelect
+    options={[
+      { label: 'Option 1', value: '1' },
+      { label: 'Option 2', value: '2' }
+    ]}
+    placeholder="Select..."
+  />
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/ResponsiveSelect/ResponsiveSelect.tsx) for the complete props API.
+
+## Accessibility
+
+- Keyboard navigation support
+- Screen reader compatible
+- ARIA attributes included
+
+## Related Components
+
+- [Dropdown](./dropdown)
+- [SearchSelect](./search-select)
+- [ResponsiveSelect](./responsive-select)
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.
