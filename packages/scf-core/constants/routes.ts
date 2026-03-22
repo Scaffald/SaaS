@@ -135,6 +135,25 @@ const ROUTES_CONFIG = {
     exact: true,
   },
 
+  WORKERS: {
+    path: '/workers',
+    titleKey: 'routes.dashboard.discover.workers.title',
+    protected: true,
+    exact: false,
+    DETAIL: {
+      path: '/workers/:id',
+      titleKey: 'routes.dashboard.discover.workers.detail',
+      protected: true,
+      exact: true,
+    },
+    MAP: {
+      path: '/workers/map',
+      titleKey: 'routes.dashboard.discover.map',
+      protected: true,
+      exact: true,
+    },
+  },
+
   /** @deprecated Use DASHBOARD.DISCOVER.EMPLOYERS.ORG instead — kept for backward compatibility */
   ORG: {
     path: '/dashboard/employers/org',
@@ -323,19 +342,21 @@ const ROUTES_CONFIG = {
       },
     },
     DISCOVER: {
+      /** @deprecated Use ROUTES.WORKERS.MAP instead */
       MAP: {
-        path: '/dashboard/map',
+        path: '/workers/map',
         titleKey: 'routes.dashboard.discover.map',
         protected: true,
         exact: true,
       },
+      /** @deprecated Use ROUTES.WORKERS instead */
       WORKERS: {
-        path: '/dashboard/workers',
+        path: '/workers',
         titleKey: 'routes.dashboard.discover.workers.title',
         protected: true,
         exact: false,
         DETAIL: {
-          path: '/dashboard/workers/:id',
+          path: '/workers/:id',
           titleKey: 'routes.dashboard.discover.workers.detail',
           protected: true,
           exact: true,

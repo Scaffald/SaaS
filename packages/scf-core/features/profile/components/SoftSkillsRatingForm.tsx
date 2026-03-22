@@ -394,7 +394,7 @@ export const SoftSkillsRatingForm: FC = () => {
               variant="filled" color="primary"
               onPress={() => {
                 setShowSuccessModal(false)
-                router.push(ROUTES.DASHBOARD.DISCOVER.MAP.path)
+                router.push(ROUTES.WORKERS.MAP.path)
               }}
             >
               Find Matching Jobs

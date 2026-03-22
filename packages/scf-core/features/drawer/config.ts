@@ -98,14 +98,14 @@ export const generateDashboardDrawerItems = (
   items.push({
     key: 'workers',
     titleKey: 'navigation.discoverWorkers',
-    href: ROUTES.DASHBOARD.DISCOVER.WORKERS.path,
-    routeKey: 'DASHBOARD_DISCOVER_WORKERS',
+    href: ROUTES.WORKERS.path,
+    routeKey: 'WORKERS',
     icon: Users,
     isExpandable: true,
     expandOnActive: true,
     subItems: [
-      { key: 'workers-index', titleKey: 'navigation.workersList', href: ROUTES.DASHBOARD.DISCOVER.WORKERS.path, exact: true },
-      { key: 'workers-map', titleKey: 'navigation.discoverMap', href: ROUTES.DASHBOARD.DISCOVER.MAP.path },
+      { key: 'workers-index', titleKey: 'navigation.workersList', href: ROUTES.WORKERS.path, exact: true },
+      { key: 'workers-map', titleKey: 'navigation.discoverMap', href: ROUTES.WORKERS.MAP.path },
     ],
   })
 
@@ -313,10 +313,10 @@ export const MOBILE_SECTIONS: MobileSection[] = [
     key: 'discover',
     label: 'Discover',
     icon: Compass,
-    route: ROUTES.DASHBOARD.DISCOVER.WORKERS.path,
-    matchPrefixes: ['/dashboard/workers', '/dashboard/employers', '/dashboard/jobs', '/dashboard/map'],
+    route: ROUTES.WORKERS.path,
+    matchPrefixes: ['/workers', '/dashboard/employers', '/dashboard/jobs'],
     subItems: [
-      { key: 'discover-workers', label: 'Workers', icon: Users, route: ROUTES.DASHBOARD.DISCOVER.WORKERS.path },
+      { key: 'discover-workers', label: 'Workers', icon: Users, route: ROUTES.WORKERS.path },
       { key: 'discover-employers', label: 'Employers', icon: Building2, route: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path },
       { key: 'discover-jobs', label: 'Jobs', icon: Briefcase, route: ROUTES.DASHBOARD.DISCOVER.JOBS.path },
       { key: 'discover-apps', label: 'Apps', icon: ClipboardCheck, route: ROUTES.DASHBOARD.DISCOVER.JOBS.APPLICATIONS.path },

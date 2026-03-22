@@ -82,7 +82,7 @@ function WorkerPreview({ pinId, visible }: { pinId: string; visible: boolean }) 
     ? getStorageUrl('avatars', worker.avatarPath)
     : worker.avatarUrl || null
 
-  const profileUrl = buildPath(ROUTES.DASHBOARD.DISCOVER.WORKERS.DETAIL, { id: pinId })
+  const profileUrl = buildPath(ROUTES.WORKERS.DETAIL, { id: pinId })
 
   return (
     <Stack gap={10}>

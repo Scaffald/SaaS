@@ -65,15 +65,13 @@ export const isActivePath = (pathname: string, href: string, exact?: boolean) =>
     )
   }
 
-  // Special case for workers: also match /dashboard/map (nav sibling under Workers)
-  const workersPath = ROUTES.DASHBOARD.DISCOVER.WORKERS.path
+  // Special case for workers: also match /workers/map (nav sibling under Workers)
+  const workersPath = ROUTES.WORKERS.path
   if (href === workersPath) {
     return (
       pathname === workersPath ||
       pathname === `${workersPath}/index` ||
-      pathname.startsWith(`${workersPath}/`) ||
-      pathname === ROUTES.DASHBOARD.DISCOVER.MAP.path ||
-      pathname.startsWith(`${ROUTES.DASHBOARD.DISCOVER.MAP.path}/`)
+      pathname.startsWith(`${workersPath}/`)
     )
   }
 
