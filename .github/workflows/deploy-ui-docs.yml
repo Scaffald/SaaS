@@ -12,11 +12,12 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  id-token: write
 
 jobs:
   deploy:
-    name: Deploy to GitHub Pages
+    name: Deploy to AWS S3 + CloudFront
     runs-on: ubuntu-latest
     steps:
       - name: Checkout monorepo
@@ -45,13 +46,19 @@ jobs:
           cd packages/scaffald-ui/docs-site
           npm run build
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          personal_token: ${{ secrets.SCAFFALD_UI_SYNC_TOKEN }}
-          publish_dir: ./packages/scaffald-ui/docs-site/build
-          external_repository: Scaffald/ui
-          publish_branch: gh-pages
-          user_name: 'Scaffald CI'
-          user_email: 'dev@scaffald.com'
-          cname: ui.scaffald.com
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy to S3
+        run: |
+          aws s3 sync packages/scaffald-ui/docs-site/build/ s3://ui-scaffald-com-docs --delete
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id E3LR29JN2CLH5S \
+            --paths "/*"
