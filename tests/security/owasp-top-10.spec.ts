@@ -76,7 +76,7 @@ test.describe('OWASP Top 10 Security Testing', () => {
   })
 
   test('A04: Insecure Design - Input validation', async ({ page }) => {
-    await page.goto('/dashboard/profile/general', { waitUntil: 'networkidle' })
+    await page.goto('/profile/general', { waitUntil: 'networkidle' })
 
     // Look for form inputs
     const input = page.locator('input, textarea').first()
@@ -121,7 +121,7 @@ test.describe('OWASP Top 10 Security Testing', () => {
   })
 
   test('A08: Software and Data Integrity Failures - CSRF protection', async ({ page }) => {
-    await page.goto('/dashboard/profile/general', { waitUntil: 'networkidle' })
+    await page.goto('/profile/general', { waitUntil: 'networkidle' })
 
     // Look for forms
     const form = page.locator('form').first()

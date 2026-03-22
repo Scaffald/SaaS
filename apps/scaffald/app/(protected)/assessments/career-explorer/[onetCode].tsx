@@ -8,7 +8,7 @@ export default function CareerDetailRoute() {
   return (
     <DashboardPage
       breadcrumbs={[
-        { label: 'Career Explorer', href: '/dashboard/career-explorer' },
+        { label: 'Career Explorer', href: '/assessments/career-explorer' },
         { label: onetCode || 'Occupation' },
       ]}
       leftContent={<CareerDetailScreen onetCode={onetCode ?? ''} />}

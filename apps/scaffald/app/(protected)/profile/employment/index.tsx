@@ -1,6 +1,6 @@
 /**
  * Redirect: Employment was merged into Resumé.
- * Old links to /dashboard/profile/employment go to the resume page.
+ * Old links to /profile/employment go to the resume page.
  */
 
 import { ROUTES } from '@scf/core/constants/routes'

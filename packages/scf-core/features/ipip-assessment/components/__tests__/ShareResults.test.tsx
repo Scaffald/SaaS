@@ -104,7 +104,7 @@ describe('ShareResults', () => {
 
     fireEvent.click(await screen.findByRole('button', { name: /Copy/i }))
     expect(copyToClipboard).toHaveBeenCalledWith(
-      'http://localhost/dashboard/assessments/ipip/shared/abcd'
+      'http://localhost/assessments/ipip/shared/abcd'
     )
     expect(toastShow).toHaveBeenCalledWith('Copied!', expect.any(Object))
 

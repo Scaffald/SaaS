@@ -209,7 +209,7 @@ async function publishTeamNotification(event: Record<string, unknown>) {
 }
 
 function buildTeamDashboardUrl(teamId: string): string {
-  return buildAppUrl(`/dashboard/teams/${teamId}`)
+  return buildAppUrl(`/employers/teams/${teamId}`)
 }
 
 async function notifyTeamMemberAdded(options: {
@@ -287,7 +287,7 @@ async function notifyTeamMemberRemoved(options: {
     },
     cta: {
       label: 'View invitations',
-      url: buildAppUrl('/dashboard/teams/invitations'),
+      url: buildAppUrl('/employers/teams/invitations'),
     },
     actorId: actorId ?? undefined,
   })

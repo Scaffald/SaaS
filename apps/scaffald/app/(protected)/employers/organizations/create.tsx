@@ -1,5 +1,5 @@
 /**
- * Redirect: /dashboard/organizations/create → /dashboard/employers/create
+ * Redirect: /dashboard/organizations/create → /employers/create
  */
 
 import { ROUTES } from '@scf/core/constants/routes'

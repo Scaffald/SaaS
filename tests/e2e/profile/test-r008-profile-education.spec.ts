@@ -2,12 +2,12 @@ import { expect, type Page, test } from '@playwright/test'
 import { signInAsTestUser } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 import { ensureProfileComplete } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/profile'
 
-test.describe('Regular • /dashboard/profile/education', () => {
+test.describe('Regular • /profile/education', () => {
   test('navigates and shows profile education UI', async ({ page }: { page: Page }) => {
     await signInAsTestUser(page)
     await ensureProfileComplete(page)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
-    expect(page.url()).toContain('/dashboard/profile/education')
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
+    expect(page.url()).toContain('/profile/education')
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
       .catch(() => {})
@@ -23,7 +23,7 @@ test.describe('Regular • /dashboard/profile/education', () => {
   }) => {
     await signInAsTestUser(page)
     await ensureProfileComplete(page)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page.waitForSelector('text=Start Date', { timeout: 10000 })
 

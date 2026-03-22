@@ -72,7 +72,7 @@ function buildAcceptUrl(token: string): string {
 }
 
 function buildRevokeUrl(invitationId: string): string {
-  const revokePath = Deno.env.get('TEAM_INVITATION_MANAGE_PATH') ?? '/dashboard/teams/invitations'
+  const revokePath = Deno.env.get('TEAM_INVITATION_MANAGE_PATH') ?? '/employers/teams/invitations'
   return buildAppUrl(`${revokePath}?invitationId=${encodeURIComponent(invitationId)}`)
 }
 

@@ -271,7 +271,7 @@ test.describe('Supabase Hardening Regression — Profile', () => {
   test('profile page loads user data', async ({ page }) => {
     await signInAndInject(page)
 
-    await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/general', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(2000)
 
     // Should not be redirected to auth
@@ -285,11 +285,11 @@ test.describe('Supabase Hardening Regression — Profile', () => {
     await signInAndInject(page)
 
     const subPages = [
-      '/dashboard/profile/general',
-      '/dashboard/profile/education',
-      '/dashboard/profile/skills',
-      '/dashboard/profile/experience',
-      '/dashboard/profile/employment',
+      '/profile/general',
+      '/profile/education',
+      '/profile/skills',
+      '/profile/experience',
+      '/profile/employment',
     ]
 
     for (const subPage of subPages) {
@@ -396,7 +396,7 @@ test.describe('Supabase Hardening Regression — Protected Routes', () => {
     await signInAndInject(page)
 
     const apiErrors = await collectApiErrors(page, async () => {
-      await page.goto('/dashboard/work-logs', { waitUntil: 'domcontentloaded' })
+      await page.goto('/employers/logs', { waitUntil: 'domcontentloaded' })
       await page.waitForTimeout(1500)
     })
 
@@ -418,7 +418,7 @@ test.describe('Supabase Hardening Regression — Session', () => {
     await dismissCookieBanner(page)
 
     // Navigate to multiple pages and verify session holds
-    const pages = ['/dashboard', '/dashboard/profile/general', '/dashboard/discover/jobs', '/dashboard']
+    const pages = ['/dashboard', '/profile/general', '/dashboard/discover/jobs', '/dashboard']
 
     for (const path of pages) {
       await page.goto(path, { waitUntil: 'domcontentloaded' })

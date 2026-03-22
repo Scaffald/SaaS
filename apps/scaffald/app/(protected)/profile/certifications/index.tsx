@@ -1,6 +1,6 @@
 /**
  * Redirect: Certifications was merged into Skills.
- * Old links to /dashboard/profile/certifications go to the skills page.
+ * Old links to /profile/certifications go to the skills page.
  */
 
 import { ROUTES } from '@scf/core/constants/routes'

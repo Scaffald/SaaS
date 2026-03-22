@@ -1,6 +1,6 @@
 /**
  * Redirect: General was merged into Resumé.
- * Old links to /dashboard/profile/general go to the resume page.
+ * Old links to /profile/general go to the resume page.
  */
 
 import { ROUTES } from '@scf/core/constants/routes'

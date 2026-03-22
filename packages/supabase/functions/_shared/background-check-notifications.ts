@@ -301,7 +301,7 @@ const _IN_APP_ONLY = ['in_app'] as const
 
 const SUMMARY_OF_RIGHTS_URL =
   'https://files.consumerfinance.gov/f/201504_cfpb_summary_your-rights-under-fcra.pdf'
-const BACKGROUND_CHECK_PORTAL_PATH = '/dashboard/profile/background-check'
+const BACKGROUND_CHECK_PORTAL_PATH = '/profile/background-check'
 const DISPUTE_RESPONSE_DAYS = 5
 
 const WORKER_EMAIL_STATUSES = new Set<BackgroundCheckStatus>([

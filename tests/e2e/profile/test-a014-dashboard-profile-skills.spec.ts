@@ -1,12 +1,12 @@
 import { expect, type Page, test } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
-test.describe('Admin • /dashboard/profile/skills', () => {
+test.describe('Admin • /profile/skills', () => {
   // Test 1: Route navigation and initial loading
   test('navigates to skills page and loads correctly', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
-    expect(page.url()).toContain('/dashboard/profile/skills')
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
+    expect(page.url()).toContain('/profile/skills')
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -19,7 +19,7 @@ test.describe('Admin • /dashboard/profile/skills', () => {
   // Test 2: Page heading and structure
   test('displays "Skills & Expertise" heading', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -32,7 +32,7 @@ test.describe('Admin • /dashboard/profile/skills', () => {
   // Test 3: Industry selector presence
   test('displays primary industry selector', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -46,7 +46,7 @@ test.describe('Admin • /dashboard/profile/skills', () => {
   // Test 4: Skill search components visibility
   test('shows skill search interface with taxonomy filters', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -62,7 +62,7 @@ test.describe('Admin • /dashboard/profile/skills', () => {
   // Test 5: Search input field presence
   test('displays search input placeholder text', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -78,7 +78,7 @@ test.describe('Admin • /dashboard/profile/skills', () => {
   // Test 6: Taxonomy checkboxes (CSI and O*NET)
   test('displays CSI and O*NET taxonomy filter checkboxes', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -95,7 +95,7 @@ test.describe('Admin • /dashboard/profile/skills', () => {
   // Test 7: Right panel "Your Skills" section
   test('displays "Your Skills" panel on the right', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -109,7 +109,7 @@ test.describe('Admin • /dashboard/profile/skills', () => {
   // Test 8: Empty state message when no skills added
   test('shows empty state message when no skills are added', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -130,7 +130,7 @@ test.describe('Admin • /dashboard/profile/skills', () => {
   // Test 9: Industry selector dropdown interaction
   test('can interact with industry selector', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -149,7 +149,7 @@ test.describe('Admin • /dashboard/profile/skills', () => {
     page: Page
   }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -170,7 +170,7 @@ test.describe('Admin • /dashboard/profile/skills', () => {
   // Test 11: Proficiency level labels exist in right panel
   test('displays proficiency levels for existing skills', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -196,7 +196,7 @@ test.describe('Admin • /dashboard/profile/skills', () => {
   // Test 12: Search input accepts text input
   test('allows typing in the search input field', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -225,7 +225,7 @@ test.describe('Admin • /dashboard/profile/skills', () => {
   // Test 13: CSI checkbox is checked by default
   test('CSI taxonomy checkbox is checked by default', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -240,7 +240,7 @@ test.describe('Admin • /dashboard/profile/skills', () => {
   // Test 14: Skill cards display code and name
   test('displays skill code and name for added skills', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -259,7 +259,7 @@ test.describe('Admin • /dashboard/profile/skills', () => {
   // Test 15: Remove skill buttons exist for added skills
   test('displays remove buttons for existing skills', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -274,7 +274,7 @@ test.describe('Admin • /dashboard/profile/skills', () => {
   // Test 16: Proficiency slider range (1-5)
   test('proficiency levels range from 1 to 5', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -293,7 +293,7 @@ test.describe('Admin • /dashboard/profile/skills', () => {
   // Test 17: Search results display with taxonomy labels
   test('search results show taxonomy labels (CSI/ONET)', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -330,7 +330,7 @@ test.describe('Admin • /dashboard/profile/skills', () => {
   // Test 18: Two-panel layout (left form, right results)
   test('displays two-panel layout with form and results', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -351,7 +351,7 @@ test.describe('Admin • /dashboard/profile/skills', () => {
   // Test 19: Proficiency level descriptions
   test('displays proficiency level descriptions', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -375,7 +375,7 @@ test.describe('Admin • /dashboard/profile/skills', () => {
   // Test 20: Industry requirement message
   test('shows message to select industry before searching', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })

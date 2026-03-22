@@ -1,6 +1,6 @@
 /**
  * Redirect: ID Verification was renamed to Verification.
- * Old path /dashboard/profile/id-verification → /dashboard/profile/verification
+ * Old path /profile/id-verification → /profile/verification
  */
 
 import { ROUTES } from '@scf/core/constants/routes'

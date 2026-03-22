@@ -190,7 +190,7 @@ export function IPIPAssessmentWizard() {
           />
         }
         breadcrumbItems={[
-          { label: 'Assessments', href: '/dashboard/assessments' },
+          { label: 'Assessments', href: '/assessments' },
           { label: 'Personality (IPIP)' },
         ]}
       />
@@ -282,7 +282,7 @@ export function IPIPAssessmentWizard() {
         />
       }
       breadcrumbItems={[
-        { label: 'Assessments', href: '/dashboard/assessments' },
+        { label: 'Assessments', href: '/assessments' },
         { label: 'Personality (IPIP)' },
       ]}
     />

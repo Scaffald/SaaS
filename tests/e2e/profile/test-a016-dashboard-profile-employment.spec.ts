@@ -1,12 +1,12 @@
 import { expect, type Page, test } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
-test.describe('Admin • /dashboard/profile/employment', () => {
+test.describe('Admin • /profile/employment', () => {
   // Test 1: Route navigation and initial loading
   test('navigates to employment page and loads correctly', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
-    expect(page.url()).toContain('/dashboard/profile/employment')
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
+    expect(page.url()).toContain('/profile/employment')
 
     await page
       .waitForFunction(
@@ -22,7 +22,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
   // Test 2: Page heading and structure
   test('displays employment preferences content', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -40,7 +40,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
   // Test 3: Hourly rate input field
   test('displays hourly rate input field', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -57,7 +57,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
   // Test 4: Hourly rate accepts numeric input
   test('allows entering hourly rate between 0-200', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -87,7 +87,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
   // Test 5: Preferred work locations component
   test('displays preferred work locations section', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -104,7 +104,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
   // Test 6: Work locations max limit hint
   test('shows work locations help text about max 3 locations', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -121,7 +121,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
   // Test 7: Open to travel toggle card
   test('displays "Open to travel" toggle card', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -143,7 +143,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
     page: Page
   }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -163,7 +163,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
   // Test 9: US Resident toggle card
   test('displays "US Resident" toggle card', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -180,7 +180,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
   // Test 10: US Passport toggle card
   test('displays "US Passport" toggle card', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -202,7 +202,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
     page: Page
   }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -219,7 +219,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
   // Test 12: License class options (7 types)
   test("shows all 7 driver's license class options", async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -242,7 +242,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
   // Test 13: Military status toggle card
   test('displays military status toggle card', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -260,7 +260,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
   // Test 14: Military status options (5 types)
   test('shows military status options when expanded', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -287,7 +287,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
   // Test 15: Availability toggle card
   test('displays availability toggle card', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -304,7 +304,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
   // Test 16: Availability options (8 types)
   test('shows availability options when expanded', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -333,7 +333,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
 
   // Test 17: Atomic save - no Save button; changes save automatically
   test('saves automatically when toggling (no Save button)', async ({ page }: { page: Page }) => {
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -353,7 +353,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
 
   // Test 18: Atomic save - toggling triggers save (no disabled Save button)
   test('employment section has no Save button (save-as-you-go)', async ({ page }: { page: Page }) => {
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -370,7 +370,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
   // Test 19: Toggle card interaction - clicking enables
   test('clicking toggle card changes its state', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -388,7 +388,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
   // Test 20: Form validation - hourly rate max constraint
   test('validates hourly rate maximum (200 dollars)', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -424,7 +424,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
   // Test 21: Right panel help text
   test('displays help text in right panel', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -443,7 +443,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
   // Test 22: Checkbox interactions
   test('checkboxes are present for multi-select options', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -463,7 +463,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
   // Test 23: Form persistence - data loads from database
   test('loads existing employment data if available', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -483,7 +483,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
   // Test 24: Travel distance range display
   test('shows travel distance range (5-100 miles)', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(
@@ -509,7 +509,7 @@ test.describe('Admin • /dashboard/profile/employment', () => {
     page: Page
   }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/employment', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(

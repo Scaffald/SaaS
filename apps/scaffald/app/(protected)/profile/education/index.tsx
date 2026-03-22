@@ -1,6 +1,6 @@
 /**
  * Redirect: Education was merged into Experience.
- * Old links to /dashboard/profile/education go to the experience page.
+ * Old links to /profile/education go to the experience page.
  */
 
 import { ROUTES } from '@scf/core/constants/routes'

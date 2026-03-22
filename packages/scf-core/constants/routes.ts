@@ -1646,14 +1646,14 @@ export const RouteBuilder = {
   /** Public profile URL path for a given slug */
   publicProfile: (slug: string) => `/users/${slug}`,
   /** My Organizations */
-  orgIndex: () => ROUTES.ORG.path,
-  orgInvitations: () => ROUTES.ORG.INVITATIONS.path,
-  orgDetail: (slug: string) => buildPath(ROUTES.ORG.DETAIL, { slug }),
-  orgTeams: (slug: string) => buildPath(ROUTES.ORG.DETAIL.TEAMS, { slug }),
+  orgIndex: () => ROUTES.EMPLOYERS.ORG.path,
+  orgInvitations: () => ROUTES.EMPLOYERS.INVITATIONS.path,
+  orgDetail: (slug: string) => buildPath(ROUTES.EMPLOYERS.ORG.DETAIL, { slug }),
+  orgTeams: (slug: string) => buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.TEAMS, { slug }),
   orgTeamDetail: (slug: string, teamId: string | number) =>
-    buildPath(ROUTES.ORG.DETAIL.TEAMS.DETAIL, { slug, teamId: String(teamId) }),
-  orgLogs: (slug: string) => buildPath(ROUTES.ORG.DETAIL.LOGS, { slug }),
-  orgLogsCreate: (slug: string) => buildPath(ROUTES.ORG.DETAIL.LOGS.CREATE, { slug }),
+    buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.TEAMS.DETAIL, { slug, teamId: String(teamId) }),
+  orgLogs: (slug: string) => buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.LOGS, { slug }),
+  orgLogsCreate: (slug: string) => buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.LOGS.CREATE, { slug }),
   orgLogDetail: (slug: string, workLogId: string) =>
-    buildPath(ROUTES.ORG.DETAIL.LOGS.DETAIL, { slug, workLogId }),
+    buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.LOGS.DETAIL, { slug, workLogId }),
 } as const

@@ -149,7 +149,7 @@ describe('ResumeImportWidget', () => {
     fireEvent.click(screen.getByTestId('resume-modal'))
 
     expect(pushMock).toHaveBeenCalledWith(
-      '/dashboard/profile/resume/review?resumeId=resume-generated'
+      '/profile/resume/review?resumeId=resume-generated'
     )
     expect(screen.queryByTestId('resume-modal')).not.toBeInTheDocument()
   })

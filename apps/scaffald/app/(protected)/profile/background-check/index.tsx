@@ -1,6 +1,6 @@
 /**
  * Redirect: Background Check was merged into Verification.
- * Old links to /dashboard/profile/background-check go to the verification page.
+ * Old links to /profile/background-check go to the verification page.
  * Note: Nested routes (initiate, dispute) remain functional.
  */
 

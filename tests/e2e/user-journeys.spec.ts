@@ -33,7 +33,7 @@ test.describe('End-to-End User Journey Testing', () => {
 
   test('profile completion flow', async ({ page }) => {
     // Navigate to profile
-    await page.goto('/dashboard/profile/general', { waitUntil: 'networkidle' })
+    await page.goto('/profile/general', { waitUntil: 'networkidle' })
 
     // Profile form should be accessible
     const form = page.locator('form').first()

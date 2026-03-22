@@ -2,12 +2,12 @@ import { expect, type Page, test } from '@playwright/test'
 import { signInAsTestUser } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 import { ensureProfileComplete } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/profile'
 
-test.describe('Regular • /dashboard/profile/skills', () => {
+test.describe('Regular • /profile/skills', () => {
   test('navigates and shows profile skills UI', async ({ page }: { page: Page }) => {
     await signInAsTestUser(page)
     await ensureProfileComplete(page)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
-    expect(page.url()).toContain('/dashboard/profile/skills')
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
+    expect(page.url()).toContain('/profile/skills')
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
       .catch(() => {})
@@ -23,7 +23,7 @@ test.describe('Regular • /dashboard/profile/skills', () => {
   }) => {
     await signInAsTestUser(page)
     await ensureProfileComplete(page)
-    await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/skills', { waitUntil: 'domcontentloaded' })
 
     await page.waitForSelector('text=Skill section completeness', { timeout: 10000 })
 

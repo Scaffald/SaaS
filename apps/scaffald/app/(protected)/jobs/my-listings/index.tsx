@@ -72,7 +72,7 @@ export default function MyListingsRoute() {
         My Listings ({jobs.length})
       </Text>
       {jobs.map((job) => (
-        <Pressable key={job.id} onPress={() => router.push(`/dashboard/jobs/${job.id}`)}>
+        <Pressable key={job.id} onPress={() => router.push(`/jobs/${job.id}`)}>
           <DashboardWidget gap={8}>
             <Row justify="space-between" align="center">
               <Text
