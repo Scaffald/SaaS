@@ -47,7 +47,7 @@ jobs:
 
       # Set NX_BASE for affected commands
       - name: Set Nx SHAs
-        uses: nrwl/nx-set-shas@v4
+        uses: nrwl/nx-set-shas@v5
         with:
           main-branch-name: main
 
