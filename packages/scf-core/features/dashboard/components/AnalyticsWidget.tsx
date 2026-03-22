@@ -18,6 +18,7 @@ type StatCardData = {
   value: string
   trend: number
   sparklinePath: string
+  hasData: boolean
 }
 
 function TrendBadge({ trend }: { trend: number }) {
@@ -73,14 +74,15 @@ function StatCard({ card }: { card: StatCardData }) {
       <Svg
         width="100%"
         height={32}
-        viewBox="0 0 100 20"
+        viewBox="0 0 100 24"
         preserveAspectRatio="none"
         style={{ marginTop: 4 }}
       >
         <Path
           d={card.sparklinePath}
-          stroke={colors.primary[600]}
-          strokeWidth={2}
+          stroke={card.hasData ? colors.primary[600] : colors.gray[300]}
+          strokeWidth={1.5}
+          strokeDasharray={card.hasData ? undefined : '4 3'}
           fill="none"
         />
       </Svg>
@@ -120,24 +122,32 @@ export function AnalyticsWidget() {
     )
   }
 
+  const profileViews = viewAnalytics?.views30d ?? 0
+  const profileTrend = viewAnalytics?.trend ?? 0
+
   const cards: StatCardData[] = [
     {
       label: 'Profile views',
-      value: formatCount(viewAnalytics?.views30d ?? 0),
-      trend: viewAnalytics?.trend ?? 0,
-      sparklinePath: 'M0,18 Q10,15 20,16 T40,10 T60,12 T80,5 T100,2',
+      value: formatCount(profileViews),
+      trend: profileTrend,
+      hasData: profileViews > 0,
+      sparklinePath: profileViews > 0
+        ? 'M0,20 C15,18 25,14 35,16 C45,18 55,10 65,12 C75,14 85,6 100,4'
+        : 'M0,12 L100,12',
     },
     {
       label: 'Search appearances',
       value: formatCount(0),
       trend: 0,
-      sparklinePath: 'M0,15 Q20,18 40,12 T80,8 T100,5',
+      hasData: false,
+      sparklinePath: 'M0,12 L100,12',
     },
     {
       label: 'Post impressions',
       value: formatCount(0),
       trend: 0,
-      sparklinePath: 'M0,10 L20,10 L40,11 L60,9 L80,10 L100,10',
+      hasData: false,
+      sparklinePath: 'M0,12 L100,12',
     },
   ]
 

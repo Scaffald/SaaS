@@ -260,15 +260,6 @@ export function ProfileSnapshotWidget() {
             ) : null}
           </Row>
 
-          {/* Action outline buttons */}
-          <Row gap={8} wrap>
-            <Button variant="outline" color="primary" size="sm">
-              Get Verified
-            </Button>
-            <Button variant="outline" color="primary" size="sm">
-              Background Check
-            </Button>
-          </Row>
         </Stack>
       </Row>
 
@@ -326,7 +317,7 @@ export function ProfileSnapshotWidget() {
 
         <ProgressBarBase value={completion} color="primary" />
 
-        {/* Suggested actions */}
+        {/* Actions */}
         <Row gap={12} wrap>
           {!hasCerts && (
             <Button
@@ -364,6 +355,12 @@ export function ProfileSnapshotWidget() {
               Add Education
             </Button>
           )}
+          <Button variant="outline" color="gray" size="sm">
+            Get Verified
+          </Button>
+          <Button variant="outline" color="gray" size="sm">
+            Background Check
+          </Button>
         </Row>
       </Stack>
     </DashboardWidget>

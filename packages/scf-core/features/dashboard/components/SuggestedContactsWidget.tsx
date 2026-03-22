@@ -40,10 +40,10 @@ function ContactRow({ contact }: { contact: SuggestedContact }) {
       <Row align="center" gap={12} flex={1}>
         <Avatar size={40} initials={contact.initials} color="gray" />
         <Stack gap={2} flex={1}>
-          <Text style={{ fontSize: 12, fontWeight: '700', color: colors.text[theme].primary }}>
+          <Text style={{ fontSize: 14, fontWeight: '700', color: colors.text[theme].primary }}>
             {contact.name}
           </Text>
-          <Text style={{ fontSize: 10, color: colors.text[theme].secondary }}>
+          <Text style={{ fontSize: 12, color: colors.text[theme].secondary }}>
             {contact.title}
           </Text>
         </Stack>
