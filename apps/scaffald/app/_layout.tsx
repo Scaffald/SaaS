@@ -126,12 +126,6 @@ export default function DashboardLayout() {
                       headerShown: false,
                     }}
                   />
-                  <Stack.Screen
-                    name="org"
-                    options={{
-                      headerShown: false,
-                    }}
-                  />
                 </Stack>
               </ErrorBoundary>
             </Provider>

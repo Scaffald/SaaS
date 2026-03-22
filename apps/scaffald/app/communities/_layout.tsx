@@ -57,10 +57,7 @@ export default function CommunitiesSectionLayout() {
         <Drawer.Screen name="connections/index" options={{ title: 'Connections' }} />
         <Drawer.Screen name="bookmarks" options={{ title: 'Bookmarks' }} />
         <Drawer.Screen name="reputation" options={{ title: 'Scaffold Score' }} />
-        <Drawer.Screen name="[slug]/index" options={{ title: 'Community' }} />
-        <Drawer.Screen name="[slug]/members" options={{ title: 'Members' }} />
-        <Drawer.Screen name="[slug]/post/create" options={{ title: 'Create Post' }} />
-        <Drawer.Screen name="[slug]/post/[postId]/index" options={{ title: 'Post' }} />
+        <Drawer.Screen name="[slug]" options={{ title: 'Community' }} />
       </DrawerLayout>
     </ErrorBoundary>
   )

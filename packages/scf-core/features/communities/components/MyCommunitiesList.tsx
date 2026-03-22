@@ -1,11 +1,11 @@
 import { useMemo, useEffect } from 'react'
-import { Pressable } from 'react-native'
-import { Text, Stack, Row, Avatar, Spinner, useThemeContext } from '@scaffald/ui'
+import { Text, Stack, Spinner, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import type { Href } from 'expo-router'
 import { RouteBuilder } from '@scf/core/constants/routes'
 import { useMyCommunities } from '@scf/core/utils/communities-sdk-hooks'
+import { CommunityCard } from './CommunityCard'
 
 type MyCommunitiesListProps = {
   searchQuery: string
@@ -79,55 +79,16 @@ export function MyCommunitiesList({ searchQuery, sortBy, onFilteredCountChange }
   }
 
   return (
-    <Stack gap={8}>
+    <Stack gap={12}>
       {filtered.map((item) => (
-          <Pressable
-            key={item.community_id}
-            onPress={() => router.push(RouteBuilder.communityDetail(item.community?.slug ?? '') as Href)}
-            style={({ pressed }) => ({ opacity: pressed ? 0.9 : 1 })}
-          >
-            <Row
-              align="center"
-              gap={12}
-              style={{
-                padding: 16,
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: colors.border[t].default,
-                cursor: 'pointer',
-              }}
-            >
-              <Avatar
-              src={item.community?.icon_url ?? undefined}
-              initials={item.community?.name?.[0] || '?'}
-              size={48}
-            />
-            <Stack style={{ flex: 1 }} gap={4}>
-              <Row align="center" gap={8}>
-                <Text style={{ fontWeight: '600', fontSize: 16 }}>
-                  {item.community?.name || 'Unknown'}
-                </Text>
-                {item.is_verified && (
-                  <Stack
-                    style={{
-                      paddingHorizontal: 6,
-                      paddingVertical: 1,
-                      borderRadius: 4,
-                      backgroundColor: t === 'dark' ? colors.success[900] : colors.success[100],
-                    }}
-                  >
-                    <Text style={{ fontSize: 11, fontWeight: '500', color: colors.success[600] }}>Verified</Text>
-                  </Stack>
-                )}
-              </Row>
-              <Text style={{ fontSize: 12, color: colors.text[t].secondary }}>
-                Joined {new Date(item.joined_at).toLocaleDateString()}
-              </Text>
-            </Stack>
-            </Row>
-          </Pressable>
-        )
-      )}
+        <CommunityCard
+          key={item.community_id}
+          community={item.community}
+          onPress={() => router.push(RouteBuilder.communityDetail(item.community?.slug ?? '') as Href)}
+          joinedAt={item.joined_at}
+          isVerified={item.is_verified}
+        />
+      ))}
     </Stack>
   )
 }

@@ -78,18 +78,6 @@ export default function Layout() {
         <Drawer.Screen name="jobs/my-listings/index" options={{ title: 'My Listings' }} />
         <Drawer.Screen name="users/[id]/index" options={{ title: 'User Profile' }} />
         <Drawer.Screen name="profile" options={{ title: 'Profile' }} />
-        <Drawer.Screen name="profile/general/index" options={{ title: 'General' }} />
-        <Drawer.Screen name="profile/employment/index" options={{ title: 'Employment' }} />
-        <Drawer.Screen name="profile/skills/index" options={{ title: 'Skills' }} />
-        <Drawer.Screen name="profile/certifications/index" options={{ title: 'Certifications' }} />
-        <Drawer.Screen name="profile/education/index" options={{ title: 'Education' }} />
-        <Drawer.Screen name="profile/experience/index" options={{ title: 'Experience' }} />
-        <Drawer.Screen name="profile/verification" options={{ title: 'Verification' }} />
-        <Drawer.Screen name="profile/resume/index" options={{ title: 'Resumé' }} />
-        <Drawer.Screen name="profile/resume/review" options={{ title: 'Resume Review' }} />
-        <Drawer.Screen name="profile/background-check/index" options={{ title: 'Background Checks' }} />
-        <Drawer.Screen name="profile/background-check/initiate" options={{ title: 'Start Background Check' }} />
-        <Drawer.Screen name="profile/background-check/[checkId]/dispute" options={{ title: 'Dispute' }} />
         <Drawer.Screen name="settings/index" options={{ title: 'Settings' }} />
         <Drawer.Screen name="employers/create" options={{ title: 'Create Employer' }} />
         <Drawer.Screen name="employers/invitations" options={{ title: 'Invitations' }} />

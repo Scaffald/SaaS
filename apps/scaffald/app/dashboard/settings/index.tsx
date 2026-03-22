@@ -11,7 +11,7 @@ import { PrivacyDataScreen } from '@scf/core/features/privacy/PrivacyDataScreen'
 import { Separator, Stack, Text } from '@scaffald/ui'
 import { ScrollView } from 'react-native'
 
-import { SettingsNotificationsSection } from './SettingsNotificationsSection'
+import { SettingsNotificationsSection } from '@scf/core/features/notifications/SettingsNotificationsSection'
 
 const sectionGap = 40
 

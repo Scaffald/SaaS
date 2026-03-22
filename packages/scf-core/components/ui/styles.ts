@@ -69,6 +69,26 @@ export const orgPalette = {
   },
 } as const
 
+/** Community card colors */
+export const communityPalette = {
+  light: {
+    iconBg: colors.green[50],
+    iconFg: colors.green[600],
+    accent: colors.green[600],
+    selectedBorder: colors.green[500],
+    pillBg: colors.green[50],
+    pillText: colors.green[700],
+  },
+  dark: {
+    iconBg: colors.green[900],
+    iconFg: colors.green[300],
+    accent: colors.green[300],
+    selectedBorder: colors.green[400],
+    pillBg: colors.green[900],
+    pillText: colors.green[300],
+  },
+} as const
+
 /** Job card colors */
 export const jobPalette = {
   light: {

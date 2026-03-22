@@ -13,6 +13,7 @@ export {
   frostedGlassStyle,
   workerPalette,
   orgPalette,
+  communityPalette,
   jobPalette,
   badgeToneColors,
   textColors,
