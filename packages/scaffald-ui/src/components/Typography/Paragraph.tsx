@@ -26,6 +26,7 @@ const getParagraphStyle = (
   serif?: boolean
 ): TextStyle => {
   const sizes: Record<TextSize, number> = {
+    xxs: fontSize.xxs,
     xs: fontSize.xs,
     sm: fontSize.sm,
     md: fontSize.md,
@@ -35,12 +36,23 @@ const getParagraphStyle = (
   }
 
   const lineHeights: Record<TextSize, number> = {
+    xxs: lineHeight.xxs,
     xs: lineHeight.xs,
     sm: lineHeight.sm,
     md: lineHeight.md,
     lg: lineHeight.lg,
     xl: lineHeight.xl,
-    '2xl': 32, // Approximate for 2xl
+    '2xl': lineHeight.h3, // Title 2 line height (28)
+  }
+
+  const letterSpacings: Record<TextSize, number> = {
+    xxs: letterSpacing.caption2,
+    xs: letterSpacing.caption1,
+    sm: letterSpacing.footnote,
+    md: letterSpacing.callout,
+    lg: letterSpacing.body,
+    xl: letterSpacing.title3,
+    '2xl': letterSpacing.title2,
   }
 
   return {
@@ -48,7 +60,7 @@ const getParagraphStyle = (
     fontSize: sizes[size],
     fontWeight: fontWeightTokens[weight],
     lineHeight: lineHeights[size],
-    letterSpacing: letterSpacing.normal,
+    letterSpacing: letterSpacings[size],
   }
 }
 

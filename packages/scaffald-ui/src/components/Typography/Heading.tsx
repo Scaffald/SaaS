@@ -53,14 +53,14 @@ const getHeadingStyle = (
     6: lineHeight.h6,
   }
 
-  // H1-H2 use tighter letter spacing (-2%), H3-H6 use tight (-1%)
+  // Per-heading letter spacing from Apple iOS HIG
   const letterSpacings: Record<HeadingLevel, number> = {
-    1: letterSpacing.tighter,
-    2: letterSpacing.tighter,
-    3: letterSpacing.tight,
-    4: letterSpacing.tight,
-    5: letterSpacing.tight,
-    6: letterSpacing.tight,
+    1: letterSpacing.largeTitle, // 0.4
+    2: letterSpacing.title1, // 0.38
+    3: letterSpacing.title2, // -0.26
+    4: letterSpacing.title3, // -0.45
+    5: letterSpacing.headline, // -0.43
+    6: letterSpacing.subheadline, // -0.23
   }
 
   // Default weights per level (can be overridden)

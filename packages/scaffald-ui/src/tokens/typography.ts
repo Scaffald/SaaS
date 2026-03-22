@@ -1,11 +1,16 @@
 /**
- * Typography tokens mapped from Figma Forsured Design System
+ * Typography tokens aligned with Apple iOS/iPadOS 26 HIG type scale
  *
- * Font family: Roboto
- * Styles from Figma:
- * - H4, H5, H6 (headings)
- * - Paragraph S, M, L (body text)
- * Weights: Regular (400), Medium (500), Semi Bold (600)
+ * Font family: Roboto (cross-platform)
+ * Type scale based on Apple's SF Pro "Large (Default)" Dynamic Type size
+ *
+ * Mapping:
+ *   h1 = Large Title (34), h2 = Title 1 (28), h3 = Title 2 (22),
+ *   h4 = Title 3 (20), h5 = Headline (17), h6 = Subheadline (15)
+ *   paragraphL = Body (17), paragraphM = Callout (16),
+ *   paragraphS = Footnote (13), caption = Caption 1 (12)
+ *
+ * Weights: Regular (400), Medium (500), Semi Bold (600), Bold (700)
  */
 
 /**
@@ -21,24 +26,25 @@ export const fontFamily = {
 
 /**
  * Font size scale
- * Mapped from Figma Forsured Design System
+ * Based on Apple iOS/iPadOS 26 HIG "Large (Default)" Dynamic Type
  */
 export const fontSize = {
-  // Paragraph sizes
-  xs: 12, // Extra small
-  sm: 14, // Paragraph S
-  md: 16, // Paragraph M (base)
-  lg: 18, // Paragraph L
-  xl: 20, // Extra large
-  '2xl': 22,
+  // Text sizes (Apple equivalents)
+  xxs: 11, // Caption 2
+  xs: 12, // Caption 1
+  sm: 13, // Footnote
+  md: 16, // Callout (body base)
+  lg: 17, // Body
+  xl: 20, // Title 3
+  '2xl': 22, // Title 2
 
-  // Heading sizes (reduced overall scale)
-  h6: 20, // H6
-  h5: 22, // H5
-  h4: 28, // H4
-  h3: 38,
-  h2: 48,
-  h1: 56,
+  // Heading sizes (Apple equivalents)
+  h6: 15, // Subheadline
+  h5: 17, // Headline
+  h4: 20, // Title 3
+  h3: 22, // Title 2
+  h2: 28, // Title 1
+  h1: 34, // Large Title
 } as const
 
 /**
@@ -53,37 +59,51 @@ export const fontWeight = {
 
 /**
  * Line height scale
- * Mapped from Figma Forsured Design System
+ * Based on Apple iOS/iPadOS 26 HIG
  */
 export const lineHeight = {
-  // Paragraph line heights
-  xs: 16,
-  sm: 20, // Paragraph S line height
-  md: 24, // Paragraph M line height
-  lg: 28, // Paragraph L line height
-  xl: 32,
+  // Text line heights (Apple equivalents)
+  xxs: 13, // Caption 2
+  xs: 16, // Caption 1
+  sm: 18, // Footnote
+  md: 21, // Callout
+  lg: 22, // Body
+  xl: 25, // Title 3
 
-  // Heading line heights (reduced to match smaller sizes)
-  h6: 26, // H6 line height
-  h5: 28, // H5 line height
-  h4: 34, // H4 line height
-  h3: 46,
-  h2: 56,
-  h1: 64,
+  // Heading line heights (Apple equivalents)
+  h6: 20, // Subheadline
+  h5: 22, // Headline
+  h4: 25, // Title 3
+  h3: 28, // Title 2
+  h2: 34, // Title 1
+  h1: 41, // Large Title
 } as const
 
 /**
  * Letter spacing
- * Figma uses percentages: -2% for H1-H2, -1% for H3-H6, 0 for body text
- * Converted to numeric values for React Native compatibility
- * Note: React Native uses numbers (pixels), not em units
+ * Per-size values from Apple iOS/iPadOS 26 HIG (exact pixel values)
+ * React Native uses numbers (pixels), not em units
  */
 export const letterSpacing = {
-  tighter: -1.5, // -2% approximation for H1-H2 headings
-  tight: -0.5, // -1% approximation for H3-H6 headings
-  normal: 0, // 0 for body text
-  wide: 0.25, // 0.5% approximation for emphasis
-  wider: 0.5, // 1% approximation for wider spacing
+  // Per-size values (Apple HIG exact)
+  largeTitle: 0.4,
+  title1: 0.38,
+  title2: -0.26,
+  title3: -0.45,
+  headline: -0.43,
+  body: -0.43,
+  callout: -0.31,
+  subheadline: -0.23,
+  footnote: -0.08,
+  caption1: 0,
+  caption2: 0.06,
+
+  // Legacy aliases (backward compat)
+  tighter: -0.45,
+  tight: -0.26,
+  normal: 0,
+  wide: 0.38,
+  wider: 0.4,
 } as const
 
 /**
@@ -106,415 +126,414 @@ export const textTransform = {
 } as const
 
 /**
- * Complete typography variants matching Figma definitions
- * All variants from Figma Forsured Design System
+ * Complete typography variants aligned with Apple iOS/iPadOS 26 HIG
  */
 export const typographyVariants = {
-  // H1 - Heading (Size: 56 / Line-height: 64 / Letter spacing: -2%)
+  // H1 - Large Title (Size: 34 / Line-height: 41 / Letter spacing: 0.4)
   h1Bold: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h1,
     fontWeight: fontWeight.bold,
     lineHeight: lineHeight.h1,
-    letterSpacing: letterSpacing.tighter, // -2%
+    letterSpacing: letterSpacing.largeTitle,
   },
   h1SemiBold: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h1,
     fontWeight: fontWeight.semibold,
     lineHeight: lineHeight.h1,
-    letterSpacing: letterSpacing.tighter, // -2%
+    letterSpacing: letterSpacing.largeTitle,
   },
   h1Medium: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h1,
     fontWeight: fontWeight.medium,
     lineHeight: lineHeight.h1,
-    letterSpacing: letterSpacing.tighter, // -2%
+    letterSpacing: letterSpacing.largeTitle,
   },
   h1Regular: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h1,
     fontWeight: fontWeight.regular,
     lineHeight: lineHeight.h1,
-    letterSpacing: letterSpacing.tighter, // -2%
+    letterSpacing: letterSpacing.largeTitle,
   },
   h1Serif: {
     fontFamily: fontFamily.serif,
     fontSize: fontSize.h1,
     fontWeight: fontWeight.regular,
     lineHeight: lineHeight.h1,
-    letterSpacing: letterSpacing.tighter, // -2%
+    letterSpacing: letterSpacing.largeTitle,
   },
 
-  // H2 - Heading (Size: 48 / Line-height: 56 / Letter spacing: -2%)
+  // H2 - Title 1 (Size: 28 / Line-height: 34 / Letter spacing: 0.38)
   h2Bold: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h2,
     fontWeight: fontWeight.bold,
     lineHeight: lineHeight.h2,
-    letterSpacing: letterSpacing.tighter, // -2%
+    letterSpacing: letterSpacing.title1,
   },
   h2SemiBold: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h2,
     fontWeight: fontWeight.semibold,
     lineHeight: lineHeight.h2,
-    letterSpacing: letterSpacing.tighter, // -2%
+    letterSpacing: letterSpacing.title1,
   },
   h2Medium: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h2,
     fontWeight: fontWeight.medium,
     lineHeight: lineHeight.h2,
-    letterSpacing: letterSpacing.tighter, // -2%
+    letterSpacing: letterSpacing.title1,
   },
   h2Regular: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h2,
     fontWeight: fontWeight.regular,
     lineHeight: lineHeight.h2,
-    letterSpacing: letterSpacing.tighter, // -2%
+    letterSpacing: letterSpacing.title1,
   },
   h2Serif: {
     fontFamily: fontFamily.serif,
     fontSize: fontSize.h2,
     fontWeight: fontWeight.regular,
     lineHeight: lineHeight.h2,
-    letterSpacing: letterSpacing.tighter, // -2%
+    letterSpacing: letterSpacing.title1,
   },
 
-  // H3 - Heading (Size: 38 / Line-height: 46 / Letter spacing: -1%)
+  // H3 - Title 2 (Size: 22 / Line-height: 28 / Letter spacing: -0.26)
   h3Bold: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h3,
     fontWeight: fontWeight.bold,
     lineHeight: lineHeight.h3,
-    letterSpacing: letterSpacing.tight, // -1%
+    letterSpacing: letterSpacing.title2,
   },
   h3SemiBold: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h3,
     fontWeight: fontWeight.semibold,
     lineHeight: lineHeight.h3,
-    letterSpacing: letterSpacing.tight, // -1%
+    letterSpacing: letterSpacing.title2,
   },
   h3Medium: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h3,
     fontWeight: fontWeight.medium,
     lineHeight: lineHeight.h3,
-    letterSpacing: letterSpacing.tight, // -1%
+    letterSpacing: letterSpacing.title2,
   },
   h3Regular: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h3,
     fontWeight: fontWeight.regular,
     lineHeight: lineHeight.h3,
-    letterSpacing: letterSpacing.tight, // -1%
+    letterSpacing: letterSpacing.title2,
   },
   h3Serif: {
     fontFamily: fontFamily.serif,
     fontSize: fontSize.h3,
     fontWeight: fontWeight.regular,
     lineHeight: lineHeight.h3,
-    letterSpacing: letterSpacing.tight, // -1%
+    letterSpacing: letterSpacing.title2,
   },
 
-  // H4 - Heading (Size: 28 / Line-height: 34 / Letter spacing: -1%)
+  // H4 - Title 3 (Size: 20 / Line-height: 25 / Letter spacing: -0.45)
   h4Bold: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h4,
     fontWeight: fontWeight.bold,
     lineHeight: lineHeight.h4,
-    letterSpacing: letterSpacing.tight, // -1%
+    letterSpacing: letterSpacing.title3,
   },
   h4SemiBold: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h4,
     fontWeight: fontWeight.semibold,
     lineHeight: lineHeight.h4,
-    letterSpacing: letterSpacing.tight, // -1%
+    letterSpacing: letterSpacing.title3,
   },
   h4Medium: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h4,
     fontWeight: fontWeight.medium,
     lineHeight: lineHeight.h4,
-    letterSpacing: letterSpacing.tight, // -1%
+    letterSpacing: letterSpacing.title3,
   },
   h4Regular: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h4,
     fontWeight: fontWeight.regular,
     lineHeight: lineHeight.h4,
-    letterSpacing: letterSpacing.tight, // -1%
+    letterSpacing: letterSpacing.title3,
   },
   h4Serif: {
     fontFamily: fontFamily.serif,
     fontSize: fontSize.h4,
     fontWeight: fontWeight.regular,
     lineHeight: lineHeight.h4,
-    letterSpacing: letterSpacing.tight, // -1%
+    letterSpacing: letterSpacing.title3,
   },
 
-  // H5 - Heading (Size: 22 / Line-height: 28 / Letter spacing: -1%)
+  // H5 - Headline (Size: 17 / Line-height: 22 / Letter spacing: -0.43)
   h5Bold: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h5,
     fontWeight: fontWeight.bold,
     lineHeight: lineHeight.h5,
-    letterSpacing: letterSpacing.tight, // -1%
+    letterSpacing: letterSpacing.headline,
   },
   h5SemiBold: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h5,
     fontWeight: fontWeight.semibold,
     lineHeight: lineHeight.h5,
-    letterSpacing: letterSpacing.tight, // -1%
+    letterSpacing: letterSpacing.headline,
   },
   h5Medium: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h5,
     fontWeight: fontWeight.medium,
     lineHeight: lineHeight.h5,
-    letterSpacing: letterSpacing.tight, // -1%
+    letterSpacing: letterSpacing.headline,
   },
   h5Regular: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h5,
     fontWeight: fontWeight.regular,
     lineHeight: lineHeight.h5,
-    letterSpacing: letterSpacing.tight, // -1%
+    letterSpacing: letterSpacing.headline,
   },
   h5Serif: {
     fontFamily: fontFamily.serif,
     fontSize: fontSize.h5,
     fontWeight: fontWeight.regular,
     lineHeight: lineHeight.h5,
-    letterSpacing: letterSpacing.tight, // -1%
+    letterSpacing: letterSpacing.headline,
   },
 
-  // H6 - Heading (Size: 20 / Line-height: 26 / Letter spacing: -1%)
+  // H6 - Subheadline (Size: 15 / Line-height: 20 / Letter spacing: -0.23)
   h6Bold: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h6,
     fontWeight: fontWeight.bold,
     lineHeight: lineHeight.h6,
-    letterSpacing: letterSpacing.tight, // -1%
+    letterSpacing: letterSpacing.subheadline,
   },
   h6SemiBold: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h6,
     fontWeight: fontWeight.semibold,
     lineHeight: lineHeight.h6,
-    letterSpacing: letterSpacing.tight, // -1%
+    letterSpacing: letterSpacing.subheadline,
   },
   h6Medium: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h6,
     fontWeight: fontWeight.medium,
     lineHeight: lineHeight.h6,
-    letterSpacing: letterSpacing.tight, // -1%
+    letterSpacing: letterSpacing.subheadline,
   },
   h6Regular: {
     fontFamily: fontFamily.heading,
     fontSize: fontSize.h6,
     fontWeight: fontWeight.regular,
     lineHeight: lineHeight.h6,
-    letterSpacing: letterSpacing.tight, // -1%
+    letterSpacing: letterSpacing.subheadline,
   },
   h6Serif: {
     fontFamily: fontFamily.serif,
     fontSize: fontSize.h6,
     fontWeight: fontWeight.regular,
     lineHeight: lineHeight.h6,
-    letterSpacing: letterSpacing.tight, // -1%
+    letterSpacing: letterSpacing.subheadline,
   },
 
-  // Subtitle (Size: 20 / Line-height: 28 / Letter spacing: 0)
+  // Subtitle - Title 3 size (Size: 20 / Line-height: 25 / Letter spacing: -0.45)
   subtitleBold: {
     fontFamily: fontFamily.body,
-    fontSize: fontSize.xl, // 20
+    fontSize: fontSize.xl,
     fontWeight: fontWeight.bold,
-    lineHeight: lineHeight.lg, // 28
-    letterSpacing: letterSpacing.normal, // 0
+    lineHeight: lineHeight.xl,
+    letterSpacing: letterSpacing.title3,
   },
   subtitleSemiBold: {
     fontFamily: fontFamily.body,
-    fontSize: fontSize.xl, // 20
+    fontSize: fontSize.xl,
     fontWeight: fontWeight.semibold,
-    lineHeight: lineHeight.lg, // 28
-    letterSpacing: letterSpacing.normal, // 0
+    lineHeight: lineHeight.xl,
+    letterSpacing: letterSpacing.title3,
   },
   subtitleMedium: {
     fontFamily: fontFamily.body,
-    fontSize: fontSize.xl, // 20
+    fontSize: fontSize.xl,
     fontWeight: fontWeight.medium,
-    lineHeight: lineHeight.lg, // 28
-    letterSpacing: letterSpacing.normal, // 0
+    lineHeight: lineHeight.xl,
+    letterSpacing: letterSpacing.title3,
   },
   subtitleRegular: {
     fontFamily: fontFamily.body,
-    fontSize: fontSize.xl, // 20
+    fontSize: fontSize.xl,
     fontWeight: fontWeight.regular,
-    lineHeight: lineHeight.lg, // 28
-    letterSpacing: letterSpacing.normal, // 0
+    lineHeight: lineHeight.xl,
+    letterSpacing: letterSpacing.title3,
   },
   subtitleSerif: {
     fontFamily: fontFamily.serif,
-    fontSize: fontSize.xl, // 20
+    fontSize: fontSize.xl,
     fontWeight: fontWeight.regular,
-    lineHeight: lineHeight.lg, // 28
-    letterSpacing: letterSpacing.normal, // 0
+    lineHeight: lineHeight.xl,
+    letterSpacing: letterSpacing.title3,
   },
 
-  // Paragraph L (Size: 18 / Line-height: 28 / Letter spacing: 0)
+  // Paragraph L - Body (Size: 17 / Line-height: 22 / Letter spacing: -0.43)
   paragraphLBold: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.lg,
     fontWeight: fontWeight.bold,
     lineHeight: lineHeight.lg,
-    letterSpacing: letterSpacing.normal,
+    letterSpacing: letterSpacing.body,
   },
   paragraphLSemiBold: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.lg,
     fontWeight: fontWeight.semibold,
     lineHeight: lineHeight.lg,
-    letterSpacing: letterSpacing.normal,
+    letterSpacing: letterSpacing.body,
   },
   paragraphLMedium: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.lg,
     fontWeight: fontWeight.medium,
     lineHeight: lineHeight.lg,
-    letterSpacing: letterSpacing.normal,
+    letterSpacing: letterSpacing.body,
   },
   paragraphLRegular: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.lg,
     fontWeight: fontWeight.regular,
     lineHeight: lineHeight.lg,
-    letterSpacing: letterSpacing.normal,
+    letterSpacing: letterSpacing.body,
   },
   paragraphLSerif: {
     fontFamily: fontFamily.serif,
     fontSize: fontSize.lg,
     fontWeight: fontWeight.regular,
     lineHeight: lineHeight.lg,
-    letterSpacing: letterSpacing.normal,
+    letterSpacing: letterSpacing.body,
   },
 
-  // Paragraph M (Size: 16 / Line-height: 24 / Letter spacing: 0)
+  // Paragraph M - Callout (Size: 16 / Line-height: 21 / Letter spacing: -0.31)
   paragraphMBold: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.md,
     fontWeight: fontWeight.bold,
     lineHeight: lineHeight.md,
-    letterSpacing: letterSpacing.normal,
+    letterSpacing: letterSpacing.callout,
   },
   paragraphMSemiBold: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.md,
     fontWeight: fontWeight.semibold,
     lineHeight: lineHeight.md,
-    letterSpacing: letterSpacing.normal,
+    letterSpacing: letterSpacing.callout,
   },
   paragraphMMedium: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.md,
     fontWeight: fontWeight.medium,
     lineHeight: lineHeight.md,
-    letterSpacing: letterSpacing.normal,
+    letterSpacing: letterSpacing.callout,
   },
   paragraphMRegular: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.md,
     fontWeight: fontWeight.regular,
     lineHeight: lineHeight.md,
-    letterSpacing: letterSpacing.normal,
+    letterSpacing: letterSpacing.callout,
   },
   paragraphMSerif: {
     fontFamily: fontFamily.serif,
     fontSize: fontSize.md,
     fontWeight: fontWeight.regular,
     lineHeight: lineHeight.md,
-    letterSpacing: letterSpacing.normal,
+    letterSpacing: letterSpacing.callout,
   },
 
-  // Paragraph S (Size: 14 / Line-height: 20 / Letter spacing: 0)
+  // Paragraph S - Footnote (Size: 13 / Line-height: 18 / Letter spacing: -0.08)
   paragraphSBold: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.sm,
     fontWeight: fontWeight.bold,
     lineHeight: lineHeight.sm,
-    letterSpacing: letterSpacing.normal,
+    letterSpacing: letterSpacing.footnote,
   },
   paragraphSSemiBold: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.sm,
     fontWeight: fontWeight.semibold,
     lineHeight: lineHeight.sm,
-    letterSpacing: letterSpacing.normal,
+    letterSpacing: letterSpacing.footnote,
   },
   paragraphSMedium: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.sm,
     fontWeight: fontWeight.medium,
     lineHeight: lineHeight.sm,
-    letterSpacing: letterSpacing.normal,
+    letterSpacing: letterSpacing.footnote,
   },
   paragraphSRegular: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.sm,
     fontWeight: fontWeight.regular,
     lineHeight: lineHeight.sm,
-    letterSpacing: letterSpacing.normal,
+    letterSpacing: letterSpacing.footnote,
   },
   paragraphSSerif: {
     fontFamily: fontFamily.serif,
     fontSize: fontSize.sm,
     fontWeight: fontWeight.regular,
     lineHeight: lineHeight.sm,
-    letterSpacing: letterSpacing.normal,
+    letterSpacing: letterSpacing.footnote,
   },
 
-  // Caption (Size: 12 / Line-height: 16 / Letter spacing: 0)
+  // Caption - Caption 1 (Size: 12 / Line-height: 16 / Letter spacing: 0)
   captionBold: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.xs,
     fontWeight: fontWeight.bold,
-    lineHeight: lineHeight.xs, // 16
-    letterSpacing: letterSpacing.normal,
+    lineHeight: lineHeight.xs,
+    letterSpacing: letterSpacing.caption1,
   },
   captionSemiBold: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.xs,
     fontWeight: fontWeight.semibold,
-    lineHeight: lineHeight.xs, // 16
-    letterSpacing: letterSpacing.normal,
+    lineHeight: lineHeight.xs,
+    letterSpacing: letterSpacing.caption1,
   },
   captionMedium: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.xs,
     fontWeight: fontWeight.medium,
-    lineHeight: lineHeight.xs, // 16
-    letterSpacing: letterSpacing.normal,
+    lineHeight: lineHeight.xs,
+    letterSpacing: letterSpacing.caption1,
   },
   captionRegular: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.xs,
     fontWeight: fontWeight.regular,
-    lineHeight: lineHeight.xs, // 16
-    letterSpacing: letterSpacing.normal,
+    lineHeight: lineHeight.xs,
+    letterSpacing: letterSpacing.caption1,
   },
   captionSerif: {
     fontFamily: fontFamily.serif,
     fontSize: fontSize.xs,
     fontWeight: fontWeight.regular,
-    lineHeight: lineHeight.xs, // 16
-    letterSpacing: letterSpacing.normal,
+    lineHeight: lineHeight.xs,
+    letterSpacing: letterSpacing.caption1,
   },
 } as const
 

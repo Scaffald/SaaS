@@ -30,6 +30,8 @@ export * from './columns'
 export * from './gradients'
 export * from './dividers'
 export * from './patterns'
+export * from './glass'
+export * from './dynamicType'
 
 // Import all for the complete tokens object
 import { colors } from './colors'
@@ -64,6 +66,16 @@ import {
   netPattern,
   patternOpacity,
 } from './patterns'
+import {
+  glassMaterials,
+  glassVibrantColors,
+  glassControlCenter,
+  glassBlur,
+} from './glass'
+import {
+  dynamicTypeFontSize,
+  dynamicTypeLineHeight,
+} from './dynamicType'
 
 /**
  * Complete design tokens object
@@ -136,6 +148,16 @@ export const tokens = {
   blocksPattern,
   netPattern,
   patternOpacity,
+
+  // Liquid Glass (iOS 26)
+  glassMaterials,
+  glassVibrantColors,
+  glassControlCenter,
+  glassBlur,
+
+  // Dynamic Type (iOS accessibility scaling)
+  dynamicTypeFontSize,
+  dynamicTypeLineHeight,
 } as const
 
 export type Tokens = typeof tokens

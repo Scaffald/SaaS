@@ -34,7 +34,7 @@ export type TextColor =
 /**
  * Text size options
  */
-export type TextSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+export type TextSize = 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 
 /**
  * Text weight options
@@ -140,7 +140,7 @@ export interface LabelProps extends BaseTextProps {
  * <Text size="lg" weight="bold">Important</Text>
  */
 export interface TextProps extends BaseTextProps {
-  /** Font size - xs (12), sm (14), md (16), lg (18), xl (20), 2xl (22) */
+  /** Font size - xxs (11), xs (12), sm (13), md (16), lg (17), xl (20), 2xl (22) */
   size?: TextSize
   /** Font weight */
   weight?: TextWeight
