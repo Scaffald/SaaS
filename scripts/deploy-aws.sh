@@ -64,7 +64,8 @@ esac
 # Configuration
 AWS_PROFILE="${AWS_PROFILE:-scaffald}"
 AWS_REGION="${AWS_REGION:-us-east-1}"
-BUCKET_NAME="${AWS_S3_BUCKET:-scaffald-app-$BUCKET_SUFFIX}"
+_DEFAULT_BUCKET="$([ "$ENV" = "production" ] && echo "app-scaffald-com" || echo "${ENV}-scaffald-com")"
+BUCKET_NAME="${AWS_S3_BUCKET:-$_DEFAULT_BUCKET}"
 DISTRIBUTION_ID="${AWS_CLOUDFRONT_DISTRIBUTION_ID}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
