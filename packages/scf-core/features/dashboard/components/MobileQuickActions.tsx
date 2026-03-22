@@ -17,25 +17,25 @@ const QUICK_ACTIONS: QuickAction[] = [
   {
     label: 'Find Jobs',
     icon: Briefcase,
-    route: buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS, {}),
+    route: buildPath(ROUTES.JOBS, {}),
     variant: 'dark',
   },
   {
     label: 'My Resume',
     icon: FileText,
-    route: buildPath(ROUTES.DASHBOARD.PROFILE.RESUME, {}),
+    route: buildPath(ROUTES.PROFILE.RESUME, {}),
     variant: 'surface',
   },
   {
     label: 'Assessments',
     icon: ClipboardCheck,
-    route: ROUTES.DASHBOARD.ASSESSMENTS.path,
+    route: ROUTES.ASSESSMENTS.path,
     variant: 'surface',
   },
   {
     label: 'Teams',
     icon: Users,
-    route: ROUTES.DASHBOARD.TEAMS.path,
+    route: ROUTES.EMPLOYERS.TEAMS.path,
     variant: 'surface',
   },
 ]

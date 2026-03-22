@@ -50,7 +50,7 @@ export function PostDetailPage({ postId }: Props) {
   if (isPostLoading) {
     return (
       <Stack align="center" justify="center" style={{ minHeight: 300 }}>
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
       </Stack>
     )
   }
@@ -178,7 +178,7 @@ export function PostDetailPage({ postId }: Props) {
           {/* Comment List */}
           {isCommentsLoading ? (
             <Stack align="center" style={{ paddingVertical: 24 }}>
-              <Spinner />
+              <Spinner variant="ios" />
             </Stack>
           ) : comments.length === 0 ? (
             <Stack align="center" style={{ paddingVertical: 24 }}>

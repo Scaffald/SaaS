@@ -61,7 +61,7 @@ export function PersonalityAssessmentWizard() {
   if (isLoading) {
     return (
       <Stack flex={1} align="center" justify="center" gap={16} padding={32}>
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
         <Text style={{ color: colors.text[theme].secondary }}>
           Loading assessment...
         </Text>

@@ -310,7 +310,7 @@ export function UserProfileHeaderEnhanced({
   const buttonSize = isMobile ? 'sm' : 'md'
 
   return (
-    <Card variant="elevated" style={{ overflow: 'hidden' }} padding="none">
+    <Card variant="glass" style={{ overflow: 'hidden' }} padding="none">
       {/* Banner Section */}
       <Stack style={{ position: 'relative', height: bannerHeight, backgroundColor: colors.bg[t].muted }}>
         {bannerUrl ? (

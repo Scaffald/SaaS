@@ -60,7 +60,7 @@ export function WorkLogPortfolioWidget({
   }, [workLogs]);
 
   return (
-    <Card borderColor={colors.border[t].default} borderWidth={1}>
+    <Card variant="outlined">
       <Stack gap={16} padding="md">
         <Stack gap={8}>
           <Text>Verified work history</Text>
@@ -72,7 +72,7 @@ export function WorkLogPortfolioWidget({
 
         {isLoading ? (
           <Row gap={8} align="center">
-            <Spinner size="sm" />
+            <Spinner variant="ios" size="sm" />
             <Text color={colors.text[t].secondary}>Loading work history…</Text>
           </Row>
         ) : workLogs.length === 0 ? (

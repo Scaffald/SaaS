@@ -276,7 +276,7 @@ export const ApplicationStatusChangeModal = ({
 
             {initializingIntent && !paymentCompleted && (
               <Stack gap={4} align="center">
-                <Spinner size="sm" />
+                <Spinner variant="ios" size="sm" />
                 <Text style={{ color: colors.text[theme].secondary }}>Preparing payment form…</Text>
               </Stack>
             )}
@@ -533,7 +533,7 @@ function HireSummaryCard({
   }
 
   return (
-    <Card padding="md" borderWidth={1} borderColor={colors.border[theme].default}>
+    <Card variant="glass" padding="md" borderWidth={1} borderColor={colors.border[theme].default}>
       <Stack gap={8}>
         <Text>Success Fee Overview</Text>
         <Row justify="space-between">

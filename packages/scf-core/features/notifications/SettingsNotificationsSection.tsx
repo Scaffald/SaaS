@@ -449,7 +449,7 @@ export function SettingsNotificationsSection() {
           <Text color="gray">Registered devices</Text>
           {devicesQuery.isLoading ? (
             <Row gap={8} align="center">
-              <Spinner size="sm" color="gray" />
+              <Spinner variant="ios" size="sm" color="gray" />
               <Text color="gray">Checking devices…</Text>
             </Row>
           ) : deviceRows.length === 0 ? (
@@ -501,7 +501,7 @@ export function SettingsNotificationsSection() {
 
       {notificationsQuery.isLoading ? (
         <Stack gap={12} align="center">
-          <Spinner size="lg" color="gray" />
+          <Spinner variant="ios" size="lg" color="gray" />
           <Text color="gray">Loading notifications…</Text>
         </Stack>
       ) : isEmpty ? (

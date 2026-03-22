@@ -37,7 +37,7 @@ export function MergeComparisonView({
   if (isLoading) {
     return (
       <Row gap={8} align="center">
-        <Spinner size="sm" />
+        <Spinner variant="ios" size="sm" />
         <Text color={colors.text[t].secondary}>Loading current profile data…</Text>
       </Row>
     );

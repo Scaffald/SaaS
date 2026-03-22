@@ -253,7 +253,7 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
             onPress={() => handleSubmit(true)}
             disabled={isLoading || !formData.title || !formData.description}
           >
-            {isLoading && <Spinner />}
+            {isLoading && <Spinner variant="ios" />}
             {!isLoading && 'Save as Draft'}
           </Button>
           <Button
@@ -263,7 +263,7 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
             onPress={() => handleSubmit(false)}
             disabled={isLoading || !formData.title || !formData.description || !formData.location}
           >
-            {isLoading && <Spinner />}
+            {isLoading && <Spinner variant="ios" />}
             {!isLoading && 'Publish'}
           </Button>
         </Row>

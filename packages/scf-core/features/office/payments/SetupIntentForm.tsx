@@ -151,7 +151,7 @@ export function SetupIntentForm({
           >
             {isInitializing ? (
               <Row gap={8} align="center">
-                <Spinner size="sm" color="primary" />
+                <Spinner variant="ios" size="sm" color="primary" />
                 <Text>Initializing…</Text>
               </Row>
             ) : (
@@ -303,7 +303,7 @@ function SetupIntentFormInner({
           >
             {isSubmitting ? (
               <Row gap={8} align="center">
-                <Spinner size="sm" color="primary" />
+                <Spinner variant="ios" size="sm" color="primary" />
                 <Text>Saving…</Text>
               </Row>
             ) : (

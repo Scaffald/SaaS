@@ -90,7 +90,7 @@ export function CommunityStatsWidget() {
   const score = scoreData?.data?.score ?? 0
 
   return (
-    <DashboardWidget gap={0} elevated>
+    <DashboardWidget gap={0}>
       <DashboardWidgetHeader title="Your Network" />
 
       <Stack

@@ -2,7 +2,7 @@
  * Profile Widgets - Self-contained, data-fetching display components
  *
  * These widgets can be used in:
- * - Own profile view (/dashboard/profile) with edit buttons
+ * - Own profile view (/profile) with edit buttons
  * - Other users' public profiles (/dashboard/users/:id)
  * - Dashboard summary view with compact variants
  */

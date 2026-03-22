@@ -99,7 +99,7 @@ export function EducationWidget({
               variant="outline"
               size="sm"
               onPress={() =>
-                router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)
+                router.push(ROUTES.PROFILE.EDUCATION.path)
               }
             >
               Edit
@@ -117,7 +117,7 @@ export function EducationWidget({
                 ? {
                     label: "Add Education",
                     onPress: () =>
-                      router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path),
+                      router.push(ROUTES.PROFILE.EDUCATION.path),
                   }
                 : undefined
             }
@@ -188,7 +188,7 @@ export function EducationWidget({
               <Text
                 style={{ color: colors.blue[700], cursor: "pointer" }}
                 onPress={() =>
-                  router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)
+                  router.push(ROUTES.PROFILE.EDUCATION.path)
                 }
               >
                 View all {education.length} entries →

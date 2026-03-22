@@ -185,15 +185,15 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
   const handleCardPress = () => {
     if (hasInquiryLink && applicationId) {
       router.push(
-        buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS.APPLICATIONS.INQUIRY, { applicationId })
+        buildPath(ROUTES.JOBS.APPLICATIONS.INQUIRY, { applicationId })
       )
       return
     }
-    router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS.DETAIL, { id: job.id }))
+    router.push(buildPath(ROUTES.JOBS.DETAIL, { id: job.id }))
   }
 
   return (
-    <Card pressable onPress={handleCardPress} padding="md" variant="surface">
+    <Card pressable onPress={handleCardPress} padding="md" variant="glass" glassMaterial="thin">
       <Stack gap={12}>
         {/* Header */}
         <Stack gap={8}>

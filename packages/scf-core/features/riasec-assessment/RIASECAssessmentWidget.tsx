@@ -18,7 +18,7 @@ export function RIASECAssessmentWidget() {
     return (
       <DashboardWidget>
         <Stack gap={10} align="center" paddingVertical={40}>
-          <Spinner size="lg" color="primary" />
+          <Spinner variant="ios" size="lg" color="primary" />
           <Text style={{ color: colors.text[theme].secondary }}>Loading...</Text>
         </Stack>
       </DashboardWidget>
@@ -30,7 +30,7 @@ export function RIASECAssessmentWidget() {
   }
 
   const handleStart = () => {
-    router.push(ROUTES.DASHBOARD.ASSESSMENTS.RIASEC.path);
+    router.push(ROUTES.ASSESSMENTS.RIASEC.path);
   };
 
   return (

@@ -171,7 +171,7 @@ export function TeamInvitationsList({
 
       {invitationsQuery.isLoading ? (
         <Stack align="center" justify="center" gap={8} paddingVertical={24}>
-          <Spinner size="lg" />
+          <Spinner variant="ios" size="lg" />
           <Text style={{ color: colors.text[theme].secondary }}>
             Loading invitations…
           </Text>

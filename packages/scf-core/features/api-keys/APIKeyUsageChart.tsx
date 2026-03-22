@@ -246,7 +246,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
   if (isLoading) {
     return (
       <Stack flex={1} justify="center" align="center" padding={32}>
-        <Spinner size="lg" color="primary" />
+        <Spinner variant="ios" size="lg" color="primary" />
         <Paragraph style={{ marginTop: 16 }} color={colors.text[theme].tertiary}>
           Loading usage analytics...
         </Paragraph>

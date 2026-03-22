@@ -68,7 +68,7 @@ export function WorkLogVisibilitySettingsCard() {
 
         {listQuery.isLoading ? (
           <Row gap={8} align="center">
-            <Spinner size="sm" />
+            <Spinner variant="ios" size="sm" />
             <Text style={{ color: colors.text[t].secondary }}>Loading work logs…</Text>
           </Row>
         ) : items.length === 0 ? (
@@ -167,7 +167,7 @@ export function WorkLogVisibilitySettingsCard() {
                       variant="outline"
                       onPress={() =>
                         router.push(
-                          buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, {
+                          buildPath(ROUTES.EMPLOYERS.LOGS.DETAIL, {
                             workLogId: item.id,
                           })
                         )

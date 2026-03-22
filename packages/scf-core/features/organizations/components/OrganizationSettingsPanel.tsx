@@ -82,7 +82,7 @@ function RenewalSettingsSection({ organizationId }: RenewalSettingsSectionProps)
       <Card bordered padding="md">
         <H4>Renewal Reminders</H4>
         <Separator />
-        <Spinner />
+        <Spinner variant="ios" />
       </Card>
     )
   }
@@ -196,7 +196,7 @@ export function OrganizationSettingsPanel({
         </Row>
         <Separator />
         {isLoading || !settings ? (
-          <Spinner />
+          <Spinner variant="ios" />
         ) : (
           <Stack gap={12}>
             <Controller

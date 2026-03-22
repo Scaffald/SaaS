@@ -273,7 +273,7 @@ export function OrganizationBackgroundCheckRequestForm() {
   if (isLoadingOrganizations || isLoadingPackages) {
     return (
       <Stack flex={1} align="center" justify="center" gap={8}>
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
         <Text style={{ color: colors.text[theme].secondary }}>
           Loading options…
         </Text>

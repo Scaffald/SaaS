@@ -108,7 +108,7 @@ export function OrganizationCheckDetails({
 
       {checkQuery.isLoading ? (
         <Stack gap={8} align="center" paddingVertical={16}>
-          <Spinner size="lg" />
+          <Spinner variant="ios" size="lg" />
           <Text style={{ color: colors.text[t].secondary }}>Loading background check details…</Text>
         </Stack>
       ) : null}

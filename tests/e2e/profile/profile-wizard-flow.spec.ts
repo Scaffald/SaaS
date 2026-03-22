@@ -63,7 +63,7 @@ test.describe('Profile Wizard Flow - E2E', () => {
       })
     )
 
-    await page.goto('/dashboard/profile/wizard', { waitUntil: 'domcontentloaded', timeout: 30000 })
+    await page.goto('/profile/wizard', { waitUntil: 'domcontentloaded', timeout: 30000 })
     await page.waitForTimeout(1000)
 
     const startButton = page.getByText('Start Wizard')
@@ -119,7 +119,7 @@ test.describe('Profile Wizard Flow - E2E', () => {
       })
     )
 
-    await page.goto('/dashboard/profile/wizard', { waitUntil: 'domcontentloaded', timeout: 30000 })
+    await page.goto('/profile/wizard', { waitUntil: 'domcontentloaded', timeout: 30000 })
     await page.waitForTimeout(1000)
 
     // Start wizard if needed
@@ -173,7 +173,7 @@ test.describe('Profile Wizard Flow - E2E', () => {
       })
     )
 
-    await page.goto('/dashboard/profile/wizard', { waitUntil: 'domcontentloaded', timeout: 30000 })
+    await page.goto('/profile/wizard', { waitUntil: 'domcontentloaded', timeout: 30000 })
     await page.waitForTimeout(1000)
 
     // This test verifies the success modal appears when wizard is completed
@@ -212,7 +212,7 @@ test.describe('Profile Wizard Flow - E2E', () => {
       })
     })
 
-    await page.goto('/dashboard/profile/wizard', { waitUntil: 'domcontentloaded', timeout: 30000 })
+    await page.goto('/profile/wizard', { waitUntil: 'domcontentloaded', timeout: 30000 })
     await page.waitForTimeout(1000)
 
     // Check if progress indicator shows percentage
@@ -252,7 +252,7 @@ test.describe('Profile Wizard Flow - E2E', () => {
       })
     )
 
-    await page.goto('/dashboard/profile/wizard', { waitUntil: 'domcontentloaded', timeout: 30000 })
+    await page.goto('/profile/wizard', { waitUntil: 'domcontentloaded', timeout: 30000 })
     await page.waitForTimeout(1000)
 
     // Start wizard if needed

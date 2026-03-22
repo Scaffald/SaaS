@@ -73,7 +73,7 @@ export function SuggestedCommunitiesWidget({ maxItems = 3 }: { maxItems?: number
   if (suggested.length === 0) return null
 
   return (
-    <DashboardWidget gap={0} elevated>
+    <DashboardWidget gap={0}>
       <DashboardWidgetHeader title="Suggested Communities" />
 
       <Stack gap={0}>

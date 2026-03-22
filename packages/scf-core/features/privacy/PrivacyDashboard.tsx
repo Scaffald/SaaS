@@ -153,7 +153,7 @@ export function PrivacyDashboard() {
           </Text>
           {isLoading ? (
             <Row padding="xl" justify="center">
-              <Spinner size="lg" />
+              <Spinner variant="ios" size="lg" />
             </Row>
           ) : (
             <DataCategorySummary
@@ -184,7 +184,7 @@ export function PrivacyDashboard() {
           </Text>
           {isLoading ? (
             <Row padding="xl" justify="center">
-              <Spinner size="lg" />
+              <Spinner variant="ios" size="lg" />
             </Row>
           ) : (
             <RequestHistoryTable
@@ -204,7 +204,7 @@ export function PrivacyDashboard() {
           </Text>
           {isLoading ? (
             <Row padding="xl" justify="center">
-              <Spinner size="lg" />
+              <Spinner variant="ios" size="lg" />
             </Row>
           ) : (
             <ConnectedAppsPanel

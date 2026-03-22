@@ -191,7 +191,7 @@ export function OfficeTeamsList() {
             }}
           >
             <Row gap={12} align="center">
-              <Spinner size="sm" />
+              <Spinner variant="ios" size="sm" />
               <Text>Archiving team...</Text>
             </Row>
           </Stack>

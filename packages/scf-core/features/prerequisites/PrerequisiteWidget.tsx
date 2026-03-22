@@ -160,7 +160,7 @@ export function PrerequisiteWidget() {
             align="center"
             paddingVertical={namedSpacing.xl}
           >
-            <Spinner size="lg" color="primary" />
+            <Spinner variant="ios" size="lg" color="primary" />
             <Text style={{ color: colors.text[theme].secondary }}>
               Loading...
             </Text>
@@ -318,7 +318,7 @@ export function PrerequisiteWidget() {
                   <Stack gap={8}>
                     {isLoadingIndustries ? (
                       <Row gap={8} align="center">
-                        <Spinner size="sm" />
+                        <Spinner variant="ios" size="sm" />
                         <Text style={{ color: colors.text[theme].secondary }}>
                           Loading industries...
                         </Text>

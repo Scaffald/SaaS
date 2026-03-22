@@ -31,7 +31,7 @@ export function PublishedPostsGallery({ userId, variant = 'full', onPostPress }:
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" style={{ paddingVertical: 32 }}>
-          <Spinner size="lg" />
+          <Spinner variant="ios" size="lg" />
           <Text style={{ color: colors.text[t].secondary }}>Loading portfolio...</Text>
         </Stack>
       </DashboardWidget>
@@ -68,7 +68,7 @@ export function PublishedPostsGallery({ userId, variant = 'full', onPostPress }:
           <Pressable onPress={() => fetchNextPage()} disabled={isFetchingNextPage}>
             <Stack align="center" style={{ paddingVertical: 12 }}>
               {isFetchingNextPage ? (
-                <Spinner size="sm" />
+                <Spinner variant="ios" size="sm" />
               ) : (
                 <Text style={{ color: colors.text[t].secondary, fontSize: 13 }}>
                   Load more

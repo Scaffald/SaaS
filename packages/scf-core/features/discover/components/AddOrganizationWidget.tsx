@@ -142,7 +142,7 @@ export function AddOrganizationWidget() {
           request={submittedRequest}
           onAddDetails={() =>
             router.push({
-              pathname: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.CREATE.path,
+              pathname: ROUTES.EMPLOYERS.CREATE.path,
               params: {
                 name: submittedRequest.name ?? trimmedQuery,
                 slug: submittedRequest.slug,
@@ -253,7 +253,7 @@ function DuplicateLink({ id, name }: DuplicateLinkProps) {
     <Button
       variant="outline"
       size="sm"
-      onPress={() => router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.DETAIL, { id }))}
+      onPress={() => router.push(buildPath(ROUTES.EMPLOYERS.DETAIL, { id }))}
       iconEnd={ArrowRight}
     >
       <Stack flex={1}>

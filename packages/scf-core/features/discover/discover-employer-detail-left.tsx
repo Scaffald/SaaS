@@ -37,7 +37,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
               try {
                 router.back()
               } catch {
-                router.replace(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path)
+                router.replace(ROUTES.EMPLOYERS.path)
               }
             }}
           >
@@ -81,7 +81,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
               try {
                 router.back()
               } catch {
-                router.replace(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path)
+                router.replace(ROUTES.EMPLOYERS.path)
               }
             }}
           >
@@ -111,7 +111,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
             try {
               router.back()
             } catch {
-              router.replace(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path)
+              router.replace(ROUTES.EMPLOYERS.path)
             }
           }}
         >

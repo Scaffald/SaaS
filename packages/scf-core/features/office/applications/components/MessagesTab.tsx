@@ -124,7 +124,7 @@ export const MessagesTab = ({
   if (isLoading) {
     return (
       <Stack flex={1} align="center" justify="center" gap={12}>
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
         <Text style={{ opacity: 0.7 }}>Loading messages...</Text>
       </Stack>
     )
@@ -133,7 +133,7 @@ export const MessagesTab = ({
   if (error) {
     return (
       <Stack gap={12} padding="md">
-        <Card padding="md" style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}>
+        <Card variant="glass" padding="md" style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}>
           <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Error loading messages</Text>
           <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300], marginTop: 8 }}>
             {error.message || 'Failed to load messages'}
@@ -148,7 +148,7 @@ export const MessagesTab = ({
       {/* Message Thread */}
       <Stack gap={12}>
         {transformedMessages.length === 0 ? (
-          <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+          <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
             <Text style={{ opacity: 0.7, textAlign: 'center' }}>
               No messages yet. Start the conversation below!
             </Text>
@@ -191,7 +191,7 @@ export const MessagesTab = ({
 
       {/* Template Manager (full screen overlay) */}
       {showTemplateManager && (
-        <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle, minHeight: 400 }}>
+        <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle, minHeight: 400 }}>
           <MessageTemplatesManager
             templates={allTemplates}
             onCreate={createTemplate}
@@ -203,7 +203,7 @@ export const MessagesTab = ({
       )}
 
       {/* Send Message */}
-      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+      <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Text style={{ marginBottom: 12 }}>Send Message</Text>
 
         {/* Template Selector */}

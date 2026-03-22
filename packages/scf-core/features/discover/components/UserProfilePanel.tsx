@@ -56,7 +56,7 @@ export function UserProfilePanel({
     if (!userId) return
 
     try {
-      router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.WORKERS.DETAIL, { id: userId }))
+      router.push(buildPath(ROUTES.WORKERS.DETAIL, { id: userId }))
       onOpenChange(false)
     } catch (navigationError) {
       console.error('Failed to navigate to worker profile', navigationError)
@@ -99,7 +99,7 @@ export function UserProfilePanel({
 
       {isLoading ? (
         <Stack paddingVertical={16} align="center" gap={12}>
-          <Spinner size="sm" color="primary" />
+          <Spinner variant="ios" size="sm" color="primary" />
           <Text color="secondary">Loading...</Text>
         </Stack>
       ) : !preview ? (

@@ -82,7 +82,7 @@ function WorkerPreview({ pinId, visible }: { pinId: string; visible: boolean }) 
     ? getStorageUrl('avatars', worker.avatarPath)
     : worker.avatarUrl || null
 
-  const profileUrl = buildPath(ROUTES.DASHBOARD.DISCOVER.WORKERS.DETAIL, { id: pinId })
+  const profileUrl = buildPath(ROUTES.WORKERS.DETAIL, { id: pinId })
 
   return (
     <Stack gap={10}>
@@ -180,7 +180,7 @@ function OrganizationPreview({ pinId, visible }: { pinId: string; visible: boole
   if (isLoading) return <LoadingState />
   if (!org) return null
 
-  const profileUrl = buildPath(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.DETAIL, { id: pinId })
+  const profileUrl = buildPath(ROUTES.EMPLOYERS.DETAIL, { id: pinId })
   const address = org.address as { city?: string; state?: string } | null
   const location = address ? [address.city, address.state].filter(Boolean).join(', ') : null
   const employeeRange = (org as { employee_count_range?: string }).employee_count_range
@@ -268,7 +268,7 @@ function JobPreview({ job }: { job: JobMapPin }) {
         variant="filled"
         color="primary"
         onPress={() => {
-          const url = buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS.DETAIL, { id: job.id })
+          const url = buildPath(ROUTES.JOBS.DETAIL, { id: job.id })
           window.open(url, '_blank', 'noopener,noreferrer')
         }}
         iconEnd={ExternalLink}
@@ -284,7 +284,7 @@ function LoadingState() {
   const t = theme === 'dark' ? 'dark' : 'light'
   return (
     <Stack align="center" paddingVertical={20} gap={8}>
-      <Spinner size="sm" color="primary" />
+      <Spinner variant="ios" size="sm" color="primary" />
       <Text style={{ ...textSmall, color: colors.text[t].disabled }}>Loading...</Text>
     </Stack>
   )

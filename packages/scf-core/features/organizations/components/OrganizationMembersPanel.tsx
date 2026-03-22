@@ -186,7 +186,7 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
         <Row justify="space-between" align="center">
           <H4>Members</H4>
           {membersLoading ? (
-            <Spinner />
+            <Spinner variant="ios" />
           ) : (
             <Text style={{ color: colors.text[theme].secondary }}>
               {activeMembers.length} total
@@ -211,7 +211,7 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
         <Row justify="space-between" align="center">
           <H4>Pending invitations</H4>
           {invitesLoading ? (
-            <Spinner />
+            <Spinner variant="ios" />
           ) : (
             <Text style={{ color: colors.text[theme].secondary }}>
               {pendingInvites.length} pending

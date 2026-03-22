@@ -189,7 +189,7 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
 function createSkeletonLayout(): DiscoverWorkerProfileScreenResult {
   const skeletonBreadcrumbs: BreadcrumbItemData[] = [
     { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Workers', href: ROUTES.DASHBOARD.DISCOVER.WORKERS.path },
+    { label: 'Workers', href: ROUTES.WORKERS.path },
     { label: 'Loading…' },
   ]
 
@@ -219,7 +219,7 @@ export function DiscoverWorkerProfileScreen({
 
   const baseBreadcrumbs: BreadcrumbItemData[] = [
     { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Workers', href: ROUTES.DASHBOARD.DISCOVER.WORKERS.path },
+    { label: 'Workers', href: ROUTES.WORKERS.path },
   ]
 
   if (!safeUserId) {

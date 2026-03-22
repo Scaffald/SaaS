@@ -207,7 +207,7 @@ export function InquiryViewOrganization({
     const sectionComments = commentsBySection[sectionName] || []
 
     return (
-      <Card padding="md" style={{ gap: 12 }}>
+      <Card variant="glass" padding="md" style={{ gap: 12 }}>
         {/* Section Header */}
         <Row justify="space-between" align="center">
           <Text>{title}</Text>

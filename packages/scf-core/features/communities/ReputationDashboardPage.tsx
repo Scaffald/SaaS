@@ -37,7 +37,7 @@ export function ReputationDashboardPage() {
   if (isScoreLoading) {
     return (
       <Stack align="center" justify="center" style={{ minHeight: 200 }}>
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
       </Stack>
     )
   }
@@ -122,7 +122,7 @@ export function ReputationDashboardPage() {
         <Text style={{ fontSize: 18, fontWeight: '600' }}>History ({historyData?.total ?? 0})</Text>
         {isHistoryLoading ? (
           <Stack align="center" style={{ paddingVertical: 24 }}>
-            <Spinner />
+            <Spinner variant="ios" />
           </Stack>
         ) : events.length === 0 ? (
           <Text style={{ color: colors.text[t].secondary }}>No reputation events yet.</Text>

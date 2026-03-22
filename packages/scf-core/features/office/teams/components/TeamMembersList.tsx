@@ -195,7 +195,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
 
       {isLoadingMembers ? (
         <Stack align="center" justify="center" paddingVertical={32} gap={8}>
-          <Spinner size="lg" />
+          <Spinner variant="ios" size="lg" />
           <Text style={{ color: colors.text[theme].secondary }}>Loading team members…</Text>
         </Stack>
       ) : hasMembers ? (

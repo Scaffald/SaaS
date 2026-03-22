@@ -64,7 +64,7 @@ export function ProfilePage({
       if (typeof pageTitle === 'function') {
         return (
           pageTitle() ??
-          (matchedRoute ? t(matchedRoute.titleKey) : t(ROUTES.DASHBOARD.PROFILE.titleKey))
+          (matchedRoute ? t(matchedRoute.titleKey) : t(ROUTES.PROFILE.titleKey))
         )
       }
       if (typeof pageTitle === 'string') {
@@ -79,7 +79,7 @@ export function ProfilePage({
         }
       }
 
-      return matchedRoute ? t(matchedRoute.titleKey) : t(ROUTES.DASHBOARD.PROFILE.titleKey)
+      return matchedRoute ? t(matchedRoute.titleKey) : t(ROUTES.PROFILE.titleKey)
     },
     deps: [locale, matchedRoute?.titleKey, computedBreadcrumbItems, ...pageTitleDeps],
     formatDocumentTitle,

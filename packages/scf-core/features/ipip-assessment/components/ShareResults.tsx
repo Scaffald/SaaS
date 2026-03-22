@@ -31,7 +31,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
     onSuccess: (data: { token: string }) => {
       // Build share URL
       const baseUrl = typeof window !== 'undefined' && window.location ? window.location.origin : ''
-      const shareUrl = `${baseUrl}/dashboard/assessments/ipip/shared/${data.token}`
+      const shareUrl = `${baseUrl}/assessments/ipip/shared/${data.token}`
       setShareLink(shareUrl)
       toast.show({
         title: 'Share link created!',

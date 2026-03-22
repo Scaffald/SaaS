@@ -106,7 +106,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
     <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Job Preview" size="lg">
       {isLoading ? (
         <Stack paddingVertical={32} align="center" justify="center">
-          <Spinner size="lg" color="primary" />
+          <Spinner variant="ios" size="lg" color="primary" />
           <Text style={{ marginTop: 16, color: colors.text[theme].secondary }}>
             Loading job details...
           </Text>

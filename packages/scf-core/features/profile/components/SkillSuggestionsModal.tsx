@@ -304,7 +304,7 @@ export function SkillSuggestionsModal({
 
           {/* No occupations */}
           {occupations.length === 0 && (
-            <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+            <Card variant="glass" padding="md">
               <Row gap={12} align="center">
                 <Sparkles size={20} color={colors.icon[theme].default} />
                 <Stack flex={1}>
@@ -323,7 +323,7 @@ export function SkillSuggestionsModal({
           {/* Loading */}
           {isLoading && onetCode && (
             <Stack align="center" justify="center" style={{ paddingVertical: 40 }}>
-              <Spinner size="lg" />
+              <Spinner variant="ios" size="lg" />
               <Text style={{ color: colors.text[theme].secondary, marginTop: 8 }}>
                 Loading occupation skills...
               </Text>

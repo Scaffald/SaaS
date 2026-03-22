@@ -250,19 +250,19 @@ export function HRISIntegrationsScreen() {
               <Stack gap={16} style={{ paddingTop: 16 }}>
                 {/* Summary Cards */}
                 <Row gap={12}>
-                  <Card style={{ flex: 1 }} padding="md">
+                  <Card variant="glass" style={{ flex: 1 }} padding="md">
                     <Stack align="center" gap={4}>
                       <Text style={{ color: colors.text[theme].primary, fontSize: 24, fontWeight: '700' }}>47</Text>
                       <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>Total Synced</Text>
                     </Stack>
                   </Card>
-                  <Card style={{ flex: 1 }} padding="md">
+                  <Card variant="glass" style={{ flex: 1 }} padding="md">
                     <Stack align="center" gap={4}>
                       <Text style={{ color: colors.fg[theme].success, fontSize: 24, fontWeight: '700' }}>98%</Text>
                       <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>Success Rate</Text>
                     </Stack>
                   </Card>
-                  <Card style={{ flex: 1 }} padding="md">
+                  <Card variant="glass" style={{ flex: 1 }} padding="md">
                     <Stack align="center" gap={4}>
                       <Text style={{ color: colors.text[theme].primary, fontSize: 24, fontWeight: '700' }}>Daily</Text>
                       <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>Sync Frequency</Text>

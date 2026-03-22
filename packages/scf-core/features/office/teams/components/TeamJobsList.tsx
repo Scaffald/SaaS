@@ -88,7 +88,7 @@ export function TeamJobsList({
 
       {isLoading ? (
         <Stack align="center" justify="center" paddingVertical={24} gap={8}>
-          <Spinner size="lg" />
+          <Spinner variant="ios" size="lg" />
           <Text style={{ color: colors.text[theme].secondary }}>
             Loading assigned jobs…
           </Text>

@@ -310,7 +310,7 @@ export function AdminBackgroundChecksPage() {
   if (isLoadingRoles) {
     return (
       <Stack flex={1} align="center" justify="center" gap={8}>
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
         <Text style={{ color: colors.text[t].secondary }}>Verifying admin access…</Text>
       </Stack>
     )

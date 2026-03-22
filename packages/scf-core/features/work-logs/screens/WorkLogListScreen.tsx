@@ -51,9 +51,9 @@ export function WorkLogListScreen({ organizationId, orgSlug }: WorkLogListScreen
     }
   );
 
-  const createPath = orgSlug ? RouteBuilder.orgLogsCreate(orgSlug) : ROUTES.DASHBOARD.WORK_LOGS.CREATE.path;
+  const createPath = orgSlug ? RouteBuilder.orgLogsCreate(orgSlug) : ROUTES.EMPLOYERS.LOGS.CREATE.path;
   const detailPath = (workLogId: string) =>
-    orgSlug ? RouteBuilder.orgLogDetail(orgSlug, workLogId) : buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId });
+    orgSlug ? RouteBuilder.orgLogDetail(orgSlug, workLogId) : buildPath(ROUTES.EMPLOYERS.LOGS.DETAIL, { workLogId });
 
   const {
     offlineWorkLogs,
@@ -163,7 +163,7 @@ export function WorkLogListScreen({ organizationId, orgSlug }: WorkLogListScreen
         {listQuery.isLoading ? (
           <Stack gap={12} paddingBottom={24}>
             {[0, 1, 2, 3].map((i) => (
-              <Card key={i} style={{ borderWidth: 1 }}>
+              <Card key={i} variant="outlined">
                 <Stack gap={12} style={{ padding: 8 }}>
                   <Row justify="space-between" align="center">
                     <Stack gap={4}>
@@ -313,7 +313,7 @@ function AnalyticsBanner({
   const { theme } = useThemeContext();
   const t = theme === 'dark' ? 'dark' : 'light';
   return (
-    <Card style={{ borderWidth: 1 }}>
+    <Card variant="outlined">
       <Stack gap={12} style={{ padding: 8 }}>
         <Text>Quick summary</Text>
         {isLoading && !statusSummary ? (
@@ -413,7 +413,7 @@ function EmptyState({ onCreate }: EmptyStateProps) {
   const { theme } = useThemeContext();
   const t = theme === 'dark' ? 'dark' : 'light';
   return (
-    <Card style={{ borderWidth: 1 }}>
+    <Card variant="outlined">
       <Stack
         gap={12}
         align="center"

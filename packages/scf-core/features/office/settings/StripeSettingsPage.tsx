@@ -162,7 +162,7 @@ export function StripeSettingsPage() {
   if (isLoading) {
     return (
       <Stack flex={1} align="center" justify="center" gap={12}>
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
         <Text>Loading Stripe settings…</Text>
       </Stack>
     )
@@ -178,7 +178,7 @@ export function StripeSettingsPage() {
       </Stack>
 
       <Stack gap={16} style={{ maxWidth: 720, width: '100%' }}>
-        <Card padding="md">
+        <Card variant="glass" padding="md">
           <Stack gap={16}>
             <Stack gap={8}>
               <Text>Publishable Key</Text>
@@ -213,7 +213,7 @@ export function StripeSettingsPage() {
           </Stack>
         </Card>
 
-        <Card padding="md">
+        <Card variant="glass" padding="md">
           <Stack gap={16}>
             <Stack gap={8}>
               <Text>Secret Keys</Text>
@@ -307,7 +307,7 @@ export function StripeSettingsPage() {
           </Stack>
         </Card>
 
-        <Card padding="md">
+        <Card variant="glass" padding="md">
           <Stack gap={16}>
             <Stack gap={8}>
               <Text>Webhook Endpoint</Text>
@@ -324,7 +324,7 @@ export function StripeSettingsPage() {
           </Stack>
         </Card>
 
-        <Card padding="md">
+        <Card variant="glass" padding="md">
           <Stack gap={16}>
             <Stack gap={8}>
               <Text>Test Mode</Text>
@@ -347,7 +347,7 @@ export function StripeSettingsPage() {
           </Stack>
         </Card>
 
-        <Card padding="md">
+        <Card variant="glass" padding="md">
           <Stack gap={16}>
             <Stack gap={8}>
               <Text>Connection Diagnostics</Text>

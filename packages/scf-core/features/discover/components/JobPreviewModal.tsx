@@ -86,7 +86,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
 
   const handleViewFullDetails = () => {
     if (job?.id) {
-      router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS.DETAIL, { id: job.id }))
+      router.push(buildPath(ROUTES.JOBS.DETAIL, { id: job.id }))
       onOpenChange(false)
     }
   }
@@ -100,7 +100,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
     >
       {isLoading ? (
         <Stack paddingVertical={32} align="center" justify="center">
-          <Spinner size="lg" color="primary" />
+          <Spinner variant="ios" size="lg" color="primary" />
           <Text style={{ color: colors.text[t].secondary, marginTop: 16 }}>
             Loading job details...
           </Text>

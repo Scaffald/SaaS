@@ -62,7 +62,7 @@ export function CommunityActivityWidget({ maxItems = 5 }: { maxItems?: number })
   if (posts.length === 0) return null
 
   return (
-    <DashboardWidget gap={0} elevated>
+    <DashboardWidget gap={0}>
       <DashboardWidgetHeader
         title="Recent Activity"
         action={

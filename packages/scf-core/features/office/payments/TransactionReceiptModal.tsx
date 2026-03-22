@@ -52,7 +52,7 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
       <ModalContent>
         {receiptQuery.isLoading ? (
           <Stack align="center" style={{ paddingVertical: 24 }} gap={12}>
-            <Spinner size="lg" />
+            <Spinner variant="ios" size="lg" />
             <Text style={{ color: colors.text[theme].secondary }}>Loading receipt…</Text>
           </Stack>
         ) : receiptQuery.error ? (

@@ -208,7 +208,7 @@ export function SkillsWidget({
               variant="outline"
               size="sm"
               onPress={() => {
-                router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path);
+                router.push(ROUTES.PROFILE.SKILLS.path);
               }}
             >
               Edit
@@ -271,7 +271,7 @@ export function SkillsWidget({
                   ? {
                       label: "Add Skills",
                       onPress: () =>
-                        router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path),
+                        router.push(ROUTES.PROFILE.SKILLS.path),
                     }
                   : undefined
               }
@@ -347,7 +347,7 @@ export function SkillsWidget({
                 <Text
                   style={{ color: colors.blue[500] }}
                   onPress={() =>
-                    router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
+                    router.push(ROUTES.PROFILE.SKILLS.path)
                   }
                 >
                   View all {skills.length} skills →
@@ -377,7 +377,7 @@ export function SkillsWidget({
                 color="primary"
                 size="sm"
                 onPress={() => {
-                  router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path);
+                  router.push(ROUTES.PROFILE.SKILLS.path);
                 }}
               >
                 Complete Assessment
@@ -392,7 +392,7 @@ export function SkillsWidget({
                   ? {
                       label: "Start Assessment",
                       onPress: () =>
-                        router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path),
+                        router.push(ROUTES.PROFILE.SKILLS.path),
                     }
                   : undefined
               }
@@ -433,7 +433,7 @@ export function SkillsWidget({
                     color="primary"
                     size="sm"
                     onPress={() =>
-                      router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
+                      router.push(ROUTES.PROFILE.SKILLS.path)
                     }
                   >
                     Update Assessment

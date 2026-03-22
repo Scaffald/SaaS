@@ -141,7 +141,7 @@ export function OfficePageLayout<TData>({
         loading={isLoading}
         renderLoading={() => (
           <Stack align="center" justify="center" paddingVertical={24} gap={8}>
-            <Spinner size="lg" />
+            <Spinner variant="ios" size="lg" />
             <Stack>Loading…</Stack>
           </Stack>
         )}

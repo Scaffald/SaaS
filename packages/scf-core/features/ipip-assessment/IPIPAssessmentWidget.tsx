@@ -31,7 +31,7 @@ export function IPIPAssessmentWidget() {
     return (
       <DashboardWidget>
         <Stack gap={8} align="center" paddingVertical={40}>
-          <Spinner size="lg" color="primary" />
+          <Spinner variant="ios" size="lg" color="primary" />
           <Text style={{ color: colors.text[theme].secondary }}>Loading...</Text>
         </Stack>
       </DashboardWidget>
@@ -46,11 +46,11 @@ export function IPIPAssessmentWidget() {
   const progressPercentage = Math.round((progress / 120) * 100)
 
   const handleStart = () => {
-    router.push(ROUTES.DASHBOARD.ASSESSMENTS.IPIP.path)
+    router.push(ROUTES.ASSESSMENTS.IPIP.path)
   }
 
   const handleViewResults = () => {
-    router.push(ROUTES.DASHBOARD.ASSESSMENTS.IPIP.RESULTS.path)
+    router.push(ROUTES.ASSESSMENTS.IPIP.RESULTS.path)
   }
 
   // Show results preview when completed

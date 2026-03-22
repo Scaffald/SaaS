@@ -381,7 +381,7 @@ export function TeamActivityFeed({
             accessibilityHint="Shares your message with the team"
             fullWidth
           >
-            {isPosting ? <Spinner size="sm" /> : "Post update"}
+            {isPosting ? <Spinner variant="ios" size="sm" /> : "Post update"}
           </Button>
         </Row>
       </Stack>
@@ -390,7 +390,7 @@ export function TeamActivityFeed({
 
       {activityQuery.isLoading ? (
         <Stack align="center" justify="center" gap={8} paddingVertical={24}>
-          <Spinner size="lg" />
+          <Spinner variant="ios" size="lg" />
           <Text style={{ color: colors.text[theme].secondary }}>
             Loading team activity…
           </Text>
@@ -435,7 +435,7 @@ export function TeamActivityFeed({
                 accessibilityHint="Loads older team activity events"
               >
                 {activityQuery.isFetchingNextPage ? (
-                  <Spinner size="sm" />
+                  <Spinner variant="ios" size="sm" />
                 ) : (
                   "Load more"
                 )}

@@ -120,7 +120,7 @@ export function MessageTemplatesManager({
 
       {/* Form */}
       {isEditing && (
-        <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+        <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
           <Stack gap={12}>
             <Text style={{ color: colors.text[theme].primary }}>
               {isCreating ? 'New Template' : 'Edit Template'}

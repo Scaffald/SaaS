@@ -285,7 +285,7 @@ export function ProfileWizard({
   if (isLoading) {
     return (
       <Stack gap={16} align="center" justify="center" flex={1} padding="xl">
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
         <Text style={{ color: "#414e62" }}>Loading your profile wizard...</Text>
       </Stack>
     );
@@ -306,7 +306,7 @@ export function ProfileWizard({
   if (state.isCompleting) {
     return (
       <Stack gap={16} align="center" justify="center" flex={1} padding="xl">
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
         <Text style={{ color: "#414e62" }}>Wrapping up your profile...</Text>
       </Stack>
     );

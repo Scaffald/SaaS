@@ -47,7 +47,7 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
     : null
 
   return (
-    <Card pressable onPress={() => onViewDetails(employer)} padding="md" variant="surface">
+    <Card pressable onPress={() => onViewDetails(employer)} padding="md" variant="glass" glassMaterial="thin">
       <Stack gap={12}>
         <CardHeader
           icon={Building2}

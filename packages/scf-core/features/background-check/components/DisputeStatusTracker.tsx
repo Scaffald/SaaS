@@ -98,7 +98,7 @@ export function DisputeStatusTracker({
   if (isLoading) {
     return (
       <Stack gap={8} align="center" paddingVertical={16}>
-        <Spinner size="sm" color="gray" />
+        <Spinner variant="ios" size="sm" color="gray" />
         <Text color={colors.text[t].secondary}>Loading dispute history…</Text>
       </Stack>
     )

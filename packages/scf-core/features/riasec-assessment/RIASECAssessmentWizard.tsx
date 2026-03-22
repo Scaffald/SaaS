@@ -218,7 +218,7 @@ export function RIASECAssessmentWizard() {
       leftContent={wizardContent}
       rightContent={railContent}
       breadcrumbItems={[
-        { label: 'Assessments', href: '/dashboard/assessments' },
+        { label: 'Assessments', href: '/assessments' },
         { label: 'Career Interests (RIASEC)' },
       ]}
     />

@@ -66,7 +66,7 @@ export function GapAnalysisWidget() {
     return (
       <DashboardWidget>
         <Stack gap={10} align="center" paddingVertical={40}>
-          <Spinner size="lg" color="primary" />
+          <Spinner variant="ios" size="lg" color="primary" />
         </Stack>
       </DashboardWidget>
     )
@@ -83,7 +83,7 @@ export function GapAnalysisWidget() {
           <Button
             size="sm"
             variant="outline"
-            onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
+            onPress={() => router.push(ROUTES.PROFILE.SKILLS.path)}
           >
             Assess Skills
           </Button>
@@ -117,7 +117,7 @@ export function GapAnalysisWidget() {
           <Button
             size="sm"
             variant="outline"
-            onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
+            onPress={() => router.push(ROUTES.PROFILE.SKILLS.path)}
           >
             My Skills
           </Button>

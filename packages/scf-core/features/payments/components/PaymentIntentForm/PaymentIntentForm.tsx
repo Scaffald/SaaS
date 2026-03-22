@@ -232,7 +232,7 @@ function PaymentIntentFormInner({
         >
           {isSubmitting ? (
             <Row gap={8} align="center">
-              <Spinner size="sm" color="gray" />
+              <Spinner variant="ios" size="sm" color="gray" />
               <Text>Processing…</Text>
             </Row>
           ) : (

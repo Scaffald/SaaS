@@ -1,17 +1,17 @@
 import { expect, type Page, test } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
-test.describe('Admin • /dashboard/profile/education', () => {
+test.describe('Admin • /profile/education', () => {
   // Test 1: Route navigation and initial loading
   test('navigates to education page and loads correctly', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
       .catch(() => {})
 
-    expect(page.url()).toContain('/dashboard/profile/education')
+    expect(page.url()).toContain('/profile/education')
 
     const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent.length).toBeGreaterThan(0)
@@ -20,7 +20,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 2: Page heading and structure
   test('displays "Education" heading and key sections', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -33,7 +33,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 3: Highest education level selector presence
   test('displays highest education level selector', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -51,7 +51,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
     page: Page
   }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -66,7 +66,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 5: Education History section presence
   test('displays "Education History" section', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -80,7 +80,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 6: Add Education button visibility
   test('displays "Add Education" button', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -94,7 +94,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 7: University autocomplete field presence
   test('displays university/institution autocomplete field', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -113,7 +113,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 8: Degree type selector presence
   test('displays degree type selector field', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -130,7 +130,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 9: Field of study input presence
   test('displays field of study input field', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -147,7 +147,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 10: Date range inputs (start and end date)
   test('displays start date and end date input fields', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -164,7 +164,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 11: Description textarea presence
   test('displays description textarea field', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -181,7 +181,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 12: Save button visibility and state
   test('displays "Save" button in disabled state initially', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -195,7 +195,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 13: Right panel "Your Education" section
   test('displays right panel with education display', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -210,7 +210,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 14: Empty state message when no education entries
   test('shows empty state when no education history exists', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -239,7 +239,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
     page: Page
   }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -258,7 +258,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 16: Input fields accept text input
   test('allows typing in field of study input', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -273,7 +273,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 17: University search minimum character requirement
   test('university search requires minimum 3 characters', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -289,7 +289,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 18: Date input format validation (YYYY-MM-DD)
   test('date inputs accept YYYY-MM-DD format', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -309,7 +309,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 19: Description character limit (500 max)
   test('description field has 500 character maximum', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -330,7 +330,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 20: Multiple education entries support
   test('supports adding multiple education entries', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -348,7 +348,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 21: Remove education button for existing entries
   test('displays remove button for education entries', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -365,20 +365,20 @@ test.describe('Admin • /dashboard/profile/education', () => {
     // Authentication handled by storage state (tests/.auth/admin.json)
 
     // Navigate and check for loading state immediately
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     // Loading state might be very brief, so we just verify the page loads
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
       .catch(() => {})
 
-    expect(page.url()).toContain('/dashboard/profile/education')
+    expect(page.url()).toContain('/profile/education')
   })
 
   // Test 23: University catalog search integration
   test('integrates with 10,000+ university catalog', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -393,7 +393,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 24: Form validation for required fields
   test('validates required university/institution field', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -412,7 +412,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
     page: Page
   }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -436,7 +436,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
     page: Page
   }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -462,7 +462,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
     page: Page
   }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -481,7 +481,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 28: Degree type options (10 types)
   test('degree type selector includes all 10 degree types', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -496,7 +496,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 29: Trade/technical field suggestions
   test('supports trade and technical fields of study', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -511,7 +511,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 30: Save button enabled when form is dirty
   test('enables save button when form has unsaved changes', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -532,7 +532,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
     page: Page
   }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -551,7 +551,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
     page: Page
   }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -571,7 +571,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
     page: Page
   }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -592,7 +592,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 34: University country filter (US default)
   test('defaults to United States universities in search', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -608,7 +608,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 35: Keyboard navigation support
   test('supports keyboard navigation in form fields', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -623,7 +623,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 36: Real-time form validation
   test('validates form fields in real-time on change', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -638,7 +638,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
   // Test 37: University search result limit (5 max)
   test('limits university search results to maximum 5', async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -646,7 +646,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
     await page.waitForTimeout(2000)
 
     // Search results are limited to 5 - this is backend/autocomplete behavior
-    expect(page.url()).toContain('/dashboard/profile/education')
+    expect(page.url()).toContain('/profile/education')
   })
 
   // Test 38: Institution name display in right panel
@@ -656,7 +656,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
     page: Page
   }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -679,7 +679,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
     page: Page
   }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
@@ -687,7 +687,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
     await page.waitForTimeout(1500)
 
     // Icons are SVG elements - we check that page has loaded
-    expect(page.url()).toContain('/dashboard/profile/education')
+    expect(page.url()).toContain('/profile/education')
   })
 
   // Test 40: Error state handling for failed data fetch
@@ -697,7 +697,7 @@ test.describe('Admin • /dashboard/profile/education', () => {
     page: Page
   }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
-    await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/education', { waitUntil: 'domcontentloaded' })
 
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })

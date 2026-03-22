@@ -98,7 +98,7 @@ export function CareerRecommendationsWidget() {
     return (
       <DashboardWidget>
         <Stack gap={10} align="center" paddingVertical={40}>
-          <Spinner size="lg" color="primary" />
+          <Spinner variant="ios" size="lg" color="primary" />
           <Text style={{ color: colors.text[theme].secondary }}>Loading...</Text>
         </Stack>
       </DashboardWidget>
@@ -121,7 +121,7 @@ export function CareerRecommendationsWidget() {
           <Button
             size="sm"
             variant="outline"
-            onPress={() => router.push(ROUTES.DASHBOARD.CAREER_EXPLORER.path)}
+            onPress={() => router.push(ROUTES.ASSESSMENTS.CAREER_EXPLORER.path)}
           >
             Explore All
           </Button>
@@ -134,7 +134,7 @@ export function CareerRecommendationsWidget() {
           return (
             <Pressable
               key={rec.onetCode}
-              onPress={() => router.push(ROUTES.DASHBOARD.CAREER_EXPLORER.DETAIL.path.replace(':onetCode', rec.onetCode))}
+              onPress={() => router.push(ROUTES.ASSESSMENTS.CAREER_EXPLORER.DETAIL.path.replace(':onetCode', rec.onetCode))}
             >
               <Row
                 gap={12}

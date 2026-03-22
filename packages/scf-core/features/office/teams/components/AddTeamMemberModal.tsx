@@ -123,7 +123,7 @@ export function AddTeamMemberModal({
           <Text style={{ color: colors.text[theme].secondary }}>Role</Text>
           {isLoadingRoles ? (
             <Row align="center" gap={8}>
-              <Spinner size="sm" />
+              <Spinner variant="ios" size="sm" />
               <Text style={{ color: colors.text[theme].secondary }}>
                 Loading roles...
               </Text>
@@ -156,7 +156,7 @@ export function AddTeamMemberModal({
             disabled={addMemberMutation.isPending}
           >
             {addMemberMutation.isPending ? (
-              <Spinner size="sm" color="gray" />
+              <Spinner variant="ios" size="sm" color="gray" />
             ) : (
               "Add Member"
             )}

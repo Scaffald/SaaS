@@ -248,7 +248,7 @@ export function OfficeTransactionHistory() {
 
       {transactionsQuery.isLoading ? (
         <Stack flex={1} align="center" justify="center" gap={12}>
-          <Spinner size="lg" />
+          <Spinner variant="ios" size="lg" />
           <Text style={{ color: colors.text[theme].secondary }}>
             Loading transactions…
           </Text>
@@ -274,7 +274,7 @@ export function OfficeTransactionHistory() {
                 paddingVertical={24}
                 gap={8}
               >
-                <Spinner size="lg" />
+                <Spinner variant="ios" size="lg" />
                 <Text style={{ color: colors.text[theme].secondary }}>
                   Loading…
                 </Text>

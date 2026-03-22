@@ -42,7 +42,7 @@ export function PortfolioGallery({
     return (
       <DashboardWidget>
         <Stack gap={16} align="center" paddingVertical={32}>
-          <Spinner size="lg" />
+          <Spinner variant="ios" size="lg" />
           <Text style={{ color: colors.text[theme].secondary }}>Loading portfolio...</Text>
         </Stack>
       </DashboardWidget>

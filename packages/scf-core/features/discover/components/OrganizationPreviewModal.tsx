@@ -49,14 +49,14 @@ export function OrganizationPreviewModal({
 
   const handleViewJobs = () => {
     // Navigate to jobs view with organization filter
-    router.push(`${ROUTES.DASHBOARD.DISCOVER.JOBS.path}?org=${organizationId}`)
+    router.push(`${ROUTES.JOBS.path}?org=${organizationId}`)
     onOpenChange(false)
   }
 
   const handleOpenInNewTab = () => {
     if (!organizationId) return
     if (typeof window !== 'undefined') {
-      window.open(`${ROUTES.DASHBOARD.DISCOVER.JOBS.path}?org=${organizationId}`, '_blank')
+      window.open(`${ROUTES.JOBS.path}?org=${organizationId}`, '_blank')
     }
   }
 
@@ -77,7 +77,7 @@ export function OrganizationPreviewModal({
     >
       {isLoading ? (
         <Stack paddingVertical={32} align="center" justify="center">
-          <Spinner size="lg" color="primary" />
+          <Spinner variant="ios" size="lg" color="primary" />
           <Text style={{ color: colors.text[t].secondary, marginTop: 16 }}>
             Loading organization details...
           </Text>

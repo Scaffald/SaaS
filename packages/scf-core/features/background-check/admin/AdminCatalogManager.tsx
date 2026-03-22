@@ -488,7 +488,7 @@ export function AdminCatalogManager() {
 
           {packagesQuery.isLoading ? (
             <Stack gap={8} align="center" paddingVertical={16}>
-              <Spinner size="lg" />
+              <Spinner variant="ios" size="lg" />
               <Text style={{ color: colors.text[t].secondary }}>Loading packages…</Text>
             </Stack>
           ) : packages.length === 0 ? (
@@ -618,7 +618,7 @@ export function AdminCatalogManager() {
 
           {checkTypesQuery.isLoading ? (
             <Stack gap={8} align="center" paddingVertical={16}>
-              <Spinner size="lg" />
+              <Spinner variant="ios" size="lg" />
               <Text style={{ color: colors.text[t].secondary }}>Loading check types…</Text>
             </Stack>
           ) : checkTypes.length === 0 ? (
@@ -787,7 +787,7 @@ export function AdminCatalogManager() {
                   <Stack gap={8}>
                     {checkTypesQuery.isLoading ? (
                       <Row gap={8} align="center">
-                        <Spinner size="sm" />
+                        <Spinner variant="ios" size="sm" />
                         <Text style={{ color: colors.text[t].secondary }}>Loading check types…</Text>
                       </Row>
                     ) : checkTypes.length === 0 ? (

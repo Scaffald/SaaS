@@ -144,7 +144,7 @@ function MetricCard({
 }) {
   const { theme } = useThemeContext()
   return (
-    <Card padding="md" style={{ flex: 1, minWidth: 140, backgroundColor: colors.bg[theme].subtle }}>
+    <Card variant="glass" padding="md" style={{ flex: 1, minWidth: 140, backgroundColor: colors.bg[theme].subtle }}>
       <Stack gap={4}>
         <Row gap={8} align="center">
           <Icon size={16} color={colors.icon[theme].default} />
@@ -246,7 +246,7 @@ export function EEOReportScreen() {
         </Row>
 
         {/* Compliance Status Banner */}
-        <Card padding="md" style={{ backgroundColor: colors.bg[theme].selected }}>
+        <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].selected }}>
           <Row gap={12} align="center">
             <ShieldCheck size={24} color={colors.fg[theme].success} />
             <Stack flex={1}>
@@ -322,7 +322,7 @@ export function EEOReportScreen() {
             <Tabs.Content>
             <Stack gap={16} paddingTop={16}>
               {MOCK_JOB_GROUPS.map((group) => (
-                <Card key={group.jobCode} padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
+                <Card key={group.jobCode} variant="glass" padding="md">
                   <Stack gap={12}>
                     <Row justify="space-between" align="center">
                       <Stack>
@@ -396,7 +396,7 @@ export function EEOReportScreen() {
             <Tabs.Trigger containerStyle={{ flex: 1 }}>Adverse Impact</Tabs.Trigger>
             <Tabs.Content>
             <Stack gap={16} paddingTop={16}>
-              <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+              <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
                 <Row gap={12} align="center">
                   <Info size={16} color={colors.icon[theme].default} />
                   <Text style={{ flex: 1, fontSize: 13, color: colors.text[theme].secondary }}>
@@ -407,7 +407,7 @@ export function EEOReportScreen() {
               </Card>
 
               {/* Gender Analysis */}
-              <Card padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
+              <Card variant="glass" variant="glass" padding="md">
                 <Stack gap={12}>
                   <Text style={{ fontWeight: '600', fontSize: 15, color: colors.text[theme].primary }}>
                     Gender Analysis
@@ -438,7 +438,7 @@ export function EEOReportScreen() {
               </Card>
 
               {/* Veteran Analysis */}
-              <Card padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
+              <Card variant="glass" variant="glass" padding="md">
                 <Stack gap={12}>
                   <Text style={{ fontWeight: '600', fontSize: 15, color: colors.text[theme].primary }}>
                     Veteran Status Analysis
@@ -466,7 +466,7 @@ export function EEOReportScreen() {
             <Tabs.Trigger containerStyle={{ flex: 1 }}>Applicant Flow</Tabs.Trigger>
             <Tabs.Content>
             <Stack gap={16} paddingTop={16}>
-              <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+              <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
                 <Row gap={12} align="center">
                   <PieChart size={16} color={colors.icon[theme].default} />
                   <Text style={{ flex: 1, fontSize: 13, color: colors.text[theme].secondary }}>
@@ -481,7 +481,7 @@ export function EEOReportScreen() {
                 const stageKeys = ['applications', 'interviewed', 'offers', 'hired'] as const
 
                 return (
-                  <Card key={group.jobCode} padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
+                  <Card key={group.jobCode} variant="glass" padding="md">
                     <Stack gap={12}>
                       <Text style={{ fontWeight: '600', fontSize: 15, color: colors.text[theme].primary }}>
                         {group.jobGroup} — Applicant Flow

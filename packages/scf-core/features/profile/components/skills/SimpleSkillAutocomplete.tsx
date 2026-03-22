@@ -148,7 +148,7 @@ export function SimpleSkillAutocomplete({
             <Stack>
               {isLoading || isSearching ? (
                 <Stack padding="md" align="center" justify="center">
-                  <Spinner size="sm" />
+                  <Spinner variant="ios" size="sm" />
                   <Text style={{ color: colors.text[t].secondary, marginTop: 8 }}>
                     Searching...
                   </Text>

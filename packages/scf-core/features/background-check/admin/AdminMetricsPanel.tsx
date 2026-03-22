@@ -16,7 +16,7 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
   if (isLoading) {
     return (
       <Stack gap={12} align="center" paddingVertical={24}>
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
         <Text style={{ color: colors.text[t].secondary }}>Loading metrics…</Text>
       </Stack>
     )

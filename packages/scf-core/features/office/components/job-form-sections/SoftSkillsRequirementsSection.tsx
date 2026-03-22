@@ -90,7 +90,7 @@ export function SoftSkillsRequirementsSection({
       >
         <Text>Soft Skills Requirements</Text>
         <Stack align="center" padding="md">
-          <Spinner size="lg" color="primary" />
+          <Spinner variant="ios" size="lg" color="primary" />
           <Text style={{ marginTop: 8, color: colors.text[theme].secondary }}>
             Loading soft skills catalog...
           </Text>

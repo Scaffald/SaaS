@@ -89,7 +89,7 @@ export const ResultsSidebar = ({ xpAwarded = 5, nextAvailableAt }: ResultsSideba
   return (
     <Stack gap={20}>
         {xpAwarded > 0 && (
-          <Card variant="elevated" padding="lg" radius="xl">
+          <Card variant="glass" padding="lg" radius="xl">
             <Stack gap={12}>
               <Row gap={12} align="center">
                 <Stack

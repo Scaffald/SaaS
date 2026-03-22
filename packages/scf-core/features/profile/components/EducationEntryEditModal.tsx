@@ -557,7 +557,7 @@ export function EducationEntryEditModal({
             >
               {isLoading ? (
                 <Row gap={8} align="center">
-                  <Spinner size="sm" />
+                  <Spinner variant="ios" size="sm" />
                   <Text>Saving...</Text>
                 </Row>
               ) : (

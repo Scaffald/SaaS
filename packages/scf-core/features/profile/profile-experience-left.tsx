@@ -280,7 +280,7 @@ export function ProfileExperienceLeft() {
             gap: 16,
           }}
         >
-          <Spinner size="lg" />
+          <Spinner variant="ios" size="lg" />
           <Text style={{ color: "#414e62" }}>Loading experience data...</Text>
         </Stack>
       </DashboardWidget>
@@ -663,7 +663,7 @@ export function ProfileExperienceLeft() {
               </Row>
             ) : isSyncing ? (
               <Row gap={8} align="center">
-                <Spinner size="sm" />
+                <Spinner variant="ios" size="sm" />
                 <Text>Saving...</Text>
               </Row>
             ) : editingEntryId ? (

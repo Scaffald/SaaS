@@ -200,7 +200,7 @@ export function ComparisonColumn({
       <Separator />
 
       {/* Employment Section */}
-      <Card padding="sm">
+      <Card variant="glass" padding="sm">
         <Stack gap={8}>
           <Text>Employment</Text>
         <ComparisonField
@@ -269,7 +269,7 @@ export function ComparisonColumn({
       </Card>
 
       {/* Compensation Section */}
-      <Card padding="sm">
+      <Card variant="glass" padding="sm">
         <Stack gap={8}>
           <Text>Compensation</Text>
         <ComparisonField
@@ -302,7 +302,7 @@ export function ComparisonColumn({
 
       {/* Capabilities Section */}
       {capabilityResponses.length > 0 && (
-        <Card padding="sm">
+        <Card variant="glass" padding="sm">
           <Stack gap={8}>
           <Text>Capabilities</Text>
           {capabilityResponses.map((response: CapabilityResponseRecord) => (
@@ -336,7 +336,7 @@ export function ComparisonColumn({
         </Card>
       )}
 
-      <Card padding="sm">
+      <Card variant="glass" padding="sm">
         <Stack gap={8}>
         <Text>Other Terms</Text>
         <ComparisonField

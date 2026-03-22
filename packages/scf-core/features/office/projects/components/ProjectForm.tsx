@@ -183,7 +183,7 @@ export function ProjectForm({
     >
       <Text>{mode === "create" ? "Create Project" : "Edit Project"}</Text>
 
-      <Card padding="md">
+      <Card variant="glass" padding="md">
         <Stack gap={16}>
           <Stack gap={8}>
             <Text>Organization</Text>
@@ -378,7 +378,7 @@ export function ProjectForm({
               }
             >
               {isLoading ? (
-                <Spinner />
+                <Spinner variant="ios" />
               ) : mode === "create" ? (
                 "Create Project"
               ) : (

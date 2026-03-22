@@ -58,7 +58,7 @@ export function ProfileResultsPanel({
 
           {isLoading ? (
             <Stack align="center" justify="center" padding={32} gap={12}>
-              <Spinner size="lg" />
+              <Spinner variant="ios" size="lg" />
               <Text style={{ color: '#414e62' }}>Loading...</Text>
             </Stack>
           ) : isEmpty ? (

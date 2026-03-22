@@ -147,7 +147,7 @@ export function QuickActionsWidget({
   }
 
   return (
-    <DashboardWidget gap={12} elevated>
+    <DashboardWidget gap={12}>
       <Text>Quick Actions</Text>
       {renderActions()}
     </DashboardWidget>

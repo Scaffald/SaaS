@@ -133,6 +133,25 @@ app.openapi(getWorkersRoute, async (c) => {
     return c.json({ error: 'Failed to fetch workers', message: error.message }, 500)
   }
 
+  // Track search impressions for analytics (fire-and-forget, don't block response)
+  const user = c.get('user')
+  if (user && workers && workers.length > 0) {
+    const impressionRows = workers.map((w: { id: string }, i: number) => ({
+      user_id: w.id,
+      searcher_id: user.id,
+      impression_type: 'search_result',
+      position: i + 1,
+      occurred_at: new Date().toISOString(),
+    }))
+    supabase
+      .schema('engagement')
+      .from('search_impressions')
+      .insert(impressionRows)
+      .then(({ error: trackError }) => {
+        if (trackError) console.error('Error tracking search impressions:', trackError)
+      })
+  }
+
   return c.json({
     workers: workers || [],
     total: workers?.length || 0,

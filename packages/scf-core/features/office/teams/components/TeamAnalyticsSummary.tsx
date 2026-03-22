@@ -134,7 +134,7 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
 
       {analyticsQuery.isLoading ? (
         <Stack align="center" justify="center" paddingVertical={16} gap={8}>
-          <Spinner size="lg" />
+          <Spinner variant="ios" size="lg" />
           <Text style={{ color: colors.text[theme].secondary }}>
             Loading analytics…
           </Text>

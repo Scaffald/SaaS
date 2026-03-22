@@ -72,7 +72,7 @@ export function SkillsGapWidget() {
     return (
       <DashboardWidget>
         <Stack gap={10} align="center" paddingVertical={40}>
-          <Spinner size="lg" color="primary" />
+          <Spinner variant="ios" size="lg" color="primary" />
         </Stack>
       </DashboardWidget>
     )
@@ -96,7 +96,7 @@ export function SkillsGapWidget() {
           <Button
             size="sm"
             variant="outline"
-            onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
+            onPress={() => router.push(ROUTES.PROFILE.SKILLS.path)}
           >
             My Skills
           </Button>
@@ -135,7 +135,7 @@ export function SkillsGapWidget() {
                 {skill.importance}
               </Text>
             </Stack>
-            <Pressable onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}>
+            <Pressable onPress={() => router.push(ROUTES.PROFILE.SKILLS.path)}>
               <Stack
                 style={{
                   width: 24,

@@ -168,7 +168,7 @@ export function SelfScheduleScreen() {
             </Text>
           </Stack>
           {bookedSlot && (
-            <Card padding="lg" style={{ width: '100%', maxWidth: 400 }}>
+            <Card variant="glass" padding="lg" style={{ width: '100%', maxWidth: 400 }}>
               <Stack gap={12} align="center">
                 <Row gap={8} align="center">
                   <Calendar size={18} color={colors.icon[theme].default} />

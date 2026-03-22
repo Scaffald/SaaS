@@ -35,7 +35,7 @@ export const OrganizationCard = memo(
             pressable
             onPress={() => onSelect(organization.id)}
             padding="md"
-            variant={isSelected ? 'elevated' : 'surface'}
+            variant={isSelected ? 'elevated' : 'glass'}
             style={[isSelected && { borderColor: pal.selectedBorder, borderWidth: 1 }]}
           >
             <Stack gap={isCompact ? 10 : 12}>

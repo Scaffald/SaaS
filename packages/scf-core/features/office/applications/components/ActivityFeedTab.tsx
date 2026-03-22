@@ -164,7 +164,7 @@ export function ActivityFeedTab({ application, isLoading }: ActivityFeedTabProps
   if (isLoading) {
     return (
       <Stack flex={1} align="center" justify="center" gap={12}>
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
         <Text style={{ opacity: 0.7 }}>Loading activity...</Text>
       </Stack>
     )
@@ -174,7 +174,7 @@ export function ActivityFeedTab({ application, isLoading }: ActivityFeedTabProps
 
   if (events.length === 0) {
     return (
-      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+      <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Text style={{ textAlign: 'center', color: colors.text[theme].secondary }}>
           No activity recorded yet.
         </Text>

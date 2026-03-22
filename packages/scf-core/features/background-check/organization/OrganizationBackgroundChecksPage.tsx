@@ -197,7 +197,7 @@ export function OrganizationBackgroundChecksPage() {
   if (isLoadingOrganizations) {
     return (
       <Stack flex={1} align="center" justify="center" gap={8}>
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
         <Text style={{ color: colors.text[t].secondary }}>Loading organizations…</Text>
       </Stack>
     )

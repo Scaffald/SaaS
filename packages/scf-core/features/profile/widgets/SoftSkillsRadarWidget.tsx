@@ -178,7 +178,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
                 variant="outline"
                 size="sm"
                 onPress={() => {
-                  router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path);
+                  router.push(ROUTES.PROFILE.SKILLS.path);
                 }}
               >
                 Edit
@@ -300,7 +300,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
             size="sm"
             iconStart={BarChart3}
             onPress={() =>
-              router.push(ROUTES.DASHBOARD.ASSESSMENTS.path)
+              router.push(ROUTES.ASSESSMENTS.path)
             }
           >
             View Full Analytics

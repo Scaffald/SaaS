@@ -101,7 +101,7 @@ export function WeeklyPulseWidget() {
   const isLoading = statusLoading || availabilityLoading
 
   const navigateToPulse = () => {
-    router.push(ROUTES.DASHBOARD.ASSESSMENTS.LUSCHER.path as never)
+    router.push(ROUTES.ASSESSMENTS.LUSCHER.path as never)
   }
 
   // All 8 Luscher colors for the teaser row
@@ -111,7 +111,7 @@ export function WeeklyPulseWidget() {
     return (
       <DashboardWidget>
         <Stack gap={10} align="center" paddingVertical={40}>
-          <Spinner size="lg" color="primary" />
+          <Spinner variant="ios" size="lg" color="primary" />
         </Stack>
       </DashboardWidget>
     )

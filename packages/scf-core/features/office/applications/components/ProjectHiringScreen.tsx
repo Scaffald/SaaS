@@ -158,7 +158,7 @@ function ProjectCard({ project, onPress }: { project: HiringProject; onPress: ()
 
   return (
     <Pressable onPress={onPress}>
-      <Card padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
+      <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
         <Stack gap={12}>
           <Row justify="space-between" align="center">
             <Stack flex={1} gap={2}>
@@ -273,7 +273,7 @@ function ProjectDetailView({ project }: { project: HiringProject }) {
   return (
     <Stack gap={16}>
       {/* Roles table */}
-      <Card padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
+      <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
         <Stack gap={12}>
           <Row justify="space-between" align="center">
             <Text style={{ fontWeight: '600', fontSize: 15, color: colors.text[theme].primary }}>
@@ -361,7 +361,7 @@ function ProjectDetailView({ project }: { project: HiringProject }) {
 
       {/* Crew list */}
       {project.crew.length > 0 && (
-        <Card padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
+        <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
           <Stack gap={12}>
             <Text style={{ fontWeight: '600', fontSize: 15, color: colors.text[theme].primary }}>
               Assigned Crew ({project.crew.length})
@@ -392,7 +392,7 @@ function ProjectDetailView({ project }: { project: HiringProject }) {
       )}
 
       {/* Project timeline */}
-      <Card padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
+      <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
         <Stack gap={8}>
           <Text style={{ fontWeight: '600', fontSize: 15, color: colors.text[theme].primary }}>
             Project Timeline
@@ -490,7 +490,7 @@ export function ProjectHiringScreen() {
 
         {/* Summary cards */}
         <Row gap={12} style={{ flexWrap: 'wrap' }}>
-          <Card padding="md" style={{ flex: 1, minWidth: 140, backgroundColor: colors.bg[theme].subtle }}>
+          <Card variant="glass" padding="md" style={{ flex: 1, minWidth: 140, backgroundColor: colors.bg[theme].subtle }}>
             <Stack gap={4}>
               <Row gap={6} align="center">
                 <HardHat size={16} color={colors.icon[theme].default} />
@@ -501,7 +501,7 @@ export function ProjectHiringScreen() {
               </Text>
             </Stack>
           </Card>
-          <Card padding="md" style={{ flex: 1, minWidth: 140, backgroundColor: colors.bg[theme].subtle }}>
+          <Card variant="glass" padding="md" style={{ flex: 1, minWidth: 140, backgroundColor: colors.bg[theme].subtle }}>
             <Stack gap={4}>
               <Row gap={6} align="center">
                 <Users size={16} color={colors.icon[theme].default} />
@@ -512,7 +512,7 @@ export function ProjectHiringScreen() {
               </Text>
             </Stack>
           </Card>
-          <Card padding="md" style={{ flex: 1, minWidth: 140, backgroundColor: colors.bg[theme].subtle }}>
+          <Card variant="glass" padding="md" style={{ flex: 1, minWidth: 140, backgroundColor: colors.bg[theme].subtle }}>
             <Stack gap={4}>
               <Row gap={6} align="center">
                 <CheckSquare size={16} color={colors.icon[theme].default} />
@@ -572,7 +572,7 @@ export function ProjectHiringScreen() {
             />
           ))}
           {filteredProjects.length === 0 && (
-            <Card padding="lg" style={{ backgroundColor: colors.bg[theme].subtle }}>
+            <Card variant="glass" padding="lg" style={{ backgroundColor: colors.bg[theme].subtle }}>
               <Stack align="center" gap={8}>
                 <Search size={24} color={colors.icon[theme].default} />
                 <Text style={{ color: colors.text[theme].secondary }}>

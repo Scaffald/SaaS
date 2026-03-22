@@ -80,7 +80,7 @@ export function OrganizationCreditsPanel({
     return (
       <Card bordered padding="md">
         <Stack gap={12} align="center" paddingVertical={16}>
-          <Spinner size="lg" />
+          <Spinner variant="ios" size="lg" />
           <Text style={{ color: colors.text[theme].secondary }}>
             Loading account credits…
           </Text>

@@ -8,7 +8,7 @@ export interface ProfileSectionIntroProps {
 
 /**
  * Intro widget for profile section pages: title + description in a DashboardWidget.
- * Matches the style used on /dashboard/profile/general.
+ * Matches the style used on /profile/general.
  */
 export function ProfileSectionIntro({ title, description }: ProfileSectionIntroProps) {
   const { theme } = useThemeContext();

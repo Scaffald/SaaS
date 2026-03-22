@@ -110,7 +110,7 @@ export const ProjectSelector = memo(function ProjectSelector({
 
       {isLoading && (
         <Row gap={8} align="center">
-          <Spinner size="sm" />
+          <Spinner variant="ios" size="sm" />
           <Text>Loading projects…</Text>
         </Row>
       )}

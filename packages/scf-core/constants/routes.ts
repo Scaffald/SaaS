@@ -129,54 +129,305 @@ const ROUTES_CONFIG = {
 
   /** Public profile by slug - /u/:slug (no auth) */
   PUBLIC_PROFILE: {
-    path: '/u/:slug',
+    path: '/users/:slug',
     titleKey: 'routes.publicProfile',
     protected: false,
     exact: true,
   },
 
-  /** @deprecated Use DASHBOARD.DISCOVER.EMPLOYERS.ORG instead — kept for backward compatibility */
+  WORKERS: {
+    path: '/workers',
+    titleKey: 'routes.dashboard.discover.workers.title',
+    protected: true,
+    exact: false,
+    DETAIL: {
+      path: '/workers/:id',
+      titleKey: 'routes.dashboard.discover.workers.detail',
+      protected: true,
+      exact: true,
+    },
+    MAP: {
+      path: '/workers/map',
+      titleKey: 'routes.dashboard.discover.map',
+      protected: true,
+      exact: true,
+    },
+  },
+
+  EMPLOYERS: {
+    path: '/employers',
+    titleKey: 'routes.dashboard.discover.employers.title',
+    protected: true,
+    exact: false,
+    CREATE: {
+      path: '/employers/create',
+      titleKey: 'routes.dashboard.discover.employers.create',
+      protected: true,
+      exact: true,
+    },
+    DETAIL: {
+      path: '/employers/:id',
+      titleKey: 'routes.dashboard.discover.employers.detail',
+      protected: true,
+      exact: true,
+    },
+    INVITATIONS: {
+      path: '/employers/invitations',
+      titleKey: 'routes.org.invitations',
+      protected: true,
+      exact: true,
+    },
+    ORG: {
+      path: '/employers/org',
+      titleKey: 'routes.org.title',
+      protected: true,
+      exact: false,
+      DETAIL: {
+        path: '/employers/org/:slug',
+        titleKey: 'routes.org.detail',
+        protected: true,
+        exact: false,
+        TEAMS: {
+          path: '/employers/org/:slug/teams',
+          titleKey: 'routes.dashboard.teams.title',
+          protected: true,
+          exact: false,
+          DETAIL: {
+            path: '/employers/org/:slug/teams/:teamId',
+            titleKey: 'routes.dashboard.teams.detail',
+            protected: true,
+            exact: true,
+          },
+        },
+        LOGS: {
+          path: '/employers/org/:slug/logs',
+          titleKey: 'routes.org.logs',
+          protected: true,
+          exact: false,
+          CREATE: {
+            path: '/employers/org/:slug/logs/create',
+            titleKey: 'routes.dashboard.workLogs.create',
+            protected: true,
+            exact: true,
+          },
+          DETAIL: {
+            path: '/employers/org/:slug/logs/:workLogId',
+            titleKey: 'routes.dashboard.workLogs.detail',
+            protected: true,
+            exact: true,
+          },
+        },
+      },
+    },
+    TEAMS: {
+      path: '/employers/teams',
+      titleKey: 'routes.dashboard.teams.title',
+      protected: true,
+      exact: false,
+      INVITATIONS: {
+        path: '/employers/teams/invitations',
+        titleKey: 'routes.dashboard.teams.invitations',
+        protected: true,
+        exact: true,
+      },
+      DETAIL: {
+        path: '/employers/teams/:teamId',
+        titleKey: 'routes.dashboard.teams.detail',
+        protected: true,
+        exact: true,
+      },
+    },
+    LOGS: {
+      path: '/employers/logs',
+      titleKey: 'routes.dashboard.workLogs.title',
+      protected: true,
+      exact: false,
+      CREATE: {
+        path: '/employers/logs/create',
+        titleKey: 'routes.dashboard.workLogs.create',
+        protected: true,
+        exact: true,
+      },
+      DETAIL: {
+        path: '/employers/logs/:workLogId',
+        titleKey: 'routes.dashboard.workLogs.detail',
+        protected: true,
+        exact: true,
+      },
+    },
+    ORGANIZATIONS: {
+      path: '/employers/organizations',
+      titleKey: 'routes.org.title',
+      protected: true,
+      exact: false,
+      CREATE: {
+        path: '/employers/organizations/create',
+        titleKey: 'routes.org.title',
+        protected: true,
+        exact: true,
+      },
+    },
+  },
+
+  PROFILE: {
+    path: '/profile',
+    titleKey: 'routes.dashboard.profile.title',
+    protected: true,
+    exact: false,
+    OVERVIEW: { path: '/profile', titleKey: 'routes.dashboard.profile.overview', protected: true, exact: true },
+    GENERAL: { path: '/profile/general', titleKey: 'routes.dashboard.profile.general', protected: true, exact: true },
+    EMPLOYMENT: { path: '/profile/employment', titleKey: 'routes.dashboard.profile.employment', protected: true, exact: true },
+    SKILLS: { path: '/profile/skills', titleKey: 'routes.dashboard.profile.skills', protected: true, exact: true },
+    CERTIFICATIONS: { path: '/profile/certifications', titleKey: 'routes.dashboard.profile.certifications', protected: true, exact: true },
+    IMPORT_REVIEW: { path: '/profile/import-review', titleKey: 'routes.dashboard.profile.importReview', protected: true, exact: true },
+    EDUCATION: { path: '/profile/education', titleKey: 'routes.dashboard.profile.education', protected: true, exact: true },
+    EXPERIENCE: { path: '/profile/experience', titleKey: 'routes.dashboard.profile.experience', protected: true, exact: true },
+    ID_VERIFICATION: { path: '/profile/verification', titleKey: 'routes.dashboard.profile.verification', protected: true, exact: true },
+    RESUME: {
+      path: '/profile/resume', titleKey: 'routes.dashboard.profile.resume.title', protected: true, exact: false,
+      REVIEW: { path: '/profile/resume/review', titleKey: 'routes.dashboard.profile.resume.review', protected: true, exact: true },
+    },
+    BACKGROUND_CHECK: {
+      path: '/profile/background-check', titleKey: 'routes.dashboard.profile.backgroundCheck.title', protected: true, exact: false,
+      INITIATE: { path: '/profile/background-check/initiate', titleKey: 'routes.dashboard.profile.backgroundCheck.initiate', protected: true, exact: true },
+      DISPUTE: { path: '/profile/background-check/:checkId/dispute', titleKey: 'routes.dashboard.profile.backgroundCheck.dispute', protected: true, exact: true },
+    },
+  },
+
+  ASSESSMENTS: {
+    path: '/assessments',
+    titleKey: 'routes.dashboard.assessments.title',
+    protected: true,
+    exact: false,
+    ANALYTICS: {
+      path: '/assessments',
+      titleKey: 'routes.dashboard.assessments.analytics',
+      protected: true,
+      exact: true,
+    },
+    LUSCHER: {
+      path: '/assessments/pulse',
+      titleKey: 'routes.dashboard.assessments.luscher',
+      protected: true,
+      exact: true,
+    },
+    IPIP: {
+      path: '/assessments/ipip',
+      titleKey: 'routes.dashboard.assessments.ipip.title',
+      protected: true,
+      exact: true,
+      RESULTS: {
+        path: '/assessments/ipip/results',
+        titleKey: 'routes.dashboard.assessments.ipip.results',
+        protected: true,
+        exact: true,
+      },
+      SHARED: {
+        path: '/assessments/ipip/shared/:token',
+        titleKey: 'routes.dashboard.assessments.ipip.shared',
+        protected: true,
+        exact: true,
+      },
+    },
+    RIASEC: {
+      path: '/assessments/riasec',
+      titleKey: 'routes.dashboard.assessments.riasec',
+      protected: true,
+      exact: true,
+    },
+    OCCUPATION: {
+      path: '/assessments/occupation',
+      titleKey: 'routes.dashboard.assessments.occupation',
+      protected: true,
+      exact: true,
+    },
+    CAREER_EXPLORER: {
+      path: '/assessments/career-explorer',
+      titleKey: 'routes.dashboard.careerExplorer.title',
+      protected: true,
+      exact: false,
+      DETAIL: {
+        path: '/assessments/career-explorer/:onetCode',
+        titleKey: 'routes.dashboard.careerExplorer.detail',
+        protected: true,
+        exact: true,
+      },
+    },
+  },
+
+  JOBS: {
+    path: '/jobs',
+    titleKey: 'routes.dashboard.discover.jobs.title',
+    protected: true,
+    exact: false,
+    DETAIL: {
+      path: '/jobs/:id',
+      titleKey: 'routes.dashboard.discover.jobs.detail',
+      protected: true,
+      exact: true,
+    },
+    APPLICATIONS: {
+      path: '/jobs/applications',
+      titleKey: 'routes.dashboard.applications.title',
+      protected: true,
+      exact: false,
+      INQUIRY: {
+        path: '/jobs/applications/:applicationId/inquiry',
+        titleKey: 'routes.dashboard.applications.inquiry',
+        protected: true,
+        exact: true,
+      },
+    },
+    MY_LISTINGS: {
+      path: '/jobs/my-listings',
+      titleKey: 'routes.dashboard.discover.jobs.myListings',
+      protected: true,
+      exact: true,
+    },
+  },
+
+  /** @deprecated Use EMPLOYERS.ORG instead — kept for backward compatibility */
   ORG: {
-    path: '/dashboard/employers/org',
+    path: '/employers/org',
     titleKey: 'routes.org.title',
     protected: true,
     exact: false,
     INVITATIONS: {
-      path: '/dashboard/employers/invitations',
+      path: '/employers/invitations',
       titleKey: 'routes.org.invitations',
       protected: true,
       exact: true,
     },
     DETAIL: {
-      path: '/dashboard/employers/org/:slug',
+      path: '/employers/org/:slug',
       titleKey: 'routes.org.detail',
       protected: true,
       exact: false,
       TEAMS: {
-        path: '/dashboard/employers/org/:slug/teams',
+        path: '/employers/org/:slug/teams',
         titleKey: 'routes.dashboard.teams.title',
         protected: true,
         exact: false,
         DETAIL: {
-          path: '/dashboard/employers/org/:slug/teams/:teamId',
+          path: '/employers/org/:slug/teams/:teamId',
           titleKey: 'routes.dashboard.teams.detail',
           protected: true,
           exact: true,
         },
       },
       LOGS: {
-        path: '/dashboard/employers/org/:slug/logs',
+        path: '/employers/org/:slug/logs',
         titleKey: 'routes.org.logs',
         protected: true,
         exact: false,
         CREATE: {
-          path: '/dashboard/employers/org/:slug/logs/create',
+          path: '/employers/org/:slug/logs/create',
           titleKey: 'routes.dashboard.workLogs.create',
           protected: true,
           exact: true,
         },
         DETAIL: {
-          path: '/dashboard/employers/org/:slug/logs/:workLogId',
+          path: '/employers/org/:slug/logs/:workLogId',
           titleKey: 'routes.dashboard.workLogs.detail',
           protected: true,
           exact: true,
@@ -191,89 +442,89 @@ const ROUTES_CONFIG = {
     protected: true,
     exact: false,
     PROFILE: {
-      path: '/dashboard/profile',
+      path: '/profile',
       titleKey: 'routes.dashboard.profile.title',
       protected: true,
       exact: false,
       OVERVIEW: {
-        path: '/dashboard/profile',
+        path: '/profile',
         titleKey: 'routes.dashboard.profile.overview',
         protected: true,
         exact: true,
       },
       GENERAL: {
-        path: '/dashboard/profile/general',
+        path: '/profile/general',
         titleKey: 'routes.dashboard.profile.general',
         protected: true,
         exact: true,
       },
       EMPLOYMENT: {
-        path: '/dashboard/profile/employment',
+        path: '/profile/employment',
         titleKey: 'routes.dashboard.profile.employment',
         protected: true,
         exact: true,
       },
       SKILLS: {
-        path: '/dashboard/profile/skills',
+        path: '/profile/skills',
         titleKey: 'routes.dashboard.profile.skills',
         protected: true,
         exact: true,
       },
       CERTIFICATIONS: {
-        path: '/dashboard/profile/certifications',
+        path: '/profile/certifications',
         titleKey: 'routes.dashboard.profile.certifications',
         protected: true,
         exact: true,
       },
       IMPORT_REVIEW: {
-        path: '/dashboard/profile/import-review',
+        path: '/profile/import-review',
         titleKey: 'routes.dashboard.profile.importReview',
         protected: true,
         exact: true,
       },
       EDUCATION: {
-        path: '/dashboard/profile/education',
+        path: '/profile/education',
         titleKey: 'routes.dashboard.profile.education',
         protected: true,
         exact: true,
       },
       EXPERIENCE: {
-        path: '/dashboard/profile/experience',
+        path: '/profile/experience',
         titleKey: 'routes.dashboard.profile.experience',
         protected: true,
         exact: true,
       },
       ID_VERIFICATION: {
-        path: '/dashboard/profile/verification',
+        path: '/profile/verification',
         titleKey: 'routes.dashboard.profile.verification',
         protected: true,
         exact: true,
       },
       RESUME: {
-        path: '/dashboard/profile/resume',
+        path: '/profile/resume',
         titleKey: 'routes.dashboard.profile.resume.title',
         protected: true,
         exact: false,
         REVIEW: {
-          path: '/dashboard/profile/resume/review',
+          path: '/profile/resume/review',
           titleKey: 'routes.dashboard.profile.resume.review',
           protected: true,
           exact: true,
         },
       },
       BACKGROUND_CHECK: {
-        path: '/dashboard/profile/background-check',
+        path: '/profile/background-check',
         titleKey: 'routes.dashboard.profile.backgroundCheck.title',
         protected: true,
         exact: false,
         INITIATE: {
-          path: '/dashboard/profile/background-check/initiate',
+          path: '/profile/background-check/initiate',
           titleKey: 'routes.dashboard.profile.backgroundCheck.initiate',
           protected: true,
           exact: true,
         },
         DISPUTE: {
-          path: '/dashboard/profile/background-check/:checkId/dispute',
+          path: '/profile/background-check/:checkId/dispute',
           titleKey: 'routes.dashboard.profile.backgroundCheck.dispute',
           protected: true,
           exact: true,
@@ -323,82 +574,84 @@ const ROUTES_CONFIG = {
       },
     },
     DISCOVER: {
+      /** @deprecated Use ROUTES.WORKERS.MAP instead */
       MAP: {
-        path: '/dashboard/map',
+        path: '/workers/map',
         titleKey: 'routes.dashboard.discover.map',
         protected: true,
         exact: true,
       },
+      /** @deprecated Use ROUTES.WORKERS instead */
       WORKERS: {
-        path: '/dashboard/workers',
+        path: '/workers',
         titleKey: 'routes.dashboard.discover.workers.title',
         protected: true,
         exact: false,
         DETAIL: {
-          path: '/dashboard/workers/:id',
+          path: '/workers/:id',
           titleKey: 'routes.dashboard.discover.workers.detail',
           protected: true,
           exact: true,
         },
       },
       EMPLOYERS: {
-        path: '/dashboard/employers',
+        path: '/employers',
         titleKey: 'routes.dashboard.discover.employers.title',
         protected: true,
         exact: false,
         CREATE: {
-          path: '/dashboard/employers/create',
+          path: '/employers/create',
           titleKey: 'routes.dashboard.discover.employers.create',
           protected: true,
           exact: true,
         },
         DETAIL: {
-          path: '/dashboard/employers/:id',
+          path: '/employers/:id',
           titleKey: 'routes.dashboard.discover.employers.detail',
           protected: true,
           exact: true,
         },
         INVITATIONS: {
-          path: '/dashboard/employers/invitations',
+          path: '/employers/invitations',
           titleKey: 'routes.org.invitations',
           protected: true,
           exact: true,
         },
         ORG: {
-          path: '/dashboard/employers/org',
+          path: '/employers/org',
           titleKey: 'routes.org.title',
           protected: true,
           exact: false,
           DETAIL: {
-            path: '/dashboard/employers/org/:slug',
+            path: '/employers/org/:slug',
             titleKey: 'routes.org.detail',
             protected: true,
             exact: false,
             TEAMS: {
-              path: '/dashboard/employers/org/:slug/teams',
+              path: '/employers/org/:slug/teams',
               titleKey: 'routes.dashboard.teams.title',
               protected: true,
               exact: false,
               DETAIL: {
-                path: '/dashboard/employers/org/:slug/teams/:teamId',
+                path: '/employers/org/:slug/teams/:teamId',
                 titleKey: 'routes.dashboard.teams.detail',
                 protected: true,
                 exact: true,
               },
             },
             LOGS: {
-              path: '/dashboard/employers/org/:slug/logs',
+              path: '/employers/org/:slug/logs',
               titleKey: 'routes.org.logs',
               protected: true,
               exact: false,
               CREATE: {
-                path: '/dashboard/employers/org/:slug/logs/create',
+                path: '/employers/org/:slug/logs/create',
                 titleKey: 'routes.dashboard.workLogs.create',
                 protected: true,
                 exact: true,
               },
               DETAIL: {
-                path: '/dashboard/employers/org/:slug/logs/:workLogId',
+                path: '/employers/org/:slug/logs/:workLogId',
                 titleKey: 'routes.dashboard.workLogs.detail',
                 protected: true,
                 exact: true,
@@ -408,30 +661,30 @@ const ROUTES_CONFIG = {
         },
       },
       JOBS: {
-        path: '/dashboard/jobs',
+        path: '/jobs',
         titleKey: 'routes.dashboard.discover.jobs.title',
         protected: true,
         exact: false,
         DETAIL: {
-          path: '/dashboard/jobs/:id',
+          path: '/jobs/:id',
           titleKey: 'routes.dashboard.discover.jobs.detail',
           protected: true,
           exact: true,
         },
         APPLICATIONS: {
-          path: '/dashboard/jobs/applications',
+          path: '/jobs/applications',
           titleKey: 'routes.dashboard.applications.title',
           protected: true,
           exact: false,
           INQUIRY: {
-            path: '/dashboard/jobs/applications/:applicationId/inquiry',
+            path: '/jobs/applications/:applicationId/inquiry',
             titleKey: 'routes.dashboard.applications.inquiry',
             protected: true,
             exact: true,
           },
         },
         MY_LISTINGS: {
-          path: '/dashboard/jobs/my-listings',
+          path: '/jobs/my-listings',
           titleKey: 'routes.dashboard.discover.jobs.myListings',
           protected: true,
           exact: true,
@@ -439,36 +692,36 @@ const ROUTES_CONFIG = {
       },
     },
     TEAMS: {
-      path: '/dashboard/teams',
+      path: '/employers/teams',
       titleKey: 'routes.dashboard.teams.title',
       protected: true,
       exact: false,
       INVITATIONS: {
-        path: '/dashboard/teams/invitations',
+        path: '/employers/teams/invitations',
         titleKey: 'routes.dashboard.teams.invitations',
         protected: true,
         exact: true,
       },
       DETAIL: {
-        path: '/dashboard/teams/:teamId',
+        path: '/employers/teams/:teamId',
         titleKey: 'routes.dashboard.teams.detail',
         protected: true,
         exact: true,
       },
     },
     WORK_LOGS: {
-      path: '/dashboard/work-logs',
+      path: '/employers/logs',
       titleKey: 'routes.dashboard.workLogs.title',
       protected: true,
       exact: false,
       CREATE: {
-        path: '/dashboard/work-logs/create',
+        path: '/employers/logs/create',
         titleKey: 'routes.dashboard.workLogs.create',
         protected: true,
         exact: true,
       },
       DETAIL: {
-        path: '/dashboard/work-logs/:workLogId',
+        path: '/employers/logs/:workLogId',
         titleKey: 'routes.dashboard.workLogs.detail',
         protected: true,
         exact: true,
@@ -481,60 +734,60 @@ const ROUTES_CONFIG = {
       exact: true,
     },
     ASSESSMENTS: {
-      path: '/dashboard/assessments',
+      path: '/assessments',
       titleKey: 'routes.dashboard.assessments.title',
       protected: true,
       exact: false,
       ANALYTICS: {
-        path: '/dashboard/assessments',
+        path: '/assessments',
         titleKey: 'routes.dashboard.assessments.analytics',
         protected: true,
         exact: true,
       },
       LUSCHER: {
-        path: '/dashboard/assessments/pulse',
+        path: '/assessments/pulse',
         titleKey: 'routes.dashboard.assessments.luscher',
         protected: true,
         exact: true,
       },
       IPIP: {
-        path: '/dashboard/assessments/ipip',
+        path: '/assessments/ipip',
         titleKey: 'routes.dashboard.assessments.ipip.title',
         protected: true,
         exact: true,
         RESULTS: {
-          path: '/dashboard/assessments/ipip/results',
+          path: '/assessments/ipip/results',
           titleKey: 'routes.dashboard.assessments.ipip.results',
           protected: true,
           exact: true,
         },
         SHARED: {
-          path: '/dashboard/assessments/ipip/shared/:token',
+          path: '/assessments/ipip/shared/:token',
           titleKey: 'routes.dashboard.assessments.ipip.shared',
           protected: true,
           exact: true,
         },
       },
       RIASEC: {
-        path: '/dashboard/assessments/riasec',
+        path: '/assessments/riasec',
         titleKey: 'routes.dashboard.assessments.riasec',
         protected: true,
         exact: true,
       },
       OCCUPATION: {
-        path: '/dashboard/assessments/occupation',
+        path: '/assessments/occupation',
         titleKey: 'routes.dashboard.assessments.occupation',
         protected: true,
         exact: true,
       },
     },
     CAREER_EXPLORER: {
-      path: '/dashboard/career-explorer',
+      path: '/assessments/career-explorer',
       titleKey: 'routes.dashboard.careerExplorer.title',
       protected: true,
       exact: false,
       DETAIL: {
-        path: '/dashboard/career-explorer/:onetCode',
+        path: '/assessments/career-explorer/:onetCode',
         titleKey: 'routes.dashboard.careerExplorer.detail',
         protected: true,
         exact: true,
@@ -545,6 +798,36 @@ const ROUTES_CONFIG = {
       titleKey: 'routes.dashboard.news',
       protected: true,
       exact: true,
+    },
+    ANALYTICS: {
+      path: '/dashboard/analytics',
+      titleKey: 'routes.dashboard.analytics.title' as const,
+      protected: true,
+      exact: false,
+      OVERVIEW: {
+        path: '/dashboard/analytics',
+        titleKey: 'routes.dashboard.analytics.overview' as const,
+        protected: true,
+        exact: true,
+      },
+      ENGAGEMENT: {
+        path: '/dashboard/analytics/engagement',
+        titleKey: 'routes.dashboard.analytics.engagement' as const,
+        protected: true,
+        exact: true,
+      },
+      VISIBILITY: {
+        path: '/dashboard/analytics/visibility',
+        titleKey: 'routes.dashboard.analytics.visibility' as const,
+        protected: true,
+        exact: true,
+      },
+      SEARCH: {
+        path: '/dashboard/analytics/search',
+        titleKey: 'routes.dashboard.analytics.search' as const,
+        protected: true,
+        exact: true,
+      },
     },
   },
 
@@ -1084,10 +1367,10 @@ export function isActiveRoute(currentPath: string, route: RouteConfig): boolean 
 
 /**
  * Returns all child routes at a specific tier from a route node
- * @param routeNode - The route node to traverse (e.g., ROUTES.DASHBOARD.PROFILE)
+ * @param routeNode - The route node to traverse (e.g., ROUTES.PROFILE)
  * @returns Array of RouteConfig objects for all child routes
  * @example
- * getRoutesAtLevel(ROUTES.DASHBOARD.PROFILE) // Returns [GENERAL, EMPLOYMENT, SKILLS, ...]
+ * getRoutesAtLevel(ROUTES.PROFILE) // Returns [GENERAL, EMPLOYMENT, SKILLS, ...]
  */
 export function getRoutesAtLevel(routeNode: RouteNode): RouteConfig[] {
   const routes: RouteConfig[] = []
@@ -1126,7 +1409,7 @@ export interface FlattenRoutesOptions {
  * @param options - Optional filter options
  * @returns Flat array of all terminal routes in the subtree
  * @example
- * flattenRoutes(ROUTES.DASHBOARD.PROFILE) // Returns all profile sub-routes
+ * flattenRoutes(ROUTES.PROFILE) // Returns all profile sub-routes
  * flattenRoutes(ROUTES, { hidden: false }) // Returns all non-hidden routes
  */
 export function flattenRoutes(
@@ -1199,7 +1482,7 @@ function findRouteByPath(
  * @param route - Route configuration or path string
  * @returns Parent route configuration or null if top-level
  * @example
- * getParentRoute(ROUTES.DASHBOARD.PROFILE.GENERAL) // Returns ROUTES.DASHBOARD.PROFILE
+ * getParentRoute(ROUTES.PROFILE.GENERAL) // Returns ROUTES.PROFILE
  */
 export function getParentRoute(route: RouteConfig | string): RouteConfig | null {
   const path = typeof route === 'string' ? route : route.path
@@ -1227,7 +1510,7 @@ export function getParentRoute(route: RouteConfig | string): RouteConfig | null 
  * @returns Array of route configurations from root to current route
  * @example
  * getBreadcrumbs('/dashboard/profile/general')
- * // Returns [ROUTES.DASHBOARD, ROUTES.DASHBOARD.PROFILE, ROUTES.DASHBOARD.PROFILE.GENERAL]
+ * // Returns [ROUTES.DASHBOARD, ROUTES.PROFILE, ROUTES.PROFILE.GENERAL]
  */
 export function getBreadcrumbs(currentPath: string): RouteConfig[] {
   const breadcrumbs: RouteConfig[] = []
@@ -1334,10 +1617,10 @@ export const AUTH_ROUTES = ROUTES.AUTH
 // ============================================================================
 
 export const RouteBuilder = {
-  dashboardTeams: () => ROUTES.DASHBOARD.TEAMS.path,
-  dashboardTeamsInvitations: () => ROUTES.DASHBOARD.TEAMS.INVITATIONS.path,
+  dashboardTeams: () => ROUTES.EMPLOYERS.TEAMS.path,
+  dashboardTeamsInvitations: () => ROUTES.EMPLOYERS.TEAMS.INVITATIONS.path,
   dashboardTeamDetail: (teamId: string | number) =>
-    buildPath(ROUTES.DASHBOARD.TEAMS.DETAIL, { teamId: String(teamId) }),
+    buildPath(ROUTES.EMPLOYERS.TEAMS.DETAIL, { teamId: String(teamId) }),
   officeTeamsDetail: (id: string | number) =>
     buildPath(ROUTES.OFFICE.CMS.TEAMS.DETAIL, { id: String(id) }),
   officeTeamsEdit: (id: string | number) =>
@@ -1361,16 +1644,16 @@ export const RouteBuilder = {
   communitiesBookmarks: () => ROUTES.COMMUNITIES.BOOKMARKS.path,
   communitiesReputation: () => ROUTES.COMMUNITIES.REPUTATION.path,
   /** Public profile URL path for a given slug */
-  publicProfile: (slug: string) => `/u/${slug}`,
+  publicProfile: (slug: string) => `/users/${slug}`,
   /** My Organizations */
-  orgIndex: () => ROUTES.ORG.path,
-  orgInvitations: () => ROUTES.ORG.INVITATIONS.path,
-  orgDetail: (slug: string) => buildPath(ROUTES.ORG.DETAIL, { slug }),
-  orgTeams: (slug: string) => buildPath(ROUTES.ORG.DETAIL.TEAMS, { slug }),
+  orgIndex: () => ROUTES.EMPLOYERS.ORG.path,
+  orgInvitations: () => ROUTES.EMPLOYERS.INVITATIONS.path,
+  orgDetail: (slug: string) => buildPath(ROUTES.EMPLOYERS.ORG.DETAIL, { slug }),
+  orgTeams: (slug: string) => buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.TEAMS, { slug }),
   orgTeamDetail: (slug: string, teamId: string | number) =>
-    buildPath(ROUTES.ORG.DETAIL.TEAMS.DETAIL, { slug, teamId: String(teamId) }),
-  orgLogs: (slug: string) => buildPath(ROUTES.ORG.DETAIL.LOGS, { slug }),
-  orgLogsCreate: (slug: string) => buildPath(ROUTES.ORG.DETAIL.LOGS.CREATE, { slug }),
+    buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.TEAMS.DETAIL, { slug, teamId: String(teamId) }),
+  orgLogs: (slug: string) => buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.LOGS, { slug }),
+  orgLogsCreate: (slug: string) => buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.LOGS.CREATE, { slug }),
   orgLogDetail: (slug: string, workLogId: string) =>
-    buildPath(ROUTES.ORG.DETAIL.LOGS.DETAIL, { slug, workLogId }),
+    buildPath(ROUTES.EMPLOYERS.ORG.DETAIL.LOGS.DETAIL, { slug, workLogId }),
 } as const

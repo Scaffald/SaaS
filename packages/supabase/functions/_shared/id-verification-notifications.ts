@@ -7,7 +7,7 @@ import {
   insertNotification,
 } from './notifications/utils.ts'
 
-const DASHBOARD_PATH = '/dashboard/profile/verification'
+const DASHBOARD_PATH = '/profile/verification'
 
 function getEnvValue(key: string): string | undefined {
   if (typeof Deno !== 'undefined' && typeof Deno.env?.get === 'function') {

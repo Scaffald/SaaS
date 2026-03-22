@@ -77,7 +77,7 @@ export function ReviewImpactSummary({
     return (
       <Card elevate bordered>
         <Stack gap={16} padding="lg" align="center" paddingVertical={40}>
-          <Spinner size="lg" color="primary" />
+          <Spinner variant="ios" size="lg" color="primary" />
           <Text style={{ color: colors.text[theme].secondary, fontSize: 14 }}>
             Calculating review impact...
           </Text>

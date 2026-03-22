@@ -134,7 +134,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
         <DashboardWidget>
           {loadingGeneral ? (
             <Stack gap={16} align="center" paddingVertical={32}>
-              <Spinner size="lg" />
+              <Spinner variant="ios" size="lg" />
               <Text style={{ color: colors.text[t].secondary }}>Loading profile...</Text>
             </Stack>
           ) : generalInfo ? (

@@ -71,7 +71,7 @@ export function OfficeCommunityVerificationScreen() {
   if (isLoading) {
     return (
       <Stack align="center" justify="center" style={{ minHeight: 300 }}>
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
         <Text style={{ color: colors.text[t].secondary }}>Loading verification queue...</Text>
       </Stack>
     )
