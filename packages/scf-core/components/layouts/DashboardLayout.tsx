@@ -34,9 +34,9 @@ export const DashboardLayout = ({
 }: DashboardLayoutProps) => {
   const { isDesktop } = useResponsive()
   const { theme } = useThemeContext()
-  const contentPadding = isDesktop ? 'xl' : 'lg'
-  const verticalPadding = isDesktop ? 'xl' : 'md'
-  const columnGap = isDesktop ? 44 : 24
+  const contentPadding = isDesktop ? 32 : 16
+  const verticalPadding = isDesktop ? 32 : 16
+  const columnGap = isDesktop ? 32 : 16
   const hasRightContent = rightContent != null
   const columnTemplate = fullWidth || !hasRightContent ? '1fr' : GOLDEN_RATIO_TEMPLATE
 

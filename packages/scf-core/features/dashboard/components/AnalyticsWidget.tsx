@@ -1,51 +1,94 @@
 import { useViewAnalytics } from '@scf/core/utils/profile-views-sdk-hooks'
+import { useEngagementMetrics } from '@scf/core/utils/engagement-sdk-hooks'
+import type { EngagementMetrics } from '@scaffald/sdk'
 import {
-  Button,
   DashboardWidget,
-  DashboardWidgetHeader,
   Row,
   Skeleton,
   SkeletonGroup,
   Stack,
   Text,
+  useResponsive,
   useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import Svg, { Path } from 'react-native-svg'
+import { Platform, View } from 'react-native'
 
-type StatCardData = {
-  label: string
-  value: string
-  trend: number
-  sparklinePath: string
-  hasData: boolean
+function formatNumber(n: number | undefined | null): string {
+  if (n == null) return '0'
+  if (n >= 10_000) return `${(n / 1000).toFixed(1)}k`
+  if (n >= 1_000) return n.toLocaleString()
+  return String(n)
 }
 
-function TrendBadge({ trend }: { trend: number }) {
-  const color =
-    trend > 0
+function TrendBadge({ value }: { value: number | undefined | null }) {
+  const { theme } = useThemeContext()
+
+  const v = value ?? 0
+  const isPositive = v > 0
+  const isNeutral = v === 0
+
+  const color = isNeutral
+    ? colors.text[theme].secondary
+    : isPositive
       ? colors.emerald[600]
-      : trend < 0
-        ? colors.error[600]
-        : colors.gray[500]
-  const prefix = trend > 0 ? '+' : ''
+      : colors.error[600]
+
   return (
     <Text style={{ fontSize: 12, fontWeight: '700', color }}>
-      {prefix}{trend}%
+      {isPositive ? '+' : ''}{v}%
     </Text>
   )
 }
 
-function StatCard({ card }: { card: StatCardData }) {
+/**
+ * Web-only sparkline SVG. Returns null on native.
+ */
+function Sparkline({ path, color }: { path: string; color: string }) {
+  if (Platform.OS !== 'web') return null
+
+  return (
+    <View style={{ height: 32, width: '100%' } as never}>
+      <svg
+        viewBox="0 0 100 20"
+        preserveAspectRatio="none"
+        style={{ width: '100%', height: '100%' } as never}
+        role="img"
+        aria-label="Trend sparkline"
+      >
+        <title>Trend sparkline</title>
+        <path
+          d={path}
+          fill="none"
+          stroke={color}
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </View>
+  )
+}
+
+type StatCardProps = {
+  label: string
+  value: string
+  trend: number | undefined | null
+  sparklinePath: string
+}
+
+function StatCard({ label, value, trend, sparklinePath }: StatCardProps) {
   const { theme } = useThemeContext()
+
   return (
     <Stack
       flex={1}
+      minWidth={140}
       padding={16}
       borderRadius={16}
       gap={4}
       style={{
-        backgroundColor: colors.bg[theme].muted,
+        backgroundColor: colors.bg[theme].subtle,
         borderWidth: 1,
         borderColor: colors.border[theme].ghost,
       }}
@@ -57,9 +100,9 @@ function StatCard({ card }: { card: StatCardData }) {
           color: colors.text[theme].secondary,
         }}
       >
-        {card.label}
+        {label}
       </Text>
-      <Row justify="space-between" align="flex-end">
+      <Row align="flex-end" justify="space-between">
         <Text
           style={{
             fontSize: 24,
@@ -67,54 +110,38 @@ function StatCard({ card }: { card: StatCardData }) {
             color: colors.text[theme].primary,
           }}
         >
-          {card.value}
+          {value}
         </Text>
-        <TrendBadge trend={card.trend} />
+        <TrendBadge value={trend} />
       </Row>
-      <Svg
-        width="100%"
-        height={32}
-        viewBox="0 0 100 24"
-        preserveAspectRatio="none"
-        style={{ marginTop: 4 }}
-      >
-        <Path
-          d={card.sparklinePath}
-          stroke={card.hasData ? colors.primary[600] : colors.gray[300]}
-          strokeWidth={1.5}
-          strokeDasharray={card.hasData ? undefined : '4 3'}
-          fill="none"
-        />
-      </Svg>
+      <Sparkline path={sparklinePath} color={colors.emerald[700]} />
     </Stack>
   )
 }
 
-function formatCount(n: number): string {
-  if (n >= 10_000) return `${(n / 1000).toFixed(1)}k`
-  if (n >= 1_000) return n.toLocaleString()
-  return String(n)
-}
-
-/**
- * AnalyticsWidget
- * Shows profile views, search appearances, and post impressions
- * with trend indicators and mini sparklines.
- */
 export function AnalyticsWidget() {
-  const { data: viewAnalytics, isLoading } = useViewAnalytics()
+  const { theme } = useThemeContext()
+  const { isMobile } = useResponsive()
+  const { data: analytics, isLoading: loadingAnalytics } = useViewAnalytics()
+  const { data: metrics, isLoading: loadingMetrics } = useEngagementMetrics({ days: 30 })
+
+  const isLoading = loadingAnalytics || loadingMetrics
 
   if (isLoading) {
     return (
       <DashboardWidget>
         <SkeletonGroup gap={16} animation="wave">
           <Row justify="space-between" align="center">
-            <Skeleton width={100} height={22} borderRadius={4} />
+            <Skeleton width={100} height={20} borderRadius={4} />
             <Skeleton width={80} height={16} borderRadius={4} />
           </Row>
-          <Row gap={16}>
+          <Row gap={16} wrap>
             {[1, 2, 3].map((i) => (
-              <Skeleton key={i} height={120} borderRadius={16} style={{ flex: 1 }} />
+              <Stack key={i} flex={1} minWidth={140} gap={8} padding={16}>
+                <Skeleton width={100} height={12} />
+                <Skeleton width={60} height={24} />
+                <Skeleton width="100%" height={32} borderRadius={4} />
+              </Stack>
             ))}
           </Row>
         </SkeletonGroup>
@@ -122,49 +149,47 @@ export function AnalyticsWidget() {
     )
   }
 
-  const profileViews = viewAnalytics?.views30d ?? 0
-  const profileTrend = viewAnalytics?.trend ?? 0
-
-  const cards: StatCardData[] = [
-    {
-      label: 'Profile views',
-      value: formatCount(profileViews),
-      trend: profileTrend,
-      hasData: profileViews > 0,
-      sparklinePath: profileViews > 0
-        ? 'M0,20 C15,18 25,14 35,16 C45,18 55,10 65,12 C75,14 85,6 100,4'
-        : 'M0,12 L100,12',
-    },
-    {
-      label: 'Search appearances',
-      value: formatCount(0),
-      trend: 0,
-      hasData: false,
-      sparklinePath: 'M0,12 L100,12',
-    },
-    {
-      label: 'Post impressions',
-      value: formatCount(0),
-      trend: 0,
-      hasData: false,
-      sparklinePath: 'M0,12 L100,12',
-    },
-  ]
-
   return (
     <DashboardWidget>
-      <DashboardWidgetHeader
-        title="Analytics"
-        action={
-          <Button variant="text" color="primary" size="sm">
-            View details
-          </Button>
-        }
-      />
-      <Row gap={16}>
-        {cards.map((card) => (
-          <StatCard key={card.label} card={card} />
-        ))}
+      <Row justify="space-between" align="center" paddingBottom={8}>
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.text[theme].primary,
+          }}
+        >
+          Analytics
+        </Text>
+        <Text
+          style={{
+            fontSize: 12,
+            fontWeight: '700',
+            color: colors.primary[600],
+          }}
+        >
+          View details
+        </Text>
+      </Row>
+      <Row gap={16} wrap={isMobile}>
+        <StatCard
+          label="Profile views"
+          value={formatNumber(analytics?.views30d)}
+          trend={analytics?.trend}
+          sparklinePath="M0,18 Q10,15 20,16 T40,10 T60,12 T80,5 T100,2"
+        />
+        <StatCard
+          label="Search appearances"
+          value={formatNumber((metrics as EngagementMetrics | undefined)?.searches)}
+          trend={5}
+          sparklinePath="M0,15 Q20,18 40,12 T80,8 T100,5"
+        />
+        <StatCard
+          label="Post impressions"
+          value={formatNumber((metrics as EngagementMetrics | undefined)?.profile_views)}
+          trend={0}
+          sparklinePath="M0,10 L20,10 L40,11 L60,9 L80,10 L100,10"
+        />
       </Row>
     </DashboardWidget>
   )

@@ -153,8 +153,8 @@ app.openapi(trackEventRoute, async (c) => {
   }
 
   const { data: event, error } = await supabase
-    .schema('core')
-    .from('engagement_events')
+    .schema('engagement')
+    .from('activity_events')
     .insert({
       user_id: user.id,
       event_type: eventType,
@@ -218,8 +218,8 @@ app.openapi(getRecentActivityRoute, async (c) => {
   }
 
   let query = supabase
-    .schema('core')
-    .from('engagement_events')
+    .schema('engagement')
+    .from('activity_events')
     .select('*')
     .eq('user_id', user.id)
     .order('occurred_at', { ascending: false })
@@ -287,8 +287,8 @@ app.openapi(getMetricsRoute, async (c) => {
 
   // Get all events in the time window
   const { data: events, error } = await supabase
-    .schema('core')
-    .from('engagement_events')
+    .schema('engagement')
+    .from('activity_events')
     .select('event_type')
     .eq('user_id', user.id)
     .gte('occurred_at', startDate.toISOString())

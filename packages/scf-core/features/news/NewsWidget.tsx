@@ -474,7 +474,7 @@ export function NewsWidget({
       {status === 'success' && (
         <Stack>
           {displayNews.map((item: EnrichedNewsItem, index: number) => (
-            <Stack key={item.id}>
+            <Stack key={`${item.id}-${index}`}>
               {index > 0 && (
                 <Stack style={{ height: 1, backgroundColor: dividerColor }} />
               )}
