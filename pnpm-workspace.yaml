@@ -8,6 +8,8 @@ packages:
   - packages/scaffald-ui
   - packages/scaffald-ui/docs-site
   - packages/scaffald-sdk
+  - packages/scaffald-sdk/docs-site
+  - packages/docs-shared
   - packages/scaffald-cli
   - packages/insurance
   - packages/compliance

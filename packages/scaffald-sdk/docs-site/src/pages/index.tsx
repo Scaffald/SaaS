@@ -1,60 +1,22 @@
 import React from 'react';
-import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
+import { HomepageHeader, Feature } from '@scaffald/docs-shared';
 import styles from './index.module.css';
 
-function HomepageHeader() {
+export default function Home(): React.ReactElement {
   const {siteConfig} = useDocusaurusContext();
-  return (
-    <header className={clsx('hero hero--primary', styles.heroBanner)}>
-      <div className="container">
-        <h1 className="hero__title">{siteConfig.title}</h1>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Link
-            className="button button--secondary button--lg"
-            to="/docs/intro">
-            Get Started →
-          </Link>
-          <Link
-            className="button button--outline button--secondary button--lg"
-            to="/docs/examples"
-            style={{marginLeft: '1rem'}}>
-            View Examples
-          </Link>
-        </div>
-        <div className={styles.npmInstall}>
-          <code>npm install @scaffald/sdk</code>
-        </div>
-      </div>
-    </header>
-  );
-}
 
-function Feature({title, description, icon}) {
-  return (
-    <div className={clsx('col col--4', styles.feature)}>
-      <div className="text--center">
-        <div className={styles.featureIcon}>{icon}</div>
-      </div>
-      <div className="text--center padding-horiz--md">
-        <h3>{title}</h3>
-        <p>{description}</p>
-      </div>
-    </div>
-  );
-}
-
-export default function Home(): JSX.Element {
-  const {siteConfig} = useDocusaurusContext();
-  
   return (
     <Layout
       title={`${siteConfig.title} - Official JavaScript/TypeScript SDK`}
       description="Official JavaScript/TypeScript SDK for the Scaffald API. Type-safe, React-ready, and production-tested.">
-      <HomepageHeader />
+      <HomepageHeader
+        primaryCTA={{ label: 'Get Started →', href: '/docs/intro' }}
+        secondaryCTA={{ label: 'View Examples', href: '/docs/examples' }}
+        npmCommand="npm install @scaffald/sdk"
+      />
       <main>
         <section className={styles.features}>
           <div className="container">
@@ -111,28 +73,16 @@ await client.applications.create({
           <div className="container">
             <div className="row">
               <div className="col col--3">
-                <div className={styles.stat}>
-                  <h3>34</h3>
-                  <p>API Resources</p>
-                </div>
+                <div className={styles.stat}><h3>34</h3><p>API Resources</p></div>
               </div>
               <div className="col col--3">
-                <div className={styles.stat}>
-                  <h3>731+</h3>
-                  <p>Tests Passing</p>
-                </div>
+                <div className={styles.stat}><h3>731+</h3><p>Tests Passing</p></div>
               </div>
               <div className="col col--3">
-                <div className={styles.stat}>
-                  <h3>99%</h3>
-                  <p>Code Coverage</p>
-                </div>
+                <div className={styles.stat}><h3>99%</h3><p>Code Coverage</p></div>
               </div>
               <div className="col col--3">
-                <div className={styles.stat}>
-                  <h3>349 KB</h3>
-                  <p>Bundle Size</p>
-                </div>
+                <div className={styles.stat}><h3>349 KB</h3><p>Bundle Size</p></div>
               </div>
             </div>
           </div>
@@ -144,9 +94,7 @@ await client.applications.create({
               <h2>Ready to Get Started?</h2>
               <p>Build powerful recruiting applications with Scaffald SDK</p>
               <div className={styles.buttons}>
-                <Link
-                  className="button button--primary button--lg"
-                  to="/docs/intro">
+                <Link className="button button--primary button--lg" to="/docs/intro">
                   Read the Docs
                 </Link>
                 <Link

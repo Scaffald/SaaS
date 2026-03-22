@@ -1,8 +1,8 @@
 import type React from 'react';
-import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
+import { HomepageHeader, Feature } from '@scaffald/docs-shared';
 import styles from './index.module.css';
 import * as ScaffaldUI from '@scaffald/ui';
 
@@ -29,34 +29,6 @@ const {
   Separator,
 } = ScaffaldUI;
 
-function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
-  return (
-    <header className={clsx('hero hero--primary', styles.heroBanner)}>
-      <div className="container">
-        <h1 className="hero__title">{siteConfig.title}</h1>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Link
-            className="button button--secondary button--lg"
-            to="/docs/guide/quick-start">
-            Get Started
-          </Link>
-          <Link
-            className="button button--outline button--secondary button--lg"
-            to="/docs/components/overview"
-            style={{marginLeft: '1rem'}}>
-            Browse Components
-          </Link>
-        </div>
-        <div className={styles.npmInstall}>
-          <code>npm install @scaffald/ui react react-native</code>
-        </div>
-      </div>
-    </header>
-  );
-}
-
 function LiveComponentShowcase() {
   return (
     <section className={styles.componentShowcase}>
@@ -68,7 +40,6 @@ function LiveComponentShowcase() {
 
         <ThemeProvider initialTheme="light">
           <div className="row" style={{gap: '2rem', marginBottom: '2rem'}}>
-            {/* Buttons & Inputs */}
             <div className="col col--6">
               <div className={styles.categoryCard}>
                 <h4>Buttons</h4>
@@ -95,7 +66,6 @@ function LiveComponentShowcase() {
               </div>
             </div>
 
-            {/* Form Controls */}
             <div className="col col--6">
               <div className={styles.categoryCard}>
                 <h4>Form Controls</h4>
@@ -114,7 +84,6 @@ function LiveComponentShowcase() {
           </div>
 
           <div className="row" style={{gap: '2rem', marginBottom: '2rem'}}>
-            {/* Feedback */}
             <div className="col col--6">
               <div className={styles.categoryCard}>
                 <h4>Feedback</h4>
@@ -133,7 +102,6 @@ function LiveComponentShowcase() {
               </div>
             </div>
 
-            {/* Data Display */}
             <div className="col col--6">
               <div className={styles.categoryCard}>
                 <h4>Data Display</h4>
@@ -160,7 +128,6 @@ function LiveComponentShowcase() {
           </div>
 
           <div className="row" style={{gap: '2rem'}}>
-            {/* Cards */}
             <div className="col col--6">
               <div className={styles.categoryCard}>
                 <h4>Cards</h4>
@@ -184,7 +151,6 @@ function LiveComponentShowcase() {
               </div>
             </div>
 
-            {/* Accordion */}
             <div className="col col--6">
               <div className={styles.categoryCard}>
                 <h4>Accordion</h4>
@@ -220,20 +186,6 @@ function LiveComponentShowcase() {
   );
 }
 
-function Feature({title, description, icon}) {
-  return (
-    <div className={clsx('col col--4', styles.feature)}>
-      <div className="text--center">
-        <div className={styles.featureIcon}>{icon}</div>
-      </div>
-      <div className="text--center padding-horiz--md">
-        <h3>{title}</h3>
-        <p>{description}</p>
-      </div>
-    </div>
-  );
-}
-
 export default function Home(): React.ReactElement {
   const {siteConfig} = useDocusaurusContext();
 
@@ -241,7 +193,11 @@ export default function Home(): React.ReactElement {
     <Layout
       title={`${siteConfig.title} - Production-Ready UI for Expo`}
       description="Best-in-class UI framework for Expo (React Native + Web). 90+ production-ready components with comprehensive theming and TypeScript support.">
-      <HomepageHeader />
+      <HomepageHeader
+        primaryCTA={{ label: 'Get Started', href: '/docs/guide/quick-start' }}
+        secondaryCTA={{ label: 'Browse Components', href: '/docs/components/overview' }}
+        npmCommand="npm install @scaffald/ui react react-native"
+      />
       <main>
         <section className={styles.features}>
           <div className="container">
@@ -306,28 +262,16 @@ function LoginForm() {
           <div className="container">
             <div className="row">
               <div className="col col--3">
-                <div className={styles.stat}>
-                  <h3>90+</h3>
-                  <p>Components</p>
-                </div>
+                <div className={styles.stat}><h3>90+</h3><p>Components</p></div>
               </div>
               <div className="col col--3">
-                <div className={styles.stat}>
-                  <h3>1,196</h3>
-                  <p>Active Imports</p>
-                </div>
+                <div className={styles.stat}><h3>1,196</h3><p>Active Imports</p></div>
               </div>
               <div className="col col--3">
-                <div className={styles.stat}>
-                  <h3>100%</h3>
-                  <p>TypeScript</p>
-                </div>
+                <div className={styles.stat}><h3>100%</h3><p>TypeScript</p></div>
               </div>
               <div className="col col--3">
-                <div className={styles.stat}>
-                  <h3>1.7 MB</h3>
-                  <p>Package Size</p>
-                </div>
+                <div className={styles.stat}><h3>1.7 MB</h3><p>Package Size</p></div>
               </div>
             </div>
           </div>
@@ -339,9 +283,7 @@ function LoginForm() {
               <h2>Ready to Build?</h2>
               <p>Create beautiful mobile and web apps with Scaffald UI</p>
               <div className={styles.buttons}>
-                <Link
-                  className="button button--primary button--lg"
-                  to="/docs/guide/installation">
+                <Link className="button button--primary button--lg" to="/docs/guide/installation">
                   Installation Guide
                 </Link>
                 <Link

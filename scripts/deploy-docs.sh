@@ -61,17 +61,10 @@ deploy_site() {
     echo -e "${BLUE}🚀 Deploying $NAME docs → $URL${NC}"
     echo -e "${BLUE}═══════════════════════════════════════${NC}"
 
-    # Install deps if needed
-    if [ ! -d "$DOCS_DIR/node_modules" ]; then
-        echo "Installing dependencies..."
-        cd "$DOCS_DIR" && npm install
-        cd "$PROJECT_ROOT"
-    fi
-
     # Build
     echo -e "${BLUE}Building...${NC}"
     rm -rf "$BUILD_DIR"
-    cd "$DOCS_DIR" && npm run build
+    cd "$DOCS_DIR" && pnpm run build
     cd "$PROJECT_ROOT"
 
     if [ ! -f "$BUILD_DIR/index.html" ]; then
@@ -116,11 +109,9 @@ deploy_site() {
 
 cd "$PROJECT_ROOT"
 
-# Install monorepo deps if needed
-if [ ! -d "$PROJECT_ROOT/node_modules" ]; then
-    echo "Installing monorepo dependencies..."
-    pnpm install --no-frozen-lockfile
-fi
+# Install monorepo deps (also links workspace packages like docs-shared)
+echo -e "${YELLOW}Installing monorepo dependencies...${NC}"
+pnpm install --no-frozen-lockfile
 
 if [[ "$TARGET" == "ui" || "$TARGET" == "all" ]]; then
     deploy_site "UI" "$UI_DOCS_DIR" "$UI_BUCKET" "$UI_DIST" "$UI_URL"

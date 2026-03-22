@@ -1,0 +1,152 @@
+.heroBanner {
+  padding: 6rem 0 4rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg,
+    rgba(251, 97, 42, 0.05) 0%,
+    rgba(251, 240, 236, 0.5) 50%,
+    rgba(251, 97, 42, 0.05) 100%
+  );
+}
+
+[data-theme='dark'] .heroBanner {
+  background: linear-gradient(135deg,
+    rgba(255, 122, 79, 0.08) 0%,
+    rgba(255, 122, 79, 0.03) 50%,
+    rgba(255, 122, 79, 0.08) 100%
+  );
+}
+
+.heroBanner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(251, 97, 42, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(200, 182, 161, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.heroBanner .container {
+  position: relative;
+  z-index: 1;
+}
+
+.heroBanner h1 {
+  font-family: 'Roboto', sans-serif;
+  font-size: 4rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #fb612a 0%, #d54e21 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+[data-theme='dark'] .heroBanner h1 {
+  background: linear-gradient(135deg, #ff7a4f 0%, #ffc4a8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.heroBanner p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.5rem;
+  color: #6b6055;
+  max-width: 640px;
+  margin: 0 auto 2rem;
+  line-height: 1.5;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+[data-theme='dark'] .heroBanner p {
+  color: #c8b6a1;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.buttons .button {
+  min-width: 180px;
+}
+
+.npmInstall {
+  margin-top: 3rem;
+  padding: 0;
+  display: inline-block;
+}
+
+.npmInstall code {
+  background: rgba(247, 242, 235, 0.8);
+  border: 2px solid rgba(251, 97, 42, 0.3);
+  border-radius: 0.5rem;
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #d54e21;
+  display: inline-block;
+  font-family: var(--ifm-font-family-monospace);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  user-select: all;
+}
+
+.npmInstall code:hover {
+  border-color: #fb612a;
+  background: rgba(251, 97, 42, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(251, 97, 42, 0.2);
+}
+
+[data-theme='dark'] .npmInstall code {
+  background: rgba(255, 122, 79, 0.08);
+  border-color: rgba(255, 122, 79, 0.4);
+  color: #ffc4a8;
+}
+
+[data-theme='dark'] .npmInstall code:hover {
+  border-color: #ff7a4f;
+  background: rgba(255, 122, 79, 0.15);
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.heroBanner .container > * {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.heroBanner h1 { animation-delay: 0.1s; }
+.heroBanner p  { animation-delay: 0.2s; }
+.buttons       { animation-delay: 0.3s; }
+.npmInstall    { animation-delay: 0.4s; }
+
+@media (max-width: 996px) {
+  .heroBanner { padding: 4rem 0 3rem; }
+  .heroBanner h1 { font-size: 2.5rem; }
+  .heroBanner p  { font-size: 1.25rem; }
+}
+
+@media (max-width: 768px) {
+  .heroBanner { padding: 3rem 0 2rem; }
+  .heroBanner h1 { font-size: 2rem; }
+  .heroBanner p  { font-size: 1.125rem; }
+  .npmInstall code { font-size: 1rem; padding: 0.875rem 1.5rem; }
+  .buttons { flex-direction: column; align-items: center; }
+  .buttons .button { width: 100%; max-width: 300px; }
+}
