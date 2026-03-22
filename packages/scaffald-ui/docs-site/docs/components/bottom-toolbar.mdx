@@ -1,0 +1,115 @@
+---
+sidebar_position: 61
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# BottomToolbar
+
+iOS 26 glassmorphic floating bottom toolbar. Supports button groups, search bars, and page control variants inside a translucent glass pill.
+
+## Import
+
+```tsx
+import { BottomToolbar, ToolbarButton } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack style={{height: 80, position: 'relative'}}>
+    <BottomToolbar
+      variant="buttons"
+      buttons={[
+        { key: 'reply', icon: <Text style={{fontSize: 20}}>{'\\u21A9'}</Text>, onPress: () => {} },
+        { key: 'folder', icon: <Text style={{fontSize: 20}}>{'\\u{1F4C1}'}</Text>, onPress: () => {} },
+        { key: 'trash', icon: <Text style={{fontSize: 20}}>{'\\u{1F5D1}'}</Text>, onPress: () => {} },
+        { key: 'compose', icon: <Text style={{fontSize: 20}}>{'\\u270E'}</Text>, onPress: () => {} },
+      ]}
+    />
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/BottomToolbar/BottomToolbar.types.ts) for the complete props API.
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `variant` | `'buttons' \| 'search' \| 'pageControl'` | `'buttons'` | Content variant |
+| `buttons` | `ToolbarButtonConfig[]` | — | Buttons for "buttons" variant |
+| `searchBar` | `ToolbarSearchBarProps` | — | Search bar for "search" variant |
+| `pageControl` | `{ count, current, onChange? }` | — | Page control config |
+| `leadingButtons` | `ToolbarButtonConfig[]` | — | Buttons before page control |
+| `trailingButtons` | `ToolbarButtonConfig[]` | — | Buttons after page control |
+| `children` | `ReactNode` | — | Custom children override |
+
+### Common Props
+
+All BottomToolbar components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Variants
+
+### Buttons
+
+A row of icon buttons in the glass pill.
+
+### Search
+
+Full-width search bar with optional trailing buttons.
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack style={{height: 80, position: 'relative'}}>
+    <BottomToolbar
+      variant="search"
+      searchBar={{ placeholder: 'Search', value: '' }}
+    />
+  </Stack>
+</ThemeProvider>`} />
+
+### Page Control
+
+Leading buttons, page indicator dots, and trailing buttons.
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack style={{height: 80, position: 'relative'}}>
+    <BottomToolbar
+      variant="pageControl"
+      leadingButtons={[
+        { key: 'back', icon: <Text style={{fontSize: 20}}>{'\\u25C0'}</Text>, onPress: () => {} },
+      ]}
+      pageControl={{ count: 5, current: 2 }}
+      trailingButtons={[
+        { key: 'fwd', icon: <Text style={{fontSize: 20}}>{'\\u25B6'}</Text>, onPress: () => {} },
+      ]}
+    />
+  </Stack>
+</ThemeProvider>`} />
+
+## Accessibility
+
+- Buttons are focusable with accessible labels
+- Glass pill does not interfere with screen reader navigation
+- Page control dots announce current page
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Glass: `rgba(245, 245, 245, 0.6)` light / `rgba(44, 44, 46, 0.7)` dark
+- Blur: `backdrop-filter: blur(50px)` on web
+- Shadows: `shadows.iosSheet` / `boxShadows.iosSheet`
+- Border radius: `borderRadius.sheet` (34px)
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+- [NavigationBar](./navigation-bar) — Top navigation bar companion
+- [TabBar](./tab-bar) — Tab-based bottom navigation
+- [ToolbarButton](./toolbar-button) — Button used in toolbars
+- [PageControl](./page-control) — Page indicator dots
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

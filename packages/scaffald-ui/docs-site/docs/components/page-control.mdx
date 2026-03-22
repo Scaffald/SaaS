@@ -1,0 +1,69 @@
+---
+sidebar_position: 66
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# PageControl
+
+iOS 26 page indicator dots. Displays the current page in a paginated view with active/inactive dot states. Supports a glass pill variant and dot size compression for 6+ pages.
+
+## Import
+
+```tsx
+import { PageControl } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={16}>
+    <PageControl totalPages={5} currentPage={2} />
+    <PageControl totalPages={5} currentPage={2} variant="pill" />
+    <PageControl totalPages={7} currentPage={3} variant="pill" />
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/PageControl/PageControl.types.ts) for the complete props API.
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `totalPages` | `number` | required | Total number of pages |
+| `currentPage` | `number` | required | Active page (0-indexed) |
+| `onPageChange` | `(page: number) => void` | — | Page change handler |
+| `variant` | `'dots' \| 'pill'` | `'dots'` | Visual variant |
+
+## Variants
+
+### Dots (default)
+
+Simple row of dots with opacity differentiation.
+
+### Pill
+
+Wraps dots in a glassmorphic capsule with backdrop blur. For 6+ pages, edge dots progressively shrink (size compression) to maintain compact layout.
+
+## Accessibility
+
+- Each dot announces its page number and total
+- Active dot has `selected` accessibility state
+- Dots are pressable when `onPageChange` is provided
+
+## Design Tokens
+
+- Dot color: `colors.labels[theme].primary`
+- Active opacity: 1.0, inactive: 0.3
+- Pill background: glassmorphic with `backdrop-filter: blur(30px)`
+- Dot sizes: 8px (standard), 6px (small), 4px (tiny)
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+- [BottomToolbar](./bottom-toolbar) — Uses PageControl in page control variant
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

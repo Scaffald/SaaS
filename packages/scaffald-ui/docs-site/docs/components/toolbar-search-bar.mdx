@@ -1,0 +1,64 @@
+---
+sidebar_position: 64
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# ToolbarSearchBar
+
+iOS 26 glassmorphic search input with search icon, optional microphone, and clear button. Used inside toolbars and search accessories.
+
+## Import
+
+```tsx
+import { ToolbarSearchBar } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={16} style={{maxWidth: 400}}>
+    <ToolbarSearchBar placeholder="Search" value="" />
+    <ToolbarSearchBar placeholder="Search" value="Search Term" />
+    <ToolbarSearchBar placeholder="Filter" value="" showMicrophone={false} />
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/ToolbarSearchBar/ToolbarSearchBar.types.ts) for the complete props API.
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `string` | `''` | Current search text |
+| `onChangeText` | `(text: string) => void` | — | Text change handler |
+| `placeholder` | `string` | `'Search'` | Placeholder text |
+| `onFocus` | `() => void` | — | Focus handler |
+| `onBlur` | `() => void` | — | Blur handler |
+| `onCancel` | `() => void` | — | Cancel handler |
+| `showMicrophone` | `boolean` | `true` | Show mic icon |
+| `showClear` | `boolean` | `true` | Show clear button when text present |
+
+## Accessibility
+
+- `accessibilityRole="search"` on the text input
+- Clear button has "Clear search" accessible label
+- Placeholder text serves as accessible label
+
+## Design Tokens
+
+- Glass background: `rgba(235, 235, 237, 0.7)` light / `rgba(58, 58, 60, 0.7)` dark
+- Blur: `backdrop-filter: blur(30px)` on web
+- Placeholder: `colors.labelsVibrant[theme].secondary`
+- Text: `colors.labels[theme].primary`
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+- [SearchAccessory](./search-accessory) — Search bar with scope filter
+- [BottomToolbar](./bottom-toolbar) — Uses search bar in search variant
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

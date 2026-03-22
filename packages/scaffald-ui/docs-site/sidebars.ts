@@ -144,6 +144,20 @@ const sidebars: SidebarsConfig = {
         'components/trade-controls',
       ],
     },
+    {
+      type: 'category',
+      label: 'iOS 26 Toolbar System',
+      collapsed: false,
+      items: [
+        'components/navigation-bar',
+        'components/bottom-toolbar',
+        'components/toolbar-button',
+        'components/toolbar-button-group',
+        'components/toolbar-search-bar',
+        'components/search-accessory',
+        'components/page-control',
+      ],
+    },
   ],
 };
 

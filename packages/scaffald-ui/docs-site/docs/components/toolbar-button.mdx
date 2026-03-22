@@ -1,0 +1,70 @@
+---
+sidebar_position: 62
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# ToolbarButton
+
+iOS 26 toolbar action button. Atomic building block for NavigationBar and BottomToolbar. Supports icon, text, filled, and back-chevron variants.
+
+## Import
+
+```tsx
+import { ToolbarButton } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Row gap={16} style={{alignItems: 'center'}}>
+    <ToolbarButton icon={<Text style={{fontSize: 22}}>{'\\u2295'}</Text>} onPress={() => {}} accessibilityLabel="Add" />
+    <ToolbarButton variant="text" label="Edit" onPress={() => {}} />
+    <ToolbarButton variant="filled" label="Done" onPress={() => {}} />
+    <ToolbarButton variant="back" label="Back" onPress={() => {}} />
+  </Row>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/ToolbarButton/ToolbarButton.types.ts) for the complete props API.
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `icon` | `ReactNode` | — | Icon element to render |
+| `label` | `string` | — | Text label |
+| `variant` | `'icon' \| 'text' \| 'filled' \| 'back'` | `'icon'` | Button style |
+| `onPress` | `() => void` | — | Press handler |
+| `disabled` | `boolean` | `false` | Whether disabled |
+| `tintColor` | `string` | — | Override accent color |
+
+## Variants
+
+- **icon**: 44x44 touch target with centered icon
+- **text**: Text label with accent color
+- **filled**: Blue pill background with white text
+- **back**: Chevron + text label for back navigation
+
+## Accessibility
+
+- `accessibilityRole="button"` on all variants
+- Disabled state communicated via `accessibilityState`
+- Back button defaults to "Back" accessible label
+
+## Design Tokens
+
+- Tint: `colors.accents[theme].blue`
+- Icons: `colors.labelsVibrant[theme].primary`
+- Filled background: accent blue with white text
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+- [NavigationBar](./navigation-bar) — Uses ToolbarButton for actions
+- [BottomToolbar](./bottom-toolbar) — Uses ToolbarButton for actions
+- [ToolbarButtonGroup](./toolbar-button-group) — Groups multiple buttons
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

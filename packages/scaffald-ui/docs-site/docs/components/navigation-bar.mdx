@@ -1,0 +1,142 @@
+---
+sidebar_position: 60
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# NavigationBar
+
+iOS 26 top navigation bar with standard and large title modes. Supports back button, leading/trailing action buttons, inline segmented controls (iPad), and search accessories.
+
+## Import
+
+```tsx
+import { NavigationBar, ToolbarButton } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={24} style={{maxWidth: 440}}>
+    <NavigationBar
+      title="Messages"
+      subtitle="3 unread"
+      backButton={{ label: 'Back', onPress: () => {} }}
+      trailingItems={
+        <ToolbarButton variant="filled" label="Done" onPress={() => {}} />
+      }
+    />
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/NavigationBar/NavigationBar.types.ts) for the complete props API.
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | required | Navigation bar title |
+| `subtitle` | `string` | — | Optional subtitle below title |
+| `showSubtitle` | `boolean` | `true` | Whether to show the subtitle |
+| `titleSize` | `'standard' \| 'large'` | `'standard'` | Title display size |
+| `backButton` | `{ label?, onPress, tintColor? }` | — | Back button configuration |
+| `leadingItems` | `ReactNode` | — | Items on the left side |
+| `trailingItems` | `ReactNode` | — | Items on the right side |
+| `segmentedControl` | `SegmentedControlProps` | — | iPad: inline segmented control |
+| `searchAccessory` | `SearchAccessoryProps` | — | iPad: search row below nav |
+| `glass` | `boolean` | `false` | Apply glassmorphic background |
+
+### Common Props
+
+All NavigationBar components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+
+## Variants
+
+### Standard Title
+
+Centered title with optional subtitle, back button, and trailing actions.
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <NavigationBar
+    title="Settings"
+    backButton={{ label: 'Back', onPress: () => {} }}
+    trailingItems={
+      <ToolbarButton icon={<Text style={{fontSize: 20}}>{'\\u270E'}</Text>} onPress={() => {}} />
+    }
+  />
+</ThemeProvider>`} />
+
+### Large Title
+
+34pt bold title displayed below the nav row, matching iOS large title behavior.
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <NavigationBar
+    title="Settings"
+    titleSize="large"
+    trailingItems={
+      <ToolbarButton variant="text" label="Edit" onPress={() => {}} />
+    }
+  />
+</ThemeProvider>`} />
+
+### iPad with Segmented Control
+
+Replaces center title with a segmented control for tabbed navigation.
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <NavigationBar
+    title="Library"
+    backButton={{ onPress: () => {} }}
+    segmentedControl={{
+      segments: ['Songs', 'Albums', 'Artists'],
+      selectedIndex: 0,
+      onSelectionChange: () => {},
+    }}
+  />
+</ThemeProvider>`} />
+
+### Glass Background
+
+Applies a translucent glassmorphic background with backdrop blur.
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack style={{backgroundColor: '#8B5CF6', padding: 0}}>
+    <NavigationBar
+      title="Photos"
+      glass
+      backButton={{ label: 'Albums', onPress: () => {} }}
+      trailingItems={
+        <ToolbarButton variant="text" label="Select" onPress={() => {}} />
+      }
+    />
+  </Stack>
+</ThemeProvider>`} />
+
+## Accessibility
+
+- Back button has accessible label
+- Title and subtitle are readable by screen readers
+- Trailing actions are focusable and announce their role
+- Segmented control provides tab semantics
+
+## Design Tokens
+
+This component uses the following design tokens:
+
+- Colors: `colors.labels[theme].primary`, `colors.labels[theme].secondary`
+- Accents: `colors.accents[theme].blue` for tint colors
+- Typography: 17pt semibold (standard), 34pt bold (large title)
+- Glass: backdrop-filter blur for glassmorphic variant
+
+See [Design Tokens](../tokens/overview) for more information.
+
+## Related Components
+
+- [BottomToolbar](./bottom-toolbar) — Bottom toolbar companion
+- [ToolbarButton](./toolbar-button) — Button used in toolbars
+- [SearchAccessory](./search-accessory) — Search bar for iPad nav bars
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

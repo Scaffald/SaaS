@@ -1,0 +1,60 @@
+---
+sidebar_position: 65
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# SearchAccessory
+
+Combines a ToolbarSearchBar with an optional SegmentedControl for scope filtering. Designed for iPad navigation bar layouts.
+
+## Import
+
+```tsx
+import { SearchAccessory } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={24} style={{maxWidth: 600}}>
+    <SearchAccessory
+      placeholder="Search"
+      scopes={[
+        { label: 'All', value: 'all' },
+        { label: 'Photos', value: 'photos' },
+      ]}
+      selectedScope="all"
+    />
+    <SearchAccessory placeholder="Search Messages" />
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/SearchAccessory/SearchAccessory.types.ts) for the complete props API.
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `string` | — | Current search text |
+| `onChangeText` | `(text: string) => void` | — | Text change handler |
+| `placeholder` | `string` | `'Search'` | Placeholder text |
+| `scopes` | `{ label, value }[]` | — | Scope filter tabs |
+| `selectedScope` | `string` | — | Currently selected scope |
+| `onScopeChange` | `(scope: string) => void` | — | Scope change handler |
+| `showMicrophone` | `boolean` | `true` | Show mic icon |
+
+## Accessibility
+
+- Search input and segmented control are independently focusable
+- Scope tabs provide tab semantics
+
+## Related Components
+
+- [ToolbarSearchBar](./toolbar-search-bar) — Standalone search bar
+- [SegmentedControl](./segmented-control) — Scope filter tabs
+- [NavigationBar](./navigation-bar) — Uses search accessory in iPad mode
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.

@@ -1,0 +1,54 @@
+---
+sidebar_position: 63
+---
+
+import LivePreview from '@site/src/components/LivePreview';
+
+# ToolbarButtonGroup
+
+Groups multiple ToolbarButtons in a row, optionally wrapped in a glass pill container. Supports 1-7 buttons.
+
+## Import
+
+```tsx
+import { ToolbarButtonGroup } from '@scaffald/ui';
+```
+
+## Basic Usage
+
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={16}>
+    <ToolbarButtonGroup
+      glass
+      buttons={[
+        { key: 'a', icon: <Text style={{fontSize: 20}}>{'\\u21A9'}</Text>, onPress: () => {} },
+        { key: 'b', icon: <Text style={{fontSize: 20}}>{'\\u{1F4C1}'}</Text>, onPress: () => {} },
+        { key: 'c', icon: <Text style={{fontSize: 20}}>{'\\u{1F5D1}'}</Text>, onPress: () => {} },
+      ]}
+    />
+  </Stack>
+</ThemeProvider>`} />
+
+## Props
+
+See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/ToolbarButtonGroup/ToolbarButtonGroup.types.ts) for the complete props API.
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `buttons` | `ToolbarButtonConfig[]` | required | Button configurations (1-7) |
+| `position` | `'top' \| 'bottom'` | `'bottom'` | Affects sizing |
+| `glass` | `boolean` | `false` | Wrap in glass pill container |
+
+## Accessibility
+
+- Each button is individually focusable
+- Group does not add its own semantic role
+
+## Related Components
+
+- [ToolbarButton](./toolbar-button) — Individual toolbar button
+- [NavigationBar](./navigation-bar) — Uses groups for leading/trailing items
+
+## Changelog
+
+See [GitHub Releases](https://github.com/Scaffald/ui/releases) for version history.
