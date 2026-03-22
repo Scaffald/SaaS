@@ -418,6 +418,12 @@ export const colors = {
       emphasis: '#e3dfd9', // gray[200] warm - Used for background elements requiring more visual emphasis
       active: '#cdc8c0', // gray[300] warm - Used for background elements currently active or hovered over
       selected: '#e8f6f9', // primary[50] teal - Used for background elements currently selected
+      /** Glass card background — semi-transparent white for backdrop-filter blur effect (web) */
+      glass: 'rgba(255, 255, 255, 0.7)',
+      /** Glass card fallback — higher opacity for native platforms without backdrop-filter */
+      glassFallback: 'rgba(249, 248, 246, 0.88)', // gray[50] warm @ 88%
+      /** Radial gradient background for dashboard surfaces (web CSS string) */
+      gradient: 'radial-gradient(circle at top right, #f1efeb, #e3dfd9)', // gray[100] → gray[200]
       /** Drawer/sidebar nav active item background (comp blue-grey). Use with white text and icon. */
       drawerNavActive: '#5a778a',
       overlay: 'rgba(0, 0, 0, 0.5)', // Black 50 opacity - Used for overlay elements (modals, dialogs)
@@ -430,6 +436,12 @@ export const colors = {
       emphasis: '#3c352c', // gray[700] warm - Used for background elements requiring more visual emphasis
       active: '#504940', // gray[600] warm - Used for background elements currently active or hovered over
       selected: '#0a3540', // dark teal tint - Used for background elements currently selected
+      /** Glass card background — semi-transparent dark for backdrop-filter blur effect (web) */
+      glass: 'rgba(30, 25, 20, 0.7)', // gray[800] warm @ 70%
+      /** Glass card fallback — higher opacity for native platforms without backdrop-filter */
+      glassFallback: 'rgba(30, 25, 20, 0.88)', // gray[800] warm @ 88%
+      /** Radial gradient background for dashboard surfaces (web CSS string) */
+      gradient: 'radial-gradient(circle at top right, #2f2820, #16110d)', // gray[750] → gray[900]
       /** Drawer/sidebar nav active item background. Use with white text and icon. */
       drawerNavActive: '#5a778a',
       overlay: 'rgba(0, 0, 0, 0.5)', // Black 50 opacity - Used for overlay elements
@@ -459,6 +471,8 @@ export const colors = {
       warning: '#9a6614', // warning[500] ochre - Used for borders indicating a warning state
       success: '#3a7d4c', // success[500] moss - Used for borders indicating a success state
       info: '#2e72a0', // info[500] slate - Used for borders indicating an informational state
+      /** Ghost border — barely visible outline for glass cards and subtle separation */
+      ghost: 'rgba(176, 179, 173, 0.2)', // comp ghost border (outline-variant @ 20%)
     },
     dark: {
       default: '#6e6760', // gray[500] warm - Primary border color for all general UI elements (3.36:1)
@@ -473,6 +487,8 @@ export const colors = {
       warning: '#9a6614', // warning[500] ochre - Used for borders indicating a warning state
       success: '#3a7d4c', // success[500] moss - Used for borders indicating a success state
       info: '#2e72a0', // info[500] slate - Used for borders indicating an informational state
+      /** Ghost border — barely visible outline for glass cards and subtle separation */
+      ghost: 'rgba(110, 103, 96, 0.2)', // gray[500] warm @ 20%
     },
     // Backward compatibility aliases (reference light mode)
     // Note: 'light' alias removed - use border.light.subtle instead (conflicts with border.light object)

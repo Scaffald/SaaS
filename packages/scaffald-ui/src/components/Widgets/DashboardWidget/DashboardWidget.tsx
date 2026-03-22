@@ -30,10 +30,10 @@ export function DashboardWidget({
   const { isDesktop } = useResponsive()
   return (
     <Card
-      variant={elevated ? 'elevated' : 'surface'}
+      variant={elevated ? 'elevated' : 'glass'}
       padding="2xl"
-      radius="2xl"
-      elevation={elevated ? 'soft' : 'soft'}
+      radius="xl"
+      elevation={elevated ? 'soft' : 'glass'}
       style={style}
       testID={testID}
     >

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { ScrollView } from 'react-native'
+import { Platform, ScrollView } from 'react-native'
 import { Grid, Row, Stack, useThemeContext, useResponsive } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { Breadcrumb, type BreadcrumbItemData } from '@scaffald/ui'
@@ -54,11 +54,18 @@ export const DashboardLayout = ({
 
   // Guard against undefined/invalid theme (e.g. before ThemeProvider resolves or when theme is 'system')
   const resolvedTheme = theme === 'dark' ? 'dark' : 'light'
-  const bgColor = colors.bg[resolvedTheme].emphasis
+
+  // Web: radial gradient for depth behind glass cards. Native: flat warm surface.
+  const bgStyle = Platform.OS === 'web'
+    ? {
+        flex: 1,
+        backgroundImage: colors.bg[resolvedTheme].gradient,
+      } as Record<string, unknown>
+    : { flex: 1, backgroundColor: colors.bg[resolvedTheme].emphasis }
 
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: bgColor }}
+      style={bgStyle}
       showsVerticalScrollIndicator={false}
     >
       <Stack gap={20} paddingTop={verticalPadding} paddingBottom={verticalPadding}>

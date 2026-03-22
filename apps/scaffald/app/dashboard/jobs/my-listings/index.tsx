@@ -3,6 +3,7 @@ import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { useOrganizations } from '@scf/core/utils/useOrganizations'
 import { useOfficeListJobs } from '@scf/core/utils/jobs-sdk-hooks'
 import { Button, DashboardWidget, Text, Stack, Spinner, Row, useThemeContext } from '@scaffald/ui'
+import { Pressable } from 'react-native'
 import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
@@ -71,46 +72,44 @@ export default function MyListingsRoute() {
         My Listings ({jobs.length})
       </Text>
       {jobs.map((job) => (
-        <DashboardWidget
-          key={job.id}
-          gap={8}
-          onPress={() => router.push(`/dashboard/jobs/${job.id}`)}
-        >
-          <Row justify="space-between" align="center">
-            <Text
-              style={{
-                color: colors.text[resolvedTheme].primary,
-                fontWeight: '600',
-                flex: 1,
-              }}
-            >
-              {job.title}
+        <Pressable key={job.id} onPress={() => router.push(`/dashboard/jobs/${job.id}`)}>
+          <DashboardWidget gap={8}>
+            <Row justify="space-between" align="center">
+              <Text
+                style={{
+                  color: colors.text[resolvedTheme].primary,
+                  fontWeight: '600',
+                  flex: 1,
+                }}
+              >
+                {job.title}
+              </Text>
+              <Text
+                style={{
+                  color: STATUS_COLORS[job.status] ?? colors.text[resolvedTheme].secondary,
+                  fontSize: 12,
+                  fontWeight: '600',
+                  textTransform: 'uppercase',
+                }}
+              >
+                {job.status}
+              </Text>
+            </Row>
+            {job.organization?.name && (
+              <Text style={{ color: colors.text[resolvedTheme].secondary, fontSize: 13 }}>
+                {job.organization.name}
+              </Text>
+            )}
+            {job.location && (
+              <Text style={{ color: colors.text[resolvedTheme].tertiary, fontSize: 13 }}>
+                {job.location}
+              </Text>
+            )}
+            <Text style={{ color: colors.text[resolvedTheme].tertiary, fontSize: 12 }}>
+              Posted {new Date(job.created_at).toLocaleDateString()}
             </Text>
-            <Text
-              style={{
-                color: STATUS_COLORS[job.status] ?? colors.text[resolvedTheme].secondary,
-                fontSize: 12,
-                fontWeight: '600',
-                textTransform: 'uppercase',
-              }}
-            >
-              {job.status}
-            </Text>
-          </Row>
-          {job.organization?.name && (
-            <Text style={{ color: colors.text[resolvedTheme].secondary, fontSize: 13 }}>
-              {job.organization.name}
-            </Text>
-          )}
-          {job.location && (
-            <Text style={{ color: colors.text[resolvedTheme].tertiary, fontSize: 13 }}>
-              {job.location}
-            </Text>
-          )}
-          <Text style={{ color: colors.text[resolvedTheme].tertiary, fontSize: 12 }}>
-            Posted {new Date(job.created_at).toLocaleDateString()}
-          </Text>
-        </DashboardWidget>
+          </DashboardWidget>
+        </Pressable>
       ))}
     </Stack>
   )

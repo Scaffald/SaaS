@@ -155,6 +155,16 @@ export const shadows = {
     elevation: 3,
   },
 
+  // Glass card shadow - native fallback for platforms without backdrop-filter
+  // Subtle, diffused shadow that pairs with semi-transparent backgrounds
+  glass: {
+    shadowColor: shadowColor,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 2,
+  },
+
   // Legacy aliases for backward compatibility
   sm: {
     shadowColor,
@@ -234,6 +244,9 @@ export const boxShadows = {
 
   // Soft wide-diffused shadow - wide diffusion for floating card feel
   soft: '0 2px 24px -4px rgba(0, 0, 0, 0.04)',
+
+  // Glass card shadow - subtle diffused shadow for glass card variant
+  glass: '0 1px 12px -2px rgba(22, 17, 13, 0.06)',
 
   // Legacy aliases for backward compatibility
   sm: '0 1px 3px 0 rgba(22, 17, 13, 0.078)', // Matches shadow-s

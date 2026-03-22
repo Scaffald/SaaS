@@ -26,7 +26,7 @@ export type CardRadius = "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
 /**
  * Card elevation level (for elevated variant)
  */
-export type CardElevation = "sm" | "md" | "lg" | "soft";
+export type CardElevation = "sm" | "md" | "lg" | "soft" | "glass";
 
 /**
  * Card component props

@@ -83,6 +83,7 @@ const SHADOW_MAP: Record<CardElevation, ShadowStyle> = {
   md: shadows.s as ShadowStyle,
   lg: shadows.m as ShadowStyle,
   soft: shadows.soft as ShadowStyle,
+  glass: shadows.glass as ShadowStyle,
 };
 
 const BOX_SHADOW_MAP: Record<CardElevation, string> = {
@@ -90,6 +91,7 @@ const BOX_SHADOW_MAP: Record<CardElevation, string> = {
   md: boxShadows.s,
   lg: boxShadows.m,
   soft: boxShadows.soft,
+  glass: boxShadows.glass,
 };
 
 // ============================================================================
@@ -148,18 +150,19 @@ export function getCardStyles(
     case "glass":
       container = {
         ...baseStyle,
-        backgroundColor: theme === 'dark'
-          ? 'rgba(30, 25, 20, 0.85)'   // gray[800] warm @ 85%
-          : 'rgba(251, 248, 243, 0.82)', // neutral[50] warm @ 82%
         borderWidth: 1,
-        borderColor: theme === 'dark'
-          ? 'rgba(80, 73, 64, 0.3)'     // gray[600] warm @ 30%
-          : 'rgba(237, 221, 201, 0.55)', // neutral[300]-ish @ 55%
+        borderColor: colors.border[theme].ghost,
       };
-      // Web-only: add backdrop blur
       if (Platform.OS === "web") {
-        (container as Record<string, unknown>).backdropFilter = 'blur(14px)';
-        (container as Record<string, unknown>).WebkitBackdropFilter = 'blur(14px)';
+        // Web: semi-transparent bg + backdrop blur for frosted glass effect
+        container.backgroundColor = colors.bg[theme].glass;
+        (container as Record<string, unknown>).backdropFilter = 'blur(20px)';
+        (container as Record<string, unknown>).WebkitBackdropFilter = 'blur(20px)';
+        (container as Record<string, unknown>).boxShadow = BOX_SHADOW_MAP.glass;
+      } else {
+        // Native: higher-opacity fallback + subtle shadow (no backdrop-filter support)
+        container.backgroundColor = colors.bg[theme].glassFallback;
+        Object.assign(container, SHADOW_MAP.glass);
       }
       break;
     default:
