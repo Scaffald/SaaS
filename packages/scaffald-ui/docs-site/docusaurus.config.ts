@@ -114,7 +114,9 @@ const config: Config = {
       title: 'Scaffald UI',
       logo: {
         alt: 'Scaffald UI Logo',
-        src: 'img/logo.svg',
+        src: 'img/scaffald-logo.svg',
+        width: 18,
+        height: 18,
       },
       items: [
         {
