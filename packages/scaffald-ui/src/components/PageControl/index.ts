@@ -1,2 +1,2 @@
 export { PageControl } from './PageControl'
-export type { PageControlProps } from './PageControl.types'
+export type { PageControlProps, PageControlVariant } from './PageControl.types'

@@ -5,6 +5,8 @@
 
 import type { StyleProp, ViewStyle } from 'react-native'
 
+export type PageControlVariant = 'dots' | 'pill'
+
 export interface PageControlProps {
   /** Total number of pages */
   totalPages: number
@@ -12,6 +14,8 @@ export interface PageControlProps {
   currentPage: number
   /** Called when a dot is pressed */
   onPageChange?: (page: number) => void
+  /** Visual variant — "dots" (default) or "pill" (glass capsule background) */
+  variant?: PageControlVariant
   /** Additional styles */
   style?: StyleProp<ViewStyle>
   /** Test ID */

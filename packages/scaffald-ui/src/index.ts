@@ -301,7 +301,26 @@ export { SegmentedControl } from "./components/SegmentedControl";
 export type { SegmentedControlProps } from "./components/SegmentedControl";
 
 export { PageControl } from "./components/PageControl";
-export type { PageControlProps } from "./components/PageControl";
+export type { PageControlProps, PageControlVariant } from "./components/PageControl";
+
+// iOS 26 Toolbar System
+export { ToolbarButton } from "./components/ToolbarButton";
+export type { ToolbarButtonProps, ToolbarButtonConfig, ToolbarButtonVariant } from "./components/ToolbarButton";
+
+export { ToolbarButtonGroup } from "./components/ToolbarButtonGroup";
+export type { ToolbarButtonGroupProps, ToolbarButtonGroupPosition } from "./components/ToolbarButtonGroup";
+
+export { ToolbarSearchBar } from "./components/ToolbarSearchBar";
+export type { ToolbarSearchBarProps } from "./components/ToolbarSearchBar";
+
+export { SearchAccessory } from "./components/SearchAccessory";
+export type { SearchAccessoryProps, SearchAccessoryScope } from "./components/SearchAccessory";
+
+export { NavigationBar } from "./components/NavigationBar";
+export type { NavigationBarProps, NavigationBarTitleSize, NavigationBarBackButton } from "./components/NavigationBar";
+
+export { BottomToolbar } from "./components/BottomToolbar";
+export type { BottomToolbarProps, BottomToolbarVariant, BottomToolbarPageControl } from "./components/BottomToolbar";
 
 export { DiscoverCard } from "./components/DiscoverCard";
 export type { DiscoverCardProps, DiscoverCardVariant } from "./components/DiscoverCard";
