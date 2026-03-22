@@ -546,6 +546,36 @@ const ROUTES_CONFIG = {
       protected: true,
       exact: true,
     },
+    ANALYTICS: {
+      path: '/dashboard/analytics',
+      titleKey: 'routes.dashboard.analytics.title' as const,
+      protected: true,
+      exact: false,
+      OVERVIEW: {
+        path: '/dashboard/analytics',
+        titleKey: 'routes.dashboard.analytics.overview' as const,
+        protected: true,
+        exact: true,
+      },
+      ENGAGEMENT: {
+        path: '/dashboard/analytics/engagement',
+        titleKey: 'routes.dashboard.analytics.engagement' as const,
+        protected: true,
+        exact: true,
+      },
+      VISIBILITY: {
+        path: '/dashboard/analytics/visibility',
+        titleKey: 'routes.dashboard.analytics.visibility' as const,
+        protected: true,
+        exact: true,
+      },
+      SEARCH: {
+        path: '/dashboard/analytics/search',
+        titleKey: 'routes.dashboard.analytics.search' as const,
+        protected: true,
+        exact: true,
+      },
+    },
   },
 
   COMMUNITIES: {

@@ -113,6 +113,10 @@ export default function Layout() {
         <Drawer.Screen name="work-logs/index" options={{ title: 'Work Logs' }} />
         <Drawer.Screen name="work-logs/create" options={{ title: 'New Work Log' }} />
         <Drawer.Screen name="work-logs/[workLogId]/index" options={{ title: 'Work Log Detail' }} />
+        <Drawer.Screen name="analytics/index" options={{ title: 'Analytics' }} />
+        <Drawer.Screen name="analytics/engagement" options={{ title: 'Engagement' }} />
+        <Drawer.Screen name="analytics/visibility" options={{ title: 'Visibility' }} />
+        <Drawer.Screen name="analytics/search" options={{ title: 'Search Analytics' }} />
       </DrawerLayout>
     </ErrorBoundary>
   )
