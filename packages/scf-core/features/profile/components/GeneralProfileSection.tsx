@@ -202,7 +202,7 @@ export function GeneralProfileSection({
   if (isLoadingProfile) {
     return (
       <Stack gap={16} padding="md" flex={1} justify="center" align="center">
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
         <Text>Loading profile...</Text>
       </Stack>
     );
@@ -439,7 +439,7 @@ export function GeneralProfileSection({
             >
               {isLoading ? (
                 <Row gap={8} align="center">
-                  <Spinner size="sm" />
+                  <Spinner variant="ios" size="sm" />
                   <Text>Saving...</Text>
                 </Row>
               ) : (

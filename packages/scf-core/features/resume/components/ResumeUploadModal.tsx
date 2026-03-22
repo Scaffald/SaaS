@@ -453,7 +453,7 @@ export function ResumeUploadModal({
               ) : status === "error" ? (
                 <AlertCircle color={colors.fg[theme].error} size={18} />
               ) : (
-                <Spinner size="sm" color="primary" />
+                <Spinner variant="ios" size="sm" color="primary" />
               )}
               <Text color={status === "error" ? colors.error[600] : colors.text[theme].primary}>
                 {progressLabel ?? "Processing resume..."}

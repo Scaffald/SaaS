@@ -111,7 +111,7 @@ export function WeeklyPulseWidget() {
     return (
       <DashboardWidget>
         <Stack gap={10} align="center" paddingVertical={40}>
-          <Spinner size="lg" color="primary" />
+          <Spinner variant="ios" size="lg" color="primary" />
         </Stack>
       </DashboardWidget>
     )

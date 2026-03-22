@@ -105,7 +105,7 @@ export function UserProfileReviews({
           justify="center"
           minHeight={400}
         >
-          <Spinner size="lg" />
+          <Spinner variant="ios" size="lg" />
           <Text style={{ color: colors.text[t].secondary }}>Loading reviews...</Text>
         </Stack>
       </Card>

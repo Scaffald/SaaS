@@ -121,7 +121,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
   if (isLoading) {
     return (
       <Stack gap={16} align="center" justify="center" padding="md">
-        <Spinner size="lg" color="primary" />
+        <Spinner variant="ios" size="lg" color="primary" />
         <Text style={{ color: colors.text[t].secondary }}>Loading version history...</Text>
       </Stack>
     )

@@ -323,7 +323,7 @@ export function SkillSuggestionsModal({
           {/* Loading */}
           {isLoading && onetCode && (
             <Stack align="center" justify="center" style={{ paddingVertical: 40 }}>
-              <Spinner size="lg" />
+              <Spinner variant="ios" size="lg" />
               <Text style={{ color: colors.text[theme].secondary, marginTop: 8 }}>
                 Loading occupation skills...
               </Text>

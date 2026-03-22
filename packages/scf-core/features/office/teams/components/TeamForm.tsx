@@ -547,7 +547,7 @@ export function TeamForm({
   if (isOptionsLoading && roles.length === 0) {
     return (
       <Stack flex={1} align="center" justify="center" padding="xl">
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
         <Text style={{ marginTop: 16 }}>Loading team options…</Text>
       </Stack>
     );

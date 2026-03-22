@@ -128,7 +128,7 @@ export function CheckStatusDashboard() {
 
           {checksQuery.isLoading && (
             <Stack gap={8} align="center" paddingVertical={24}>
-              <Spinner size="lg" color="gray" />
+              <Spinner variant="ios" size="lg" color="gray" />
               <Text color={colors.text[t].secondary}>Loading your background checks…</Text>
             </Stack>
           )}

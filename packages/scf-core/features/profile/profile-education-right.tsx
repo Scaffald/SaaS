@@ -90,7 +90,7 @@ export function ProfileEducationRight({
         />
         <DashboardWidget>
         <Stack align="center" justify="center" style={{ padding: 32 }} gap={16}>
-          <Spinner size="lg" />
+          <Spinner variant="ios" size="lg" />
           <Text style={{ color: colors.text[theme].secondary }}>
             Loading education data...
           </Text>

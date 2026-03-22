@@ -542,7 +542,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
 
                 {isLoadingMatch ? (
                   <Stack gap={8} align="center" style={{ paddingVertical: 16 }}>
-                    <Spinner size="sm" color="primary" />
+                    <Spinner variant="ios" size="sm" color="primary" />
                     <Text style={{ color: colors.text[t].secondary }}>Calculating match...</Text>
                   </Stack>
                 ) : matchData?.needsSelfAssessment ? (

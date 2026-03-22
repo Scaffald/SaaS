@@ -276,7 +276,7 @@ export const ApplicationStatusChangeModal = ({
 
             {initializingIntent && !paymentCompleted && (
               <Stack gap={4} align="center">
-                <Spinner size="sm" />
+                <Spinner variant="ios" size="sm" />
                 <Text style={{ color: colors.text[theme].secondary }}>Preparing payment form…</Text>
               </Stack>
             )}

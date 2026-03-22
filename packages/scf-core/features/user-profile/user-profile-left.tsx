@@ -71,7 +71,7 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
   if (isLoading) {
     return (
       <Stack flex={1} align="center" justify="center" paddingVertical={40}>
-        <Spinner size="lg" color="primary" />
+        <Spinner variant="ios" size="lg" color="primary" />
         <Text style={{ marginTop: 16, color: colors.text[t].secondary }}>
           Loading profile...
         </Text>
@@ -116,7 +116,7 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
             >
               <Row gap={8} align="center">
                 {syncStatus === "syncing" ? (
-                  <Spinner size="sm" color="primary" />
+                  <Spinner variant="ios" size="sm" color="primary" />
                 ) : syncStatus === "error" ? (
                   <AlertTriangle size="md" color={t === 'dark' ? colors.error[300] : colors.error[600]} />
                 ) : (

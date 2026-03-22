@@ -334,7 +334,7 @@ export function AdminCheckReviewDialog({
               </Stack>
             ) : detailQuery.isLoading || detailQuery.isFetching ? (
               <Stack gap={12} align="center" justify="center" style={{ paddingVertical: 24 }}>
-                <Spinner size="lg" />
+                <Spinner variant="ios" size="lg" />
                 <Text style={{ color: '#414e62' }}>Loading background check…</Text>
               </Stack>
             ) : detailQuery.isError ? (
@@ -354,7 +354,7 @@ export function AdminCheckReviewDialog({
               </Stack>
             ) : !detailedCheck ? (
               <Stack gap={12} align="center" justify="center" style={{ paddingVertical: 24 }}>
-                <Spinner size="lg" />
+                <Spinner variant="ios" size="lg" />
                 <Text style={{ color: '#414e62' }}>Preparing detailed background check information…</Text>
               </Stack>
             ) : (
@@ -558,7 +558,7 @@ export function AdminCheckReviewDialog({
                             >
                               <Row gap={8} align="center">
                                 {isDocumentLoading ? (
-                                  <Spinner size="sm" />
+                                  <Spinner variant="ios" size="sm" />
                                 ) : (
                                   <DownloadCloud size="md" />
                                 )}
@@ -724,7 +724,7 @@ export function AdminCheckReviewDialog({
               <Button size="sm" onPress={handleSubmit} disabled={!detailedCheck || isSubmitting}>
                 {isSubmitting ? (
                   <Row gap={8} align="center">
-                    <Spinner size="sm" color="gray" />
+                    <Spinner variant="ios" size="sm" color="gray" />
                     <Text style={{ color: '#414e62' }}>Saving…</Text>
                   </Row>
                 ) : (

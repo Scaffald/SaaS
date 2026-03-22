@@ -77,7 +77,7 @@ export function OrganizationPreviewModal({
     >
       {isLoading ? (
         <Stack paddingVertical={32} align="center" justify="center">
-          <Spinner size="lg" color="primary" />
+          <Spinner variant="ios" size="lg" color="primary" />
           <Text style={{ color: colors.text[t].secondary, marginTop: 16 }}>
             Loading organization details...
           </Text>

@@ -40,7 +40,7 @@ export function SuccessView({ isVisible }: SuccessViewProps) {
             >
               {t('auth.success.description')}
             </Paragraph>
-            <Spinner size="lg" style={{ marginTop: 24 }} />
+            <Spinner variant="ios" size="lg" style={{ marginTop: 24 }} />
           </Stack>
         </Box>
       )}

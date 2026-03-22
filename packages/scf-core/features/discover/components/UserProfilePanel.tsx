@@ -99,7 +99,7 @@ export function UserProfilePanel({
 
       {isLoading ? (
         <Stack paddingVertical={16} align="center" gap={12}>
-          <Spinner size="sm" color="primary" />
+          <Spinner variant="ios" size="sm" color="primary" />
           <Text color="secondary">Loading...</Text>
         </Stack>
       ) : !preview ? (

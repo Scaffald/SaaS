@@ -89,7 +89,7 @@ export function CareerAssessmentWidget() {
     return (
       <DashboardWidget>
         <Stack gap={gap.sm} align="center" paddingVertical={40}>
-          <Spinner size="lg" color="gray" />
+          <Spinner variant="ios" size="lg" color="gray" />
           <Text style={{ color: colors.text[t].secondary }}>Loading...</Text>
         </Stack>
       </DashboardWidget>

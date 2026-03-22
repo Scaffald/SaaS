@@ -31,7 +31,7 @@ export function PersonalityAssessmentWidget() {
     return (
       <DashboardWidget>
         <Stack gap={spacing[8]} align="center" style={{ paddingVertical: 40 }}>
-          <Spinner size="lg" />
+          <Spinner variant="ios" size="lg" />
           <Text style={{ color: colors.text[theme].secondary }}>
             Loading...
           </Text>

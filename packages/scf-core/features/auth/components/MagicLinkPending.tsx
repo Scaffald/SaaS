@@ -183,7 +183,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
             accessibilityLabel={t('auth.verify.verifying')}
             accessibilityLiveRegion="polite"
           >
-            <Spinner size="md" color="gray" />
+            <Spinner variant="ios" size="md" color="gray" />
           </Box>
         )}
       </Box>

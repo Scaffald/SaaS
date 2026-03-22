@@ -284,7 +284,7 @@ function LoadingState() {
   const t = theme === 'dark' ? 'dark' : 'light'
   return (
     <Stack align="center" paddingVertical={20} gap={8}>
-      <Spinner size="sm" color="primary" />
+      <Spinner variant="ios" size="sm" color="primary" />
       <Text style={{ ...textSmall, color: colors.text[t].disabled }}>Loading...</Text>
     </Stack>
   )

@@ -105,7 +105,7 @@ export function CareerDetailScreen({ onetCode }: CareerDetailScreenProps) {
   if (isLoading) {
     return (
       <Stack flex={1} align="center" justify="center">
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
         <Text style={{ color: colors.text[theme].secondary, marginTop: 12 }}>
           Loading occupation details...
         </Text>

@@ -130,7 +130,7 @@ export function OfficeNotificationsConsole() {
 
         {deliveriesQuery.isLoading ? (
           <Stack align="center" gap={12} marginTop={16}>
-            <Spinner size="lg" color="gray" />
+            <Spinner variant="ios" size="lg" color="gray" />
             <Text style={{ color: colors.text[theme].secondary }}>
               Loading deliveries…
             </Text>
@@ -243,7 +243,7 @@ export function OfficeNotificationsConsole() {
 
         {digestQuery.isLoading ? (
           <Stack align="center" gap={12} marginTop={16}>
-            <Spinner size="lg" color="gray" />
+            <Spinner variant="ios" size="lg" color="gray" />
             <Text style={{ color: colors.text[theme].secondary }}>
               Loading digest queue…
             </Text>

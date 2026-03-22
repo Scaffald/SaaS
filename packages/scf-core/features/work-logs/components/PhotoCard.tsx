@@ -177,7 +177,7 @@ export function PhotoCard({
             justify="center"
             align="center"
           >
-            <Spinner color="gray" />
+            <Spinner variant="ios" color="gray" />
           </Stack>
         )}
         {(photo.isRefreshingUrl || isDeleting) && (
@@ -194,7 +194,7 @@ export function PhotoCard({
             justify="center"
             gap={8}
           >
-            <Spinner size="lg" />
+            <Spinner variant="ios" size="lg" />
             <Text style={{ color: "white" }}>
               {isDeleting ? "Removing…" : "Refreshing…"}
             </Text>

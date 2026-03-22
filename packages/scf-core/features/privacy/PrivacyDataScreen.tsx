@@ -246,7 +246,7 @@ export function PrivacyDataScreen() {
 
           {isLoadingSummary ? (
             <Stack align="center" style={{ paddingVertical: 20 }}>
-              <Spinner size="md" />
+              <Spinner variant="ios" size="md" />
             </Stack>
           ) : (
             <Stack gap={6}>
@@ -330,7 +330,7 @@ export function PrivacyDataScreen() {
 
               {isLoadingRequests ? (
                 <Stack align="center" style={{ paddingVertical: 20 }}>
-                  <Spinner size="md" />
+                  <Spinner variant="ios" size="md" />
                 </Stack>
               ) : (
                 <Stack gap={8}>

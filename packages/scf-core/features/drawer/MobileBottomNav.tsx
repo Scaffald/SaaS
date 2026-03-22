@@ -1,11 +1,10 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { Text, useThemeContext, useResponsive, Popover, PopoverContent } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { Text, useThemeContext, useResponsive, Popover, PopoverContent, GlassSurface } from '@scaffald/ui'
+import { colors, glassVibrantColors } from '@scaffald/ui/tokens'
 import { usePathname, useRouter } from 'expo-router'
 import { ChevronLeft, Search, X } from 'lucide-react-native'
 import { useRef, useState } from 'react'
 import {
-  Animated,
   LayoutAnimation,
   Platform,
   Pressable,
@@ -39,33 +38,7 @@ function getActiveSection(pathname: string): MobileSection | null {
 /** Check if a sub-item tab is active */
 function isTabActive(tab: { route: string; exact?: boolean }, pathname: string): boolean {
   if (tab.exact) return pathname === tab.route
-  return pathname === tab.route || pathname.startsWith(tab.route + '/')
-}
-
-// ============================================================================
-// Glassmorphic style helper
-// ============================================================================
-
-function getGlassStyle(theme: 'light' | 'dark') {
-  const base = {
-    borderWidth: 1,
-    borderColor: theme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.08)',
-  }
-
-  if (Platform.OS === 'web') {
-    return {
-      ...base,
-      backdropFilter: 'blur(24px) saturate(180%)',
-      WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-      backgroundColor:
-        theme === 'light' ? 'rgba(255,255,255,0.78)' : 'rgba(30,30,30,0.78)',
-    } as Record<string, unknown>
-  }
-
-  return {
-    ...base,
-    backgroundColor: colors.bg[theme].default,
-  }
+  return pathname === tab.route || pathname.startsWith(`${tab.route}/`)
 }
 
 // ============================================================================
@@ -98,9 +71,10 @@ export function MobileBottomNav() {
 
   if (!isMobile) return null
 
-  const glassStyle = getGlassStyle(theme)
-  const iconMuted = colors.icon[theme].muted
-  const iconDefault = colors.icon[theme].default
+  const resolvedTheme: 'light' | 'dark' = theme === 'dark' ? 'dark' : 'light'
+  const vibrant = glassVibrantColors[resolvedTheme]
+  const iconMuted = vibrant.tertiaryText
+  const iconDefault = vibrant.primaryText
 
   // ── Handlers ──
 
@@ -182,7 +156,7 @@ export function MobileBottomNav() {
           size="xs"
           weight="semibold"
           style={{
-            color: colors.text[theme].tertiary,
+            color: colors.text[resolvedTheme].tertiary,
             paddingHorizontal: 16,
             paddingVertical: 8,
             textTransform: 'uppercase',
@@ -205,9 +179,9 @@ export function MobileBottomNav() {
                 paddingHorizontal: 16,
                 paddingVertical: 10,
                 backgroundColor: pressed
-                  ? colors.bg[theme].subtle
+                  ? colors.bg[resolvedTheme].subtle
                   : isActive
-                    ? colors.bg[theme].subtle
+                    ? colors.bg[resolvedTheme].subtle
                     : 'transparent',
                 borderRadius: 8,
                 marginHorizontal: 4,
@@ -223,7 +197,7 @@ export function MobileBottomNav() {
                 style={{
                   color: isActive
                     ? colors.primary[600]
-                    : colors.text[theme].primary,
+                    : colors.text[resolvedTheme].primary,
                 }}
               >
                 {item.label}
@@ -252,18 +226,14 @@ export function MobileBottomNav() {
       >
         {/* Search results popover */}
         {searchResults.length > 0 && (
-          <View
+          <GlassSurface
+            material="thick"
+            radius="lg"
+            elevated
             style={{
-              ...getGlassStyle(theme),
-              borderRadius: 16,
               marginBottom: 8,
               paddingVertical: 4,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: -4 },
-              shadowOpacity: 0.08,
-              shadowRadius: 12,
-              elevation: 8,
-            } as Record<string, unknown>}
+            }}
           >
             {searchResults.map((result, i) => {
               const Icon = result.icon
@@ -281,7 +251,7 @@ export function MobileBottomNav() {
                     paddingHorizontal: 16,
                     paddingVertical: 10,
                     backgroundColor: pressed
-                      ? colors.bg[theme].subtle
+                      ? colors.bg[resolvedTheme].subtle
                       : 'transparent',
                     borderRadius: 8,
                     marginHorizontal: 4,
@@ -289,35 +259,31 @@ export function MobileBottomNav() {
                 >
                   <Icon size={18} color={iconMuted} />
                   <View style={{ flex: 1 }}>
-                    <Text size="sm" style={{ color: colors.text[theme].primary }}>
+                    <Text size="sm" style={{ color: colors.text[resolvedTheme].primary }}>
                       {result.label}
                     </Text>
-                    <Text size="xs" style={{ color: colors.text[theme].tertiary }}>
+                    <Text size="xs" style={{ color: colors.text[resolvedTheme].tertiary }}>
                       {result.section}
                     </Text>
                   </View>
                 </Pressable>
               )
             })}
-          </View>
+          </GlassSurface>
         )}
 
         {/* Search input bar */}
-        <View
+        <GlassSurface
+          material="regular"
+          radius="3xl"
+          elevated
           style={{
-            ...glassStyle,
             flexDirection: 'row',
             alignItems: 'center',
             height: PILL_HEIGHT,
-            borderRadius: PILL_HEIGHT / 2,
             paddingHorizontal: 14,
             gap: 10,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.08,
-            shadowRadius: 12,
-            elevation: 4,
-          } as Record<string, unknown>}
+          }}
         >
           <Search size={18} color={iconMuted} />
           <TextInput
@@ -325,11 +291,11 @@ export function MobileBottomNav() {
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder="Search..."
-            placeholderTextColor={colors.text[theme].tertiary}
+            placeholderTextColor={colors.text[resolvedTheme].tertiary}
             style={{
               flex: 1,
               fontSize: 15,
-              color: colors.text[theme].primary,
+              color: colors.text[resolvedTheme].primary,
               ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
             } as Record<string, unknown>}
             autoCapitalize="none"
@@ -338,7 +304,7 @@ export function MobileBottomNav() {
           <Pressable onPress={handleSearchClose} hitSlop={8}>
             <X size={18} color={iconMuted} />
           </Pressable>
-        </View>
+        </GlassSurface>
       </View>
     )
   }
@@ -362,24 +328,20 @@ export function MobileBottomNav() {
       }}
     >
       {/* Back button */}
-      <Pressable
-        onPress={handleBack}
-        style={({ pressed }) => ({
-          ...glassStyle,
-          width: BUTTON_SIZE,
-          height: BUTTON_SIZE,
-          borderRadius: BUTTON_SIZE / 2,
-          alignItems: 'center',
-          justifyContent: 'center',
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.06,
-          shadowRadius: 8,
-          elevation: 3,
-          opacity: pressed ? 0.7 : 1,
-        } as Record<string, unknown>)}
-      >
-        <ChevronLeft size={ICON_SIZE} color={iconDefault} />
+      <Pressable onPress={handleBack} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
+        <GlassSurface
+          material="regular"
+          radius="3xl"
+          elevated
+          style={{
+            width: BUTTON_SIZE,
+            height: BUTTON_SIZE,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <ChevronLeft size={ICON_SIZE} color={iconDefault} />
+        </GlassSurface>
       </Pressable>
 
       {/* Center pill with section icons */}
@@ -393,72 +355,64 @@ export function MobileBottomNav() {
             <PopoverContent>{renderPopoverContent()}</PopoverContent>
           }
         >
-          <View
+          <GlassSurface
+            material="regular"
+            radius="3xl"
+            elevated
             style={{
-              ...glassStyle,
               height: PILL_HEIGHT,
-              borderRadius: PILL_HEIGHT / 2,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-evenly',
-            paddingHorizontal: 8,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.08,
-            shadowRadius: 12,
-            elevation: 4,
-          } as Record<string, unknown>}
-        >
-          {MOBILE_SECTIONS.map((section) => {
-            const Icon = section.icon
-            const isActive = activeSection?.key === section.key
-            return (
-              <Pressable
-                key={section.key}
-                onPress={() => handleSectionTap(section)}
-                style={({ pressed }) => ({
-                  width: ACTIVE_DOT_SIZE,
-                  height: ACTIVE_DOT_SIZE,
-                  borderRadius: ACTIVE_DOT_SIZE / 2,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: isActive
-                    ? colors.primary[600]
-                    : pressed
-                      ? colors.bg[theme].subtle
-                      : 'transparent',
-                })}
-              >
-                <Icon
-                  size={ICON_SIZE}
-                  color={isActive ? '#fff' : iconMuted}
-                />
-              </Pressable>
-            )
-          })}
-          </View>
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-evenly',
+              paddingHorizontal: 8,
+            }}
+          >
+            {MOBILE_SECTIONS.map((section) => {
+              const Icon = section.icon
+              const isActive = activeSection?.key === section.key
+              return (
+                <Pressable
+                  key={section.key}
+                  onPress={() => handleSectionTap(section)}
+                  style={({ pressed }) => ({
+                    width: ACTIVE_DOT_SIZE,
+                    height: ACTIVE_DOT_SIZE,
+                    borderRadius: ACTIVE_DOT_SIZE / 2,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: isActive
+                      ? colors.primary[600]
+                      : pressed
+                        ? colors.bg[resolvedTheme].subtle
+                        : 'transparent',
+                  })}
+                >
+                  <Icon
+                    size={ICON_SIZE}
+                    color={isActive ? '#fff' : iconMuted}
+                  />
+                </Pressable>
+              )
+            })}
+          </GlassSurface>
         </Popover>
       </View>
 
       {/* Search button */}
-      <Pressable
-        onPress={handleSearchOpen}
-        style={({ pressed }) => ({
-          ...glassStyle,
-          width: BUTTON_SIZE,
-          height: BUTTON_SIZE,
-          borderRadius: BUTTON_SIZE / 2,
-          alignItems: 'center',
-          justifyContent: 'center',
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.06,
-          shadowRadius: 8,
-          elevation: 3,
-          opacity: pressed ? 0.7 : 1,
-        } as Record<string, unknown>)}
-      >
-        <Search size={ICON_SIZE} color={iconDefault} />
+      <Pressable onPress={handleSearchOpen} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
+        <GlassSurface
+          material="regular"
+          radius="3xl"
+          elevated
+          style={{
+            width: BUTTON_SIZE,
+            height: BUTTON_SIZE,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Search size={ICON_SIZE} color={iconDefault} />
+        </GlassSurface>
       </Pressable>
     </View>
   )

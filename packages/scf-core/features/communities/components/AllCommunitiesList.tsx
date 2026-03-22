@@ -62,7 +62,7 @@ export function AllCommunitiesList({ searchQuery, sortBy, onFilteredCountChange 
   if (isLoading) {
     return (
       <Stack align="center" style={{ paddingVertical: 40 }}>
-        <Spinner />
+        <Spinner variant="ios" />
       </Stack>
     )
   }

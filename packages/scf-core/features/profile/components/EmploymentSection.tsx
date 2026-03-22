@@ -93,7 +93,7 @@ export function EmploymentSection({
     return (
       <DashboardWidget>
         <Stack gap={16} padding="md" flex={1} justify="center" align="center">
-          <Spinner size="lg" />
+          <Spinner variant="ios" size="lg" />
           <Text>Loading employment preferences...</Text>
         </Stack>
       </DashboardWidget>
@@ -129,7 +129,7 @@ export function EmploymentSection({
               gap: 8,
             }}
           >
-            <Spinner size="sm" />
+            <Spinner variant="ios" size="sm" />
             <Text size="sm" style={{ color: "#637083" }}>
               Saving...
             </Text>

@@ -114,7 +114,7 @@ export function CareerExplorerScreen() {
 
           {searchLoading ? (
             <Stack align="center" paddingVertical={20}>
-              <Spinner size="lg" />
+              <Spinner variant="ios" size="lg" />
             </Stack>
           ) : (
             <Stack gap={6}>

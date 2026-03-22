@@ -1284,7 +1284,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 extractPlainText(formData.description).trim().length === 0)
             }
           >
-            {isLoading && <Spinner />}
+            {isLoading && <Spinner variant="ios" />}
             {!isLoading && 'Save as Draft'}
           </Button>
           <Button
@@ -1303,7 +1303,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                   new Date(formData.scheduled_publish_at) <= new Date())
             )}
           >
-            {isLoading && <Spinner />}
+            {isLoading && <Spinner variant="ios" />}
             {!isLoading && (formData.scheduled_publish_at ? 'Schedule' : 'Post')}
           </Button>
         </Row>

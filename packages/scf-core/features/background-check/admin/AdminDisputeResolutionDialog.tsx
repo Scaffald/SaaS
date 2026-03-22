@@ -182,7 +182,7 @@ export function AdminDisputeResolutionDialog({
               </Stack>
             ) : (
               <Stack gap={12} align="center" justify="center" style={{ paddingVertical: 24 }}>
-                <Spinner size="lg" />
+                <Spinner variant="ios" size="lg" />
                 <Text style={{ color: '#414e62' }}>Loading dispute…</Text>
               </Stack>
             )}
@@ -203,7 +203,7 @@ export function AdminDisputeResolutionDialog({
               >
                 {isSubmitting ? (
                   <Row gap={8} align="center">
-                    <Spinner size="sm" color="gray" />
+                    <Spinner variant="ios" size="sm" color="gray" />
                     <Text style={{ color: '#414e62' }}>Resolving…</Text>
                   </Row>
                 ) : (

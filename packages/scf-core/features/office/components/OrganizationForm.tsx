@@ -306,7 +306,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
             )}
             {slugStatus.state === 'checking' && slugNeedsValidation && (
               <Row gap={8} align="center">
-                <Spinner size="sm" />
+                <Spinner variant="ios" size="sm" />
                 <Text style={{ color: colors.text[theme].secondary }}>
                   Checking availability...
                 </Text>

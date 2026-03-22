@@ -71,7 +71,7 @@ export function ProfileEmploymentLeft() {
                 gap: 8,
               }}
             >
-              <Spinner size="sm" />
+              <Spinner variant="ios" size="sm" />
               <Text size="sm" style={{ color: "#637083" }}>
                 Saving preferences...
               </Text>

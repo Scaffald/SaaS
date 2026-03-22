@@ -314,7 +314,7 @@ export function WorkLogForm({
             <Text>Skills Used</Text>
             {skillsQuery.isLoading && (
               <Row gap={8} align="center">
-                <Spinner size="sm" />
+                <Spinner variant="ios" size="sm" />
                 <Text>Loading your skills…</Text>
               </Row>
             )}

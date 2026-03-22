@@ -341,7 +341,7 @@ export function OfficeOrganizationsList() {
               <Text>Pending Approvals</Text>
               {isRequestsLoading ? (
                 <Row justify="center" paddingVertical={16}>
-                  <Spinner size="lg" />
+                  <Spinner variant="ios" size="lg" />
                 </Row>
               ) : pendingRequests.length === 0 ? (
                 <Text style={{ color: colors.text[theme].secondary }}>

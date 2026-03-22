@@ -378,7 +378,7 @@ export function ProjectForm({
               }
             >
               {isLoading ? (
-                <Spinner />
+                <Spinner variant="ios" />
               ) : mode === "create" ? (
                 "Create Project"
               ) : (

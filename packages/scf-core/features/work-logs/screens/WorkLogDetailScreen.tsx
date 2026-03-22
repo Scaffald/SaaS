@@ -307,7 +307,7 @@ export function WorkLogDetailScreen() {
   if (workLogQuery.isLoading) {
     return (
       <Stack flex={1} justify="center" align="center" gap={12}>
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
         <Text style={{ color: colors.text[theme].secondary }}>Loading work log…</Text>
       </Stack>
     );

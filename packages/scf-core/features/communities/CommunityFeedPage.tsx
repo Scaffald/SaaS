@@ -57,7 +57,7 @@ export function CommunityFeedPage({ slug }: Props) {
   if (isCommunityLoading) {
     return (
       <Stack align="center" justify="center" style={{ minHeight: 200 }}>
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
       </Stack>
     )
   }
@@ -118,7 +118,7 @@ export function CommunityFeedPage({ slug }: Props) {
       {/* Feed */}
       {isFeedLoading ? (
         <Stack align="center" style={{ paddingVertical: 40 }}>
-          <Spinner />
+          <Spinner variant="ios" />
         </Stack>
       ) : posts.length === 0 ? (
         <Stack gap={12} align="center" justify="center" style={{ minHeight: 200, padding: 24 }}>
@@ -149,7 +149,7 @@ export function CommunityFeedPage({ slug }: Props) {
           ListFooterComponent={
             isFetchingNextPage ? (
               <Stack align="center" style={{ paddingVertical: 16 }}>
-                <Spinner size="sm" />
+                <Spinner variant="ios" size="sm" />
               </Stack>
             ) : null
           }

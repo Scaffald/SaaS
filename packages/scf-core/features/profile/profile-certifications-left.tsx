@@ -607,7 +607,7 @@ export function ProfileCertificationsLeft({
             minHeight: 300,
           }}
         >
-          <Spinner size="lg" />
+          <Spinner variant="ios" size="lg" />
           <Text>Loading certifications...</Text>
         </Stack>
       </DashboardWidget>

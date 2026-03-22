@@ -223,7 +223,7 @@ export function VanityUrlSection() {
     return (
       <DashboardWidget>
         <Stack align="center" padding="md">
-          <Spinner size="sm" />
+          <Spinner variant="ios" size="sm" />
         </Stack>
       </DashboardWidget>
     )
@@ -285,7 +285,7 @@ export function VanityUrlSection() {
                   autoCapitalize="none"
                   autoCorrect={false}
                 />
-                {isCheckingAvailability && <Spinner size="sm" />}
+                {isCheckingAvailability && <Spinner variant="ios" size="sm" />}
               </Row>
 
               {/* Availability Status */}
@@ -349,7 +349,7 @@ export function VanityUrlSection() {
                     availabilityStatus.available !== true
                   }
                 >
-                  {isUpdating ? <Spinner size="sm" /> : 'Save'}
+                  {isUpdating ? <Spinner variant="ios" size="sm" /> : 'Save'}
                 </Button>
               </Row>
             </Stack>

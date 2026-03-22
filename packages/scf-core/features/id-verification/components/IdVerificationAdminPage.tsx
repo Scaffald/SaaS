@@ -297,7 +297,7 @@ export function IdVerificationAdminPage({
           />
           {isLoadingOrganizations ? (
             <Row gap={8} align="center">
-              <Spinner size="sm" />
+              <Spinner variant="ios" size="sm" />
               <Text style={{ color: colors.text[t].secondary }}>Loading organizations…</Text>
             </Row>
           ) : null}

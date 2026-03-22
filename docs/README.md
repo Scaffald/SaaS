@@ -2,6 +2,7 @@
 
 ## Setup and operations
 
+- [Deployment infrastructure](setup/DEPLOYMENT.md) — DNS, AWS, Supabase branches, CI/CD, GitHub secrets
 - [GoTrue env config](gotrue-env-config.md)
 - [Manual validation checklist](MANUAL-VALIDATION-CHECKLIST.md)
 

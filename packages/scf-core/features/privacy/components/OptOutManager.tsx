@@ -321,7 +321,7 @@ export function OptOutManager({ onClose }: OptOutManagerProps) {
       {/* Loading state */}
       {isLoading ? (
         <Row padding="xl" justify="center">
-          <Spinner size="lg" />
+          <Spinner variant="ios" size="lg" />
         </Row>
       ) : (
         <>

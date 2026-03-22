@@ -366,7 +366,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           <Stack paddingTop={16}>
             {inquiryMode === 'view' && isInquiryLoading && (
               <Stack padding="md" align="center" gap={16}>
-                <Spinner size="lg" />
+                <Spinner variant="ios" size="lg" />
                 <Text>Loading inquiry...</Text>
               </Stack>
             )}
@@ -414,7 +414,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
 
             {inquiryMode === 'edit' && (!inquiryData?.inquiry || !inquiryFormValues) && (
               <Stack padding="md" align="center" gap={16}>
-                <Spinner size="lg" />
+                <Spinner variant="ios" size="lg" />
                 <Text>Preparing inquiry for editing...</Text>
               </Stack>
             )}

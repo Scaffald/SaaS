@@ -18,7 +18,7 @@ export function OccupationAssessmentWidget() {
     return (
       <DashboardWidget>
         <Stack gap={8} align="center" paddingVertical={40}>
-          <Spinner size="lg" color="primary" />
+          <Spinner variant="ios" size="lg" color="primary" />
           <Text style={{ color: colors.text[theme].secondary }}>Loading...</Text>
         </Stack>
       </DashboardWidget>

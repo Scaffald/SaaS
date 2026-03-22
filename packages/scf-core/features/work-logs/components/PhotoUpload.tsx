@@ -429,7 +429,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
 
       {isLoadingPhotos ? (
         <Row gap={8} align="center">
-          <Spinner />
+          <Spinner variant="ios" />
           <Text>Loading photos…</Text>
         </Row>
       ) : (

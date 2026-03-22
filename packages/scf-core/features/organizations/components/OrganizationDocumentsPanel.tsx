@@ -109,7 +109,7 @@ export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocum
       </Row>
       <Separator />
       {isLoading ? (
-        <Spinner />
+        <Spinner variant="ios" />
       ) : documents.length === 0 ? (
         <Paragraph style={{ color: colors.text[t].secondary }}>No documents uploaded yet.</Paragraph>
       ) : (

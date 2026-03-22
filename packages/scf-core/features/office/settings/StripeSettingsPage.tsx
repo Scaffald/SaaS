@@ -162,7 +162,7 @@ export function StripeSettingsPage() {
   if (isLoading) {
     return (
       <Stack flex={1} align="center" justify="center" gap={12}>
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
         <Text>Loading Stripe settings…</Text>
       </Stack>
     )

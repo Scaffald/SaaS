@@ -504,7 +504,7 @@ export function DataRequestForm({
             >
               {submitRequest.isPending ? (
                 <Row gap={8} align="center">
-                  <Spinner size="sm" />
+                  <Spinner variant="ios" size="sm" />
                   <Text>Submitting...</Text>
                 </Row>
               ) : (

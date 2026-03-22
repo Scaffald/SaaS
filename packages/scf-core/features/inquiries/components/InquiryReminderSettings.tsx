@@ -74,7 +74,7 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
         <H4>Inquiry Reminders</H4>
         <Separator />
         {isLoading ? (
-          <Spinner />
+          <Spinner variant="ios" />
         ) : (
           <Stack gap={16}>
             <Row align="center" justify="space-between" gap={12}>

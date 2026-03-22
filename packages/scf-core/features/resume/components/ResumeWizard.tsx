@@ -516,7 +516,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
   if (isLoading) {
     return (
       <Stack align="center" justify="center" flex={1} gap={12}>
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
         <Text style={{ color: colors.text[t].secondary }}>
           Loading resume import wizard...
         </Text>

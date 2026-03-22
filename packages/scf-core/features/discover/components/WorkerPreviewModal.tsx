@@ -366,7 +366,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
     >
       {showLoading ? (
         <Stack paddingVertical={32} align="center" justify="center">
-          <Spinner size="lg" color="primary" />
+          <Spinner variant="ios" size="lg" color="primary" />
           <Text style={{ marginTop: 16 }} color="secondary">
             Loading profile...
           </Text>

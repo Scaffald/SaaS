@@ -40,7 +40,7 @@ export function CommunityMembersPage({ slug }: Props) {
 
       {isLoading ? (
         <Stack align="center" style={{ paddingVertical: 40 }}>
-          <Spinner />
+          <Spinner variant="ios" />
         </Stack>
       ) : filtered.length === 0 ? (
         <Stack align="center" style={{ paddingVertical: 40 }}>

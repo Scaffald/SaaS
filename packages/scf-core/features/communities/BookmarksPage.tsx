@@ -29,7 +29,7 @@ export function BookmarksPage() {
 
       {isLoading ? (
         <Stack align="center" style={{ paddingVertical: 40 }}>
-          <Spinner />
+          <Spinner variant="ios" />
         </Stack>
       ) : posts.length === 0 ? (
         <Stack align="center" style={{ paddingVertical: 40 }}>
@@ -53,7 +53,7 @@ export function BookmarksPage() {
           ListFooterComponent={
             isFetchingNextPage ? (
               <Stack align="center" style={{ paddingVertical: 16 }}>
-                <Spinner size="sm" />
+                <Spinner variant="ios" size="sm" />
               </Stack>
             ) : null
           }

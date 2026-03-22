@@ -517,7 +517,7 @@ export function CCPAAdminDashboard() {
           <Text>Compliance Metrics</Text>
           {isLoading ? (
             <Row padding="xl" justify="center">
-              <Spinner size="lg" />
+              <Spinner variant="ios" size="lg" />
             </Row>
           ) : (
             <Row gap={12} wrap>
@@ -642,7 +642,7 @@ export function CCPAAdminDashboard() {
         <Stack gap={8}>
           {isLoading ? (
             <Row padding="xl" justify="center">
-              <Spinner size="lg" />
+              <Spinner variant="ios" size="lg" />
             </Row>
           ) : requests?.requests?.length === 0 ? (
             <Stack

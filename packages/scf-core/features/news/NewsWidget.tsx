@@ -431,7 +431,7 @@ export function NewsWidget({
 
       {status === 'resolving' ? (
         <Stack align="center" gap={8}>
-          <Spinner size="lg" color="primary" />
+          <Spinner variant="ios" size="lg" color="primary" />
           <Text style={{ color: colors.text[theme].secondary }}>Loading news…</Text>
         </Stack>
       ) : status === 'not_configured' ? (
@@ -442,7 +442,7 @@ export function NewsWidget({
         </Stack>
       ) : status === 'loading' ? (
         <Stack align="center" gap={8}>
-          <Spinner size="lg" color="primary" />
+          <Spinner variant="ios" size="lg" color="primary" />
           <Text style={{ color: colors.text[theme].secondary }}>
             {shouldFetchFallback ? 'Loading news…' : 'Loading personalised news…'}
           </Text>

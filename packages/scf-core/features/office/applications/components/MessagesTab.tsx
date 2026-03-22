@@ -124,7 +124,7 @@ export const MessagesTab = ({
   if (isLoading) {
     return (
       <Stack flex={1} align="center" justify="center" gap={12}>
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
         <Text style={{ opacity: 0.7 }}>Loading messages...</Text>
       </Stack>
     )

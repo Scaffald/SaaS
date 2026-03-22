@@ -87,7 +87,7 @@ export function APIKeysList({
   if (isLoading) {
     return (
       <Stack flex={1} justify="center" align="center" padding="xl">
-        <Spinner size="lg" color="primary" />
+        <Spinner variant="ios" size="lg" color="primary" />
         <Paragraph style={{ marginTop: 16 }} color={colors.text[theme].tertiary}>
           Loading API keys...
         </Paragraph>

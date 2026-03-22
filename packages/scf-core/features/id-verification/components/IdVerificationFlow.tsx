@@ -325,7 +325,7 @@ function PricingSection({
     return (
       <Card padding="md" bordered>
         <Stack gap={8} align="center">
-          <Spinner size="sm" />
+          <Spinner variant="ios" size="sm" />
           <Text style={{ color: colors.text[theme].secondary }}>Loading verification options…</Text>
         </Stack>
       </Card>

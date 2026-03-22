@@ -215,7 +215,7 @@ export const OfficeApplicationsScreen = () => {
         justify="center"
         style={{ backgroundColor: colors.bg[theme].default }}
       >
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
         <Text style={{ marginTop: 16, color: colors.text[theme].secondary }}>
           Loading applications...
         </Text>

@@ -146,7 +146,7 @@ export function OccupationSearch({
           onBlur={handleInputBlur}
           disabled={disabled}
         />
-        {isLoading && <Spinner size="sm" />}
+        {isLoading && <Spinner variant="ios" size="sm" />}
       </Row>
 
       {showDropdown && (

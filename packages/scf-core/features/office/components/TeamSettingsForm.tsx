@@ -320,7 +320,7 @@ export function TeamSettingsForm({
 
       <Row justify="space-between" align="center" wrap gap={12}>
         <Row gap={8} align="center">
-          {updateMutation.isPending ? <Spinner size="sm" /> : null}
+          {updateMutation.isPending ? <Spinner variant="ios" size="sm" /> : null}
           <Text color={statusColor}>{statusLabel}</Text>
         </Row>
         <Button

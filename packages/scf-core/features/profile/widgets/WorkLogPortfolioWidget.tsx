@@ -72,7 +72,7 @@ export function WorkLogPortfolioWidget({
 
         {isLoading ? (
           <Row gap={8} align="center">
-            <Spinner size="sm" />
+            <Spinner variant="ios" size="sm" />
             <Text color={colors.text[t].secondary}>Loading work history…</Text>
           </Row>
         ) : workLogs.length === 0 ? (

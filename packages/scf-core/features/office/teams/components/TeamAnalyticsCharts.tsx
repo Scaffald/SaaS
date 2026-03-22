@@ -169,7 +169,7 @@ export function TeamAnalyticsCharts({
   if (isLoading && metrics.length === 0) {
     return (
       <Stack gap={12} align="center" justify="center" paddingVertical={16}>
-        <Spinner size="lg" />
+        <Spinner variant="ios" size="lg" />
         <Text style={{ color: colors.text[theme].secondary }}>
           Loading analytics data…
         </Text>

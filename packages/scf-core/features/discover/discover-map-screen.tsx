@@ -1080,7 +1080,7 @@ const MapLoadingOverlay = ({ theme }: { theme: 'light' | 'dark' }) => (
       shadowRadius: 4,
     }}
   >
-    <Spinner size="sm" color="primary" />
+    <Spinner variant="ios" size="sm" color="primary" />
     <Text style={{ fontSize: 13, color: colors.text[theme].secondary }}>Loading...</Text>
   </View>
 )

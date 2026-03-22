@@ -248,7 +248,7 @@ export function TeamInviteModal({
           <Label>Team role</Label>
           {isLoadingRoles ? (
             <Row gap={8} align="center">
-              <Spinner size="sm" />
+              <Spinner variant="ios" size="sm" />
               <Text style={{ color: colors.text[theme].secondary }}>
                 Loading roles…
               </Text>
@@ -341,7 +341,7 @@ export function TeamInviteModal({
             }
           >
             {inviteMutation.isPending ? (
-              <Spinner size="sm" color="gray" />
+              <Spinner variant="ios" size="sm" color="gray" />
             ) : (
               "Send Invitation"
             )}
