@@ -1,90 +1,70 @@
-import {
-  ProfileActivityWidget,
-  TeamInvitationsWidget,
-} from '@scf/core/features/dashboard/components'
-import { NewsWidget } from '@scf/core/features/news'
-import { CommunityActivityWidget } from '@scf/core/features/communities'
-import { DashboardWidget } from '@scaffald/ui'
-import { Text, Stack, useThemeContext } from '@scaffald/ui'
+import { CompactNewsWidget } from '@scf/core/features/dashboard/components/CompactNewsWidget'
+import { RecentActivityWidget } from '@scf/core/features/dashboard/components/RecentActivityWidget'
+import { SuggestedContactsWidget } from '@scf/core/features/dashboard/components/SuggestedContactsWidget'
+import { Stack, Text, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useEffect, useState } from 'react'
 
-const profileTipCards: Array<{
-  title: string
-  subtitle: string
-  body: string
-}> = [
-  {
-    title: 'Add a Profile Photo',
-    subtitle: 'Did you know that profiles with a photo are dramatically more visible?',
-    body:
-      'Members with a profile picture receive up to 21× more profile views and as many as 36× more messages. A simple upload could make the difference between getting passed over or getting noticed.',
-  },
-  {
-    title: 'First Impressions',
-    subtitle: 'Make Every Second Count',
-    body:
-      'Recruiters skim profiles and resumes quickly — often giving just 6 seconds in an initial scan. Having your basic details like name, email, and phone filled out ensures they don\'t miss something important about you in those crucial first moments.',
-  },
-  {
-    title: 'Verified Credentials',
-    subtitle: 'Verified Details Build Trust',
-    body:
-      'Sharing verified information builds credibility with employers. In one large-scale study, discover who displayed credentials publicly increased their likelihood of gaining new employment by about 6 percentage points compared to those who didn\'t. Trust really does make a measurable difference.',
-  },
+const growthTips = [
+  'Profiles with verified skills get 5x more project invitations.',
+  'Adding a profile photo increases your visibility by up to 21x.',
+  'Completing assessments unlocks personalized career recommendations.',
 ]
 
 export function DashboardIndexRight() {
-  const [index, setIndex] = useState(0)
+  const [tipIndex, setTipIndex] = useState(0)
   const { theme } = useThemeContext()
 
   useEffect(() => {
     const id = setInterval(() => {
-      setIndex((i) => (i + 1) % profileTipCards.length)
+      setTipIndex((i) => (i + 1) % growthTips.length)
     }, 8000)
     return () => clearInterval(id)
   }, [])
 
-  const card = profileTipCards[index]
+  const tip = growthTips[tipIndex]
 
   return (
     <Stack gap={20}>
-      <ProfileActivityWidget />
-      <DashboardWidget gap={12} elevated>
-        {card ? (
-          <Stack gap={12}>
-            <Text
-              style={{
-                fontSize: 18,
-                fontWeight: '600',
-                color: colors.text[theme].primary,
-              }}
-            >
-              {card.title}
-            </Text>
-            <Text
-              style={{
-                fontStyle: 'italic',
-                lineHeight: 16,
-                color: colors.text[theme].secondary,
-              }}
-            >
-              {card.subtitle}
-            </Text>
-            <Text
-              style={{
-                lineHeight: 16,
-                color: colors.text[theme].secondary,
-              }}
-            >
-              {card.body}
-            </Text>
-          </Stack>
-        ) : null}
-      </DashboardWidget>
-      <TeamInvitationsWidget />
-      <CommunityActivityWidget maxItems={3} />
-      <NewsWidget industry="construction" maxItems={6} />
+      <CompactNewsWidget />
+      <RecentActivityWidget />
+      <SuggestedContactsWidget />
+
+      {/* Growth Tip — warm tinted card */}
+      <Stack
+        padding={20}
+        borderRadius={20}
+        gap={8}
+        style={{
+          backgroundColor:
+            theme === 'light' ? colors.primary[50] : colors.primary[900],
+          borderWidth: 1,
+          borderColor:
+            theme === 'light' ? colors.primary[200] : colors.primary[800],
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 12,
+            fontWeight: '700',
+            textTransform: 'uppercase',
+            letterSpacing: 1.5,
+            color:
+              theme === 'light' ? colors.primary[700] : colors.primary[300],
+          }}
+        >
+          Growth Tip
+        </Text>
+        <Text
+          style={{
+            fontSize: 12,
+            lineHeight: 18,
+            color: colors.text[theme].primary,
+          }}
+        >
+          {tip}
+        </Text>
+      </Stack>
     </Stack>
   )
 }

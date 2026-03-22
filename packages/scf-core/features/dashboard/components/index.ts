@@ -1,4 +1,7 @@
+export { AnalyticsWidget } from './AnalyticsWidget'
 export { ProfileActivityWidget } from './ProfileActivityWidget'
+export { RecentActivityWidget } from './RecentActivityWidget'
+export { SuggestedContactsWidget } from './SuggestedContactsWidget'
 export {
   TeamInvitationList,
   TeamInvitationsWidget,
