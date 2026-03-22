@@ -78,15 +78,14 @@ export function SliderTrack({
   const isLight = theme === 'light'
 
   const getBackgroundColor = (): string => {
-    if (isLight) {
-      return colors.bg.light.subtle // gray[100]
-    }
-    return colors.bg.dark.subtle // gray[700] or similar
+    // iOS 26: systemGray4 for track background
+    return colors.systemGray[theme].gray4
   }
 
   const getFillColor = (): string => {
     if (color === 'primary') {
-      return colors.primary[500]
+      // iOS 26: accent blue for filled track
+      return colors.accents[theme].blue
     }
     // Gray variant
     return isLight ? colors.gray[900] : colors.gray[100]

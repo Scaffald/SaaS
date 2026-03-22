@@ -669,6 +669,23 @@ export type {
 export { EditMenu } from "./components/EditMenu";
 export type { EditMenuAction, EditMenuProps } from "./components/EditMenu";
 
+export { ListItemAccessory } from "./components/ListItemAccessory";
+export type { ListItemAccessoryProps, ListItemAccessoryType } from "./components/ListItemAccessory";
+
+export { NumericStepper } from "./components/NumericStepper";
+export type { NumericStepperProps } from "./components/NumericStepper";
+
+export { TabBar } from "./components/TabBar";
+export type { TabBarItem, TabBarProps } from "./components/TabBar";
+
+export { NavigationList } from "./components/NavigationList";
+export type {
+  NavigationListItem,
+  NavigationListProps,
+  NavigationListSection,
+  NavigationListToolbarAction,
+} from "./components/NavigationList";
+
 export { StatusIndicator } from "./components/StatusIndicator";
 export type {
   StatusIndicatorIconType,

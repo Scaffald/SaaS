@@ -3,6 +3,7 @@
  */
 
 import type { ViewStyle } from 'react-native'
+import type React from 'react'
 
 export type SliderColor = 'primary' | 'gray'
 export type SliderIndicatorPosition = 'top' | 'bottom' | 'none'
@@ -98,4 +99,16 @@ export interface SliderProps {
    * Custom style for the tooltip
    */
   tooltipStyle?: ViewStyle
+
+  /**
+   * Optional icon rendered at the minimum (leading) end of the slider.
+   * Useful for indicating scale context (e.g. a turtle icon for slow speed).
+   */
+  minIcon?: React.ReactNode
+
+  /**
+   * Optional icon rendered at the maximum (trailing) end of the slider.
+   * Useful for indicating scale context (e.g. a rabbit icon for fast speed).
+   */
+  maxIcon?: React.ReactNode
 }

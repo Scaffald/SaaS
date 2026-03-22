@@ -4,7 +4,7 @@
  */
 
 import { Platform, StyleSheet } from 'react-native'
-import type { ViewStyle } from 'react-native'
+import type { ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { borderRadius } from '../../tokens/borders'
 import { shadows, boxShadows } from '../../tokens/shadows'
@@ -23,6 +23,15 @@ export interface SheetHeaderStyleConfig {
   header: ViewStyle
   headerContent: ViewStyle
   titleContainer: ViewStyle
+  // iOS 26 nav bar styles
+  navBar: ViewStyle
+  navBarLeading: ViewStyle
+  navBarCenter: ViewStyle
+  navBarTrailing: ViewStyle
+  navBarCircleButton: ViewStyle
+  navBarCloseIcon: TextStyle
+  navBarActionIcon: TextStyle
+  navBarTitle: TextStyle
 }
 
 export interface SheetContentStyleConfig {
@@ -105,6 +114,50 @@ export function getSheetHeaderStyles(theme: ThemeMode): SheetHeaderStyleConfig {
     titleContainer: {
       flex: 1,
       gap: spacing[4],
+    },
+    // iOS 26 nav bar layout
+    navBar: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      minHeight: 44,
+    },
+    navBarLeading: {
+      width: 44,
+      alignItems: 'flex-start',
+      justifyContent: 'center',
+    },
+    navBarCenter: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    navBarTrailing: {
+      width: 44,
+      alignItems: 'flex-end',
+      justifyContent: 'center',
+    },
+    navBarCircleButton: {
+      width: 30,
+      height: 30,
+      borderRadius: 15,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    navBarCloseIcon: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.labels[theme].primary,
+    },
+    navBarActionIcon: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: '#ffffff',
+    },
+    navBarTitle: {
+      fontSize: 17,
+      fontWeight: '600',
+      color: colors.labels[theme].primary,
     },
   }
 }

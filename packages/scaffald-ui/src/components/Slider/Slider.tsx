@@ -27,10 +27,12 @@ export function Slider({
   fillStyle,
   handleStyle,
   tooltipStyle,
+  minIcon,
+  maxIcon,
 }: SliderProps) {
-  // Derive handle size from custom style or default (16px)
-  const handleHeight = (handleStyle?.height as number) ?? 16
-  const handleWidth = (handleStyle?.width as number) ?? 16
+  // Derive handle size from custom style or default (28px — iOS 26)
+  const handleHeight = (handleStyle?.height as number) ?? 28
+  const handleWidth = (handleStyle?.width as number) ?? 28
   const halfHandle = Math.max(handleHeight, handleWidth) / 2
   const slider = useSlider({
     value,
@@ -58,11 +60,20 @@ export function Slider({
   // Determine handle state
   const handleState = slider.isDragging ? 'active' : 'default'
 
+  const hasIcons = minIcon || maxIcon
+
   return (
     <View style={[styles.container, style]}>
+      <View style={hasIcons ? styles.iconRow : undefined}>
+        {minIcon && <View style={styles.iconContainer}>{minIcon}</View>}
+        <View
+          style={[
+            hasIcons ? styles.trackContainerWithIcons : undefined,
+          ]}
+        >
       <View
         ref={slider.trackRef}
-        style={[styles.trackContainer, { height: Math.max(16, handleHeight) }]}
+        style={[styles.trackContainer, { height: Math.max(28, handleHeight) }]}
         onLayout={slider.handleTrackLayout}
         {...(slider.trackPanResponder?.panHandlers ?? {})}
       >
@@ -188,6 +199,9 @@ export function Slider({
           </View>
         )}
       </View>
+        </View>
+        {maxIcon && <View style={styles.iconContainer}>{maxIcon}</View>}
+      </View>
     </View>
   )
 }
@@ -213,5 +227,17 @@ const styles = StyleSheet.create({
   trackPressArea: {
     flex: 1,
     width: '100%',
+  },
+  iconRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  iconContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  trackContainerWithIcons: {
+    flex: 1,
   },
 })

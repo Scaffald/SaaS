@@ -32,6 +32,7 @@ import type { SheetProps, SheetHeaderProps, SheetContentProps, SheetFooterProps,
 import { useThemeContext } from '../../theme'
 import { Text, H4 } from '../Typography'
 import { Button } from '../Button'
+import { colors } from '../../tokens/colors'
 import {
   getSheetStyles,
   getSheetHeaderStyles,
@@ -271,6 +272,8 @@ export function SheetHeader({
   subtitle,
   showCloseButton = true,
   onClose,
+  closeButton,
+  actionButton,
   children,
   style,
   testID,
@@ -278,10 +281,57 @@ export function SheetHeader({
   const { theme } = useThemeContext()
   const styles = getSheetHeaderStyles(theme)
 
+  // iOS 26 nav bar pattern: when closeButton or actionButton is provided
+  const useNavBarLayout = closeButton || actionButton
+
   return (
     <View style={[styles.header, style]} testID={testID}>
       {children ? (
         children
+      ) : useNavBarLayout ? (
+        <View style={styles.navBar}>
+          {/* Leading: close button */}
+          <View style={styles.navBarLeading}>
+            {closeButton && (
+              <Pressable
+                onPress={closeButton.onPress}
+                style={[styles.navBarCircleButton, { backgroundColor: colors.fills[theme].secondary }]}
+                accessibilityRole="button"
+                accessibilityLabel="Close sheet"
+              >
+                {closeButton.icon ?? (
+                  <Text style={styles.navBarCloseIcon}>{'\u2715'}</Text>
+                )}
+              </Pressable>
+            )}
+          </View>
+
+          {/* Center: title */}
+          <View style={styles.navBarCenter}>
+            {title && <Text style={styles.navBarTitle}>{title}</Text>}
+            {subtitle && (
+              <Text size="sm" color="secondary">
+                {subtitle}
+              </Text>
+            )}
+          </View>
+
+          {/* Trailing: action button */}
+          <View style={styles.navBarTrailing}>
+            {actionButton && (
+              <Pressable
+                onPress={actionButton.onPress}
+                style={[styles.navBarCircleButton, { backgroundColor: colors.accents[theme].blue }]}
+                accessibilityRole="button"
+                accessibilityLabel="Action"
+              >
+                {actionButton.icon ?? (
+                  <Text style={styles.navBarActionIcon}>{'\u2191'}</Text>
+                )}
+              </Pressable>
+            )}
+          </View>
+        </View>
       ) : (
         <View style={styles.headerContent}>
           <View style={styles.titleContainer}>

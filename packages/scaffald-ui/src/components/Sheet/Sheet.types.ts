@@ -103,6 +103,22 @@ export interface SheetProps {
 /**
  * Sheet header props
  */
+/**
+ * iOS 26 header button configuration
+ */
+export interface SheetHeaderButton {
+  /**
+   * Callback when the button is pressed
+   */
+  onPress: () => void
+
+  /**
+   * Custom icon to render inside the button.
+   * If omitted, a default icon is used (X for close, up-arrow for action).
+   */
+  icon?: React.ReactNode
+}
+
 export interface SheetHeaderProps {
   /**
    * Title text
@@ -124,6 +140,19 @@ export interface SheetHeaderProps {
    * Callback when close button is pressed
    */
   onClose?: () => void
+
+  /**
+   * iOS 26 close button configuration.
+   * Renders a circular close button on the leading edge of the header.
+   * When provided, takes precedence over showCloseButton/onClose.
+   */
+  closeButton?: SheetHeaderButton
+
+  /**
+   * iOS 26 action button configuration.
+   * Renders a circular action button on the trailing edge of the header.
+   */
+  actionButton?: SheetHeaderButton
 
   /**
    * Custom content to render instead of title/subtitle

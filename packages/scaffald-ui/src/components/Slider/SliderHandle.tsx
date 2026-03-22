@@ -3,7 +3,7 @@
  * Draggable handle for the slider with states
  */
 
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, Platform } from 'react-native'
 import type { ViewStyle } from 'react-native'
 import { colors } from '../../tokens/colors'
 import { useThemeContext } from '../../theme'
@@ -35,7 +35,7 @@ export interface SliderHandleProps {
   style?: ViewStyle
 }
 
-const HANDLE_SIZE = 16 // 16px diameter from Figma
+const HANDLE_SIZE = 28 // 28px diameter — iOS 26 thumb size
 
 export function SliderHandle({
   state = 'default',
@@ -46,30 +46,22 @@ export function SliderHandle({
   const { theme } = useThemeContext()
   const isLight = theme === 'light'
 
-  const getBorderColor = (): string => {
-    if (disabled) {
-      return isLight ? colors.gray[300] : colors.gray[600]
-    }
-
-    if (state === 'active') {
-      if (color === 'primary') {
-        return colors.primary[500]
-      }
-      // Gray active: darker border
-      return isLight ? colors.gray[900] : colors.gray[100]
-    }
-
-    // Default state: lighter border
-    return isLight ? colors.gray[200] : colors.gray[600]
-  }
-
+  // iOS 26: White circle thumb with shadow, no visible border
   const baseStyle: ViewStyle = {
     width: HANDLE_SIZE,
     height: HANDLE_SIZE,
     borderRadius: HANDLE_SIZE / 2,
-    borderWidth: 2,
-    borderColor: getBorderColor(),
     backgroundColor: colors.white,
+    // iOS 26 thumb shadow
+    ...(Platform.OS === 'web'
+      ? { boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.15)' } as ViewStyle
+      : {
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.15,
+          shadowRadius: 4,
+          elevation: 3,
+        }),
   }
 
   const webHandleStyle = webStyle({
