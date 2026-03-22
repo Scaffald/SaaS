@@ -100,7 +100,7 @@ build_web_app() {
             env_file="$PROJECT_ROOT/.env.preview"
             ;;
         dev|development)
-            env_file="$PROJECT_ROOT/.env"
+            env_file="$PROJECT_ROOT/.env.dev"
             ;;
     esac
 
@@ -267,7 +267,7 @@ if [ ! -d "$BUILD_DIR" ]; then
     # Build workspace packages
     echo -e "${BLUE}Building workspace packages...${NC}"
     cd "$PROJECT_ROOT"
-    pnpm --filter @unicornlove/ui build
+    pnpm --filter @scaffald/ui build
     pnpm --filter @scf/core build
     pnpm --filter @scf/schemas build
     
