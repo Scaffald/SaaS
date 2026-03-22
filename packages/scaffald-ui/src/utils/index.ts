@@ -27,3 +27,12 @@ export {
 
 export { webStyle } from './webStyles'
 export type { WebViewStyle, WebTextStyle } from './webStyles'
+
+export {
+  getGlassMaterialStyles,
+  getGlassControlCenterStyles,
+  getGlassVibrantTextColor,
+  getGlassVibrantFillColor,
+  getGlassSeparatorColor,
+} from './glassStyles'
+export type { GlassMaterialStyleResult, GlassControlCenterStyleResult } from './glassStyles'

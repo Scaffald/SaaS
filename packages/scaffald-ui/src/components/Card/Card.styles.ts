@@ -16,6 +16,8 @@ import type {
   CardVariant,
 } from "./Card.types";
 import type { ResolvedThemeMode } from "../../tokens/colors";
+import type { GlassMaterial } from "../../tokens/glass";
+import { getGlassMaterialStyles } from "../../utils/glassStyles";
 
 // ============================================================================
 // Types
@@ -109,6 +111,7 @@ export function getCardStyles(
   isPressed: boolean,
   disabled: boolean,
   theme: ResolvedThemeMode = 'light',
+  glassMaterial?: GlassMaterial,
 ): CardStyleConfig {
   // Light: white card surface. Dark: bg.dark.muted (#2f2820) so inputs (bg.dark.subtle)
   // sit one shade darker — creating the inset effect the design requires.
@@ -147,24 +150,31 @@ export function getCardStyles(
         backgroundColor: colors.bg[theme].subtle,
       };
       break;
-    case "glass":
+    case "glass": {
+      // When a specific glassMaterial is set, use the Liquid Glass material system
+      const materialLevel = glassMaterial ?? 'regular';
+      const materialStyles = getGlassMaterialStyles(materialLevel, theme);
+
       container = {
         ...baseStyle,
         borderWidth: 1,
         borderColor: colors.border[theme].ghost,
       };
       if (Platform.OS === "web") {
-        // Web: semi-transparent bg + backdrop blur for frosted glass effect
-        container.backgroundColor = colors.bg[theme].glass;
-        (container as Record<string, unknown>).backdropFilter = 'blur(20px)';
-        (container as Record<string, unknown>).WebkitBackdropFilter = 'blur(20px)';
+        // Web: use material fallback bg as base (layers render via GlassSurface or nested divs)
+        container.backgroundColor = materialStyles.nativeContainer.backgroundColor;
+        // Apply blur from tint/blur layers directly on the container for simple Card usage
+        const blurRadius = glassMaterial ? 50 : 20;
+        (container as Record<string, unknown>).backdropFilter = `blur(${blurRadius}px)`;
+        (container as Record<string, unknown>).WebkitBackdropFilter = `blur(${blurRadius}px)`;
         (container as Record<string, unknown>).boxShadow = BOX_SHADOW_MAP.glass;
       } else {
-        // Native: higher-opacity fallback + subtle shadow (no backdrop-filter support)
-        container.backgroundColor = colors.bg[theme].glassFallback;
+        // Native: higher-opacity fallback + subtle shadow
+        container.backgroundColor = materialStyles.nativeContainer.backgroundColor;
         Object.assign(container, SHADOW_MAP.glass);
       }
       break;
+    }
     default:
       container = baseStyle;
   }

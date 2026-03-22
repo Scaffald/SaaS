@@ -5,6 +5,8 @@
 import type { ViewStyle, TextStyle } from 'react-native'
 
 export type ProgressBarColor = 'primary' | 'gray' | 'error' | 'success'
+/** Visual style variant */
+export type ProgressBarVariant = 'default' | 'ios'
 export type ProgressBarOrientation = 'horizontal' | 'vertical'
 export type ProgressIndicatorIconType = 'spinner' | 'check' | 'cancel' | 'none'
 export type HintMessageType = 'default' | 'error' | 'warning'
@@ -20,6 +22,12 @@ export interface ProgressBarBaseProps {
    * @default 'primary'
    */
   color?: ProgressBarColor
+
+  /**
+   * Visual style variant. 'ios' uses iOS 26 accent colors and fills.
+   * @default 'default'
+   */
+  variant?: ProgressBarVariant
 
   /**
    * Custom style for the progress bar container

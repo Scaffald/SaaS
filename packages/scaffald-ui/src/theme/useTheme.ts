@@ -20,8 +20,13 @@ import { spacing, namedSpacing } from '../tokens/spacing'
 import { typography } from '../tokens/typography'
 import { borderRadius, borders } from '../tokens/borders'
 import { shadows, boxShadows } from '../tokens/shadows'
+import { glassVibrantColors, type GlassMaterial } from '../tokens/glass'
 import { useThemeContext } from './ThemeProvider'
 import type { ResolvedThemeMode } from '../tokens/colors'
+import {
+  getGlassMaterialStyles,
+  type GlassMaterialStyleResult,
+} from '../utils/glassStyles'
 
 export type ThemeColors = {
   text: (typeof colors.text)[ResolvedThemeMode]
@@ -41,6 +46,10 @@ export interface ThemeObject {
   borders: typeof borders
   shadows: typeof shadows
   boxShadows: typeof boxShadows
+  /** Vibrant text/fill colors for glass surfaces (current theme) */
+  vibrantText: (typeof glassVibrantColors)[ResolvedThemeMode]
+  /** Get glass material styles for current theme */
+  glassMaterial: (material: GlassMaterial) => GlassMaterialStyleResult
 }
 
 export function useTheme(): ThemeObject {
@@ -63,6 +72,9 @@ export function useTheme(): ThemeObject {
       borders,
       shadows,
       boxShadows,
+      vibrantText: glassVibrantColors[theme],
+      glassMaterial: (material: GlassMaterial) =>
+        getGlassMaterialStyles(material, theme),
     }),
     [theme]
   )

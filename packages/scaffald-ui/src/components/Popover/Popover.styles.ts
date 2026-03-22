@@ -36,7 +36,8 @@ export function getPopoverStyles(
   theme: ThemeMode,
   maxWidth: number,
   width?: number | 'auto' | 'trigger',
-  triggerWidth?: number
+  triggerWidth?: number,
+  variant: 'default' | 'glass' = 'default',
 ): PopoverStyleConfig {
   const shadow = shadows.m
 
@@ -49,6 +50,47 @@ export function getPopoverStyles(
     popoverWidth = undefined
   }
 
+  // iOS 26 glass variant
+  if (variant === 'glass') {
+    const container: ViewStyle = {
+      position: 'absolute',
+      width: popoverWidth,
+      maxWidth,
+      borderRadius: 20,
+      overflow: 'hidden',
+    }
+
+    if (Platform.OS === 'web') {
+      const webContainer = container as Record<string, unknown>
+      webContainer.backdropFilter = 'blur(65px)'
+      webContainer.WebkitBackdropFilter = 'blur(65px)'
+      webContainer.backgroundColor = theme === 'dark'
+        ? 'rgba(30, 30, 30, 0.7)'
+        : 'rgba(255, 255, 255, 0.84)'
+      webContainer.boxShadow = '0px 10px 100px 0px rgba(0, 0, 0, 0.3)'
+    } else {
+      container.backgroundColor = theme === 'dark'
+        ? 'rgba(30, 30, 30, 0.88)'
+        : 'rgba(255, 255, 255, 0.92)'
+      Object.assign(container, {
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.3,
+        shadowRadius: 50,
+        elevation: 12,
+      })
+    }
+
+    return {
+      container,
+      content: {
+        overflow: 'hidden',
+        borderRadius: 20,
+      },
+    }
+  }
+
+  // Default variant
   return {
     container: {
       position: 'absolute',

@@ -82,6 +82,7 @@ export function Card({
   backgroundColor,
   borderColor,
   borderWidth,
+  glassMaterial,
 }: CardProps): React.ReactElement {
   const [isPressed, setIsPressed] = useState(false)
   const { theme } = useThemeContext()
@@ -101,7 +102,7 @@ export function Card({
   }, [onPressOut])
 
   // Get styles from factory function
-  const styles = useStyles(getCardStyles, [variant, padding, radius, elevation, isPressed, disabled, theme] as const)
+  const styles = useStyles(getCardStyles, [variant, padding, radius, elevation, isPressed, disabled, theme, glassMaterial] as const)
   const deprecatedStyle = [
     backgroundColor !== undefined && { backgroundColor },
     borderColor !== undefined && { borderColor },

@@ -9,6 +9,7 @@ import { Card } from '../../Card'
 import { Stack } from '../../Layout'
 import type { GapValue } from '../../Layout'
 import { useResponsive } from '../../../hooks/useResponsive'
+import type { GlassMaterial } from '../../../tokens/glass'
 
 export interface DashboardWidgetProps {
   children: React.ReactNode
@@ -16,6 +17,8 @@ export interface DashboardWidgetProps {
   gap?: GapValue | number
   /** Use elevated card variant */
   elevated?: boolean
+  /** Liquid Glass material density (when not elevated, defaults to 'regular') */
+  glassMaterial?: GlassMaterial
   style?: object
   testID?: string
 }
@@ -24,6 +27,7 @@ export function DashboardWidget({
   children,
   gap = 16,
   elevated = false,
+  glassMaterial,
   style,
   testID,
 }: DashboardWidgetProps): React.ReactElement {
@@ -34,6 +38,7 @@ export function DashboardWidget({
       padding="2xl"
       radius="xl"
       elevation={elevated ? 'soft' : 'glass'}
+      glassMaterial={elevated ? undefined : glassMaterial}
       style={style}
       testID={testID}
     >

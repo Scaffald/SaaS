@@ -296,6 +296,13 @@ export type { GlassSliderProps } from "./components/GlassSlider";
 export { GlassWidget } from "./components/GlassWidget";
 export type { GlassWidgetProps, GlassWidgetSize } from "./components/GlassWidget";
 
+// iOS 26 Controls
+export { SegmentedControl } from "./components/SegmentedControl";
+export type { SegmentedControlProps } from "./components/SegmentedControl";
+
+export { PageControl } from "./components/PageControl";
+export type { PageControlProps } from "./components/PageControl";
+
 export { DiscoverCard } from "./components/DiscoverCard";
 export type { DiscoverCardProps, DiscoverCardVariant } from "./components/DiscoverCard";
 
@@ -1020,6 +1027,7 @@ export type {
   SheetAnimation,
   SheetContentProps,
   SheetFooterProps,
+  SheetHeaderButton,
   SheetHeaderProps,
   SheetHeight,
   SheetProps,

@@ -13,6 +13,7 @@ import { useThemeContext } from '../../theme'
 export function ProgressBarBase({
   value,
   color = 'primary',
+  variant = 'default',
   style,
   fillStyle,
 }: ProgressBarBaseProps) {
@@ -25,6 +26,9 @@ export function ProgressBarBase({
 
   // Get background color (container)
   const getBackgroundColor = () => {
+    if (variant === 'ios') {
+      return colors.fills[theme].primary // rgba(120,120,128,0.2)
+    }
     if (isLight) {
       return colors.bg.light.subtle // gray[100]
     }
@@ -33,6 +37,9 @@ export function ProgressBarBase({
 
   // Get progress fill color based on color variant
   const getFillColor = () => {
+    if (variant === 'ios') {
+      return colors.accents[theme].blue // #0088FF / #0A84FF
+    }
     switch (color) {
       case 'primary':
         return colors.primary[500]

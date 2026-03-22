@@ -259,6 +259,7 @@ export function Popover({
   closeOnEscapeKey = true,
   showArrow = true,
   offset = 8,
+  variant = 'default',
   width,
   maxWidth = 320,
   style,
@@ -359,14 +360,14 @@ export function Popover({
 
   // Clone trigger with press handlers
   const triggerElement = isValidElement(children)
-    ? cloneElement(children as React.ReactElement<any>, {
+    ? cloneElement(children as React.ReactElement<Record<string, unknown>>, {
         ref: triggerRef,
         ...(trigger === 'press' && { onPress: handleToggle }),
         ...(trigger === 'longPress' && { onLongPress: handleToggle }),
       })
     : children
 
-  const styles = getPopoverStyles(theme, maxWidth, width, triggerLayout?.width)
+  const styles = getPopoverStyles(theme, maxWidth, width, triggerLayout?.width, variant)
   const arrowStyle = showArrow
     ? getArrowStyleWithColor(placement, position, colors.bg[theme].default)
     : null

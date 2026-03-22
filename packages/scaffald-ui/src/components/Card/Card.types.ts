@@ -5,6 +5,7 @@
 
 import type { ReactNode } from "react";
 import type { ImageStyle, StyleProp, ViewStyle } from "react-native";
+import type { GlassMaterial } from "../../tokens/glass";
 
 /**
  * Card variant determines the visual style.
@@ -52,6 +53,8 @@ export interface CardProps {
   radius?: CardRadius;
   /** Elevation level (only for 'elevated' variant) */
   elevation?: CardElevation;
+  /** Liquid Glass material density (only for 'glass' variant). Defaults to 'regular'. */
+  glassMaterial?: GlassMaterial;
   /** Whether the card is pressable/interactive */
   pressable?: boolean;
   /** Callback when card is pressed (requires pressable=true) */

@@ -6,6 +6,9 @@
 import type { ReactNode } from 'react'
 import type { ViewStyle, StyleProp } from 'react-native'
 
+/** Popover visual style variant */
+export type PopoverVariant = 'default' | 'glass'
+
 /**
  * Popover placement options
  */
@@ -104,6 +107,12 @@ export interface PopoverProps {
    * @default 320
    */
   maxWidth?: number
+
+  /**
+   * Visual style variant. 'glass' uses iOS 26 Liquid Glass material.
+   * @default 'default'
+   */
+  variant?: PopoverVariant
 
   /**
    * Custom style for the popover container
