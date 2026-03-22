@@ -41,7 +41,9 @@
   --ifm-font-size-base: 16px;
   --ifm-line-height-base: 1.5;
   --ifm-heading-font-weight: 600;
-  --ifm-heading-color: #3a342f;
+  --ifm-heading-color: #1a1510;
+  --ifm-font-color-base: #2d2520;
+  --ifm-font-color-secondary: #4a3f36;
 
   /* Spacing */
   --ifm-spacing-horizontal: 1.5rem;

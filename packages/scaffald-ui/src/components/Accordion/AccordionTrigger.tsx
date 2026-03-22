@@ -95,12 +95,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: '100%',
-    marginHorizontal: -spacing[16], // Negative margin to extend to edges
+    marginHorizontal: -spacing[16],
     marginVertical: -spacing[10],
     paddingHorizontal: spacing[16],
     paddingVertical: spacing[10],
-    borderRadius: 10, // Match parent border radius
+    borderRadius: 10,
   },
   leftContainer: {
     flexDirection: 'row',
