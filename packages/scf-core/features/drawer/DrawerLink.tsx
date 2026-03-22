@@ -15,8 +15,8 @@ import { isActivePath } from './utils'
  * dynamic style function to the rendered `<a>` on web.
  */
 const itemStyle = (
-  _active: boolean,
-  pressed: boolean,
+  active: boolean,
+  _pressed: boolean,
   resolvedTheme: 'light' | 'dark',
   _activeBg: string,
   borderRadius = 12,
@@ -29,10 +29,10 @@ const itemStyle = (
   borderRadius,
   width: '100%' as const,
   alignSelf: 'stretch' as const,
-  backgroundColor: pressed
+  backgroundColor: active
     ? resolvedTheme === 'dark'
-      ? colors.bg[resolvedTheme].muted
-      : colors.bg[resolvedTheme].emphasis
+      ? 'rgba(80,73,64,0.6)'
+      : 'rgba(200,195,188,0.6)'
     : 'transparent',
 })
 

@@ -176,7 +176,7 @@ export function ProfileIdentityWidget() {
     <DashboardWidget>
       <Stack gap={32}>
         {/* Identity Section */}
-        <Row gap={16} align="flex-start" wrap>
+        <Row gap={16} align="center" wrap>
           {/* Avatar */}
           <Avatar
             size={80}
