@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { useDebounce } from '@scf/core/utils/useDebounce'
-import { DiscoverHeader } from './components/DiscoverHeader'
+import { PageHeader } from '@scf/core/components/PageHeader'
 import type { ResultListRef } from './components/ResultList'
 import { DiscoverWorkersLeft } from './discover-workers-left'
 import { DiscoverWorkersRight } from './discover-workers-right'
@@ -44,10 +44,10 @@ export function DiscoverWorkersScreen() {
 
   return {
     header: (
-      <DiscoverHeader
+      <PageHeader
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
-        placeholder="Search by name, title, or location..."
+        searchPlaceholder="Search by name, title, or location..."
         onReset={hasFilters ? handleReset : undefined}
       />
     ),

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useDebounce } from '@scf/core/utils/useDebounce'
-import { DiscoverHeader } from './components/DiscoverHeader'
+import { PageHeader } from '@scf/core/components/PageHeader'
+import { SortDropdown } from './components/SortDropdown'
 import { DiscoverJobsLeft } from './discover-jobs-left'
 import { DiscoverJobsRight } from './discover-jobs-right'
 
@@ -36,12 +37,23 @@ export function DiscoverJobsScreen() {
 
   return {
     header: (
-      <DiscoverHeader
+      <PageHeader
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
-        placeholder="Search jobs by title, company..."
+        searchPlaceholder="Search jobs by title, company..."
         onReset={hasFilters ? handleReset : undefined}
-      />
+      >
+        {jobSource !== 'external' && (
+          <SortDropdown
+            value={sortBy}
+            onChange={(v) => setSortBy(v as 'relevance' | 'match_score')}
+            options={[
+              { value: 'relevance', label: 'Relevance' },
+              { value: 'match_score', label: 'Best Match' },
+            ]}
+          />
+        )}
+      </PageHeader>
     ),
     left: (
       <DiscoverJobsLeft

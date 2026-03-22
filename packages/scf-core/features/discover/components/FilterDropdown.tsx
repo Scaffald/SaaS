@@ -121,7 +121,7 @@ export const FilterDropdown = ({
         iconStart={SlidersHorizontal}
         iconEnd={ChevronDown}
       >
-        {getButtonLabel()}
+        <Text>{getButtonLabel()}</Text>
       </Button>
     </Popover>
   )

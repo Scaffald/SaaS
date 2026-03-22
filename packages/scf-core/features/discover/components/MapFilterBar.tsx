@@ -1,10 +1,11 @@
 import type { AddressResult } from '@scaffald/ui'
 import { AddressAutocomplete } from '@scaffald/ui'
 import { createMapboxGeocodingProvider } from '@scf/core/utils/mapbox-geocoding-provider'
-import { List, RotateCcw } from 'lucide-react-native'
+import { List } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
 import { Button, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { PageHeader } from '@scf/core/components/PageHeader'
 import { FilterDropdown } from './FilterDropdown'
 
 type MapFilterBarProps = {
@@ -45,17 +46,8 @@ function validateMapboxToken(token: string | undefined): { valid: boolean; error
 }
 
 /**
- * Full-width Map Filter Bar Component
- *
- * A comprehensive filter bar positioned above the map and drawer components.
- * Contains search input, filter dropdowns, results count, and reset functionality.
- *
- * Features:
- * - Always-visible search input using AddressAutocomplete
- * - Filter dropdown for Workers/Organizations/Jobs toggles
- * - Results count display (clickable to toggle results rail/sheet)
- * - Reset button to clear all filters and search
- * - Responsive design: horizontal on desktop, may stack on mobile
+ * Map-specific filter bar that composes PageHeader with AddressAutocomplete search,
+ * filter toggles, and a results count button.
  */
 export const MapFilterBar = ({
   onLocationSelect,
@@ -73,7 +65,6 @@ export const MapFilterBar = ({
   const t = theme === 'dark' ? 'dark' : 'light'
   const [searchQuery, setSearchQuery] = useState('')
 
-  // Validate API key
   const mapboxToken = process.env.EXPO_PUBLIC_MAPBOX_TOKEN
   const tokenValidation = useMemo(() => validateMapboxToken(mapboxToken), [mapboxToken])
 
@@ -89,51 +80,48 @@ export const MapFilterBar = ({
     [onLocationSelect]
   )
 
-  return (
-    <Row
-      width="100%"
-      paddingHorizontal={16}
-      paddingVertical={10}
-      gap={10}
-      align="center"
-      style={{ backgroundColor: colors.bg[t].default, borderBottomWidth: 1, borderBottomColor: colors.border[t].default }}
-    >
-      {/* Search Input */}
-      {tokenValidation.valid && mapboxToken ? (
-        <Stack flex={1} minWidth={200}>
-          <AddressAutocomplete
-            value={searchQuery}
-            onChange={setSearchQuery}
-            onAddressSelect={handleLocationSelect}
-            placeholder="Search city, county, or region..."
-            provider={createMapboxGeocodingProvider(mapboxToken)}
-            searchOptions={{
-              types: ['place', 'region', 'district', 'locality'],
-              zoomLevel: 'city',
-            }}
-            minLength={2}
-            maxResults={5}
-            debounceMs={300}
-          />
-        </Stack>
-      ) : (
-        <Stack
-          flex={1}
-          minWidth={200}
-          style={{ backgroundColor: colors.bg[t].default, borderColor: t === 'dark' ? colors.error[400] : colors.error[500] }}
-          padding="sm"
-          borderRadius={16}
-          borderWidth={1}
-          gap={8}
-        >
-          <Row align="center" gap={8}>
-            <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>Map Search Unavailable</Text>
-          </Row>
-          <Text style={{ color: colors.text[t].secondary }}>{tokenValidation.error}</Text>
-        </Stack>
-      )}
+  const renderSearch = useCallback(() => {
+    if (tokenValidation.valid && mapboxToken) {
+      return (
+        <AddressAutocomplete
+          value={searchQuery}
+          onChange={setSearchQuery}
+          onAddressSelect={handleLocationSelect}
+          placeholder="Search city, county, or region..."
+          provider={createMapboxGeocodingProvider(mapboxToken)}
+          searchOptions={{
+            types: ['place', 'region', 'district', 'locality'],
+            zoomLevel: 'city',
+          }}
+          minLength={2}
+          maxResults={5}
+          debounceMs={300}
+        />
+      )
+    }
 
-      {/* Filter Dropdown */}
+    return (
+      <Stack
+        style={{ backgroundColor: colors.bg[t].default, borderColor: t === 'dark' ? colors.error[400] : colors.error[500] }}
+        padding="sm"
+        borderRadius={16}
+        borderWidth={1}
+        gap={8}
+      >
+        <Row align="center" gap={8}>
+          <Text style={{ color: t === 'dark' ? colors.error[300] : colors.error[600] }}>Map Search Unavailable</Text>
+        </Row>
+        <Text style={{ color: colors.text[t].secondary }}>{tokenValidation.error}</Text>
+      </Stack>
+    )
+  }, [tokenValidation, mapboxToken, searchQuery, handleLocationSelect, t])
+
+  return (
+    <PageHeader
+      renderSearch={renderSearch}
+      onReset={onReset}
+      style={{ backgroundColor: colors.bg[t].default }}
+    >
       <FilterDropdown
         showWorkers={showWorkers}
         showOrganizations={showOrganizations}
@@ -143,7 +131,6 @@ export const MapFilterBar = ({
         onShowJobsChange={onShowJobsChange}
       />
 
-      {/* Results Count */}
       <Button
         size="md"
         variant="outline"
@@ -159,16 +146,6 @@ export const MapFilterBar = ({
           <Text>Results</Text>
         )}
       </Button>
-
-      {/* Reset Button */}
-      <Button
-        size="md"
-        variant="outline"
-        iconStart={RotateCcw}
-        onPress={onReset}
-        color="gray"
-        accessibilityLabel="Reset filters and search"
-      />
-    </Row>
+    </PageHeader>
   )
 }
