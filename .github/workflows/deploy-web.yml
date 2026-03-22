@@ -101,7 +101,7 @@ jobs:
           EXPO_PUBLIC_SUPABASE_URL: ${{ github.ref == 'refs/heads/preview' && secrets.PREVIEW_EXPO_PUBLIC_SUPABASE_URL || secrets.EXPO_PUBLIC_SUPABASE_URL }}
           EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ github.ref == 'refs/heads/preview' && secrets.PREVIEW_EXPO_PUBLIC_SUPABASE_ANON_KEY || secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
           # App URL
-          EXPO_PUBLIC_URL: ${{ github.ref == 'refs/heads/prod' && 'https://app.scaffald.com' || github.ref == 'refs/heads/preview' && 'https://preview.scaffald.com' || 'https://dev.scaffald.com' }}
+          EXPO_PUBLIC_URL: ${{ github.ref == 'refs/heads/prod' && 'https://beta.scaffald.com' || github.ref == 'refs/heads/preview' && 'https://prev.scaffald.com' || 'https://sandbox.scaffald.com' }}
           # Google OAuth
           EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: ${{ github.ref == 'refs/heads/preview' && secrets.PREVIEW_EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || secrets.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID }}
           EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID: ${{ github.ref == 'refs/heads/preview' && secrets.PREVIEW_EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID || secrets.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID }}
