@@ -55,9 +55,9 @@ export function GrowthTipCard() {
   return (
     <Stack
       padding={24}
-      borderRadius={20}
+      borderRadius={12}
       style={{
-        backgroundColor: colors.primary[800],
+        backgroundColor: colors.success[600],
         overflow: 'hidden',
         position: 'relative',
       }}
@@ -129,15 +129,15 @@ export function GrowthTipCard() {
 
       {/* Footer: dots + counter */}
       <Row justify="space-between" align="center" marginTop={24}>
-        <Row gap={8}>
+        <Row gap={6}>
           {profileTipCards.map((_, i) => (
             <Pressable
               key={i}
               onPress={() => goToIndex(i)}
               style={{
-                width: 8,
-                height: 8,
-                borderRadius: 4,
+                width: 6,
+                height: 6,
+                borderRadius: 3,
                 backgroundColor: i === index ? '#fff' : 'rgba(255,255,255,0.3)',
               }}
             />

@@ -39,11 +39,11 @@ export function MobileGrowthTip() {
   return (
     <View
       style={{
-        backgroundColor: colors.primary[50],
-        borderRadius: 20,
+        backgroundColor: colors.success[50],
+        borderRadius: 12,
         padding: 16,
         borderWidth: 1,
-        borderColor: colors.primary[100],
+        borderColor: colors.success[100],
       }}
     >
       <Row gap={12} style={{ alignItems: 'flex-start' }}>
@@ -52,7 +52,7 @@ export function MobileGrowthTip() {
             width: 36,
             height: 36,
             borderRadius: 18,
-            backgroundColor: colors.primary[500],
+            backgroundColor: colors.success[600],
             justifyContent: 'center',
             alignItems: 'center',
           }}
