@@ -533,7 +533,7 @@ function HireSummaryCard({
   }
 
   return (
-    <Card padding="md" borderWidth={1} borderColor={colors.border[theme].default}>
+    <Card variant="glass" padding="md" borderWidth={1} borderColor={colors.border[theme].default}>
       <Stack gap={8}>
         <Text>Success Fee Overview</Text>
         <Row justify="space-between">

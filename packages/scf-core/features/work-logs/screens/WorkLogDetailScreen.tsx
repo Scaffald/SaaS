@@ -458,7 +458,7 @@ export function WorkLogDetailScreen() {
           </Text>
         </Stack>
 
-        <Card style={{ borderColor: colors.border[theme].default, borderWidth: 1 }}>
+        <Card variant="outlined">
           <Stack gap={12} padding="sm">
             <Text>Summary</Text>
             <Row gap={16} wrap>
@@ -488,7 +488,7 @@ export function WorkLogDetailScreen() {
           </Stack>
         </Card>
 
-        <Card style={{ borderColor: colors.border[theme].default, borderWidth: 1 }}>
+        <Card variant="outlined">
           <Stack gap={12} padding="sm">
             <Text>Profile visibility</Text>
             <Paragraph style={{ color: colors.text[theme].secondary }}>
@@ -570,7 +570,7 @@ export function WorkLogDetailScreen() {
           </Stack>
         </Card>
 
-        <Card style={{ borderColor: colors.border[theme].default, borderWidth: 1 }}>
+        <Card variant="outlined">
           <Stack gap={12} padding="sm">
             <Text>Time entries</Text>
             <Stack gap={8}>
@@ -599,7 +599,7 @@ export function WorkLogDetailScreen() {
           </Stack>
         </Card>
 
-        <Card style={{ borderColor: colors.border[theme].default, borderWidth: 1 }}>
+        <Card variant="outlined">
           <Stack gap={12} padding="sm">
             <Text>Tasks completed</Text>
             {taskItems.length === 0 ? (
@@ -648,7 +648,7 @@ export function WorkLogDetailScreen() {
         </Card>
 
         {photos.length > 0 && (
-          <Card style={{ borderColor: colors.border[theme].default, borderWidth: 1 }}>
+          <Card variant="outlined">
             <Stack gap={12} padding="sm">
               <Text>Photos</Text>
               <PhotoGallery
@@ -684,7 +684,7 @@ export function WorkLogDetailScreen() {
           </Card>
         )}
 
-        <Card style={{ borderColor: colors.border[theme].default, borderWidth: 1 }}>
+        <Card variant="outlined">
           <Stack gap={12} padding="sm">
             <Row justify="space-between" align="center">
               <Text>Collaborators</Text>
@@ -763,7 +763,7 @@ export function WorkLogDetailScreen() {
           </Stack>
         </Card>
 
-        <Card style={{ borderColor: colors.border[theme].default, borderWidth: 1 }}>
+        <Card variant="outlined">
           <Stack gap={12} padding="sm">
             <Row justify="space-between" align="center">
               <Text>Conversation</Text>
@@ -812,7 +812,7 @@ export function WorkLogDetailScreen() {
           </Stack>
         </Card>
 
-        <Card style={{ borderColor: colors.border[theme].default, borderWidth: 1 }}>
+        <Card variant="outlined">
           <Stack gap={12} padding="sm">
             <Text>Exports</Text>
             <Paragraph style={{ color: colors.text[theme].secondary }}>
@@ -913,7 +913,7 @@ function CollaboratorRow({
   const permission = collaborator.permission_level ?? "view";
 
   return (
-    <Card style={{ borderWidth: 1, borderColor: colors.border[theme].default }}>
+    <Card variant="outlined">
       <Stack gap={8} padding="sm">
         <Text>{displayName}</Text>
         <Text style={{ color: colors.text[theme].secondary }}>

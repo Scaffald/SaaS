@@ -312,19 +312,19 @@ export function CalendarSchedulingScreen() {
 
                 {/* Stats */}
                 <Row gap={12}>
-                  <Card style={{ flex: 1 }} padding="md">
+                  <Card variant="glass" style={{ flex: 1 }} padding="md">
                     <Stack align="center" gap={4}>
                       <Text style={{ color: colors.text[theme].primary, fontSize: 24, fontWeight: '700' }}>3</Text>
                       <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>Upcoming</Text>
                     </Stack>
                   </Card>
-                  <Card style={{ flex: 1 }} padding="md">
+                  <Card variant="glass" style={{ flex: 1 }} padding="md">
                     <Stack align="center" gap={4}>
                       <Text style={{ color: colors.text[theme].primary, fontSize: 24, fontWeight: '700' }}>1</Text>
                       <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>Confirmed</Text>
                     </Stack>
                   </Card>
-                  <Card style={{ flex: 1 }} padding="md">
+                  <Card variant="glass" style={{ flex: 1 }} padding="md">
                     <Stack align="center" gap={4}>
                       <Text style={{ color: colors.text[theme].primary, fontSize: 24, fontWeight: '700' }}>12</Text>
                       <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>Completed</Text>
@@ -381,7 +381,7 @@ export function CalendarSchedulingScreen() {
                 </DashboardWidget>
 
                 {/* How it works */}
-                <Card padding="lg">
+                <Card variant="glass" padding="lg">
                   <Stack gap={12}>
                     <Text style={{ color: colors.text[theme].primary, fontWeight: '600', fontSize: 16 }}>
                       How Self-Scheduling Works

@@ -144,7 +144,7 @@ export function IdVerificationContent() {
     <Stack gap={16}>
       {statusCard}
 
-      <Card padding="md" bordered>
+      <Card variant="glass" padding="md" bordered>
         <Stack gap={8}>
           <Text>Why verify your identity?</Text>
           <Text style={{ color: colors.text[theme].secondary }}>
@@ -189,7 +189,7 @@ export function IdVerificationRight() {
   const { theme } = useThemeContext()
   return (
     <Stack gap={16}>
-      <Card padding="md" bordered>
+      <Card variant="glass" padding="md" bordered>
         <Stack gap={8}>
           <Text>What happens after payment?</Text>
           <Text style={{ color: colors.text[theme].secondary }}>
@@ -205,7 +205,7 @@ export function IdVerificationRight() {
         </Stack>
       </Card>
 
-      <Card padding="md" bordered style={{ backgroundColor: colors.info[50], borderColor: colors.border[theme].info }}>
+      <Card variant="glass" padding="md" bordered style={{ backgroundColor: colors.info[50], borderColor: colors.border[theme].info }}>
         <Stack gap={8}>
           <Text style={{ color: colors.info[700] }}>Need help?</Text>
           <Text style={{ color: colors.info[600] }}>
@@ -237,7 +237,7 @@ function renderStatusCard(
 ) {
   if (queryReturn.isLoading) {
     return (
-      <Card padding="md" bordered>
+      <Card variant="glass" padding="md" bordered>
         <Stack gap={8}>
           <IdVerificationBadge status={null} muted size="md" />
           <Text style={{ color: colors.text[theme].secondary }}>Loading your verification badge…</Text>
@@ -248,7 +248,7 @@ function renderStatusCard(
 
   if (queryReturn.isError) {
     return (
-      <Card padding="md" bordered style={{ backgroundColor: colors.error[50], borderColor: colors.border[theme].error }}>
+      <Card variant="glass" padding="md" bordered style={{ backgroundColor: colors.error[50], borderColor: colors.border[theme].error }}>
         <Stack gap={8}>
           <Text style={{ color: colors.error[700] }}>Unable to load badge</Text>
           <Text style={{ color: colors.fg[theme].error }}>
@@ -270,7 +270,7 @@ function renderStatusCard(
     | undefined
   if (!badge) {
     return (
-      <Card padding="md" bordered>
+      <Card variant="glass" padding="md" bordered>
         <Stack gap={8}>
           <IdVerificationBadge status={null} muted size="md" />
           <Text style={{ color: colors.text[theme].secondary }}>
@@ -282,7 +282,7 @@ function renderStatusCard(
   }
 
   return (
-    <Card padding="md" bordered>
+    <Card variant="glass" padding="md" bordered>
       <Stack gap={8}>
         <IdVerificationBadge
           status={badge.badgeStatus as 'active' | 'expired' | 'revoked'}
@@ -323,7 +323,7 @@ function PricingSection({
 
   if (isLoading) {
     return (
-      <Card padding="md" bordered>
+      <Card variant="glass" padding="md" bordered>
         <Stack gap={8} align="center">
           <Spinner variant="ios" size="sm" />
           <Text style={{ color: colors.text[theme].secondary }}>Loading verification options…</Text>
@@ -334,7 +334,7 @@ function PricingSection({
 
   if (pricingOptions.length === 0) {
     return (
-      <Card padding="md" bordered style={{ backgroundColor: colors.bg[theme].subtle, borderColor: colors.border[theme].default }}>
+      <Card variant="glass" padding="md" bordered style={{ backgroundColor: colors.bg[theme].subtle, borderColor: colors.border[theme].default }}>
         <Stack gap={8}>
           <Text>Verification temporarily unavailable</Text>
           <Text style={{ color: colors.text[theme].secondary }}>

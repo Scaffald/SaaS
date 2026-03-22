@@ -151,7 +151,7 @@ export function UserForm({
         </Row>
 
         {/* Profile Information */}
-        <Card padding="md">
+        <Card variant="glass" padding="md">
           <Stack gap={12}>
             <Text style={{ marginBottom: 8 }}>Profile Information</Text>
 
@@ -199,7 +199,7 @@ export function UserForm({
         </Card>
 
         {/* Private Information */}
-        <Card padding="md">
+        <Card variant="glass" padding="md">
           <Stack gap={12}>
             <Text style={{ marginBottom: 8 }}>Private Information</Text>
 
@@ -249,7 +249,7 @@ export function UserForm({
         </Card>
 
         {/* Employment Information */}
-        <Card padding="md">
+        <Card variant="glass" padding="md">
           <Stack gap={12}>
             <Text style={{ marginBottom: 8 }}>Employment Information</Text>
 

@@ -37,7 +37,7 @@ export const CandidateProfileTab = ({
   return (
     <Stack gap={16}>
       {/* Contact Info */}
-      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+      <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Text style={{ marginBottom: 12 }}>Contact Information</Text>
         {isContactLocked ? (
           <Stack gap={8}>
@@ -63,7 +63,7 @@ export const CandidateProfileTab = ({
       </Card>
 
       {/* Skills */}
-      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+      <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Text style={{ marginBottom: 12 }}>Skills</Text>
         <Stack gap={12}>
           {candidate.skills.map((skill, index) => (
@@ -106,7 +106,7 @@ export const CandidateProfileTab = ({
       </Card>
 
       {/* Certifications */}
-      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+      <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Text style={{ marginBottom: 12 }}>Certifications</Text>
         <Stack gap={12}>
           {candidate.certifications.map((cert, index) => (
@@ -124,7 +124,7 @@ export const CandidateProfileTab = ({
       </Card>
 
       {/* Experience */}
-      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+      <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Text style={{ marginBottom: 12 }}>Work Experience</Text>
         <Stack gap={16}>
           {candidate.experience.map((exp, index) => (

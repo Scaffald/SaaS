@@ -286,7 +286,7 @@ export function ATSMetricsDashboard({
         </Row>
 
         {/* Pipeline Funnel */}
-        <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+        <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
           <Text style={{ marginBottom: 12, color: colors.text[theme].primary }}>
             Pipeline Funnel
           </Text>
@@ -347,7 +347,7 @@ export function ATSMetricsDashboard({
 
         {/* Conversion Rates */}
         {conversionRates.length > 0 && (
-          <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+          <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
             <Text style={{ marginBottom: 12, color: colors.text[theme].primary }}>
               Stage Conversion Rates
             </Text>
@@ -385,7 +385,7 @@ export function ATSMetricsDashboard({
         )}
 
         {/* Source of Hire (Issue #91) */}
-        <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+        <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
           <Text style={{ marginBottom: 12, color: colors.text[theme].primary }}>
             Source of Hire
           </Text>
@@ -421,7 +421,7 @@ export function ATSMetricsDashboard({
         </Card>
 
         {/* Time-to-Hire (Issue #92) */}
-        <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+        <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
           <Text style={{ marginBottom: 12, color: colors.text[theme].primary }}>
             Time to Hire
           </Text>

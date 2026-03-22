@@ -60,7 +60,7 @@ export function WorkLogPortfolioWidget({
   }, [workLogs]);
 
   return (
-    <Card borderColor={colors.border[t].default} borderWidth={1}>
+    <Card variant="outlined">
       <Stack gap={16} padding="md">
         <Stack gap={8}>
           <Text>Verified work history</Text>

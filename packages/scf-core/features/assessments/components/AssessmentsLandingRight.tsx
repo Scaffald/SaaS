@@ -5,7 +5,7 @@ export const AssessmentsLandingRight = () => {
   const { theme } = useThemeContext()
 
   return (
-    <DashboardWidget gap={gap.md} elevated>
+    <DashboardWidget gap={gap.md}>
       <Stack gap={gap.md}>
         <Stack gap={gap.xs}>
           <Text style={{ color: colors.text[theme].secondary }}>Why assessments matter</Text>

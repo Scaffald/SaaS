@@ -187,7 +187,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
       </Row>
 
       {/* App Details */}
-      <Card padding="md">
+      <Card variant="glass" padding="md">
         <Stack gap={16}>
         <Stack gap={12}>
           <Text size="lg">Application Details</Text>
@@ -270,7 +270,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
       </Card>
 
       {/* Redirect URIs */}
-      <Card padding="md" data-testid="oauth-app-redirect-uris">
+      <Card variant="glass" padding="md" data-testid="oauth-app-redirect-uris">
         <Stack gap={16}>
         <Stack gap={12}>
           <Text size="lg">Redirect URIs</Text>
@@ -293,7 +293,7 @@ export function OAuthAppDetail({ appId }: OAuthAppDetailProps) {
       </Card>
 
       {/* Allowed Scopes */}
-      <Card padding="md" data-testid="oauth-app-scopes">
+      <Card variant="glass" padding="md" data-testid="oauth-app-scopes">
         <Stack gap={16}>
         <Stack gap={12}>
           <Text size="lg">Allowed Scopes</Text>

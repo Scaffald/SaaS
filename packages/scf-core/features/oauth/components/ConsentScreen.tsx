@@ -104,7 +104,7 @@ export function ConsentScreen({
 
   return (
     <Stack flex={1} padding="md" maxWidth={600} alignSelf="center" gap={16}>
-      <Card padding="md">
+      <Card variant="glass" padding="md">
         <Stack gap={16}>
         <Stack gap={12}>
           <Row gap={12} align="center">

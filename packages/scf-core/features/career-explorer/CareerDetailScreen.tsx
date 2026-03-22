@@ -165,7 +165,7 @@ export function CareerDetailScreen({ onetCode }: CareerDetailScreenProps) {
         </Stack>
 
         {/* Description */}
-        <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+        <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
           <Text style={{ color: colors.text[theme].primary, lineHeight: 22 }}>
             {occupation.description}
           </Text>
@@ -180,7 +180,7 @@ export function CareerDetailScreen({ onetCode }: CareerDetailScreenProps) {
                 Education & Training
               </Text>
             </Row>
-            <Card padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
+            <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
               <Stack gap={8}>
                 <Row justify="space-between">
                   <Text style={{ color: colors.text[theme].secondary, fontSize: 13 }}>
@@ -220,7 +220,7 @@ export function CareerDetailScreen({ onetCode }: CareerDetailScreenProps) {
                 Skills ({skills.length})
               </Text>
             </Row>
-            <Card padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
+            <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
               <Stack gap={10}>
                 {skills.slice(0, 10).map((skill) => (
                   <SkillBar
@@ -244,7 +244,7 @@ export function CareerDetailScreen({ onetCode }: CareerDetailScreenProps) {
                 Abilities ({abilities.length})
               </Text>
             </Row>
-            <Card padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
+            <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
               <Stack gap={10}>
                 {abilities.slice(0, 8).map((ability) => (
                   <SkillBar
@@ -268,7 +268,7 @@ export function CareerDetailScreen({ onetCode }: CareerDetailScreenProps) {
                 Knowledge ({knowledge.length})
               </Text>
             </Row>
-            <Card padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
+            <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
               <Stack gap={10}>
                 {knowledge.slice(0, 8).map((k) => (
                   <SkillBar
@@ -321,7 +321,7 @@ export function CareerDetailScreen({ onetCode }: CareerDetailScreenProps) {
                 Common Tasks
               </Text>
             </Row>
-            <Card padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
+            <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
               <Stack gap={8}>
                 {tasks.slice(0, 8).map((task, idx) => (
                   <Row key={idx} gap={8} align="flex-start">

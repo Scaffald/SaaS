@@ -153,7 +153,7 @@ export function AuthorizedAppsList() {
           })}
         </Stack>
       ) : (
-        <Card padding="xl" data-testid="no-authorized-apps">
+        <Card variant="glass" padding="xl" data-testid="no-authorized-apps">
           <Stack gap={12} align="center">
             <Text size="lg">No Authorized Apps</Text>
             <Paragraph size="sm" style={{ color: colors.text[t].secondary }} align="center">

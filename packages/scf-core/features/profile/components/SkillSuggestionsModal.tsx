@@ -304,7 +304,7 @@ export function SkillSuggestionsModal({
 
           {/* No occupations */}
           {occupations.length === 0 && (
-            <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+            <Card variant="glass" padding="md">
               <Row gap={12} align="center">
                 <Sparkles size={20} color={colors.icon[theme].default} />
                 <Stack flex={1}>

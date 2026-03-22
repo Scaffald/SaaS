@@ -77,7 +77,7 @@ export function AppRegistrationForm() {
   if (credentials) {
     return (
       <Stack flex={1} padding="md" maxWidth={800} alignSelf="center" gap={16}>
-        <Card padding="md">
+        <Card variant="glass" padding="md">
           <Stack gap={12}>
             <Text size="2xl">App Registration Successful!</Text>
             <Paragraph size="sm">
@@ -129,7 +129,7 @@ export function AppRegistrationForm() {
 
   return (
     <Stack flex={1} padding="md" maxWidth={800} alignSelf="center" gap={16}>
-      <Card padding="md">
+      <Card variant="glass" padding="md">
         <Stack gap={16}>
           <Stack gap={8}>
             <Text size="2xl">Register OAuth Application</Text>

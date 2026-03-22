@@ -365,7 +365,7 @@ export function APIKeyScopesManager({
               </Stack>
 
             {/* Summary */}
-            <Card padding="sm" style={{ backgroundColor: colors.bg[t].muted }}>
+            <Card variant="glass" padding="sm" style={{ backgroundColor: colors.bg[t].muted }}>
               <Stack gap={8}>
                 <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
                   Selected Permissions

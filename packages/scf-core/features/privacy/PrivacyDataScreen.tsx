@@ -220,7 +220,7 @@ export function PrivacyDataScreen() {
         </Stack>
 
         {/* Rights Banner */}
-        <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+        <Card variant="glass" padding="md">
           <Row gap={12} align="center">
             <Shield size={24} color={colors.fg[theme].active} />
             <Stack flex={1}>
@@ -275,7 +275,7 @@ export function PrivacyDataScreen() {
           </Row>
 
           <Row gap={12} style={{ flexWrap: 'wrap' }}>
-            <Card padding="md" style={{ flex: 1, minWidth: 200, backgroundColor: colors.bg[theme].default }}>
+            <Card variant="glass" padding="md" style={{ flex: 1, minWidth: 200 }}>
               <Stack gap={8} align="center">
                 <Download size={24} color={colors.info[600]} />
                 <Text style={{ fontWeight: '600', color: colors.text[theme].primary }}>Export Data</Text>
@@ -288,7 +288,7 @@ export function PrivacyDataScreen() {
               </Stack>
             </Card>
 
-            <Card padding="md" style={{ flex: 1, minWidth: 200, backgroundColor: colors.bg[theme].default }}>
+            <Card variant="glass" padding="md" style={{ flex: 1, minWidth: 200 }}>
               <Stack gap={8} align="center">
                 <Trash2 size={24} color={colors.error[600]} />
                 <Text style={{ fontWeight: '600', color: colors.text[theme].primary }}>Delete Data</Text>
@@ -301,7 +301,7 @@ export function PrivacyDataScreen() {
               </Stack>
             </Card>
 
-            <Card padding="md" style={{ flex: 1, minWidth: 200, backgroundColor: colors.bg[theme].default }}>
+            <Card variant="glass" padding="md" style={{ flex: 1, minWidth: 200 }}>
               <Stack gap={8} align="center">
                 <ShieldCheck size={24} color={colors.success[500]} />
                 <Text style={{ fontWeight: '600', color: colors.text[theme].primary }}>Correct Data</Text>
@@ -335,7 +335,7 @@ export function PrivacyDataScreen() {
               ) : (
                 <Stack gap={8}>
                   {requests.map((req) => (
-                    <Card key={req.id} padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
+                    <Card key={req.id} variant="glass" padding="md">
                       <Row justify="space-between" align="center">
                         <Stack gap={2}>
                           <Text style={{ fontWeight: '500', color: colors.text[theme].primary }}>
@@ -373,7 +373,7 @@ export function PrivacyDataScreen() {
               if (!info) return null
 
               return (
-                <Card key={optOut.category} padding="md" style={{ backgroundColor: colors.bg[theme].default }}>
+                <Card key={optOut.category} variant="glass" padding="md">
                   <Row justify="space-between" align="center">
                     <Stack flex={1} gap={2}>
                       <Text style={{ fontWeight: '500', color: colors.text[theme].primary }}>
@@ -410,7 +410,7 @@ export function PrivacyDataScreen() {
         <ModalContent>
           <Stack gap={16}>
             {requestType === 'deletion' && (
-              <Card padding="md" style={{ backgroundColor: colors.bg[theme].muted }}>
+              <Card variant="glass" padding="md">
                 <Row gap={12} align="center">
                   <AlertTriangle size={20} color={colors.fg[theme].error} />
                   <Stack flex={1}>

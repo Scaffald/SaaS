@@ -13,7 +13,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
   return (
     <Stack gap={16}>
       {/* Screening Answers */}
-      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+      <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Text style={{ marginBottom: 12 }}>Screening Questions</Text>
         <Stack gap={12}>
           <Row justify="space-between">
@@ -41,7 +41,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
 
       {/* Custom Questions */}
       {application.customAnswers.length > 0 && (
-        <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+        <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
           <Text style={{ marginBottom: 12 }}>Custom Questions</Text>
           <Stack gap={16}>
             {application.customAnswers.map((qa, index) => (
@@ -62,7 +62,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
       )}
 
       {/* Attachments */}
-      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+      <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Text style={{ marginBottom: 12 }}>Attachments</Text>
         <Stack gap={8}>
           {application.attachments.resume && (
@@ -129,7 +129,7 @@ export const ApplicationDetailsTab = ({ application }: ApplicationDetailsTabProp
       </Card>
 
       {/* Stage History */}
-      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+      <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Text style={{ marginBottom: 12 }}>Application Timeline</Text>
         <Stack gap={12}>
           {application.stageHistory.map((history, index) => (

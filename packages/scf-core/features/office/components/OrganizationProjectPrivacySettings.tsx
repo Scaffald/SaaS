@@ -82,7 +82,7 @@ export function OrganizationProjectPrivacySettings({
 
   if (isLoading) {
     return (
-      <Card padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
+      <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].subtle }}>
         <Spinner variant="ios" />
       </Card>
     )

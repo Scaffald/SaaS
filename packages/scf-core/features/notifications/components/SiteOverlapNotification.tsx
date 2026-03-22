@@ -55,7 +55,7 @@ export function SiteOverlapNotification({
   }
 
   return (
-    <Card padding="md" style={{ backgroundColor: t === 'dark' ? colors.yellow[900] : colors.yellow[50], borderColor: t === 'dark' ? colors.yellow[600] : colors.yellow[300], borderWidth: 2 }}>
+    <Card variant="glass" padding="md" style={{ backgroundColor: t === 'dark' ? colors.yellow[900] : colors.yellow[50], borderColor: t === 'dark' ? colors.yellow[600] : colors.yellow[300], borderWidth: 2 }}>
       <Stack gap={16}>
         <Row gap={12} align="flex-start">
           <AlertTriangle size={24} color={t === 'dark' ? colors.yellow[300] : colors.yellow[700]} />
@@ -65,13 +65,13 @@ export function SiteOverlapNotification({
               Site boundaries overlap by {overlapPercent}% (threshold: {threshold}%)
             </Text>
             <Row gap={8} wrap>
-              <Card padding="sm" style={{ backgroundColor: t === 'dark' ? colors.yellow[800] : colors.yellow[100], borderRadius: 8 }}>
+              <Card variant="glass" padding="sm" style={{ backgroundColor: t === 'dark' ? colors.yellow[800] : colors.yellow[100], borderRadius: 8 }}>
                 <Row gap={8} align="center">
                   <MapPin size={24} />
                   <Text>Site 1: {siteId.slice(0, 8)}...</Text>
                 </Row>
               </Card>
-              <Card padding="sm" style={{ backgroundColor: t === 'dark' ? colors.yellow[800] : colors.yellow[100], borderRadius: 8 }}>
+              <Card variant="glass" padding="sm" style={{ backgroundColor: t === 'dark' ? colors.yellow[800] : colors.yellow[100], borderRadius: 8 }}>
                 <Row gap={8} align="center">
                   <MapPin size={24} />
                   <Text>Site 2: {overlappingSiteId.slice(0, 8)}...</Text>

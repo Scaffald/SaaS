@@ -116,7 +116,7 @@ function AutoFillPreview({ data }: { data: AutoFilledJobData }) {
   const { theme } = useThemeContext()
 
   return (
-    <Card padding="md" style={{ borderWidth: 1, borderColor: colors.border[theme].active }}>
+    <Card variant="glass" padding="md" style={{ borderWidth: 1, borderColor: colors.border[theme].active }}>
       <Stack gap={12}>
         <Row gap={6} align="center">
           <Sparkles size={16} color={colors.fg[theme].active} />

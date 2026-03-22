@@ -76,7 +76,7 @@ export function CommunityCard({
   if (hasInteractiveTrailing) {
     return (
       <Pressable onPress={onPress} style={{ cursor: 'pointer' } as never}>
-        <Card padding="md" variant="surface">
+        <Card padding="md" variant="glass" glassMaterial="thin">
           {cardContent}
         </Card>
       </Pressable>
@@ -84,7 +84,7 @@ export function CommunityCard({
   }
 
   return (
-    <Card pressable onPress={onPress} padding="md" variant="surface">
+    <Card pressable onPress={onPress} padding="md" variant="glass" glassMaterial="thin">
       {cardContent}
     </Card>
   )

@@ -198,7 +198,7 @@ function PackageCard({ pkg }: { pkg: CheckPackage }) {
   const { theme } = useThemeContext()
 
   return (
-    <Card padding="md" style={{ borderWidth: 1, borderColor: colors.border[theme].default }}>
+    <Card variant="glass" padding="md" style={{ borderWidth: 1, borderColor: colors.border[theme].default }}>
       <Stack gap={10}>
         <Row justify="space-between" align="center">
           <Text style={{ color: colors.text[theme].primary, fontWeight: '600', fontSize: 15 }}>{pkg.name}</Text>
