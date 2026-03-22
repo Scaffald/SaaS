@@ -1,11 +1,17 @@
 import { InquiryOverviewWidget } from '@scf/core/features/inquiries/components/InquiryOverviewWidget'
-import { Stack } from '@scaffald/ui'
+import { Stack, useResponsive } from '@scaffald/ui'
 import { IPIPAssessmentWidget } from '../ipip-assessment'
 import { OccupationAssessmentWidget } from '../occupation-assessment'
 import { ProfileSnapshotWidget, SoftSkillsComparisonWidget } from '../profile/widgets'
 import { RIASECAssessmentWidget } from '../riasec-assessment'
 import { WeeklyPulseWidget } from '../luscher-test/components/WeeklyPulseWidget'
-import { MobileDashboardGreeting, MobileQuickActions } from './components'
+import {
+  MobileProfileHero,
+  MobileProfileStrength,
+  MobileQuickActions,
+  MobileGrowthTip,
+  MobileDashboardTabs,
+} from './components'
 import { CareerRecommendationsWidget } from './widgets/CareerRecommendationsWidget'
 import { SkillsGapWidget } from './widgets/SkillsGapWidget'
 import { CareerPathWidget } from './widgets/CareerPathWidget'
@@ -13,16 +19,27 @@ import { TechnologySkillsWidget } from './widgets/TechnologySkillsWidget'
 
 /**
  * Dashboard Index Left Component
- * Shows ProfileSnapshotWidget, assessment widgets, and career widgets (Issue #103)
+ * Mobile: profile hero, quick actions, strength card, growth tip, tabbed widgets
+ * Desktop: flat widget list (unchanged)
  * Prerequisites are now enforced at the route level via /onboarding
  */
 export function DashboardIndexLeft() {
+  const { isMobile } = useResponsive()
+
+  if (isMobile) {
+    return (
+      <Stack gap={16}>
+        <MobileProfileHero />
+        <MobileQuickActions />
+        <MobileProfileStrength />
+        <MobileGrowthTip />
+        <MobileDashboardTabs />
+      </Stack>
+    )
+  }
+
   return (
     <Stack gap={20}>
-      <MobileDashboardGreeting />
-      <MobileQuickActions />
-      {/* <ResumeImportWidget /> */}
-      {/* <ProfileCompletionExperience /> */}
       <ProfileSnapshotWidget />
       <SoftSkillsComparisonWidget showCTA />
       <InquiryOverviewWidget />

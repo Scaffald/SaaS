@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react'
+import { useMemo, useEffect } from 'react'
 import { Pressable } from 'react-native'
-import { Text, Stack, Row, Input, Avatar, Button, Spinner, useThemeContext } from '@scaffald/ui'
+import { Text, Stack, Row, Avatar, Button, Spinner, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import type { Href } from 'expo-router'
@@ -9,10 +9,15 @@ import { useCommunities, useJoinCommunityMutation } from '@scf/core/utils/commun
 import { useQueryClient } from '@tanstack/react-query'
 import type { Community } from '@scaffald/sdk/resources/communities'
 
-export function AllCommunitiesList() {
+type AllCommunitiesListProps = {
+  searchQuery: string
+  sortBy: string
+  onFilteredCountChange?: (count: number) => void
+}
+
+export function AllCommunitiesList({ searchQuery, sortBy, onFilteredCountChange }: AllCommunitiesListProps) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
-  const [searchTerm, setSearchTerm] = useState('')
   const router = useRouter()
   const queryClient = useQueryClient()
 
@@ -26,13 +31,33 @@ export function AllCommunitiesList() {
   })
 
   const filtered = useMemo(() => {
-    if (!searchTerm.trim()) return communities
-    const lower = searchTerm.toLowerCase()
-    return communities.filter(
-      (c: Community) =>
-        c.name.toLowerCase().includes(lower) || c.description?.toLowerCase().includes(lower)
-    )
-  }, [communities, searchTerm])
+    let result = communities
+    if (searchQuery.trim()) {
+      const lower = searchQuery.toLowerCase()
+      result = result.filter(
+        (c: Community) =>
+          c.name.toLowerCase().includes(lower) || c.description?.toLowerCase().includes(lower)
+      )
+    }
+    switch (sortBy) {
+      case 'name':
+        result = [...result].sort((a, b) => a.name.localeCompare(b.name))
+        break
+      case 'newest':
+        result = [...result].sort((a, b) => b.created_at.localeCompare(a.created_at))
+        break
+      default:
+        result = [...result].sort(
+          (a, b) => (b.member_count + b.post_count) - (a.member_count + a.post_count)
+        )
+        break
+    }
+    return result
+  }, [communities, searchQuery, sortBy])
+
+  useEffect(() => {
+    onFilteredCountChange?.(filtered.length)
+  }, [filtered.length, onFilteredCountChange])
 
   if (isLoading) {
     return (
@@ -44,8 +69,6 @@ export function AllCommunitiesList() {
 
   return (
     <Stack gap={16}>
-      <Input placeholder="Search communities..." value={searchTerm} onChangeText={setSearchTerm} />
-
       {filtered.length === 0 ? (
         <Stack align="center" style={{ paddingVertical: 40 }}>
           <Text style={{ color: colors.text[t].secondary }}>No communities found</Text>

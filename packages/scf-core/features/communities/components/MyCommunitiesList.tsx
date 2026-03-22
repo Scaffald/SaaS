@@ -1,3 +1,4 @@
+import { useMemo, useEffect } from 'react'
 import { Pressable } from 'react-native'
 import { Text, Stack, Row, Avatar, Spinner, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
@@ -6,12 +7,52 @@ import type { Href } from 'expo-router'
 import { RouteBuilder } from '@scf/core/constants/routes'
 import { useMyCommunities } from '@scf/core/utils/communities-sdk-hooks'
 
-export function MyCommunitiesList() {
+type MyCommunitiesListProps = {
+  searchQuery: string
+  sortBy: string
+  onFilteredCountChange?: (count: number) => void
+}
+
+export function MyCommunitiesList({ searchQuery, sortBy, onFilteredCountChange }: MyCommunitiesListProps) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
   const router = useRouter()
   const { data, isLoading } = useMyCommunities()
   const memberships = data?.data ?? []
+
+  const filtered = useMemo(() => {
+    let result = memberships
+    if (searchQuery.trim()) {
+      const lower = searchQuery.toLowerCase()
+      result = result.filter(
+        (item) =>
+          item.community?.name?.toLowerCase().includes(lower) ||
+          item.community?.description?.toLowerCase().includes(lower)
+      )
+    }
+    switch (sortBy) {
+      case 'name':
+        result = [...result].sort((a, b) =>
+          (a.community?.name ?? '').localeCompare(b.community?.name ?? '')
+        )
+        break
+      case 'newest':
+        result = [...result].sort((a, b) => b.joined_at.localeCompare(a.joined_at))
+        break
+      default:
+        result = [...result].sort(
+          (a, b) =>
+            ((b.community?.member_count ?? 0) + (b.community?.post_count ?? 0)) -
+            ((a.community?.member_count ?? 0) + (a.community?.post_count ?? 0))
+        )
+        break
+    }
+    return result
+  }, [memberships, searchQuery, sortBy])
+
+  useEffect(() => {
+    onFilteredCountChange?.(filtered.length)
+  }, [filtered.length, onFilteredCountChange])
 
   if (isLoading) {
     return (
@@ -29,9 +70,17 @@ export function MyCommunitiesList() {
     )
   }
 
+  if (filtered.length === 0) {
+    return (
+      <Stack align="center" style={{ paddingVertical: 40 }}>
+        <Text style={{ color: colors.text[t].secondary }}>No communities found</Text>
+      </Stack>
+    )
+  }
+
   return (
     <Stack gap={8}>
-      {memberships.map((item) => (
+      {filtered.map((item) => (
           <Pressable
             key={item.community_id}
             onPress={() => router.push(RouteBuilder.communityDetail(item.community?.slug ?? '') as Href)}

@@ -1,6 +1,6 @@
 import { useCalculateSoftSkillsMatch } from '@scf/core/utils/jobs-sdk-hooks'
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { Card, Chip, extractPlainText, useThemeContext } from '@scaffald/ui'
+import { Card, extractPlainText, useThemeContext } from '@scaffald/ui'
 import { Briefcase, Building2, Clock, DollarSign, MapPin } from 'lucide-react-native'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
@@ -11,8 +11,6 @@ import {
   jobPalette,
   workerPalette,
   textSmall,
-  textCaption,
-  CardHeader,
   MetricRow,
   Pill,
 } from '@scf/core/components/ui'

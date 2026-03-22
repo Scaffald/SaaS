@@ -45,7 +45,7 @@ function SuggestedCommunitiesWidgetSkeleton() {
  * Shows communities the user hasn't joined yet, with a quick "Join" action.
  */
 export function SuggestedCommunitiesWidget({ maxItems = 3 }: { maxItems?: number }) {
-  const router = useRouter()
+  const _router = useRouter()
   const queryClient = useQueryClient()
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'

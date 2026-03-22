@@ -297,7 +297,7 @@ export const DrawerLink = ({
                     top: 0,
                     bottom: isLastSubItem ? '50%' : 0,
                     width: 1,
-                    backgroundColor: colors.border[resolvedTheme].default,
+                    backgroundColor: colors.border[resolvedTheme].muted,
                   }}
                 />
                 {/* Tree horizontal branch */}
@@ -308,7 +308,7 @@ export const DrawerLink = ({
                     top: '50%',
                     width: 10,
                     height: 1,
-                    backgroundColor: colors.border[resolvedTheme].default,
+                    backgroundColor: colors.border[resolvedTheme].muted,
                   }}
                 />
                 <Paragraph

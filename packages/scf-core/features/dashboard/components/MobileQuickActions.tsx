@@ -1,9 +1,44 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { Row, Text, useResponsive, useThemeContext } from '@scaffald/ui'
+import { Text, useResponsive, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
-import { Briefcase, FileText } from 'lucide-react-native'
-import { Pressable } from 'react-native'
+import { Briefcase, ClipboardCheck, FileText, Users } from 'lucide-react-native'
+import type { LucideIcon } from 'lucide-react-native'
+import { Pressable, ScrollView } from 'react-native'
+
+type QuickAction = {
+  label: string
+  icon: LucideIcon
+  route: string
+  variant: 'dark' | 'surface'
+}
+
+const QUICK_ACTIONS: QuickAction[] = [
+  {
+    label: 'Find Jobs',
+    icon: Briefcase,
+    route: buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS, {}),
+    variant: 'dark',
+  },
+  {
+    label: 'My Resume',
+    icon: FileText,
+    route: buildPath(ROUTES.DASHBOARD.PROFILE.RESUME, {}),
+    variant: 'surface',
+  },
+  {
+    label: 'Assessments',
+    icon: ClipboardCheck,
+    route: ROUTES.DASHBOARD.ASSESSMENTS.path,
+    variant: 'surface',
+  },
+  {
+    label: 'Teams',
+    icon: Users,
+    route: ROUTES.DASHBOARD.TEAMS.path,
+    variant: 'surface',
+  },
+]
 
 export function MobileQuickActions() {
   const { isMobile } = useResponsive()
@@ -13,44 +48,52 @@ export function MobileQuickActions() {
   if (!isMobile) return null
 
   return (
-    <Row gap={12}>
-      {/* Find Jobs — dark accent tile */}
-      <Pressable
-        onPress={() => router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS, {}))}
-        style={{
-          flex: 1,
-          backgroundColor: theme === 'dark' ? colors.bg.dark.muted : colors.fg.light.default,
-          borderRadius: 20,
-          padding: 16,
-          height: 88,
-          justifyContent: 'space-between',
-        }}
-      >
-        <Briefcase size={22} color={colors.primary[400]} />
-        <Text size="md" weight="semibold" style={{ color: '#ffffff' }}>
-          Find Jobs
-        </Text>
-      </Pressable>
-
-      {/* My Resume — surface tile */}
-      <Pressable
-        onPress={() => router.push(buildPath(ROUTES.DASHBOARD.PROFILE.RESUME, {}))}
-        style={{
-          flex: 1,
-          backgroundColor: colors.bg[theme].default,
-          borderRadius: 20,
-          padding: 16,
-          height: 88,
-          justifyContent: 'space-between',
-          borderWidth: 1,
-          borderColor: colors.border[theme].default,
-        }}
-      >
-        <FileText size={22} color={colors.icon[theme].default} />
-        <Text size="md" weight="semibold" style={{ color: colors.text[theme].primary }}>
-          My Resume
-        </Text>
-      </Pressable>
-    </Row>
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={{ gap: 10 }}
+    >
+      {QUICK_ACTIONS.map(({ label, icon: Icon, route, variant }) => {
+        const isDark = variant === 'dark'
+        return (
+          <Pressable
+            key={label}
+            onPress={() => router.push(route)}
+            style={{
+              width: 100,
+              backgroundColor: isDark
+                ? theme === 'dark'
+                  ? colors.bg.dark.muted
+                  : colors.fg.light.default
+                : colors.bg[theme].default,
+              borderRadius: 16,
+              padding: 14,
+              height: 88,
+              justifyContent: 'space-between',
+              ...(isDark
+                ? {}
+                : {
+                    borderWidth: 1,
+                    borderColor: colors.border[theme].default,
+                  }),
+            }}
+          >
+            <Icon
+              size={20}
+              color={isDark ? colors.primary[400] : colors.icon[theme].default}
+            />
+            <Text
+              size="xs"
+              weight="semibold"
+              style={{
+                color: isDark ? '#ffffff' : colors.text[theme].primary,
+              }}
+            >
+              {label}
+            </Text>
+          </Pressable>
+        )
+      })}
+    </ScrollView>
   )
 }

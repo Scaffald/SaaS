@@ -1,5 +1,5 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { Card, Button, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { Building2, Clock, DollarSign, MapPin } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
@@ -9,7 +9,6 @@ import {
   textSmall,
   textCaption,
   iconCircleStyle,
-  CardHeader,
   MetricRow,
   Pill,
 } from '@scf/core/components/ui'
