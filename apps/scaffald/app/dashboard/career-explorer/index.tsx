@@ -2,12 +2,13 @@ import { CareerExplorerScreen } from '@scf/core/features/career-explorer/CareerE
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 
 export default function CareerExplorerRoute() {
+  const { leftContent, rightContent } = CareerExplorerScreen()
+
   return (
     <DashboardPage
       breadcrumbs={[{ label: 'Career Explorer' }]}
-      leftContent={<CareerExplorerScreen />}
-      rightContent={null}
-      fullWidth
+      leftContent={leftContent}
+      rightContent={rightContent}
     />
   )
 }

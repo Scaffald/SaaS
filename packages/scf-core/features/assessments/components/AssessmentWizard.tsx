@@ -141,7 +141,6 @@ export function AssessmentWizard({
   transitionDirection = 1,
 }: AssessmentWizardProps) {
   const { theme } = useThemeContext()
-  const t = theme === 'dark' ? 'dark' : 'light'
   const currentStepOrder = steps.find((s) => s.id === currentStep)?.order || 0
   const calculatedCompletedSteps = new Set(
     steps.filter((step) => step.order < currentStepOrder).map((step) => step.id)
@@ -167,10 +166,10 @@ export function AssessmentWizard({
   if (error) {
     return (
       <Stack flex={1} align="center" justify="center" gap={16} padding={32}>
-        <AlertCircle size={48} color={colors.text[t].secondary} />
-        <Text style={{ color: colors.text[t].secondary }}>Error loading assessment</Text>
+        <AlertCircle size={48} color={colors.text[theme].secondary} />
+        <Text style={{ color: colors.text[theme].secondary }}>Error loading assessment</Text>
         <Stack align="center">
-          <Text style={{ color: colors.text[t].secondary }}>{error.message || 'An unexpected error occurred'}</Text>
+          <Text style={{ color: colors.text[theme].secondary }}>{error.message || 'An unexpected error occurred'}</Text>
         </Stack>
       </Stack>
     )
@@ -183,10 +182,10 @@ export function AssessmentWizard({
         <Stack padding="md" gap={12}>
           {(title || description) && (
             <Stack gap={4}>
-              {title && <Text style={{ color: colors.text[t].secondary }}>{title}</Text>}
+              {title && <Text style={{ color: colors.text[theme].secondary }}>{title}</Text>}
               {description && (
                 <Stack align="center">
-                  <Text style={{ color: colors.text[t].secondary }}>{description}</Text>
+                  <Text style={{ color: colors.text[theme].secondary }}>{description}</Text>
                 </Stack>
               )}
             </Stack>

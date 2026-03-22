@@ -55,7 +55,6 @@ const ASSESSMENT_LANDING_CARDS: AssessmentLandingCard[] = [
 export const AssessmentsLandingLeft = () => {
   const router = useRouter()
   const { theme } = useThemeContext()
-  const t = theme === 'dark' ? 'dark' : 'light'
 
   return (
     <Stack gap={gap.lg}>
@@ -64,8 +63,8 @@ export const AssessmentsLandingLeft = () => {
           <DashboardWidget key={key} gap={gap.md}>
             <Stack gap={gap.sm}>
               <Stack gap={gap.xs}>
-                <Text style={{ color: colors.text[t].secondary }}>{title}</Text>
-                <Text style={{ color: colors.text[t].secondary }}>{description}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>{title}</Text>
+                <Text style={{ color: colors.text[theme].secondary }}>{description}</Text>
               </Stack>
 
               <Button
@@ -78,7 +77,7 @@ export const AssessmentsLandingLeft = () => {
                 {ctaLabel}
               </Button>
 
-              {estimatedTime ? <Text style={{ color: colors.text[t].secondary }}>{estimatedTime}</Text> : null}
+              {estimatedTime ? <Text style={{ color: colors.text[theme].secondary }}>{estimatedTime}</Text> : null}
             </Stack>
           </DashboardWidget>
         )

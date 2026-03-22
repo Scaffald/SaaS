@@ -21,11 +21,10 @@ export const AssessmentsLayout = ({
 }: AssessmentsLayoutProps) => {
   const { isDesktop } = useResponsive()
   const { theme } = useThemeContext()
-  const resolvedTheme = theme === 'dark' ? 'dark' : 'light'
   const hasRightContent = rightContent != null
   const contentPadding = isDesktop ? '2xl' : 'lg'
   const columnGap = isDesktop ? 44 : 24
-  const bgColor = colors.bg[resolvedTheme].emphasis
+  const bgColor = colors.bg[theme].emphasis
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: bgColor }} showsVerticalScrollIndicator={false}>
