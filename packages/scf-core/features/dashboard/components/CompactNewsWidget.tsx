@@ -100,7 +100,7 @@ export function CompactNewsWidget() {
 
   const { effectiveIndustryId } = useNewsIndustryResolution({
     industrySlug: selectedSlug,
-    useUserIndustry: false,
+    useUserIndustry: selectedSlug === 'construction',
   })
 
   const { data: newsItems, isLoading, refetch, isFetching } = useAggregatedNews({
@@ -150,16 +150,16 @@ export function CompactNewsWidget() {
   return (
     <DashboardWidget>
       <Row justify="space-between" align="center" paddingBottom={8}>
-        <Text
-          style={{
-            fontSize: 16,
-            fontWeight: '700',
-            color: colors.text[t].primary,
-          }}
-        >
-          News
-        </Text>
         <Row align="center" gap={8}>
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: '700',
+              color: colors.text[t].primary,
+            }}
+          >
+            News
+          </Text>
           <Popover
             placement="bottom"
             open={industryOpen}
@@ -223,7 +223,6 @@ export function CompactNewsWidget() {
                   fontWeight: '700',
                   color: colors.text[t].secondary,
                   textTransform: 'uppercase',
-                  letterSpacing: 0.5,
                 }}
               >
                 {selectedName}
@@ -231,15 +230,15 @@ export function CompactNewsWidget() {
               <ChevronDown size={10} color={colors.text[t].secondary} />
             </Pressable>
           </Popover>
-          <Pressable
-            onPress={handleRefresh}
-            hitSlop={8}
-            style={({ pressed }) => ({ opacity: pressed ? 0.5 : isFetching ? 0.4 : 0.7 })}
-            disabled={isFetching}
-          >
-            <RefreshCw size={14} color={colors.icon[t].default} />
-          </Pressable>
         </Row>
+        <Pressable
+          onPress={handleRefresh}
+          hitSlop={8}
+          style={({ pressed }) => ({ opacity: pressed ? 0.5 : isFetching ? 0.4 : 0.7 })}
+          disabled={isFetching}
+        >
+          <RefreshCw size={14} color={colors.icon[t].default} />
+        </Pressable>
       </Row>
 
       <Stack gap={20}>
