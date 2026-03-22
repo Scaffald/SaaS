@@ -9,6 +9,8 @@ import * as ScaffaldUI from '@scaffald/ui';
 
 const {
   ThemeContext,
+  DashboardWidget,
+  DashboardWidgetHeader,
   Button,
   Card,
   CardHeader,
@@ -47,8 +49,8 @@ function LiveComponentShowcase() {
           <div className={styles.widgetGrid}>
 
             <div className={styles.widget}>
-              <div className={styles.categoryCard}>
-                <h4>Buttons</h4>
+              <DashboardWidget>
+                <DashboardWidgetHeader title="Buttons" />
                 <Stack gap={12}>
                   <Row gap={8} style={{flexWrap: 'wrap'}}>
                     <Button variant="filled" color="primary">Primary</Button>
@@ -66,13 +68,13 @@ function LiveComponentShowcase() {
                     <Button disabled variant="filled" color="gray">Disabled</Button>
                   </Row>
                 </Stack>
-                <Link to="/docs/components/button">View Button docs</Link>
-              </div>
+                <Link to="/docs/components/button" className={styles.widgetLink}>View Button docs →</Link>
+              </DashboardWidget>
             </div>
 
             <div className={styles.widget}>
-              <div className={styles.categoryCard}>
-                <h4>Form Controls</h4>
+              <DashboardWidget>
+                <DashboardWidgetHeader title="Form Controls" />
                 <Stack gap={12}>
                   <Input label="Email" placeholder="you@example.com" />
                   <Row gap={16} style={{alignItems: 'center', flexWrap: 'wrap'}}>
@@ -80,13 +82,13 @@ function LiveComponentShowcase() {
                     <Toggle label="Dark mode" size="sm" />
                   </Row>
                 </Stack>
-                <Link to="/docs/components/input">View Input docs</Link>
-              </div>
+                <Link to="/docs/components/input" className={styles.widgetLink}>View Input docs →</Link>
+              </DashboardWidget>
             </div>
 
             <div className={styles.widget}>
-              <div className={styles.categoryCard}>
-                <h4>Feedback</h4>
+              <DashboardWidget>
+                <DashboardWidgetHeader title="Feedback" />
                 <Stack gap={12}>
                   <Alert type="info" title="Informational message for the user." />
                   <Alert type="success" title="Operation completed successfully!" />
@@ -96,13 +98,13 @@ function LiveComponentShowcase() {
                     <ProgressBar value={72} />
                   </Row>
                 </Stack>
-                <Link to="/docs/components/alert">View Alert docs</Link>
-              </div>
+                <Link to="/docs/components/alert" className={styles.widgetLink}>View Alert docs →</Link>
+              </DashboardWidget>
             </div>
 
             <div className={styles.widget}>
-              <div className={styles.categoryCard}>
-                <h4>Data Display</h4>
+              <DashboardWidget>
+                <DashboardWidgetHeader title="Data Display" />
                 <Stack gap={12}>
                   <Row gap={8} style={{alignItems: 'center'}}>
                     <Avatar initials="JD" size={40} color="primary" />
@@ -118,13 +120,13 @@ function LiveComponentShowcase() {
                   </Row>
                   <SkeletonText lines={3} />
                 </Stack>
-                <Link to="/docs/components/avatar">View Avatar docs</Link>
-              </div>
+                <Link to="/docs/components/avatar" className={styles.widgetLink}>View Avatar docs →</Link>
+              </DashboardWidget>
             </div>
 
             <div className={styles.widget}>
-              <div className={styles.categoryCard}>
-                <h4>Cards</h4>
+              <DashboardWidget>
+                <DashboardWidgetHeader title="Cards" />
                 <Stack gap={12}>
                   <Card variant="elevated" padding="md">
                     <CardHeader title="Elevated Card" subtitle="With shadow" />
@@ -139,13 +141,13 @@ function LiveComponentShowcase() {
                     </CardContent>
                   </Card>
                 </Stack>
-                <Link to="/docs/components/card">View Card docs</Link>
-              </div>
+                <Link to="/docs/components/card" className={styles.widgetLink}>View Card docs →</Link>
+              </DashboardWidget>
             </div>
 
             <div className={styles.widget}>
-              <div className={styles.categoryCard}>
-                <h4>Accordion</h4>
+              <DashboardWidget>
+                <DashboardWidgetHeader title="Accordion" />
                 <Accordion defaultValue="item1">
                   <Accordion.Item value="item1">
                     <Accordion.Trigger>What is Scaffald UI?</Accordion.Trigger>
@@ -166,8 +168,8 @@ function LiveComponentShowcase() {
                     </Accordion.Content>
                   </Accordion.Item>
                 </Accordion>
-                <Link to="/docs/components/accordion">View Accordion docs</Link>
-              </div>
+                <Link to="/docs/components/accordion" className={styles.widgetLink}>View Accordion docs →</Link>
+              </DashboardWidget>
             </div>
 
           </div>

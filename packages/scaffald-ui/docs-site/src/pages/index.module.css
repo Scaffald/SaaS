@@ -327,6 +327,30 @@
   color: #9a8b7a;
 }
 
+.widgetLink {
+  color: #fb612a;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  margin-top: 1rem;
+  transition: all 0.2s ease;
+}
+
+.widgetLink:hover {
+  color: #d54e21;
+  transform: translateX(4px);
+}
+
+[data-theme='dark'] .widgetLink {
+  color: #ff7a4f;
+}
+
+[data-theme='dark'] .widgetLink:hover {
+  color: #ffc4a8;
+}
+
 .categoryCard a {
   color: #fb612a;
   font-weight: 600;
