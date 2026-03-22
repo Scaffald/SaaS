@@ -33,19 +33,19 @@ const buildOrgSubItems = (memberships: OrganizationMembership[]): DrawerItemConf
     .map((m) => ({
       key: `org-${m.organization_slug}`,
       title: m.organization_name,
-      href: `/dashboard/employers/org/${m.organization_slug}`,
+      href: `/employers/org/${m.organization_slug}`,
       isExpandable: true,
       expandOnActive: true,
       subItems: [
         {
           key: `org-${m.organization_slug}-teams`,
-          titleKey: ROUTES.DASHBOARD.TEAMS.titleKey,
-          href: `/dashboard/employers/org/${m.organization_slug}/teams`,
+          titleKey: ROUTES.EMPLOYERS.TEAMS.titleKey,
+          href: `/employers/org/${m.organization_slug}/teams`,
         },
         {
           key: `org-${m.organization_slug}-logs`,
-          titleKey: ROUTES.ORG.DETAIL.LOGS.titleKey,
-          href: `/dashboard/employers/org/${m.organization_slug}/logs`,
+          titleKey: ROUTES.EMPLOYERS.LOGS.titleKey,
+          href: `/employers/org/${m.organization_slug}/logs`,
         },
       ],
     }))
@@ -111,17 +111,17 @@ export const generateDashboardDrawerItems = (
 
   // Employers - expandable with Search, Create, Join, and per-org sub-items
   const employerSubItems: DrawerItemConfig[] = [
-    { key: 'employers-index', titleKey: 'navigation.employersList', href: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path, exact: true },
-    { key: 'employers-create', titleKey: 'navigation.employersCreate', href: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.CREATE.path },
-    { key: 'employers-join', titleKey: 'navigation.employersJoin', href: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.INVITATIONS.path },
+    { key: 'employers-index', titleKey: 'navigation.employersList', href: ROUTES.EMPLOYERS.path, exact: true },
+    { key: 'employers-create', titleKey: 'navigation.employersCreate', href: ROUTES.EMPLOYERS.CREATE.path },
+    { key: 'employers-join', titleKey: 'navigation.employersJoin', href: ROUTES.EMPLOYERS.INVITATIONS.path },
     ...buildOrgSubItems(memberships ?? []),
   ]
 
   items.push({
     key: 'employers',
     titleKey: 'navigation.discoverEmployers',
-    href: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path,
-    routeKey: 'DASHBOARD_DISCOVER_EMPLOYERS',
+    href: ROUTES.EMPLOYERS.path,
+    routeKey: 'EMPLOYERS',
     icon: Building2,
     isExpandable: true,
     expandOnActive: true,
@@ -314,10 +314,10 @@ export const MOBILE_SECTIONS: MobileSection[] = [
     label: 'Discover',
     icon: Compass,
     route: ROUTES.WORKERS.path,
-    matchPrefixes: ['/workers', '/dashboard/employers', '/dashboard/jobs'],
+    matchPrefixes: ['/workers', '/employers', '/dashboard/jobs'],
     subItems: [
       { key: 'discover-workers', label: 'Workers', icon: Users, route: ROUTES.WORKERS.path },
-      { key: 'discover-employers', label: 'Employers', icon: Building2, route: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path },
+      { key: 'discover-employers', label: 'Employers', icon: Building2, route: ROUTES.EMPLOYERS.path },
       { key: 'discover-jobs', label: 'Jobs', icon: Briefcase, route: ROUTES.DASHBOARD.DISCOVER.JOBS.path },
       { key: 'discover-apps', label: 'Apps', icon: ClipboardCheck, route: ROUTES.DASHBOARD.DISCOVER.JOBS.APPLICATIONS.path },
     ],

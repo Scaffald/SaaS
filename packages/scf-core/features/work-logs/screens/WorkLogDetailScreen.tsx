@@ -322,7 +322,7 @@ export function WorkLogDetailScreen() {
         </Paragraph>
         <Button
           size="md"
-          onPress={() => router.replace(ROUTES.DASHBOARD.WORK_LOGS.path)}
+          onPress={() => router.replace(ROUTES.EMPLOYERS.LOGS.path)}
         >
           Back to work logs
         </Button>

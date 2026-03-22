@@ -33,7 +33,7 @@ export function WorkLogCreateScreen() {
               message: 'You can review or edit this entry at any time.',
               variant: 'success',
             })
-            router.replace(buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId }))
+            router.replace(buildPath(ROUTES.EMPLOYERS.LOGS.DETAIL, { workLogId }))
           }}
         />
 

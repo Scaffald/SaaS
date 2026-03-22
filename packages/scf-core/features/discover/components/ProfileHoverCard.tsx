@@ -180,7 +180,7 @@ function OrganizationPreview({ pinId, visible }: { pinId: string; visible: boole
   if (isLoading) return <LoadingState />
   if (!org) return null
 
-  const profileUrl = buildPath(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.DETAIL, { id: pinId })
+  const profileUrl = buildPath(ROUTES.EMPLOYERS.DETAIL, { id: pinId })
   const address = org.address as { city?: string; state?: string } | null
   const location = address ? [address.city, address.state].filter(Boolean).join(', ') : null
   const employeeRange = (org as { employee_count_range?: string }).employee_count_range

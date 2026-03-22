@@ -19,8 +19,6 @@ export default function DashboardLayout() {
     >
       <DrawerLayout protectionComponent={null}>
         <Drawer.Screen name="index" options={{ title: 'Dashboard' }} />
-        <Drawer.Screen name="employers/index" options={{ title: 'Search Employers' }} />
-        <Drawer.Screen name="employers/[id]/index" options={{ title: 'Employer Profile' }} />
         <Drawer.Screen name="jobs/index" options={{ title: 'Search Jobs' }} />
         <Drawer.Screen name="jobs/[id]" options={{ title: 'Job Detail' }} />
         <Drawer.Screen name="jobs/applications/index" options={{ title: 'Applications' }} />
@@ -32,21 +30,6 @@ export default function DashboardLayout() {
         <Drawer.Screen name="users/[id]/index" options={{ title: 'User Profile' }} />
         <Drawer.Screen name="profile" options={{ title: 'Profile' }} />
         <Drawer.Screen name="settings/index" options={{ title: 'Settings' }} />
-        <Drawer.Screen name="employers/create" options={{ title: 'Create Employer' }} />
-        <Drawer.Screen name="employers/invitations" options={{ title: 'Invitations' }} />
-        <Drawer.Screen name="employers/org/index" options={{ title: 'My Organizations' }} />
-        <Drawer.Screen name="employers/org/[slug]/index" options={{ title: 'Organization' }} />
-        <Drawer.Screen name="employers/org/[slug]/teams/index" options={{ title: 'Teams' }} />
-        <Drawer.Screen
-          name="employers/org/[slug]/teams/[teamId]/index"
-          options={{ title: 'Team Detail' }}
-        />
-        <Drawer.Screen name="employers/org/[slug]/logs/index" options={{ title: 'Logs' }} />
-        <Drawer.Screen name="employers/org/[slug]/logs/create" options={{ title: 'New Log' }} />
-        <Drawer.Screen
-          name="employers/org/[slug]/logs/[workLogId]/index"
-          options={{ title: 'Log Detail' }}
-        />
         <Drawer.Screen name="news/index" options={{ title: 'News' }} />
         <Drawer.Screen name="career-explorer/index" options={{ title: 'Career Explorer' }} />
         <Drawer.Screen name="career-explorer/[onetCode]" options={{ title: 'Occupation Detail' }} />
@@ -61,11 +44,6 @@ export default function DashboardLayout() {
           name="assessments/occupation/index"
           options={{ title: 'Occupation Preferences' }}
         />
-        <Drawer.Screen name="teams/index" options={{ title: 'Teams' }} />
-        <Drawer.Screen name="teams/invitations" options={{ title: 'Team Invitations' }} />
-        <Drawer.Screen name="work-logs/index" options={{ title: 'Work Logs' }} />
-        <Drawer.Screen name="work-logs/create" options={{ title: 'New Work Log' }} />
-        <Drawer.Screen name="work-logs/[workLogId]/index" options={{ title: 'Work Log Detail' }} />
         <Drawer.Screen name="analytics/index" options={{ title: 'Analytics' }} />
         <Drawer.Screen name="analytics/engagement" options={{ title: 'Engagement' }} />
         <Drawer.Screen name="analytics/visibility" options={{ title: 'Visibility' }} />

@@ -19,7 +19,7 @@ export function DiscoverEmployersLeft({
   const router = useRouter()
 
   const handleViewDetails = (employer: Employer) => {
-    router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.DETAIL, { id: employer.id }))
+    router.push(buildPath(ROUTES.EMPLOYERS.DETAIL, { id: employer.id }))
   }
 
   if (isLoading) {

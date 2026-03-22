@@ -35,7 +35,7 @@ const QUICK_ACTIONS: QuickAction[] = [
   {
     label: 'Teams',
     icon: Users,
-    route: ROUTES.DASHBOARD.TEAMS.path,
+    route: ROUTES.EMPLOYERS.TEAMS.path,
     variant: 'surface',
   },
 ]

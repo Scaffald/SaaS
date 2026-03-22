@@ -76,10 +76,10 @@ export default function AcceptTeamInvitationScreen() {
   const handleViewTeam = () => {
     if (resultTeamId) {
       router.replace(
-        buildPath(ROUTES.DASHBOARD.TEAMS.DETAIL, { teamId: resultTeamId })
+        buildPath(ROUTES.EMPLOYERS.TEAMS.DETAIL, { teamId: resultTeamId })
       );
     } else {
-      router.replace(ROUTES.DASHBOARD.TEAMS.INVITATIONS.path);
+      router.replace(ROUTES.EMPLOYERS.TEAMS.INVITATIONS.path);
     }
   };
 

@@ -75,8 +75,8 @@ export const isActivePath = (pathname: string, href: string, exact?: boolean) =>
     )
   }
 
-  // Special case for employers: match /dashboard/employers and children (e.g. /dashboard/employers/create, /dashboard/employers/:id)
-  const employersPath = ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path
+  // Special case for employers: match /employers and children
+  const employersPath = ROUTES.EMPLOYERS.path
   if (href === employersPath) {
     return (
       pathname === employersPath ||

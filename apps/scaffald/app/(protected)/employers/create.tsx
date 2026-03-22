@@ -59,7 +59,7 @@ export default function DashboardOrganizationCreatePage() {
         size="sm"
         variant="outline"
         color="primary"
-        onPress={() => router.replace(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path)}
+        onPress={() => router.replace(ROUTES.EMPLOYERS.path)}
       >
         Back to Discover
       </Button>
