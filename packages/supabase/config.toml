@@ -60,6 +60,18 @@ additional_redirect_urls = [
   "http://127.0.0.1:8081/auth/callback",
   "http://localhost:8081",
   "http://localhost:8081/auth/callback",
+  "https://sandbox.scaffald.com",
+  "https://sandbox.scaffald.com/auth/callback",
+  "https://prev.scaffald.com",
+  "https://prev.scaffald.com/auth/callback",
+  "https://beta.scaffald.com",
+  "https://beta.scaffald.com/auth/callback",
+  "https://dev.scaffald.com",
+  "https://dev.scaffald.com/auth/callback",
+  "https://preview.scaffald.com",
+  "https://preview.scaffald.com/auth/callback",
+  "https://app.scaffald.com",
+  "https://app.scaffald.com/auth/callback",
 ]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 seconds (one
 # week).
