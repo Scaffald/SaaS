@@ -6,7 +6,7 @@ import LivePreview from '@site/src/components/LivePreview';
 
 # Checklist
 
-Interactive checklist component for displaying a list of tasks or items with completion states.
+Interactive checklist component for displaying tasks with completion states and a progress bar.
 
 ## Import
 
@@ -18,58 +18,49 @@ import { Checklist } from '@scaffald/ui';
 
 <LivePreview code={`<ThemeProvider initialTheme="light">
   <Checklist
+    title="Getting Started"
+    subtitle="Complete these steps"
+    completionPercentage={50}
     items={[
-      { id: '1', label: 'Set up your profile', completed: true },
-      { id: '2', label: 'Connect your account', completed: true },
-      { id: '3', label: 'Invite team members', completed: false },
-      { id: '4', label: 'Complete onboarding', completed: false },
+      { id: '1', title: 'Create your account', description: 'Sign up with email or SSO', complete: true },
+      { id: '2', title: 'Verify your email', description: 'Check your inbox', complete: true },
+      { id: '3', title: 'Set your preferences', description: 'Choose settings', complete: false },
+      { id: '4', title: 'Invite team members', description: 'Add collaborators', complete: false },
     ]}
   />
 </ThemeProvider>`} />
 
 ## Props
 
-See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/Checklist/Checklist.tsx) for the complete props API.
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | — | Header title |
+| `subtitle` | `string` | — | Header subtitle |
+| `items` | `ChecklistItem[]` | — | Array of checklist items |
+| `completionPercentage` | `number` | — | Progress percentage (0–100) |
+| `onItemPress` | `(item) => void` | — | Called when item is pressed |
+| `isLoading` | `boolean` | `false` | Show skeleton loading state |
+| `showProgress` | `boolean` | `true` | Show progress bar |
 
-### Common Props
+### ChecklistItem
 
-All Checklist components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | `string` | Unique identifier |
+| `title` | `string` | Item title |
+| `description` | `string` | Item description |
+| `complete` | `boolean` | Whether completed |
 
-## Examples
+## Loading State
 
 <LivePreview code={`<ThemeProvider initialTheme="light">
-  <Stack gap={16}>
-    <Text style={{fontWeight: 'bold'}}>Getting Started</Text>
-    <Checklist
-      items={[
-        { id: '1', label: 'Create account', completed: true },
-        { id: '2', label: 'Verify email', completed: true },
-        { id: '3', label: 'Set preferences', completed: false },
-      ]}
-    />
-  </Stack>
+  <Checklist isLoading completionPercentage={0} items={[]} />
 </ThemeProvider>`} />
-
-## Accessibility
-
-- Keyboard navigation support
-- Screen reader compatible
-- ARIA attributes included
-- Focus management
-
-## Design Tokens
-
-This component uses the following design tokens:
-
-- Colors: `colors.{semantic}.{theme}.{variant}`
-- Spacing: `spacing.*`
-- Typography: `typography.*`
-
-See [Design Tokens](../tokens/overview) for more information.
 
 ## Related Components
 
-No related components.
+- [Checkbox](./checkbox)
+- [Progress](./progress)
 
 ## Changelog
 

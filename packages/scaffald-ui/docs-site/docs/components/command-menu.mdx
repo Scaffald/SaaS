@@ -6,32 +6,21 @@ import LivePreview from '@site/src/components/LivePreview';
 
 # CommandMenu
 
-A searchable command palette for quick navigation and action execution, similar to VS Code's command palette or Spotlight.
+A searchable command palette for quick navigation and action execution. Includes CommandMenuItem for individual actions and CommandShortcut for keyboard shortcut badges.
 
 ## Import
 
 ```tsx
-import { CommandMenu } from '@scaffald/ui';
+import { CommandMenu, CommandMenuItem, CommandShortcut } from '@scaffald/ui';
 ```
 
-## Basic Usage
+## Usage
 
-<LivePreview code={`<ThemeProvider initialTheme="light">
-  <Text>CommandMenu renders a searchable command palette overlay. Trigger it with a keyboard shortcut (e.g., Ctrl+K). See props documentation for usage.</Text>
-</ThemeProvider>`} />
-
-## Props
-
-See the [TypeScript definitions](https://github.com/Scaffald/ui/blob/main/src/components/CommandMenu/CommandMenu.tsx) for the complete props API.
-
-### Common Props
-
-All CommandMenu components accept standard React Native [`View` props](https://reactnative.dev/docs/view#props).
-
-## Examples
+CommandMenu renders as a modal overlay triggered by a keyboard shortcut (Ctrl+K or Cmd+K).
 
 ```tsx
-// Full CommandMenu implementation
+const [isOpen, setIsOpen] = useState(false);
+
 <CommandMenu
   open={isOpen}
   onClose={() => setIsOpen(false)}
@@ -39,30 +28,43 @@ All CommandMenu components accept standard React Native [`View` props](https://r
 >
   <CommandMenuItem label="Go to Dashboard" icon="home" />
   <CommandMenuItem label="Settings" icon="settings" />
-  <CommandMenuItem label="Log out" icon="log-out" />
 </CommandMenu>
 ```
 
-## Accessibility
+## CommandMenuItem
 
-- Keyboard navigation support
-- Screen reader compatible
-- ARIA attributes included
-- Focus management
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={4} style={{padding: 8, borderRadius: 8, backgroundColor: '#f5f5f5'}}>
+    <CommandMenuItem label="Go to Dashboard" />
+    <CommandMenuItem label="Search Projects" />
+    <CommandMenuItem label="Create New Document" />
+    <CommandMenuItem label="Help & Support" />
+  </Stack>
+</ThemeProvider>`} />
 
-## Design Tokens
+## CommandShortcut
 
-This component uses the following design tokens:
-
-- Colors: `colors.{semantic}.{theme}.{variant}`
-- Spacing: `spacing.*`
-- Typography: `typography.*`
-
-See [Design Tokens](../tokens/overview) for more information.
+<LivePreview code={`<ThemeProvider initialTheme="light">
+  <Stack gap={12}>
+    <Row gap={8} style={{alignItems: 'center'}}>
+      <Text style={{width: 120}}>Command Palette</Text>
+      <CommandShortcut keys={['Ctrl', 'K']} />
+    </Row>
+    <Row gap={8} style={{alignItems: 'center'}}>
+      <Text style={{width: 120}}>Save</Text>
+      <CommandShortcut keys={['Ctrl', 'S']} />
+    </Row>
+    <Row gap={8} style={{alignItems: 'center'}}>
+      <Text style={{width: 120}}>Undo</Text>
+      <CommandShortcut keys={['Ctrl', 'Z']} />
+    </Row>
+  </Stack>
+</ThemeProvider>`} />
 
 ## Related Components
 
 - [CommandMenuFooter](./command-menu-footer)
+- [Menu](./menu)
 
 ## Changelog
 
