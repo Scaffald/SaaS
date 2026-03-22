@@ -215,7 +215,7 @@ export function TeamInvitationsWidget() {
           <Button
             variant="outline"
             size="sm"
-            onPress={() => router.push(ROUTES.DASHBOARD.TEAMS.INVITATIONS.path)}
+            onPress={() => router.push(ROUTES.EMPLOYERS.TEAMS.INVITATIONS.path)}
           >
             Manage
           </Button>

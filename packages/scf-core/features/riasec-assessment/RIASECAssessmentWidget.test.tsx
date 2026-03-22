@@ -97,7 +97,7 @@ describe('RIASECAssessmentWidget', () => {
     const button = screen.getByText('Start Interest Assessment')
     button.click()
 
-    expect(mockRouterPush).toHaveBeenCalledWith('/dashboard/assessments/riasec')
+    expect(mockRouterPush).toHaveBeenCalledWith('/assessments/riasec')
   })
 
   it('should display estimated time', () => {

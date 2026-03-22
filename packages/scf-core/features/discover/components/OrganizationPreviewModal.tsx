@@ -49,14 +49,14 @@ export function OrganizationPreviewModal({
 
   const handleViewJobs = () => {
     // Navigate to jobs view with organization filter
-    router.push(`${ROUTES.DASHBOARD.DISCOVER.JOBS.path}?org=${organizationId}`)
+    router.push(`${ROUTES.JOBS.path}?org=${organizationId}`)
     onOpenChange(false)
   }
 
   const handleOpenInNewTab = () => {
     if (!organizationId) return
     if (typeof window !== 'undefined') {
-      window.open(`${ROUTES.DASHBOARD.DISCOVER.JOBS.path}?org=${organizationId}`, '_blank')
+      window.open(`${ROUTES.JOBS.path}?org=${organizationId}`, '_blank')
     }
   }
 

@@ -102,7 +102,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
 
   // Handle navigation to assessment
   const handleNavigateToAssessment = () => {
-    router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
+    router.push(ROUTES.PROFILE.SKILLS.path)
   }
 
   // Category labels for display
@@ -250,7 +250,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
                 variant="outline"
                 size="sm"
                 onPress={() => {
-                  router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
+                  router.push(ROUTES.PROFILE.SKILLS.path)
                 }}
               >
                 Edit

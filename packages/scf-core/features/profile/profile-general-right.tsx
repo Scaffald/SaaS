@@ -21,7 +21,7 @@ export function ProfileGeneralRight() {
     (resumeId: string) => {
       setResumeModalOpen(false);
       router.push({
-        pathname: ROUTES.DASHBOARD.PROFILE.RESUME.REVIEW.path,
+        pathname: ROUTES.PROFILE.RESUME.REVIEW.path,
         params: { resumeId },
       });
     },

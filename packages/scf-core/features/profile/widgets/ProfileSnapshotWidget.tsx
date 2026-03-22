@@ -129,7 +129,7 @@ export function ProfileSnapshotWidget() {
               <Button
                 variant="filled"
                 color="primary"
-                onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
+                onPress={() => router.push(ROUTES.PROFILE.path)}
               >
                 Complete Profile
               </Button>
@@ -165,7 +165,7 @@ export function ProfileSnapshotWidget() {
           <Button
             variant="filled"
             color="primary"
-            onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
+            onPress={() => router.push(ROUTES.PROFILE.path)}
           >
             Complete Profile
           </Button>
@@ -241,7 +241,7 @@ export function ProfileSnapshotWidget() {
               size="sm"
               variant="text"
               color="primary"
-              onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
+              onPress={() => router.push(ROUTES.PROFILE.path)}
             >
               Edit profile
             </Button>
@@ -325,7 +325,7 @@ export function ProfileSnapshotWidget() {
               color="gray"
               size="sm"
               onPress={() =>
-                router.push(ROUTES.DASHBOARD.PROFILE.path)
+                router.push(ROUTES.PROFILE.path)
               }
             >
               Add Certification
@@ -337,7 +337,7 @@ export function ProfileSnapshotWidget() {
               color="gray"
               size="sm"
               onPress={() =>
-                router.push(ROUTES.DASHBOARD.PROFILE.path)
+                router.push(ROUTES.PROFILE.path)
               }
             >
               Update Experience
@@ -349,7 +349,7 @@ export function ProfileSnapshotWidget() {
               color="gray"
               size="sm"
               onPress={() =>
-                router.push(ROUTES.DASHBOARD.PROFILE.path)
+                router.push(ROUTES.PROFILE.path)
               }
             >
               Add Education

@@ -113,7 +113,7 @@ test.describe('Touch Interaction and Gesture Testing', () => {
       })
 
       test('debouncing prevents double-submit', async ({ page }) => {
-        await page.goto('/dashboard/profile/general', { waitUntil: 'networkidle' })
+        await page.goto('/profile/general', { waitUntil: 'networkidle' })
 
         const submitButton = page.locator('button[type="submit"], button:has-text("Save")').first()
         const buttonCount = await submitButton.count()

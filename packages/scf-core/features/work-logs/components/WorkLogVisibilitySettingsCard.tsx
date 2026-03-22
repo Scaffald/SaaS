@@ -167,7 +167,7 @@ export function WorkLogVisibilitySettingsCard() {
                       variant="outline"
                       onPress={() =>
                         router.push(
-                          buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, {
+                          buildPath(ROUTES.EMPLOYERS.LOGS.DETAIL, {
                             workLogId: item.id,
                           })
                         )

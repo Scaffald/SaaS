@@ -99,7 +99,7 @@ export function ExperienceWidget({
               variant="outline"
               size="sm"
               onPress={() =>
-                router.push(ROUTES.DASHBOARD.PROFILE.EXPERIENCE.path)
+                router.push(ROUTES.PROFILE.EXPERIENCE.path)
               }
             >
               Edit
@@ -117,7 +117,7 @@ export function ExperienceWidget({
                 ? {
                     label: "Add Experience",
                     onPress: () =>
-                      router.push(ROUTES.DASHBOARD.PROFILE.EXPERIENCE.path),
+                      router.push(ROUTES.PROFILE.EXPERIENCE.path),
                   }
                 : undefined
             }
@@ -197,7 +197,7 @@ export function ExperienceWidget({
               <Text
                 style={{ color: colors.blue[500] }}
                 onPress={() =>
-                  router.push(ROUTES.DASHBOARD.PROFILE.EXPERIENCE.path)
+                  router.push(ROUTES.PROFILE.EXPERIENCE.path)
                 }
               >
                 View all {experiences.length} positions →

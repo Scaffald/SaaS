@@ -188,7 +188,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
             size="md"
             variant="outline"
             onPress={() => {
-              router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
+              router.push(ROUTES.JOBS.path)
             }}
           >
             Back to Jobs
@@ -258,10 +258,10 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
           }}
           onCancel={() => {
             // Navigate back to jobs list
-            router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
+            router.push(ROUTES.JOBS.path)
           }}
           onReturnToJobs={() => {
-            router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
+            router.push(ROUTES.JOBS.path)
           }}
         />
       </Stack>
@@ -306,7 +306,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
           size="md"
           variant="outline"
           onPress={() => {
-            router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
+            router.push(ROUTES.JOBS.path)
           }}
         >
           Back to Jobs
@@ -326,7 +326,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
           size="md"
           color="primary"
           onPress={() => {
-            router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
+            router.push(ROUTES.JOBS.path)
           }}
         >
           Back to Jobs

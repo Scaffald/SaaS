@@ -51,9 +51,9 @@ export function WorkLogListScreen({ organizationId, orgSlug }: WorkLogListScreen
     }
   );
 
-  const createPath = orgSlug ? RouteBuilder.orgLogsCreate(orgSlug) : ROUTES.DASHBOARD.WORK_LOGS.CREATE.path;
+  const createPath = orgSlug ? RouteBuilder.orgLogsCreate(orgSlug) : ROUTES.EMPLOYERS.LOGS.CREATE.path;
   const detailPath = (workLogId: string) =>
-    orgSlug ? RouteBuilder.orgLogDetail(orgSlug, workLogId) : buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId });
+    orgSlug ? RouteBuilder.orgLogDetail(orgSlug, workLogId) : buildPath(ROUTES.EMPLOYERS.LOGS.DETAIL, { workLogId });
 
   const {
     offlineWorkLogs,

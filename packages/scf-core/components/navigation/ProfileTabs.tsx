@@ -36,8 +36,8 @@ const isPathActive = (currentPath: string, targetHref: string) => {
 
   // Check if current path starts with base path
   // But exclude nested routes (e.g., background-check sub-routes)
-  // Only match direct children of /dashboard/profile
-  if (normalizedTarget.startsWith('/dashboard/profile/')) {
+  // Only match direct children of /profile
+  if (normalizedTarget.startsWith('/profile/')) {
     // For direct profile children, match exactly or start with base
     // Exclude deeper nested routes
     const targetDepth = base.split('/').filter(Boolean).length
@@ -61,18 +61,18 @@ export const ProfileTabs = ({
   const currentPath = pathname ?? ''
   const { t } = useTranslation()
 
-  // Get child routes for /dashboard/profile
+  // Get child routes for /profile
   const childRoutes = useMemo(() => {
-    const routes = getChildRoutes('/dashboard/profile')
+    const routes = getChildRoutes('/profile')
     return routes
   }, [])
 
   // Filter to only show direct children (exclude BACKGROUND_CHECK which has nested routes)
-  // Direct children have depth 3: /dashboard/profile/general
+  // Direct children have depth 3: /profile/general
   const directChildRoutes = useMemo(() => {
     return childRoutes.filter((route) => {
       // Exclude BACKGROUND_CHECK as it has its own nested navigation
-      if (route.path === '/dashboard/profile/background-check') {
+      if (route.path === '/profile/background-check') {
         return false
       }
       // Only include routes that are direct children (exact: true or are top-level profile routes)

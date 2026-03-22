@@ -79,7 +79,7 @@ export function CareerPathWidget() {
         {adjacentCareers.map((career) => (
           <Pressable
             key={career.onetCode}
-            onPress={() => router.push(ROUTES.DASHBOARD.CAREER_EXPLORER.DETAIL.path.replace(':onetCode', career.onetCode))}
+            onPress={() => router.push(ROUTES.ASSESSMENTS.CAREER_EXPLORER.DETAIL.path.replace(':onetCode', career.onetCode))}
           >
             <Row
               gap={10}

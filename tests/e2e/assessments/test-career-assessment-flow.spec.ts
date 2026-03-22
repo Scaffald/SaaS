@@ -40,7 +40,7 @@ test.describe('Career Assessment Flow', () => {
 
     test('should complete RIASEC assessment flow', async ({ page }: { page: Page }) => {
       // Navigate directly to assessment page
-      await page.goto('/dashboard/assessments/riasec', { waitUntil: 'domcontentloaded' })
+      await page.goto('/assessments/riasec', { waitUntil: 'domcontentloaded' })
       await page.waitForTimeout(2000)
 
       // Verify assessment page loaded
@@ -117,7 +117,7 @@ test.describe('Career Assessment Flow', () => {
 
     test('should complete occupation assessment flow', async ({ page }: { page: Page }) => {
       // Navigate directly to assessment page
-      await page.goto('/dashboard/assessments/occupation', { waitUntil: 'domcontentloaded' })
+      await page.goto('/assessments/occupation', { waitUntil: 'domcontentloaded' })
       await page.waitForTimeout(2000)
 
       // Verify assessment page loaded
@@ -161,7 +161,7 @@ test.describe('Career Assessment Flow', () => {
     }: {
       page: Page
     }) => {
-      await page.goto('/dashboard/assessments', { waitUntil: 'domcontentloaded' })
+      await page.goto('/assessments', { waitUntil: 'domcontentloaded' })
       await page.waitForTimeout(2000)
 
       // Check for RIASEC card
@@ -180,7 +180,7 @@ test.describe('Career Assessment Flow', () => {
     })
 
     test('should navigate to RIASEC assessment from landing page', async ({ page }: { page: Page }) => {
-      await page.goto('/dashboard/assessments', { waitUntil: 'domcontentloaded' })
+      await page.goto('/assessments', { waitUntil: 'domcontentloaded' })
       await page.waitForTimeout(2000)
 
       const riasecButton = page.getByText(/Discover Career Interests|Start Interest Assessment/i)
@@ -193,7 +193,7 @@ test.describe('Career Assessment Flow', () => {
     })
 
     test('should navigate to occupation assessment from landing page', async ({ page }: { page: Page }) => {
-      await page.goto('/dashboard/assessments', { waitUntil: 'domcontentloaded' })
+      await page.goto('/assessments', { waitUntil: 'domcontentloaded' })
       await page.waitForTimeout(2000)
 
       const occupationButton = page.getByText(/Refine Occupation Matches|Add Occupations/i)

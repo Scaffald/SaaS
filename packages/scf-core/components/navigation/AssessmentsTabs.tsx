@@ -32,7 +32,7 @@ const isPathActive = (currentPath: string, targetHref: string) => {
     return false
   }
 
-  if (normalizedTarget.startsWith('/dashboard/assessments/')) {
+  if (normalizedTarget.startsWith('/assessments/')) {
     const targetDepth = base.split('/').filter(Boolean).length
     const currentDepth = normalizedCurrent.split('/').filter(Boolean).length
 
@@ -54,7 +54,7 @@ export const AssessmentsTabs = ({
   const _isSmallScreen = width <= 800
   const { t } = useTranslation()
 
-  const childRoutes = useMemo(() => getChildRoutes('/dashboard/assessments'), [])
+  const childRoutes = useMemo(() => getChildRoutes('/assessments'), [])
 
   const directChildRoutes = useMemo(() => {
     return childRoutes.filter((route) => {

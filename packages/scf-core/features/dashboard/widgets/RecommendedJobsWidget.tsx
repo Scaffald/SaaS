@@ -234,7 +234,7 @@ export function RecommendedJobsWidget() {
           <Button
             size="sm"
             variant="outline"
-            onPress={() => router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)}
+            onPress={() => router.push(ROUTES.JOBS.path)}
           >
             View All
           </Button>
@@ -246,7 +246,7 @@ export function RecommendedJobsWidget() {
           <JobRecommendationCard
             key={job.id}
             job={job}
-            onPress={() => router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.DETAIL.path.replace(':id', job.id))}
+            onPress={() => router.push(ROUTES.JOBS.DETAIL.path.replace(':id', job.id))}
           />
         ))}
       </Stack>

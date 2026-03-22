@@ -86,7 +86,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
 
   const handleViewFullDetails = () => {
     if (job?.id) {
-      router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS.DETAIL, { id: job.id }))
+      router.push(buildPath(ROUTES.JOBS.DETAIL, { id: job.id }))
       onOpenChange(false)
     }
   }

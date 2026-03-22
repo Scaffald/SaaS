@@ -155,7 +155,7 @@ test.describe('Platform-Specific Testing Matrix', () => {
     })
 
     test('forms work consistently across platforms', async ({ page }) => {
-      await page.goto('/dashboard/profile/general', { waitUntil: 'networkidle' })
+      await page.goto('/profile/general', { waitUntil: 'networkidle' })
 
       const inputs = page.locator('input, textarea, select')
       const inputCount = await inputs.count()

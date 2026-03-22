@@ -172,7 +172,7 @@ test.describe('Background check dispute workflow', () => {
       })
     )
 
-    await page.goto('/dashboard/profile/background-check')
+    await page.goto('/profile/background-check')
 
     await expect(page.getByText(/background check dashboard/i)).toBeVisible()
     await expect(page.getByText(/executive/i)).toBeVisible()

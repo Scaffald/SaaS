@@ -108,24 +108,10 @@ export default function DashboardLayout() {
                     headerShown: false,
                   }}
                 >
-                  <Stack.Screen
-                    name="auth"
-                    options={{
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name="dashboard"
-                    options={{
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name="communities"
-                    options={{
-                      headerShown: false,
-                    }}
-                  />
+                  <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                  <Stack.Screen name="(public)" options={{ headerShown: false }} />
+                  <Stack.Screen name="(protected)" options={{ headerShown: false }} />
+                  <Stack.Screen name="(admin)" options={{ headerShown: false }} />
                 </Stack>
               </ErrorBoundary>
             </Provider>

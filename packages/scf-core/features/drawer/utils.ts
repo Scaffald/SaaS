@@ -54,31 +54,29 @@ export const isActivePath = (pathname: string, href: string, exact?: boolean) =>
   }
 
   // Special case for assessments: also match career-explorer (nav sibling under Assessments)
-  const assessmentsPath = ROUTES.DASHBOARD.ASSESSMENTS.path
+  const assessmentsPath = ROUTES.ASSESSMENTS.path
   if (href === assessmentsPath) {
     return (
       pathname === assessmentsPath ||
       pathname === `${assessmentsPath}/index` ||
       pathname.startsWith(`${assessmentsPath}/`) ||
-      pathname === ROUTES.DASHBOARD.CAREER_EXPLORER.path ||
-      pathname.startsWith(`${ROUTES.DASHBOARD.CAREER_EXPLORER.path}/`)
+      pathname === ROUTES.ASSESSMENTS.CAREER_EXPLORER.path ||
+      pathname.startsWith(`${ROUTES.ASSESSMENTS.CAREER_EXPLORER.path}/`)
     )
   }
 
-  // Special case for workers: also match /dashboard/map (nav sibling under Workers)
-  const workersPath = ROUTES.DASHBOARD.DISCOVER.WORKERS.path
+  // Special case for workers: also match /workers/map (nav sibling under Workers)
+  const workersPath = ROUTES.WORKERS.path
   if (href === workersPath) {
     return (
       pathname === workersPath ||
       pathname === `${workersPath}/index` ||
-      pathname.startsWith(`${workersPath}/`) ||
-      pathname === ROUTES.DASHBOARD.DISCOVER.MAP.path ||
-      pathname.startsWith(`${ROUTES.DASHBOARD.DISCOVER.MAP.path}/`)
+      pathname.startsWith(`${workersPath}/`)
     )
   }
 
-  // Special case for employers: match /dashboard/employers and children (e.g. /dashboard/employers/create, /dashboard/employers/:id)
-  const employersPath = ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path
+  // Special case for employers: match /employers and children
+  const employersPath = ROUTES.EMPLOYERS.path
   if (href === employersPath) {
     return (
       pathname === employersPath ||

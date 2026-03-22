@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: 20.x
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 10.20.0
 
@@ -47,7 +47,7 @@ jobs:
 
       # Set NX_BASE for affected commands
       - name: Set Nx SHAs
-        uses: nrwl/nx-set-shas@v4
+        uses: nrwl/nx-set-shas@v5
         with:
           main-branch-name: main
 

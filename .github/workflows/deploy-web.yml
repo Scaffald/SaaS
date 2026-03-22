@@ -41,7 +41,7 @@ jobs:
 
       # ===== SETUP =====
       - name: 📦 Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
         with:
           version: ${{ env.PNPM_VERSION }}
 
@@ -73,7 +73,7 @@ jobs:
         run: pnpm install --frozen-lockfile --prefer-offline
 
       - name: Set Nx SHAs
-        uses: nrwl/nx-set-shas@v4
+        uses: nrwl/nx-set-shas@v5
         with:
           main-branch-name: main
 
