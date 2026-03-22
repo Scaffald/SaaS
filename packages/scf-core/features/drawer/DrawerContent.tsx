@@ -20,11 +20,10 @@ import {
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import { useCallback, type ReactNode } from 'react'
-import { Platform, Pressable, ScrollView, type PressableStateCallbackType } from 'react-native'
+import { Pressable, ScrollView, type PressableStateCallbackType } from 'react-native'
 import type { GestureResponderEvent } from 'react-native'
-import { Text, useWindowDimensions, Row, Stack, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
-import { frostedGlassStyle } from '@scf/core/components/ui'
+import { Text, useWindowDimensions, Row, Stack, useThemeContext, GlassSurface } from '@scaffald/ui'
+import { colors, glassVibrantColors } from '@scaffald/ui/tokens'
 import { useOrganizations } from '@scf/core/utils/useOrganizations'
 import { DrawerLink } from './DrawerLink'
 import { getDrawerItems, generateOfficeDrawerItem } from './config'
@@ -156,29 +155,19 @@ export const DrawerContent = ({
     </Pressable>
   )
 
-  // Mobile overlay: frosted glass with border. Tablet+: transparent (inherits content bg).
-  const drawerBgStyle = isSmall
-    ? {
-        ...frostedGlassStyle(theme),
-        ...(Platform.OS === 'web'
-          ? {
-              borderRightWidth: 1,
-              borderRightColor:
-                theme === 'dark' ? 'rgba(80, 73, 64, 0.3)' : 'rgba(237, 221, 201, 0.4)',
-            }
-          : {}),
-      }
-    : {
-        backgroundColor: 'transparent',
-      }
+  const glassTheme: 'light' | 'dark' = theme === 'dark' ? 'dark' : 'light'
+  const vibrant = glassVibrantColors[glassTheme]
 
   return (
-    <Stack
-      flex={1}
-      style={drawerBgStyle}
-      paddingHorizontal={isCollapsed ? 8 : 24}
-      paddingVertical={20}
-      align={isCollapsed ? 'center' : 'stretch'}
+    <GlassSurface
+      material={isSmall ? 'thick' : 'regular'}
+      specularBorder={!isSmall}
+      style={{
+        flex: 1,
+        paddingHorizontal: isCollapsed ? 8 : 24,
+        paddingVertical: 20,
+        alignItems: isCollapsed ? 'center' : 'stretch',
+      }}
     >
       <Stack flex={1} justify="space-between" gap={20} width="100%">
         {!isSmall ? (
@@ -241,7 +230,7 @@ export const DrawerContent = ({
           style={{
             paddingTop: 16,
             borderTopWidth: 1,
-            borderTopColor: colors.border[theme].default,
+            borderTopColor: vibrant.separator,
             width: '100%',
           }}
           align={isCollapsed ? 'center' : 'stretch'}
@@ -297,7 +286,7 @@ export const DrawerContent = ({
           )}
         </Stack>
       </Stack>
-    </Stack>
+    </GlassSurface>
   )
 }
 
@@ -363,9 +352,9 @@ const DrawerProfileCard = ({
       style={{
         padding: 12,
         borderRadius: 20,
-        backgroundColor: colors.bg[theme].subtle,
+        backgroundColor: glassVibrantColors[theme === 'dark' ? 'dark' : 'light'].tertiaryFill,
         borderWidth: 1,
-        borderColor: colors.border[theme].subtle,
+        borderColor: glassVibrantColors[theme === 'dark' ? 'dark' : 'light'].separator,
       }}
     >
       {avatarUri ? (

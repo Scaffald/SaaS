@@ -145,7 +145,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
           headerShown: isSmall,
           contentStyle: { paddingBottom: isSmall ? 56 : 0 },
           headerStyle: {
-            backgroundColor: colors.bg[theme].default,
+            backgroundColor: 'transparent',
             borderWidth: 0,
           },
           headerLeftContainerStyle: {
@@ -158,7 +158,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
             color: colors.text[theme].primary,
           },
           drawerStyle: {
-            backgroundColor: isSmall ? colors.bg[theme].default : colors.bg[theme].emphasis,
+            backgroundColor: 'transparent',
             borderRightWidth: 0,
             borderRadius: 0,
             width: drawerWidth,

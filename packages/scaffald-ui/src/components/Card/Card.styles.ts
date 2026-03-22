@@ -163,10 +163,9 @@ export function getCardStyles(
       if (Platform.OS === "web") {
         // Web: use material fallback bg as base (layers render via GlassSurface or nested divs)
         container.backgroundColor = materialStyles.nativeContainer.backgroundColor;
-        // Apply blur from tint/blur layers directly on the container for simple Card usage
-        const blurRadius = glassMaterial ? 50 : 20;
-        (container as Record<string, unknown>).backdropFilter = `blur(${blurRadius}px)`;
-        (container as Record<string, unknown>).WebkitBackdropFilter = `blur(${blurRadius}px)`;
+        // Apply Liquid Glass blur — always 50px for full material effect
+        (container as Record<string, unknown>).backdropFilter = "blur(50px) saturate(180%)";
+        (container as Record<string, unknown>).WebkitBackdropFilter = "blur(50px) saturate(180%)";
         (container as Record<string, unknown>).boxShadow = BOX_SHADOW_MAP.glass;
       } else {
         // Native: higher-opacity fallback + subtle shadow

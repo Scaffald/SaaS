@@ -6,13 +6,11 @@ import { useToast } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Button, Card, DashboardWidget, DashboardWidgetHeader, Separator, Skeleton, SkeletonBox, SkeletonText, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { colors, glassVibrantColors } from '@scaffald/ui/tokens'
 
 function TeamInvitationsWidgetSkeleton() {
-  const { theme } = useThemeContext()
-  const t = theme === 'dark' ? 'dark' : 'light'
   return (
-    <Card padding="md" style={{ borderColor: colors.border[t].default, borderWidth: 1, backgroundColor: colors.bg[t].default, gap: 16 }}>
+    <Card variant="outlined" padding="md" style={{ gap: 16 }}>
       {/* Header */}
       <Row justify="space-between" align="center">
         <Row gap={8} align="center">
@@ -24,7 +22,7 @@ function TeamInvitationsWidgetSkeleton() {
 
       {/* Invitation skeletons */}
       {[0, 1].map((i) => (
-        <Card key={i} padding="md" style={{ borderWidth: 1, borderColor: colors.border[t].default, backgroundColor: colors.bg[t].default, gap: 12 }}>
+        <Card key={i} variant="outlined" padding="md" style={{ gap: 12 }}>
           <Row justify="space-between" align="center">
             <SkeletonText lines={2} style={{ flex: 1 }} />
             <Row gap={8} marginLeft={16}>
@@ -61,7 +59,7 @@ export function TeamInvitationList({
     return (
       <Stack
         gap={8}
-        style={{ borderWidth: 1, borderColor: colors.border[t].default, borderRadius: 16, backgroundColor: colors.bg[t].muted }}
+        style={{ borderWidth: 1, borderColor: glassVibrantColors[t].separator, borderRadius: 16, backgroundColor: glassVibrantColors[t].tertiaryFill }}
         padding="md"
       >
         <Text>No pending invitations</Text>
@@ -89,9 +87,9 @@ export function TeamInvitationList({
         return (
           <Card
             key={invitation.id}
+            variant="outlined"
             padding="md"
-            borderWidth={1}
-            style={{ borderColor: colors.border[t].default, backgroundColor: colors.bg[t].default, gap: 12 }}
+            style={{ gap: 12 }}
           >
             <Row justify="space-between" align="center">
               <Stack gap={4} flex={1}>
