@@ -1,4 +1,5 @@
 import type React from 'react';
+import { useState, useCallback } from 'react';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
@@ -7,7 +8,7 @@ import styles from './index.module.css';
 import * as ScaffaldUI from '@scaffald/ui';
 
 const {
-  ThemeProvider,
+  ThemeContext,
   Button,
   Card,
   CardHeader,
@@ -30,6 +31,10 @@ const {
 } = ScaffaldUI;
 
 function LiveComponentShowcase() {
+  const [theme, setThemeState] = useState<'light' | 'dark'>('light');
+  const setTheme = useCallback((t: 'light' | 'dark') => setThemeState(t), []);
+  const toggleTheme = useCallback(() => setThemeState(p => p === 'light' ? 'dark' : 'light'), []);
+
   return (
     <section className={styles.componentShowcase}>
       <div className="container">
@@ -38,7 +43,7 @@ function LiveComponentShowcase() {
           <p>Real Scaffald UI components rendered right here. What you see is what you get.</p>
         </div>
 
-        <ThemeProvider initialTheme="light">
+        <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
           <div className={styles.widgetGrid}>
 
             <div className={styles.widget}>
@@ -166,7 +171,7 @@ function LiveComponentShowcase() {
             </div>
 
           </div>
-        </ThemeProvider>
+        </ThemeContext.Provider>
       </div>
     </section>
   );

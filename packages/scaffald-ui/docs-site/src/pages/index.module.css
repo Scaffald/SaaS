@@ -136,11 +136,7 @@
    ============================================ */
 .features {
   padding: 6rem 0;
-  background: #ffffff;
-}
-
-[data-theme='dark'] .features {
-  background: #1a232d;
+  background: var(--ifm-background-color);
 }
 
 .feature {
