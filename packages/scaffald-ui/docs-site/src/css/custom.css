@@ -3,6 +3,8 @@
  * Earth-tone theme matching the Scaffald app
  */
 
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600&display=swap');
+
 /* ============================================
    COLOR SYSTEM - Scaffald Earth-Tone Brand Colors
    ============================================ */
@@ -40,9 +42,6 @@
   --ifm-line-height-base: 1.5;
   --ifm-heading-font-weight: 600;
   --ifm-heading-color: #3a342f;
-
-  /* Load Roboto font from Google Fonts */
-  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600&display=swap');
 
   /* Spacing */
   --ifm-spacing-horizontal: 1.5rem;

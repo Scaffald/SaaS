@@ -39,8 +39,9 @@ function LiveComponentShowcase() {
         </div>
 
         <ThemeProvider initialTheme="light">
-          <div className="row" style={{gap: '2rem', marginBottom: '2rem'}}>
-            <div className="col col--6">
+          <div className={styles.widgetGrid}>
+
+            <div className={styles.widget}>
               <div className={styles.categoryCard}>
                 <h4>Buttons</h4>
                 <Stack gap={12}>
@@ -60,13 +61,11 @@ function LiveComponentShowcase() {
                     <Button disabled variant="filled" color="gray">Disabled</Button>
                   </Row>
                 </Stack>
-                <div style={{marginTop: 12}}>
-                  <Link to="/docs/components/button">View Button docs</Link>
-                </div>
+                <Link to="/docs/components/button">View Button docs</Link>
               </div>
             </div>
 
-            <div className="col col--6">
+            <div className={styles.widget}>
               <div className={styles.categoryCard}>
                 <h4>Form Controls</h4>
                 <Stack gap={12}>
@@ -76,15 +75,11 @@ function LiveComponentShowcase() {
                     <Toggle label="Dark mode" size="sm" />
                   </Row>
                 </Stack>
-                <div style={{marginTop: 12}}>
-                  <Link to="/docs/components/input">View Input docs</Link>
-                </div>
+                <Link to="/docs/components/input">View Input docs</Link>
               </div>
             </div>
-          </div>
 
-          <div className="row" style={{gap: '2rem', marginBottom: '2rem'}}>
-            <div className="col col--6">
+            <div className={styles.widget}>
               <div className={styles.categoryCard}>
                 <h4>Feedback</h4>
                 <Stack gap={12}>
@@ -96,13 +91,11 @@ function LiveComponentShowcase() {
                     <ProgressBar value={72} />
                   </Row>
                 </Stack>
-                <div style={{marginTop: 12}}>
-                  <Link to="/docs/components/alert">View Alert docs</Link>
-                </div>
+                <Link to="/docs/components/alert">View Alert docs</Link>
               </div>
             </div>
 
-            <div className="col col--6">
+            <div className={styles.widget}>
               <div className={styles.categoryCard}>
                 <h4>Data Display</h4>
                 <Stack gap={12}>
@@ -120,15 +113,11 @@ function LiveComponentShowcase() {
                   </Row>
                   <SkeletonText lines={3} />
                 </Stack>
-                <div style={{marginTop: 12}}>
-                  <Link to="/docs/components/avatar">View Avatar docs</Link>
-                </div>
+                <Link to="/docs/components/avatar">View Avatar docs</Link>
               </div>
             </div>
-          </div>
 
-          <div className="row" style={{gap: '2rem'}}>
-            <div className="col col--6">
+            <div className={styles.widget}>
               <div className={styles.categoryCard}>
                 <h4>Cards</h4>
                 <Stack gap={12}>
@@ -145,13 +134,11 @@ function LiveComponentShowcase() {
                     </CardContent>
                   </Card>
                 </Stack>
-                <div style={{marginTop: 12}}>
-                  <Link to="/docs/components/card">View Card docs</Link>
-                </div>
+                <Link to="/docs/components/card">View Card docs</Link>
               </div>
             </div>
 
-            <div className="col col--6">
+            <div className={styles.widget}>
               <div className={styles.categoryCard}>
                 <h4>Accordion</h4>
                 <Accordion defaultValue="item1">
@@ -174,11 +161,10 @@ function LiveComponentShowcase() {
                     </Accordion.Content>
                   </Accordion.Item>
                 </Accordion>
-                <div style={{marginTop: 12}}>
-                  <Link to="/docs/components/accordion">View Accordion docs</Link>
-                </div>
+                <Link to="/docs/components/accordion">View Accordion docs</Link>
               </div>
             </div>
+
           </div>
         </ThemeProvider>
       </div>
