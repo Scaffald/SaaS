@@ -2,7 +2,6 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { useIPIPStatus } from '@scf/core/utils/personality-assessment-sdk-hooks'
 import { useRIASECStatus, useOccupationStatus } from '@scf/core/utils/onet-sdk-hooks'
 import {
-  Button,
   DashboardWidget,
   Row,
   Skeleton,
@@ -103,7 +102,7 @@ function AssessmentCard({ card, isFirst }: { card: AssessmentCardData; isFirst: 
       onPress={() => router.push(card.route as never)}
       style={{
         padding: 24,
-        borderRadius: 20,
+        borderRadius: 16,
         minWidth: 240,
         maxWidth: 260,
         backgroundColor: isFeatured ? colors.bg[theme].default : colors.bg[theme].subtle,
@@ -112,29 +111,18 @@ function AssessmentCard({ card, isFirst }: { card: AssessmentCardData; isFirst: 
         gap: 16,
       }}
     >
-      <Text
-        style={{
-          fontSize: 16,
-          fontWeight: '700',
-          color: colors.text[theme].primary,
-        }}
-        numberOfLines={1}
-      >
-        {card.title}
-      </Text>
-
-      <Text
-        style={{
-          fontSize: 14,
-          color: colors.text[theme].secondary,
-          lineHeight: 20,
-        }}
-        numberOfLines={3}
-      >
-        {card.description}
-      </Text>
-
-      <Row style={{ marginTop: 'auto' as never }} justify="space-between" align="center">
+      <Row justify="space-between" align="center">
+        <Text
+          style={{
+            fontSize: 16,
+            fontWeight: '700',
+            color: colors.text[theme].primary,
+            flex: 1,
+          }}
+          numberOfLines={1}
+        >
+          {card.title}
+        </Text>
         <Stack
           paddingHorizontal={8}
           paddingVertical={2}
@@ -153,10 +141,29 @@ function AssessmentCard({ card, isFirst }: { card: AssessmentCardData; isFirst: 
             {card.badge}
           </Text>
         </Stack>
-        <Button variant="outline" color="primary" size="sm">
-          {card.ctaLabel}
-        </Button>
       </Row>
+
+      <Text
+        style={{
+          fontSize: 14,
+          color: colors.text[theme].secondary,
+          lineHeight: 20,
+        }}
+        numberOfLines={3}
+      >
+        {card.description}
+      </Text>
+
+      <Text
+        style={{
+          fontSize: 12,
+          fontWeight: '700',
+          color: colors.primary[600],
+          marginTop: 'auto' as never,
+        }}
+      >
+        {card.ctaLabel}
+      </Text>
     </Pressable>
   )
 }
@@ -204,20 +211,14 @@ export function AssessmentsCarouselWidget() {
           >
             Assessments
           </Text>
-          <Row gap={8}>
+          <Row gap={4}>
             <Pressable
               onPress={() => {
                 const prev = Math.max(0, activeIndex - 1)
                 scrollRef.current?.scrollTo({ x: prev * 284, animated: true })
                 setActiveIndex(prev)
               }}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : activeIndex === 0 ? 0.3 : 1,
-                padding: 8,
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: colors.border[theme].ghost,
-              })}
+              style={({ pressed }) => ({ opacity: pressed ? 0.5 : activeIndex === 0 ? 0.3 : 0.7, padding: 4 })}
               disabled={activeIndex === 0}
             >
               <ChevronLeft size={18} color={colors.text[theme].primary} />
@@ -228,13 +229,7 @@ export function AssessmentsCarouselWidget() {
                 scrollRef.current?.scrollTo({ x: next * 284, animated: true })
                 setActiveIndex(next)
               }}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : activeIndex >= cards.length - 1 ? 0.3 : 1,
-                padding: 8,
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: colors.border[theme].ghost,
-              })}
+              style={({ pressed }) => ({ opacity: pressed ? 0.5 : activeIndex >= cards.length - 1 ? 0.3 : 0.7, padding: 4 })}
               disabled={activeIndex >= cards.length - 1}
             >
               <ChevronRight size={18} color={colors.text[theme].primary} />
@@ -279,23 +274,25 @@ export function AssessmentsCarouselWidget() {
                 setActiveIndex(i)
               }}
               style={{
-                width: 8,
-                height: 8,
-                borderRadius: 4,
+                width: 10,
+                height: 10,
+                borderRadius: 5,
                 backgroundColor:
                   i === activeIndex ? colors.primary[600] : colors.gray[300],
               }}
             />
           ))}
         </Row>
-        <Button
-          variant="text"
-          color="primary"
-          size="sm"
+        <Text
+          style={{
+            fontSize: 12,
+            fontWeight: '700',
+            color: colors.primary[600],
+          }}
           onPress={() => router.push(ROUTES.DASHBOARD.ASSESSMENTS.path as never)}
         >
           View All
-        </Button>
+        </Text>
       </Row>
     </DashboardWidget>
   )

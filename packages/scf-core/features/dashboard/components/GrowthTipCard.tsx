@@ -55,9 +55,9 @@ export function GrowthTipCard() {
   return (
     <Stack
       padding={24}
-      borderRadius={12}
+      borderRadius={16}
       style={{
-        backgroundColor: colors.success[600],
+        backgroundColor: colors.primary[800],
         overflow: 'hidden',
         position: 'relative',
       }}
@@ -92,13 +92,13 @@ export function GrowthTipCard() {
             onPress={() => goToIndex((index - 1 + profileTipCards.length) % profileTipCards.length)}
             style={({ pressed }) => ({ opacity: pressed ? 0.5 : 0.7, padding: 2 })}
           >
-            <ChevronLeft size={18} color="#fff" />
+            <ChevronLeft size={14} color="#fff" />
           </Pressable>
           <Pressable
             onPress={() => goToIndex((index + 1) % profileTipCards.length)}
             style={({ pressed }) => ({ opacity: pressed ? 0.5 : 0.7, padding: 2 })}
           >
-            <ChevronRight size={18} color="#fff" />
+            <ChevronRight size={14} color="#fff" />
           </Pressable>
         </Row>
       </Row>
