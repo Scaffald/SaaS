@@ -1,58 +1,14 @@
 import { ErrorBoundary } from '@scf/core/components/ErrorBoundary'
-import { ROUTES } from '@scf/core/constants/routes'
 import { DrawerLayout } from '@scf/core/features/drawer/DrawerLayout'
-import { useProtectedRoute } from '@scf/core/utils/auth/useProtectedRoute'
-import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
-import { usePrerequisitesCheck } from '@scf/core/utils/prerequisites-sdk-hooks'
-import { useRouter } from 'expo-router'
+import { useUser } from '@scf/core/utils/useUser'
 import { Drawer } from 'expo-router/drawer'
-import { useEffect, useRef } from 'react'
-import { StyleSheet } from 'react-native'
-import { Spinner, Text, Stack, useThemeContext } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
 
-export default function Layout() {
-  const { isLoading, user } = useProtectedRoute()
-  const { session, isLoading: isSessionLoading } = useSessionContext()
-  const { theme } = useThemeContext()
-  const resolvedTheme = theme === 'dark' ? 'dark' : 'light'
-  const router = useRouter()
-  const hasRedirectedToOnboardingRef = useRef(false)
-
-  // Check prerequisites status - only run when we have a valid user
-  // This prevents race conditions after DB resets when session is invalid
-  const { data: statusData, isLoading: isCheckingPrereqs } = usePrerequisitesCheck({
-    enabled: !!user, // Only run if user exists
-  })
-
-  // Redirect to /onboarding once when prerequisites incomplete (avoids loop / double replace)
-  // biome-ignore lint/correctness/useExhaustiveDependencies: router is stable; deps would cause re-runs on every route change
-  useEffect(() => {
-    if (isCheckingPrereqs || !statusData || statusData.isComplete || hasRedirectedToOnboardingRef.current) {
-      return
-    }
-    hasRedirectedToOnboardingRef.current = true
-    router.replace(ROUTES.ONBOARDING.path)
-  }, [statusData, isCheckingPrereqs])
-
-  // Wait for session before rendering drawer so SDK has token and API calls don't 401
-  const sessionReady = !isSessionLoading && (user ? !!session?.access_token : true)
-
-  // Show loading overlay while auth/session/prereqs are pending.
-  // Keep DrawerLayout always mounted so the Drawer navigator never remounts — remounting
-  // fires all Drawer.Screen navigation effects simultaneously, causing the
-  // "Maximum update depth exceeded" crash.
-  const loadingOverlay =
-    isLoading || isCheckingPrereqs || !sessionReady ? (
-      <Stack
-        style={{ ...StyleSheet.absoluteFillObject, backgroundColor: colors.bg[resolvedTheme].default }}
-        justify="center"
-        align="center"
-      >
-        <Spinner size="lg" />
-        <Text>Loading...</Text>
-      </Stack>
-    ) : null
+/**
+ * Dashboard Layout — Drawer navigation only.
+ * Auth, session, and prerequisites are handled by the (protected) group layout.
+ */
+export default function DashboardLayout() {
+  const { user } = useUser()
 
   return (
     <ErrorBoundary
@@ -61,7 +17,7 @@ export default function Layout() {
         userId: user?.id,
       }}
     >
-      <DrawerLayout protectionComponent={loadingOverlay} hideDrawer={!statusData?.isComplete}>
+      <DrawerLayout protectionComponent={null}>
         <Drawer.Screen name="index" options={{ title: 'Dashboard' }} />
         <Drawer.Screen name="map/index" options={{ title: 'Map Search' }} />
         <Drawer.Screen name="workers/index" options={{ title: 'Search Workers' }} />
