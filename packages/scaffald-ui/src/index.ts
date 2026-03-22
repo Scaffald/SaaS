@@ -922,12 +922,12 @@ export type {
 //   CryptoAssetCardProps,
 // } from "./components/CryptoAssetCard";
 
-// export { TradeControls } from "./components/TradeControls";
-// export type {
-//   TradeAsset,
-//   TradeControlsProps,
-//   TradeMode,
-// } from "./components/TradeControls";
+export { TradeControls } from "./components/TradeControls";
+export type {
+  TradeAsset,
+  TradeControlsProps,
+  TradeMode,
+} from "./components/TradeControls";
 
 // Navigation components
 export { NavIconButton } from "./components/NavIconButton";

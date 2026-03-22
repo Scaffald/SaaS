@@ -100,7 +100,7 @@ export function CompactNewsWidget() {
 
   const { effectiveIndustryId } = useNewsIndustryResolution({
     industrySlug: selectedSlug,
-    useUserIndustry: selectedSlug === 'construction',
+    useUserIndustry: false,
   })
 
   const { data: newsItems, isLoading, refetch, isFetching } = useAggregatedNews({
