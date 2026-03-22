@@ -4,7 +4,6 @@ import { openPublicProfileInNewTab } from "@scf/core/utils/publicProfileUrl";
 import {
   useGeneralInfoWidget,
   useExperienceWidget,
-  useSkillsWidget,
   useCertificationsWidget,
   useEducationWidget,
 } from "@scf/core/utils/profile-widgets-sdk-hooks";
@@ -14,13 +13,11 @@ import {
   Avatar,
   Button,
   DashboardWidget,
-  H4,
   ProgressBarBase,
   Row,
   Skeleton,
   SkeletonAvatar,
   SkeletonGroup,
-  SkeletonText,
   Stack,
   Text,
   useThemeContext,
@@ -30,9 +27,9 @@ import { useRouter } from "expo-router";
 
 /**
  * ProfileSnapshotWidget
- * Comprehensive profile overview for dashboard.
- * Shows stats, skills preview, and quick actions.
- * Aligned with Stitch "Reimagined Branded Profile Card" design.
+ * Profile identity + profile strength card for dashboard.
+ * Horizontal avatar layout with action CTAs and completion bar.
+ * Aligned with Stitch "Professional Profile" comp.
  */
 export function ProfileSnapshotWidget() {
   const { theme } = useThemeContext();
@@ -56,11 +53,6 @@ export function ProfileSnapshotWidget() {
       { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
     );
 
-  const { data: skills, isLoading: loadingSkills } = useSkillsWidget(
-    { userId: user?.id },
-    { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
-  );
-
   const { data: certifications, isLoading: loadingCerts } =
     useCertificationsWidget(
       { userId: user?.id },
@@ -75,7 +67,6 @@ export function ProfileSnapshotWidget() {
   const isLoading =
     loadingGeneral ||
     loadingExperience ||
-    loadingSkills ||
     loadingCerts ||
     loadingEducation;
 
@@ -84,53 +75,42 @@ export function ProfileSnapshotWidget() {
     generalInfoErr &&
     (generalInfoErr as ScaffaldError).statusCode === 404;
 
-  // Shimmer loading state (Stitch-aligned structure)
+  // Shimmer loading state
   if (isLoading) {
     return (
-      <DashboardWidget>
+      <DashboardWidget gap={32}>
         <SkeletonGroup gap={24} animation="wave">
-          <Row justify="space-between" align="center">
-            <Skeleton width={100} height={28} borderRadius={4} />
-            <Skeleton width={120} height={20} borderRadius={4} />
-          </Row>
-          <Stack gap={16} align="center">
+          <Row gap={16} align="center">
             <SkeletonAvatar size={80} animation="wave" />
-            <SkeletonText lines={2} lastLineWidth="60%" animation="wave" />
-          </Stack>
-          <Stack gap={8}>
-            <Row justify="space-between">
-              <Skeleton width={80} height={16} />
-              <Skeleton width={36} height={16} />
-            </Row>
-            <Skeleton height={10} width="100%" borderRadius={99} />
-          </Stack>
-          <Row gap={12} wrap>
-            {[1, 2, 3].map((i) => (
-              <Stack
-                key={i}
-                gap={4}
-                flex={1}
-                minWidth={80}
-                align="center"
-                style={{ padding: 16, backgroundColor: colors.bg[theme].muted, borderRadius: 16 }}
-              >
-                <Skeleton width={32} height={24} />
-                <Skeleton width={48} height={10} />
-              </Stack>
-            ))}
+            <Stack gap={8} flex={1}>
+              <Skeleton width={160} height={20} borderRadius={4} />
+              <Row gap={12}>
+                <Skeleton width={70} height={14} borderRadius={4} />
+                <Skeleton width={80} height={14} borderRadius={4} />
+              </Row>
+              <Row gap={8}>
+                <Skeleton width={100} height={28} borderRadius={8} />
+                <Skeleton width={120} height={28} borderRadius={8} />
+              </Row>
+            </Stack>
           </Row>
-          <Stack gap={8}>
+          <Stack
+            gap={16}
+            padding={16}
+            borderRadius={16}
+            style={{ backgroundColor: colors.bg[theme].muted }}
+          >
             <Row justify="space-between">
-              <Skeleton width={80} height={14} />
-              <Skeleton width={50} height={14} />
+              <Skeleton width={100} height={16} />
+              <Skeleton width={80} height={16} />
             </Row>
-            <Row gap={8} wrap>
-              {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} width={100} height={28} borderRadius={8} />
+            <Skeleton height={12} width="100%" borderRadius={99} />
+            <Row gap={12}>
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} width={120} height={36} borderRadius={12} />
               ))}
             </Row>
           </Stack>
-          <Skeleton height={44} width="100%" borderRadius={16} />
         </SkeletonGroup>
       </DashboardWidget>
     );
@@ -197,30 +177,17 @@ export function ProfileSnapshotWidget() {
   // Calculate profile completion
   const calculateCompletion = (): number => {
     let completed = 0;
-    const total = 7;
+    const total = 6;
     if (generalInfo?.about) completed++;
     if (generalInfo?.headline) completed++;
     if (generalInfo?.years_of_experience !== null) completed++;
     if (experience && experience.length > 0) completed++;
     if (education && education.length > 0) completed++;
-    if (skills && skills.length > 0) completed++;
     if (certifications && certifications.length > 0) completed++;
     return Math.round((completed / total) * 100);
   };
 
   const completion = calculateCompletion();
-  const resolvedYearsOfExperience =
-    typeof generalInfo.calculatedYearsOfExperience === "number"
-      ? generalInfo.calculatedYearsOfExperience
-      : generalInfo.years_of_experience ?? 0;
-  const formattedYearsOfExperience =
-    Number.isFinite(resolvedYearsOfExperience) &&
-    resolvedYearsOfExperience % 1 !== 0
-      ? resolvedYearsOfExperience.toFixed(1)
-      : resolvedYearsOfExperience ?? 0;
-
-  const currentRole = experience?.find((exp) => exp.is_current);
-  const topSkills = skills?.slice(0, 5) || [];
 
   const displayName =
     generalInfo.display_name ||
@@ -228,295 +195,173 @@ export function ProfileSnapshotWidget() {
       ? `${generalInfo.privateData.first_name} ${generalInfo.privateData.last_name}`
       : generalInfo.username);
 
+  const strengthLabel =
+    completion >= 80 ? "Advanced" : completion >= 40 ? "Intermediate" : "Beginner";
+
+  const hasCerts = certifications && certifications.length > 0;
+  const hasExperience = experience && experience.length > 0;
+  const hasEducation = education && education.length > 0;
+
   return (
-    <DashboardWidget>
-      <Stack gap={24}>
-        {/* Header */}
-        <Row justify="space-between" align="center" wrap>
-          <H4>Profile</H4>
-          <Row gap={8} wrap>
-            {generalInfo.slug ? (
-              <Button
-                size="sm"
-                variant="text"
-                color="primary"
-                onPress={() => {
-                  const s = generalInfo.slug
-                  if (s) openPublicProfileInNewTab(s)
-                }}
-              >
-                View public profile
-              </Button>
-            ) : null}
+    <DashboardWidget gap={32}>
+      {/* Identity Row — horizontal: avatar left, name + CTAs right */}
+      <Row gap={16} align="flex-start">
+        <Avatar
+          size={80}
+          src={
+            getAvatarUrl(generalInfo.avatar_path) ||
+            generalInfo.avatar_url ||
+            undefined
+          }
+          initials={
+            displayName
+              ?.split(/\s+/)
+              .map((n) => n[0])
+              .join("")
+              .toUpperCase()
+              .slice(0, 2) ?? ""
+          }
+          color="gray"
+        />
+        <Stack gap={8} flex={1}>
+          <Text
+            style={{
+              fontWeight: "700",
+              fontSize: 18,
+              color: colors.text[theme].primary,
+              lineHeight: 22,
+            }}
+          >
+            {displayName}
+          </Text>
+
+          {/* Secondary text links */}
+          <Row gap={16}>
             <Button
               size="sm"
               variant="text"
               color="primary"
               onPress={() => router.push(ROUTES.PROFILE.path)}
             >
-              View Full Profile
+              Edit profile
             </Button>
-          </Row>
-        </Row>
-
-        {/* Avatar & Name Section */}
-        <Stack gap={16} align="center">
-          <Avatar
-            size={80}
-            src={
-              getAvatarUrl(generalInfo.avatar_path) ||
-              generalInfo.avatar_url ||
-              undefined
-            }
-            initials={
-              displayName
-                ?.split(/\s+/)
-                .map((n) => n[0])
-                .join("")
-                .toUpperCase()
-                .slice(0, 2) ?? ""
-            }
-            color="gray"
-          />
-          <Stack gap={4} align="center">
-            <Text style={{ fontWeight: "700", fontSize: 20, color: colors.text[theme].primary }}>
-              {displayName}
-            </Text>
-            {generalInfo.headline && (
-              <Text style={{ color: colors.text[theme].secondary }}>
-                {generalInfo.headline}
-              </Text>
-            )}
-          </Stack>
-          {generalInfo.open_to_work && (
-            <Row
-              paddingHorizontal={12}
-              paddingVertical={6}
-              borderRadius={10}
-              style={{
-                backgroundColor: colors.green[100],
-                borderWidth: 1,
-                borderColor: colors.green[600],
-              }}
-            >
-              <Text style={{ color: colors.green[800] }}>Open to Work</Text>
-            </Row>
-          )}
-        </Stack>
-
-        {/* Current Role - Stitch: centered label + role + company */}
-        {currentRole && (
-          <Stack
-            gap={4}
-            style={{ backgroundColor: colors.bg[theme].muted }}
-            padding="sm"
-            borderRadius={16}
-          >
-            <Text style={{ color: colors.text[theme].secondary }}>
-              Current Role
-            </Text>
-            <Text style={{ fontWeight: "700", fontSize: 18, color: colors.text[theme].primary }}>
-              {currentRole.job_title}
-            </Text>
-            <Text style={{ color: colors.text[theme].secondary }}>
-              {currentRole.company_name}
-            </Text>
-          </Stack>
-        )}
-
-        {/* Stats Grid */}
-        <Stack gap={16}>
-          <Text style={{ textTransform: 'uppercase', letterSpacing: 1.5, fontSize: 11, fontWeight: '700', color: colors.text[theme].tertiary }}>Profile Stats</Text>
-
-          {/* Completion Bar */}
-          <Stack gap={8}>
-            <Row justify="space-between" align="center">
-              <Text
-                style={{
-                  fontWeight: "600",
-                  fontSize: 14,
-                  color: colors.text[theme].primary,
-                }}
-              >
-                Completion
-              </Text>
-              <Text
-                style={{
-                  fontWeight: "700",
-                  fontSize: 14,
-                  color: theme === "light" ? colors.blue[700] : colors.blue[300],
-                }}
-              >
-                {completion}%
-              </Text>
-            </Row>
-            <ProgressBarBase value={completion} color="primary" />
-          </Stack>
-
-          {/* Stats Row */}
-          <Row gap={10} wrap>
-            <Stack
-              gap={4}
-              flex={1}
-              minWidth={80}
-              style={{ backgroundColor: colors.bg[theme].muted }}
-              padding={16}
-              borderRadius={16}
-              align="center"
-            >
-              <Text
-                style={{
-                  color:
-                    theme === "light" ? colors.blue[700] : colors.blue[300],
-                  fontSize: 24,
-                  fontWeight: '700',
-                }}
-              >
-                {skills?.length || 0}
-              </Text>
-              <Text style={{ color: colors.text[theme].secondary, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>
-                Skills
-              </Text>
-            </Stack>
-
-            <Stack
-              gap={4}
-              flex={1}
-              minWidth={80}
-              style={{ backgroundColor: colors.bg[theme].muted }}
-              padding={16}
-              borderRadius={16}
-              align="center"
-            >
-              <Text
-                style={{
-                  color:
-                    theme === "light" ? colors.green[700] : colors.green[300],
-                  fontSize: 24,
-                  fontWeight: '700',
-                }}
-              >
-                {certifications?.length || 0}
-              </Text>
-              <Text style={{ color: colors.text[theme].secondary, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Certs</Text>
-            </Stack>
-
-            <Stack
-              gap={4}
-              flex={1}
-              minWidth={80}
-              style={{ backgroundColor: colors.bg[theme].muted }}
-              padding={16}
-              borderRadius={16}
-              align="center"
-            >
-              <Text
-                style={{
-                  color:
-                    theme === "light" ? colors.blue[700] : colors.blue[300],
-                  fontSize: 24,
-                  fontWeight: '700',
-                }}
-              >
-                {formattedYearsOfExperience}
-              </Text>
-              <Text style={{ color: colors.text[theme].secondary, fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 }}>Years</Text>
-            </Stack>
-          </Row>
-        </Stack>
-
-        {/* Top Skills - Stitch: Top Skills + View All, chips */}
-        {topSkills.length > 0 && (
-          <Stack gap={8}>
-            <Row justify="space-between" align="center">
-              <Text style={{ textTransform: 'uppercase', letterSpacing: 1.5, fontSize: 11, fontWeight: '700', color: colors.text[theme].tertiary }}>Top Skills</Text>
+            {generalInfo.slug ? (
               <Button
                 size="sm"
                 variant="text"
                 color="primary"
-                onPress={() =>
-                  router.push(ROUTES.PROFILE.SKILLS.path)
-                }
+                onPress={() => {
+                  const s = generalInfo.slug;
+                  if (s) openPublicProfileInNewTab(s);
+                }}
               >
-                View All
+                View Profile
               </Button>
-            </Row>
-            <Row gap={8} wrap>
-              {topSkills.map((skill) => {
-                const displayCode =
-                  typeof skill.displayCode === "string"
-                    ? skill.displayCode
-                    : null;
-                const skillName =
-                  typeof skill.name === "string" ? skill.name : "Skill";
-                const chipLabel =
-                  typeof skill.label === "string"
-                    ? skill.label
-                    : displayCode
-                      ? `${displayCode} · ${skillName}`
-                      : skillName;
-                const isVerified = skill.verified === true;
+            ) : null}
+          </Row>
 
-                return (
-                  <Row
-                    key={skill.id as string}
-                    paddingHorizontal={10}
-                    paddingVertical={6}
-                    borderRadius={999}
-                    style={{
-                      backgroundColor: colors.bg[theme].muted,
-                      borderWidth: 1,
-                      borderColor: isVerified
-                        ? colors.green[600]
-                        : colors.gray[300],
-                    }}
-                  >
-                    {isVerified && (
-                      <Text
-                        style={{ color: colors.green[700], marginRight: 4 }}
-                      >
-                        ✓
-                      </Text>
-                    )}
-                    <Text
-                      style={{
-                        fontSize: 11,
-                        fontWeight: "600",
-                        color: colors.text[theme].primary,
-                      }}
-                    >
-                      {chipLabel}
-                    </Text>
-                  </Row>
-                );
-              })}
-            </Row>
-          </Stack>
-        )}
+        </Stack>
+      </Row>
 
-        {/* Edit Profile CTA - Stitch: full-width button + helper text */}
-        <Stack gap={8}>
-          <Button
-            variant="filled"
-            color="primary"
-            size="md"
-            onPress={() => router.push(ROUTES.PROFILE.path)}
-            style={{ width: "100%" }}
-          >
-            Edit Profile
-          </Button>
-          {completion < 100 && (
+      {/* Profile Strength */}
+      <Stack
+        gap={16}
+        padding={16}
+        borderRadius={16}
+        style={{
+          backgroundColor: colors.bg[theme].subtle,
+          borderWidth: 1,
+          borderColor: colors.border[theme].ghost,
+        }}
+      >
+        <Row justify="space-between" align="center">
+          <Row align="center" gap={8}>
             <Text
               style={{
-                fontSize: 12,
-                color: colors.text[theme].secondary,
-                textAlign: "center",
+                fontSize: 14,
+                fontWeight: "700",
+                color: colors.text[theme].primary,
               }}
             >
-              Complete your profile to attract more opportunities
+              Profile Strength
             </Text>
+            <Stack
+              paddingHorizontal={8}
+              paddingVertical={2}
+              borderRadius={6}
+              style={{ backgroundColor: colors.indigo[50] }}
+            >
+              <Text
+                style={{
+                  fontSize: 10,
+                  fontWeight: "800",
+                  color: colors.indigo[700],
+                  textTransform: "uppercase",
+                  letterSpacing: 0.5,
+                }}
+              >
+                {strengthLabel}
+              </Text>
+            </Stack>
+          </Row>
+          <Text
+            style={{
+              fontSize: 14,
+              fontWeight: "700",
+              color: colors.primary[600],
+            }}
+          >
+            {completion}% Complete
+          </Text>
+        </Row>
+
+        <ProgressBarBase value={completion} color="primary" />
+
+        {/* Actions */}
+        <Row gap={12} wrap>
+          {!hasCerts && (
+            <Button
+              variant="outline"
+              color="gray"
+              size="sm"
+              onPress={() =>
+                router.push(ROUTES.PROFILE.path)
+              }
+            >
+              Add Certification
+            </Button>
           )}
-        </Stack>
+          {!hasExperience && (
+            <Button
+              variant="outline"
+              color="gray"
+              size="sm"
+              onPress={() =>
+                router.push(ROUTES.PROFILE.path)
+              }
+            >
+              Update Experience
+            </Button>
+          )}
+          {!hasEducation && (
+            <Button
+              variant="outline"
+              color="gray"
+              size="sm"
+              onPress={() =>
+                router.push(ROUTES.PROFILE.path)
+              }
+            >
+              Add Education
+            </Button>
+          )}
+          <Button variant="outline" color="gray" size="sm">
+            Get Verified
+          </Button>
+          <Button variant="outline" color="gray" size="sm">
+            Background Check
+          </Button>
+        </Row>
       </Stack>
     </DashboardWidget>
   );

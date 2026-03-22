@@ -85,22 +85,22 @@ export const lineHeight = {
  * React Native uses numbers (pixels), not em units
  */
 export const letterSpacing = {
-  // Per-size values (Apple HIG exact)
+  // Per-size values (loosened from Apple HIG for dashboard readability)
   largeTitle: 0.4,
   title1: 0.38,
-  title2: -0.26,
-  title3: -0.45,
-  headline: -0.43,
-  body: -0.43,
-  callout: -0.31,
-  subheadline: -0.23,
-  footnote: -0.08,
-  caption1: 0,
-  caption2: 0.06,
+  title2: 0,
+  title3: -0.1,
+  headline: -0.1,
+  body: -0.2,
+  callout: -0.15,
+  subheadline: -0.1,
+  footnote: 0,
+  caption1: 0.1,
+  caption2: 0.1,
 
   // Legacy aliases (backward compat)
-  tighter: -0.45,
-  tight: -0.26,
+  tighter: -0.2,
+  tight: -0.1,
   normal: 0,
   wide: 0.38,
   wider: 0.4,

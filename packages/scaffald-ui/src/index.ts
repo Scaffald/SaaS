@@ -909,11 +909,18 @@ export type {
   SidebarWidgetType,
 } from "./components/Sidebar";
 
-// Crypto Wallet components (files not yet created — commented out to unblock build)
+// Crypto Wallet components (stubbed — component files not yet created)
 // export { CryptoWalletLayout } from "./components/CryptoWalletLayout";
-// export type { CryptoWalletLayoutProps, CryptoWalletLayoutVariant } from "./components/CryptoWalletLayout";
+// export type {
+//   CryptoWalletLayoutProps,
+//   CryptoWalletLayoutVariant,
+// } from "./components/CryptoWalletLayout";
+
 // export { CryptoAssetCard } from "./components/CryptoAssetCard";
-// export type { ChangeType, CryptoAssetCardProps } from "./components/CryptoAssetCard";
+// export type {
+//   ChangeType,
+//   CryptoAssetCardProps,
+// } from "./components/CryptoAssetCard";
 
 export { TradeControls } from "./components/TradeControls";
 export type {

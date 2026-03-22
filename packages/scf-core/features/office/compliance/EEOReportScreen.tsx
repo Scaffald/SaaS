@@ -407,7 +407,7 @@ export function EEOReportScreen() {
               </Card>
 
               {/* Gender Analysis */}
-              <Card variant="glass" variant="glass" padding="md">
+              <Card variant="glass" padding="md">
                 <Stack gap={12}>
                   <Text style={{ fontWeight: '600', fontSize: 15, color: colors.text[theme].primary }}>
                     Gender Analysis
@@ -438,7 +438,7 @@ export function EEOReportScreen() {
               </Card>
 
               {/* Veteran Analysis */}
-              <Card variant="glass" variant="glass" padding="md">
+              <Card variant="glass" padding="md">
                 <Stack gap={12}>
                   <Text style={{ fontWeight: '600', fontSize: 15, color: colors.text[theme].primary }}>
                     Veteran Status Analysis

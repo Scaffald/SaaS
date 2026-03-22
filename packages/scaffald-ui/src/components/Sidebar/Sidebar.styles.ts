@@ -71,10 +71,11 @@ export function getSidebarStyles(
     gap: spacing[2],
   }
 
-  // Footer container styles with better spacing
+  // Footer container — pinned to bottom via marginTop auto
   const footerContainer: ViewStyle = {
-    paddingTop: spacing[12],
-    paddingBottom: spacing[16],
+    marginTop: 'auto',
+    paddingTop: spacing[16],
+    paddingBottom: spacing[24],
     borderTopWidth: borderWidth.thin,
     borderTopColor: isLight ? colors.border.light.subtle : colors.border.dark.subtle,
   }

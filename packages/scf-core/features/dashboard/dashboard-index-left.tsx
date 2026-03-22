@@ -12,6 +12,8 @@ import {
   MobileGrowthTip,
   MobileDashboardTabs,
 } from './components'
+import { AnalyticsWidget } from './components/AnalyticsWidget'
+import { AssessmentsCarouselWidget } from './components/AssessmentsCarouselWidget'
 import { CareerRecommendationsWidget } from './widgets/CareerRecommendationsWidget'
 import { SkillsGapWidget } from './widgets/SkillsGapWidget'
 import { CareerPathWidget } from './widgets/CareerPathWidget'
@@ -40,7 +42,9 @@ export function DashboardIndexLeft() {
 
   return (
     <Stack gap={20}>
+      <AnalyticsWidget />
       <ProfileSnapshotWidget />
+      <AssessmentsCarouselWidget />
       <SoftSkillsComparisonWidget showCTA />
       <InquiryOverviewWidget />
       <WeeklyPulseWidget />
