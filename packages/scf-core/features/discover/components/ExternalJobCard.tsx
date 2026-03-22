@@ -85,7 +85,7 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
     <Card
       pressable
       onPress={() =>
-        router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS.DETAIL, { id: job.id }))
+        router.push(buildPath(ROUTES.JOBS.DETAIL, { id: job.id }))
       }
       padding="md"
       variant={job.featured ? 'elevated' : 'surface'}

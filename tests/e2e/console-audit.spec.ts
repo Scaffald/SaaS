@@ -22,29 +22,29 @@ const PUBLIC_ROUTES = ['/', '/auth', '/auth/verify', '/auth/success']
 /** Dashboard routes – require auth. Covers all static dashboard pages. */
 const DASHBOARD_ROUTES = [
   '/dashboard',
-  '/dashboard/map',
-  '/dashboard/profile',
-  '/dashboard/profile/general',
-  '/dashboard/profile/education',
-  '/dashboard/profile/experience',
-  '/dashboard/profile/employment',
-  '/dashboard/profile/skills',
-  '/dashboard/profile/certifications',
-  '/dashboard/profile/resume',
-  '/dashboard/profile/background-check',
-  '/dashboard/workers',
-  '/dashboard/jobs',
-  '/dashboard/employers',
-  '/dashboard/employers/create',
-  '/dashboard/work-logs',
-  '/dashboard/work-logs/create',
-  '/dashboard/assessments',
-  '/dashboard/assessments/pulse',
-  '/dashboard/assessments/ipip',
-  '/dashboard/assessments/riasec',
-  '/dashboard/assessments/occupation',
+  '/workers/map',
+  '/profile',
+  '/profile/general',
+  '/profile/education',
+  '/profile/experience',
+  '/profile/employment',
+  '/profile/skills',
+  '/profile/certifications',
+  '/profile/resume',
+  '/profile/background-check',
+  '/workers',
+  '/jobs',
+  '/employers',
+  '/employers/create',
+  '/employers/logs',
+  '/employers/logs/create',
+  '/assessments',
+  '/assessments/pulse',
+  '/assessments/ipip',
+  '/assessments/riasec',
+  '/assessments/occupation',
   '/dashboard/settings',
-  '/dashboard/teams',
+  '/employers/teams',
   '/dashboard/news',
   '/org',
   '/org/invitations',
@@ -53,7 +53,7 @@ const DASHBOARD_ROUTES = [
 ]
 
 /** Dynamic dashboard routes (require valid IDs). Audit manually with real IDs or add test fixture IDs. */
-// const DASHBOARD_DYNAMIC_ROUTES = ['/dashboard/workers/[id]', '/dashboard/employers/[id]', '/dashboard/work-logs/[workLogId]', '/dashboard/users/[id]']
+// const DASHBOARD_DYNAMIC_ROUTES = ['/workers/[id]', '/employers/[id]', '/employers/logs/[workLogId]', '/dashboard/users/[id]']
 
 /** Office routes – require admin */
 const OFFICE_ROUTES = ['/office', '/office/jobs', '/office/applications', '/office/cms']

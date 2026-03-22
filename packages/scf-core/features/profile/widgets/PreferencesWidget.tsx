@@ -78,7 +78,7 @@ export function PreferencesWidget({
               variant="outline"
               size="sm"
               onPress={() =>
-                router.push(ROUTES.DASHBOARD.PROFILE.EMPLOYMENT.path)
+                router.push(ROUTES.PROFILE.EMPLOYMENT.path)
               }
             >
               Edit

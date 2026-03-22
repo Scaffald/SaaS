@@ -20,7 +20,7 @@ import { expect, test } from '@playwright/test'
  */
 const API_ENDPOINTS = [
   { path: '/dashboard', endpoint: '/api/trpc/dashboard' },
-  { path: '/dashboard/profile/general', endpoint: '/api/trpc/profile' },
+  { path: '/profile/general', endpoint: '/api/trpc/profile' },
   { path: '/dashboard/discover/workers', endpoint: '/api/trpc/discover.workers' },
   { path: '/dashboard/discover/jobs', endpoint: '/api/trpc/discover.jobs' },
   { path: '/dashboard/discover/employers', endpoint: '/api/trpc/discover.employers' },

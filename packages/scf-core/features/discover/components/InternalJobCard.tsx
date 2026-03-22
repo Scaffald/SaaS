@@ -185,11 +185,11 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
   const handleCardPress = () => {
     if (hasInquiryLink && applicationId) {
       router.push(
-        buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS.APPLICATIONS.INQUIRY, { applicationId })
+        buildPath(ROUTES.JOBS.APPLICATIONS.INQUIRY, { applicationId })
       )
       return
     }
-    router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS.DETAIL, { id: job.id }))
+    router.push(buildPath(ROUTES.JOBS.DETAIL, { id: job.id }))
   }
 
   return (

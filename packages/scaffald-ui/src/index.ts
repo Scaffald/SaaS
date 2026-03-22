@@ -911,23 +911,16 @@ export type {
 
 // Crypto Wallet components (files not yet created — commented out to unblock build)
 // export { CryptoWalletLayout } from "./components/CryptoWalletLayout";
-// export type {
-//   CryptoWalletLayoutProps,
-//   CryptoWalletLayoutVariant,
-// } from "./components/CryptoWalletLayout";
-
+// export type { CryptoWalletLayoutProps, CryptoWalletLayoutVariant } from "./components/CryptoWalletLayout";
 // export { CryptoAssetCard } from "./components/CryptoAssetCard";
-// export type {
-//   ChangeType,
-//   CryptoAssetCardProps,
-// } from "./components/CryptoAssetCard";
+// export type { ChangeType, CryptoAssetCardProps } from "./components/CryptoAssetCard";
 
-// export { TradeControls } from "./components/TradeControls";
-// export type {
-//   TradeAsset,
-//   TradeControlsProps,
-//   TradeMode,
-// } from "./components/TradeControls";
+export { TradeControls } from "./components/TradeControls";
+export type {
+  TradeAsset,
+  TradeControlsProps,
+  TradeMode,
+} from "./components/TradeControls";
 
 // Navigation components
 export { NavIconButton } from "./components/NavIconButton";

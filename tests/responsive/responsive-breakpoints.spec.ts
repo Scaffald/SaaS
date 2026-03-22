@@ -33,9 +33,9 @@ const VIEWPORTS = [
 const TEST_PAGES = [
   { path: '/', name: 'Home' },
   { path: '/dashboard', name: 'Dashboard' },
-  { path: '/dashboard/profile/general', name: 'Profile General' },
-  { path: '/dashboard/profile/employment', name: 'Profile Employment' },
-  { path: '/dashboard/profile/education', name: 'Profile Education' },
+  { path: '/profile/general', name: 'Profile General' },
+  { path: '/profile/employment', name: 'Profile Employment' },
+  { path: '/profile/education', name: 'Profile Education' },
   { path: '/dashboard/discover/workers', name: 'Discover Workers' },
   { path: '/dashboard/discover/jobs', name: 'Discover Jobs' },
   { path: '/dashboard/discover/employers', name: 'Discover Employers' },
@@ -118,7 +118,7 @@ test.describe('Responsive Layout Testing', () => {
 
     test('forms stack vertically on mobile', async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 667 }) // Mobile
-      await page.goto('/dashboard/profile/general', { waitUntil: 'networkidle' })
+      await page.goto('/profile/general', { waitUntil: 'networkidle' })
       await page.waitForTimeout(2000)
 
       const inputs = page.locator('input, textarea, select')

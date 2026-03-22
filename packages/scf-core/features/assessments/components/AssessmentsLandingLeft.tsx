@@ -20,7 +20,7 @@ const ASSESSMENT_LANDING_CARDS: AssessmentLandingCard[] = [
     description:
       'Capture how you are feeling this week so coaches can tailor guidance and keep a pulse on engagement.',
     ctaLabel: 'Open Weekly Pulse',
-    route: ROUTES.DASHBOARD.ASSESSMENTS.LUSCHER,
+    route: ROUTES.ASSESSMENTS.LUSCHER,
     estimatedTime: 'Takes ~2 minutes',
   },
   {
@@ -29,7 +29,7 @@ const ASSESSMENT_LANDING_CARDS: AssessmentLandingCard[] = [
     description:
       'Answer a research-backed personality inventory to help match you with environments where you thrive.',
     ctaLabel: 'Start Personality Assessment',
-    route: ROUTES.DASHBOARD.ASSESSMENTS.IPIP,
+    route: ROUTES.ASSESSMENTS.IPIP,
     estimatedTime: 'Takes ~12 minutes',
   },
   {
@@ -38,7 +38,7 @@ const ASSESSMENT_LANDING_CARDS: AssessmentLandingCard[] = [
     description:
       'Rate your interest across six Holland themes to uncover roles and work families that fit your style.',
     ctaLabel: 'Discover Career Interests',
-    route: ROUTES.DASHBOARD.ASSESSMENTS.RIASEC,
+    route: ROUTES.ASSESSMENTS.RIASEC,
     estimatedTime: 'Takes ~3 minutes',
   },
   {
@@ -47,7 +47,7 @@ const ASSESSMENT_LANDING_CARDS: AssessmentLandingCard[] = [
     description:
       'Stack-rank job factors to focus the recommendations you receive on roles that align with your goals.',
     ctaLabel: 'Refine Occupation Matches',
-    route: ROUTES.DASHBOARD.ASSESSMENTS.OCCUPATION,
+    route: ROUTES.ASSESSMENTS.OCCUPATION,
     estimatedTime: 'Takes ~4 minutes',
   },
 ]

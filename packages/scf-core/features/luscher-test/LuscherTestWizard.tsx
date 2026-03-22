@@ -319,7 +319,7 @@ export function LuscherTestWizard() {
       leftContent={wizardContent}
       rightContent={railContent}
       breadcrumbItems={[
-        { label: 'Assessments', href: '/dashboard/assessments' },
+        { label: 'Assessments', href: '/assessments' },
         { label: 'Weekly Pulse' },
       ]}
     />

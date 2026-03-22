@@ -66,7 +66,7 @@ export function CareerExplorerScreen() {
 
   const handleOccupationPress = useCallback(
     (onetCode: string) => {
-      router.push(ROUTES.DASHBOARD.CAREER_EXPLORER.DETAIL.path.replace(':onetCode', onetCode))
+      router.push(ROUTES.ASSESSMENTS.CAREER_EXPLORER.DETAIL.path.replace(':onetCode', onetCode))
     },
     [router]
   )
@@ -228,7 +228,7 @@ export function CareerExplorerScreen() {
             <Button
               size="sm"
               color="primary"
-              onPress={() => router.push(ROUTES.DASHBOARD.ASSESSMENTS.RIASEC.path)}
+              onPress={() => router.push(ROUTES.ASSESSMENTS.RIASEC.path)}
             >
               Take Assessment
             </Button>
@@ -269,14 +269,14 @@ export function CareerExplorerScreen() {
             <Button
               size="sm"
               variant="outline"
-              onPress={() => router.push(ROUTES.DASHBOARD.ASSESSMENTS.RIASEC.path)}
+              onPress={() => router.push(ROUTES.ASSESSMENTS.RIASEC.path)}
             >
               Career Interests (RIASEC)
             </Button>
             <Button
               size="sm"
               variant="outline"
-              onPress={() => router.push(ROUTES.DASHBOARD.ASSESSMENTS.OCCUPATION.path)}
+              onPress={() => router.push(ROUTES.ASSESSMENTS.OCCUPATION.path)}
             >
               Occupation Preferences
             </Button>

@@ -23,7 +23,7 @@ import {
 const TEST_PAGES = [
   { path: '/', name: 'Home' },
   { path: '/dashboard', name: 'Dashboard' },
-  { path: '/dashboard/profile/general', name: 'Profile General' },
+  { path: '/profile/general', name: 'Profile General' },
   { path: '/dashboard/discover/workers', name: 'Discover Workers' },
   { path: '/dashboard/discover/jobs', name: 'Discover Jobs' },
   { path: '/dashboard/discover/employers', name: 'Discover Employers' },

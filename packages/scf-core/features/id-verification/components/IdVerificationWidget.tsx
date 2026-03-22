@@ -30,7 +30,7 @@ export function IdVerificationWidget() {
         <Button
           size="sm"
           color="primary"
-          onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.ID_VERIFICATION.path)}
+          onPress={() => router.push(ROUTES.PROFILE.ID_VERIFICATION.path)}
         >
           Manage verification
         </Button>

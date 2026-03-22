@@ -18,7 +18,7 @@ export function ResumeImportWidget() {
     (resumeId: string) => {
       setModalOpen(false);
       router.push({
-        pathname: ROUTES.DASHBOARD.PROFILE.RESUME.REVIEW.path,
+        pathname: ROUTES.PROFILE.RESUME.REVIEW.path,
         params: { resumeId },
       });
     },

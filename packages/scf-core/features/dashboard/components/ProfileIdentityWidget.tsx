@@ -117,7 +117,7 @@ export function ProfileIdentityWidget() {
               <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
                 Complete your profile to get started
               </Text>
-              <Button variant="filled" color="primary" onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}>
+              <Button variant="filled" color="primary" onPress={() => router.push(ROUTES.PROFILE.path)}>
                 Complete Profile
               </Button>
             </>
@@ -143,7 +143,7 @@ export function ProfileIdentityWidget() {
           <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
             Complete your profile to get started
           </Text>
-          <Button variant="filled" color="primary" onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}>
+          <Button variant="filled" color="primary" onPress={() => router.push(ROUTES.PROFILE.path)}>
             Complete Profile
           </Button>
         </Stack>
@@ -176,7 +176,7 @@ export function ProfileIdentityWidget() {
     <DashboardWidget>
       <Stack gap={32}>
         {/* Identity Section */}
-        <Row gap={16} align="center" wrap>
+        <Row gap={16} align="flex-start" wrap>
           {/* Avatar */}
           <Avatar
             size={80}
@@ -210,7 +210,7 @@ export function ProfileIdentityWidget() {
                   fontWeight: '700',
                   color: colors.primary[700],
                 }}
-                onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
+                onPress={() => router.push(ROUTES.PROFILE.path)}
               >
                 Edit profile
               </Text>
@@ -300,7 +300,7 @@ export function ProfileIdentityWidget() {
                 variant="outline"
                 color="gray"
                 size="sm"
-                onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)}
+                onPress={() => router.push(ROUTES.PROFILE.CERTIFICATIONS.path)}
               >
                 Add Certification
               </Button>
@@ -310,7 +310,7 @@ export function ProfileIdentityWidget() {
                 variant="outline"
                 color="gray"
                 size="sm"
-                onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EMPLOYMENT.path)}
+                onPress={() => router.push(ROUTES.PROFILE.EMPLOYMENT.path)}
               >
                 Update Experience
               </Button>
@@ -320,7 +320,7 @@ export function ProfileIdentityWidget() {
                 variant="outline"
                 color="gray"
                 size="sm"
-                onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
+                onPress={() => router.push(ROUTES.PROFILE.path)}
               >
                 Add Education
               </Button>
@@ -329,7 +329,7 @@ export function ProfileIdentityWidget() {
               variant="outline"
               color="gray"
               size="sm"
-              onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.ID_VERIFICATION.path)}
+              onPress={() => router.push(ROUTES.PROFILE.ID_VERIFICATION.path)}
             >
               Get Verified
             </Button>
@@ -337,7 +337,7 @@ export function ProfileIdentityWidget() {
               variant="outline"
               color="gray"
               size="sm"
-              onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.BACKGROUND_CHECK.path)}
+              onPress={() => router.push(ROUTES.PROFILE.BACKGROUND_CHECK.path)}
             >
               Background Check
             </Button>

@@ -26,7 +26,7 @@ export function MobileProfileHero() {
 
   return (
     <Pressable
-      onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
+      onPress={() => router.push(ROUTES.PROFILE.path)}
       style={{
         backgroundColor: colors.bg[theme].default,
         borderRadius: 20,

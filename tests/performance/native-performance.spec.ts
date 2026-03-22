@@ -21,7 +21,7 @@ import { expect, test } from '@playwright/test'
 const MOBILE_PAGES = [
   '/',
   '/dashboard',
-  '/dashboard/profile/general',
+  '/profile/general',
   '/dashboard/discover/workers',
   '/dashboard/discover/map',
 ]

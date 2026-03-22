@@ -149,7 +149,7 @@ test.describe('Profile resume import workflow', () => {
   test('uploads a resume, triggers AI parsing, and redirects to review flow', async ({ page }) => {
     const resumeBuffer = createPdfBuffer(TEST_RESUME_CONTENT)
 
-    await page.goto('/dashboard/profile/general')
+    await page.goto('/profile/general')
 
     const uploadButton = page.getByRole('button', { name: /upload resume/i })
     await expect(uploadButton).toBeVisible()
@@ -167,9 +167,9 @@ test.describe('Profile resume import workflow', () => {
     await expect(page.getByText(/uploading resume/i)).toBeVisible()
     await expect(page.getByText(/parsing resume/i)).toBeVisible()
 
-    await page.waitForURL(`**/dashboard/profile/resume/review?resumeId=${RESUME_ID}`)
+    await page.waitForURL(`**/profile/resume/review?resumeId=${RESUME_ID}`)
 
-    await page.goto('/dashboard/profile/general')
+    await page.goto('/profile/general')
     await expect(page.getByRole('button', { name: /upload resume/i })).toHaveCount(0)
     expect(uploadCalls).toBe(1)
   })
@@ -177,7 +177,7 @@ test.describe('Profile resume import workflow', () => {
   test('shows validation error for files larger than 1MB without calling upload', async ({
     page,
   }) => {
-    await page.goto('/dashboard/profile/general')
+    await page.goto('/profile/general')
 
     const uploadButton = page.getByRole('button', { name: /upload resume/i })
     const fileChooserPromise = page.waitForEvent('filechooser')
@@ -198,7 +198,7 @@ test.describe('Profile resume import workflow', () => {
   })
 
   test('rejects unsupported file types with inline error message', async ({ page }) => {
-    await page.goto('/dashboard/profile/general')
+    await page.goto('/profile/general')
 
     const uploadButton = page.getByRole('button', { name: /upload resume/i })
     const fileChooserPromise = page.waitForEvent('filechooser')
@@ -259,7 +259,7 @@ test.describe('Profile resume import workflow', () => {
       })
     )
 
-    await page.goto(`/dashboard/profile/resume/review?resumeId=${RESUME_ID}`)
+    await page.goto(`/profile/resume/review?resumeId=${RESUME_ID}`)
     await page.waitForTimeout(1000)
 
     // Check if parsed data is displayed
@@ -304,7 +304,7 @@ test.describe('Profile resume import workflow', () => {
       })
     )
 
-    await page.goto(`/dashboard/profile/resume/review?resumeId=${RESUME_ID}`)
+    await page.goto(`/profile/resume/review?resumeId=${RESUME_ID}`)
     await page.waitForTimeout(1000)
 
     // Check for section selection UI (checkboxes or similar)
@@ -355,7 +355,7 @@ test.describe('Profile resume import workflow', () => {
       fulfillJson(route, { success: true })
     })
 
-    await page.goto('/dashboard/profile/general')
+    await page.goto('/profile/general')
     await page.waitForTimeout(1000)
 
     // After import, completion should increase
@@ -384,7 +384,7 @@ test.describe('Profile resume import workflow', () => {
       })
     })
 
-    await page.goto('/dashboard/profile/general')
+    await page.goto('/profile/general')
     const uploadButton = page.getByRole('button', { name: /upload resume/i })
     const fileChooserPromise = page.waitForEvent('filechooser')
     await uploadButton.click()

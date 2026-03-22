@@ -62,7 +62,7 @@ export function useProtectedRoute(options: UseProtectedRouteOptions = {}) {
 
         onTimeout?.()
 
-        const inAuthGroup = segments[0] === 'auth'
+        const inAuthGroup = segments[0] === '(auth)' || segments[0] === 'auth'
 
         if (!inAuthGroup) {
           try {
@@ -95,7 +95,7 @@ export function useProtectedRoute(options: UseProtectedRouteOptions = {}) {
       return
     }
 
-    const inAuthGroup = segments[0] === 'auth'
+    const inAuthGroup = segments[0] === '(auth)' || segments[0] === 'auth'
 
     // If user is not authenticated and not in auth group, redirect to auth
     if (!user && !inAuthGroup) {

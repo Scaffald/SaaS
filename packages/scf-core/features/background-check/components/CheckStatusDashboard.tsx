@@ -63,7 +63,7 @@ export function CheckStatusDashboard() {
   }, [checksQuery.data, activeFilter])
 
   const handleStartNewCheck = () => {
-    router.push(ROUTES.DASHBOARD.PROFILE.BACKGROUND_CHECK.INITIATE.path)
+    router.push(ROUTES.PROFILE.BACKGROUND_CHECK.INITIATE.path)
   }
 
   const handleViewDetails = (check: BackgroundCheckSummary) => {
@@ -72,7 +72,7 @@ export function CheckStatusDashboard() {
 
   const handleRenew = (check: BackgroundCheckSummary) => {
     setSelectedCheckId(check.id)
-    router.push(ROUTES.DASHBOARD.PROFILE.BACKGROUND_CHECK.INITIATE.path)
+    router.push(ROUTES.PROFILE.BACKGROUND_CHECK.INITIATE.path)
   }
 
   const handleDisputeNavigation = (check: BackgroundCheckSummary) => {
@@ -80,7 +80,7 @@ export function CheckStatusDashboard() {
       setDisputeCheck(check)
       return
     }
-    const disputePath = buildPath(ROUTES.DASHBOARD.PROFILE.BACKGROUND_CHECK.DISPUTE, {
+    const disputePath = buildPath(ROUTES.PROFILE.BACKGROUND_CHECK.DISPUTE, {
       checkId: check.id,
     })
     router.push(disputePath)

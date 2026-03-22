@@ -64,6 +64,7 @@ import { CommunityInteractions } from './resources/community-interactions.js'
 import { CommunityReputation } from './resources/community-reputation.js'
 import { CommunitySkills } from './resources/community-skills.js'
 import { OfficeCommunities } from './resources/office-communities.js'
+import { Analytics } from './resources/analytics.js'
 
 export class Scaffald {
   private http: HttpClient
@@ -131,6 +132,7 @@ export class Scaffald {
   public readonly communityReputation: CommunityReputation
   public readonly communitySkills: CommunitySkills
   public readonly officeCommunities: OfficeCommunities
+  public readonly analytics: Analytics
 
   constructor(config: ScaffaldConfig) {
     if (!config.apiKey && !config.accessToken && !config.supabaseToken) {
@@ -206,6 +208,7 @@ export class Scaffald {
     this.communityReputation = new CommunityReputation(this.http)
     this.communitySkills = new CommunitySkills(this.http)
     this.officeCommunities = new OfficeCommunities(this.http)
+    this.analytics = new Analytics(this.http)
   }
 
   getRateLimitInfo(): RateLimitInfo | undefined {

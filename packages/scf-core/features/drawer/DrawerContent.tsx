@@ -111,7 +111,7 @@ export const DrawerContent = ({
     setTheme(nextTheme)
   }, [resolvedTheme, setTheme])
 
-  const profilePath = ROUTES.DASHBOARD.PROFILE.path
+  const profilePath = ROUTES.PROFILE.path
   const handleProfilePress = useCallback(() => {
     router.push(profilePath)
     handleNavigate(profilePath)

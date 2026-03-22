@@ -104,6 +104,13 @@
       "title": "Teams"
     },
     "home": "Home",
+    "analytics": {
+      "title": "Analytics",
+      "overview": "Overview",
+      "engagement": "Engagement",
+      "visibility": "Visibility",
+      "search": "Search"
+    },
     "title": "Dashboard",
     "user": "User Profile",
     "workLogs": {

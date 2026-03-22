@@ -2,12 +2,12 @@ import { expect, type Page, test } from '@playwright/test'
 import { signInAsTestUser } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 import { ensureProfileComplete } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/profile'
 
-test.describe('Regular • /dashboard/profile/experience', () => {
+test.describe('Regular • /profile/experience', () => {
   test('navigates and shows profile experience UI', async ({ page }: { page: Page }) => {
     await signInAsTestUser(page)
     await ensureProfileComplete(page)
-    await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
-    expect(page.url()).toContain('/dashboard/profile/experience')
+    await page.goto('/profile/experience', { waitUntil: 'domcontentloaded' })
+    expect(page.url()).toContain('/profile/experience')
     await page
       .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
       .catch(() => {})
@@ -19,7 +19,7 @@ test.describe('Regular • /dashboard/profile/experience', () => {
   test('shows success banner after saving changes', async ({ page }: { page: Page }) => {
     await signInAsTestUser(page)
     await ensureProfileComplete(page)
-    await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile/experience', { waitUntil: 'domcontentloaded' })
 
     const jobTitleField = await page.waitForSelector('input[placeholder="e.g. Electrician"]', {
       timeout: 10000,
@@ -31,7 +31,7 @@ test.describe('Regular • /dashboard/profile/experience', () => {
     await expect(page.getByText(/Changes saved successfully/i)).toBeVisible()
     await expect(page.getByText(/Saved!/i)).toBeVisible()
 
-    await page.goto('/dashboard/profile', { waitUntil: 'domcontentloaded' })
+    await page.goto('/profile', { waitUntil: 'domcontentloaded' })
     await expect(page.getByText(/Automated Test Role/i)).toBeVisible()
   })
 })

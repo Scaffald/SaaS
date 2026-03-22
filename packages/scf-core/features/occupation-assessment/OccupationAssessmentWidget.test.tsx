@@ -97,7 +97,7 @@ describe('OccupationAssessmentWidget', () => {
     const button = screen.getByText('Add Occupations')
     button.click()
 
-    expect(mockRouterPush).toHaveBeenCalledWith('/dashboard/assessments/occupation')
+    expect(mockRouterPush).toHaveBeenCalledWith('/assessments/occupation')
   })
 
   it('should display estimated time', () => {

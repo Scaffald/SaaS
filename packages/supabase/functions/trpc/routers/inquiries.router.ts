@@ -1300,7 +1300,7 @@ export const inquiriesRouter = router({
               severity: 'info',
               title: 'New Inquiry Received',
               message: `You have received an inquiry from ${organizationName}`,
-              cta_url: `/dashboard/jobs/applications/${applicationId}/inquiry`,
+              cta_url: `/jobs/applications/${applicationId}/inquiry`,
               metadata: {
                 inquiry_id: inquiry.id,
                 application_id: applicationId,
@@ -1782,7 +1782,7 @@ export const inquiriesRouter = router({
           severity: 'info',
           title: `Inquiry from ${orgName}`,
           message: `${orgName} has sent you an inquiry for ${jobTitle}`,
-          cta_url: `/dashboard/jobs/applications/${inquiry.application_id}/inquiry`,
+          cta_url: `/jobs/applications/${inquiry.application_id}/inquiry`,
           metadata: {
             inquiry_id: inquiry.id,
             application_id: inquiry.application_id,
@@ -1926,7 +1926,7 @@ export const inquiriesRouter = router({
           severity: 'info',
           title: `New Comment from ${senderName}`,
           message: `${senderName} commented on the ${sectionLabel} section`,
-          cta_url: `/dashboard/jobs/applications/${inquiry.application_id}/inquiry`,
+          cta_url: `/jobs/applications/${inquiry.application_id}/inquiry`,
           metadata: {
             inquiry_id: inquiry.id,
             application_id: inquiry.application_id,
@@ -2440,7 +2440,7 @@ export const inquiriesRouter = router({
         severity: 'info',
         title: 'Inquiry Terms Updated',
         message: `${orgName} has updated the inquiry terms. Please review the changes.`,
-        cta_url: `/dashboard/jobs/applications/${inquiry.application_id}/inquiry`,
+        cta_url: `/jobs/applications/${inquiry.application_id}/inquiry`,
         metadata: {
           inquiry_id: id,
           application_id: inquiry.application_id,

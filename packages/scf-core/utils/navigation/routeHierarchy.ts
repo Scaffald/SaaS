@@ -245,7 +245,7 @@ function findRouteNodeInNested(
           return value as Record<string, unknown>
         }
         // Even if path doesn't match, recursively search children
-        // (e.g., DASHBOARD has path '/dashboard' but we're looking for '/dashboard/profile')
+        // (e.g., DASHBOARD has path '/dashboard' but we're looking for '/profile')
         const result = findRouteNodeInNested(value, targetPath)
         if (result) {
           return result
