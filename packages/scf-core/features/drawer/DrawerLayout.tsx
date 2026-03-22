@@ -19,7 +19,6 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { Pressable } from 'react-native'
 import { DrawerContent } from './DrawerContent'
 import { MobileBottomNav } from './MobileBottomNav'
-import { AccountSwitcher } from '@scf/core/features/dev/AccountSwitcher'
 import { ScaffaldLogo } from '@scf/core/assets'
 
 interface DrawerLayoutProps {
@@ -204,7 +203,6 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
         {children}
       </Drawer>
       {isSmall && <MobileBottomNav />}
-      <AccountSwitcher />
       {/* TODO: Uncomment this when we implement fully */}
       {/* {!hideDrawer ? <FeedbackWidget /> : null} */}
     </>

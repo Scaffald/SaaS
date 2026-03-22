@@ -1,17 +1,86 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { Text, useThemeContext, useResponsive } from '@scaffald/ui'
+import { Text, useThemeContext, useResponsive, Popover, PopoverContent } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { usePathname, useRouter } from 'expo-router'
-import { Briefcase, Home, Newspaper, User } from 'lucide-react-native'
-import { Pressable, View } from 'react-native'
+import { ChevronLeft, Search, X } from 'lucide-react-native'
+import { useRef, useState } from 'react'
+import {
+  Animated,
+  LayoutAnimation,
+  Platform,
+  Pressable,
+  TextInput,
+  UIManager,
+  View,
+} from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { MOBILE_SECTIONS, type MobileSection, type MobileTabItem } from './config'
 
-const TABS = [
-  { label: 'Home', icon: Home, route: ROUTES.DASHBOARD.path },
-  { label: 'Jobs', icon: Briefcase, route: ROUTES.DASHBOARD.DISCOVER.JOBS.path },
-  { label: 'News', icon: Newspaper, route: ROUTES.DASHBOARD.NEWS.path },
-  { label: 'Profile', icon: User, route: ROUTES.DASHBOARD.PROFILE.path },
-] as const
+// Enable LayoutAnimation on Android
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true)
+}
+
+/** Determine which section the user is currently in based on pathname. */
+function getActiveSection(pathname: string): MobileSection | null {
+  for (const section of MOBILE_SECTIONS) {
+    for (const prefix of section.matchPrefixes) {
+      if (pathname === prefix || pathname.startsWith(prefix)) {
+        return section
+      }
+    }
+  }
+  if (pathname === ROUTES.DASHBOARD.path || pathname === '/dashboard') {
+    return MOBILE_SECTIONS[0]
+  }
+  return null
+}
+
+/** Check if a sub-item tab is active */
+function isTabActive(tab: { route: string; exact?: boolean }, pathname: string): boolean {
+  if (tab.exact) return pathname === tab.route
+  return pathname === tab.route || pathname.startsWith(tab.route + '/')
+}
+
+// ============================================================================
+// Glassmorphic style helper
+// ============================================================================
+
+function getGlassStyle(theme: 'light' | 'dark') {
+  const base = {
+    borderWidth: 1,
+    borderColor: theme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.08)',
+  }
+
+  if (Platform.OS === 'web') {
+    return {
+      ...base,
+      backdropFilter: 'blur(24px) saturate(180%)',
+      WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+      backgroundColor:
+        theme === 'light' ? 'rgba(255,255,255,0.78)' : 'rgba(30,30,30,0.78)',
+    } as Record<string, unknown>
+  }
+
+  return {
+    ...base,
+    backgroundColor: colors.bg[theme].default,
+  }
+}
+
+// ============================================================================
+// Constants
+// ============================================================================
+
+const PILL_HEIGHT = 44
+const BUTTON_SIZE = 44
+const ICON_SIZE = 20
+const ACTIVE_DOT_SIZE = 36
+const BAR_GAP = 8
+
+// ============================================================================
+// Component
+// ============================================================================
 
 export function MobileBottomNav() {
   const { isMobile } = useResponsive()
@@ -19,52 +88,378 @@ export function MobileBottomNav() {
   const insets = useSafeAreaInsets()
   const pathname = usePathname()
   const router = useRouter()
+  const searchInputRef = useRef<TextInput>(null)
+
+  const [searchActive, setSearchActive] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [popoverOpen, setPopoverOpen] = useState(false)
+
+  const activeSection = getActiveSection(pathname)
 
   if (!isMobile) return null
+
+  const glassStyle = getGlassStyle(theme)
+  const iconMuted = colors.icon[theme].muted
+  const iconDefault = colors.icon[theme].default
+
+  // ── Handlers ──
+
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back()
+    } else {
+      router.push(ROUTES.DASHBOARD.path)
+    }
+  }
+
+  const handleSectionTap = (section: MobileSection) => {
+    if (activeSection?.key === section.key) {
+      // Tapping active section → open popover with sub-items
+      setPopoverOpen(true)
+      return
+    }
+    router.push(section.route)
+  }
+
+  const handleSubItemTap = (item: MobileTabItem) => {
+    setPopoverOpen(false)
+    router.push(item.route)
+  }
+
+  const handleSearchOpen = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+    setSearchActive(true)
+    setPopoverOpen(false)
+    setTimeout(() => searchInputRef.current?.focus(), 100)
+  }
+
+  const handleSearchClose = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+    setSearchActive(false)
+    setSearchQuery('')
+  }
+
+  // ── Search results ──
+
+  const getSearchResults = () => {
+    if (!searchQuery.trim()) return []
+    const q = searchQuery.toLowerCase()
+    const results: { label: string; route: string; section: string; icon: MobileTabItem['icon'] }[] = []
+    for (const section of MOBILE_SECTIONS) {
+      // Match section itself
+      if (section.label.toLowerCase().includes(q)) {
+        results.push({
+          label: section.label,
+          route: section.route,
+          section: 'Sections',
+          icon: section.icon,
+        })
+      }
+      // Match sub-items
+      for (const item of section.subItems) {
+        if (item.label.toLowerCase().includes(q)) {
+          results.push({
+            label: item.label,
+            route: item.route,
+            section: section.label,
+            icon: item.icon,
+          })
+        }
+      }
+    }
+    return results.slice(0, 8)
+  }
+
+  const searchResults = searchActive ? getSearchResults() : []
+
+  // ── Sub-menu popover content ──
+
+  const renderPopoverContent = () => {
+    if (!activeSection) return null
+    return (
+      <View style={{ minWidth: 200, paddingVertical: 4 }}>
+        <Text
+          size="xs"
+          weight="semibold"
+          style={{
+            color: colors.text[theme].tertiary,
+            paddingHorizontal: 16,
+            paddingVertical: 8,
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
+          }}
+        >
+          {activeSection.label}
+        </Text>
+        {activeSection.subItems.map((item) => {
+          const Icon = item.icon
+          const isActive = isTabActive(item, pathname)
+          return (
+            <Pressable
+              key={item.key}
+              onPress={() => handleSubItemTap(item)}
+              style={({ pressed }) => ({
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 12,
+                paddingHorizontal: 16,
+                paddingVertical: 10,
+                backgroundColor: pressed
+                  ? colors.bg[theme].subtle
+                  : isActive
+                    ? colors.bg[theme].subtle
+                    : 'transparent',
+                borderRadius: 8,
+                marginHorizontal: 4,
+              })}
+            >
+              <Icon
+                size={18}
+                color={isActive ? colors.primary[600] : iconDefault}
+              />
+              <Text
+                size="sm"
+                weight={isActive ? 'semibold' : 'regular'}
+                style={{
+                  color: isActive
+                    ? colors.primary[600]
+                    : colors.text[theme].primary,
+                }}
+              >
+                {item.label}
+              </Text>
+            </Pressable>
+          )
+        })}
+      </View>
+    )
+  }
+
+  // ── Search mode ──
+
+  if (searchActive) {
+    return (
+      <View
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          paddingBottom: insets.bottom + 8,
+          paddingHorizontal: 16,
+          paddingTop: 8,
+        }}
+      >
+        {/* Search results popover */}
+        {searchResults.length > 0 && (
+          <View
+            style={{
+              ...getGlassStyle(theme),
+              borderRadius: 16,
+              marginBottom: 8,
+              paddingVertical: 4,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: -4 },
+              shadowOpacity: 0.08,
+              shadowRadius: 12,
+              elevation: 8,
+            } as Record<string, unknown>}
+          >
+            {searchResults.map((result, i) => {
+              const Icon = result.icon
+              return (
+                <Pressable
+                  key={`${result.route}-${i}`}
+                  onPress={() => {
+                    handleSearchClose()
+                    router.push(result.route)
+                  }}
+                  style={({ pressed }) => ({
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 12,
+                    paddingHorizontal: 16,
+                    paddingVertical: 10,
+                    backgroundColor: pressed
+                      ? colors.bg[theme].subtle
+                      : 'transparent',
+                    borderRadius: 8,
+                    marginHorizontal: 4,
+                  })}
+                >
+                  <Icon size={18} color={iconMuted} />
+                  <View style={{ flex: 1 }}>
+                    <Text size="sm" style={{ color: colors.text[theme].primary }}>
+                      {result.label}
+                    </Text>
+                    <Text size="xs" style={{ color: colors.text[theme].tertiary }}>
+                      {result.section}
+                    </Text>
+                  </View>
+                </Pressable>
+              )
+            })}
+          </View>
+        )}
+
+        {/* Search input bar */}
+        <View
+          style={{
+            ...glassStyle,
+            flexDirection: 'row',
+            alignItems: 'center',
+            height: PILL_HEIGHT,
+            borderRadius: PILL_HEIGHT / 2,
+            paddingHorizontal: 14,
+            gap: 10,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.08,
+            shadowRadius: 12,
+            elevation: 4,
+          } as Record<string, unknown>}
+        >
+          <Search size={18} color={iconMuted} />
+          <TextInput
+            ref={searchInputRef}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="Search..."
+            placeholderTextColor={colors.text[theme].tertiary}
+            style={{
+              flex: 1,
+              fontSize: 15,
+              color: colors.text[theme].primary,
+              ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
+            } as Record<string, unknown>}
+            autoCapitalize="none"
+            returnKeyType="search"
+          />
+          <Pressable onPress={handleSearchClose} hitSlop={8}>
+            <X size={18} color={iconMuted} />
+          </Pressable>
+        </View>
+      </View>
+    )
+  }
+
+  // ── Default bar ──
 
   return (
     <View
       style={{
-        position: 'absolute',
+        position: Platform.OS === 'web' ? ('fixed' as never) : 'absolute',
         bottom: 0,
         left: 0,
         right: 0,
-        height: 56 + insets.bottom,
-        paddingBottom: insets.bottom,
-        backgroundColor: colors.bg[theme].default,
-        borderTopWidth: 1,
-        borderTopColor: colors.border[theme].default,
+        zIndex: 9999,
+        paddingBottom: insets.bottom + 8,
+        paddingHorizontal: 16,
+        paddingTop: 8,
         flexDirection: 'row',
         alignItems: 'center',
+        gap: BAR_GAP,
       }}
     >
-      {TABS.map(({ label, icon: Icon, route }) => {
-        const isHome = route === ROUTES.DASHBOARD.path
-        const isActive = pathname === route || (!isHome && pathname.startsWith(route))
-        const iconColor = isActive ? colors.primary[600] : colors.icon[theme].muted
-        return (
-          <Pressable
-            key={route}
-            onPress={() => router.push(route)}
+      {/* Back button */}
+      <Pressable
+        onPress={handleBack}
+        style={({ pressed }) => ({
+          ...glassStyle,
+          width: BUTTON_SIZE,
+          height: BUTTON_SIZE,
+          borderRadius: BUTTON_SIZE / 2,
+          alignItems: 'center',
+          justifyContent: 'center',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.06,
+          shadowRadius: 8,
+          elevation: 3,
+          opacity: pressed ? 0.7 : 1,
+        } as Record<string, unknown>)}
+      >
+        <ChevronLeft size={ICON_SIZE} color={iconDefault} />
+      </Pressable>
+
+      {/* Center pill with section icons */}
+      <View style={{ flex: 1 }}>
+        <Popover
+          placement="top"
+          open={popoverOpen}
+          onOpenChange={setPopoverOpen}
+          trigger="manual"
+          content={
+            <PopoverContent>{renderPopoverContent()}</PopoverContent>
+          }
+        >
+          <View
             style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingTop: 8,
-              gap: 3,
-            }}
-          >
-            <Icon size={22} color={iconColor} />
-            <Text
-              size="xs"
-              weight={isActive ? 'semibold' : 'regular'}
-              style={{ color: iconColor }}
-            >
-              {label}
-            </Text>
-          </Pressable>
-        )
-      })}
+              ...glassStyle,
+              height: PILL_HEIGHT,
+              borderRadius: PILL_HEIGHT / 2,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-evenly',
+            paddingHorizontal: 8,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.08,
+            shadowRadius: 12,
+            elevation: 4,
+          } as Record<string, unknown>}
+        >
+          {MOBILE_SECTIONS.map((section) => {
+            const Icon = section.icon
+            const isActive = activeSection?.key === section.key
+            return (
+              <Pressable
+                key={section.key}
+                onPress={() => handleSectionTap(section)}
+                style={({ pressed }) => ({
+                  width: ACTIVE_DOT_SIZE,
+                  height: ACTIVE_DOT_SIZE,
+                  borderRadius: ACTIVE_DOT_SIZE / 2,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: isActive
+                    ? colors.primary[600]
+                    : pressed
+                      ? colors.bg[theme].subtle
+                      : 'transparent',
+                })}
+              >
+                <Icon
+                  size={ICON_SIZE}
+                  color={isActive ? '#fff' : iconMuted}
+                />
+              </Pressable>
+            )
+          })}
+          </View>
+        </Popover>
+      </View>
+
+      {/* Search button */}
+      <Pressable
+        onPress={handleSearchOpen}
+        style={({ pressed }) => ({
+          ...glassStyle,
+          width: BUTTON_SIZE,
+          height: BUTTON_SIZE,
+          borderRadius: BUTTON_SIZE / 2,
+          alignItems: 'center',
+          justifyContent: 'center',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.06,
+          shadowRadius: 8,
+          elevation: 3,
+          opacity: pressed ? 0.7 : 1,
+        } as Record<string, unknown>)}
+      >
+        <Search size={ICON_SIZE} color={iconDefault} />
+      </Pressable>
     </View>
   )
 }
