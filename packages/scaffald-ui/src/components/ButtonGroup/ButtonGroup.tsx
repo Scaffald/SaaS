@@ -133,7 +133,7 @@ export function ButtonGroup({
                 paddingHorizontal: item.label
                   ? sizeConfig.paddingHorizontal
                   : sizeConfig.height / 2,
-                backgroundColor: selected ? colors.gray[100] : 'transparent',
+                backgroundColor: selected ? colors.bg[theme].subtle : 'transparent',
                 borderColor: colors.border[theme].default,
                 borderWidth: 1,
                 borderTopLeftRadius: isFirst ? borderRadius.s : 0,
