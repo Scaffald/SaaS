@@ -137,10 +137,17 @@ apply to prod, preview, and dev.
 - `https://prev.scaffald.com`
 - `https://beta.scaffald.com`
 
-**Authorised redirect URIs**:
+**Authorised redirect URIs** (two sets — app-to-Supabase and Google-to-Supabase):
+
+App callback (handled by the web app):
 - `https://sandbox.scaffald.com/auth/callback`
 - `https://prev.scaffald.com/auth/callback`
 - `https://beta.scaffald.com/auth/callback`
+
+Supabase callback (Google redirects here after OAuth):
+- `https://auth.scaffald.com/auth/v1/callback` (prod — custom domain)
+- `https://uhjkipdwayqfihkanabk.supabase.co/auth/v1/callback` (preview branch)
+- `https://pmtdqrfpumqwkdhpgwcz.supabase.co/auth/v1/callback` (dev branch)
 
 > When canonical domains are reclaimed, add `app/dev/preview.scaffald.com` variants here too.
 
