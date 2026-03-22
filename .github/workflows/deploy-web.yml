@@ -201,6 +201,9 @@ jobs:
         env:
           APP_ENV: ${{ github.ref == 'refs/heads/prod' && 'production' || github.ref == 'refs/heads/preview' && 'preview' || 'dev' }}
           DISTRIBUTION_ID: ${{ github.ref == 'refs/heads/prod' && secrets.SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD || github.ref == 'refs/heads/preview' && secrets.SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_PREVIEW || secrets.SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.SCAFFALD_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.SCAFFALD_AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.SCAFFALD_AWS_REGION || 'us-east-1' }}
         run: |
           # Wait up to 3 minutes for CloudFront invalidation to begin propagating
           if [ -z "$DISTRIBUTION_ID" ]; then
@@ -219,10 +222,6 @@ jobs:
             [ "$STATUS" = "200" ] && echo "✅ Smoke test passed" || echo "⚠️ Unexpected status $STATUS (may still be propagating)"
           fi
         continue-on-error: true
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.SCAFFALD_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.SCAFFALD_AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.SCAFFALD_AWS_REGION || 'us-east-1' }}
 
       # ===== SUMMARY =====
       - name: 📊 Summary
