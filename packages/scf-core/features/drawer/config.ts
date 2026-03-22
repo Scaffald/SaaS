@@ -130,22 +130,22 @@ export const generateDashboardDrawerItems = (
 
   // Jobs - expandable with applications and optional My Listings
   const jobSubItems: DrawerItemConfig[] = [
-    { key: 'jobs-index', titleKey: ROUTES.DASHBOARD.DISCOVER.JOBS.titleKey, href: ROUTES.DASHBOARD.DISCOVER.JOBS.path, exact: true },
-    { key: 'jobs-applications', titleKey: ROUTES.DASHBOARD.DISCOVER.JOBS.APPLICATIONS.titleKey, href: ROUTES.DASHBOARD.DISCOVER.JOBS.APPLICATIONS.path },
+    { key: 'jobs-index', titleKey: ROUTES.JOBS.titleKey, href: ROUTES.JOBS.path, exact: true },
+    { key: 'jobs-applications', titleKey: ROUTES.JOBS.APPLICATIONS.titleKey, href: ROUTES.JOBS.APPLICATIONS.path },
   ]
   if (memberships && memberships.length > 0) {
     jobSubItems.push({
       key: 'jobs-my-listings',
       titleKey: 'navigation.jobsMyListings',
-      href: ROUTES.DASHBOARD.DISCOVER.JOBS.MY_LISTINGS.path,
+      href: ROUTES.JOBS.MY_LISTINGS.path,
     })
   }
 
   items.push({
     key: 'jobs',
     titleKey: 'navigation.discoverJobs',
-    href: ROUTES.DASHBOARD.DISCOVER.JOBS.path,
-    routeKey: 'DASHBOARD_DISCOVER_JOBS',
+    href: ROUTES.JOBS.path,
+    routeKey: 'JOBS',
     icon: Briefcase,
     isExpandable: true,
     expandOnActive: true,
@@ -155,37 +155,37 @@ export const generateDashboardDrawerItems = (
   // Assessments - expandable with second-tier (pulse, ipip, riasec, occupation)
   items.push({
     key: 'assessments',
-    titleKey: ROUTES.DASHBOARD.ASSESSMENTS.titleKey,
-    href: ROUTES.DASHBOARD.ASSESSMENTS.path,
-    routeKey: 'DASHBOARD_ASSESSMENTS',
+    titleKey: ROUTES.ASSESSMENTS.titleKey,
+    href: ROUTES.ASSESSMENTS.path,
+    routeKey: 'ASSESSMENTS',
     icon: ClipboardCheck,
     isExpandable: true,
     expandOnActive: true,
     subItems: [
-      { key: 'assessments-index', titleKey: ROUTES.DASHBOARD.ASSESSMENTS.ANALYTICS.titleKey, href: ROUTES.DASHBOARD.ASSESSMENTS.ANALYTICS.path },
-      { key: 'assessments-pulse', titleKey: ROUTES.DASHBOARD.ASSESSMENTS.LUSCHER.titleKey, href: ROUTES.DASHBOARD.ASSESSMENTS.LUSCHER.path },
-      { key: 'assessments-ipip', titleKey: ROUTES.DASHBOARD.ASSESSMENTS.IPIP.titleKey, href: ROUTES.DASHBOARD.ASSESSMENTS.IPIP.path },
-      { key: 'assessments-riasec', titleKey: ROUTES.DASHBOARD.ASSESSMENTS.RIASEC.titleKey, href: ROUTES.DASHBOARD.ASSESSMENTS.RIASEC.path },
-      { key: 'assessments-occupation', titleKey: ROUTES.DASHBOARD.ASSESSMENTS.OCCUPATION.titleKey, href: ROUTES.DASHBOARD.ASSESSMENTS.OCCUPATION.path },
-      { key: 'assessments-career-explorer', titleKey: ROUTES.DASHBOARD.CAREER_EXPLORER.titleKey, href: ROUTES.DASHBOARD.CAREER_EXPLORER.path },
+      { key: 'assessments-index', titleKey: ROUTES.ASSESSMENTS.ANALYTICS.titleKey, href: ROUTES.ASSESSMENTS.ANALYTICS.path },
+      { key: 'assessments-pulse', titleKey: ROUTES.ASSESSMENTS.LUSCHER.titleKey, href: ROUTES.ASSESSMENTS.LUSCHER.path },
+      { key: 'assessments-ipip', titleKey: ROUTES.ASSESSMENTS.IPIP.titleKey, href: ROUTES.ASSESSMENTS.IPIP.path },
+      { key: 'assessments-riasec', titleKey: ROUTES.ASSESSMENTS.RIASEC.titleKey, href: ROUTES.ASSESSMENTS.RIASEC.path },
+      { key: 'assessments-occupation', titleKey: ROUTES.ASSESSMENTS.OCCUPATION.titleKey, href: ROUTES.ASSESSMENTS.OCCUPATION.path },
+      { key: 'assessments-career-explorer', titleKey: ROUTES.ASSESSMENTS.CAREER_EXPLORER.titleKey, href: ROUTES.ASSESSMENTS.CAREER_EXPLORER.path },
     ],
   })
 
   // Profile - expandable with Overview + all tier-1 (tabs)
   items.push({
     key: 'profile',
-    titleKey: ROUTES.DASHBOARD.PROFILE.titleKey,
-    href: ROUTES.DASHBOARD.PROFILE.path,
-    routeKey: 'DASHBOARD_PROFILE',
+    titleKey: ROUTES.PROFILE.titleKey,
+    href: ROUTES.PROFILE.path,
+    routeKey: 'PROFILE',
     icon: User,
     isExpandable: true,
     expandOnActive: true,
     subItems: [
-      { key: 'profile-overview', titleKey: ROUTES.DASHBOARD.PROFILE.OVERVIEW.titleKey, href: ROUTES.DASHBOARD.PROFILE.OVERVIEW.path, exact: true },
-      { key: 'profile-resume', titleKey: ROUTES.DASHBOARD.PROFILE.RESUME.titleKey, href: ROUTES.DASHBOARD.PROFILE.RESUME.path },
-      { key: 'profile-skills', titleKey: ROUTES.DASHBOARD.PROFILE.SKILLS.titleKey, href: ROUTES.DASHBOARD.PROFILE.SKILLS.path },
-      { key: 'profile-experience', titleKey: ROUTES.DASHBOARD.PROFILE.EXPERIENCE.titleKey, href: ROUTES.DASHBOARD.PROFILE.EXPERIENCE.path },
-      { key: 'profile-verification', titleKey: ROUTES.DASHBOARD.PROFILE.ID_VERIFICATION.titleKey, href: ROUTES.DASHBOARD.PROFILE.ID_VERIFICATION.path },
+      { key: 'profile-overview', titleKey: ROUTES.PROFILE.OVERVIEW.titleKey, href: ROUTES.PROFILE.OVERVIEW.path, exact: true },
+      { key: 'profile-resume', titleKey: ROUTES.PROFILE.RESUME.titleKey, href: ROUTES.PROFILE.RESUME.path },
+      { key: 'profile-skills', titleKey: ROUTES.PROFILE.SKILLS.titleKey, href: ROUTES.PROFILE.SKILLS.path },
+      { key: 'profile-experience', titleKey: ROUTES.PROFILE.EXPERIENCE.titleKey, href: ROUTES.PROFILE.EXPERIENCE.path },
+      { key: 'profile-verification', titleKey: ROUTES.PROFILE.ID_VERIFICATION.titleKey, href: ROUTES.PROFILE.ID_VERIFICATION.path },
     ],
   })
 
@@ -314,12 +314,12 @@ export const MOBILE_SECTIONS: MobileSection[] = [
     label: 'Discover',
     icon: Compass,
     route: ROUTES.WORKERS.path,
-    matchPrefixes: ['/workers', '/employers', '/dashboard/jobs'],
+    matchPrefixes: ['/workers', '/employers', '/jobs'],
     subItems: [
       { key: 'discover-workers', label: 'Workers', icon: Users, route: ROUTES.WORKERS.path },
       { key: 'discover-employers', label: 'Employers', icon: Building2, route: ROUTES.EMPLOYERS.path },
-      { key: 'discover-jobs', label: 'Jobs', icon: Briefcase, route: ROUTES.DASHBOARD.DISCOVER.JOBS.path },
-      { key: 'discover-apps', label: 'Apps', icon: ClipboardCheck, route: ROUTES.DASHBOARD.DISCOVER.JOBS.APPLICATIONS.path },
+      { key: 'discover-jobs', label: 'Jobs', icon: Briefcase, route: ROUTES.JOBS.path },
+      { key: 'discover-apps', label: 'Apps', icon: ClipboardCheck, route: ROUTES.JOBS.APPLICATIONS.path },
     ],
   },
   {
@@ -339,26 +339,26 @@ export const MOBILE_SECTIONS: MobileSection[] = [
     key: 'assess',
     label: 'Assess',
     icon: ClipboardCheck,
-    route: ROUTES.DASHBOARD.ASSESSMENTS.path,
-    matchPrefixes: ['/dashboard/assessments', '/dashboard/career-explorer'],
+    route: ROUTES.ASSESSMENTS.path,
+    matchPrefixes: ['/assessments'],
     subItems: [
-      { key: 'assess-analytics', label: 'Analytics', icon: BarChart3, route: ROUTES.DASHBOARD.ASSESSMENTS.ANALYTICS.path },
-      { key: 'assess-pulse', label: 'Pulse', icon: Wrench, route: ROUTES.DASHBOARD.ASSESSMENTS.LUSCHER.path },
-      { key: 'assess-personality', label: 'Personality', icon: User, route: ROUTES.DASHBOARD.ASSESSMENTS.IPIP.path },
-      { key: 'assess-career', label: 'Career', icon: Compass, route: ROUTES.DASHBOARD.CAREER_EXPLORER.path },
+      { key: 'assess-analytics', label: 'Analytics', icon: BarChart3, route: ROUTES.ASSESSMENTS.ANALYTICS.path },
+      { key: 'assess-pulse', label: 'Pulse', icon: Wrench, route: ROUTES.ASSESSMENTS.LUSCHER.path },
+      { key: 'assess-personality', label: 'Personality', icon: User, route: ROUTES.ASSESSMENTS.IPIP.path },
+      { key: 'assess-career', label: 'Career', icon: Compass, route: ROUTES.ASSESSMENTS.CAREER_EXPLORER.path },
     ],
   },
   {
     key: 'profile',
     label: 'Profile',
     icon: User,
-    route: ROUTES.DASHBOARD.PROFILE.path,
-    matchPrefixes: ['/dashboard/profile'],
+    route: ROUTES.PROFILE.path,
+    matchPrefixes: ['/profile'],
     subItems: [
-      { key: 'profile-overview', label: 'Overview', icon: User, route: ROUTES.DASHBOARD.PROFILE.OVERVIEW.path, exact: true },
-      { key: 'profile-resume', label: 'Resume', icon: ResumeIcon, route: ROUTES.DASHBOARD.PROFILE.RESUME.path },
-      { key: 'profile-skills', label: 'Skills', icon: Star, route: ROUTES.DASHBOARD.PROFILE.SKILLS.path },
-      { key: 'profile-exp', label: 'Exp', icon: Briefcase, route: ROUTES.DASHBOARD.PROFILE.EXPERIENCE.path },
+      { key: 'profile-overview', label: 'Overview', icon: User, route: ROUTES.PROFILE.OVERVIEW.path, exact: true },
+      { key: 'profile-resume', label: 'Resume', icon: ResumeIcon, route: ROUTES.PROFILE.RESUME.path },
+      { key: 'profile-skills', label: 'Skills', icon: Star, route: ROUTES.PROFILE.SKILLS.path },
+      { key: 'profile-exp', label: 'Exp', icon: Briefcase, route: ROUTES.PROFILE.EXPERIENCE.path },
     ],
   },
 ]

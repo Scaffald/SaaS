@@ -598,7 +598,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         return;
       }
       case "review": {
-        router.push(ROUTES.DASHBOARD.PROFILE.GENERAL.path);
+        router.push(ROUTES.PROFILE.GENERAL.path);
         return;
       }
       default:

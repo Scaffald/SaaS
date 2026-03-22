@@ -120,7 +120,7 @@ export function TechnicalSkillsWidget({
               variant="outline"
               size="sm"
               onPress={() => {
-                router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path);
+                router.push(ROUTES.PROFILE.SKILLS.path);
               }}
             >
               Edit
@@ -138,7 +138,7 @@ export function TechnicalSkillsWidget({
                 ? {
                     label: "Add Skills",
                     onPress: () =>
-                      router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path),
+                      router.push(ROUTES.PROFILE.SKILLS.path),
                   }
                 : undefined
             }
@@ -212,7 +212,7 @@ export function TechnicalSkillsWidget({
               <Text
                 style={{ color: colors.blue[700], cursor: "pointer" }}
                 onPress={() =>
-                  router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
+                  router.push(ROUTES.PROFILE.SKILLS.path)
                 }
               >
                 View all {skills.length} skills →

@@ -276,7 +276,7 @@ export function OccupationAssessmentWizard() {
             size="sm"
             variant="outline"
             color="primary"
-            onPress={() => router.push(ROUTES.DASHBOARD.CAREER_EXPLORER.path)}
+            onPress={() => router.push(ROUTES.ASSESSMENTS.CAREER_EXPLORER.path)}
           >
             Open Career Explorer
           </Button>

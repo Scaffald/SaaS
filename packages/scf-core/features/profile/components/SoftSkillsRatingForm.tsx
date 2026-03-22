@@ -212,7 +212,7 @@ export const SoftSkillsRatingForm: FC = () => {
   // Handle success modal close
   const handleSuccessModalClose = useCallback(() => {
     setShowSuccessModal(false)
-    router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
+    router.push(ROUTES.PROFILE.SKILLS.path)
   }, [router])
 
   if (isLoading) {

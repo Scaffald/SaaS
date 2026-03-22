@@ -28,7 +28,7 @@ export default function PublicJobDetailPage() {
   // Build breadcrumb items
   const breadcrumbItems: BreadcrumbItemData[] = [
     { href: '/', label: 'Home' },
-    { href: ROUTES.DASHBOARD.DISCOVER.JOBS.path, label: 'Jobs' },
+    { href: ROUTES.JOBS.path, label: 'Jobs' },
     {
       label: jobData?.title || 'Loading...',
     },

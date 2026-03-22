@@ -149,7 +149,7 @@ export function ProfileSnapshotWidget() {
               <Button
                 variant="filled"
                 color="primary"
-                onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
+                onPress={() => router.push(ROUTES.PROFILE.path)}
               >
                 Complete Profile
               </Button>
@@ -185,7 +185,7 @@ export function ProfileSnapshotWidget() {
           <Button
             variant="filled"
             color="primary"
-            onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
+            onPress={() => router.push(ROUTES.PROFILE.path)}
           >
             Complete Profile
           </Button>
@@ -252,7 +252,7 @@ export function ProfileSnapshotWidget() {
               size="sm"
               variant="text"
               color="primary"
-              onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
+              onPress={() => router.push(ROUTES.PROFILE.path)}
             >
               View Full Profile
             </Button>
@@ -435,7 +435,7 @@ export function ProfileSnapshotWidget() {
                 variant="text"
                 color="primary"
                 onPress={() =>
-                  router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
+                  router.push(ROUTES.PROFILE.SKILLS.path)
                 }
               >
                 View All
@@ -500,7 +500,7 @@ export function ProfileSnapshotWidget() {
             variant="filled"
             color="primary"
             size="md"
-            onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
+            onPress={() => router.push(ROUTES.PROFILE.path)}
             style={{ width: "100%" }}
           >
             Edit Profile

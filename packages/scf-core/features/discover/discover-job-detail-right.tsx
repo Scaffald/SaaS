@@ -564,7 +564,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                     <Button
                       variant="filled" color="primary"
                       size="sm"
-                      onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
+                      onPress={() => router.push(ROUTES.PROFILE.SKILLS.path)}
                     >
                       Start Assessment
                     </Button>
@@ -613,7 +613,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                         <Button
                           variant="outline"
                           size="sm"
-                          onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
+                          onPress={() => router.push(ROUTES.PROFILE.SKILLS.path)}
                         >
                           Update Assessment
                         </Button>

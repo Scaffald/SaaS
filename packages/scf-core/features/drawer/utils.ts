@@ -54,14 +54,14 @@ export const isActivePath = (pathname: string, href: string, exact?: boolean) =>
   }
 
   // Special case for assessments: also match career-explorer (nav sibling under Assessments)
-  const assessmentsPath = ROUTES.DASHBOARD.ASSESSMENTS.path
+  const assessmentsPath = ROUTES.ASSESSMENTS.path
   if (href === assessmentsPath) {
     return (
       pathname === assessmentsPath ||
       pathname === `${assessmentsPath}/index` ||
       pathname.startsWith(`${assessmentsPath}/`) ||
-      pathname === ROUTES.DASHBOARD.CAREER_EXPLORER.path ||
-      pathname.startsWith(`${ROUTES.DASHBOARD.CAREER_EXPLORER.path}/`)
+      pathname === ROUTES.ASSESSMENTS.CAREER_EXPLORER.path ||
+      pathname.startsWith(`${ROUTES.ASSESSMENTS.CAREER_EXPLORER.path}/`)
     )
   }
 

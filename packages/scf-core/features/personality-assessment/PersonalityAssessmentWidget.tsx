@@ -68,7 +68,7 @@ export function PersonalityAssessmentWidget() {
   };
 
   const handleStart = () => {
-    router.push(ROUTES.DASHBOARD.ASSESSMENTS.IPIP.path);
+    router.push(ROUTES.ASSESSMENTS.IPIP.path);
   };
 
   return (

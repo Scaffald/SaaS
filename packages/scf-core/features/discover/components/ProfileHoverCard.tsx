@@ -268,7 +268,7 @@ function JobPreview({ job }: { job: JobMapPin }) {
         variant="filled"
         color="primary"
         onPress={() => {
-          const url = buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS.DETAIL, { id: job.id })
+          const url = buildPath(ROUTES.JOBS.DETAIL, { id: job.id })
           window.open(url, '_blank', 'noopener,noreferrer')
         }}
         iconEnd={ExternalLink}

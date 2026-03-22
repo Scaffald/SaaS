@@ -110,7 +110,7 @@ export function CertificationsWidget({
               variant="outline"
               size="sm"
               onPress={() =>
-                router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)
+                router.push(ROUTES.PROFILE.CERTIFICATIONS.path)
               }
             >
               Edit
@@ -128,7 +128,7 @@ export function CertificationsWidget({
                 ? {
                     label: "Add Certification",
                     onPress: () =>
-                      router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path),
+                      router.push(ROUTES.PROFILE.CERTIFICATIONS.path),
                   }
                 : undefined
             }
@@ -267,7 +267,7 @@ export function CertificationsWidget({
               <Text
                 style={{ color: colors.blue[500] }}
                 onPress={() =>
-                  router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)
+                  router.push(ROUTES.PROFILE.CERTIFICATIONS.path)
                 }
               >
                 View all {certifications.length} certifications →
