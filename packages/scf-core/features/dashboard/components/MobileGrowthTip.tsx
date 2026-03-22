@@ -40,7 +40,7 @@ export function MobileGrowthTip() {
     <View
       style={{
         backgroundColor: colors.primary[50],
-        borderRadius: 16,
+        borderRadius: 20,
         padding: 16,
         borderWidth: 1,
         borderColor: colors.primary[100],

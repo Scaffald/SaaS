@@ -59,7 +59,7 @@ export function TeamInvitationList({
     return (
       <Stack
         gap={8}
-        style={{ borderWidth: 1, borderColor: glassVibrantColors[t].separator, borderRadius: 16, backgroundColor: glassVibrantColors[t].tertiaryFill }}
+        style={{ borderWidth: 1, borderColor: glassVibrantColors[t].separator, borderRadius: 20, backgroundColor: glassVibrantColors[t].tertiaryFill }}
         padding="md"
       >
         <Text>No pending invitations</Text>

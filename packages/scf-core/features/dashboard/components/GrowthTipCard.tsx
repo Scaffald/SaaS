@@ -55,7 +55,7 @@ export function GrowthTipCard() {
   return (
     <Stack
       padding={24}
-      borderRadius={16}
+      borderRadius={20}
       style={{
         backgroundColor: colors.primary[800],
         overflow: 'hidden',
@@ -92,13 +92,13 @@ export function GrowthTipCard() {
             onPress={() => goToIndex((index - 1 + profileTipCards.length) % profileTipCards.length)}
             style={({ pressed }) => ({ opacity: pressed ? 0.5 : 0.7, padding: 2 })}
           >
-            <ChevronLeft size={14} color="#fff" />
+            <ChevronLeft size={18} color="#fff" />
           </Pressable>
           <Pressable
             onPress={() => goToIndex((index + 1) % profileTipCards.length)}
             style={({ pressed }) => ({ opacity: pressed ? 0.5 : 0.7, padding: 2 })}
           >
-            <ChevronRight size={14} color="#fff" />
+            <ChevronRight size={18} color="#fff" />
           </Pressable>
         </Row>
       </Row>
@@ -129,15 +129,15 @@ export function GrowthTipCard() {
 
       {/* Footer: dots + counter */}
       <Row justify="space-between" align="center" marginTop={24}>
-        <Row gap={6}>
+        <Row gap={8}>
           {profileTipCards.map((_, i) => (
             <Pressable
               key={i}
               onPress={() => goToIndex(i)}
               style={{
-                width: 6,
-                height: 6,
-                borderRadius: 3,
+                width: 8,
+                height: 8,
+                borderRadius: 4,
                 backgroundColor: i === index ? '#fff' : 'rgba(255,255,255,0.3)',
               }}
             />

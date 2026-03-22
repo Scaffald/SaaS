@@ -66,7 +66,7 @@ export function MobileQuickActions() {
                   ? colors.bg.dark.muted
                   : colors.fg.light.default
                 : colors.bg[theme].default,
-              borderRadius: 16,
+              borderRadius: 20,
               padding: 14,
               height: 88,
               justifyContent: 'space-between',
