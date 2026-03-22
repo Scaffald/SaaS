@@ -54,14 +54,14 @@ function ActivityRow({ item }: { item: ActivityItem }) {
   const { theme } = useThemeContext()
 
   return (
-    <Stack gap={2}>
-      <Text style={{ fontSize: 12, color: colors.text[theme].secondary, lineHeight: 17 }}>
+    <Stack gap={4}>
+      <Text style={{ fontSize: 12, color: colors.text[theme].secondary, lineHeight: 18 }}>
         {item.parts.map((part, i) => {
           if (part.bold) {
             return (
               <Text
                 key={i}
-                style={{ fontWeight: '700', color: colors.text[theme].primary }}
+                style={{ fontSize: 12, fontWeight: '700', color: colors.text[theme].primary }}
               >
                 {part.text}
               </Text>
@@ -71,7 +71,7 @@ function ActivityRow({ item }: { item: ActivityItem }) {
             return (
               <Text
                 key={i}
-                style={{ fontWeight: '500', color: colors.primary[600] }}
+                style={{ fontSize: 12, fontWeight: '500', color: colors.primary[600] }}
               >
                 {part.text}
               </Text>
@@ -80,7 +80,7 @@ function ActivityRow({ item }: { item: ActivityItem }) {
           return part.text
         })}
       </Text>
-      <Text style={{ fontSize: 10, color: colors.text[theme].secondary, opacity: 0.6 }}>
+      <Text style={{ fontSize: 11, color: colors.text[theme].tertiary }}>
         {item.timestamp}
       </Text>
     </Stack>

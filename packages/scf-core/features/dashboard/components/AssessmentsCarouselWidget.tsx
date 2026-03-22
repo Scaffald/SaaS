@@ -112,18 +112,29 @@ function AssessmentCard({ card, isFirst }: { card: AssessmentCardData; isFirst: 
         gap: 16,
       }}
     >
-      <Row justify="space-between" align="center">
-        <Text
-          style={{
-            fontSize: 16,
-            fontWeight: '700',
-            color: colors.text[theme].primary,
-            flex: 1,
-          }}
-          numberOfLines={1}
-        >
-          {card.title}
-        </Text>
+      <Text
+        style={{
+          fontSize: 16,
+          fontWeight: '700',
+          color: colors.text[theme].primary,
+        }}
+        numberOfLines={1}
+      >
+        {card.title}
+      </Text>
+
+      <Text
+        style={{
+          fontSize: 14,
+          color: colors.text[theme].secondary,
+          lineHeight: 20,
+        }}
+        numberOfLines={3}
+      >
+        {card.description}
+      </Text>
+
+      <Row style={{ marginTop: 'auto' as never }} justify="space-between" align="center">
         <Stack
           paddingHorizontal={8}
           paddingVertical={2}
@@ -142,20 +153,6 @@ function AssessmentCard({ card, isFirst }: { card: AssessmentCardData; isFirst: 
             {card.badge}
           </Text>
         </Stack>
-      </Row>
-
-      <Text
-        style={{
-          fontSize: 14,
-          color: colors.text[theme].secondary,
-          lineHeight: 20,
-        }}
-        numberOfLines={3}
-      >
-        {card.description}
-      </Text>
-
-      <Row style={{ marginTop: 'auto' as never }} justify="flex-end">
         <Button variant="outline" color="primary" size="sm">
           {card.ctaLabel}
         </Button>

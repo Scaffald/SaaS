@@ -37,19 +37,19 @@ export function getSidebarFooterStyles(
   }
 
   const actionsWrapper: ViewStyle = {
-    flexDirection: 'row',
+    flexDirection: collapsed ? 'column' : 'row',
     alignItems: 'center',
-    paddingHorizontal: spacing[16],
-    paddingVertical: spacing[8],
+    paddingHorizontal: collapsed ? spacing[8] : spacing[16],
+    paddingVertical: spacing[12],
     justifyContent: collapsed ? 'center' : 'flex-start',
   }
 
   const actions: ViewStyle = {
-    flexDirection: 'row',
+    flexDirection: collapsed ? 'column' : 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    flex: 1,
-    gap: spacing[4],
+    justifyContent: collapsed ? 'center' : 'space-between',
+    flex: collapsed ? undefined : 1,
+    gap: collapsed ? spacing[8] : spacing[4],
   }
 
   const actionButton: ViewStyle = {

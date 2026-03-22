@@ -223,6 +223,7 @@ export function CompactNewsWidget() {
                   fontWeight: '700',
                   color: colors.text[t].secondary,
                   textTransform: 'uppercase',
+                  letterSpacing: 0.5,
                 }}
               >
                 {selectedName}
