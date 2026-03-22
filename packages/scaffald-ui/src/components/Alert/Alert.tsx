@@ -1,40 +1,64 @@
 /**
  * Alert component
- * Versatile alert/notification component with multiple types and styles
+ * iOS 26 glassmorphic modal alert with backward-compatible inline mode
+ *
+ * When `primaryAction`, `destructiveAction`, or `secondaryAction` props are provided
+ * the alert renders as an iOS 26 modal overlay.  Otherwise the legacy inline style
+ * is used for full backward compatibility.
  *
  * @example
  * ```tsx
  * import { Alert } from '@scaffald/ui'
  *
- * // Basic info alert
- * <Alert title="Information" description="This is an informational message" />
- *
- * // Success alert with actions
+ * // iOS 26 modal alert with stacked buttons
  * <Alert
- *   type="success"
- *   variant="filled"
- *   title="Success!"
- *   description="Your changes have been saved"
- *   actions={[
- *     { label: 'Undo', onPress: () => console.log('Undo') },
- *     { label: 'View', onPress: () => console.log('View') }
- *   ]}
+ *   visible={show}
+ *   onClose={() => setShow(false)}
+ *   title="Delete Photo"
+ *   description="This action cannot be undone."
+ *   destructiveAction={{ label: 'Delete', onPress: handleDelete }}
+ *   secondaryAction={{ label: 'Cancel', onPress: () => setShow(false) }}
  * />
  *
- * // Controlled dismissible alert
+ * // iOS 26 modal with text fields and side-by-side buttons
  * <Alert
- *   title="Warning"
- *   type="warning"
- *   visible={isVisible}
- *   onClose={() => setIsVisible(false)}
+ *   visible={show}
+ *   onClose={() => setShow(false)}
+ *   title="Sign In"
+ *   textFields={[
+ *     { value: email, placeholder: 'Email', onChangeText: setEmail },
+ *     { value: password, placeholder: 'Password', onChangeText: setPassword, secureTextEntry: true },
+ *   ]}
+ *   primaryAction={{ label: 'Sign In', onPress: handleSignIn }}
+ *   secondaryAction={{ label: 'Cancel', onPress: () => setShow(false) }}
+ *   layout="side-by-side"
+ * />
+ *
+ * // Legacy inline alert (backward compatible)
+ * <Alert
+ *   title="Information"
+ *   description="This is an informational message"
+ *   type="info"
+ *   actions={[
+ *     { label: 'Undo', onPress: () => console.log('Undo') },
+ *     { label: 'View', onPress: () => console.log('View') },
+ *   ]}
  * />
  * ```
  */
 
-import { useState } from 'react'
-import { View, Text, Pressable, StyleSheet } from 'react-native'
-import type { AlertProps } from './Alert.types'
+import { useState, useMemo } from 'react'
+import {
+  View,
+  Text,
+  Pressable,
+  Modal,
+  TextInput,
+  StyleSheet,
+} from 'react-native'
+import type { AlertProps, AlertAction } from './Alert.types'
 import { useThemeContext } from '../../theme'
+import { getAlertStyles } from './Alert.styles'
 import {
   getBackgroundColor,
   getTextColor,
@@ -49,9 +73,187 @@ import { colors } from '../../tokens/colors'
 import { borderWidth } from '../../tokens/borders'
 
 // Import Lucide icons
-import { AlertCircle, CheckCircle, AlertTriangle, XCircle, Sparkles, X } from 'lucide-react-native'
+import {
+  AlertCircle,
+  CheckCircle,
+  AlertTriangle,
+  XCircle,
+  Sparkles,
+  X,
+} from 'lucide-react-native'
 
-export function Alert({
+export function Alert(props: AlertProps) {
+  const {
+    primaryAction,
+    destructiveAction,
+    secondaryAction,
+    textFields,
+    layout,
+  } = props
+
+  // Determine whether to render as iOS 26 modal or legacy inline
+  const isModal = !!(primaryAction || destructiveAction || secondaryAction || textFields)
+
+  if (isModal) {
+    return <AlertModal {...props} />
+  }
+
+  return <AlertInline {...props} />
+}
+
+// ─── iOS 26 Modal Alert ──────────────────────────────────────────────────────
+
+function AlertModal({
+  title,
+  description,
+  primaryAction,
+  destructiveAction,
+  secondaryAction,
+  layout = 'stacked',
+  textFields,
+  visible,
+  defaultVisible = true,
+  onClose,
+  dismissible = true,
+  style,
+  titleStyle,
+  descriptionStyle,
+}: AlertProps) {
+  const [internalVisible, setInternalVisible] = useState(defaultVisible)
+  const isControlled = visible !== undefined
+  const isVisible = isControlled ? visible : internalVisible
+
+  const { theme } = useThemeContext()
+  const styles = useMemo(() => getAlertStyles(theme), [theme])
+
+  const handleClose = () => {
+    if (!isControlled) setInternalVisible(false)
+    onClose?.()
+  }
+
+  // Collect buttons in render order
+  const buttons: { action: AlertAction; variant: 'primary' | 'destructive' | 'secondary' }[] = []
+
+  if (layout === 'side-by-side') {
+    // Side-by-side: secondary on left, primary on right
+    if (secondaryAction) buttons.push({ action: secondaryAction, variant: 'secondary' })
+    if (primaryAction) buttons.push({ action: primaryAction, variant: 'primary' })
+    if (destructiveAction) buttons.push({ action: destructiveAction, variant: 'destructive' })
+  } else {
+    // Stacked: primary first, then destructive, then secondary
+    if (primaryAction) buttons.push({ action: primaryAction, variant: 'primary' })
+    if (destructiveAction) buttons.push({ action: destructiveAction, variant: 'destructive' })
+    if (secondaryAction) buttons.push({ action: secondaryAction, variant: 'secondary' })
+  }
+
+  return (
+    <Modal
+      visible={isVisible}
+      transparent
+      animationType="fade"
+      onRequestClose={dismissible ? handleClose : undefined}
+      statusBarTranslucent
+    >
+      <Pressable
+        style={styles.overlay}
+        onPress={dismissible ? handleClose : undefined}
+        accessibilityRole="button"
+        accessibilityLabel="Close alert"
+      >
+        <Pressable
+          style={[styles.container, style]}
+          onPress={(e) => e.stopPropagation()}
+          accessibilityRole="alert"
+        >
+          {/* Title & Description */}
+          <View style={styles.textArea}>
+            <Text
+              style={[styles.title, titleStyle]}
+              accessibilityRole="header"
+            >
+              {title}
+            </Text>
+            {description ? (
+              <Text style={[styles.description, descriptionStyle]}>
+                {description}
+              </Text>
+            ) : null}
+          </View>
+
+          {/* Text Fields */}
+          {textFields && textFields.length > 0 && (
+            <View style={styles.textFieldsContainer}>
+              {textFields.map((field, index) => (
+                <View key={index}>
+                  {index > 0 && <View style={styles.textFieldSeparator} />}
+                  <TextInput
+                    style={styles.textFieldInput}
+                    value={field.value}
+                    placeholder={field.placeholder}
+                    placeholderTextColor={colors.labels[theme].tertiary}
+                    onChangeText={field.onChangeText}
+                    secureTextEntry={field.secureTextEntry}
+                    autoCapitalize="none"
+                  />
+                </View>
+              ))}
+            </View>
+          )}
+
+          {/* Buttons */}
+          {buttons.length > 0 && (
+            <View
+              style={
+                layout === 'side-by-side'
+                  ? styles.buttonsSideBySide
+                  : styles.buttonsStacked
+              }
+            >
+              {buttons.map(({ action, variant }) => {
+                const bgStyle =
+                  variant === 'primary'
+                    ? styles.buttonPrimary
+                    : variant === 'destructive'
+                      ? styles.buttonDestructive
+                      : styles.buttonSecondary
+
+                const textStyle =
+                  variant === 'primary'
+                    ? styles.buttonPrimaryText
+                    : variant === 'destructive'
+                      ? styles.buttonDestructiveText
+                      : styles.buttonSecondaryText
+
+                return (
+                  <Pressable
+                    key={action.label}
+                    onPress={action.onPress}
+                    accessibilityRole="button"
+                    accessibilityLabel={action.label}
+                    style={({ pressed }) => [
+                      styles.buttonBase,
+                      bgStyle,
+                      layout === 'side-by-side' && styles.buttonSideBySideItem,
+                      pressed && styles.buttonPressed,
+                    ]}
+                  >
+                    <Text style={[textStyle, action.style]}>
+                      {action.label}
+                    </Text>
+                  </Pressable>
+                )
+              })}
+            </View>
+          )}
+        </Pressable>
+      </Pressable>
+    </Modal>
+  )
+}
+
+// ─── Legacy Inline Alert (backward compatible) ───────────────────────────────
+
+function AlertInline({
   title,
   type = 'info',
   variant = 'linear',
@@ -108,7 +310,9 @@ export function Alert({
       case 'success':
         return <CheckCircle size={iconSize} color={iconColor} fill={iconColor} />
       case 'warning':
-        return <AlertTriangle size={iconSize} color={iconColor} fill={iconColor} />
+        return (
+          <AlertTriangle size={iconSize} color={iconColor} fill={iconColor} />
+        )
       case 'error':
         return <XCircle size={iconSize} color={iconColor} fill={iconColor} />
       case 'ai':
@@ -129,7 +333,7 @@ export function Alert({
   return (
     <View
       style={[
-        styles.container,
+        inlineStyles.container,
         {
           backgroundColor,
           borderRadius: borderRadius.l,
@@ -141,32 +345,48 @@ export function Alert({
           borderTopWidth: borderWidth.thin,
           borderRightWidth: borderWidth.thin,
           borderBottomWidth: borderWidth.thin,
-          borderTopColor: isLight ? colors.border.light.default : colors.border.dark.default,
-          borderRightColor: isLight ? colors.border.light.default : colors.border.dark.default,
-          borderBottomColor: isLight ? colors.border.light.default : colors.border.dark.default,
+          borderTopColor: isLight
+            ? colors.border.light.default
+            : colors.border.dark.default,
+          borderRightColor: isLight
+            ? colors.border.light.default
+            : colors.border.dark.default,
+          borderBottomColor: isLight
+            ? colors.border.light.default
+            : colors.border.dark.default,
         },
         style,
       ]}
     >
       {/* Header row with icon, content, and close button */}
-      <View style={styles.header}>
+      <View style={inlineStyles.header}>
         {/* Icon */}
-        <View style={styles.iconContainer}>{renderIcon()}</View>
+        <View style={inlineStyles.iconContainer}>{renderIcon()}</View>
 
         {/* Content area */}
         <View
           style={[
-            styles.contentArea,
+            inlineStyles.contentArea,
             actionsPosition === 'right' &&
               limitedActions.length > 0 &&
-              styles.contentAreaWithRightActions,
+              inlineStyles.contentAreaWithRightActions,
           ]}
         >
           {/* Title and description */}
-          <View style={styles.textContainer}>
-            <Text style={[styles.title, { color: titleColor }, titleStyle]}>{title}</Text>
+          <View style={inlineStyles.textContainer}>
+            <Text
+              style={[inlineStyles.title, { color: titleColor }, titleStyle]}
+            >
+              {title}
+            </Text>
             {description && (
-              <Text style={[styles.description, { color: descriptionColor }, descriptionStyle]}>
+              <Text
+                style={[
+                  inlineStyles.description,
+                  { color: descriptionColor },
+                  descriptionStyle,
+                ]}
+              >
                 {description}
               </Text>
             )}
@@ -174,13 +394,17 @@ export function Alert({
 
           {/* Actions - bottom position */}
           {actionsPosition === 'bottom' && limitedActions.length > 0 && (
-            <View style={styles.actionsBottom}>{renderActions(limitedActions, actionColor)}</View>
+            <View style={inlineStyles.actionsBottom}>
+              {renderActions(limitedActions, actionColor)}
+            </View>
           )}
         </View>
 
         {/* Actions - right position */}
         {actionsPosition === 'right' && limitedActions.length > 0 && (
-          <View style={styles.actionsRight}>{renderActions(limitedActions, actionColor)}</View>
+          <View style={inlineStyles.actionsRight}>
+            {renderActions(limitedActions, actionColor)}
+          </View>
         )}
 
         {/* Close button */}
@@ -190,7 +414,10 @@ export function Alert({
             hitSlop={8}
             accessibilityRole="button"
             accessibilityLabel="Close alert"
-            style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
+            style={({ pressed }) => [
+              inlineStyles.closeButton,
+              pressed && inlineStyles.closeButtonPressed,
+            ]}
           >
             <X size={24} color={closeColor} />
           </Pressable>
@@ -200,22 +427,30 @@ export function Alert({
   )
 
   // Render action buttons
-  function renderActions(actionList: typeof limitedActions, color: string) {
+  function renderActions(
+    actionList: typeof limitedActions,
+    color: string
+  ) {
     return actionList.map((action) => (
       <Pressable
         key={action.label}
         onPress={action.onPress}
         accessibilityRole="button"
         accessibilityLabel={action.label}
-        style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}
+        style={({ pressed }) => [
+          inlineStyles.actionButton,
+          pressed && inlineStyles.actionButtonPressed,
+        ]}
       >
-        <Text style={[styles.actionText, { color }, action.style]}>{action.label}</Text>
+        <Text style={[inlineStyles.actionText, { color }, action.style]}>
+          {action.label}
+        </Text>
       </Pressable>
     ))
   }
 }
 
-const styles = StyleSheet.create({
+const inlineStyles = StyleSheet.create({
   container: {
     padding: spacing[16],
   },

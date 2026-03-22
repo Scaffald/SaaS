@@ -165,6 +165,24 @@ export const shadows = {
     elevation: 2,
   },
 
+  // Liquid Glass elevated shadow - native equivalent for floating glass panels
+  glassElevated: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 32,
+    elevation: 8,
+  },
+
+  // iOS 26 sheet/alert/menu shadow — matches Figma exactly: 0px 8px 40px rgba(0,0,0,0.12)
+  iosSheet: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 40,
+    elevation: 10,
+  },
+
   // Legacy aliases for backward compatibility
   sm: {
     shadowColor,
@@ -247,6 +265,22 @@ export const boxShadows = {
 
   // Glass card shadow - subtle diffused shadow for glass card variant
   glass: '0 1px 12px -2px rgba(22, 17, 13, 0.06)',
+
+  // Liquid Glass inset shadow — Control Center panel depth effect (6-layer)
+  glassInset: [
+    'inset 1px 1px 0px -0.5px #333',
+    'inset -1px -1px 0px -0.5px #262626',
+    'inset 1px 1px 0.5px -1px white',
+    'inset -1px -1px 0.5px -1px white',
+    'inset 0px 0px 3px 0px rgba(255, 255, 255, 0.5)',
+    'inset 0px 0px 16px 0px #f2f2f2',
+  ].join(', '),
+
+  // Liquid Glass elevated shadow — floating glass panel
+  glassElevated: '0 8px 32px -4px rgba(0, 0, 0, 0.12), 0 2px 8px -2px rgba(0, 0, 0, 0.08)',
+
+  // iOS 26 sheet/alert/menu shadow — matches Figma exactly
+  iosSheet: '0 8px 40px 0 rgba(0, 0, 0, 0.12)',
 
   // Legacy aliases for backward compatibility
   sm: '0 1px 3px 0 rgba(22, 17, 13, 0.078)', // Matches shadow-s

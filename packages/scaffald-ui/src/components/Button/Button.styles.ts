@@ -4,6 +4,7 @@
  */
 
 import type { ViewStyle, TextStyle } from 'react-native'
+import { Platform } from 'react-native'
 import { colors } from '../../tokens/colors'
 import type { ThemeMode } from '../../tokens/colors'
 import { spacing } from '../../tokens/spacing'
@@ -11,6 +12,7 @@ import { borderRadius } from '../../tokens/borders'
 import { typography } from '../../tokens/typography'
 import { shadows } from '../../tokens/shadows'
 import type { ButtonColor, ButtonVariant, ButtonSize, ButtonStyleConfig } from './Button.types'
+import { glassVibrantColors } from '../../tokens/glass'
 
 /**
  * Button size configurations from Figma
@@ -61,6 +63,53 @@ export function getButtonIconSize(size: ButtonSize): number {
 }
 
 /**
+ * iOS 26 button size configurations from Figma
+ * - Small: 28px height, 15px font, pill shape
+ * - Medium: 34px height, 15px font, pill shape
+ * - Large: 50px height, 17px font, 12px radius (text) or circle (icon-only)
+ */
+const iosSizeConfig = {
+  sm: {
+    height: 28,
+    minWidth: 28,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    gap: 3,
+    iconSize: 15,
+    fontSize: 15,
+    lineHeight: 20,
+    borderRadius: 1000, // pill
+  },
+  md: {
+    height: 34,
+    minWidth: 34,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    gap: 3,
+    iconSize: 15,
+    fontSize: 15,
+    lineHeight: 20,
+    borderRadius: 1000, // pill
+  },
+  lg: {
+    height: 50,
+    minWidth: 50,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    gap: 4,
+    iconSize: 17,
+    fontSize: 17,
+    lineHeight: 22,
+    borderRadius: 12, // rounded rect for text, 500 for icon-only
+  },
+} as const
+
+/** Whether a variant is iOS 26 style */
+function isIOSVariant(variant: ButtonVariant): boolean {
+  return variant === 'bordered-prominent' || variant === 'bordered' || variant === 'borderless'
+}
+
+/**
  * Get button styles based on variant, color, size, state, and theme
  */
 export function getButtonStyles(
@@ -69,8 +118,39 @@ export function getButtonStyles(
   size: ButtonSize,
   disabled: boolean,
   iconOnly: boolean,
-  theme: ThemeMode = 'light'
+  theme: ThemeMode = 'light',
+  destructive: boolean = false
 ): ButtonStyleConfig {
+  // Use iOS size config for iOS variants
+  if (isIOSVariant(variant)) {
+    const validSize: ButtonSize = iosSizeConfig[size] ? size : 'md'
+    const sizeStyles = iosSizeConfig[validSize]
+
+    const baseContainer: ViewStyle = {
+      height: sizeStyles.height,
+      minWidth: iconOnly ? sizeStyles.minWidth : undefined,
+      paddingHorizontal: iconOnly ? 0 : sizeStyles.paddingHorizontal,
+      paddingVertical: sizeStyles.paddingVertical,
+      borderRadius: iconOnly && size === 'lg' ? 500 : sizeStyles.borderRadius,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: sizeStyles.gap,
+      borderWidth: 0,
+    }
+
+    const baseText: TextStyle = {
+      fontFamily: typography.bodyMedium.fontFamily,
+      fontSize: sizeStyles.fontSize,
+      fontWeight: '400', // SF Pro Regular for iOS buttons
+      lineHeight: sizeStyles.lineHeight,
+      letterSpacing: size === 'lg' ? -0.43 : -0.23,
+      textAlign: 'center',
+    }
+
+    return getIOSVariantStyles(variant, disabled, destructive, baseContainer, baseText, sizeStyles.iconSize, theme)
+  }
+
   // Safety check: ensure size is valid, fallback to 'md' if invalid
   const validSize: ButtonSize = sizeConfig[size] ? size : 'md'
   const sizeStyles = sizeConfig[validSize]
@@ -138,8 +218,54 @@ function getVariantStyles(
     return getLightStyles(color, disabled, baseContainer, baseText, iconSize, theme)
   }
 
+  // Glass variant
+  if (variant === 'glass') {
+    return getGlassStyles(disabled, baseContainer, baseText, iconSize, theme)
+  }
+
   // Text variant
   return getTextStyles(color, disabled, baseContainer, baseText, iconSize, theme)
+}
+
+/**
+ * Glass variant styles — Liquid Glass button with backdrop-blur
+ */
+function getGlassStyles(
+  disabled: boolean,
+  baseContainer: ViewStyle,
+  baseText: TextStyle,
+  _iconSize: number,
+  theme: ThemeMode
+): ButtonStyleConfig {
+  const vibrant = glassVibrantColors[theme]
+  const container: ViewStyle = {
+    ...baseContainer,
+    borderWidth: 1,
+    borderColor: colors.border[theme].ghost,
+  }
+
+  if (Platform.OS === 'web') {
+    (container as Record<string, unknown>).backdropFilter = 'blur(20px)';
+    (container as Record<string, unknown>).WebkitBackdropFilter = 'blur(20px)';
+    container.backgroundColor = theme === 'dark' ? 'rgba(0, 0, 0, 0.26)' : 'rgba(255, 255, 255, 0.4)';
+  } else {
+    container.backgroundColor = theme === 'dark' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.45)';
+  }
+
+  return {
+    container,
+    text: {
+      ...baseText,
+      color: disabled ? vibrant.tertiaryText : vibrant.primaryText,
+    },
+    iconColor: disabled ? vibrant.tertiaryText : vibrant.primaryText,
+    hover: {
+      backgroundColor: theme === 'dark' ? 'rgba(0, 0, 0, 0.35)' : 'rgba(255, 255, 255, 0.55)',
+    },
+    pressed: {
+      backgroundColor: theme === 'dark' ? 'rgba(0, 0, 0, 0.45)' : 'rgba(255, 255, 255, 0.65)',
+    },
+  }
 }
 
 /**
@@ -337,6 +463,70 @@ function getLightStyles(
     pressed: {
       backgroundColor: disabled ? styles.bg : styles.pressedBg,
     },
+  }
+}
+
+// ============================================================================
+// iOS 26 Variant Styles
+// ============================================================================
+
+/**
+ * Get iOS 26 variant-specific styles (bordered-prominent, bordered, borderless)
+ */
+function getIOSVariantStyles(
+  variant: ButtonVariant,
+  disabled: boolean,
+  destructive: boolean,
+  baseContainer: ViewStyle,
+  baseText: TextStyle,
+  iconSize: number,
+  theme: ThemeMode
+): ButtonStyleConfig {
+  const accent = destructive
+    ? colors.accents[theme].red
+    : colors.accents[theme].blue
+
+  if (variant === 'bordered-prominent') {
+    // Solid accent background, white text
+    const bg = disabled
+      ? (theme === 'light' ? 'rgba(120, 120, 128, 0.16)' : 'rgba(120, 120, 128, 0.32)')
+      : accent
+    const textColor = disabled
+      ? colors.labelsVibrant[theme].tertiary
+      : colors.white
+
+    return {
+      container: { ...baseContainer, backgroundColor: bg },
+      text: { ...baseText, color: textColor, fontWeight: '510' as TextStyle['fontWeight'] },
+      iconColor: textColor,
+      hover: { backgroundColor: disabled ? bg : (destructive ? '#E0303E' : '#0077E0'), opacity: disabled ? 1 : 0.9 },
+      pressed: { backgroundColor: disabled ? bg : (destructive ? '#CC2A35' : '#006ACC'), opacity: disabled ? 1 : 0.85 },
+    }
+  }
+
+  if (variant === 'bordered') {
+    // Subtle fill background, accent text
+    const bg = colors.fills[theme].secondary
+    const textColor = disabled ? colors.labelsVibrant[theme].tertiary : accent
+
+    return {
+      container: { ...baseContainer, backgroundColor: bg },
+      text: { ...baseText, color: textColor, fontWeight: '510' as TextStyle['fontWeight'] },
+      iconColor: textColor,
+      hover: { backgroundColor: disabled ? bg : colors.fills[theme].primary },
+      pressed: { backgroundColor: disabled ? bg : colors.fills[theme].primary, opacity: 0.85 },
+    }
+  }
+
+  // borderless — no background, accent text
+  const textColor = disabled ? colors.labelsVibrant[theme].tertiary : accent
+
+  return {
+    container: { ...baseContainer, backgroundColor: 'transparent' },
+    text: { ...baseText, color: textColor },
+    iconColor: textColor,
+    hover: { backgroundColor: disabled ? 'transparent' : (theme === 'light' ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.06)') },
+    pressed: { backgroundColor: disabled ? 'transparent' : (theme === 'light' ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.1)') },
   }
 }
 

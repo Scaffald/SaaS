@@ -383,6 +383,137 @@ export const colors = {
   white: '#ffffff',
   black: '#000000',
 
+  // ============================================================================
+  // iOS 26 Semantic Tokens
+  // Mapped from Apple iOS/iPadOS 26 Figma community file
+  // ============================================================================
+
+  /** iOS 26 accent colors — system tint colors used for interactive elements */
+  accents: {
+    light: {
+      blue: '#0088FF',
+      red: '#FF383C',
+      green: '#34C759',
+      orange: '#FF9500',
+    },
+    dark: {
+      blue: '#0A84FF',
+      red: '#FF453A',
+      green: '#30D158',
+      orange: '#FF9F0A',
+    },
+  },
+
+  /** iOS 26 fill tokens — semi-transparent fills for controls and surfaces */
+  fills: {
+    light: {
+      primary: 'rgba(120, 120, 128, 0.2)',
+      secondary: 'rgba(120, 120, 128, 0.16)',
+      tertiary: 'rgba(118, 118, 128, 0.12)',
+      quaternary: 'rgba(116, 116, 128, 0.08)',
+    },
+    dark: {
+      primary: 'rgba(120, 120, 128, 0.36)',
+      secondary: 'rgba(120, 120, 128, 0.32)',
+      tertiary: 'rgba(118, 118, 128, 0.24)',
+      quaternary: 'rgba(118, 118, 128, 0.18)',
+    },
+  },
+
+  /** iOS 26 label tokens — text/icon colors for glass/vibrant surfaces */
+  labels: {
+    light: {
+      primary: '#000000',
+      secondary: 'rgba(60, 60, 67, 0.6)',
+      tertiary: 'rgba(60, 60, 67, 0.3)',
+      quaternary: 'rgba(60, 60, 67, 0.18)',
+    },
+    dark: {
+      primary: '#ffffff',
+      secondary: 'rgba(235, 235, 245, 0.6)',
+      tertiary: 'rgba(235, 235, 245, 0.3)',
+      quaternary: 'rgba(235, 235, 245, 0.18)',
+    },
+  },
+
+  /** iOS 26 vibrant label tokens — for labels on glass/blur surfaces */
+  labelsVibrant: {
+    light: {
+      primary: '#1a1a1a',
+      secondary: '#727272',
+      tertiary: '#bfbfbf',
+      quaternary: '#d9d9d9',
+    },
+    dark: {
+      primary: '#ffffff',
+      secondary: 'rgba(255, 255, 255, 0.55)',
+      tertiary: 'rgba(255, 255, 255, 0.25)',
+      quaternary: 'rgba(255, 255, 255, 0.1)',
+    },
+  },
+
+  /** iOS 26 vibrant fill tokens — for fills on glass/blur surfaces */
+  fillsVibrant: {
+    light: {
+      primary: '#cccccc',
+      secondary: '#e0e0e0',
+      tertiary: '#ededed',
+    },
+    dark: {
+      primary: '#333333',
+      secondary: '#2a2a2a',
+      tertiary: '#1f1f1f',
+    },
+  },
+
+  /** iOS 26 separator tokens */
+  separators: {
+    light: {
+      opaque: '#c6c6c8',
+      vibrant: '#e6e6e6',
+    },
+    dark: {
+      opaque: '#38383a',
+      vibrant: 'rgba(255, 255, 255, 0.15)',
+    },
+  },
+
+  /** iOS 26 system gray values */
+  systemGray: {
+    light: {
+      gray: '#8e8e93',
+      gray2: '#aeaeb2',
+      gray3: '#c7c7cc',
+      gray4: '#d1d1d6',
+      gray5: '#e5e5ea',
+      gray6: '#f2f2f7',
+    },
+    dark: {
+      gray: '#8e8e93',
+      gray2: '#636366',
+      gray3: '#48484a',
+      gray4: '#3a3a3c',
+      gray5: '#2c2c2e',
+      gray6: '#1c1c1e',
+    },
+  },
+
+  /** iOS 26 system background tokens */
+  systemBg: {
+    light: {
+      primary: '#ffffff',
+      secondary: '#f2f2f7',
+      tertiary: '#ffffff',
+      elevated: '#ffffff',
+    },
+    dark: {
+      primary: '#000000',
+      secondary: '#1c1c1e',
+      tertiary: '#2c2c2e',
+      elevated: '#1c1c1e',
+    },
+  },
+
   // Typography Color Tokens (Text Colors)
   // Semantic tokens organized by usage context with light/dark mode support
   text: {
@@ -392,6 +523,14 @@ export const colors = {
       tertiary: '#6e6760', // gray[500] warm - Reserved for secondary text
       disabled: '#cdc8c0', // gray[300] warm - Context for operational disabilities
       quaternary: '#ffffff', // Base/0 White - Contrast for optimal readability (inverse text)
+      /** Vibrant text for glass surfaces — full opacity, high contrast */
+      vibrantPrimary: '#000000',
+      /** Vibrant text for glass surfaces — secondary emphasis */
+      vibrantSecondary: '#3d3d3d',
+      /** Vibrant text for glass surfaces — tertiary emphasis */
+      vibrantTertiary: 'rgba(80, 80, 80, 0.7)',
+      /** Vibrant text for glass surfaces — quaternary/hint */
+      vibrantQuaternary: 'rgba(72, 72, 72, 0.6)',
     },
     dark: {
       primary: '#ffffff', // Base/0 White - Reserved for title text
@@ -399,6 +538,14 @@ export const colors = {
       tertiary: '#9e9790', // gray[400] warm - Reserved for secondary text
       disabled: '#504940', // gray[600] warm - Context for operational disabilities
       quaternary: '#16110d', // gray[900] warm - Contrast for optimal readability (inverse text)
+      /** Vibrant text for glass surfaces — full opacity, high contrast */
+      vibrantPrimary: '#ffffff',
+      /** Vibrant text for glass surfaces — secondary emphasis */
+      vibrantSecondary: 'rgba(255, 255, 255, 0.85)',
+      /** Vibrant text for glass surfaces — tertiary emphasis */
+      vibrantTertiary: 'rgba(255, 255, 255, 0.55)',
+      /** Vibrant text for glass surfaces — quaternary/hint */
+      vibrantQuaternary: 'rgba(255, 255, 255, 0.33)',
     },
     // Backward compatibility aliases (reference light mode)
     primary: '#16110d', // Alias for text.light.primary
@@ -422,6 +569,12 @@ export const colors = {
       glass: 'rgba(255, 255, 255, 0.7)',
       /** Glass card fallback — higher opacity for native platforms without backdrop-filter */
       glassFallback: 'rgba(249, 248, 246, 0.88)', // gray[50] warm @ 88%
+      /** Liquid Glass material backgrounds (iOS 26) — use with getGlassMaterialStyles() */
+      glassUltrathin: 'rgba(255, 255, 255, 0.15)',
+      glassThin: 'rgba(255, 255, 255, 0.45)',
+      glassRegular: 'rgba(255, 255, 255, 0.7)',
+      glassThick: 'rgba(255, 255, 255, 0.88)',
+      glassChrome: 'rgba(255, 255, 255, 0.85)',
       /** Radial gradient background for dashboard surfaces (web CSS string) */
       gradient: 'radial-gradient(circle at top right, #f1efeb, #e3dfd9)', // gray[100] → gray[200]
       /** Drawer/sidebar nav active item background (comp blue-grey). Use with white text and icon. */
@@ -440,6 +593,12 @@ export const colors = {
       glass: 'rgba(30, 25, 20, 0.7)', // gray[800] warm @ 70%
       /** Glass card fallback — higher opacity for native platforms without backdrop-filter */
       glassFallback: 'rgba(30, 25, 20, 0.88)', // gray[800] warm @ 88%
+      /** Liquid Glass material backgrounds (iOS 26) — use with getGlassMaterialStyles() */
+      glassUltrathin: 'rgba(0, 0, 0, 0.15)',
+      glassThin: 'rgba(0, 0, 0, 0.4)',
+      glassRegular: 'rgba(0, 0, 0, 0.55)',
+      glassThick: 'rgba(0, 0, 0, 0.75)',
+      glassChrome: 'rgba(28, 28, 28, 0.92)',
       /** Radial gradient background for dashboard surfaces (web CSS string) */
       gradient: 'radial-gradient(circle at top right, #2f2820, #16110d)', // gray[750] → gray[900]
       /** Drawer/sidebar nav active item background. Use with white text and icon. */
@@ -473,6 +632,10 @@ export const colors = {
       info: '#2e72a0', // info[500] slate - Used for borders indicating an informational state
       /** Ghost border — barely visible outline for glass cards and subtle separation */
       ghost: 'rgba(176, 179, 173, 0.2)', // comp ghost border (outline-variant @ 20%)
+      /** Liquid Glass specular highlight border (outer) */
+      glassSpecular: 'rgba(255, 255, 255, 0.01)',
+      /** Liquid Glass specular highlight border (inner, 0.5px) */
+      glassSpecularInner: 'rgba(69, 69, 69, 0.3)',
     },
     dark: {
       default: '#6e6760', // gray[500] warm - Primary border color for all general UI elements (3.36:1)
@@ -489,6 +652,10 @@ export const colors = {
       info: '#2e72a0', // info[500] slate - Used for borders indicating an informational state
       /** Ghost border — barely visible outline for glass cards and subtle separation */
       ghost: 'rgba(110, 103, 96, 0.2)', // gray[500] warm @ 20%
+      /** Liquid Glass specular highlight border (outer) */
+      glassSpecular: 'rgba(255, 255, 255, 0.01)',
+      /** Liquid Glass specular highlight border (inner, 0.5px) */
+      glassSpecularInner: 'rgba(69, 69, 69, 0.3)',
     },
     // Backward compatibility aliases (reference light mode)
     // Note: 'light' alias removed - use border.light.subtle instead (conflicts with border.light object)

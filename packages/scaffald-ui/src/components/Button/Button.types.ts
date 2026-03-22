@@ -13,11 +13,29 @@ export type ButtonColor = 'gray' | 'primary' | 'success' | 'error'
 
 /**
  * Button style variants
+ *
+ * iOS 26 variants (from Apple HIG):
+ * - 'bordered-prominent': Solid accent fill with white text (maps to iOS Bordered Prominent)
+ * - 'bordered': Subtle fill with accent text (maps to iOS Bordered)
+ * - 'borderless': No background, accent text only (maps to iOS Borderless)
  */
-export type ButtonVariant = 'filled' | 'outline' | 'light' | 'text'
+export type ButtonVariant =
+  | 'filled'
+  | 'outline'
+  | 'light'
+  | 'text'
+  | 'glass'
+  | 'bordered-prominent'
+  | 'bordered'
+  | 'borderless'
 
 /**
  * Button size variants
+ *
+ * iOS 26 sizes (when using iOS variants):
+ * - 'sm': 28px height, 15px font
+ * - 'md': 34px height, 15px font
+ * - 'lg': 50px height, 17px font
  */
 export type ButtonSize = 'sm' | 'md' | 'lg'
 
@@ -81,6 +99,13 @@ export interface ButtonProps extends Omit<PressableProps, 'style' | 'children'> 
    * @default false
    */
   loading?: boolean
+
+  /**
+   * Destructive action (renders text/icon in red)
+   * Applies to iOS 26 variants: bordered-prominent shows red bg, others show red text
+   * @default false
+   */
+  destructive?: boolean
 
   /**
    * Custom button container style

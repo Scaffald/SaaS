@@ -277,6 +277,25 @@ export type {
   SelectableCardProps,
 } from "./components/Card";
 
+// Liquid Glass components (iOS 26)
+export { GlassSurface } from "./components/GlassSurface";
+export type { GlassSurfaceProps, GlassSurfaceVariant } from "./components/GlassSurface";
+
+export { GlassPanel } from "./components/GlassPanel";
+export type { GlassPanelProps } from "./components/GlassPanel";
+
+export { GlassIconButton } from "./components/GlassIconButton";
+export type { GlassIconButtonProps, GlassIconButtonSize } from "./components/GlassIconButton";
+
+export { GlassGroup } from "./components/GlassGroup";
+export type { GlassGroupProps } from "./components/GlassGroup";
+
+export { GlassSlider } from "./components/GlassSlider";
+export type { GlassSliderProps } from "./components/GlassSlider";
+
+export { GlassWidget } from "./components/GlassWidget";
+export type { GlassWidgetProps, GlassWidgetSize } from "./components/GlassWidget";
+
 export { DiscoverCard } from "./components/DiscoverCard";
 export type { DiscoverCardProps, DiscoverCardVariant } from "./components/DiscoverCard";
 
@@ -611,10 +630,37 @@ export { Alert } from "./components/Alert";
 export type {
   AlertAction,
   AlertActionsPosition,
+  AlertButtonLayout,
   AlertProps,
+  AlertTextField,
   AlertType,
   AlertVariant,
 } from "./components/Alert";
+
+// iOS 26 Components
+export { ActionSheet } from "./components/ActionSheet";
+export type { ActionSheetAction, ActionSheetProps } from "./components/ActionSheet";
+
+export { ActivityView } from "./components/ActivityView";
+export type {
+  ActivityViewAction,
+  ActivityViewApp,
+  ActivityViewContact,
+  ActivityViewListItem,
+  ActivityViewProps,
+  ActivityViewSection,
+} from "./components/ActivityView";
+
+export { ContextMenu } from "./components/ContextMenu";
+export type {
+  ContextMenuAction,
+  ContextMenuProps,
+  ContextMenuQuickAction,
+  ContextMenuSection,
+} from "./components/ContextMenu";
+
+export { EditMenu } from "./components/EditMenu";
+export type { EditMenuAction, EditMenuProps } from "./components/EditMenu";
 
 export { StatusIndicator } from "./components/StatusIndicator";
 export type {

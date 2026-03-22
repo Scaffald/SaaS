@@ -49,6 +49,7 @@ export const Button = forwardRef<View, ButtonProps>(function Button({
   iconEnd: IconEnd,
   iconOnly = false,
   loading = false,
+  destructive = false,
   style,
   textStyle,
   onPress,
@@ -60,8 +61,8 @@ export const Button = forwardRef<View, ButtonProps>(function Button({
 
   // Get styles based on current props and theme
   const styles = useMemo(
-    () => getButtonStyles(color, variant, size, isDisabled, iconOnly, theme),
-    [color, variant, size, isDisabled, iconOnly, theme]
+    () => getButtonStyles(color, variant, size, isDisabled, iconOnly, theme, destructive),
+    [color, variant, size, isDisabled, iconOnly, theme, destructive]
   )
 
   // Calculate icon/loading size based on button size

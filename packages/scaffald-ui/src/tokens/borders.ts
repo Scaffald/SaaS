@@ -22,6 +22,18 @@ export const borderRadius = {
   xxxl: 16, // radius-xxxl
   xxxxl: 24, // radius-xxxxl
   max: 999, // radius-max (fully rounded/pill shape)
+
+  // iOS 26 specific radii
+  /** iOS 26 sheet/alert top corner radius (34px) */
+  sheet: 34,
+  /** iOS 26 context menu quick action button radius (20px) */
+  menuAction: 20,
+  /** iOS 26 alert text field container radius (26px) */
+  alertField: 26,
+  /** iOS 26 context menu container radius (30px) */
+  menuContainer: 30,
+  /** iOS 26 pill button radius (100px) */
+  pill: 100,
 } as const
 
 /**
@@ -41,6 +53,13 @@ export const radius = {
   '3xl': borderRadius.xxxl, // 16
   '4xl': borderRadius.xxxxl, // 24
   full: borderRadius.max, // 999 (pill shape)
+
+  // iOS 26 aliases
+  sheet: borderRadius.sheet, // 34 (action sheet / alert)
+  menuAction: borderRadius.menuAction, // 20 (context menu quick action)
+  alertField: borderRadius.alertField, // 26 (alert text field)
+  menuContainer: borderRadius.menuContainer, // 30 (menu container)
+  pill: borderRadius.pill, // 100 (pill button)
 } as const
 
 /**
