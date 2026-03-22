@@ -1,11 +1,21 @@
 #!/bin/bash
 
-# Pre-push hook: run affected builds and tests before pushing
-# Catches broken builds and regressions before CI. Skip with: git push --no-verify
+# Pre-push hook: validates that affected builds + tests pass before pushing.
+#
+# Strategy: Heavy checks (build, test) run BEFORE the SSH connection opens
+# via `pnpm prepush`, which writes a stamp file on success. This hook only
+# verifies the stamp — fast enough to not timeout the SSH connection.
+#
+# Workflow:
+#   1. Developer runs: git push (this hook fires)
+#   2. If stamp exists for current HEAD → pass immediately
+#   3. If no stamp → run checks inline, write stamp, then pass
+#
+# Skip with: git push --no-verify, SKIP_HOOKS=1, or SKIP_PREPUSH=1
 
 set -e
 
-# Quick-skip: SKIP_HOOKS=1 or SKIP_PREPUSH=1 to bypass (friendlier than --no-verify)
+# Quick-skip
 if [ "${SKIP_HOOKS:-}" = "1" ] || [ "${SKIP_PREPUSH:-}" = "1" ]; then
   echo "⏭️  Pre-push hooks skipped (SKIP_HOOKS/SKIP_PREPUSH=1)"
   exit 0
@@ -14,26 +24,26 @@ fi
 PROJECT_ROOT="$(git rev-parse --show-toplevel)"
 cd "$PROJECT_ROOT"
 
-# --- SSH keepalive: prevent GitHub from closing the connection during long builds ---
-export GIT_SSH_COMMAND="ssh -o ServerAliveInterval=15 -o ServerAliveCountMax=20"
-
-# --- Stamp cache: skip checks if this exact HEAD already passed ---
 HEAD_SHA=$(git rev-parse HEAD)
 STAMP_FILE="$PROJECT_ROOT/.nx/cache/.prepush-validated"
+
+# Fast path: stamp exists for this exact commit
 if [ -f "$STAMP_FILE" ] && [ "$(cat "$STAMP_FILE")" = "$HEAD_SHA" ]; then
-  echo "✅ Pre-push checks already passed for $(echo "$HEAD_SHA" | cut -c1-8)"
+  echo "✅ Pre-push: already validated $(echo "$HEAD_SHA" | cut -c1-8)"
   exit 0
 fi
 
-# --- Memory cap: prevent OOM (matches the 'check' script) ---
-export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=4096}"
+# Slow path: run checks now (will hold SSH connection open)
+echo "🔍 Running pre-push checks (no stamp found for $(echo "$HEAD_SHA" | cut -c1-8))..."
+echo "   💡 Tip: run 'pnpm prepush' before pushing to avoid SSH timeouts"
 
-echo "🔍 Running pre-push checks..."
+# Memory cap
+export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=4096}"
 
 # Fetch to ensure nx affected has correct base
 git fetch origin main 2>/dev/null || true
 
-# --- Timeout support (default 180s, configurable via PREPUSH_TIMEOUT) ---
+# Timeout support
 TIMEOUT_CMD=""
 for cmd in timeout gtimeout; do
   if command -v "$cmd" >/dev/null 2>&1; then
@@ -52,13 +62,11 @@ run_with_timeout() {
   fi
 }
 
-# --- Run build + test in parallel ---
+# Run build + test in parallel
 BUILD_LOG=$(mktemp)
 TEST_LOG=$(mktemp)
-BUILD_EXIT=0
-TEST_EXIT=0
-
-echo "🏗️  Checking affected builds + tests (parallel)..."
+cleanup() { rm -f "$BUILD_LOG" "$TEST_LOG"; }
+trap cleanup EXIT
 
 run_with_timeout pnpm affected:build > "$BUILD_LOG" 2>&1 &
 BUILD_PID=$!
@@ -66,41 +74,34 @@ BUILD_PID=$!
 run_with_timeout pnpm affected:test > "$TEST_LOG" 2>&1 &
 TEST_PID=$!
 
-# Wait for both, capture exit codes
+BUILD_EXIT=0
+TEST_EXIT=0
 wait $BUILD_PID || BUILD_EXIT=$?
 wait $TEST_PID || TEST_EXIT=$?
 
-# Handle timeout (124 = GNU timeout exit code)
+# Timeout → allow push (CI catches issues)
 if [ "$BUILD_EXIT" -eq 124 ] || [ "$TEST_EXIT" -eq 124 ]; then
-  echo "⚠️ Pre-push checks timed out after ${PREPUSH_TIMEOUT}s"
-  echo "   Allowing push — CI will catch any issues"
-  rm -f "$BUILD_LOG" "$TEST_LOG"
+  echo "⚠️ Pre-push timed out after ${PREPUSH_TIMEOUT}s — allowing push (CI will verify)"
   exit 0
 fi
 
-# Report failures
 if [ "$BUILD_EXIT" -ne 0 ]; then
-  echo "❌ Affected build failed:"
+  echo "❌ Build failed:"
   cat "$BUILD_LOG"
-  rm -f "$BUILD_LOG" "$TEST_LOG"
-  kill $TEST_PID 2>/dev/null || true
   echo ""
   echo "Fix errors or push with: git push --no-verify"
   exit 1
 fi
 
 if [ "$TEST_EXIT" -ne 0 ]; then
-  echo "❌ Affected tests failed:"
+  echo "❌ Tests failed:"
   cat "$TEST_LOG"
-  rm -f "$BUILD_LOG" "$TEST_LOG"
   echo ""
   echo "Fix failures or push with: git push --no-verify"
   exit 1
 fi
 
-rm -f "$BUILD_LOG" "$TEST_LOG"
-
-# --- Write stamp on success ---
+# Write stamp
 mkdir -p "$(dirname "$STAMP_FILE")"
 echo "$HEAD_SHA" > "$STAMP_FILE"
 
