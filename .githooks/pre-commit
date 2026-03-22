@@ -5,8 +5,17 @@
 
 set -e
 
+# Quick-skip: SKIP_HOOKS=1 or SKIP_PRECOMMIT=1 to bypass (friendlier than --no-verify)
+if [ "${SKIP_HOOKS:-}" = "1" ] || [ "${SKIP_PRECOMMIT:-}" = "1" ]; then
+  echo "⏭️  Pre-commit hooks skipped (SKIP_HOOKS/SKIP_PRECOMMIT=1)"
+  exit 0
+fi
+
 PROJECT_ROOT="$(git rev-parse --show-toplevel)"
 cd "$PROJECT_ROOT"
+
+# Allow more parallel NX tasks for lint (default 3 in nx.json is conservative)
+export NX_PARALLEL=${NX_PARALLEL:-5}
 
 echo "🔧 Running pre-commit checks (affected only)..."
 

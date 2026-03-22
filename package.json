@@ -63,6 +63,7 @@
     "prebuild:clean": "pnpm --filter scaffald-app prebuild --clean && pnpm setup-sentry",
     "prebuild:only": "pnpm --filter scaffald-app prebuild",
     "precommit": "pnpm lint:routes && pnpm lint:sorted-keys && nx affected -t lint,typecheck",
+    "precommit:skip": "SKIP_PRECOMMIT=1 git commit",
     "prepare": "git config core.hooksPath .githooks 2>/dev/null || true",
     "preview": "./scripts/deploy.sh preview",
     "prod": "./scripts/deploy.sh production",

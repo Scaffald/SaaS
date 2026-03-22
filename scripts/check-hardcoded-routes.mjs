@@ -93,11 +93,6 @@ async function walk(directory) {
 }
 
 async function checkFile(filePath) {
-  // If we're checking staged files only, skip files not in the staged set
-  if (stagedFiles !== null && !stagedFiles.has(filePath)) {
-    return
-  }
-
   const content = await readFile(filePath, 'utf8')
 
   for (const { regex, reason } of PATTERNS) {
@@ -111,7 +106,21 @@ async function checkFile(filePath) {
 }
 
 ;(async () => {
-  await walk(ROOT)
+  // Fast path: when staged files are available, check only those directly (skip tree walk)
+  if (stagedFiles !== null) {
+    if (stagedFiles.size === 0) {
+      console.log('✅ No staged files to check for hardcoded routes.')
+      process.exit(0)
+    }
+    for (const filePath of stagedFiles) {
+      const ext = path.extname(filePath)
+      if (!EXTENSIONS.has(ext) || ALLOWLIST.has(filePath)) continue
+      await checkFile(filePath)
+    }
+  } else {
+    // Fallback: full directory walk (CI or manual runs)
+    await walk(ROOT)
+  }
 
   if (violations.length > 0) {
     console.error('\n❌ Hardcoded route paths detected:')
