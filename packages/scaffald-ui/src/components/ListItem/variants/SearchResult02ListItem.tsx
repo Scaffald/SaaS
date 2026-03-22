@@ -58,7 +58,7 @@ export function SearchResult02ListItem({
                 fontSize: typographyVariants.paragraphMSemiBold.fontSize,
                 fontWeight: typographyVariants.paragraphMSemiBold.fontWeight,
                 lineHeight: typographyVariants.paragraphMSemiBold.lineHeight,
-                letterSpacing: parseFloat(typographyVariants.paragraphMSemiBold.letterSpacing || '0'),
+                letterSpacing: typographyVariants.paragraphMSemiBold.letterSpacing,
                 color: colors.text[theme].primary,
               }}
             >
@@ -71,7 +71,7 @@ export function SearchResult02ListItem({
                   fontSize: typographyVariants.paragraphSRegular.fontSize,
                   fontWeight: typographyVariants.paragraphSRegular.fontWeight,
                   lineHeight: typographyVariants.paragraphSRegular.lineHeight,
-                  letterSpacing: parseFloat(typographyVariants.paragraphSRegular.letterSpacing || '0'),
+                  letterSpacing: typographyVariants.paragraphSRegular.letterSpacing,
                   color: colors.text[theme].tertiary,
                 }}
               >

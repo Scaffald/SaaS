@@ -244,7 +244,7 @@ export function ListItem(props: ListItemProps) {
                         fontSize: typographyVariants.paragraphSSemiBold.fontSize,
                         fontWeight: typographyVariants.paragraphSSemiBold.fontWeight,
                         lineHeight: typographyVariants.paragraphSSemiBold.lineHeight,
-                        letterSpacing: parseFloat(typographyVariants.paragraphSSemiBold.letterSpacing || '0'),
+                        letterSpacing: typographyVariants.paragraphSSemiBold.letterSpacing,
                         color: colors.text[theme].primary,
                       }}
                     >
@@ -326,7 +326,7 @@ export function ListItem(props: ListItemProps) {
                       fontSize: typographyVariants.paragraphMSemiBold.fontSize,
                       fontWeight: typographyVariants.paragraphMSemiBold.fontWeight,
                       lineHeight: typographyVariants.paragraphMSemiBold.lineHeight,
-                      letterSpacing: parseFloat(typographyVariants.paragraphMSemiBold.letterSpacing || '0'),
+                      letterSpacing: typographyVariants.paragraphMSemiBold.letterSpacing,
                       color: colors.text[theme].primary,
                     }}
                   >
@@ -339,7 +339,7 @@ export function ListItem(props: ListItemProps) {
                         fontSize: typographyVariants.paragraphSRegular.fontSize,
                         fontWeight: typographyVariants.paragraphSRegular.fontWeight,
                         lineHeight: typographyVariants.paragraphSRegular.lineHeight,
-                        letterSpacing: parseFloat(typographyVariants.paragraphSRegular.letterSpacing || '0'),
+                        letterSpacing: typographyVariants.paragraphSRegular.letterSpacing,
                         color: colors.text[theme].tertiary,
                       }}
                     >

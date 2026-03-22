@@ -32,7 +32,7 @@ export function getListStyles(theme: ThemeMode = 'light', gap: number = 10): Lis
       fontSize: typographyVariants.paragraphMMedium.fontSize,
       fontWeight: typographyVariants.paragraphMMedium.fontWeight,
       lineHeight: typographyVariants.paragraphMMedium.lineHeight,
-      letterSpacing: parseFloat(typographyVariants.paragraphMMedium.letterSpacing || '0'),
+      letterSpacing: typographyVariants.paragraphMMedium.letterSpacing,
       color: colors.text[theme].secondary,
       marginBottom: spacing[16],
     },

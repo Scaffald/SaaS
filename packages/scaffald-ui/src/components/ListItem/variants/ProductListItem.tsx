@@ -101,7 +101,7 @@ export function ProductListItem({
                   fontSize: typographyVariants.paragraphSSemiBold.fontSize,
                   fontWeight: typographyVariants.paragraphSSemiBold.fontWeight,
                   lineHeight: typographyVariants.paragraphSSemiBold.lineHeight,
-                  letterSpacing: parseFloat(typographyVariants.paragraphSSemiBold.letterSpacing || '0'),
+                  letterSpacing: typographyVariants.paragraphSSemiBold.letterSpacing,
                   color: colors.text[theme].primary,
                 }}
               >

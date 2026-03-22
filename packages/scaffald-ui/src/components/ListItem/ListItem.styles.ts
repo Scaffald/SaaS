@@ -54,7 +54,7 @@ export function getListItemStyles(
     fontSize: typographyVariants.paragraphMSemiBold.fontSize,
     fontWeight: typographyVariants.paragraphMSemiBold.fontWeight,
     lineHeight: typographyVariants.paragraphMSemiBold.lineHeight,
-    letterSpacing: parseFloat(typographyVariants.paragraphMSemiBold.letterSpacing || '0'),
+    letterSpacing: typographyVariants.paragraphMSemiBold.letterSpacing,
     color: colors.text[theme].primary,
   }
 
@@ -64,7 +64,7 @@ export function getListItemStyles(
     fontSize: typographyVariants.paragraphSRegular.fontSize,
     fontWeight: typographyVariants.paragraphSRegular.fontWeight,
     lineHeight: typographyVariants.paragraphSRegular.lineHeight,
-    letterSpacing: parseFloat(typographyVariants.paragraphSRegular.letterSpacing || '0'),
+    letterSpacing: typographyVariants.paragraphSRegular.letterSpacing,
     color: colors.text[theme].tertiary,
   }
 
@@ -74,7 +74,7 @@ export function getListItemStyles(
     fontSize: typographyVariants.paragraphSRegular.fontSize,
     fontWeight: typographyVariants.paragraphSRegular.fontWeight,
     lineHeight: typographyVariants.paragraphSRegular.lineHeight,
-    letterSpacing: parseFloat(typographyVariants.paragraphSRegular.letterSpacing || '0'),
+    letterSpacing: typographyVariants.paragraphSRegular.letterSpacing,
     color: colors.text[theme].secondary,
   }
 
@@ -84,7 +84,7 @@ export function getListItemStyles(
     fontSize: typographyVariants.captionRegular.fontSize,
     fontWeight: typographyVariants.captionRegular.fontWeight,
     lineHeight: typographyVariants.captionRegular.lineHeight,
-    letterSpacing: parseFloat(typographyVariants.captionRegular.letterSpacing || '0'),
+    letterSpacing: typographyVariants.captionRegular.letterSpacing,
     color: colors.text[theme].tertiary,
   }
 
@@ -106,7 +106,7 @@ export function getListItemStyles(
           fontSize: typographyVariants.paragraphMSemiBold.fontSize,
           fontWeight: typographyVariants.paragraphMSemiBold.fontWeight,
           lineHeight: typographyVariants.paragraphMSemiBold.lineHeight,
-          letterSpacing: parseFloat(typographyVariants.paragraphMSemiBold.letterSpacing || '0'),
+          letterSpacing: typographyVariants.paragraphMSemiBold.letterSpacing,
           color: colors.text[theme].primary,
         },
         subtitle: baseSubtitle,
@@ -129,7 +129,7 @@ export function getListItemStyles(
           fontSize: typographyVariants.paragraphLSemiBold.fontSize,
           fontWeight: typographyVariants.paragraphLSemiBold.fontWeight,
           lineHeight: typographyVariants.paragraphLSemiBold.lineHeight,
-          letterSpacing: parseFloat(typographyVariants.paragraphLSemiBold.letterSpacing || '0'),
+          letterSpacing: typographyVariants.paragraphLSemiBold.letterSpacing,
           color: colors.text[theme].primary,
         },
         rightSection: {
@@ -157,7 +157,7 @@ export function getListItemStyles(
           fontSize: typographyVariants.paragraphLSemiBold.fontSize,
           fontWeight: typographyVariants.paragraphLSemiBold.fontWeight,
           lineHeight: typographyVariants.paragraphLSemiBold.lineHeight,
-          letterSpacing: parseFloat(typographyVariants.paragraphLSemiBold.letterSpacing || '0'),
+          letterSpacing: typographyVariants.paragraphLSemiBold.letterSpacing,
           color: colors.text[theme].primary,
         },
         subtitle: {
@@ -165,7 +165,7 @@ export function getListItemStyles(
           fontSize: typographyVariants.paragraphSRegular.fontSize,
           fontWeight: typographyVariants.paragraphSRegular.fontWeight,
           lineHeight: typographyVariants.paragraphSRegular.lineHeight,
-          letterSpacing: parseFloat(typographyVariants.paragraphSRegular.letterSpacing || '0'),
+          letterSpacing: typographyVariants.paragraphSRegular.letterSpacing,
           color: colors.text[theme].secondary,
         },
         description: baseDescription,
@@ -188,7 +188,7 @@ export function getListItemStyles(
           fontSize: typographyVariants.paragraphLSemiBold.fontSize,
           fontWeight: typographyVariants.paragraphLSemiBold.fontWeight,
           lineHeight: typographyVariants.paragraphLSemiBold.lineHeight,
-          letterSpacing: parseFloat(typographyVariants.paragraphLSemiBold.letterSpacing || '0'),
+          letterSpacing: typographyVariants.paragraphLSemiBold.letterSpacing,
           color: colors.text[theme].primary,
         },
         description: baseDescription,
@@ -210,7 +210,7 @@ export function getListItemStyles(
           fontSize: typographyVariants.paragraphLSemiBold.fontSize,
           fontWeight: typographyVariants.paragraphLSemiBold.fontWeight,
           lineHeight: typographyVariants.paragraphLSemiBold.lineHeight,
-          letterSpacing: parseFloat(typographyVariants.paragraphLSemiBold.letterSpacing || '0'),
+          letterSpacing: typographyVariants.paragraphLSemiBold.letterSpacing,
           color: colors.text[theme].primary,
         },
         description: baseDescription,
@@ -232,7 +232,7 @@ export function getListItemStyles(
           fontSize: typographyVariants.paragraphSSemiBold.fontSize,
           fontWeight: typographyVariants.paragraphSSemiBold.fontWeight,
           lineHeight: typographyVariants.paragraphSSemiBold.lineHeight,
-          letterSpacing: parseFloat(typographyVariants.paragraphSSemiBold.letterSpacing || '0'),
+          letterSpacing: typographyVariants.paragraphSSemiBold.letterSpacing,
           color: colors.text[theme].primary,
         },
         metadata: baseMetadata,
@@ -254,7 +254,7 @@ export function getListItemStyles(
           fontSize: typographyVariants.paragraphMMedium.fontSize,
           fontWeight: typographyVariants.paragraphMMedium.fontWeight,
           lineHeight: typographyVariants.paragraphMMedium.lineHeight,
-          letterSpacing: parseFloat(typographyVariants.paragraphMMedium.letterSpacing || '0'),
+          letterSpacing: typographyVariants.paragraphMMedium.letterSpacing,
           color: colors.text[theme].primary,
         },
         subtitle: baseSubtitle,
@@ -276,7 +276,7 @@ export function getListItemStyles(
           fontSize: typographyVariants.paragraphMMedium.fontSize,
           fontWeight: typographyVariants.paragraphMMedium.fontWeight,
           lineHeight: typographyVariants.paragraphMMedium.lineHeight,
-          letterSpacing: parseFloat(typographyVariants.paragraphMMedium.letterSpacing || '0'),
+          letterSpacing: typographyVariants.paragraphMMedium.letterSpacing,
           color: colors.text[theme].primary,
         },
         subtitle: baseSubtitle,
@@ -300,7 +300,7 @@ export function getListItemStyles(
           fontSize: typographyVariants.paragraphSMedium.fontSize,
           fontWeight: typographyVariants.paragraphSMedium.fontWeight,
           lineHeight: typographyVariants.paragraphSMedium.lineHeight,
-          letterSpacing: parseFloat(typographyVariants.paragraphSMedium.letterSpacing || '0'),
+          letterSpacing: typographyVariants.paragraphSMedium.letterSpacing,
           color: colors.text[theme].tertiary,
         },
         subtitle: {
@@ -308,7 +308,7 @@ export function getListItemStyles(
           fontSize: typographyVariants.paragraphSMedium.fontSize,
           fontWeight: typographyVariants.paragraphSMedium.fontWeight,
           lineHeight: typographyVariants.paragraphSMedium.lineHeight,
-          letterSpacing: parseFloat(typographyVariants.paragraphSMedium.letterSpacing || '0'),
+          letterSpacing: typographyVariants.paragraphSMedium.letterSpacing,
           color: colors.text[theme].primary,
         },
       }
@@ -329,7 +329,7 @@ export function getListItemStyles(
           fontSize: typographyVariants.paragraphSMedium.fontSize,
           fontWeight: typographyVariants.paragraphSMedium.fontWeight,
           lineHeight: typographyVariants.paragraphSMedium.lineHeight,
-          letterSpacing: parseFloat(typographyVariants.paragraphSMedium.letterSpacing || '0'),
+          letterSpacing: typographyVariants.paragraphSMedium.letterSpacing,
           color: colors.text[theme].primary,
         },
         rightSection: {
