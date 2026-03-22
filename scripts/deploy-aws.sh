@@ -66,7 +66,13 @@ AWS_PROFILE="${AWS_PROFILE:-scaffald}"
 AWS_REGION="${AWS_REGION:-us-east-1}"
 _DEFAULT_BUCKET="$([ "$ENV" = "production" ] && echo "app-scaffald-com" || echo "${ENV}-scaffald-com")"
 BUCKET_NAME="${AWS_S3_BUCKET:-$_DEFAULT_BUCKET}"
-DISTRIBUTION_ID="${AWS_CLOUDFRONT_DISTRIBUTION_ID}"
+# Default distribution IDs (can be overridden via AWS_CLOUDFRONT_DISTRIBUTION_ID)
+case "$ENV" in
+    dev)        _DEFAULT_DIST_ID="E1LG9TCV0OTUY1" ;;
+    preview)    _DEFAULT_DIST_ID="E1YYVZYC1XER5O" ;;
+    production) _DEFAULT_DIST_ID="E22499AF1OBX1Y" ;;
+esac
+DISTRIBUTION_ID="${AWS_CLOUDFRONT_DISTRIBUTION_ID:-$_DEFAULT_DIST_ID}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 BUILD_DIR="$PROJECT_ROOT/apps/scaffald/dist"

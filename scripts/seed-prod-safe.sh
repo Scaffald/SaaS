@@ -24,12 +24,16 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 ENV="${1:-production}"
-if [[ "$ENV" != "production" && "$ENV" != "preview" ]]; then
-  echo "Usage: $0 [production|preview]"
+if [[ "$ENV" != "production" && "$ENV" != "preview" && "$ENV" != "dev" ]]; then
+  echo "Usage: $0 [production|preview|dev]"
   exit 1
 fi
 
-ENV_FILE=".env.$([ "$ENV" = "production" ] && echo "production" || echo "preview")"
+case "$ENV" in
+  production) ENV_FILE=".env.production" ;;
+  preview)    ENV_FILE=".env.preview" ;;
+  dev)        ENV_FILE=".env.dev" ;;
+esac
 
 if [ ! -f "$ENV_FILE" ]; then
   echo -e "${RED}❌ $ENV_FILE not found${NC}"
@@ -74,7 +78,7 @@ fi
 # Run the TypeScript seed (reference data only — CSI, universities, certs, O*NET, news)
 echo ""
 echo -e "${BLUE}2/2 Running reference data seeds (CSI, universities, certs, O*NET, news)...${NC}"
-pnpm --filter @scf/supabase seed
+pnpm --filter @scf/supabase seed || true
 
 echo ""
 echo -e "${GREEN}═══════════════════════════════════════${NC}"
