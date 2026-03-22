@@ -102,7 +102,7 @@ function AssessmentCard({ card, isFirst }: { card: AssessmentCardData; isFirst: 
       onPress={() => router.push(card.route as never)}
       style={{
         padding: 24,
-        borderRadius: 16,
+        borderRadius: 20,
         minWidth: 240,
         maxWidth: 260,
         backgroundColor: isFeatured ? colors.bg[theme].default : colors.bg[theme].subtle,
@@ -274,9 +274,9 @@ export function AssessmentsCarouselWidget() {
                 setActiveIndex(i)
               }}
               style={{
-                width: 10,
-                height: 10,
-                borderRadius: 5,
+                width: 8,
+                height: 8,
+                borderRadius: 4,
                 backgroundColor:
                   i === activeIndex ? colors.primary[600] : colors.gray[300],
               }}
