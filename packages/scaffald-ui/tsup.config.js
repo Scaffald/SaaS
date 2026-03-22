@@ -8,7 +8,7 @@ module.exports = defineConfig({
     'rich-text-editor': 'src/rich-text-editor.ts',
     maps: 'src/maps.ts',
   },
-  format: ['esm', 'cjs'],
+  format: ['esm'],
   dts: true,
   splitting: false,
   sourcemap: true,
