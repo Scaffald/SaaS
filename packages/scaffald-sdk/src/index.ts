@@ -911,5 +911,27 @@ export type {
   VerifyEvidenceParams,
 } from './resources/skill-analytics.js'
 
+export type {
+  MetricWithSparkline,
+  AnalyticsSummary,
+  GetSummaryParams,
+  EngagementTimelineEntry,
+  GetEngagementTimelineParams,
+  EngagementTimelineResponse,
+  AnalyticsVisitor,
+  GetVisitorsParams,
+  VisitorsResponse,
+  VisibilityTimelineEntry,
+  GetVisibilityTimelineParams,
+  VisibilityTimelineResponse,
+  SearchKeyword,
+  GetSearchKeywordsParams,
+  SearchKeywordsResponse,
+  SearchTimelineEntry,
+  GetSearchTimelineParams,
+  SearchTimelineResponse,
+  TrackImpressionParams,
+} from './resources/analytics.js'
+
 import { Scaffald } from './client.js'
 export default Scaffald

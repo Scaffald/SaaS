@@ -909,7 +909,7 @@ export type {
   SidebarWidgetType,
 } from "./components/Sidebar";
 
-// Crypto Wallet components (stubs — component files not yet created)
+// Crypto Wallet components (temporarily disabled — component files not yet created)
 // export { CryptoWalletLayout } from "./components/CryptoWalletLayout";
 // export type { CryptoWalletLayoutProps, CryptoWalletLayoutVariant } from "./components/CryptoWalletLayout";
 // export { CryptoAssetCard } from "./components/CryptoAssetCard";

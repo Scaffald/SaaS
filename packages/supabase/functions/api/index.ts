@@ -69,6 +69,7 @@ import communitySkillsRouter from './routes/community-skills.ts'
 import communityVerificationRouter from './routes/community-verification.ts'
 import officeCommunitiesRouter from './routes/office-communities.ts'
 import communitySearchRouter from './routes/community-search.ts'
+import analyticsRouter from './routes/analytics.ts'
 import openapi from './openapi.ts'
 import { corsHeaders } from '../_shared/cors.ts'
 import { authMiddleware } from './middleware/auth.ts'
@@ -165,6 +166,7 @@ app.route('/v1/communities/skills', communitySkillsRouter) // Skill taxonomy (se
 app.route('/v1/communities/verification', communityVerificationRouter) // License verification
 app.route('/v1/office/communities', officeCommunitiesRouter) // Office community verification queue
 app.route('/v1/communities/search', communitySearchRouter) // Employer professional search
+app.route('/v1/analytics', analyticsRouter) // Dashboard analytics (engagement, visibility, search)
 
 // OpenAPI documentation
 app.route('/', openapi)
