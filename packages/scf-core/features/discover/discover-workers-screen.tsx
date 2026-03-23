@@ -15,8 +15,8 @@ import { DiscoverWorkersRight } from './discover-workers-right'
  *
  * Search/filter/sort state lives here as the single source of truth.
  * Two UIs control the same state:
- *   - Header: PageHeader with search input + filter pills (all viewports)
- *   - Footer: BottomToolbar with Sheets/ActionSheet (mobile only)
+ *   - Desktop+: PageHeader with search input + filter pills (header)
+ *   - Mobile: BottomToolbar with Sheets/ActionSheet (footer)
  */
 export function DiscoverWorkersScreen() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -119,17 +119,20 @@ export function DiscoverWorkersScreen() {
     />
   ) : null
 
+  // Header — desktop+ only (mobile uses footer instead)
+  const header = isMobile ? null : (
+    <PageHeader
+      searchValue={searchQuery}
+      onSearchChange={setSearchQuery}
+      searchPlaceholder="Search workers, skills, or locations..."
+      searchVariant="pill"
+      filterPills={filterPills}
+      onReset={hasFilters ? handleReset : undefined}
+    />
+  )
+
   return {
-    header: (
-      <PageHeader
-        searchValue={searchQuery}
-        onSearchChange={setSearchQuery}
-        searchPlaceholder="Search workers, skills, or locations..."
-        searchVariant="pill"
-        filterPills={filterPills}
-        onReset={hasFilters ? handleReset : undefined}
-      />
-    ),
+    header,
     left: (
       <DiscoverWorkersLeft
         searchQuery={debouncedSearch}

@@ -1,14 +1,16 @@
 import { useState, useCallback } from 'react'
-import { Tabs, Text, Stack, useThemeContext } from '@scaffald/ui'
+import { Tabs, Text, Stack, useThemeContext, useResponsive } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { PageHeader } from '@scf/core/components/PageHeader'
+import type { FilterPillConfig } from '@scf/core/components/PageHeader'
 import { SortDropdown } from '@scf/core/features/discover/components/SortDropdown'
+import { CommunitiesBottomToolbar } from './CommunitiesBottomToolbar'
+import type { CommunitySortBy } from './CommunitiesBottomToolbar'
 import { AllCommunitiesList } from './components/AllCommunitiesList'
 import { MyCommunitiesList } from './components/MyCommunitiesList'
 
 type TabValue = 'all' | 'my'
-type SortValue = 'most_active' | 'name' | 'newest'
 
 const sortOptions = [
   { value: 'most_active', label: 'Most Active' },
@@ -16,12 +18,19 @@ const sortOptions = [
   { value: 'newest', label: 'Newest' },
 ]
 
+const SORT_LABEL_MAP: Record<CommunitySortBy, string> = {
+  most_active: 'Most Active',
+  name: 'Name (A–Z)',
+  newest: 'Newest',
+}
+
 export function CommunitiesHubPage() {
   const { theme } = useThemeContext()
+  const { isMobile } = useResponsive()
   const t = theme === 'dark' ? 'dark' : 'light'
   const [activeTab, setActiveTab] = useState<TabValue>('all')
   const [searchQuery, setSearchQuery] = useState('')
-  const [sortBy, setSortBy] = useState<SortValue>('most_active')
+  const [sortBy, setSortBy] = useState<CommunitySortBy>('most_active')
   const [resultCount, setResultCount] = useState<number | undefined>(undefined)
 
   const debouncedSearch = useDebounce(searchQuery, 300)
@@ -37,6 +46,18 @@ export function CommunitiesHubPage() {
     setResultCount(count)
   }, [])
 
+  // Filter pills for desktop header
+  const filterPills: FilterPillConfig[] = []
+  if (sortBy !== 'most_active') {
+    filterPills.push({
+      id: 'sort',
+      label: 'Sort',
+      value: SORT_LABEL_MAP[sortBy],
+      isActive: true,
+      onPress: () => {},
+    })
+  }
+
   return (
     <Stack gap={16}>
       <Stack gap={4}>
@@ -46,20 +67,25 @@ export function CommunitiesHubPage() {
         </Text>
       </Stack>
 
-      <PageHeader
-        searchValue={searchQuery}
-        onSearchChange={setSearchQuery}
-        searchPlaceholder="Search communities..."
-        resultCount={resultCount}
-        resultLabel={resultCount === 1 ? 'Community' : 'Communities'}
-        onReset={hasFilters ? handleReset : undefined}
-      >
-        <SortDropdown
-          value={sortBy}
-          onChange={(v) => setSortBy(v as SortValue)}
-          options={sortOptions}
-        />
-      </PageHeader>
+      {/* Desktop: header with search + sort pill */}
+      {!isMobile && (
+        <PageHeader
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
+          searchPlaceholder="Search communities..."
+          searchVariant="pill"
+          filterPills={filterPills}
+          resultCount={resultCount}
+          resultLabel={resultCount === 1 ? 'Community' : 'Communities'}
+          onReset={hasFilters ? handleReset : undefined}
+        >
+          <SortDropdown
+            value={sortBy}
+            onChange={(v) => setSortBy(v as CommunitySortBy)}
+            options={sortOptions}
+          />
+        </PageHeader>
+      )}
 
       <Tabs
         value={activeTab}
@@ -91,6 +117,18 @@ export function CommunitiesHubPage() {
           </Tabs.Content>
         </Tabs.Item>
       </Tabs>
+
+      {/* Mobile: bottom toolbar for search + sort */}
+      {isMobile && (
+        <CommunitiesBottomToolbar
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+          hasFilters={hasFilters}
+          onReset={handleReset}
+        />
+      )}
     </Stack>
   )
 }

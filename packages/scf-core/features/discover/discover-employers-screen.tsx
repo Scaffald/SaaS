@@ -1,7 +1,10 @@
 import { useEmployers } from '@scf/core/utils/employers-sdk-hooks'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { useMemo, useState } from 'react'
+import { useResponsive } from '@scaffald/ui'
 import { PageHeader } from '@scf/core/components/PageHeader'
+import type { FilterPillConfig } from '@scf/core/components/PageHeader'
+import { EmployersBottomToolbar } from './components/EmployersBottomToolbar'
 import { DiscoverEmployersLeft } from './discover-employers-left'
 import { DiscoverEmployersRight } from './discover-employers-right'
 import { getAvailableIndustries, getSelectedIndustryCounts } from './utils/employerFilters'
@@ -33,12 +36,17 @@ function transformEmployerRecord(record: unknown): Employer | unknown {
 
 /**
  * Discover Employers Screen Component
- * Main screen for employer discovery with search/filter on right and employer list on left
+ *
+ * Search/filter state lives here as the single source of truth.
+ *   - Desktop+: PageHeader with search + filter pills (header)
+ *   - Mobile: BottomToolbar with Sheets (footer)
  */
 export function DiscoverEmployersScreen() {
   const [searchQuery, setSearchQuery] = useState('')
   const debouncedSearch = useDebounce(searchQuery, 300)
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
+
+  const { isMobile } = useResponsive()
 
   // Fetch all employers (no filters) to build industry name-to-ID mapping
   // React Query will cache this, so it won't cause duplicate requests
@@ -117,17 +125,54 @@ export function DiscoverEmployersScreen() {
 
   const hasActiveFilters = searchQuery.length > 0 || selectedIndustries.length > 0
 
+  // Filter pills for desktop header
+  const filterPills = useMemo<FilterPillConfig[]>(() => {
+    const pills: FilterPillConfig[] = []
+
+    pills.push({
+      id: 'industry',
+      label: 'Industry',
+      value: selectedIndustries.length > 0
+        ? selectedIndustries.length === 1
+          ? selectedIndustries[0]
+          : `${selectedIndustries.length} selected`
+        : undefined,
+      isActive: selectedIndustries.length > 0,
+      onPress: () => {},
+    })
+
+    return pills
+  }, [selectedIndustries])
+
+  // Header — desktop+ only
+  const header = isMobile ? null : (
+    <PageHeader
+      searchValue={searchQuery}
+      onSearchChange={setSearchQuery}
+      searchPlaceholder="Search employers..."
+      searchVariant="pill"
+      filterPills={filterPills}
+      resultCount={employers.length}
+      resultLabel={employers.length === 1 ? 'Employer' : 'Employers'}
+      onReset={hasActiveFilters ? handleClearFilters : undefined}
+    />
+  )
+
+  // Footer — mobile only
+  const footer = isMobile ? (
+    <EmployersBottomToolbar
+      searchValue={searchQuery}
+      onSearchChange={setSearchQuery}
+      selectedIndustries={selectedIndustries}
+      onIndustriesChange={setSelectedIndustries}
+      availableIndustries={availableIndustries}
+      hasFilters={hasActiveFilters}
+      onReset={handleClearFilters}
+    />
+  ) : null
+
   return {
-    header: (
-      <PageHeader
-        searchValue={searchQuery}
-        onSearchChange={setSearchQuery}
-        searchPlaceholder="Search employers..."
-        resultCount={employers.length}
-        resultLabel={employers.length === 1 ? 'Employer' : 'Employers'}
-        onReset={hasActiveFilters ? handleClearFilters : undefined}
-      />
-    ),
+    header,
     left: (
       <DiscoverEmployersLeft
         employers={employers}
@@ -145,5 +190,6 @@ export function DiscoverEmployersScreen() {
         onClearFilters={handleClearFilters}
       />
     ),
+    footer,
   }
 }
