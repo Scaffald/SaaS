@@ -2,6 +2,7 @@ const path = require('path')
 
 const APP_ENV = process.env.APP_ENV || process.env.NODE_ENV || 'development'
 const ENV_FILE_MAP = {
+  dev: '.env.dev',
   preview: '.env.preview',
   production: '.env.production',
   staging: '.env.staging',

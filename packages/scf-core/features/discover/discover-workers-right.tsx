@@ -1,244 +1,309 @@
-import { Award, BadgeCheck, X } from 'lucide-react-native'
-import { useState } from 'react'
+import { Users, TrendingUp } from 'lucide-react-native'
+import { View } from 'react-native'
 import {
-  Button,
-  Input,
-  RangeSlider,
+  Card,
   Row,
   ScrollView,
-  Separator,
   Stack,
   Text,
-  getIconSize,
   useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import { SearchFilterWidget } from './components/SearchFilterWidget'
-
-interface DiscoverWorkersRightProps {
-  searchQuery: string
-  onClearSearch: () => void
-  onIndustriesChange: (industries: string[]) => void
-  minScore: number
-  onMinScoreChange: (score: number) => void
-  selectedSkills: string[]
-  onSkillsChange: (skills: string[]) => void
-  selectedCertifications: string[]
-  onCertificationsChange: (certifications: string[]) => void
-}
 
 /**
- * Discover Workers Right Component
- * Right panel content for the workers discovery page - displays filters
+ * Discover Workers Right Panel — Sidebar widgets
+ * Shows insights, top trades distribution, and community hub.
+ * All search/filter functionality is handled by the PageHeader.
  */
-export function DiscoverWorkersRight({
-  searchQuery,
-  onClearSearch,
-  onIndustriesChange,
-  minScore,
-  onMinScoreChange,
-  selectedSkills,
-  onSkillsChange,
-  selectedCertifications,
-  onCertificationsChange,
-}: DiscoverWorkersRightProps) {
+export function DiscoverWorkersRight() {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
-  const [skillInput, setSkillInput] = useState('')
-  const [certificationInput, setCertificationInput] = useState('')
-
-  const handleAddSkill = () => {
-    if (skillInput.trim() && !selectedSkills.includes(skillInput.trim())) {
-      onSkillsChange([...selectedSkills, skillInput.trim()])
-      setSkillInput('')
-    }
-  }
-
-  const handleRemoveSkill = (skill: string) => {
-    onSkillsChange(selectedSkills.filter((s) => s !== skill))
-  }
-
-  const handleAddCertification = () => {
-    if (certificationInput.trim() && !selectedCertifications.includes(certificationInput.trim())) {
-      onCertificationsChange([...selectedCertifications, certificationInput.trim()])
-      setCertificationInput('')
-    }
-  }
-
-  const handleRemoveCertification = (cert: string) => {
-    onCertificationsChange(selectedCertifications.filter((c) => c !== cert))
-  }
-
-  const handleClearFilters = () => {
-    onClearSearch()
-    setSkillInput('')
-    setCertificationInput('')
-    onIndustriesChange([])
-    onMinScoreChange(0)
-    onSkillsChange([])
-    onCertificationsChange([])
-  }
-
-  const hasActiveFilters =
-    searchQuery.length > 0 ||
-    minScore > 0 ||
-    selectedSkills.length > 0 ||
-    selectedCertifications.length > 0
-
-  // Custom active filters content
-  const activeFiltersContent = (
-    <Stack gap={8}>
-      {searchQuery && (
-        <Row gap={8} align="center">
-          <Text color={colors.text[t].secondary}>Search:</Text>
-          <Text color={t === 'dark' ? colors.blue[300] : colors.blue[600]}>{searchQuery}</Text>
-        </Row>
-      )}
-      {minScore > 0 && (
-        <Row gap={8} align="center">
-          <Text color={colors.text[t].secondary}>Min Score:</Text>
-          <Text color={t === 'dark' ? colors.blue[300] : colors.blue[600]}>{minScore}</Text>
-        </Row>
-      )}
-      {selectedSkills.length > 0 && (
-        <Row gap={8} align="center" wrap>
-          <Text color={colors.text[t].secondary}>Skills:</Text>
-          <Text color={t === 'dark' ? colors.blue[300] : colors.blue[600]}>{selectedSkills.length}</Text>
-        </Row>
-      )}
-      {selectedCertifications.length > 0 && (
-        <Row gap={8} align="center" wrap>
-          <Text color={colors.text[t].secondary}>Certs:</Text>
-          <Text color={t === 'dark' ? colors.green[300] : colors.green[600]}>{selectedCertifications.length}</Text>
-        </Row>
-      )}
-    </Stack>
-  )
 
   return (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-      <Stack gap={16} padding="md">
-        <SearchFilterWidget
-          title="Filters"
-          subtitle="Find skilled workers for your projects"
-          searchQuery={searchQuery}
-          onSearchChange={() => {}}
-          showSearch={false}
-          hasActiveFilters={hasActiveFilters}
-          onClearFilters={handleClearFilters}
-          wrapped={false}
-          activeFiltersContent={activeFiltersContent}
-        >
-          <Separator />
+      <Stack gap={20} padding="md">
+        {/* Worker Growth Widget */}
+        <WorkerGrowthWidget theme={t} />
 
-          {/* Scaffald Score Filter */}
-          <Stack gap={12}>
-            <Row justify="space-between" align="center">
-              <Text color="secondary">Scaffald Score</Text>
-              <Text color="primary">{minScore}</Text>
-            </Row>
-            <RangeSlider
-              value={minScore}
-              onValueChange={onMinScoreChange}
-              min={0}
-              max={100}
-              step={5}
-            />
-          </Stack>
+        {/* Top Trades Widget */}
+        <TopTradesWidget theme={t} />
 
-          <Separator />
-
-          {/* Skills Filter */}
-          <Stack gap={12}>
-            <Row align="center" gap={8}>
-              <Award size={getIconSize('md')} color={colors.text[t].secondary} />
-              <Text color={colors.text[t].secondary}>Skills</Text>
-            </Row>
-
-            <Row gap={8}>
-              <Input
-                style={{ flex: 1 }}
-                placeholder="Add skill..."
-                value={skillInput}
-                onChangeText={setSkillInput}
-                onSubmitEditing={handleAddSkill}
-              />
-              <Button size="sm" onPress={handleAddSkill} disabled={!skillInput.trim()}>
-                Add
-              </Button>
-            </Row>
-
-            {selectedSkills.length > 0 && (
-              <Row gap={8} wrap>
-                {selectedSkills.map((skill) => (
-                  <Row
-                    key={skill}
-                    backgroundColor={colors.bg[t].muted}
-                    paddingHorizontal={8}
-                    paddingVertical={4}
-                    borderRadius={12}
-                    gap={4}
-                    align="center"
-                  >
-                    <Text color={t === 'dark' ? colors.blue[300] : colors.blue[600]}>{skill}</Text>
-                    <Button size="sm" variant="text" onPress={() => handleRemoveSkill(skill)}>
-                      <X size={16} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
-                    </Button>
-                  </Row>
-                ))}
-              </Row>
-            )}
-          </Stack>
-
-          <Separator />
-
-          {/* Certifications Filter */}
-          <Stack gap={12}>
-            <Row align="center" gap={8}>
-              <BadgeCheck size={getIconSize('md')} color={colors.text[t].secondary} />
-              <Text color={colors.text[t].secondary}>Certifications</Text>
-            </Row>
-
-            <Row gap={8}>
-              <Input
-                style={{ flex: 1 }}
-                placeholder="Add certification..."
-                value={certificationInput}
-                onChangeText={setCertificationInput}
-                onSubmitEditing={handleAddCertification}
-              />
-              <Button
-                size="sm"
-                onPress={handleAddCertification}
-                disabled={!certificationInput.trim()}
-              >
-                Add
-              </Button>
-            </Row>
-
-            {selectedCertifications.length > 0 && (
-              <Row gap={8} wrap>
-                {selectedCertifications.map((cert) => (
-                  <Row
-                    key={cert}
-                    backgroundColor={colors.bg[t].muted}
-                    paddingHorizontal={8}
-                    paddingVertical={4}
-                    borderRadius={12}
-                    gap={4}
-                    align="center"
-                  >
-                    <Text color={t === 'dark' ? colors.green[300] : colors.green[600]}>{cert}</Text>
-                    <Button size="sm" variant="text" onPress={() => handleRemoveCertification(cert)}>
-                      <X size={16} color={t === 'dark' ? colors.green[300] : colors.green[600]} />
-                    </Button>
-                  </Row>
-                ))}
-              </Row>
-            )}
-          </Stack>
-        </SearchFilterWidget>
+        {/* Community Hub Widget */}
+        <CommunityHubWidget theme={t} />
       </Stack>
     </ScrollView>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Worker Growth Widget
+// ---------------------------------------------------------------------------
+
+function WorkerGrowthWidget({ theme }: { theme: 'light' | 'dark' }) {
+  return (
+    <Card variant="glass" glassMaterial="thin" padding="lg" radius="xl">
+      <Stack gap={12}>
+        <Row justify="space-between" align="center">
+          <Text
+            style={{
+              fontWeight: '700',
+              fontSize: 14,
+              color: colors.text[theme].primary,
+            }}
+          >
+            Worker Growth
+          </Text>
+          <TrendingUp size={18} color={colors.text[theme].secondary} />
+        </Row>
+
+        <Stack gap={2}>
+          <Text
+            style={{
+              fontWeight: '800',
+              fontSize: 28,
+              color: colors.text[theme].primary,
+              letterSpacing: -0.5,
+            }}
+          >
+            124
+          </Text>
+          <Text
+            style={{
+              fontSize: 12,
+              fontWeight: '500',
+              color: colors.text[theme].tertiary,
+            }}
+          >
+            New Signups (Last 30 Days)
+          </Text>
+        </Stack>
+
+        {/* Trend line placeholder */}
+        <View
+          style={{
+            height: 48,
+            width: '100%',
+            marginTop: 4,
+            borderRadius: 8,
+            backgroundColor: theme === 'dark'
+              ? 'rgba(79, 100, 91, 0.1)'
+              : 'rgba(79, 100, 91, 0.05)',
+          }}
+        />
+      </Stack>
+    </Card>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Top Trades Widget
+// ---------------------------------------------------------------------------
+
+const TOP_TRADES = [
+  { name: 'Structural Mason', percentage: 42 },
+  { name: 'LEED Specialist', percentage: 28 },
+  { name: 'Master Electrician', percentage: 18 },
+  { name: 'Safety Lead', percentage: 12 },
+]
+
+function TopTradesWidget({ theme }: { theme: 'light' | 'dark' }) {
+  const barBg = theme === 'dark' ? colors.gray[700] : 'rgba(214, 211, 205, 0.4)'
+  const barFill = theme === 'dark' ? colors.green[400] : '#4f645b'
+
+  return (
+    <Card variant="glass" glassMaterial="thin" padding="lg" radius="xl">
+      <Stack gap={16}>
+        <Text
+          style={{
+            fontWeight: '700',
+            fontSize: 14,
+            color: colors.text[theme].primary,
+          }}
+        >
+          Top Trades
+        </Text>
+
+        <Stack gap={14}>
+          {TOP_TRADES.map((trade) => (
+            <Stack key={trade.name} gap={6}>
+              <Row justify="space-between" align="center">
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontWeight: '600',
+                    color: colors.text[theme].primary,
+                  }}
+                >
+                  {trade.name}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontWeight: '600',
+                    color: colors.text[theme].secondary,
+                  }}
+                >
+                  {trade.percentage}%
+                </Text>
+              </Row>
+              <View
+                style={{
+                  height: 6,
+                  width: '100%',
+                  borderRadius: 9999,
+                  backgroundColor: barBg,
+                  overflow: 'hidden',
+                }}
+              >
+                <View
+                  style={{
+                    height: '100%',
+                    width: `${trade.percentage}%`,
+                    borderRadius: 9999,
+                    backgroundColor: barFill,
+                  }}
+                />
+              </View>
+            </Stack>
+          ))}
+        </Stack>
+      </Stack>
+    </Card>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Community Hub Widget
+// ---------------------------------------------------------------------------
+
+const SUGGESTED_CONTACTS = [
+  { name: 'Julian Voss', role: 'Arch. Planner' },
+  { name: 'Lana Dre', role: 'Sustainability' },
+]
+
+function CommunityHubWidget({ theme }: { theme: 'light' | 'dark' }) {
+  return (
+    <Card variant="glass" glassMaterial="thin" padding="lg" radius="xl">
+      <Stack gap={16}>
+        <Row gap={8} align="center">
+          <Users size={16} color={colors.text[theme].secondary} />
+          <Text
+            style={{
+              fontWeight: '700',
+              fontSize: 14,
+              color: colors.text[theme].primary,
+            }}
+          >
+            Community Hub
+          </Text>
+        </Row>
+
+        {/* Growth Tip Card */}
+        <View
+          style={{
+            backgroundColor: theme === 'dark'
+              ? colors.bg.dark.subtle
+              : colors.bg.light.subtle,
+            padding: 14,
+            borderRadius: 12,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 10,
+              fontWeight: '700',
+              textTransform: 'uppercase',
+              letterSpacing: 1.2,
+              color: colors.text[theme].secondary,
+              marginBottom: 4,
+            }}
+          >
+            Growth Tip
+          </Text>
+          <Text
+            style={{
+              fontSize: 12,
+              fontWeight: '500',
+              lineHeight: 18,
+              color: colors.text[theme].primary,
+            }}
+          >
+            Prioritize organic material sourcing to increase your sustainability
+            score by up to 15%.
+          </Text>
+        </View>
+
+        {/* Suggested Contacts */}
+        <Stack gap={10}>
+          <Text
+            style={{
+              fontSize: 11,
+              fontWeight: '700',
+              textTransform: 'uppercase',
+              letterSpacing: 1,
+              color: colors.text[theme].tertiary,
+            }}
+          >
+            Suggested Contacts
+          </Text>
+          {SUGGESTED_CONTACTS.map((contact) => (
+            <Row key={contact.name} justify="space-between" align="center">
+              <Row gap={10} align="center">
+                <View
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 16,
+                    backgroundColor: theme === 'dark'
+                      ? colors.gray[700]
+                      : colors.gray[200],
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: '600',
+                      color: colors.text[theme].secondary,
+                    }}
+                  >
+                    {contact.name.charAt(0)}
+                  </Text>
+                </View>
+                <Stack gap={1}>
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: '700',
+                      color: colors.text[theme].primary,
+                    }}
+                  >
+                    {contact.name}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 10,
+                      color: colors.text[theme].tertiary,
+                    }}
+                  >
+                    {contact.role}
+                  </Text>
+                </Stack>
+              </Row>
+              <Text
+                style={{
+                  fontSize: 10,
+                  fontWeight: '700',
+                  color: colors.text[theme].secondary,
+                }}
+              >
+                Connect
+              </Text>
+            </Row>
+          ))}
+        </Stack>
+      </Stack>
+    </Card>
   )
 }

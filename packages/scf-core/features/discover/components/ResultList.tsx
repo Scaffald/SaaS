@@ -3,6 +3,8 @@ import { Search } from 'lucide-react-native'
 import { forwardRef, memo, useImperativeHandle, useMemo, useRef } from 'react'
 import { Platform } from 'react-native'
 import { ScrollView, Stack } from '@scaffald/ui'
+import { DirectoryCard } from '@scf/core/components/DirectoryCard'
+import type { DirectoryCardBadge, DirectoryCardMetric } from '@scf/core/components/DirectoryCard'
 import type { JobMapPin } from '../hooks/useJobs'
 import type { OrganizationMapPin } from '../hooks/useOrganizations'
 import type { TalentProfile } from '../types'
@@ -26,6 +28,40 @@ type ResultListProps = {
   onRetry?: () => void
   /** Called when a card is hovered (web only). Pass null on hover end. */
   onCardHover?: (id: string | null) => void
+  /**
+   * Card style for profile items.
+   * - 'compact' = small ProfileCard (map rail, default)
+   * - 'directory' = full DirectoryCard with metrics/badges (directory page)
+   * @default 'compact'
+   */
+  profileCardVariant?: 'compact' | 'directory'
+}
+
+/** Map TalentProfile → DirectoryCard props */
+function profileToDirectoryProps(profile: TalentProfile) {
+  const metrics: DirectoryCardMetric[] = []
+  if (profile.score > 0) metrics.push({ value: profile.score, label: 'Score' })
+  if (profile.experienceYears > 0)
+    metrics.push({
+      value: `${profile.experienceYears} ${profile.experienceYears === 1 ? 'year' : 'years'}`,
+      label: 'Experience',
+    })
+  if (profile.hourlyRate > 0) metrics.push({ value: `$${profile.hourlyRate}`, label: 'Rate' })
+
+  const badges: DirectoryCardBadge[] = [
+    ...profile.certifications.map((cert) => ({
+      id: `cert-${cert}`,
+      label: cert,
+      color: 'primary' as const,
+    })),
+    ...profile.skills.map((skill) => ({
+      id: `skill-${skill}`,
+      label: skill,
+      color: 'accent' as const,
+    })),
+  ]
+
+  return { metrics, badges }
 }
 
 export interface ResultListRef {
@@ -34,7 +70,7 @@ export interface ResultListRef {
 
 const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
   (
-    { profiles, organizations = [], jobs = [], selectedId, onSelect, isLoading, error, onRetry, onCardHover },
+    { profiles, organizations = [], jobs = [], selectedId, onSelect, isLoading, error, onRetry, onCardHover, profileCardVariant = 'compact' },
     ref
   ) => {
     const scrollViewRef = useRef<ScrollView>(null)
@@ -177,12 +213,31 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
                   onMouseLeave={Platform.OS === 'web' && onCardHover ? () => onCardHover(null) : undefined}
                 >
                   {result.type === 'profile' ? (
-                    <ResultCard
-                      ref={(ref) => registerCardRef(result.id, ref)}
-                      profile={result}
-                      isSelected={result.id === selectedId}
-                      onSelect={onSelect}
-                    />
+                    profileCardVariant === 'directory' ? (
+                      (() => {
+                        const { metrics, badges } = profileToDirectoryProps(result)
+                        return (
+                          <DirectoryCard
+                            id={result.id}
+                            name={result.name}
+                            role={result.title}
+                            location={result.locationLabel}
+                            avatarUrl={result.avatarUrl}
+                            badges={badges}
+                            metrics={metrics}
+                            isSelected={result.id === selectedId}
+                            onPress={onSelect}
+                          />
+                        )
+                      })()
+                    ) : (
+                      <ResultCard
+                        ref={(ref) => registerCardRef(result.id, ref)}
+                        profile={result}
+                        isSelected={result.id === selectedId}
+                        onSelect={onSelect}
+                      />
+                    )
                   ) : result.type === 'organization' ? (
                     <OrganizationCard
                       ref={(ref) => registerCardRef(result.id, ref)}

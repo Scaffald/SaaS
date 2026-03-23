@@ -38,7 +38,7 @@ case "$MODE" in
     echo "  Skipping Docker — using remote sandbox database"
     echo ""
     echo "  Starting app..."
-    dotenv -e .env.dev -- pnpm dev
+    APP_ENV=dev dotenv -e .env.dev -- pnpm dev
     ;;
   *)
     echo "Usage: ./scripts/dev.sh [--local|--remote]"

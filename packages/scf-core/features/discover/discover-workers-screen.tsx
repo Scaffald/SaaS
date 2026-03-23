@@ -1,22 +1,34 @@
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
+import { Row, Stack, Text, RangeSlider, useThemeContext, useResponsive } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { PageHeader } from '@scf/core/components/PageHeader'
+import type { FilterPillConfig } from '@scf/core/components/PageHeader'
 import type { ResultListRef } from './components/ResultList'
+import { WorkersBottomToolbar } from './components/WorkersBottomToolbar'
+import type { WorkerSortBy } from './components/WorkersBottomToolbar'
 import { DiscoverWorkersLeft } from './discover-workers-left'
 import { DiscoverWorkersRight } from './discover-workers-right'
 
 /**
  * Discover Workers Screen Component
- * Main screen for worker discovery with search/filter on right and worker list on left
+ *
+ * Search/filter/sort state lives here as the single source of truth.
+ * Two UIs control the same state:
+ *   - Header: PageHeader with search input + filter pills (all viewports)
+ *   - Footer: BottomToolbar with Sheets/ActionSheet (mobile only)
  */
 export function DiscoverWorkersScreen() {
   const [searchQuery, setSearchQuery] = useState('')
   const debouncedSearch = useDebounce(searchQuery, 300)
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
   const [minScore, setMinScore] = useState(0)
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([])
-  const [selectedCertifications, setSelectedCertifications] = useState<string[]>([])
+  const [sortBy, setSortBy] = useState<WorkerSortBy>('score')
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
+
+  const { theme } = useThemeContext()
+  const { isMobile } = useResponsive()
+  const t = theme === 'dark' ? 'dark' : 'light'
 
   const resultListRef = useRef<ResultListRef>(null)
 
@@ -31,23 +43,90 @@ export function DiscoverWorkersScreen() {
     setSearchQuery('')
     setSelectedIndustries([])
     setMinScore(0)
-    setSelectedSkills([])
-    setSelectedCertifications([])
+    setSortBy('score')
   }
 
   const hasFilters =
     searchQuery.length > 0 ||
     selectedIndustries.length > 0 ||
-    minScore > 0 ||
-    selectedSkills.length > 0 ||
-    selectedCertifications.length > 0
+    minScore > 0
+
+  // Min Score popover content (for header pill on desktop)
+  const scorePopoverContent = useMemo(
+    () => (
+      <Stack style={{ minWidth: 220, paddingVertical: 4, paddingHorizontal: 4 }} gap={12}>
+        <Row justify="space-between" align="center">
+          <Text style={{ fontSize: 13, fontWeight: '600', color: colors.text[t].primary }}>
+            Min Score
+          </Text>
+          <Text style={{ fontSize: 13, fontWeight: '700', color: colors.text[t].primary }}>
+            {minScore}
+          </Text>
+        </Row>
+        <RangeSlider
+          value={minScore}
+          onValueChange={setMinScore}
+          min={0}
+          max={100}
+          step={5}
+        />
+      </Stack>
+    ),
+    [minScore, t]
+  )
+
+  // Build filter pills for the header bar
+  const filterPills = useMemo<FilterPillConfig[]>(() => {
+    const pills: FilterPillConfig[] = []
+
+    pills.push({
+      id: 'industry',
+      label: 'Trade',
+      value: selectedIndustries.length > 0
+        ? selectedIndustries.length === 1
+          ? selectedIndustries[0]
+          : `${selectedIndustries.length} selected`
+        : undefined,
+      isActive: selectedIndustries.length > 0,
+      onPress: () => {},
+    })
+
+    pills.push({
+      id: 'score',
+      label: 'Min Score',
+      value: minScore > 0 ? `${minScore}+` : undefined,
+      isActive: minScore > 0,
+      onPress: () => {},
+      popoverContent: scorePopoverContent,
+    })
+
+    return pills
+  }, [selectedIndustries, minScore, scorePopoverContent])
+
+  // Footer — mobile only
+  const footer = isMobile ? (
+    <WorkersBottomToolbar
+      searchValue={searchQuery}
+      onSearchChange={setSearchQuery}
+      selectedIndustries={selectedIndustries}
+      onIndustriesChange={setSelectedIndustries}
+      minScore={minScore}
+      onMinScoreChange={setMinScore}
+      sortBy={sortBy}
+      onSortChange={setSortBy}
+      hasFilters={hasFilters}
+      onReset={handleReset}
+    />
+  ) : null
 
   return {
     header: (
       <PageHeader
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
-        searchPlaceholder="Search by name, title, or location..."
+        searchPlaceholder="Search workers, skills, or locations..."
+        searchVariant="pill"
+        filterPills={filterPills}
         onReset={hasFilters ? handleReset : undefined}
       />
     ),
@@ -56,25 +135,15 @@ export function DiscoverWorkersScreen() {
         searchQuery={debouncedSearch}
         selectedIndustries={selectedIndustries}
         minScore={minScore}
-        selectedSkills={selectedSkills}
-        selectedCertifications={selectedCertifications}
+        selectedSkills={[]}
+        selectedCertifications={[]}
         selectedProfileId={selectedProfileId}
         onSelect={handleSelect}
         resultListRef={resultListRef}
+        sortBy={sortBy}
       />
     ),
-    right: (
-      <DiscoverWorkersRight
-        searchQuery={searchQuery}
-        onClearSearch={() => setSearchQuery('')}
-        onIndustriesChange={setSelectedIndustries}
-        minScore={minScore}
-        onMinScoreChange={setMinScore}
-        selectedSkills={selectedSkills}
-        onSkillsChange={setSelectedSkills}
-        selectedCertifications={selectedCertifications}
-        onCertificationsChange={setSelectedCertifications}
-      />
-    ),
+    right: <DiscoverWorkersRight />,
+    footer,
   }
 }

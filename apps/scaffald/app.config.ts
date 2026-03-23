@@ -16,6 +16,7 @@ const ENV_FILE_MAP: Record<string, string> = {
   production: ".env.production",
   preview: ".env.preview",
   staging: ".env.staging",
+  dev: ".env.dev",
   development: ".env",
 };
 

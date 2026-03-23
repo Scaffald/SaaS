@@ -182,3 +182,67 @@ export const pillStyle: ViewStyle = {
   paddingVertical: 3,
   borderRadius: 6,
 }
+
+// ---------------------------------------------------------------------------
+// Filter pill — glassmorphic pill button for inline header filters
+// ---------------------------------------------------------------------------
+
+export function filterPillGlassStyle(
+  theme: ResolvedThemeMode,
+  isActive = false
+): ViewStyle & Record<string, unknown> {
+  const base: ViewStyle = {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 9999,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  }
+
+  if (Platform.OS !== 'web') {
+    return {
+      ...base,
+      backgroundColor: isActive
+        ? (theme === 'dark' ? colors.primary[800] : colors.primary[50])
+        : colors.bg[theme].subtle,
+      borderWidth: 1,
+      borderColor: colors.border[theme].ghost,
+    }
+  }
+
+  return {
+    ...base,
+    backgroundColor: isActive
+      ? (theme === 'dark' ? 'rgba(2, 45, 56, 0.6)' : 'rgba(232, 246, 249, 0.7)')
+      : (theme === 'dark' ? 'rgba(0, 0, 0, 0.35)' : 'rgba(255, 255, 255, 0.45)'),
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    // ghost border via outline (web-only)
+    outlineWidth: 1,
+    outlineStyle: 'solid',
+    outlineColor: theme === 'dark' ? 'rgba(176, 179, 173, 0.15)' : 'rgba(176, 179, 173, 0.2)',
+  } as ViewStyle & Record<string, unknown>
+}
+
+// ---------------------------------------------------------------------------
+// Directory card — metric column styles for the two-column layout
+// ---------------------------------------------------------------------------
+
+export function metricColumnStyle(theme: ResolvedThemeMode) {
+  return {
+    value: {
+      fontSize: 22,
+      fontWeight: '800' as const,
+      color: colors.text[theme].primary,
+      letterSpacing: -0.3,
+    } satisfies TextStyle,
+    label: {
+      fontSize: 9,
+      fontWeight: '700' as const,
+      textTransform: 'uppercase' as const,
+      letterSpacing: 1.5,
+      color: colors.icon[theme].muted,
+    } satisfies TextStyle,
+  }
+}

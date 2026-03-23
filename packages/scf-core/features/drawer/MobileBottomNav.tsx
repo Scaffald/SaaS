@@ -1,5 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
-import { Text, useThemeContext, useResponsive, Popover, PopoverContent, GlassSurface } from '@scaffald/ui'
+import { Text, useThemeContext, useResponsive, Popover, PopoverContent, GlassSurface, useBottomBarContext } from '@scaffald/ui'
 import { colors, glassVibrantColors } from '@scaffald/ui/tokens'
 import { usePathname, useRouter } from 'expo-router'
 import { ChevronLeft, Search, X } from 'lucide-react-native'
@@ -58,6 +58,7 @@ const BAR_GAP = 8
 export function MobileBottomNav() {
   const { isMobile } = useResponsive()
   const { theme } = useThemeContext()
+  const { globalBarHidden } = useBottomBarContext()
   const insets = useSafeAreaInsets()
   const pathname = usePathname()
   const router = useRouter()
@@ -69,7 +70,8 @@ export function MobileBottomNav() {
 
   const activeSection = getActiveSection(pathname)
 
-  if (!isMobile) return null
+  // Hide when not mobile or when a page-level BottomBar is active
+  if (!isMobile || globalBarHidden) return null
 
   const resolvedTheme: 'light' | 'dark' = theme === 'dark' ? 'dark' : 'light'
   const vibrant = glassVibrantColors[resolvedTheme]

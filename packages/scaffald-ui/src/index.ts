@@ -319,8 +319,38 @@ export type { SearchAccessoryProps, SearchAccessoryScope } from "./components/Se
 export { NavigationBar } from "./components/NavigationBar";
 export type { NavigationBarProps, NavigationBarTitleSize, NavigationBarBackButton } from "./components/NavigationBar";
 
+/** @deprecated Use BottomBar instead */
 export { BottomToolbar } from "./components/BottomToolbar";
+/** @deprecated Use BottomBar instead */
 export type { BottomToolbarProps, BottomToolbarVariant, BottomToolbarPageControl } from "./components/BottomToolbar";
+
+// BottomBar — composable bottom bar system
+export {
+  BottomBar,
+  BottomBarProvider,
+  useBottomBarContext,
+  BottomBarActions,
+  BottomBarSearch,
+  BottomBarPageControl,
+  usePageBottomBar,
+  useSearchSheet,
+  useFilterSheet,
+  useSortSheet,
+} from "./components/BottomBar";
+export type {
+  BottomBarProps,
+  BottomBarLevel,
+  BottomBarActionsProps,
+  BottomBarSearchProps,
+  BottomBarPageControlProps,
+  BottomBarPageControlConfig,
+  BottomBarContextValue,
+  FilterControl,
+  SortOption,
+  UseSearchSheetOptions,
+  UseFilterSheetOptions,
+  UseSortSheetOptions,
+} from "./components/BottomBar";
 
 export { DiscoverCard } from "./components/DiscoverCard";
 export type { DiscoverCardProps, DiscoverCardVariant } from "./components/DiscoverCard";

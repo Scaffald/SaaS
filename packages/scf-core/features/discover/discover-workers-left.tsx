@@ -3,6 +3,7 @@ import { type RefObject, useMemo } from 'react'
 import { Stack } from '@scaffald/ui'
 import type { ResultListRef } from './components/ResultList'
 import { ResultList } from './components/ResultList'
+import type { WorkerSortBy } from './components/WorkersBottomToolbar'
 import { useTalentProfiles } from './hooks/useTalentProfiles'
 
 interface DiscoverWorkersLeftProps {
@@ -14,11 +15,13 @@ interface DiscoverWorkersLeftProps {
   selectedProfileId: string | null
   onSelect: (id: string) => void
   resultListRef: RefObject<ResultListRef | null>
+  /** Sort order for the results list */
+  sortBy?: WorkerSortBy
 }
 
 /**
  * Discover Workers Left Component
- * Left panel content for the workers discovery page - displays worker listings using map components
+ * Left panel content for the workers discovery page - displays worker listings
  */
 export function DiscoverWorkersLeft({
   searchQuery,
@@ -29,6 +32,7 @@ export function DiscoverWorkersLeft({
   selectedProfileId,
   onSelect,
   resultListRef,
+  sortBy = 'score',
 }: DiscoverWorkersLeftProps) {
   // Fetch workers using the same hook as the map page
   const { data: talentProfiles = [], isLoading, error, refetch } = useTalentProfiles()
@@ -42,13 +46,15 @@ export function DiscoverWorkersLeft({
         return false
       }
 
-      // Search filter - matches name, title, or location
+      // Search filter - matches name, title, location, skills, certifications
       if (searchQuery) {
         const query = searchQuery.toLowerCase()
         const matchesSearch =
           profile.name.toLowerCase().includes(query) ||
           profile.title.toLowerCase().includes(query) ||
-          profile.locationLabel.toLowerCase().includes(query)
+          profile.locationLabel.toLowerCase().includes(query) ||
+          profile.skills.some((s) => s.toLowerCase().includes(query)) ||
+          profile.certifications.some((c) => c.toLowerCase().includes(query))
 
         if (!matchesSearch) return false
       }
@@ -80,16 +86,32 @@ export function DiscoverWorkersLeft({
     })
   }, [talentProfiles, searchQuery, minScore, selectedSkills, selectedCertifications, currentUserId])
 
+  // Sort filtered results
+  const sortedProfiles = useMemo(() => {
+    const sorted = [...filteredProfiles]
+    switch (sortBy) {
+      case 'score':
+        return sorted.sort((a, b) => b.score - a.score)
+      case 'experience':
+        return sorted.sort((a, b) => b.experienceYears - a.experienceYears)
+      case 'name':
+        return sorted.sort((a, b) => a.name.localeCompare(b.name))
+      default:
+        return sorted
+    }
+  }, [filteredProfiles, sortBy])
+
   return (
     <Stack style={{ flex: 1, overflow: 'hidden' }}>
       <ResultList
         ref={resultListRef}
-        profiles={filteredProfiles}
+        profiles={sortedProfiles}
         selectedId={selectedProfileId}
         onSelect={onSelect}
         isLoading={isLoading}
         error={error ?? null}
         onRetry={() => void refetch()}
+        profileCardVariant="directory"
       />
     </Stack>
   )

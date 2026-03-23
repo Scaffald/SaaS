@@ -4,14 +4,14 @@
     {
       "name": "scaffald-local",
       "runtimeExecutable": "/bin/bash",
-      "runtimeArgs": ["-c", "export NVM_DIR=\"$HOME/.nvm\"; . \"$NVM_DIR/nvm.sh\"; dotenv -e .env -- pnpm --filter scaffald-app web"],
+      "runtimeArgs": ["-c", "export NVM_DIR=\"$HOME/.nvm\"; . \"$NVM_DIR/nvm.sh\"; dotenv -e .env -- pnpm --filter scaffald-app web --clear"],
       "port": 8081,
       "autoPort": false
     },
     {
       "name": "scaffald-remote",
       "runtimeExecutable": "/bin/bash",
-      "runtimeArgs": ["-c", "export NVM_DIR=\"$HOME/.nvm\"; . \"$NVM_DIR/nvm.sh\"; dotenv -e .env.dev -- pnpm --filter scaffald-app web --port 8082"],
+      "runtimeArgs": ["-c", "export NVM_DIR=\"$HOME/.nvm\"; . \"$NVM_DIR/nvm.sh\"; APP_ENV=dev dotenv -e .env.dev -- pnpm --filter scaffald-app web --clear --port 8082"],
       "port": 8082,
       "autoPort": false
     },

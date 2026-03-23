@@ -7,7 +7,7 @@ import {
 } from '@scf/core/utils/notifications-sdk-hooks'
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { useQueryClient } from '@tanstack/react-query'
-import { shadows, useThemeContext, useResponsive, Row } from '@scaffald/ui'
+import { shadows, useThemeContext, useResponsive, Row, BottomBarProvider } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import type { NotificationItem } from '@scf/core/components/notifications'
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
@@ -135,7 +135,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
   const drawerWidth = isSmall ? undefined : isDrawerCollapsed ? 92 : 300
 
   return (
-    <>
+    <BottomBarProvider>
       {protectionComponent}
 
       <Drawer
@@ -205,6 +205,6 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
       {isSmall && <MobileBottomNav />}
       {/* TODO: Uncomment this when we implement fully */}
       {/* {!hideDrawer ? <FeedbackWidget /> : null} */}
-    </>
+    </BottomBarProvider>
   )
 }

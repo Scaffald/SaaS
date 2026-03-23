@@ -24,4 +24,6 @@ export {
   titleStyle,
   iconCircleStyle,
   pillStyle,
+  filterPillGlassStyle,
+  metricColumnStyle,
 } from './styles'
