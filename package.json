@@ -38,6 +38,8 @@
     "deploy:reset": "./scripts/deploy-reset.sh",
     "deploy:verify": "./scripts/verify-prod-deployment.sh",
     "dev": "(pnpm watchman:reset || true) && (pnpm --filter @scaffald/ui watch &) && pnpm --filter scaffald-app start",
+    "dev:local": "./scripts/dev.sh --local",
+    "dev:remote": "./scripts/dev.sh --remote",
     "env-local": "cross-env NODE_ENV=development APP_ENV=development dotenv -e .env --",
     "env-preview": "cross-env NODE_ENV=production APP_ENV=preview dotenv -e .env.preview --",
     "env-prod": "cross-env NODE_ENV=production APP_ENV=production dotenv -e .env.production --",
@@ -147,7 +149,9 @@
     "watch": "nx run-many -t watch",
     "watchman:reset": "watchman watch-del \"$(pwd)\" ; watchman watch-project \"$(pwd)\"",
     "web": "pnpm --filter scaffald-app web",
-    "web:build": "pnpm --filter scaffald-app web:build"
+    "web:build": "pnpm --filter scaffald-app web:build",
+    "web:local": "dotenv -e .env -- pnpm --filter scaffald-app web",
+    "web:remote": "dotenv -e .env.dev -- pnpm --filter scaffald-app web"
   },
   "dependencies": {
     "@scaffald/ui": "link:packages/scaffald-ui",
