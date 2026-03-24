@@ -1,5 +1,8 @@
 import { useMemo, useState } from 'react'
-import { useResponsive } from '@scaffald/ui'
+import { Pressable } from 'react-native'
+import { Stack, Text, useResponsive, useThemeContext } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
+import { Check } from 'lucide-react-native'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { PageHeader } from '@scf/core/components/PageHeader'
 import type { FilterPillConfig } from '@scf/core/components/PageHeader'
@@ -26,6 +29,8 @@ export function DiscoverJobsScreen() {
   const [sortBy, setSortBy] = useState<JobSortBy>('relevance')
 
   const { isMobile } = useResponsive()
+  const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light'
 
   const handleReset = () => {
     setSearchQuery('')
@@ -44,6 +49,49 @@ export function DiscoverJobsScreen() {
     (minSoftSkillsMatch !== null && minSoftSkillsMatch > 0) ||
     sortBy !== 'relevance'
 
+  // Source pill popover content (desktop)
+  const SOURCE_OPTIONS: { value: JobSource; label: string }[] = [
+    { value: 'all', label: 'All Jobs' },
+    { value: 'internal', label: 'Internal Jobs (Scaffald)' },
+    { value: 'external', label: 'External Jobs' },
+  ]
+
+  const sourcePopoverContent = useMemo(
+    () => (
+      <Stack gap={4} style={{ minWidth: 200, padding: 8 }}>
+        <Text style={{ fontSize: 13, color: colors.text[t].secondary, paddingHorizontal: 8, paddingBottom: 4 }}>
+          Job Source
+        </Text>
+        {SOURCE_OPTIONS.map((option) => {
+          const isSelected = option.value === jobSource
+          return (
+            <Pressable
+              key={option.value}
+              onPress={() => setJobSource(option.value)}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingVertical: 8,
+                paddingHorizontal: 8,
+                borderRadius: 6,
+                backgroundColor: isSelected ? colors.bg[t].muted : 'transparent',
+              }}
+              accessibilityRole="radio"
+              accessibilityState={{ selected: isSelected }}
+            >
+              <Text style={{ color: isSelected ? colors.text[t].primary : colors.text[t].secondary }}>
+                {option.label}
+              </Text>
+              {isSelected ? <Check size={16} color={colors.fg[t].active} /> : null}
+            </Pressable>
+          )
+        })}
+      </Stack>
+    ),
+    [jobSource, t]
+  )
+
   // Filter pills for desktop header
   const filterPills = useMemo<FilterPillConfig[]>(() => {
     const pills: FilterPillConfig[] = []
@@ -54,6 +102,7 @@ export function DiscoverJobsScreen() {
       value: jobSource !== 'all' ? (jobSource === 'internal' ? 'Internal' : 'External') : undefined,
       isActive: jobSource !== 'all',
       onPress: () => {},
+      popoverContent: sourcePopoverContent,
     })
 
     if (selectedJobTypes.length > 0) {
@@ -68,18 +117,8 @@ export function DiscoverJobsScreen() {
       })
     }
 
-    if (sortBy !== 'relevance') {
-      pills.push({
-        id: 'sort',
-        label: 'Sort',
-        value: 'Best Match',
-        isActive: true,
-        onPress: () => {},
-      })
-    }
-
     return pills
-  }, [jobSource, selectedJobTypes, sortBy])
+  }, [jobSource, selectedJobTypes, sourcePopoverContent])
 
   // Header — desktop+ only
   const header = isMobile ? null : (
@@ -141,11 +180,8 @@ export function DiscoverJobsScreen() {
         onIndustriesChange={setSelectedIndustries}
         onJobTypesChange={setSelectedJobTypes}
         jobSource={jobSource}
-        onJobSourceChange={setJobSource}
         minSoftSkillsMatch={minSoftSkillsMatch}
         onMinSoftSkillsMatchChange={setMinSoftSkillsMatch}
-        sortBy={sortBy}
-        onSortByChange={setSortBy}
       />
     ),
     footer,

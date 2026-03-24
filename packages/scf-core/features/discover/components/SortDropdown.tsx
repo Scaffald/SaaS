@@ -2,8 +2,9 @@ import { Popover } from '@scaffald/ui'
 import { ArrowUpDown, Check, ChevronDown } from 'lucide-react-native'
 import { useState } from 'react'
 import { Pressable } from 'react-native'
-import { Button, Text, Stack, useThemeContext } from '@scaffald/ui'
+import { Text, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { filterPillGlassStyle } from '@scf/core/components/ui'
 
 type SortOption = {
   value: string
@@ -68,6 +69,11 @@ export const SortDropdown = ({ value, onChange, options }: SortDropdownProps) =>
     </Stack>
   )
 
+  const isNonDefault = value !== options[0]?.value
+  const pillText = isNonDefault
+    ? colors.text[t].primary
+    : colors.text[t].secondary
+
   return (
     <Popover
       open={isOpen}
@@ -75,15 +81,18 @@ export const SortDropdown = ({ value, onChange, options }: SortDropdownProps) =>
       placement="bottom-start"
       content={popoverContent}
     >
-      <Button
-        size="md"
-        variant="outline"
-        color={value !== options[0]?.value ? 'primary' : 'gray'}
-        iconStart={ArrowUpDown}
-        iconEnd={ChevronDown}
+      <Pressable
+        onPress={() => setIsOpen((v) => !v)}
+        style={filterPillGlassStyle(t, isNonDefault)}
+        accessibilityRole="button"
+        accessibilityLabel={`Sort by ${selectedLabel}`}
       >
-        <Text>{selectedLabel}</Text>
-      </Button>
+        <ArrowUpDown size={14} color={pillText} />
+        <Text style={{ fontSize: 12, fontWeight: '600', color: pillText }} numberOfLines={1}>
+          {selectedLabel}
+        </Text>
+        <ChevronDown size={14} color={pillText} />
+      </Pressable>
     </Popover>
   )
 }

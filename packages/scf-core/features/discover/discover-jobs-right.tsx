@@ -1,7 +1,7 @@
 import { useFilterOptions } from '@scf/core/utils/jobs-sdk-hooks'
 import { useSoftSkills } from '@scf/core/utils/profile-skills-sdk-hooks'
-import { DashboardWidget, ResponsiveSelect } from '@scaffald/ui'
-import { ChevronsUpDown, Filter, X } from 'lucide-react-native'
+import { DashboardWidget } from '@scaffald/ui'
+import { Filter, X } from 'lucide-react-native'
 import { useState } from 'react'
 import {
   Button,
@@ -22,11 +22,8 @@ interface DiscoverJobsRightProps {
   onIndustriesChange: (industries: string[]) => void
   onJobTypesChange: (types: string[]) => void
   jobSource: 'all' | 'internal' | 'external'
-  onJobSourceChange: (source: 'all' | 'internal' | 'external') => void
   minSoftSkillsMatch: number | null
   onMinSoftSkillsMatchChange: (match: number | null) => void
-  sortBy: 'relevance' | 'match_score'
-  onSortByChange: (sort: 'relevance' | 'match_score') => void
 }
 
 /**
@@ -39,11 +36,8 @@ export function DiscoverJobsRight({
   onIndustriesChange,
   onJobTypesChange,
   jobSource,
-  onJobSourceChange,
   minSoftSkillsMatch,
   onMinSoftSkillsMatchChange,
-  sortBy,
-  onSortByChange,
 }: DiscoverJobsRightProps) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
@@ -84,7 +78,6 @@ export function DiscoverJobsRight({
     setSelectedIndustries([])
     setSelectedJobTypes([])
     onMinSoftSkillsMatchChange(null)
-    onSortByChange('relevance')
     onIndustriesChange([])
     onJobTypesChange([])
   }
@@ -93,8 +86,7 @@ export function DiscoverJobsRight({
     searchQuery ||
     selectedIndustries.length > 0 ||
     selectedJobTypes.length > 0 ||
-    minSoftSkillsMatch !== null ||
-    sortBy !== 'relevance'
+    minSoftSkillsMatch !== null
 
   if (filtersLoading) {
     return (
@@ -127,40 +119,6 @@ export function DiscoverJobsRight({
               </Button>
             )}
           </Row>
-        </DashboardWidget>
-
-        {/* Job Source Filter */}
-        <DashboardWidget>
-          <Stack gap={12}>
-            <Text color="secondary">Job Source</Text>
-
-            <Stack gap={8}>
-              <Button
-                size="sm"
-                variant="outline"
-                color={jobSource === 'all' ? 'primary' : 'gray'}
-                onPress={() => onJobSourceChange('all')}
-              >
-                All Jobs
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                color={jobSource === 'internal' ? 'primary' : 'gray'}
-                onPress={() => onJobSourceChange('internal')}
-              >
-                Internal Jobs (Scaffald)
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                color={jobSource === 'external' ? 'primary' : 'gray'}
-                onPress={() => onJobSourceChange('external')}
-              >
-                External Jobs
-              </Button>
-            </Stack>
-          </Stack>
         </DashboardWidget>
 
         {/* Industry Filter */}
@@ -252,35 +210,6 @@ export function DiscoverJobsRight({
           </DashboardWidget>
         )}
 
-        {/* Sort Options */}
-        {jobSource !== 'external' && (
-          <DashboardWidget>
-            <Stack gap={12}>
-              <Row align="center" gap={8}>
-                <ChevronsUpDown size={18} color={colors.text[t].tertiary} />
-                <Text color="secondary">Sort By</Text>
-              </Row>
-
-              <ResponsiveSelect
-                value={sortBy}
-                onValueChange={(value) => {
-                  onSortByChange(value as 'relevance' | 'match_score')
-                }}
-                options={[
-                  { value: 'relevance', label: 'Relevance' },
-                  {
-                    value: 'match_score',
-                    label: 'Best Soft Skills Match',
-                    disabled: !hasSoftSkillsAssessment,
-                  },
-                ]}
-                placeholder="Sort jobs by..."
-                label="Sort"
-              />
-            </Stack>
-          </DashboardWidget>
-        )}
-
         {/* Active Filters Summary */}
         {hasActiveFilters && (
           <DashboardWidget>
@@ -312,13 +241,6 @@ export function DiscoverJobsRight({
                 <Row align="center" gap={8}>
                   <Text color="secondary">Min Match:</Text>
                   <Text color="primary">{minSoftSkillsMatch}%</Text>
-                </Row>
-              )}
-
-              {sortBy !== 'relevance' && (
-                <Row align="center" gap={8}>
-                  <Text color="secondary">Sort:</Text>
-                  <Text color="primary">{sortBy === 'match_score' ? 'Best Match' : sortBy}</Text>
                 </Row>
               )}
             </Stack>

@@ -5,17 +5,34 @@ These hooks run automatically when using this repository.
 | Hook | Runs | What it does |
 |------|------|--------------|
 | **pre-commit** | Before each commit | Lint + typecheck (affected packages, single nx invocation) |
-| **pre-push** | Before each push | Build + unit tests (affected packages) |
+| **pre-push** | Before each push | Stamp-only verification (instant pass/fail) |
 
 Hooks are activated via `git config core.hooksPath .githooks`, which is set automatically by `pnpm install` (prepare script).
+
+## Push workflow
+
+The pre-push hook does **not** run checks itself — it only verifies a stamp file. This keeps pushes instant and avoids SSH timeouts.
+
+```bash
+# 1. Commit (pre-commit runs lint + typecheck)
+git commit -m "feat: my changes"
+
+# 2. Validate build + tests (writes stamp on success)
+pnpm prepush
+
+# 3. Push (instant — hook checks stamp)
+git push
+```
+
+If you forget step 2, the hook fails with a reminder to run `pnpm prepush`.
 
 ## Optimizations
 
 - Pre-commit uses one `nx affected -t lint,typecheck` instead of separate lint + typecheck (faster, avoids graph lock)
 - Custom lint scripts (`lint:routes`, `lint:sorted-keys`) only check staged files, not the entire repo
-- NX parallelism is set to 5 during hooks (`NX_PARALLEL`); override with `NX_PARALLEL=8`
-- Timeout: 90s default; set `PRECOMMIT_TIMEOUT=120` to increase
-- Uses `timeout` or `gtimeout` when available (macOS: `brew install coreutils` for gtimeout)
+- `pnpm prepush` runs build + test in parallel with `NX_PARALLEL=5`
+- NX caching means repeated runs are near-instant when nothing changed
+- Pre-push hook is stamp-only — no SSH timeout risk
 
 ## Skip hooks when needed
 
