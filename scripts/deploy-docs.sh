@@ -25,12 +25,12 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 UI_BUCKET="ui-scaffald-com-docs"
 UI_DIST="E3LR29JN2CLH5S"
 UI_URL="https://ui.scaffald.com"
-UI_DOCS_DIR="$PROJECT_ROOT/packages/scaffald-ui/docs-site"
+UI_DOCS_DIR="$PROJECT_ROOT/packages/ui/docs-site"
 
 SDK_BUCKET="sdk-scaffald-com-docs"
 SDK_DIST="E24SHZWG4D41LG"
 SDK_URL="https://sdk.scaffald.com"
-SDK_DOCS_DIR="$PROJECT_ROOT/packages/scaffald-sdk/docs-site"
+SDK_DOCS_DIR="$PROJECT_ROOT/packages/sdk/docs-site"
 
 # Load .env if AWS creds not already in environment
 if [ -z "$AWS_ACCESS_KEY_ID" ] && [ -f "$PROJECT_ROOT/.env" ]; then

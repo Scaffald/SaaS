@@ -5,10 +5,9 @@ packages:
   - packages/scf-schemas
   - packages/scf-trpc
   - packages/ui
-  - packages/scaffald-ui
-  - packages/scaffald-ui/docs-site
-  - packages/scaffald-sdk
-  - packages/scaffald-sdk/docs-site
+  - packages/ui/docs-site
+  - packages/sdk
+  - packages/sdk/docs-site
   - packages/docs-shared
   - packages/scaffald-cli
   - packages/insurance

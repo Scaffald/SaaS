@@ -68,16 +68,21 @@
     "precommit": "pnpm lint:routes && pnpm lint:sorted-keys && nx affected -t lint,typecheck",
     "precommit:skip": "SKIP_PRECOMMIT=1 git commit",
     "prepush": "git fetch origin main 2>/dev/null; echo '🔍 Running pre-push validation...' && SECONDS=0 && NODE_OPTIONS=${NODE_OPTIONS:---max-old-space-size=4096} NX_PARALLEL=${NX_PARALLEL:-5} nx affected -t build & nx affected -t test --exclude=@scaffald/integration-test,@scaffald/ui,scf-core & wait && echo $(git rev-parse HEAD) > .nx/cache/.prepush-validated && echo \"✅ Pre-push validated in ${SECONDS}s — git push will skip checks\"",
-    "prepare": "git config core.hooksPath .githooks 2>/dev/null || true",
+    "prepare": "git config core.hooksPath .githooks 2>/dev/null || true; git submodule update --init --recursive 2>/dev/null || true",
     "preview": "./scripts/deploy.sh preview",
     "prod": "./scripts/deploy.sh production",
     "radium:check": "./scripts/radium-check.sh",
     "release": "semantic-release",
     "release:dry-run": "semantic-release --dry-run",
+    "release:ui": "cd packages/ui && pnpm release",
+    "release:ui:dry": "cd packages/ui && pnpm release:dry",
+    "release:sdk": "cd packages/sdk && pnpm release",
+    "release:sdk:dry": "cd packages/sdk && pnpm release:dry",
     "reset": "rm -rf node_modules apps/*/node_modules packages/*/node_modules .nx apps/scaffald/.expo apps/scaffald/dist apps/scaffald/android/build apps/scaffald/ios/build apps/scaffald/.next **/tsconfig.tsbuildinfo **/.DS_Store && pnpm store prune && echo '✅ Cache cleared! Run pnpm install to reinstall dependencies.'",
     "reset:full": "pnpm reset && rm -rf apps/scaffald/android apps/scaffald/ios && echo '✅ Full reset complete! Run pnpm prebuild to regenerate native directories.'",
     "secrets:add": "./scripts/add-github-secrets.sh",
     "setup-sentry": "node scripts/setup-sentry.mjs",
+    "submodule:update": "git submodule update --remote --merge",
     "storybook": "pnpm --filter @scaffald/ui storybook",
     "storybook:build": "pnpm --filter @scaffald/ui build-storybook",
     "storybook:deploy": "./scripts/deploy-storybook-aws.sh",
@@ -160,13 +165,12 @@
     "web:remote": "dotenv -e .env.dev -- pnpm --filter scaffald-app web"
   },
   "dependencies": {
-    "@scaffald/ui": "link:packages/scaffald-ui",
+    "@scaffald/ui": "link:packages/ui",
     "@stripe/react-stripe-js": "^5.6.0",
     "@stripe/stripe-js": "^8.7.0",
     "@tiptap/core": "^2.27.2",
     "date-fns": "^4.1.0",
-    "html2canvas": "^1.4.1",
-    "ui": "link:../../Library/pnpm/global/5/node_modules/@scaffald/ui"
+    "html2canvas": "^1.4.1"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",

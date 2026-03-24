@@ -1,0 +1,6 @@
+[submodule "packages/ui"]
+	path = packages/ui
+	url = git@github.com:Scaffald/ui.git
+[submodule "packages/sdk"]
+	path = packages/sdk
+	url = git@github.com:Scaffald/sdk.git
