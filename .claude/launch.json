@@ -28,6 +28,13 @@
       "runtimeArgs": ["-c", "export NVM_DIR=\"$HOME/.nvm\"; . \"$NVM_DIR/nvm.sh\"; cd packages/ui && npx storybook dev -p 6006"],
       "port": 6006,
       "autoPort": false
+    },
+    {
+      "name": "sdk-docs",
+      "runtimeExecutable": "/bin/bash",
+      "runtimeArgs": ["-c", "export NVM_DIR=\"$HOME/.nvm\"; . \"$NVM_DIR/nvm.sh\"; cd packages/sdk/docs-site && npx docusaurus start --port 3334"],
+      "port": 3334,
+      "autoPort": false
     }
   ]
 }
