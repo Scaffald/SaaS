@@ -219,6 +219,9 @@ importers:
 
   .:
     dependencies:
+      '@scaffald/sdk':
+        specifier: link:packages/sdk
+        version: link:packages/sdk
       '@scaffald/ui':
         specifier: link:packages/ui
         version: link:packages/ui

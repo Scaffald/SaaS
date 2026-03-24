@@ -165,6 +165,7 @@
     "web:remote": "dotenv -e .env.dev -- pnpm --filter scaffald-app web"
   },
   "dependencies": {
+    "@scaffald/sdk": "link:packages/sdk",
     "@scaffald/ui": "link:packages/ui",
     "@stripe/react-stripe-js": "^5.6.0",
     "@stripe/stripe-js": "^8.7.0",
