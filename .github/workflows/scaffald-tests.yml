@@ -93,7 +93,7 @@ jobs:
           CI: true
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           files: ./apps/scaffald/coverage/coverage-final.json
           flags: scaffald-unit
