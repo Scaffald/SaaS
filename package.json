@@ -37,7 +37,7 @@
     "deploy:docs:sdk": "./scripts/deploy-docs.sh sdk",
     "deploy:reset": "./scripts/deploy-reset.sh",
     "deploy:verify": "./scripts/verify-prod-deployment.sh",
-    "dev": "(pnpm watchman:reset || true) && (pnpm --filter @scaffald/ui watch &) && pnpm --filter scaffald-app start",
+    "dev": "APP_ENV=dev-local dotenv -e .env.dev-local -- sh -c '(pnpm watchman:reset || true) && (pnpm --filter @scaffald/ui watch &) && pnpm --filter scaffald-app start'",
     "dev:local": "./scripts/dev.sh --local",
     "dev:remote": "./scripts/dev.sh --remote",
     "env-dev": "cross-env NODE_ENV=development APP_ENV=dev dotenv -e .env.dev --",

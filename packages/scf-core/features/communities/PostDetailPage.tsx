@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
-import { ScrollView } from 'react-native'
-import { Text, Stack, Row, Button, Spinner, Separator, Avatar, Input, useThemeContext } from '@scaffald/ui'
+import { ScrollView, Image } from 'react-native'
+import { Text, Stack, Row, Card, Button, Spinner, Separator, Avatar, Input, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useQueryClient } from '@tanstack/react-query'
 import {
@@ -68,126 +68,130 @@ export function PostDetailPage({ postId }: Props) {
   return (
     <ScrollView>
       <Stack gap={16}>
-        {/* Post Header */}
-        <Stack gap={8}>
-          <Row align="center" gap={8}>
-            <Avatar
-              src={post.author?.avatar_url ?? undefined}
-              initials={post.author?.display_name?.[0] || '?'}
-              size={24}
-            />
-            <Stack>
-              <Text style={{ fontWeight: '600' }}>{post.author?.display_name || 'Anonymous'}</Text>
-              <Text style={{ color: colors.text[t].secondary, fontSize: 12 }}>
-                {new Date(post.created_at).toLocaleDateString()}
-              </Text>
-            </Stack>
-            <Stack style={{ marginLeft: 'auto' }}>
-              <Text style={{ color: colors.text[t].secondary, fontSize: 12, textTransform: 'capitalize' }}>
-                {post.post_type}
-              </Text>
-            </Stack>
-          </Row>
-
-          <Text style={{ fontSize: 24, fontWeight: '700' }}>{post.title}</Text>
-          <Text>{post.body}</Text>
-
-          {/* Media */}
-          {post.media_urls && post.media_urls.length > 0 && (
-            <Stack gap={8}>
-              {post.media_urls.map((_url: string, i: number) => (
-                <Stack
-                  key={`media-${i}`}
-                  style={{
-                    height: 300,
-                    borderRadius: 12,
-                    overflow: 'hidden',
-                    backgroundColor: colors.bg[t].muted,
-                  }}
-                >
-                  {/* Image component would go here - using placeholder for cross-platform */}
-                  <Text style={{ color: colors.text[t].secondary, padding: 8 }}>
-                    Media {i + 1}
-                  </Text>
-                </Stack>
-              ))}
-            </Stack>
-          )}
-        </Stack>
-
-        {/* Interactions Bar */}
-        <Row align="center" gap={16}>
-          <UpvoteButton
-            targetType="post"
-            targetId={post.id}
-            count={post.upvote_count}
-            hasUpvoted={post.has_upvoted ?? false}
-          />
-          <Text style={{ color: colors.text[t].secondary }}>{post.comment_count} comments</Text>
-          {summary && summary.rating_count > 0 && (
-            <Row align="center" gap={4}>
-              <StarRating value={summary.rating_avg ?? 0} readonly size={16} />
-              <Text style={{ color: colors.text[t].secondary }}>({summary.rating_count})</Text>
+        {/* Post Content Card */}
+        <Card variant="glass" glassMaterial="thin" padding="lg">
+          <Stack gap={12}>
+            {/* Post Header */}
+            <Row align="center" gap={8}>
+              <Avatar
+                src={post.author?.avatar_url ?? undefined}
+                initials={post.author?.display_name?.[0] || '?'}
+                size={24}
+              />
+              <Stack>
+                <Text style={{ fontWeight: '600' }}>{post.author?.display_name || 'Anonymous'}</Text>
+                <Text style={{ color: colors.text[t].secondary, fontSize: 12 }}>
+                  {new Date(post.created_at).toLocaleDateString()}
+                </Text>
+              </Stack>
+              <Stack style={{ marginLeft: 'auto' }}>
+                <Text style={{ color: colors.text[t].secondary, fontSize: 12, textTransform: 'capitalize' }}>
+                  {post.post_type}
+                </Text>
+              </Stack>
             </Row>
-          )}
-          <Stack style={{ marginLeft: 'auto' }}>
-            <BookmarkButton postId={post.id} hasBookmarked={post.has_bookmarked ?? false} />
-          </Stack>
-        </Row>
 
-        <Separator />
+            <Text style={{ fontSize: 24, fontWeight: '700' }}>{post.title}</Text>
+            <Text>{post.body}</Text>
+
+            {/* Media */}
+            {post.media_urls && post.media_urls.length > 0 && (
+              <Stack gap={8}>
+                {post.media_urls.map((url: string, i: number) => (
+                  <Stack
+                    key={`media-${i}`}
+                    style={{
+                      height: 300,
+                      borderRadius: 12,
+                      overflow: 'hidden',
+                      backgroundColor: colors.bg[t].muted,
+                    }}
+                  >
+                    <Image
+                      source={{ uri: url }}
+                      style={{ width: '100%', height: '100%' }}
+                      resizeMode="cover"
+                    />
+                  </Stack>
+                ))}
+              </Stack>
+            )}
+
+            <Separator />
+
+            {/* Interactions Bar */}
+            <Row align="center" gap={16}>
+              <UpvoteButton
+                targetType="post"
+                targetId={post.id}
+                count={post.upvote_count}
+                hasUpvoted={post.has_upvoted ?? false}
+              />
+              <Text style={{ color: colors.text[t].secondary }}>{post.comment_count} comments</Text>
+              {summary && summary.rating_count > 0 && (
+                <Row align="center" gap={4}>
+                  <StarRating value={summary.rating_avg ?? 0} readonly size={16} />
+                  <Text style={{ color: colors.text[t].secondary }}>({summary.rating_count})</Text>
+                </Row>
+              )}
+              <Stack style={{ marginLeft: 'auto' }}>
+                <BookmarkButton postId={post.id} hasBookmarked={post.has_bookmarked ?? false} />
+              </Stack>
+            </Row>
+          </Stack>
+        </Card>
 
         {/* AI Feedback Summary */}
         {post.ai_feedback_summary && (
-          <>
+          <Card variant="glass" glassMaterial="thin" padding="lg">
             <AIFeedbackSummary summary={post.ai_feedback_summary} />
-            <Separator />
-          </>
+          </Card>
         )}
 
         {/* Rating Section (critique/showcase only) */}
         {post.post_type !== 'advice' && post.is_published && (
-          <>
+          <Card variant="glass" glassMaterial="thin" padding="lg">
             <RatingInput postId={post.id} />
-            <Separator />
-          </>
+          </Card>
         )}
 
         {/* Comments Section */}
-        <Stack gap={12}>
-          <Text style={{ fontSize: 18, fontWeight: '600' }}>Comments ({post.comment_count})</Text>
+        <Card variant="glass" glassMaterial="thin" padding="lg">
+          <Stack gap={12}>
+            <Text style={{ fontSize: 18, fontWeight: '600' }}>Comments ({post.comment_count})</Text>
 
-          {/* Add Comment */}
-          <Row gap={8}>
-            <Input
-              placeholder="Add a comment..."
-              value={commentBody}
-              onChangeText={setCommentBody}
-              style={{ flex: 1 }}
-            />
-            <Button
-              variant="filled"
-              size="sm"
-              onPress={handleAddComment}
-              disabled={!commentBody.trim() || createComment.isPending}
-            >
-              Post
-            </Button>
-          </Row>
+            {/* Add Comment */}
+            <Row gap={8}>
+              <Input
+                placeholder="Add a comment..."
+                value={commentBody}
+                onChangeText={setCommentBody}
+                style={{ flex: 1 }}
+              />
+              <Button
+                variant="filled"
+                size="sm"
+                onPress={handleAddComment}
+                disabled={!commentBody.trim() || createComment.isPending}
+              >
+                Post
+              </Button>
+            </Row>
 
-          {/* Comment List */}
-          {isCommentsLoading ? (
-            <Stack align="center" style={{ paddingVertical: 24 }}>
-              <Spinner variant="ios" />
-            </Stack>
-          ) : comments.length === 0 ? (
-            <Stack align="center" style={{ paddingVertical: 24 }}>
-              <Text style={{ color: colors.text[t].secondary }}>No comments yet. Be the first!</Text>
-            </Stack>
-          ) : (
-            <CommentThread comments={comments} postId={postId} />
-          )}
-        </Stack>
+            {/* Comment List */}
+            {isCommentsLoading ? (
+              <Stack align="center" style={{ paddingVertical: 24 }}>
+                <Spinner variant="ios" />
+              </Stack>
+            ) : comments.length === 0 ? (
+              <Stack align="center" style={{ paddingVertical: 24 }}>
+                <Text style={{ color: colors.text[t].secondary }}>No comments yet. Be the first!</Text>
+              </Stack>
+            ) : (
+              <CommentThread comments={comments} postId={postId} />
+            )}
+          </Stack>
+        </Card>
       </Stack>
     </ScrollView>
   )

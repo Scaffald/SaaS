@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color:#fbf8f3;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;margin:0;padding:0;font-size:12px;font-weight:400;text-align:center;width:100%;">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { background:#fbf8f3; margin:0; padding:0; font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; font-size:14px; font-weight:400; text-align:center; width:100%; }
+    @media only screen and (max-width:480px) { .main { margin:10px auto !important; } }
+  </style>
+</head>
+<body style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;font-weight:400;text-align:center;padding:0;margin:0;width:100%;" bgcolor="#fbf8f3">
+  <center>
+    <table style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;font-weight:400;text-align:center;padding:0;margin:0;width:100%;" bgcolor="#fbf8f3" cellpadding="0" cellspacing="0">
+      <tr>
+        <td align="center">
+          <table class="main" style="width:100%;color:#504940;text-align:left;max-width:600px;margin:20px auto;" cellpadding="0" cellspacing="0">
+            <tr>
+              <td>
+                <table style="width:100%;box-shadow:0 0 10px rgba(0,0,0,0.05);border-radius:8px;overflow:hidden;" cellpadding="0" cellspacing="0">
+
+                  <!-- Header -->
+                  <tr>
+                    <td style="border-bottom:1px solid #e8dccb;padding:40px 20px 30px;text-align:center;" bgcolor="#6b6055">
+                      <h1 style="color:#f7f2eb;font-size:22px;font-weight:400;margin:0;padding:10px 0 5px;">Scaffald</h1>
+                      <h2 style="color:#2a2623;font-weight:400;font-size:14px;margin:0;padding:0;">Email Change</h2>
+                    </td>
+                  </tr>
+
+                  <!-- Body -->
+                  <tr>
+                    <td style="color:#504940;padding:30px;font-size:14px;line-height:22px;" bgcolor="#ffffff">
+                      <h2 style="color:#504940;font-size:18px;margin:0 0 16px;">Confirm your new email</h2>
+                      <p style="margin:0 0 24px;">
+                        We received a request to change your email address to <strong>{{ .NewEmail }}</strong>. Use the code below or click the button to confirm.
+                      </p>
+
+                      <!-- OTP Code -->
+                      <div style="text-align:center;margin:0 0 24px;">
+                        <div style="display:inline-block;background-color:#f1e9df;border:1px solid #e8dccb;border-radius:8px;padding:16px 32px;font-size:32px;font-weight:700;letter-spacing:8px;color:#034550;font-family:'Courier New',monospace;">
+                          {{ .Token }}
+                        </div>
+                      </div>
+
+                      <p style="margin:0 0 24px;color:#9e9790;font-size:13px;text-align:center;">
+                        This code expires in 10 minutes.
+                      </p>
+
+                      <!-- Divider -->
+                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0;">
+                        <tr><td style="border-top:1px solid #e8dccb;font-size:0;height:1px;line-height:0;">&nbsp;</td></tr>
+                      </table>
+
+                      <p style="margin:0 0 16px;font-size:13px;color:#9e9790;text-align:center;">
+                        Or click the button below to confirm directly:
+                      </p>
+
+                      <!-- CTA Button -->
+                      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 24px;">
+                        <tr>
+                          <td style="background-color:#1d7282;border-radius:6px;padding:12px 28px;text-align:center;">
+                            <a href="{{ .ConfirmationURL }}" style="color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;display:inline-block;">Confirm Email Change</a>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <p style="margin:0;font-size:12px;color:#9e9790;text-align:center;">
+                        If you didn't request this change, please secure your account immediately.
+                      </p>
+                    </td>
+                  </tr>
+
+                  <!-- Footer -->
+                  <tr>
+                    <td style="color:#9e9790;padding:20px 30px;font-size:12px;line-height:18px;text-align:center;" bgcolor="#f1e9df">
+                      <p style="margin:0;">Scaffald &mdash; Workforce management, simplified.</p>
+                    </td>
+                  </tr>
+
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </center>
+</body>
+</html>

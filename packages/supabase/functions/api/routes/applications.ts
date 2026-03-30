@@ -302,7 +302,7 @@ app.openapi(createApplicationRoute, async (c) => {
     )
   }
 
-  if (job.status !== 'published') {
+  if (job.status !== 'open') {
     return c.json(
       {
         error: 'Bad Request',

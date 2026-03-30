@@ -1,5 +1,6 @@
 import type { ChannelAdapter, NotificationRow } from '../types.ts'
 import { normalizeMetadata } from '../utils.ts'
+import { wrapInBrandedTemplate, EMAIL_COLORS } from '../../email-template.ts'
 
 interface SendEmailPayload {
   personalizations: Array<{
@@ -55,52 +56,36 @@ function buildRenewalHtml(
 
   const ctaUrl = resolveCtaUrl(notification.cta_url)
   const ctaLabel = notification.cta_label ?? 'View Policy'
+  const c = EMAIL_COLORS
 
-  return `<!DOCTYPE html>
-<html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background-color:#f4f4f5;color:#18181b;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f5;padding:32px 16px;">
-    <tr><td align="center">
-      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
-        <!-- Header -->
-        <tr><td style="background-color:${escapeHtml(severityColor)};padding:24px 32px;">
-          <h1 style="margin:0;font-size:20px;font-weight:600;color:#ffffff;">${escapeHtml(urgency)}: Policy Renewal Reminder</h1>
-        </td></tr>
-        <!-- Body -->
-        <tr><td style="padding:32px;">
-          <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#3f3f46;">
-            ${escapeHtml(notification.message ?? notification.title)}
-          </p>
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#fafafa;border:1px solid #e4e4e7;border-radius:6px;margin:24px 0;">
-            <tr><td style="padding:20px 24px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                ${companyName ? `<tr><td style="padding:6px 0;font-size:13px;color:#71717a;width:140px;">Company</td><td style="padding:6px 0;font-size:14px;font-weight:500;color:#18181b;">${escapeHtml(companyName)}</td></tr>` : ''}
-                <tr><td style="padding:6px 0;font-size:13px;color:#71717a;width:140px;">Policy Number</td><td style="padding:6px 0;font-size:14px;font-weight:500;color:#18181b;">${escapeHtml(policyNumber)}</td></tr>
-                <tr><td style="padding:6px 0;font-size:13px;color:#71717a;width:140px;">Policy Type</td><td style="padding:6px 0;font-size:14px;font-weight:500;color:#18181b;">${escapeHtml(policyType)}</td></tr>
-                ${carrierName ? `<tr><td style="padding:6px 0;font-size:13px;color:#71717a;width:140px;">Carrier</td><td style="padding:6px 0;font-size:14px;font-weight:500;color:#18181b;">${escapeHtml(carrierName)}</td></tr>` : ''}
-                <tr><td style="padding:6px 0;font-size:13px;color:#71717a;width:140px;">Expiration Date</td><td style="padding:6px 0;font-size:14px;font-weight:600;color:${escapeHtml(severityColor)};">${escapeHtml(expirationDate)}</td></tr>
-                <tr><td style="padding:6px 0;font-size:13px;color:#71717a;width:140px;">Days Remaining</td><td style="padding:6px 0;font-size:14px;font-weight:600;color:${escapeHtml(severityColor)};">${intervalDays}</td></tr>
-              </table>
-            </td></tr>
-          </table>
-          <table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px 0;">
-            <tr><td style="background-color:${escapeHtml(severityColor)};border-radius:6px;padding:12px 28px;">
-              <a href="${escapeHtml(ctaUrl)}" style="color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;display:inline-block;">${escapeHtml(ctaLabel)}</a>
-            </td></tr>
-          </table>
-        </td></tr>
-        <!-- Footer -->
-        <tr><td style="padding:16px 32px;border-top:1px solid #e4e4e7;">
-          <p style="margin:0;font-size:12px;color:#a1a1aa;text-align:center;">
-            You are receiving this because you are associated with this policy. Manage your notification preferences in your account settings.
-          </p>
-        </td></tr>
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>`
+  const innerBody = `
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">
+      ${escapeHtml(notification.message ?? notification.title)}
+    </p>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:${c.sectionBg};border:1px solid ${c.border};border-radius:6px;margin:24px 0;">
+      <tr><td style="padding:20px 24px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+          ${companyName ? `<tr><td style="padding:6px 0;font-size:13px;color:${c.mutedText};width:140px;">Company</td><td style="padding:6px 0;font-size:14px;font-weight:500;color:${c.bodyText};">${escapeHtml(companyName)}</td></tr>` : ''}
+          <tr><td style="padding:6px 0;font-size:13px;color:${c.mutedText};width:140px;">Policy Number</td><td style="padding:6px 0;font-size:14px;font-weight:500;color:${c.bodyText};">${escapeHtml(policyNumber)}</td></tr>
+          <tr><td style="padding:6px 0;font-size:13px;color:${c.mutedText};width:140px;">Policy Type</td><td style="padding:6px 0;font-size:14px;font-weight:500;color:${c.bodyText};">${escapeHtml(policyType)}</td></tr>
+          ${carrierName ? `<tr><td style="padding:6px 0;font-size:13px;color:${c.mutedText};width:140px;">Carrier</td><td style="padding:6px 0;font-size:14px;font-weight:500;color:${c.bodyText};">${escapeHtml(carrierName)}</td></tr>` : ''}
+          <tr><td style="padding:6px 0;font-size:13px;color:${c.mutedText};width:140px;">Expiration Date</td><td style="padding:6px 0;font-size:14px;font-weight:600;color:${escapeHtml(severityColor)};">${escapeHtml(expirationDate)}</td></tr>
+          <tr><td style="padding:6px 0;font-size:13px;color:${c.mutedText};width:140px;">Days Remaining</td><td style="padding:6px 0;font-size:14px;font-weight:600;color:${escapeHtml(severityColor)};">${intervalDays}</td></tr>
+        </table>
+      </td></tr>
+    </table>
+    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px 0;">
+      <tr><td style="background-color:${c.ctaButton};border-radius:6px;padding:12px 28px;">
+        <a href="${escapeHtml(ctaUrl)}" style="color:${c.ctaButtonText};font-size:14px;font-weight:600;text-decoration:none;display:inline-block;">${escapeHtml(ctaLabel)}</a>
+      </td></tr>
+    </table>`
+
+  return wrapInBrandedTemplate({
+    title: 'Scaffald',
+    subtitle: `${urgency}: Policy Renewal Reminder`,
+    body: innerBody,
+    footerHtml: `<p style="margin:0;font-size:12px;text-align:center;">You are receiving this because you are associated with this policy. Manage your notification preferences in your account settings.</p>`,
+  })
 }
 
 function buildRenewalPlainText(

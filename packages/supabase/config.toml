@@ -45,31 +45,30 @@ file_size_limit = "50MiB"
 [auth]
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
 # in emails.
-# For local development, use http://localhost:5173 (Forsured web) or http://127.0.0.1:8081 (Scaffald Expo)
-# Set to http://localhost:5173 for Forsured web app
-site_url = "http://localhost:5173"
+# Default to Expo/Metro port 8081 for local development
+site_url = "http://localhost:8081"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-# Include both Forsured web (5173) and Scaffald Expo (8081) ports
-# Also include callback paths for magic links
 additional_redirect_urls = [
+  "http://localhost:8081",
+  "http://localhost:8081/auth/callback",
+  "http://127.0.0.1:8081",
+  "http://127.0.0.1:8081/auth/callback",
   "http://localhost:5173",
   "http://localhost:5173/auth/callback",
   "http://127.0.0.1:5173",
   "http://127.0.0.1:5173/auth/callback",
-  "http://127.0.0.1:8081",
-  "http://127.0.0.1:8081/auth/callback",
-  "http://localhost:8081",
-  "http://localhost:8081/auth/callback",
   "https://sandbox.scaffald.com",
   "https://sandbox.scaffald.com/auth/callback",
-  "https://prev.scaffald.com",
-  "https://prev.scaffald.com/auth/callback",
-  "https://beta.scaffald.com",
-  "https://beta.scaffald.com/auth/callback",
+  "https://staging.scaffald.com",
+  "https://staging.scaffald.com/auth/callback",
   "https://dev.scaffald.com",
   "https://dev.scaffald.com/auth/callback",
+  "https://prev.scaffald.com",
+  "https://prev.scaffald.com/auth/callback",
   "https://preview.scaffald.com",
   "https://preview.scaffald.com/auth/callback",
+  "https://beta.scaffald.com",
+  "https://beta.scaffald.com/auth/callback",
   "https://app.scaffald.com",
   "https://app.scaffald.com/auth/callback",
 ]
@@ -87,6 +86,27 @@ enable_signup = true
 double_confirm_changes = true
 # If enabled, users need to confirm their email address before signing in.
 enable_confirmations = true
+
+# Custom branded email templates (see email-templates/ directory)
+[auth.email.template.invite]
+subject = "You're invited to Scaffald"
+content_path = "./supabase/email-templates/invite.html"
+
+[auth.email.template.confirmation]
+subject = "Confirm your Scaffald account"
+content_path = "./supabase/email-templates/confirmation.html"
+
+[auth.email.template.recovery]
+subject = "Reset your Scaffald password"
+content_path = "./supabase/email-templates/recovery.html"
+
+[auth.email.template.magic_link]
+subject = "Your Scaffald sign-in code"
+content_path = "./supabase/email-templates/magic_link.html"
+
+[auth.email.template.email_change]
+subject = "Confirm your new email address"
+content_path = "./supabase/email-templates/email_change.html"
 
 # MFA (issue #175): configurable in config.toml. Leaked password (HIBP) is NOT in config.toml;
 # enable it in Dashboard → Auth → Attack Protection / Password (see supabase/cli#4620).

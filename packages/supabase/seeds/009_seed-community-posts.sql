@@ -10,6 +10,29 @@
 BEGIN;
 
 -- =========================================================
+-- 0. STORAGE BASE URL — resolves to local or remote Supabase
+-- =========================================================
+-- Detect the Supabase API URL from the current database config.
+-- Local dev: http://127.0.0.1:54321, Remote: https://<project>.supabase.co
+DO $$
+BEGIN
+  PERFORM set_config(
+    'app.storage_base',
+    CASE
+      -- Local dev uses the default JWT secret
+      WHEN current_setting('app.settings.jwt_secret', true)
+           = 'super-secret-jwt-token-with-at-least-32-characters-long'
+        THEN 'http://127.0.0.1:54321'
+      ELSE COALESCE(
+        current_setting('app.settings.supabase_url', true),
+        'https://pmtdqrfpumqwkdhpgwcz.supabase.co'
+      )
+    END || '/storage/v1/object/public/community-media/demo',
+    true
+  );
+END $$;
+
+-- =========================================================
 -- 1. MEMBERSHIPS — join users to trade communities
 -- =========================================================
 
@@ -150,8 +173,8 @@ SELECT
   au.id, 'showcase'::community.post_type, 'published'::community.post_status,
   '200A panel upgrade — Federal Pacific swap-out',
   E'Finally got this one done. Homeowner had a Federal Pacific Stab-Lok from 1978 that was showing signs of arcing. Swapped it for a Square D Homeline 200A with whole-home surge protection.\n\nThe old panel had double-tapped breakers everywhere and aluminum branch circuits with no anti-oxidant compound. Spent an extra day re-terminating everything properly.\n\nAlways satisfying to make a home safer. If you still see FPE panels on jobs, flag them immediately — those things are a fire waiting to happen.',
-  ARRAY['https://storage.example.com/community/jake-panel-before.jpg', 'https://storage.example.com/community/jake-panel-after.jpg'],
-  ARRAY['https://storage.example.com/community/jake-panel-before-thumb.jpg', 'https://storage.example.com/community/jake-panel-after-thumb.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/jake-panel-before.jpg', '' || current_setting('app.storage_base') || '/jake-panel-after.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/jake-panel-before.jpg', '' || current_setting('app.storage_base') || '/jake-panel-after.jpg'],
   true, NOW() - INTERVAL '6 days', 18, 3,
   NOW() - INTERVAL '6 days'
 FROM auth.users au WHERE au.email = 'jake.hendricks@example.test'
@@ -185,8 +208,8 @@ SELECT
   au.id, 'showcase'::community.post_type, 'published'::community.post_status,
   'Clean conduit rack — 400ft run, zero splices',
   E'We pulled this 400-foot conduit rack on a warehouse fit-out last week. 2-inch rigid with 90s at every turn. The GC wanted everything exposed and painted so it had to be perfect.\n\nSecret weapon: laser level for the strut channel layout. Made everything dead straight. Inspector walked through and didn''t pull a single cover.',
-  ARRAY['https://storage.example.com/community/ron-conduit-rack.jpg'],
-  ARRAY['https://storage.example.com/community/ron-conduit-rack-thumb.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/ron-conduit-rack.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/ron-conduit-rack.jpg'],
   true, NOW() - INTERVAL '2 days', 22,
   NOW() - INTERVAL '2 days'
 FROM auth.users au WHERE au.email = 'ron.mitchell@wizard.construction'
@@ -208,8 +231,8 @@ SELECT
   au.id, 'showcase'::community.post_type, 'published'::community.post_status,
   'Boiler room re-pipe — 6-inch copper to PEX transition',
   E'Just finished a complete boiler room re-pipe on a 1960s apartment building in Grand Rapids. The existing 6-inch copper mains were shot — pinhole leaks everywhere from decades of hard water.\n\nWe transitioned to 2-inch PEX-A for the distribution lines with ProPress fittings at the boiler connections. Cut install time by 40% compared to sweating every joint.\n\nThe hardest part was working around the asbestos-wrapped pipes — had to bring in an abatement crew before we could touch anything. Planning ahead saved us a week of downtime.',
-  ARRAY['https://storage.example.com/community/marcus-boiler-room.jpg', 'https://storage.example.com/community/marcus-pex-transition.jpg'],
-  ARRAY['https://storage.example.com/community/marcus-boiler-room-thumb.jpg', 'https://storage.example.com/community/marcus-pex-transition-thumb.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/marcus-boiler-room.jpg', '' || current_setting('app.storage_base') || '/marcus-pex-transition.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/marcus-boiler-room.jpg', '' || current_setting('app.storage_base') || '/marcus-pex-transition.jpg'],
   true, NOW() - INTERVAL '8 days', 14, 2,
   NOW() - INTERVAL '8 days'
 FROM auth.users au WHERE au.email = 'marcus.rivera@example.test'
@@ -263,8 +286,8 @@ SELECT
   au.id, 'showcase'::community.post_type, 'published'::community.post_status,
   'Custom white oak staircase — floating treads with hidden steel',
   E'This one took 3 weeks from template to install. Client wanted a floating staircase with white oak treads and no visible supports. We used a hidden steel stringer welded to the wall plate with each tread bolted through the drywall.\n\nThe finish is Rubio Monocoat Pure — one coat, natural look. Every tread was hand-selected for grain match. The hardest part was getting the spacing perfect — code requires 7-3/4" max rise and we hit 7-11/16" on the nose.\n\nMost satisfying build of the year so far.',
-  ARRAY['https://storage.example.com/community/carlos-staircase-side.jpg', 'https://storage.example.com/community/carlos-staircase-detail.jpg'],
-  ARRAY['https://storage.example.com/community/carlos-staircase-side-thumb.jpg', 'https://storage.example.com/community/carlos-staircase-detail-thumb.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/carlos-staircase-side.jpg', '' || current_setting('app.storage_base') || '/carlos-staircase-detail.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/carlos-staircase-side.jpg', '' || current_setting('app.storage_base') || '/carlos-staircase-detail.jpg'],
   true, NOW() - INTERVAL '7 days', 31, 4,
   NOW() - INTERVAL '7 days'
 FROM auth.users au WHERE au.email = 'carlos.gutierrez@example.test'
@@ -282,8 +305,8 @@ SELECT
   au.id, 'showcase'::community.post_type, 'published'::community.post_status,
   'Timber frame pavilion — Douglas fir, traditional joinery',
   E'Built this pavilion for a lakeside property up near Traverse City. All Douglas fir timbers with traditional mortise-and-tenon joinery — no metal connectors visible. The king post truss spans 24 feet.\n\nWe pre-cut everything in the shop and assembled on site in 2 days with a crew of 4 and a small crane. The client wanted it to look like it had been there for 100 years. Mission accomplished.',
-  ARRAY['https://storage.example.com/community/derek-timber-frame.jpg'],
-  ARRAY['https://storage.example.com/community/derek-timber-frame-thumb.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/derek-timber-frame.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/derek-timber-frame.jpg'],
   true, NOW() - INTERVAL '4 days', 27,
   NOW() - INTERVAL '4 days'
 FROM auth.users au WHERE au.email = 'derek.johnson@wizard.construction'
@@ -321,8 +344,8 @@ SELECT
   au.id, 'showcase'::community.post_type, 'published'::community.post_status,
   'Multi-zone mini-split — 5 heads, 1 condenser, clean line sets',
   E'Finished this 5-zone Mitsubishi Hyper Heat install in a 1920s bungalow that had no ductwork. Client didn''t want to tear open walls for ducts so mini-splits were the only option.\n\nRan all line sets through the basement and up interior walls to keep the exterior clean. Used line hide covers on the 15-foot outdoor run to the condenser. Each zone has its own thermostat tied into the kumo cloud controller.\n\nThe Hyper Heat units will handle -13°F so the client could ditch the old boiler completely. Estimated savings: $2,400/year on heating alone.',
-  ARRAY['https://storage.example.com/community/ron-minisplit-interior.jpg', 'https://storage.example.com/community/ron-minisplit-exterior.jpg'],
-  ARRAY['https://storage.example.com/community/ron-minisplit-interior-thumb.jpg', 'https://storage.example.com/community/ron-minisplit-exterior-thumb.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/ron-minisplit-interior.jpg', '' || current_setting('app.storage_base') || '/ron-minisplit-exterior.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/ron-minisplit-interior.jpg', '' || current_setting('app.storage_base') || '/ron-minisplit-exterior.jpg'],
   true, NOW() - INTERVAL '3 days', 19, 2,
   NOW() - INTERVAL '3 days'
 FROM auth.users au WHERE au.email = 'ron.mitchell@wizard.construction'
@@ -360,8 +383,8 @@ SELECT
   au.id, 'showcase'::community.post_type, 'published'::community.post_status,
   'CJP welds on W14x90 moment connections — ultrasonic tested, zero defects',
   E'Just got the UT results back on our moment frame connections for the Detroit Metro project. 47 complete joint penetration welds, zero rejections. \n\nAll done with FCAW-G (flux-core gas-shielded) on A992 steel. Preheat to 250°F per AWS D1.1 and interpass temp held below 600°F.\n\nThe key is prep — every joint got a 45° bevel with a 1/4" root opening and backing bar. No shortcuts on structural. These connections are what keep the building standing in a seismic event.',
-  ARRAY['https://storage.example.com/community/derek-cjp-weld.jpg'],
-  ARRAY['https://storage.example.com/community/derek-cjp-weld-thumb.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/derek-cjp-weld.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/derek-cjp-weld.jpg'],
   true, NOW() - INTERVAL '9 days', 24,
   NOW() - INTERVAL '9 days'
 FROM auth.users au WHERE au.email = 'derek.johnson@wizard.construction'
@@ -379,8 +402,8 @@ SELECT
   au.id, 'critique'::community.post_type, 'published'::community.post_status,
   'Critique my TIG beads — practicing stainless for a food-grade job',
   E'I''ve been practicing TIG on 304 stainless for an upcoming food processing facility. Need sanitary welds with full penetration and smooth crowns — no undercut or porosity allowed.\n\nRunning 1/8" ER308L filler, 80-90 amps on 3/32" tungsten. Argon at 20 CFH with a trailing shield.\n\nI feel like my dime spacing is inconsistent. Any tips on maintaining rhythm? Also — do you walk the cup or freehand on pipe?',
-  ARRAY['https://storage.example.com/community/carlos-tig-beads.jpg'],
-  ARRAY['https://storage.example.com/community/carlos-tig-beads-thumb.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/carlos-tig-beads.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/carlos-tig-beads.jpg'],
   true, NOW() - INTERVAL '3 days', 10, 2,
   NOW() - INTERVAL '3 days'
 FROM auth.users au WHERE au.email = 'carlos.gutierrez@example.test'
@@ -402,8 +425,8 @@ SELECT
   au.id, 'showcase'::community.post_type, 'published'::community.post_status,
   'Complete outdoor living space — paver patio, fire pit, retaining wall',
   E'Wrapped up this backyard transformation last week. Client wanted a full outdoor living space on a sloped lot, so we built a 600 sqft Unilock Beacon Hill paver patio with a 3-foot Versa-Lok retaining wall to level the area.\n\nThe fire pit is natural gas with a 42" Belgard round kit. Added low-voltage landscape lighting throughout — 12 path lights and 6 up-lights on the mature oaks.\n\nTotal project was 3 weeks from demo to final walkthrough. The before/after on this one is dramatic.',
-  ARRAY['https://storage.example.com/community/clay-patio-overview.jpg', 'https://storage.example.com/community/clay-firepit-night.jpg'],
-  ARRAY['https://storage.example.com/community/clay-patio-overview-thumb.jpg', 'https://storage.example.com/community/clay-firepit-night-thumb.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/clay-patio-overview.jpg', '' || current_setting('app.storage_base') || '/clay-firepit-night.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/clay-patio-overview.jpg', '' || current_setting('app.storage_base') || '/clay-firepit-night.jpg'],
   true, NOW() - INTERVAL '5 days', 25, 3,
   NOW() - INTERVAL '5 days'
 FROM auth.users au WHERE au.email = 'clay@unicorn.love'
@@ -441,8 +464,8 @@ SELECT
   au.id, 'showcase'::community.post_type, 'published'::community.post_status,
   'Kitchen cabinet refinish — oak to SW Alabaster, HVLP sprayed',
   E'Transformed these 1990s honey oak cabinets without replacing them. Full process:\n\n1. Degloss with liquid sander (Krudd Kutter)\n2. Fill grain with Aqua Coat grain filler (2 coats, sand between)\n3. Prime with Stix bonding primer (2 coats)\n4. Topcoat: Sherwin-Williams Emerald Urethane in Alabaster, sprayed with Graco FinishPro HVLP\n\nThe grain filler is the step most people skip and it makes all the difference. Without it, you''ll see oak grain texture through the paint forever.\n\nTotal cost for a 25-door kitchen: about $1,800 in materials. Client saved $15K vs replacement.',
-  ARRAY['https://storage.example.com/community/ron-cabinets-before.jpg', 'https://storage.example.com/community/ron-cabinets-after.jpg'],
-  ARRAY['https://storage.example.com/community/ron-cabinets-before-thumb.jpg', 'https://storage.example.com/community/ron-cabinets-after-thumb.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/ron-cabinets-before.jpg', '' || current_setting('app.storage_base') || '/ron-cabinets-after.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/ron-cabinets-before.jpg', '' || current_setting('app.storage_base') || '/ron-cabinets-after.jpg'],
   true, NOW() - INTERVAL '6 days', 20,
   NOW() - INTERVAL '6 days'
 FROM auth.users au WHERE au.email = 'ron.mitchell@wizard.construction'
@@ -464,8 +487,8 @@ SELECT
   au.id, 'showcase'::community.post_type, 'published'::community.post_status,
   'Standing seam metal roof — 24 gauge Kynar, 6 valleys, zero leaks',
   E'Completed a full tear-off and standing seam install on a 3,200 sqft colonial with a complex roofline — 6 valleys, 3 dormers, and a cupola. 24-gauge steel with Kynar 500 finish in Charcoal Gray.\n\nThe valleys were the challenge. We used W-valley pans with hemmed edges instead of open valleys. Took longer but the water channeling is bulletproof.\n\nInstalled 50-year snow guards on all eave sections. This roof should outlast the house. 4-man crew, 8 working days from tear-off to final trim.',
-  ARRAY['https://storage.example.com/community/james-standing-seam.jpg'],
-  ARRAY['https://storage.example.com/community/james-standing-seam-thumb.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/james-standing-seam.jpg'],
+  ARRAY['' || current_setting('app.storage_base') || '/james-standing-seam.jpg'],
   true, NOW() - INTERVAL '4 days', 17, 2,
   NOW() - INTERVAL '4 days'
 FROM auth.users au WHERE au.email = 'james.okafor@wizard.construction'

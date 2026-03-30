@@ -3,7 +3,7 @@ import { ApplicationStep } from '@scf/schemas'
 import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
 import { SaveStatusIndicator, useThemeContext } from '@scaffald/ui'
 import { AlertCircle } from 'lucide-react-native'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button, Text, Row, Stack } from '@scaffald/ui'
 import { ScrollView } from 'react-native'
 import { colors } from '@scaffald/ui/tokens'
@@ -102,11 +102,13 @@ export function ApplicationWizard({
 
   // Track application started for engagement analytics
   const trackEventMutation = useTrackEngagementMutation()
+  const trackEventRef = useRef(trackEventMutation)
+  trackEventRef.current = trackEventMutation
 
   useEffect(() => {
     // Track when application wizard is opened (application started)
     try {
-      trackEventMutation.mutate({
+      trackEventRef.current.mutate({
         eventType: 'application_start',
         targetType: 'job',
         targetId: jobId,
@@ -119,7 +121,7 @@ export function ApplicationWizard({
       // Silent error handling - don't impact user flow
       console.warn('Failed to track application started:', error)
     }
-  }, [jobId, jobTitle, organizationName, trackEventMutation])
+  }, [jobId, jobTitle, organizationName])
 
   // Define application steps - only include custom questions if there are any
   const steps: Array<{ id: ApplicationStepType; label: string }> = [
