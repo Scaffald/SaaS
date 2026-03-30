@@ -23,6 +23,8 @@ npm-debug.log*
 .env.preview
 .env.local
 .env.local*
+.env.dev-local
+.env.*-local
 .env.development.local
 .env.test
 .env.test.local

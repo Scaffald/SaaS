@@ -22,14 +22,14 @@ fi
 case "$MODE" in
   --local)
     echo ""
-    echo "  ━━━ LOCAL MODE ━━━"
+    echo "  ━━━ LOCAL MODE (Docker + local Supabase) ━━━"
     echo "  Supabase: http://127.0.0.1:54321"
     echo "  Starting Docker + local Supabase..."
     echo ""
     pnpm supa start
     echo ""
     echo "  Starting app..."
-    pnpm dev
+    (pnpm watchman:reset || true) && (pnpm --filter @scaffald/ui watch &) && pnpm --filter scaffald-app start
     ;;
   --remote)
     echo ""
@@ -38,7 +38,7 @@ case "$MODE" in
     echo "  Skipping Docker — using remote sandbox database"
     echo ""
     echo "  Starting app..."
-    APP_ENV=dev dotenv -e .env.dev -- pnpm dev
+    APP_ENV=dev dotenv -e .env.dev -- sh -c '(pnpm watchman:reset || true) && (pnpm --filter @scaffald/ui watch &) && pnpm --filter scaffald-app start'
     ;;
   *)
     echo "Usage: ./scripts/dev.sh [--local|--remote]"
