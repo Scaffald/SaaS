@@ -74,7 +74,7 @@ export const applicationsRouter = router({
       })
     }
 
-    if (job.status !== 'published') {
+    if (job.status !== 'open') {
       throw new TRPCError({
         code: 'BAD_REQUEST',
         message: 'This job is not accepting applications',
