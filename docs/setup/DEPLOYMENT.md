@@ -6,22 +6,9 @@ Reference for all deployment environments, DNS, AWS, Supabase, and CI/CD configu
 
 | Environment | Git branch | Web URL | Status |
 |-------------|-----------|---------|--------|
-| Production  | `prod`    | https://beta.scaffald.com | ✅ Live (interim domain) |
-| Preview     | `preview` | https://prev.scaffald.com | ✅ Live (interim domain) |
-| Dev         | `main`    | https://sandbox.scaffald.com | ✅ Live (interim domain) |
-
-### Canonical domains (pending)
-
-`app.scaffald.com`, `preview.scaffald.com`, and `dev.scaffald.com` are owned but currently
-blocked — a deleted AWS account's CloudFront distributions still hold the CNAME registrations
-globally. AWS Support ticket required to release them.
-
-Once released, run:
-```bash
-pnpm deploy:aws:attach-alias E22499AF1OBX1Y app.scaffald.com
-pnpm deploy:aws:attach-alias E1YYVZYC1XER5O preview.scaffald.com
-pnpm deploy:aws:attach-alias E1LG9TCV0OTUY1 dev.scaffald.com
-```
+| Production  | `prod`    | https://app.scaffald.com | ✅ Live |
+| Preview     | `preview` | https://preview.scaffald.com | ✅ Live |
+| Dev         | `main`    | https://dev.scaffald.com | ✅ Live |
 
 ---
 
@@ -31,9 +18,9 @@ pnpm deploy:aws:attach-alias E1LG9TCV0OTUY1 dev.scaffald.com
 
 | Environment | Distribution ID    | Domain alias |
 |-------------|-------------------|--------------|
-| Production  | `E22499AF1OBX1Y`  | beta.scaffald.com |
-| Preview     | `E1YYVZYC1XER5O`  | prev.scaffald.com |
-| Dev         | `E1LG9TCV0OTUY1`  | sandbox.scaffald.com |
+| Production  | `E22499AF1OBX1Y`  | app.scaffald.com |
+| Preview     | `E1YYVZYC1XER5O`  | preview.scaffald.com |
+| Dev         | `E1LG9TCV0OTUY1`  | dev.scaffald.com |
 
 ### S3 buckets
 
@@ -47,13 +34,10 @@ Bucket names are stored in GitHub secrets:
 Hosted zone: `scaffald.com` — `Z03807932GT9W30LQ0T67`
 
 Current active records:
-- `sandbox.scaffald.com` → ALIAS to `E1LG9TCV0OTUY1` CloudFront domain
-- `prev.scaffald.com` → ALIAS to `E1YYVZYC1XER5O` CloudFront domain
-- `beta.scaffald.com` → ALIAS to `E22499AF1OBX1Y` CloudFront domain
+- `dev.scaffald.com` → ALIAS to `E1LG9TCV0OTUY1` CloudFront domain
+- `preview.scaffald.com` → ALIAS to `E1YYVZYC1XER5O` CloudFront domain
+- `app.scaffald.com` → ALIAS to `E22499AF1OBX1Y` CloudFront domain
 - `auth.scaffald.com` → CNAME to Supabase custom domain (production project)
-
-Records for `dev.scaffald.com`, `preview.scaffald.com`, `app.scaffald.com` were removed to
-prevent 403 errors while the canonical domains are blocked.
 
 ### IAM / credentials
 
@@ -90,13 +74,10 @@ Dev/preview branches use their default Supabase URLs (`<ref>.supabase.co`).
 All of the following are allowlisted in `packages/supabase/config.toml` and pushed to the
 remote project via `pnpm supa config push --project-ref <ref>`:
 
-- `https://sandbox.scaffald.com` + `/auth/callback`
-- `https://prev.scaffald.com` + `/auth/callback`
-- `https://beta.scaffald.com` + `/auth/callback`
-- `https://dev.scaffald.com` + `/auth/callback` (pre-added for when canonical domain is reclaimed)
+- `https://dev.scaffald.com` + `/auth/callback`
 - `https://preview.scaffald.com` + `/auth/callback`
 - `https://app.scaffald.com` + `/auth/callback`
-- `http://localhost:5173` + callback (Forsured web dev)
+- `http://localhost:5173` + callback (web dev)
 - `http://localhost:8081` + callback (Expo dev)
 
 ### Migration note
@@ -133,23 +114,21 @@ A single GCP OAuth client is shared across all environments. The same client ID 
 apply to prod, preview, and dev.
 
 **Authorised JavaScript origins** (must be set in Google Cloud Console):
-- `https://sandbox.scaffald.com`
-- `https://prev.scaffald.com`
-- `https://beta.scaffald.com`
+- `https://app.scaffald.com`
+- `https://preview.scaffald.com`
+- `https://dev.scaffald.com`
 
 **Authorised redirect URIs** (two sets — app-to-Supabase and Google-to-Supabase):
 
 App callback (handled by the web app):
-- `https://sandbox.scaffald.com/auth/callback`
-- `https://prev.scaffald.com/auth/callback`
-- `https://beta.scaffald.com/auth/callback`
+- `https://app.scaffald.com/auth/callback`
+- `https://preview.scaffald.com/auth/callback`
+- `https://dev.scaffald.com/auth/callback`
 
 Supabase callback (Google redirects here after OAuth):
 - `https://auth.scaffald.com/auth/v1/callback` (prod — custom domain)
 - `https://uhjkipdwayqfihkanabk.supabase.co/auth/v1/callback` (preview branch)
 - `https://pmtdqrfpumqwkdhpgwcz.supabase.co/auth/v1/callback` (dev branch)
-
-> When canonical domains are reclaimed, add `app/dev/preview.scaffald.com` variants here too.
 
 ---
 

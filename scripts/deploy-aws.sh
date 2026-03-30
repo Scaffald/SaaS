@@ -201,10 +201,10 @@ if [ -z "$DISTRIBUTION_ID" ]; then
     # Try to get distribution ID from CloudFront
     case "$ENV" in
         dev)
-            DOMAIN_PATTERN="dev.app.scaffald.com"
+            DOMAIN_PATTERN="dev.scaffald.com"
             ;;
         preview)
-            DOMAIN_PATTERN="preview.app.scaffald.com"
+            DOMAIN_PATTERN="preview.scaffald.com"
             ;;
         production)
             DOMAIN_PATTERN="app.scaffald.com"

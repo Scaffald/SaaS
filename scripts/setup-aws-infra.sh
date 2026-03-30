@@ -24,9 +24,9 @@ fi
 case "$ENV" in
     dev)
         BUCKET_SUFFIX="dev"
-        DOMAIN_NAME="dev.app.scaffald.com"
+        DOMAIN_NAME="dev.scaffald.com"
         ENV_LABEL="Development"
-        SETUP_DNS=false
+        SETUP_DNS=true
         ;;
     preview)
         BUCKET_SUFFIX="preview"

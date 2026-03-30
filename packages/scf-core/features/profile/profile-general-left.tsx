@@ -20,6 +20,7 @@ import { useSafeToast } from "@scf/core/hooks/useSafeToast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { JSONContent } from "@tiptap/core";
 import { useEffect, useRef, useState } from "react";
+import { Platform } from "react-native";
 import { Controller, useForm } from "react-hook-form";
 import {
   Input,
@@ -156,7 +157,7 @@ export function ProfileGeneralLeft() {
 
   // Browser navigation guard - prevent data loss on page close/navigation
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (Platform.OS !== 'web' || typeof window === "undefined") return;
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (isDirty) {
