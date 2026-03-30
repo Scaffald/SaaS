@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { Text, Stack, Row, Button, Spinner, Separator, useThemeContext } from '@scaffald/ui'
+import { Text, Stack, Row, Card, Button, Spinner, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import type { Href } from 'expo-router'
@@ -72,47 +72,47 @@ export function CommunityFeedPage({ slug }: Props) {
   return (
     <Stack gap={16}>
       {/* Community Header */}
-      <Stack gap={8}>
-        <Row align="center" justify="space-between" style={{ flexWrap: 'wrap', gap: 12 }}>
-          <Stack gap={2} style={{ flex: 1, minWidth: 200 }}>
-            <Text style={{ fontSize: 24, fontWeight: '700' }}>{community.name}</Text>
-            <Text style={{ color: colors.text[t].secondary }}>{community.description}</Text>
-          </Stack>
-          {community.is_member ? (
-            <Row gap={8}>
+      <Card variant="glass" glassMaterial="thin" padding="lg">
+        <Stack gap={8}>
+          <Row align="center" justify="space-between" style={{ flexWrap: 'wrap', gap: 12 }}>
+            <Stack gap={2} style={{ flex: 1, minWidth: 200 }}>
+              <Text style={{ fontSize: 24, fontWeight: '700' }}>{community.name}</Text>
+              <Text style={{ color: colors.text[t].secondary }}>{community.description}</Text>
+            </Stack>
+            {community.is_member ? (
+              <Row gap={8}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onPress={() => router.push(RouteBuilder.communityPostCreate(slug) as Href)}
+                >
+                  New Post
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onPress={() => leaveMutation.mutate(community.id)}
+                >
+                  Leave
+                </Button>
+              </Row>
+            ) : (
               <Button
-                variant="outline"
+                variant="filled"
                 size="sm"
-                onPress={() => router.push(RouteBuilder.communityPostCreate(slug) as Href)}
+                onPress={() => joinMutation.mutate({ communityId: community.id })}
               >
-                New Post
+                Join Community
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onPress={() => leaveMutation.mutate(community.id)}
-              >
-                Leave
-              </Button>
-            </Row>
-          ) : (
-            <Button
-              variant="filled"
-              size="sm"
-              onPress={() => joinMutation.mutate({ communityId: community.id })}
-            >
-              Join Community
-            </Button>
-          )}
-        </Row>
-        <Row gap={16}>
-          <Text style={{ color: colors.text[t].secondary }}>{community.member_count} members</Text>
-          <Text style={{ color: colors.text[t].secondary }}>{community.post_count} posts</Text>
-          {community.is_verified && <Text style={{ color: colors.text[t].primary }}>Verified</Text>}
-        </Row>
-      </Stack>
-
-      <Separator />
+            )}
+          </Row>
+          <Row gap={16}>
+            <Text style={{ color: colors.text[t].secondary }}>{community.member_count} members</Text>
+            <Text style={{ color: colors.text[t].secondary }}>{community.post_count} posts</Text>
+            {community.is_verified && <Text style={{ color: colors.text[t].primary }}>Verified</Text>}
+          </Row>
+        </Stack>
+      </Card>
 
       {/* Feed */}
       {isFeedLoading ? (

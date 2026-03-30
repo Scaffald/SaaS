@@ -1,6 +1,6 @@
-import { Text, Stack, Row, Avatar, useThemeContext } from '@scaffald/ui'
+import { Text, Stack, Row, Card, Avatar, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import { Image, Pressable } from 'react-native'
+import { Image } from 'react-native'
 import { StarRating } from './StarRating'
 import type { CommunityPost } from '@scaffald/sdk/resources/community-posts'
 
@@ -14,16 +14,8 @@ export function PostCard({ post, onPress }: Props) {
   const t = theme === 'dark' ? 'dark' : 'light'
 
   return (
-    <Pressable onPress={onPress}>
-      <Stack
-        gap={8}
-        style={{
-          padding: 16,
-          borderRadius: 12,
-          borderWidth: 1,
-          borderColor: colors.border[t].default,
-        }}
-      >
+    <Card pressable onPress={onPress} padding="md" variant="glass" glassMaterial="thin">
+      <Stack gap={8}>
         {/* Author row */}
         <Row align="center" gap={8}>
           <Avatar
@@ -134,6 +126,6 @@ export function PostCard({ post, onPress }: Props) {
           )}
         </Row>
       </Stack>
-    </Pressable>
+    </Card>
   )
 }
