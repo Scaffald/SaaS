@@ -25,6 +25,10 @@ export default function JobsLayout() {
           name="applications/[applicationId]/inquiry"
           options={{ title: 'Inquiry' }}
         />
+        <Drawer.Screen
+          name="applications/[applicationId]/index"
+          options={{ drawerItemStyle: { display: 'none' }, title: 'Application Detail' }}
+        />
         <Drawer.Screen name="my-listings/index" options={{ title: 'My Listings' }} />
       </DrawerLayout>
     </ErrorBoundary>

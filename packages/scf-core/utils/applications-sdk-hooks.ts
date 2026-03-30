@@ -64,6 +64,23 @@ export function useApplications(params?: ListApplicationsParams, options?: { ena
   })
 }
 
+/** Get activity feed for an application */
+export function useApplicationActivity(
+  applicationId: string | undefined,
+  options?: { enabled?: boolean }
+) {
+  const client = useScaffaldJobsClient()
+  return useQuery({
+    queryKey: ['applications', 'activity', applicationId],
+    queryFn: async () => {
+      if (!client || !applicationId) throw new Error('Missing client or applicationId')
+      return client.applications.getActivity(applicationId)
+    },
+    enabled: !!client && !!applicationId && options?.enabled !== false,
+    staleTime: 2 * 60 * 1000,
+  })
+}
+
 /** Get messages for an application */
 export function useApplicationMessages(
   applicationId: string | undefined,

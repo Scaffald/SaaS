@@ -3,8 +3,6 @@ import { authMiddleware, requireAuth } from '../middleware/auth.ts'
 import {
   applicationCreateSchema,
   applicationUpdateSchema,
-  attachmentMetadataSchema,
-  customQuestionAnswerSchema,
 } from '../../_shared/application-schemas.ts'
 
 const app = new OpenAPIHono()
@@ -15,6 +13,37 @@ app.use('*', authMiddleware)
 /**
  * Zod Schemas for Applications API
  */
+
+// DB status → API status mapping
+const STATUS_DB_TO_API: Record<string, string> = {
+  new: 'pending',
+  screen: 'reviewing',
+}
+
+function mapDbStatus(dbStatus: string): string {
+  return STATUS_DB_TO_API[dbStatus] ?? dbStatus
+}
+
+// Job summary embedded in application responses
+const jobSummarySchema = z
+  .object({
+    id: z.string().uuid(),
+    title: z.string().nullable(),
+    location: z.string().nullable(),
+    employment_type: z.string().nullable(),
+    remote_option: z.string().nullable(),
+    pay_range_min_cents: z.number().int().nullable(),
+    pay_range_max_cents: z.number().int().nullable(),
+    pay_range_type: z.string().nullable(),
+    organization: z
+      .object({
+        id: z.string().uuid(),
+        name: z.string().nullable(),
+        logo_url: z.string().nullable(),
+      })
+      .nullable(),
+  })
+  .openapi('ApplicationJobSummary')
 
 // Application response schema (public fields only)
 const applicationSchema = z
@@ -32,19 +61,13 @@ const applicationSchema = z
       'rejected',
       'withdrawn',
     ]),
-    current_location: z.string().nullable(),
-    willing_to_relocate: z.boolean().nullable(),
-    years_experience: z.number().int().nullable(),
-    is_authorized_to_work: z.boolean().nullable(),
-    earliest_start_date: z.string().nullable(),
     screening_answers: z.record(z.string(), z.unknown()).nullable(),
-    custom_question_answers: z.array(customQuestionAnswerSchema).nullable(),
-    attachments: z.record(z.string(), attachmentMetadataSchema).nullable(),
+    attachment_metadata: z.record(z.string(), z.unknown()).nullable(),
     completed_steps: z.array(z.string()).nullable(),
-    is_complete: z.boolean(),
-    applied_at: z.string(),
-    updated_at: z.string(),
+    created_at: z.string(),
+    stage_changed_at: z.string().nullable(),
     score: z.number().int().nullable(),
+    job: jobSummarySchema.nullable().optional(),
   })
   .openapi('Application')
 
@@ -144,16 +167,26 @@ app.openapi(listApplicationsRoute, async (c) => {
     return c.json({ error: 'Unauthorized', message: 'Authentication required' }, 401)
   }
 
+  // Map API status filter back to DB status for querying
+  const STATUS_API_TO_DB: Record<string, string> = {
+    pending: 'new',
+    reviewing: 'screen',
+  }
+  const dbStatus = status ? (STATUS_API_TO_DB[status] ?? status) : undefined
+
   let query = supabase
     .schema('core')
     .from('applications')
-    .select('*', { count: 'exact' })
+    .select(
+      '*, job:jobs!job_id(id, title, location, employment_type, remote_option, pay_range_min_cents, pay_range_max_cents, pay_range_type, organization:organizations!organization_id(id, name, logo_url))',
+      { count: 'exact' }
+    )
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1)
 
-  if (status) {
-    query = query.eq('status', status)
+  if (dbStatus) {
+    query = query.eq('status', dbStatus)
   }
 
   const { data, error, count } = await query
@@ -166,7 +199,7 @@ app.openapi(listApplicationsRoute, async (c) => {
   const rows = data ?? []
   const mapped = rows.map((row: Record<string, unknown>) => ({
     ...row,
-    applied_at: row.applied_at ?? row.created_at,
+    status: mapDbStatus(row.status as string),
   }))
 
   return c.json(
@@ -441,7 +474,9 @@ app.openapi(getApplicationRoute, async (c) => {
   const { data: application, error } = await supabase
     .schema('core')
     .from('applications')
-    .select('*')
+    .select(
+      '*, job:jobs!job_id(id, title, location, employment_type, remote_option, pay_range_min_cents, pay_range_max_cents, pay_range_type, organization:organizations!organization_id(id, name, logo_url))'
+    )
     .eq('id', id)
     .single()
 
@@ -464,7 +499,12 @@ app.openapi(getApplicationRoute, async (c) => {
     )
   }
 
-  return c.json({ data: application }, 200)
+  return c.json({
+    data: {
+      ...application,
+      status: mapDbStatus(application.status as string),
+    },
+  }, 200)
 })
 
 /**
@@ -865,6 +905,88 @@ async function generateWebhookSignature(payload: unknown, secret: string): Promi
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('')
 }
+
+/**
+ * GET /v1/applications/:id/activity
+ * Get activity feed for an application
+ */
+const activitySchema = z
+  .object({
+    id: z.string().uuid(),
+    application_id: z.string().uuid(),
+    event_type: z.string(),
+    details: z.record(z.string(), z.unknown()).nullable(),
+    created_at: z.string(),
+  })
+  .openapi('ApplicationActivity')
+
+const getActivityRoute = createRoute({
+  method: 'get',
+  path: '/{id}/activity',
+  tags: ['Applications'],
+  summary: 'Get application activity feed',
+  description: 'Get the activity timeline for a specific application.',
+  middleware: requireAuth,
+  request: {
+    params: z.object({
+      id: z.string().uuid(),
+    }),
+  },
+  responses: {
+    200: {
+      description: 'Activity feed',
+      content: {
+        'application/json': {
+          schema: z.object({ data: z.array(activitySchema) }),
+        },
+      },
+    },
+    401: { description: 'Unauthorized', content: { 'application/json': { schema: errorResponseSchema } } },
+    403: { description: 'Forbidden', content: { 'application/json': { schema: errorResponseSchema } } },
+    404: { description: 'Not found', content: { 'application/json': { schema: errorResponseSchema } } },
+  },
+  security: [{ bearerAuth: [] }],
+})
+
+app.openapi(getActivityRoute, async (c) => {
+  const supabase = c.get('supabase')
+  const user = c.get('user')
+  const { id } = c.req.valid('param')
+
+  if (!user) {
+    return c.json({ error: 'Unauthorized' }, 401)
+  }
+
+  // Verify user owns this application
+  const { data: application, error: appError } = await supabase
+    .schema('core')
+    .from('applications')
+    .select('id, user_id')
+    .eq('id', id)
+    .single()
+
+  if (appError || !application) {
+    return c.json({ error: 'Not Found', message: 'Application not found' }, 404)
+  }
+
+  if (application.user_id !== user.id) {
+    return c.json({ error: 'Forbidden', message: 'You can only access your own applications' }, 403)
+  }
+
+  const { data: activity, error } = await supabase
+    .schema('core')
+    .from('application_activity')
+    .select('id, application_id, event_type, details, created_at')
+    .eq('application_id', id)
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Error fetching activity:', error)
+    return c.json({ error: 'Internal Server Error', message: error.message }, 500)
+  }
+
+  return c.json({ data: activity ?? [] }, 200)
+})
 
 // Generate OpenAPI documentation
 app.doc('/openapi.json', {
