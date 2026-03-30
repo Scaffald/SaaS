@@ -1,5 +1,4 @@
 import { useCallback, useMemo } from 'react'
-import { FlatList } from 'react-native'
 import { Text, Stack, Row, Button, Spinner, Separator, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
@@ -74,8 +73,8 @@ export function CommunityFeedPage({ slug }: Props) {
     <Stack gap={16}>
       {/* Community Header */}
       <Stack gap={8}>
-        <Row align="center" justify="space-between">
-          <Stack gap={2}>
+        <Row align="center" justify="space-between" style={{ flexWrap: 'wrap', gap: 12 }}>
+          <Stack gap={2} style={{ flex: 1, minWidth: 200 }}>
             <Text style={{ fontSize: 24, fontWeight: '700' }}>{community.name}</Text>
             <Text style={{ color: colors.text[t].secondary }}>{community.description}</Text>
           </Stack>
@@ -134,26 +133,25 @@ export function CommunityFeedPage({ slug }: Props) {
           )}
         </Stack>
       ) : (
-        <FlatList
-          data={posts}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
+        <Stack gap={12}>
+          {posts.map((item) => (
             <PostCard
+              key={item.id}
               post={item}
               onPress={() => router.push(RouteBuilder.communityPostDetail(slug, item.id) as Href)}
             />
+          ))}
+          {isFetchingNextPage && (
+            <Stack align="center" style={{ paddingVertical: 16 }}>
+              <Spinner variant="ios" size="sm" />
+            </Stack>
           )}
-          ItemSeparatorComponent={() => <Stack style={{ height: 12 }} />}
-          onEndReached={handleLoadMore}
-          onEndReachedThreshold={0.5}
-          ListFooterComponent={
-            isFetchingNextPage ? (
-              <Stack align="center" style={{ paddingVertical: 16 }}>
-                <Spinner variant="ios" size="sm" />
-              </Stack>
-            ) : null
-          }
-        />
+          {hasNextPage && !isFetchingNextPage && (
+            <Button variant="outline" size="sm" onPress={handleLoadMore} style={{ alignSelf: 'center' }}>
+              Load More
+            </Button>
+          )}
+        </Stack>
       )}
     </Stack>
   )

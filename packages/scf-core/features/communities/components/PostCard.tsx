@@ -1,6 +1,6 @@
 import { Text, Stack, Row, Avatar, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import { Pressable } from 'react-native'
+import { Image, Pressable } from 'react-native'
 import { StarRating } from './StarRating'
 import type { CommunityPost } from '@scaffald/sdk/resources/community-posts'
 
@@ -62,21 +62,45 @@ export function PostCard({ post, onPress }: Props) {
           {post.body}
         </Text>
 
-        {/* Media thumbnail (Polaroid style) */}
+        {/* Media thumbnails */}
         {post.media_thumbnails && post.media_thumbnails.length > 0 && (
-          <Stack
-            style={{
-              height: 180,
-              borderRadius: 8,
-              overflow: 'hidden',
-              backgroundColor: colors.bg[t].muted,
-            }}
-          >
-            {/* Image would render here */}
-            <Text style={{ color: colors.text[t].secondary, padding: 8, fontSize: 12 }}>
-              {post.media_thumbnails.length} media
-            </Text>
-          </Stack>
+          <Row gap={8} style={{ flexWrap: 'wrap' }}>
+            {post.media_thumbnails.slice(0, 3).map((url, idx) => (
+              <Stack
+                key={idx}
+                style={{
+                  flex: post.media_thumbnails.length === 1 ? 1 : undefined,
+                  width: post.media_thumbnails.length === 1 ? '100%' : 180,
+                  height: 180,
+                  borderRadius: 8,
+                  overflow: 'hidden',
+                  backgroundColor: colors.bg[t].muted,
+                }}
+              >
+                <Image
+                  source={{ uri: url }}
+                  style={{ width: '100%', height: '100%' }}
+                  resizeMode="cover"
+                />
+              </Stack>
+            ))}
+            {post.media_thumbnails.length > 3 && (
+              <Stack
+                align="center"
+                justify="center"
+                style={{
+                  width: 60,
+                  height: 180,
+                  borderRadius: 8,
+                  backgroundColor: colors.bg[t].muted,
+                }}
+              >
+                <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text[t].secondary }}>
+                  +{post.media_thumbnails.length - 3}
+                </Text>
+              </Stack>
+            )}
+          </Row>
         )}
 
         {/* Stats row */}
