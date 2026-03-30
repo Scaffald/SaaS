@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NationSearch Background Check ATS — Interactive Prototype</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #111; color: #fff; }
+
+    /* Navigation */
+    .proto-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: #0f172a; border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding: 0 24px; display: flex; align-items: center; gap: 0; height: 48px;
+      overflow-x: auto; white-space: nowrap;
+    }
+    .proto-nav .brand {
+      font-weight: 700; font-size: 14px; color: #fff; margin-right: 20px;
+      padding-right: 20px; border-right: 1px solid rgba(255,255,255,0.15);
+      flex-shrink: 0;
+    }
+    .proto-nav button {
+      background: none; border: none; color: rgba(255,255,255,0.5); font-size: 12px;
+      padding: 14px 14px; cursor: pointer; border-bottom: 2px solid transparent;
+      white-space: nowrap; font-family: inherit; transition: all 0.15s;
+    }
+    .proto-nav button:hover { color: rgba(255,255,255,0.8); }
+    .proto-nav button.active {
+      color: #fff; font-weight: 600; border-bottom-color: #fff;
+    }
+    .proto-nav .counter {
+      margin-left: auto; font-size: 11px; color: rgba(255,255,255,0.4);
+      flex-shrink: 0; padding-left: 16px;
+    }
+
+    /* Screens */
+    .screen { display: none; padding: 64px 24px 40px; max-width: 1200px; margin: 0 auto; }
+    .screen.active { display: block; }
+    .screen-title { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 16px; text-align: center; }
+
+    /* Mockup Frame */
+    .mock-frame {
+      background: #fff; border-radius: 12px; overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3); color: #1a1a1a; font-size: 13px;
+    }
+    .mock-url {
+      background: #f3f4f6; padding: 8px 16px; font-size: 11px; color: #6b7280;
+      border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; gap: 8px;
+    }
+    .mock-url .dots { display: flex; gap: 4px; }
+    .mock-url .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .mock-url .dot-r { background: #fca5a5; }
+    .mock-url .dot-y { background: #fcd34d; }
+    .mock-url .dot-g { background: #86efac; }
+    .mock-url .url-text { background: #fff; border-radius: 4px; padding: 3px 12px; flex: 1; font-size: 11px; color: #9ca3af; }
+
+    /* Clickable areas */
+    [data-goto] { cursor: pointer; transition: opacity 0.15s; }
+    [data-goto]:hover { opacity: 0.85; }
+
+    /* Bottom nav */
+    .screen-nav {
+      display: flex; justify-content: center; gap: 12px; margin-top: 24px;
+    }
+    .screen-nav button {
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+      color: #fff; padding: 8px 20px; border-radius: 6px; font-size: 13px;
+      cursor: pointer; font-family: inherit; transition: all 0.15s;
+    }
+    .screen-nav button:hover { background: rgba(255,255,255,0.2); }
+    .screen-nav button:disabled { opacity: 0.3; cursor: default; }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<div class="proto-nav">
+  <span class="brand">NationSearch Prototype</span>
+  <button onclick="goTo(0)" id="nav-0">1. Public Page</button>
+  <button onclick="goTo(1)" id="nav-1">2. Onboarding</button>
+  <button onclick="goTo(2)" id="nav-2">3. Dashboard</button>
+  <button onclick="goTo(3)" id="nav-3">4. Case Detail</button>
+  <button onclick="goTo(4)" id="nav-4">5. Flow Builder</button>
+  <button onclick="goTo(5)" id="nav-5">6. Client View</button>
+  <button onclick="goTo(6)" id="nav-6">7. Applicant Form</button>
+  <button onclick="goTo(7)" id="nav-7">8. Applicant Status</button>
+  <span class="counter" id="counter">1 / 8</span>
+</div>
+
+<!-- ==================== SCREEN 1: Public Page ==================== -->
+<div class="screen active" id="screen-0">
+  <div class="screen-title">Screen 1 of 8 — What a prospective client sees</div>
+  <div class="mock-frame">
+    <div class="mock-url">
+      <div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+      <div class="url-text">scaffald.com/services/nationsearch</div>
+    </div>
+
+    <!-- Nav -->
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; border-bottom: 1px solid #e5e7eb; background: #fafafa;">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="font-weight: 700; font-size: 18px; color: #111;">Scaffald</span>
+        <span style="color: #9ca3af;">|</span>
+        <span style="font-size: 14px; color: #6b7280;">Jobs</span>
+        <span style="font-size: 14px; color: #6b7280;">Companies</span>
+        <span style="font-size: 14px; color: #6b7280;">Recruiters</span>
+        <span style="font-size: 14px; font-weight: 600; color: #111; border-bottom: 2px solid #111; padding-bottom: 2px;">Services</span>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <span style="font-size: 14px; color: #6b7280;">Log in</span>
+        <span style="font-size: 14px; background: #111; color: #fff; padding: 6px 16px; border-radius: 6px;">Sign Up</span>
+      </div>
+    </div>
+
+    <!-- Hero -->
+    <div style="padding: 48px 32px 32px; background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%); color: #fff;">
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+        <div style="width: 64px; height: 64px; background: #fff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; color: #0f172a; line-height: 1.1; text-align: center;">NS</div>
+        <div>
+          <h1 style="margin: 0; font-size: 28px; font-weight: 700;">NationSearch</h1>
+          <p style="margin: 4px 0 0; font-size: 15px; opacity: 0.8;">Background Screening &amp; Investigations &bull; Denver, CO &bull; Since 2007</p>
+        </div>
+      </div>
+      <p style="font-size: 16px; line-height: 1.6; max-width: 640px; opacity: 0.9; margin: 0;">Accurate, compliant background checks with a human touch. We don't just run databases — we verify identities, call courthouses, and make sure you're getting the right information about the right person.</p>
+      <div style="margin-top: 24px;">
+        <span data-goto="1" style="background: #fff; color: #0f172a; padding: 10px 24px; border-radius: 8px; font-weight: 600; font-size: 15px; display: inline-block;">Get Started</span>
+        <span style="border: 1px solid rgba(255,255,255,0.4); color: #fff; padding: 10px 24px; border-radius: 8px; font-size: 15px; margin-left: 12px; display: inline-block;">Learn More</span>
+      </div>
+    </div>
+
+    <!-- Trust Bar -->
+    <div style="display: flex; justify-content: center; gap: 40px; padding: 20px 32px; background: #f8fafc; border-bottom: 1px solid #e5e7eb; flex-wrap: wrap;">
+      <div style="text-align: center;"><div style="font-size: 22px; font-weight: 700; color: #111;">17+</div><div style="font-size: 12px; color: #6b7280;">Years in Business</div></div>
+      <div style="text-align: center;"><div style="font-size: 22px; font-weight: 700; color: #111;">50</div><div style="font-size: 12px; color: #6b7280;">States Covered</div></div>
+      <div style="text-align: center;"><div style="font-size: 22px; font-weight: 700; color: #111;">2 day</div><div style="font-size: 12px; color: #6b7280;">Avg. Turnaround</div></div>
+      <div style="text-align: center;"><div style="font-size: 22px; font-weight: 700; color: #111;">99.8%</div><div style="font-size: 12px; color: #6b7280;">Accuracy Rate</div></div>
+      <div style="text-align: center;"><div style="font-size: 22px; font-weight: 700; color: #111;">4.9</div><div style="font-size: 12px; color: #6b7280;">Client Rating</div></div>
+    </div>
+
+    <!-- Services -->
+    <div style="padding: 32px;">
+      <h3 style="font-size: 18px; font-weight: 600; margin: 0 0 20px; color: #111;">Services</h3>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+        <div style="border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px;"><div style="font-size: 13px; font-weight: 600; color: #111; margin-bottom: 6px;">Criminal Records</div><div style="font-size: 12px; color: #6b7280; line-height: 1.5;">County, statewide, federal, and multijurisdictional database searches</div><div style="font-size: 13px; font-weight: 600; color: #0f172a; margin-top: 10px;">$15 - $85</div></div>
+        <div style="border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px;"><div style="font-size: 13px; font-weight: 600; color: #111; margin-bottom: 6px;">Employment Verification</div><div style="font-size: 12px; color: #6b7280; line-height: 1.5;">Verify past employers, titles, dates, and reason for leaving</div><div style="font-size: 13px; font-weight: 600; color: #0f172a; margin-top: 10px;">$12 - $35</div></div>
+        <div style="border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px;"><div style="font-size: 13px; font-weight: 600; color: #111; margin-bottom: 6px;">Education Verification</div><div style="font-size: 12px; color: #6b7280; line-height: 1.5;">Confirm degrees, certifications, and dates of attendance</div><div style="font-size: 13px; font-weight: 600; color: #0f172a; margin-top: 10px;">$10 - $25</div></div>
+        <div style="border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px;"><div style="font-size: 13px; font-weight: 600; color: #111; margin-bottom: 6px;">Motor Vehicle Records</div><div style="font-size: 12px; color: #6b7280; line-height: 1.5;">Driving history, license status, violations, and suspensions</div><div style="font-size: 13px; font-weight: 600; color: #0f172a; margin-top: 10px;">$8 - $20</div></div>
+        <div style="border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px;"><div style="font-size: 13px; font-weight: 600; color: #111; margin-bottom: 6px;">Credit Reports</div><div style="font-size: 12px; color: #6b7280; line-height: 1.5;">TransUnion credit history for financial responsibility roles</div><div style="font-size: 13px; font-weight: 600; color: #0f172a; margin-top: 10px;">$10 - $18</div></div>
+        <div style="border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px;"><div style="font-size: 13px; font-weight: 600; color: #111; margin-bottom: 6px;">Drug Testing</div><div style="font-size: 12px; color: #6b7280; line-height: 1.5;">Coordination with certified labs for pre-employment screening</div><div style="font-size: 13px; font-weight: 600; color: #0f172a; margin-top: 10px;">$25 - $65</div></div>
+      </div>
+    </div>
+
+    <!-- Why NationSearch -->
+    <div style="padding: 0 32px 32px;">
+      <h3 style="font-size: 18px; font-weight: 600; margin: 0 0 20px; color: #111;">Why NationSearch?</h3>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+        <div style="background: #f8fafc; border-radius: 10px; padding: 20px;"><div style="font-size: 14px; font-weight: 600; color: #111; margin-bottom: 6px;">Human-verified accuracy</div><div style="font-size: 13px; color: #6b7280; line-height: 1.5;">Every result is reviewed by a real person. We call courthouses, verify identities, and confirm records belong to your candidate.</div></div>
+        <div style="background: #f8fafc; border-radius: 10px; padding: 20px;"><div style="font-size: 14px; font-weight: 600; color: #111; margin-bottom: 6px;">Not a data mine</div><div style="font-size: 13px; color: #6b7280; line-height: 1.5;">Unlike high-volume automated services, we don't just dump database results. We verify every match to protect you and your candidates.</div></div>
+        <div style="background: #f8fafc; border-radius: 10px; padding: 20px;"><div style="font-size: 14px; font-weight: 600; color: #111; margin-bottom: 6px;">FCRA compliant</div><div style="font-size: 13px; color: #6b7280; line-height: 1.5;">Full compliance with federal and state-specific regulations. We report what's legally reportable — you make the decisions.</div></div>
+        <div style="background: #f8fafc; border-radius: 10px; padding: 20px;"><div style="font-size: 14px; font-weight: 600; color: #111; margin-bottom: 6px;">Personal service</div><div style="font-size: 13px; color: #6b7280; line-height: 1.5;">You'll work with real people who know your account. Questions? Pick up the phone. We're not a chatbot.</div></div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div data-goto="1" style="padding: 32px; background: #f0f4ff; text-align: center; border-top: 1px solid #e5e7eb;">
+      <div style="font-size: 18px; font-weight: 600; color: #111; margin-bottom: 8px;">Ready to get started?</div>
+      <div style="font-size: 14px; color: #6b7280; margin-bottom: 20px;">Tell us about your business and we'll put together a custom proposal.</div>
+      <span style="background: #0f172a; color: #fff; padding: 12px 32px; border-radius: 8px; font-weight: 600; font-size: 15px; display: inline-block;">Request a Proposal</span>
+    </div>
+  </div>
+  <div class="screen-nav">
+    <button disabled>&larr; Previous</button>
+    <button onclick="goTo(1)">Next: Onboarding &rarr;</button>
+  </div>
+</div>
+
+<!-- ==================== SCREEN 2: Onboarding Intake ==================== -->
+<div class="screen" id="screen-1">
+  <div class="screen-title">Screen 2 of 8 — Client onboarding intake form (Step 1 + Step 2)</div>
+  <div class="mock-frame">
+    <div class="mock-url">
+      <div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+      <div class="url-text">scaffald.com/services/nationsearch/get-started</div>
+    </div>
+
+    <!-- Nav -->
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; border-bottom: 1px solid #e5e7eb; background: #fafafa;">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span data-goto="0" style="font-weight: 700; font-size: 18px; color: #111;">Scaffald</span>
+        <span style="color: #9ca3af;">|</span>
+        <span data-goto="0" style="font-size: 14px; color: #6b7280;">NationSearch</span>
+        <span style="font-size: 14px; color: #6b7280;">&rsaquo;</span>
+        <span style="font-size: 14px; font-weight: 600; color: #111;">Get Started</span>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div style="display: flex; justify-content: center; gap: 0; padding: 24px 32px 0;">
+      <div style="display: flex; align-items: center;"><div style="width: 32px; height: 32px; background: #0f172a; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600;">1</div><span style="font-size: 13px; font-weight: 600; color: #111; margin-left: 8px;">Your Company</span></div>
+      <div style="width: 48px; height: 1px; background: #d1d5db; margin: 0 12px; align-self: center;"></div>
+      <div style="display: flex; align-items: center;"><div style="width: 32px; height: 32px; background: #e5e7eb; color: #9ca3af; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px;">2</div><span style="font-size: 13px; color: #9ca3af; margin-left: 8px;">Services</span></div>
+      <div style="width: 48px; height: 1px; background: #d1d5db; margin: 0 12px; align-self: center;"></div>
+      <div style="display: flex; align-items: center;"><div style="width: 32px; height: 32px; background: #e5e7eb; color: #9ca3af; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px;">3</div><span style="font-size: 13px; color: #9ca3af; margin-left: 8px;">Scope</span></div>
+      <div style="width: 48px; height: 1px; background: #d1d5db; margin: 0 12px; align-self: center;"></div>
+      <div style="display: flex; align-items: center;"><div style="width: 32px; height: 32px; background: #e5e7eb; color: #9ca3af; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px;">4</div><span style="font-size: 13px; color: #9ca3af; margin-left: 8px;">Review</span></div>
+    </div>
+
+    <!-- Step 1 Form -->
+    <div style="padding: 32px; max-width: 600px; margin: 0 auto;">
+      <h3 style="font-size: 20px; font-weight: 600; margin: 0 0 4px; color: #111;">Tell us about your company</h3>
+      <p style="font-size: 14px; color: #6b7280; margin: 0 0 28px;">This helps us tailor a proposal to your needs.</p>
+      <div style="margin-bottom: 20px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px;">Company Name</label><div style="border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 14px; font-size: 14px; color: #6b7280;">TransWest Trucking</div></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+        <div><label style="display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px;">Industry</label><div style="border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 14px; font-size: 14px; color: #6b7280;">Transportation</div></div>
+        <div><label style="display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px;">Company Size</label><div style="border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 14px; font-size: 14px; color: #6b7280;">200-500 employees</div></div>
+      </div>
+      <div style="margin-bottom: 20px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px;">Where do you hire?</label><p style="font-size: 12px; color: #9ca3af; margin: 0 0 8px;">This affects which state regulations apply.</p><div style="display: flex; flex-wrap: wrap; gap: 8px;"><span style="background: #0f172a; color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 13px;">Colorado</span><span style="background: #0f172a; color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 13px;">Wyoming</span><span style="background: #0f172a; color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 13px;">Nebraska</span><span style="background: #f3f4f6; color: #374151; padding: 6px 14px; border-radius: 20px; font-size: 13px; border: 1px dashed #d1d5db;">+ Add state</span></div></div>
+      <div style="margin-bottom: 20px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px;">Contact Name</label><div style="border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 14px; font-size: 14px; color: #6b7280;">Sarah Mitchell</div></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+        <div><label style="display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px;">Email</label><div style="border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 14px; font-size: 14px; color: #6b7280;">sarah@transwest.com</div></div>
+        <div><label style="display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px;">Phone</label><div style="border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 14px; font-size: 14px; color: #6b7280;">(303) 555-0142</div></div>
+      </div>
+      <div style="margin-bottom: 28px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px;">Estimated checks per month</label><div style="border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 14px; font-size: 14px; color: #6b7280;">10-25</div></div>
+    </div>
+
+    <!-- Step 2 inline -->
+    <div style="padding: 0 32px 32px; max-width: 700px; margin: 0 auto; border-top: 2px solid #e5e7eb; padding-top: 24px;">
+      <h3 style="font-size: 18px; font-weight: 600; margin: 0 0 4px; color: #111;">Step 2: Select Services</h3>
+      <p style="font-size: 14px; color: #6b7280; margin: 0 0 20px;">Select the services you need. You can adjust these later.</p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="border: 2px solid #0f172a; border-radius: 10px; padding: 16px; background: #f0f4ff;"><div style="display: flex; justify-content: space-between;"><span style="font-size: 14px; font-weight: 600; color: #111;">Criminal Records</span><span style="width: 20px; height: 20px; background: #0f172a; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px;">&#10003;</span></div><div style="font-size: 12px; color: #6b7280; margin-top: 4px;">County, statewide, federal</div><div style="font-size: 13px; font-weight: 600; color: #0f172a; margin-top: 8px;">$15 - $85</div></div>
+        <div style="border: 2px solid #0f172a; border-radius: 10px; padding: 16px; background: #f0f4ff;"><div style="display: flex; justify-content: space-between;"><span style="font-size: 14px; font-weight: 600; color: #111;">Motor Vehicle Records</span><span style="width: 20px; height: 20px; background: #0f172a; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px;">&#10003;</span></div><div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Driving history and license</div><div style="font-size: 13px; font-weight: 600; color: #0f172a; margin-top: 8px;">$8 - $20</div></div>
+        <div style="border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px;"><div style="display: flex; justify-content: space-between;"><span style="font-size: 14px; font-weight: 600; color: #111;">Employment Verification</span><span style="width: 20px; height: 20px; border: 1px solid #d1d5db; border-radius: 4px;"></span></div><div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Verify employers, titles, dates</div><div style="font-size: 13px; font-weight: 600; color: #0f172a; margin-top: 8px;">$12 - $35</div></div>
+        <div style="border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px;"><div style="display: flex; justify-content: space-between;"><span style="font-size: 14px; font-weight: 600; color: #111;">Education Verification</span><span style="width: 20px; height: 20px; border: 1px solid #d1d5db; border-radius: 4px;"></span></div><div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Confirm degrees and certifications</div><div style="font-size: 13px; font-weight: 600; color: #0f172a; margin-top: 8px;">$10 - $25</div></div>
+        <div style="border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px;"><div style="display: flex; justify-content: space-between;"><span style="font-size: 14px; font-weight: 600; color: #111;">Credit Reports</span><span style="width: 20px; height: 20px; border: 1px solid #d1d5db; border-radius: 4px;"></span></div><div style="font-size: 12px; color: #6b7280; margin-top: 4px;">TransUnion credit history</div><div style="font-size: 13px; font-weight: 600; color: #0f172a; margin-top: 8px;">$10 - $18</div><div style="font-size: 11px; color: #b45309; margin-top: 6px; background: #fffbeb; padding: 4px 8px; border-radius: 4px;">Requires additional onboarding (5-10 days)</div></div>
+        <div style="border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px;"><div style="display: flex; justify-content: space-between;"><span style="font-size: 14px; font-weight: 600; color: #111;">Drug Testing</span><span style="width: 20px; height: 20px; border: 1px solid #d1d5db; border-radius: 4px;"></span></div><div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Pre-employment lab screening</div><div style="font-size: 13px; font-weight: 600; color: #0f172a; margin-top: 8px;">$25 - $65</div></div>
+      </div>
+      <div style="margin-top: 24px; background: #f8fafc; border-radius: 10px; padding: 16px; border: 1px solid #e5e7eb;"><div style="display: flex; justify-content: space-between; align-items: center;"><div><div style="font-size: 14px; font-weight: 600; color: #111;">Estimated cost per background check</div><div style="font-size: 12px; color: #6b7280; margin-top: 2px;">Based on your selected services and hiring locations</div></div><div style="text-align: right;"><div style="font-size: 22px; font-weight: 700; color: #0f172a;">$23 - $105</div><div style="font-size: 12px; color: #6b7280;">per candidate</div></div></div></div>
+    </div>
+  </div>
+  <div class="screen-nav">
+    <button onclick="goTo(0)">&larr; Previous</button>
+    <button onclick="goTo(2)">Next: Dashboard &rarr;</button>
+  </div>
+</div>
+
+<!-- ==================== SCREEN 3: Dashboard ==================== -->
+<div class="screen" id="screen-2">
+  <div class="screen-title">Screen 3 of 8 — NationSearch operational dashboard (Jodie / processors)</div>
+  <div class="mock-frame">
+    <div class="mock-url">
+      <div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+      <div class="url-text">scaffald.com &bull; NationSearch Dashboard</div>
+    </div>
+    <div style="display: flex; min-height: 680px;">
+      <!-- Sidebar -->
+      <div style="width: 200px; background: #0f172a; color: #fff; padding: 20px 0; flex-shrink: 0;">
+        <div style="padding: 0 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.08);"><div style="font-weight: 700; font-size: 16px;">Scaffald</div><div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 2px;">NationSearch</div></div>
+        <nav style="padding: 16px 0;">
+          <div style="padding: 10px 20px; background: rgba(255,255,255,0.1); font-weight: 600; font-size: 13px; border-left: 3px solid #fff;">Dashboard</div>
+          <div style="padding: 10px 20px; color: rgba(255,255,255,0.6); font-size: 13px;">Cases</div>
+          <div data-goto="5" style="padding: 10px 20px; color: rgba(255,255,255,0.6); font-size: 13px; display: flex; justify-content: space-between;">Clients <span style="background: rgba(255,255,255,0.15); padding: 1px 8px; border-radius: 10px; font-size: 11px;">42</span></div>
+          <div style="padding: 10px 20px; color: rgba(255,255,255,0.6); font-size: 13px; display: flex; justify-content: space-between;">Tasks <span style="background: #dc2626; padding: 1px 8px; border-radius: 10px; font-size: 11px; color: #fff;">7</span></div>
+          <div style="padding: 10px 20px; color: rgba(255,255,255,0.6); font-size: 13px;">Reports</div>
+          <div style="padding: 10px 20px; color: rgba(255,255,255,0.6); font-size: 13px;">Compliance Rules</div>
+          <div data-goto="4" style="padding: 10px 20px; color: rgba(255,255,255,0.6); font-size: 13px;">Flow Builder</div>
+          <div style="padding: 10px 20px; color: rgba(255,255,255,0.6); font-size: 13px;">Settings</div>
+        </nav>
+      </div>
+      <!-- Main -->
+      <div style="flex: 1; padding: 20px; overflow-x: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;"><div><h2 style="margin: 0; font-size: 20px; font-weight: 700; color: #111;">Dashboard</h2></div><span style="background: #0f172a; color: #fff; padding: 8px 20px; border-radius: 8px; font-weight: 600; font-size: 13px;">+ New Case</span></div>
+        <!-- Alert -->
+        <div style="background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;"><span style="font-size: 16px;">&#9888;</span><span style="font-weight: 600; color: #92400e;">3 cases need attention</span><span style="color: #92400e;"> — 2 stale (5+ days), 1 disputed</span></div>
+        <!-- Stats -->
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 16px;">
+          <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px;"><div style="font-size: 11px; color: #6b7280;">Active Cases</div><div style="font-size: 22px; font-weight: 700; color: #111; margin-top: 2px;">34</div></div>
+          <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px;"><div style="font-size: 11px; color: #6b7280;">Awaiting QA</div><div style="font-size: 22px; font-weight: 700; color: #b45309; margin-top: 2px;">8</div></div>
+          <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px;"><div style="font-size: 11px; color: #6b7280;">Completed / Week</div><div style="font-size: 22px; font-weight: 700; color: #059669; margin-top: 2px;">12</div></div>
+          <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px;"><div style="font-size: 11px; color: #6b7280;">Avg. Turnaround</div><div style="font-size: 22px; font-weight: 700; color: #111; margin-top: 2px;">2.1d</div></div>
+          <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px;"><div style="font-size: 11px; color: #6b7280;">Clients</div><div style="font-size: 22px; font-weight: 700; color: #111; margin-top: 2px;">42</div></div>
+        </div>
+        <!-- Kanban -->
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; margin-bottom: 16px;">
+          <h3 style="margin: 0 0 12px; font-size: 14px; font-weight: 600; color: #111;">Active Cases</h3>
+          <div style="display: flex; gap: 10px; overflow-x: auto;">
+            <!-- Intake -->
+            <div style="min-width: 170px; flex: 1;"><div style="font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 8px;">Intake <span style="background: #e5e7eb; padding: 1px 6px; border-radius: 8px; font-size: 10px; color: #374151;">5</span></div>
+              <div data-goto="3" style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; border-left: 3px solid #6366f1; margin-bottom: 6px;"><div style="font-size: 12px; font-weight: 600; color: #111;">James Rodriguez</div><div style="font-size: 10px; color: #6b7280; margin-top: 2px;">Martin Marietta &bull; Criminal + MVR</div><div style="font-size: 10px; color: #059669; margin-top: 6px;">2h ago</div></div>
+              <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; border-left: 3px solid #6366f1;"><div style="font-size: 12px; font-weight: 600; color: #111;">Priya Sharma</div><div style="font-size: 10px; color: #6b7280; margin-top: 2px;">Acme Construction &bull; Full Pkg</div><div style="font-size: 10px; color: #059669; margin-top: 6px;">4h ago</div></div>
+              <div style="font-size: 11px; color: #9ca3af; text-align: center; padding: 4px;">+3 more</div>
+            </div>
+            <!-- Submitted -->
+            <div style="min-width: 170px; flex: 1;"><div style="font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 8px;">Submitted <span style="background: #e5e7eb; padding: 1px 6px; border-radius: 8px; font-size: 10px; color: #374151;">9</span></div>
+              <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 10px; border-left: 3px solid #dc2626; margin-bottom: 6px;"><div style="font-size: 12px; font-weight: 600; color: #111;">David Chen</div><div style="font-size: 10px; color: #6b7280; margin-top: 2px;">TransWest &bull; Criminal + Credit</div><div style="font-size: 10px; color: #dc2626; font-weight: 600; margin-top: 6px;">6 days &bull; Stale</div></div>
+              <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; border-left: 3px solid #f59e0b;"><div style="font-size: 12px; font-weight: 600; color: #111;">Maria Santos</div><div style="font-size: 10px; color: #6b7280; margin-top: 2px;">Pueblo Mechanical</div><div style="font-size: 10px; color: #d97706; margin-top: 6px;">3 days</div></div>
+              <div style="font-size: 11px; color: #9ca3af; text-align: center; padding: 4px;">+7 more</div>
+            </div>
+            <!-- Manual Research -->
+            <div style="min-width: 170px; flex: 1;"><div style="font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 8px;">Manual Research <span style="background: #e5e7eb; padding: 1px 6px; border-radius: 8px; font-size: 10px; color: #374151;">4</span></div>
+              <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; border-left: 3px solid #8b5cf6; margin-bottom: 6px;"><div style="font-size: 12px; font-weight: 600; color: #111;">Robert Williams</div><div style="font-size: 10px; color: #6b7280; margin-top: 2px;">Pinnacle Staffing</div><div style="font-size: 10px; color: #7c3aed; margin-top: 4px; background: #f5f3ff; padding: 2px 6px; border-radius: 4px;">Call Pueblo clerk</div></div>
+              <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; border-left: 3px solid #8b5cf6;"><div style="font-size: 12px; font-weight: 600; color: #111;">Lisa Park</div><div style="font-size: 10px; color: #6b7280; margin-top: 2px;">Mountain View LLC</div><div style="font-size: 10px; color: #7c3aed; margin-top: 4px; background: #f5f3ff; padding: 2px 6px; border-radius: 4px;">Mail WY request</div></div>
+            </div>
+            <!-- QA Review -->
+            <div style="min-width: 170px; flex: 1;"><div style="font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 8px;">QA Review <span style="background: #fef3c7; padding: 1px 6px; border-radius: 8px; font-size: 10px; color: #92400e; font-weight: 700;">8</span></div>
+              <div data-goto="3" style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; border-left: 3px solid #f59e0b; margin-bottom: 6px;"><div style="font-size: 12px; font-weight: 600; color: #111;">Angela Torres</div><div style="font-size: 10px; color: #6b7280; margin-top: 2px;">Acme Construction &bull; Full Pkg</div><div style="font-size: 10px; color: #dc2626; margin-top: 4px; background: #fef2f2; padding: 2px 6px; border-radius: 4px;">1 finding</div></div>
+              <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; border-left: 3px solid #f59e0b;"><div style="font-size: 12px; font-weight: 600; color: #111;">Michael Johnson</div><div style="font-size: 10px; color: #6b7280; margin-top: 2px;">Pinnacle Staffing</div><div style="font-size: 10px; color: #059669; margin-top: 4px; background: #f0fdf4; padding: 2px 6px; border-radius: 4px;">Clear</div></div>
+            </div>
+            <!-- Delivered -->
+            <div style="min-width: 170px; flex: 1;"><div style="font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 8px;">Delivered <span style="background: #d1fae5; padding: 1px 6px; border-radius: 8px; font-size: 10px; color: #065f46;">12</span></div>
+              <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; border-left: 3px solid #10b981; margin-bottom: 6px;"><div style="font-size: 12px; font-weight: 600; color: #111;">Sarah Kim</div><div style="font-size: 10px; color: #6b7280; margin-top: 2px;">TransWest &bull; Criminal + MVR</div><div style="font-size: 10px; color: #059669; margin-top: 6px;">&#10003; Clear</div></div>
+              <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; border-left: 3px solid #10b981;"><div style="font-size: 12px; font-weight: 600; color: #111;">Tom Bradley</div><div style="font-size: 10px; color: #6b7280; margin-top: 2px;">Mountain View LLC</div><div style="font-size: 10px; color: #dc2626; margin-top: 6px;">&#9679; Findings</div></div>
+            </div>
+          </div>
+        </div>
+        <!-- Tasks + Clients -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px;"><h3 style="margin: 0 0 10px; font-size: 14px; font-weight: 600; color: #111;">My Tasks <span style="font-weight: 400; color: #6b7280; font-size: 12px;">7 pending</span></h3>
+            <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #fef2f2; border-radius: 6px; margin-bottom: 6px;"><span style="width: 6px; height: 6px; background: #dc2626; border-radius: 50%;"></span><div style="flex: 1; font-size: 12px;"><div style="font-weight: 500; color: #111;">Follow up: David Chen results overdue</div><div style="color: #6b7280; font-size: 11px;">TransWest &bull; Auto-created</div></div><span style="font-size: 10px; color: #dc2626;">Overdue</span></div>
+            <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f9fafb; border-radius: 6px; margin-bottom: 6px;"><span style="width: 6px; height: 6px; background: #f59e0b; border-radius: 50%;"></span><div style="flex: 1; font-size: 12px;"><div style="font-weight: 500; color: #111;">Call Pueblo County clerk</div><div style="color: #6b7280; font-size: 11px;">Pinnacle Staffing</div></div><span style="font-size: 10px; color: #d97706;">Today</span></div>
+            <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f9fafb; border-radius: 6px;"><span style="width: 6px; height: 6px; background: #6366f1; border-radius: 50%;"></span><div style="flex: 1; font-size: 12px;"><div style="font-weight: 500; color: #111;">90-day check-in: Mountain View</div><div style="color: #6b7280; font-size: 11px;">Client relationship</div></div><span style="font-size: 10px; color: #6b7280;">Tomorrow</span></div>
+          </div>
+          <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px;"><h3 style="margin: 0 0 10px; font-size: 14px; font-weight: 600; color: #111;">Client Alerts</h3>
+            <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #fef2f2; border-radius: 6px; margin-bottom: 6px;"><span style="width: 6px; height: 6px; background: #dc2626; border-radius: 50%;"></span><div style="flex: 1; font-size: 12px;"><div style="font-weight: 500; color: #111;">Summit Engineering — 142 days no contact</div><div style="color: #6b7280; font-size: 11px;">Volume declining</div></div><span style="font-size: 10px; color: #dc2626;">At risk</span></div>
+            <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #fffbeb; border-radius: 6px; margin-bottom: 6px;"><span style="width: 6px; height: 6px; background: #f59e0b; border-radius: 50%;"></span><div style="flex: 1; font-size: 12px;"><div style="font-weight: 500; color: #111;">Rocky Mountain HR — credit onboarding</div><div style="color: #6b7280; font-size: 11px;">Day 7 of 10</div></div><span style="font-size: 10px; color: #d97706;">In progress</span></div>
+            <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f0fdf4; border-radius: 6px;"><span style="width: 6px; height: 6px; background: #10b981; border-radius: 50%;"></span><div style="flex: 1; font-size: 12px;"><div style="font-weight: 500; color: #111;">Apex Logistics — 30-day check-in</div><div style="color: #6b7280; font-size: 11px;">Onboarded Mar 1</div></div><span style="font-size: 10px; color: #059669;">Due soon</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="screen-nav">
+    <button onclick="goTo(1)">&larr; Previous</button>
+    <button onclick="goTo(3)">Next: Case Detail &rarr;</button>
+  </div>
+</div>
+
+<!-- ==================== SCREEN 4: Case Detail ==================== -->
+<div class="screen" id="screen-3">
+  <div class="screen-title">Screen 4 of 8 — Single case: Angela Torres / Acme Construction (QA Review)</div>
+  <div class="mock-frame">
+    <div class="mock-url">
+      <div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+      <div class="url-text">scaffald.com &bull; Case: Angela Torres &bull; Acme Construction</div>
+    </div>
+    <div style="padding: 16px 24px; background: #fff; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+      <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><span data-goto="2" style="color: #6366f1;">Dashboard</span><span style="color: #9ca3af;">/</span><span style="color: #374151; font-weight: 600;">Angela Torres</span></div>
+      <div style="display: flex; gap: 8px;"><span style="border: 1px solid #e5e7eb; padding: 6px 14px; border-radius: 6px; font-size: 12px; color: #374151;">Print Report</span><span style="border: 1px solid #e5e7eb; padding: 6px 14px; border-radius: 6px; font-size: 12px; color: #374151;">Add Note</span><span style="background: #0f172a; color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600;">Move to &rarr;</span></div>
+    </div>
+    <div style="padding: 20px 24px; display: flex; gap: 20px;">
+      <!-- Left -->
+      <div style="flex: 2;">
+        <!-- Header -->
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 18px; margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 14px;"><div><h2 style="margin: 0; font-size: 20px; font-weight: 700; color: #111;">Angela Torres</h2><div style="font-size: 13px; color: #6b7280; margin-top: 4px;">Acme Construction &bull; Full Package &bull; Mar 26, 2026</div></div><div style="display: flex; align-items: center; gap: 8px;"><span style="background: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">QA Review</span></div></div>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <div style="width: 22px; height: 22px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff;">&#10003;</div><span style="font-size: 10px; color: #059669; margin-right: 4px;">Intake</span>
+            <div style="width: 24px; height: 2px; background: #059669;"></div>
+            <div style="width: 22px; height: 22px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff;">&#10003;</div><span style="font-size: 10px; color: #059669; margin-right: 4px;">Order</span>
+            <div style="width: 24px; height: 2px; background: #059669;"></div>
+            <div style="width: 22px; height: 22px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff;">&#10003;</div><span style="font-size: 10px; color: #059669; margin-right: 4px;">Submitted</span>
+            <div style="width: 24px; height: 2px; background: #059669;"></div>
+            <div style="width: 22px; height: 22px; background: #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff;">&#9679;</div><span style="font-size: 10px; color: #f59e0b; font-weight: 600; margin-right: 4px;">QA</span>
+            <div style="width: 24px; height: 2px; background: #e5e7eb;"></div>
+            <div style="width: 22px; height: 22px; background: #e5e7eb; border-radius: 50%;"></div><span style="font-size: 10px; color: #9ca3af; margin-right: 4px;">Report</span>
+            <div style="width: 24px; height: 2px; background: #e5e7eb;"></div>
+            <div style="width: 22px; height: 22px; background: #e5e7eb; border-radius: 50%;"></div><span style="font-size: 10px; color: #9ca3af;">Delivered</span>
+          </div>
+        </div>
+        <!-- Components -->
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 18px; margin-bottom: 14px;">
+          <h3 style="margin: 0 0 14px; font-size: 14px; font-weight: 600; color: #111;">Background Check Components</h3>
+          <div style="border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 8px; overflow: hidden;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: #fef2f2;"><div style="display: flex; align-items: center; gap: 8px;"><span style="width: 8px; height: 8px; background: #dc2626; border-radius: 50%;"></span><span style="font-weight: 600; color: #111; font-size: 13px;">Criminal — Denver County</span></div><span style="font-size: 12px; color: #dc2626; font-weight: 600;">1 Record Found</span></div>
+            <div style="padding: 12px 14px;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; font-size: 12px;"><div><div style="color: #6b7280;">Offense</div><div style="color: #111; font-weight: 500;">Theft — Misdemeanor</div></div><div><div style="color: #6b7280;">Case #</div><div style="color: #111; font-weight: 500;">2021-CR-04821</div></div><div><div style="color: #6b7280;">Disposition</div><div style="color: #111; font-weight: 500;">Guilty — Deferred</div></div><div><div style="color: #6b7280;">Date</div><div style="color: #111; font-weight: 500;">Aug 14, 2021</div></div></div>
+              <div style="margin-top: 10px; padding: 8px 12px; background: #fffbeb; border-radius: 6px; font-size: 12px; color: #92400e;">&#9888; Within 7-year FCRA window. Reportable. Deferred judgment — flag for client.</div>
+            </div>
+          </div>
+          <div style="border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 8px;"><div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px;"><div style="display: flex; align-items: center; gap: 8px;"><span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span><span style="font-weight: 600; color: #111;">Criminal — CO Statewide (CBI)</span></div><span style="font-size: 12px; color: #059669;">Clear</span></div></div>
+          <div style="border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 8px;"><div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px;"><div style="display: flex; align-items: center; gap: 8px;"><span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span><span style="font-weight: 600; color: #111;">Motor Vehicle Records — CO</span></div><span style="font-size: 12px; color: #059669;">Clear</span></div></div>
+          <div style="border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 8px;"><div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px;"><div style="display: flex; align-items: center; gap: 8px;"><span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span><span style="font-weight: 600; color: #111;">Employment — 2 employers</span></div><span style="font-size: 12px; color: #059669;">Verified</span></div></div>
+          <div style="border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 8px;"><div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px;"><div style="display: flex; align-items: center; gap: 8px;"><span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span><span style="font-weight: 600; color: #111;">Education — B.S. Civil Eng, CSU</span></div><span style="font-size: 12px; color: #059669;">Verified</span></div></div>
+          <div style="border: 1px solid #e5e7eb; border-radius: 8px;"><div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px;"><div style="display: flex; align-items: center; gap: 8px;"><span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span><span style="font-weight: 600; color: #111;">Drug Screen — 10-panel</span></div><span style="font-size: 12px; color: #059669;">Negative</span></div></div>
+        </div>
+        <!-- QA Decision -->
+        <div style="background: #fff; border: 2px solid #f59e0b; border-radius: 10px; padding: 18px;">
+          <h3 style="margin: 0 0 10px; font-size: 14px; font-weight: 600; color: #111;">QA Review Decision</h3>
+          <p style="font-size: 12px; color: #6b7280; margin: 0 0 14px;">1 finding requires review before this report can be delivered.</p>
+          <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px;">
+            <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb; cursor: pointer;"><span style="width: 16px; height: 16px; border: 2px solid #0f172a; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><span style="width: 8px; height: 8px; background: #0f172a; border-radius: 50%;"></span></span><div><div style="font-size: 12px; font-weight: 600; color: #111;">Identity confirmed — include in report</div></div></label>
+            <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb; cursor: pointer;"><span style="width: 16px; height: 16px; border: 2px solid #d1d5db; border-radius: 50%;"></span><div><div style="font-size: 12px; font-weight: 600; color: #111;">Identity mismatch — exclude</div></div></label>
+            <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb; cursor: pointer;"><span style="width: 16px; height: 16px; border: 2px solid #d1d5db; border-radius: 50%;"></span><div><div style="font-size: 12px; font-weight: 600; color: #111;">Needs more research</div></div></label>
+          </div>
+          <div style="margin-bottom: 12px;"><label style="display: block; font-size: 11px; font-weight: 600; color: #374151; margin-bottom: 4px;">QA Note (required)</label><div style="border: 1px solid #d1d5db; border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #6b7280; min-height: 36px;">Confirmed identity via DOB match. Case 2021-CR-04821 belongs to applicant.</div></div>
+          <span style="background: #059669; color: #fff; padding: 8px 18px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">Approve &rarr; Generate Report</span>
+        </div>
+      </div>
+      <!-- Right -->
+      <div style="flex: 1; min-width: 240px;">
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; margin-bottom: 14px;"><h4 style="margin: 0 0 10px; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase;">Applicant</h4><div style="font-size: 12px; line-height: 2;"><div><span style="color: #6b7280;">Name:</span> <span style="color: #111; font-weight: 500;">Angela Marie Torres</span></div><div><span style="color: #6b7280;">DOB:</span> 04/12/1989</div><div><span style="color: #6b7280;">SSN:</span> ***-**-4821</div><div><span style="color: #6b7280;">Address:</span> 1424 Elm St, Denver, CO</div></div></div>
+        <div data-goto="5" style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; margin-bottom: 14px;"><h4 style="margin: 0 0 10px; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase;">Client</h4><div style="font-size: 12px; line-height: 2;"><div style="font-weight: 500; color: #111;">Acme Construction</div><div><span style="color: #6b7280;">Contact:</span> Mike Peters (HR)</div><div><span style="color: #6b7280;">Source:</span> <span style="color: #6366f1;">Recruiter Referral</span></div></div></div>
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px;"><h4 style="margin: 0 0 12px; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase;">Timeline</h4><div style="position: relative; padding-left: 18px; font-size: 11px;">
+          <div style="position: absolute; left: 4px; top: 4px; bottom: 4px; width: 2px; background: #e5e7eb;"></div>
+          <div style="position: relative; margin-bottom: 14px;"><div style="position: absolute; left: -18px; top: 2px; width: 10px; height: 10px; background: #f59e0b; border-radius: 50%;"></div><div style="font-weight: 600; color: #111;">Moved to QA Review</div><div style="color: #6b7280;">System &bull; 6h ago</div></div>
+          <div style="position: relative; margin-bottom: 14px;"><div style="position: absolute; left: -18px; top: 2px; width: 10px; height: 10px; background: #dc2626; border-radius: 50%;"></div><div style="font-weight: 600; color: #111;">Finding: Denver County</div><div style="color: #6b7280;">Accio &bull; 6h ago</div></div>
+          <div style="position: relative; margin-bottom: 14px;"><div style="position: absolute; left: -18px; top: 2px; width: 10px; height: 10px; background: #10b981; border-radius: 50%;"></div><div style="font-weight: 600; color: #111;">All components complete</div><div style="color: #6b7280;">System &bull; 6h ago</div></div>
+          <div style="position: relative; margin-bottom: 14px;"><div style="position: absolute; left: -18px; top: 2px; width: 10px; height: 10px; background: #6366f1; border-radius: 50%;"></div><div style="font-weight: 600; color: #111;">Order submitted</div><div style="color: #6b7280;">Melissa &bull; Mar 27</div></div>
+          <div style="position: relative; margin-bottom: 14px;"><div style="position: absolute; left: -18px; top: 2px; width: 10px; height: 10px; background: #10b981; border-radius: 50%;"></div><div style="font-weight: 600; color: #111;">Intake completed</div><div style="color: #6b7280;">Angela Torres &bull; Mar 26</div></div>
+          <div style="position: relative;"><div style="position: absolute; left: -18px; top: 2px; width: 10px; height: 10px; background: #6366f1; border-radius: 50%;"></div><div style="font-weight: 600; color: #111;">Case created</div><div style="color: #6b7280;">Recruiter referral &bull; Mar 26</div></div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+  <div class="screen-nav">
+    <button onclick="goTo(2)">&larr; Previous</button>
+    <button onclick="goTo(4)">Next: Flow Builder &rarr;</button>
+  </div>
+</div>
+
+<!-- ==================== SCREEN 5: Flow Builder ==================== -->
+<div class="screen" id="screen-4">
+  <div class="screen-title">Screen 5 of 8 — Flow builder: stages, transitions, and automation rules</div>
+  <div class="mock-frame">
+    <div class="mock-url">
+      <div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+      <div class="url-text">scaffald.com &bull; NationSearch &bull; Flow Builder</div>
+    </div>
+    <div style="padding: 14px 24px; background: #fff; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+      <div style="display: flex; align-items: center; gap: 12px;"><span data-goto="2" style="color: #6366f1; font-size: 13px;">Settings</span><span style="color: #9ca3af;">/</span><span style="font-weight: 600; color: #111; font-size: 13px;">Flow Builder</span><span style="background: #dbeafe; color: #1d4ed8; padding: 2px 10px; border-radius: 12px; font-size: 11px;">Background Check Pipeline</span></div>
+      <div style="display: flex; gap: 8px;"><span style="border: 1px solid #e5e7eb; padding: 6px 14px; border-radius: 6px; font-size: 12px; color: #374151;">Export JSON</span><span style="background: #059669; color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600;">Save Changes</span></div>
+    </div>
+    <!-- Tabs -->
+    <div style="display: flex; background: #fff; border-bottom: 1px solid #e5e7eb; padding: 0 24px;"><span style="padding: 12px 20px; font-size: 13px; font-weight: 600; color: #111; border-bottom: 2px solid #0f172a;">Stages & Transitions</span><span style="padding: 12px 20px; font-size: 13px; color: #6b7280;">Automation Rules</span><span style="padding: 12px 20px; font-size: 13px; color: #6b7280;">Notifications</span><span style="padding: 12px 20px; font-size: 13px; color: #6b7280;">SLA Thresholds</span></div>
+    <!-- Canvas -->
+    <div style="padding: 20px; background: #f9fafb;">
+      <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 24px;">
+        <!-- Row 1 -->
+        <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 24px;">
+          <div style="border: 2px solid #6366f1; border-radius: 10px; padding: 12px 18px; text-align: center; background: #f5f3ff; position: relative; min-width: 120px;"><div style="position: absolute; top: -8px; left: 10px; background: #6366f1; color: #fff; font-size: 9px; padding: 1px 6px; border-radius: 4px; font-weight: 600;">INITIAL</div><div style="width: 10px; height: 10px; background: #6366f1; border-radius: 50%; margin: 0 auto 4px;"></div><div style="font-size: 12px; font-weight: 600; color: #111;">Intake</div></div>
+          <div style="display: flex; align-items: center; color: #9ca3af;">&rarr;</div>
+          <div style="border: 2px solid #e5e7eb; border-radius: 10px; padding: 12px 18px; text-align: center; min-width: 120px;"><div style="width: 10px; height: 10px; background: #3b82f6; border-radius: 50%; margin: 0 auto 4px;"></div><div style="font-size: 12px; font-weight: 600; color: #111;">Order Review</div></div>
+          <div style="display: flex; align-items: center; color: #9ca3af;">&rarr;</div>
+          <div style="border: 2px solid #e5e7eb; border-radius: 10px; padding: 12px 18px; text-align: center; min-width: 120px;"><div style="width: 10px; height: 10px; background: #0ea5e9; border-radius: 50%; margin: 0 auto 4px;"></div><div style="font-size: 12px; font-weight: 600; color: #111;">Submitted</div></div>
+          <div style="display: flex; align-items: center; color: #9ca3af;">&rarr;</div>
+          <div style="border: 2px solid #e5e7eb; border-radius: 10px; padding: 12px 18px; text-align: center; min-width: 120px;"><div style="width: 10px; height: 10px; background: #f59e0b; border-radius: 50%; margin: 0 auto 4px;"></div><div style="font-size: 12px; font-weight: 600; color: #111;">Partial Results</div></div>
+        </div>
+        <!-- Row 2 -->
+        <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 24px;">
+          <div style="border: 2px solid #8b5cf6; border-radius: 10px; padding: 12px 18px; text-align: center; background: #faf5ff; min-width: 120px;"><div style="width: 10px; height: 10px; background: #8b5cf6; border-radius: 50%; margin: 0 auto 4px;"></div><div style="font-size: 12px; font-weight: 600; color: #111;">Manual Research</div></div>
+          <div style="display: flex; align-items: center; color: #9ca3af;">&rarr;</div>
+          <div style="border: 2px solid #f59e0b; border-radius: 10px; padding: 12px 18px; text-align: center; background: #fffbeb; min-width: 120px;"><div style="width: 10px; height: 10px; background: #f59e0b; border-radius: 50%; margin: 0 auto 4px;"></div><div style="font-size: 12px; font-weight: 600; color: #111;">QA Review</div></div>
+          <div style="display: flex; align-items: center; color: #9ca3af;">&rarr;</div>
+          <div style="border: 2px solid #e5e7eb; border-radius: 10px; padding: 12px 18px; text-align: center; min-width: 120px;"><div style="width: 10px; height: 10px; background: #10b981; border-radius: 50%; margin: 0 auto 4px;"></div><div style="font-size: 12px; font-weight: 600; color: #111;">Report Ready</div></div>
+          <div style="display: flex; align-items: center; color: #9ca3af;">&rarr;</div>
+          <div style="border: 2px solid #10b981; border-radius: 10px; padding: 12px 18px; text-align: center; background: #f0fdf4; min-width: 120px; position: relative;"><div style="position: absolute; top: -8px; left: 10px; background: #10b981; color: #fff; font-size: 9px; padding: 1px 6px; border-radius: 4px; font-weight: 600;">TERMINAL</div><div style="width: 10px; height: 10px; background: #10b981; border-radius: 50%; margin: 0 auto 4px;"></div><div style="font-size: 12px; font-weight: 600; color: #111;">Delivered</div></div>
+        </div>
+        <!-- Row 3 -->
+        <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+          <div style="border: 2px solid #dc2626; border-radius: 10px; padding: 12px 18px; text-align: center; background: #fef2f2; min-width: 120px;"><div style="width: 10px; height: 10px; background: #dc2626; border-radius: 50%; margin: 0 auto 4px;"></div><div style="font-size: 12px; font-weight: 600; color: #111;">Adverse Action</div></div>
+          <div style="border: 2px solid #f97316; border-radius: 10px; padding: 12px 18px; text-align: center; background: #fff7ed; min-width: 120px;"><div style="width: 10px; height: 10px; background: #f97316; border-radius: 50%; margin: 0 auto 4px;"></div><div style="font-size: 12px; font-weight: 600; color: #111;">Disputed</div></div>
+          <div style="border: 2px solid #9ca3af; border-radius: 10px; padding: 12px 18px; text-align: center; min-width: 120px;"><div style="width: 10px; height: 10px; background: #9ca3af; border-radius: 50%; margin: 0 auto 4px;"></div><div style="font-size: 12px; font-weight: 600; color: #111;">On Hold</div></div>
+          <div style="border: 2px solid #6b7280; border-radius: 10px; padding: 12px 18px; text-align: center; background: #f3f4f6; min-width: 120px; position: relative;"><div style="position: absolute; top: -8px; left: 10px; background: #6b7280; color: #fff; font-size: 9px; padding: 1px 6px; border-radius: 4px; font-weight: 600;">TERMINAL</div><div style="width: 10px; height: 10px; background: #6b7280; border-radius: 50%; margin: 0 auto 4px;"></div><div style="font-size: 12px; font-weight: 600; color: #111;">Cancelled</div></div>
+        </div>
+        <div style="text-align: center; margin-top: 20px;"><span style="border: 2px dashed #d1d5db; border-radius: 10px; padding: 8px 20px; font-size: 12px; color: #9ca3af; display: inline-block;">+ Add Stage</span></div>
+      </div>
+      <!-- Rules -->
+      <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 18px; margin-top: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;"><h3 style="margin: 0; font-size: 14px; font-weight: 600; color: #111;">Automation Rules <span style="font-weight: 400; color: #6b7280; font-size: 12px;">(8 active)</span></h3><span style="background: #0f172a; color: #fff; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600;">+ New Rule</span></div>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <div style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb;"><span style="width: 6px; height: 6px; background: #10b981; border-radius: 50%;"></span><div style="flex: 1;"><div style="font-size: 12px; font-weight: 500; color: #111;">Send intake link on case creation</div><div style="font-size: 11px; color: #6b7280;"><span style="color: #6366f1;">When</span> item created &rarr; <span style="color: #059669;">Then</span> email applicant intake link</div></div><span style="font-size: 10px; color: #059669; background: #f0fdf4; padding: 2px 6px; border-radius: 4px;">Active</span></div>
+          <div style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb;"><span style="width: 6px; height: 6px; background: #10b981; border-radius: 50%;"></span><div style="flex: 1;"><div style="font-size: 12px; font-weight: 500; color: #111;">Auto-assign QA Review to Jodie</div><div style="font-size: 11px; color: #6b7280;"><span style="color: #6366f1;">When</span> enters QA Review &rarr; <span style="color: #059669;">Then</span> assign to Jodie</div></div><span style="font-size: 10px; color: #059669; background: #f0fdf4; padding: 2px 6px; border-radius: 4px;">Active</span></div>
+          <div style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb;"><span style="width: 6px; height: 6px; background: #10b981; border-radius: 50%;"></span><div style="flex: 1;"><div style="font-size: 12px; font-weight: 500; color: #111;">Stale intake reminder (48h)</div><div style="font-size: 11px; color: #6b7280;"><span style="color: #6366f1;">When</span> Intake > 48h &rarr; <span style="color: #059669;">Then</span> remind applicant</div></div><span style="font-size: 10px; color: #059669; background: #f0fdf4; padding: 2px 6px; border-radius: 4px;">Active</span></div>
+          <div style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb;"><span style="width: 6px; height: 6px; background: #10b981; border-radius: 50%;"></span><div style="flex: 1;"><div style="font-size: 12px; font-weight: 500; color: #111;">Route adverse findings</div><div style="font-size: 11px; color: #6b7280;"><span style="color: #6366f1;">When</span> Report Ready + adverse &rarr; <span style="color: #059669;">Then</span> move to Adverse Action</div></div><span style="font-size: 10px; color: #059669; background: #f0fdf4; padding: 2px 6px; border-radius: 4px;">Active</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="screen-nav">
+    <button onclick="goTo(3)">&larr; Previous</button>
+    <button onclick="goTo(5)">Next: Client View &rarr;</button>
+  </div>
+</div>
+
+<!-- ==================== SCREEN 6: Client View ==================== -->
+<div class="screen" id="screen-5">
+  <div class="screen-title">Screen 6 of 8 — TransWest Trucking: Scaffald company record + NationSearch relationship tab</div>
+  <div class="mock-frame">
+    <div class="mock-url">
+      <div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+      <div class="url-text">scaffald.com &bull; TransWest Trucking &bull; NationSearch</div>
+    </div>
+    <div style="padding: 14px 24px; background: #fff; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between;"><div style="display: flex; align-items: center; gap: 12px;"><span data-goto="2" style="color: #6366f1; font-size: 13px;">Clients</span><span style="color: #9ca3af;">/</span><span style="font-weight: 600; color: #111; font-size: 13px;">TransWest Trucking</span><span style="background: #d1fae5; color: #065f46; padding: 2px 10px; border-radius: 12px; font-size: 11px;">Active</span></div><span style="background: #0f172a; color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600;">New Background Check</span></div>
+    <!-- Company Header -->
+    <div style="padding: 20px 24px; background: #fff; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between;"><div style="display: flex; gap: 14px; align-items: center;"><div style="width: 48px; height: 48px; background: #0f172a; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #fff;">TW</div><div><h2 style="margin: 0; font-size: 18px; font-weight: 700; color: #111;">TransWest Trucking</h2><div style="font-size: 12px; color: #6b7280; margin-top: 2px;">Transportation &bull; 200-500 employees &bull; Denver, CO &bull; Client since June 2019</div></div></div><div style="text-align: right;"><div style="font-size: 11px; color: #6b7280;">Last Contact</div><div style="font-size: 14px; font-weight: 600; color: #111;">12 days ago</div></div></div>
+    <!-- Tabs -->
+    <div style="display: flex; background: #fff; border-bottom: 1px solid #e5e7eb; padding: 0 24px;"><span style="padding: 12px 20px; font-size: 13px; color: #6b7280;">Company Profile</span><span style="padding: 12px 20px; font-size: 13px; font-weight: 600; color: #111; border-bottom: 2px solid #0f172a;">NationSearch</span><span style="padding: 12px 20px; font-size: 13px; color: #6b7280;">Jobs</span><span style="padding: 12px 20px; font-size: 13px; color: #6b7280;">Team</span></div>
+    <div style="padding: 20px 24px; display: flex; gap: 20px; background: #f9fafb;">
+      <!-- Left -->
+      <div style="flex: 2;">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px;">
+          <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px;"><div style="font-size: 10px; color: #6b7280;">Total Checks</div><div style="font-size: 20px; font-weight: 700; color: #111; margin-top: 2px;">247</div><div style="font-size: 10px; color: #059669;">&uarr; 12% vs last year</div></div>
+          <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px;"><div style="font-size: 10px; color: #6b7280;">This Month</div><div style="font-size: 20px; font-weight: 700; color: #111; margin-top: 2px;">14</div></div>
+          <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px;"><div style="font-size: 10px; color: #6b7280;">Avg. Turnaround</div><div style="font-size: 20px; font-weight: 700; color: #111; margin-top: 2px;">1.8d</div></div>
+          <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px;"><div style="font-size: 10px; color: #6b7280;">Finding Rate</div><div style="font-size: 20px; font-weight: 700; color: #111; margin-top: 2px;">18%</div></div>
+        </div>
+        <!-- Notes -->
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px;">
+          <h3 style="margin: 0 0 12px; font-size: 14px; font-weight: 600; color: #111;">Notes & Activity</h3>
+          <div style="padding: 10px; background: #f9fafb; border-radius: 8px; border-left: 3px solid #6366f1; margin-bottom: 8px;"><div style="display: flex; justify-content: space-between; margin-bottom: 4px;"><div style="display: flex; align-items: center; gap: 6px;"><span style="font-size: 11px; font-weight: 600; color: #111;">Jodie</span><span style="background: #dbeafe; color: #1d4ed8; padding: 1px 5px; border-radius: 4px; font-size: 9px;">Phone Call</span></div><span style="font-size: 10px; color: #6b7280;">Mar 18</span></div><div style="font-size: 12px; color: #374151; line-height: 1.5;">Spoke with Sarah Mitchell about adding drug testing. Expanding into NE, want pre-employment screens for CDL drivers.</div></div>
+          <div style="padding: 10px; background: #f9fafb; border-radius: 8px; border-left: 3px solid #6366f1;"><div style="display: flex; justify-content: space-between; margin-bottom: 4px;"><div style="display: flex; align-items: center; gap: 6px;"><span style="font-size: 11px; font-weight: 600; color: #111;">Jodie</span><span style="background: #dbeafe; color: #1d4ed8; padding: 1px 5px; border-radius: 4px; font-size: 9px;">Client Instruction</span></div><span style="font-size: 10px; color: #6b7280;">Feb 4</span></div><div style="font-size: 12px; color: #374151; line-height: 1.5;">Updated policy: report all theft charges regardless of amount (previously $50k threshold).</div></div>
+        </div>
+      </div>
+      <!-- Right -->
+      <div style="flex: 1; min-width: 240px;">
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; margin-bottom: 12px;"><h4 style="margin: 0 0 10px; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase;">Contacts</h4><div style="font-size: 12px;"><div style="font-weight: 600; color: #111;">Sarah Mitchell</div><div style="color: #6b7280;">HR Director &bull; Primary</div><div style="color: #6b7280; margin-bottom: 8px;">sarah@transwest.com</div><div style="font-weight: 600; color: #111;">Dave Thompson</div><div style="color: #6b7280;">CFO &bull; Billing</div></div></div>
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; margin-bottom: 12px;"><h4 style="margin: 0 0 10px; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase;">Services</h4><div style="font-size: 12px; line-height: 2;">
+          <div style="display: flex; justify-content: space-between;"><span>Criminal</span><span style="color: #059669;">&#10003;</span></div>
+          <div style="display: flex; justify-content: space-between;"><span>MVR</span><span style="color: #059669;">&#10003;</span></div>
+          <div style="display: flex; justify-content: space-between;"><span>Employment</span><span style="color: #059669;">&#10003;</span></div>
+          <div style="display: flex; justify-content: space-between;"><span>Credit</span><span style="color: #9ca3af;">&#10007;</span></div>
+          <div style="display: flex; justify-content: space-between;"><span>Drug Testing</span><span style="color: #f59e0b;">Pending</span></div>
+          <div style="border-top: 1px solid #f3f4f6; padding-top: 6px; margin-top: 4px;"><div style="display: flex; justify-content: space-between;"><span style="color: #6b7280;">Lookback</span><span style="font-weight: 500;">7 years</span></div><div style="display: flex; justify-content: space-between;"><span style="color: #6b7280;">Counties</span><span style="font-weight: 500;">2</span></div><div style="display: flex; justify-content: space-between;"><span style="color: #6b7280;">AKA</span><span style="font-weight: 500;">Yes (up to 3)</span></div></div>
+        </div></div>
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px;"><h4 style="margin: 0 0 10px; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase;">Client Policies</h4><div style="font-size: 12px; color: #374151; line-height: 1.8;"><div style="padding: 4px 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #6b7280;">Theft:</span> All charges <span style="background: #fef3c7; color: #92400e; padding: 1px 4px; border-radius: 3px; font-size: 10px;">Updated Feb 4</span></div><div style="padding: 4px 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #6b7280;">DUI:</span> Flag all</div><div style="padding: 4px 0;"><span style="color: #6b7280;">Sector:</span> Transportation (CDL/DOT)</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="screen-nav">
+    <button onclick="goTo(4)">&larr; Previous</button>
+    <button onclick="goTo(6)">Next: Applicant Form &rarr;</button>
+  </div>
+</div>
+
+<!-- ==================== SCREEN 7: Applicant Intake ==================== -->
+<div class="screen" id="screen-6">
+  <div class="screen-title">Screen 7 of 8 — What the candidate fills out after receiving the secure link</div>
+  <div class="mock-frame">
+    <div class="mock-url">
+      <div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+      <div class="url-text">scaffald.com/check/a8f2c... &bull; Secure Background Check Form</div>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; border-bottom: 1px solid #e5e7eb;"><div style="display: flex; align-items: center; gap: 10px;"><span style="font-weight: 700; font-size: 16px; color: #111;">Scaffald</span><span style="color: #d1d5db;">|</span><span style="font-size: 13px; color: #6b7280;">Background Check</span></div><div style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span><span style="font-size: 12px; color: #059669;">Secure connection</span></div></div>
+    <div style="max-width: 580px; margin: 0 auto; padding: 32px 24px;">
+      <div style="text-align: center; margin-bottom: 28px;"><div style="width: 48px; height: 48px; background: #f0f4ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 22px;">&#128274;</div><h2 style="margin: 0 0 8px; font-size: 22px; font-weight: 700; color: #111;">Background Check Authorization</h2><p style="margin: 0; font-size: 14px; color: #6b7280; line-height: 1.6;"><strong>Acme Construction</strong> has requested a background check as part of your application. Processed by <strong>NationSearch</strong>.</p></div>
+      <!-- What to Expect -->
+      <div style="background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; margin-bottom: 24px;"><div style="font-size: 13px; font-weight: 600; color: #111; margin-bottom: 8px;">What to expect</div><div style="font-size: 13px; color: #6b7280; display: flex; flex-direction: column; gap: 6px;"><div style="display: flex; align-items: center; gap: 8px;"><span style="width: 20px; height: 20px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #374151; flex-shrink: 0;">1</span> Fill out the form (~5 minutes)</div><div style="display: flex; align-items: center; gap: 8px;"><span style="width: 20px; height: 20px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #374151; flex-shrink: 0;">2</span> Review and sign consent</div><div style="display: flex; align-items: center; gap: 8px;"><span style="width: 20px; height: 20px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #374151; flex-shrink: 0;">3</span> Results typically ready in 1-3 business days</div><div style="display: flex; align-items: center; gap: 8px;"><span style="width: 20px; height: 20px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #374151; flex-shrink: 0;">4</span> Check status anytime from this link</div></div></div>
+      <!-- Form -->
+      <h3 style="font-size: 16px; font-weight: 600; color: #111; margin: 0 0 16px;">Personal Information</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px;"><div><label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">First Name *</label><div style="border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 12px; font-size: 14px; color: #111;">Angela</div></div><div><label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">Middle</label><div style="border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 12px; font-size: 14px; color: #111;">Marie</div></div><div><label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">Last Name *</label><div style="border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 12px; font-size: 14px; color: #111;">Torres</div></div></div>
+      <div style="margin-bottom: 16px;"><label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">Other names you've used</label><p style="font-size: 11px; color: #9ca3af; margin: 0 0 6px;">Previous married names, maiden name, etc.</p><div style="display: flex; gap: 8px;"><span style="background: #f3f4f6; padding: 6px 12px; border-radius: 20px; font-size: 13px; color: #374151;">Angela M. Rodriguez <span style="color: #9ca3af; margin-left: 4px;">&times;</span></span><span style="border: 1px dashed #d1d5db; padding: 6px 12px; border-radius: 20px; font-size: 13px; color: #9ca3af;">+ Add name</span></div></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;"><div><label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">Date of Birth *</label><div style="border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 12px; font-size: 14px; color: #111;">04/12/1989</div></div><div><label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">SSN *</label><div style="border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 12px; font-size: 14px; color: #111; display: flex; justify-content: space-between;">&bull;&bull;&bull;-&bull;&bull;-4821 <span style="font-size: 11px; color: #6366f1;">Show</span></div></div></div>
+      <div style="background: #f0f4ff; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 12px; color: #374151; line-height: 1.6;"><strong style="color: #111;">Why do we need your SSN?</strong> It's one of several identifiers to verify your identity and locate correct records. Your information is encrypted and only used for this check.</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;"><div><label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">Driver's License *</label><div style="border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 12px; font-size: 14px; color: #111;">12-345-678</div></div><div><label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">Issuing State *</label><div style="border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 12px; font-size: 14px; color: #111;">Colorado</div></div></div>
+      <!-- Opt-in -->
+      <div style="background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; margin-bottom: 24px;"><div style="display: flex; align-items: flex-start; gap: 10px;"><span style="width: 16px; height: 16px; border: 2px solid #0f172a; border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 2px;"><span style="width: 8px; height: 8px; background: #0f172a; border-radius: 2px;"></span></span><div><div style="font-size: 13px; font-weight: 600; color: #111;">Save to my Scaffald profile</div><div style="font-size: 12px; color: #6b7280; margin-top: 2px;">Add address history and license to your profile for future checks. Removable anytime.</div></div></div></div>
+      <div style="display: flex; justify-content: flex-end;"><span data-goto="7" style="background: #0f172a; color: #fff; padding: 10px 28px; border-radius: 8px; font-weight: 600; font-size: 14px; display: inline-block;">Next: Address History &rarr;</span></div>
+      <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e5e7eb; text-align: center; font-size: 12px; color: #9ca3af; line-height: 1.6;">Encrypted in transit and at rest. Expires in 7 days.<br>Questions? (303) 555-0100 &bull; <span style="color: #6366f1;">FCRA Rights</span> &bull; <span style="color: #6366f1;">Privacy</span></div>
+    </div>
+  </div>
+  <div class="screen-nav">
+    <button onclick="goTo(5)">&larr; Previous</button>
+    <button onclick="goTo(7)">Next: Applicant Status &rarr;</button>
+  </div>
+</div>
+
+<!-- ==================== SCREEN 8: Applicant Status ==================== -->
+<div class="screen" id="screen-7">
+  <div class="screen-title">Screen 8 of 8 — What the applicant sees when checking their background check status</div>
+  <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+    <!-- In Progress -->
+    <div class="mock-frame" style="flex: 1; min-width: 400px;">
+      <div class="mock-url">
+        <div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+        <div class="url-text">In Progress State</div>
+      </div>
+      <div style="padding: 14px 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between;"><div style="display: flex; align-items: center; gap: 10px;"><span style="font-weight: 700; font-size: 16px; color: #111;">Scaffald</span><span style="color: #d1d5db;">|</span><span style="font-size: 13px; color: #6b7280;">My Background Check</span></div><div style="display: flex; align-items: center; gap: 6px;"><span style="width: 22px; height: 22px; background: #f3f4f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: #374151;">AT</span><span style="font-size: 13px; color: #374151;">Angela Torres</span></div></div>
+      <div style="max-width: 480px; margin: 0 auto; padding: 28px 24px;">
+        <div style="text-align: center; margin-bottom: 24px;"><div style="width: 56px; height: 56px; background: #fffbeb; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 26px;">&#9203;</div><h2 style="margin: 0 0 6px; font-size: 20px; font-weight: 700; color: #111;">In Progress</h2><p style="margin: 0; font-size: 14px; color: #6b7280;">Your background check is being processed. We'll email you when it's complete.</p></div>
+        <div style="background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 10px; padding: 18px; margin-bottom: 20px;">
+          <div style="display: flex; align-items: flex-start; gap: 12px; padding-bottom: 14px;"><div style="display: flex; flex-direction: column; align-items: center;"><div style="width: 26px; height: 26px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #fff;">&#10003;</div><div style="width: 2px; height: 20px; background: #059669;"></div></div><div><div style="font-size: 13px; font-weight: 600; color: #111;">Information submitted</div><div style="font-size: 11px; color: #6b7280;">March 26, 2026</div></div></div>
+          <div style="display: flex; align-items: flex-start; gap: 12px; padding-bottom: 14px;"><div style="display: flex; flex-direction: column; align-items: center;"><div style="width: 26px; height: 26px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #fff;">&#10003;</div><div style="width: 2px; height: 20px; background: #059669;"></div></div><div><div style="font-size: 13px; font-weight: 600; color: #111;">Consent authorized</div><div style="font-size: 11px; color: #6b7280;">March 26, 2026</div></div></div>
+          <div style="display: flex; align-items: flex-start; gap: 12px; padding-bottom: 14px;"><div style="display: flex; flex-direction: column; align-items: center;"><div style="width: 26px; height: 26px; background: #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><div style="width: 8px; height: 8px; background: #fff; border-radius: 50%;"></div></div><div style="width: 2px; height: 20px; background: #e5e7eb;"></div></div><div><div style="font-size: 13px; font-weight: 600; color: #111;">Records being searched</div><div style="font-size: 11px; color: #d97706;">In progress — typically 1-3 business days</div></div></div>
+          <div style="display: flex; align-items: flex-start; gap: 12px; padding-bottom: 14px;"><div style="display: flex; flex-direction: column; align-items: center;"><div style="width: 26px; height: 26px; background: #e5e7eb; border-radius: 50%;"></div><div style="width: 2px; height: 20px; background: #e5e7eb;"></div></div><div style="font-size: 13px; color: #9ca3af;">Quality review</div></div>
+          <div style="display: flex; align-items: flex-start; gap: 12px;"><div style="width: 26px; height: 26px; background: #e5e7eb; border-radius: 50%;"></div><div style="font-size: 13px; color: #9ca3af;">Complete</div></div>
+        </div>
+        <div style="margin-bottom: 20px;"><div style="border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 6px; padding: 10px 14px; font-size: 13px; color: #111; display: flex; justify-content: space-between;">How long does this take? <span style="color: #9ca3af;">+</span></div><div style="border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 6px; padding: 10px 14px; font-size: 13px; color: #111; display: flex; justify-content: space-between;">What if something is wrong? <span style="color: #9ca3af;">+</span></div><div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #111; display: flex; justify-content: space-between;">What are my rights? <span style="color: #9ca3af;">+</span></div></div>
+        <div style="text-align: center; font-size: 12px; color: #9ca3af;">Questions? (303) 555-0100 &bull; <span style="color: #6366f1;">FCRA Rights</span></div>
+      </div>
+    </div>
+    <!-- Complete -->
+    <div class="mock-frame" style="flex: 1; min-width: 400px;">
+      <div class="mock-url">
+        <div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+        <div class="url-text">Complete State</div>
+      </div>
+      <div style="padding: 14px 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between;"><div style="display: flex; align-items: center; gap: 10px;"><span style="font-weight: 700; font-size: 16px; color: #111;">Scaffald</span><span style="color: #d1d5db;">|</span><span style="font-size: 13px; color: #6b7280;">My Background Check</span></div><div style="display: flex; align-items: center; gap: 6px;"><span style="width: 22px; height: 22px; background: #f3f4f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: #374151;">AT</span><span style="font-size: 13px; color: #374151;">Angela Torres</span></div></div>
+      <div style="max-width: 480px; margin: 0 auto; padding: 28px 24px;">
+        <div style="text-align: center; margin-bottom: 24px;"><div style="width: 56px; height: 56px; background: #f0fdf4; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 26px;">&#10003;</div><h2 style="margin: 0 0 6px; font-size: 20px; font-weight: 700; color: #111;">Complete</h2><p style="margin: 0; font-size: 14px; color: #6b7280;">Your background check has been completed and delivered to Acme Construction.</p></div>
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 18px; margin-bottom: 20px;">
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px;"><div style="width: 22px; height: 22px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff;">&#10003;</div><span style="font-size: 12px; color: #065f46;">Information submitted — Mar 26</span></div>
+            <div style="display: flex; align-items: center; gap: 10px;"><div style="width: 22px; height: 22px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff;">&#10003;</div><span style="font-size: 12px; color: #065f46;">Consent authorized — Mar 26</span></div>
+            <div style="display: flex; align-items: center; gap: 10px;"><div style="width: 22px; height: 22px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff;">&#10003;</div><span style="font-size: 12px; color: #065f46;">Records searched — Mar 28</span></div>
+            <div style="display: flex; align-items: center; gap: 10px;"><div style="width: 22px; height: 22px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff;">&#10003;</div><span style="font-size: 12px; color: #065f46;">Quality review — Mar 28</span></div>
+            <div style="display: flex; align-items: center; gap: 10px;"><div style="width: 22px; height: 22px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff;">&#10003;</div><span style="font-size: 12px; color: #065f46; font-weight: 600;">Report delivered — Mar 28</span></div>
+          </div>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; margin-bottom: 20px;"><h4 style="margin: 0 0 6px; font-size: 13px; font-weight: 600; color: #111;">Your rights</h4><div style="font-size: 12px; color: #6b7280; line-height: 1.6;">Under the FCRA, you can: request a copy of the report, dispute inaccurate information, and add a statement to your file.</div></div>
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;"><span style="display: block; text-align: center; background: #0f172a; color: #fff; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 14px;">Request a Copy of My Report</span><span style="display: block; text-align: center; border: 1px solid #e5e7eb; color: #374151; padding: 10px 20px; border-radius: 8px; font-size: 14px;">Dispute a Finding</span></div>
+        <div style="background: #f0f4ff; border: 1px solid #c7d2fe; border-radius: 10px; padding: 14px; margin-bottom: 20px;"><div style="font-size: 13px; font-weight: 600; color: #111; margin-bottom: 4px;">Your Scaffald Profile</div><div style="font-size: 12px; color: #6b7280; line-height: 1.5;">Your info was saved to your profile. You won't have to enter it again. <span style="color: #6366f1;">Manage profile &rarr;</span></div></div>
+        <div style="text-align: center; font-size: 12px; color: #9ca3af;">Questions? (303) 555-0100 &bull; <span style="color: #6366f1;">FCRA Rights</span> &bull; <span style="color: #6366f1;">Privacy</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="screen-nav">
+    <button onclick="goTo(6)">&larr; Previous</button>
+    <button disabled>End of Prototype</button>
+  </div>
+</div>
+
+<script>
+let current = 0;
+const total = 8;
+
+function goTo(n) {
+  document.getElementById('screen-' + current).classList.remove('active');
+  document.getElementById('nav-' + current).classList.remove('active');
+  current = n;
+  document.getElementById('screen-' + current).classList.add('active');
+  document.getElementById('nav-' + current).classList.add('active');
+  document.getElementById('counter').textContent = (current + 1) + ' / ' + total;
+  window.scrollTo(0, 0);
+}
+
+// Init
+document.getElementById('nav-0').classList.add('active');
+
+// Clickable areas
+document.addEventListener('click', function(e) {
+  const el = e.target.closest('[data-goto]');
+  if (el) goTo(parseInt(el.dataset.goto));
+});
+
+// Keyboard nav
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' && current < total - 1) goTo(current + 1);
+  if (e.key === 'ArrowLeft' && current > 0) goTo(current - 1);
+});
+</script>
+
+</body>
+</html>
