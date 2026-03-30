@@ -1,10 +1,13 @@
 import { useMemo, useRef, useState } from 'react'
 import { Row, Stack, Text, RangeSlider, useThemeContext, useResponsive } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { useDebounce } from '@scf/core/utils/useDebounce'
 import { PageHeader } from '@scf/core/components/PageHeader'
 import type { FilterPillConfig } from '@scf/core/components/PageHeader'
+import { useRouter } from 'expo-router'
 import type { ResultListRef } from './components/ResultList'
+import { WorkerPreviewModal } from './components/WorkerPreviewModal'
 import { WorkersBottomToolbar } from './components/WorkersBottomToolbar'
 import type { WorkerSortBy } from './components/WorkersBottomToolbar'
 import { DiscoverWorkersLeft } from './discover-workers-left'
@@ -25,18 +28,27 @@ export function DiscoverWorkersScreen() {
   const [minScore, setMinScore] = useState(0)
   const [sortBy, setSortBy] = useState<WorkerSortBy>('score')
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
+  const [workerModalOpen, setWorkerModalOpen] = useState(false)
+  const [workerModalUserId, setWorkerModalUserId] = useState<string | null>(null)
 
   const { theme } = useThemeContext()
   const { isMobile } = useResponsive()
   const t = theme === 'dark' ? 'dark' : 'light'
+  const router = useRouter()
 
   const resultListRef = useRef<ResultListRef>(null)
 
   const handleSelect = (id: string) => {
     setSelectedProfileId(id)
-    setTimeout(() => {
-      resultListRef.current?.scrollToCard(id)
-    }, 100)
+    if (isMobile) {
+      router.push(buildPath(ROUTES.WORKERS.DETAIL, { id }))
+    } else {
+      setWorkerModalUserId(id)
+      setWorkerModalOpen(true)
+      setTimeout(() => {
+        resultListRef.current?.scrollToCard(id)
+      }, 100)
+    }
   }
 
   const handleReset = () => {
@@ -134,17 +146,24 @@ export function DiscoverWorkersScreen() {
   return {
     header,
     left: (
-      <DiscoverWorkersLeft
-        searchQuery={debouncedSearch}
-        selectedIndustries={selectedIndustries}
-        minScore={minScore}
-        selectedSkills={[]}
-        selectedCertifications={[]}
-        selectedProfileId={selectedProfileId}
-        onSelect={handleSelect}
-        resultListRef={resultListRef}
-        sortBy={sortBy}
-      />
+      <>
+        <DiscoverWorkersLeft
+          searchQuery={debouncedSearch}
+          selectedIndustries={selectedIndustries}
+          minScore={minScore}
+          selectedSkills={[]}
+          selectedCertifications={[]}
+          selectedProfileId={selectedProfileId}
+          onSelect={handleSelect}
+          resultListRef={resultListRef}
+          sortBy={sortBy}
+        />
+        <WorkerPreviewModal
+          userId={workerModalUserId}
+          open={workerModalOpen}
+          onOpenChange={setWorkerModalOpen}
+        />
+      </>
     ),
     right: <DiscoverWorkersRight />,
     footer,
