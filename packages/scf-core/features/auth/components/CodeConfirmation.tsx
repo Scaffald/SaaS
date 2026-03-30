@@ -102,7 +102,7 @@ export function CodeConfirmation({ codeSize, secureText, onEnter }: CodeConfirma
   }, [hasError])
 
   return (
-    <View ref={containerRef} style={{ paddingTop: 12, paddingBottom: 24, flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <View ref={containerRef} style={{ paddingTop: 12, alignItems: 'center' }}>
       <Form onSubmit={onSubmit} gap={8}>
         <Row
           gap={8}
@@ -111,8 +111,6 @@ export function CodeConfirmation({ codeSize, secureText, onEnter }: CodeConfirma
           style={{
             transform: [{ translateX: shakeOffset }],
             marginTop: 8,
-            marginBottom: 0,
-            paddingBottom: 0,
           }}
         >
           {Array.from({ length: codeSize }, (_, id) => (
