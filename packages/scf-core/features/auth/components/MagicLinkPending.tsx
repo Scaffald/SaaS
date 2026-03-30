@@ -25,6 +25,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
   const [verified, setVerified] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [codeKey, setCodeKey] = useState(0)
   const requestMagicLink = useRequestMagicLinkMutation()
   const { t } = useTranslation()
   const { theme } = useThemeContext()
@@ -71,6 +72,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
         setCode(undefined)
         setCodeEntered(false)
         setVerified(false)
+        setCodeKey((k) => k + 1)
       } finally {
         setIsSubmitting(false)
       }
@@ -82,6 +84,8 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
 
   const handleResendClick = useCallback(async () => {
     if (!email) return
+    setError(null)
+    setCodeKey((k) => k + 1)
     try {
       await requestMagicLink.mutateAsync({
         email: email.trim().toLowerCase(),
@@ -134,7 +138,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
           <EmailHeader email={displayEmail} />
 
           <Box style={{ width: '100%' }}>
-            <CodeConfirmation codeSize={6} secureText={false} onEnter={handleEnter} />
+            <CodeConfirmation key={codeKey} codeSize={6} secureText={false} onEnter={handleEnter} />
 
             <ResendTimer
               onComplete={handleResendComplete}

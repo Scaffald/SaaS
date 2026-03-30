@@ -1,6 +1,6 @@
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { RefreshCcw } from 'lucide-react-native'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '@scaffald/ui'
 interface ResendTimerProps {
   onComplete: () => void
@@ -11,8 +11,6 @@ interface ResendTimerProps {
 export function ResendTimer({ onComplete, onResendClick, disabled = false }: ResendTimerProps) {
   const [isTimerActive, setIsTimerActive] = useState(false)
   const [seconds, setSeconds] = useState(30)
-  const startTimeRef = useRef<number | null>(null)
-  const rafIdRef = useRef<number | null>(null)
   const { t } = useTranslation()
 
   const handleResendClick = () => {
@@ -21,39 +19,23 @@ export function ResendTimer({ onComplete, onResendClick, disabled = false }: Res
   }
 
   useEffect(() => {
-    if (!isTimerActive || seconds === 0) return
+    if (!isTimerActive) return
 
-    const animate = (timestamp: number) => {
-      if (!startTimeRef.current) {
-        startTimeRef.current = timestamp
-      }
+    setSeconds(30)
+    const intervalId = setInterval(() => {
+      setSeconds((prev) => {
+        if (prev <= 1) {
+          clearInterval(intervalId)
+          setIsTimerActive(false)
+          onComplete()
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
 
-      const elapsed = timestamp - startTimeRef.current
-      const newSeconds = 30 - Math.floor(elapsed / 1000)
-
-      if (newSeconds <= 0) {
-        setSeconds(0)
-        setIsTimerActive(false)
-        onComplete()
-        return
-      }
-
-      if (newSeconds !== seconds) {
-        setSeconds(newSeconds)
-      }
-
-      rafIdRef.current = requestAnimationFrame(animate)
-    }
-
-    rafIdRef.current = requestAnimationFrame(animate)
-
-    return () => {
-      if (rafIdRef.current) {
-        cancelAnimationFrame(rafIdRef.current)
-      }
-      startTimeRef.current = null
-    }
-  }, [isTimerActive, seconds, onComplete])
+    return () => clearInterval(intervalId)
+  }, [isTimerActive, onComplete])
 
   if (!isTimerActive) {
     return (
