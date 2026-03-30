@@ -25,7 +25,7 @@
     "@supabase/supabase-js": "catalog:",
     "@trpc/server": "catalog:",
     "adm-zip": "^0.5.16",
-    "csv-parse": "^6.1.0",
+    "csv-parse": "^6.2.1",
     "pdf-lib": "^1.17.1",
     "pg-copy-streams": "^6.0.5",
     "posthog-node": "^5.15.0",
