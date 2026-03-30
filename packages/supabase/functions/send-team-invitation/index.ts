@@ -3,6 +3,7 @@ import { z } from 'zod'
 
 import { buildAppUrl, resolveAppBaseUrl } from '../_shared/app-url'
 import { corsHeaders, createCorsResponse } from '../_shared/cors'
+import { wrapInBrandedTemplate, EMAIL_COLORS } from '../_shared/email-template'
 import {
   type NotificationEventPayload,
   notificationEventSchema,
@@ -90,6 +91,7 @@ function buildEmailContent(params: {
     : 'This invitation will expire soon.'
   const roleText = roleName ? ` as a ${roleName}` : ''
   const orgText = organizationName ? ` at ${organizationName}` : ''
+  const c = EMAIL_COLORS
 
   const text = [
     `You've been invited to join ${teamName}${orgText}${roleText}.`,
@@ -100,35 +102,28 @@ function buildEmailContent(params: {
     expiryText,
   ].join('\n')
 
-  const html = `
-    <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #1f2933;">
-      <h2 style="color: #111827;">Join ${teamName}</h2>
-      <p>
-        You've been invited to join <strong>${teamName}</strong>${orgText}${roleText}.
-      </p>
-      <p style="margin: 24px 0;">
-        <a
-          href="${acceptUrl}"
-          style="
-            background-color: #2563eb;
-            border-radius: 6px;
-            color: #ffffff;
-            display: inline-block;
-            font-weight: 600;
-            padding: 12px 24px;
-            text-decoration: none;
-          "
-        >
-          Accept invitation
-        </a>
-      </p>
-      <p>
-        If the button above doesn't work, copy and paste this link into your browser:<br />
-        <a href="${acceptUrl}">${acceptUrl}</a>
-      </p>
-      <p style="color: #6b7280; font-size: 14px; margin-top: 24px;">${expiryText}</p>
-    </div>
+  const innerBody = `
+    <h2 style="color:${c.bodyText};font-size:18px;margin:0 0 16px;">Join ${teamName}</h2>
+    <p style="margin:0 0 16px;font-size:14px;line-height:22px;">
+      You've been invited to join <strong>${teamName}</strong>${orgText}${roleText}.
+    </p>
+    <p style="margin:24px 0;">
+      <a href="${acceptUrl}" style="background-color:${c.ctaButton};border-radius:6px;color:${c.ctaButtonText};display:inline-block;font-weight:600;padding:12px 24px;text-decoration:none;font-size:14px;">
+        Accept invitation
+      </a>
+    </p>
+    <p style="margin:0 0 8px;font-size:13px;line-height:20px;">
+      If the button above doesn't work, copy and paste this link into your browser:<br />
+      <a href="${acceptUrl}" style="color:${c.link};word-break:break-all;">${acceptUrl}</a>
+    </p>
+    <p style="color:${c.mutedText};font-size:13px;margin-top:24px;">${expiryText}</p>
   `
+
+  const html = wrapInBrandedTemplate({
+    title: 'Scaffald',
+    subtitle: 'Team Invitation',
+    body: innerBody,
+  })
 
   return { subject, text, html }
 }

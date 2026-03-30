@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Platform, View } from 'react-native'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import { Box, Button, Form, Row } from '@scaffald/ui'
+import { Button, Form, Row } from '@scaffald/ui'
 
 import { CodeConfirmationInput, type FormFields } from './CodeConfirmationInput'
 
@@ -38,6 +39,44 @@ export function CodeConfirmation({ codeSize, secureText, onEnter }: CodeConfirma
     onEnter(code)
   })
 
+  // Handle paste at container level for reliable cross-browser support.
+  // React Native Web's TextInput doesn't reliably forward onPaste, so we
+  // attach a native DOM listener on the wrapper element instead.
+  // biome-ignore lint/suspicious/noExplicitAny: RNW View ref is a DOM element on web
+  const containerRef = useRef<any>(null)
+
+  const handlePaste = useCallback(
+    (e: Event) => {
+      const clipboardEvent = e as ClipboardEvent
+      const pasted = clipboardEvent.clipboardData?.getData('text') ?? ''
+      const digits = pasted.replace(/\D/g, '').slice(0, codeSize)
+      if (digits.length < 2) return // Let single chars flow through normally
+
+      e.preventDefault()
+      digits.split('').forEach((d, i) => {
+        setValue(`code${i}`, d, { shouldValidate: true })
+      })
+
+      // Focus the next empty field or the last field
+      const nextEmpty = digits.length < codeSize ? digits.length : codeSize - 1
+      setFocus(`code${nextEmpty}`)
+
+      if (digits.length === codeSize) {
+        // Defer submit so react-hook-form state has flushed
+        setTimeout(() => onSubmit(), 0)
+      }
+    },
+    [codeSize, setValue, setFocus, onSubmit]
+  )
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') return
+    const el = containerRef.current as HTMLElement | null
+    if (!el) return
+    el.addEventListener('paste', handlePaste, true)
+    return () => el.removeEventListener('paste', handlePaste, true)
+  }, [handlePaste])
+
   const hasError = Object.keys(formState.errors).length > 0
   const [shakeOffset, setShakeOffset] = useState(0)
 
@@ -63,7 +102,7 @@ export function CodeConfirmation({ codeSize, secureText, onEnter }: CodeConfirma
   }, [hasError])
 
   return (
-    <Box paddingTop={12} paddingBottom={24} flex={1} align="center" justify="center">
+    <View ref={containerRef} style={{ paddingTop: 12, paddingBottom: 24, flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Form onSubmit={onSubmit} gap={8}>
         <Row
           gap={8}
@@ -100,6 +139,6 @@ export function CodeConfirmation({ codeSize, secureText, onEnter }: CodeConfirma
           {t('auth.verify.verifyButton')}
         </Button>
       </Form>
-    </Box>
+    </View>
   )
 }

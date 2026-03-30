@@ -1,0 +1,140 @@
+<!--
+  Scaffald Branded Email Template — Reference / Preview
+  ======================================================
+  This file is a visual reference for designers and developers.
+  It demonstrates the branded email layout and color palette
+  that all transactional emails should follow.
+
+  Brand colors (from packages/ui/src/tokens/colors.ts):
+    Page background:   #fbf8f3  (neutral[50])
+    Header background:  #6b6055  (neutral[700])
+    Header title:       #f7f2eb  (neutral[100])
+    Header subtitle:    #2a2623  (neutral[900])
+    Card background:    #ffffff
+    Section background: #f1e9df  (neutral[200])
+    Body text:          #504940  (gray[600])
+    Muted text:         #9e9790  (gray[400])
+    CTA button:         #1d7282  (primary[500])
+    Link color:         #1d7282  (primary[500])
+    Accent:             #c8b6a1  (neutral[500])
+    Border:             #e8dccb  (neutral[300])
+-->
+<!DOCTYPE html>
+<html lang="en" style="background-color:#fbf8f3;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;margin:0;padding:0;font-size:12px;font-weight:400;text-align:center;width:100%;">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scaffald Email Template Reference</title>
+  <style>
+    body { background:#fbf8f3; margin:0; padding:0; font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; font-size:14px; font-weight:400; text-align:center; width:100%; }
+    @media only screen and (max-width:480px) {
+      .column { border-left:none !important; border-right:none !important; display:block; padding:10px 0 !important; width:100% !important; }
+      .main { margin:10px auto !important; }
+    }
+  </style>
+</head>
+<body style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;font-weight:400;text-align:center;padding:0;margin:0;width:100%;" bgcolor="#fbf8f3">
+  <center>
+    <table class="body" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;font-weight:400;text-align:center;padding:0;margin:0;width:100%;" bgcolor="#fbf8f3" cellpadding="0" cellspacing="0">
+      <tr>
+        <td align="center">
+          <table class="main" style="width:100%;color:#504940;text-align:left;max-width:600px;margin:20px auto;" cellpadding="0" cellspacing="0">
+            <tr>
+              <td>
+                <table class="content" style="width:100%;box-shadow:0 0 10px rgba(0,0,0,0.05);border-radius:8px;overflow:hidden;" cellpadding="0" cellspacing="0">
+
+                  <!-- Header -->
+                  <tr>
+                    <td style="border-bottom:1px solid #e8dccb;padding:40px 20px 30px;text-align:center;" bgcolor="#6b6055">
+                      <h1 style="color:#f7f2eb;font-size:22px;font-weight:400;margin:0;padding:10px 0 5px;">
+                        Scaffald
+                      </h1>
+                      <h2 style="color:#2a2623;font-weight:400;font-size:14px;margin:0;padding:0;">
+                        Notification Subject Line
+                      </h2>
+                    </td>
+                  </tr>
+
+                  <!-- Body Content -->
+                  <tr>
+                    <td style="color:#504940;padding:30px;font-size:14px;line-height:22px;" bgcolor="#ffffff">
+                      <h2 style="color:#504940;font-size:18px;margin:0 0 16px;">Welcome to Scaffald</h2>
+                      <p style="margin:0 0 16px;">
+                        This is a reference template demonstrating the branded email layout. All transactional emails from Scaffald should follow this color palette and structure.
+                      </p>
+
+                      <!-- Info Card -->
+                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f1e9df;border:1px solid #e8dccb;border-radius:6px;margin:24px 0;">
+                        <tr>
+                          <td style="padding:20px 24px;">
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                              <tr>
+                                <td style="padding:6px 0;font-size:13px;color:#9e9790;width:140px;">Label</td>
+                                <td style="padding:6px 0;font-size:14px;font-weight:500;color:#504940;">Value goes here</td>
+                              </tr>
+                              <tr>
+                                <td style="padding:6px 0;font-size:13px;color:#9e9790;width:140px;">Another Label</td>
+                                <td style="padding:6px 0;font-size:14px;font-weight:500;color:#504940;">Another value</td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <!-- CTA Button -->
+                      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px 0;">
+                        <tr>
+                          <td style="background-color:#1d7282;border-radius:6px;padding:12px 28px;">
+                            <a href="#" style="color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;display:inline-block;">
+                              Call to Action
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <p style="margin:0;font-size:13px;line-height:20px;">
+                        Need help? <a href="#" style="color:#1d7282;text-decoration:none;">Contact support</a> or reply to this email.
+                      </p>
+                    </td>
+                  </tr>
+
+                  <!-- Footer -->
+                  <tr>
+                    <td style="color:#9e9790;padding:20px 30px;font-size:12px;line-height:18px;text-align:center;" bgcolor="#f1e9df">
+                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td class="column" style="width:50%;line-height:22px;padding:10px 30px 10px 10px;vertical-align:top;" valign="top" width="50%">
+                            <h3 style="font-size:14px;line-height:22px;margin:0;padding:0 0 10px;color:#504940;">Thank you</h3>
+                            <span style="color:#9e9790;font-size:12px;">
+                              This email was sent by Scaffald.<br>
+                              Manage your preferences in account settings.
+                            </span>
+                            <big style="color:#e8dccb;font-size:14px;font-weight:400;padding-top:10px;display:block;">
+                              <span style="color:#504940;">We'd love your</span>
+                              <a href="#" style="color:#c8b6a1;font-weight:400;text-decoration:none;">Feedback</a>
+                            </big>
+                          </td>
+                          <td class="column" style="width:50%;line-height:22px;padding:10px 30px;vertical-align:top;" valign="top" width="50%">
+                            <h3 style="font-size:14px;line-height:22px;margin:0;padding:0 0 10px;color:#504940;">Questions?</h3>
+                            <span style="color:#9e9790;font-size:12px;">
+                              Support is available Monday through Friday, 9 AM to 5 PM MST.
+                            </span>
+                            <big style="color:#e8dccb;font-size:14px;font-weight:400;padding-top:10px;display:block;">
+                              <a href="mailto:support@scaffald.com" style="color:#c8b6a1;font-weight:400;text-decoration:none;">support@scaffald.com</a>
+                            </big>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </center>
+</body>
+</html>
