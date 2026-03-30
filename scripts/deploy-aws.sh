@@ -68,7 +68,7 @@ _DEFAULT_BUCKET="$([ "$ENV" = "production" ] && echo "app-scaffald-com" || echo 
 BUCKET_NAME="${AWS_S3_BUCKET:-$_DEFAULT_BUCKET}"
 # Default distribution IDs (can be overridden via AWS_CLOUDFRONT_DISTRIBUTION_ID)
 case "$ENV" in
-    dev)        _DEFAULT_DIST_ID="E1LG9TCV0OTUY1" ;;
+    dev)        _DEFAULT_DIST_ID="E3J4DOM99FE5N" ;;
     preview)    _DEFAULT_DIST_ID="E1YYVZYC1XER5O" ;;
     production) _DEFAULT_DIST_ID="E22499AF1OBX1Y" ;;
 esac

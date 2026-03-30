@@ -20,7 +20,7 @@ Reference for all deployment environments, DNS, AWS, Supabase, and CI/CD configu
 |-------------|-------------------|--------------|
 | Production  | `E22499AF1OBX1Y`  | app.scaffald.com |
 | Preview     | `E1YYVZYC1XER5O`  | preview.scaffald.com |
-| Dev         | `E1LG9TCV0OTUY1`  | dev.scaffald.com |
+| Dev         | `E3J4DOM99FE5N`   | dev.scaffald.com |
 
 ### S3 buckets
 
@@ -34,7 +34,7 @@ Bucket names are stored in GitHub secrets:
 Hosted zone: `scaffald.com` — `Z03807932GT9W30LQ0T67`
 
 Current active records:
-- `dev.scaffald.com` → ALIAS to `E1LG9TCV0OTUY1` CloudFront domain
+- `dev.scaffald.com` → ALIAS to `E3J4DOM99FE5N` CloudFront domain
 - `preview.scaffald.com` → ALIAS to `E1YYVZYC1XER5O` CloudFront domain
 - `app.scaffald.com` → ALIAS to `E22499AF1OBX1Y` CloudFront domain
 - `auth.scaffald.com` → CNAME to Supabase custom domain (production project)
@@ -151,7 +151,7 @@ for manual deploys.
 | `SCAFFALD_AWS_S3_BUCKET_DEV` | S3 bucket for dev |
 | `SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD` | Overrides default `E22499AF1OBX1Y` |
 | `SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_PREVIEW` | Overrides default `E1YYVZYC1XER5O` |
-| `SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV` | Overrides default `E1LG9TCV0OTUY1` |
+| `SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV` | Overrides default `E3J4DOM99FE5N` |
 | `EXPO_PUBLIC_SUPABASE_URL` | Prod Supabase URL (`https://auth.scaffald.com`) |
 | `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Prod Supabase anon key |
 | `PREVIEW_EXPO_PUBLIC_SUPABASE_URL` | Preview branch URL |
