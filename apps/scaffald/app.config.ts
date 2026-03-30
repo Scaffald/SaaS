@@ -74,7 +74,7 @@ const androidPackage = IS_PRODUCTION
 
 export default {
   expo: {
-    name: IS_PRODUCTION ? "SCF-Scaffald" : `SCF-Scaffald (${APP_ENV})`,
+    name: IS_PRODUCTION ? "Scaffald" : `Scaffald (${APP_ENV})`,
     slug: "scf-scaffald",
     jsEngine: "hermes",
     scheme: "com.scaffald",

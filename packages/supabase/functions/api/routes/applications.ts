@@ -326,24 +326,27 @@ app.openapi(createApplicationRoute, async (c) => {
   }
 
   // Create application
+  // Map flat screening fields into the screening_answers JSONB column
+  // and attachments into attachment_metadata JSONB column
+  const screeningAnswers = {
+    current_location: input.current_location,
+    willing_to_relocate: input.willing_to_relocate,
+    years_experience: input.years_experience,
+    is_authorized_to_work: input.is_authorized_to_work,
+    earliest_start_date: input.earliest_start_date,
+    ...(input.screening_answers || {}),
+  }
+
   const { data: application, error } = await supabase
     .schema('core')
     .from('applications')
     .insert({
       job_id: input.job_id,
       user_id: user.id,
-      current_location: input.current_location,
-      willing_to_relocate: input.willing_to_relocate,
-      years_experience: input.years_experience,
-      is_authorized_to_work: input.is_authorized_to_work,
-      earliest_start_date: input.earliest_start_date,
-      screening_answers: input.screening_answers || {},
-      custom_question_answers: input.custom_question_answers || [],
-      attachments: input.attachments || {},
+      screening_answers: screeningAnswers,
+      attachment_metadata: input.attachments || {},
       completed_steps: input.completed_steps || [],
-      is_complete: input.is_complete,
-      status: 'pending',
-      applied_at: new Date().toISOString(),
+      status: 'new',
     })
     .select()
     .single()

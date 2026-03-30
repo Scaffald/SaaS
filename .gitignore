@@ -101,6 +101,8 @@ static/
 
 # plans files
 /plans/
+.claude/
+.certs/
 
 # Supabase CLI generated files and directories
 /supabase/

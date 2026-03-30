@@ -7,7 +7,6 @@ import { useRecordTermsAcceptanceMutation } from '@scf/core/utils/cookieConsent/
 import { translateError } from '@scf/core/utils/errors/translateError'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import { useUser } from '@scf/core/utils/useUser'
 import { applyZodErrorMap } from '@scf/core/utils/zodErrorMap'
 import {
   Button,
@@ -25,11 +24,10 @@ import { colors, spacing } from '@scaffald/ui/tokens'
 import type { AuthChangeEvent, Session } from '@supabase/auth-js'
 import { Mail } from 'lucide-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { useEffect, useState } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
+import { useEffect, useRef, useState } from 'react'
+import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { Pressable, Text } from 'react-native'
 import { z } from 'zod'
-import { LoadingOverlay } from '@scaffald/ui'
 import { SocialLogin } from './components/SocialLogin'
 
 applyZodErrorMap()
@@ -44,10 +42,12 @@ const LoginSchema = z.object({
 })
 
 export const LoginScreen = () => {
+  const renderCount = useRef(0)
+  renderCount.current++
+  console.log('[LoginScreen] render #' + renderCount.current)
   const params = useLocalSearchParams<{ email?: string }>()
   const router = useRouter()
   useRedirectAfterSignIn()
-  const { isLoadingSession } = useUser()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [hasAgreed, setHasAgreed] = useState(true)
   const requestMagicLink = useRequestMagicLinkMutation()
@@ -63,7 +63,9 @@ export const LoginScreen = () => {
   const cardLinkColor = colors.primary[700]               // #034550 — 6.8:1 on glass
 
   useEffect(() => {
+    console.log('[LoginScreen] params check:', JSON.stringify(params))
     if (params?.email) {
+      console.log('[LoginScreen] has email param, replacing route')
       router.replace(ROUTES.AUTH.LOGIN.path)
     }
   }, [params?.email, router])
@@ -157,17 +159,24 @@ export const LoginScreen = () => {
         <Card variant="glass" radius="lg" elevation="md" padding="lg" style={{ width: '100%' }}>
           <Form onSubmit={handleSubmit} gap={spacing[20]}>
             <Stack gap={spacing[20]}>
-              <Input
-                placeholder={t('auth.login.emailPlaceholder')}
-                value={form.watch('email')}
-                onChangeText={(text) => form.setValue('email', text)}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-                iconStart={Mail}
-                error={!!form.formState.errors.email}
-                errorMessage={form.formState.errors.email?.message}
-                disabled={!hasAgreed}
+              <Controller
+                control={form.control}
+                name="email"
+                render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                  <Input
+                    placeholder={t('auth.login.emailPlaceholder')}
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoComplete="email"
+                    iconStart={Mail}
+                    error={!!error}
+                    errorMessage={error?.message}
+                    disabled={!hasAgreed}
+                  />
+                )}
               />
 
               <Button
@@ -237,7 +246,10 @@ export const LoginScreen = () => {
           </Form>
         </Card>
       </Stack>
-      {isLoadingSession && <LoadingOverlay />}
+      {/* LoadingOverlay removed: its mount/unmount cycle steals TextInput
+         focus on iOS native due to full-screen absolute positioning with
+         zIndex 1000 disrupting the responder chain. The login form is
+         already usable while the session loads. */}
     </FormProvider>
   )
 }

@@ -100,10 +100,6 @@ export default function RootIndex() {
       return
     }
 
-    // Set hasNavigated synchronously BEFORE the async call to prevent re-entry
-    // if navigation causes a re-render before the async setState commits.
-    setHasNavigated(true)
-
     const performNavigation = async () => {
       try {
         if (user) {
@@ -126,6 +122,8 @@ export default function RootIndex() {
           console.log('Navigating to auth for unauthenticated user')
           router.replace(AUTH_ROUTES.LOGIN.path)
         }
+        // Only mark as navigated after navigation succeeds
+        setHasNavigated(true)
       } catch (error) {
         console.error('Navigation error:', error)
         // Don't retry automatically to avoid infinite loops
@@ -138,8 +136,7 @@ export default function RootIndex() {
       performNavigation()
     } else {
       // On native, use a small delay to ensure the router is fully ready
-      const timeoutId = setTimeout(performNavigation, 50)
-      return () => clearTimeout(timeoutId)
+      setTimeout(performNavigation, 50)
     }
   }, [
     user,

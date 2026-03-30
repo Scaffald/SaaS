@@ -14,7 +14,7 @@ import { useCookieConsentState } from '@scf/core/utils/cookieConsent'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import NetInfo from '@react-native-community/netinfo'
 import type { Session } from '@supabase/auth-js'
-import { createContext, type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
+import { createContext, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { AuthStateChangeHandler } from './AuthStateChangeHandler'
 
@@ -336,7 +336,7 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
     }
   }, [])
 
-  const contextValue: SessionContextHelper = {
+  const contextValue = useMemo<SessionContextHelper>(() => ({
     session,
     error,
     isLoading,
@@ -344,7 +344,7 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
     signOut,
     clearAuth,
     refreshSession,
-  }
+  }), [session, error, isLoading, signOut, clearAuth, refreshSession])
 
   return (
     <SessionContext.Provider value={contextValue}>
