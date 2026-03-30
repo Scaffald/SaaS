@@ -12,7 +12,7 @@ import {
 } from '@scaffald/ui'
 import { CheckCircle2 } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
 import { Button, Label, Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
@@ -138,7 +138,7 @@ export function QuickApplyModal({
     },
   })
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setFormData({
       current_location: '',
       willing_to_relocate: false,
@@ -150,7 +150,7 @@ export function QuickApplyModal({
     setIsSubmitting(false)
     setShowSuccess(false)
     onOpenChange(false)
-  }
+  }, [onOpenChange])
 
   const validateField = (field: keyof ScreeningAnswers, value: unknown) => {
     setErrors((prevErrors) => {
