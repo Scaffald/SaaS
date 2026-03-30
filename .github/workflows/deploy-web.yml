@@ -122,7 +122,7 @@ jobs:
 
       # ===== UPLOAD ARTIFACT =====
       - name: 📦 Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: web-build-${{ github.sha }}
           path: apps/scaffald/dist/
