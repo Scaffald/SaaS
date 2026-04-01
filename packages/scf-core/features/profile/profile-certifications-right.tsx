@@ -8,6 +8,7 @@ import { getStorageUrl } from "@scf/core/utils/supabase/storage";
 import { ProfileSectionIntro } from "@scf/core/features/profile/components";
 import { Button, DashboardWidget, useThemeContext } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
+import { workerPalette } from "@scf/core/components/ui/styles";
 import {
   Award,
   ChevronDown,
@@ -45,6 +46,8 @@ interface CertificationTree {
  */
 export function ProfileCertificationsRight() {
   const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light" as const;
+  const pal = workerPalette[t];
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [selectedFiles, setSelectedFiles] = useState<
     Record<string, File | null>
@@ -219,8 +222,7 @@ export function ProfileCertificationsRight() {
               <Stack gap={8}>
                 <Text
                   style={{
-                    color:
-                      theme === "light" ? colors.blue[700] : colors.blue[300],
+                    color: pal.pillText,
                   }}
                 >
                   Top-Level Categories
@@ -262,14 +264,8 @@ export function ProfileCertificationsRight() {
                             <Text>{cert.catalog.title}</Text>
                             <Text
                               style={{
-                                color:
-                                  theme === "light"
-                                    ? colors.blue[700]
-                                    : colors.blue[300],
-                                backgroundColor:
-                                  theme === "light"
-                                    ? colors.blue[50]
-                                    : colors.blue[900],
+                                color: pal.pillText,
+                                backgroundColor: pal.pillBg,
                                 paddingHorizontal: 8,
                                 paddingVertical: 2,
                                 borderRadius: 8,

@@ -4,7 +4,7 @@ import { DashboardWidget, ResponsiveModal, useThemeContext } from "@scaffald/ui"
 import { Eye } from "lucide-react-native";
 import { useState } from "react";
 import { Image } from "react-native";
-import { Card, H4, Spinner, Text, Row, Stack } from "@scaffald/ui";
+import { Card, DashboardWidgetHeader, Spinner, Text, Row, Stack } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
 import type { PortfolioItem } from "@scaffald/sdk";
 import type { ProfileWidgetProps } from "./types";
@@ -57,7 +57,7 @@ export function PortfolioGallery({
     <>
       <DashboardWidget>
         <Stack gap={16}>
-          <H4>Portfolio</H4>
+          <DashboardWidgetHeader title="Portfolio" />
 
           {/* Grid Layout */}
           <Stack gap={12}>

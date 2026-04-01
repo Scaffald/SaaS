@@ -3,11 +3,12 @@ import { useExperienceWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
 import {
   Button,
   DashboardWidget,
+  DashboardWidgetHeader,
   EmptyState,
-  H4,
   Separator,
   Skeleton,
   SkeletonAvatar,
+  SkeletonGroup,
   SkeletonText,
   Text,
   Row,
@@ -17,6 +18,8 @@ import {
 import { Briefcase } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { colors } from "@scaffald/ui/tokens";
+import { workerPalette } from "@scf/core/components/ui/styles";
+import { Pill } from "@scf/core/components/ui/CardPrimitives";
 import { formatDate } from "../utils/date-formatting";
 import type { ProfileWidgetProps } from "./types";
 import type { ExperienceWidgetEntry } from "@scaffald/sdk";
@@ -38,6 +41,8 @@ export function ExperienceWidget({
 }: ProfileWidgetProps) {
   const router = useRouter();
   const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light" as const;
+  const pal = workerPalette[t];
   const { data, isLoading, error, refetch, isFetching } = useExperienceWidget(
     { userId },
     {
@@ -48,17 +53,15 @@ export function ExperienceWidget({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <Stack gap={12}>
-          <Row justify="space-between" align="center">
-            <Skeleton width={120} height={20} shape="text" />
-          </Row>
+        <SkeletonGroup gap={12} animation="wave">
+          <Skeleton width={120} height={20} shape="text" />
           {[0, 1].map((i) => (
             <Row key={i} gap={12} align="flex-start">
               <SkeletonAvatar size={40} />
               <SkeletonText lines={2} style={{ flex: 1 }} />
             </Row>
           ))}
-        </Stack>
+        </SkeletonGroup>
       </DashboardWidget>
     );
   }
@@ -92,20 +95,22 @@ export function ExperienceWidget({
     <DashboardWidget>
       <Stack gap={12}>
         {/* Header */}
-        <Row justify="space-between" align="center">
-          <H4>Work Experience</H4>
-          {showEdit && (
-            <Button
-              variant="outline"
-              size="sm"
-              onPress={() =>
-                router.push(ROUTES.PROFILE.EXPERIENCE.path)
-              }
-            >
-              Edit
-            </Button>
-          )}
-        </Row>
+        <DashboardWidgetHeader
+          title="Work Experience"
+          action={
+            showEdit ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onPress={() =>
+                  router.push(ROUTES.PROFILE.EXPERIENCE.path)
+                }
+              >
+                Edit
+              </Button>
+            ) : undefined
+          }
+        />
 
         {experiences.length === 0 ? (
           <EmptyState
@@ -144,18 +149,7 @@ export function ExperienceWidget({
                       {exp.is_current ? "Present" : formatDate(exp.end_date)}
                     </Text>
                     {exp.is_current && (
-                      <Row
-                        paddingHorizontal={8}
-                        paddingVertical={2}
-                        borderRadius={8}
-                        style={{
-                          backgroundColor: colors.blue[50],
-                          borderWidth: 1,
-                          borderColor: colors.blue[500],
-                        }}
-                      >
-                        <Text style={{ color: colors.blue[700] }}>Current</Text>
-                      </Row>
+                      <Pill label="Current" bgColor={pal.pillBg} textColor={pal.pillText} />
                     )}
                   </Row>
 
@@ -195,7 +189,7 @@ export function ExperienceWidget({
             {/* Show More link for compact view */}
             {showCompact && experiences.length > 3 && (
               <Text
-                style={{ color: colors.blue[500] }}
+                style={{ color: pal.accent }}
                 onPress={() =>
                   router.push(ROUTES.PROFILE.EXPERIENCE.path)
                 }

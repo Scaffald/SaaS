@@ -5,7 +5,7 @@ import {
   Button,
   Card,
   DashboardWidget,
-  H4,
+  DashboardWidgetHeader,
   ResponsiveModal,
   Skeleton,
   SkeletonBox,
@@ -19,6 +19,8 @@ import { randomUUID } from 'expo-crypto'
 import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from 'lucide-react-native'
 import { useState } from 'react'
 import { colors } from '@scaffald/ui/tokens'
+import { workerPalette } from '@scf/core/components/ui/styles'
+import { Pill } from '@scf/core/components/ui/CardPrimitives'
 import { ReviewWizard } from '../../reviews/components/ReviewWizard'
 import { ReviewImpactSummary } from '../../reviews/components/ReviewImpactSummary'
 import type { ProfileWidgetProps } from './types'
@@ -48,6 +50,8 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
   const [showReviewModal, setShowReviewModal] = useState(false)
   const [completedReviewId, setCompletedReviewId] = useState<string | null>(null)
   const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light' as const
+  const pal = workerPalette[t]
   const { user: currentUser } = useUser()
 
   // Fetch profile data for review modal
@@ -130,19 +134,21 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
       <>
         <DashboardWidget>
           <Stack gap={16}>
-            <Row justify="space-between" align="center">
-              <H4>Reviews & Ratings</H4>
-              {canLeaveReview && (
-                <Button
-                  variant="filled" color="primary"
-                  size="sm"
-                  iconStart={MessageSquarePlus}
-                  onPress={handleLeaveReview}
-                >
-                  Leave Review
-                </Button>
-              )}
-            </Row>
+            <DashboardWidgetHeader
+              title="Reviews & Ratings"
+              action={
+                canLeaveReview ? (
+                  <Button
+                    variant="filled" color="primary"
+                    size="sm"
+                    iconStart={MessageSquarePlus}
+                    onPress={handleLeaveReview}
+                  >
+                    Leave Review
+                  </Button>
+                ) : undefined
+              }
+            />
             <Stack align="center" justify="center" minHeight={150} gap={8}>
               <Text style={{ color: colors.text[theme].secondary }}>No reviews yet</Text>
               {canLeaveReview && <Text style={{ color: colors.text[theme].secondary }}>Be the first to leave a review</Text>}
@@ -210,19 +216,21 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
       <DashboardWidget>
         <Stack gap={16}>
           {/* Header */}
-          <Row justify="space-between" align="center">
-            <H4>Reviews & Ratings</H4>
-            {canLeaveReview && (
-              <Button
-                variant="filled" color="primary"
-                size="sm"
-                iconStart={MessageSquarePlus}
-                onPress={handleLeaveReview}
-              >
-                Leave Review
-              </Button>
-            )}
-          </Row>
+          <DashboardWidgetHeader
+            title="Reviews & Ratings"
+            action={
+              canLeaveReview ? (
+                <Button
+                  variant="filled" color="primary"
+                  size="sm"
+                  iconStart={MessageSquarePlus}
+                  onPress={handleLeaveReview}
+                >
+                  Leave Review
+                </Button>
+              ) : undefined
+            }
+          />
 
           {/* Rating Summary */}
           <Card variant="outlined" backgroundColor={colors.bg[theme].subtle}>
@@ -314,16 +322,9 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                     <Stack gap={4}>
                       <Row gap={8} align="center">
                         <Text style={{ color: colors.text[theme].secondary }}>Anonymous Reviewer</Text>
-                        <Row
-                          gap={4}
-                          align="center"
-                          paddingHorizontal={8}
-                          paddingVertical={2}
-                          backgroundColor={colors.blue[100]}
-                          borderRadius={8}
-                        >
-                          <Shield size={14} color={colors.blue[600]} />
-                          <Text style={{ color: colors.blue[600] }}>VERIFIED</Text>
+                        <Row gap={4} align="center">
+                          <Shield size={14} color={pal.accent} />
+                          <Pill label="VERIFIED" bgColor={pal.pillBg} textColor={pal.pillText} />
                         </Row>
                       </Row>
                     </Stack>
@@ -375,7 +376,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
             ))}
 
             {showCompact && reviews.length > 2 && (
-              <Text style={{ color: colors.blue[500], cursor: 'pointer' }}>
+              <Text style={{ color: pal.accent, cursor: 'pointer' }}>
                 + {reviews.length - 2} more reviews
               </Text>
             )}

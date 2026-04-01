@@ -11,6 +11,7 @@ import {
   useThemeContext,
 } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
+import { workerPalette } from "@scf/core/components/ui/styles";
 import {
   AlertCircle,
   Calendar,
@@ -38,6 +39,8 @@ export function ProfileEducationRight({
   onEditEntry,
 }: ProfileEducationRightProps = {}) {
   const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light" as const;
+  const pal = workerPalette[t];
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<string | null>(null);
   const toast = useToast();
   const queryClient = useQueryClient();
@@ -181,7 +184,7 @@ export function ProfileEducationRight({
                   {/* Current Education Badge */}
                   {edu.is_current && (
                     <Row gap={4} align="center">
-                      <Text style={{ color: colors.blue[500] }}>Current</Text>
+                      <Text style={{ color: pal.accent }}>Current</Text>
                     </Row>
                   )}
 

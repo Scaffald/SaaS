@@ -3,8 +3,8 @@ import { useSkillsWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
 import {
   Button,
   DashboardWidget,
+  DashboardWidgetHeader,
   EmptyState,
-  H4,
   Skeleton,
   SkeletonBox,
   SkeletonGroup,
@@ -16,6 +16,7 @@ import {
 import { CheckCircle } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { colors } from "@scaffald/ui/tokens";
+import { workerPalette } from "@scf/core/components/ui/styles";
 import { getProficiencyLabel } from "../constants/proficiency-levels";
 import type { ProfileWidgetProps } from "./types";
 import type { SkillWidgetEntry } from "@scaffald/sdk";
@@ -37,6 +38,8 @@ export function TechnicalSkillsWidget({
 }: ProfileWidgetProps) {
   const router = useRouter();
   const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light" as const;
+  const pal = workerPalette[t];
 
   // Fetch technical skills
   const { data, isLoading, error, refetch, isFetching } = useSkillsWidget(
@@ -51,7 +54,7 @@ export function TechnicalSkillsWidget({
       <DashboardWidget>
         <Stack gap={12}>
           <Skeleton width={60} height={20} shape="text" />
-          <SkeletonGroup direction="row" gap={8} style={{ flexWrap: 'wrap' }}>
+          <SkeletonGroup direction="row" gap={8} animation="wave" style={{ flexWrap: 'wrap' }}>
             {[100, 80, 120, 90, 110].map((w, i) => (
               <SkeletonBox key={i} width={w} height={32} borderRadius={99} />
             ))}
@@ -113,20 +116,22 @@ export function TechnicalSkillsWidget({
     <DashboardWidget>
       <Stack gap={12}>
         {/* Header */}
-        <Row justify="space-between" align="center">
-          <H4>Technical Skills</H4>
-          {showEdit && (
-            <Button
-              variant="outline"
-              size="sm"
-              onPress={() => {
-                router.push(ROUTES.PROFILE.SKILLS.path);
-              }}
-            >
-              Edit
-            </Button>
-          )}
-        </Row>
+        <DashboardWidgetHeader
+          title="Technical Skills"
+          action={
+            showEdit ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onPress={() => {
+                  router.push(ROUTES.PROFILE.SKILLS.path);
+                }}
+              >
+                Edit
+              </Button>
+            ) : undefined
+          }
+        />
 
         {/* Skills Content */}
         {skills.length === 0 ? (
@@ -174,27 +179,27 @@ export function TechnicalSkillsWidget({
                           gap={8}
                           align="center"
                           style={{
-                            backgroundColor: colors.blue[200],
-                            borderColor: skill.verified ? colors.blue[700] : colors.blue[500],
+                            backgroundColor: pal.pillBg,
+                            borderColor: skill.verified ? pal.pillText : pal.accent,
                           }}
                         >
                           {skill.verified && (
-                            <CheckCircle size={16} color={colors.blue[700]} />
+                            <CheckCircle size={16} color={pal.pillText} />
                           )}
                           <Stack gap={2}>
-                            <Text style={{ color: colors.blue[700] }}>
+                            <Text style={{ color: pal.pillText }}>
                               {skill.name}
                             </Text>
                             {!showCompact && (
                               <Row gap={8}>
                                 {skill.proficiency > 0 && (
-                                  <Text style={{ color: colors.blue[800] }}>
+                                  <Text style={{ color: pal.pillText }}>
                                     {getProficiencyLabel(skill.proficiency)}
                                   </Text>
                                 )}
                                 {skill.yearsExperience !== null &&
                                   skill.yearsExperience > 0 && (
-                                    <Text style={{ color: colors.blue[800] }}>
+                                    <Text style={{ color: pal.pillText }}>
                                       • {skill.yearsExperience}y
                                     </Text>
                                   )}
@@ -210,7 +215,7 @@ export function TechnicalSkillsWidget({
             {/* Show More link for compact view */}
             {showCompact && skills.length > 5 && (
               <Text
-                style={{ color: colors.blue[700], cursor: "pointer" }}
+                style={{ color: pal.accent, cursor: "pointer" }}
                 onPress={() =>
                   router.push(ROUTES.PROFILE.SKILLS.path)
                 }

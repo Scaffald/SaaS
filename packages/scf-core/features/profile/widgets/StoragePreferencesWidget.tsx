@@ -12,7 +12,7 @@ import { Cloud, Database, HardDrive } from "lucide-react-native";
 import {
   Button,
   DashboardWidget,
-  H4,
+  DashboardWidgetHeader,
   Skeleton,
   SkeletonBox,
   Text,
@@ -24,6 +24,7 @@ import type { ComponentType } from "react";
 import { useState, useEffect } from "react";
 import { Pressable } from "react-native";
 import { colors } from "@scaffald/ui/tokens";
+import { workerPalette } from "@scf/core/components/ui/styles";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useStoragePreference,
@@ -72,6 +73,8 @@ export function StoragePreferencesWidget() {
     useState<StorageBackend>("supabase");
   const [hasChanges, setHasChanges] = useState(false);
   const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light" as const;
+  const pal = workerPalette[t];
 
   const { data, isLoading, error } = useStoragePreference();
   const queryClient = useQueryClient();
@@ -128,25 +131,25 @@ export function StoragePreferencesWidget() {
     <DashboardWidget>
       <Stack gap={12}>
         {/* Header */}
-        <Row justify="space-between" align="center">
-          <Stack gap={4}>
-            <H4>Document Storage</H4>
-            <Text style={{ color: colors.text[theme].secondary }}>
-              Choose where your documents are stored
-            </Text>
-          </Stack>
-          {hasChanges && (
-            <Button
-              variant="filled"
-              color="primary"
-              size="sm"
-              disabled={mutation.isPending}
-              onPress={handleSave}
-            >
-              {mutation.isPending ? "Saving..." : "Save"}
-            </Button>
-          )}
-        </Row>
+        <DashboardWidgetHeader
+          title="Document Storage"
+          action={
+            hasChanges ? (
+              <Button
+                variant="filled"
+                color="primary"
+                size="sm"
+                disabled={mutation.isPending}
+                onPress={handleSave}
+              >
+                {mutation.isPending ? "Saving..." : "Save"}
+              </Button>
+            ) : undefined
+          }
+        />
+        <Text style={{ color: colors.text[theme].secondary }}>
+          Choose where your documents are stored
+        </Text>
 
         {/* Storage Options */}
         <Stack gap={12}>
@@ -166,8 +169,8 @@ export function StoragePreferencesWidget() {
                   align="center"
                   style={{
                     borderWidth: 2,
-                    borderColor: isSelected ? colors.blue[400] : colors.border[theme].default,
-                    backgroundColor: isSelected ? colors.blue[50] : colors.bg[theme].default,
+                    borderColor: isSelected ? pal.selectedBorder : colors.border[theme].default,
+                    backgroundColor: isSelected ? pal.pillBg : colors.bg[theme].default,
                     opacity: option.available ? 1 : 0.5,
                   }}
                 >
@@ -178,12 +181,12 @@ export function StoragePreferencesWidget() {
                     align="center"
                     justify="center"
                     style={{
-                      backgroundColor: isSelected ? colors.blue[200] : colors.bg[theme].muted,
+                      backgroundColor: isSelected ? pal.iconBg : colors.bg[theme].muted,
                     }}
                   >
                     <IconComponent
                       size={24}
-                      color={isSelected ? colors.blue[600] : colors.text[theme].tertiary}
+                      color={isSelected ? pal.accent : colors.text[theme].tertiary}
                     />
                   </Row>
 
@@ -238,12 +241,12 @@ export function StoragePreferencesWidget() {
           padding="sm"
           borderRadius={12}
           style={{
-            backgroundColor: colors.blue[50],
+            backgroundColor: pal.pillBg,
             borderWidth: 1,
-            borderColor: colors.blue[300],
+            borderColor: pal.selectedBorder,
           }}
         >
-          <Text style={{ color: colors.blue[700] }}>
+          <Text style={{ color: pal.pillText }}>
             Note: Existing documents will remain in their current storage
             location. Only new documents will use your selected preference.
           </Text>

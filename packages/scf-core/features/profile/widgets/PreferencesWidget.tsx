@@ -1,9 +1,11 @@
 import { ROUTES } from "@scf/core/constants/routes";
 import { usePreferencesWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
-import { Button, DashboardWidget, H4, Skeleton, SkeletonForm, useThemeContext } from "@scaffald/ui";
+import { Button, DashboardWidget, DashboardWidgetHeader, Skeleton, SkeletonForm, SkeletonGroup, useThemeContext } from "@scaffald/ui";
 import { useRouter } from "expo-router";
 import { Text, Row, Stack } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
+import { workerPalette } from "@scf/core/components/ui/styles";
+import { Pill } from "@scf/core/components/ui/CardPrimitives";
 
 /**
  * PreferencesWidget
@@ -18,6 +20,8 @@ export function PreferencesWidget({
   showEdit?: boolean;
 }) {
   const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light" as const;
+  const pal = workerPalette[t];
   const router = useRouter();
   const { data, isLoading, error } = usePreferencesWidget({
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
@@ -26,10 +30,10 @@ export function PreferencesWidget({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <Stack gap={12}>
+        <SkeletonGroup gap={12} animation="wave">
           <Skeleton width={100} height={20} shape="text" />
           <SkeletonForm fields={4} />
-        </Stack>
+        </SkeletonGroup>
       </DashboardWidget>
     );
   }
@@ -71,20 +75,22 @@ export function PreferencesWidget({
     <DashboardWidget>
       <Stack gap={12}>
         {/* Header */}
-        <Row justify="space-between" align="center">
-          <H4>Work Preferences</H4>
-          {showEdit && (
-            <Button
-              variant="outline"
-              size="sm"
-              onPress={() =>
-                router.push(ROUTES.PROFILE.EMPLOYMENT.path)
-              }
-            >
-              Edit
-            </Button>
-          )}
-        </Row>
+        <DashboardWidgetHeader
+          title="Work Preferences"
+          action={
+            showEdit ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onPress={() =>
+                  router.push(ROUTES.PROFILE.EMPLOYMENT.path)
+                }
+              >
+                Edit
+              </Button>
+            ) : undefined
+          }
+        />
 
         <Stack gap={16}>
           {/* Availability */}
@@ -125,17 +131,7 @@ export function PreferencesWidget({
                 <Text>Preferred Locations</Text>
                 <Row gap={8} wrap>
                   {data.preferred_work_locations.map((location: string) => (
-                    <Row
-                      key={location}
-                      backgroundColor={colors.info[50]}
-                      paddingHorizontal={12}
-                      paddingVertical={6}
-                      borderRadius={12}
-                      borderWidth={1}
-                      borderColor={colors.border[theme].info}
-                    >
-                      <Text color={colors.fg[theme].info}>{location}</Text>
-                    </Row>
+                    <Pill key={location} label={location} bgColor={pal.pillBg} textColor={pal.pillText} />
                   ))}
                 </Row>
               </Stack>
@@ -198,17 +194,7 @@ export function PreferencesWidget({
                 <Text>Driver's Licenses</Text>
                 <Row gap={8} wrap>
                   {data.drivers_license_classes.map((license: string) => (
-                    <Row
-                      key={license}
-                      backgroundColor={colors.info[50]}
-                      paddingHorizontal={12}
-                      paddingVertical={6}
-                      borderRadius={12}
-                      borderWidth={1}
-                      borderColor={colors.border[theme].info}
-                    >
-                      <Text color={colors.fg[theme].info}>Class {license}</Text>
-                    </Row>
+                    <Pill key={license} label={`Class ${license}`} bgColor={pal.pillBg} textColor={pal.pillText} />
                   ))}
                 </Row>
               </Stack>

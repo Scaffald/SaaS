@@ -3,11 +3,12 @@ import { useEducationWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
 import {
   Button,
   DashboardWidget,
+  DashboardWidgetHeader,
   EmptyState,
-  H4,
   Separator,
   Skeleton,
   SkeletonAvatar,
+  SkeletonGroup,
   SkeletonText,
   Text,
   Row,
@@ -17,6 +18,8 @@ import {
 import { GraduationCap } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { colors } from "@scaffald/ui/tokens";
+import { workerPalette } from "@scf/core/components/ui/styles";
+import { Pill } from "@scf/core/components/ui/CardPrimitives";
 import { formatDate } from "../utils/date-formatting";
 import type { ProfileWidgetProps } from "./types";
 import type { EducationWidgetEntry } from "@scaffald/sdk";
@@ -38,6 +41,8 @@ export function EducationWidget({
 }: ProfileWidgetProps) {
   const router = useRouter();
   const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light" as const;
+  const pal = workerPalette[t];
   const { data, isLoading, error, refetch, isFetching } = useEducationWidget(
     { userId },
     {
@@ -48,17 +53,15 @@ export function EducationWidget({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <Stack gap={12}>
-          <Row justify="space-between" align="center">
-            <Skeleton width={80} height={20} shape="text" />
-          </Row>
+        <SkeletonGroup gap={12} animation="wave">
+          <Skeleton width={80} height={20} shape="text" />
           {[0, 1].map((i) => (
             <Row key={i} gap={12} align="flex-start">
               <SkeletonAvatar size={40} />
               <SkeletonText lines={2} style={{ flex: 1 }} />
             </Row>
           ))}
-        </Stack>
+        </SkeletonGroup>
       </DashboardWidget>
     );
   }
@@ -92,20 +95,22 @@ export function EducationWidget({
     <DashboardWidget>
       <Stack gap={12}>
         {/* Header */}
-        <Row justify="space-between" align="center">
-          <H4>Education</H4>
-          {showEdit && (
-            <Button
-              variant="outline"
-              size="sm"
-              onPress={() =>
-                router.push(ROUTES.PROFILE.EDUCATION.path)
-              }
-            >
-              Edit
-            </Button>
-          )}
-        </Row>
+        <DashboardWidgetHeader
+          title="Education"
+          action={
+            showEdit ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onPress={() =>
+                  router.push(ROUTES.PROFILE.EDUCATION.path)
+                }
+              >
+                Edit
+              </Button>
+            ) : undefined
+          }
+        />
 
         {education.length === 0 ? (
           <EmptyState
@@ -149,18 +154,7 @@ export function EducationWidget({
                       {edu.is_current ? "Present" : formatDate(edu.end_date)}
                     </Text>
                     {edu.is_current && (
-                      <Row
-                        paddingHorizontal={8}
-                        paddingVertical={2}
-                        borderRadius={8}
-                        borderWidth={1}
-                        style={{
-                          backgroundColor: colors.blue[200],
-                          borderColor: colors.blue[700],
-                        }}
-                      >
-                        <Text style={{ color: colors.blue[700] }}>Current</Text>
-                      </Row>
+                      <Pill label="Current" bgColor={pal.pillBg} textColor={pal.pillText} />
                     )}
                   </Row>
 
@@ -171,7 +165,7 @@ export function EducationWidget({
 
                   {/* Description */}
                   {edu.description && !showCompact && (
-                    <Text style={{ color: colors.text[theme].secondary, lineHeight: 12 }}>
+                    <Text style={{ color: colors.text[theme].secondary, lineHeight: 20 }}>
                       {edu.description}
                     </Text>
                   )}
@@ -186,7 +180,7 @@ export function EducationWidget({
             {/* Show More link for compact view */}
             {showCompact && education.length > 2 && (
               <Text
-                style={{ color: colors.blue[700], cursor: "pointer" }}
+                style={{ color: pal.accent, cursor: "pointer" }}
                 onPress={() =>
                   router.push(ROUTES.PROFILE.EDUCATION.path)
                 }

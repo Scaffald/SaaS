@@ -3,10 +3,11 @@ import { useCertificationsWidget } from "@scf/core/utils/profile-widgets-sdk-hoo
 import {
   Button,
   DashboardWidget,
+  DashboardWidgetHeader,
   EmptyState,
-  H4,
   Separator,
   Skeleton,
+  SkeletonGroup,
   SkeletonList,
   Text,
   Row,
@@ -17,6 +18,8 @@ import { Award, CheckCircle } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { Linking } from "react-native";
 import { colors } from "@scaffald/ui/tokens";
+import { workerPalette } from "@scf/core/components/ui/styles";
+import { Pill } from "@scf/core/components/ui/CardPrimitives";
 import { formatDate } from "../utils/date-formatting";
 import type { ProfileWidgetProps } from "./types";
 import type { CertificationWidgetEntry } from "@scaffald/sdk";
@@ -38,6 +41,8 @@ export function CertificationsWidget({
 }: ProfileWidgetProps) {
   const router = useRouter();
   const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light" as const;
+  const pal = workerPalette[t];
   const { data, isLoading, error, refetch, isFetching } =
     useCertificationsWidget(
       { userId },
@@ -49,10 +54,10 @@ export function CertificationsWidget({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <Stack gap={12}>
+        <SkeletonGroup gap={12} animation="wave">
           <Skeleton width={120} height={20} shape="text" />
           <SkeletonList count={3} variant="profile" />
-        </Stack>
+        </SkeletonGroup>
       </DashboardWidget>
     );
   }
@@ -103,20 +108,22 @@ export function CertificationsWidget({
     <DashboardWidget>
       <Stack gap={12}>
         {/* Header */}
-        <Row justify="space-between" align="center">
-          <H4>Certifications</H4>
-          {showEdit && (
-            <Button
-              variant="outline"
-              size="sm"
-              onPress={() =>
-                router.push(ROUTES.PROFILE.CERTIFICATIONS.path)
-              }
-            >
-              Edit
-            </Button>
-          )}
-        </Row>
+        <DashboardWidgetHeader
+          title="Certifications"
+          action={
+            showEdit ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onPress={() =>
+                  router.push(ROUTES.PROFILE.CERTIFICATIONS.path)
+                }
+              >
+                Edit
+              </Button>
+            ) : undefined
+          }
+        />
 
         {certifications.length === 0 ? (
           <EmptyState
@@ -146,20 +153,9 @@ export function CertificationsWidget({
                       <Stack gap={4}>
                         <Row gap={8} align="center">
                           <Text>{cert.name}</Text>
-                          <Row
-                            paddingHorizontal={8}
-                            paddingVertical={2}
-                            borderRadius={8}
-                            style={{
-                              backgroundColor: colors.blue[50],
-                              borderWidth: 1,
-                              borderColor: colors.blue[500],
-                            }}
-                          >
-                            <CheckCircle size={14} color={colors.blue[700]} />
-                            <Text style={{ color: colors.blue[700], marginLeft: 4 }}>
-                              Active
-                            </Text>
+                          <Row gap={4} align="center">
+                            <CheckCircle size={14} color={pal.accent} />
+                            <Pill label="Active" bgColor={pal.pillBg} textColor={pal.pillText} />
                           </Row>
                         </Row>
                         {cert.issuing_organization && (
@@ -210,7 +206,7 @@ export function CertificationsWidget({
                                 </Text>
                                 <Text
                                   style={{
-                                    color: colors.blue[500],
+                                    color: pal.accent,
                                     textDecorationLine: "underline",
                                   }}
                                   onPress={() =>
@@ -265,7 +261,7 @@ export function CertificationsWidget({
             {/* Show More link for compact view */}
             {showCompact && certifications.length > 3 && (
               <Text
-                style={{ color: colors.blue[500] }}
+                style={{ color: pal.accent }}
                 onPress={() =>
                   router.push(ROUTES.PROFILE.CERTIFICATIONS.path)
                 }

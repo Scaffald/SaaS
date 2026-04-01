@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Pressable } from 'react-native'
 import { Button, Card, Input, ScrollView, Spinner, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { workerPalette } from '@scf/core/components/ui/styles'
 import type { ParentSkill } from '../../types/profile-skills-types'
 
 // Local debounce hook to avoid dependency issues
@@ -47,6 +48,7 @@ export function SimpleSkillAutocomplete({
 }: SimpleSkillAutocompleteProps) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
+  const pal = workerPalette[t]
   const [results, setResults] = useState<ParentSkill[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const debouncedValue = useDebounceValue(value, 300)
@@ -170,7 +172,7 @@ export function SimpleSkillAutocomplete({
                           <Text>{skill.name}</Text>
                           {skill.code && <Text style={{ color: colors.text[t].secondary }}>{skill.code}</Text>}
                         </Stack>
-                        {isExisting && <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>Added</Text>}
+                        {isExisting && <Text style={{ color: pal.accent }}>Added</Text>}
                       </Row>
                     </Stack>
                     </Pressable>

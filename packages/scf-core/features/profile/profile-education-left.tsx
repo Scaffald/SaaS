@@ -17,6 +17,7 @@ import {
 } from "@scaffald/ui";
 import { MonthYearPicker } from "./components/MonthYearPicker";
 import { colors } from "@scaffald/ui/tokens";
+import { workerPalette } from "@scf/core/components/ui/styles";
 import { UniversityAutocomplete } from "@scf/core/components/university";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDown, Plus, X } from "lucide-react-native";
@@ -88,6 +89,8 @@ export function ProfileEducationLeft({
   onEditComplete,
 }: ProfileEducationLeftProps = {}) {
   const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light" as const;
+  const pal = workerPalette[t];
   const [isLoading, setIsLoading] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [hiddenEntryIds, setHiddenEntryIds] = useState<Set<string>>(new Set());
@@ -523,14 +526,12 @@ export function ProfileEducationLeft({
                     padding: 12,
                     borderWidth: 1,
                     borderColor: isEditing
-                      ? colors.blue[300]
+                      ? pal.selectedBorder
                       : hasEntryErrors
                       ? colors.error[300]
                       : colors.border[theme].default,
                     backgroundColor: isEditing
-                      ? theme === "light"
-                        ? colors.blue[50]
-                        : colors.blue[900]
+                      ? pal.pillBg
                       : hasEntryErrors
                       ? theme === "light"
                         ? colors.error[50]

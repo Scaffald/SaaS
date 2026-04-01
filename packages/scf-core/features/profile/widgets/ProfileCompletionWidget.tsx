@@ -4,7 +4,7 @@ import { CheckCircle, ChevronRight, Circle } from "lucide-react-native";
 import { useToast } from "@scaffald/ui";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
-import { Button, H4, ProgressBar, Text, Row, Stack } from "@scaffald/ui";
+import { Button, DashboardWidgetHeader, ProgressBar, Text, Row, Stack } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
 import type { ProfileWidgetProps } from "./types";
 
@@ -70,15 +70,17 @@ export function ProfileCompletionWidget({
     <DashboardWidget>
       <Stack gap={16}>
         {/* Header */}
-        <Row justify="space-between" align="center">
-          <H4>Profile Completion</H4>
-          {variant === "full" && (
-            <Text style={{ color: colors.text[theme].secondary }}>
-              {completionData.totalComplete} of {completionData.totalItems}{" "}
-              complete
-            </Text>
-          )}
-        </Row>
+        <DashboardWidgetHeader
+          title="Profile Completion"
+          action={
+            variant === "full" ? (
+              <Text style={{ color: colors.text[theme].secondary }}>
+                {completionData.totalComplete} of {completionData.totalItems}{" "}
+                complete
+              </Text>
+            ) : undefined
+          }
+        />
 
         {/* Progress Bar */}
         <Stack gap={8}>

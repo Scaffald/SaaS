@@ -14,6 +14,7 @@ import {
   Skeleton,
   SkeletonAvatar,
   SkeletonBox,
+  SkeletonGroup,
   SkeletonText,
   Text,
   Row,
@@ -23,6 +24,8 @@ import {
 import { MessageSquarePlus } from "lucide-react-native";
 import { useState } from "react";
 import { colors } from "@scaffald/ui/tokens";
+import { workerPalette } from "@scf/core/components/ui/styles";
+import { Pill } from "@scf/core/components/ui/CardPrimitives";
 import type { ProfileWidgetProps } from "./types";
 
 interface GeneralInfoWidgetProps extends ProfileWidgetProps {
@@ -51,6 +54,8 @@ export function GeneralInfoWidget({
 }: GeneralInfoWidgetProps) {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light" as const;
+  const pal = workerPalette[t];
   const { user: currentUser } = useUser();
   const { data, isLoading, error, refetch, isFetching } = useGeneralInfoWidget(
     { userId },
@@ -66,24 +71,26 @@ export function GeneralInfoWidget({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <Stack gap={12} align="center">
-          <SkeletonAvatar size={40} />
-          <Skeleton width={160} height={16} shape="text" />
-          <Skeleton width={120} height={14} shape="text" />
-          <SkeletonBox width={100} height={28} borderRadius={99} />
-        </Stack>
-        <Stack gap={12} style={{ marginTop: 12 }}>
-          <Skeleton width={60} height={14} shape="text" />
-          <SkeletonText lines={3} lastLineWidth="80%" />
-        </Stack>
-        <Stack gap={8} style={{ marginTop: 12 }}>
-          {[0, 1, 2, 3, 4].map((i) => (
-            <Stack key={i} gap={4}>
-              <Skeleton width="30%" height={12} shape="text" />
-              <Skeleton width="100%" height={14} shape="text" />
-            </Stack>
-          ))}
-        </Stack>
+        <SkeletonGroup gap={12} animation="wave">
+          <Stack gap={12} align="center">
+            <SkeletonAvatar size={40} />
+            <Skeleton width={160} height={16} shape="text" />
+            <Skeleton width={120} height={14} shape="text" />
+            <SkeletonBox width={100} height={28} borderRadius={99} />
+          </Stack>
+          <Stack gap={12}>
+            <Skeleton width={60} height={14} shape="text" />
+            <SkeletonText lines={3} lastLineWidth="80%" />
+          </Stack>
+          <Stack gap={8}>
+            {[0, 1, 2, 3, 4].map((i) => (
+              <Stack key={i} gap={4}>
+                <Skeleton width="30%" height={12} shape="text" />
+                <Skeleton width="100%" height={14} shape="text" />
+              </Stack>
+            ))}
+          </Stack>
+        </SkeletonGroup>
       </DashboardWidget>
     );
   }
@@ -222,16 +229,7 @@ export function GeneralInfoWidget({
 
             {/* Status Badges */}
             {data.open_to_work && (
-              <Row
-                backgroundColor={colors.blue[50]}
-                paddingHorizontal={12}
-                paddingVertical={6}
-                borderRadius={999}
-                borderWidth={1}
-                borderColor={colors.blue[300]}
-              >
-                <Text style={{ color: colors.blue[700] }}>Open to Work</Text>
-              </Row>
+              <Pill label="Open to Work" bgColor={pal.pillBg} textColor={pal.pillText} />
             )}
           </Stack>
 
@@ -239,7 +237,7 @@ export function GeneralInfoWidget({
           {data.about && variant === "full" && (
             <Stack gap={8}>
               <Text>About</Text>
-              <Text style={{ color: colors.text[theme].secondary, lineHeight: 12 }}>
+              <Text style={{ color: colors.text[theme].secondary, lineHeight: 20 }}>
                 {data.about}
               </Text>
             </Stack>

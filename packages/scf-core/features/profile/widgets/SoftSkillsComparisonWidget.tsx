@@ -20,6 +20,7 @@ import {
 import { useRouter } from 'expo-router'
 import { useMemo, useState, type FC } from 'react'
 import { colors } from '@scaffald/ui/tokens'
+import { workerPalette } from '@scf/core/components/ui/styles'
 import type { ProfileWidgetProps } from './types'
 
 interface SkillsChartDataset {
@@ -56,6 +57,8 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
 }) => {
   const router = useRouter()
   const { theme } = useThemeContext()
+  const t = theme === 'dark' ? 'dark' : 'light' as const
+  const pal = workerPalette[t]
   const [activeCategory, setActiveCategory] = useState<SoftSkillCategory>('reliability')
 
   // Fetch soft skills data
@@ -131,13 +134,13 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
       {
         label: CATEGORY_LABELS[activeCategory],
         data: chartData,
-        fillColor: colors.blue[200],
-        strokeColor: colors.blue[700],
+        fillColor: pal.pillBg,
+        strokeColor: pal.pillText,
         strokeWidth: 3,
         fillOpacity: 0.02,
         gradient: {
-          startColor: colors.blue[500],
-          endColor: colors.blue[200],
+          startColor: pal.accent,
+          endColor: pal.pillBg,
         },
       },
     ]
@@ -165,7 +168,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
     }
 
     return datasets
-  }, [data, skills, activeCategory, comparisonData])
+  }, [data, skills, activeCategory, comparisonData, pal])
 
   if (isLoading) {
     return (
@@ -319,7 +322,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
             {categoryChartData.length > 1 && (
               <Row gap={16} align="center" justify="center" paddingVertical={8}>
                 <Row gap={8} align="center">
-                  <Stack width={20} height={3} backgroundColor={colors.blue[700]} />
+                  <Stack width={20} height={3} backgroundColor={pal.pillText} />
                   <Text style={{ color: colors.text[theme].secondary }}>Self Assessment</Text>
                 </Row>
                 <Row gap={8} align="center">

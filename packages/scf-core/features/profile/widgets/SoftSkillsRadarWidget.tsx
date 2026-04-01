@@ -10,8 +10,8 @@ import { Pressable } from "react-native";
 import {
   Button,
   DashboardWidget,
+  DashboardWidgetHeader,
   EmptyState,
-  H4,
   Skeleton,
   SkeletonBox,
   ResponsiveModal,
@@ -26,6 +26,13 @@ import { useCallback, useMemo, useState, type FC } from "react";
 import { Separator, Text, Row, Stack } from "@scaffald/ui";
 import { useSoftSkillsComparison } from "@scf/core/utils/profile-skills-sdk-hooks";
 import type { ProfileWidgetProps } from "./types";
+
+const CATEGORY_LABELS: Record<string, string> = {
+  reliability: "Reliability",
+  collaboration: "Collaboration",
+  professionalism: "Professionalism",
+  technical: "Technical",
+};
 
 /**
  * SoftSkillsRadarWidget component
@@ -82,14 +89,6 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
         versionHistory: undefined, // Not needed for widget
       }));
   }, [data]);
-
-  // Build radar chart axes from category averages
-  const CATEGORY_LABELS: Record<string, string> = {
-    reliability: "Reliability",
-    collaboration: "Collaboration",
-    professionalism: "Professionalism",
-    technical: "Technical",
-  };
 
   const radarAxes = useMemo(() => {
     if (!data?.categoryAverages) return [];
@@ -159,33 +158,35 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
     <DashboardWidget>
       <Stack gap={12}>
         {/* Header */}
-        <Row justify="space-between" align="center">
-          <H4>Soft Skills</H4>
-          <Row gap={8} align="center">
-            {!showCompact && (
-              <Button
-                variant="outline"
-                size="sm"
-                iconStart={Download}
-                onPress={handleExport}
-                testID="soft-skills-export-button"
-              >
-                Export
-              </Button>
-            )}
-            {showEdit && (
-              <Button
-                variant="outline"
-                size="sm"
-                onPress={() => {
-                  router.push(ROUTES.PROFILE.SKILLS.path);
-                }}
-              >
-                Edit
-              </Button>
-            )}
-          </Row>
-        </Row>
+        <DashboardWidgetHeader
+          title="Soft Skills"
+          action={
+            <Row gap={8} align="center">
+              {!showCompact && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  iconStart={Download}
+                  onPress={handleExport}
+                  testID="soft-skills-export-button"
+                >
+                  Export
+                </Button>
+              )}
+              {showEdit && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onPress={() => {
+                    router.push(ROUTES.PROFILE.SKILLS.path);
+                  }}
+                >
+                  Edit
+                </Button>
+              )}
+            </Row>
+          }
+        />
 
         {/* Radar Chart */}
         {radarAxes.length >= 3 && (

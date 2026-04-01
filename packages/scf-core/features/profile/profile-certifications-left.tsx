@@ -18,6 +18,7 @@ import {
 import { Button, DashboardWidget, useThemeContext } from "@scaffald/ui";
 import { MonthYearPicker } from "./components/MonthYearPicker";
 import { colors } from "@scaffald/ui/tokens";
+import { workerPalette } from "@scf/core/components/ui/styles";
 import { Award, PlusCircle, UploadCloud } from "lucide-react-native";
 import { useToast } from "@scaffald/ui";
 import { useCallback, useEffect, useState } from "react";
@@ -86,6 +87,8 @@ export function ProfileCertificationsLeft({
   onSelectCertificationForProof,
 }: ProfileCertificationsLeftProps) {
   const { theme } = useThemeContext();
+  const t = theme === "dark" ? "dark" : "light" as const;
+  const pal = workerPalette[t];
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Certification[]>([]);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
@@ -877,10 +880,7 @@ export function ProfileCertificationsLeft({
                   <Stack key={topLevel.id} gap={8}>
                     <Text
                       style={{
-                        color:
-                          theme === "light"
-                            ? colors.blue[700]
-                            : colors.blue[300],
+                        color: pal.pillText,
                       }}
                     >
                       {topLevel.catalog.title}
