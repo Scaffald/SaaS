@@ -17,7 +17,7 @@ on:
 
 env:
   NODE_VERSION: "20"
-  PNPM_VERSION: "10.17.1"
+  PNPM_VERSION: "10.20.0"
 
 # Prevent concurrent deployments to the same environment
 concurrency:
