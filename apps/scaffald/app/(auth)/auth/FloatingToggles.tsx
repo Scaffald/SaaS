@@ -3,7 +3,7 @@ import { useTranslation } from '@scf/core/utils/useTranslation'
 import { useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { Moon, Sun } from 'lucide-react-native'
-import { Pressable, Text, View } from 'react-native'
+import { Platform, Pressable, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const LOCALE_LABELS: Record<SupportedLocale, string> = {
@@ -86,8 +86,10 @@ export function AuthFloatingToggles() {
       style={{
         zIndex: 100,
         backgroundColor: theme === 'dark' ? colors.bg.dark.default : colors.white,
-        paddingTop: insets.top > 20 ? insets.top - 16 : insets.top || 12,
-        paddingBottom: insets.top > 20 ? 0 : 8,
+        paddingTop: Platform.OS !== 'web' && insets.top > 20
+          ? insets.top - 26
+          : insets.top || 12,
+        paddingBottom: Platform.OS !== 'web' && insets.top > 20 ? 4 : 8,
         paddingHorizontal: 16,
         flexDirection: 'row',
         justifyContent: 'space-between',
