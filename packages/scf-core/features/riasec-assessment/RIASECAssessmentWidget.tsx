@@ -42,12 +42,7 @@ export function RIASECAssessmentWidget() {
           match your interests.
         </Text>
 
-        <Button
-          variant="filled"
-          color="primary"
-          onPress={handleStart}
-          size="lg"
-        >
+        <Button variant="outline" color="gray" size="sm" fullWidth onPress={handleStart}>
           Start Interest Assessment
         </Button>
 

@@ -23,9 +23,10 @@ export const isActivePath = (pathname: string, href: string, exact?: boolean) =>
     return pathname === '/' || pathname === '/index'
   }
 
-  // Special case for dashboard: expand only on home, news, and analytics — not settings, user profiles, etc.
+  // Special case for dashboard: expand only on home, news, analytics, and notifications — not settings, user profiles, etc.
   const dashboardPath = ROUTES.DASHBOARD.path
   const analyticsPath = ROUTES.DASHBOARD.ANALYTICS.path
+  const notificationsPath = ROUTES.DASHBOARD.NOTIFICATIONS.path
   if (href === dashboardPath) {
     return (
       pathname === dashboardPath ||
@@ -33,7 +34,9 @@ export const isActivePath = (pathname: string, href: string, exact?: boolean) =>
       pathname === ROUTES.DASHBOARD.NEWS.path ||
       pathname === analyticsPath ||
       pathname === `${analyticsPath}/index` ||
-      pathname.startsWith(`${analyticsPath}/`)
+      pathname.startsWith(`${analyticsPath}/`) ||
+      pathname === notificationsPath ||
+      pathname.startsWith(`${notificationsPath}/`)
     )
   }
 

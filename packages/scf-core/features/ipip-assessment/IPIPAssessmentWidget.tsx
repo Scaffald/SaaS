@@ -4,9 +4,9 @@ import {
   useAssessmentStatus,
   useIPIPStatus,
 } from '@scf/core/utils/personality-assessment-sdk-hooks'
-import { Button, DashboardWidget, DashboardWidgetHeader, useThemeContext } from '@scaffald/ui'
+import { Button, DashboardWidget, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import { ArrowRight, CheckCircle2 } from 'lucide-react-native'
+import { CheckCircle2 } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { ProgressBar, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { useIPIPResults } from './hooks/useIPIPResults'
@@ -24,7 +24,8 @@ export function IPIPAssessmentWidget() {
   const { data: assessmentData } = useAssessmentStatus()
   const results = useIPIPResults()
 
-  const status = (statusData as { data?: { isCompleted?: boolean; progress?: number } } | undefined)?.data
+  const status = (statusData as { data?: { isCompleted?: boolean; progress?: number } } | undefined)
+    ?.data
   const assessment = (assessmentData as { data?: { ipip_answers?: unknown } } | undefined)?.data
 
   if (isLoading) {
@@ -53,12 +54,33 @@ export function IPIPAssessmentWidget() {
     router.push(ROUTES.ASSESSMENTS.IPIP.RESULTS.path)
   }
 
+  const labelStyle = {
+    fontSize: 10,
+    fontWeight: '800' as const,
+    color: colors.text[theme].tertiary,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 1.5,
+  }
+
+  const metaStyle = {
+    fontSize: 11,
+    fontWeight: '600' as const,
+    color: colors.text[theme].tertiary,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 0.5,
+  }
+
   // Show results preview when completed
   if (isCompleted && results.isComplete && results.archetype) {
     return (
       <DashboardWidget>
         <Stack gap={12}>
-          <DashboardWidgetHeader title="Personality Assessment" />
+          <Stack gap={4}>
+            <Text style={labelStyle}>Personality</Text>
+            <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text[theme].primary }}>
+              Personality Assessment
+            </Text>
+          </Stack>
           <Row justify="space-between" align="center">
             <Stack gap={4} flex={1}>
               <Row align="center" gap={8}>
@@ -134,7 +156,7 @@ export function IPIPAssessmentWidget() {
             )}
           </Stack>
 
-          <Button variant="filled" color="primary" onPress={handleViewResults} size="lg" iconEnd={ArrowRight}>
+          <Button variant="outline" color="gray" size="sm" fullWidth onPress={handleViewResults}>
             View Full Results
           </Button>
         </Stack>
@@ -146,7 +168,12 @@ export function IPIPAssessmentWidget() {
   return (
     <DashboardWidget>
       <Stack gap={12}>
-        <DashboardWidgetHeader title="Personality Assessment" />
+        <Stack gap={4}>
+          <Text style={labelStyle}>Personality</Text>
+          <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text[theme].primary }}>
+            Personality Assessment
+          </Text>
+        </Stack>
         <Text style={{ color: colors.text[theme].secondary }}>
           Answer 120 questions to discover your personality traits using the Big Five personality
           model.
@@ -156,25 +183,23 @@ export function IPIPAssessmentWidget() {
         {hasStarted && (
           <Stack gap={8}>
             <Row justify="space-between" align="center">
-              <Text style={{ color: colors.text[theme].secondary }}>Progress</Text>
-              <Text style={{ color: colors.text[theme].secondary }}>
+              <Text style={metaStyle}>Progress</Text>
+              <Text style={metaStyle}>
                 {progress}/120 ({progressPercentage}%)
               </Text>
             </Row>
             <ProgressBar value={progressPercentage} />
             {completedDomains > 0 && (
-              <Text style={{ color: colors.text[theme].secondary }}>
-                {completedDomains} of 5 domains completed
-              </Text>
+              <Text style={metaStyle}>{completedDomains} of 5 domains completed</Text>
             )}
           </Stack>
         )}
 
-        <Button variant="filled" color="primary" onPress={handleStart} size="lg">
+        <Button variant="outline" color="gray" size="sm" fullWidth onPress={handleStart}>
           {hasStarted ? 'Continue Questions' : 'Start Questions'}
         </Button>
 
-        <Text style={{ color: colors.text[theme].secondary }}>
+        <Text style={metaStyle}>
           {hasStarted ? `${progress}/120 questions answered` : 'Takes about 10-15 minutes'}
         </Text>
       </Stack>

@@ -9,7 +9,6 @@ import {
   Button,
   DashboardWidget,
   DashboardWidgetHeader,
-  EmptyState,
   Separator,
   Skeleton,
   SkeletonBox,
@@ -34,6 +33,13 @@ interface SkillsChartDataset {
     startColor: string
     endColor: string
   }
+}
+
+const CATEGORY_LABELS: Record<SoftSkillCategory, string> = {
+  reliability: 'Reliability',
+  collaboration: 'Collaboration',
+  professionalism: 'Professionalism',
+  technical: 'Technical',
 }
 
 /**
@@ -105,14 +111,6 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
     router.push(ROUTES.PROFILE.SKILLS.path)
   }
 
-  // Category labels for display
-  const categoryLabels: Record<SoftSkillCategory, string> = {
-    reliability: 'Reliability',
-    collaboration: 'Collaboration',
-    professionalism: 'Professionalism',
-    technical: 'Technical',
-  }
-
   // Calculate skills chart data for the active category
   const categoryChartData = useMemo<SkillsChartDataset[] | null>(() => {
     if (!data || !skills || skills.length === 0) return null
@@ -131,7 +129,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
 
     const datasets: SkillsChartDataset[] = [
       {
-        label: categoryLabels[activeCategory],
+        label: CATEGORY_LABELS[activeCategory],
         data: chartData,
         fillColor: colors.blue[200],
         strokeColor: colors.blue[700],
@@ -191,18 +189,44 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
     )
   }
 
+  const labelStyle = {
+    fontSize: 10,
+    fontWeight: '800' as const,
+    color: colors.text[theme].tertiary,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 1.5,
+  }
+
+  const metaStyle = {
+    fontSize: 11,
+    fontWeight: '600' as const,
+    color: colors.text[theme].tertiary,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 0.5,
+  }
+
   // Show empty state when no data or no skills
   if (!data || data.skills.length === 0) {
     return (
       <DashboardWidget>
-        <Stack gap={16}>
-          <DashboardWidgetHeader title="Soft Skills Analysis" />
-          <EmptyState
-            title="No soft skills assessment"
-            description="Complete your soft skills assessment to see your profile"
-          />
+        <Stack gap={12}>
+          <Stack gap={4}>
+            <Text style={labelStyle}>Soft Skills</Text>
+            <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text[theme].primary }}>
+              Soft Skills Analysis
+            </Text>
+          </Stack>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Complete your soft skills assessment to see your profile.
+          </Text>
           {showCTA && (
-            <Button variant="filled" color="primary" onPress={handleNavigateToAssessment}>
+            <Button
+              variant="outline"
+              color="gray"
+              size="sm"
+              fullWidth
+              onPress={handleNavigateToAssessment}
+            >
               Complete Soft Skills Assessment
             </Button>
           )}
@@ -215,20 +239,27 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
   if (!isCompleted && showCTA) {
     return (
       <DashboardWidget>
-        <Stack gap={16}>
-          <DashboardWidgetHeader title="Soft Skills Analysis" />
-          <Stack gap={16}>
-            <Stack gap={8}>
-              <Text style={{ color: colors.text[theme].secondary }}>
-                Complete your soft skills assessment to showcase your strengths and improve job
-                matching.
-              </Text>
-              <Text style={{ color: colors.text[theme].secondary }}>{completionCount} of 25 skills rated</Text>
-            </Stack>
-            <Button variant="filled" color="primary" onPress={handleNavigateToAssessment}>
-              Complete Soft Skills Assessment
-            </Button>
+        <Stack gap={12}>
+          <Stack gap={4}>
+            <Text style={labelStyle}>Soft Skills</Text>
+            <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text[theme].primary }}>
+              Soft Skills Analysis
+            </Text>
           </Stack>
+          <Text style={{ color: colors.text[theme].secondary }}>
+            Complete your soft skills assessment to showcase your strengths and improve job
+            matching.
+          </Text>
+          <Text style={metaStyle}>{completionCount} of 25 skills rated</Text>
+          <Button
+            variant="outline"
+            color="gray"
+            size="sm"
+            fullWidth
+            onPress={handleNavigateToAssessment}
+          >
+            Complete Soft Skills Assessment
+          </Button>
         </Stack>
       </DashboardWidget>
     )
@@ -274,7 +305,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
         {categoryChartData && categoryChartData.length > 0 && (
           <Stack gap={16}>
             <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
-              {categoryLabels[activeCategory]} Skills
+              {CATEGORY_LABELS[activeCategory]} Skills
             </Text>
 
             {/* Skills chart placeholder - SkillsChart not available in @scaffald/ui */}
@@ -299,7 +330,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
             )}
 
             <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
-              Individual skill ratings in {categoryLabels[activeCategory]}
+              Individual skill ratings in {CATEGORY_LABELS[activeCategory]}
             </Text>
           </Stack>
         )}

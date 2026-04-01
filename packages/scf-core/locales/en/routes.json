@@ -63,6 +63,7 @@
       }
     },
     "news": "News",
+    "notifications": "Notifications",
     "organizations": {
       "create": "Request Organization",
       "title": "Organizations"

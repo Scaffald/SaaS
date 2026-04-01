@@ -42,7 +42,7 @@ export function OccupationAssessmentWidget() {
           relevant opportunities.
         </Text>
 
-        <Button variant="filled" color="primary" onPress={handleStart} size="lg">
+        <Button variant="outline" color="gray" size="sm" fullWidth onPress={handleStart}>
           Add Occupations
         </Button>
 

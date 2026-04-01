@@ -19,7 +19,9 @@ import { useQueryClient } from '@tanstack/react-query'
 import { AlertCircle, ExternalLink, Info, ShieldAlert } from 'lucide-react-native'
 import {
   Button,
+  Card,
   NotificationTag,
+  Tabs,
   Toggle,
   Input,
   Label,
@@ -28,7 +30,9 @@ import {
   Text,
   Row,
   Stack,
+  useThemeContext,
 } from '@scaffald/ui'
+import { colors } from '@scaffald/ui/tokens'
 import type { Href } from 'expo-router'
 import { useRouter } from 'expo-router'
 import type { ComponentType } from 'react'
@@ -76,16 +80,23 @@ interface ApiNotification {
   routed_channels?: string[] | null
 }
 
-const FILTERS: Array<{ label: string; value: 'all' | 'unread' | 'archived' }> = [
-  { label: 'All', value: 'all' },
-  { label: 'Unread', value: 'unread' },
-  { label: 'Archived', value: 'archived' },
-]
+const FILTERS = ['All', 'Unread', 'Archived'] as const
+type FilterValue = 'all' | 'unread' | 'archived'
+const FILTER_MAP: Record<(typeof FILTERS)[number], FilterValue> = {
+  All: 'all',
+  Unread: 'unread',
+  Archived: 'archived',
+}
 
-const severityIconTokens: Record<NotificationItem['severity'], string> = {
-  critical: '$red10',
-  important: '$yellow10',
-  info: '$blue10',
+function getSeverityColor(severity: NotificationItem['severity']): string {
+  switch (severity) {
+    case 'critical':
+      return colors.error[500]
+    case 'important':
+      return colors.warning[500]
+    default:
+      return colors.blue[500]
+  }
 }
 
 type SeverityIconProps = {
@@ -94,8 +105,7 @@ type SeverityIconProps = {
 }
 
 const SeverityIcon = ({ IconComponent, severity }: SeverityIconProps) => {
-  const colorToken = severityIconTokens[severity] ?? '$blue10'
-  return <IconComponent size={22} color={colorToken} />
+  return <IconComponent size={22} color={getSeverityColor(severity)} />
 }
 
 function getSeverityIcon(severity: NotificationItem['severity']) {
@@ -164,8 +174,10 @@ function mapNotification(apiNotification: ApiNotification): NotificationItem {
 
 export function SettingsNotificationsSection() {
   const router = useRouter()
+  const { theme } = useThemeContext()
   const queryClient = useQueryClient()
-  const [filter, setFilter] = useState<'all' | 'unread' | 'archived'>('all')
+  const [filter, setFilter] = useState<FilterValue>('all')
+  const [activeTab, setActiveTab] = useState<string>('All')
   const preferencesQuery = useNotificationPreferences()
   const savePreferencesMutation = useSavePreferencesMutation({
     onSuccess: () => {
@@ -284,341 +296,420 @@ export function SettingsNotificationsSection() {
     if (notification.ctaUrl) router.push(notification.ctaUrl as Href)
   }
 
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab)
+    const filterValue = FILTER_MAP[tab as keyof typeof FILTER_MAP] ?? 'all'
+    setFilter(filterValue)
+    notificationsQuery.refetch()
+  }
+
+  const renderNotificationList = () => {
+    if (notificationsQuery.isLoading) {
+      return (
+        <Stack gap={12} align="center" style={{ paddingVertical: 40 }}>
+          <Spinner variant="ios" size="lg" color="gray" />
+          <Text style={{ color: colors.text[theme].secondary }}>Loading notifications…</Text>
+        </Stack>
+      )
+    }
+
+    if (isEmpty) {
+      return (
+        <Stack gap={12} align="center" style={{ paddingVertical: 40 }}>
+          <Info size={48} color={colors.icon[theme].muted} />
+          <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text[theme].primary }}>
+            You're all caught up!
+          </Text>
+          <Text style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
+            New alerts will show up here when there's something you need to review.
+          </Text>
+        </Stack>
+      )
+    }
+
+    return (
+      <Stack gap={12}>
+        {notifications.map((notification) => {
+          const IconComponent = getSeverityIcon(notification.severity) as ComponentType<{
+            size?: number
+            color?: string
+          }>
+          return (
+            <Stack
+              key={notification.id}
+              style={{
+                backgroundColor: colors.bg[theme].subtle,
+                borderRadius: 12,
+                overflow: 'hidden',
+              }}
+            >
+              <Row style={{ padding: 16, gap: 12, alignItems: 'flex-start' }}>
+                <SeverityIcon IconComponent={IconComponent} severity={notification.severity} />
+                <Stack gap={8} style={{ flex: 1 }}>
+                  <Row justify="space-between" align="center">
+                    <Text style={{ color: colors.text[theme].primary, fontWeight: '500', flex: 1 }}>
+                      {notification.title}
+                    </Text>
+                    <NotificationTag size="md">
+                      {notification.severity.toUpperCase()}
+                    </NotificationTag>
+                  </Row>
+                  <Text style={{ color: colors.text[theme].secondary, fontSize: 14 }}>
+                    {notification.preview}
+                  </Text>
+                  <Row gap={12} align="center">
+                    <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>
+                      {formatRelativeTime(notification.createdAt)}
+                    </Text>
+                    {notification.channels.length > 0 && (
+                      <NotificationTag>{notification.channels.join(', ')}</NotificationTag>
+                    )}
+                  </Row>
+                </Stack>
+              </Row>
+
+              {notification.metadata?.notification_type === 'site_overlap' &&
+              notification.metadata?.site_id &&
+              notification.metadata?.overlapping_site_id ? (
+                <Row padding="sm">
+                  <SiteOverlapNotification
+                    notificationId={notification.id}
+                    siteId={notification.metadata.site_id}
+                    overlappingSiteId={notification.metadata.overlapping_site_id}
+                    overlapPercent={notification.metadata.overlap_percent || 0}
+                    threshold={notification.metadata.threshold || 2.0}
+                    onDismiss={(id) => archiveMutation.mutate({ ids: [id] })}
+                  />
+                </Row>
+              ) : (
+                <Row
+                  gap={12}
+                  justify="flex-end"
+                  style={{
+                    paddingHorizontal: 16,
+                    paddingBottom: 12,
+                    paddingTop: 4,
+                  }}
+                >
+                  {!notification.read ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onPress={() => markReadMutation.mutate({ ids: [notification.id] })}
+                    >
+                      Mark as read
+                    </Button>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onPress={() => markUnreadMutation.mutate({ ids: [notification.id] })}
+                    >
+                      Mark unread
+                    </Button>
+                  )}
+                  {filter === 'archived' ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      color="success"
+                      onPress={() => restoreMutation.mutate({ ids: [notification.id] })}
+                    >
+                      Restore
+                    </Button>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onPress={() => archiveMutation.mutate({ ids: [notification.id] })}
+                    >
+                      Archive
+                    </Button>
+                  )}
+                  {notification.ctaUrl && (
+                    <Button
+                      size="sm"
+                      color="primary"
+                      iconEnd={ExternalLink}
+                      onPress={() => handleNavigate(notification)}
+                    >
+                      {notification.ctaLabel ?? 'Open'}
+                    </Button>
+                  )}
+                </Row>
+              )}
+            </Stack>
+          )
+        })}
+        {notificationsQuery.hasNextPage && (
+          <Button
+            color="primary"
+            disabled={notificationsQuery.isFetchingNextPage}
+            onPress={() => notificationsQuery.fetchNextPage()}
+          >
+            {notificationsQuery.isFetchingNextPage ? 'Loading…' : 'Load more'}
+          </Button>
+        )}
+      </Stack>
+    )
+  }
+
   return (
     <Stack gap={24}>
-      <Stack gap={8}>
-        <Text>Notifications</Text>
-        <Text color="gray">
+      {/* Page header */}
+      <Stack gap={2}>
+        <Text style={{ fontSize: 22, fontWeight: '700', color: colors.text[theme].primary }}>
+          Notifications
+        </Text>
+        <Text style={{ fontSize: 13, color: colors.text[theme].secondary }}>
           Stay up to date with applications, opportunities, and platform updates.
         </Text>
       </Stack>
 
-      <Stack gap={16} padding={16}>
-        <Row justify="space-between" align="center">
-          <Stack gap={4}>
-            <Text>Preferences</Text>
-            <Text color="gray">Control how and when we reach you.</Text>
-          </Stack>
-          <Button
-            variant="filled"
-            size="md"
-            disabled={savePreferencesMutation.isPending}
-            onPress={handleSavePreferences}
-          >
-            {savePreferencesMutation.isPending ? 'Saving…' : 'Save changes'}
-          </Button>
-        </Row>
-
-        <Separator />
-
-        <Stack gap={12}>
-          <Row align="center" justify="space-between">
-            <Label
-              color="gray"
-              onPress={() =>
-                setPreferences((prev) => ({ ...prev, globalEnabled: !prev.globalEnabled }))
-              }
+      {/* Preferences card */}
+      <Card variant="outlined" radius="lg" padding="lg">
+        <Stack gap={16}>
+          <Row justify="space-between" align="center">
+            <Stack gap={4}>
+              <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text[theme].primary }}>
+                Preferences
+              </Text>
+              <Text style={{ fontSize: 13, color: colors.text[theme].secondary }}>
+                Control how and when we reach you.
+              </Text>
+            </Stack>
+            <Button
+              variant="filled"
+              size="sm"
+              disabled={savePreferencesMutation.isPending}
+              onPress={handleSavePreferences}
             >
-              Enable notifications
-            </Label>
-            <Toggle
-              checked={preferences.globalEnabled}
-              onChange={(value) => setPreferences((prev) => ({ ...prev, globalEnabled: value }))}
-              aria-label="Enable notifications"
-            />
+              {savePreferencesMutation.isPending ? 'Saving…' : 'Save changes'}
+            </Button>
           </Row>
-          <Stack gap={8} paddingLeft={8}>
-            {(
-              [
-                { key: 'in_app', label: 'In-app' },
-                { key: 'email', label: 'Email' },
-                { key: 'push', label: 'Mobile push' },
-                { key: 'sms', label: 'SMS' },
-              ] as const
-            ).map(({ key, label }) => (
-              <Row key={key} align="center" justify="space-between">
-                <Label
-                  color="gray"
-                  onPress={() =>
-                    setPreferences((prev) => ({
-                      ...prev,
-                      channelEnabled: { ...prev.channelEnabled, [key]: !prev.channelEnabled[key] },
-                    }))
-                  }
-                >
-                  {label}
-                </Label>
-                <Toggle
-                  checked={preferences.channelEnabled[key]}
-                  onChange={(value) =>
-                    setPreferences((prev) => ({
-                      ...prev,
-                      channelEnabled: { ...prev.channelEnabled, [key]: value },
-                    }))
-                  }
-                  aria-label={`Enable ${label} notifications`}
-                />
-              </Row>
-            ))}
-          </Stack>
 
           <Separator />
 
-          <Stack gap={8}>
-            <Text color="gray">Quiet hours</Text>
-            <Text color="gray">We'll queue non-critical alerts during these hours.</Text>
-            <Row gap={8} align="center">
-              <Input
-                placeholder="22:00"
-                value={preferences.quietHours?.start ?? ''}
-                onChangeText={(text) =>
-                  setPreferences((prev) => ({
-                    ...prev,
-                    quietHours: {
-                      end: prev.quietHours?.end ?? '',
-                      start: text,
-                    },
-                  }))
+          <Stack gap={12}>
+            <Row align="center" justify="space-between">
+              <Label
+                style={{ color: colors.text[theme].primary }}
+                onPress={() =>
+                  setPreferences((prev) => ({ ...prev, globalEnabled: !prev.globalEnabled }))
                 }
-              />
-              <Text color="gray">to</Text>
-              <Input
-                placeholder="07:00"
-                value={preferences.quietHours?.end ?? ''}
-                onChangeText={(text) =>
-                  setPreferences((prev) => ({
-                    ...prev,
-                    quietHours: {
-                      end: text,
-                      start: prev.quietHours?.start ?? '',
-                    },
-                  }))
-                }
-              />
-              <Button
-                size="md"
-                onPress={() => setPreferences((prev) => ({ ...prev, quietHours: null }))}
               >
-                Clear
-              </Button>
+                Enable notifications
+              </Label>
+              <Toggle
+                checked={preferences.globalEnabled}
+                onChange={(value) => setPreferences((prev) => ({ ...prev, globalEnabled: value }))}
+                aria-label="Enable notifications"
+              />
             </Row>
-          </Stack>
-
-          <Separator />
-
-          <Stack gap={8}>
-            <Text color="gray">Digest frequency</Text>
-            <Row gap={8}>
+            <Stack gap={8} paddingLeft={8}>
               {(
                 [
-                  { label: 'Immediate', value: 'immediate' },
-                  { label: 'Daily summary', value: 'digest_daily' },
-                  { label: 'Weekly summary', value: 'digest_weekly' },
-                  { label: 'Mute', value: 'mute' },
+                  { key: 'in_app', label: 'In-app' },
+                  { key: 'email', label: 'Email' },
+                  { key: 'push', label: 'Mobile push' },
+                  { key: 'sms', label: 'SMS' },
                 ] as const
-              ).map((option) => (
-                <Button
-                  key={option.value}
-                  size="md"
-                  color={preferences.digestFrequency === option.value ? 'primary' : 'gray'}
-                  variant={preferences.digestFrequency === option.value ? undefined : 'outline'}
-                  onPress={() =>
-                    setPreferences((prev) => ({
-                      ...prev,
-                      digestFrequency: option.value as typeof prev.digestFrequency,
-                    }))
-                  }
-                >
-                  {option.label}
-                </Button>
-              ))}
-            </Row>
-          </Stack>
-
-          {savePreferencesMutation.isSuccess && (
-            <Text color="green">Preferences saved.</Text>
-          )}
-          {savePreferencesMutation.isError && (
-            <Text color="red">Failed to save preferences.</Text>
-          )}
-        </Stack>
-
-        <Separator />
-
-        <Stack gap={8}>
-          <Text color="gray">Registered devices</Text>
-          {devicesQuery.isLoading ? (
-            <Row gap={8} align="center">
-              <Spinner variant="ios" size="sm" color="gray" />
-              <Text color="gray">Checking devices…</Text>
-            </Row>
-          ) : deviceRows.length === 0 ? (
-            <Text color="gray">No devices registered yet.</Text>
-          ) : (
-            <Stack>
-              <Row padding={8}>
-                <Text>Token</Text>
-                <Text>Platform</Text>
-                <Text>Last seen</Text>
-              </Row>
-              {deviceRows.map((device) => (
-                <Row key={device.id} padding={8} gap={8}>
-                  <Text color="gray">{device.token}</Text>
-                  <Text color="gray">{device.platform}</Text>
-                  <Text color="gray">
-                    {formatDate(
-                      device.last_seen_at ?? device.updated_at ?? device.created_at ?? null
-                    )}
-                  </Text>
+              ).map(({ key, label }) => (
+                <Row key={key} align="center" justify="space-between">
+                  <Label
+                    style={{ color: colors.text[theme].secondary }}
+                    onPress={() =>
+                      setPreferences((prev) => ({
+                        ...prev,
+                        channelEnabled: { ...prev.channelEnabled, [key]: !prev.channelEnabled[key] },
+                      }))
+                    }
+                  >
+                    {label}
+                  </Label>
+                  <Toggle
+                    checked={preferences.channelEnabled[key]}
+                    onChange={(value) =>
+                      setPreferences((prev) => ({
+                        ...prev,
+                        channelEnabled: { ...prev.channelEnabled, [key]: value },
+                      }))
+                    }
+                    aria-label={`Enable ${label} notifications`}
+                  />
                 </Row>
               ))}
             </Stack>
-          )}
-        </Stack>
-      </Stack>
 
-      <Row gap={12}>
-        {FILTERS.map((item) => {
-          const isActive = filter === item.value
-          return (
-            <Button
-              key={item.value}
-              color={isActive ? 'primary' : 'gray'}
-              variant={isActive ? undefined : 'outline'}
-              onPress={() => {
-                setFilter(item.value)
-                notificationsQuery.refetch()
-              }}
-            >
-              {item.label}
-              {item.value === 'unread' && unreadCount > 0 && (
-                <NotificationTag>{unreadCount > 99 ? '99+' : unreadCount}</NotificationTag>
-              )}
-            </Button>
-          )
-        })}
-      </Row>
+            <Separator />
 
-      {notificationsQuery.isLoading ? (
-        <Stack gap={12} align="center">
-          <Spinner variant="ios" size="lg" color="gray" />
-          <Text color="gray">Loading notifications…</Text>
-        </Stack>
-      ) : isEmpty ? (
-        <Stack gap={12} align="center">
-          <Info size={48} color="$color8" />
-          <Text color="gray">You're all caught up!</Text>
-          <Text color="gray">
-            New alerts will show up here when there's something you need to review.
-          </Text>
-        </Stack>
-      ) : (
-        <Stack gap={8}>
-          {notifications.map((notification) => {
-            const IconComponent = getSeverityIcon(notification.severity) as ComponentType<{
-              size?: number
-              color?: string
-            }>
-            return (
-              <Stack key={notification.id}>
-                <Row padding={16} gap={12} align="flex-start">
-                  <SeverityIcon IconComponent={IconComponent} severity={notification.severity} />
-                  <Stack gap={8}>
-                    <Row justify="space-between" align="center">
-                      <Text color="gray">{notification.title}</Text>
-                      <NotificationTag size="md">
-                        {notification.severity.toUpperCase()}
-                      </NotificationTag>
-                    </Row>
-                    <Text color="gray">{notification.preview}</Text>
-                    <Row gap={12} align="center">
-                      <Text color="gray">{formatRelativeTime(notification.createdAt)}</Text>
-                      {notification.channels.length > 0 && (
-                        <NotificationTag>{notification.channels.join(', ')}</NotificationTag>
-                      )}
-                    </Row>
-                  </Stack>
+            <Stack gap={8}>
+              <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text[theme].primary }}>
+                Quiet hours
+              </Text>
+              <Text style={{ fontSize: 13, color: colors.text[theme].secondary }}>
+                We'll queue non-critical alerts during these hours.
+              </Text>
+              <Row gap={8} align="center">
+                <Input
+                  placeholder="22:00"
+                  value={preferences.quietHours?.start ?? ''}
+                  onChangeText={(text) =>
+                    setPreferences((prev) => ({
+                      ...prev,
+                      quietHours: {
+                        end: prev.quietHours?.end ?? '',
+                        start: text,
+                      },
+                    }))
+                  }
+                />
+                <Text style={{ color: colors.text[theme].tertiary }}>to</Text>
+                <Input
+                  placeholder="07:00"
+                  value={preferences.quietHours?.end ?? ''}
+                  onChangeText={(text) =>
+                    setPreferences((prev) => ({
+                      ...prev,
+                      quietHours: {
+                        end: text,
+                        start: prev.quietHours?.start ?? '',
+                      },
+                    }))
+                  }
+                />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onPress={() => setPreferences((prev) => ({ ...prev, quietHours: null }))}
+                >
+                  Clear
+                </Button>
+              </Row>
+            </Stack>
+
+            <Separator />
+
+            <Stack gap={8}>
+              <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text[theme].primary }}>
+                Digest frequency
+              </Text>
+              <Row gap={8} style={{ flexWrap: 'wrap' }}>
+                {(
+                  [
+                    { label: 'Immediate', value: 'immediate' },
+                    { label: 'Daily summary', value: 'digest_daily' },
+                    { label: 'Weekly summary', value: 'digest_weekly' },
+                    { label: 'Mute', value: 'mute' },
+                  ] as const
+                ).map((option) => (
+                  <Button
+                    key={option.value}
+                    size="sm"
+                    color={preferences.digestFrequency === option.value ? 'primary' : 'gray'}
+                    variant={preferences.digestFrequency === option.value ? 'filled' : 'outline'}
+                    onPress={() =>
+                      setPreferences((prev) => ({
+                        ...prev,
+                        digestFrequency: option.value as typeof prev.digestFrequency,
+                      }))
+                    }
+                  >
+                    {option.label}
+                  </Button>
+                ))}
+              </Row>
+            </Stack>
+
+            {savePreferencesMutation.isSuccess && (
+              <Text style={{ color: colors.success[500] }}>Preferences saved.</Text>
+            )}
+            {savePreferencesMutation.isError && (
+              <Text style={{ color: colors.error[500] }}>Failed to save preferences.</Text>
+            )}
+          </Stack>
+
+          <Separator />
+
+          {/* Registered devices */}
+          <Stack gap={8}>
+            <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text[theme].primary }}>
+              Registered devices
+            </Text>
+            {devicesQuery.isLoading ? (
+              <Row gap={8} align="center">
+                <Spinner variant="ios" size="sm" color="gray" />
+                <Text style={{ color: colors.text[theme].secondary }}>Checking devices…</Text>
+              </Row>
+            ) : deviceRows.length === 0 ? (
+              <Text style={{ color: colors.text[theme].tertiary }}>No devices registered yet.</Text>
+            ) : (
+              <Stack gap={4}>
+                <Row
+                  gap={8}
+                  style={{
+                    padding: 8,
+                    borderRadius: 8,
+                    backgroundColor: colors.bg[theme].muted,
+                  }}
+                >
+                  <Text style={{ flex: 1, fontWeight: '600', fontSize: 12, color: colors.text[theme].secondary }}>
+                    Token
+                  </Text>
+                  <Text style={{ width: 80, fontWeight: '600', fontSize: 12, color: colors.text[theme].secondary }}>
+                    Platform
+                  </Text>
+                  <Text style={{ width: 120, fontWeight: '600', fontSize: 12, color: colors.text[theme].secondary }}>
+                    Last seen
+                  </Text>
                 </Row>
-
-                <Separator />
-
-                {notification.metadata?.notification_type === 'site_overlap' &&
-                notification.metadata?.site_id &&
-                notification.metadata?.overlapping_site_id ? (
-                  <Row padding="sm">
-                    <SiteOverlapNotification
-                      notificationId={notification.id}
-                      siteId={notification.metadata.site_id}
-                      overlappingSiteId={notification.metadata.overlapping_site_id}
-                      overlapPercent={notification.metadata.overlap_percent || 0}
-                      threshold={notification.metadata.threshold || 2.0}
-                      onDismiss={(id) => archiveMutation.mutate({ ids: [id] })}
-                    />
+                {deviceRows.map((device) => (
+                  <Row
+                    key={device.id}
+                    gap={8}
+                    style={{ padding: 8, borderRadius: 8 }}
+                  >
+                    <Text
+                      style={{ flex: 1, fontSize: 12, color: colors.text[theme].tertiary }}
+                      numberOfLines={1}
+                    >
+                      {device.token}
+                    </Text>
+                    <Text style={{ width: 80, fontSize: 12, color: colors.text[theme].tertiary }}>
+                      {device.platform}
+                    </Text>
+                    <Text style={{ width: 120, fontSize: 12, color: colors.text[theme].tertiary }}>
+                      {formatDate(
+                        device.last_seen_at ?? device.updated_at ?? device.created_at ?? null
+                      )}
+                    </Text>
                   </Row>
-                ) : (
-                  <Row padding="sm" gap={12} justify="flex-end">
-                    {!notification.read ? (
-                      <Button
-                        size="md"
-                        color="primary"
-                        onPress={() => markReadMutation.mutate({ ids: [notification.id] })}
-                      >
-                        Mark as read
-                      </Button>
-                    ) : (
-                      <Button
-                        size="md"
-                        color="gray"
-                        onPress={() => markUnreadMutation.mutate({ ids: [notification.id] })}
-                      >
-                        Mark unread
-                      </Button>
-                    )}
-                    {filter === 'archived' ? (
-                      <Button
-                        size="md"
-                        color="success"
-                        onPress={() => restoreMutation.mutate({ ids: [notification.id] })}
-                      >
-                        Restore
-                      </Button>
-                    ) : (
-                      <Button
-                        size="md"
-                        color="gray"
-                        onPress={() => archiveMutation.mutate({ ids: [notification.id] })}
-                      >
-                        Archive
-                      </Button>
-                    )}
-                    {notification.ctaUrl && (
-                      <Button
-                        size="md"
-                        color="primary"
-                        onPress={() => handleNavigate(notification)}
-                      >
-                        <Row gap={8} align="center">
-                          <Text color="gray">{notification.ctaLabel ?? 'Open'}</Text>
-                          <ExternalLink size="lg" color="#ffffff" />
-                        </Row>
-                      </Button>
-                    )}
-                  </Row>
-                )}
+                ))}
               </Stack>
-            )
-          })}
-          {notificationsQuery.hasNextPage && (
-            <Button
-              color="primary"
-              disabled={notificationsQuery.isFetchingNextPage}
-              onPress={() => notificationsQuery.fetchNextPage()}
-            >
-              {notificationsQuery.isFetchingNextPage ? 'Loading…' : 'Load more'}
-            </Button>
-          )}
+            )}
+          </Stack>
         </Stack>
-      )}
+      </Card>
+
+      {/* Notification list with tabs */}
+      <Tabs
+        value={activeTab}
+        onValueChange={handleTabChange}
+        type="line"
+        align="start"
+      >
+        {FILTERS.map((tab) => (
+          <Tabs.Item key={tab} value={tab}>
+            <Tabs.Trigger>
+              {tab}
+              {tab === 'Unread' && unreadCount > 0 && ` (${unreadCount > 99 ? '99+' : unreadCount})`}
+            </Tabs.Trigger>
+            <Tabs.Content>
+              {renderNotificationList()}
+            </Tabs.Content>
+          </Tabs.Item>
+        ))}
+      </Tabs>
     </Stack>
   )
 }
