@@ -1,6 +1,6 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { useOccupationStatus } from '@scf/core/utils/onet-sdk-hooks'
-import { Button, DashboardWidget, DashboardWidgetHeader, useThemeContext } from '@scaffald/ui'
+import { Button, DashboardWidget, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import { Spinner, Text, Stack } from '@scaffald/ui'
@@ -33,10 +33,31 @@ export function OccupationAssessmentWidget() {
     router.push(ROUTES.ASSESSMENTS.OCCUPATION.path)
   }
 
+  const labelStyle = {
+    fontSize: 10,
+    fontWeight: '800' as const,
+    color: colors.text[theme].tertiary,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 1.5,
+  }
+
+  const metaStyle = {
+    fontSize: 11,
+    fontWeight: '600' as const,
+    color: colors.text[theme].tertiary,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 0.5,
+  }
+
   return (
     <DashboardWidget>
       <Stack gap={12}>
-        <DashboardWidgetHeader title="Occupation Preferences" />
+        <Stack gap={4}>
+          <Text style={labelStyle}>Occupation</Text>
+          <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text[theme].primary }}>
+            Occupation Preferences
+          </Text>
+        </Stack>
         <Text style={{ color: colors.text[theme].secondary }}>
           Tell us about your current occupation and target occupations to help us recommend
           relevant opportunities.
@@ -46,7 +67,7 @@ export function OccupationAssessmentWidget() {
           Add Occupations
         </Button>
 
-        <Text style={{ color: colors.text[theme].secondary }}>Takes about 1-2 minutes (optional)</Text>
+        <Text style={metaStyle}>Takes about 1-2 minutes (optional)</Text>
       </Stack>
     </DashboardWidget>
   )
