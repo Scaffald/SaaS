@@ -2,6 +2,7 @@ diff --git a/lib/module/memory/bundleUnpacker.native.js b/lib/module/memory/bund
 --- a/lib/module/memory/bundleUnpacker.native.js
 +++ b/lib/module/memory/bundleUnpacker.native.js
 @@ -15,10 +15,10 @@
+     }
      return value;
    } else if (category === 'RemoteFunction') {
 -    const remoteFunctionHolder = () => {
@@ -17,7 +18,8 @@ diff --git a/lib/module/memory/bundleUnpacker.native.js b/lib/module/memory/bund
 diff --git a/lib/module/memory/valueUnpacker.native.js b/lib/module/memory/valueUnpacker.native.js
 --- a/lib/module/memory/valueUnpacker.native.js
 +++ b/lib/module/memory/valueUnpacker.native.js
-@@ -42,10 +42,12 @@
+@@ -42,11 +42,12 @@
+       }
        return value;
      } else if (category === 'RemoteFunction') {
 -      const fun = () => {
