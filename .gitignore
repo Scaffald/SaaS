@@ -4,6 +4,7 @@ deno.lock
 
 # expo
 **/.expo/*
+ios/
 
 # production
 /build

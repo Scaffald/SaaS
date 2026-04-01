@@ -1,5 +1,5 @@
 import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
-import { corsHeaders } from '../_shared/cors'
+import { corsHeaders } from '../_shared/cors.ts'
 
 type NewsSource = {
   id: string

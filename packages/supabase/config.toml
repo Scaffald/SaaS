@@ -45,8 +45,11 @@ file_size_limit = "50MiB"
 [auth]
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
 # in emails.
-# Default to Expo/Metro port 8081 for local development
-site_url = "http://localhost:8081"
+# Uses EXPO_PUBLIC_URL env var so each environment gets the correct site URL.
+# Local dev (.env): http://localhost:8081
+# Preview (.env.preview): https://preview.scaffald.com
+# Production (.env.production): https://app.scaffald.com
+site_url = "env(EXPO_PUBLIC_URL)"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
 additional_redirect_urls = [
   "http://localhost:8081",
