@@ -31,8 +31,8 @@ export function MobileProfileStrength() {
     <View
       style={{
         backgroundColor: colors.bg[theme].subtle,
-        borderRadius: 20,
-        padding: 20,
+        borderRadius: 16,
+        padding: 16,
       }}
     >
       {/* Header */}

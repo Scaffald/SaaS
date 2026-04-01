@@ -1,0 +1,51 @@
+appId: com.scaffald.app.development
+tags:
+  - logged-in
+---
+# Dashboard Smoke Test
+# Verifies authenticated user can see the dashboard without crashes.
+# PREREQUISITE: User must be logged in.
+
+- launchApp
+
+# Handle Expo dev launcher if it appears
+- runFlow:
+    when:
+      visible: '.*8081.*'
+    commands:
+      - tapOn: '.*8081.*'
+      - extendedWaitUntil:
+          visible: "Continue|Dashboard|Discover|Grow"
+          timeout: 45000
+
+# Dismiss dev tools welcome modal
+- runFlow:
+    when:
+      visible: "This is the developer menu"
+    commands:
+      - tapOn: "Continue"
+
+# Handle cookie banner
+- runFlow:
+    when:
+      visible: "This site uses cookies"
+    commands:
+      - tapOn: "Reject"
+
+# Dismiss dev tools panel if open
+- runFlow:
+    when:
+      visible: "Go home"
+    commands:
+      - tapOn:
+          point: "95%,30%"
+
+# App should be on dashboard or onboarding (authenticated)
+- extendedWaitUntil:
+    visible: "Dashboard|Discover|Grow|Weekly Growth Tip"
+    timeout: 15000
+
+# Verify no ErrorBoundary crash screen
+- assertNotVisible:
+    text: "ErrorBoundary caught"
+    optional: true

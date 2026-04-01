@@ -18,12 +18,12 @@ export default function Layout() {
   return (
     <ToastProvider>
       <View style={{ flex: 1 }}>
+        <AuthFloatingToggles />
         <Stack
           screenOptions={{
             headerShown: false,
           }}
         />
-        <AuthFloatingToggles />
       </View>
       <ToastContainer />
     </ToastProvider>

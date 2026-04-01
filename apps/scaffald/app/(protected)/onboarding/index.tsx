@@ -16,6 +16,7 @@ import {
   Text,
   Row,
   Stack,
+  useResponsive,
   useToast,
 } from "@scaffald/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -45,6 +46,7 @@ import {
 export default function OnboardingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [proximity, setProximity] = useState<{ lat: number; lng: number } | undefined>();
+  const { isMobile } = useResponsive();
   const toast = useToast();
   const router = useRouter();
   const { requestLocation } = useUserLocation();
@@ -163,7 +165,7 @@ export default function OnboardingPage() {
   return (
     <ScrollView>
       <Stack justify="center" align="center" padding={16} minHeight="100vh">
-        <Stack maxWidth={600} width="100%" gap={12} padding={24}>
+        <Stack maxWidth={600} width="100%" gap={12} padding={12}>
           <Stack gap={8}>
             <Text color="gray">Complete Your Profile</Text>
             <Text color="gray">
@@ -179,8 +181,8 @@ export default function OnboardingPage() {
           ) : (
             <>
               {/* 1. Name Fields */}
-              <Stack gap={12}>
-                <Row gap={12}>
+              {isMobile ? (
+                <Stack gap={12}>
                   <Stack gap={8}>
                     <Text>First Name *</Text>
                     <Controller
@@ -198,7 +200,6 @@ export default function OnboardingPage() {
                       <Text color="red">{errors.first_name.message}</Text>
                     )}
                   </Stack>
-
                   <Stack gap={8}>
                     <Text>Last Name *</Text>
                     <Controller
@@ -216,8 +217,45 @@ export default function OnboardingPage() {
                       <Text color="red">{errors.last_name.message}</Text>
                     )}
                   </Stack>
+                </Stack>
+              ) : (
+                <Row gap={12}>
+                  <Stack flex={1} gap={8}>
+                    <Text>First Name *</Text>
+                    <Controller
+                      name="first_name"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          placeholder="First name"
+                          value={field.value}
+                          onChangeText={field.onChange}
+                        />
+                      )}
+                    />
+                    {errors.first_name && (
+                      <Text color="red">{errors.first_name.message}</Text>
+                    )}
+                  </Stack>
+                  <Stack flex={1} gap={8}>
+                    <Text>Last Name *</Text>
+                    <Controller
+                      name="last_name"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          placeholder="Last name"
+                          value={field.value}
+                          onChangeText={field.onChange}
+                        />
+                      )}
+                    />
+                    {errors.last_name && (
+                      <Text color="red">{errors.last_name.message}</Text>
+                    )}
+                  </Stack>
                 </Row>
-              </Stack>
+              )}
 
               <Separator />
 

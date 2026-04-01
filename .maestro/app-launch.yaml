@@ -1,0 +1,36 @@
+appId: com.scaffald.app.development
+---
+# App Launch Smoke Test
+# Verifies the app launches without crashes and reaches a usable screen.
+
+- launchApp
+
+# Handle Expo dev launcher if it appears
+- runFlow:
+    when:
+      visible: '.*8081.*'
+    commands:
+      - tapOn: '.*8081.*'
+      - extendedWaitUntil:
+          visible: "Continue"
+          timeout: 45000
+
+# Dismiss Expo dev tools welcome modal if shown
+- runFlow:
+    when:
+      visible: "This is the developer menu"
+    commands:
+      - tapOn: "Continue"
+
+# Dismiss dev tools panel if open
+- runFlow:
+    when:
+      visible: "Go home"
+    commands:
+      - tapOn:
+          point: "95%,30%"
+
+# App should reach login screen OR dashboard
+- extendedWaitUntil:
+    visible: "Login|Dashboard|Discover"
+    timeout: 15000

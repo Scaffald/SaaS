@@ -1,14 +1,11 @@
-import { useTranslation } from '@scf/core/utils/useTranslation'
 import {
   Onboarding,
-  OnboardingStepContent,
   Box,
   Stack,
   Text,
   type OnboardingStepInfo,
 } from '@scaffald/ui'
 import { ScaffaldLogo } from '@scf/core/assets'
-import { UserSearch, Share2, Sprout } from 'lucide-react-native'
 import type { FC } from 'react'
 
 interface WelcomeScreenProps {
@@ -75,13 +72,13 @@ function AuthTestimonialContent({ quote, author, role }: Omit<TestimonialSlide, 
       flex={1}
       justify="center"
       align="center"
-      style={{ paddingHorizontal: 48, paddingVertical: 60 }}
+      style={{ paddingHorizontal: 28, paddingVertical: 24 }}
     >
       {/* Logo + tagline */}
-      <Stack gap={12} align="center" style={{ marginBottom: 44 }}>
+      <Stack gap={10} align="center" style={{ marginBottom: 32 }}>
         <ScaffaldLogo
-          width={180}
-          height={29}
+          width={160}
+          height={26}
           primaryColor="#ffffff"
           secondaryColor="rgba(255,255,255,0.7)"
           gradientStart="#ffffff"
@@ -90,9 +87,9 @@ function AuthTestimonialContent({ quote, author, role }: Omit<TestimonialSlide, 
         <Text
           style={{
             color: 'rgba(255,255,255,0.72)',
-            fontSize: 17,
+            fontSize: 15,
             textAlign: 'center',
-            lineHeight: 25,
+            lineHeight: 22,
             letterSpacing: 0.2,
             ...textShadow,
           }}
@@ -105,23 +102,23 @@ function AuthTestimonialContent({ quote, author, role }: Omit<TestimonialSlide, 
       <Text
         style={{
           color: '#ffffff',
-          fontSize: 18,
+          fontSize: 15,
           fontWeight: '500',
-          lineHeight: 28,
+          lineHeight: 24,
           textAlign: 'center',
-          marginBottom: 28,
+          marginBottom: 24,
           ...textShadow,
         }}
       >
         {quote}
       </Text>
 
-      {/* Author (no avatar) */}
+      {/* Author */}
       <Stack gap={2} align="center">
-        <Text style={{ color: '#ffffff', fontWeight: '600', fontSize: 14, textAlign: 'center', ...textShadow }}>
+        <Text style={{ color: '#ffffff', fontWeight: '600', fontSize: 13, textAlign: 'center', ...textShadow }}>
           {author}
         </Text>
-        <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, textAlign: 'center', ...textShadow }}>
+        <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, textAlign: 'center', ...textShadow }}>
           {role}
         </Text>
       </Stack>
@@ -129,44 +126,18 @@ function AuthTestimonialContent({ quote, author, role }: Omit<TestimonialSlide, 
   )
 }
 
-const createDefaultSlides = (
-  t: (key: string, params?: Record<string, unknown>) => string
-): OnboardingStepInfo[] => [
-  {
-    backgroundImage: 'https://images.pexels.com/photos/271667/pexels-photo-271667.jpeg',
-    Content: () => (
-      <OnboardingStepContent
-        title={t('auth.welcome.steps.discover.title')}
-        icon={UserSearch}
-        description={t('auth.welcome.steps.discover.description')}
-      />
-    ),
-  },
-  {
-    backgroundImage: 'https://images.pexels.com/photos/574073/pexels-photo-574073.jpeg',
-    Content: () => (
-      <OnboardingStepContent
-        title={t('auth.welcome.steps.connect.title')}
-        icon={Share2}
-        description={t('auth.welcome.steps.connect.description')}
-      />
-    ),
-  },
-  {
-    backgroundImage:
-      'https://images.pexels.com/photos/40568/medical-appointment-doctor-healthcare-40568.jpeg',
-    Content: () => (
-      <OnboardingStepContent
-        title={t('auth.welcome.steps.grow.title')}
-        icon={Sprout}
-        description={t('auth.welcome.steps.grow.description')}
-      />
-    ),
-  },
-]
+/** Mobile slides reuse the same testimonial content as the desktop branded panel. */
+const createMobileSlides = (): OnboardingStepInfo[] =>
+  AUTH_TESTIMONIALS.slice(0, 3).map((slide) => ({
+    backgroundImage: slide.backgroundImage,
+    Content: (() => {
+      const s = slide
+      const ContentComponent: FC = () => <AuthTestimonialContent {...s} />
+      return ContentComponent
+    })(),
+  }))
 
 export const WelcomeScreen = ({ onOnboarded, brandedPanel = false }: WelcomeScreenProps = {}) => {
-  const { t } = useTranslation()
 
   // Branded auth panel: dark testimonial carousel
   if (brandedPanel) {
@@ -186,12 +157,12 @@ export const WelcomeScreen = ({ onOnboarded, brandedPanel = false }: WelcomeScre
     )
   }
 
-  // Standard onboarding flow (mobile)
-  const steps: OnboardingStepInfo[] = createDefaultSlides(t)
+  // Standard onboarding flow (mobile) — same testimonial content as desktop
+  const steps: OnboardingStepInfo[] = createMobileSlides()
 
   return (
     <Box flex={1}>
-      <Onboarding autoSwipe={true} onOnboarded={onOnboarded} steps={steps} />
+      <Onboarding overlay="dark" autoSwipe={true} onOnboarded={onOnboarded} steps={steps} />
     </Box>
   )
 }

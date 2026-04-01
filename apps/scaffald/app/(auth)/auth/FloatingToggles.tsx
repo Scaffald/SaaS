@@ -4,6 +4,7 @@ import { useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { Moon, Sun } from 'lucide-react-native'
 import { Pressable, Text, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const LOCALE_LABELS: Record<SupportedLocale, string> = {
   en: 'EN',
@@ -17,16 +18,12 @@ function cycleLocale(current: SupportedLocale): SupportedLocale {
   return supportedLocales[next] ?? 'en'
 }
 
-export function FloatingThemeToggle() {
+function ThemeToggleButton() {
   const { theme, toggleTheme } = useThemeContext()
   return (
     <Pressable
       onPress={toggleTheme}
       style={{
-        position: 'absolute',
-        top: 16,
-        right: 16,
-        zIndex: 100,
         width: 40,
         height: 40,
         borderRadius: 20,
@@ -47,7 +44,7 @@ export function FloatingThemeToggle() {
   )
 }
 
-export function FloatingLocaleToggle() {
+function LocaleToggleButton() {
   const { theme } = useThemeContext()
   const { locale, setLocale } = useTranslation()
   const nextLocale = cycleLocale(locale)
@@ -56,10 +53,6 @@ export function FloatingLocaleToggle() {
     <Pressable
       onPress={() => setLocale(nextLocale)}
       style={{
-        position: 'absolute',
-        top: 16,
-        right: 64,
-        zIndex: 100,
         width: 40,
         height: 40,
         borderRadius: 20,
@@ -85,10 +78,24 @@ export function FloatingLocaleToggle() {
 }
 
 export function AuthFloatingToggles() {
+  const { theme } = useThemeContext()
+  const insets = useSafeAreaInsets()
+
   return (
-    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 100, pointerEvents: 'box-none' }}>
-      <FloatingLocaleToggle />
-      <FloatingThemeToggle />
+    <View
+      style={{
+        zIndex: 100,
+        backgroundColor: theme === 'dark' ? colors.bg.dark.default : colors.white,
+        paddingTop: insets.top > 20 ? insets.top - 16 : insets.top || 12,
+        paddingBottom: insets.top > 20 ? 0 : 8,
+        paddingHorizontal: 16,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}
+    >
+      <LocaleToggleButton />
+      <ThemeToggleButton />
     </View>
   )
 }

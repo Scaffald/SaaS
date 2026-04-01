@@ -1,0 +1,72 @@
+appId: com.scaffald.app.development
+tags:
+  - logged-out
+---
+# Login Screen Smoke Test
+# Verifies login UI renders correctly and accepts email input.
+# Uses clearState to ensure a logged-out state.
+
+- launchApp:
+    clearState: true
+
+# After clearState, Expo dev launcher appears — tap the dev server
+- extendedWaitUntil:
+    visible: '.*8081.*'
+    timeout: 15000
+
+- tapOn: '.*8081.*'
+
+# Wait for JS bundle to fully download and execute (cold start after clearState)
+- waitForAnimationToEnd
+- repeat:
+    times: 5
+    commands:
+      - waitForAnimationToEnd
+
+# The Expo dev tools welcome modal is native and invisible to Maestro.
+# The "Continue" button is a blue pill at the bottom of the modal sheet.
+# On iPhone 16e (390x844), it sits around y=730 (86% from top).
+- tapOn:
+    point: "50%,86%"
+
+- waitForAnimationToEnd
+
+# If dev tools panel appeared, dismiss with X (top-right of sheet ~y=50%)
+- tapOn:
+    point: "90%,48%"
+
+- waitForAnimationToEnd
+
+# Handle cookie banner — Reject button is bottom-right
+- runFlow:
+    when:
+      visible: "Reject"
+    commands:
+      - tapOn: "Reject"
+
+# Handle onboarding carousel — Skip is bottom-left
+- runFlow:
+    when:
+      visible: "Skip"
+    commands:
+      - tapOn: "Skip"
+
+# Wait for login screen
+- extendedWaitUntil:
+    visible: "Login / Register"
+    timeout: 30000
+
+# Verify login screen elements
+- assertVisible: "Login / Register"
+
+# Enter email
+- tapOn: "your@email.acme"
+- inputText: "test-maestro@scaffald.com"
+
+# Submit
+- tapOn: "Login / Register"
+
+# Verify we reach code verification
+- extendedWaitUntil:
+    visible: '.*[Cc]ode.*|.*[Vv]erif.*'
+    timeout: 15000

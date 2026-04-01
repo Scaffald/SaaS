@@ -1,0 +1,26 @@
+appId: com.scaffald.app.development
+---
+# Reusable: dismiss all Expo dev launcher modals and cookie banners.
+# Call with: - runFlow: helpers/dismiss-dev-modals.yaml
+
+# Dismiss the dev tools welcome modal (blue "Continue" button at bottom)
+- runFlow:
+    when:
+      visible: "This is the developer menu"
+    commands:
+      - tapOn: "Continue"
+
+# Dismiss the dev tools panel (has "Go home" and "Reload")
+- runFlow:
+    when:
+      visible: "Go home"
+    commands:
+      - tapOn:
+          point: "95%,30%"
+
+# Dismiss cookie banner
+- runFlow:
+    when:
+      visible: "This site uses cookies"
+    commands:
+      - tapOn: "Reject"

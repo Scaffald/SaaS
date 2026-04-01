@@ -29,8 +29,8 @@ export function MobileProfileHero() {
       onPress={() => router.push(ROUTES.PROFILE.path)}
       style={{
         backgroundColor: colors.bg[theme].default,
-        borderRadius: 20,
-        padding: 20,
+        borderRadius: 16,
+        padding: 16,
         borderWidth: 1,
         borderColor: colors.border[theme].subtle,
       }}
