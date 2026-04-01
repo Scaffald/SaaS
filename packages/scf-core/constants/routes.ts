@@ -799,6 +799,12 @@ const ROUTES_CONFIG = {
       protected: true,
       exact: true,
     },
+    NOTIFICATIONS: {
+      path: '/dashboard/notifications',
+      titleKey: 'routes.dashboard.notifications',
+      protected: true,
+      exact: true,
+    },
     ANALYTICS: {
       path: '/dashboard/analytics',
       titleKey: 'routes.dashboard.analytics.title' as const,
@@ -1488,7 +1494,7 @@ export function getParentRoute(route: RouteConfig | string): RouteConfig | null 
   const path = typeof route === 'string' ? route : route.path
   const result = findRouteByPath(path)
 
-  if (!result || !result.parent) {
+  if (!result?.parent) {
     return null
   }
 

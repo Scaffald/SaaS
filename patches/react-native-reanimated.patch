@@ -1,0 +1,14 @@
+diff --git a/apple/reanimated/apple/REANodesManager.mm b/apple/reanimated/apple/REANodesManager.mm
+--- a/apple/reanimated/apple/REANodesManager.mm
++++ b/apple/reanimated/apple/REANodesManager.mm
+@@ -128,7 +128,9 @@
+ - (void)performOperations
+ {
+   RCTAssertMainQueue();
+-  _performOperations(); // calls ReanimatedModuleProxy::performOperations
++  if (_performOperations) {
++    _performOperations(); // calls ReanimatedModuleProxy::performOperations
++  }
+ }
+
+ - (void)dispatchEvent:(id<RCTEvent>)event

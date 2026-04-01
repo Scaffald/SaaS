@@ -1,0 +1,120 @@
+appId: com.scaffald.app.development
+tags:
+  - logged-in
+  - regression
+---
+# Drawer Swipe Regression Test
+# Verifies the drawer navigator opens via swipe and button tap without crashing.
+# Reproduces: SIGSEGV in REANodesManager.performOperations triggered by pan gesture.
+# PREREQUISITE: User must be logged in and on the dashboard.
+
+- launchApp
+
+# Handle Expo dev launcher if it appears
+- runFlow:
+    when:
+      visible: '.*8081.*'
+    commands:
+      - tapOn: '.*8081.*'
+      - extendedWaitUntil:
+          visible: "Continue|Dashboard|Discover|Grow"
+          timeout: 45000
+
+# Dismiss dev tools welcome modal
+- runFlow:
+    when:
+      visible: "This is the developer menu"
+    commands:
+      - tapOn: "Continue"
+
+# Handle cookie banner
+- runFlow:
+    when:
+      visible: "This site uses cookies"
+    commands:
+      - tapOn: "Reject"
+
+# Dismiss dev tools panel if open
+- runFlow:
+    when:
+      visible: "Go home"
+    commands:
+      - tapOn:
+          point: "95%,30%"
+
+# Wait for dashboard to fully load
+- extendedWaitUntil:
+    visible: "Dashboard|Discover|Grow|Weekly Growth Tip"
+    timeout: 15000
+
+# Verify no crash has occurred
+- assertNotVisible:
+    text: "ErrorBoundary caught"
+    optional: true
+
+# --- Test 1: Open drawer via hamburger menu button tap ---
+- tapOn:
+    point: "8%,6%"
+- waitForAnimationToEnd
+
+# Drawer should be visible with navigation items
+- extendedWaitUntil:
+    visible: "Dashboard|Settings|Discover"
+    timeout: 5000
+
+# Close drawer by tapping the overlay area (right side)
+- tapOn:
+    point: "90%,50%"
+- waitForAnimationToEnd
+
+# --- Test 2: Open drawer via swipe gesture (the crash trigger) ---
+# Swipe from left edge to center to open the drawer
+- swipe:
+    start: "2%,50%"
+    end: "70%,50%"
+    duration: 400
+
+- waitForAnimationToEnd
+
+# If we get here without SIGSEGV, the crash is fixed
+- extendedWaitUntil:
+    visible: "Dashboard|Settings|Discover"
+    timeout: 5000
+
+# Close drawer via swipe back
+- swipe:
+    start: "70%,50%"
+    end: "2%,50%"
+    duration: 400
+
+- waitForAnimationToEnd
+
+# --- Test 3: Rapid open/close to stress test gesture handler ---
+- swipe:
+    start: "2%,50%"
+    end: "60%,50%"
+    duration: 300
+- swipe:
+    start: "60%,50%"
+    end: "2%,50%"
+    duration: 300
+- swipe:
+    start: "2%,50%"
+    end: "60%,50%"
+    duration: 300
+- swipe:
+    start: "60%,50%"
+    end: "2%,50%"
+    duration: 300
+
+- waitForAnimationToEnd
+
+# Final verification: app is still alive and responsive
+- extendedWaitUntil:
+    visible: "Dashboard|Discover|Grow|Weekly Growth Tip"
+    timeout: 10000
+
+# No crash screen visible
+- assertNotVisible:
+    text: "ErrorBoundary caught"
+    optional: true

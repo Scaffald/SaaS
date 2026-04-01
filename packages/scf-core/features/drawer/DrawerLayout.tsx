@@ -154,6 +154,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
           headerRightContainerStyle: {
             paddingRight: 20,
           },
+          headerTitleAlign: 'center',
           headerTitleStyle: {
             color: colors.text[theme].primary,
           },
@@ -173,14 +174,14 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
                   navigation.dispatch(DrawerActions.toggleDrawer())
                 }}
               >
-                <Menu size={24} />
+                <Menu size={24} color={colors.icon[theme].default} />
               </Pressable>
             ) : null
           },
           headerRight: () =>
             isSmall ? (
               <Pressable
-                onPress={() => router.push(buildPath(ROUTES.DASHBOARD.SETTINGS.NOTIFICATIONS, {}))}
+                onPress={() => router.push(buildPath(ROUTES.DASHBOARD.NOTIFICATIONS, {}))}
                 style={{ paddingRight: 4 }}
               >
                 <Bell size={22} color={colors.icon[theme].default} />

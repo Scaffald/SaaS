@@ -10,7 +10,6 @@ type QuickAction = {
   label: string
   icon: LucideIcon
   route: string
-  variant: 'dark' | 'surface'
 }
 
 const QUICK_ACTIONS: QuickAction[] = [
@@ -18,25 +17,21 @@ const QUICK_ACTIONS: QuickAction[] = [
     label: 'Find Jobs',
     icon: Briefcase,
     route: buildPath(ROUTES.JOBS, {}),
-    variant: 'dark',
   },
   {
     label: 'My Resume',
     icon: FileText,
     route: buildPath(ROUTES.PROFILE.RESUME, {}),
-    variant: 'surface',
   },
   {
     label: 'Assessments',
     icon: ClipboardCheck,
     route: ROUTES.ASSESSMENTS.path,
-    variant: 'surface',
   },
   {
     label: 'Teams',
     icon: Users,
     route: ROUTES.EMPLOYERS.TEAMS.path,
-    variant: 'surface',
   },
 ]
 
@@ -53,47 +48,37 @@ export function MobileQuickActions() {
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{ gap: 10 }}
     >
-      {QUICK_ACTIONS.map(({ label, icon: Icon, route, variant }) => {
-        const isDark = variant === 'dark'
-        return (
+      {QUICK_ACTIONS.map(({ label, icon: Icon, route }) => (
           <Pressable
             key={label}
             onPress={() => router.push(route)}
             style={{
-              width: 100,
-              backgroundColor: isDark
-                ? theme === 'dark'
-                  ? colors.bg.dark.muted
-                  : colors.fg.light.default
-                : colors.bg[theme].default,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 8,
+              backgroundColor: colors.bg[theme].default,
               borderRadius: 20,
-              padding: 14,
-              height: 88,
-              justifyContent: 'space-between',
-              ...(isDark
-                ? {}
-                : {
-                    borderWidth: 1,
-                    borderColor: colors.border[theme].default,
-                  }),
+              paddingHorizontal: 14,
+              paddingVertical: 10,
+              borderWidth: 1,
+              borderColor: colors.border[theme].default,
             }}
           >
             <Icon
-              size={20}
-              color={isDark ? colors.primary[400] : colors.icon[theme].default}
+              size={18}
+              color={colors.icon[theme].default}
             />
             <Text
               size="xs"
               weight="semibold"
               style={{
-                color: isDark ? '#ffffff' : colors.text[theme].primary,
+                color: colors.text[theme].primary,
               }}
             >
               {label}
             </Text>
           </Pressable>
-        )
-      })}
+        ))}
     </ScrollView>
   )
 }

@@ -3,6 +3,7 @@ import type { OrganizationMembership } from '@scf/core/utils/useOrganizations'
 import {
   AlertTriangle,
   BarChart3,
+  Bell as BellIcon,
   Bookmark,
   Briefcase,
   Building2,
@@ -74,6 +75,7 @@ export const generateDashboardDrawerItems = (
       { key: 'dashboard-index', titleKey: 'routes.dashboard.home', href: ROUTES.DASHBOARD.path, exact: true },
       { key: 'dashboard-news', titleKey: ROUTES.DASHBOARD.NEWS.titleKey, href: ROUTES.DASHBOARD.NEWS.path },
       { key: 'dashboard-analytics', titleKey: ROUTES.DASHBOARD.ANALYTICS.titleKey, href: ROUTES.DASHBOARD.ANALYTICS.path, icon: TrendingUp },
+      { key: 'dashboard-notifications', title: 'Notifications', href: ROUTES.DASHBOARD.NOTIFICATIONS.path, icon: BellIcon },
     ],
   })
 
@@ -300,13 +302,13 @@ export const MOBILE_SECTIONS: MobileSection[] = [
     label: 'Home',
     icon: Home,
     route: ROUTES.DASHBOARD.path,
-    matchPrefixes: ['/dashboard/news', '/dashboard/settings', '/dashboard/analytics'],
+    matchPrefixes: ['/dashboard/news', '/dashboard/settings', '/dashboard/analytics', '/dashboard/notifications'],
     subItems: [
       { key: 'home-feed', label: 'Feed', icon: Home, route: ROUTES.DASHBOARD.path, exact: true },
       { key: 'home-news', label: 'News', icon: Newspaper, route: ROUTES.DASHBOARD.NEWS.path },
       { key: 'home-analytics', label: 'Analytics', icon: TrendingUp, route: ROUTES.DASHBOARD.ANALYTICS.path },
       { key: 'home-settings', label: 'Settings', icon: Settings, route: ROUTES.DASHBOARD.SETTINGS.path },
-      { key: 'home-notifs', label: 'Notifs', icon: Bell, route: ROUTES.DASHBOARD.SETTINGS.NOTIFICATIONS.path },
+      { key: 'home-notifs', label: 'Notifs', icon: Bell, route: ROUTES.DASHBOARD.NOTIFICATIONS.path },
     ],
   },
   {

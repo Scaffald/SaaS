@@ -1,9 +1,8 @@
-import { Stack, useResponsive } from '@scaffald/ui'
+import { Stack, useResponsive, usePageBottomBar } from '@scaffald/ui'
 import {
   MobileProfileHero,
   MobileProfileStrength,
   MobileQuickActions,
-  MobileGrowthTip,
   MobileDashboardTabs,
   AnalyticsWidget,
   ProfileIdentityWidget,
@@ -18,6 +17,8 @@ import {
  */
 export function DashboardIndexLeft() {
   const { isMobile } = useResponsive()
+  // Hide the global MobileBottomNav on the dashboard index
+  usePageBottomBar('dashboard-index', isMobile)
 
   if (isMobile) {
     return (
@@ -25,7 +26,6 @@ export function DashboardIndexLeft() {
         <MobileProfileHero />
         <MobileQuickActions />
         <MobileProfileStrength />
-        <MobileGrowthTip />
         <MobileDashboardTabs />
       </Stack>
     )

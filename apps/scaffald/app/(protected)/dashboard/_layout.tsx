@@ -22,6 +22,7 @@ export default function DashboardLayout() {
         <Drawer.Screen name="users/[id]/index" options={{ title: 'User Profile' }} />
         <Drawer.Screen name="settings/index" options={{ title: 'Settings' }} />
         <Drawer.Screen name="news/index" options={{ title: 'News' }} />
+        <Drawer.Screen name="notifications/index" options={{ title: 'Notifications' }} />
         <Drawer.Screen name="analytics/index" options={{ title: 'Analytics' }} />
         <Drawer.Screen name="analytics/engagement" options={{ title: 'Engagement' }} />
         <Drawer.Screen name="analytics/visibility" options={{ title: 'Visibility' }} />
