@@ -155,8 +155,8 @@
     },
     {
       "includes": [
-        "packages/scaffald-ui/src/**/*.ts",
-        "packages/scaffald-ui/src/**/*.tsx"
+        "packages/ui/src/**/*.ts",
+        "packages/ui/src/**/*.tsx"
       ],
       "linter": {
         "rules": {

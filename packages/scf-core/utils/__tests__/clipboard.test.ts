@@ -101,7 +101,7 @@ describe('clipboard utilities', () => {
       })
 
       it('copies text using ExpoClipboard.setStringAsync', async () => {
-        vi.mocked(ExpoClipboard.setStringAsync).mockResolvedValue(true)
+        vi.mocked(ExpoClipboard.setStringAsync).mockResolvedValue(undefined as any)
 
         const result = await copyToClipboard('native text')
         expect(result).toBe(true)

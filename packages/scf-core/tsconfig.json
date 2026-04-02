@@ -27,7 +27,15 @@
     "../supabase/functions/**/*",
     "../supabase/migrations/**/*",
     "../supabase/scripts/**/*",
-    "../ui/src/**/*"
+    "../ui/src/**/*.test.ts",
+    "../ui/src/**/*.test.tsx",
+    "../ui/src/**/*.spec.ts",
+    "../ui/src/**/*.spec.tsx",
+    "../ui/src/**/*.stories.ts",
+    "../ui/src/**/*.stories.tsx",
+    "../ui/src/stories/**/*",
+    "../ui/src/__tests__/**/*",
+    "../ui/src/playground/**/*"
   ],
   "extends": "../../tsconfig.base",
   "include": [
@@ -44,6 +52,7 @@
     "types.d.ts",
     "types",
     "package.json",
+    "../ui/src",
     "../../types/custom-modules.d.ts"
   ],
   "references": []
