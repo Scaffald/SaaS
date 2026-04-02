@@ -21,7 +21,7 @@ export function AnalyticsTabBar() {
           <Button
             key={tab.path}
             size="sm"
-            variant={isActive ? 'filled' : 'ghost'}
+            variant={isActive ? 'filled' : 'text'}
             color={isActive ? 'primary' : undefined}
             onPress={() => router.push(tab.path as Parameters<typeof router.push>[0])}
           >

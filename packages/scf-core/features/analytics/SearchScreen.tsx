@@ -57,13 +57,8 @@ export function SearchScreen() {
                 </Text>
                 <BarChart
                   data={searchTimeline?.timeline.map((d) => d.impressions) ?? []}
-                  labels={searchTimeline?.timeline.map((d) => {
-                    const date = new Date(d.date)
-                    return `${date.getMonth() + 1}/${date.getDate()}`
-                  })}
-                  width={undefined}
                   height={200}
-                  color={colors.blue[500]}
+                  colors={[colors.blue[500]]}
                 />
               </Stack>
             </Card>
@@ -79,19 +74,19 @@ export function SearchScreen() {
 
                 {/* Table header */}
                 <Row style={styles.tableHeader}>
-                  <Text style={[styles.headerCell, styles.keywordCol, { color: colors.text[resolvedTheme].tertiary }]}>
+                  <Text style={StyleSheet.flatten([styles.headerCell, styles.keywordCol, { color: colors.text[resolvedTheme].tertiary }])}>
                     Keyword
                   </Text>
-                  <Text style={[styles.headerCell, styles.numCol, { color: colors.text[resolvedTheme].tertiary }]}>
+                  <Text style={StyleSheet.flatten([styles.headerCell, styles.numCol, { color: colors.text[resolvedTheme].tertiary }])}>
                     Impressions
                   </Text>
-                  <Text style={[styles.headerCell, styles.numCol, { color: colors.text[resolvedTheme].tertiary }]}>
+                  <Text style={StyleSheet.flatten([styles.headerCell, styles.numCol, { color: colors.text[resolvedTheme].tertiary }])}>
                     Clicks
                   </Text>
-                  <Text style={[styles.headerCell, styles.numCol, { color: colors.text[resolvedTheme].tertiary }]}>
+                  <Text style={StyleSheet.flatten([styles.headerCell, styles.numCol, { color: colors.text[resolvedTheme].tertiary }])}>
                     CTR
                   </Text>
-                  <Text style={[styles.headerCell, styles.numCol, { color: colors.text[resolvedTheme].tertiary }]}>
+                  <Text style={StyleSheet.flatten([styles.headerCell, styles.numCol, { color: colors.text[resolvedTheme].tertiary }])}>
                     Avg Pos
                   </Text>
                 </Row>
@@ -105,20 +100,20 @@ export function SearchScreen() {
                     <Row style={styles.tableRow}>
                       <Text
                         numberOfLines={1}
-                        style={[styles.cell, styles.keywordCol, { color: colors.text[resolvedTheme].primary, fontWeight: '500' }]}
+                        style={StyleSheet.flatten([styles.cell, styles.keywordCol, { color: colors.text[resolvedTheme].primary, fontWeight: '500' as const }])}
                       >
                         {kw.query}
                       </Text>
-                      <Text style={[styles.cell, styles.numCol, { color: colors.text[resolvedTheme].primary }]}>
+                      <Text style={StyleSheet.flatten([styles.cell, styles.numCol, { color: colors.text[resolvedTheme].primary }])}>
                         {kw.impressions.toLocaleString()}
                       </Text>
-                      <Text style={[styles.cell, styles.numCol, { color: colors.text[resolvedTheme].primary }]}>
+                      <Text style={StyleSheet.flatten([styles.cell, styles.numCol, { color: colors.text[resolvedTheme].primary }])}>
                         {kw.clicks.toLocaleString()}
                       </Text>
-                      <Text style={[styles.cell, styles.numCol, { color: colors.text[resolvedTheme].primary }]}>
+                      <Text style={StyleSheet.flatten([styles.cell, styles.numCol, { color: colors.text[resolvedTheme].primary }])}>
                         {kw.ctr}%
                       </Text>
-                      <Text style={[styles.cell, styles.numCol, { color: colors.text[resolvedTheme].primary }]}>
+                      <Text style={StyleSheet.flatten([styles.cell, styles.numCol, { color: colors.text[resolvedTheme].primary }])}>
                         #{kw.avgPosition}
                       </Text>
                     </Row>

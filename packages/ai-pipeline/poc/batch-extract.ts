@@ -7,13 +7,17 @@
 import { config } from 'dotenv';
 config({ path: new URL('../../../.env', import.meta.url).pathname });
 import { readFileSync, writeFileSync, readdirSync, mkdirSync } from 'node:fs';
-import { resolve, join, basename, extname } from 'node:path';
+import { resolve, join, basename, extname, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { convertPdfToImages } from '../src/extraction/pdf-to-images.js';
 import { AIExtractionService } from '../src/ai/openai-client.js';
 import { ACORD25_SYSTEM_PROMPT, PROMPT_VERSION } from './prompts/acord25.js';
 
-const INPUT_DIR = resolve(import.meta.dirname, 'fixtures/input');
-const RESULTS_DIR = resolve(import.meta.dirname, 'fixtures/results');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const INPUT_DIR = resolve(__dirname, 'fixtures/input');
+const RESULTS_DIR = resolve(__dirname, 'fixtures/results');
 
 async function main() {
   const apiKey = process.env.OPENAI_API_KEY;

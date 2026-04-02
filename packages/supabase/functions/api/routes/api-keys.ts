@@ -186,7 +186,7 @@ app.get('/', requireAuth, async (c) => {
         .limit(1)
         .single()
 
-      if (!membership || !membership.team) {
+      if (!membership?.team) {
         return c.json(
           {
             error: 'Forbidden',
@@ -337,7 +337,7 @@ app.patch('/:id', requireAuth, async (c) => {
       .eq('user_id', user.id)
       .single()
 
-    if (!profile || !profile.organization_id) {
+    if (!profile?.organization_id) {
       return c.json({ error: 'Forbidden' }, 403)
     }
 
@@ -432,7 +432,7 @@ app.delete('/:id', requireAuth, async (c) => {
       .eq('user_id', user.id)
       .single()
 
-    if (!profile || !profile.organization_id) {
+    if (!profile?.organization_id) {
       return c.json({ error: 'Forbidden' }, 403)
     }
 

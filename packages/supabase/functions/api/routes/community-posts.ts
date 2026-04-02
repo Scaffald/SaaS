@@ -898,7 +898,7 @@ app.openapi(unpublishPostRoute, async (c) => {
     .eq('author_id', user.id)
     .maybeSingle()
 
-  if (!existing || !existing.is_published) {
+  if (!existing?.is_published) {
     return c.json({ error: 'Post not found or not published' }, 404)
   }
 

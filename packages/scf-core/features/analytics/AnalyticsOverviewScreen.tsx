@@ -95,12 +95,13 @@ export function AnalyticsOverviewScreen() {
                 </Stack>
               ) : timeline?.timeline && timeline.timeline.length > 0 ? (
                 <LinearChart
-                  data={timeline.timeline.map((d) => d.total)}
-                  labels={timeline.timeline.map((d) => {
+                  data={timeline.timeline.map((d) => {
                     const date = new Date(d.date)
-                    return `${date.getMonth() + 1}/${date.getDate()}`
+                    return {
+                      x: `${date.getMonth() + 1}/${date.getDate()}`,
+                      y: d.total,
+                    }
                   })}
-                  width={undefined}
                   height={200}
                   color={colors.primary[500]}
                 />

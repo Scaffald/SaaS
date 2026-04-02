@@ -696,7 +696,6 @@ export function SettingsNotificationsSection() {
         value={activeTab}
         onValueChange={handleTabChange}
         type="line"
-        align="start"
       >
         {FILTERS.map((tab) => (
           <Tabs.Item key={tab} value={tab}>

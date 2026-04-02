@@ -6,8 +6,8 @@
  * for testing in Node.js/jsdom environment
  */
 
-import { render, RenderOptions } from '@testing-library/react-native';
-import { ReactElement, ReactNode } from 'react';
+import { render, type RenderOptions } from '@testing-library/react-native';
+import type { ReactElement, ReactNode } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider } from '@scaffald/ui';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';

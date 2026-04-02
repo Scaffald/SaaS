@@ -26,7 +26,8 @@
     "../../supabase/scripts/**/*",
     "../supabase/functions/**/*",
     "../supabase/migrations/**/*",
-    "../supabase/scripts/**/*"
+    "../supabase/scripts/**/*",
+    "../ui/src/**/*"
   ],
   "extends": "../../tsconfig.base",
   "include": [
@@ -43,7 +44,6 @@
     "types.d.ts",
     "types",
     "package.json",
-    "../ui/src",
     "../../types/custom-modules.d.ts"
   ],
   "references": []

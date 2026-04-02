@@ -96,7 +96,7 @@ export function ApplicationDetailScreen({ applicationId }: ApplicationDetailScre
 
   const withdrawMutation = useWithdrawApplicationMutation({
     onSuccess: () => {
-      toast.show({ title: 'Application withdrawn', variant: 'success' })
+      toast.show({ title: 'Application withdrawn', message: 'Your application has been withdrawn.', variant: 'success' })
       setShowWithdrawConfirm(false)
       queryClient.invalidateQueries({ queryKey: ['applications'] })
     },

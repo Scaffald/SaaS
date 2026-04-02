@@ -44,7 +44,7 @@ const LoginSchema = z.object({
 export const LoginScreen = () => {
   const renderCount = useRef(0)
   renderCount.current++
-  console.log('[LoginScreen] render #' + renderCount.current)
+  console.log(`[LoginScreen] render #${renderCount.current}`)
   const params = useLocalSearchParams<{ email?: string }>()
   const router = useRouter()
   useRedirectAfterSignIn()
@@ -68,7 +68,7 @@ export const LoginScreen = () => {
       console.log('[LoginScreen] has email param, replacing route')
       router.replace(ROUTES.AUTH.LOGIN.path)
     }
-  }, [params?.email, router])
+  }, [params?.email, router, params])
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     defaultValues: {

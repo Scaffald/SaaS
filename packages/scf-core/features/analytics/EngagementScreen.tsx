@@ -76,12 +76,13 @@ export function EngagementScreen() {
                 Engagement Timeline
               </Text>
               <LinearChart
-                data={timeline.timeline.map((d) => d.total)}
-                labels={timeline.timeline.map((d) => {
+                data={timeline.timeline.map((d) => {
                   const date = new Date(d.date)
-                  return `${date.getMonth() + 1}/${date.getDate()}`
+                  return {
+                    x: `${date.getMonth() + 1}/${date.getDate()}`,
+                    y: d.total,
+                  }
                 })}
-                width={undefined}
                 height={220}
                 color={colors.primary[500]}
               />
@@ -97,9 +98,12 @@ export function EngagementScreen() {
                 </Text>
                 <Row gap={20} align="center" justify="center" style={{ flexWrap: 'wrap' }}>
                   <DonutChart
-                    data={donutData.map((d) => d.value)}
-                    colors={donutData.map((d) => d.color)}
-                    size={160}
+                    data={donutData.map((d) => ({
+                      label: d.label,
+                      value: d.value,
+                      color: d.color,
+                    }))}
+                    size="lg"
                   />
                   <Stack gap={8}>
                     {donutData.map((d) => (

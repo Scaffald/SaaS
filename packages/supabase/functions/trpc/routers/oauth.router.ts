@@ -715,7 +715,7 @@ export const oauthRouter = t.router({
       .eq('client_id', input.client_id)
       .single()
 
-    if (!app || !app.client_secret_hash) {
+    if (!app?.client_secret_hash) {
       return { active: false }
     }
 

@@ -219,7 +219,7 @@ export function QuickApplyModal({
     // Validate all fields first
     const validationErrors: Partial<Record<keyof ScreeningAnswers, string>> = {}
 
-    if (!formData.current_location || !formData.current_location.trim()) {
+    if (!formData.current_location?.trim()) {
       validationErrors.current_location = 'Current location is required'
     }
     if (formData.years_experience === undefined || formData.years_experience === null) {
@@ -228,7 +228,7 @@ export function QuickApplyModal({
     if (formData.is_authorized_to_work === undefined || formData.is_authorized_to_work === null) {
       validationErrors.is_authorized_to_work = 'Work authorization status is required'
     }
-    if (!formData.earliest_start_date || !formData.earliest_start_date.trim()) {
+    if (!formData.earliest_start_date?.trim()) {
       validationErrors.earliest_start_date = 'Earliest start date is required'
     }
 

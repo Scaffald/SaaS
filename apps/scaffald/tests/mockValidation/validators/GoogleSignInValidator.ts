@@ -61,7 +61,7 @@ export class GoogleSignInValidator implements MockValidator {
             ));
           }
 
-          if (!result.user || !result.user.email) {
+          if (!result.user?.email) {
             errors.push(createValidationError(
               'signIn result.user.email',
               'string',

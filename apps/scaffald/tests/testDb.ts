@@ -7,7 +7,7 @@
  * Use a dedicated test database or isolated schema for tests.
  */
 
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 // Use local Supabase instance for testing
 const TEST_SUPABASE_URL = process.env.TEST_SUPABASE_URL ||

@@ -82,7 +82,7 @@ export async function initAnalytics({ hasConsent, debug = __DEV__ }: InitAnalyti
       loaded: (posthogInstance) => {
         // Register super properties
         posthogInstance.register(buildSuperProperties())
-        client = posthogInstance
+        client = posthogInstance as unknown as PostHog
         console.log('[analytics] PostHog initialized on web', Boolean(client))
       },
     })

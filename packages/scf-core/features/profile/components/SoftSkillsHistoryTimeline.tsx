@@ -61,7 +61,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
 
   // Prepare current version radar chart data
   const currentVersionData = useMemo(() => {
-    if (!currentData || !currentData.categoryAverages) return null
+    if (!currentData?.categoryAverages) return null
 
     const categoryLabels: Record<SoftSkillCategory, string> = {
       reliability: 'Reliability',

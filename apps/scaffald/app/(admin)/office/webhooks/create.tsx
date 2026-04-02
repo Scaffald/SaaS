@@ -67,7 +67,7 @@ export default function CreateWebhookPage() {
   };
 
   const handleSubmit = () => {
-    if (!url || !url.startsWith("https://")) {
+    if (!url?.startsWith("https://")) {
       Alert.alert("Invalid URL", "Webhook URL must start with https://");
       return;
     }

@@ -62,20 +62,22 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
   // Pre-populate form with existing data when available
   useEffect(() => {
     if (existingApp) {
+      const sa = (existingApp.screening_answers ?? {}) as Record<string, unknown>
+      const am = (existingApp.attachment_metadata ?? {}) as Record<string, AttachmentMetadata>
       setState((prev) => ({
         ...prev,
         applicationId: existingApp.id,
         screeningAnswers: {
-          current_location: existingApp.current_location || '',
-          willing_to_relocate: existingApp.willing_to_relocate ?? false,
-          years_experience: existingApp.years_experience ?? 0,
-          is_authorized_to_work: existingApp.is_authorized_to_work ?? false,
-          earliest_start_date: existingApp.earliest_start_date || '',
+          current_location: (sa.current_location as string) || '',
+          willing_to_relocate: (sa.willing_to_relocate as boolean) ?? false,
+          years_experience: (sa.years_experience as number) ?? 0,
+          is_authorized_to_work: (sa.is_authorized_to_work as boolean) ?? false,
+          earliest_start_date: (sa.earliest_start_date as string) || '',
         },
-        customQuestionAnswers: existingApp.custom_question_answers || [],
-        attachments: existingApp.attachments || {},
+        customQuestionAnswers: (sa.custom_question_answers as CustomQuestionAnswer[]) || [],
+        attachments: am,
         isDirty: false,
-        lastSavedAt: existingApp.updated_at ? new Date(existingApp.updated_at) : null,
+        lastSavedAt: existingApp.stage_changed_at ? new Date(existingApp.stage_changed_at) : null,
       }))
     }
   }, [existingApp])

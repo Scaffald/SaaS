@@ -174,7 +174,7 @@ export function ProfileSkillsRight() {
         return false;
       }
       // Exclude skills without valid details
-      if (!skill.skill_details || !skill.skill_details.name) {
+      if (!skill.skill_details?.name) {
         return false;
       }
       return true;

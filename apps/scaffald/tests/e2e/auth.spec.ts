@@ -84,7 +84,7 @@ test.describe("Authentication Flow", () => {
 /**
  * Helper function to sign in (customize based on your app)
  */
-async function signIn(page: any, email: string, password: string) {
+async function _signIn(_page: any, _email: string, _password: string) {
   // await page.goto('/');
   // await page.getByLabel(/email/i).fill(email);
   // await page.getByLabel(/password/i).fill(password);

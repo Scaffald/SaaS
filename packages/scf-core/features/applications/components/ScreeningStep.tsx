@@ -86,7 +86,7 @@ export function ScreeningStep({
     const newErrors: Partial<Record<keyof ScreeningAnswers, string>> = {}
 
     // Validate current location
-    if (!answers.current_location || !answers.current_location.trim()) {
+    if (!answers.current_location?.trim()) {
       newErrors.current_location = 'Current location is required'
     }
 

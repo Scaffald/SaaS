@@ -18,7 +18,7 @@ export function DateRangeSelector({ value, onChange }: DateRangeSelectorProps) {
         <Button
           key={opt.days}
           size="sm"
-          variant={value === opt.days ? 'filled' : 'ghost'}
+          variant={value === opt.days ? 'filled' : 'text'}
           color={value === opt.days ? 'primary' : undefined}
           onPress={() => onChange(opt.days)}
         >

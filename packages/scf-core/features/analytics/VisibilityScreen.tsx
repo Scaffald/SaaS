@@ -91,10 +91,9 @@ export function VisibilityScreen() {
                 </Text>
                 <CircleChart
                   value={ctr}
-                  maxValue={100}
-                  size={80}
+                  size="sm"
                   color={colors.green[500]}
-                  label={`${ctr}%`}
+                  showLabel
                 />
               </Stack>
             </Card>
@@ -107,12 +106,13 @@ export function VisibilityScreen() {
                 Impressions Over Time
               </Text>
               <LinearChart
-                data={visibility?.timeline.map((d) => d.searchResults + d.recommendations + d.feedAppearances) ?? []}
-                labels={visibility?.timeline.map((d) => {
+                data={visibility?.timeline.map((d) => {
                   const date = new Date(d.date)
-                  return `${date.getMonth() + 1}/${date.getDate()}`
-                })}
-                width={undefined}
+                  return {
+                    x: `${date.getMonth() + 1}/${date.getDate()}`,
+                    y: d.searchResults + d.recommendations + d.feedAppearances,
+                  }
+                }) ?? []}
                 height={200}
                 color={colors.green[500]}
               />

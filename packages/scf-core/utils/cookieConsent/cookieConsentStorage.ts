@@ -27,7 +27,7 @@ export async function getConsentState(
     const raw = await getItem(COOKIE_CONSENT_STORAGE_KEY)
     if (!raw) return null
     const parsed = JSON.parse(raw) as CookieConsentState | null
-    if (!parsed || !parsed.selections || typeof parsed.selections !== 'object') return null
+    if (!parsed?.selections || typeof parsed.selections !== 'object') return null
     return parsed
   } catch {
     return null

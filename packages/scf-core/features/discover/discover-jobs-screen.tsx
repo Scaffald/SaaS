@@ -89,7 +89,7 @@ export function DiscoverJobsScreen() {
         })}
       </Stack>
     ),
-    [jobSource, t]
+    [jobSource, t, SOURCE_OPTIONS.map]
   )
 
   // Filter pills for desktop header

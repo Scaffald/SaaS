@@ -1,4 +1,5 @@
 import { formatDistanceToNow } from 'date-fns'
+import type { ReactNode } from 'react'
 import { Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
@@ -88,9 +89,9 @@ export function ActivityTimeline({ entries }: ActivityTimelineProps) {
               <Text style={{ color: colors.text[theme].primary, fontSize: 14, fontWeight: '500' }}>
                 {label}
               </Text>
-              {detail && (
+              {detail != null && (
                 <Text style={{ color: colors.text[theme].secondary, fontSize: 13 }}>
-                  {String(detail)}
+                  {String(detail) as ReactNode}
                 </Text>
               )}
               <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>

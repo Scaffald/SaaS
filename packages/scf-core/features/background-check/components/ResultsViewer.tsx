@@ -123,7 +123,7 @@ export const ResultsViewer = memo(function ResultsViewer({
       const record = entry as Record<string, unknown>;
       const statusValue =
         typeof record.status === "string" ? record.status : null;
-      if (!statusValue || !statusValue.startsWith("completed")) continue;
+      if (!statusValue?.startsWith("completed")) continue;
       const occurredAt =
         typeof record.occurred_at === "string"
           ? (record.occurred_at as string)

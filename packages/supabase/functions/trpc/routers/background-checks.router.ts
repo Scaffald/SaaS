@@ -1941,14 +1941,14 @@ export const backgroundChecksRouter = t.router({
         })
       }
 
-      if (!pkg || !pkg.is_active) {
+      if (!pkg?.is_active) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
           message: 'Selected background check package is not available',
         })
       }
 
-      if (!input.consent || !input.consent.consent_signature) {
+      if (!input.consent?.consent_signature) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
           message: 'Worker consent is required before initiating a background check.',
@@ -3033,7 +3033,7 @@ export const backgroundChecksRouter = t.router({
         })
       }
 
-      if (!pkg || !pkg.is_active) {
+      if (!pkg?.is_active) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
           message: 'Selected background check package is not available',

@@ -5,9 +5,9 @@
  * Verifies Supabase is running and database is ready
  */
 
-import { chromium, FullConfig } from '@playwright/test';
+import type { FullConfig } from '@playwright/test';
 
-async function globalSetup(config: FullConfig) {
+async function globalSetup(_config: FullConfig) {
   console.log('\n🔧 Setting up E2E test environment...\n');
 
   // Verify Supabase is running
