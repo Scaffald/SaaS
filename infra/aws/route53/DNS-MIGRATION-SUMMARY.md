@@ -6,7 +6,7 @@ All DNS records from CloudFlare for `scaffald.com` have been exported and prepar
 ## DNS Records Inventory
 
 ### Root Domain Records
-- **A Records** (2): `31.43.161.6`, `31.43.160.6`
+- **A Record**: `185.230.63.107` (Wix — updated 2026-04-02, previously `31.43.161.6`, `31.43.160.6` for Framer)
 - **MX Records** (5): Google Workspace email servers
   - Priority 1: `aspmx.l.google.com`
   - Priority 5: `alt1.aspmx.l.google.com`, `alt2.aspmx.l.google.com`
@@ -16,7 +16,7 @@ All DNS records from CloudFlare for `scaffald.com` have been exported and prepar
   - Google Site Verification (2 records)
 
 ### Subdomain Records
-- **www.scaffald.com**: CNAME → `sites.framer.app`
+- **www.scaffald.com**: CNAME → `pointing.wixdns.net` (updated 2026-04-02, previously `sites.framer.app`)
 - **app.scaffald.com**: A records → `104.21.90.219`, `172.67.205.140` (CloudFlare IPs)
 - **staging.scaffald.com**: CNAME → `dec60148739e932d.vercel-dns-016.com`
 

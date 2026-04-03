@@ -185,13 +185,13 @@ All DNS records from CloudFlare have been exported and are ready for migration t
 **Complete DNS Records File**: `infra/aws/route53/scaffald-complete-records.json`
 
 This file contains all DNS records currently configured in CloudFlare:
-- **A records**: Root domain (`scaffald.com`) pointing to `31.43.161.6` and `31.43.160.6`
+- **A record**: Root domain (`scaffald.com`) pointing to `185.230.63.107` (Wix — updated 2026-04-02)
 - **MX records**: Google Workspace email (5 MX records with priorities)
 - **TXT records**: 
   - SPF record for email authentication
   - Google site verification records (2)
 - **CNAME records**:
-  - `www.scaffald.com` → `sites.framer.app`
+  - `www.scaffald.com` → `pointing.wixdns.net` (Wix — updated 2026-04-02)
   - `staging.scaffald.com` → `dec60148739e932d.vercel-dns-016.com`
 - **A records for subdomains**:
   - `app.scaffald.com` → CloudFlare IPs (104.21.90.219, 172.67.205.140)

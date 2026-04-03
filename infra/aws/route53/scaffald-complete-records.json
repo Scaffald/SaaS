@@ -9,10 +9,7 @@
         "TTL": 300,
         "ResourceRecords": [
           {
-            "Value": "31.43.161.6"
-          },
-          {
-            "Value": "31.43.160.6"
+            "Value": "185.230.63.107"
           }
         ]
       }
@@ -69,7 +66,7 @@
         "TTL": 300,
         "ResourceRecords": [
           {
-            "Value": "sites.framer.app"
+            "Value": "pointing.wixdns.net"
           }
         ]
       }
