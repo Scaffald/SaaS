@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scaffald ATS — Recruiter, Company & Applicant Prototype</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #111; color: #fff; }
+    .proto-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: #0f172a; border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding: 0 16px; display: flex; align-items: center; gap: 0; height: 48px;
+      overflow-x: auto; white-space: nowrap;
+    }
+    .proto-nav .brand { font-weight: 700; font-size: 13px; color: #fff; margin-right: 16px; padding-right: 16px; border-right: 1px solid rgba(255,255,255,0.15); flex-shrink: 0; }
+    .proto-nav .section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.3); padding: 0 8px; flex-shrink: 0; }
+    .proto-nav button { background: none; border: none; color: rgba(255,255,255,0.5); font-size: 11px; padding: 14px 10px; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; font-family: inherit; transition: all 0.15s; }
+    .proto-nav button:hover { color: rgba(255,255,255,0.8); }
+    .proto-nav button.active { color: #fff; font-weight: 600; border-bottom-color: #fff; }
+    .proto-nav .counter { margin-left: auto; font-size: 11px; color: rgba(255,255,255,0.4); flex-shrink: 0; padding-left: 12px; }
+    .screen { display: none; padding: 64px 24px 40px; max-width: 1200px; margin: 0 auto; }
+    .screen.active { display: block; }
+    .screen-title { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 16px; text-align: center; }
+    .screen-persona { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; text-align: center; margin-bottom: 4px; }
+    .persona-recruiter { color: #818cf8; }
+    .persona-company { color: #34d399; }
+    .persona-applicant { color: #fbbf24; }
+    .mock-frame { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.3); color: #1a1a1a; font-size: 13px; }
+    .mock-url { background: #f3f4f6; padding: 8px 16px; font-size: 11px; color: #6b7280; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; gap: 8px; }
+    .mock-url .dots { display: flex; gap: 4px; }
+    .mock-url .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .mock-url .dot-r { background: #fca5a5; } .mock-url .dot-y { background: #fcd34d; } .mock-url .dot-g { background: #86efac; }
+    .mock-url .url-text { background: #fff; border-radius: 4px; padding: 3px 12px; flex: 1; font-size: 11px; color: #9ca3af; }
+    [data-goto] { cursor: pointer; transition: opacity 0.15s; } [data-goto]:hover { opacity: 0.85; }
+    .screen-nav { display: flex; justify-content: center; gap: 12px; margin-top: 24px; }
+    .screen-nav button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 8px 20px; border-radius: 6px; font-size: 13px; cursor: pointer; font-family: inherit; }
+    .screen-nav button:hover { background: rgba(255,255,255,0.2); }
+    .screen-nav button:disabled { opacity: 0.3; cursor: default; }
+  </style>
+</head>
+<body>
+
+<div class="proto-nav">
+  <span class="brand">Scaffald ATS Prototype</span>
+  <span class="section-label">Recruiter</span>
+  <button onclick="goTo(0)" id="nav-0">Dashboard</button>
+  <button onclick="goTo(1)" id="nav-1">Job Posting</button>
+  <button onclick="goTo(2)" id="nav-2">Client View</button>
+  <span class="section-label">Company</span>
+  <button onclick="goTo(3)" id="nav-3">Dashboard</button>
+  <button onclick="goTo(4)" id="nav-4">Candidate</button>
+  <span class="section-label">Applicant</span>
+  <button onclick="goTo(5)" id="nav-5">My Apps</button>
+  <button onclick="goTo(6)" id="nav-6">Recruiter Stats</button>
+  <button onclick="goTo(7)" id="nav-7">Company Stats</button>
+  <span class="counter" id="counter">1 / 8</span>
+</div>
+
+<!-- ==================== SCREEN 1: Recruiter Dashboard ==================== -->
+<div class="screen active" id="screen-0">
+  <div class="screen-persona persona-recruiter">Recruiter View</div>
+  <div class="screen-title">Screen 1 of 8 — Recruiter dashboard: candidates across multiple clients and jobs</div>
+  <div class="mock-frame">
+    <div class="mock-url"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div><div class="url-text">scaffald.com &bull; Pinnacle Staffing &bull; Recruiter Dashboard</div></div>
+    <div style="display: flex; min-height: 700px;">
+      <!-- Sidebar -->
+      <div style="width: 200px; background: #0f172a; color: #fff; padding: 20px 0; flex-shrink: 0;">
+        <div style="padding: 0 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.08);"><div style="font-weight: 700; font-size: 16px;">Scaffald</div><div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 2px;">Pinnacle Staffing</div></div>
+        <nav style="padding: 16px 0;">
+          <div style="padding: 10px 20px; background: rgba(255,255,255,0.1); font-weight: 600; font-size: 13px; border-left: 3px solid #fff;">Dashboard</div>
+          <div style="padding: 10px 20px; color: rgba(255,255,255,0.6); font-size: 13px;">Candidates</div>
+          <div data-goto="1" style="padding: 10px 20px; color: rgba(255,255,255,0.6); font-size: 13px; display: flex; justify-content: space-between;">Jobs <span style="background: rgba(255,255,255,0.15); padding: 1px 8px; border-radius: 10px; font-size: 11px;">8</span></div>
+          <div style="padding: 10px 20px; color: rgba(255,255,255,0.6); font-size: 13px; display: flex; justify-content: space-between;">Clients <span style="background: rgba(255,255,255,0.15); padding: 1px 8px; border-radius: 10px; font-size: 11px;">5</span></div>
+          <div style="padding: 10px 20px; color: rgba(255,255,255,0.6); font-size: 13px; display: flex; justify-content: space-between;">Tasks <span style="background: #dc2626; padding: 1px 8px; border-radius: 10px; font-size: 11px; color: #fff;">4</span></div>
+          <div style="padding: 10px 20px; color: rgba(255,255,255,0.6); font-size: 13px;">Flow Builder</div>
+          <div style="padding: 10px 20px; color: rgba(255,255,255,0.6); font-size: 13px;">Reports</div>
+        </nav>
+      </div>
+      <!-- Main -->
+      <div style="flex: 1; padding: 20px; overflow-x: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h2 style="margin: 0; font-size: 20px; font-weight: 700; color: #111;">Pipeline</h2>
+          <div style="display: flex; gap: 8px;">
+            <span data-goto="1" style="background: #0f172a; color: #fff; padding: 8px 20px; border-radius: 8px; font-weight: 600; font-size: 13px;">+ Post Job</span>
+          </div>
+        </div>
+        <!-- Filters -->
+        <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+          <span style="background: #0f172a; color: #fff; padding: 5px 14px; border-radius: 20px; font-size: 12px;">All Jobs</span>
+          <span style="background: #f3f4f6; color: #374151; padding: 5px 14px; border-radius: 20px; font-size: 12px; border: 1px solid #e5e7eb;">Sr. Project Manager</span>
+          <span style="background: #f3f4f6; color: #374151; padding: 5px 14px; border-radius: 20px; font-size: 12px; border: 1px solid #e5e7eb;">CDL Driver</span>
+          <span style="color: #9ca3af; padding: 5px 8px; font-size: 12px;">|</span>
+          <span style="background: #0f172a; color: #fff; padding: 5px 14px; border-radius: 20px; font-size: 12px;">All Clients</span>
+          <span style="background: #f3f4f6; color: #374151; padding: 5px 14px; border-radius: 20px; font-size: 12px; border: 1px solid #e5e7eb;">Acme Construction</span>
+          <span style="background: #f3f4f6; color: #374151; padding: 5px 14px; border-radius: 20px; font-size: 12px; border: 1px solid #e5e7eb;">Summit Engineering</span>
+          <span style="background: #f3f4f6; color: #374151; padding: 5px 14px; border-radius: 20px; font-size: 12px; border: 1px solid #e5e7eb;">TransWest</span>
+        </div>
+        <!-- Stats -->
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 16px;">
+          <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px;"><div style="font-size: 11px; color: #6b7280;">Active Candidates</div><div style="font-size: 22px; font-weight: 700; color: #111; margin-top: 2px;">47</div></div>
+          <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px;"><div style="font-size: 11px; color: #6b7280;">Presented to Clients</div><div style="font-size: 22px; font-weight: 700; color: #818cf8; margin-top: 2px;">12</div></div>
+          <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px;"><div style="font-size: 11px; color: #6b7280;">In Interviews</div><div style="font-size: 22px; font-weight: 700; color: #f59e0b; margin-top: 2px;">6</div></div>
+          <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px;"><div style="font-size: 11px; color: #6b7280;">Placed This Month</div><div style="font-size: 22px; font-weight: 700; color: #059669; margin-top: 2px;">3</div></div>
+          <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px;"><div style="font-size: 11px; color: #6b7280;">Avg. Time to Place</div><div style="font-size: 22px; font-weight: 700; color: #111; margin-top: 2px;">18d</div></div>
+        </div>
+        <!-- Kanban -->
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px;">
+          <div style="display: flex; gap: 10px; overflow-x: auto;">
+            <!-- New -->
+            <div style="min-width: 180px; flex: 1;"><div style="font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 8px;">New <span style="background: #e5e7eb; padding: 1px 6px; border-radius: 8px; font-size: 10px; color: #374151;">11</span></div>
+              <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; border-left: 3px solid #6366f1; margin-bottom: 6px;"><div style="font-size: 12px; font-weight: 600; color: #111;">Marcus Johnson</div><div style="font-size: 10px; color: #6b7280; margin-top: 2px;">Sr. Project Manager</div><div style="font-size: 10px; color: #818cf8; margin-top: 4px; background: #eef2ff; padding: 2px 6px; border-radius: 4px; display: inline-block;">Acme + Summit</div><div style="font-size: 10px; color: #059669; margin-top: 4px;">1h ago</div></div>
+              <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; border-left: 3px solid #6366f1;"><div style="font-size: 12px; font-weight: 600; color: #111;">Diana Reyes</div><div style="font-size: 10px; color: #6b7280; margin-top: 2px;">CDL Driver</div><div style="font-size: 10px; color: #818cf8; margin-top: 4px; background: #eef2ff; padding: 2px 6px; border-radius: 4px; display: inline-block;">TransWest</div><div style="font-size: 10px; color: #059669; margin-top: 4px;">3h ago</div></div>
+              <div style="font-size: 11px; color: #9ca3af; text-align: center; padding: 4px;">+9 more</div>
+            </div>
+            <!-- Screening -->
+            <div style="min-width: 180px; flex: 1;"><div style="font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 8px;">Screening <span style="background: #e5e7eb; padding: 1px 6px; border-radius: 8px; font-size: 10px;">8</span></div>
+              <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; border-left: 3px solid #3b82f6; margin-bottom: 6px;"><div style="font-size: 12px; font-weight: 600; color: #111;">Kevin Park</div><div style="font-size: 10px; color: #6b7280;">Site Superintendent</div><div style="font-size: 10px; color: #818cf8; margin-top: 4px; background: #eef2ff; padding: 2px 6px; border-radius: 4px; display: inline-block;">Acme</div><div style="font-size: 10px; color: #d97706; margin-top: 4px;">2 days</div></div>
+              <div style="font-size: 11px; color: #9ca3af; text-align: center; padding: 4px;">+7 more</div>
+            </div>
+            <!-- Client Presentation -->
+            <div style="min-width: 180px; flex: 1;"><div style="font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 8px;">Presented <span style="background: #eef2ff; padding: 1px 6px; border-radius: 8px; font-size: 10px; color: #4338ca; font-weight: 700;">12</span></div>
+              <div data-goto="2" style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; border-left: 3px solid #818cf8; margin-bottom: 6px;"><div style="font-size: 12px; font-weight: 600; color: #111;">Sarah Williams</div><div style="font-size: 10px; color: #6b7280;">Sr. Project Manager</div><div style="font-size: 10px; color: #818cf8; margin-top: 4px; background: #eef2ff; padding: 2px 6px; border-radius: 4px; display: inline-block;">Summit Eng.</div><div style="display: flex; justify-content: space-between; margin-top: 4px;"><span style="font-size: 10px; color: #d97706;">Awaiting feedback 2d</span></div></div>
+              <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px; border-left: 3px solid #10b981; margin-bottom: 6px;"><div style="font-size: 12px; font-weight: 600; color: #111;">Tom Rodriguez</div><div style="font-size: 10px; color: #6b7280;">Sr. Project Manager</div><div style="font-size: 10px; color: #818cf8; margin-top: 4px; background: #eef2ff; padding: 2px 6px; border-radius: 4px; display: inline-block;">Acme Const.</div><div style="font-size: 10px; color: #059669; margin-top: 4px;">&#10003; Client approved — schedule interview</div></div>
+              <div style="font-size: 11px; color: #9ca3af; text-align: center; padding: 4px;">+10 more</div>
+            </div>
+            <!-- Interview -->
+            <div style="min-width: 180px; flex: 1;"><div style="font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 8px;">Interview <span style="background: #fef3c7; padding: 1px 6px; border-radius: 8px; font-size: 10px; color: #92400e;">6</span></div>
+              <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; border-left: 3px solid #f59e0b; margin-bottom: 6px;"><div style="font-size: 12px; font-weight: 600; color: #111;">Amy Chen</div><div style="font-size: 10px; color: #6b7280;">Safety Manager</div><div style="font-size: 10px; color: #818cf8; margin-top: 4px; background: #eef2ff; padding: 2px 6px; border-radius: 4px; display: inline-block;">Summit Eng.</div><div style="font-size: 10px; color: #6b7280; margin-top: 4px;">Interview: Apr 2, 10am</div></div>
+              <div style="font-size: 11px; color: #9ca3af; text-align: center; padding: 4px;">+5 more</div>
+            </div>
+            <!-- BG Check -->
+            <div style="min-width: 180px; flex: 1;"><div style="font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 8px;">BG Check <span style="background: #e5e7eb; padding: 1px 6px; border-radius: 8px; font-size: 10px;">2</span></div>
+              <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; border-left: 3px solid #8b5cf6;"><div style="font-size: 12px; font-weight: 600; color: #111;">Jake Morrison</div><div style="font-size: 10px; color: #6b7280;">CDL Driver</div><div style="font-size: 10px; color: #818cf8; margin-top: 4px; background: #eef2ff; padding: 2px 6px; border-radius: 4px; display: inline-block;">TransWest</div><div style="font-size: 10px; color: #8b5cf6; margin-top: 4px;">NationSearch: Submitted</div></div>
+            </div>
+            <!-- Offer / Hired -->
+            <div style="min-width: 180px; flex: 1;"><div style="font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 8px;">Offer / Hired <span style="background: #d1fae5; padding: 1px 6px; border-radius: 8px; font-size: 10px; color: #065f46;">5</span></div>
+              <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px; border-left: 3px solid #10b981; margin-bottom: 6px;"><div style="font-size: 12px; font-weight: 600; color: #111;">Maria Lopez</div><div style="font-size: 10px; color: #6b7280;">Project Coordinator</div><div style="font-size: 10px; color: #818cf8; margin-top: 4px; background: #eef2ff; padding: 2px 6px; border-radius: 4px; display: inline-block;">Acme</div><div style="font-size: 10px; color: #059669; margin-top: 4px;">&#10003; Hired — starts Apr 14</div></div>
+              <div style="font-size: 11px; color: #9ca3af; text-align: center; padding: 4px;">+4 more</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="screen-nav"><button disabled>&larr; Previous</button><button onclick="goTo(1)">Next: Job Posting &rarr;</button></div>
+</div>
+
+<!-- ==================== SCREEN 2: Multi-Company Job Posting ==================== -->
+<div class="screen" id="screen-1">
+  <div class="screen-persona persona-recruiter">Recruiter View</div>
+  <div class="screen-title">Screen 2 of 8 — Posting a job that routes candidates to multiple client companies</div>
+  <div class="mock-frame">
+    <div class="mock-url"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div><div class="url-text">scaffald.com &bull; Pinnacle Staffing &bull; Post a Job</div></div>
+    <div style="padding: 14px 24px; background: #fff; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between;"><div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><span data-goto="0" style="color: #6366f1;">Dashboard</span><span style="color: #9ca3af;">/</span><span style="font-weight: 600; color: #111;">Post a Job</span></div><div style="display: flex; gap: 8px;"><span style="border: 1px solid #e5e7eb; padding: 6px 14px; border-radius: 6px; font-size: 12px; color: #374151;">Save Draft</span><span style="background: #0f172a; color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600;">Publish</span></div></div>
+    <div style="max-width: 640px; margin: 0 auto; padding: 28px 24px;">
+      <h3 style="font-size: 18px; font-weight: 600; color: #111; margin: 0 0 20px;">Job Details</h3>
+      <div style="margin-bottom: 16px;"><label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">Job Title</label><div style="border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 14px; font-size: 14px; color: #111;">Senior Project Manager</div></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+        <div><label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">Location</label><div style="border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 14px; font-size: 14px; color: #111;">Denver, CO</div></div>
+        <div><label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">Compensation Range</label><div style="border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 14px; font-size: 14px; color: #111;">$95,000 - $125,000</div></div>
+      </div>
+      <div style="margin-bottom: 20px;"><label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">Description</label><div style="border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 14px; font-size: 14px; color: #6b7280; min-height: 60px;">We're looking for an experienced PM to lead commercial construction projects...</div></div>
+
+      <!-- Multi-Company Routing -->
+      <div style="border: 2px solid #818cf8; border-radius: 10px; padding: 20px; background: #eef2ff; margin-bottom: 20px;">
+        <h4 style="margin: 0 0 8px; font-size: 14px; font-weight: 600; color: #111;">Route candidates to client companies</h4>
+        <p style="font-size: 12px; color: #6b7280; margin: 0 0 14px;">Applicants see one job posting. You decide which client(s) to present each candidate to.</p>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #fff; border-radius: 8px; border: 1px solid #e5e7eb;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="width: 18px; height: 18px; background: #0f172a; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px;">&#10003;</span>
+              <div><div style="font-size: 13px; font-weight: 600; color: #111;">Acme Construction</div><div style="font-size: 11px; color: #6b7280;">3 open PM roles &bull; Denver</div></div>
+            </div>
+            <span style="font-size: 11px; color: #059669;">Active client</span>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #fff; border-radius: 8px; border: 1px solid #e5e7eb;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="width: 18px; height: 18px; background: #0f172a; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px;">&#10003;</span>
+              <div><div style="font-size: 13px; font-weight: 600; color: #111;">Summit Engineering</div><div style="font-size: 11px; color: #6b7280;">1 open PM role &bull; Boulder</div></div>
+            </div>
+            <span style="font-size: 11px; color: #059669;">Active client</span>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #fff; border-radius: 8px; border: 1px solid #e5e7eb;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="width: 18px; height: 18px; border: 1px solid #d1d5db; border-radius: 4px;"></span>
+              <div><div style="font-size: 13px; font-weight: 600; color: #111;">Mountain View LLC</div><div style="font-size: 11px; color: #6b7280;">No current PM openings</div></div>
+            </div>
+            <span style="font-size: 11px; color: #6b7280;">Active client</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Background Check -->
+      <div style="border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+          <span style="width: 18px; height: 18px; background: #0f172a; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px;">&#10003;</span>
+          <div style="font-size: 13px; font-weight: 600; color: #111;">Require background check</div>
+        </div>
+        <div style="font-size: 12px; color: #6b7280; margin-left: 28px;">Candidates who advance will be routed to NationSearch for background screening. The background check stage will be added to your flow automatically.</div>
+      </div>
+
+      <!-- Flow Selection -->
+      <div style="border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px;">
+        <label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 8px;">Pipeline Flow</label>
+        <div style="display: flex; gap: 8px;">
+          <span style="background: #0f172a; color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 12px;">Standard Recruiting</span>
+          <span style="background: #f3f4f6; color: #374151; padding: 6px 14px; border-radius: 20px; font-size: 12px; border: 1px solid #e5e7eb;">Executive Search</span>
+          <span style="background: #f3f4f6; color: #374151; padding: 6px 14px; border-radius: 20px; font-size: 12px; border: 1px solid #e5e7eb;">High Volume</span>
+        </div>
+        <div style="font-size: 11px; color: #6b7280; margin-top: 8px;">Standard: New → Screening → Phone → Present → Interview → BG Check → Offer → Hired</div>
+      </div>
+    </div>
+  </div>
+  <div class="screen-nav"><button onclick="goTo(0)">&larr; Previous</button><button onclick="goTo(2)">Next: Client View &rarr;</button></div>
+</div>
+
+<!-- ==================== SCREEN 3: Client Company View ==================== -->
+<div class="screen" id="screen-2">
+  <div class="screen-persona persona-company">Client Company View</div>
+  <div class="screen-title">Screen 3 of 8 — What the client company (Acme) sees when a recruiter presents candidates</div>
+  <div class="mock-frame">
+    <div class="mock-url"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div><div class="url-text">scaffald.com &bull; Acme Construction &bull; Recruiting &bull; Pinnacle Staffing</div></div>
+    <div style="padding: 14px 24px; background: #fff; border-bottom: 1px solid #e5e7eb;"><div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><span style="color: #6366f1;">Acme Construction</span><span style="color: #9ca3af;">/</span><span style="color: #6366f1;">Recruiting</span><span style="color: #9ca3af;">/</span><span style="font-weight: 600; color: #111;">Pinnacle Staffing — Sr. Project Manager</span></div></div>
+    <div style="padding: 20px 24px;">
+      <!-- Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div><h2 style="margin: 0; font-size: 18px; font-weight: 700; color: #111;">Candidates from Pinnacle Staffing</h2><div style="font-size: 13px; color: #6b7280; margin-top: 4px;">Senior Project Manager &bull; Denver, CO &bull; 4 candidates presented</div></div>
+        <div style="text-align: right;"><div style="font-size: 12px; color: #6b7280;">Recruiter stats</div><div style="font-size: 13px; font-weight: 600; color: #111;">Avg. 5 days to present &bull; 82% response rate</div></div>
+      </div>
+      <!-- Candidates -->
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <!-- Candidate 1: Approved -->
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 18px; display: flex; gap: 16px;">
+          <div style="width: 48px; height: 48px; background: #dbeafe; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #1d4ed8; flex-shrink: 0;">TR</div>
+          <div style="flex: 1;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div><div style="font-size: 15px; font-weight: 600; color: #111;">Tom Rodriguez</div><div style="font-size: 12px; color: #6b7280; margin-top: 2px;">12 years experience &bull; PMP Certified &bull; Denver, CO</div></div>
+              <span style="background: #d1fae5; color: #065f46; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;">You approved — scheduling interview</span>
+            </div>
+            <div style="font-size: 12px; color: #374151; margin-top: 10px; line-height: 1.6; background: #f9fafb; padding: 10px; border-radius: 6px;"><strong>Recruiter's notes:</strong> Strong commercial construction background. Led $50M+ projects at Turner Construction. PMP certified, familiar with Procore. Relocating from Phoenix, available in 3 weeks.</div>
+            <div style="display: flex; gap: 8px; margin-top: 10px;">
+              <span style="background: #f3f4f6; padding: 4px 10px; border-radius: 4px; font-size: 11px; color: #374151;">View full profile</span>
+              <span style="background: #f3f4f6; padding: 4px 10px; border-radius: 4px; font-size: 11px; color: #374151;">Download resume</span>
+            </div>
+          </div>
+        </div>
+        <!-- Candidate 2: Awaiting feedback -->
+        <div style="background: #fff; border: 2px solid #f59e0b; border-radius: 10px; padding: 18px; display: flex; gap: 16px;">
+          <div style="width: 48px; height: 48px; background: #fce7f3; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #be185d; flex-shrink: 0;">SW</div>
+          <div style="flex: 1;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div><div style="font-size: 15px; font-weight: 600; color: #111;">Sarah Williams</div><div style="font-size: 12px; color: #6b7280; margin-top: 2px;">8 years experience &bull; LEED AP &bull; Boulder, CO</div></div>
+              <span style="background: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;">Awaiting your feedback</span>
+            </div>
+            <div style="font-size: 12px; color: #374151; margin-top: 10px; line-height: 1.6; background: #f9fafb; padding: 10px; border-radius: 6px;"><strong>Recruiter's notes:</strong> Sustainable construction specialist. LEED AP certification. Managed mixed-use projects $20-40M range. Strong client communication skills. Currently at Hensel Phelps.</div>
+            <div style="display: flex; gap: 8px; margin-top: 12px;">
+              <span style="background: #059669; color: #fff; padding: 6px 16px; border-radius: 6px; font-size: 12px; font-weight: 600;">Schedule Interview</span>
+              <span style="background: #fff; border: 1px solid #e5e7eb; color: #374151; padding: 6px 16px; border-radius: 6px; font-size: 12px;">Need More Info</span>
+              <span style="background: #fff; border: 1px solid #e5e7eb; color: #dc2626; padding: 6px 16px; border-radius: 6px; font-size: 12px;">Pass</span>
+            </div>
+          </div>
+        </div>
+        <!-- Candidate 3: Passed -->
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 18px; display: flex; gap: 16px; opacity: 0.6;">
+          <div style="width: 48px; height: 48px; background: #f3f4f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #6b7280; flex-shrink: 0;">JB</div>
+          <div style="flex: 1;">
+            <div style="display: flex; justify-content: space-between;"><div><div style="font-size: 15px; font-weight: 600; color: #111;">Jason Brooks</div><div style="font-size: 12px; color: #6b7280; margin-top: 2px;">5 years experience &bull; Denver, CO</div></div><span style="background: #f3f4f6; color: #6b7280; padding: 4px 12px; border-radius: 20px; font-size: 11px;">Passed — Mar 25</span></div>
+            <div style="font-size: 12px; color: #6b7280; margin-top: 8px;">Your feedback: "Looking for more commercial experience. Mostly residential background."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="screen-nav"><button onclick="goTo(1)">&larr; Previous</button><button onclick="goTo(3)">Next: Company Dashboard &rarr;</button></div>
+</div>
+
+<!-- ==================== SCREEN 4: Hiring Company Dashboard ==================== -->
+<div class="screen" id="screen-3">
+  <div class="screen-persona persona-company">Hiring Company View</div>
+  <div class="screen-title">Screen 4 of 8 — Company managing their own hiring pipeline directly</div>
+  <div class="mock-frame">
+    <div class="mock-url"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div><div class="url-text">scaffald.com &bull; Mountain View LLC &bull; Hiring</div></div>
+    <div style="display: flex; min-height: 640px;">
+      <div style="width: 200px; background: #0f172a; color: #fff; padding: 20px 0; flex-shrink: 0;">
+        <div style="padding: 0 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.08);"><div style="font-weight: 700; font-size: 16px;">Scaffald</div><div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 2px;">Mountain View LLC</div></div>
+        <nav style="padding: 16px 0;">
+          <div style="padding: 10px 20px; color: rgba(255,255,255,0.6); font-size: 13px;">Company Profile</div>
+          <div style="padding: 10px 20px; background: rgba(255,255,255,0.1); font-weight: 600; font-size: 13px; border-left: 3px solid #fff;">Hiring</div>
+          <div style="padding: 10px 20px; color: rgba(255,255,255,0.6); font-size: 13px;">Jobs</div>
+          <div style="padding: 10px 20px; color: rgba(255,255,255,0.6); font-size: 13px;">Team</div>
+          <div style="padding: 10px 20px; color: rgba(255,255,255,0.6); font-size: 13px;">Recruiting</div>
+          <div style="padding: 10px 20px; color: rgba(255,255,255,0.6); font-size: 13px;">Flow Builder</div>
+        </nav>
+      </div>
+      <div style="flex: 1; padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div><h2 style="margin: 0; font-size: 20px; font-weight: 700; color: #111;">Hiring Pipeline</h2><div style="font-size: 13px; color: #6b7280; margin-top: 2px;">3 open positions &bull; 22 active candidates</div></div>
+          <div style="display: flex; gap: 8px;"><span style="border: 1px solid #e5e7eb; padding: 6px 14px; border-radius: 6px; font-size: 12px; color: #374151;">Find a Recruiter</span><span style="background: #0f172a; color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600;">+ Post Job</span></div>
+        </div>
+        <!-- Job Tabs -->
+        <div style="display: flex; gap: 0; border-bottom: 1px solid #e5e7eb; margin-bottom: 16px;">
+          <span style="padding: 10px 16px; font-size: 13px; font-weight: 600; color: #111; border-bottom: 2px solid #0f172a;">Estimator <span style="background: #e5e7eb; padding: 1px 6px; border-radius: 8px; font-size: 10px; color: #374151;">9</span></span>
+          <span style="padding: 10px 16px; font-size: 13px; color: #6b7280;">Safety Coordinator <span style="background: #e5e7eb; padding: 1px 6px; border-radius: 8px; font-size: 10px; color: #374151;">8</span></span>
+          <span style="padding: 10px 16px; font-size: 13px; color: #6b7280;">Admin Assistant <span style="background: #e5e7eb; padding: 1px 6px; border-radius: 8px; font-size: 10px; color: #374151;">5</span></span>
+        </div>
+        <!-- Kanban -->
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px;">
+          <div style="display: flex; gap: 10px; overflow-x: auto;">
+            <div style="min-width: 175px; flex: 1;"><div style="font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 8px;">Applied <span style="background: #e5e7eb; padding: 1px 6px; border-radius: 8px; font-size: 10px;">4</span></div>
+              <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; border-left: 3px solid #6366f1; margin-bottom: 6px;"><div style="font-size: 12px; font-weight: 600; color: #111;">Natalie Foster</div><div style="font-size: 10px; color: #6b7280;">Direct apply &bull; Today</div></div>
+              <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; border-left: 3px solid #818cf8; margin-bottom: 6px;"><div style="font-size: 12px; font-weight: 600; color: #111;">Chris Yamamoto</div><div style="font-size: 10px; color: #818cf8;">via Pinnacle Staffing</div><div style="font-size: 10px; color: #6b7280;">Yesterday</div></div>
+              <div style="font-size: 11px; color: #9ca3af; text-align: center; padding: 4px;">+2 more</div>
+            </div>
+            <div style="min-width: 175px; flex: 1;"><div style="font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 8px;">Screening <span style="background: #e5e7eb; padding: 1px 6px; border-radius: 8px; font-size: 10px;">2</span></div>
+              <div data-goto="4" style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; border-left: 3px solid #3b82f6;"><div style="font-size: 12px; font-weight: 600; color: #111;">Ryan Mitchell</div><div style="font-size: 10px; color: #6b7280;">Direct apply &bull; 2 days</div></div>
+            </div>
+            <div style="min-width: 175px; flex: 1;"><div style="font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 8px;">Interview <span style="background: #fef3c7; padding: 1px 6px; border-radius: 8px; font-size: 10px; color: #92400e;">2</span></div>
+              <div data-goto="4" style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; border-left: 3px solid #f59e0b; margin-bottom: 6px;"><div style="font-size: 12px; font-weight: 600; color: #111;">Emily Chang</div><div style="font-size: 10px; color: #6b7280;">Interview: Apr 1</div><div style="font-size: 10px; color: #6b7280; margin-top: 4px;">Interviewers: Mike P., Sarah R.</div></div>
+            </div>
+            <div style="min-width: 175px; flex: 1;"><div style="font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 8px;">Offer <span style="background: #e5e7eb; padding: 1px 6px; border-radius: 8px; font-size: 10px;">1</span></div>
+              <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px; border-left: 3px solid #10b981;"><div style="font-size: 12px; font-weight: 600; color: #111;">Daniel Park</div><div style="font-size: 10px; color: #059669;">Offer sent Mar 28</div><div style="font-size: 10px; color: #6b7280;">Awaiting response</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="screen-nav"><button onclick="goTo(2)">&larr; Previous</button><button onclick="goTo(4)">Next: Candidate Detail &rarr;</button></div>
+</div>
+
+<!-- ==================== SCREEN 5: Candidate Detail with Interview Feedback ==================== -->
+<div class="screen" id="screen-4">
+  <div class="screen-persona persona-company">Hiring Company View</div>
+  <div class="screen-title">Screen 5 of 8 — Candidate detail with structured interview feedback from team members</div>
+  <div class="mock-frame">
+    <div class="mock-url"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div><div class="url-text">scaffald.com &bull; Mountain View LLC &bull; Emily Chang &bull; Estimator</div></div>
+    <div style="padding: 14px 24px; background: #fff; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between;"><div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><span data-goto="3" style="color: #6366f1;">Hiring</span><span style="color: #9ca3af;">/</span><span style="color: #6366f1;">Estimator</span><span style="color: #9ca3af;">/</span><span style="font-weight: 600; color: #111;">Emily Chang</span></div><div style="display: flex; gap: 8px;"><span style="border: 1px solid #e5e7eb; padding: 6px 14px; border-radius: 6px; font-size: 12px; color: #374151;">Add Note</span><span style="background: #0f172a; color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600;">Move to &rarr;</span></div></div>
+    <div style="padding: 20px 24px; display: flex; gap: 20px;">
+      <div style="flex: 2;">
+        <!-- Header -->
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 18px; margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 12px;"><div><h2 style="margin: 0; font-size: 20px; font-weight: 700; color: #111;">Emily Chang</h2><div style="font-size: 13px; color: #6b7280; margin-top: 4px;">Estimator &bull; Applied Mar 20 &bull; Direct apply</div></div><span style="background: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">Interview</span></div>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <div style="width: 22px; height: 22px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff;">&#10003;</div><span style="font-size: 10px; color: #059669; margin-right: 8px;">Applied</span>
+            <div style="width: 20px; height: 2px; background: #059669;"></div>
+            <div style="width: 22px; height: 22px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff;">&#10003;</div><span style="font-size: 10px; color: #059669; margin-right: 8px;">Screen</span>
+            <div style="width: 20px; height: 2px; background: #059669;"></div>
+            <div style="width: 22px; height: 22px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff;">&#10003;</div><span style="font-size: 10px; color: #059669; margin-right: 8px;">Phone</span>
+            <div style="width: 20px; height: 2px; background: #059669;"></div>
+            <div style="width: 22px; height: 22px; background: #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><div style="width: 8px; height: 8px; background: #fff; border-radius: 50%;"></div></div><span style="font-size: 10px; color: #f59e0b; font-weight: 600; margin-right: 8px;">Interview</span>
+            <div style="width: 20px; height: 2px; background: #e5e7eb;"></div>
+            <div style="width: 22px; height: 22px; background: #e5e7eb; border-radius: 50%;"></div><span style="font-size: 10px; color: #9ca3af; margin-right: 8px;">BG Check</span>
+            <div style="width: 20px; height: 2px; background: #e5e7eb;"></div>
+            <div style="width: 22px; height: 22px; background: #e5e7eb; border-radius: 50%;"></div><span style="font-size: 10px; color: #9ca3af;">Offer</span>
+          </div>
+        </div>
+
+        <!-- Interview Feedback -->
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 18px; margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <h3 style="margin: 0; font-size: 15px; font-weight: 600; color: #111;">Interview Feedback</h3>
+            <span style="font-size: 12px; color: #6b7280;">Interview: April 1, 10:00 AM</span>
+          </div>
+          <!-- Feedback 1 -->
+          <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; margin-bottom: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 28px; height: 28px; background: #dbeafe; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; color: #1d4ed8;">MP</div>
+                <div><div style="font-size: 13px; font-weight: 600; color: #111;">Mike Peters</div><div style="font-size: 11px; color: #6b7280;">Estimating Director</div></div>
+              </div>
+              <span style="background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;">Strong Hire</span>
+            </div>
+            <div style="font-size: 12px; color: #374151; line-height: 1.6;">Excellent technical skills. Really impressed with her takeoff accuracy and knowledge of RSMeans. She asked great questions about our project pipeline. Her experience with heavy civil and commercial aligns perfectly. Concerned she might want more money than budgeted — worth discussing.</div>
+          </div>
+          <!-- Feedback 2 -->
+          <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; margin-bottom: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 28px; height: 28px; background: #fce7f3; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; color: #be185d;">SR</div>
+                <div><div style="font-size: 13px; font-weight: 600; color: #111;">Sarah Reeves</div><div style="font-size: 11px; color: #6b7280;">VP Operations</div></div>
+              </div>
+              <span style="background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;">Hire</span>
+            </div>
+            <div style="font-size: 12px; color: #374151; line-height: 1.6;">Good culture fit. Collaborative approach to working with PMs and field teams. She has experience leading junior estimators which we need. I'd move her forward.</div>
+          </div>
+          <!-- Pending -->
+          <div style="border: 1px dashed #d1d5db; border-radius: 8px; padding: 14px; text-align: center;">
+            <div style="font-size: 12px; color: #9ca3af;">Waiting on feedback from <strong>Jake Thompson</strong> (Field Superintendent)</div>
+          </div>
+        </div>
+
+        <!-- Decision -->
+        <div style="background: #fff; border: 2px solid #059669; border-radius: 10px; padding: 18px;">
+          <h3 style="margin: 0 0 8px; font-size: 14px; font-weight: 600; color: #111;">Decision</h3>
+          <p style="font-size: 12px; color: #6b7280; margin: 0 0 12px;">2 of 3 interviewers recommend hiring. Awaiting 1 more response.</p>
+          <div style="display: flex; gap: 8px;">
+            <span style="background: #059669; color: #fff; padding: 8px 18px; border-radius: 6px; font-size: 12px; font-weight: 600;">Advance to Background Check</span>
+            <span style="border: 1px solid #e5e7eb; padding: 8px 18px; border-radius: 6px; font-size: 12px; color: #374151;">Skip to Offer</span>
+            <span style="border: 1px solid #e5e7eb; padding: 8px 18px; border-radius: 6px; font-size: 12px; color: #dc2626;">Reject</span>
+          </div>
+        </div>
+      </div>
+      <!-- Right sidebar -->
+      <div style="flex: 1; min-width: 240px;">
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; margin-bottom: 14px;">
+          <h4 style="margin: 0 0 10px; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase;">Candidate</h4>
+          <div style="font-size: 12px; line-height: 2;"><div style="font-weight: 500; color: #111;">Emily Chang</div><div><span style="color: #6b7280;">Location:</span> Denver, CO</div><div><span style="color: #6b7280;">Experience:</span> 6 years</div><div><span style="color: #6b7280;">Current:</span> Kiewit Corporation</div><div><span style="color: #6b7280;">Education:</span> B.S. Construction Mgmt, CSU</div></div>
+        </div>
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; margin-bottom: 14px;">
+          <h4 style="margin: 0 0 10px; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase;">Application</h4>
+          <div style="font-size: 12px; line-height: 2;"><div><span style="color: #6b7280;">Source:</span> Direct apply</div><div><span style="color: #6b7280;">Applied:</span> Mar 20, 2026</div><div><span style="color: #6b7280;">Resume:</span> <span style="color: #6366f1;">Download</span></div><div><span style="color: #6b7280;">Score:</span> <span style="font-weight: 600; color: #111;">87/100</span></div></div>
+        </div>
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px;">
+          <h4 style="margin: 0 0 10px; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase;">Timeline</h4>
+          <div style="font-size: 11px; display: flex; flex-direction: column; gap: 8px;">
+            <div><div style="font-weight: 600; color: #111;">Interview scheduled</div><div style="color: #6b7280;">Apr 1 &bull; Mike P., Sarah R., Jake T.</div></div>
+            <div><div style="font-weight: 600; color: #111;">Phone screen completed</div><div style="color: #6b7280;">Mar 25 &bull; "Strong communicator"</div></div>
+            <div><div style="font-weight: 600; color: #111;">Application received</div><div style="color: #6b7280;">Mar 20 &bull; Direct apply via Scaffald</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="screen-nav"><button onclick="goTo(3)">&larr; Previous</button><button onclick="goTo(5)">Next: Applicant View &rarr;</button></div>
+</div>
+
+<!-- ==================== SCREEN 6: Applicant My Applications ==================== -->
+<div class="screen" id="screen-5">
+  <div class="screen-persona persona-applicant">Applicant View</div>
+  <div class="screen-title">Screen 6 of 8 — Applicant's "My Applications" dashboard — everything in one place</div>
+  <div class="mock-frame">
+    <div class="mock-url"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div><div class="url-text">scaffald.com &bull; My Applications</div></div>
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; border-bottom: 1px solid #e5e7eb;"><div style="display: flex; align-items: center; gap: 16px;"><span style="font-weight: 700; font-size: 18px; color: #111;">Scaffald</span><span style="font-size: 14px; color: #6b7280;">Jobs</span><span style="font-size: 14px; font-weight: 600; color: #111; border-bottom: 2px solid #111; padding-bottom: 2px;">My Applications</span><span style="font-size: 14px; color: #6b7280;">Profile</span></div><div style="display: flex; align-items: center; gap: 8px;"><span style="width: 28px; height: 28px; background: #fef3c7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #92400e;">AT</span><span style="font-size: 13px; color: #374151;">Angela Torres</span></div></div>
+    <div style="max-width: 720px; margin: 0 auto; padding: 28px 24px;">
+      <h2 style="margin: 0 0 4px; font-size: 22px; font-weight: 700; color: #111;">My Applications</h2>
+      <p style="font-size: 14px; color: #6b7280; margin: 0 0 24px;">3 active &bull; 2 completed</p>
+
+      <!-- Active Apps -->
+      <h3 style="font-size: 14px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 12px;">Active</h3>
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px;">
+        <!-- App 1 -->
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-size: 15px; font-weight: 600; color: #111;">Senior Project Manager</div>
+            <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">via Pinnacle Staffing &bull; Applied Mar 15</div>
+          </div>
+          <div style="text-align: right;">
+            <span style="background: #dbeafe; color: #1d4ed8; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;">Being considered</span>
+            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">Updated 2 days ago</div>
+          </div>
+        </div>
+        <!-- App 2 -->
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-size: 15px; font-weight: 600; color: #111;">Estimator</div>
+            <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">Mountain View LLC &bull; Applied Mar 20</div>
+          </div>
+          <div style="text-align: right;">
+            <span style="background: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;">Interview stage</span>
+            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">Updated today</div>
+          </div>
+        </div>
+        <!-- App 3: BG Check -->
+        <div style="background: #fff; border: 2px solid #8b5cf6; border-radius: 10px; padding: 16px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-size: 15px; font-weight: 600; color: #111;">Site Superintendent</div>
+            <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">Acme Construction &bull; Applied Mar 10</div>
+          </div>
+          <div style="text-align: right;">
+            <span style="background: #f5f3ff; color: #7c3aed; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;">Background check in progress</span>
+            <div style="font-size: 11px; color: #8b5cf6; margin-top: 4px;">NationSearch &bull; Est. 1-3 days</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Completed -->
+      <h3 style="font-size: 14px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 12px;">Completed</h3>
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px;">
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; display: flex; justify-content: space-between; align-items: center; opacity: 0.7;">
+          <div><div style="font-size: 15px; font-weight: 600; color: #111;">Project Coordinator</div><div style="font-size: 12px; color: #6b7280; margin-top: 2px;">Summit Engineering &bull; Feb 2026</div></div>
+          <span style="background: #fef2f2; color: #dc2626; padding: 4px 12px; border-radius: 20px; font-size: 12px;">Not selected</span>
+        </div>
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; display: flex; justify-content: space-between; align-items: center; opacity: 0.7;">
+          <div><div style="font-size: 15px; font-weight: 600; color: #111;">Assistant PM</div><div style="font-size: 12px; color: #6b7280; margin-top: 2px;">via Denver Talent Group &bull; Jan 2026</div></div>
+          <span style="background: #f3f4f6; color: #6b7280; padding: 4px 12px; border-radius: 20px; font-size: 12px;">Withdrawn</span>
+        </div>
+      </div>
+
+      <!-- Profile Callout -->
+      <div style="background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; display: flex; justify-content: space-between; align-items: center;">
+        <div><div style="font-size: 14px; font-weight: 600; color: #111;">Your Scaffald Profile</div><div style="font-size: 12px; color: #6b7280; margin-top: 2px;">85% complete — add certifications to stand out to employers</div></div>
+        <span style="color: #6366f1; font-size: 13px;">Complete profile &rarr;</span>
+      </div>
+    </div>
+  </div>
+  <div class="screen-nav"><button onclick="goTo(4)">&larr; Previous</button><button onclick="goTo(6)">Next: Recruiter Stats &rarr;</button></div>
+</div>
+
+<!-- ==================== SCREEN 7: Recruiter Transparency Stats ==================== -->
+<div class="screen" id="screen-6">
+  <div class="screen-persona persona-applicant">Applicant View</div>
+  <div class="screen-title">Screen 7 of 8 — Transparency stats for a recruiter — what applicants see before engaging</div>
+  <div class="mock-frame">
+    <div class="mock-url"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div><div class="url-text">scaffald.com &bull; Recruiters &bull; Pinnacle Staffing</div></div>
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; border-bottom: 1px solid #e5e7eb;"><div style="display: flex; align-items: center; gap: 16px;"><span style="font-weight: 700; font-size: 18px; color: #111;">Scaffald</span><span style="font-size: 14px; color: #6b7280;">Jobs</span><span style="font-size: 14px; font-weight: 600; color: #111; border-bottom: 2px solid #111; padding-bottom: 2px;">Recruiters</span></div></div>
+    <div style="max-width: 760px; margin: 0 auto; padding: 28px 24px;">
+      <!-- Header -->
+      <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 24px;">
+        <div style="width: 64px; height: 64px; background: #0f172a; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; color: #fff;">PS</div>
+        <div>
+          <h2 style="margin: 0; font-size: 22px; font-weight: 700; color: #111;">Pinnacle Staffing</h2>
+          <div style="font-size: 13px; color: #6b7280; margin-top: 4px;">Construction & Engineering Recruiting &bull; Denver, CO &bull; Since 2015</div>
+          <div style="display: flex; gap: 6px; margin-top: 6px;"><span style="background: #f3f4f6; padding: 3px 10px; border-radius: 12px; font-size: 11px; color: #374151;">Construction</span><span style="background: #f3f4f6; padding: 3px 10px; border-radius: 12px; font-size: 11px; color: #374151;">Engineering</span><span style="background: #f3f4f6; padding: 3px 10px; border-radius: 12px; font-size: 11px; color: #374151;">Project Management</span></div>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px;">
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; text-align: center;">
+          <div style="font-size: 28px; font-weight: 700; color: #111;">92%</div>
+          <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Response Rate</div>
+          <div style="font-size: 11px; color: #059669; margin-top: 2px;">Top 10% on Scaffald</div>
+        </div>
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; text-align: center;">
+          <div style="font-size: 28px; font-weight: 700; color: #111;">4.7</div>
+          <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Applicant Rating</div>
+          <div style="font-size: 11px; color: #6b7280; margin-top: 2px;">Based on 89 reviews</div>
+        </div>
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; text-align: center;">
+          <div style="font-size: 28px; font-weight: 700; color: #111;">18d</div>
+          <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Avg. Time to Place</div>
+          <div style="font-size: 11px; color: #6b7280; margin-top: 2px;">Industry avg: 28 days</div>
+        </div>
+      </div>
+
+      <!-- Detailed Stats -->
+      <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; margin-bottom: 16px;">
+        <h3 style="margin: 0 0 14px; font-size: 15px; font-weight: 600; color: #111;">Performance</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 13px;">
+          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #6b7280;">Avg. time to first contact</span><span style="font-weight: 600; color: #111;">1.2 days</span></div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #6b7280;">Successful placements (12 mo)</span><span style="font-weight: 600; color: #111;">34</span></div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #6b7280;">Would work with again</span><span style="font-weight: 600; color: #059669;">88%</span></div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #6b7280;">Active open positions</span><span style="font-weight: 600; color: #111;">8</span></div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 0;"><span style="color: #6b7280;">Kept informed about status</span><span style="font-weight: 600; color: #059669;">94% Yes</span></div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 0;"><span style="color: #6b7280;">Process speed vs expectation</span><span style="font-weight: 600; color: #111;">72% as expected or faster</span></div>
+        </div>
+      </div>
+
+      <!-- Recent Reviews -->
+      <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; margin-bottom: 16px;">
+        <h3 style="margin: 0 0 14px; font-size: 15px; font-weight: 600; color: #111;">What applicants say</h3>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="padding: 12px; background: #f9fafb; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;"><span style="font-size: 12px; color: #f59e0b;">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span style="font-size: 11px; color: #6b7280;">Mar 2026 &bull; Hired</span></div>
+            <div style="font-size: 13px; color: #374151; line-height: 1.5;">"Pinnacle was transparent throughout the whole process. My recruiter called me back the same day I applied and kept me updated at every stage. Got placed in 2 weeks."</div>
+          </div>
+          <div style="padding: 12px; background: #f9fafb; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;"><span style="font-size: 12px; color: #f59e0b;">&#9733;&#9733;&#9733;&#9733;<span style="color: #d1d5db;">&#9733;</span></span><span style="font-size: 11px; color: #6b7280;">Feb 2026 &bull; Not selected</span></div>
+            <div style="font-size: 13px; color: #374151; line-height: 1.5;">"Even though I didn't get the job, they let me know within a week and gave helpful feedback. Most recruiters just ghost you."</div>
+          </div>
+        </div>
+        <div style="font-size: 12px; color: #6366f1; text-align: center; margin-top: 10px;">View all 89 reviews &rarr;</div>
+      </div>
+
+      <!-- Open Jobs -->
+      <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px;">
+        <h3 style="margin: 0 0 14px; font-size: 15px; font-weight: 600; color: #111;">Open Positions</h3>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f3f4f6;"><div><div style="font-size: 14px; font-weight: 500; color: #111;">Senior Project Manager</div><div style="font-size: 12px; color: #6b7280;">Denver, CO &bull; $95-125K</div></div><span style="background: #0f172a; color: #fff; padding: 5px 14px; border-radius: 6px; font-size: 12px;">Apply</span></div>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f3f4f6;"><div><div style="font-size: 14px; font-weight: 500; color: #111;">CDL Driver — Class A</div><div style="font-size: 12px; color: #6b7280;">Denver, CO &bull; $28-35/hr</div></div><span style="background: #0f172a; color: #fff; padding: 5px 14px; border-radius: 6px; font-size: 12px;">Apply</span></div>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0;"><div><div style="font-size: 14px; font-weight: 500; color: #111;">Safety Manager</div><div style="font-size: 12px; color: #6b7280;">Boulder, CO &bull; $85-110K</div></div><span style="background: #0f172a; color: #fff; padding: 5px 14px; border-radius: 6px; font-size: 12px;">Apply</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="screen-nav"><button onclick="goTo(5)">&larr; Previous</button><button onclick="goTo(7)">Next: Company Stats &rarr;</button></div>
+</div>
+
+<!-- ==================== SCREEN 8: Company Transparency Stats ==================== -->
+<div class="screen" id="screen-7">
+  <div class="screen-persona persona-applicant">Applicant View</div>
+  <div class="screen-title">Screen 8 of 8 — Company transparency stats — what applicants see before applying</div>
+  <div class="mock-frame">
+    <div class="mock-url"><div class="dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div><div class="url-text">scaffald.com &bull; Companies &bull; Mountain View LLC</div></div>
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; border-bottom: 1px solid #e5e7eb;"><div style="display: flex; align-items: center; gap: 16px;"><span style="font-weight: 700; font-size: 18px; color: #111;">Scaffald</span><span style="font-size: 14px; color: #6b7280;">Jobs</span><span style="font-size: 14px; font-weight: 600; color: #111; border-bottom: 2px solid #111; padding-bottom: 2px;">Companies</span></div></div>
+    <div style="max-width: 760px; margin: 0 auto; padding: 28px 24px;">
+      <!-- Header -->
+      <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 24px;">
+        <div style="width: 64px; height: 64px; background: #059669; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: #fff;">MV</div>
+        <div>
+          <h2 style="margin: 0; font-size: 22px; font-weight: 700; color: #111;">Mountain View LLC</h2>
+          <div style="font-size: 13px; color: #6b7280; margin-top: 4px;">General Contractor &bull; 50-100 employees &bull; Denver, CO</div>
+          <div style="display: flex; gap: 6px; margin-top: 6px;"><span style="background: #f3f4f6; padding: 3px 10px; border-radius: 12px; font-size: 11px; color: #374151;">Commercial</span><span style="background: #f3f4f6; padding: 3px 10px; border-radius: 12px; font-size: 11px; color: #374151;">Heavy Civil</span><span style="background: #f3f4f6; padding: 3px 10px; border-radius: 12px; font-size: 11px; color: #374151;">Residential</span></div>
+        </div>
+      </div>
+
+      <!-- Hiring Stats -->
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px;">
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; text-align: center;">
+          <div style="font-size: 24px; font-weight: 700; color: #111;">87%</div>
+          <div style="font-size: 11px; color: #6b7280; margin-top: 2px;">Response Rate</div>
+        </div>
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; text-align: center;">
+          <div style="font-size: 24px; font-weight: 700; color: #111;">4.5</div>
+          <div style="font-size: 11px; color: #6b7280; margin-top: 2px;">Applicant Rating</div>
+        </div>
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; text-align: center;">
+          <div style="font-size: 24px; font-weight: 700; color: #111;">22d</div>
+          <div style="font-size: 11px; color: #6b7280; margin-top: 2px;">Avg. Time to Hire</div>
+        </div>
+        <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; text-align: center;">
+          <div style="font-size: 24px; font-weight: 700; color: #111;">2d</div>
+          <div style="font-size: 11px; color: #6b7280; margin-top: 2px;">Avg. First Response</div>
+        </div>
+      </div>
+
+      <!-- Detailed -->
+      <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; margin-bottom: 16px;">
+        <h3 style="margin: 0 0 14px; font-size: 15px; font-weight: 600; color: #111;">Hiring Insights</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 13px;">
+          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #6b7280;">Open positions</span><span style="font-weight: 600; color: #111;">3</span></div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #6b7280;">Hires last 12 months</span><span style="font-weight: 600; color: #111;">11</span></div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #6b7280;">Interview-to-offer ratio</span><span style="font-weight: 600; color: #111;">1 in 3</span></div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6;"><span style="color: #6b7280;">Would apply again</span><span style="font-weight: 600; color: #059669;">91%</span></div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 0;"><span style="color: #6b7280;">Background checks</span><span style="font-weight: 600; color: #111;">Yes — NationSearch</span></div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 0;"><span style="color: #6b7280;">Uses recruiters</span><span style="font-weight: 600; color: #111;">Pinnacle Staffing</span></div>
+        </div>
+      </div>
+
+      <!-- Reviews -->
+      <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; margin-bottom: 16px;">
+        <h3 style="margin: 0 0 14px; font-size: 15px; font-weight: 600; color: #111;">What applicants say</h3>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="padding: 12px; background: #f9fafb; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;"><span style="font-size: 12px; color: #f59e0b;">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span style="font-size: 11px; color: #6b7280;">Mar 2026 &bull; Hired</span></div>
+            <div style="font-size: 13px; color: #374151; line-height: 1.5;">"Great interview experience. They were organized, respectful of my time, and gave me a decision within a week. The team I met was genuine and the project portfolio is impressive."</div>
+          </div>
+          <div style="padding: 12px; background: #f9fafb; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;"><span style="font-size: 12px; color: #f59e0b;">&#9733;&#9733;&#9733;&#9733;<span style="color: #d1d5db;">&#9733;</span></span><span style="font-size: 11px; color: #6b7280;">Feb 2026 &bull; Not selected</span></div>
+            <div style="font-size: 13px; color: #374151; line-height: 1.5;">"Professional process. Didn't get the role but they were upfront about why and the recruiter followed up with other opportunities. Much better than most companies."</div>
+          </div>
+        </div>
+        <div style="font-size: 12px; color: #6366f1; text-align: center; margin-top: 10px;">View all 24 reviews &rarr;</div>
+      </div>
+
+      <!-- Open Jobs -->
+      <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px;">
+        <h3 style="margin: 0 0 14px; font-size: 15px; font-weight: 600; color: #111;">Open Positions</h3>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f3f4f6;"><div><div style="font-size: 14px; font-weight: 500; color: #111;">Estimator</div><div style="font-size: 12px; color: #6b7280;">Denver &bull; $70-90K &bull; Posted Mar 15</div></div><span style="background: #0f172a; color: #fff; padding: 5px 14px; border-radius: 6px; font-size: 12px;">Apply</span></div>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f3f4f6;"><div><div style="font-size: 14px; font-weight: 500; color: #111;">Safety Coordinator</div><div style="font-size: 12px; color: #6b7280;">Denver &bull; $55-70K &bull; Posted Mar 20</div></div><span style="background: #0f172a; color: #fff; padding: 5px 14px; border-radius: 6px; font-size: 12px;">Apply</span></div>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0;"><div><div style="font-size: 14px; font-weight: 500; color: #111;">Administrative Assistant</div><div style="font-size: 12px; color: #6b7280;">Denver &bull; $40-50K &bull; Posted Mar 25</div></div><span style="background: #0f172a; color: #fff; padding: 5px 14px; border-radius: 6px; font-size: 12px;">Apply</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="screen-nav"><button onclick="goTo(6)">&larr; Previous</button><button disabled>End of Prototype</button></div>
+</div>
+
+<script>
+let current = 0;
+const total = 8;
+function goTo(n) {
+  document.getElementById('screen-' + current).classList.remove('active');
+  document.getElementById('nav-' + current).classList.remove('active');
+  current = n;
+  document.getElementById('screen-' + current).classList.add('active');
+  document.getElementById('nav-' + current).classList.add('active');
+  document.getElementById('counter').textContent = (current + 1) + ' / ' + total;
+  window.scrollTo(0, 0);
+}
+document.getElementById('nav-0').classList.add('active');
+document.addEventListener('click', function(e) {
+  const el = e.target.closest('[data-goto]');
+  if (el) goTo(parseInt(el.dataset.goto));
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' && current < total - 1) goTo(current + 1);
+  if (e.key === 'ArrowLeft' && current > 0) goTo(current - 1);
+});
+</script>
+</body>
+</html>
