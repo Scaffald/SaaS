@@ -3,8 +3,11 @@ import { render } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('@scaffald/ui', () => ({
-  SocialLoginGroup: ({
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+  return {
+    ...actual,
+    SocialLoginGroup: ({
     orLabel,
     googleText,
     appleText,
@@ -36,7 +39,8 @@ vi.mock('@scaffald/ui', () => ({
       </button>
     </div>
   ),
-}))
+  }
+})
 
 vi.mock('@scf/core/utils/useTranslation', () => ({
   useTranslation: () => ({ t: (key: string) => key }),

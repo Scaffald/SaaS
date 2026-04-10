@@ -9,13 +9,15 @@ const mockGetOccupationStatus = vi.fn()
 const mockSaveCareerAssessment = vi.fn()
 const mockInvalidate = vi.fn()
 
-vi.mock('expo-router', () => ({
+vi.mock('expo-router', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   useRouter: () => ({
     push: mockRouterPush,
   }),
 }))
 
-vi.mock('@scaffald/ui', () => ({
+vi.mock('@scaffald/ui', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   useToast: () => ({
     show: mockToastShow,
   }),
@@ -101,8 +103,10 @@ vi.mock('@scf/core/features/career-assessment/components/OccupationSearch', () =
 
 // Mock Button and UI components
 vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
   const React = await import('react')
   return {
+    ...actual,
     Button: ({ children, onPress, disabled, ...props }: {
       children: React.ReactNode
       onPress?: () => void
@@ -125,7 +129,8 @@ vi.mock('@scaffald/ui', async () => {
   }
 })
 
-vi.mock('lucide-react-native', () => ({
+vi.mock('lucide-react-native', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   Plus: () => <span data-testid="plus-icon">+</span>,
   X: () => <span data-testid="x-icon">×</span>,
 }))

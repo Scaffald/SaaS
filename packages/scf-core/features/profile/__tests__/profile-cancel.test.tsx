@@ -109,14 +109,18 @@ vi.mock('@scaffald/ui', () => {
   }
 })
 
-vi.mock('@scaffald/ui', () => ({
-  Stack: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+  return {
+    ...actual,
+    Stack: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Row: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Text: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
   Input: ({ value, onChangeText }: { value?: string; onChangeText?: (v: string) => void }) => (
     <input value={value} onChange={(e) => onChangeText?.(e.target.value)} />
   ),
-}))
+  }
+})
 
 describe('Profile Cancel Button Pattern', () => {
   beforeEach(() => {

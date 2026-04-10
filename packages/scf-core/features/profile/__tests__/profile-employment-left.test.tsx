@@ -260,7 +260,9 @@ vi.mock("@scaffald/ui", () => {
   };
 });
 
-vi.mock("@scaffald/ui", () => {
+vi.mock("@scaffald/ui", async () => {
+  const actual = await vi.importActual("@scaffald/ui")
+
   type DivProps = ComponentPropsWithoutRef<"div">;
 
   type TextInputProps = ComponentPropsWithoutRef<"input"> & {
@@ -479,6 +481,7 @@ vi.mock("@scaffald/ui", () => {
   const Spinner = () => <Text>Spinner</Text>;
 
   return {
+    ...actual,
     Stack: createView(),
     Row: createView(),
     Card: createView(),

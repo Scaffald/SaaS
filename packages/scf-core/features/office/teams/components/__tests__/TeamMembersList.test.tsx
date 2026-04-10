@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import type { ReactElement, ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 const mockUseQuery = vi.fn()
 const mockUseMutation = vi.fn()
@@ -35,7 +36,9 @@ vi.mock('@scf/core/utils/useUser', () => ({
   useUser: () => ({ user: { id: 'current-user-id' } }),
 }))
 
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const Stack = ({ children }: { children?: ReactNode }) => <div>{children}</div>
   const Text = ({ children }: { children?: ReactNode }) => <span>{children}</span>
   const Button = ({ children, onPress }: { children?: ReactNode; onPress?: () => void }) => (
@@ -96,6 +99,7 @@ vi.mock('@scaffald/ui', () => {
   const Spinner = () => <span>Loading</span>
 
   return {
+    ...actual,
     Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
     Stack: Stack,
     Row: Stack,
@@ -189,13 +193,13 @@ describe('TeamMembersList', () => {
   })
 
   it('renders member list with roles', () => {
-    render(<TeamMembersList teamId="team-1" organizationId="org-1" />)
+    render(<TeamMembersList teamId="team-1" organizationId="org-1" />, { wrapper: TestQueryWrapper })
 
     expect(screen.getByText('Test User')).toBeInTheDocument()
   })
 
   it('displays member roles correctly', () => {
-    render(<TeamMembersList teamId="team-1" organizationId="org-1" />)
+    render(<TeamMembersList teamId="team-1" organizationId="org-1" />, { wrapper: TestQueryWrapper })
 
     // Check that member role is displayed (there may be multiple "Member" texts)
     const memberTexts = screen.getAllByText(/Member/i)
@@ -208,7 +212,7 @@ describe('TeamMembersList', () => {
       isLoading: true,
     })
 
-    render(<TeamMembersList teamId="team-1" organizationId="org-1" />)
+    render(<TeamMembersList teamId="team-1" organizationId="org-1" />, { wrapper: TestQueryWrapper })
 
     // Check for spinner (which renders "Loading" text)
     const loadingElements = screen.getAllByText(/Loading/i)

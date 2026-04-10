@@ -4,7 +4,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { StepNavigation } from '../StepNavigation'
 
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const Stack = ({
     children,
     ...rest
@@ -35,6 +37,7 @@ vi.mock('@scaffald/ui', () => {
   } & Record<string, unknown>) => <span {...rest}>{children}</span>
 
   return {
+    ...actual,
     Stack: Stack,
     Row: Stack,
     Button,

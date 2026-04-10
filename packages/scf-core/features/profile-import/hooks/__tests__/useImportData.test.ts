@@ -2,6 +2,7 @@ import { renderHook } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useImportData } from '../useImportData'
+import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 const useQueryMock = vi.fn()
 
@@ -88,7 +89,7 @@ describe('useImportData', () => {
       isError: false,
     })
 
-    const { result } = renderHook(() => useImportData())
+    const { result } = renderHook(() => useImportData(), { wrapper: TestQueryWrapper })
 
     expect(result.current.isLoading).toBe(false)
     expect(result.current.importData).toEqual({
@@ -178,7 +179,7 @@ describe('useImportData', () => {
       isError: false,
     })
 
-    const { result } = renderHook(() => useImportData())
+    const { result } = renderHook(() => useImportData(), { wrapper: TestQueryWrapper })
 
     expect(result.current.importData).toBeNull()
   })

@@ -21,49 +21,7 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@scaffald/ui', () => ({
-  useToast: () => ({ show: mockShow }),
-}))
-
-vi.mock('@scaffald/ui', () => ({
-  ResponsiveModal: ({
-    open,
-    children,
-    testID,
-  }: {
-    open: boolean
-    children: React.ReactNode
-    testID?: string
-  }) => (open ? <div data-testid={testID ?? 'modal'}>{children}</div> : null),
-  ResponsiveSelect: ({
-    value,
-    onValueChange,
-    options,
-    placeholder,
-    'data-testid': dataTestId,
-    testID,
-  }: {
-    value?: string | null
-    onValueChange: (value: string) => void
-    options: Array<{ value: string; label: string }>
-    placeholder?: string
-    'data-testid'?: string
-    testID?: string
-  }) => (
-    <select
-      data-testid={dataTestId ?? testID ?? 'responsive-select'}
-      value={value ?? ''}
-      onChange={(event) => onValueChange(event.target.value)}
-    >
-      {placeholder && <option value="">{placeholder}</option>}
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
-  ),
-}))
+// First @scaffald/ui mock removed - merged into second one below
 
 vi.mock('@scf/core/components/user', () => ({
   UserSearch: ({
@@ -79,7 +37,9 @@ vi.mock('@scf/core/components/user', () => ({
   ),
 }))
 
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const Stack = ({ children, testID }: { children?: ReactNode; testID?: string }) => (
     <div data-testid={testID}>{children}</div>
   )
@@ -175,6 +135,7 @@ vi.mock('@scaffald/ui', () => {
   const Spinner = () => <span>Loading</span>
 
   return {
+    ...actual,
     Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
     Stack: Stack,
     Row: Stack,
@@ -186,10 +147,60 @@ vi.mock('@scaffald/ui', () => {
     Select,
     RadioGroup,
     Spinner,
+    useToast: () => ({ show: mockShow }),
+    ResponsiveModal: ({
+      open,
+      children,
+      testID,
+    }: {
+      open: boolean
+      children: React.ReactNode
+      testID?: string
+    }) => (open ? <div data-testid={testID ?? 'modal'}>{children}</div> : null),
+    ResponsiveSelect: ({
+      value,
+      onValueChange,
+      options,
+      placeholder,
+      'data-testid': dataTestId,
+      testID,
+    }: {
+      value?: string | null
+      onValueChange: (value: string) => void
+      options: Array<{ value: string; label: string }>
+      placeholder?: string
+      'data-testid'?: string
+      testID?: string
+    }) => (
+      <select
+        data-testid={dataTestId ?? testID ?? 'responsive-select'}
+        value={value ?? ''}
+        onChange={(event: React.ChangeEvent<HTMLSelectElement>) => onValueChange(event.target.value)}
+      >
+        {placeholder && <option value="">{placeholder}</option>}
+        {options.map((option: { value: string; label: string }) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    ),
   }
 })
 
-vi.mock('lucide-react-native', () => ({
+vi.mock('@scaffald/sdk/react', () => ({
+  useScaffald: () => ({}),
+  useScaffaldOrNull: () => ({}),
+  ScaffaldProvider: ({ children }: { children: ReactNode }) => children,
+  useInviteTeamMember: () => ({
+    mutateAsync: mockUseMutation(),
+    isPending: false,
+  }),
+  useTeamRoles: () => mockUseQuery(),
+}))
+
+vi.mock('lucide-react-native', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   Check: () => <span data-testid="check-icon">Check</span>,
   ChevronDown: () => <span data-testid="chevron-down-icon">ChevronDown</span>,
   Mail: () => <span data-testid="mail-icon">Mail</span>,

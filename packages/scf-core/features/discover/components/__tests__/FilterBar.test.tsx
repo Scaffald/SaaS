@@ -4,7 +4,9 @@ import type { CSSProperties, ReactNode } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
 // Beyond UI mock before import
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const mapStyleProps = (props: Record<string, unknown>) => {
     const styleProps: Record<string, unknown> = {
       ...(props.style as Record<string, unknown> | undefined),
@@ -76,7 +78,8 @@ vi.mock('@scaffald/ui', () => {
         }
       }
     }
-    return { style: styleProps, passthrough } as const
+    return {
+    ...actual, style: styleProps, passthrough } as const
   }
 
   const MockButton = (props: {

@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { IPIPAssessmentWizard } from '../IPIPAssessmentWizard'
+import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 const mockRouterPush = vi.fn()
 const mockToastShow = vi.fn()
@@ -16,17 +17,22 @@ let mutationOptions: {
   onError?: (error: Error) => void
 } | null = null
 
-vi.mock('expo-router', () => ({
+vi.mock('expo-router', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   useRouter: () => ({
     push: mockRouterPush,
   }),
 }))
 
-vi.mock('@scaffald/ui', () => ({
-  useToast: () => ({
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+  return {
+    ...actual,
+    useToast: () => ({
     show: mockToastShow,
   }),
-}))
+  }
+})
 
 vi.mock('@scf/core/utils/api', () => ({
   api: {
@@ -98,7 +104,7 @@ describe('IPIPAssessmentWizard', () => {
 
   it('shows the completion interstitial and toast after finishing a domain', async () => {
     const user = userEvent.setup()
-    render(<IPIPAssessmentWizard />)
+    render(<IPIPAssessmentWizard />, { wrapper: TestQueryWrapper })
 
     await user.click(screen.getByRole('button', { name: /Complete Mock Domain/i }))
 
@@ -115,7 +121,7 @@ describe('IPIPAssessmentWizard', () => {
 
   it('lets the user continue to the next domain after acknowledging completion', async () => {
     const user = userEvent.setup()
-    render(<IPIPAssessmentWizard />)
+    render(<IPIPAssessmentWizard />, { wrapper: TestQueryWrapper })
 
     await user.click(screen.getByRole('button', { name: /Complete Mock Domain/i }))
     await user.click(screen.getByRole('button', { name: /Continue to Next Domain/i }))
@@ -128,7 +134,7 @@ describe('IPIPAssessmentWizard', () => {
 
   it('saves answers through the mutation with the correct payload', async () => {
     const user = userEvent.setup()
-    render(<IPIPAssessmentWizard />)
+    render(<IPIPAssessmentWizard />, { wrapper: TestQueryWrapper })
 
     await user.click(screen.getByRole('button', { name: /Save Mock Progress/i }))
 

@@ -5,8 +5,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { PersonalizedBenefit } from '../../hooks/useCompletionNudges'
 import type { CompletionStatus } from '../../hooks/useCompletionStatus'
 import type { EnhancedProfileCompletionWidgetProps } from '../EnhancedProfileCompletionWidget'
-import { EnhancedProfileCompletionWidget } from '../EnhancedProfileCompletionWidget'
-
 vi.mock('../../constants/sectionMetadata', () => ({
   resolveSectionMetadata: (sectionId: string) => ({
     id: sectionId,
@@ -22,19 +20,15 @@ vi.mock('../MilestoneBadge', () => ({
   ),
 }))
 
-vi.mock('@scaffald/ui', () => ({
-  DashboardWidget: ({ children }: { children?: ReactNode }) => (
-    <div data-testid="dashboard-widget">{children}</div>
-  ),
-}))
-
 vi.mock('expo-linear-gradient', () => ({
   LinearGradient: ({ children }: { children?: ReactNode }) => (
     <div data-testid="linear-gradient">{children}</div>
   ),
 }))
 
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const createStack = (dataTestId: string) =>
     function Stack({
       children,
@@ -117,6 +111,7 @@ vi.mock('@scaffald/ui', () => {
   )
 
   return {
+    ...actual,
     Stack: createStack('ystack'),
     Row: createStack('xstack'),
     Card,
@@ -124,8 +119,13 @@ vi.mock('@scaffald/ui', () => {
     Button,
     Text,
     Progress,
+    DashboardWidget: ({ children, ...rest }: { children?: ReactNode } & Record<string, unknown>) => (
+      <div data-testid="dashboard-widget" {...rest}>{children}</div>
+    ),
   }
 })
+
+const { EnhancedProfileCompletionWidget } = await import('../EnhancedProfileCompletionWidget')
 
 const baseStatus: CompletionStatus = {
   sections: [],

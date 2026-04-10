@@ -20,10 +20,23 @@ const storageMocks = vi.hoisted(() => {
   };
 });
 
-vi.mock("@scaffald/ui", () => ({
-  useToast: () => ({
+vi.mock("@scaffald/ui", async () => {
+  const actual = await vi.importActual("@scaffald/ui")
+  return {
+    ...actual,
+    useToast: () => ({
     show: toastShow,
   }),
+  }
+});
+
+vi.mock("expo-crypto", () => ({
+  randomUUID: () => "test-uuid-1234",
+}));
+
+vi.mock("expo-file-system", () => ({
+  readAsStringAsync: vi.fn().mockResolvedValue("base64data"),
+  EncodingType: { Base64: "base64" },
 }));
 
 vi.mock("@scf/core/utils/api", () => ({

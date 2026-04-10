@@ -33,13 +33,16 @@ vi.mock('@scf/core/utils/mapbox-geocoding-provider', () => ({
   createMapboxGeocodingProvider: mockCreateMapboxProvider,
 }))
 
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const React = require('react')
   const El =
     (tag: string) =>
     ({ children, ...rest }: { children?: React.ReactNode; [key: string]: unknown }) =>
       React.createElement(tag, rest, children)
   return {
+    ...actual,
     useThemeContext: () => ({ theme: 'light' as const }),
     useToast: () => ({ show: mockShowToast }),
     Modal: ({

@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { ResumeWizardSection } from '../../hooks/useResumeWizard';
 import { useResumeWizard } from '../../hooks/useResumeWizard';
+import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 interface MockWizardState {
   id: string;
@@ -77,7 +78,7 @@ describe("useResumeWizard", () => {
       completedSteps: [0, 1, 2],
     };
 
-    const { result } = renderHook(() => useResumeWizard(RESUME_ID));
+    const { result } = renderHook(() => useResumeWizard(RESUME_ID), { wrapper: TestQueryWrapper });
 
     expect(result.current.steps).toHaveLength(7);
     expect(result.current.currentIndex).toBe(3);
@@ -94,7 +95,7 @@ describe("useResumeWizard", () => {
       completedSteps: [],
     };
 
-    const { result } = renderHook(() => useResumeWizard(RESUME_ID));
+    const { result } = renderHook(() => useResumeWizard(RESUME_ID), { wrapper: TestQueryWrapper });
     expect(result.current.currentIndex).toBe(0);
 
     await act(async () => {
@@ -128,7 +129,7 @@ describe("useResumeWizard", () => {
       completedSteps: [0],
     };
 
-    const { result } = renderHook(() => useResumeWizard(RESUME_ID));
+    const { result } = renderHook(() => useResumeWizard(RESUME_ID), { wrapper: TestQueryWrapper });
     expect(result.current.currentIndex).toBe(1);
 
     await act(async () => {
@@ -162,7 +163,7 @@ describe("useResumeWizard", () => {
       errors,
     };
 
-    const { result } = renderHook(() => useResumeWizard(RESUME_ID));
+    const { result } = renderHook(() => useResumeWizard(RESUME_ID), { wrapper: TestQueryWrapper });
 
     expect(result.current.parsedData).toEqual(parsedData);
     expect(result.current.errors).toEqual(errors);

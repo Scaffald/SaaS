@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 const mockUseInfiniteQuery = vi.fn()
 const mockUseMutation = vi.fn()
@@ -98,11 +99,16 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@scaffald/ui', () => ({
-  useToast: () => ({ show: vi.fn() }),
-}))
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+  return {
+    ...actual,
+    useToast: () => ({ show: vi.fn() }),
+  }
+})
 
-vi.mock('lucide-react-native', () => ({
+vi.mock('lucide-react-native', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   Check: () => <span data-testid="check-icon">Check</span>,
   ChevronDown: () => <span data-testid="chevron-down-icon">ChevronDown</span>,
   MessageCircle: () => <span data-testid="message-circle-icon">MessageCircle</span>,
@@ -141,7 +147,7 @@ describe('TeamActivityFeed', () => {
   })
 
   it('renders activity events', () => {
-    render(<TeamActivityFeed teamId="team-1" />)
+    render(<TeamActivityFeed teamId="team-1" />, { wrapper: TestQueryWrapper })
 
     expect(screen.getByText(/joined/i)).toBeInTheDocument()
   })
@@ -154,7 +160,7 @@ describe('TeamActivityFeed', () => {
       fetchNextPage: vi.fn(),
     })
 
-    render(<TeamActivityFeed teamId="team-1" />)
+    render(<TeamActivityFeed teamId="team-1" />, { wrapper: TestQueryWrapper })
 
     // Check for spinner (which renders "Loading" text)
     const loadingElements = screen.getAllByText(/Loading/i)
@@ -176,7 +182,7 @@ describe('TeamActivityFeed', () => {
       fetchNextPage: vi.fn(),
     })
 
-    render(<TeamActivityFeed teamId="team-1" />)
+    render(<TeamActivityFeed teamId="team-1" />, { wrapper: TestQueryWrapper })
 
     expect(screen.getByText(/No activity/i)).toBeInTheDocument()
   })

@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 const mockUseQuery = vi.fn()
 const mockUseMutation = vi.fn()
@@ -30,7 +31,9 @@ vi.mock('@scaffald/ui', () => ({
   useToast: () => ({ show: mockShow }),
 }))
 
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const Stack = ({ children }: { children?: ReactNode }) => <div>{children}</div>
   const Text = ({ children }: { children?: ReactNode }) => <span>{children}</span>
   const Button = ({ children, onPress }: { children?: ReactNode; onPress?: () => void }) => (
@@ -57,6 +60,7 @@ vi.mock('@scaffald/ui', () => {
   const Spinner = () => <span>Loading</span>
 
   return {
+    ...actual,
     Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
     Stack: Stack,
     Row: Stack,
@@ -69,7 +73,8 @@ vi.mock('@scaffald/ui', () => {
   }
 })
 
-vi.mock('lucide-react-native', () => ({
+vi.mock('lucide-react-native', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   MessageCircle: () => <span data-testid="message-circle-icon">MessageCircle</span>,
   Send: () => <span data-testid="send-icon">Send</span>,
 }))
@@ -100,14 +105,14 @@ describe('TeamCommentThread', () => {
   })
 
   it('renders comments', () => {
-    render(<TeamCommentThread teamId="team-1" />)
+    render(<TeamCommentThread teamId="team-1" />, { wrapper: TestQueryWrapper })
 
     expect(screen.getByText('Test comment')).toBeInTheDocument()
   })
 
   it('allows posting new comments', async () => {
     const user = userEvent.setup()
-    render(<TeamCommentThread teamId="team-1" />)
+    render(<TeamCommentThread teamId="team-1" />, { wrapper: TestQueryWrapper })
 
     const commentInput = screen.getByPlaceholderText(/add a comment/i)
     await user.type(commentInput, 'New comment')
@@ -126,7 +131,7 @@ describe('TeamCommentThread', () => {
       isLoading: true,
     })
 
-    render(<TeamCommentThread teamId="team-1" />)
+    render(<TeamCommentThread teamId="team-1" />, { wrapper: TestQueryWrapper })
 
     expect(screen.getByText(/Loading discussion/i)).toBeInTheDocument()
   })

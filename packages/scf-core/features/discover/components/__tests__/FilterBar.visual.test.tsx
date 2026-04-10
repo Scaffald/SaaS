@@ -11,7 +11,9 @@ interface ExtendedCSSProperties extends CSSProperties {
 }
 
 // Beyond UI mock before import
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const mapStyleProps = (props: Record<string, unknown>) => {
     const styleProps: Record<string, unknown> = {
       ...(props.style as Record<string, unknown> | undefined),
@@ -95,12 +97,14 @@ vi.mock('@scaffald/ui', () => {
   }
 
   return {
+    ...actual,
     Row: MockXStack,
     Button: MockButton,
   }
 })
 
-vi.mock('lucide-react-native', () => ({
+vi.mock('lucide-react-native', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   Search: () => <span data-testid="icon-search" />,
   SlidersHorizontal: () => <span data-testid="icon-filters" />,
   RotateCcw: () => <span data-testid="icon-reset" />,

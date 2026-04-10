@@ -1,10 +1,13 @@
 import { render, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 const mockUseQuery = vi.fn()
 
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const Stack = ({ children }: { children?: ReactNode }) => <div>{children}</div>
   const Text = ({ children }: { children?: ReactNode }) => <span>{children}</span>
   const Button = ({ children, onPress }: { children?: ReactNode; onPress?: () => void }) => (
@@ -66,6 +69,7 @@ vi.mock('@scaffald/ui', () => {
     open ? <div>{children}</div> : null
 
   return {
+    ...actual,
     Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
     Stack: Stack,
     Row: Stack,
@@ -89,7 +93,8 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('lucide-react-native', () => ({
+vi.mock('lucide-react-native', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   Check: () => <span data-testid="check-icon">Check</span>,
   ChevronDown: () => <span data-testid="chevron-down-icon">ChevronDown</span>,
   RefreshCw: () => <span data-testid="refresh-cw-icon">RefreshCw</span>,
@@ -116,7 +121,7 @@ describe('TeamAnalyticsSummary', () => {
   })
 
   it('displays metrics when data is available', () => {
-    render(<TeamAnalyticsSummary teamId="team-1" />)
+    render(<TeamAnalyticsSummary teamId="team-1" />, { wrapper: TestQueryWrapper })
 
     // Check for analytics summary title
     expect(screen.getByText(/Analytics summary/i)).toBeInTheDocument()
@@ -128,7 +133,7 @@ describe('TeamAnalyticsSummary', () => {
       isLoading: true,
     })
 
-    render(<TeamAnalyticsSummary teamId="team-1" />)
+    render(<TeamAnalyticsSummary teamId="team-1" />, { wrapper: TestQueryWrapper })
 
     // Check for spinner (which renders "Loading" text)
     const loadingElements = screen.getAllByText(/Loading/i)
@@ -141,7 +146,7 @@ describe('TeamAnalyticsSummary', () => {
       isLoading: false,
     })
 
-    render(<TeamAnalyticsSummary teamId="team-1" />)
+    render(<TeamAnalyticsSummary teamId="team-1" />, { wrapper: TestQueryWrapper })
 
     // Should render without crashing
     expect(screen.queryByText(/Loading/i)).not.toBeInTheDocument()

@@ -4,30 +4,9 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { ProfileCompletionModal } from '../ProfileCompletionModal'
 
-vi.mock('@scaffald/ui', () => ({
-  ResponsiveModal: ({
-    open,
-    onOpenChange,
-    title,
-    children,
-  }: {
-    open: boolean
-    onOpenChange: (value: boolean) => void
-    title: string
-    children?: ReactNode
-  }) =>
-    open ? (
-      <div data-testid="responsive-modal">
-        <h1>{title}</h1>
-        <button type="button" onClick={() => onOpenChange(false)}>
-          Close Modal
-        </button>
-        {children}
-      </div>
-    ) : null,
-}))
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
 
-vi.mock('@scaffald/ui', () => {
   const Stack = ({
     children,
     ...rest
@@ -62,12 +41,35 @@ vi.mock('@scaffald/ui', () => {
     children?: ReactNode
   } & Record<string, unknown>) => <p {...rest}>{children}</p>
 
+  const ResponsiveModal = ({
+    open,
+    onOpenChange,
+    title,
+    children,
+  }: {
+    open: boolean
+    onOpenChange: (value: boolean) => void
+    title: string
+    children?: ReactNode
+  }) =>
+    open ? (
+      <div data-testid="responsive-modal">
+        <h1>{title}</h1>
+        <button type="button" onClick={() => onOpenChange(false)}>
+          Close Modal
+        </button>
+        {children}
+      </div>
+    ) : null
+
   return {
+    ...actual,
     Stack: Stack,
     Row: Stack,
     Button,
     Text,
     Paragraph,
+    ResponsiveModal,
   }
 })
 

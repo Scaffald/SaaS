@@ -88,7 +88,9 @@ vi.mock('../../../../profile/components/MonthYearPicker', () => ({
   },
 }))
 
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const Stack = ({
     children,
     ...rest
@@ -162,6 +164,7 @@ vi.mock('@scaffald/ui', () => {
   )
 
   return {
+    ...actual,
     Stack: Stack,
     Row: Stack,
     Input,

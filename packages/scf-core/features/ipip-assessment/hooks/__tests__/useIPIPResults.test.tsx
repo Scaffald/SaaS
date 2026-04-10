@@ -4,6 +4,7 @@ import { renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as normalizerModule from '../../utils/scoreNormalizer'
 import { useIPIPResults } from '../useIPIPResults'
+import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 const assessmentQueryResult: {
   data:
@@ -102,7 +103,7 @@ describe('useIPIPResults', () => {
       next_available_at: null,
     }
 
-    const { result } = renderHook(() => useIPIPResults())
+    const { result } = renderHook(() => useIPIPResults(), { wrapper: TestQueryWrapper })
 
     expect(result.current).toMatchObject({
       ...baseResultState,
@@ -117,7 +118,7 @@ describe('useIPIPResults', () => {
       next_available_at: null,
     }
 
-    const { result } = renderHook(() => useIPIPResults())
+    const { result } = renderHook(() => useIPIPResults(), { wrapper: TestQueryWrapper })
 
     expect(result.current.completedDomains).toBe(1)
     expect(result.current.hasPartialResults).toBe(true)
@@ -146,7 +147,7 @@ describe('useIPIPResults', () => {
       },
     }
 
-    const { result } = renderHook(() => useIPIPResults())
+    const { result } = renderHook(() => useIPIPResults(), { wrapper: TestQueryWrapper })
 
     expect(result.current.isComplete).toBe(true)
     expect(result.current.completedDomains).toBe(5)
@@ -165,7 +166,7 @@ describe('useIPIPResults', () => {
       throw new Error('scoring failed')
     })
 
-    const { result } = renderHook(() => useIPIPResults())
+    const { result } = renderHook(() => useIPIPResults(), { wrapper: TestQueryWrapper })
 
     expect(result.current.scoringError?.message).toBe('scoring failed')
     expect(result.current.scores).toBeNull()
@@ -182,7 +183,7 @@ describe('useIPIPResults', () => {
       throw new Error('normalize failed')
     })
 
-    const { result } = renderHook(() => useIPIPResults())
+    const { result } = renderHook(() => useIPIPResults(), { wrapper: TestQueryWrapper })
 
     expect(result.current.normalizationError?.message).toBe('normalize failed')
     expect(result.current.normalizedScores).toBeNull()

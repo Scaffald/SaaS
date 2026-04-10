@@ -6,7 +6,9 @@ import { ReviewStep } from '../ReviewStep'
 const mockOnEdit = vi.fn()
 const mockOnSubmit = vi.fn()
 
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const React = require('react')
   const createEl =
     (tag: string) =>
@@ -14,6 +16,7 @@ vi.mock('@scaffald/ui', () => {
       React.createElement(tag, rest, children)
 
   return {
+    ...actual,
     Stack: createEl('div'),
     Row: createEl('div'),
     Text: createEl('span'),

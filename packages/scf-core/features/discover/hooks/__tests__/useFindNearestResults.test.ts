@@ -1,5 +1,6 @@
 import { renderHook, act } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 const mockUseQuery = vi.fn()
 
@@ -44,6 +45,7 @@ describe('useFindNearestResults', () => {
         initialRadius: 25,
         maxAttempts: 4,
       }),
+      { wrapper: TestQueryWrapper },
     )
 
     expect(capturedArgs).toEqual({
@@ -76,6 +78,7 @@ describe('useFindNearestResults', () => {
         initialRadius: 40,
         maxAttempts: 2,
       }),
+      { wrapper: TestQueryWrapper },
     )
 
     expect(capturedArgs).toEqual({
@@ -96,6 +99,7 @@ describe('useFindNearestResults', () => {
         initialRadius: 10,
         maxAttempts: 2,
       }),
+      { wrapper: TestQueryWrapper },
     )
 
     expect(result.current.currentRadius).toBe(10)
@@ -135,6 +139,7 @@ describe('useFindNearestResults', () => {
         initialRadius: 15,
         maxAttempts: 3,
       }),
+      { wrapper: TestQueryWrapper },
     )
 
     act(() => {

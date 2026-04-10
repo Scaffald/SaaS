@@ -94,20 +94,25 @@ vi.mock('@scaffald/ui', () => ({
   Spinner: () => <div>Loading...</div>,
 }))
 
-vi.mock('@scaffald/ui', () => ({
-  Stack: (props: { children: ReactNode }) => <div>{props.children}</div>,
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+  return {
+    ...actual,
+    Stack: (props: { children: ReactNode }) => <div>{props.children}</div>,
   Row: (props: { children: ReactNode }) => <div>{props.children}</div>,
   Text: (props: { children: ReactNode }) => <span>{props.children}</span>,
   H4: (props: { children: ReactNode }) => <h4>{props.children}</h4>,
   ScrollView: (props: { children: ReactNode }) => <div>{props.children}</div>,
-}))
+  }
+})
 
 // Import component after all mocks are set up
 import { WorkerPreviewModal } from '../WorkerPreviewModal'
+import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 describe('WorkerPreviewModal Enhanced Content', () => {
   it('should display top 8-10 skills (not just 5)', () => {
-    render(<WorkerPreviewModal userId="user-1" open={true} onOpenChange={vi.fn()} />)
+    render(<WorkerPreviewModal userId="user-1" open={true} onOpenChange={vi.fn()} />, { wrapper: TestQueryWrapper })
 
     // Modal should render
     expect(screen.getByTestId('worker-preview-modal')).toBeInTheDocument()
@@ -119,7 +124,7 @@ describe('WorkerPreviewModal Enhanced Content', () => {
   })
 
   it('should display top 5 certifications (not just 3)', () => {
-    render(<WorkerPreviewModal userId="user-1" open={true} onOpenChange={vi.fn()} />)
+    render(<WorkerPreviewModal userId="user-1" open={true} onOpenChange={vi.fn()} />, { wrapper: TestQueryWrapper })
 
     // Certifications are sliced to top 5 in the component (certifications.slice(0, 5))
     // This test verifies the component uses the correct slice limit
@@ -128,7 +133,7 @@ describe('WorkerPreviewModal Enhanced Content', () => {
   })
 
   it('should display 2-3 recent experience positions', () => {
-    render(<WorkerPreviewModal userId="user-1" open={true} onOpenChange={vi.fn()} />)
+    render(<WorkerPreviewModal userId="user-1" open={true} onOpenChange={vi.fn()} />, { wrapper: TestQueryWrapper })
 
     // Experience is sliced to top 3 in the component (experience.slice(0, 3))
     // This test verifies the component uses the correct slice limit
@@ -137,7 +142,7 @@ describe('WorkerPreviewModal Enhanced Content', () => {
   })
 
   it('should display highest/most recent education', () => {
-    render(<WorkerPreviewModal userId="user-1" open={true} onOpenChange={vi.fn()} />)
+    render(<WorkerPreviewModal userId="user-1" open={true} onOpenChange={vi.fn()} />, { wrapper: TestQueryWrapper })
 
     // Education is sliced to top 1 in the component (education.slice(0, 1))
     // This test verifies the component uses the correct slice limit

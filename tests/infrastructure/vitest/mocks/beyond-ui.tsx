@@ -226,6 +226,60 @@ export const Portal = ({
 
 // Misc
 export const EmptyState = createEl('div')
+export const Fieldset = createEl('fieldset')
+export const ModalHeader = createEl('div')
+export const ResponsiveModal = ({
+  children,
+  open,
+  visible,
+  ...rest
+}: {
+  children?: ReactNode
+  open?: boolean
+  visible?: boolean
+  [key: string]: unknown
+}) =>
+  (open || visible)
+    ? createElement('div', { role: 'dialog', 'data-testid': 'responsive-modal', ...rest }, children)
+    : null
+export const Slider = ({
+  value,
+  onValueChange,
+  min,
+  max,
+  disabled,
+  ...rest
+}: {
+  value?: number
+  onValueChange?: (val: number) => void
+  min?: number
+  max?: number
+  disabled?: boolean
+  [key: string]: unknown
+}) =>
+  createElement('input', {
+    type: 'range',
+    role: 'slider',
+    value: value ?? 0,
+    min: min ?? 0,
+    max: max ?? 100,
+    disabled,
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => onValueChange?.(Number(e.target.value)),
+    ...rest,
+  })
+export const RadioGroup = createEl('div')
+export const DashboardWidget = createEl('div')
+export const AddressAutocomplete = createEl('div')
+export const AssessmentProgressBar = ({
+  value,
+  max,
+  ...rest
+}: {
+  value?: number
+  max?: number
+  [key: string]: unknown
+}) => createElement('div', { role: 'progressbar', 'aria-valuenow': value, 'aria-valuemax': max, ...rest })
+export const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? require('react').useLayoutEffect : require('react').useEffect
 export const Tabs = createEl('div')
 export const Form = createEl('form')
 export const Progress = ({

@@ -3,11 +3,13 @@ import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ResumeImportWidget } from '../ResumeImportWidget'
+import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 const pushMock = vi.fn()
 const resumeQueryMock = vi.fn()
 
-vi.mock('expo-router', () => ({
+vi.mock('expo-router', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   useRouter: () => ({
     push: pushMock,
   }),
@@ -17,7 +19,8 @@ vi.mock('../../hooks/useResumeWizard', () => ({
   useResumeWizard: vi.fn(),
 }))
 
-vi.mock('lucide-react-native', () => ({
+vi.mock('lucide-react-native', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   // Icons used by ResumeImportWidget
   FileText: () => <span data-testid="icon-file-text" />,
   ShieldCheck: () => <span data-testid="icon-shield-check" />,
@@ -102,14 +105,18 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@scaffald/ui', () => ({
-  DashboardWidget: ({ children }: { children?: ReactNode }) => (
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+  return {
+    ...actual,
+    DashboardWidget: ({ children }: { children?: ReactNode }) => (
     <div data-testid="dashboard-widget">{children}</div>
   ),
   spacing: {
     md: 16,
   },
-}))
+  }
+})
 
 describe('ResumeImportWidget', () => {
   beforeEach(() => {
@@ -122,7 +129,7 @@ describe('ResumeImportWidget', () => {
   })
 
   it('renders the widget when user has not uploaded a resume', () => {
-    render(<ResumeImportWidget />)
+    render(<ResumeImportWidget />, { wrapper: TestQueryWrapper })
 
     expect(resumeQueryMock).toHaveBeenCalledTimes(1)
     expect(screen.getByText('Import Your Resume')).toBeInTheDocument()
@@ -135,13 +142,13 @@ describe('ResumeImportWidget', () => {
       isLoading: false,
     })
 
-    render(<ResumeImportWidget />)
+    render(<ResumeImportWidget />, { wrapper: TestQueryWrapper })
 
     expect(screen.queryByText('Import Your Resume')).not.toBeInTheDocument()
   })
 
   it('opens the modal and routes to resume review after completion', () => {
-    render(<ResumeImportWidget />)
+    render(<ResumeImportWidget />, { wrapper: TestQueryWrapper })
 
     fireEvent.click(screen.getByText('Upload Resume'))
     expect(screen.getByTestId('resume-modal')).toBeInTheDocument()

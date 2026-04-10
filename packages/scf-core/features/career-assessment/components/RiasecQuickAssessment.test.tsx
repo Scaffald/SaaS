@@ -6,24 +6,22 @@ import { renderWithProviders } from '@test-helpers/test-utils'
 
 // Beyond UI mock
 vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
   const React = await import('react')
   return {
-    Slider: {
-      Track: ({ children }: { children: React.ReactNode }) => <div data-testid="slider-track">{children}</div>,
-      TrackActive: () => <div data-testid="slider-track-active" />,
-      Thumb: ({ onValueChange, value, disabled }: { onValueChange?: (value: number[]) => void; value: number[]; disabled?: boolean }) => (
-        <input
-          type="range"
-          role="slider"
-          data-testid={`slider-thumb-${value[0]}`}
-          min={1}
-          max={5}
-          value={value[0]}
-          disabled={disabled}
-          onChange={(e) => onValueChange?.([Number(e.target.value)])}
-        />
-      ),
-    },
+    ...actual,
+    Slider: ({ value, onValueChange, disabled, min, max }: { value?: number; onValueChange?: (val: number) => void; disabled?: boolean; min?: number; max?: number }) => (
+      <input
+        type="range"
+        role="slider"
+        data-testid={`slider-thumb-${value ?? 0}`}
+        min={min ?? 1}
+        max={max ?? 5}
+        value={value ?? 0}
+        disabled={disabled}
+        onChange={(e) => onValueChange?.(Number(e.target.value))}
+      />
+    ),
     Text: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
       <span {...props}>{children}</span>
     ),

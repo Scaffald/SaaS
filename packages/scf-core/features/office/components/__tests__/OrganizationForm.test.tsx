@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 const createOrganizationMock = vi.hoisted(() => ({ mutateAsync: vi.fn(), useMutation: vi.fn() }))
 const updateOrganizationMock = vi.hoisted(() => ({ mutateAsync: vi.fn(), useMutation: vi.fn() }))
@@ -306,7 +307,8 @@ vi.mock('@scaffald/ui', async () => {
   }
 })
 
-vi.mock('lucide-react-native', () => ({
+vi.mock('lucide-react-native', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   // Icons used by OrganizationForm
   Check: () => <span data-testid="check-icon" />,
   ChevronDown: () => <span data-testid="chevron-icon" />,
@@ -385,7 +387,8 @@ describe('OrganizationForm', () => {
             },
           ],
         }}
-      />
+      />,
+      { wrapper: TestQueryWrapper },
     )
 
     await user.click(screen.getByRole('button', { name: /create/i }))
@@ -414,7 +417,8 @@ describe('OrganizationForm', () => {
           slug: 'existing-co',
           logo_url: 'https://logo.png',
         }}
-      />
+      />,
+      { wrapper: TestQueryWrapper },
     )
 
     await user.click(screen.getByRole('button', { name: /update/i }))

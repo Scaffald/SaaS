@@ -1,8 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { InquiryCommentThread } from '../InquiryCommentThread'
-
 const addCommentMock = vi.fn()
 const markCommentReadMock = vi.fn()
 
@@ -23,13 +21,30 @@ vi.mock('@scf/core/utils/useUser', () => ({
   useUser: () => ({ user: { id: 'user-1' } }),
 }))
 
-vi.mock('@scaffald/ui', () => ({
-  useToast: () => ({ show: vi.fn() }),
-}))
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+  return {
+    ...actual,
+    useToast: () => ({ show: vi.fn() }),
+  }
+})
 
 vi.mock('react-native-reanimated/src/component/FlatList', () => ({
   default: () => null,
 }))
+
+vi.mock('@scf/core/utils/inquiries-sdk-hooks', () => ({
+  useAddInquiryCommentMutation: () => ({
+    mutateAsync: addCommentMock,
+    isPending: false,
+  }),
+  useMarkCommentReadMutation: () => ({
+    mutateAsync: markCommentReadMock,
+    isPending: false,
+  }),
+}))
+
+const { InquiryCommentThread } = await import('../InquiryCommentThread')
 
 describe('InquiryCommentThread', () => {
   beforeEach(() => {

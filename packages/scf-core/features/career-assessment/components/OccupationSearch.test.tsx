@@ -37,8 +37,10 @@ vi.mock('@scf/core/utils/api', () => ({
 
 // Beyond UI mock
 vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
   const React = await import('react')
   return {
+    ...actual,
     Input: ({ value, onChangeText, onFocus, onBlur, placeholder, disabled, ...props }: {
       value: string
       onChangeText?: (text: string) => void

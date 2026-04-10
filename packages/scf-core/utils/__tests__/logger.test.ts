@@ -1,5 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { logger } from '../logger'
+
+vi.mock('@sentry/react-native', () => ({
+  captureException: vi.fn(),
+  captureMessage: vi.fn(),
+  addBreadcrumb: vi.fn(),
+  Severity: { Error: 'error', Warning: 'warning', Info: 'info', Debug: 'debug' },
+}))
+
+const { logger } = await import('../logger')
 
 describe('Logger', () => {
   beforeEach(() => {

@@ -63,8 +63,11 @@ vi.mock('@scaffald/ui', () => {
   }
 })
 
-vi.mock('@scaffald/ui', () => ({
-  AddressAutocomplete: (props: {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+  return {
+    ...actual,
+    AddressAutocomplete: (props: {
     onChange: (value: string) => void
     onAddressSelect: (result: {
       coordinates: { lng: number; lat: number }
@@ -87,7 +90,8 @@ vi.mock('@scaffald/ui', () => ({
       </button>
     </div>
   ),
-}))
+  }
+})
 
 vi.mock('lucide-react-native', () => ({
   AlertCircle: () => <span data-testid="alert-icon" />,

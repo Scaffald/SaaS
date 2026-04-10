@@ -11,8 +11,11 @@ const uploadMocks = vi.hoisted(() => ({
   triggerError: vi.fn(),
 }))
 
-vi.mock('@scaffald/ui', () => ({
-  UploadSurface: ({
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+  return {
+    ...actual,
+    UploadSurface: ({
     children,
     onSelect,
     onError,
@@ -60,7 +63,8 @@ vi.mock('@scaffald/ui', () => ({
       })}
     </div>
   ),
-}))
+  }
+})
 
 const reasonOptions = [
   { value: 'incorrect_records', label: 'Records contain inaccurate findings' },

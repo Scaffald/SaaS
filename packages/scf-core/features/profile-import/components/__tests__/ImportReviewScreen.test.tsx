@@ -134,7 +134,9 @@ vi.mock('@scf/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const Stack = ({
     children,
     ...rest
@@ -214,6 +216,7 @@ vi.mock('@scaffald/ui', () => {
   } & Record<string, unknown>) => <h5 {...rest}>{children}</h5>
 
   return {
+    ...actual,
     Stack: Stack,
     Row: Stack,
     Button,
@@ -227,7 +230,8 @@ vi.mock('@scaffald/ui', () => {
   }
 })
 
-vi.mock('lucide-react-native', () => ({
+vi.mock('lucide-react-native', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   CheckCircle2: () => <span data-testid="check-icon">Check</span>,
   FileWarning: () => <span data-testid="warning-icon">Warning</span>,
   Loader2: () => <span data-testid="loader-icon">Loader</span>,

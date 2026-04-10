@@ -228,7 +228,9 @@ vi.mock('../components', () => ({
 }))
 
 // Beyond UI mock
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const Stack = ({
     children,
     testID,
@@ -291,6 +293,7 @@ vi.mock('@scaffald/ui', () => {
   } & Record<string, unknown>) => <h4 {...rest}>{children}</h4>
 
   return {
+    ...actual,
     Stack: Stack,
     Row: Stack,
     Text,
@@ -301,7 +304,8 @@ vi.mock('@scaffald/ui', () => {
 })
 
 // Mock lucide icons
-vi.mock('lucide-react-native', () => ({
+vi.mock('lucide-react-native', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   // Icons used by PortfolioManager
   Plus: () => <span data-testid="plus-icon">Plus</span>,
   Edit3: () => <span data-testid="edit-icon">Edit3</span>,

@@ -2,6 +2,7 @@ import { renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useCompletionStatus } from '../useCompletionStatus'
+import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 const mockGetStatusQuery = {
   data: undefined as unknown,
@@ -50,14 +51,14 @@ describe('useCompletionStatus', () => {
   it('returns null status when data is loading', () => {
     mockGetStatusQuery.isLoading = true
 
-    const { result } = renderHook(() => useCompletionStatus())
+    const { result } = renderHook(() => useCompletionStatus(), { wrapper: TestQueryWrapper })
 
     expect(result.current.status).toBeNull()
     expect(result.current.isLoading).toBe(true)
   })
 
   it('returns null status when data is undefined', () => {
-    const { result } = renderHook(() => useCompletionStatus())
+    const { result } = renderHook(() => useCompletionStatus(), { wrapper: TestQueryWrapper })
 
     expect(result.current.status).toBeNull()
   })
@@ -111,7 +112,7 @@ describe('useCompletionStatus', () => {
 
     mockGetStatusQuery.data = rawStatus
 
-    const { result } = renderHook(() => useCompletionStatus())
+    const { result } = renderHook(() => useCompletionStatus(), { wrapper: TestQueryWrapper })
 
     expect(result.current.status).not.toBeNull()
     expect(result.current.status?.completionPercentage).toBe(30)
@@ -152,7 +153,7 @@ describe('useCompletionStatus', () => {
 
     mockGetStatusQuery.data = rawStatus
 
-    const { result } = renderHook(() => useCompletionStatus())
+    const { result } = renderHook(() => useCompletionStatus(), { wrapper: TestQueryWrapper })
 
     expect(result.current.status?.sections.filter((s) => s.completed)).toHaveLength(2)
   })
@@ -195,7 +196,7 @@ describe('useCompletionStatus', () => {
 
     mockGetStatusQuery.data = rawStatus
 
-    const { result } = renderHook(() => useCompletionStatus())
+    const { result } = renderHook(() => useCompletionStatus(), { wrapper: TestQueryWrapper })
 
     expect(result.current.status?.incompleteSections).toEqual(['skills', 'experience'])
   })
@@ -235,7 +236,7 @@ describe('useCompletionStatus', () => {
 
     mockGetStatusQuery.data = rawStatus
 
-    const { result } = renderHook(() => useCompletionStatus())
+    const { result } = renderHook(() => useCompletionStatus(), { wrapper: TestQueryWrapper })
 
     expect(result.current.status?.milestoneBadges).toHaveLength(3)
     expect(result.current.status?.milestoneBadges[0]?.achieved).toBe(true)
@@ -246,7 +247,7 @@ describe('useCompletionStatus', () => {
   it('handles loading state', () => {
     mockGetStatusQuery.isLoading = true
 
-    const { result } = renderHook(() => useCompletionStatus())
+    const { result } = renderHook(() => useCompletionStatus(), { wrapper: TestQueryWrapper })
 
     expect(result.current.isLoading).toBe(true)
   })
@@ -254,7 +255,7 @@ describe('useCompletionStatus', () => {
   it('handles error state', () => {
     mockGetStatusQuery.isError = true
 
-    const { result } = renderHook(() => useCompletionStatus())
+    const { result } = renderHook(() => useCompletionStatus(), { wrapper: TestQueryWrapper })
 
     expect(result.current.isError).toBe(true)
   })
@@ -275,7 +276,7 @@ describe('useCompletionStatus', () => {
 
     mockGetStatusQuery.data = rawStatus
 
-    const { result } = renderHook(() => useCompletionStatus())
+    const { result } = renderHook(() => useCompletionStatus(), { wrapper: TestQueryWrapper })
 
     expect(result.current.status?.modalMode).toBe('first-login')
   })
@@ -296,7 +297,7 @@ describe('useCompletionStatus', () => {
 
     mockGetStatusQuery.data = rawStatus
 
-    const { result } = renderHook(() => useCompletionStatus())
+    const { result } = renderHook(() => useCompletionStatus(), { wrapper: TestQueryWrapper })
 
     expect(result.current.status?.modalMode).toBe('progress-reminder')
   })
@@ -337,7 +338,7 @@ describe('useCompletionStatus', () => {
 
     mockGetStatusQuery.data = rawStatus
 
-    const { result } = renderHook(() => useCompletionStatus())
+    const { result } = renderHook(() => useCompletionStatus(), { wrapper: TestQueryWrapper })
 
     expect(result.current.status?.summary.completedWeight).toBe(20)
     expect(result.current.status?.summary.remainingWeight).toBe(80)
@@ -365,7 +366,7 @@ describe('useCompletionStatus', () => {
 
     mockGetStatusQuery.data = rawStatus
 
-    const { result } = renderHook(() => useCompletionStatus())
+    const { result } = renderHook(() => useCompletionStatus(), { wrapper: TestQueryWrapper })
 
     expect(result.current.status?.nudgeStatus.shouldPrompt).toBe(true)
     expect(result.current.status?.nudgeStatus.lastDismissedAt).toBe('2025-01-01T10:00:00Z')
@@ -388,7 +389,7 @@ describe('useCompletionStatus', () => {
 
     mockGetStatusQuery.data = rawStatus
 
-    const { result } = renderHook(() => useCompletionStatus())
+    const { result } = renderHook(() => useCompletionStatus(), { wrapper: TestQueryWrapper })
 
     expect(result.current.userType).toBe('worker')
   })

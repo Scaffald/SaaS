@@ -72,11 +72,15 @@ vi.mock('@scf/core/utils/supabase/client', () => ({
   },
 }))
 
-vi.mock('@scaffald/ui', () => ({
-  useToast: () => ({
-    show: mocks.toastShow,
-  }),
-}))
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+  return {
+    ...actual,
+    useToast: () => ({
+      show: mocks.toastShow,
+    }),
+  }
+})
 
 vi.mock('react-hook-form', async () => {
   const actual = await vi.importActual<typeof import('react-hook-form')>('react-hook-form')

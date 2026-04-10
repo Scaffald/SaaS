@@ -3,15 +3,20 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { act } from 'react-dom/test-utils'
 import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
 import { ShareResults } from '../ShareResults'
+import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 const toastShow = vi.fn()
 const invalidateAssessment = vi.fn()
 
-vi.mock('@scaffald/ui', () => ({
-  useToast: () => ({
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+  return {
+    ...actual,
+    useToast: () => ({
     show: toastShow,
   }),
-}))
+  }
+})
 
 vi.mock('@scf/core/utils/clipboard', () => ({
   copyToClipboard: vi.fn().mockResolvedValue(true),
@@ -71,14 +76,14 @@ describe('ShareResults', () => {
   })
 
   it('renders a locked state when the assessment is incomplete', () => {
-    render(<ShareResults isComplete={false} nextAvailableAt={null} />)
+    render(<ShareResults isComplete={false} nextAvailableAt={null} />, { wrapper: TestQueryWrapper })
 
     expect(screen.getByText(/Complete Assessment to Share/i)).toBeVisible()
     expect(screen.queryByText(/Generate Share Link/i)).not.toBeInTheDocument()
   })
 
   it('generates and displays a share link with privacy controls', () => {
-    render(<ShareResults isComplete nextAvailableAt={null} />)
+    render(<ShareResults isComplete nextAvailableAt={null} />, { wrapper: TestQueryWrapper })
 
     fireEvent.click(screen.getByRole('button', { name: /Generate Share Link/i }))
     expect(generateMutation.mutate).toHaveBeenCalledWith({ expiresInDays: 30 })
@@ -95,7 +100,7 @@ describe('ShareResults', () => {
   })
 
   it('copies the generated link to clipboard and revokes it', async () => {
-    render(<ShareResults isComplete nextAvailableAt={null} />)
+    render(<ShareResults isComplete nextAvailableAt={null} />, { wrapper: TestQueryWrapper })
 
     fireEvent.click(screen.getByRole('button', { name: /Generate Share Link/i }))
     act(() => {
@@ -121,7 +126,7 @@ describe('ShareResults', () => {
     const nextMonth = new Date()
     nextMonth.setMonth(nextMonth.getMonth() + 1)
 
-    render(<ShareResults isComplete nextAvailableAt={nextMonth.toISOString()} />)
+    render(<ShareResults isComplete nextAvailableAt={nextMonth.toISOString()} />, { wrapper: TestQueryWrapper })
 
     expect(screen.getByText(/Retake Available Soon/i)).toBeVisible()
     expect(screen.getByText(/This cooldown period ensures accurate results/i)).toBeVisible()

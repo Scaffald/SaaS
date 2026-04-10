@@ -24,8 +24,10 @@ vi.mock('@scf/core/utils/api', () => ({
 
 // Beyond UI mock
 vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
   const React = await import('react')
   return {
+    ...actual,
     Button: ({ children, onPress, ...props }: { children: React.ReactNode; onPress?: () => void; [key: string]: unknown }) => (
       <button onClick={onPress} {...props}>{children}</button>
     ),

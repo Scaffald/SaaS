@@ -267,7 +267,9 @@ vi.mock('../components/steps/EducationStep', () => ({
   ),
 }))
 
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const Stack = ({
     children,
     onPress,
@@ -333,6 +335,7 @@ vi.mock('@scaffald/ui', () => {
   )
 
   return {
+    ...actual,
     Stack: Stack,
     Row: Stack,
     ScrollView: Stack,

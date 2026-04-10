@@ -5,7 +5,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { WizardStartScreen } from '../WizardStartScreen'
 
 // Beyond UI mock: Card.Header used by component; beyond-ui exports CardHeader separately
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const Stack = ({
     children,
     testID,
@@ -85,6 +87,7 @@ vi.mock('@scaffald/ui', () => {
   } & Record<string, unknown>) => <h3 {...rest}>{children}</h3>
 
   return {
+    ...actual,
     Stack,
     Row: Stack,
     Button,

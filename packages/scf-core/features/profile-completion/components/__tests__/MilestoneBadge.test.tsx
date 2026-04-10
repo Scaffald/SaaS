@@ -4,7 +4,9 @@ import { describe, expect, it, vi } from 'vitest'
 import type { CompletionMilestone } from '../../hooks/useCompletionStatus'
 import { MilestoneBadge } from '../MilestoneBadge'
 
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const Stack = ({
     children,
     opacity,
@@ -13,7 +15,7 @@ vi.mock('@scaffald/ui', () => {
     children?: ReactNode
     opacity?: number
   } & Record<string, unknown>) => (
-    <div {...rest} style={{ ...(rest.style as Record<string, unknown>), opacity }}>
+    <div {...rest} style={{ ...(rest.style as Record<string, unknown>), ...(opacity !== undefined ? { opacity } : {}) }}>
       {children}
     </div>
   )
@@ -26,13 +28,15 @@ vi.mock('@scaffald/ui', () => {
   } & Record<string, unknown>) => <span {...rest}>{children}</span>
 
   return {
+    ...actual,
     Stack: Stack,
     Row: Stack,
     Text,
   }
 })
 
-vi.mock('lucide-react-native', () => ({
+vi.mock('lucide-react-native', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   Trophy: ({ size, color }: { size?: number; color?: string }) => (
     <span data-testid="trophy-icon" data-size={size} data-color={color}>
       Trophy

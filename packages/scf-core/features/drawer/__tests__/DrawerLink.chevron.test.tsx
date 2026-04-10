@@ -9,7 +9,8 @@ vi.mock('expo-router', () => ({
   ),
 }))
 
-vi.mock('lucide-react-native', () => ({
+vi.mock('lucide-react-native', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   ChevronRight: () => <span data-testid="chevron-right" />,
   ChevronDown: () => <span data-testid="chevron-down" />,
   Check: () => <span data-testid="check" />,

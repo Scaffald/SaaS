@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { IPIPResultsPage } from '../IPIPResultsPage'
+import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 const mockPush = vi.fn()
 vi.mock('expo-router', () => ({
@@ -83,7 +84,7 @@ describe('IPIPResultsPage', () => {
       isLoading: true,
     })
 
-    render(<IPIPResultsPage />)
+    render(<IPIPResultsPage />, { wrapper: TestQueryWrapper })
 
     expect(screen.getByText(/Loading your results/i)).toBeVisible()
   })
@@ -95,7 +96,7 @@ describe('IPIPResultsPage', () => {
       hasPartialResults: false,
     })
 
-    render(<IPIPResultsPage />)
+    render(<IPIPResultsPage />, { wrapper: TestQueryWrapper })
 
     expect(screen.getByText(/Error Loading Results/i)).toBeVisible()
     fireEvent.click(screen.getByRole('button', { name: /Retry/i }))
@@ -107,7 +108,7 @@ describe('IPIPResultsPage', () => {
   })
 
   it('renders the empty state when no answers have been saved yet', () => {
-    render(<IPIPResultsPage />)
+    render(<IPIPResultsPage />, { wrapper: TestQueryWrapper })
 
     expect(screen.getByText(/No Results Yet/i)).toBeVisible()
     expect(screen.queryByTestId('narrative-view')).not.toBeInTheDocument()
@@ -125,7 +126,7 @@ describe('IPIPResultsPage', () => {
       hasPartialResults: true,
     })
 
-    render(<IPIPResultsPage />)
+    render(<IPIPResultsPage />, { wrapper: TestQueryWrapper })
 
     expect(screen.getByTestId('narrative-view')).toBeVisible()
     expect(screen.getByTestId('chart-view')).toBeVisible()
@@ -144,7 +145,7 @@ describe('IPIPResultsPage', () => {
       completedDomains: 5,
     })
 
-    render(<IPIPResultsPage />)
+    render(<IPIPResultsPage />, { wrapper: TestQueryWrapper })
 
     expect(awardMutation.mutate).toHaveBeenCalled()
     expect(screen.getByTestId('share-results')).toHaveTextContent('share-enabled')

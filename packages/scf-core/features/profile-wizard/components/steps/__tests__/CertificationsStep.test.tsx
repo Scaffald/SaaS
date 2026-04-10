@@ -90,7 +90,9 @@ vi.mock('expo-crypto', () => ({
   randomUUID: () => 'test-uuid-123',
 }))
 
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const Stack = ({
     children,
     ...rest
@@ -187,6 +189,7 @@ vi.mock('@scaffald/ui', () => {
   ;(Card as any).Header = CardHeader
 
   return {
+    ...actual,
     Stack: Stack,
     Row: Stack,
     Input,

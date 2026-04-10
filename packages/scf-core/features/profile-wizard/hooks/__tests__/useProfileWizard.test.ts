@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useProfileWizard } from '../useProfileWizard';
 import type { ProfileWizardProgressResponse } from '../useProfileWizard';
 import type { ProfileWizardStepId } from '../../utils/wizardSteps';
+import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 const mockGetProgressQuery = {
   data: undefined as unknown,
@@ -59,7 +60,7 @@ describe("useProfileWizard", () => {
   });
 
   it("initializes with default progress", () => {
-    const { result } = renderHook(() => useProfileWizard());
+    const { result } = renderHook(() => useProfileWizard(), { wrapper: TestQueryWrapper });
 
     expect(result.current.state.currentStep).toBe("general");
     expect(result.current.state.progress.completionPercentage).toBe(0);
@@ -70,7 +71,7 @@ describe("useProfileWizard", () => {
   });
 
   it("initializes with custom initial step", () => {
-    const { result } = renderHook(() => useProfileWizard("skills"));
+    const { result } = renderHook(() => useProfileWizard("skills"), { wrapper: TestQueryWrapper });
 
     expect(result.current.state.currentStep).toBe("skills");
   });
@@ -94,7 +95,7 @@ describe("useProfileWizard", () => {
 
     mockGetProgressQuery.data = savedProgress;
 
-    const { result } = renderHook(() => useProfileWizard());
+    const { result } = renderHook(() => useProfileWizard(), { wrapper: TestQueryWrapper });
 
     await waitFor(() => {
       expect(result.current.state.currentStep).toBe("experience");
@@ -110,7 +111,7 @@ describe("useProfileWizard", () => {
   });
 
   it("handles step navigation with goNext", () => {
-    const { result } = renderHook(() => useProfileWizard());
+    const { result } = renderHook(() => useProfileWizard(), { wrapper: TestQueryWrapper });
 
     act(() => {
       result.current.goNext();
@@ -120,7 +121,7 @@ describe("useProfileWizard", () => {
   });
 
   it("handles step navigation with goBack", () => {
-    const { result } = renderHook(() => useProfileWizard("skills"));
+    const { result } = renderHook(() => useProfileWizard("skills"), { wrapper: TestQueryWrapper });
 
     act(() => {
       result.current.goBack();
@@ -130,7 +131,7 @@ describe("useProfileWizard", () => {
   });
 
   it("does not go before first step", () => {
-    const { result } = renderHook(() => useProfileWizard("general"));
+    const { result } = renderHook(() => useProfileWizard("general"), { wrapper: TestQueryWrapper });
 
     act(() => {
       result.current.goBack();
@@ -140,7 +141,7 @@ describe("useProfileWizard", () => {
   });
 
   it("does not go after last step", () => {
-    const { result } = renderHook(() => useProfileWizard("education"));
+    const { result } = renderHook(() => useProfileWizard("education"), { wrapper: TestQueryWrapper });
 
     act(() => {
       result.current.goNext();
@@ -150,7 +151,7 @@ describe("useProfileWizard", () => {
   });
 
   it("handles goToStep", () => {
-    const { result } = renderHook(() => useProfileWizard());
+    const { result } = renderHook(() => useProfileWizard(), { wrapper: TestQueryWrapper });
 
     act(() => {
       result.current.goToStep("certifications");
@@ -178,7 +179,7 @@ describe("useProfileWizard", () => {
 
     mockSaveStepMutation.mutateAsync.mockResolvedValue(saveResponse);
 
-    const { result } = renderHook(() => useProfileWizard());
+    const { result } = renderHook(() => useProfileWizard(), { wrapper: TestQueryWrapper });
 
     await act(async () => {
       await result.current.saveStep({
@@ -220,7 +221,7 @@ describe("useProfileWizard", () => {
 
     mockSaveStepMutation.mutateAsync.mockReturnValue(savePromise);
 
-    const { result } = renderHook(() => useProfileWizard());
+    const { result } = renderHook(() => useProfileWizard(), { wrapper: TestQueryWrapper });
 
     await act(async () => {
       result.current
@@ -277,7 +278,7 @@ describe("useProfileWizard", () => {
 
     mockCompleteMutation.mutateAsync.mockResolvedValue(completeResponse);
 
-    const { result } = renderHook(() => useProfileWizard());
+    const { result } = renderHook(() => useProfileWizard(), { wrapper: TestQueryWrapper });
 
     await act(async () => {
       await result.current.completeWizard({ celebrate: true });
@@ -303,7 +304,7 @@ describe("useProfileWizard", () => {
 
     mockCompleteMutation.mutateAsync.mockReturnValue(completePromise);
 
-    const { result } = renderHook(() => useProfileWizard());
+    const { result } = renderHook(() => useProfileWizard(), { wrapper: TestQueryWrapper });
 
     await act(async () => {
       result.current.completeWizard().catch(() => {});
@@ -332,7 +333,7 @@ describe("useProfileWizard", () => {
   });
 
   it("handles markStepSkipped", () => {
-    const { result } = renderHook(() => useProfileWizard());
+    const { result } = renderHook(() => useProfileWizard(), { wrapper: TestQueryWrapper });
 
     // First, set up some completed steps
     act(() => {
@@ -350,7 +351,7 @@ describe("useProfileWizard", () => {
   });
 
   it("handles refresh", async () => {
-    const { result } = renderHook(() => useProfileWizard());
+    const { result } = renderHook(() => useProfileWizard(), { wrapper: TestQueryWrapper });
 
     await act(async () => {
       await result.current.refresh();
@@ -362,7 +363,7 @@ describe("useProfileWizard", () => {
   it("handles loading state", () => {
     mockGetProgressQuery.isLoading = true;
 
-    const { result } = renderHook(() => useProfileWizard());
+    const { result } = renderHook(() => useProfileWizard(), { wrapper: TestQueryWrapper });
 
     expect(result.current.isLoading).toBe(true);
   });
@@ -370,7 +371,7 @@ describe("useProfileWizard", () => {
   it("handles error state", () => {
     mockGetProgressQuery.isError = true;
 
-    const { result } = renderHook(() => useProfileWizard());
+    const { result } = renderHook(() => useProfileWizard(), { wrapper: TestQueryWrapper });
 
     expect(result.current.isError).toBe(true);
   });
@@ -387,7 +388,7 @@ describe("useProfileWizard", () => {
 
     mockGetProgressQuery.data = savedProgress;
 
-    const { result } = renderHook(() => useProfileWizard("skills"));
+    const { result } = renderHook(() => useProfileWizard("skills"), { wrapper: TestQueryWrapper });
 
     await waitFor(() => {
       expect(result.current.state.currentStep).toBe("skills");
@@ -407,7 +408,8 @@ describe("useProfileWizard", () => {
     mockGetProgressQuery.data = savedProgress;
 
     const { result } = renderHook(() =>
-      useProfileWizard("invalid-step" as unknown as ProfileWizardStepId)
+      useProfileWizard("invalid-step" as unknown as ProfileWizardStepId),
+      { wrapper: TestQueryWrapper },
     );
 
     await waitFor(() => {
@@ -416,7 +418,7 @@ describe("useProfileWizard", () => {
   });
 
   it("returns ordered steps", () => {
-    const { result } = renderHook(() => useProfileWizard());
+    const { result } = renderHook(() => useProfileWizard(), { wrapper: TestQueryWrapper });
 
     expect(result.current.orderedSteps).toEqual([
       "general",
@@ -440,7 +442,7 @@ describe("useProfileWizard", () => {
 
     mockSaveStepMutation.mutateAsync.mockResolvedValue(saveResponse);
 
-    const { result } = renderHook(() => useProfileWizard());
+    const { result } = renderHook(() => useProfileWizard(), { wrapper: TestQueryWrapper });
 
     await act(async () => {
       await result.current.saveStep({

@@ -4,7 +4,9 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { ProgressIndicator } from '../ProgressIndicator'
 
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const Stack = ({
     children,
     ...rest
@@ -44,6 +46,7 @@ vi.mock('@scaffald/ui', () => {
   )
 
   return {
+    ...actual,
     Stack: Stack,
     Row: Stack,
     Text,

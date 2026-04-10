@@ -2,6 +2,7 @@ import { act, renderHook, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { ApplicationStatus } from '../../../mock-data/ats-mock-data'
+import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 const invalidateMock = vi.fn()
 let mutateShouldFail = false
@@ -62,7 +63,7 @@ describe('useApplicationStatusChange', () => {
   })
 
   it('executes valid non-critical transitions immediately', async () => {
-    const { result } = renderHook(() => useApplicationStatusChange())
+    const { result } = renderHook(() => useApplicationStatusChange(), { wrapper: TestQueryWrapper })
 
     await act(async () => {
       await result.current.changeStatus({
@@ -86,7 +87,7 @@ describe('useApplicationStatusChange', () => {
   })
 
   it('tracks invalid transitions as errors without invoking mutation', async () => {
-    const { result } = renderHook(() => useApplicationStatusChange())
+    const { result } = renderHook(() => useApplicationStatusChange(), { wrapper: TestQueryWrapper })
 
     await act(async () => {
       await result.current.changeStatus({
@@ -101,7 +102,7 @@ describe('useApplicationStatusChange', () => {
   })
 
   it('captures critical transitions for confirmation', async () => {
-    const { result } = renderHook(() => useApplicationStatusChange())
+    const { result } = renderHook(() => useApplicationStatusChange(), { wrapper: TestQueryWrapper })
 
     const payload = {
       applicationId: 'app-2',
@@ -120,7 +121,7 @@ describe('useApplicationStatusChange', () => {
   })
 
   it('confirms pending transitions and resets state', async () => {
-    const { result } = renderHook(() => useApplicationStatusChange())
+    const { result } = renderHook(() => useApplicationStatusChange(), { wrapper: TestQueryWrapper })
 
     const payload = {
       applicationId: 'app-3',
@@ -144,7 +145,7 @@ describe('useApplicationStatusChange', () => {
   })
 
   it('allows cancelling a recorded pending change', async () => {
-    const { result } = renderHook(() => useApplicationStatusChange())
+    const { result } = renderHook(() => useApplicationStatusChange(), { wrapper: TestQueryWrapper })
 
     await act(async () => {
       await result.current.changeStatus({

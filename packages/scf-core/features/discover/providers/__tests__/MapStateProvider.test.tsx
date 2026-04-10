@@ -398,7 +398,7 @@ describe('MapStateProvider', () => {
       STORAGE_KEY,
       JSON.stringify({
         version: 1,
-        timestamp: Date.now() - 24 * 60 * 60 * 1000, // Exactly 24 hours ago
+        timestamp: Date.now() - 24 * 60 * 60 * 1000 - 1000, // Just over 24 hours ago (expired)
         data: {
           lastSearchLocation: {
             coordinates: [-80, 35],

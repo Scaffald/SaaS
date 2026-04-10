@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 // Mock data - defined before any mocks that reference it
 const mockPreviewData = {
@@ -76,7 +77,9 @@ vi.mock('@scf/core/constants/routes', () => ({
 }))
 
 // Beyond UI mock
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const Stack = ({
     children,
     testID,
@@ -153,6 +156,7 @@ vi.mock('@scaffald/ui', () => {
   const Spinner = (props: Record<string, unknown>) => <div data-testid="spinner" {...props} />
 
   return {
+    ...actual,
     Stack: Stack,
     Row: Stack,
     Button,
@@ -197,7 +201,8 @@ describe('UserProfilePanel', () => {
       })
 
       const { container } = render(
-        <UserProfilePanel userId="user-123" open={false} onOpenChange={mockOnOpenChange} />
+        <UserProfilePanel userId="user-123" open={false} onOpenChange={mockOnOpenChange} />,
+        { wrapper: TestQueryWrapper },
       )
 
       expect(container.firstChild).toBeNull()
@@ -210,7 +215,8 @@ describe('UserProfilePanel', () => {
       })
 
       const { container } = render(
-        <UserProfilePanel userId={null} open={true} onOpenChange={mockOnOpenChange} />
+        <UserProfilePanel userId={null} open={true} onOpenChange={mockOnOpenChange} />,
+        { wrapper: TestQueryWrapper },
       )
 
       expect(container.firstChild).toBeNull()
@@ -222,7 +228,7 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       expect(screen.getByTestId('profile-panel-card')).toBeInTheDocument()
     })
@@ -235,7 +241,7 @@ describe('UserProfilePanel', () => {
         isLoading: true,
       })
 
-      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       expect(screen.getByTestId('spinner')).toBeInTheDocument()
       expect(screen.getByText('Loading...')).toBeInTheDocument()
@@ -247,7 +253,7 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      render(<UserProfilePanel userId="user-123" open={false} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={false} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       expect(mockUseQuery).toHaveBeenCalledWith({ userId: 'user-123' }, { enabled: false })
     })
@@ -258,7 +264,7 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       expect(mockUseQuery).toHaveBeenCalledWith({ userId: 'user-123' }, { enabled: true })
     })
@@ -271,7 +277,7 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       expect(screen.getByText('Profile not found')).toBeInTheDocument()
     })
@@ -284,7 +290,7 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       expect(screen.getByText('John Doe')).toBeInTheDocument()
     })
@@ -295,7 +301,7 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       expect(screen.getByText('Senior Developer')).toBeInTheDocument()
     })
@@ -311,7 +317,7 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       expect(screen.queryByText('Senior Developer')).not.toBeInTheDocument()
     })
@@ -322,7 +328,7 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       expect(screen.getByText('San Francisco, CA')).toBeInTheDocument()
       expect(screen.getByTestId('map-pin-icon')).toBeInTheDocument()
@@ -339,7 +345,7 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       expect(screen.queryByText('San Francisco, CA')).not.toBeInTheDocument()
     })
@@ -352,7 +358,7 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       const avatarImage = screen.getByTestId('avatar-image')
       expect(avatarImage).toBeInTheDocument()
@@ -374,7 +380,7 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       const avatarImage = screen.getByTestId('avatar-image')
       expect(avatarImage).toBeInTheDocument()
@@ -393,7 +399,7 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       expect(screen.getByTestId('avatar-fallback')).toBeInTheDocument()
       expect(screen.getByTestId('user-icon')).toBeInTheDocument()
@@ -407,7 +413,7 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       expect(screen.getByText('Top Skills')).toBeInTheDocument()
       expect(screen.getByText('Skill (5)')).toBeInTheDocument()
@@ -421,7 +427,7 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       expect(screen.getByText('+1 more')).toBeInTheDocument()
     })
@@ -437,7 +443,7 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       expect(screen.queryByText('Top Skills')).not.toBeInTheDocument()
     })
@@ -458,7 +464,7 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       expect(screen.getByText('Skill')).toBeInTheDocument()
       expect(screen.queryByText('Skill (0)')).not.toBeInTheDocument()
@@ -472,7 +478,7 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       const viewProfileButton = screen.getByText('View Profile')
       fireEvent.click(viewProfileButton)
@@ -486,7 +492,7 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       const viewProfileButton = screen.getByText('View Profile')
       fireEvent.click(viewProfileButton)
@@ -504,7 +510,7 @@ describe('UserProfilePanel', () => {
         throw new Error('Navigation failed')
       })
 
-      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       const viewProfileButton = screen.getByText('View Profile')
       fireEvent.click(viewProfileButton)
@@ -522,7 +528,7 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       const closeButton = screen.getByTestId('x-icon').closest('button')
       expect(closeButton).toBeInTheDocument()
@@ -541,7 +547,7 @@ describe('UserProfilePanel', () => {
         isLoading: false,
       })
 
-      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />)
+      render(<UserProfilePanel userId="user-123" open={true} onOpenChange={mockOnOpenChange} />, { wrapper: TestQueryWrapper })
 
       const card = screen.getByTestId('profile-panel-card')
       expect(card).toBeInTheDocument()
@@ -560,7 +566,8 @@ describe('UserProfilePanel', () => {
           open={true}
           onOpenChange={mockOnOpenChange}
           position={{ top: 100, left: 50 }}
-        />
+        />,
+        { wrapper: TestQueryWrapper },
       )
 
       const card = screen.getByTestId('profile-panel-card')

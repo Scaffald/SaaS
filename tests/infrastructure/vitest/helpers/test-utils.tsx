@@ -1,7 +1,26 @@
 import type { ReactElement, ReactNode } from 'react';
 import { render, type RenderOptions } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { FormTestWrapper } from './form-setup';
 import { BeyondUIThemeWrapper } from './theme-setup';
+
+function createTestQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  });
+}
+
+export function TestQueryWrapper({ children }: { children: ReactNode }) {
+  const queryClient = createTestQueryClient();
+  return (
+    <QueryClientProvider client={queryClient}>
+      {children}
+    </QueryClientProvider>
+  );
+}
 
 /**
  * Options for custom render function
@@ -49,6 +68,9 @@ export function renderWithProviders(
     if (withTheme) {
       content = <BeyondUIThemeWrapper>{content}</BeyondUIThemeWrapper>;
     }
+
+    // Always wrap with QueryClientProvider
+    content = <TestQueryWrapper>{content}</TestQueryWrapper>;
 
     return <>{content}</>;
   };

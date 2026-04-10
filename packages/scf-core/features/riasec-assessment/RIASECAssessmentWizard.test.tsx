@@ -11,18 +11,18 @@ const mockGetRIASECStatus = vi.fn()
 const mockSaveCareerAssessment = vi.fn()
 const mockInvalidate = vi.fn()
 
-vi.mock('expo-router', () => ({
+vi.mock('expo-router', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   useRouter: () => ({
     push: mockRouterPush,
   }),
 }))
 
-vi.mock('@scaffald/ui', () => ({
+vi.mock('@scaffald/ui', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   useToast: () => ({
     show: mockToastShow,
   }),
-  ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
-  useThemeContext: () => ({ theme: 'light' as const }),
 }))
 
 vi.mock('@scf/core/utils/api', () => ({
@@ -108,8 +108,10 @@ vi.mock('@scf/core/features/career-assessment/components/RiasecQuickAssessment',
 
 // Mock Button
 vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
   const React = await import('react')
   return {
+    ...actual,
     Button: ({ children, onPress, disabled, ...props }: {
       children: React.ReactNode
       onPress?: () => void

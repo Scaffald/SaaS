@@ -39,9 +39,15 @@ vi.mock("@scf/core/utils/api", () => ({
   },
 }));
 
-vi.mock("@scaffald/ui", () => ({ useToast: () => toastMock }));
+vi.mock("@scaffald/ui", async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  useToast: () => toastMock,
+}));
 
-vi.mock("expo-router", () => ({ useRouter: () => routerMock }));
+vi.mock("expo-router", async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  useRouter: () => routerMock,
+}));
 
 vi.mock("@scf/schemas", () => {
   const teamRoleKeySchema = z.enum([
@@ -80,7 +86,8 @@ vi.mock("@scf/schemas", () => {
   };
 });
 
-vi.mock("lucide-react-native", () => ({
+vi.mock("lucide-react-native", async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   Palette: () => <span data-testid="palette-icon">Palette</span>,
   Check: () => <span data-testid="check-icon">Check</span>,
   ChevronDown: () => <span data-testid="chevron-down-icon">ChevronDown</span>,
@@ -97,6 +104,27 @@ vi.mock("lucide-react-native", () => ({
   ),
   Building2: () => <span data-testid="building2-icon">Building2</span>,
   FileText: () => <span data-testid="file-text-icon">FileText</span>,
+}));
+
+vi.mock("@scaffald/sdk/react", () => ({
+  useScaffald: () => ({}),
+  useScaffaldOrNull: () => ({}),
+  ScaffaldProvider: ({ children }: { children: ReactNode }) => children,
+  useCreateTeam: () => ({
+    mutateAsync: createTeamMock.mutateAsync,
+    isPending: false,
+  }),
+  useUpdateTeam: () => ({
+    mutateAsync: updateTeamMock.mutateAsync,
+    isPending: false,
+  }),
+  useTeamRoles: () => ({
+    data: [
+      { id: "role-1", key: "member", name: "Member" },
+      { id: "role-2", key: "team_admin", name: "Team Admin" },
+    ],
+    isLoading: false,
+  }),
 }));
 
 vi.mock("@scf/core/constants/routes", () => ({
@@ -351,7 +379,8 @@ vi.mock("@scaffald/ui", async () => {
   };
 });
 
-vi.mock("lucide-react-native", () => ({
+vi.mock("lucide-react-native", async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   Check: () => <span data-testid="check-icon" />,
   ChevronDown: () => <span data-testid="chevron-icon" />,
 }));

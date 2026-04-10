@@ -2,9 +2,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const extractPlainText = vi.fn();
 
-vi.mock("@scaffald/ui", () => ({
-  extractPlainText,
-}));
+vi.mock("@scaffald/ui", async () => {
+  const actual = await vi.importActual("@scaffald/ui")
+  return {
+    ...actual,
+    extractPlainText,
+  }
+});
 
 const {
   filterEmployers,

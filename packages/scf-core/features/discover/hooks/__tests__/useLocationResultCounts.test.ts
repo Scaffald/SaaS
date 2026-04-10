@@ -19,6 +19,7 @@ import {
   formatLocationWithCounts,
   useLocationResultCounts,
 } from '../useLocationResultCounts';
+import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 describe("useLocationResultCounts", () => {
   beforeEach(() => {
@@ -35,7 +36,8 @@ describe("useLocationResultCounts", () => {
       useLocationResultCounts({
         coordinates: { lat: 42.3601, lng: -71.0589 },
         enabled: true,
-      })
+      }),
+      { wrapper: TestQueryWrapper },
     );
 
     // The hook should calculate bounds from coordinates
@@ -90,7 +92,8 @@ describe("useLocationResultCounts", () => {
       useLocationResultCounts({
         coordinates: { lat: 42.3601, lng: -71.0589 },
         enabled: false,
-      })
+      }),
+      { wrapper: TestQueryWrapper },
     );
 
     expect(mockUseQuery).toHaveBeenCalledWith(
@@ -112,7 +115,8 @@ describe("useLocationResultCounts", () => {
       useLocationResultCounts({
         coordinates: { lat: 42.3601, lng: -71.0589 },
         enabled: true,
-      })
+      }),
+      { wrapper: TestQueryWrapper },
     );
 
     // Hook should handle errors without crashing
@@ -136,7 +140,8 @@ describe("useLocationResultCounts", () => {
       useLocationResultCounts({
         coordinates: { lat: 42.3601, lng: -71.0589 },
         enabled: true,
-      })
+      }),
+      { wrapper: TestQueryWrapper },
     );
 
     expect(result.current.isCached).toBe(true);

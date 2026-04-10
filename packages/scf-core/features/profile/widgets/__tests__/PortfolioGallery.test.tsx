@@ -77,7 +77,9 @@ vi.mock('@scaffald/ui', () => ({
 }))
 
 // Beyond UI mock
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const Stack = ({
     children,
     testID,
@@ -136,6 +138,7 @@ vi.mock('@scaffald/ui', () => {
   const Spinner = (props: Record<string, unknown>) => <div data-testid="spinner" {...props} />
 
   return {
+    ...actual,
     Stack: Stack,
     Row: Stack,
     Text,
@@ -147,7 +150,8 @@ vi.mock('@scaffald/ui', () => {
 })
 
 // Mock lucide icons
-vi.mock('lucide-react-native', () => ({
+vi.mock('lucide-react-native', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   Eye: ({ size, color }: { size?: number; color?: string }) => (
     <span data-testid="eye-icon" data-size={size} data-color={color}>
       Eye

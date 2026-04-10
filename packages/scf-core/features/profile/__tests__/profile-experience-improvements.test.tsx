@@ -3,7 +3,9 @@ import React from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock MonthYearPicker component
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const React = require('react') as typeof import('react')
   const MonthYearPicker = ({
     value,
@@ -39,6 +41,7 @@ vi.mock('@scaffald/ui', () => {
   }
 
   return {
+    ...actual,
     MonthYearPicker,
     DashboardWidget: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
     Button: ({

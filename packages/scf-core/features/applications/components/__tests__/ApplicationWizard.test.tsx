@@ -98,13 +98,16 @@ vi.mock('../SuccessStep', () => ({
   SuccessStep: () => <div data-testid="success-step">Application Submitted</div>,
 }))
 
-vi.mock('@scaffald/ui', () => {
+vi.mock('@scaffald/ui', async () => {
+  const actual = await vi.importActual('@scaffald/ui')
+
   const React = require('react')
   const createEl =
     (tag: string) =>
     ({ children, ...rest }: { children?: React.ReactNode; [key: string]: unknown }) =>
       React.createElement(tag, rest, children)
   return {
+    ...actual,
     Stack: createEl('div'),
     Row: createEl('div'),
     Text: createEl('span'),

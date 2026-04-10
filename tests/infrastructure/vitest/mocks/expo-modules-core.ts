@@ -35,6 +35,8 @@ export const EventEmitter = vi.fn().mockImplementation(() => ({
 }));
 export const SharedObject = vi.fn();
 export const NativeModule = vi.fn();
+export const createPermissionHook = vi.fn(() => () => [null, vi.fn(), vi.fn()]);
+export const PermissionStatus = { UNDETERMINED: 'undetermined', GRANTED: 'granted', DENIED: 'denied' };
 
 export default {
   NativeModulesProxy: mockNativeModuleProxy,
