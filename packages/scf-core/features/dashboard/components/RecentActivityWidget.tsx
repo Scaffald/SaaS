@@ -62,7 +62,7 @@ export function RecentActivityWidget() {
     entries.push({
       id: `activity-${item.id}`,
       text: (
-        <Text style={{ fontSize: 12, color: colors.text[theme].secondary, lineHeight: 16 }}>
+        <Text style={{ fontSize: 13, color: colors.text[theme].secondary, lineHeight: 19 }}>
           {label.charAt(0).toUpperCase() + label.slice(1)}
         </Text>
       ),
@@ -76,7 +76,7 @@ export function RecentActivityWidget() {
     entries.push({
       id: 'views-summary',
       text: (
-        <Text style={{ fontSize: 12, color: colors.text[theme].secondary, lineHeight: 16 }}>
+        <Text style={{ fontSize: 13, color: colors.text[theme].secondary, lineHeight: 19 }}>
           You appeared in{' '}
           <Text style={{ fontWeight: '700', color: colors.text[theme].primary }}>
             {viewCount} searches
@@ -94,10 +94,9 @@ export function RecentActivityWidget() {
       <DashboardWidget>
         <Text
           style={{
-            fontSize: 16,
+            fontSize: 18,
             fontWeight: '700',
             color: colors.text[theme].primary,
-            marginBottom: 12,
           }}
         >
           Recent Activity
@@ -113,23 +112,22 @@ export function RecentActivityWidget() {
     <DashboardWidget>
       <Text
         style={{
-          fontSize: 16,
+          fontSize: 18,
           fontWeight: '700',
           color: colors.text[theme].primary,
-          marginBottom: 4,
         }}
       >
         Recent Activity
       </Text>
-      <Stack gap={16}>
+      <Stack gap={14}>
         {entries.map((entry) => (
-          <Stack key={entry.id} gap={2}>
+          <Stack key={entry.id} gap={4}>
             {entry.text}
             <Text
               style={{
-                fontSize: 10,
-                color: colors.text[theme].secondary,
-                opacity: 0.6,
+                fontSize: 11,
+                fontWeight: '500',
+                color: colors.text[theme].tertiary,
               }}
             >
               {entry.timestamp}

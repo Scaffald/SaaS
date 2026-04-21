@@ -111,23 +111,12 @@ function AssessmentCard({ card, isFirst }: { card: AssessmentCardData; isFirst: 
         gap: 16,
       }}
     >
-      <Row justify="space-between" align="center">
-        <Text
-          style={{
-            fontSize: 16,
-            fontWeight: '700',
-            color: colors.text[theme].primary,
-            flex: 1,
-          }}
-          numberOfLines={1}
-        >
-          {card.title}
-        </Text>
+      <Stack gap={8}>
         <Stack
           paddingHorizontal={8}
           paddingVertical={2}
           borderRadius={4}
-          style={{ backgroundColor: card.badgeColor.bg }}
+          style={{ backgroundColor: card.badgeColor.bg, alignSelf: 'flex-start' }}
         >
           <Text
             style={{
@@ -141,7 +130,17 @@ function AssessmentCard({ card, isFirst }: { card: AssessmentCardData; isFirst: 
             {card.badge}
           </Text>
         </Stack>
-      </Row>
+        <Text
+          style={{
+            fontSize: 16,
+            fontWeight: '700',
+            color: colors.text[theme].primary,
+          }}
+          numberOfLines={2}
+        >
+          {card.title}
+        </Text>
+      </Stack>
 
       <Text
         style={{
@@ -204,7 +203,7 @@ export function AssessmentsCarouselWidget() {
         <Row justify="space-between" align="center">
           <Text
             style={{
-              fontSize: 20,
+              fontSize: 18,
               fontWeight: '700',
               color: colors.text[theme].primary,
             }}
