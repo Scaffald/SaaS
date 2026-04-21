@@ -1,5 +1,6 @@
 export { AnalyticsWidget } from './AnalyticsWidget'
 export { AssessmentsCarouselWidget } from './AssessmentsCarouselWidget'
+export { CommunitiesWidget } from './CommunitiesWidget'
 export { CompactNewsWidget } from './CompactNewsWidget'
 export { GrowthTipCard } from './GrowthTipCard'
 export { MobileDashboardGreeting } from './MobileDashboardGreeting'

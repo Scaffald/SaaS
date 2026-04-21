@@ -7,6 +7,7 @@ import { OccupationAssessmentWidget } from '../../occupation-assessment'
 import { RIASECAssessmentWidget } from '../../riasec-assessment'
 import { GrowthTipCard } from './GrowthTipCard'
 import { CompactNewsWidget } from './CompactNewsWidget'
+import { CommunitiesWidget } from './CommunitiesWidget'
 import { RecentActivityWidget } from './RecentActivityWidget'
 
 const TABS = ['Overview', 'Assessments'] as const
@@ -18,6 +19,7 @@ function OverviewTab() {
       <GrowthTipCard />
       <InquiryOverviewWidget />
       <CompactNewsWidget />
+      <CommunitiesWidget />
       <RecentActivityWidget />
     </Stack>
   )
