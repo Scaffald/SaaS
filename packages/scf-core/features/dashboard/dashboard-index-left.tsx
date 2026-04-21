@@ -5,8 +5,9 @@ import {
   MobileQuickActions,
   MobileDashboardTabs,
   AnalyticsWidget,
+  CommunitiesWidget,
+  CompactNewsWidget,
   ProfileIdentityWidget,
-  AssessmentsCarouselWidget,
 } from './components'
 
 /**
@@ -35,7 +36,8 @@ export function DashboardIndexLeft() {
     <Stack gap={20}>
       <AnalyticsWidget />
       <ProfileIdentityWidget />
-      <AssessmentsCarouselWidget />
+      <CommunitiesWidget />
+      <CompactNewsWidget />
     </Stack>
   )
 }
