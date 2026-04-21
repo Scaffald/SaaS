@@ -1,113 +1,174 @@
 import { useProfileCompletion } from '@scf/core/features/dashboard/completion/useProfileCompletion'
-import { Row, Stack, Text, useResponsive, useThemeContext } from '@scaffald/ui'
+import { Button, Row, Stack, Text, useResponsive, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
-import { ChevronRight, CircleDot } from 'lucide-react-native'
-import { Pressable, View } from 'react-native'
-
-function getStrengthLabel(pct: number): string {
-  if (pct >= 80) return 'Strong'
-  if (pct >= 50) return 'Intermediate'
-  if (pct >= 25) return 'Getting Started'
-  return 'Beginner'
-}
+import { ChevronLeft, ChevronRight } from 'lucide-react-native'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Animated, Pressable, View } from 'react-native'
 
 export function MobileProfileStrength() {
   const { isMobile } = useResponsive()
   const { theme } = useThemeContext()
   const { completionData, isLoading } = useProfileCompletion()
   const router = useRouter()
+  const [index, setIndex] = useState(0)
+  const fadeAnim = useRef(new Animated.Value(1)).current
 
-  if (!isMobile || isLoading || !completionData) return null
+  const incompleteItems = useMemo(
+    () => completionData?.items.filter((item) => !item.complete) ?? [],
+    [completionData]
+  )
 
-  const { completionPercentage, items } = completionData
-  const incompleteItems = items.filter((item) => !item.complete).slice(0, 3)
+  const goToIndex = useCallback(
+    (newIndex: number) => {
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start(() => {
+        setIndex(newIndex)
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }).start()
+      })
+    },
+    [fadeAnim]
+  )
 
-  if (incompleteItems.length === 0) return null
+  useEffect(() => {
+    if (incompleteItems.length <= 1) return
+    const id = setInterval(() => {
+      goToIndex((index + 1) % incompleteItems.length)
+    }, 8000)
+    return () => clearInterval(id)
+  }, [index, incompleteItems.length, goToIndex])
 
-  const strengthLabel = getStrengthLabel(completionPercentage)
+  if (!isMobile || isLoading || !completionData || incompleteItems.length === 0) {
+    return null
+  }
+
+  const safeIndex = index % incompleteItems.length
+  const card = incompleteItems[safeIndex]
+  if (!card) return null
+
+  const handleCTA = () => {
+    if (card.actionRoute) router.push(card.actionRoute)
+  }
+
+  const showArrows = incompleteItems.length > 1
 
   return (
     <View
       style={{
-        backgroundColor: colors.bg[theme].subtle,
+        backgroundColor: colors.bg[theme].default,
         borderRadius: 16,
-        padding: 16,
+        paddingHorizontal: 16,
+        paddingTop: 16,
+        paddingBottom: 12,
+        borderWidth: 1,
+        borderColor: colors.border[theme].subtle,
       }}
     >
-      {/* Header */}
-      <Row style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
-        <Stack gap={2}>
-          <Text
-            size="xs"
-            weight="semibold"
-            style={{
-              color: colors.text[theme].tertiary,
-              textTransform: 'uppercase',
-              letterSpacing: 1,
-              fontSize: 10,
-            }}
-          >
-            Profile Strength
-          </Text>
-          <Text size="lg" weight="bold" style={{ color: colors.primary[600] }}>
-            {strengthLabel}
-          </Text>
-        </Stack>
-        <Text size="sm" weight="semibold" style={{ color: colors.primary[600] }}>
-          {completionPercentage}%
+      <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.text[theme].primary,
+          }}
+        >
+          Profile strength
         </Text>
+
+        {showArrows ? (
+          <Row gap={4} style={{ alignItems: 'center' }}>
+            <Pressable
+              onPress={() =>
+                goToIndex((safeIndex - 1 + incompleteItems.length) % incompleteItems.length)
+              }
+              hitSlop={8}
+              style={({ pressed }) => ({ opacity: pressed ? 0.4 : 0.7, padding: 2 })}
+            >
+              <ChevronLeft size={20} color={colors.icon[theme].default} />
+            </Pressable>
+            <Pressable
+              onPress={() => goToIndex((safeIndex + 1) % incompleteItems.length)}
+              hitSlop={8}
+              style={({ pressed }) => ({ opacity: pressed ? 0.4 : 0.7, padding: 2 })}
+            >
+              <ChevronRight size={20} color={colors.icon[theme].default} />
+            </Pressable>
+          </Row>
+        ) : null}
       </Row>
 
-      {/* Progress bar */}
-      <View
-        style={{
-          height: 6,
-          backgroundColor: colors.bg[theme].muted,
-          borderRadius: 3,
-          overflow: 'hidden',
-          marginTop: 12,
-        }}
-      >
-        <View
-          style={{
-            height: '100%',
-            width: `${completionPercentage}%`,
-            backgroundColor: colors.primary[500],
-            borderRadius: 3,
-          }}
-        />
-      </View>
-
-      {/* Action items */}
-      <Stack gap={8} style={{ marginTop: 16 }}>
-        {incompleteItems.map((item) => (
-          <Pressable
-            key={item.id}
-            onPress={() => {
-              if (item.actionRoute) router.push(item.actionRoute)
-            }}
+      <Animated.View style={{ opacity: fadeAnim, marginTop: 8 }}>
+        <Stack gap={6}>
+          <Text
             style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 12,
-              padding: 12,
-              backgroundColor: colors.bg[theme].default,
-              borderRadius: 12,
+              fontSize: 16,
+              fontWeight: '600',
+              color: colors.text[theme].primary,
             }}
           >
-            <CircleDot size={18} color={colors.primary[500]} />
-            <Text
-              size="sm"
-              weight="medium"
-              style={{ color: colors.text[theme].primary, flex: 1 }}
-            >
-              {item.title}
-            </Text>
-            <ChevronRight size={16} color={colors.icon[theme].muted} />
-          </Pressable>
-        ))}
-      </Stack>
+            {card.title}
+          </Text>
+          <Text
+            size="sm"
+            style={{
+              color: colors.text[theme].secondary,
+              lineHeight: 20,
+            }}
+          >
+            {card.description}
+          </Text>
+        </Stack>
+      </Animated.View>
+
+      <Button
+        variant="filled"
+        color="primary"
+        fullWidth
+        onPress={handleCTA}
+        style={{ marginTop: 16 }}
+      >
+        {card.actionLabel ?? `Complete ${card.title}`}
+      </Button>
+
+      {showArrows ? (
+        <Row
+          style={{ justifyContent: 'space-between', alignItems: 'center', marginTop: 16 }}
+        >
+          <Row gap={6}>
+            {incompleteItems.map((_, i) => (
+              <Pressable
+                key={i}
+                onPress={() => goToIndex(i)}
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: 3,
+                  backgroundColor:
+                    i === safeIndex
+                      ? colors.primary[500]
+                      : colors.border[theme].default,
+                }}
+              />
+            ))}
+          </Row>
+          <Text
+            style={{
+              fontSize: 11,
+              fontWeight: '600',
+              color: colors.text[theme].tertiary,
+            }}
+          >
+            {safeIndex + 1} / {incompleteItems.length}
+          </Text>
+        </Row>
+      ) : null}
     </View>
   )
 }
