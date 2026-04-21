@@ -35,12 +35,6 @@ const QUICK_ACTIONS: QuickAction[] = [
   { label: 'Teams', icon: Users, route: ROUTES.EMPLOYERS.TEAMS.path },
 ]
 
-function getStrengthLabel(pct: number): 'Beginner' | 'Intermediate' | 'Advanced' {
-  if (pct >= 80) return 'Advanced'
-  if (pct >= 50) return 'Intermediate'
-  return 'Beginner'
-}
-
 export function ProfileHero() {
   const { theme } = useThemeContext()
   const { data } = useGeneralInfoWidget()
@@ -63,15 +57,20 @@ export function ProfileHero() {
       .slice(0, 2) || '?'
   const slug = data?.slug
   const isVerified = data?.idVerificationBadge?.badge_status === 'active'
-  const completionPct = completionData?.completionPercentage ?? 0
-  const strengthLabel = getStrengthLabel(completionPct)
+  const rawCompletionPct = completionData?.completionPercentage ?? 0
 
-  const strengthBadge =
-    completionPct >= 80
-      ? { bg: colors.emerald[100], text: colors.emerald[700] }
-      : completionPct >= 50
-        ? { bg: colors.indigo[50], text: colors.indigo[700] }
-        : { bg: colors.amber[100], text: colors.amber[700] }
+  // Baseline credit for signals the user has already provided just by having an
+  // account — so the meter never shows 0% when the profile is clearly started.
+  const hasName =
+    !!(firstName && lastName) ||
+    (!!data?.display_name && data.display_name !== 'Your profile')
+  const hasAvatar = !!avatarUrl
+  const baselinePct =
+    5 + // account exists (we wouldn't be rendering otherwise)
+    (hasName ? 5 : 0) +
+    (hasAvatar ? 5 : 0) +
+    (isVerified ? 5 : 0)
+  const completionPct = Math.min(100, Math.max(rawCompletionPct, baselinePct))
 
   return (
     <DashboardWidget>
@@ -133,35 +132,15 @@ export function ProfileHero() {
         }}
       >
         <Row justify="space-between" align="center">
-          <Row gap={8} align="center">
-            <Text
-              style={{
-                fontSize: 14,
-                fontWeight: '700',
-                color: colors.text[theme].primary,
-              }}
-            >
-              Profile Strength
-            </Text>
-            <Stack
-              paddingHorizontal={8}
-              paddingVertical={2}
-              borderRadius={6}
-              style={{ backgroundColor: strengthBadge.bg }}
-            >
-              <Text
-                style={{
-                  fontSize: 10,
-                  fontWeight: '800',
-                  color: strengthBadge.text,
-                  textTransform: 'uppercase',
-                  letterSpacing: 0.5,
-                }}
-              >
-                {strengthLabel}
-              </Text>
-            </Stack>
-          </Row>
+          <Text
+            style={{
+              fontSize: 14,
+              fontWeight: '700',
+              color: colors.text[theme].primary,
+            }}
+          >
+            Profile Strength
+          </Text>
           <Text
             style={{
               fontSize: 13,
@@ -176,7 +155,11 @@ export function ProfileHero() {
           </Text>
         </Row>
 
-        <ProgressBarBase value={completionPct} color="primary" />
+        <ProgressBarBase
+          value={completionPct}
+          color="primary"
+          style={{ backgroundColor: colors.bg[theme].muted }}
+        />
       </Stack>
 
       <ScrollView

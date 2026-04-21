@@ -1,9 +1,18 @@
-import { Button, DashboardWidget, Row, Stack, Text, useThemeContext } from '@scaffald/ui'
+import {
+  Button,
+  CarouselArrows,
+  CarouselDots,
+  DashboardWidget,
+  Row,
+  Stack,
+  Text,
+  useThemeContext,
+} from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
-import { ChevronLeft, ChevronRight, TrendingUp } from 'lucide-react-native'
+import { TrendingUp } from 'lucide-react-native'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Animated, Pressable, View } from 'react-native'
+import { Animated, View } from 'react-native'
 import { useGrowthCards } from '../completion/useGrowthCards'
 
 export function GrowthCard() {
@@ -59,9 +68,9 @@ export function GrowthCard() {
   const eyebrowColor = isEngagement
     ? 'rgba(255,255,255,0.75)'
     : colors.text[theme].tertiary
-  const chevronColor = isEngagement ? '#fff' : colors.icon[theme].default
-  const dotOn = isEngagement ? '#fff' : colors.primary[500]
-  const dotOff = isEngagement ? 'rgba(255,255,255,0.3)' : colors.border[theme].default
+  const chevronColor = isEngagement ? '#fff' : undefined
+  const dotOn = isEngagement ? '#fff' : undefined
+  const dotOff = isEngagement ? 'rgba(255,255,255,0.3)' : undefined
   const counterColor = isEngagement
     ? 'rgba(255,255,255,0.6)'
     : colors.text[theme].tertiary
@@ -99,22 +108,11 @@ export function GrowthCard() {
           {card.eyebrow}
         </Text>
         {showArrows ? (
-          <Row gap={4} align="center">
-            <Pressable
-              onPress={() => goToIndex((safeIndex - 1 + cards.length) % cards.length)}
-              hitSlop={8}
-              style={({ pressed }) => ({ opacity: pressed ? 0.4 : 0.7, padding: 2 })}
-            >
-              <ChevronLeft size={18} color={chevronColor} />
-            </Pressable>
-            <Pressable
-              onPress={() => goToIndex((safeIndex + 1) % cards.length)}
-              hitSlop={8}
-              style={({ pressed }) => ({ opacity: pressed ? 0.4 : 0.7, padding: 2 })}
-            >
-              <ChevronRight size={18} color={chevronColor} />
-            </Pressable>
-          </Row>
+          <CarouselArrows
+            color={chevronColor}
+            onPrev={() => goToIndex((safeIndex - 1 + cards.length) % cards.length)}
+            onNext={() => goToIndex((safeIndex + 1) % cards.length)}
+          />
         ) : null}
       </Row>
 
@@ -152,20 +150,13 @@ export function GrowthCard() {
 
       {showArrows ? (
         <Row justify="space-between" align="center">
-          <Row gap={6}>
-            {cards.map((_, i) => (
-              <Pressable
-                key={i}
-                onPress={() => goToIndex(i)}
-                style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: 3,
-                  backgroundColor: i === safeIndex ? dotOn : dotOff,
-                }}
-              />
-            ))}
-          </Row>
+          <CarouselDots
+            count={cards.length}
+            activeIndex={safeIndex}
+            onDotPress={goToIndex}
+            activeColor={dotOn}
+            inactiveColor={dotOff}
+          />
           <Text
             style={{
               fontSize: 11,

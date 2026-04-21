@@ -2,6 +2,8 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { useIPIPStatus } from '@scf/core/utils/personality-assessment-sdk-hooks'
 import { useRIASECStatus, useOccupationStatus } from '@scf/core/utils/onet-sdk-hooks'
 import {
+  CarouselArrows,
+  CarouselDots,
   DashboardWidget,
   Row,
   Skeleton,
@@ -12,7 +14,6 @@ import {
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
-import { ChevronLeft, ChevronRight } from 'lucide-react-native'
 import { useRef, useState } from 'react'
 import { ScrollView, type NativeSyntheticEvent, type NativeScrollEvent, Pressable } from 'react-native'
 
@@ -173,8 +174,24 @@ export function AssessmentsCarouselWidget() {
   const { cards, isLoading } = useAssessmentCards()
   const [activeIndex, setActiveIndex] = useState(0)
   const scrollRef = useRef<ScrollView>(null)
+  // Suppress onScroll-driven index updates while a programmatic scrollTo is
+  // animating — otherwise each in-between offset flashes its matching dot as
+  // the scroll sweeps across neighbouring cards.
+  const isProgrammaticScroll = useRef(false)
+
+  const scrollToIndex = (nextIndex: number) => {
+    isProgrammaticScroll.current = true
+    scrollRef.current?.scrollTo({ x: nextIndex * 284, animated: true })
+    setActiveIndex(nextIndex)
+    // Re-enable user-driven updates once the animated scroll has settled.
+    // 400ms covers typical scrollTo animation duration on both web and native.
+    setTimeout(() => {
+      isProgrammaticScroll.current = false
+    }, 400)
+  }
 
   const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (isProgrammaticScroll.current) return
     const x = e.nativeEvent.contentOffset.x
     const cardWidth = 260 + 24 // card width + gap
     const idx = Math.round(x / cardWidth)
@@ -210,30 +227,16 @@ export function AssessmentsCarouselWidget() {
           >
             Assessments
           </Text>
-          <Row gap={4}>
-            <Pressable
-              onPress={() => {
-                const prev = Math.max(0, activeIndex - 1)
-                scrollRef.current?.scrollTo({ x: prev * 284, animated: true })
-                setActiveIndex(prev)
-              }}
-              style={({ pressed }) => ({ opacity: pressed ? 0.5 : activeIndex === 0 ? 0.3 : 0.7, padding: 4 })}
-              disabled={activeIndex === 0}
-            >
-              <ChevronLeft size={18} color={colors.text[theme].primary} />
-            </Pressable>
-            <Pressable
-              onPress={() => {
-                const next = Math.min(cards.length - 1, activeIndex + 1)
-                scrollRef.current?.scrollTo({ x: next * 284, animated: true })
-                setActiveIndex(next)
-              }}
-              style={({ pressed }) => ({ opacity: pressed ? 0.5 : activeIndex >= cards.length - 1 ? 0.3 : 0.7, padding: 4 })}
-              disabled={activeIndex >= cards.length - 1}
-            >
-              <ChevronRight size={18} color={colors.text[theme].primary} />
-            </Pressable>
-          </Row>
+          <CarouselArrows
+            onPrev={() => {
+              if (cards.length === 0) return
+              scrollToIndex((activeIndex - 1 + cards.length) % cards.length)
+            }}
+            onNext={() => {
+              if (cards.length === 0) return
+              scrollToIndex((activeIndex + 1) % cards.length)
+            }}
+          />
         </Row>
 
         <Text
@@ -264,24 +267,11 @@ export function AssessmentsCarouselWidget() {
 
       {/* Pagination dots + View All */}
       <Row justify="space-between" align="center">
-        <Row gap={8}>
-          {cards.map((_, i) => (
-            <Pressable
-              key={i}
-              onPress={() => {
-                scrollRef.current?.scrollTo({ x: i * 284, animated: true })
-                setActiveIndex(i)
-              }}
-              style={{
-                width: 8,
-                height: 8,
-                borderRadius: 4,
-                backgroundColor:
-                  i === activeIndex ? colors.primary[600] : colors.gray[300],
-              }}
-            />
-          ))}
-        </Row>
+        <CarouselDots
+          count={cards.length}
+          activeIndex={activeIndex}
+          onDotPress={scrollToIndex}
+        />
         <Text
           style={{
             fontSize: 12,
