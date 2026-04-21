@@ -5,18 +5,20 @@ import {
   useUnreadCount,
   useMarkAsReadMutation,
 } from '@scf/core/utils/notifications-sdk-hooks'
+import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { useQueryClient } from '@tanstack/react-query'
-import { shadows, useThemeContext, useResponsive, Row, BottomBarProvider } from '@scaffald/ui'
+import { shadows, useThemeContext, useResponsive, Avatar, Row, Text, BottomBarProvider } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import type { NotificationItem } from '@scf/core/components/notifications'
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { DrawerActions } from '@react-navigation/native'
-import { Bell, Menu } from 'lucide-react-native'
+import { ArrowLeft, Bell, Search, X } from 'lucide-react-native'
 import { Drawer } from 'expo-router/drawer'
 import { useRouter } from 'expo-router'
-import { useEffect, useState, type ReactNode } from 'react'
-import { Pressable } from 'react-native'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { Pressable, TextInput, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { DrawerContent } from './DrawerContent'
 import { MobileBottomNav } from './MobileBottomNav'
 import { ScaffaldLogo } from '@scf/core/assets'
@@ -65,7 +67,38 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
 
   // Fetch unread count only when authenticated to avoid 400 from OpenAPI validation
   const { data: unreadCountData } = useUnreadCount({ enabled: !!session })
-  const _unreadCount = unreadCountData?.data?.unread_count ?? 0
+  const unreadCount = unreadCountData?.data?.unread_count ?? 0
+
+  const { data: profileData } = useGeneralInfoWidget()
+  const avatarUrl = profileData?.avatar_url ?? profileData?.avatar_path ?? undefined
+  const firstName = profileData?.privateData?.first_name ?? ''
+  const avatarInitials = (firstName.charAt(0) || 'U').toUpperCase()
+  const avatarAlt = profileData?.display_name ?? firstName
+  const isVerified = profileData?.idVerificationBadge?.badge_status === 'active'
+
+  const [searchActive, setSearchActive] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const searchInputRef = useRef<TextInput | null>(null)
+  const insets = useSafeAreaInsets()
+
+  const closeSearch = () => {
+    setSearchActive(false)
+    setSearchQuery('')
+  }
+
+  const submitSearch = () => {
+    const q = searchQuery.trim()
+    closeSearch()
+    const base = ROUTES.DASHBOARD.ANALYTICS.SEARCH.path
+    router.push(q ? `${base}?q=${encodeURIComponent(q)}` : base)
+  }
+
+  useEffect(() => {
+    if (searchActive) {
+      const id = setTimeout(() => searchInputRef.current?.focus(), 50)
+      return () => clearTimeout(id)
+    }
+  }, [searchActive])
 
   // Mark as read mutation
   const queryClient = useQueryClient()
@@ -167,25 +200,145 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
             minWidth: drawerWidth,
           },
           overlayColor: shadows.xs.shadowColor,
+          header: isSmall && searchActive
+            ? () => (
+                <View
+                  style={{
+                    paddingTop: insets.top,
+                    backgroundColor: colors.bg[theme].default,
+                    borderBottomWidth: 1,
+                    borderBottomColor: colors.border[theme].subtle,
+                  }}
+                >
+                  <Row
+                    gap={8}
+                    align="center"
+                    style={{
+                      paddingHorizontal: 12,
+                      paddingVertical: 10,
+                    }}
+                  >
+                    <Pressable
+                      onPress={closeSearch}
+                      hitSlop={8}
+                      style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1, padding: 4 })}
+                    >
+                      <ArrowLeft size={22} color={colors.icon[theme].default} />
+                    </Pressable>
+                    <View
+                      style={{
+                        flex: 1,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 8,
+                        paddingHorizontal: 12,
+                        paddingVertical: 8,
+                        backgroundColor: colors.bg[theme].subtle,
+                        borderRadius: 999,
+                      }}
+                    >
+                      <Search size={18} color={colors.icon[theme].muted} />
+                      <TextInput
+                        ref={searchInputRef}
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                        onSubmitEditing={submitSearch}
+                        placeholder="Search Scaffald"
+                        placeholderTextColor={colors.text[theme].tertiary}
+                        returnKeyType="search"
+                        autoCorrect={false}
+                        style={[
+                          {
+                            flex: 1,
+                            fontSize: 15,
+                            color: colors.text[theme].primary,
+                            paddingVertical: 0,
+                          },
+                          { outlineStyle: 'none' } as object,
+                        ]}
+                      />
+                      {searchQuery.length > 0 ? (
+                        <Pressable
+                          onPress={() => setSearchQuery('')}
+                          hitSlop={8}
+                          style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+                        >
+                          <X size={16} color={colors.icon[theme].muted} />
+                        </Pressable>
+                      ) : null}
+                    </View>
+                  </Row>
+                </View>
+              )
+            : undefined,
           headerLeft: () => {
             return isSmall ? (
               <Pressable
                 onPress={() => {
                   navigation.dispatch(DrawerActions.toggleDrawer())
                 }}
+                hitSlop={4}
+                style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
               >
-                <Menu size={24} color={colors.icon[theme].default} />
+                <Avatar
+                  size={32}
+                  src={avatarUrl}
+                  initials={avatarInitials}
+                  verified={isVerified}
+                  alt={avatarAlt}
+                />
               </Pressable>
             ) : null
           },
           headerRight: () =>
             isSmall ? (
-              <Pressable
-                onPress={() => router.push(buildPath(ROUTES.DASHBOARD.NOTIFICATIONS, {}))}
-                style={{ paddingRight: 4 }}
-              >
-                <Bell size={22} color={colors.icon[theme].default} />
-              </Pressable>
+              <Row gap={16} align="center">
+                <Pressable
+                  onPress={() => setSearchActive(true)}
+                  hitSlop={8}
+                  style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+                >
+                  <Search size={22} color={colors.icon[theme].default} />
+                </Pressable>
+                <Pressable
+                  onPress={() => router.push(buildPath(ROUTES.DASHBOARD.NOTIFICATIONS, {}))}
+                  hitSlop={8}
+                  style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1, paddingRight: 4 })}
+                >
+                  <View>
+                    <Bell size={22} color={colors.icon[theme].default} />
+                    {unreadCount > 0 ? (
+                      <View
+                        style={{
+                          position: 'absolute',
+                          top: -4,
+                          right: -6,
+                          minWidth: 16,
+                          height: 16,
+                          borderRadius: 8,
+                          backgroundColor: colors.primary[500],
+                          paddingHorizontal: 4,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderWidth: 2,
+                          borderColor: colors.bg[theme].default,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 9,
+                            fontWeight: '700',
+                            color: '#ffffff',
+                            lineHeight: 11,
+                          }}
+                        >
+                          {unreadCount > 99 ? '99+' : unreadCount}
+                        </Text>
+                      </View>
+                    ) : null}
+                  </View>
+                </Pressable>
+              </Row>
             ) : (
               <Row gap={12} align="center">
                 <ScaffaldLogo height={22} width={22} showWordmark={false} />
