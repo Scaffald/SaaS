@@ -142,10 +142,10 @@ jobs:
             echo "⏭️ Supabase secrets not configured — skipping edge functions"
             exit 0
           fi
-          for func in job-import news; do
+          for func in api job-import news; do
             pnpx supabase functions deploy "$func" \
               --project-ref "$SUPABASE_PROJECT_ID" \
-              --auth-token "$SUPABASE_ACCESS_TOKEN" \
+              --use-api \
               || echo "⚠️ $func deployment failed (non-blocking)"
           done
         continue-on-error: true
