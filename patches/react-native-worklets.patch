@@ -1,3 +1,19 @@
+diff --git a/lib/module/memory/serializable.native.js b/lib/module/memory/serializable.native.js
+--- a/lib/module/memory/serializable.native.js
++++ b/lib/module/memory/serializable.native.js
+@@ -521,6 +521,16 @@ function freezeObjectInDev(value) {
+   if (!__DEV__ || globalThis.__RUNTIME_KIND !== RuntimeKind.ReactNative) {
+     return;
+   }
++  // Reanimated 4 shared values register themselves in serializableMappingCache before
++  // any worklets run. On a cache miss (e.g. fast-refresh clears the cache), createSerializable
++  // falls back to clonePlainJSObject which calls this function. Freezing a shared value
++  // replaces its `.value` setter with a no-op, silently breaking animations
++  // (e.g. the expo-router/drawer drawer never opening on iOS). Skip them instead.
++  if (value != null && value._isReanimatedSharedValue === true) {
++    return;
++  }
+   Object.entries(value).forEach(([key, element]) => {
 diff --git a/lib/module/memory/bundleUnpacker.native.js b/lib/module/memory/bundleUnpacker.native.js
 --- a/lib/module/memory/bundleUnpacker.native.js
 +++ b/lib/module/memory/bundleUnpacker.native.js
