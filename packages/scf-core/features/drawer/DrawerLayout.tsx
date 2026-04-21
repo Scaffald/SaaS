@@ -89,7 +89,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
   const submitSearch = () => {
     const q = searchQuery.trim()
     closeSearch()
-    const base = ROUTES.DASHBOARD.ANALYTICS.SEARCH.path
+    const base = ROUTES.SEARCH.path
     router.push(q ? `${base}?q=${encodeURIComponent(q)}` : base)
   }
 

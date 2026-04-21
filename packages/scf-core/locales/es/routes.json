@@ -1,5 +1,6 @@
 {
   "publicProfile": "Perfil público",
+  "search": "Buscar",
   "auth": {
     "callback": "Auth Callback",
     "confirm": "Confirm Account",

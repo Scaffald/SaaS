@@ -135,6 +135,13 @@ const ROUTES_CONFIG = {
     exact: true,
   },
 
+  SEARCH: {
+    path: '/search',
+    titleKey: 'routes.search' as const,
+    protected: true,
+    exact: true,
+  },
+
   WORKERS: {
     path: '/workers',
     titleKey: 'routes.dashboard.discover.workers.title',
