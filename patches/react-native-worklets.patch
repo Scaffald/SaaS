@@ -1,3 +1,16 @@
+diff --git a/Common/cpp/worklets/Resources/ValueUnpacker.cpp b/Common/cpp/worklets/Resources/ValueUnpacker.cpp
+--- a/Common/cpp/worklets/Resources/ValueUnpacker.cpp
++++ b/Common/cpp/worklets/Resources/ValueUnpacker.cpp
+@@ -40,7 +40,9 @@ const char ValueUnpackerCode[] =
+     } else if (category === 'RemoteFunction') {
+       var fun = function fun() {
+         var label = remoteFunctionName ? "function `".concat(remoteFunctionName, "`") : 'anonymous function';
+-        throw new Error("[Worklets] Tried to synchronously call a non-worklet ".concat(label, " on the UI thread.\nSee https://docs.swmansion.com/react-native-worklets/docs/guides/troubleshooting#tried-to-synchronously-call-a-non-worklet-function-on-the-ui-thread for more details."));
++        // Downgraded from throw to console.warn for Reanimated 4.2.1 + drawer-layout compat.
++        // addListener/removeListener are called from mappers; they're safe no-ops here since
++        // mappers still run via dirty-flag polling on animation frames.
++        console.warn("[Worklets] Tried to synchronously call a non-worklet ".concat(label, " on the UI thread."));
+       };
 diff --git a/lib/module/memory/serializable.native.js b/lib/module/memory/serializable.native.js
 --- a/lib/module/memory/serializable.native.js
 +++ b/lib/module/memory/serializable.native.js
