@@ -1,13 +1,12 @@
 import { Stack, useResponsive, usePageBottomBar } from '@scaffald/ui'
 import {
   MobileProfileHero,
-  MobileProfileStrength,
+  ProfileStrengthCard,
   MobileQuickActions,
   MobileDashboardTabs,
   AnalyticsWidget,
   CommunitiesWidget,
   CompactNewsWidget,
-  ProfileIdentityWidget,
 } from './components'
 
 /**
@@ -26,7 +25,7 @@ export function DashboardIndexLeft() {
       <Stack gap={16}>
         <MobileProfileHero />
         <MobileQuickActions />
-        <MobileProfileStrength />
+        <ProfileStrengthCard />
         <MobileDashboardTabs />
       </Stack>
     )
@@ -35,7 +34,6 @@ export function DashboardIndexLeft() {
   return (
     <Stack gap={20}>
       <AnalyticsWidget />
-      <ProfileIdentityWidget />
       <CommunitiesWidget />
       <CompactNewsWidget />
     </Stack>

@@ -1,13 +1,12 @@
 import { useProfileCompletion } from '@scf/core/features/dashboard/completion/useProfileCompletion'
-import { Button, Row, Stack, Text, useResponsive, useThemeContext } from '@scaffald/ui'
+import { Button, Row, Stack, Text, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import { ChevronLeft, ChevronRight } from 'lucide-react-native'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Animated, Pressable, View } from 'react-native'
 
-export function MobileProfileStrength() {
-  const { isMobile } = useResponsive()
+export function ProfileStrengthCard() {
   const { theme } = useThemeContext()
   const { completionData, isLoading } = useProfileCompletion()
   const router = useRouter()
@@ -45,7 +44,7 @@ export function MobileProfileStrength() {
     return () => clearInterval(id)
   }, [index, incompleteItems.length, goToIndex])
 
-  if (!isMobile || isLoading || !completionData || incompleteItems.length === 0) {
+  if (isLoading || !completionData || incompleteItems.length === 0) {
     return null
   }
 
