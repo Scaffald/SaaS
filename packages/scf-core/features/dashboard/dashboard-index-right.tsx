@@ -2,6 +2,7 @@ import { Stack, useResponsive } from '@scaffald/ui'
 import {
   AssessmentsCarouselWidget,
   GrowthCard,
+  ProfileHero,
   RecentActivityWidget,
   SuggestedContactsWidget,
 } from './components'
@@ -13,6 +14,7 @@ export function DashboardIndexRight() {
 
   return (
     <Stack gap={20}>
+      <ProfileHero />
       <GrowthCard />
       <AssessmentsCarouselWidget />
       <RecentActivityWidget />
