@@ -1,6 +1,5 @@
 import { ScaffaldLogo } from '@scf/core/assets'
 import { ROUTES } from '@scf/core/constants/routes'
-import { useThemeSetting } from '@scf/core/provider/theme/UniversalThemeProvider'
 import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { usePathname } from '@scf/core/utils/usePathname'
 import { openPublicProfileInNewTab } from '@scf/core/utils/publicProfileUrl'
@@ -11,11 +10,9 @@ import { useUser } from '@scf/core/utils/useUser'
 import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 import {
   ExternalLink,
-  Moon,
   PanelLeftClose,
   PanelRightClose,
   Settings as SettingsIcon,
-  Sun,
 } from 'lucide-react-native'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
@@ -66,7 +63,6 @@ export const DrawerContent = ({
   const { theme } = useThemeContext()
   const pathname = normalizePath(usePathname())
   const router = useRouter()
-  const { resolvedTheme, set: setTheme } = useThemeSetting()
   const { user, profile } = useUser()
   const { hasOfficeRole } = useUserRoles()
   const { data: generalInfo } = useGeneralInfoWidget(undefined, {
@@ -106,11 +102,6 @@ export const DrawerContent = ({
     handleNavigate(ROUTES.DASHBOARD.SETTINGS.path)
   }, [router, handleNavigate])
 
-  const handleThemeToggle = useCallback(() => {
-    const nextTheme = resolvedTheme === 'dark' ? 'light' : 'dark'
-    setTheme(nextTheme)
-  }, [resolvedTheme, setTheme])
-
   const profilePath = ROUTES.PROFILE.path
   const handleProfilePress = useCallback(() => {
     router.push(profilePath)
@@ -126,9 +117,6 @@ export const DrawerContent = ({
     }
   }, [handleNavigate, pathname])
 
-  const ThemeToggleIcon = resolvedTheme === 'dark' ? Sun : Moon
-  const themeToggleLabel =
-    resolvedTheme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'
   const footerIconSize = 22
 
   const FooterActionButton = ({
@@ -240,11 +228,6 @@ export const DrawerContent = ({
           <FooterActionButton label="Settings" onPress={handleSettingsPress}>
             <SettingsIcon size={footerIconSize} color={colors.icon[glassTheme].default} />
           </FooterActionButton>
-          {!isCollapsed && (
-            <FooterActionButton label={themeToggleLabel} onPress={handleThemeToggle}>
-              <ThemeToggleIcon size={footerIconSize} color={colors.icon[glassTheme].default} />
-            </FooterActionButton>
-          )}
           {canCollapse && onToggleCollapse ? (
             <FooterActionButton
               label={isCollapsed ? 'Expand navigation' : 'Collapse navigation'}

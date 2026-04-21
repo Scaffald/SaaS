@@ -175,8 +175,10 @@ export const useThemeSetting = () => {
     throw new Error('useThemeSetting should be used within the context provider.')
   }
 
-  const resolvedTheme =
-    context.current === 'system' ? context.systemTheme : (context.current ?? 'system')
+  // TODO: re-enable when dark mode is ready — remove this cast and restore the line below
+  const resolvedTheme = 'light' as 'light' | 'dark'
+  // const resolvedTheme =
+  //   context.current === 'system' ? context.systemTheme : (context.current ?? 'system')
 
   const outputContext = {
     ...context,
