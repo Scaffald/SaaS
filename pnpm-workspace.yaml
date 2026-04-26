@@ -70,7 +70,7 @@ catalog:
   expo-system-ui: ~55.0.16
   expo-updates: ~55.0.21
   expo-web-browser: ~55.0.14
-  fast-xml-parser: ~5.5.7
+  fast-xml-parser: ~5.7.0
   i18n-js: ^4.4.3
   mapbox-gl: ~3.16.0
   moti: ~0.25.3
