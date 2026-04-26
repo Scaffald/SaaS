@@ -256,7 +256,7 @@
     "check-dependency-version-consistency": "^6.0.0",
     "cross-env": "^7.0.3",
     "dotenv-cli": "^7.4.2",
-    "flow-remove-types": "^2.307.0",
+    "flow-remove-types": "^2.311.0",
     "fs-extra": "^11.3.3",
     "jsdom": "^27.2.0",
     "msw": "^2.12.8",
