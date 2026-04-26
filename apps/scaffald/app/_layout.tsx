@@ -17,17 +17,8 @@ import type { Session } from '@supabase/auth-js'
 import { SplashScreen, Stack, useSegments } from 'expo-router'
 import type { ReactNode } from 'react'
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
-import { LogBox, View } from 'react-native'
+import { View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-
-// Suppress known upstream warnings from react-native-drawer-layout v4 + Reanimated v4.
-// The drawer's internal code passes shared values in dependency arrays and uses
-// non-worklet addListener/removeListener methods. These are cosmetic warnings —
-// the drawer functions correctly. Remove once drawer-layout ships a v5 stable fix.
-LogBox.ignoreLogs([
-  '[Worklets] Tried to modify key `value`',
-  '[Worklets] Tried to synchronously call a non-worklet function',
-])
 
 /** Bridges UniversalThemeProvider (scf-core) to scaffald-ui ThemeProvider so one source drives both. */
 function ThemeBridge({ children }: { children: ReactNode }) {

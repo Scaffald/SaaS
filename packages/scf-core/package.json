@@ -23,7 +23,6 @@
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
-    "@react-navigation/drawer": "^7.5.8",
     "@rehookify/datepicker": "^6.6.6",
     "@scaffald/sdk": "workspace:*",
     "@scaffald/ui": "workspace:*",

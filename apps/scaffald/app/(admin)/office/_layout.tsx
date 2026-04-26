@@ -2,8 +2,8 @@ import { ErrorBoundary } from '@scf/core/components/ErrorBoundary'
 import { DrawerLayout } from '@scf/core/features/drawer/DrawerLayout'
 import { useOfficeRouteProtection } from '@scf/core/utils/auth/useOfficeRouteProtection'
 import { useRoleProtectedRoute } from '@scf/core/utils/auth/useRoleProtectedRoute'
-import { Drawer } from 'expo-router/drawer'
-import { Spinner, Text, Stack } from '@scaffald/ui'
+import { Stack } from 'expo-router'
+import { Spinner, Text, Stack as UIStack } from '@scaffald/ui'
 
 export default function OfficeLayout() {
   const { isAuthorized, isLoading } = useRoleProtectedRoute(['office'])
@@ -12,10 +12,10 @@ export default function OfficeLayout() {
   // Show loading state BEFORE rendering the drawer
   if (isLoading) {
     return (
-      <Stack justify="center" align="center">
+      <UIStack justify="center" align="center">
         <Spinner size="lg" />
         <Text>Loading...</Text>
-      </Stack>
+      </UIStack>
     )
   }
 
@@ -39,38 +39,38 @@ export default function OfficeLayout() {
       }}
     >
       <DrawerLayout protectionComponent={null}>
-        <Drawer.Screen name="index" options={{ title: 'Office' }} />
-        <Drawer.Screen name="applications/index" options={{ title: 'Applications' }} />
-        <Drawer.Screen name="cms/index" options={{ title: 'Users' }} />
-        <Drawer.Screen name="users/[id]/edit" options={{ title: 'Edit User' }} />
-        <Drawer.Screen name="jobs/index" options={{ title: 'Jobs' }} />
-        <Drawer.Screen name="jobs/create" options={{ title: 'Create Job' }} />
-        <Drawer.Screen name="jobs/[id]/edit" options={{ title: 'Edit Job' }} />
-        <Drawer.Screen name="teams/index" options={{ title: 'Teams' }} />
-        <Drawer.Screen name="teams/create" options={{ title: 'Create Team' }} />
-        <Drawer.Screen name="teams/[id]/index" options={{ title: 'Team Detail' }} />
-        <Drawer.Screen name="teams/[id]/edit" options={{ title: 'Edit Team' }} />
-        <Drawer.Screen name="teams/[id]/analytics" options={{ title: 'Team Analytics' }} />
-        <Drawer.Screen name="teams/[id]/settings" options={{ title: 'Team Settings' }} />
-        <Drawer.Screen name="universities/index" options={{ title: 'Universities' }} />
-        <Drawer.Screen name="universities/create" options={{ title: 'Create University' }} />
-        <Drawer.Screen name="universities/[id]/edit" options={{ title: 'Edit University' }} />
-        <Drawer.Screen name="organizations/index" options={{ title: 'Organizations' }} />
-        <Drawer.Screen name="organizations/create" options={{ title: 'Create Organization' }} />
-        <Drawer.Screen name="organizations/[id]/edit" options={{ title: 'Edit Organization' }} />
-        <Drawer.Screen name="background-checks/index" options={{ title: 'Background Checks' }} />
-        <Drawer.Screen
+        <Stack.Screen name="index" options={{ title: 'Office' }} />
+        <Stack.Screen name="applications/index" options={{ title: 'Applications' }} />
+        <Stack.Screen name="cms/index" options={{ title: 'Users' }} />
+        <Stack.Screen name="users/[id]/edit" options={{ title: 'Edit User' }} />
+        <Stack.Screen name="jobs/index" options={{ title: 'Jobs' }} />
+        <Stack.Screen name="jobs/create" options={{ title: 'Create Job' }} />
+        <Stack.Screen name="jobs/[id]/edit" options={{ title: 'Edit Job' }} />
+        <Stack.Screen name="teams/index" options={{ title: 'Teams' }} />
+        <Stack.Screen name="teams/create" options={{ title: 'Create Team' }} />
+        <Stack.Screen name="teams/[id]/index" options={{ title: 'Team Detail' }} />
+        <Stack.Screen name="teams/[id]/edit" options={{ title: 'Edit Team' }} />
+        <Stack.Screen name="teams/[id]/analytics" options={{ title: 'Team Analytics' }} />
+        <Stack.Screen name="teams/[id]/settings" options={{ title: 'Team Settings' }} />
+        <Stack.Screen name="universities/index" options={{ title: 'Universities' }} />
+        <Stack.Screen name="universities/create" options={{ title: 'Create University' }} />
+        <Stack.Screen name="universities/[id]/edit" options={{ title: 'Edit University' }} />
+        <Stack.Screen name="organizations/index" options={{ title: 'Organizations' }} />
+        <Stack.Screen name="organizations/create" options={{ title: 'Create Organization' }} />
+        <Stack.Screen name="organizations/[id]/edit" options={{ title: 'Edit Organization' }} />
+        <Stack.Screen name="background-checks/index" options={{ title: 'Background Checks' }} />
+        <Stack.Screen
           name="background-checks/request"
           options={{ title: 'Request Background Check' }}
         />
-        <Drawer.Screen name="storage/index" options={{ title: 'Storage Analytics' }} />
-        <Drawer.Screen name="payments/index" options={{ title: 'Payment Analytics' }} />
-        <Drawer.Screen name="transactions/index" options={{ title: 'Transaction History' }} />
-        <Drawer.Screen name="violations/index" options={{ title: 'Violation Reports' }} />
-        <Drawer.Screen name="settings/geographic" options={{ title: 'Geographic Settings' }} />
-        <Drawer.Screen name="settings/stripe" options={{ title: 'Stripe Payments' }} />
-        <Drawer.Screen name="api-keys/page" options={{ title: 'API Keys' }} />
-        <Drawer.Screen
+        <Stack.Screen name="storage/index" options={{ title: 'Storage Analytics' }} />
+        <Stack.Screen name="payments/index" options={{ title: 'Payment Analytics' }} />
+        <Stack.Screen name="transactions/index" options={{ title: 'Transaction History' }} />
+        <Stack.Screen name="violations/index" options={{ title: 'Violation Reports' }} />
+        <Stack.Screen name="settings/geographic" options={{ title: 'Geographic Settings' }} />
+        <Stack.Screen name="settings/stripe" options={{ title: 'Stripe Payments' }} />
+        <Stack.Screen name="api-keys/page" options={{ title: 'API Keys' }} />
+        <Stack.Screen
           name="communities/verification"
           options={{ title: 'Community Verification' }}
         />

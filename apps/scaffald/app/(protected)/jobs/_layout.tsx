@@ -1,7 +1,7 @@
 import { ErrorBoundary } from '@scf/core/components/ErrorBoundary'
 import { DrawerLayout } from '@scf/core/features/drawer/DrawerLayout'
 import { useUser } from '@scf/core/utils/useUser'
-import { Drawer } from 'expo-router/drawer'
+import { Stack } from 'expo-router'
 
 /**
  * Jobs Layout — Drawer navigation only.
@@ -18,18 +18,18 @@ export default function JobsLayout() {
       }}
     >
       <DrawerLayout protectionComponent={null}>
-        <Drawer.Screen name="index" options={{ title: 'Search Jobs' }} />
-        <Drawer.Screen name="[id]" options={{ title: 'Job Detail' }} />
-        <Drawer.Screen name="applications/index" options={{ title: 'Applications' }} />
-        <Drawer.Screen
+        <Stack.Screen name="index" options={{ title: 'Search Jobs' }} />
+        <Stack.Screen name="[id]" options={{ title: 'Job Detail' }} />
+        <Stack.Screen name="applications/index" options={{ title: 'Applications' }} />
+        <Stack.Screen
           name="applications/[applicationId]/inquiry"
           options={{ title: 'Inquiry' }}
         />
-        <Drawer.Screen
+        <Stack.Screen
           name="applications/[applicationId]/index"
-          options={{ drawerItemStyle: { display: 'none' }, title: 'Application Detail' }}
+          options={{ title: 'Application Detail' }}
         />
-        <Drawer.Screen name="my-listings/index" options={{ title: 'My Listings' }} />
+        <Stack.Screen name="my-listings/index" options={{ title: 'My Listings' }} />
       </DrawerLayout>
     </ErrorBoundary>
   )

@@ -152,9 +152,9 @@ const InnerProvider = ({ children }: { children: ReactNode }) => {
 
   const navTheme = resolvedTheme === 'dark' ? AppDarkTheme : AppLightTheme
 
-  // Wrap all platforms with React Navigation theme provider
-  // This is needed because expo-router/drawer uses React Navigation components
-  // that require theme context (like Background, Header, etc.)
+  // Wrap all platforms with React Navigation theme provider — expo-router's
+  // Stack uses React Navigation components that require theme context
+  // (Background, Header, etc.).
   if (Platform.OS === 'web') {
     return <ThemeProvider value={navTheme}>{children as ReactNode}</ThemeProvider>
   }

@@ -7,7 +7,6 @@ import { supabase } from '@scf/core/utils/supabase/client'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
 import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
 import { useUser } from '@scf/core/utils/useUser'
-import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 import {
   ExternalLink,
   PanelLeftClose,
@@ -17,9 +16,9 @@ import {
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import { useCallback, type ReactNode } from 'react'
-import { Pressable, ScrollView, type PressableStateCallbackType } from 'react-native'
+import { Pressable, ScrollView, View, type PressableStateCallbackType } from 'react-native'
 import type { GestureResponderEvent } from 'react-native'
-import { Text, useWindowDimensions, Row, Stack, useThemeContext, GlassSurface } from '@scaffald/ui'
+import { Text, useWindowDimensions, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors, glassVibrantColors } from '@scaffald/ui/tokens'
 import { useOrganizations } from '@scf/core/utils/useOrganizations'
 import { DrawerLink } from './DrawerLink'
@@ -28,33 +27,23 @@ import { normalizePath } from './utils'
 
 const OFFICE_DRAWER_ITEM = generateOfficeDrawerItem()
 
-export type DrawerContentProps = DrawerContentComponentProps & {
-  /**
-   * Callback when navigation occurs (for closing drawer on web)
-   */
-  onNavigate?: () => void
-  /**
-   * Whether the drawer is collapsed (icon-only)
-   */
+export type DrawerContentProps = {
+  /** Called when the drawer should close (after navigating to a link). */
+  onClose?: () => void
+  /** Whether the drawer is collapsed (icon-only). */
   isCollapsed?: boolean
-  /**
-   * Whether collapsing is available (md and larger)
-   */
+  /** Whether collapsing is available (md and larger). */
   canCollapse?: boolean
-  /**
-   * Toggle collapse handler
-   */
+  /** Toggle collapse handler. */
   onToggleCollapse?: () => void
 }
 
 /**
- * DrawerContent component renders the main content area of the drawer
- * Handles state management, navigation logic, and renders the UI
- * Works for both mobile (React Navigation) and web use cases
+ * DrawerContent renders the main content area of the drawer.
+ * Used by both the mobile overlay drawer and the desktop permanent sidebar.
  */
 export const DrawerContent = ({
-  navigation,
-  onNavigate,
+  onClose,
   isCollapsed = false,
   canCollapse = false,
   onToggleCollapse,
@@ -87,14 +76,9 @@ export const DrawerContent = ({
 
   const handleNavigate = useCallback(
     (_href: string, _event?: GestureResponderEvent) => {
-      // Close drawer on mobile, call onNavigate callback on web
-      if (navigation) {
-        navigation.closeDrawer()
-      } else {
-        onNavigate?.()
-      }
+      onClose?.()
     },
-    [navigation, onNavigate]
+    [onClose]
   )
 
   const handleSettingsPress = useCallback(() => {
@@ -146,16 +130,16 @@ export const DrawerContent = ({
   const glassTheme: 'light' | 'dark' = theme === 'dark' ? 'dark' : 'light'
 
   return (
-    <GlassSurface
-      material="thick"
-      elevated={!isSmall}
-      specularBorder={!isSmall}
+    <View
       style={{
         flex: 1,
+        width: '100%',
         paddingHorizontal: isCollapsed ? 8 : 24,
         paddingVertical: 20,
         alignItems: isCollapsed ? 'center' : 'stretch',
-      } as Record<string, unknown>}
+        borderRightWidth: isSmall ? 0 : 1,
+        borderRightColor: colors.border[theme].subtle,
+      }}
     >
       <Stack flex={1} justify="space-between" gap={20} width="100%">
         {!isSmall ? (
@@ -242,7 +226,7 @@ export const DrawerContent = ({
           ) : null}
         </Row>
       </Stack>
-    </GlassSurface>
+    </View>
   )
 }
 

@@ -1,7 +1,7 @@
 import { ErrorBoundary } from '@scf/core/components/ErrorBoundary'
 import { DrawerLayout } from '@scf/core/features/drawer/DrawerLayout'
 import { useUser } from '@scf/core/utils/useUser'
-import { Drawer } from 'expo-router/drawer'
+import { Stack } from 'expo-router'
 
 /**
  * Workers Layout — Drawer navigation only.
@@ -18,9 +18,9 @@ export default function WorkersLayout() {
       }}
     >
       <DrawerLayout protectionComponent={null}>
-        <Drawer.Screen name="index" options={{ title: 'Search Workers' }} />
-        <Drawer.Screen name="[id]/index" options={{ title: 'Worker Profile' }} />
-        <Drawer.Screen name="map/index" options={{ title: 'Map Search' }} />
+        <Stack.Screen name="index" options={{ title: 'Search Workers' }} />
+        <Stack.Screen name="[id]/index" options={{ title: 'Worker Profile' }} />
+        <Stack.Screen name="map/index" options={{ title: 'Map Search' }} />
       </DrawerLayout>
     </ErrorBoundary>
   )
