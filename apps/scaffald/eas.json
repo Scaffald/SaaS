@@ -142,7 +142,8 @@
     }
   },
   "cli": {
-    "version": ">= 10.2.3"
+    "version": ">= 10.2.3",
+    "appVersionSource": "local"
   },
   "submit": {
     "production": {

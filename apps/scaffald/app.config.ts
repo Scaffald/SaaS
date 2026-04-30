@@ -97,6 +97,11 @@ export default {
       bundleIdentifier: iosBundleIdentifier,
       buildNumber: IOS_BUILD_NUMBER,
       infoPlist: {
+        // App uses standard HTTPS / no custom encryption. Setting this to
+        // false skips Apple's per-upload encryption-export questionnaire.
+        // If we ever ship custom crypto we'll need to flip this to true and
+        // provide ECCN documentation.
+        ITSAppUsesNonExemptEncryption: false,
         // "location" intentionally NOT declared: Apple App Store review will
         // reject apps that declare background-location capability without
         // actively using TaskManager / startLocationUpdatesAsync. Add it back
