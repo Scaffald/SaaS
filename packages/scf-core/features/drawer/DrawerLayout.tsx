@@ -329,12 +329,12 @@ function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: Drawer
             headerShown: showHeader,
             header: showHeader ? renderMobileHeader : undefined,
             // Reserve room for the floating mobile tab bar:
-            // GlassSurface (56) + outer paddingTop (8) + outer paddingBottom (8) + bottom safe-area inset.
+            // GlassSurface (56) + outer paddingTop (8) + bottom safe-area inset.
             // Match the page background to the theme so the bar doesn't float over a stark
             // white strip when the screen renders past the last card of content.
             contentStyle: {
               backgroundColor: colors.bg[theme].default,
-              paddingBottom: isSmall ? 72 + insets.bottom : 0,
+              paddingBottom: isSmall ? 64 + insets.bottom : 0,
             },
           }}
         >
