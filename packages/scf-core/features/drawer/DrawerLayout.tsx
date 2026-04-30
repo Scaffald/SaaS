@@ -52,13 +52,24 @@ export function DrawerLayout(props: DrawerLayoutProps) {
   )
 }
 
+/**
+ * Dev-only override: visit any page with `?forceMobile=1` (web only) to
+ * render the mobile drawer + bottom-nav layout at any viewport width.
+ * Useful for inspecting the mobile chrome on a desktop browser without
+ * needing DevTools device toolbar.
+ */
+function shouldForceMobile(): boolean {
+  if (typeof window === 'undefined' || !window.location) return false
+  return new URLSearchParams(window.location.search).has('forceMobile')
+}
+
 function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: DrawerLayoutProps) {
   const { width } = useResponsive()
   const { theme } = useThemeContext()
   const router = useRouter()
   const { session } = useSessionContext()
   const { close, toggle } = useDrawer()
-  const isSmall = width < 1024
+  const isSmall = width < 1024 || shouldForceMobile()
   const [isDrawerCollapsed, setIsDrawerCollapsed] = useState(false)
 
   const { data: preferencesData } = useNotificationPreferences({
