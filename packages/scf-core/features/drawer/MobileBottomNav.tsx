@@ -13,13 +13,12 @@
  *   Web    → GlassSurface (CSS backdrop-filter)
  */
 
-import { ROUTES } from '@scf/core/constants/routes'
 import { GlassSurface, Text, useResponsive, useThemeContext, useBottomBarContext } from '@scaffald/ui'
 import { colors, glassVibrantColors } from '@scaffald/ui/tokens'
 import { BlurView } from './NativeBlurView'
 import { usePathname, useRouter } from 'expo-router'
 import { useEffect, useMemo, useRef, type ReactNode } from 'react'
-import { Animated, Easing, LayoutChangeEvent, Platform, Pressable, StyleSheet, View } from 'react-native'
+import { Animated, Easing, type LayoutChangeEvent, Platform, Pressable, StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { MOBILE_SECTIONS, type MobileSection } from './config'
 
@@ -59,10 +58,10 @@ function getActiveSectionIndex(pathname: string): number {
 
 const pillShadow = {
   shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.12,
-  shadowRadius: 8,
-  elevation: 8,
+  shadowOffset: { width: 0, height: 6 },
+  shadowOpacity: 0.14,
+  shadowRadius: 16,
+  elevation: 12,
 }
 
 function GlassTabBar({
@@ -120,7 +119,12 @@ function GlassTabBar({
 
   // Web: CSS backdrop-filter via GlassSurface
   return (
-    <GlassSurface material="thin" radius="3xl" elevated style={styles.webSurface}>
+    <GlassSurface
+      material="thin"
+      radius="3xl"
+      elevated
+      style={[styles.webSurface, { boxShadow: '0 6px 24px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)' } as object]}
+    >
       {children}
     </GlassSurface>
   )
@@ -131,10 +135,19 @@ function GlassTabBar({
 export function MobileBottomNav() {
   const { isMobile } = useResponsive()
   const { theme } = useThemeContext()
-  const { globalBarHidden } = useBottomBarContext()
+  const { setNavBarHeight } = useBottomBarContext()
   const insets = useSafeAreaInsets()
   const pathname = usePathname()
   const router = useRouter()
+
+  const visible = isMobile || shouldForceMobile()
+
+  // Register nav height so page-level BottomBars can offset above the pill.
+  // PILL_HEIGHT (56) + paddingTop (8) + gap (8) = 72.
+  useEffect(() => {
+    setNavBarHeight(visible ? 72 : 0)
+    return () => setNavBarHeight(0)
+  }, [visible, setNavBarHeight])
 
   const activeIndex = useMemo(() => getActiveSectionIndex(pathname), [pathname])
 
@@ -163,7 +176,7 @@ export function MobileBottomNav() {
     ]).start()
   }, [activeIndex, indicatorX, indicatorWidth])
 
-  if ((!isMobile && !shouldForceMobile()) || globalBarHidden) return null
+  if (!visible) return null
 
   const resolvedTheme: 'light' | 'dark' = theme === 'dark' ? 'dark' : 'light'
   const vibrant = glassVibrantColors[resolvedTheme]

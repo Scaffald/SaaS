@@ -6,8 +6,8 @@ import type { CommunitySkill } from '@scaffald/sdk/resources/community-skills'
 
 interface Props {
   communityId: string | undefined
-  selectedTags: string[]
-  onTagsChange: (tags: string[]) => void
+  selectedTags: CommunitySkill[]
+  onTagsChange: (tags: CommunitySkill[]) => void
 }
 
 export function SkillTagPicker({ communityId, selectedTags, onTagsChange }: Props) {
@@ -21,20 +21,21 @@ export function SkillTagPicker({ communityId, selectedTags, onTagsChange }: Prop
   )
 
   const results = searchResults?.data ?? []
+  const selectedIds = new Set(selectedTags.map((s) => s.id))
 
   const handleSelect = useCallback(
     (skill: CommunitySkill) => {
-      if (!selectedTags.includes(skill.id)) {
-        onTagsChange([...selectedTags, skill.id])
+      if (!selectedIds.has(skill.id)) {
+        onTagsChange([...selectedTags, skill])
       }
       setQuery('')
     },
-    [selectedTags, onTagsChange]
+    [selectedTags, onTagsChange, selectedIds]
   )
 
   const handleRemove = useCallback(
     (id: string) => {
-      onTagsChange(selectedTags.filter((t) => t !== id))
+      onTagsChange(selectedTags.filter((s) => s.id !== id))
     },
     [selectedTags, onTagsChange]
   )
@@ -44,9 +45,9 @@ export function SkillTagPicker({ communityId, selectedTags, onTagsChange }: Prop
       {/* Selected Tags */}
       {selectedTags.length > 0 && (
         <Row gap={4} style={{ flexWrap: 'wrap' }}>
-          {selectedTags.map((tagId) => (
+          {selectedTags.map((skill) => (
             <Stack
-              key={tagId}
+              key={skill.id}
               style={{
                 paddingHorizontal: 8,
                 paddingVertical: 4,
@@ -55,11 +56,11 @@ export function SkillTagPicker({ communityId, selectedTags, onTagsChange }: Prop
               }}
             >
               <Row align="center" gap={4}>
-                <Text style={{ fontSize: 12 }}>{tagId.slice(0, 8)}...</Text>
+                <Text style={{ fontSize: 12 }}>{skill.name}</Text>
                 <Button
                   variant="outline"
                   size="sm"
-                  onPress={() => handleRemove(tagId)}
+                  onPress={() => handleRemove(skill.id)}
                   style={{ padding: 0, minWidth: 20, minHeight: 20 }}
                 >
                   x

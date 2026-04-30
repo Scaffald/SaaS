@@ -11,7 +11,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useThemeContext, useResponsive, Avatar, Row, Text, BottomBarProvider } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import type { NotificationItem } from '@scf/core/components/notifications'
-import { ROUTES, buildPath } from '@scf/core/constants/routes'
+import { ROUTES, } from '@scf/core/constants/routes'
 import { ArrowLeft, Search, X } from 'lucide-react-native'
 import { Stack } from 'expo-router'
 import { useRouter } from 'expo-router'
@@ -299,19 +299,18 @@ function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: Drawer
       )
     },
     [
-      avatarAlt,
-      avatarInitials,
-      avatarUrl,
-      closeSearch,
-      insets.top,
-      isVerified,
-      router,
-      searchActive,
-      searchQuery,
-      submitSearch,
-      theme,
-      toggle,
-      unreadCount,
+      avatarAlt, 
+      avatarInitials, 
+      avatarUrl, 
+      closeSearch, 
+      insets.top, 
+      isVerified, 
+      searchActive, 
+      searchQuery, 
+      submitSearch, 
+      theme, 
+      toggle, 
+      unreadCount
     ]
   )
 
@@ -339,13 +338,8 @@ function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: Drawer
           screenOptions={{
             headerShown: showHeader,
             header: showHeader ? renderMobileHeader : undefined,
-            // Reserve room for the floating mobile tab bar:
-            // GlassSurface (56) + outer paddingTop (8) + bottom safe-area inset.
-            // Match the page background to the theme so the bar doesn't float over a stark
-            // white strip when the screen renders past the last card of content.
             contentStyle: {
               backgroundColor: colors.bg[theme].default,
-              paddingBottom: isSmall ? 64 + insets.bottom : 0,
             },
           }}
         >
