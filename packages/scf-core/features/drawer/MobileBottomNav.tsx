@@ -13,13 +13,12 @@
  *   Web    → GlassSurface (CSS backdrop-filter)
  */
 
-import { ROUTES } from '@scf/core/constants/routes'
 import { GlassSurface, Text, useResponsive, useThemeContext, useBottomBarContext } from '@scaffald/ui'
 import { colors, glassVibrantColors } from '@scaffald/ui/tokens'
 import { BlurView } from './NativeBlurView'
 import { usePathname, useRouter } from 'expo-router'
 import { useEffect, useMemo, useRef, type ReactNode } from 'react'
-import { Animated, Easing, LayoutChangeEvent, Platform, Pressable, StyleSheet, View } from 'react-native'
+import { Animated, Easing, type LayoutChangeEvent, Platform, Pressable, StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { MOBILE_SECTIONS, type MobileSection } from './config'
 
