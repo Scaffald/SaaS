@@ -135,10 +135,19 @@ function GlassTabBar({
 export function MobileBottomNav() {
   const { isMobile } = useResponsive()
   const { theme } = useThemeContext()
-  const { globalBarHidden } = useBottomBarContext()
+  const { setNavBarHeight } = useBottomBarContext()
   const insets = useSafeAreaInsets()
   const pathname = usePathname()
   const router = useRouter()
+
+  const visible = isMobile || shouldForceMobile()
+
+  // Register nav height so page-level BottomBars can offset above the pill.
+  // PILL_HEIGHT (56) + paddingTop (8) + gap (8) = 72.
+  useEffect(() => {
+    setNavBarHeight(visible ? 72 : 0)
+    return () => setNavBarHeight(0)
+  }, [visible, setNavBarHeight])
 
   const activeIndex = useMemo(() => getActiveSectionIndex(pathname), [pathname])
 
@@ -167,7 +176,7 @@ export function MobileBottomNav() {
     ]).start()
   }, [activeIndex, indicatorX, indicatorWidth])
 
-  if ((!isMobile && !shouldForceMobile()) || globalBarHidden) return null
+  if (!visible) return null
 
   const resolvedTheme: 'light' | 'dark' = theme === 'dark' ? 'dark' : 'light'
   const vibrant = glassVibrantColors[resolvedTheme]
