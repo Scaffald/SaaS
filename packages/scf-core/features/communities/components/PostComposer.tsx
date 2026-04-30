@@ -10,7 +10,9 @@ import {
   useSubmitPostMutation,
 } from '@scf/core/utils/communities-sdk-hooks'
 import { SkillTagPicker } from './SkillTagPicker'
+import { PostMediaUpload } from './PostMediaUpload'
 import type { PostType } from '@scaffald/sdk/resources/community-posts'
+import type { CommunitySkill } from '@scaffald/sdk/resources/community-skills'
 
 interface Props {
   communitySlug: string
@@ -38,7 +40,10 @@ export function PostComposer({ communitySlug }: Props) {
   const [postType, setPostType] = useState<PostType>('advice')
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
-  const [skillTags, setSkillTags] = useState<string[]>([])
+  const [skillTags, setSkillTags] = useState<CommunitySkill[]>([])
+  const [mediaUrls, setMediaUrls] = useState<string[]>([])
+
+  const requiresMedia = postType === 'critique' || postType === 'showcase'
 
   const createPost = useCreatePostMutation({
     onSuccess: (data) => {
@@ -58,14 +63,16 @@ export function PostComposer({ communitySlug }: Props) {
 
   const handleCreate = useCallback(() => {
     if (!community?.id || !title.trim() || !body.trim()) return
+    if (requiresMedia && mediaUrls.length === 0) return
     createPost.mutate({
       community_id: community.id,
       post_type: postType,
       title: title.trim(),
       body: body.trim(),
-      skill_tags: skillTags,
+      skill_tags: skillTags.map((s) => s.id),
+      media_urls: mediaUrls,
     })
-  }, [community?.id, postType, title, body, skillTags, createPost])
+  }, [community?.id, postType, title, body, skillTags, mediaUrls, requiresMedia, createPost])
 
   const isPending = createPost.isPending || submitPost.isPending
 
@@ -142,25 +149,13 @@ export function PostComposer({ communitySlug }: Props) {
           />
         </Stack>
 
-        {/* Media Upload placeholder */}
-        {(postType === 'critique' || postType === 'showcase') && (
-          <Stack gap={4}>
-            <Text style={{ fontWeight: '600' }}>Media (required for {postType})</Text>
-            <Stack
-              align="center"
-              justify="center"
-              style={{
-                height: 120,
-                borderRadius: 12,
-                borderWidth: 2,
-                borderStyle: 'dashed',
-                borderColor: '#ccc',
-              }}
-            >
-              <Text style={{ color: colors.text[t].secondary }}>Tap to upload images or video</Text>
-            </Stack>
-          </Stack>
-        )}
+        {/* Media Upload */}
+        <Stack gap={4}>
+          <Text style={{ fontWeight: '600' }}>
+            Media{requiresMedia ? ` (required for ${postType})` : ' (optional)'}
+          </Text>
+          <PostMediaUpload value={mediaUrls} onChange={setMediaUrls} disabled={isPending} />
+        </Stack>
 
         <Separator />
 
@@ -172,7 +167,12 @@ export function PostComposer({ communitySlug }: Props) {
           <Button
             variant="filled"
             onPress={handleCreate}
-            disabled={!title.trim() || !body.trim() || isPending}
+            disabled={
+              !title.trim() ||
+              !body.trim() ||
+              isPending ||
+              (requiresMedia && mediaUrls.length === 0)
+            }
           >
             {isPending ? 'Creating...' : 'Create & Submit'}
           </Button>

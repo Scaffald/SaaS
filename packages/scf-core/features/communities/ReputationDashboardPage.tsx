@@ -8,6 +8,8 @@ import {
   useGiftKarmaMutation,
 } from '@scf/core/utils/communities-sdk-hooks'
 import { ScaffoldScoreBadge } from './components/ScaffoldScoreBadge'
+import { MemberPicker } from './components/MemberPicker'
+import type { CommunityMember } from '@scaffald/sdk/resources/communities'
 
 export function ReputationDashboardPage() {
   const { theme } = useThemeContext()
@@ -21,14 +23,14 @@ export function ReputationDashboardPage() {
   const events = historyData?.data ?? []
 
   // Karma gifting state
-  const [giftReceiverId, setGiftReceiverId] = useState('')
+  const [giftReceiver, setGiftReceiver] = useState<CommunityMember | null>(null)
   const [giftAmount, setGiftAmount] = useState('')
   const [giftMessage, setGiftMessage] = useState('')
 
   const giftKarma = useGiftKarmaMutation({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['communities', 'reputation'] })
-      setGiftReceiverId('')
+      setGiftReceiver(null)
       setGiftAmount('')
       setGiftMessage('')
     },
@@ -83,13 +85,12 @@ export function ReputationDashboardPage() {
         <Text style={{ color: colors.text[t].secondary }}>
           Send karma to community members who helped you. Max 10 per gift, 5 gifts per day.
         </Text>
+        <MemberPicker
+          selected={giftReceiver}
+          onSelect={setGiftReceiver}
+          disabled={giftKarma.isPending}
+        />
         <Row gap={8} style={{ flexWrap: 'wrap' }}>
-          <Input
-            placeholder="User ID"
-            value={giftReceiverId}
-            onChangeText={setGiftReceiverId}
-            style={{ flex: 2, minWidth: 200 }}
-          />
           <Input
             placeholder="Amount (1-10)"
             value={giftAmount}
@@ -102,14 +103,15 @@ export function ReputationDashboardPage() {
         <Button
           variant="filled"
           size="sm"
-          onPress={() =>
+          onPress={() => {
+            if (!giftReceiver) return
             giftKarma.mutate({
-              receiver_id: giftReceiverId,
+              receiver_id: giftReceiver.id,
               amount: parseInt(giftAmount, 10) || 1,
               message: giftMessage || undefined,
             })
-          }
-          disabled={!giftReceiverId || !giftAmount || giftKarma.isPending}
+          }}
+          disabled={!giftReceiver || !giftAmount || giftKarma.isPending}
         >
           Send Karma
         </Button>
