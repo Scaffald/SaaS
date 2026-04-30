@@ -4,7 +4,6 @@ import {
   usePublishedFeed,
 } from '@scf/core/utils/communities-sdk-hooks'
 import {
-  Avatar,
   Button,
   DashboardWidget,
   DashboardWidgetHeader,
@@ -99,37 +98,6 @@ export function CommunityActivityWidget({ maxItems = 5 }: { maxItems?: number })
                   borderTopColor: colors.border[t].default,
                 }}
               >
-                <Row align="center" gap={6}>
-                  <Avatar
-                    size={20}
-                    src={post.author?.avatar_url ?? undefined}
-                    initials={post.author?.display_name?.[0] || '?'}
-                  />
-                  <Text
-                    size="sm"
-                    weight="medium"
-                    style={{ color: colors.text[t].secondary }}
-                    numberOfLines={1}
-                  >
-                    {post.author?.display_name || 'Anonymous'}
-                  </Text>
-                  {community?.name && (
-                    <>
-                      <Text size="sm" style={{ color: colors.text[t].tertiary }}>
-                        in
-                      </Text>
-                      <Text
-                        size="sm"
-                        weight="medium"
-                        style={{ color: colors.text[t].secondary }}
-                        numberOfLines={1}
-                      >
-                        {community.name}
-                      </Text>
-                    </>
-                  )}
-                </Row>
-
                 <Text
                   size="md"
                   weight="semibold"
