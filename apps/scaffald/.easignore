@@ -1,0 +1,15 @@
+# EAS clean-build hygiene: don't ship local prebuild output to EAS workers.
+# Cloud builds always run a fresh prebuild from app.config.ts, so any cached
+# native folders here would just bloat the build context (or worse, drift).
+
+ios/
+android/
+
+# Local dev artifacts
+.expo/
+dist/
+build/
+*.log
+
+# Keep node_modules out of build context (EAS reinstalls anyway)
+node_modules/

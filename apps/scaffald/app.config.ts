@@ -97,7 +97,11 @@ export default {
       bundleIdentifier: iosBundleIdentifier,
       buildNumber: IOS_BUILD_NUMBER,
       infoPlist: {
-        UIBackgroundModes: ["location", "fetch", "remote-notification"],
+        // "location" intentionally NOT declared: Apple App Store review will
+        // reject apps that declare background-location capability without
+        // actively using TaskManager / startLocationUpdatesAsync. Add it back
+        // only when a real background-location feature ships.
+        UIBackgroundModes: ["fetch", "remote-notification"],
         NSLocationWhenInUseUsageDescription:
           "This app requires access to your location when open.",
         NSLocationAlwaysAndWhenInUseUsageDescription:
@@ -193,7 +197,7 @@ export default {
         origin: false,
       },
       eas: {
-        // projectId: "b5f02af2-6475-4d9e-81b3-664f89564580", // Old project - commented out to create new project
+        projectId: "ba0f9b47-eb78-494c-a03f-c33b9defa904",
       },
       mapbox: {
         accessToken: process.env.EXPO_PUBLIC_MAPBOX_TOKEN,
