@@ -6,7 +6,6 @@ import {
   useMyCommunities,
 } from '@scf/core/utils/communities-sdk-hooks'
 import {
-  Avatar,
   Button,
   DashboardWidget,
   Row,
@@ -127,11 +126,9 @@ function CommunityBadge({
 
 function PostPreview({
   post,
-  communityName,
   onPress,
 }: {
   post: CommunityPostLite
-  communityName: string
   onPress: () => void
 }) {
   const { theme } = useThemeContext()
@@ -147,31 +144,6 @@ function PostPreview({
         opacity: pressed ? 0.7 : 1,
       })}
     >
-      <Row gap={10} align="center" style={{ marginBottom: 8 }}>
-        <Avatar
-          size={24}
-          src={post.author?.avatar_url ?? undefined}
-          initials={(post.author?.display_name?.charAt(0) || '?').toUpperCase()}
-        />
-        <Stack flex={1} gap={0}>
-          <Text
-            style={{
-              fontSize: 13,
-              fontWeight: '600',
-              color: colors.text[theme].primary,
-            }}
-            numberOfLines={1}
-          >
-            {post.author?.display_name ?? 'Member'}
-          </Text>
-          <Text
-            style={{ fontSize: 11, color: colors.text[theme].tertiary }}
-            numberOfLines={1}
-          >
-            {communityName}
-          </Text>
-        </Stack>
-      </Row>
       {post.title ? (
         <Text
           style={{
@@ -389,7 +361,6 @@ export function CommunitiesWidget() {
               <PostPreview
                 key={post.id}
                 post={post}
-                communityName={selected.name}
                 onPress={() =>
                   router.push(buildPath(ROUTES.COMMUNITIES.DETAIL, { slug: selected.slug }))
                 }
