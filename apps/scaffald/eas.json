@@ -44,23 +44,6 @@
         "simulator": true
       }
     },
-    "preview": {
-      "cache": {
-        "disabled": false,
-        "key": "preview-web"
-      },
-      "env": {
-        "APP_ENV": "staging",
-        "EXPO_PUBLIC_POSTHOG_API_KEY": "${POSTHOG_KEY_STAGING}",
-        "EXPO_PUBLIC_POSTHOG_HOST": "https://app.posthog.com",
-        "EXPO_PUBLIC_SENTRY_DSN_NATIVE": "https://11f32683d2e167d8de8e350e7a33a5e3@o1019232.ingest.us.sentry.io/4510467560964096",
-        "EXPO_PUBLIC_SENTRY_DSN_WEB": "https://549714752feca37523a21ba85bb14760@o1019232.ingest.us.sentry.io/4510467545759744",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY",
-        "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
-        "EXPO_PUBLIC_URL": "TODO",
-        "NODE_ENV": "staging"
-      }
-    },
     "production": {
       "android": {
         "buildType": "apk",
@@ -92,23 +75,6 @@
         }
       },
       "releaseChannel": "production"
-    },
-    "production-web": {
-      "cache": {
-        "disabled": false,
-        "key": "production-web"
-      },
-      "env": {
-        "APP_ENV": "production",
-        "EXPO_PUBLIC_POSTHOG_API_KEY": "${POSTHOG_KEY_PROD}",
-        "EXPO_PUBLIC_POSTHOG_HOST": "https://app.posthog.com",
-        "EXPO_PUBLIC_SENTRY_DSN_NATIVE": "https://11f32683d2e167d8de8e350e7a33a5e3@o1019232.ingest.us.sentry.io/4510467560964096",
-        "EXPO_PUBLIC_SENTRY_DSN_WEB": "https://549714752feca37523a21ba85bb14760@o1019232.ingest.us.sentry.io/4510467545759744",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY",
-        "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
-        "EXPO_PUBLIC_URL": "TODO",
-        "NODE_ENV": "production"
-      }
     },
     "staging": {
       "android": {
@@ -142,7 +108,8 @@
     }
   },
   "cli": {
-    "version": ">= 10.2.3"
+    "version": ">= 10.2.3",
+    "appVersionSource": "local"
   },
   "submit": {
     "production": {
@@ -151,9 +118,9 @@
         "track": "production"
       },
       "ios": {
-        "appleId": "your-apple-id@example.com",
-        "appleTeamId": "ABCD123456",
-        "ascAppId": "1234567890"
+        "appleId": "clay@unicorn.love",
+        "appleTeamId": "DAC62CF44G",
+        "ascAppId": "6753185287"
       }
     },
     "staging": {
@@ -162,9 +129,9 @@
         "track": "beta"
       },
       "ios": {
-        "appleId": "your-apple-id@example.com",
-        "appleTeamId": "ABCD123456",
-        "ascAppId": "1234567890"
+        "appleId": "clay@unicorn.love",
+        "appleTeamId": "DAC62CF44G",
+        "ascAppId": "6753185287"
       }
     }
   }
