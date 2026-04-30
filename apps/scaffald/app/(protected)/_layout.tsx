@@ -4,8 +4,8 @@ import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { usePrerequisitesCheck } from '@scf/core/utils/prerequisites-sdk-hooks'
 import { Slot, useRouter, useSegments } from 'expo-router'
 import { useEffect, useRef } from 'react'
-import { StyleSheet } from 'react-native'
-import { Spinner, Text, Stack, useThemeContext } from '@scaffald/ui'
+import { StyleSheet, View } from 'react-native'
+import { Spinner, Text, Stack, useThemeContext, BottomBarProvider } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 /**
@@ -52,18 +52,22 @@ export default function ProtectedLayout() {
     ? !isLoading && sessionReady
     : !isLoading && !isCheckingPrereqs && sessionReady
 
-  if (!isReady) {
-    return (
-      <Stack
-        style={{ ...StyleSheet.absoluteFillObject, backgroundColor: colors.bg[resolvedTheme].default }}
-        justify="center"
-        align="center"
-      >
-        <Spinner size="lg" />
-        <Text>Loading...</Text>
-      </Stack>
-    )
-  }
-
-  return <Slot />
+  return (
+    <BottomBarProvider>
+      <View style={{ flex: 1 }}>
+        {!isReady ? (
+          <Stack
+            style={{ ...StyleSheet.absoluteFillObject, backgroundColor: colors.bg[resolvedTheme].default }}
+            justify="center"
+            align="center"
+          >
+            <Spinner size="lg" />
+            <Text>Loading...</Text>
+          </Stack>
+        ) : (
+          <Slot />
+        )}
+      </View>
+    </BottomBarProvider>
+  )
 }

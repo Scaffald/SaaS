@@ -327,7 +327,7 @@ function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: Drawer
   const showHeader = isSmall && !hideDrawer
 
   return (
-    <>
+    <View style={{ flex: 1 }}>
       {protectionComponent}
       <CustomDrawer
         permanent={!isSmall && !hideDrawer}
@@ -353,6 +353,6 @@ function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: Drawer
         </Stack>
       </CustomDrawer>
       {isSmall && !hideDrawer ? <MobileBottomNav /> : null}
-    </>
+    </View>
   )
 }

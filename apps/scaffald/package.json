@@ -69,6 +69,7 @@
     "expo-dev-client": "catalog:",
     "expo-device": "catalog:",
     "expo-document-picker": "catalog:",
+    "expo-blur": "catalog:",
     "expo-font": "catalog:",
     "expo-glass-effect": "catalog:",
     "expo-image": "catalog:",
