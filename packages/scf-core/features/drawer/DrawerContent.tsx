@@ -23,6 +23,7 @@ import { colors, glassVibrantColors } from '@scaffald/ui/tokens'
 import { useOrganizations } from '@scf/core/utils/useOrganizations'
 import { DrawerLink } from './DrawerLink'
 import { getDrawerItems, generateOfficeDrawerItem } from './config'
+import { MobileDrawerSections } from './MobileDrawerSections'
 import { normalizePath } from './utils'
 
 const OFFICE_DRAWER_ITEM = generateOfficeDrawerItem()
@@ -173,58 +174,73 @@ export const DrawerContent = ({
         <ScrollView
           style={{ flex: 1, marginTop: 8 }}
           contentContainerStyle={{
-            gap: 4,
+            gap: isSmall ? 0 : 4,
             width: '100%',
             alignItems: isCollapsed ? 'center' : 'stretch',
+            paddingBottom: 16,
           }}
           showsVerticalScrollIndicator={false}
         >
-          {hasOfficeRole ? (
-            <DrawerLink
-              item={OFFICE_DRAWER_ITEM}
-              pathname={pathname}
-              onNavigate={handleNavigate}
-              isCollapsed={isCollapsed}
+          {isSmall && !isCollapsed ? (
+            <MobileDrawerSections
+              organizations={orgMemberships ?? null}
+              onNavigate={() => onClose?.()}
+              onSettingsPress={handleSettingsPress}
+              onLogoutPress={handleLogoutPress}
             />
-          ) : null}
-          {drawerItems.map((item) => (
-            <DrawerLink
-              key={item.key}
-              item={item}
-              pathname={pathname}
-              onNavigate={handleNavigate}
-              isCollapsed={isCollapsed}
-            />
-          ))}
+          ) : (
+            <>
+              {hasOfficeRole ? (
+                <DrawerLink
+                  item={OFFICE_DRAWER_ITEM}
+                  pathname={pathname}
+                  onNavigate={handleNavigate}
+                  isCollapsed={isCollapsed}
+                />
+              ) : null}
+              {drawerItems.map((item) => (
+                <DrawerLink
+                  key={item.key}
+                  item={item}
+                  pathname={pathname}
+                  onNavigate={handleNavigate}
+                  isCollapsed={isCollapsed}
+                />
+              ))}
+            </>
+          )}
         </ScrollView>
 
-        {/* Footer controls — pill container */}
-        <Row
-          justify={isCollapsed ? 'center' : 'space-between'}
-          align="center"
-          style={{
-            backgroundColor: glassTheme === 'dark' ? 'rgba(80,73,64,0.4)' : 'rgba(200,195,188,0.4)',
-            borderRadius: 16,
-            padding: 8,
-            width: '100%',
-          }}
-        >
-          <FooterActionButton label="Settings" onPress={handleSettingsPress}>
-            <SettingsIcon size={footerIconSize} color={colors.icon[glassTheme].default} />
-          </FooterActionButton>
-          {canCollapse && onToggleCollapse ? (
-            <FooterActionButton
-              label={isCollapsed ? 'Expand navigation' : 'Collapse navigation'}
-              onPress={onToggleCollapse}
-            >
-              {isCollapsed ? (
-                <PanelRightClose size={footerIconSize} color={colors.icon[glassTheme].default} />
-              ) : (
-                <PanelLeftClose size={footerIconSize} color={colors.icon[glassTheme].default} />
-              )}
+        {/* Footer controls — pill container (desktop only; mobile has settings inline). */}
+        {!isSmall ? (
+          <Row
+            justify={isCollapsed ? 'center' : 'space-between'}
+            align="center"
+            style={{
+              backgroundColor:
+                glassTheme === 'dark' ? 'rgba(80,73,64,0.4)' : 'rgba(200,195,188,0.4)',
+              borderRadius: 16,
+              padding: 8,
+              width: '100%',
+            }}
+          >
+            <FooterActionButton label="Settings" onPress={handleSettingsPress}>
+              <SettingsIcon size={footerIconSize} color={colors.icon[glassTheme].default} />
             </FooterActionButton>
-          ) : null}
-        </Row>
+            {canCollapse && onToggleCollapse ? (
+              <FooterActionButton
+                label={isCollapsed ? 'Expand navigation' : 'Collapse navigation'}
+                onPress={onToggleCollapse}
+              >
+                {isCollapsed ? (
+                  <PanelRightClose size={footerIconSize} color={colors.icon[glassTheme].default} />
+                ) : (
+                  <PanelLeftClose size={footerIconSize} color={colors.icon[glassTheme].default} />
+                )}
+              </FooterActionButton>
+            ) : null}
+          </Row>
+        ) : null}
       </Stack>
     </View>
   )

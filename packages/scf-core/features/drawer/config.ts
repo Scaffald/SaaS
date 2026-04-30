@@ -266,16 +266,7 @@ export const getDrawerItems = (memberships?: OrganizationMembership[]): DrawerIt
 // Mobile Bottom Nav Configuration
 // ============================================================================
 
-import {
-  Bell,
-  Compass,
-  FileText as ResumeIcon,
-  Home,
-  Newspaper,
-  Settings,
-  Star,
-  Wrench,
-} from 'lucide-react-native'
+import { Home } from 'lucide-react-native'
 import type { ComponentType } from 'react'
 
 export type MobileTabItem = {
@@ -296,33 +287,37 @@ export type MobileSection = {
   subItems: MobileTabItem[]
 }
 
+/**
+ * Mobile primary tabs — 3-tab pill (Home / Jobs / Community).
+ *
+ * Profile, settings, notifications, organizations and assessments are
+ * accessed via the drawer (avatar tap). Discover/Workers/Assessments
+ * surface as Home-tab widgets in a follow-up.
+ */
 export const MOBILE_SECTIONS: MobileSection[] = [
   {
     key: 'home',
     label: 'Home',
     icon: Home,
     route: ROUTES.DASHBOARD.path,
-    matchPrefixes: ['/dashboard/news', '/dashboard/settings', '/dashboard/analytics', '/dashboard/notifications'],
-    subItems: [
-      { key: 'home-feed', label: 'Feed', icon: Home, route: ROUTES.DASHBOARD.path, exact: true },
-      { key: 'home-news', label: 'News', icon: Newspaper, route: ROUTES.DASHBOARD.NEWS.path },
-      { key: 'home-analytics', label: 'Analytics', icon: TrendingUp, route: ROUTES.DASHBOARD.ANALYTICS.path },
-      { key: 'home-settings', label: 'Settings', icon: Settings, route: ROUTES.DASHBOARD.SETTINGS.path },
-      { key: 'home-notifs', label: 'Notifs', icon: Bell, route: ROUTES.DASHBOARD.NOTIFICATIONS.path },
+    matchPrefixes: [
+      '/dashboard',
+      // Sections that no longer have their own tab still highlight Home
+      // when the user lands on them via a Home-tab widget link.
+      '/workers',
+      '/employers',
+      '/assessments',
+      '/profile',
     ],
+    subItems: [],
   },
   {
-    key: 'discover',
-    label: 'Discover',
-    icon: Compass,
-    route: ROUTES.WORKERS.path,
-    matchPrefixes: ['/workers', '/employers', '/jobs'],
-    subItems: [
-      { key: 'discover-workers', label: 'Workers', icon: Users, route: ROUTES.WORKERS.path },
-      { key: 'discover-employers', label: 'Employers', icon: Building2, route: ROUTES.EMPLOYERS.path },
-      { key: 'discover-jobs', label: 'Jobs', icon: Briefcase, route: ROUTES.JOBS.path },
-      { key: 'discover-apps', label: 'Apps', icon: ClipboardCheck, route: ROUTES.JOBS.APPLICATIONS.path },
-    ],
+    key: 'jobs',
+    label: 'Jobs',
+    icon: Briefcase,
+    route: ROUTES.JOBS.path,
+    matchPrefixes: ['/jobs'],
+    subItems: [],
   },
   {
     key: 'community',
@@ -330,37 +325,6 @@ export const MOBILE_SECTIONS: MobileSection[] = [
     icon: Bookmark,
     route: ROUTES.COMMUNITIES.path,
     matchPrefixes: ['/communities'],
-    subItems: [
-      { key: 'community-hub', label: 'Hub', icon: Bookmark, route: ROUTES.COMMUNITIES.path, exact: true },
-      { key: 'community-connect', label: 'Connect', icon: Link, route: ROUTES.COMMUNITIES.CONNECTIONS.path },
-      { key: 'community-bookmarks', label: 'Bookmarks', icon: Bookmark, route: ROUTES.COMMUNITIES.BOOKMARKS.path },
-      { key: 'community-rep', label: 'Rep', icon: Star, route: ROUTES.COMMUNITIES.REPUTATION.path },
-    ],
-  },
-  {
-    key: 'assess',
-    label: 'Assess',
-    icon: ClipboardCheck,
-    route: ROUTES.ASSESSMENTS.path,
-    matchPrefixes: ['/assessments'],
-    subItems: [
-      { key: 'assess-analytics', label: 'Analytics', icon: BarChart3, route: ROUTES.ASSESSMENTS.ANALYTICS.path },
-      { key: 'assess-pulse', label: 'Pulse', icon: Wrench, route: ROUTES.ASSESSMENTS.LUSCHER.path },
-      { key: 'assess-personality', label: 'Personality', icon: User, route: ROUTES.ASSESSMENTS.IPIP.path },
-      { key: 'assess-career', label: 'Career', icon: Compass, route: ROUTES.ASSESSMENTS.CAREER_EXPLORER.path },
-    ],
-  },
-  {
-    key: 'profile',
-    label: 'Profile',
-    icon: User,
-    route: ROUTES.PROFILE.path,
-    matchPrefixes: ['/profile'],
-    subItems: [
-      { key: 'profile-overview', label: 'Overview', icon: User, route: ROUTES.PROFILE.OVERVIEW.path, exact: true },
-      { key: 'profile-resume', label: 'Resume', icon: ResumeIcon, route: ROUTES.PROFILE.RESUME.path },
-      { key: 'profile-skills', label: 'Skills', icon: Star, route: ROUTES.PROFILE.SKILLS.path },
-      { key: 'profile-exp', label: 'Exp', icon: Briefcase, route: ROUTES.PROFILE.EXPERIENCE.path },
-    ],
+    subItems: [],
   },
 ]
