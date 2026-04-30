@@ -12,7 +12,7 @@ import { useThemeContext, useResponsive, Avatar, Row, Text, BottomBarProvider } 
 import { colors } from '@scaffald/ui/tokens'
 import type { NotificationItem } from '@scf/core/components/notifications'
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
-import { ArrowLeft, Bell, Search, X } from 'lucide-react-native'
+import { ArrowLeft, Search, X } from 'lucide-react-native'
 import { Stack } from 'expo-router'
 import { useRouter } from 'expo-router'
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
@@ -259,6 +259,7 @@ function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: Drawer
                 src={avatarUrl}
                 initials={avatarInitials}
                 verified={isVerified}
+                badgeCount={unreadCount}
                 alt={avatarAlt}
               />
             </Pressable>
@@ -280,46 +281,6 @@ function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: Drawer
                 style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
               >
                 <Search size={22} color={colors.icon[theme].default} />
-              </Pressable>
-              <Pressable
-                onPress={() => router.push(buildPath(ROUTES.DASHBOARD.NOTIFICATIONS, {}))}
-                hitSlop={8}
-                accessibilityLabel="Notifications"
-                accessibilityRole="button"
-                style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1, paddingRight: 4 })}
-              >
-                <View>
-                  <Bell size={22} color={colors.icon[theme].default} />
-                  {unreadCount > 0 ? (
-                    <View
-                      style={{
-                        position: 'absolute',
-                        top: -4,
-                        right: -6,
-                        minWidth: 16,
-                        height: 16,
-                        borderRadius: 8,
-                        backgroundColor: colors.primary[500],
-                        paddingHorizontal: 4,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderWidth: 2,
-                        borderColor: colors.bg[theme].default,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: 9,
-                          fontWeight: '700',
-                          color: '#ffffff',
-                          lineHeight: 11,
-                        }}
-                      >
-                        {unreadCount > 99 ? '99+' : unreadCount}
-                      </Text>
-                    </View>
-                  ) : null}
-                </View>
               </Pressable>
             </Row>
           </Row>
