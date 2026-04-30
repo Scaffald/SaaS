@@ -111,6 +111,11 @@ export function MobileBottomNav() {
     router.push(section.route)
   }
 
+  // Web has no real safe area; native respects the bottom inset so the bar
+  // sits above the iOS home indicator. The previous `+ 8` padding produced
+  // a visible gap below the bar on web (no inset to absorb it) — drop it.
+  const bottomPadding = Platform.OS === 'web' ? 0 : Math.max(insets.bottom, 8)
+
   return (
     <View
       pointerEvents="box-none"
@@ -120,13 +125,13 @@ export function MobileBottomNav() {
         left: 0,
         right: 0,
         zIndex: 9999,
-        paddingBottom: insets.bottom + 8,
+        paddingBottom: bottomPadding,
         paddingHorizontal: 16,
         paddingTop: 8,
       }}
     >
       <GlassSurface
-        material="regular"
+        material="thin"
         radius="3xl"
         elevated
         style={{ height: PILL_HEIGHT }}
