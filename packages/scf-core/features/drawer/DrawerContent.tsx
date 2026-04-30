@@ -185,7 +185,6 @@ export const DrawerContent = ({
             <MobileDrawerSections
               organizations={orgMemberships ?? null}
               onNavigate={() => onClose?.()}
-              onProfilePress={handleProfilePress}
               onSettingsPress={handleSettingsPress}
               onLogoutPress={handleLogoutPress}
             />
@@ -212,33 +211,36 @@ export const DrawerContent = ({
           )}
         </ScrollView>
 
-        {/* Footer controls — pill container */}
-        <Row
-          justify={isCollapsed ? 'center' : 'space-between'}
-          align="center"
-          style={{
-            backgroundColor: glassTheme === 'dark' ? 'rgba(80,73,64,0.4)' : 'rgba(200,195,188,0.4)',
-            borderRadius: 16,
-            padding: 8,
-            width: '100%',
-          }}
-        >
-          <FooterActionButton label="Settings" onPress={handleSettingsPress}>
-            <SettingsIcon size={footerIconSize} color={colors.icon[glassTheme].default} />
-          </FooterActionButton>
-          {canCollapse && onToggleCollapse ? (
-            <FooterActionButton
-              label={isCollapsed ? 'Expand navigation' : 'Collapse navigation'}
-              onPress={onToggleCollapse}
-            >
-              {isCollapsed ? (
-                <PanelRightClose size={footerIconSize} color={colors.icon[glassTheme].default} />
-              ) : (
-                <PanelLeftClose size={footerIconSize} color={colors.icon[glassTheme].default} />
-              )}
+        {/* Footer controls — pill container (desktop only; mobile has settings inline). */}
+        {!isSmall ? (
+          <Row
+            justify={isCollapsed ? 'center' : 'space-between'}
+            align="center"
+            style={{
+              backgroundColor:
+                glassTheme === 'dark' ? 'rgba(80,73,64,0.4)' : 'rgba(200,195,188,0.4)',
+              borderRadius: 16,
+              padding: 8,
+              width: '100%',
+            }}
+          >
+            <FooterActionButton label="Settings" onPress={handleSettingsPress}>
+              <SettingsIcon size={footerIconSize} color={colors.icon[glassTheme].default} />
             </FooterActionButton>
-          ) : null}
-        </Row>
+            {canCollapse && onToggleCollapse ? (
+              <FooterActionButton
+                label={isCollapsed ? 'Expand navigation' : 'Collapse navigation'}
+                onPress={onToggleCollapse}
+              >
+                {isCollapsed ? (
+                  <PanelRightClose size={footerIconSize} color={colors.icon[glassTheme].default} />
+                ) : (
+                  <PanelLeftClose size={footerIconSize} color={colors.icon[glassTheme].default} />
+                )}
+              </FooterActionButton>
+            ) : null}
+          </Row>
+        ) : null}
       </Stack>
     </View>
   )

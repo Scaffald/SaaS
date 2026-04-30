@@ -20,7 +20,6 @@ import {
   Mail,
   Plus,
   Settings as SettingsIcon,
-  User as UserIcon,
 } from 'lucide-react-native'
 import { Row, Stack, Text, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
@@ -33,7 +32,6 @@ type IconLike = ComponentType<{ size?: number; color?: string }>
 type MobileDrawerSectionsProps = {
   organizations?: OrganizationMembership[] | null
   onNavigate?: (href: string) => void
-  onProfilePress: () => void
   onSettingsPress: () => void
   onLogoutPress: () => void
 }
@@ -41,7 +39,6 @@ type MobileDrawerSectionsProps = {
 export function MobileDrawerSections({
   organizations,
   onNavigate,
-  onProfilePress,
   onSettingsPress,
   onLogoutPress,
 }: MobileDrawerSectionsProps) {
@@ -57,14 +54,6 @@ export function MobileDrawerSections({
 
   return (
     <Stack gap={20} width="100%">
-      <Section title="Profile">
-        <DrawerRow
-          icon={UserIcon}
-          label="View profile"
-          onPress={onProfilePress}
-        />
-      </Section>
-
       <DrawerNotificationsFeed onNavigate={() => onNavigate?.(ROUTES.DASHBOARD.NOTIFICATIONS.path)} />
 
       <Section title="Organizations">
