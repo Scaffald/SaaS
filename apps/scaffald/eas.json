@@ -151,9 +151,9 @@
         "track": "production"
       },
       "ios": {
-        "appleId": "your-apple-id@example.com",
-        "appleTeamId": "ABCD123456",
-        "ascAppId": "1234567890"
+        "appleId": "clay@unicorn.love",
+        "appleTeamId": "DAC62CF44G",
+        "ascAppId": "6753185287"
       }
     },
     "staging": {
@@ -162,9 +162,9 @@
         "track": "beta"
       },
       "ios": {
-        "appleId": "your-apple-id@example.com",
-        "appleTeamId": "ABCD123456",
-        "ascAppId": "1234567890"
+        "appleId": "clay@unicorn.love",
+        "appleTeamId": "DAC62CF44G",
+        "ascAppId": "6753185287"
       }
     }
   }
