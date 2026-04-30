@@ -85,7 +85,8 @@ app.openapi(getMyScoreRoute, async (c) => {
     return c.json({ error: 'Unauthorized' }, 401)
   }
 
-  // Lazy-init the score row
+  // Lazy-init the score row (RLS may block client-context inserts; ignore errors,
+  // we'll fall through to defaults below if no row exists).
   await supabase
     .schema('community')
     .from('scaffold_scores')
@@ -96,10 +97,25 @@ app.openapi(getMyScoreRoute, async (c) => {
     .from('scaffold_scores')
     .select('*')
     .eq('user_id', user.id)
-    .single()
+    .maybeSingle()
 
   if (error) {
     return c.json({ error: 'Failed to fetch score', message: error.message }, 500)
+  }
+
+  if (!data) {
+    const now = new Date().toISOString()
+    return c.json({
+      data: {
+        user_id: user.id as string,
+        score: 0,
+        karma_bank: 5,
+        total_earned: 0,
+        total_spent: 0,
+        last_updated_at: now,
+        created_at: now,
+      },
+    })
   }
 
   return c.json({ data })

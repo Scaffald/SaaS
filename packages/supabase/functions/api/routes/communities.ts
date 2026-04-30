@@ -457,7 +457,7 @@ app.openapi(listMembersRoute, async (c) => {
 
 const myCommunitiesRoute = createRoute({
   method: 'get',
-  path: '/my/list',
+  path: '/my',
   tags: ['Communities'],
   summary: 'My communities',
   description: 'Get communities the authenticated user belongs to',
