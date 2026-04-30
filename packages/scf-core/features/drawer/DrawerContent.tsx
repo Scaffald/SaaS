@@ -23,6 +23,7 @@ import { colors, glassVibrantColors } from '@scaffald/ui/tokens'
 import { useOrganizations } from '@scf/core/utils/useOrganizations'
 import { DrawerLink } from './DrawerLink'
 import { getDrawerItems, generateOfficeDrawerItem } from './config'
+import { MobileDrawerSections } from './MobileDrawerSections'
 import { normalizePath } from './utils'
 
 const OFFICE_DRAWER_ITEM = generateOfficeDrawerItem()
@@ -173,29 +174,42 @@ export const DrawerContent = ({
         <ScrollView
           style={{ flex: 1, marginTop: 8 }}
           contentContainerStyle={{
-            gap: 4,
+            gap: isSmall ? 0 : 4,
             width: '100%',
             alignItems: isCollapsed ? 'center' : 'stretch',
+            paddingBottom: 16,
           }}
           showsVerticalScrollIndicator={false}
         >
-          {hasOfficeRole ? (
-            <DrawerLink
-              item={OFFICE_DRAWER_ITEM}
-              pathname={pathname}
-              onNavigate={handleNavigate}
-              isCollapsed={isCollapsed}
+          {isSmall && !isCollapsed ? (
+            <MobileDrawerSections
+              organizations={orgMemberships ?? null}
+              onNavigate={() => onClose?.()}
+              onProfilePress={handleProfilePress}
+              onSettingsPress={handleSettingsPress}
+              onLogoutPress={handleLogoutPress}
             />
-          ) : null}
-          {drawerItems.map((item) => (
-            <DrawerLink
-              key={item.key}
-              item={item}
-              pathname={pathname}
-              onNavigate={handleNavigate}
-              isCollapsed={isCollapsed}
-            />
-          ))}
+          ) : (
+            <>
+              {hasOfficeRole ? (
+                <DrawerLink
+                  item={OFFICE_DRAWER_ITEM}
+                  pathname={pathname}
+                  onNavigate={handleNavigate}
+                  isCollapsed={isCollapsed}
+                />
+              ) : null}
+              {drawerItems.map((item) => (
+                <DrawerLink
+                  key={item.key}
+                  item={item}
+                  pathname={pathname}
+                  onNavigate={handleNavigate}
+                  isCollapsed={isCollapsed}
+                />
+              ))}
+            </>
+          )}
         </ScrollView>
 
         {/* Footer controls — pill container */}
