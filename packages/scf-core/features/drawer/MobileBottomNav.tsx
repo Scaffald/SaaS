@@ -31,6 +31,12 @@ const PILL_HORIZONTAL_PAD = 6
 
 // ── Helpers ──
 
+/** Dev override — see DrawerLayout's shouldForceMobile. */
+function shouldForceMobile(): boolean {
+  if (typeof window === 'undefined' || !window.location) return false
+  return new URLSearchParams(window.location.search).has('forceMobile')
+}
+
 function getActiveSectionIndex(pathname: string): number {
   for (let i = 0; i < MOBILE_SECTIONS.length; i++) {
     const section = MOBILE_SECTIONS[i]
@@ -82,7 +88,7 @@ export function MobileBottomNav() {
     ]).start()
   }, [activeIndex, indicatorX, indicatorWidth])
 
-  if (!isMobile || globalBarHidden) return null
+  if ((!isMobile && !shouldForceMobile()) || globalBarHidden) return null
 
   const resolvedTheme: 'light' | 'dark' = theme === 'dark' ? 'dark' : 'light'
   const vibrant = glassVibrantColors[resolvedTheme]
