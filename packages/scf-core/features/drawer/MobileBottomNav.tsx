@@ -58,10 +58,10 @@ function getActiveSectionIndex(pathname: string): number {
 
 const pillShadow = {
   shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.12,
-  shadowRadius: 8,
-  elevation: 8,
+  shadowOffset: { width: 0, height: 6 },
+  shadowOpacity: 0.14,
+  shadowRadius: 16,
+  elevation: 12,
 }
 
 function GlassTabBar({
@@ -119,7 +119,12 @@ function GlassTabBar({
 
   // Web: CSS backdrop-filter via GlassSurface
   return (
-    <GlassSurface material="thin" radius="3xl" elevated style={styles.webSurface}>
+    <GlassSurface
+      material="thin"
+      radius="3xl"
+      elevated
+      style={[styles.webSurface, { boxShadow: '0 6px 24px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)' } as object]}
+    >
       {children}
     </GlassSurface>
   )
