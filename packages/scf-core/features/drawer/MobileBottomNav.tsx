@@ -129,62 +129,67 @@ export function MobileBottomNav() {
         material="regular"
         radius="3xl"
         elevated
-        style={{
-          height: PILL_HEIGHT,
-          flexDirection: 'row',
-          alignItems: 'stretch',
-          paddingHorizontal: PILL_HORIZONTAL_PAD,
-        }}
+        style={{ height: PILL_HEIGHT }}
       >
-        {/* Animated active indicator */}
-        <Animated.View
-          pointerEvents="none"
+        <View
           style={{
-            position: 'absolute',
-            top: TAB_VERTICAL_PAD,
-            bottom: TAB_VERTICAL_PAD,
-            left: 0,
-            transform: [{ translateX: indicatorX }],
-            width: indicatorWidth,
-            borderRadius: ACTIVE_INDICATOR_RADIUS,
-            backgroundColor: activeBg,
+            height: PILL_HEIGHT,
+            flexDirection: 'row',
+            alignItems: 'stretch',
+            paddingHorizontal: PILL_HORIZONTAL_PAD,
+            position: 'relative',
           }}
-        />
+        >
+          {/* Animated active indicator */}
+          <Animated.View
+            pointerEvents="none"
+            style={{
+              position: 'absolute',
+              top: TAB_VERTICAL_PAD,
+              bottom: TAB_VERTICAL_PAD,
+              left: 0,
+              transform: [{ translateX: indicatorX }],
+              width: indicatorWidth,
+              borderRadius: ACTIVE_INDICATOR_RADIUS,
+              backgroundColor: activeBg,
+            }}
+          />
 
-        {MOBILE_SECTIONS.map((section, index) => {
-          const Icon = section.icon
-          const isActive = index === activeIndex
-          return (
-            <Pressable
-              key={section.key}
-              onPress={() => handleTabPress(section, index)}
-              onLayout={handleTabLayout(index)}
-              accessibilityRole="tab"
-              accessibilityState={{ selected: isActive }}
-              accessibilityLabel={section.label}
-              style={({ pressed }) => ({
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'center',
-                paddingVertical: TAB_VERTICAL_PAD,
-                opacity: pressed ? 0.7 : 1,
-              })}
-            >
-              <Icon size={ICON_SIZE} color={isActive ? activeText : inactiveText} />
-              <Text
-                size="xs"
-                weight={isActive ? 'semibold' : 'medium'}
-                style={{
-                  marginTop: 2,
-                  fontSize: LABEL_FONT_SIZE,
-                  color: isActive ? activeText : inactiveText,
-                }}
+          {MOBILE_SECTIONS.map((section, index) => {
+            const Icon = section.icon
+            const isActive = index === activeIndex
+            return (
+              <Pressable
+                key={section.key}
+                onPress={() => handleTabPress(section, index)}
+                onLayout={handleTabLayout(index)}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: isActive }}
+                accessibilityLabel={section.label}
+                style={({ pressed }) => ({
+                  flex: 1,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingVertical: TAB_VERTICAL_PAD,
+                  opacity: pressed ? 0.7 : 1,
+                })}
               >
-                {section.label}
-              </Text>
-            </Pressable>
-          )
-        })}
+                <Icon size={ICON_SIZE} color={isActive ? activeText : inactiveText} />
+                <Text
+                  size="xs"
+                  weight={isActive ? 'semibold' : 'medium'}
+                  style={{
+                    marginTop: 2,
+                    fontSize: LABEL_FONT_SIZE,
+                    color: isActive ? activeText : inactiveText,
+                  }}
+                >
+                  {section.label}
+                </Text>
+              </Pressable>
+            )
+          })}
+        </View>
       </GlassSurface>
     </View>
   )
