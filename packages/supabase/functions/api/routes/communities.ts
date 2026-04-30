@@ -128,6 +128,94 @@ app.openapi(listCommunitiesRoute, async (c) => {
 })
 
 // ============================================================================
+// GET /v1/communities/my — Get communities the current user belongs to
+// (must be registered BEFORE /{slug} so the static path wins the matcher)
+// ============================================================================
+
+const myCommunitiesRoute = createRoute({
+  method: 'get',
+  path: '/my',
+  tags: ['Communities'],
+  summary: 'My communities',
+  description: 'Get communities the authenticated user belongs to',
+  responses: {
+    200: {
+      description: 'List of community memberships with nested community detail',
+      content: {
+        'application/json': {
+          schema: z.object({
+            data: z.array(
+              z.object({
+                community_id: z.string().uuid(),
+                community: communitySchema,
+                joined_at: z.string().nullable(),
+                is_verified: z.boolean(),
+                membership_id: z.string().uuid(),
+              })
+            ),
+          }),
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized',
+      content: { 'application/json': { schema: errorResponseSchema } },
+    },
+  },
+  security: [{ bearerAuth: [] }],
+})
+
+app.openapi(myCommunitiesRoute, async (c) => {
+  const supabase = c.get('supabase')
+  const user = c.get('user')
+
+  if (!user) {
+    return c.json({ error: 'Unauthorized' }, 401)
+  }
+
+  const { data: memberships, error } = await supabase
+    .schema('community')
+    .from('memberships')
+    .select('id, community_id, is_verified, joined_at')
+    .eq('user_id', user.id)
+
+  if (error) {
+    console.error('Error fetching memberships:', error)
+    return c.json({ error: 'Failed to fetch memberships', message: error.message }, 500)
+  }
+
+  if (!memberships || memberships.length === 0) {
+    return c.json({ data: [] })
+  }
+
+  const communityIds = memberships.map((m) => m.community_id)
+  const { data: communities } = await supabase
+    .schema('community')
+    .from('communities')
+    .select('*')
+    .in('id', communityIds)
+    .eq('is_active', true)
+
+  const communityMap = new Map((communities || []).map((c) => [c.id, c]))
+
+  const data = memberships
+    .map((m) => {
+      const community = communityMap.get(m.community_id)
+      if (!community) return null
+      return {
+        community_id: m.community_id,
+        community,
+        joined_at: m.joined_at ?? null,
+        is_verified: m.is_verified || false,
+        membership_id: m.id,
+      }
+    })
+    .filter((x): x is NonNullable<typeof x> => x !== null)
+
+  return c.json({ data })
+})
+
+// ============================================================================
 // GET /v1/communities/:slug — Get community detail
 // ============================================================================
 
@@ -432,15 +520,19 @@ app.openapi(listMembersRoute, async (c) => {
 
   const usersById = new Map((users || []).map((u) => [u.id, u]))
 
-  const data = (memberships || []).map((m) => ({
-    ...m,
-    user: usersById.get(m.user_id) || {
+  // Return a flattened CommunityMember shape (id is user_id, fields hoisted from
+  // the joined user row) so the SDK type and all consumers line up.
+  const data = (memberships || []).map((m) => {
+    const u = usersById.get(m.user_id)
+    return {
       id: m.user_id,
-      display_name: null,
-      avatar_url: null,
-      headline: null,
-    },
-  }))
+      display_name: u?.display_name ?? null,
+      avatar_url: u?.avatar_url ?? null,
+      headline: u?.headline ?? null,
+      is_verified: m.is_verified,
+      joined_at: m.joined_at,
+    }
+  })
 
   const { count } = await supabase
     .schema('community')
@@ -449,85 +541,6 @@ app.openapi(listMembersRoute, async (c) => {
     .eq('community_id', id)
 
   return c.json({ data, total: count || 0 })
-})
-
-// ============================================================================
-// GET /v1/communities/my — Get communities the current user belongs to
-// ============================================================================
-
-const myCommunitiesRoute = createRoute({
-  method: 'get',
-  path: '/my',
-  tags: ['Communities'],
-  summary: 'My communities',
-  description: 'Get communities the authenticated user belongs to',
-  responses: {
-    200: {
-      description: 'List of communities',
-      content: {
-        'application/json': {
-          schema: z.object({
-            data: z.array(
-              communitySchema.extend({
-                is_verified: z.boolean(),
-                membership_id: z.string().uuid(),
-              })
-            ),
-          }),
-        },
-      },
-    },
-    401: {
-      description: 'Unauthorized',
-      content: { 'application/json': { schema: errorResponseSchema } },
-    },
-  },
-  security: [{ bearerAuth: [] }],
-})
-
-app.openapi(myCommunitiesRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
-
-  if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
-  }
-
-  const { data: memberships, error } = await supabase
-    .schema('community')
-    .from('memberships')
-    .select('id, community_id, is_verified')
-    .eq('user_id', user.id)
-
-  if (error) {
-    console.error('Error fetching memberships:', error)
-    return c.json({ error: 'Failed to fetch memberships', message: error.message }, 500)
-  }
-
-  if (!memberships || memberships.length === 0) {
-    return c.json({ data: [] })
-  }
-
-  const communityIds = memberships.map((m) => m.community_id)
-  const { data: communities } = await supabase
-    .schema('community')
-    .from('communities')
-    .select('*')
-    .in('id', communityIds)
-    .eq('is_active', true)
-
-  const membershipMap = new Map(memberships.map((m) => [m.community_id, m]))
-
-  const data = (communities || []).map((comm) => {
-    const m = membershipMap.get(comm.id)
-    return {
-      ...comm,
-      is_verified: m?.is_verified || false,
-      membership_id: m?.id || null,
-    }
-  })
-
-  return c.json({ data })
 })
 
 export default app

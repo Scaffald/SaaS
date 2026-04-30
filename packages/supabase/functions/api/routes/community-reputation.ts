@@ -289,8 +289,8 @@ app.openapi(giftKarmaRoute, async (c) => {
     return c.json({ error: 'Daily karma gift limit reached (5 per day)' }, 400)
   }
 
-  // Call the gift_karma function
-  const { error } = await supabase.rpc('gift_karma', {
+  // Call the gift_karma function (defined in the community schema)
+  const { error } = await supabase.schema('community').rpc('gift_karma', {
     p_giver_id: user.id,
     p_receiver_id: receiver_id,
     p_amount: amount,
