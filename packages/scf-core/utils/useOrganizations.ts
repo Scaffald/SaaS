@@ -59,7 +59,7 @@ export const useOrganizations = () => {
 
       const memberships = (data ?? []) as JoinedTeamMember[]
 
-      return memberships
+      const all = memberships
         .map((item) => {
           const organization = item.teams?.organizations
 
@@ -77,7 +77,20 @@ export const useOrganizations = () => {
           } satisfies OrganizationMembership
         })
         .filter((membership): membership is OrganizationMembership => membership !== null)
-        .sort((a, b) => a.organization_name.localeCompare(b.organization_name))
+
+      // A user can belong to multiple teams within the same organization; the
+      // org list should show each org once. Keep the earliest joined_at as the
+      // canonical entry so sorts/filters are stable.
+      const byOrg = new Map<string, OrganizationMembership>()
+      for (const m of all) {
+        const existing = byOrg.get(m.organization_id)
+        if (!existing || m.joined_at < existing.joined_at) {
+          byOrg.set(m.organization_id, m)
+        }
+      }
+      return Array.from(byOrg.values()).sort((a, b) =>
+        a.organization_name.localeCompare(b.organization_name)
+      )
     },
   })
 }
