@@ -1,0 +1,87 @@
+name: EAS iOS Build
+
+# Triggers an EAS Workflow run for the iOS app. The actual build runs on EAS
+# cloud workers (cloning from GitHub via the connected Expo App, with
+# --recurse-submodules so packages/ui + packages/sdk hydrate correctly). This
+# Actions job is only the trigger — keeps GitHub Actions minutes minimal and
+# delegates the heavy lifting to EAS macOS workers.
+
+on:
+  push:
+    branches: [prod]   # auto-trigger production builds when prod branch advances
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: 'eas.json build profile'
+        required: false
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+      ref:
+        description: 'Git ref to build (defaults to current commit)'
+        required: false
+        default: ''
+      auto_submit:
+        description: 'Auto-submit to App Store Connect after build succeeds (TestFlight upload)'
+        required: false
+        default: false
+        type: boolean
+
+# Avoid stacking concurrent EAS triggers for the same ref
+concurrency:
+  group: eas-ios-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  trigger-eas-build:
+    name: Trigger EAS Workflow
+    runs-on: ubuntu-latest
+    timeout-minutes: 10  # this job only triggers; the actual build runs on EAS
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+
+      - name: Install eas-cli
+        run: npm install -g eas-cli@latest
+
+      - name: Resolve build ref
+        id: resolve_ref
+        run: |
+          REF="${{ inputs.ref }}"
+          if [ -z "$REF" ]; then
+            REF="${{ github.sha }}"
+          fi
+          echo "ref=$REF" >> "$GITHUB_OUTPUT"
+          echo "Building from ref: $REF"
+
+      - name: Trigger EAS Workflow
+        working-directory: apps/scaffald
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "::error::EXPO_TOKEN secret is not configured. Generate one at https://expo.dev/accounts/unicorn-love/settings/access-tokens and add as a GitHub repo secret named EXPO_TOKEN."
+            exit 1
+          fi
+
+          PROFILE="${{ inputs.profile || 'production' }}"
+          REF="${{ steps.resolve_ref.outputs.ref }}"
+
+          echo "Triggering EAS workflow: profile=$PROFILE ref=$REF auto_submit=${{ inputs.auto_submit || 'false' }}"
+
+          eas workflow:run .eas/workflows/production-ios.yml \
+            --ref "$REF" \
+            --non-interactive \
+            -F profile="$PROFILE"
+
+          echo "::notice::EAS Workflow triggered. Watch progress at https://expo.dev/accounts/unicorn-love/projects/scf-scaffald/workflows"
