@@ -43,7 +43,7 @@ catalog:
   babel-preset-expo: ~55.0.18
   burnt: ~0.13.0
   cross-env: ~7.0.3
-  expo: ~55.0.17
+  expo: ~55.0.18
   expo-apple-authentication: ~55.0.13
   expo-build-properties: ~55.0.13
   expo-clipboard: ~55.0.13
@@ -52,7 +52,7 @@ catalog:
   expo-dev-client: ~55.0.28
   expo-device: ~55.0.15
   expo-document-picker: ~55.0.13
-  expo-blur: ~14.1.4
+  expo-blur: ~55.0.14
   expo-font: ~55.0.6
   expo-glass-effect: ~55.0.10
   expo-image: ~55.0.9
@@ -63,7 +63,7 @@ catalog:
   expo-localization: ~55.0.13
   expo-location: ~55.1.8
   expo-modules-core: ~55.0.23
-  expo-notifications: ~55.0.20
+  expo-notifications: ~55.0.21
   expo-router: ~55.0.13
   expo-secure-store: ~55.0.13
   expo-splash-screen: ~55.0.19
