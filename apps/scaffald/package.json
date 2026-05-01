@@ -5,6 +5,7 @@
   "scripts": {
     "adb:reverse": "adb reverse tcp:8081 tcp:8081",
     "android": "expo run:android",
+    "eas-build-pre-install": "bash scripts/eas-pre-install.sh",
     "check": "pnpm format:fix && pnpm lint:fix && pnpm typecheck",
     "clean": "react-native-clean-project",
     "eas:build:dev:android": "cross-env NODE_ENV=development APP_ENV=development eas build --profile development --platform android",
