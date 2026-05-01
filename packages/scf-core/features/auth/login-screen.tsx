@@ -22,7 +22,7 @@ import {
 } from '@scaffald/ui'
 import { colors, spacing } from '@scaffald/ui/tokens'
 import type { AuthChangeEvent, Session } from '@supabase/auth-js'
-import { Mail } from 'lucide-react-native'
+import { Lock, Mail } from 'lucide-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
@@ -39,6 +39,7 @@ const LoginSchema = z.object({
     .string()
     .email(i18n.t('validation.email.invalid'))
     .describe(i18n.t('auth.login.emailPlaceholder')),
+  password: z.string().optional(),
 })
 
 export const LoginScreen = () => {
@@ -50,6 +51,7 @@ export const LoginScreen = () => {
   useRedirectAfterSignIn()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [hasAgreed, setHasAgreed] = useState(true)
+  const [usePassword, setUsePassword] = useState(false)
   const requestMagicLink = useRequestMagicLinkMutation()
   const { t } = useTranslation()
   const { theme } = useThemeContext()
@@ -73,8 +75,58 @@ export const LoginScreen = () => {
   const form = useForm<z.infer<typeof LoginSchema>>({
     defaultValues: {
       email: params?.email || '',
+      password: '',
     },
   })
+
+  async function signInWithPassword(data: z.infer<typeof LoginSchema>) {
+    if (!hasAgreed) return
+    setIsSubmitting(true)
+
+    const trimmedEmail = data.email?.trim()
+    const password = data.password ?? ''
+
+    if (!trimmedEmail) {
+      form.setError('email', { type: 'custom', message: t('validation.email.required') })
+      setIsSubmitting(false)
+      return
+    }
+    if (!password) {
+      form.setError('password', { type: 'custom', message: 'Password is required.' })
+      setIsSubmitting(false)
+      return
+    }
+
+    const normalizedEmail = trimmedEmail.toLowerCase()
+    const emailDomain = normalizedEmail.includes('@')
+      ? (normalizedEmail.split('@')[1] ?? 'unknown')
+      : 'unknown'
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: normalizedEmail,
+        password,
+      })
+      if (error) throw error
+
+      captureEvent('auth_password_signin_succeeded', {
+        email_domain: emailDomain || null,
+      })
+      // useRedirectAfterSignIn handles routing on SIGNED_IN
+    } catch (error) {
+      const err = error as Error
+      captureEvent('auth_password_signin_failed', {
+        email_domain: emailDomain || null,
+        message: err?.message ?? null,
+      })
+      form.setError('password', {
+        type: 'custom',
+        message: translateError(error),
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   async function sendMagicLink(data: z.infer<typeof LoginSchema>) {
     if (!hasAgreed) return
@@ -130,7 +182,7 @@ export const LoginScreen = () => {
     }
   }
 
-  const handleSubmit = form.handleSubmit(sendMagicLink)
+  const handleSubmit = form.handleSubmit(usePassword ? signInWithPassword : sendMagicLink)
 
   return (
     <FormProvider {...form}>
@@ -179,6 +231,28 @@ export const LoginScreen = () => {
                 )}
               />
 
+              {usePassword && (
+                <Controller
+                  control={form.control}
+                  name="password"
+                  render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                    <Input
+                      placeholder={t('auth.login.passwordPlaceholder')}
+                      value={value ?? ''}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      secureTextEntry
+                      autoCapitalize="none"
+                      autoComplete="current-password"
+                      iconStart={Lock}
+                      error={!!error}
+                      errorMessage={error?.message}
+                      disabled={!hasAgreed}
+                    />
+                  )}
+                />
+              )}
+
               <Button
                 onPress={handleSubmit}
                 disabled={!hasAgreed || isSubmitting || requestMagicLink.isPending}
@@ -190,9 +264,33 @@ export const LoginScreen = () => {
                 }}
               >
                 {isSubmitting || requestMagicLink.isPending
-                  ? t('auth.login.sending')
-                  : t('auth.login.submitButton')}
+                  ? usePassword
+                    ? t('auth.login.passwordSigningIn')
+                    : t('auth.login.sending')
+                  : usePassword
+                    ? t('auth.login.passwordSignIn')
+                    : t('auth.login.submitButton')}
               </Button>
+
+              <Pressable
+                onPress={() => {
+                  setUsePassword(!usePassword)
+                  form.clearErrors()
+                }}
+                accessibilityRole="button"
+                accessibilityLabel={usePassword ? t('auth.login.switchToMagicLink') : t('auth.login.switchToPassword')}
+              >
+                <Paragraph
+                  size="sm"
+                  style={{
+                    color: cardLinkColor,
+                    textDecorationLine: 'underline',
+                    textAlign: 'center',
+                  }}
+                >
+                  {usePassword ? t('auth.login.switchToMagicLink') : t('auth.login.switchToPassword')}
+                </Paragraph>
+              </Pressable>
 
               <SocialLogin />
               <Paragraph size="sm" style={{ color: cardTextSecondary }}>

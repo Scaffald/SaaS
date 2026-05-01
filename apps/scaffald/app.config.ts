@@ -107,12 +107,18 @@ export default {
         // actively using TaskManager / startLocationUpdatesAsync. Add it back
         // only when a real background-location feature ships.
         UIBackgroundModes: ["fetch", "remote-notification"],
+        // Permission strings must match what's declared in App Store Connect →
+        // App Privacy and explain WHY the data is collected. Apple frequently
+        // rejects generic strings like "Allow access to your location."
+        // Background-location strings (NSLocationAlways*) are intentionally
+        // omitted: we use foreground location only. Re-add them only if a
+        // real background-tracking feature ships.
         NSLocationWhenInUseUsageDescription:
-          "This app requires access to your location when open.",
-        NSLocationAlwaysAndWhenInUseUsageDescription:
-          "This app requires access to your location even when closed.",
-        NSLocationAlwaysUsageDescription:
-          "This app requires access to your location when open.",
+          "Scaffald uses your location to show nearby trade jobs and workers on the map.",
+        NSPhotoLibraryUsageDescription:
+          "Scaffald accesses your photos so you can upload a profile picture and attach images to job listings.",
+        NSCameraUsageDescription:
+          "Scaffald uses the camera so you can take a profile photo or capture jobsite images for listings.",
       },
     },
     android: {
@@ -162,20 +168,21 @@ export default {
         "expo-image-picker",
         {
           photosPermission:
-            "The app accesses your photos to let you share them with your friends.",
+            "Scaffald accesses your photos so you can upload a profile picture and attach images to job listings.",
+          cameraPermission:
+            "Scaffald uses the camera so you can take a profile photo or capture jobsite images for listings.",
         },
       ],
       [
         "expo-location",
         {
-          locationAlwaysAndWhenInUsePermission:
-            "Allow $(PRODUCT_NAME) to use your location.",
-          locationAlwaysPermission:
-            "Allow $(PRODUCT_NAME) to use your location.",
+          // Foreground-only — we do not use background location. Background
+          // flags are intentionally false to match the App Privacy form and
+          // avoid rejection for declaring unused capabilities.
           locationWhenInUsePermission:
-            "Allow $(PRODUCT_NAME) to use your location.",
-          isIosBackgroundLocationEnabled: true,
-          isAndroidBackgroundLocationEnabled: true,
+            "Scaffald uses your location to show nearby trade jobs and workers on the map.",
+          isIosBackgroundLocationEnabled: false,
+          isAndroidBackgroundLocationEnabled: false,
         },
       ],
       [

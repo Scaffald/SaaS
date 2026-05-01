@@ -77,7 +77,7 @@ Scaffald is a product of Unicorn LLC.
 ---
 
 ## What's New in This Version (4,000 char max)
-*(For initial 1.1.6 submission)*
+*(For initial 1.0.0 submission)*
 
 Welcome to Scaffald — modern hiring for the technical trades.
 
@@ -127,8 +127,8 @@ Alternate sets to consider:
 
 **Sign-in required?** Yes
 **Demo account:**
-- Worker side: `reviewer-worker@scaffald.com` / `<set strong password>`
-- Employer side: `reviewer-employer@scaffald.com` / `<set strong password>`
+- Worker side: `reviewer-worker@scaffald.com` / `Scaffald2026!`
+- Employer side: `reviewer-employer@scaffald.com` / `Scaffald2026!`
 
 **Contact for App Review:**
 - First name: Clay
@@ -139,10 +139,15 @@ Alternate sets to consider:
 **Notes for the reviewer (paste into Notes field):**
 > Scaffald is a hiring marketplace for the skilled trades (welders, electricians, plumbers, HVAC, etc.).
 >
-> Two demo accounts are provided — one for the Worker experience and one for the Employer experience. After signing in, the home tab shows the relevant dashboard.
+> Two demo accounts are provided — sign in with email/password on the Sign In screen.
 >
-> Worker flow to test: Sign in → Jobs tab → tap any listing → Quick Apply.
-> Employer flow to test: Sign in → Dashboard → Workers tab → tap any worker → send a message; or Jobs → Create.
+> **Worker account** — `reviewer-worker@scaffald.com` / `Scaffald2026!`
+> Persona: Alex Martinez, Journeyman Welder, Detroit MI.
+> Flow: Jobs tab → map shows open positions near Detroit → tap "Pipe Welder / Fabricator" at Apex Mechanical → Quick Apply.
+>
+> **Employer account** — `reviewer-employer@scaffald.com` / `Scaffald2026!`
+> Persona: Jamie Chen, owner of Apex Mechanical Inc.
+> Flow: Dashboard → Jobs → tap "Pipe Welder / Fabricator" → Applications → tap Alex Martinez's application → send a message. Or: Workers tab → browse nearby tradespeople.
 >
 > Location permission is used to surface nearby jobs and workers on a map (foreground only). Push notifications are used for new matches and messages.
 >
@@ -216,8 +221,8 @@ Alternate sets to consider:
 ---
 
 ## Version & Build
-- **Marketing version:** 1.1.6 *(from `apps/scaffald/package.json`)*
-- **Build number:** auto-derived as `10106` by `app.config.ts`
+- **Marketing version:** 1.0.0 *(from `apps/scaffald/package.json`)*
+- **Build number:** auto-derived as `10000` by `app.config.ts`
 - **Minimum iOS:** as set by Expo SDK 54 (iOS 15.1+)
 
 ## Localization

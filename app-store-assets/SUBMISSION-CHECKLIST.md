@@ -93,7 +93,7 @@ App Review **will** click them, and a 404 is the most common reason marketing ap
 
 The version still shows "iOS App Version 1.0" with no build attached. The other Claude Code tab is doing the EAS build. Once it finishes and EAS submits to App Store Connect, the build will appear under the Build section of the version.
 
-Note: package.json says `1.1.6` but App Store Connect is set up as Version 1.0. First-release apps usually launch as 1.0.0. Worth confirming with whoever started the ASC record before submitting.
+Note: `apps/scaffald/package.json` is set to `1.0.0` and App Store Connect is set up as Version 1.0 — these match. The build number is auto-derived as `10000` by `app.config.ts`.
 
 ### 6. Submit for Review
 
@@ -151,7 +151,11 @@ If you want to swap the illustrative app screens for real device captures:
 - [ ] Age Rating questionnaire submitted (4+)
 - [ ] Pricing & Availability set (Free, all territories)
 - [ ] Privacy Policy URL set
-- [ ] App Review demo accounts created and verified
+- [ ] App Review demo accounts created in **production** and verified from a fresh device
+      Seed file: `packages/supabase/seeds/010_seed-app-review-accounts.sql`
+      Or create manually: Supabase Dashboard → Authentication → Add User
+      Worker: `reviewer-worker@scaffald.com` / `Scaffald2026!`
+      Employer: `reviewer-employer@scaffald.com` / `Scaffald2026!`
 - [ ] Reviewer notes pasted in (see metadata doc § App Review Information)
 - [ ] Build attached to the version
 - [ ] Marketing / Support / Privacy URLs return 200
