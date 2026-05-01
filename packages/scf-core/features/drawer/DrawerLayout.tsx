@@ -345,8 +345,8 @@ function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: Drawer
         >
           {children}
         </Stack>
+        {isSmall && !hideDrawer ? <MobileBottomNav /> : null}
       </CustomDrawer>
-      {isSmall && !hideDrawer ? <MobileBottomNav /> : null}
     </View>
   )
 }

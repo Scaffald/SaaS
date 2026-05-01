@@ -9,6 +9,11 @@ const config = getDefaultConfig(__dirname, {
   isCSSEnabled: true,
 })
 
+// Watch the monorepo root so changes to packages/* (e.g. @scf/core, @scaffald/ui)
+// trigger Fast Refresh without needing a full reload.
+const monorepoRoot = path.resolve(__dirname, '../..')
+config.watchFolders = [monorepoRoot]
+
 // Prefer 'source' field in package.json exports so workspace packages like @scaffald/ui
 // are bundled from TypeScript source directly — no build step needed during development.
 config.resolver.unstable_enablePackageExports = true

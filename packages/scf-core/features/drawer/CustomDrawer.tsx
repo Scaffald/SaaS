@@ -196,6 +196,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    zIndex: 10000,
   },
   overlayPress: { flex: 1 },
   drawer: {
@@ -208,6 +209,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.18,
     shadowRadius: 12,
     elevation: 16,
+    zIndex: 10001,
   },
   drawerInner: { flex: 1, width: '100%' },
   permanentContainer: { flex: 1, flexDirection: 'row' },
