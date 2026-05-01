@@ -1,0 +1,23 @@
+name: Production iOS build
+
+# Triggered manually via `eas workflow:run .eas/workflows/production-ios.yml --ref main`
+# (or via the EAS dashboard). Cloud-clones the repo with --recurse-submodules,
+# which is the only path that hydrates packages/ui and packages/sdk on the
+# worker. CLI uploads (`eas build`) tar the local working tree and skip
+# submodule contents, breaking pnpm install.
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        type: string
+        default: production
+        description: eas.json build profile to use
+
+jobs:
+  build_ios:
+    name: Build iOS (production)
+    type: build
+    params:
+      platform: ios
+      profile: ${{ inputs.profile }}
