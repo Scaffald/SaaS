@@ -69,7 +69,7 @@
       },
       "ios": {
         "buildConfiguration": "Release",
-        "image": "macos-sequoia-26.0-xcode-26.0",
+        "image": "macos-sequoia-15.6-xcode-26.2",
         "cache": {
           "customPaths": ["node_modules"],
           "disabled": false,
