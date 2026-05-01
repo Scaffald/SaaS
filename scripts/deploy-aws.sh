@@ -83,6 +83,12 @@ bump_version_if_needed() {
         return
     fi
 
+    if [ "${SKIP_VERSION_BUMP:-}" = "1" ]; then
+        echo -e "${YELLOW}Skipping version bump (SKIP_VERSION_BUMP=1)${NC}"
+        VERSION_BUMPED=true
+        return
+    fi
+
     echo -e "${YELLOW}Auto-incrementing application version...${NC}"
     local log_file="/tmp/version-bump.log"
     if pnpm version:auto >"$log_file" 2>&1; then
