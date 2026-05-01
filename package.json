@@ -271,7 +271,7 @@
     "vitest": "^4.0.18",
     "vitest-mock-extended": "^3.1.0"
   },
-  "packageManager": "pnpm@10.20.0",
+  "packageManager": "pnpm@10.28.2",
   "pnpm": {
     "overrides": {
       "@supabase/supabase-js": "~2.86.0",
