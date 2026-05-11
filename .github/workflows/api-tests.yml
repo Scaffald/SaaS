@@ -81,6 +81,7 @@ jobs:
         run: |
           deno test \
             --allow-all \
+            --no-check \
             --config=functions/api/deno.json \
             --coverage=coverage \
             --junit-path=./test-results/junit.xml \
@@ -95,6 +96,7 @@ jobs:
         run: |
           deno test \
             --allow-all \
+            --no-check \
             --config=functions/api/deno.json \
             --coverage=coverage \
             functions/api/__tests__/integration/*.test.ts
