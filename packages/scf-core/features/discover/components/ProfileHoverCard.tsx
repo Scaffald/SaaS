@@ -233,7 +233,12 @@ function JobPreview({ job }: { job: JobMapPin }) {
   const t = theme === 'dark' ? 'dark' : 'light'
   const jPal = jobPalette[t]
   const payRange = formatPayRange(job)
-  const tags = [job.employment_type, job.remote_option].filter(Boolean) as string[]
+  const employmentTypeMap: Record<string, string> = { full_time: 'Full-Time', part_time: 'Part-Time', contract: 'Contract', temp: 'Temporary', intern: 'Internship' }
+  const remoteOptionMap: Record<string, string> = { on_site: 'On-site', hybrid: 'Hybrid', remote: 'Remote' }
+  const tags = [
+    job.employment_type ? (employmentTypeMap[job.employment_type] ?? job.employment_type) : null,
+    job.remote_option ? (remoteOptionMap[job.remote_option] ?? job.remote_option) : null,
+  ].filter(Boolean) as string[]
 
   return (
     <Stack gap={10}>
