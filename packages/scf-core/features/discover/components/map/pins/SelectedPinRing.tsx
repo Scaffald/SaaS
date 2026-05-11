@@ -1,14 +1,20 @@
 import { useMemo } from 'react'
 import { PIN_COLORS, type MapPinCategory } from '../pinColors'
+import {
+  AVATAR_OFFSET_Y,
+  AVATAR_SIZE,
+  CAPSULE_FONT,
+  CAPSULE_HEIGHT,
+  CAPSULE_PADDING_X,
+  ICON_GAP,
+  ICON_SIZE,
+  determinePinType,
+  getCapsuleLabel,
+  isAvatarPin,
+  type MapPinData,
+} from './MapPin.shared'
 
-const CAPSULE_HEIGHT = 28
-const CAPSULE_PADDING_X = 10
-const CAPSULE_FONT = 'bold 12px "DIN Offc Pro", "Inter", system-ui, sans-serif'
-const ICON_SIZE = 10
-const ICON_GAP = 4
 const RING_PADDING = 5
-const AVATAR_HEIGHT = 53
-const AVATAR_OFFSET_Y = 6
 
 const KEYFRAMES_ID = 'scf-pin-ring-keyframes'
 function ensureKeyframes() {
@@ -60,9 +66,9 @@ export function SelectedPinRing({
   const { width, height, offsetY } = useMemo(() => {
     if (isAvatar) {
       return {
-        width: AVATAR_HEIGHT,
-        height: AVATAR_HEIGHT,
-        offsetY: -(AVATAR_HEIGHT / 2 + AVATAR_OFFSET_Y),
+        width: AVATAR_SIZE,
+        height: AVATAR_SIZE,
+        offsetY: -(AVATAR_SIZE / 2 + AVATAR_OFFSET_Y),
       }
     }
     const iconW = hasIcon ? ICON_SIZE + ICON_GAP : 0
@@ -105,34 +111,15 @@ export function SelectedPinRing({
   )
 }
 
-/** Re-derive what label the selected pin's capsule shows, mirroring MapAdapter logic. */
-export function getSelectedPinLabel(pin: {
-  pinType?: MapPinCategory
-  organization?: string
-  title?: string
-  score?: number
-  hourlyRate?: number
-  payLabel?: string
-  avatarUrl?: string | null
-}): { label: string | null; isAvatar: boolean } {
-  const type: MapPinCategory =
-    pin.pinType ??
-    (pin.organization === 'Organization' ? 'organization' : pin.organization === 'Job' ? 'job' : 'worker')
-
-  if (type === 'worker') {
-    if (pin.avatarUrl) return { label: null, isAvatar: true }
-    if (pin.score != null) return { label: String(pin.score), isAvatar: false }
-    return { label: null, isAvatar: false }
+/** Derive label + render-mode for the selected pin (shared with MapPin). */
+export function getSelectedPinLabel(pin: MapPinData): {
+  label: string | null
+  isAvatar: boolean
+  pinType: MapPinCategory
+} {
+  return {
+    label: getCapsuleLabel(pin),
+    isAvatar: isAvatarPin(pin),
+    pinType: determinePinType(pin),
   }
-  if (type === 'organization') {
-    return { label: truncate(pin.title ?? '', 14), isAvatar: false }
-  }
-  // job
-  const label = pin.payLabel ?? (pin.hourlyRate ? `$${pin.hourlyRate}/hr` : truncate(pin.title ?? '', 12))
-  return { label, isAvatar: false }
-}
-
-function truncate(text: string, maxLen: number): string {
-  if (text.length <= maxLen) return text
-  return `${text.slice(0, maxLen - 1)}…`
 }
