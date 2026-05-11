@@ -58,7 +58,6 @@ module.exports = (api) => {
           root: ['../..'],
         },
       ],
-      'react-native-reanimated/plugin',
     ],
     presets: [
       [

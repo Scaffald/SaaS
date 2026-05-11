@@ -20,9 +20,9 @@ config.resolver.nodeModulesPaths = [
 // Enable symlinks so pnpm workspace links resolve correctly
 config.resolver.unstable_enableSymlinks = true
 
-// Deduplicate React and Reanimated — force ALL requires to the workspace root copy.
+// Deduplicate React — force ALL requires to the workspace root copy.
 // extraNodeModules can't beat nested node_modules; resolveRequest can.
-const DEDUPE = ['react', 'react-native', 'react-native-reanimated']
+const DEDUPE = ['react', 'react-native']
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   const pkg = DEDUPE.find(p => moduleName === p || moduleName.startsWith(p + '/'))
   if (pkg) {

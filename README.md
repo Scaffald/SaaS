@@ -961,7 +961,7 @@ If you're installing a library with any native code, you must install it in `exp
 
 ```sh
 cd apps/expo
-pnpm add react-native-reanimated
+pnpm add react-native-svg
 cd ..
 pnpm
 ```
