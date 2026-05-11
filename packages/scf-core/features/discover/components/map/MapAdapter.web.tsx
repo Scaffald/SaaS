@@ -1,11 +1,12 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
+import { createRoot, type Root } from 'react-dom/client'
 import { useColorScheme, View } from 'react-native'
 import type { MapContainerRef, ViewportBounds } from '@scaffald/ui'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
-import { createPulsingRing } from './PulsingDot'
 import { PIN_COLORS, type MapPinCategory } from './pinColors'
+import { SelectedPinRing, getSelectedPinLabel } from './pins/SelectedPinRing'
 import {
   getMapStyleUrl,
   getStandardStyleConfig,
@@ -314,14 +315,6 @@ function jitterCoordinates(pins: MapPin[]): Map<string, [number, number]> {
   return jittered
 }
 
-function ensurePulsingRingImage(map: mapboxgl.Map) {
-  if (map.hasImage('pulsing-ring')) {
-    map.removeImage('pulsing-ring')
-  }
-  const ring = createPulsingRing(map, { size: 200, duration: 1300 })
-  map.addImage('pulsing-ring', ring, { pixelRatio: 2 })
-}
-
 const determinePinType = (pin: MapPin): MapPinCategory => {
   if (pin.pinType) return pin.pinType
   if (pin.organization === 'Organization') return 'organization'
@@ -411,6 +404,8 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
     const jitteredPinCoordsRef = useRef(new Map<string, [number, number]>())
     const cardMarkerRef = useRef<mapboxgl.Marker | null>(null)
     const centerMarkerRef = useRef<mapboxgl.Marker | null>(null)
+    const selectedRingMarkerRef = useRef<mapboxgl.Marker | null>(null)
+    const selectedRingRootRef = useRef<Root | null>(null)
     const [isMapReady, setIsMapReady] = useState(false)
     const currentZoomRef = useRef(zoom)
     const zoomRef = useRef(zoom)
@@ -674,39 +669,6 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
             })
           }
 
-          // Selected pin ring indicator
-          ensurePulsingRingImage(map)
-          map.addSource('selected-pin-pulse', {
-            type: 'geojson',
-            data: { type: 'FeatureCollection', features: [] },
-          })
-          // Static ring: colored stroke, transparent fill — wraps the capsule
-          map.addLayer({
-            id: 'selected-pin-ring',
-            type: 'circle',
-            source: 'selected-pin-pulse',
-            paint: {
-              'circle-radius': 20,
-              'circle-color': 'transparent',
-              'circle-stroke-width': 2.5,
-              'circle-stroke-color': [
-                'match', ['get', 'pinType'],
-                'worker', pinColorsRef.current.worker,
-                'organization', pinColorsRef.current.organization,
-                'job', pinColorsRef.current.job,
-                pinColorsRef.current.worker,
-              ],
-              'circle-stroke-opacity': 0.9,
-            },
-          })
-          // Animated pulsing ring
-          map.addLayer({
-            id: 'selected-pin-pulse-layer',
-            type: 'symbol',
-            source: 'selected-pin-pulse',
-            layout: { 'icon-image': 'pulsing-ring', 'icon-size': 0.72 },
-          })
-
           // Highlight ring for hovered cards (sidebar → map)
           map.addSource('highlighted-pin-ring', {
             type: 'geojson',
@@ -896,43 +858,6 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
         // Clear capsule image cache (images lost on style change)
         capsuleImageCacheRef.current.clear()
 
-        // Re-add selected pin ring indicator
-        ensurePulsingRingImage(map)
-        if (!map.getSource('selected-pin-pulse')) {
-          map.addSource('selected-pin-pulse', {
-            type: 'geojson',
-            data: { type: 'FeatureCollection', features: [] },
-          })
-        }
-        if (!map.getLayer('selected-pin-ring')) {
-          map.addLayer({
-            id: 'selected-pin-ring',
-            type: 'circle',
-            source: 'selected-pin-pulse',
-            paint: {
-              'circle-radius': 20,
-              'circle-color': 'transparent',
-              'circle-stroke-width': 2.5,
-              'circle-stroke-color': [
-                'match', ['get', 'pinType'],
-                'worker', pinColorsRef.current.worker,
-                'organization', pinColorsRef.current.organization,
-                'job', pinColorsRef.current.job,
-                pinColorsRef.current.worker,
-              ],
-              'circle-stroke-opacity': 0.9,
-            },
-          })
-        }
-        if (!map.getLayer('selected-pin-pulse-layer')) {
-          map.addLayer({
-            id: 'selected-pin-pulse-layer',
-            type: 'symbol',
-            source: 'selected-pin-pulse',
-            layout: { 'icon-image': 'pulsing-ring', 'icon-size': 0.72 },
-          })
-        }
-
         // Re-add highlight ring
         if (!map.getSource('highlighted-pin-ring')) {
           map.addSource('highlighted-pin-ring', {
@@ -955,28 +880,6 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
           })
         }
 
-        // Restore selected pin pulse
-        const pinsSnapshot = latestPinsRef.current
-        const selectedPin = pinsSnapshot.find((pin) => pin.selected === true)
-        if (selectedPin) {
-          const source = map.getSource('selected-pin-pulse') as mapboxgl.GeoJSONSource | null
-          if (source) {
-            const coord = jitteredPinCoordsRef.current.get(selectedPin.id) ?? selectedPin.coordinate
-            const [lng, lat] = coord
-            if (isValidCoord(lng, lat)) {
-              try {
-                source.setData({
-                  type: 'FeatureCollection',
-                  features: [{
-                    type: 'Feature',
-                    geometry: { type: 'Point', coordinates: coord },
-                    properties: { id: selectedPin.id, pinType: selectedPin.pinType ?? 'worker' },
-                  }],
-                })
-              } catch { /* ignore */ }
-            }
-          }
-        }
       }
 
       map.once('styledata', handleStyleData)
@@ -1245,8 +1148,6 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
             ...pointLayerIds,
             ...avatarLayerIds,
             ...labelLayerIds,
-            'selected-pin-ring',
-            'selected-pin-pulse-layer',
             'highlighted-pin-ring-layer',
           ],
         })
@@ -1364,41 +1265,84 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
       } catch { /* ignore */ }
     }, [centerLocation, isMapReady])
 
-    // --- Update ring indicator for selected pin ---
+    // --- Selected pin React marker (CSS-animated ring matching pin shape) ---
     useEffect(() => {
       if (!mapRef.current || !isMapReady) return
       const map = mapRef.current
 
-      try {
-        if (!map.getSource('selected-pin-pulse')) return
-        const source = map.getSource('selected-pin-pulse') as mapboxgl.GeoJSONSource
-        if (!source || typeof source.setData !== 'function') return
+      const selectedPin = pins.find((pin) => pin.selected === true)
 
-        const selectedPin = pins.find((pin) => pin.selected === true)
-
-        if (selectedPin) {
-          const coord = jitteredPinCoordsRef.current.get(selectedPin.id) ?? selectedPin.coordinate
-          const [lng, lat] = coord
-          if (!isValidCoord(lng, lat)) {
-            try { source.setData({ type: 'FeatureCollection', features: [] }) } catch { /* */ }
-            return
-          }
-
-          try {
-            source.setData({
-              type: 'FeatureCollection',
-              features: [{
-                type: 'Feature',
-                geometry: { type: 'Point', coordinates: coord },
-                properties: { id: selectedPin.id, pinType: selectedPin.pinType ?? 'worker' },
-              }],
-            })
-          } catch { /* ignore */ }
-        } else {
-          try { source.setData({ type: 'FeatureCollection', features: [] }) } catch { /* */ }
+      // Tear down when nothing is selected
+      if (!selectedPin) {
+        if (selectedRingRootRef.current) {
+          const root = selectedRingRootRef.current
+          selectedRingRootRef.current = null
+          queueMicrotask(() => { try { root.unmount() } catch { /* ignore */ } })
         }
-      } catch { /* ignore */ }
-    }, [pins, isMapReady])
+        if (selectedRingMarkerRef.current) {
+          try { selectedRingMarkerRef.current.remove() } catch { /* ignore */ }
+          selectedRingMarkerRef.current = null
+        }
+        return
+      }
+
+      const coord = jitteredPinCoordsRef.current.get(selectedPin.id) ?? selectedPin.coordinate
+      const [lng, lat] = coord
+      if (!isValidCoord(lng, lat)) return
+
+      const { label, isAvatar } = getSelectedPinLabel(selectedPin)
+      const pinType: MapPinCategory =
+        selectedPin.pinType ??
+        (selectedPin.organization === 'Organization'
+          ? 'organization'
+          : selectedPin.organization === 'Job'
+            ? 'job'
+            : 'worker')
+      const hasIcon = !isAvatar
+
+      const ringNode = (
+        <SelectedPinRing
+          label={label}
+          pinType={pinType}
+          theme={themeMode}
+          hasIcon={hasIcon}
+          isAvatar={isAvatar}
+        />
+      )
+
+      // Create marker + React root on first selection
+      if (!selectedRingMarkerRef.current) {
+        const el = document.createElement('div')
+        el.style.position = 'absolute'
+        el.style.pointerEvents = 'none'
+        const root = createRoot(el)
+        root.render(ringNode)
+        selectedRingRootRef.current = root
+        selectedRingMarkerRef.current = new mapboxgl.Marker({ element: el, anchor: 'center' })
+          .setLngLat(coord)
+          .addTo(map)
+        return
+      }
+
+      // Update existing marker
+      selectedRingMarkerRef.current.setLngLat(coord)
+      selectedRingRootRef.current?.render(ringNode)
+    }, [pins, isMapReady, themeMode])
+
+    // Cleanup React root on unmount
+    useEffect(() => {
+      return () => {
+        if (selectedRingRootRef.current) {
+          const root = selectedRingRootRef.current
+          selectedRingRootRef.current = null
+          queueMicrotask(() => { try { root.unmount() } catch { /* ignore */ } })
+        }
+        if (selectedRingMarkerRef.current) {
+          try { selectedRingMarkerRef.current.remove() } catch { /* ignore */ }
+          selectedRingMarkerRef.current = null
+        }
+      }
+    }, [])
 
     // --- Fly to center when centerLocation changes ---
     useEffect(() => {
