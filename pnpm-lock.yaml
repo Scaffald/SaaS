@@ -619,9 +619,6 @@ importers:
       '@rnmapbox/maps':
         specifier: 'catalog:'
         version: 10.1.45(expo@55.0.18)(react-dom@19.2.0(react@19.2.0))(react-native@0.83.6(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
-      '@scaffald/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
       '@sentry/react':
         specifier: ^10.28.0
         version: 10.28.0(react@19.2.0)
