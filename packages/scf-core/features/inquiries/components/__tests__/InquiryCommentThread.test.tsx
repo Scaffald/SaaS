@@ -29,10 +29,6 @@ vi.mock('@scaffald/ui', async () => {
   }
 })
 
-vi.mock('react-native-reanimated/src/component/FlatList', () => ({
-  default: () => null,
-}))
-
 vi.mock('@scf/core/utils/inquiries-sdk-hooks', () => ({
   useAddInquiryCommentMutation: () => ({
     mutateAsync: addCommentMock,

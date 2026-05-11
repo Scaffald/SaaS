@@ -218,14 +218,12 @@
     "react-native": "catalog:",
     "react-native-dotenv": "catalog:",
     "react-native-gesture-handler": "catalog:",
-    "react-native-reanimated": "catalog:",
     "react-native-safe-area-context": "catalog:",
     "react-native-screens": "catalog:",
     "react-native-svg": "catalog:",
     "react-native-url-polyfill": "catalog:",
     "react-native-web": "catalog:",
-    "react-native-webview": "catalog:",
-    "react-native-worklets": "catalog:"
+    "react-native-webview": "catalog:"
   },
   "devDependencies": {
     "@babel/core": "catalog:",
