@@ -83,7 +83,8 @@ jobs:
 
       - name: Wait for API
         run: |
-          timeout 600 bash -c 'until curl -sf http://127.0.0.1:54321/functions/v1/api/health 2>/dev/null | grep -q ok; do sleep 2; done'
+          ANON_KEY="${{ secrets.SUPABASE_ANON_KEY_LOCAL || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' }}"
+          timeout 600 bash -c "until curl -sf http://127.0.0.1:54321/functions/v1/api/health -H \"apikey: \$ANON_KEY\" 2>/dev/null | grep -q ok; do sleep 2; done"
 
       - name: Seed database
         run: |
