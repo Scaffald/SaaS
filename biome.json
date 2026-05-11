@@ -86,6 +86,17 @@
   "overrides": [
     {
       "includes": [
+        "packages/supabase/functions/api/**/*.ts",
+        "packages/supabase/functions/api/**/*.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": { "noExplicitAny": "off" }
+        }
+      }
+    },
+    {
+      "includes": [
         "**/packages/supabase/functions/**/*.ts",
         "**/packages/supabase/functions/**/*.tsx"
       ],

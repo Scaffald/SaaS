@@ -98,7 +98,6 @@ app.get("/analytics", async (c) => {
     .filter((id, index, array) => Boolean(id) && array.indexOf(id) === index);
 
   // deno-lint-ignore no-explicit-any
-  // biome-ignore lint/suspicious/noExplicitAny: Complex Supabase type inference
   let usersLookup = new Map<string, any>();
 
   if (topUserIds.length > 0) {
@@ -116,7 +115,6 @@ app.get("/analytics", async (c) => {
     }
 
     // deno-lint-ignore no-explicit-any
-    // biome-ignore lint/suspicious/noExplicitAny: User row type mismatch
     usersLookup = new Map(
       (usersData ?? []).map((user: any) => [user.id, user]),
     );
@@ -124,7 +122,6 @@ app.get("/analytics", async (c) => {
 
   const topUsers = topUsersSource.map((row) => {
     // deno-lint-ignore no-explicit-any
-    // biome-ignore lint/suspicious/noExplicitAny: User lookup type
     const profile = usersLookup.get(row.user_id) as any;
     const total = toNumber(row.total_bytes);
     const limit = toNumber(row.storage_limit_bytes);

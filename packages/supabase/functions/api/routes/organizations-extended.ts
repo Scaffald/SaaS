@@ -15,7 +15,6 @@ app.use("*", authMiddleware);
 // Helpers
 // ---------------------------------------------------------------------------
 
-// biome-ignore lint/suspicious/noExplicitAny: Supabase client type varies
 type SupabaseClient = any;
 
 async function getOrgAccess(
@@ -43,7 +42,6 @@ async function getOrgAccess(
     .select("role:roles(name, scope), scope_org_id")
     .eq("user_id", userId);
 
-  // biome-ignore lint/suspicious/noExplicitAny: Complex type inference
   const isAdmin = isOwner ||
     (assignments ?? []).some((a: any) =>
       (a.scope_org_id === orgId &&
@@ -52,7 +50,6 @@ async function getOrgAccess(
         a.role?.scope === "platform")
     );
 
-  // biome-ignore lint/suspicious/noExplicitAny: Complex type inference
   const isMember = isAdmin ||
     (assignments ?? []).some((a: any) => a.scope_org_id === orgId);
 
@@ -391,7 +388,6 @@ app.get("/:id/member-activity", async (c) => {
     string,
     { userId: string; actions: number; lastActionAt: string }
   >();
-  // biome-ignore lint/suspicious/noExplicitAny: Complex type inference
   for (const entry of (data ?? []) as any[]) {
     if (!entry.actor_user_id) continue;
     if (!activityMap.has(entry.actor_user_id)) {

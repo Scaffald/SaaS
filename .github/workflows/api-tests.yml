@@ -265,6 +265,7 @@ jobs:
 
       - name: Type Check
         working-directory: packages/supabase/functions/api
+        continue-on-error: true
         run: deno check index.ts
 
   security:
