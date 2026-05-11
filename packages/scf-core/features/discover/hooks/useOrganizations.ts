@@ -100,5 +100,6 @@ export const useOrganizations = (options: UseOrganizationsOptions = {}) => {
       return filtered.slice(0, Math.min(limit, 200))
     },
     staleTime: 10 * 60 * 1000, // 10 minutes - organizations change less frequently
+    placeholderData: (prev) => prev,
   })
 }

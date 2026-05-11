@@ -99,6 +99,7 @@ export const DiscoverMapScreen = () => {
     undefined
   )
   const recenterTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const hoverClearTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Pin state management for transitions and clustering
   const [clusters, setClusters] = useState<ClusterInfo[]>([])
@@ -183,19 +184,29 @@ export const DiscoverMapScreen = () => {
       : []
 
     const jobPins = showJobs
-      ? jobs.map((job) => ({
-          id: job.id,
-          coordinate: job.coordinates,
-          title: job.title,
-          subtitle: job.organization_name || 'Job Opening',
-          organization: 'Job' as const,
-          selected: job.id === selectedProfileId,
-          pinType: 'job' as const,
-          type: 'job' as const,
-          hourlyRate: job.pay_range_min_cents
-            ? Math.round(job.pay_range_min_cents / 100)
-            : undefined,
-        }))
+      ? jobs.map((job) => {
+          let payLabel: string | undefined
+          if (job.pay_range_min_cents) {
+            const minDollars = job.pay_range_min_cents / 100
+            const maxDollars = job.pay_range_max_cents ? job.pay_range_max_cents / 100 : null
+            const fmt = (d: number) => d >= 1000 ? `$${(d / 1000).toFixed(0)}k` : `$${d.toFixed(0)}`
+            const suffix = job.pay_range_type === 'hourly' ? '/hr' : job.pay_range_type === 'salary' ? '/yr' : ''
+            payLabel = maxDollars
+              ? `${fmt(minDollars)}–${fmt(maxDollars)}${suffix}`
+              : `${fmt(minDollars)}+${suffix}`
+          }
+          return {
+            id: job.id,
+            coordinate: job.coordinates,
+            title: job.title,
+            subtitle: job.organization_name || 'Job Opening',
+            organization: 'Job' as const,
+            selected: job.id === selectedProfileId,
+            pinType: 'job' as const,
+            type: 'job' as const,
+            payLabel,
+          }
+        })
       : []
 
     return [...workerPins, ...orgPins, ...jobPins]
@@ -236,9 +247,8 @@ export const DiscoverMapScreen = () => {
 
   useEffect(() => {
     return () => {
-      if (recenterTimeoutRef.current) {
-        clearTimeout(recenterTimeoutRef.current)
-      }
+      if (recenterTimeoutRef.current) clearTimeout(recenterTimeoutRef.current)
+      if (hoverClearTimeoutRef.current) clearTimeout(hoverClearTimeoutRef.current)
     }
   }, [])
 
@@ -420,14 +430,38 @@ export const DiscoverMapScreen = () => {
     [isSmallScreen, maybeCenterPinForHoverCard, updateHoverCardPosition]
   )
 
+  const cancelHoverClear = useCallback(() => {
+    if (hoverClearTimeoutRef.current) {
+      clearTimeout(hoverClearTimeoutRef.current)
+      hoverClearTimeoutRef.current = null
+    }
+  }, [])
+
+  const scheduleHoverClear = useCallback(() => {
+    cancelHoverClear()
+    hoverClearTimeoutRef.current = setTimeout(() => {
+      clearHoverState()
+      hoverClearTimeoutRef.current = null
+    }, 120)
+  }, [cancelHoverClear, clearHoverState])
+
+  const handleHoverCardEnter = useCallback(() => {
+    cancelHoverClear()
+  }, [cancelHoverClear])
+
+  const handleHoverCardLeave = useCallback(() => {
+    scheduleHoverClear()
+  }, [scheduleHoverClear])
+
   // Handle pin hover — show hover card without selecting
   const handlePinHover = useCallback(
     (pinId: string | null) => {
       if (Platform.OS !== 'web' || isSmallScreen) return
       if (!pinId) {
-        clearHoverState()
+        scheduleHoverClear()
         return
       }
+      cancelHoverClear()
       // Don't re-trigger if already showing this pin
       if (activePinId === pinId && hoverCardVisible) return
       const pinType = getPinType(pinId)
@@ -435,7 +469,7 @@ export const DiscoverMapScreen = () => {
         showHoverCardForPin(pinId, pinType, { trigger: 'click' })
       }
     },
-    [activePinId, clearHoverState, getPinType, hoverCardVisible, isSmallScreen, showHoverCardForPin]
+    [activePinId, cancelHoverClear, getPinType, hoverCardVisible, isSmallScreen, scheduleHoverClear, showHoverCardForPin]
   )
 
   // Handle pin click - focus corresponding card
@@ -748,6 +782,8 @@ export const DiscoverMapScreen = () => {
           position={hoverCardPosition}
           jobData={activePinType === 'job' && activePinId ? jobs.find((j) => j.id === activePinId) ?? null : null}
           onClose={clearHoverState}
+          onHoverCardEnter={handleHoverCardEnter}
+          onHoverCardLeave={handleHoverCardLeave}
         />
       )}
 

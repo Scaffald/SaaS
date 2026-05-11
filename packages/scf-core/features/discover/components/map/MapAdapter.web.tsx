@@ -28,6 +28,7 @@ interface MapPin {
   subtitle?: string
   score?: number
   hourlyRate?: number
+  payLabel?: string
   availability?: string
   organization?: string
   color?: string
@@ -141,9 +142,66 @@ const CAPSULE_HEIGHT = 28
 const CAPSULE_PADDING_X = 10
 const CAPSULE_FONT = 'bold 12px "DIN Offc Pro", "Inter", system-ui, sans-serif'
 const CAPSULE_SCALE = 2 // retina
+const ICON_SIZE = 10 // logical px
+const ICON_GAP = 4 // logical px between icon and text
+
+/** Draw a small type icon at canvas coordinates (cx, cy) with the given logical size. */
+function drawPinTypeIcon(
+  ctx: CanvasRenderingContext2D,
+  type: MapPinCategory,
+  cx: number,
+  cy: number,
+  size: number,
+) {
+  ctx.save()
+  ctx.fillStyle = 'rgba(255,255,255,0.92)'
+  ctx.strokeStyle = 'rgba(255,255,255,0.92)'
+
+  if (type === 'worker') {
+    // Person silhouette: circle head + rounded shoulder arc
+    const headR = size * 0.28
+    ctx.beginPath()
+    ctx.arc(cx, cy - size * 0.13, headR, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.beginPath()
+    ctx.arc(cx, cy + size * 0.52, size * 0.42, Math.PI * 1.08, Math.PI * 1.92)
+    ctx.fill()
+  } else if (type === 'organization') {
+    // Building: filled rect + small door cutout
+    const bw = size * 0.68
+    const bh = size * 0.72
+    ctx.fillRect(cx - bw / 2, cy - bh / 2, bw, bh)
+    ctx.fillStyle = 'rgba(0,0,0,0.28)'
+    ctx.fillRect(cx - bw * 0.16, cy + bh * 0.1, bw * 0.32, bh * 0.38)
+  } else if (type === 'job') {
+    // Briefcase: body rect + handle arc
+    const bw = size * 0.74
+    const bh = size * 0.52
+    const handleW = bw * 0.38
+    ctx.lineWidth = size * 0.17
+    ctx.lineCap = 'round'
+    ctx.beginPath()
+    ctx.arc(cx, cy - bh / 2 + size * 0.04, handleW / 2, Math.PI, 0)
+    ctx.stroke()
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    const r = size * 0.1
+    const left = cx - bw / 2
+    const top = cy - bh * 0.18
+    if (ctx.roundRect) {
+      ctx.roundRect(left, top, bw, bh, r)
+    } else {
+      ctx.rect(left, top, bw, bh)
+    }
+    ctx.fill()
+  }
+
+  ctx.restore()
+}
 
 /**
  * Generates a pill/capsule-shaped canvas image for a map pin.
+ * Optionally draws a small type icon before the label.
  * Returns { canvas, width, height } for use with map.addImage().
  */
 function createCapsulePin(
@@ -151,11 +209,16 @@ function createCapsulePin(
   bgColor: string,
   textColor = '#ffffff',
   borderColor = 'rgba(255,255,255,0.9)',
+  iconType?: MapPinCategory,
 ): { canvas: HTMLCanvasElement; width: number; height: number } {
   const scale = CAPSULE_SCALE
   const h = CAPSULE_HEIGHT * scale
   const padX = CAPSULE_PADDING_X * scale
   const radius = h / 2
+
+  const iconPx = iconType ? ICON_SIZE * scale : 0
+  const iconGapPx = iconType ? ICON_GAP * scale : 0
+  const iconTotalW = iconPx + iconGapPx
 
   // Measure text width
   const measureCanvas = document.createElement('canvas')
@@ -164,7 +227,7 @@ function createCapsulePin(
   measureCtx.font = CAPSULE_FONT.replace('12px', `${12 * scale}px`)
   const textWidth = measureCtx.measureText(label).width
 
-  const w = Math.ceil(textWidth + padX * 2)
+  const w = Math.ceil(iconTotalW + textWidth + padX * 2)
   const totalW = Math.max(w, h) // Ensure at least circular for short labels
 
   const canvas = document.createElement('canvas')
@@ -194,12 +257,20 @@ function createCapsulePin(
   ctx.strokeStyle = borderColor
   ctx.stroke()
 
+  // Icon
+  if (iconType) {
+    const iconCx = padX + iconPx / 2
+    const iconCy = h / 2
+    drawPinTypeIcon(ctx, iconType, iconCx, iconCy, iconPx)
+  }
+
   // Text
   ctx.font = CAPSULE_FONT.replace('12px', `${12 * scale}px`)
   ctx.fillStyle = textColor
-  ctx.textAlign = 'center'
+  ctx.textAlign = 'left'
   ctx.textBaseline = 'middle'
-  ctx.fillText(label, totalW / 2, h / 2 + 0.5 * scale)
+  const textX = padX + iconTotalW
+  ctx.fillText(label, textX, h / 2 + 0.5 * scale)
 
   return { canvas, width: totalW, height: h }
 }
@@ -209,6 +280,38 @@ function createCapsulePin(
  */
 function capsuleImageId(type: MapPinCategory, label: string, theme: string): string {
   return `capsule-${type}-${theme}-${label.replace(/[^a-zA-Z0-9$/]/g, '_')}`
+}
+
+/**
+ * Apply small coordinate jitter to pins sharing the same location within a type group.
+ * Spreads duplicates in a circle so they're distinct when zoomed past cluster max zoom.
+ */
+function jitterCoordinates(pins: MapPin[]): Map<string, [number, number]> {
+  const coordGroups = new Map<string, string[]>()
+  for (const pin of pins) {
+    const key = `${pin.coordinate[0].toFixed(4)},${pin.coordinate[1].toFixed(4)}`
+    const group = coordGroups.get(key) ?? []
+    group.push(pin.id)
+    coordGroups.set(key, group)
+  }
+
+  const jittered = new Map<string, [number, number]>()
+  const pinById = new Map(pins.map((p) => [p.id, p]))
+
+  for (const ids of coordGroups.values()) {
+    if (ids.length <= 1) continue
+    const base = pinById.get(ids[0])!.coordinate
+    const r = 0.0004 // ~40m, visible only when zoomed in close
+    for (let i = 0; i < ids.length; i++) {
+      const angle = (i / ids.length) * 2 * Math.PI
+      jittered.set(ids[i], [
+        base[0] + r * Math.cos(angle),
+        base[1] + r * Math.sin(angle),
+      ])
+    }
+  }
+
+  return jittered
 }
 
 function ensurePulsingDotImage(map: mapboxgl.Map) {
@@ -904,7 +1007,31 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
           ) as mapboxgl.GeoJSONSource | null
           if (!source) continue
 
+          const jitteredCoords = jitterCoordinates(pinsByType[type])
+
+          const ensureCapsule = (label: string, pinType: MapPinCategory) => {
+            const imgId = capsuleImageId(pinType, label, themeMode)
+            if (!capsuleImageCacheRef.current.has(imgId) && !map.hasImage(imgId)) {
+              const { canvas, width, height } = createCapsulePin(
+                label,
+                pinColorsRef.current[pinType],
+                '#ffffff',
+                'rgba(255,255,255,0.9)',
+                pinType,
+              )
+              const ctx = canvas.getContext('2d')
+              if (ctx) {
+                try {
+                  map.addImage(imgId, ctx.getImageData(0, 0, width, height), { pixelRatio: CAPSULE_SCALE })
+                  capsuleImageCacheRef.current.add(imgId)
+                } catch { /* ignore */ }
+              }
+            }
+            return imgId
+          }
+
           const features: GeoJSON.Feature<GeoJSON.Point>[] = pinsByType[type].map((pin) => {
+            const coord = jitteredCoords.get(pin.id) ?? pin.coordinate
             const baseProperties: Record<string, unknown> = {
               id: pin.id,
               title: pin.title,
@@ -919,67 +1046,24 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
               if (pin.score != null) {
                 baseProperties.score = String(pin.score)
               }
-              // Worker capsule: show score
+              // Worker capsule: show score with person icon
               if (pin.score != null && !pin.avatarUrl) {
                 const capsuleLabel = String(pin.score)
-                const imgId = capsuleImageId(type, capsuleLabel, themeMode)
-                baseProperties.capsuleImageId = imgId
-                if (!capsuleImageCacheRef.current.has(imgId) && !map.hasImage(imgId)) {
-                  const { canvas, width, height } = createCapsulePin(
-                    capsuleLabel,
-                    pinColorsRef.current[type],
-                  )
-                  const ctx = canvas.getContext('2d')
-                  if (ctx) {
-                    try {
-                      map.addImage(imgId, ctx.getImageData(0, 0, width, height), { pixelRatio: CAPSULE_SCALE })
-                      capsuleImageCacheRef.current.add(imgId)
-                    } catch { /* ignore */ }
-                  }
-                }
+                baseProperties.capsuleImageId = ensureCapsule(capsuleLabel, type)
               }
             } else if (type === 'organization') {
               const capsuleLabel = truncateLabel(pin.title ?? '', 14)
               baseProperties.label = capsuleLabel
-              const imgId = capsuleImageId(type, capsuleLabel, themeMode)
-              baseProperties.capsuleImageId = imgId
-              if (!capsuleImageCacheRef.current.has(imgId) && !map.hasImage(imgId)) {
-                const { canvas, width, height } = createCapsulePin(
-                  capsuleLabel,
-                  pinColorsRef.current[type],
-                )
-                const ctx = canvas.getContext('2d')
-                if (ctx) {
-                  try {
-                    map.addImage(imgId, ctx.getImageData(0, 0, width, height), { pixelRatio: CAPSULE_SCALE })
-                    capsuleImageCacheRef.current.add(imgId)
-                  } catch { /* ignore */ }
-                }
-              }
+              baseProperties.capsuleImageId = ensureCapsule(capsuleLabel, type)
             } else if (type === 'job') {
-              const capsuleLabel = pin.hourlyRate
-                ? `$${pin.hourlyRate}/hr`
-                : truncateLabel(pin.title ?? '', 12)
+              const capsuleLabel = pin.payLabel
+                ?? (pin.hourlyRate ? `$${pin.hourlyRate}/hr` : truncateLabel(pin.title ?? '', 12))
               baseProperties.label = capsuleLabel
-              const imgId = capsuleImageId(type, capsuleLabel, themeMode)
-              baseProperties.capsuleImageId = imgId
-              if (!capsuleImageCacheRef.current.has(imgId) && !map.hasImage(imgId)) {
-                const { canvas, width, height } = createCapsulePin(
-                  capsuleLabel,
-                  pinColorsRef.current[type],
-                )
-                const ctx = canvas.getContext('2d')
-                if (ctx) {
-                  try {
-                    map.addImage(imgId, ctx.getImageData(0, 0, width, height), { pixelRatio: CAPSULE_SCALE })
-                    capsuleImageCacheRef.current.add(imgId)
-                  } catch { /* ignore */ }
-                }
-              }
+              baseProperties.capsuleImageId = ensureCapsule(capsuleLabel, type)
             }
             return {
               type: 'Feature',
-              geometry: { type: 'Point', coordinates: pin.coordinate },
+              geometry: { type: 'Point', coordinates: coord },
               properties: baseProperties,
             }
           })

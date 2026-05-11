@@ -7,6 +7,7 @@ export type MapPinType = {
   subtitle?: string
   score?: number
   hourlyRate?: number
+  payLabel?: string
   availability?: 'available' | 'unavailable'
   organization?: 'Individual' | 'Organization' | 'Job'
   color?: string

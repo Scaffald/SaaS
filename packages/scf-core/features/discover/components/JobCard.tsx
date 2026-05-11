@@ -13,6 +13,28 @@ type JobCardProps = {
   variant?: 'compact' | 'full'
 }
 
+function formatEmploymentType(type?: string): string {
+  if (!type) return type ?? ''
+  const map: Record<string, string> = {
+    full_time: 'Full-Time',
+    part_time: 'Part-Time',
+    contract: 'Contract',
+    temp: 'Temporary',
+    intern: 'Internship',
+  }
+  return map[type] ?? type
+}
+
+function formatRemoteOption(option?: string): string {
+  if (!option) return option ?? ''
+  const map: Record<string, string> = {
+    on_site: 'On-site',
+    hybrid: 'Hybrid',
+    remote: 'Remote',
+  }
+  return map[option] ?? option
+}
+
 function formatSalary(minCents?: number, maxCents?: number, type?: string): string | null {
   if (!minCents && !maxCents) return null
   const fmt = (cents: number) => {
@@ -43,7 +65,7 @@ export const JobCard = memo(
         job.pay_range_max_cents,
         job.pay_range_type
       )
-      const tags = [job.employment_type, job.remote_option].filter(Boolean) as string[]
+      const tags = [formatEmploymentType(job.employment_type), formatRemoteOption(job.remote_option)].filter(Boolean)
 
       return (
         <View ref={ref}>
