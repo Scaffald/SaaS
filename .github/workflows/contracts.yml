@@ -28,7 +28,7 @@ jobs:
               - 'tests/reports/contracts/**'
               - 'vitest.contracts.config.ts'
               - '.github/workflows/contracts.yml'
-- 'packages/supabase/functions/trpc/routers/resume.router.ts'
+              - 'packages/supabase/functions/trpc/routers/resume.router.ts'
               - 'packages/supabase/functions/trpc/routers/personality-assessment.router.ts'
               - 'packages/supabase/functions/trpc/routers/stripe-settings.router.ts'
               - 'packages/supabase/functions/trpc/routers/addresses.router.ts'
