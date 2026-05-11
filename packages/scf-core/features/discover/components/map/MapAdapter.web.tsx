@@ -7,6 +7,8 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 
 import { PIN_COLORS, type MapPinCategory } from './pinColors'
 import { SelectedPinRing, getSelectedPinLabel } from './pins/SelectedPinRing'
+import { MapMarkers } from './pins/MapMarkers'
+import type { MapPinData } from './pins/MapPin.shared'
 import {
   getMapStyleUrl,
   getStandardStyleConfig,
@@ -72,9 +74,6 @@ const PIN_SOURCE_CONFIGS: Record<
     sourceId: string
     clusterLayerId: string
     clusterCountLayerId: string
-    pointLayerId: string
-    avatarLayerId?: string
-    labelLayerId: string
     clusterIdOffset: number
   }
 > = {
@@ -82,206 +81,32 @@ const PIN_SOURCE_CONFIGS: Record<
     sourceId: 'worker-pins',
     clusterLayerId: 'worker-clusters',
     clusterCountLayerId: 'worker-cluster-count',
-    pointLayerId: 'worker-unclustered',
-    avatarLayerId: 'worker-avatar-layer',
-    labelLayerId: 'worker-score-label',
     clusterIdOffset: 0,
   },
   organization: {
     sourceId: 'organization-pins',
     clusterLayerId: 'organization-clusters',
     clusterCountLayerId: 'organization-cluster-count',
-    pointLayerId: 'organization-unclustered',
-    labelLayerId: 'organization-label',
     clusterIdOffset: 1_000_000,
   },
   job: {
     sourceId: 'job-pins',
     clusterLayerId: 'job-clusters',
     clusterCountLayerId: 'job-cluster-count',
-    pointLayerId: 'job-unclustered',
-    labelLayerId: 'job-label',
     clusterIdOffset: 2_000_000,
   },
 }
 
 const clusterLayerIds = PIN_TYPE_ORDER.map((type) => PIN_SOURCE_CONFIGS[type].clusterLayerId)
-const pointLayerIds = PIN_TYPE_ORDER.map((type) => PIN_SOURCE_CONFIGS[type].pointLayerId)
-const avatarLayerIds = PIN_TYPE_ORDER.map((type) => PIN_SOURCE_CONFIGS[type].avatarLayerId).filter(
-  (id): id is string => Boolean(id)
-)
-const labelLayerIds = PIN_TYPE_ORDER.map((type) => PIN_SOURCE_CONFIGS[type].labelLayerId)
 const layerToPinType = PIN_TYPE_ORDER.reduce<Record<string, MapPinCategory>>((acc, type) => {
-  const config = PIN_SOURCE_CONFIGS[type]
-  acc[config.clusterLayerId] = type
-  acc[config.pointLayerId] = type
-  if (config.avatarLayerId) {
-    acc[config.avatarLayerId] = type
-  }
-  acc[config.labelLayerId] = type
+  acc[PIN_SOURCE_CONFIGS[type].clusterLayerId] = type
   return acc
 }, {})
 
 const CLUSTER_MAX_ZOOM = 14
 const CLUSTER_RADIUS_PX = 50
-const AVATAR_IMAGE_PREFIX = 'avatar-pin'
-const AVATAR_BASE_SIZE = 96
-const AVATAR_BORDER_WIDTH = 6
 
 type PinColorMap = Record<MapPinCategory, string>
-
-// --- Helpers ---
-
-function truncateLabel(text: string, maxLen: number): string {
-  if (text.length <= maxLen) return text
-  return `${text.slice(0, maxLen - 1)}…`
-}
-
-// --- Capsule Pin Image Generator ---
-
-const CAPSULE_HEIGHT = 28
-const CAPSULE_PADDING_X = 10
-const CAPSULE_FONT = 'bold 12px "DIN Offc Pro", "Inter", system-ui, sans-serif'
-const CAPSULE_SCALE = 2 // retina
-const ICON_SIZE = 10 // logical px
-const ICON_GAP = 4 // logical px between icon and text
-
-/** Draw a small type icon at canvas coordinates (cx, cy) with the given logical size. */
-function drawPinTypeIcon(
-  ctx: CanvasRenderingContext2D,
-  type: MapPinCategory,
-  cx: number,
-  cy: number,
-  size: number,
-) {
-  ctx.save()
-  ctx.fillStyle = 'rgba(255,255,255,0.92)'
-  ctx.strokeStyle = 'rgba(255,255,255,0.92)'
-
-  if (type === 'worker') {
-    // Person silhouette: circle head + rounded shoulder arc
-    const headR = size * 0.28
-    ctx.beginPath()
-    ctx.arc(cx, cy - size * 0.13, headR, 0, Math.PI * 2)
-    ctx.fill()
-    ctx.beginPath()
-    ctx.arc(cx, cy + size * 0.52, size * 0.42, Math.PI * 1.08, Math.PI * 1.92)
-    ctx.fill()
-  } else if (type === 'organization') {
-    // Building: filled rect + small door cutout
-    const bw = size * 0.68
-    const bh = size * 0.72
-    ctx.fillRect(cx - bw / 2, cy - bh / 2, bw, bh)
-    ctx.fillStyle = 'rgba(0,0,0,0.28)'
-    ctx.fillRect(cx - bw * 0.16, cy + bh * 0.1, bw * 0.32, bh * 0.38)
-  } else if (type === 'job') {
-    // Briefcase: body rect + handle arc
-    const bw = size * 0.74
-    const bh = size * 0.52
-    const handleW = bw * 0.38
-    ctx.lineWidth = size * 0.17
-    ctx.lineCap = 'round'
-    ctx.beginPath()
-    ctx.arc(cx, cy - bh / 2 + size * 0.04, handleW / 2, Math.PI, 0)
-    ctx.stroke()
-    ctx.lineWidth = 1
-    ctx.beginPath()
-    const r = size * 0.1
-    const left = cx - bw / 2
-    const top = cy - bh * 0.18
-    if (ctx.roundRect) {
-      ctx.roundRect(left, top, bw, bh, r)
-    } else {
-      ctx.rect(left, top, bw, bh)
-    }
-    ctx.fill()
-  }
-
-  ctx.restore()
-}
-
-/**
- * Generates a pill/capsule-shaped canvas image for a map pin.
- * Optionally draws a small type icon before the label.
- * Returns { canvas, width, height } for use with map.addImage().
- */
-function createCapsulePin(
-  label: string,
-  bgColor: string,
-  textColor = '#ffffff',
-  borderColor = 'rgba(255,255,255,0.9)',
-  iconType?: MapPinCategory,
-): { canvas: HTMLCanvasElement; width: number; height: number } {
-  const scale = CAPSULE_SCALE
-  const h = CAPSULE_HEIGHT * scale
-  const padX = CAPSULE_PADDING_X * scale
-  const radius = h / 2
-
-  const iconPx = iconType ? ICON_SIZE * scale : 0
-  const iconGapPx = iconType ? ICON_GAP * scale : 0
-  const iconTotalW = iconPx + iconGapPx
-
-  // Measure text width
-  const measureCanvas = document.createElement('canvas')
-  const measureCtx = measureCanvas.getContext('2d')
-  if (!measureCtx) return { canvas: measureCanvas, width: 0, height: 0 }
-  measureCtx.font = CAPSULE_FONT.replace('12px', `${12 * scale}px`)
-  const textWidth = measureCtx.measureText(label).width
-
-  const w = Math.ceil(iconTotalW + textWidth + padX * 2)
-  const totalW = Math.max(w, h) // Ensure at least circular for short labels
-
-  const canvas = document.createElement('canvas')
-  canvas.width = totalW
-  canvas.height = h
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return { canvas, width: totalW, height: h }
-
-  // Draw pill shape with shadow
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.25)'
-  ctx.shadowBlur = 4 * scale
-  ctx.shadowOffsetY = 2 * scale
-
-  ctx.beginPath()
-  ctx.moveTo(radius, 0)
-  ctx.lineTo(totalW - radius, 0)
-  ctx.arc(totalW - radius, radius, radius, -Math.PI / 2, Math.PI / 2)
-  ctx.lineTo(radius, h)
-  ctx.arc(radius, radius, radius, Math.PI / 2, (3 * Math.PI) / 2)
-  ctx.closePath()
-  ctx.fillStyle = bgColor
-  ctx.fill()
-
-  // Border
-  ctx.shadowColor = 'transparent'
-  ctx.lineWidth = 1.5 * scale
-  ctx.strokeStyle = borderColor
-  ctx.stroke()
-
-  // Icon
-  if (iconType) {
-    const iconCx = padX + iconPx / 2
-    const iconCy = h / 2
-    drawPinTypeIcon(ctx, iconType, iconCx, iconCy, iconPx)
-  }
-
-  // Text
-  ctx.font = CAPSULE_FONT.replace('12px', `${12 * scale}px`)
-  ctx.fillStyle = textColor
-  ctx.textAlign = 'left'
-  ctx.textBaseline = 'middle'
-  const textX = padX + iconTotalW
-  ctx.fillText(label, textX, h / 2 + 0.5 * scale)
-
-  return { canvas, width: totalW, height: h }
-}
-
-/**
- * Generate a unique capsule image ID from pin type and label text.
- */
-function capsuleImageId(type: MapPinCategory, label: string, theme: string): string {
-  return `capsule-${type}-${theme}-${label.replace(/[^a-zA-Z0-9$/]/g, '_')}`
-}
 
 /**
  * Apply small coordinate jitter to pins sharing the same location within a type group.
@@ -322,47 +147,6 @@ const determinePinType = (pin: MapPin): MapPinCategory => {
   return 'worker'
 }
 
-const createAvatarCanvas = (
-  url: string,
-  { size = AVATAR_BASE_SIZE, borderColor = '#ffffff', borderWidth = AVATAR_BORDER_WIDTH }: {
-    size?: number
-    borderColor?: string
-    borderWidth?: number
-  }
-): Promise<HTMLCanvasElement> => {
-  return new Promise((resolve, reject) => {
-    const image = new Image()
-    image.crossOrigin = 'anonymous'
-    image.onload = () => {
-      const canvas = document.createElement('canvas')
-      canvas.width = size
-      canvas.height = size
-      const ctx = canvas.getContext('2d')
-      if (!ctx) {
-        reject(new Error('Unable to acquire 2D context'))
-        return
-      }
-      const radius = size / 2
-      ctx.clearRect(0, 0, size, size)
-      ctx.save()
-      ctx.beginPath()
-      ctx.arc(radius, radius, radius - borderWidth, 0, Math.PI * 2)
-      ctx.closePath()
-      ctx.clip()
-      ctx.drawImage(image, 0, 0, size, size)
-      ctx.restore()
-      ctx.lineWidth = borderWidth
-      ctx.strokeStyle = borderColor
-      ctx.beginPath()
-      ctx.arc(radius, radius, radius - borderWidth / 2, 0, Math.PI * 2)
-      ctx.stroke()
-      resolve(canvas)
-    }
-    image.onerror = (error) => reject(error)
-    image.src = url
-  })
-}
-
 function applyStandardStyleConfig(
   _map: mapboxgl.Map,
   _themeMode: 'light' | 'dark',
@@ -397,16 +181,15 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
     const resolvedTheme = colorScheme === 'dark' ? 'dark' : 'light'
     const mapContainerRef = useRef<HTMLDivElement | null>(null)
     const mapRef = useRef<mapboxgl.Map | null>(null)
-    const markersRef = useRef(new Map<string, mapboxgl.Marker>())
-    const avatarImageCacheRef = useRef(new Map<string, { url: string; borderColor: string }>())
-    const loadingAvatarIdsRef = useRef(new Set<string>())
-    const capsuleImageCacheRef = useRef(new Set<string>())
     const jitteredPinCoordsRef = useRef(new Map<string, [number, number]>())
-    const cardMarkerRef = useRef<mapboxgl.Marker | null>(null)
     const centerMarkerRef = useRef<mapboxgl.Marker | null>(null)
     const selectedRingMarkerRef = useRef<mapboxgl.Marker | null>(null)
     const selectedRingRootRef = useRef<Root | null>(null)
     const [isMapReady, setIsMapReady] = useState(false)
+    const [mapInstance, setMapInstance] = useState<mapboxgl.Map | null>(null)
+    // Pins Mapbox renders as individual (non-clustered) features → ids that should
+    // get a React marker. Recomputed on sourcedata / moveend / zoomend.
+    const [visiblePinIds, setVisiblePinIds] = useState<Set<string>>(new Set())
     const currentZoomRef = useRef(zoom)
     const zoomRef = useRef(zoom)
 
@@ -529,9 +312,11 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
         map.on('load', () => {
           applyStandardStyleConfig(map, themeMode, mapStyle)
 
-          // Add sources and layers for each pin type
+          // Add sources and cluster layers for each pin type.
+          // Individual pins are rendered as React-component DOM markers in <MapMarkers>;
+          // only the cluster bubble + count are drawn as Mapbox layers below.
           for (const type of PIN_TYPE_ORDER) {
-            const { sourceId, clusterLayerId, clusterCountLayerId, pointLayerId, avatarLayerId, labelLayerId } =
+            const { sourceId, clusterLayerId, clusterCountLayerId } =
               PIN_SOURCE_CONFIGS[type]
 
             map.addSource(sourceId, {
@@ -570,55 +355,6 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
               },
               paint: { 'text-color': themeMode === 'dark' ? '#ffffff' : '#0f172a' },
             })
-
-            // Capsule pin layer — pill-shaped images with embedded labels
-            map.addLayer({
-              id: pointLayerId,
-              type: 'symbol',
-              source: sourceId,
-              filter: ['all', ['!', ['has', 'point_count']], ['has', 'capsuleImageId'], ['!', ['has', 'avatarImageId']]],
-              layout: {
-                'icon-image': ['get', 'capsuleImageId'],
-                'icon-size': 1,
-                'icon-allow-overlap': true,
-                'icon-anchor': 'center',
-              },
-            })
-
-            if (avatarLayerId) {
-              map.addLayer({
-                id: avatarLayerId,
-                type: 'symbol',
-                source: sourceId,
-                filter: ['all', ['!', ['has', 'point_count']], ['has', 'avatarImageId']],
-                layout: {
-                  'icon-image': ['get', 'avatarImageId'],
-                  'icon-size': 0.55,
-                  'icon-anchor': 'bottom',
-                  'icon-offset': [0, -6],
-                  'icon-allow-overlap': true,
-                },
-              })
-            }
-
-            // Fallback label layer for pins without capsule images
-            map.addLayer({
-              id: labelLayerId,
-              type: 'symbol',
-              source: sourceId,
-              filter: ['all', ['!', ['has', 'point_count']], ['!', ['has', 'capsuleImageId']], ['!', ['has', 'avatarImageId']]],
-              layout: {
-                'text-field': type === 'worker' ? ['get', 'score'] : ['get', 'label'],
-                'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Regular'],
-                'text-size': 11,
-                'text-allow-overlap': true,
-              },
-              paint: {
-                'text-color': pinColorsRef.current[type],
-                'text-halo-color': themeMode === 'dark' ? '#1a1a1a' : '#ffffff',
-                'text-halo-width': 1.5,
-              },
-            })
           }
 
           // Register cluster click handlers
@@ -651,23 +387,7 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
             })
           }
 
-          // Register point click/hover handlers
-          const interactivePointLayers = [...pointLayerIds, ...avatarLayerIds, ...labelLayerIds]
-          for (const layerId of interactivePointLayers) {
-            map.on('click', layerId, (e) => {
-              const pinId = e.features?.[0]?.properties?.id
-              if (pinId) onPinPressRef.current?.(pinId)
-            })
-            map.on('mouseenter', layerId, (e) => {
-              map.getCanvas().style.cursor = 'pointer'
-              const pinId = e.features?.[0]?.properties?.id
-              if (pinId) onPinHoverRef.current?.(pinId)
-            })
-            map.on('mouseleave', layerId, () => {
-              map.getCanvas().style.cursor = ''
-              onPinHoverRef.current?.(null)
-            })
-          }
+          // Individual pin click/hover is handled by <MapPin> React event handlers.
 
           // Highlight ring for hovered cards (sidebar → map)
           map.addSource('highlighted-pin-ring', {
@@ -704,6 +424,7 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
           map.on('zoomend', handleViewportChangeDebounced)
 
           setIsMapReady(true)
+          setMapInstance(map)
 
           if (onMapReadyRef.current) {
             const initialBounds = extractViewportBounds(map)
@@ -731,7 +452,6 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
           if (map) {
             map.remove()
             mapRef.current = null
-            markersRef.current.clear()
           }
         }
       } catch (error) {
@@ -755,8 +475,7 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
         applyStandardStyleConfig(map, themeMode, mapStyle)
 
         for (const type of PIN_TYPE_ORDER) {
-          const { sourceId, clusterLayerId, clusterCountLayerId, pointLayerId, avatarLayerId, labelLayerId } =
-            PIN_SOURCE_CONFIGS[type]
+          const { sourceId, clusterLayerId, clusterCountLayerId } = PIN_SOURCE_CONFIGS[type]
 
           if (!map.getSource(sourceId)) {
             map.addSource(sourceId, {
@@ -800,63 +519,7 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
               paint: { 'text-color': themeMode === 'dark' ? '#ffffff' : '#0f172a' },
             })
           }
-
-          if (!map.getLayer(pointLayerId)) {
-            // Capsule pin layer — pill-shaped images with embedded labels
-            map.addLayer({
-              id: pointLayerId,
-              type: 'symbol',
-              source: sourceId,
-              filter: ['all', ['!', ['has', 'point_count']], ['has', 'capsuleImageId'], ['!', ['has', 'avatarImageId']]],
-              layout: {
-                'icon-image': ['get', 'capsuleImageId'],
-                'icon-size': 1,
-                'icon-allow-overlap': true,
-                'icon-anchor': 'center',
-              },
-            })
-          }
-
-          if (avatarLayerId && !map.getLayer(avatarLayerId)) {
-            map.addLayer({
-              id: avatarLayerId,
-              type: 'symbol',
-              source: sourceId,
-              filter: ['all', ['!', ['has', 'point_count']], ['has', 'avatarImageId']],
-              layout: {
-                'icon-image': ['get', 'avatarImageId'],
-                'icon-size': 0.55,
-                'icon-anchor': 'bottom',
-                'icon-offset': [0, -6],
-                'icon-allow-overlap': true,
-              },
-            })
-          }
-
-          if (!map.getLayer(labelLayerId)) {
-            // Fallback label layer
-            map.addLayer({
-              id: labelLayerId,
-              type: 'symbol',
-              source: sourceId,
-              filter: ['all', ['!', ['has', 'point_count']], ['!', ['has', 'capsuleImageId']], ['!', ['has', 'avatarImageId']]],
-              layout: {
-                'text-field': type === 'worker' ? ['get', 'score'] : ['get', 'label'],
-                'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Regular'],
-                'text-size': 11,
-                'text-allow-overlap': true,
-              },
-              paint: {
-                'text-color': pinColorsRef.current[type],
-                'text-halo-color': themeMode === 'dark' ? '#1a1a1a' : '#ffffff',
-                'text-halo-width': 1.5,
-              },
-            })
-          }
         }
-
-        // Clear capsule image cache (images lost on style change)
-        capsuleImageCacheRef.current.clear()
 
         // Re-add highlight ring
         if (!map.getSource('highlighted-pin-ring')) {
@@ -952,62 +615,14 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
             jitteredPinCoordsRef.current.set(id, coord)
           }
 
-          const ensureCapsule = (label: string, pinType: MapPinCategory) => {
-            const imgId = capsuleImageId(pinType, label, themeMode)
-            if (!capsuleImageCacheRef.current.has(imgId) && !map.hasImage(imgId)) {
-              const { canvas, width, height } = createCapsulePin(
-                label,
-                pinColorsRef.current[pinType],
-                '#ffffff',
-                'rgba(255,255,255,0.9)',
-                pinType,
-              )
-              const ctx = canvas.getContext('2d')
-              if (ctx) {
-                try {
-                  map.addImage(imgId, ctx.getImageData(0, 0, width, height), { pixelRatio: CAPSULE_SCALE })
-                  capsuleImageCacheRef.current.add(imgId)
-                } catch { /* ignore */ }
-              }
-            }
-            return imgId
-          }
-
+          // Features only need an id + coordinate — Mapbox uses them solely for
+          // clustering math; rendering is done by <MapMarkers /> React components.
           const features: GeoJSON.Feature<GeoJSON.Point>[] = pinsByType[type].map((pin) => {
             const coord = jitteredCoords.get(pin.id) ?? pin.coordinate
-            const baseProperties: Record<string, unknown> = {
-              id: pin.id,
-              title: pin.title,
-              subtitle: pin.subtitle,
-              availability: pin.availability,
-              organization: pin.organization,
-            }
-            if (type === 'worker') {
-              if (pin.avatarUrl) {
-                baseProperties.avatarImageId = `${AVATAR_IMAGE_PREFIX}-${pin.id}`
-              }
-              if (pin.score != null) {
-                baseProperties.score = String(pin.score)
-              }
-              // Worker capsule: show score with person icon
-              if (pin.score != null && !pin.avatarUrl) {
-                const capsuleLabel = String(pin.score)
-                baseProperties.capsuleImageId = ensureCapsule(capsuleLabel, type)
-              }
-            } else if (type === 'organization') {
-              const capsuleLabel = truncateLabel(pin.title ?? '', 14)
-              baseProperties.label = capsuleLabel
-              baseProperties.capsuleImageId = ensureCapsule(capsuleLabel, type)
-            } else if (type === 'job') {
-              const capsuleLabel = pin.payLabel
-                ?? (pin.hourlyRate ? `$${pin.hourlyRate}/hr` : truncateLabel(pin.title ?? '', 12))
-              baseProperties.label = capsuleLabel
-              baseProperties.capsuleImageId = ensureCapsule(capsuleLabel, type)
-            }
             return {
               type: 'Feature',
               geometry: { type: 'Point', coordinates: coord },
-              properties: baseProperties,
+              properties: { id: pin.id },
             }
           })
 
@@ -1122,15 +737,6 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
           })
         })
 
-        // Clean up old DOM markers (if any)
-        for (const [pinId, marker] of markersRef.current.entries()) {
-          if (marker !== cardMarkerRef.current) {
-            try {
-              marker.remove()
-              markersRef.current.delete(pinId)
-            } catch { /* ignore */ }
-          }
-        }
       } catch (error) {
         logger.error('Error updating markers', error)
       }
@@ -1142,14 +748,11 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
       const map = mapRef.current
 
       const handleMapClick = (e: mapboxgl.MapMouseEvent) => {
+        // Clicks on React pin markers don't reach the Mapbox canvas (DOM markers
+        // sit above and stopPropagation themselves), so we only need to ignore
+        // clicks that hit a Mapbox-rendered cluster layer or the highlight ring.
         const features = map.queryRenderedFeatures(e.point, {
-          layers: [
-            ...clusterLayerIds,
-            ...pointLayerIds,
-            ...avatarLayerIds,
-            ...labelLayerIds,
-            'highlighted-pin-ring-layer',
-          ],
+          layers: [...clusterLayerIds, 'highlighted-pin-ring-layer'],
         })
         if (features.length === 0) {
           onPinPressRef.current?.(null)
@@ -1159,68 +762,6 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
       map.on('click', handleMapClick)
       return () => { map.off('click', handleMapClick) }
     }, [isMapReady])
-
-    // --- Load avatar images ---
-    useEffect(() => {
-      if (!mapRef.current || !isMapReady) return
-      const map = mapRef.current
-      let isCancelled = false
-
-      const workerPinsWithAvatars = pins.filter(
-        (pin) =>
-          determinePinType(pin) === 'worker' && typeof pin.avatarUrl === 'string' && pin.avatarUrl
-      )
-
-      const activeImageIds = new Set(
-        workerPinsWithAvatars.map((pin) => `${AVATAR_IMAGE_PREFIX}-${pin.id}`)
-      )
-
-      // Clean up stale avatar images
-      for (const [imageId, metadata] of avatarImageCacheRef.current.entries()) {
-        if (!activeImageIds.has(imageId) || metadata.borderColor !== pinColors.worker) {
-          if (map.hasImage(imageId)) map.removeImage(imageId)
-          avatarImageCacheRef.current.delete(imageId)
-        }
-      }
-
-      for (const pin of workerPinsWithAvatars) {
-        const imageId = `${AVATAR_IMAGE_PREFIX}-${pin.id}`
-        const currentEntry = avatarImageCacheRef.current.get(imageId)
-        const nextUrl = pin.avatarUrl as string
-
-        if (
-          currentEntry &&
-          currentEntry.url === nextUrl &&
-          currentEntry.borderColor === pinColors.worker &&
-          map.hasImage(imageId)
-        ) {
-          continue
-        }
-
-        if (loadingAvatarIdsRef.current.has(imageId)) continue
-
-        loadingAvatarIdsRef.current.add(imageId)
-
-        createAvatarCanvas(nextUrl, { borderColor: pinColors.worker })
-          .then((canvas) => {
-            if (isCancelled) return
-            if (map.hasImage(imageId)) map.removeImage(imageId)
-            const ctx = canvas.getContext('2d')
-            if (!ctx) return
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-            map.addImage(imageId, imageData, { pixelRatio: 2 })
-            avatarImageCacheRef.current.set(imageId, { url: nextUrl, borderColor: pinColors.worker })
-          })
-          .catch(() => {
-            avatarImageCacheRef.current.delete(imageId)
-          })
-          .finally(() => {
-            loadingAvatarIdsRef.current.delete(imageId)
-          })
-      }
-
-      return () => { isCancelled = true }
-    }, [pins, isMapReady, pinColors.worker])
 
     // --- Remove radius circle if exists ---
     useEffect(() => {
@@ -1290,14 +831,7 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
       const [lng, lat] = coord
       if (!isValidCoord(lng, lat)) return
 
-      const { label, isAvatar } = getSelectedPinLabel(selectedPin)
-      const pinType: MapPinCategory =
-        selectedPin.pinType ??
-        (selectedPin.organization === 'Organization'
-          ? 'organization'
-          : selectedPin.organization === 'Job'
-            ? 'job'
-            : 'worker')
+      const { label, isAvatar, pinType } = getSelectedPinLabel(selectedPin)
       const hasIcon = !isAvatar
 
       const ringNode = (
@@ -1352,8 +886,83 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
       mapRef.current.flyTo({ center: centerLocation, zoom: 12, speed: 0.8 })
     }, [centerLocation, isMapReady])
 
+    // --- Track which pin IDs Mapbox treats as unclustered (→ get a React marker) ---
+    useEffect(() => {
+      if (!mapRef.current || !isMapReady) return
+      const map = mapRef.current
+
+      let scheduled = false
+      const recompute = () => {
+        if (scheduled) return
+        scheduled = true
+        requestAnimationFrame(() => {
+          scheduled = false
+          if (!map.isStyleLoaded()) return
+          const ids = new Set<string>()
+          for (const type of PIN_TYPE_ORDER) {
+            const sourceId = PIN_SOURCE_CONFIGS[type].sourceId
+            if (!map.getSource(sourceId)) continue
+            try {
+              const feats = map.querySourceFeatures(sourceId, {
+                filter: ['!', ['has', 'point_count']],
+              })
+              for (const f of feats) {
+                const id = f.properties?.id
+                if (typeof id === 'string') ids.add(id)
+              }
+            } catch { /* ignore */ }
+          }
+          setVisiblePinIds((prev) => {
+            if (prev.size === ids.size) {
+              let same = true
+              for (const id of ids) {
+                if (!prev.has(id)) { same = false; break }
+              }
+              if (same) return prev
+            }
+            return ids
+          })
+        })
+      }
+
+      map.on('sourcedata', recompute)
+      map.on('moveend', recompute)
+      map.on('zoomend', recompute)
+      recompute()
+
+      return () => {
+        map.off('sourcedata', recompute)
+        map.off('moveend', recompute)
+        map.off('zoomend', recompute)
+      }
+    }, [isMapReady])
+
+    // Per-pin event callbacks routed through the existing ref-stable handlers.
+    const handlePinPress = useMemo(
+      () => (id: string) => onPinPressRef.current?.(id),
+      [],
+    )
+    const handlePinHoverEnter = useMemo(
+      () => (id: string) => onPinHoverRef.current?.(id),
+      [],
+    )
+    const handlePinHoverLeave = useMemo(
+      () => () => onPinHoverRef.current?.(null),
+      [],
+    )
+
     return (
       <View style={[{ flex: 1, position: 'relative', overflow: 'hidden', borderRadius: 20 }, style]}>
+        <MapMarkers
+          map={mapInstance}
+          pins={pins as MapPinData[]}
+          jitteredCoords={jitteredPinCoordsRef.current}
+          visiblePinIds={visiblePinIds}
+          theme={themeMode}
+          onPinPress={handlePinPress}
+          onPinHoverEnter={handlePinHoverEnter}
+          onPinHoverLeave={handlePinHoverLeave}
+        />
         <div
           ref={mapContainerRef}
           style={{ width: '100%', height: '100%' }}
