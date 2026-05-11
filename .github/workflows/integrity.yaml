@@ -44,6 +44,7 @@ jobs:
       - name: Build workspace packages (required for typecheck)
         run: |
           pnpm --filter @scaffald/sdk build
+          pnpm --filter @scaffald/ui build
 
       - name: Format, Lint & Type Check (nx run-many)
         run: pnpm check

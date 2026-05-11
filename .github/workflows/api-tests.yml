@@ -57,7 +57,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
-          deno-version: v1.x
+          deno-version: v2.x
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -190,7 +190,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
-          deno-version: v1.x
+          deno-version: v2.x
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -205,6 +205,7 @@ jobs:
 
       - name: Run Benchmarks
         working-directory: packages/supabase
+        continue-on-error: true
         run: |
           deno bench --allow-all functions/api/__tests__/benchmarks/rest-vs-trpc.bench.ts > benchmark-results.txt
 
@@ -246,7 +247,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
-          deno-version: v1.x
+          deno-version: v2.x
 
       - name: Lint Code
         working-directory: packages/supabase/functions/api

@@ -160,6 +160,9 @@
       ],
       "linter": {
         "rules": {
+          "style": {
+            "useImportType": "warn"
+          },
           "suspicious": {
             "noExplicitAny": "warn",
             "noArrayIndexKey": "off"

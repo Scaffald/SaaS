@@ -16,8 +16,8 @@ if (!process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY) {
   process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";
 }
 
-// Mock window.matchMedia (common JSDOM issue)
-if (!global.window.matchMedia) {
+// Mock window.matchMedia (common JSDOM issue; window may not exist in node env)
+if (global.window && !global.window.matchMedia) {
   global.window.matchMedia = vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
@@ -30,8 +30,8 @@ if (!global.window.matchMedia) {
   }));
 }
 
-// Mock window.confirm (JSDOM doesn't implement it)
-if (!global.window.confirm) {
+// Mock window.confirm (JSDOM doesn't implement it; window may not exist in node env)
+if (global.window && !global.window.confirm) {
   global.window.confirm = vi.fn(() => true);
 }
 

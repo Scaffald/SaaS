@@ -1,6 +1,6 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.14/schema.json",
-  "files": { "includes": ["src/**"], "experimentalScannerIgnores": ["dist/**", "node_modules/**"] },
+  "$schema": "https://biomejs.dev/schemas/2.4.9/schema.json",
+  "files": { "includes": ["src/**"], "ignore": ["dist/**", "node_modules/**"] },
   "linter": {
     "enabled": true,
     "rules": {
