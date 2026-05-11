@@ -44,6 +44,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          submodules: true
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
@@ -183,6 +185,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          submodules: true
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
@@ -243,6 +247,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          submodules: true
 
       - name: Setup Deno
         uses: denoland/setup-deno@v2
