@@ -72,7 +72,12 @@ jobs:
       - name: Start Supabase
         run: |
           cd packages
-          supabase start
+          for attempt in 1 2 3; do
+            supabase start && break
+            echo "Attempt $attempt failed, retrying..."
+            supabase stop --no-backup 2>/dev/null || true
+            sleep 10
+          done
         env:
           SUPABASE_DB_PASSWORD: postgres
 
