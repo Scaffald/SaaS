@@ -175,7 +175,8 @@
             "noSvgWithoutTitle": "warn",
             "useButtonType": "warn",
             "noLabelWithoutControl": "warn",
-            "useSemanticElements": "warn"
+            "useSemanticElements": "warn",
+            "useValidAnchor": "warn"
           },
           "style": {
             "useImportType": "warn"
