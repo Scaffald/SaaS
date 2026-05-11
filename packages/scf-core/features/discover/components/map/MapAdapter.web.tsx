@@ -1,11 +1,12 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
+import { createRoot, type Root } from 'react-dom/client'
 import { useColorScheme, View } from 'react-native'
 import type { MapContainerRef, ViewportBounds } from '@scaffald/ui'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
-import { createPulsingDot } from './PulsingDot'
 import { PIN_COLORS, type MapPinCategory } from './pinColors'
+import { SelectedPinRing, getSelectedPinLabel } from './pins/SelectedPinRing'
 import {
   getMapStyleUrl,
   getStandardStyleConfig,
@@ -314,19 +315,6 @@ function jitterCoordinates(pins: MapPin[]): Map<string, [number, number]> {
   return jittered
 }
 
-function ensurePulsingDotImage(map: mapboxgl.Map) {
-  if (map.hasImage('pulsing-dot')) {
-    map.removeImage('pulsing-dot')
-  }
-  const pulsingDot = createPulsingDot(map, {
-    size: 200,
-    innerColor: 'rgba(59, 130, 246, 1)',
-    outerColor: 'rgba(59, 130, 246, 0.4)',
-    duration: 1000,
-  })
-  map.addImage('pulsing-dot', pulsingDot, { pixelRatio: 2 })
-}
-
 const determinePinType = (pin: MapPin): MapPinCategory => {
   if (pin.pinType) return pin.pinType
   if (pin.organization === 'Organization') return 'organization'
@@ -413,8 +401,11 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
     const avatarImageCacheRef = useRef(new Map<string, { url: string; borderColor: string }>())
     const loadingAvatarIdsRef = useRef(new Set<string>())
     const capsuleImageCacheRef = useRef(new Set<string>())
+    const jitteredPinCoordsRef = useRef(new Map<string, [number, number]>())
     const cardMarkerRef = useRef<mapboxgl.Marker | null>(null)
     const centerMarkerRef = useRef<mapboxgl.Marker | null>(null)
+    const selectedRingMarkerRef = useRef<mapboxgl.Marker | null>(null)
+    const selectedRingRootRef = useRef<Root | null>(null)
     const [isMapReady, setIsMapReady] = useState(false)
     const currentZoomRef = useRef(zoom)
     const zoomRef = useRef(zoom)
@@ -678,19 +669,6 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
             })
           }
 
-          // Pulsing dot for selected pins
-          ensurePulsingDotImage(map)
-          map.addSource('selected-pin-pulse', {
-            type: 'geojson',
-            data: { type: 'FeatureCollection', features: [] },
-          })
-          map.addLayer({
-            id: 'selected-pin-pulse-layer',
-            type: 'symbol',
-            source: 'selected-pin-pulse',
-            layout: { 'icon-image': 'pulsing-dot', 'icon-size': 0.5 },
-          })
-
           // Highlight ring for hovered cards (sidebar → map)
           map.addSource('highlighted-pin-ring', {
             type: 'geojson',
@@ -880,23 +858,6 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
         // Clear capsule image cache (images lost on style change)
         capsuleImageCacheRef.current.clear()
 
-        // Re-add pulsing dot
-        ensurePulsingDotImage(map)
-        if (!map.getSource('selected-pin-pulse')) {
-          map.addSource('selected-pin-pulse', {
-            type: 'geojson',
-            data: { type: 'FeatureCollection', features: [] },
-          })
-        }
-        if (!map.getLayer('selected-pin-pulse-layer')) {
-          map.addLayer({
-            id: 'selected-pin-pulse-layer',
-            type: 'symbol',
-            source: 'selected-pin-pulse',
-            layout: { 'icon-image': 'pulsing-dot', 'icon-size': 0.5 },
-          })
-        }
-
         // Re-add highlight ring
         if (!map.getSource('highlighted-pin-ring')) {
           map.addSource('highlighted-pin-ring', {
@@ -919,27 +880,6 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
           })
         }
 
-        // Restore selected pin pulse
-        const pinsSnapshot = latestPinsRef.current
-        const selectedPin = pinsSnapshot.find((pin) => pin.selected === true)
-        if (selectedPin) {
-          const source = map.getSource('selected-pin-pulse') as mapboxgl.GeoJSONSource | null
-          if (source) {
-            const [lng, lat] = selectedPin.coordinate
-            if (isValidCoord(lng, lat)) {
-              try {
-                source.setData({
-                  type: 'FeatureCollection',
-                  features: [{
-                    type: 'Feature',
-                    geometry: { type: 'Point', coordinates: selectedPin.coordinate },
-                    properties: { id: selectedPin.id },
-                  }],
-                })
-              } catch { /* ignore */ }
-            }
-          }
-        }
       }
 
       map.once('styledata', handleStyleData)
@@ -1008,6 +948,9 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
           if (!source) continue
 
           const jitteredCoords = jitterCoordinates(pinsByType[type])
+          for (const [id, coord] of jitteredCoords) {
+            jitteredPinCoordsRef.current.set(id, coord)
+          }
 
           const ensureCapsule = (label: string, pinType: MapPinCategory) => {
             const imgId = capsuleImageId(pinType, label, themeMode)
@@ -1205,7 +1148,6 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
             ...pointLayerIds,
             ...avatarLayerIds,
             ...labelLayerIds,
-            'selected-pin-pulse-layer',
             'highlighted-pin-ring-layer',
           ],
         })
@@ -1323,40 +1265,84 @@ export const MapAdapter = forwardRef<MapContainerRef, MapAdapterProps>(
       } catch { /* ignore */ }
     }, [centerLocation, isMapReady])
 
-    // --- Update pulsing dot for selected pin ---
+    // --- Selected pin React marker (CSS-animated ring matching pin shape) ---
     useEffect(() => {
-      if (!mapRef.current || !isMapReady || isStyleLoadingRef.current) return
+      if (!mapRef.current || !isMapReady) return
       const map = mapRef.current
 
-      try {
-        if (!map.getSource('selected-pin-pulse')) return
-        const source = map.getSource('selected-pin-pulse') as mapboxgl.GeoJSONSource
-        if (!source || typeof source.setData !== 'function') return
+      const selectedPin = pins.find((pin) => pin.selected === true)
 
-        const selectedPin = pins.find((pin) => pin.selected === true)
-
-        if (selectedPin) {
-          const [lng, lat] = selectedPin.coordinate
-          if (!isValidCoord(lng, lat)) {
-            try { source.setData({ type: 'FeatureCollection', features: [] }) } catch { /* */ }
-            return
-          }
-
-          try {
-            source.setData({
-              type: 'FeatureCollection',
-              features: [{
-                type: 'Feature',
-                geometry: { type: 'Point', coordinates: selectedPin.coordinate },
-                properties: { id: selectedPin.id },
-              }],
-            })
-          } catch { /* ignore */ }
-        } else {
-          try { source.setData({ type: 'FeatureCollection', features: [] }) } catch { /* */ }
+      // Tear down when nothing is selected
+      if (!selectedPin) {
+        if (selectedRingRootRef.current) {
+          const root = selectedRingRootRef.current
+          selectedRingRootRef.current = null
+          queueMicrotask(() => { try { root.unmount() } catch { /* ignore */ } })
         }
-      } catch { /* ignore */ }
-    }, [pins, isMapReady])
+        if (selectedRingMarkerRef.current) {
+          try { selectedRingMarkerRef.current.remove() } catch { /* ignore */ }
+          selectedRingMarkerRef.current = null
+        }
+        return
+      }
+
+      const coord = jitteredPinCoordsRef.current.get(selectedPin.id) ?? selectedPin.coordinate
+      const [lng, lat] = coord
+      if (!isValidCoord(lng, lat)) return
+
+      const { label, isAvatar } = getSelectedPinLabel(selectedPin)
+      const pinType: MapPinCategory =
+        selectedPin.pinType ??
+        (selectedPin.organization === 'Organization'
+          ? 'organization'
+          : selectedPin.organization === 'Job'
+            ? 'job'
+            : 'worker')
+      const hasIcon = !isAvatar
+
+      const ringNode = (
+        <SelectedPinRing
+          label={label}
+          pinType={pinType}
+          theme={themeMode}
+          hasIcon={hasIcon}
+          isAvatar={isAvatar}
+        />
+      )
+
+      // Create marker + React root on first selection
+      if (!selectedRingMarkerRef.current) {
+        const el = document.createElement('div')
+        el.style.position = 'absolute'
+        el.style.pointerEvents = 'none'
+        const root = createRoot(el)
+        root.render(ringNode)
+        selectedRingRootRef.current = root
+        selectedRingMarkerRef.current = new mapboxgl.Marker({ element: el, anchor: 'center' })
+          .setLngLat(coord)
+          .addTo(map)
+        return
+      }
+
+      // Update existing marker
+      selectedRingMarkerRef.current.setLngLat(coord)
+      selectedRingRootRef.current?.render(ringNode)
+    }, [pins, isMapReady, themeMode])
+
+    // Cleanup React root on unmount
+    useEffect(() => {
+      return () => {
+        if (selectedRingRootRef.current) {
+          const root = selectedRingRootRef.current
+          selectedRingRootRef.current = null
+          queueMicrotask(() => { try { root.unmount() } catch { /* ignore */ } })
+        }
+        if (selectedRingMarkerRef.current) {
+          try { selectedRingMarkerRef.current.remove() } catch { /* ignore */ }
+          selectedRingMarkerRef.current = null
+        }
+      }
+    }, [])
 
     // --- Fly to center when centerLocation changes ---
     useEffect(() => {
