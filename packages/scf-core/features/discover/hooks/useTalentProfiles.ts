@@ -200,5 +200,6 @@ export const useTalentProfiles = (options: UseTalentProfilesOptions = {}) => {
     enabled,
     queryFn: fetchTalentProfiles,
     staleTime: 5 * 60 * 1000, // 5 minutes
+    placeholderData: (prev) => prev,
   })
 }

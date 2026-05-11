@@ -123,5 +123,6 @@ export const useJobs = (options: UseJobsOptions = {}) => {
     enabled,
     queryFn: buildJobsQuery({ bounds, limit }),
     staleTime: 5 * 60 * 1000, // 5 minutes - jobs change frequently
+    placeholderData: (prev) => prev,
   })
 }
