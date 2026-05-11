@@ -3,69 +3,75 @@
  * Provides a clean interface for making HTTP requests during tests
  */
 
-import { TEST_API_BASE_URL, TEST_SUPABASE_ANON_KEY, fetchWithTimeout } from '../setup.ts'
+import {
+  fetchWithTimeout,
+  TEST_API_BASE_URL,
+  TEST_SUPABASE_ANON_KEY,
+} from "../setup.ts";
 
 export interface TestClientOptions {
-  authToken?: string
-  apiKey?: string
-  baseUrl?: string
+  authToken?: string;
+  apiKey?: string;
+  baseUrl?: string;
 }
 
 export interface TestResponse<T = unknown> {
-  status: number
-  headers: Headers
-  body: T
-  raw: Response
+  status: number;
+  headers: Headers;
+  body: T;
+  raw: Response;
 }
 
 /**
  * Test HTTP Client for REST API
  */
 export class TestClient {
-  private baseUrl: string
-  private authToken?: string
-  private apiKey?: string
+  private baseUrl: string;
+  private authToken?: string;
+  private apiKey?: string;
 
   constructor(options: TestClientOptions = {}) {
-    this.baseUrl = options.baseUrl || TEST_API_BASE_URL
-    this.authToken = options.authToken
-    this.apiKey = options.apiKey
+    this.baseUrl = options.baseUrl || TEST_API_BASE_URL;
+    this.authToken = options.authToken;
+    this.apiKey = options.apiKey;
   }
 
   /**
    * Set auth token for subsequent requests
    */
   setAuthToken(token: string | null) {
-    this.authToken = token || undefined
+    this.authToken = token || undefined;
   }
 
   /**
    * Set API key for subsequent requests
    */
   setApiKey(key: string | null) {
-    this.apiKey = key || undefined
+    this.apiKey = key || undefined;
   }
 
   /**
    * Build headers for request
    */
-  private buildHeaders(customHeaders: Record<string, string> = {}): HeadersInit {
+  private buildHeaders(
+    customHeaders: Record<string, string> = {},
+  ): HeadersInit {
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...customHeaders,
-    }
+    };
 
     // Add auth header (JWT takes precedence over API key)
     if (this.authToken) {
-      headers['Authorization'] = `Bearer ${this.authToken}`
+      headers["Authorization"] = `Bearer ${this.authToken}`;
     } else if (this.apiKey) {
-      headers['Authorization'] = `Bearer ${this.apiKey}`
+      headers["Authorization"] = `Bearer ${this.apiKey}`;
     } else {
       // Use anon key as fallback
-      headers['Authorization'] = `Bearer ${TEST_SUPABASE_ANON_KEY}`
+      headers["Authorization"] = `Bearer ${TEST_SUPABASE_ANON_KEY}`;
     }
 
-    return headers
+    return headers;
   }
 
   /**
@@ -75,24 +81,24 @@ export class TestClient {
     method: string,
     path: string,
     options: {
-      body?: unknown
-      query?: Record<string, string | number | boolean | undefined>
-      headers?: Record<string, string>
-      timeout?: number
-    } = {}
+      body?: unknown;
+      query?: Record<string, string | number | boolean | undefined>;
+      headers?: Record<string, string>;
+      timeout?: number;
+    } = {},
   ): Promise<TestResponse<T>> {
     // Build URL with query parameters
-    let url = `${this.baseUrl}${path}`
+    let url = `${this.baseUrl}${path}`;
     if (options.query) {
-      const queryParams = new URLSearchParams()
+      const queryParams = new URLSearchParams();
       Object.entries(options.query).forEach(([key, value]) => {
         if (value !== undefined) {
-          queryParams.append(key, String(value))
+          queryParams.append(key, String(value));
         }
-      })
-      const queryString = queryParams.toString()
+      });
+      const queryString = queryParams.toString();
       if (queryString) {
-        url += `?${queryString}`
+        url += `?${queryString}`;
       }
     }
 
@@ -100,23 +106,27 @@ export class TestClient {
     const requestOptions: RequestInit = {
       method,
       headers: this.buildHeaders(options.headers),
-    }
+    };
 
     // Add body for non-GET requests
-    if (options.body && method !== 'GET') {
-      requestOptions.body = JSON.stringify(options.body)
+    if (options.body && method !== "GET") {
+      requestOptions.body = JSON.stringify(options.body);
     }
 
     // Make request with timeout
-    const response = await fetchWithTimeout(url, requestOptions, options.timeout || 5000)
+    const response = await fetchWithTimeout(
+      url,
+      requestOptions,
+      options.timeout || 5000,
+    );
 
     // Parse response body
-    let body: T
-    const contentType = response.headers.get('content-type')
-    if (contentType?.includes('application/json')) {
-      body = await response.json()
+    let body: T;
+    const contentType = response.headers.get("content-type");
+    if (contentType?.includes("application/json")) {
+      body = await response.json();
     } else {
-      body = (await response.text()) as T
+      body = (await response.text()) as T;
     }
 
     return {
@@ -124,7 +134,7 @@ export class TestClient {
       headers: response.headers,
       body,
       raw: response,
-    }
+    };
   }
 
   /**
@@ -133,12 +143,12 @@ export class TestClient {
   async get<T = unknown>(
     path: string,
     options?: {
-      query?: Record<string, string | number | boolean | undefined>
-      headers?: Record<string, string>
-      timeout?: number
-    }
+      query?: Record<string, string | number | boolean | undefined>;
+      headers?: Record<string, string>;
+      timeout?: number;
+    },
   ): Promise<TestResponse<T>> {
-    return this.request<T>('GET', path, options)
+    return this.request<T>("GET", path, options);
   }
 
   /**
@@ -148,12 +158,12 @@ export class TestClient {
     path: string,
     body?: unknown,
     options?: {
-      query?: Record<string, string | number | boolean | undefined>
-      headers?: Record<string, string>
-      timeout?: number
-    }
+      query?: Record<string, string | number | boolean | undefined>;
+      headers?: Record<string, string>;
+      timeout?: number;
+    },
   ): Promise<TestResponse<T>> {
-    return this.request<T>('POST', path, { ...options, body })
+    return this.request<T>("POST", path, { ...options, body });
   }
 
   /**
@@ -163,12 +173,12 @@ export class TestClient {
     path: string,
     body?: unknown,
     options?: {
-      query?: Record<string, string | number | boolean | undefined>
-      headers?: Record<string, string>
-      timeout?: number
-    }
+      query?: Record<string, string | number | boolean | undefined>;
+      headers?: Record<string, string>;
+      timeout?: number;
+    },
   ): Promise<TestResponse<T>> {
-    return this.request<T>('PUT', path, { ...options, body })
+    return this.request<T>("PUT", path, { ...options, body });
   }
 
   /**
@@ -178,12 +188,12 @@ export class TestClient {
     path: string,
     body?: unknown,
     options?: {
-      query?: Record<string, string | number | boolean | undefined>
-      headers?: Record<string, string>
-      timeout?: number
-    }
+      query?: Record<string, string | number | boolean | undefined>;
+      headers?: Record<string, string>;
+      timeout?: number;
+    },
   ): Promise<TestResponse<T>> {
-    return this.request<T>('PATCH', path, { ...options, body })
+    return this.request<T>("PATCH", path, { ...options, body });
   }
 
   /**
@@ -192,12 +202,12 @@ export class TestClient {
   async delete<T = unknown>(
     path: string,
     options?: {
-      query?: Record<string, string | number | boolean | undefined>
-      headers?: Record<string, string>
-      timeout?: number
-    }
+      query?: Record<string, string | number | boolean | undefined>;
+      headers?: Record<string, string>;
+      timeout?: number;
+    },
   ): Promise<TestResponse<T>> {
-    return this.request<T>('DELETE', path, options)
+    return this.request<T>("DELETE", path, options);
   }
 }
 
@@ -205,21 +215,23 @@ export class TestClient {
  * Create a test client with optional auth token or API key
  */
 export function createTestClient(options: TestClientOptions = {}): TestClient {
-  return new TestClient(options)
+  return new TestClient(options);
 }
 
 /**
  * Create an authenticated test client
  */
-export async function createAuthenticatedClient(token: string): Promise<TestClient> {
-  return new TestClient({ authToken: token })
+export async function createAuthenticatedClient(
+  token: string,
+): Promise<TestClient> {
+  return new TestClient({ authToken: token });
 }
 
 /**
  * Create an API key authenticated test client
  */
 export function createApiKeyClient(apiKey: string): TestClient {
-  return new TestClient({ apiKey })
+  return new TestClient({ apiKey });
 }
 
 /**
@@ -228,76 +240,99 @@ export function createApiKeyClient(apiKey: string): TestClient {
 export function assertStatus(response: TestResponse, expected: number) {
   if (response.status !== expected) {
     throw new Error(
-      `Expected status ${expected}, got ${response.status}. Body: ${JSON.stringify(
-        response.body,
-        null,
-        2
-      )}`
-    )
+      `Expected status ${expected}, got ${response.status}. Body: ${
+        JSON.stringify(
+          response.body,
+          null,
+          2,
+        )
+      }`,
+    );
   }
 }
 
 export function assertSuccessResponse<T>(
-  response: TestResponse
+  response: TestResponse,
 ): asserts response is TestResponse<{ data: T }> {
   if (response.status < 200 || response.status >= 300) {
     throw new Error(
-      `Expected success status (2xx), got ${response.status}. Body: ${JSON.stringify(
-        response.body,
-        null,
-        2
-      )}`
-    )
+      `Expected success status (2xx), got ${response.status}. Body: ${
+        JSON.stringify(
+          response.body,
+          null,
+          2,
+        )
+      }`,
+    );
   }
 
-  if (!response.body || typeof response.body !== 'object' || !('data' in response.body)) {
+  if (
+    !response.body || typeof response.body !== "object" ||
+    !("data" in response.body)
+  ) {
     throw new Error(
-      `Expected response body to have 'data' property. Got: ${JSON.stringify(
-        response.body,
-        null,
-        2
-      )}`
-    )
+      `Expected response body to have 'data' property. Got: ${
+        JSON.stringify(
+          response.body,
+          null,
+          2,
+        )
+      }`,
+    );
   }
 }
 
 export function assertErrorResponse(
-  response: TestResponse
+  response: TestResponse,
 ): asserts response is TestResponse<{ error: string }> {
   if (response.status >= 200 && response.status < 300) {
-    throw new Error(`Expected error status (4xx or 5xx), got ${response.status}`)
+    throw new Error(
+      `Expected error status (4xx or 5xx), got ${response.status}`,
+    );
   }
 
-  if (!response.body || typeof response.body !== 'object' || !('error' in response.body)) {
+  if (
+    !response.body || typeof response.body !== "object" ||
+    !("error" in response.body)
+  ) {
     throw new Error(
-      `Expected response body to have 'error' property. Got: ${JSON.stringify(
-        response.body,
-        null,
-        2
-      )}`
-    )
+      `Expected response body to have 'error' property. Got: ${
+        JSON.stringify(
+          response.body,
+          null,
+          2,
+        )
+      }`,
+    );
   }
 }
 
 export function assertPaginatedResponse<T>(
-  response: TestResponse
+  response: TestResponse,
 ): asserts response is TestResponse<{
-  data: T[]
-  pagination: { total: number; limit: number; offset: number; hasMore: boolean }
+  data: T[];
+  pagination: {
+    total: number;
+    limit: number;
+    offset: number;
+    hasMore: boolean;
+  };
 }> {
-  assertSuccessResponse(response)
+  assertSuccessResponse(response);
 
   if (
     !response.body ||
-    typeof response.body !== 'object' ||
-    !('pagination' in response.body)
+    typeof response.body !== "object" ||
+    !("pagination" in response.body)
   ) {
     throw new Error(
-      `Expected response body to have 'pagination' property. Got: ${JSON.stringify(
-        response.body,
-        null,
-        2
-      )}`
-    )
+      `Expected response body to have 'pagination' property. Got: ${
+        JSON.stringify(
+          response.body,
+          null,
+          2,
+        )
+      }`,
+    );
   }
 }

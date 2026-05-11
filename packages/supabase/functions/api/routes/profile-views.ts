@@ -3,11 +3,11 @@
  * Track and analyze profile views with deduplication
  */
 
-import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { authMiddleware } from '../middleware/auth.ts'
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { authMiddleware } from "../middleware/auth.ts";
 
-const app = new OpenAPIHono()
-app.use('*', authMiddleware)
+const app = new OpenAPIHono();
+app.use("*", authMiddleware);
 
 // ============================================================================
 // Schemas
@@ -16,7 +16,7 @@ app.use('*', authMiddleware)
 const _errorResponseSchema = z.object({
   error: z.string(),
   message: z.string().optional(),
-}).openapi('ErrorResponse')
+}).openapi("ErrorResponse");
 
 // ============================================================================
 // Routes
@@ -27,14 +27,14 @@ const _errorResponseSchema = z.object({
  * Record a profile view (with deduplication)
  */
 const recordViewRoute = createRoute({
-  method: 'post',
-  path: '/record',
-  tags: ['Profile Views'],
-  summary: 'Record profile view',
+  method: "post",
+  path: "/record",
+  tags: ["Profile Views"],
+  summary: "Record profile view",
   request: {
     body: {
       content: {
-        'application/json': {
+        "application/json": {
           schema: z.object({
             viewed_user_id: z.string().uuid(),
           }),
@@ -44,79 +44,91 @@ const recordViewRoute = createRoute({
   },
   responses: {
     200: {
-      description: 'View recorded',
+      description: "View recorded",
       content: {
-        'application/json': {
+        "application/json": {
           schema: z.object({
             success: z.boolean(),
             skipped: z.boolean(),
-            reason: z.enum(['own_profile', 'already_viewed_today', 'already_viewed_session', 'duplicate_prevented']).optional(),
+            reason: z.enum([
+              "own_profile",
+              "already_viewed_today",
+              "already_viewed_session",
+              "duplicate_prevented",
+            ]).optional(),
           }),
         },
       },
     },
   },
   security: [{ bearerAuth: [] }],
-})
+});
 
 app.openapi(recordViewRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
-  const { viewed_user_id } = c.req.valid('json')
+  const supabase = c.get("supabase");
+  const user = c.get("user");
+  const { viewed_user_id } = c.req.valid("json");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   // Don't record own profile views
   if (user.id === viewed_user_id) {
-    return c.json({ success: false, skipped: true, reason: 'own_profile' })
+    return c.json({ success: false, skipped: true, reason: "own_profile" });
   }
 
   // Check if already viewed today
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   const { data: existingView } = await supabase
-    .schema('engagement')
-    .from('profile_views')
-    .select('id')
-    .eq('viewer_user_id', user.id)
-    .eq('viewed_user_id', viewed_user_id)
-    .gte('viewed_at', today.toISOString())
+    .schema("engagement")
+    .from("profile_views")
+    .select("id")
+    .eq("viewer_user_id", user.id)
+    .eq("viewed_user_id", viewed_user_id)
+    .gte("viewed_at", today.toISOString())
     .limit(1)
-    .maybeSingle()
+    .maybeSingle();
 
   if (existingView) {
-    return c.json({ success: false, skipped: true, reason: 'already_viewed_today' })
+    return c.json({
+      success: false,
+      skipped: true,
+      reason: "already_viewed_today",
+    });
   }
 
   // Record the view
   const { error } = await supabase
-    .schema('engagement')
-    .from('profile_views')
+    .schema("engagement")
+    .from("profile_views")
     .insert({
       viewer_user_id: user.id,
       viewed_user_id,
       viewed_at: new Date().toISOString(),
-    })
+    });
 
   if (error) {
-    return c.json({ error: 'Failed to record view', message: error.message }, 500)
+    return c.json(
+      { error: "Failed to record view", message: error.message },
+      500,
+    );
   }
 
-  return c.json({ success: true, skipped: false })
-})
+  return c.json({ success: true, skipped: false });
+});
 
 /**
  * GET /v1/profile-views
  * Get who viewed current user's profile
  */
 const getProfileViewsRoute = createRoute({
-  method: 'get',
-  path: '/',
-  tags: ['Profile Views'],
-  summary: 'Get profile views',
+  method: "get",
+  path: "/",
+  tags: ["Profile Views"],
+  summary: "Get profile views",
   request: {
     query: z.object({
       limit: z.coerce.number().optional(),
@@ -125,9 +137,9 @@ const getProfileViewsRoute = createRoute({
   },
   responses: {
     200: {
-      description: 'Profile views',
+      description: "Profile views",
       content: {
-        'application/json': {
+        "application/json": {
           schema: z.object({
             views: z.array(z.object({
               id: z.string().uuid(),
@@ -153,114 +165,144 @@ const getProfileViewsRoute = createRoute({
     },
   },
   security: [{ bearerAuth: [] }],
-})
+});
 
 app.openapi(getProfileViewsRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
-  const { limit = 50, offset = 0 } = c.req.valid('query')
+  const supabase = c.get("supabase");
+  const user = c.get("user");
+  const { limit = 50, offset = 0 } = c.req.valid("query");
 
   if (!user) {
-    return c.json({ views: [], total: 0 })
+    return c.json({ views: [], total: 0 });
   }
 
   const { data: views, error: viewsError } = await supabase
-    .schema('engagement')
-    .from('profile_views')
-    .select('id, viewed_at, viewer_user_id, viewer_role_type, viewer_industry_id')
-    .eq('viewed_user_id', user.id)
-    .order('viewed_at', { ascending: false })
-    .range(offset, offset + limit - 1)
+    .schema("engagement")
+    .from("profile_views")
+    .select(
+      "id, viewed_at, viewer_user_id, viewer_role_type, viewer_industry_id",
+    )
+    .eq("viewed_user_id", user.id)
+    .order("viewed_at", { ascending: false })
+    .range(offset, offset + limit - 1);
 
   if (viewsError) {
-    return c.json({ error: 'Failed to fetch views', message: viewsError.message }, 500)
+    return c.json({
+      error: "Failed to fetch views",
+      message: viewsError.message,
+    }, 500);
   }
 
   const { count } = await supabase
-    .schema('engagement')
-    .from('profile_views')
-    .select('*', { count: 'exact', head: true })
-    .eq('viewed_user_id', user.id)
+    .schema("engagement")
+    .from("profile_views")
+    .select("*", { count: "exact", head: true })
+    .eq("viewed_user_id", user.id);
 
   if (!views || views.length === 0) {
-    return c.json({ views: [], total: count || 0 })
+    return c.json({ views: [], total: count || 0 });
   }
 
   const viewerUserIds = [
     ...new Set(
-      views.map((v: { viewer_user_id: string | null }) => v.viewer_user_id).filter(Boolean)
+      views.map((v: { viewer_user_id: string | null }) => v.viewer_user_id)
+        .filter(Boolean),
     ),
-  ] as string[]
+  ] as string[];
   const industryIds = [
     ...new Set(
       views
         .map((v: { viewer_industry_id: string | null }) => v.viewer_industry_id)
-        .filter(Boolean)
+        .filter(Boolean),
     ),
-  ] as string[]
+  ] as string[];
 
-  const usersMap = new Map<string, { id: string; display_name: string | null; username: string | null; avatar_url: string | null; headline: string | null; industry_id: string | null }>()
+  const usersMap = new Map<
+    string,
+    {
+      id: string;
+      display_name: string | null;
+      username: string | null;
+      avatar_url: string | null;
+      headline: string | null;
+      industry_id: string | null;
+    }
+  >();
   if (viewerUserIds.length > 0) {
     const { data: users } = await supabase
-      .schema('core')
-      .from('users')
-      .select('id, display_name, username, avatar_url, headline, industry_id')
-      .in('id', viewerUserIds)
+      .schema("core")
+      .from("users")
+      .select("id, display_name, username, avatar_url, headline, industry_id")
+      .in("id", viewerUserIds);
     for (const u of users || []) {
-      usersMap.set(u.id, u)
+      usersMap.set(u.id, u);
     }
   }
 
-  const industriesMap = new Map<string, { id: string; name: string }>()
+  const industriesMap = new Map<string, { id: string; name: string }>();
   if (industryIds.length > 0) {
     const { data: industries } = await supabase
-      .schema('core')
-      .from('industries')
-      .select('id, name')
-      .in('id', industryIds)
+      .schema("core")
+      .from("industries")
+      .select("id, name")
+      .in("id", industryIds);
     for (const ind of industries || []) {
-      industriesMap.set(ind.id, ind)
+      industriesMap.set(ind.id, ind);
     }
   }
 
-  const result = (views as Array<{ id: string; viewed_at: string; viewer_user_id: string | null; viewer_role_type: string | null; viewer_industry_id: string | null }>).map((view) => {
-    const viewerUser = view.viewer_user_id ? usersMap.get(view.viewer_user_id) : null
-    const viewerInd = view.viewer_industry_id ? industriesMap.get(view.viewer_industry_id) : null
+  const result = (views as Array<
+    {
+      id: string;
+      viewed_at: string;
+      viewer_user_id: string | null;
+      viewer_role_type: string | null;
+      viewer_industry_id: string | null;
+    }
+  >).map((view) => {
+    const viewerUser = view.viewer_user_id
+      ? usersMap.get(view.viewer_user_id)
+      : null;
+    const viewerInd = view.viewer_industry_id
+      ? industriesMap.get(view.viewer_industry_id)
+      : null;
     return {
       id: view.id,
       viewed_at: view.viewed_at,
       viewer: viewerUser
         ? {
-            id: viewerUser.id,
-            display_name: viewerUser.display_name,
-            username: viewerUser.username,
-            avatar_url: viewerUser.avatar_url,
-            headline: viewerUser.headline,
-            industry_id: viewerUser.industry_id,
-          }
+          id: viewerUser.id,
+          display_name: viewerUser.display_name,
+          username: viewerUser.username,
+          avatar_url: viewerUser.avatar_url,
+          headline: viewerUser.headline,
+          industry_id: viewerUser.industry_id,
+        }
         : null,
       viewer_role_type: view.viewer_role_type,
-      viewer_industry: viewerInd ? { id: viewerInd.id, name: viewerInd.name } : null,
-    }
-  })
+      viewer_industry: viewerInd
+        ? { id: viewerInd.id, name: viewerInd.name }
+        : null,
+    };
+  });
 
-  return c.json({ views: result, total: count || 0 })
-})
+  return c.json({ views: result, total: count || 0 });
+});
 
 /**
  * GET /v1/profile-views/analytics
  * Get aggregated view statistics
  */
 const getViewAnalyticsRoute = createRoute({
-  method: 'get',
-  path: '/analytics',
-  tags: ['Profile Views'],
-  summary: 'Get view analytics',
+  method: "get",
+  path: "/analytics",
+  tags: ["Profile Views"],
+  summary: "Get view analytics",
   responses: {
     200: {
-      description: 'View analytics',
+      description: "View analytics",
       content: {
-        'application/json': {
+        "application/json": {
           schema: z.object({
             views30d: z.number(),
             viewsTotal: z.number(),
@@ -272,50 +314,50 @@ const getViewAnalyticsRoute = createRoute({
     },
   },
   security: [{ bearerAuth: [] }],
-})
+});
 
 app.openapi(getViewAnalyticsRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
+  const supabase = c.get("supabase");
+  const user = c.get("user");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   // Get total views
   const { count: totalCount } = await supabase
-    .schema('engagement')
-    .from('profile_views')
-    .select('*', { count: 'exact', head: true })
-    .eq('viewed_user_id', user.id)
+    .schema("engagement")
+    .from("profile_views")
+    .select("*", { count: "exact", head: true })
+    .eq("viewed_user_id", user.id);
 
   // Get views in last 30 days
-  const thirtyDaysAgo = new Date()
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
   const { count: views30d } = await supabase
-    .schema('engagement')
-    .from('profile_views')
-    .select('*', { count: 'exact', head: true })
-    .eq('viewed_user_id', user.id)
-    .gte('viewed_at', thirtyDaysAgo.toISOString())
+    .schema("engagement")
+    .from("profile_views")
+    .select("*", { count: "exact", head: true })
+    .eq("viewed_user_id", user.id)
+    .gte("viewed_at", thirtyDaysAgo.toISOString());
 
   // Get last view
   const { data: lastView } = await supabase
-    .schema('engagement')
-    .from('profile_views')
-    .select('viewed_at')
-    .eq('viewed_user_id', user.id)
-    .order('viewed_at', { ascending: false })
+    .schema("engagement")
+    .from("profile_views")
+    .select("viewed_at")
+    .eq("viewed_user_id", user.id)
+    .order("viewed_at", { ascending: false })
     .limit(1)
-    .maybeSingle()
+    .maybeSingle();
 
   return c.json({
     views30d: views30d || 0,
     viewsTotal: totalCount || 0,
     lastViewAt: lastView?.viewed_at || null,
     trend: 0, // Could calculate trend from historical data
-  })
-})
+  });
+});
 
-export default app
+export default app;

@@ -1,6 +1,7 @@
 # REST API Test Suite
 
-Comprehensive test suite for the Scaffald REST API with 100% coverage requirement.
+Comprehensive test suite for the Scaffald REST API with 100% coverage
+requirement.
 
 ## 📋 Test Structure
 
@@ -52,6 +53,7 @@ deno coverage coverage
 ### Test Commands
 
 #### Unit Tests Only
+
 ```bash
 deno test --allow-all functions/api/__tests__/routes/jobs.test.ts
 deno test --allow-all functions/api/__tests__/routes/applications.test.ts
@@ -61,21 +63,25 @@ deno test --allow-all functions/api/__tests__/routes/api-keys.test.ts
 ```
 
 #### Integration Tests
+
 ```bash
 deno test --allow-all functions/api/__tests__/integration/*.test.ts
 ```
 
 #### All Tests
+
 ```bash
 deno test --allow-all functions/api/__tests__/**/*.test.ts
 ```
 
 #### Performance Benchmarks
+
 ```bash
 deno bench --allow-all functions/api/__tests__/benchmarks/rest-vs-trpc.bench.ts
 ```
 
 #### Coverage Report
+
 ```bash
 # Generate coverage
 deno test --allow-all --coverage=coverage functions/api/__tests__/**/*.test.ts
@@ -101,20 +107,21 @@ open coverage/html/index.html
 
 ### Coverage by Module
 
-| Module | Endpoints | Tests | Coverage |
-|--------|-----------|-------|----------|
-| Jobs | 4 | 26 | 100% |
-| Applications | 4 | 31 | 100% |
-| Profiles | 3 | 18 | 100% |
-| OAuth | 6 | 39 | 100% |
-| API Keys | 6 | 33 | 100% |
-| **Total** | **23** | **147** | **100%** |
+| Module       | Endpoints | Tests   | Coverage |
+| ------------ | --------- | ------- | -------- |
+| Jobs         | 4         | 26      | 100%     |
+| Applications | 4         | 31      | 100%     |
+| Profiles     | 3         | 18      | 100%     |
+| OAuth        | 6         | 39      | 100%     |
+| API Keys     | 6         | 33      | 100%     |
+| **Total**    | **23**    | **147** | **100%** |
 
 ## 🧪 Test Categories
 
 ### Unit Tests (147 tests)
 
 Test individual endpoints in isolation:
+
 - Request/response validation
 - Authentication/authorization
 - Input validation
@@ -124,6 +131,7 @@ Test individual endpoints in isolation:
 ### Integration Tests (7 tests)
 
 Test complete user workflows:
+
 - **Auth Flows** (3 tests):
   - Magic link authentication
   - OAuth 2.0 with PKCE
@@ -138,6 +146,7 @@ Test complete user workflows:
 ### Performance Benchmarks
 
 Compare REST API vs tRPC performance:
+
 - Response times (avg, p50, p95, p99)
 - Throughput (requests/second)
 - Concurrent request handling
@@ -148,44 +157,44 @@ Compare REST API vs tRPC performance:
 ### Test Client (`helpers/test-client.ts`)
 
 ```typescript
-import { createTestClient } from '../helpers/test-client.ts'
+import { createTestClient } from "../helpers/test-client.ts";
 
-const client = createTestClient({ authToken: 'your-token' })
+const client = createTestClient({ authToken: "your-token" });
 
 // Make requests
-const response = await client.get('/v1/jobs')
-const response = await client.post('/v1/applications', { data })
+const response = await client.get("/v1/jobs");
+const response = await client.post("/v1/applications", { data });
 
 // Assertions
-assertSuccessResponse(response)
-assertErrorResponse(response)
-assertStatus(response, 404)
-assertPaginatedResponse(response)
+assertSuccessResponse(response);
+assertErrorResponse(response);
+assertStatus(response, 404);
+assertPaginatedResponse(response);
 ```
 
 ### Fixtures (`helpers/fixtures.ts`)
 
 ```typescript
-import { createTestJob, createTestApiKey } from '../helpers/fixtures.ts'
+import { createTestApiKey, createTestJob } from "../helpers/fixtures.ts";
 
 // Create test data
-const job = await createTestJob({ status: 'published' })
-const apiKey = await createTestApiKey({ organization_id: org.id })
+const job = await createTestJob({ status: "published" });
+const apiKey = await createTestApiKey({ organization_id: org.id });
 
 // Cleanup
-await cleanupCurrentTestData()
+await cleanupCurrentTestData();
 ```
 
 ### Setup (`setup.ts`)
 
 ```typescript
-import { markTestStart, registerUserWithMagicLink } from '../setup.ts'
+import { markTestStart, registerUserWithMagicLink } from "../setup.ts";
 
 // Mark test start for cleanup tracking
-markTestStart()
+markTestStart();
 
 // Create authenticated user
-const user = await registerUserWithMagicLink('test@example.com')
+const user = await registerUserWithMagicLink("test@example.com");
 ```
 
 ## 🎯 Best Practices
@@ -193,13 +202,13 @@ const user = await registerUserWithMagicLink('test@example.com')
 ### 1. Always Clean Up
 
 ```typescript
-Deno.test('My test', async () => {
-  markTestStart()  // Mark test start
+Deno.test("My test", async () => {
+  markTestStart(); // Mark test start
 
   // ... test code ...
 
-  await cleanupCurrentTestData()  // Clean up at end
-})
+  await cleanupCurrentTestData(); // Clean up at end
+});
 ```
 
 ### 2. Use Fixtures
@@ -216,20 +225,20 @@ const job = await createTestJob({ status: 'published' })
 
 ```typescript
 // ✅ Use helper assertions
-assertSuccessResponse(response)
-assertEquals(response.status, 201)
-assertExists(response.body.data.id)
+assertSuccessResponse(response);
+assertEquals(response.status, 201);
+assertExists(response.body.data.id);
 
 // ✅ Check specific error messages
-assert(response.body.message?.includes('not found'))
+assert(response.body.message?.includes("not found"));
 ```
 
 ### 4. Unique Test Data
 
 ```typescript
 // ✅ Use timestamps for uniqueness
-const email = `test-${Date.now()}@example.com`
-const name = `Test Org ${Date.now()}`
+const email = `test-${Date.now()}@example.com`;
+const name = `Test Org ${Date.now()}`;
 ```
 
 ## 🚨 Troubleshooting
@@ -239,6 +248,7 @@ const name = `Test Org ${Date.now()}`
 **Issue**: API function not starting
 
 **Solutions**:
+
 1. Ensure Docker Desktop is running
 2. Restart Supabase: `pnpx supabase stop && pnpx supabase start`
 3. Check migrations: `pnpx supabase db reset --local`
@@ -249,6 +259,7 @@ const name = `Test Org ${Date.now()}`
 **Issue**: Database schema out of date
 
 **Solution**:
+
 ```bash
 pnpx supabase db reset --local
 ```
@@ -258,6 +269,7 @@ pnpx supabase db reset --local
 **Issue**: Slow database or network
 
 **Solutions**:
+
 1. Increase timeout in test: `Deno.test({ timeout: 30000 }, ...)`
 2. Check Docker resources (CPU/Memory)
 3. Ensure local Supabase is healthy: `pnpx supabase status`
@@ -267,6 +279,7 @@ pnpx supabase db reset --local
 **Issue**: Port 54321 already in use
 
 **Solutions**:
+
 1. Stop other Supabase instances: `pnpx supabase stop --all`
 2. Change ports in `supabase/config.toml`
 3. Kill process: `lsof -ti:54321 | xargs kill -9`
@@ -276,59 +289,60 @@ pnpx supabase db reset --local
 ### Template for New Endpoint Test
 
 ```typescript
-Deno.test('VERB /v1/endpoint/:param - does something', async () => {
-  markTestStart()
+Deno.test("VERB /v1/endpoint/:param - does something", async () => {
+  markTestStart();
 
   // Setup
-  const user = await registerUserWithMagicLink('test@example.com')
-  const client = createTestClient({ authToken: user.token })
+  const user = await registerUserWithMagicLink("test@example.com");
+  const client = createTestClient({ authToken: user.token });
 
   // Execute
-  const response = await client.get('/v1/endpoint')
+  const response = await client.get("/v1/endpoint");
 
   // Assert
-  assertSuccessResponse(response)
-  assertEquals(response.status, 200)
-  assertExists(response.body.data)
+  assertSuccessResponse(response);
+  assertEquals(response.status, 200);
+  assertExists(response.body.data);
 
   // Cleanup
-  await cleanupCurrentTestData()
-})
+  await cleanupCurrentTestData();
+});
 ```
 
 ### Template for Integration Test
 
 ```typescript
-Deno.test('FLOW: Complete user journey description', async () => {
-  markTestStart()
+Deno.test("FLOW: Complete user journey description", async () => {
+  markTestStart();
 
   // Step 1: Setup
-  const admin = createAdminClient()
+  const admin = createAdminClient();
   // ... create necessary data
 
   // Step 2: User action
-  const user = await registerUserWithMagicLink('test@example.com')
-  const client = createTestClient({ authToken: user.token })
+  const user = await registerUserWithMagicLink("test@example.com");
+  const client = createTestClient({ authToken: user.token });
 
   // Step 3: Perform workflow
-  const response1 = await client.get('/v1/endpoint1')
-  assertSuccessResponse(response1)
+  const response1 = await client.get("/v1/endpoint1");
+  assertSuccessResponse(response1);
 
-  const response2 = await client.post('/v1/endpoint2', { data })
-  assertSuccessResponse(response2)
+  const response2 = await client.post("/v1/endpoint2", { data });
+  assertSuccessResponse(response2);
 
   // Step 4: Verify end state
-  const finalResponse = await client.get('/v1/verify')
-  assertSuccessResponse(finalResponse)
+  const finalResponse = await client.get("/v1/verify");
+  assertSuccessResponse(finalResponse);
 
   // Cleanup
-  await cleanupCurrentTestData()
-})
+  await cleanupCurrentTestData();
+});
 ```
 
 ## 🔄 CI/CD Integration
 
 Tests run automatically on:
+
 - **Pull Requests** to `main` branch
 - **Pushes** to `main` branch
 
@@ -337,6 +351,7 @@ Tests run automatically on:
 See `.github/workflows/api-tests.yml` for full configuration.
 
 **Jobs**:
+
 1. **test**: Run all unit and integration tests
 2. **benchmark**: Performance benchmarks (PRs only)
 3. **lint**: Code linting and formatting
@@ -344,6 +359,7 @@ See `.github/workflows/api-tests.yml` for full configuration.
 5. **status-check**: Aggregate status
 
 **Coverage Enforcement**:
+
 - Minimum: 100%
 - Blocks PR merge if coverage drops
 - Reports uploaded to Codecov
@@ -357,7 +373,8 @@ See `.github/workflows/api-tests.yml` for full configuration.
 
 ## 💡 Tips
 
-- Run tests in watch mode: `deno test --allow-all --watch functions/api/__tests__`
+- Run tests in watch mode:
+  `deno test --allow-all --watch functions/api/__tests__`
 - Focus on specific test: Use `Deno.test.only()` during development
 - Skip slow tests: Use `Deno.test.ignore()` temporarily
 - Debug tests: Add `--inspect-brk` flag and use Chrome DevTools
@@ -366,16 +383,14 @@ See `.github/workflows/api-tests.yml` for full configuration.
 
 ## 🎉 Success Criteria
 
-✅ All 154 tests passing
-✅ 100% code coverage
-✅ No security vulnerabilities
-✅ Performance benchmarks meet targets:
-  - p95 latency < 200ms
-  - p99 latency < 500ms
-  - Throughput > 100 req/s
+✅ All 154 tests passing ✅ 100% code coverage ✅ No security vulnerabilities ✅
+Performance benchmarks meet targets:
+
+- p95 latency < 200ms
+- p99 latency < 500ms
+- Throughput > 100 req/s
 
 ---
 
-**Last Updated**: 2025-12-31
-**Maintained By**: Engineering Team
-**Questions?**: Open an issue or check the migration docs
+**Last Updated**: 2025-12-31 **Maintained By**: Engineering Team **Questions?**:
+Open an issue or check the migration docs

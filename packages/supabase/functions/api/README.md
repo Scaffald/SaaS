@@ -5,8 +5,11 @@ Public REST API for third-party integrations, built with Hono framework on Deno.
 ## Architecture
 
 **Hybrid Approach**: This REST API coexists with the existing tRPC API:
-- **REST**: Public-facing endpoints for third-party integrations (this directory)
-- **tRPC**: Internal admin tools and mobile app (continues to use existing tRPC routers)
+
+- **REST**: Public-facing endpoints for third-party integrations (this
+  directory)
+- **tRPC**: Internal admin tools and mobile app (continues to use existing tRPC
+  routers)
 
 ## Directory Structure
 
@@ -47,21 +50,26 @@ supabase functions serve api
 ## Endpoints
 
 ### Health Check
+
 - `GET /health` - API health status
 
 ### Jobs API (Week 2) ✅
+
 - `GET /v1/jobs` - List published jobs with filtering and pagination
-  - Query params: status, limit, offset, organizationId, location, employmentType, remoteOption
+  - Query params: status, limit, offset, organizationId, location,
+    employmentType, remoteOption
   - Returns: paginated list of jobs with metadata
 - `GET /v1/jobs/:id` - Get job details by ID
   - Returns: full job object
-- `GET /v1/jobs/:id/similar` - Get similar jobs based on organization and employment type
+- `GET /v1/jobs/:id/similar` - Get similar jobs based on organization and
+  employment type
   - Query params: limit (default: 5, max: 20)
   - Returns: array of similar jobs
 - `GET /v1/jobs/filter-options` - Get available filter values
   - Returns: unique employment types, locations, and remote options
 
 ### Applications API (Week 3) ✅
+
 - `POST /v1/applications` - Submit job application
   - Supports both quick and full applications
   - Validates job status and deadline
@@ -79,6 +87,7 @@ supabase functions serve api
   - Triggers `application.withdrawn` webhook
 
 ### Profiles API (Week 4) ✅
+
 - `GET /v1/profiles/:username` - Public user profile
   - Returns username, bio, skills, certifications
   - Only shows public profiles
@@ -93,6 +102,7 @@ supabase functions serve api
   - Rate limited: 100 requests per 15 minutes
 
 ### OAuth 2.0 (Week 1)
+
 - `GET /oauth/authorize` - Authorization endpoint
 - `POST /oauth/token` - Token endpoint
 - `POST /oauth/revoke` - Token revocation
@@ -100,6 +110,7 @@ supabase functions serve api
 - `GET /oauth/userinfo` - UserInfo endpoint
 
 ### Documentation
+
 - `GET /` - Swagger UI
 - `GET /openapi.json` - OpenAPI specification
 
@@ -129,7 +140,8 @@ OAuth integration endpoints are protected by OAuth 2.0 with PKCE.
   - [x] GET /v1/applications/:id - Get application details
   - [x] PATCH /v1/applications/:id - Update application
   - [x] POST /v1/applications/:id/withdraw - Withdraw application
-  - [x] Webhook support (application.created, application.updated, application.withdrawn)
+  - [x] Webhook support (application.created, application.updated,
+        application.withdrawn)
   - [x] HMAC SHA-256 webhook signatures
   - [x] Webhook delivery logging
 - [x] Week 4: Public Profiles API with rate limiting
@@ -138,26 +150,33 @@ OAuth integration endpoints are protected by OAuth 2.0 with PKCE.
   - [x] GET /v1/profiles/employers/:slug - Get employer profile
   - [x] Rate limiting middleware (100 req/15min)
   - [x] User and IP-based rate limiting
-  - [x] Rate limit headers (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset)
+  - [x] Rate limit headers (X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Reset)
 
 ## Migration from tRPC
 
 Each endpoint is migrated from the existing tRPC routers:
-- **Jobs**: `packages/supabase/functions/trpc/routers/jobs.router.ts` (1,175 LOC)
-- **Applications**: `packages/supabase/functions/trpc/routers/applications.router.ts` (947 LOC)
-- **OAuth**: `packages/supabase/functions/trpc/routers/oauth.router.ts` (1,190 LOC)
+
+- **Jobs**: `packages/supabase/functions/trpc/routers/jobs.router.ts` (1,175
+  LOC)
+- **Applications**:
+  `packages/supabase/functions/trpc/routers/applications.router.ts` (947 LOC)
+- **OAuth**: `packages/supabase/functions/trpc/routers/oauth.router.ts` (1,190
+  LOC)
 
 Authentication logic is shared via the same `context.ts` pattern used by tRPC.
 
 ## Rate Limiting
 
 Public API endpoints are rate-limited (configured in Week 4):
+
 - **Free tier**: 100 requests per 15 minutes
 - **Paid tier**: Higher limits based on plan
 
 ## OpenAPI Documentation
 
 Access the interactive API documentation at:
+
 ```
 https://your-project.supabase.co/functions/v1/api/
 ```

@@ -4,11 +4,11 @@
  * Temporary storage with 24-hour TTL
  */
 
-import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { authMiddleware } from '../middleware/auth.ts'
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { authMiddleware } from "../middleware/auth.ts";
 
-const app = new OpenAPIHono()
-app.use('*', authMiddleware)
+const app = new OpenAPIHono();
+app.use("*", authMiddleware);
 
 // ============================================================================
 // Schemas
@@ -17,7 +17,7 @@ app.use('*', authMiddleware)
 const _errorResponseSchema = z.object({
   error: z.string(),
   message: z.string().optional(),
-}).openapi('ErrorResponse')
+}).openapi("ErrorResponse");
 
 const importPayloadSchema = z.object({
   general: z.array(z.object({
@@ -53,7 +53,7 @@ const importPayloadSchema = z.object({
     issue_date: z.string().nullable().optional(),
     confidence_score: z.number().optional(),
   })),
-})
+});
 
 // ============================================================================
 // Routes
@@ -64,18 +64,18 @@ const importPayloadSchema = z.object({
  * Get saved import data
  */
 const getImportDataRoute = createRoute({
-  method: 'get',
-  path: '/data',
-  tags: ['Profile Import'],
-  summary: 'Get import data',
+  method: "get",
+  path: "/data",
+  tags: ["Profile Import"],
+  summary: "Get import data",
   responses: {
     200: {
-      description: 'Import data metadata',
+      description: "Import data metadata",
       content: {
-        'application/json': {
+        "application/json": {
           schema: z.object({
             version: z.number(),
-            source: z.enum(['resume', 'json', 'linkedin', 'manual']),
+            source: z.enum(["resume", "json", "linkedin", "manual"]),
             storedAt: z.string(),
             expiresAt: z.string(),
             payload: importPayloadSchema,
@@ -85,42 +85,42 @@ const getImportDataRoute = createRoute({
     },
   },
   security: [{ bearerAuth: [] }],
-})
+});
 
 app.openapi(getImportDataRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
+  const supabase = c.get("supabase");
+  const user = c.get("user");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   const { data, error } = await supabase
-    .schema('core')
-    .from('profile_import_data')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
+    .schema("core")
+    .from("profile_import_data")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
     .limit(1)
-    .single()
+    .single();
 
   if (error || !data) {
-    return c.json(null)
+    return c.json(null);
   }
 
   // Check if expired (24 hours)
-  const expiresAt = new Date(data.created_at)
-  expiresAt.setHours(expiresAt.getHours() + 24)
+  const expiresAt = new Date(data.created_at);
+  expiresAt.setHours(expiresAt.getHours() + 24);
 
   if (new Date() > expiresAt) {
     // Delete expired data
     await supabase
-      .schema('core')
-      .from('profile_import_data')
+      .schema("core")
+      .from("profile_import_data")
       .delete()
-      .eq('id', data.id)
+      .eq("id", data.id);
 
-    return c.json(null)
+    return c.json(null);
   }
 
   return c.json({
@@ -129,25 +129,25 @@ app.openapi(getImportDataRoute, async (c) => {
     storedAt: data.created_at,
     expiresAt: expiresAt.toISOString(),
     payload: data.payload,
-  })
-})
+  });
+});
 
 /**
  * POST /v1/profiles/import/data
  * Save import data for review
  */
 const saveImportDataRoute = createRoute({
-  method: 'post',
-  path: '/data',
-  tags: ['Profile Import'],
-  summary: 'Save import data',
+  method: "post",
+  path: "/data",
+  tags: ["Profile Import"],
+  summary: "Save import data",
   request: {
     body: {
       content: {
-        'application/json': {
+        "application/json": {
           schema: z.object({
             payload: importPayloadSchema,
-            source: z.enum(['resume', 'json', 'linkedin', 'manual']),
+            source: z.enum(["resume", "json", "linkedin", "manual"]),
           }),
         },
       },
@@ -155,13 +155,13 @@ const saveImportDataRoute = createRoute({
   },
   responses: {
     201: {
-      description: 'Import data saved',
+      description: "Import data saved",
       content: {
-        'application/json': {
+        "application/json": {
           schema: z.object({
             metadata: z.object({
               version: z.number(),
-              source: z.enum(['resume', 'json', 'linkedin', 'manual']),
+              source: z.enum(["resume", "json", "linkedin", "manual"]),
               storedAt: z.string(),
               expiresAt: z.string(),
               payload: importPayloadSchema,
@@ -172,42 +172,45 @@ const saveImportDataRoute = createRoute({
     },
   },
   security: [{ bearerAuth: [] }],
-})
+});
 
 app.openapi(saveImportDataRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
-  const { payload, source } = c.req.valid('json')
+  const supabase = c.get("supabase");
+  const user = c.get("user");
+  const { payload, source } = c.req.valid("json");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
-  const storedAt = new Date().toISOString()
-  const expiresAt = new Date()
-  expiresAt.setHours(expiresAt.getHours() + 24)
+  const storedAt = new Date().toISOString();
+  const expiresAt = new Date();
+  expiresAt.setHours(expiresAt.getHours() + 24);
 
   // Delete any existing import data
   await supabase
-    .schema('core')
-    .from('profile_import_data')
+    .schema("core")
+    .from("profile_import_data")
     .delete()
-    .eq('user_id', user.id)
+    .eq("user_id", user.id);
 
   // Insert new import data
   const { error } = await supabase
-    .schema('core')
-    .from('profile_import_data')
+    .schema("core")
+    .from("profile_import_data")
     .insert({
       user_id: user.id,
       source,
       payload,
     })
     .select()
-    .single()
+    .single();
 
   if (error) {
-    return c.json({ error: 'Failed to save import data', message: error.message }, 500)
+    return c.json({
+      error: "Failed to save import data",
+      message: error.message,
+    }, 500);
   }
 
   return c.json({
@@ -218,23 +221,23 @@ app.openapi(saveImportDataRoute, async (c) => {
       expiresAt: expiresAt.toISOString(),
       payload,
     },
-  }, 201)
-})
+  }, 201);
+});
 
 /**
  * DELETE /v1/profiles/import/data
  * Clear saved import data
  */
 const clearImportDataRoute = createRoute({
-  method: 'delete',
-  path: '/data',
-  tags: ['Profile Import'],
-  summary: 'Clear import data',
+  method: "delete",
+  path: "/data",
+  tags: ["Profile Import"],
+  summary: "Clear import data",
   responses: {
     200: {
-      description: 'Import data cleared',
+      description: "Import data cleared",
       content: {
-        'application/json': {
+        "application/json": {
           schema: z.object({
             success: z.boolean(),
           }),
@@ -243,27 +246,30 @@ const clearImportDataRoute = createRoute({
     },
   },
   security: [{ bearerAuth: [] }],
-})
+});
 
 app.openapi(clearImportDataRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
+  const supabase = c.get("supabase");
+  const user = c.get("user");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   const { error } = await supabase
-    .schema('core')
-    .from('profile_import_data')
+    .schema("core")
+    .from("profile_import_data")
     .delete()
-    .eq('user_id', user.id)
+    .eq("user_id", user.id);
 
   if (error) {
-    return c.json({ error: 'Failed to clear import data', message: error.message }, 500)
+    return c.json({
+      error: "Failed to clear import data",
+      message: error.message,
+    }, 500);
   }
 
-  return c.json({ success: true })
-})
+  return c.json({ success: true });
+});
 
-export default app
+export default app;

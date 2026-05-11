@@ -4,13 +4,13 @@
  * Endpoints for listing and viewing worker profiles
  */
 
-import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { authMiddleware } from '../middleware/auth.ts'
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { authMiddleware } from "../middleware/auth.ts";
 
-const app = new OpenAPIHono()
+const app = new OpenAPIHono();
 
 // Auth middleware provides supabase client (endpoint can still be public)
-app.use('*', authMiddleware)
+app.use("*", authMiddleware);
 
 // ============================================================================
 // Schemas
@@ -21,7 +21,7 @@ const errorResponseSchema = z
     error: z.string(),
     message: z.string().optional(),
   })
-  .openapi('ErrorResponse')
+  .openapi("ErrorResponse");
 
 const workerSchema = z
   .object({
@@ -34,7 +34,7 @@ const workerSchema = z
     created_at: z.string(),
     updated_at: z.string(),
   })
-  .openapi('Worker')
+  .openapi("Worker");
 
 const workerDetailedSchema = z
   .object({
@@ -47,7 +47,7 @@ const workerDetailedSchema = z
     created_at: z.string(),
     updated_at: z.string(),
   })
-  .openapi('WorkerDetailed')
+  .openapi("WorkerDetailed");
 
 // Request schemas
 const getWorkersQuerySchema = z.object({
@@ -55,7 +55,7 @@ const getWorkersQuerySchema = z.object({
   industryIds: z.array(z.string()).optional(),
   skillIds: z.array(z.string()).optional(),
   limit: z.coerce.number().int().min(1).max(100).default(50).optional(),
-})
+});
 
 // Response schemas
 const workersListResponseSchema = z
@@ -63,7 +63,7 @@ const workersListResponseSchema = z
     workers: z.array(workerSchema),
     total: z.number().int(),
   })
-  .openapi('WorkersListResponse')
+  .openapi("WorkersListResponse");
 
 // ============================================================================
 // Routes
@@ -74,41 +74,41 @@ const workersListResponseSchema = z
  * Get all workers with optional filtering
  */
 const getWorkersRoute = createRoute({
-  method: 'get',
-  path: '/',
-  tags: ['Workers'],
-  summary: 'List workers',
-  description: 'Get all workers with optional filtering for public discovery',
+  method: "get",
+  path: "/",
+  tags: ["Workers"],
+  summary: "List workers",
+  description: "Get all workers with optional filtering for public discovery",
   request: {
     query: getWorkersQuerySchema,
   },
   responses: {
     200: {
-      description: 'List of workers',
+      description: "List of workers",
       content: {
-        'application/json': {
+        "application/json": {
           schema: workersListResponseSchema,
         },
       },
     },
     500: {
-      description: 'Internal server error',
+      description: "Internal server error",
       content: {
-        'application/json': {
+        "application/json": {
           schema: errorResponseSchema,
         },
       },
     },
   },
-})
+});
 
 app.openapi(getWorkersRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const { limit = 50 } = c.req.valid('query')
+  const supabase = c.get("supabase");
+  const { limit = 50 } = c.req.valid("query");
 
   let dbQuery = supabase
-    .schema('core')
-    .from('users')
+    .schema("core")
+    .from("users")
     .select(`
       id,
       display_name,
@@ -119,55 +119,60 @@ app.openapi(getWorkersRoute, async (c) => {
       created_at,
       updated_at
     `)
-    .order('created_at', { ascending: false })
+    .order("created_at", { ascending: false });
 
   // Apply limit
   if (limit) {
-    dbQuery = dbQuery.limit(limit)
+    dbQuery = dbQuery.limit(limit);
   }
 
-  const { data: workers, error } = await dbQuery
+  const { data: workers, error } = await dbQuery;
 
   if (error) {
-    console.error('Error fetching workers:', error)
-    return c.json({ error: 'Failed to fetch workers', message: error.message }, 500)
+    console.error("Error fetching workers:", error);
+    return c.json(
+      { error: "Failed to fetch workers", message: error.message },
+      500,
+    );
   }
 
   // Track search impressions for analytics (fire-and-forget, don't block response)
-  const user = c.get('user')
+  const user = c.get("user");
   if (user && workers && workers.length > 0) {
     const impressionRows = workers.map((w: { id: string }, i: number) => ({
       user_id: w.id,
       searcher_id: user.id,
-      impression_type: 'search_result',
+      impression_type: "search_result",
       position: i + 1,
       occurred_at: new Date().toISOString(),
-    }))
+    }));
     supabase
-      .schema('engagement')
-      .from('search_impressions')
+      .schema("engagement")
+      .from("search_impressions")
       .insert(impressionRows)
       .then(({ error: trackError }) => {
-        if (trackError) console.error('Error tracking search impressions:', trackError)
-      })
+        if (trackError) {
+          console.error("Error tracking search impressions:", trackError);
+        }
+      });
   }
 
   return c.json({
     workers: workers || [],
     total: workers?.length || 0,
-  })
-})
+  });
+});
 
 /**
  * GET /v1/workers/:id
  * Get a single worker profile by ID
  */
 const getWorkerByIdRoute = createRoute({
-  method: 'get',
-  path: '/{id}',
-  tags: ['Workers'],
-  summary: 'Get worker by ID',
-  description: 'Get detailed worker profile by ID',
+  method: "get",
+  path: "/{id}",
+  tags: ["Workers"],
+  summary: "Get worker by ID",
+  description: "Get detailed worker profile by ID",
   request: {
     params: z.object({
       id: z.string().uuid(),
@@ -175,39 +180,39 @@ const getWorkerByIdRoute = createRoute({
   },
   responses: {
     200: {
-      description: 'Worker profile',
+      description: "Worker profile",
       content: {
-        'application/json': {
+        "application/json": {
           schema: workerDetailedSchema,
         },
       },
     },
     404: {
-      description: 'Worker not found',
+      description: "Worker not found",
       content: {
-        'application/json': {
+        "application/json": {
           schema: errorResponseSchema,
         },
       },
     },
     500: {
-      description: 'Internal server error',
+      description: "Internal server error",
       content: {
-        'application/json': {
+        "application/json": {
           schema: errorResponseSchema,
         },
       },
     },
   },
-})
+});
 
 app.openapi(getWorkerByIdRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const { id } = c.req.valid('param')
+  const supabase = c.get("supabase");
+  const { id } = c.req.valid("param");
 
   const { data: worker, error } = await supabase
-    .schema('core')
-    .from('users')
+    .schema("core")
+    .from("users")
     .select(`
       id,
       name,
@@ -218,18 +223,21 @@ app.openapi(getWorkerByIdRoute, async (c) => {
       created_at,
       updated_at
     `)
-    .eq('id', id)
-    .single()
+    .eq("id", id)
+    .single();
 
   if (error) {
-    console.error('Error fetching worker:', error)
-    if (error.code === 'PGRST116') {
-      return c.json({ error: 'Worker not found' }, 404)
+    console.error("Error fetching worker:", error);
+    if (error.code === "PGRST116") {
+      return c.json({ error: "Worker not found" }, 404);
     }
-    return c.json({ error: 'Failed to fetch worker', message: error.message }, 500)
+    return c.json(
+      { error: "Failed to fetch worker", message: error.message },
+      500,
+    );
   }
 
-  return c.json(worker)
-})
+  return c.json(worker);
+});
 
-export default app
+export default app;
