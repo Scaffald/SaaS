@@ -309,46 +309,62 @@ export function ProfileHoverCard({
   const t = theme === 'dark' ? 'dark' : 'light'
   if (!visible || !pinId || !pinType) return null
 
+  // Pin types render at different sizes; offset the popup so its top edge sits
+  // just below the pin's bounding box, regardless of marker anchor.
+  // Capsule pins (worker score / org / job) are ~28px tall, center-anchored.
+  // Worker avatar pins are ~48px tall, bottom-anchored at the coordinate.
+  const popupGap = pinType === 'worker' ? 18 : 22
+
   return (
-    <ViewWithMouse
+    <View
+      // Zero-width anchor positioned at the pin's screen coordinate.
+      // `alignItems: center` then centers the popup horizontally on the pin.
+      pointerEvents="box-none"
       style={{
         position: 'absolute',
-        backgroundColor: colors.bg[t].subtle,
-        borderWidth: 1,
-        borderColor: colors.border[t].default,
-        borderRadius: 16,
-        padding: 16,
-        minWidth: 280,
-        maxWidth: 320,
-        zIndex: 1000,
-        top: position?.y ?? 0,
         left: position?.x ?? 0,
-        boxShadow: '0 8px 24px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)',
-        pointerEvents: 'auto',
-        transform: [{ translateY: -8 }],
+        top: position?.y ?? 0,
+        width: 0,
+        alignItems: 'center',
+        zIndex: 1000,
       }}
-      onMouseEnter={onHoverCardEnter}
-      onMouseLeave={onHoverCardLeave}
     >
-      {onClose && (
-        <View style={{ position: 'absolute', top: 8, right: 8, zIndex: 1 }}>
-          <Button
-            size="sm"
-            variant="text"
-            iconStart={X}
-            onPress={onClose}
-            aria-label="Close"
-          />
-        </View>
-      )}
-      {pinType === 'worker' && <WorkerPreview pinId={pinId} visible={visible} />}
-      {pinType === 'organization' && <OrganizationPreview pinId={pinId} visible={visible} />}
-      {pinType === 'job' && jobData && <JobPreview job={jobData} />}
-      {pinType === 'job' && !jobData && (
-        <Stack align="center" paddingVertical={16}>
-          <Text style={{ ...textSmall, color: colors.text[t].disabled }}>Job data unavailable</Text>
-        </Stack>
-      )}
-    </ViewWithMouse>
+      <ViewWithMouse
+        style={{
+          backgroundColor: colors.bg[t].subtle,
+          borderWidth: 1,
+          borderColor: colors.border[t].default,
+          borderRadius: 16,
+          padding: 16,
+          minWidth: 280,
+          maxWidth: 320,
+          boxShadow: '0 8px 24px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)',
+          pointerEvents: 'auto',
+          transform: [{ translateY: popupGap }],
+        }}
+        onMouseEnter={onHoverCardEnter}
+        onMouseLeave={onHoverCardLeave}
+      >
+        {onClose && (
+          <View style={{ position: 'absolute', top: 8, right: 8, zIndex: 1 }}>
+            <Button
+              size="sm"
+              variant="text"
+              iconStart={X}
+              onPress={onClose}
+              aria-label="Close"
+            />
+          </View>
+        )}
+        {pinType === 'worker' && <WorkerPreview pinId={pinId} visible={visible} />}
+        {pinType === 'organization' && <OrganizationPreview pinId={pinId} visible={visible} />}
+        {pinType === 'job' && jobData && <JobPreview job={jobData} />}
+        {pinType === 'job' && !jobData && (
+          <Stack align="center" paddingVertical={16}>
+            <Text style={{ ...textSmall, color: colors.text[t].disabled }}>Job data unavailable</Text>
+          </Stack>
+        )}
+      </ViewWithMouse>
+    </View>
   )
 }
