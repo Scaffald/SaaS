@@ -82,17 +82,19 @@ const info = BRAND_COLORS.info        // #3182CE
 - **Semantic Colors**: Use for status indicators, alerts, and feedback
 
 ### Animation
-Both components support animation through props:
+Both components support animation through props using React Native's
+built-in `Animated` API:
 
 ```tsx
-import { useSharedValue, withSpring } from 'react-native-reanimated'
+import { useRef } from 'react'
+import { Animated } from 'react-native'
 
-const animatedSize = useSharedValue(48)
+const size = useRef(new Animated.Value(48)).current
 
 // Animate size changes
-animatedSize.value = withSpring(72)
+Animated.spring(size, { toValue: 72, useNativeDriver: false }).start()
 
-<ScaffaldIcon size={animatedSize.value} />
+<ScaffaldIcon size={size as unknown as number} />
 ```
 
 ## File Structure
