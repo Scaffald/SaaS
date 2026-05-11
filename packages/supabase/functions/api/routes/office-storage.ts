@@ -91,6 +91,7 @@ app.get('/analytics', async (c) => {
     .map((row) => row.user_id)
     .filter((id, index, array) => Boolean(id) && array.indexOf(id) === index)
 
+  // deno-lint-ignore no-explicit-any
   // biome-ignore lint/suspicious/noExplicitAny: Complex Supabase type inference
   let usersLookup = new Map<string, any>()
 
@@ -105,11 +106,13 @@ app.get('/analytics', async (c) => {
       return c.json({ error: 'Failed to load user profiles', message: usersError.message }, 500)
     }
 
+    // deno-lint-ignore no-explicit-any
     // biome-ignore lint/suspicious/noExplicitAny: User row type mismatch
     usersLookup = new Map((usersData ?? []).map((user: any) => [user.id, user]))
   }
 
   const topUsers = topUsersSource.map((row) => {
+    // deno-lint-ignore no-explicit-any
     // biome-ignore lint/suspicious/noExplicitAny: User lookup type
     const profile = usersLookup.get(row.user_id) as any
     const total = toNumber(row.total_bytes)

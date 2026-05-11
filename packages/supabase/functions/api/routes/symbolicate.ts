@@ -9,7 +9,7 @@ import { Hono } from 'hono'
 const app = new Hono()
 
 // POST /symbolicate - Metro/Expo often POST stack traces here
-app.post('/', async (c) => {
+app.post('/', (c) => {
   return c.json(
     {
       stack: [],
@@ -24,7 +24,7 @@ app.post('/', async (c) => {
 })
 
 // GET /symbolicate - some clients use GET
-app.get('/', async (c) => {
+app.get('/', (c) => {
   return c.json(
     {
       stack: [],

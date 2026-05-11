@@ -10,6 +10,13 @@ export const eventSchemas = {
     error_code: z.string().nullable().optional(),
     message: z.string().nullable().optional(),
   }),
+  auth_password_signin_succeeded: z.object({
+    email_domain: z.string().nullable().optional(),
+  }),
+  auth_password_signin_failed: z.object({
+    email_domain: z.string().nullable().optional(),
+    message: z.string().nullable().optional(),
+  }),
   auth_social_sign_in_started: z.object({
     provider: z.enum(['google', 'apple']),
   }),
