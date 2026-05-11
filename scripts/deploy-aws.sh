@@ -83,6 +83,12 @@ bump_version_if_needed() {
         return
     fi
 
+    if [ "${SKIP_VERSION_BUMP:-}" = "1" ]; then
+        echo -e "${YELLOW}Skipping version bump (SKIP_VERSION_BUMP=1)${NC}"
+        VERSION_BUMPED=true
+        return
+    fi
+
     echo -e "${YELLOW}Auto-incrementing application version...${NC}"
     local log_file="/tmp/version-bump.log"
     if pnpm version:auto >"$log_file" 2>&1; then
@@ -125,13 +131,24 @@ build_web_app() {
         source "$env_file"
         set +a
         echo -e "${BLUE}Loaded environment from $env_file${NC}"
+        echo "  EXPO_PUBLIC_URL=${EXPO_PUBLIC_URL:-<unset>}"
         echo "  EXPO_PUBLIC_SUPABASE_URL=${EXPO_PUBLIC_SUPABASE_URL:-<unset>}"
         echo "  APP_ENV=$APP_ENV"
     else
         echo -e "${YELLOW}⚠️  Environment file not found at $env_file${NC}"
     fi
 
-    pnpm --filter scaffald-app web:build
+    # Clear Metro's transformer cache. It's keyed by source content + transformer
+    # config, NOT by EXPO_PUBLIC_* values — so without this, a back-to-back
+    # deploy of two envs (e.g. preview then production) will bake the first
+    # env's EXPO_PUBLIC_URL into the second env's bundle.
+    local metro_cache_dir="${TMPDIR:-/tmp}/metro-cache"
+    if [ -d "$metro_cache_dir" ]; then
+        echo -e "${BLUE}Clearing Metro transformer cache at $metro_cache_dir${NC}"
+        rm -rf "$metro_cache_dir"
+    fi
+
+    pnpm --filter scaffald-app exec expo export --platform web --clear
 
     echo "/* /index.html 200" > "$BUILD_DIR/_redirects"
     cat > "$BUILD_DIR/_headers" <<'EOF'

@@ -14,11 +14,7 @@ export default function Screen() {
   const screenBg = { flex: 1, backgroundColor: colors.bg[theme].default }
 
   if (isSmallScreen && !hasOnboarded) {
-    return (
-      <SafeAreaView style={screenBg} edges={['top', 'bottom', 'left', 'right']}>
-        <WelcomeScreen onOnboarded={() => setHasOnboarded(true)} />
-      </SafeAreaView>
-    )
+    return <WelcomeScreen onOnboarded={() => setHasOnboarded(true)} />
   }
 
   return (
