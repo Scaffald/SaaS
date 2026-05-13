@@ -34,7 +34,8 @@ function PinIcon({ type, size, color }: { type: MapPinCategory; size: number; co
   } as const
   if (type === 'worker') {
     return (
-      <svg {...common} strokeWidth={0}>
+      // biome-ignore lint/a11y/noSvgWithoutTitle: decorative icon, aria-hidden provided via spread
+      <svg {...common} aria-hidden strokeWidth={0}>
         <circle cx={12} cy={8} r={4} />
         <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
       </svg>
@@ -42,14 +43,16 @@ function PinIcon({ type, size, color }: { type: MapPinCategory; size: number; co
   }
   if (type === 'organization') {
     return (
-      <svg {...common} strokeWidth={0}>
+      // biome-ignore lint/a11y/noSvgWithoutTitle: decorative icon, aria-hidden provided via spread
+      <svg {...common} aria-hidden strokeWidth={0}>
         <path d="M4 21V5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v16H4Zm14 0V9h2a1 1 0 0 1 1 1v11h-3ZM8 8h2v2H8V8Zm0 4h2v2H8v-2Zm4-4h2v2h-2V8Zm0 4h2v2h-2v-2Z" />
       </svg>
     )
   }
   // job
   return (
-    <svg {...common} strokeWidth={0}>
+    // biome-ignore lint/a11y/noSvgWithoutTitle: decorative icon, aria-hidden provided via spread
+    <svg {...common} aria-hidden strokeWidth={0}>
       <path d="M9 3h6a2 2 0 0 1 2 2v2h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3V5a2 2 0 0 1 2-2Zm0 4h6V5H9v2Z" />
     </svg>
   )
@@ -67,6 +70,8 @@ function CapsulePin({ pin, theme, onPress, onHoverEnter, onHoverLeave }: MapPinP
 
   const containerStyle: CSSProperties = {
     height: CAPSULE_HEIGHT,
+    paddingTop: 0,
+    paddingBottom: 0,
     paddingLeft: CAPSULE_PADDING_X,
     paddingRight: CAPSULE_PADDING_X,
     borderRadius: CAPSULE_HEIGHT / 2,
@@ -88,7 +93,8 @@ function CapsulePin({ pin, theme, onPress, onHoverEnter, onHoverLeave }: MapPinP
   }
 
   return (
-    <div
+    <button
+      type="button"
       onClick={handleClick}
       onMouseEnter={() => onHoverEnter?.(pin.id)}
       onMouseLeave={() => onHoverLeave?.(pin.id)}
@@ -96,7 +102,7 @@ function CapsulePin({ pin, theme, onPress, onHoverEnter, onHoverLeave }: MapPinP
     >
       <PinIcon type={type} size={ICON_SIZE} color="rgba(255,255,255,0.95)" />
       {label && <span>{label}</span>}
-    </div>
+    </button>
   )
 }
 
@@ -113,6 +119,7 @@ function AvatarPin({ pin, theme, onPress, onHoverEnter, onHoverLeave }: MapPinPr
   const wrapStyle: CSSProperties = {
     width: AVATAR_SIZE,
     height: AVATAR_SIZE,
+    padding: 0,
     borderRadius: '50%',
     backgroundColor: color,
     border: `${AVATAR_BORDER_WIDTH}px solid #ffffff`,
@@ -126,7 +133,8 @@ function AvatarPin({ pin, theme, onPress, onHoverEnter, onHoverLeave }: MapPinPr
   }
 
   return (
-    <div
+    <button
+      type="button"
       onClick={handleClick}
       onMouseEnter={() => onHoverEnter?.(pin.id)}
       onMouseLeave={() => onHoverLeave?.(pin.id)}
@@ -142,7 +150,7 @@ function AvatarPin({ pin, theme, onPress, onHoverEnter, onHoverLeave }: MapPinPr
       ) : (
         <PinIcon type="worker" size={22} color="rgba(255,255,255,0.95)" />
       )}
-    </div>
+    </button>
   )
 }
 

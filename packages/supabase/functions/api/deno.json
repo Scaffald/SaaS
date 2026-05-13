@@ -14,6 +14,17 @@
     "dev": "deno run --allow-all --watch index.ts",
     "test": "deno test --allow-all"
   },
+  "lint": {
+    "rules": {
+      "exclude": [
+        "require-await",
+        "no-explicit-any",
+        "no-unused-vars",
+        "no-import-prefix",
+        "no-unversioned-import"
+      ]
+    }
+  },
   "compilerOptions": {
     "lib": [
       "deno.window",

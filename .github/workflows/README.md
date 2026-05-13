@@ -66,7 +66,7 @@ The `Test Suite` workflow verifies the Vitest suites and the Supabase Deno integ
 
 1. **Setup**
    - Checkout repository
-   - Install pnpm 10.20.0 and Node.js 22 with pnpm caching
+   - Install pnpm (version from packageManager field) and Node.js 22 with pnpm caching
    - Install dependencies via `pnpm install --frozen-lockfile`
 2. **Supabase**
    - Launches the local Supabase stack with `pnpm supa start`

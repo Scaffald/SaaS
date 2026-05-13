@@ -3,16 +3,16 @@
  * Manage webhook endpoints and deliveries
  */
 
-import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { authMiddleware } from '../middleware/auth.ts'
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { authMiddleware } from "../middleware/auth.ts";
 
-const app = new OpenAPIHono()
-app.use('*', authMiddleware)
+const app = new OpenAPIHono();
+app.use("*", authMiddleware);
 
 const _errorResponseSchema = z.object({
   error: z.string(),
   message: z.string().optional(),
-})
+});
 
 /**
  * GET /v1/webhooks
@@ -20,15 +20,15 @@ const _errorResponseSchema = z.object({
  */
 app.openapi(
   createRoute({
-    method: 'get',
-    path: '/',
-    tags: ['Webhooks'],
-    summary: 'List webhooks',
+    method: "get",
+    path: "/",
+    tags: ["Webhooks"],
+    summary: "List webhooks",
     responses: {
       200: {
-        description: 'Webhooks',
+        description: "Webhooks",
         content: {
-          'application/json': {
+          "application/json": {
             schema: z.object({
               data: z.array(z.any()),
             }),
@@ -39,22 +39,26 @@ app.openapi(
     security: [{ bearerAuth: [] }],
   }),
   async (c) => {
-    const supabase = c.get('supabase')
-    const user = c.get('user')
+    const supabase = c.get("supabase");
+    const user = c.get("user");
 
     if (!user) {
-      return c.json({ error: 'Unauthorized' }, 401)
+      return c.json({ error: "Unauthorized" }, 401);
     }
 
-    const { data, error } = await supabase.schema('core').from('webhooks').select('*').eq('user_id', user.id)
+    const { data, error } = await supabase.schema("core").from("webhooks")
+      .select("*").eq("user_id", user.id);
 
     if (error) {
-      return c.json({ error: 'Failed to fetch webhooks', message: error.message }, 500)
+      return c.json({
+        error: "Failed to fetch webhooks",
+        message: error.message,
+      }, 500);
     }
 
-    return c.json({ data: data || [] })
-  }
-)
+    return c.json({ data: data || [] });
+  },
+);
 
 /**
  * POST /v1/webhooks
@@ -62,14 +66,14 @@ app.openapi(
  */
 app.openapi(
   createRoute({
-    method: 'post',
-    path: '/',
-    tags: ['Webhooks'],
-    summary: 'Create webhook',
+    method: "post",
+    path: "/",
+    tags: ["Webhooks"],
+    summary: "Create webhook",
     request: {
       body: {
         content: {
-          'application/json': {
+          "application/json": {
             schema: z.object({
               url: z.string().url(),
               description: z.string().optional(),
@@ -84,9 +88,9 @@ app.openapi(
     },
     responses: {
       201: {
-        description: 'Webhook created',
+        description: "Webhook created",
         content: {
-          'application/json': {
+          "application/json": {
             schema: z.object({
               data: z.any(),
               message: z.string(),
@@ -98,20 +102,20 @@ app.openapi(
     security: [{ bearerAuth: [] }],
   }),
   async (c) => {
-    const supabase = c.get('supabase')
-    const user = c.get('user')
-    const body = c.req.valid('json')
+    const supabase = c.get("supabase");
+    const user = c.get("user");
+    const body = c.req.valid("json");
 
     if (!user) {
-      return c.json({ error: 'Unauthorized' }, 401)
+      return c.json({ error: "Unauthorized" }, 401);
     }
 
     // Generate webhook secret
-    const secret = crypto.randomUUID()
+    const secret = crypto.randomUUID();
 
     const { data, error } = await supabase
-      .schema('core')
-      .from('webhooks')
+      .schema("core")
+      .from("webhooks")
       .insert({
         user_id: user.id,
         url: body.url,
@@ -124,21 +128,25 @@ app.openapi(
         is_active: true,
       })
       .select()
-      .single()
+      .single();
 
     if (error) {
-      return c.json({ error: 'Failed to create webhook', message: error.message }, 500)
+      return c.json({
+        error: "Failed to create webhook",
+        message: error.message,
+      }, 500);
     }
 
     return c.json(
       {
         data: { ...data, secret },
-        message: 'Webhook created. Save the secret - it will not be shown again.',
+        message:
+          "Webhook created. Save the secret - it will not be shown again.",
       },
-      201
-    )
-  }
-)
+      201,
+    );
+  },
+);
 
 /**
  * DELETE /v1/webhooks/:id
@@ -146,18 +154,18 @@ app.openapi(
  */
 app.openapi(
   createRoute({
-    method: 'delete',
-    path: '/{id}',
-    tags: ['Webhooks'],
-    summary: 'Delete webhook',
+    method: "delete",
+    path: "/{id}",
+    tags: ["Webhooks"],
+    summary: "Delete webhook",
     request: {
       params: z.object({ id: z.string().uuid() }),
     },
     responses: {
       200: {
-        description: 'Webhook deleted',
+        description: "Webhook deleted",
         content: {
-          'application/json': {
+          "application/json": {
             schema: z.object({ success: z.boolean() }),
           },
         },
@@ -166,22 +174,26 @@ app.openapi(
     security: [{ bearerAuth: [] }],
   }),
   async (c) => {
-    const supabase = c.get('supabase')
-    const user = c.get('user')
-    const { id } = c.req.valid('param')
+    const supabase = c.get("supabase");
+    const user = c.get("user");
+    const { id } = c.req.valid("param");
 
     if (!user) {
-      return c.json({ error: 'Unauthorized' }, 401)
+      return c.json({ error: "Unauthorized" }, 401);
     }
 
-    const { error } = await supabase.schema('core').from('webhooks').delete().eq('id', id).eq('user_id', user.id)
+    const { error } = await supabase.schema("core").from("webhooks").delete()
+      .eq("id", id).eq("user_id", user.id);
 
     if (error) {
-      return c.json({ error: 'Failed to delete webhook', message: error.message }, 500)
+      return c.json({
+        error: "Failed to delete webhook",
+        message: error.message,
+      }, 500);
     }
 
-    return c.json({ success: true })
-  }
-)
+    return c.json({ success: true });
+  },
+);
 
-export default app
+export default app;

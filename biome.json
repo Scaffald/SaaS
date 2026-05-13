@@ -86,6 +86,17 @@
   "overrides": [
     {
       "includes": [
+        "packages/supabase/functions/api/**/*.ts",
+        "packages/supabase/functions/api/**/*.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": { "noExplicitAny": "off" }
+        }
+      }
+    },
+    {
+      "includes": [
         "**/packages/supabase/functions/**/*.ts",
         "**/packages/supabase/functions/**/*.tsx"
       ],
@@ -155,11 +166,34 @@
     },
     {
       "includes": [
+        "apps/web/**/*.ts",
+        "apps/web/**/*.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "noSvgWithoutTitle": "warn",
+            "useButtonType": "warn",
+            "noLabelWithoutControl": "warn",
+            "useSemanticElements": "warn",
+            "useValidAnchor": "warn"
+          },
+          "style": {
+            "useImportType": "warn"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
         "packages/ui/src/**/*.ts",
         "packages/ui/src/**/*.tsx"
       ],
       "linter": {
         "rules": {
+          "style": {
+            "useImportType": "warn"
+          },
           "suspicious": {
             "noExplicitAny": "warn",
             "noArrayIndexKey": "off"

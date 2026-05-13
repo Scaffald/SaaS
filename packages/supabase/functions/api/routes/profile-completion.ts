@@ -3,11 +3,11 @@
  * Tracks profile completion status, milestones, and nudges
  */
 
-import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { authMiddleware } from '../middleware/auth.ts'
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { authMiddleware } from "../middleware/auth.ts";
 
-const app = new OpenAPIHono()
-app.use('*', authMiddleware)
+const app = new OpenAPIHono();
+app.use("*", authMiddleware);
 
 // ============================================================================
 // Schemas
@@ -16,7 +16,7 @@ app.use('*', authMiddleware)
 const _errorResponseSchema = z.object({
   error: z.string(),
   message: z.string().optional(),
-}).openapi('ErrorResponse')
+}).openapi("ErrorResponse");
 
 // ============================================================================
 // Routes
@@ -27,15 +27,15 @@ const _errorResponseSchema = z.object({
  * Get profile completion status
  */
 const getStatusRoute = createRoute({
-  method: 'get',
-  path: '/status',
-  tags: ['Profile Completion'],
-  summary: 'Get completion status',
+  method: "get",
+  path: "/status",
+  tags: ["Profile Completion"],
+  summary: "Get completion status",
   responses: {
     200: {
-      description: 'Profile completion status',
+      description: "Profile completion status",
       content: {
-        'application/json': {
+        "application/json": {
           schema: z.object({
             completionPercentage: z.number(),
             milestoneBadges: z.array(z.object({
@@ -74,56 +74,79 @@ const getStatusRoute = createRoute({
     },
   },
   security: [{ bearerAuth: [] }],
-})
+});
 
 app.openapi(getStatusRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
+  const supabase = c.get("supabase");
+  const user = c.get("user");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   // Fetch profile completion data
   const { data: profile } = await supabase
-    .schema('core')
-    .from('user_profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
+    .schema("core")
+    .from("user_profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
 
   // Calculate completion (simplified version)
   const sections = [
-    { id: 'general', title: 'General Info', weight: 20 },
-    { id: 'skills', title: 'Skills', weight: 20 },
-    { id: 'experience', title: 'Experience', weight: 20 },
-    { id: 'certifications', title: 'Certifications', weight: 15 },
-    { id: 'preferences', title: 'Preferences', weight: 15 },
-    { id: 'education', title: 'Education', weight: 10 },
-  ]
+    { id: "general", title: "General Info", weight: 20 },
+    { id: "skills", title: "Skills", weight: 20 },
+    { id: "experience", title: "Experience", weight: 20 },
+    { id: "certifications", title: "Certifications", weight: 15 },
+    { id: "preferences", title: "Preferences", weight: 15 },
+    { id: "education", title: "Education", weight: 10 },
+  ];
 
-  let completedWeight = 0
-  const sectionProgress = sections.map(section => {
+  let completedWeight = 0;
+  const sectionProgress = sections.map((section) => {
     // Simplified: mark as complete if profile has basic data
-    const completed = profile && (section.id === 'general' ? !!profile.headline : false)
-    if (completed) completedWeight += section.weight
+    const completed = profile &&
+      (section.id === "general" ? !!profile.headline : false);
+    if (completed) completedWeight += section.weight;
     return {
       ...section,
       completed,
-      missingFields: completed ? [] : ['Required fields'],
-    }
-  })
+      missingFields: completed ? [] : ["Required fields"],
+    };
+  });
 
-  const completionPercentage = Math.round(completedWeight)
-  const incompleteSections = sectionProgress.filter(s => !s.completed).map(s => s.id)
+  const completionPercentage = Math.round(completedWeight);
+  const incompleteSections = sectionProgress.filter((s) => !s.completed).map(
+    (s) => s.id,
+  );
 
   return c.json({
     completionPercentage,
     milestoneBadges: [
-      { id: '25', threshold: 25, achieved: completionPercentage >= 25, reachedAt: null },
-      { id: '50', threshold: 50, achieved: completionPercentage >= 50, reachedAt: null },
-      { id: '75', threshold: 75, achieved: completionPercentage >= 75, reachedAt: null },
-      { id: '100', threshold: 100, achieved: completionPercentage >= 100, reachedAt: null },
+      {
+        id: "25",
+        threshold: 25,
+        achieved: completionPercentage >= 25,
+        reachedAt: null,
+      },
+      {
+        id: "50",
+        threshold: 50,
+        achieved: completionPercentage >= 50,
+        reachedAt: null,
+      },
+      {
+        id: "75",
+        threshold: 75,
+        achieved: completionPercentage >= 75,
+        reachedAt: null,
+      },
+      {
+        id: "100",
+        threshold: 100,
+        achieved: completionPercentage >= 100,
+        reachedAt: null,
+      },
     ],
     sectionProgress,
     incompleteSections,
@@ -137,25 +160,27 @@ app.openapi(getStatusRoute, async (c) => {
     summary: {
       completedWeight,
       remainingWeight: 100 - completedWeight,
-      nextMilestone: completionPercentage >= 100 ? null : Math.ceil(completionPercentage / 25) * 25,
+      nextMilestone: completionPercentage >= 100
+        ? null
+        : Math.ceil(completionPercentage / 25) * 25,
     },
     updatedAt: new Date().toISOString(),
-  })
-})
+  });
+});
 
 /**
  * POST /v1/profiles/completion/nudges/dismiss
  * Dismiss a profile completion nudge
  */
 const dismissNudgeRoute = createRoute({
-  method: 'post',
-  path: '/nudges/dismiss',
-  tags: ['Profile Completion'],
-  summary: 'Dismiss nudge',
+  method: "post",
+  path: "/nudges/dismiss",
+  tags: ["Profile Completion"],
+  summary: "Dismiss nudge",
   request: {
     body: {
       content: {
-        'application/json': {
+        "application/json": {
           schema: z.object({
             nudgeId: z.string(),
             reason: z.string().optional(),
@@ -166,9 +191,9 @@ const dismissNudgeRoute = createRoute({
   },
   responses: {
     200: {
-      description: 'Nudge dismissed',
+      description: "Nudge dismissed",
       content: {
-        'application/json': {
+        "application/json": {
           schema: z.object({
             success: z.boolean(),
             nudgeHistory: z.object({
@@ -184,32 +209,35 @@ const dismissNudgeRoute = createRoute({
     },
   },
   security: [{ bearerAuth: [] }],
-})
+});
 
 app.openapi(dismissNudgeRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
-  const { nudgeId, reason } = c.req.valid('json')
+  const supabase = c.get("supabase");
+  const user = c.get("user");
+  const { nudgeId, reason } = c.req.valid("json");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
-  const dismissedAt = new Date().toISOString()
+  const dismissedAt = new Date().toISOString();
 
   // Store dismissal in user metadata or separate table
   const { error } = await supabase
-    .schema('core')
-    .from('profile_completion_nudges')
+    .schema("core")
+    .from("profile_completion_nudges")
     .upsert({
       user_id: user.id,
       nudge_id: nudgeId,
       dismissed_at: dismissedAt,
       reason,
-    })
+    });
 
   if (error) {
-    return c.json({ error: 'Failed to dismiss nudge', message: error.message }, 500)
+    return c.json(
+      { error: "Failed to dismiss nudge", message: error.message },
+      500,
+    );
   }
 
   return c.json({
@@ -223,23 +251,23 @@ app.openapi(dismissNudgeRoute, async (c) => {
       },
       lastDismissedAt: dismissedAt,
     },
-  })
-})
+  });
+});
 
 /**
  * GET /v1/profiles/completion/benefits
  * Get personalized benefits messaging
  */
 const getBenefitsRoute = createRoute({
-  method: 'get',
-  path: '/benefits',
-  tags: ['Profile Completion'],
-  summary: 'Get personalized benefits',
+  method: "get",
+  path: "/benefits",
+  tags: ["Profile Completion"],
+  summary: "Get personalized benefits",
   responses: {
     200: {
-      description: 'Personalized benefits',
+      description: "Personalized benefits",
       content: {
-        'application/json': {
+        "application/json": {
           schema: z.object({
             benefits: z.array(z.object({
               id: z.string(),
@@ -259,31 +287,31 @@ const getBenefitsRoute = createRoute({
     },
   },
   security: [{ bearerAuth: [] }],
-})
+});
 
 app.openapi(getBenefitsRoute, async (c) => {
-  const user = c.get('user')
+  const user = c.get("user");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   return c.json({
     benefits: [
       {
-        id: 'skills-benefit',
-        title: 'Stand Out to Employers',
-        description: 'Add skills to increase profile visibility',
-        relatedSection: 'skills',
-        userType: 'worker',
+        id: "skills-benefit",
+        title: "Stand Out to Employers",
+        description: "Add skills to increase profile visibility",
+        relatedSection: "skills",
+        userType: "worker",
         opportunityCount: 0,
       },
     ],
     completionPercentage: 50,
-    incompleteSections: ['skills', 'certifications'],
-    userTypes: ['worker'],
+    incompleteSections: ["skills", "certifications"],
+    userTypes: ["worker"],
     updatedAt: new Date().toISOString(),
-  })
-})
+  });
+});
 
-export default app
+export default app;

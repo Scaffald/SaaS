@@ -16,8 +16,7 @@ on:
         options: [dev, preview, production]
 
 env:
-  NODE_VERSION: "20"
-  PNPM_VERSION: "10.20.0"
+  NODE_VERSION: "22"
 
 # Prevent concurrent deployments to the same environment
 concurrency:
@@ -43,8 +42,6 @@ jobs:
       # ===== SETUP =====
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v6
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v6
@@ -81,7 +78,6 @@ jobs:
       # ===== BUILD WORKSPACE PACKAGES =====
       - name: 🏗️ Build workspace packages
         run: |
-          pnpm nx run @scaffald/ui:build
           pnpm nx run scf-core:build || true
           pnpm nx run scf-schemas:build
 

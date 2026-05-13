@@ -4,42 +4,43 @@
  * Local copy avoids cross-package import map resolution in the edge runtime.
  */
 
-import { z } from 'zod'
+import { z } from "zod";
 
 // =============================================================================
 // PROFILE WIZARD SCHEMAS & CONSTANTS
 // =============================================================================
 
 export const PROFILE_WIZARD_STEPS = [
-  'general',
-  'skills',
-  'experience',
-  'certifications',
-  'preferences',
-  'education',
-] as const
+  "general",
+  "skills",
+  "experience",
+  "certifications",
+  "preferences",
+  "education",
+] as const;
 
-export type ProfileWizardStepId = (typeof PROFILE_WIZARD_STEPS)[number]
+export type ProfileWizardStepId = (typeof PROFILE_WIZARD_STEPS)[number];
 
 export const PROFILE_WIZARD_OPTIONAL_STEPS: ProfileWizardStepId[] = [
-  'certifications',
-  'education',
-]
+  "certifications",
+  "education",
+];
 
 export const PROFILE_WIZARD_REQUIRED_STEPS = PROFILE_WIZARD_STEPS.filter(
-  (step) => !PROFILE_WIZARD_OPTIONAL_STEPS.includes(step)
-) as ProfileWizardStepId[]
+  (step) => !PROFILE_WIZARD_OPTIONAL_STEPS.includes(step),
+) as ProfileWizardStepId[];
 
-export const PROFILE_WIZARD_STEP_WEIGHTS: Record<ProfileWizardStepId, number> = {
-  general: 20,
-  skills: 20,
-  experience: 20,
-  certifications: 10,
-  preferences: 15,
-  education: 15,
-}
+export const PROFILE_WIZARD_STEP_WEIGHTS: Record<ProfileWizardStepId, number> =
+  {
+    general: 20,
+    skills: 20,
+    experience: 20,
+    certifications: 10,
+    preferences: 15,
+    education: 15,
+  };
 
-export const profileWizardStepSchema = z.enum(PROFILE_WIZARD_STEPS)
+export const profileWizardStepSchema = z.enum(PROFILE_WIZARD_STEPS);
 
 const generalStepSchema = z
   .object({
@@ -48,7 +49,7 @@ const generalStepSchema = z
     headline: z.string().optional(),
     bio: z.string().nullable().optional(),
   })
-  .strip()
+  .strip();
 
 const skillsStepSchema = z
   .object({
@@ -57,13 +58,13 @@ const skillsStepSchema = z
         z.object({
           id: z.string().optional(),
           name: z.string(),
-          taxonomy: z.enum(['csi', 'onet']).optional(),
+          taxonomy: z.enum(["csi", "onet"]).optional(),
           proficiency: z.number().int().min(1).max(5).optional(),
-        })
+        }),
       )
       .optional(),
   })
-  .strip()
+  .strip();
 
 const experienceStepSchema = z
   .object({
@@ -74,7 +75,7 @@ const experienceStepSchema = z
     isCurrent: z.boolean().optional(),
     summary: z.string().nullable().optional(),
   })
-  .strip()
+  .strip();
 
 const certificationEntrySchema = z
   .object({
@@ -84,22 +85,23 @@ const certificationEntrySchema = z
     issuedOn: z.string().nullable().optional(),
     expiresOn: z.string().nullable().optional(),
   })
-  .strip()
+  .strip();
 
 const certificationsStepSchema = z
   .object({
     certifications: z.array(certificationEntrySchema).optional(),
   })
-  .strip()
+  .strip();
 
 const preferencesStepSchema = z
   .object({
     locationPreference: z.string().nullable().optional(),
     hourlyRate: z.string().nullable().optional(),
     availability: z.string().nullable().optional(),
-    remotePreference: z.enum(['remote', 'hybrid', 'onsite']).nullable().optional(),
+    remotePreference: z.enum(["remote", "hybrid", "onsite"]).nullable()
+      .optional(),
   })
-  .strip()
+  .strip();
 
 const educationStepSchema = z
   .object({
@@ -109,7 +111,7 @@ const educationStepSchema = z
     endDate: z.string().nullable().optional(),
     isCurrent: z.boolean().optional(),
   })
-  .strip()
+  .strip();
 
 const profileWizardStepSchemas = {
   general: generalStepSchema,
@@ -118,11 +120,13 @@ const profileWizardStepSchemas = {
   certifications: certificationsStepSchema,
   preferences: preferencesStepSchema,
   education: educationStepSchema,
-} as const
+} as const;
 
 export type ProfileWizardStepData = {
-  [Step in ProfileWizardStepId]?: z.infer<(typeof profileWizardStepSchemas)[Step]>
-}
+  [Step in ProfileWizardStepId]?: z.infer<
+    (typeof profileWizardStepSchemas)[Step]
+  >;
+};
 
 const profileWizardStepDataSchema = z
   .object({
@@ -134,40 +138,40 @@ const profileWizardStepDataSchema = z
     education: educationStepSchema.optional(),
   })
   .partial()
-  .strip()
+  .strip();
 
-export const profileWizardSaveStepInputSchema = z.discriminatedUnion('step', [
+export const profileWizardSaveStepInputSchema = z.discriminatedUnion("step", [
   z.object({
-    step: z.literal('general'),
+    step: z.literal("general"),
     data: generalStepSchema,
     skip: z.boolean().optional(),
   }),
   z.object({
-    step: z.literal('skills'),
+    step: z.literal("skills"),
     data: skillsStepSchema,
     skip: z.boolean().optional(),
   }),
   z.object({
-    step: z.literal('experience'),
+    step: z.literal("experience"),
     data: experienceStepSchema,
     skip: z.boolean().optional(),
   }),
   z.object({
-    step: z.literal('certifications'),
+    step: z.literal("certifications"),
     data: certificationsStepSchema,
     skip: z.boolean().optional(),
   }),
   z.object({
-    step: z.literal('preferences'),
+    step: z.literal("preferences"),
     data: preferencesStepSchema,
     skip: z.boolean().optional(),
   }),
   z.object({
-    step: z.literal('education'),
+    step: z.literal("education"),
     data: educationStepSchema,
     skip: z.boolean().optional(),
   }),
-])
+]);
 
 export const profileWizardProgressSchema = z
   .object({
@@ -179,10 +183,12 @@ export const profileWizardProgressSchema = z
     completedAt: z.string().datetime().nullable().optional(),
     stepData: profileWizardStepDataSchema.default({}),
   })
-  .strip()
+  .strip();
 
-export type ProfileWizardProgress = z.infer<typeof profileWizardProgressSchema>
-export type ProfileWizardSaveStepInput = z.infer<typeof profileWizardSaveStepInputSchema>
+export type ProfileWizardProgress = z.infer<typeof profileWizardProgressSchema>;
+export type ProfileWizardSaveStepInput = z.infer<
+  typeof profileWizardSaveStepInputSchema
+>;
 
 export const profileWizardDefaultProgress: ProfileWizardProgress = {
   currentStep: PROFILE_WIZARD_STEPS[0],
@@ -192,4 +198,4 @@ export const profileWizardDefaultProgress: ProfileWizardProgress = {
   requiredSteps: PROFILE_WIZARD_REQUIRED_STEPS,
   completedAt: null,
   stepData: {},
-}
+};

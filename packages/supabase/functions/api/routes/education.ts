@@ -3,12 +3,12 @@
  * Manages user education entries
  */
 
-import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { authMiddleware } from '../middleware/auth.ts'
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { authMiddleware } from "../middleware/auth.ts";
 
-const app = new OpenAPIHono()
+const app = new OpenAPIHono();
 
-app.use('*', authMiddleware)
+app.use("*", authMiddleware);
 
 // ============================================================================
 // Schemas
@@ -19,7 +19,7 @@ const errorResponseSchema = z
     error: z.string(),
     message: z.string().optional(),
   })
-  .openapi('ErrorResponse')
+  .openapi("ErrorResponse");
 
 const educationEntrySchema = z
   .object({
@@ -41,35 +41,35 @@ const educationEntrySchema = z
     created_at: z.string().optional(),
     updated_at: z.string().optional(),
   })
-  .openapi('EducationEntry')
+  .openapi("EducationEntry");
 
 const educationLevelSchema = z
   .object({
     education_level: z.string().nullable(),
   })
-  .openapi('EducationLevel')
+  .openapi("EducationLevel");
 
 const saveEducationSchema = z.object({
   education_level: z.string().nullable().optional(),
   education_entries: z.array(educationEntrySchema),
-})
+});
 
 const saveEducationResponseSchema = z
   .object({
     success: z.boolean(),
     education_entries: z.array(educationEntrySchema),
   })
-  .openapi('SaveEducationResponse')
+  .openapi("SaveEducationResponse");
 
 const deleteEducationSchema = z.object({
   educationId: z.string().uuid(),
-})
+});
 
 const deleteEducationResponseSchema = z
   .object({
     success: z.boolean(),
   })
-  .openapi('DeleteEducationResponse')
+  .openapi("DeleteEducationResponse");
 
 // ============================================================================
 // Routes
@@ -80,125 +80,131 @@ const deleteEducationResponseSchema = z
  * Get education entries
  */
 const getEducationRoute = createRoute({
-  method: 'get',
-  path: '/',
-  tags: ['Education'],
-  summary: 'Get education',
-  description: 'Get education entries for the authenticated user',
+  method: "get",
+  path: "/",
+  tags: ["Education"],
+  summary: "Get education",
+  description: "Get education entries for the authenticated user",
   responses: {
     200: {
-      description: 'Education entries',
+      description: "Education entries",
       content: {
-        'application/json': {
+        "application/json": {
           schema: z.array(educationEntrySchema),
         },
       },
     },
     401: {
-      description: 'Unauthorized',
+      description: "Unauthorized",
       content: {
-        'application/json': {
+        "application/json": {
           schema: errorResponseSchema,
         },
       },
     },
   },
   security: [{ bearerAuth: [] }],
-})
+});
 
 app.openapi(getEducationRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
+  const supabase = c.get("supabase");
+  const user = c.get("user");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   const { data: entries, error } = await supabase
-    .schema('core')
-    .from('user_education')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('start_date', { ascending: false })
+    .schema("core")
+    .from("user_education")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("start_date", { ascending: false });
 
   if (error) {
-    console.error('Error fetching education:', error)
-    return c.json({ error: 'Failed to fetch education', message: error.message }, 500)
+    console.error("Error fetching education:", error);
+    return c.json({
+      error: "Failed to fetch education",
+      message: error.message,
+    }, 500);
   }
 
-  return c.json(entries || [])
-})
+  return c.json(entries || []);
+});
 
 /**
  * GET /v1/profiles/education/level
  * Get education level
  */
 const getEducationLevelRoute = createRoute({
-  method: 'get',
-  path: '/level',
-  tags: ['Education'],
-  summary: 'Get education level',
-  description: 'Get education level from user profile',
+  method: "get",
+  path: "/level",
+  tags: ["Education"],
+  summary: "Get education level",
+  description: "Get education level from user profile",
   responses: {
     200: {
-      description: 'Education level',
+      description: "Education level",
       content: {
-        'application/json': {
+        "application/json": {
           schema: educationLevelSchema,
         },
       },
     },
     401: {
-      description: 'Unauthorized',
+      description: "Unauthorized",
       content: {
-        'application/json': {
+        "application/json": {
           schema: errorResponseSchema,
         },
       },
     },
   },
   security: [{ bearerAuth: [] }],
-})
+});
 
 app.openapi(getEducationLevelRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
+  const supabase = c.get("supabase");
+  const user = c.get("user");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   const { data: profile, error } = await supabase
-    .schema('core')
-    .from('user_profiles')
-    .select('education_level')
-    .eq('id', user.id)
-    .single()
+    .schema("core")
+    .from("user_profiles")
+    .select("education_level")
+    .eq("id", user.id)
+    .single();
 
   if (error) {
-    console.error('Error fetching education level:', error)
-    return c.json({ error: 'Failed to fetch education level', message: error.message }, 500)
+    console.error("Error fetching education level:", error);
+    return c.json({
+      error: "Failed to fetch education level",
+      message: error.message,
+    }, 500);
   }
 
   return c.json({
     education_level: profile?.education_level || null,
-  })
-})
+  });
+});
 
 /**
  * POST /v1/profiles/education
  * Save education entries
  */
 const saveEducationRoute = createRoute({
-  method: 'post',
-  path: '/',
-  tags: ['Education'],
-  summary: 'Save education',
-  description: 'Create or update education entries in bulk',
+  method: "post",
+  path: "/",
+  tags: ["Education"],
+  summary: "Save education",
+  description: "Create or update education entries in bulk",
   request: {
     body: {
       content: {
-        'application/json': {
+        "application/json": {
           schema: saveEducationSchema,
         },
       },
@@ -206,41 +212,41 @@ const saveEducationRoute = createRoute({
   },
   responses: {
     200: {
-      description: 'Education saved',
+      description: "Education saved",
       content: {
-        'application/json': {
+        "application/json": {
           schema: saveEducationResponseSchema,
         },
       },
     },
     401: {
-      description: 'Unauthorized',
+      description: "Unauthorized",
       content: {
-        'application/json': {
+        "application/json": {
           schema: errorResponseSchema,
         },
       },
     },
   },
   security: [{ bearerAuth: [] }],
-})
+});
 
 app.openapi(saveEducationRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
-  const { education_level, education_entries } = c.req.valid('json')
+  const supabase = c.get("supabase");
+  const user = c.get("user");
+  const { education_level, education_entries } = c.req.valid("json");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   // Update education level if provided
   if (education_level !== undefined) {
     await supabase
-      .schema('core')
-      .from('user_profiles')
+      .schema("core")
+      .from("user_profiles")
       .update({ education_level, updated_at: new Date().toISOString() })
-      .eq('id', user.id)
+      .eq("id", user.id);
   }
 
   // Upsert education entries
@@ -248,39 +254,42 @@ app.openapi(saveEducationRoute, async (c) => {
     ...entry,
     user_id: user.id,
     updated_at: new Date().toISOString(),
-  }))
+  }));
 
   const { data: savedEntries, error } = await supabase
-    .schema('core')
-    .from('user_education')
-    .upsert(entriesToUpsert, { onConflict: 'id' })
-    .select()
+    .schema("core")
+    .from("user_education")
+    .upsert(entriesToUpsert, { onConflict: "id" })
+    .select();
 
   if (error) {
-    console.error('Error saving education:', error)
-    return c.json({ error: 'Failed to save education', message: error.message }, 500)
+    console.error("Error saving education:", error);
+    return c.json(
+      { error: "Failed to save education", message: error.message },
+      500,
+    );
   }
 
   return c.json({
     success: true,
     education_entries: savedEntries || [],
-  })
-})
+  });
+});
 
 /**
  * POST /v1/profiles/education/delete
  * Delete education entry
  */
 const deleteEducationRoute = createRoute({
-  method: 'post',
-  path: '/delete',
-  tags: ['Education'],
-  summary: 'Delete education',
-  description: 'Delete a single education entry',
+  method: "post",
+  path: "/delete",
+  tags: ["Education"],
+  summary: "Delete education",
+  description: "Delete a single education entry",
   request: {
     body: {
       content: {
-        'application/json': {
+        "application/json": {
           schema: deleteEducationSchema,
         },
       },
@@ -288,47 +297,50 @@ const deleteEducationRoute = createRoute({
   },
   responses: {
     200: {
-      description: 'Education deleted',
+      description: "Education deleted",
       content: {
-        'application/json': {
+        "application/json": {
           schema: deleteEducationResponseSchema,
         },
       },
     },
     401: {
-      description: 'Unauthorized',
+      description: "Unauthorized",
       content: {
-        'application/json': {
+        "application/json": {
           schema: errorResponseSchema,
         },
       },
     },
   },
   security: [{ bearerAuth: [] }],
-})
+});
 
 app.openapi(deleteEducationRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
-  const { educationId } = c.req.valid('json')
+  const supabase = c.get("supabase");
+  const user = c.get("user");
+  const { educationId } = c.req.valid("json");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   const { error } = await supabase
-    .schema('core')
-    .from('user_education')
+    .schema("core")
+    .from("user_education")
     .delete()
-    .eq('id', educationId)
-    .eq('user_id', user.id)
+    .eq("id", educationId)
+    .eq("user_id", user.id);
 
   if (error) {
-    console.error('Error deleting education:', error)
-    return c.json({ error: 'Failed to delete education', message: error.message }, 500)
+    console.error("Error deleting education:", error);
+    return c.json({
+      error: "Failed to delete education",
+      message: error.message,
+    }, 500);
   }
 
-  return c.json({ success: true })
-})
+  return c.json({ success: true });
+});
 
-export default app
+export default app;

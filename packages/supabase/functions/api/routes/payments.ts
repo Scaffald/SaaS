@@ -36,8 +36,12 @@ async function loadStripeClient(supabaseAdmin: any): Promise<Stripe> {
     .eq("settings_name", "stripe")
     .maybeSingle();
 
-  if (error) throw new Error(`Failed to load Stripe settings: ${error.message}`);
-  if (!settings?.api_key_secret_id) throw new Error("Stripe API key is not configured.");
+  if (error) {
+    throw new Error(`Failed to load Stripe settings: ${error.message}`);
+  }
+  if (!settings?.api_key_secret_id) {
+    throw new Error("Stripe API key is not configured.");
+  }
 
   const { data: secretValue, error: secretError } = await supabaseAdmin
     .schema("core")
@@ -45,7 +49,9 @@ async function loadStripeClient(supabaseAdmin: any): Promise<Stripe> {
 
   if (secretError || !secretValue) {
     throw new Error(
-      secretError ? `Failed to load Stripe secret: ${secretError.message}` : "Stripe API secret unavailable."
+      secretError
+        ? `Failed to load Stripe secret: ${secretError.message}`
+        : "Stripe API secret unavailable.",
     );
   }
 
@@ -57,7 +63,11 @@ async function loadStripeClient(supabaseAdmin: any): Promise<Stripe> {
 }
 
 // biome-ignore lint/suspicious/noExplicitAny: Supabase client typed as any
-async function getOrCreateStripeCustomer(supabaseAdmin: any, stripe: Stripe, organizationId: string): Promise<string> {
+async function getOrCreateStripeCustomer(
+  supabaseAdmin: any,
+  stripe: Stripe,
+  organizationId: string,
+): Promise<string> {
   const { data: org, error } = await supabaseAdmin
     .schema("core")
     .from("organizations")
@@ -65,7 +75,9 @@ async function getOrCreateStripeCustomer(supabaseAdmin: any, stripe: Stripe, org
     .eq("id", organizationId)
     .maybeSingle();
 
-  if (error || !org) throw new Error(error?.message ?? "Organization not found");
+  if (error || !org) {
+    throw new Error(error?.message ?? "Organization not found");
+  }
   if (org.stripe_customer_id) return org.stripe_customer_id;
 
   const customer = await stripe.customers.create({
@@ -103,36 +115,70 @@ paymentsRouter.get("/analytics", async (c) => {
     .select("*")
     .gte("created_at", startDate.toISOString());
 
-  if (error) return c.json({ error: `Failed to load analytics: ${error.message}` }, 500);
+  if (error) {
+    return c.json({ error: `Failed to load analytics: ${error.message}` }, 500);
+  }
 
   const all = transactions ?? [];
-  const totalRevenue = all.filter((t: Record<string, unknown>) => t.status === "succeeded")
-    .reduce((s: number, t: Record<string, unknown>) => s + (Number(t.amount_cents) ?? 0), 0);
+  const totalRevenue = all.filter((t: Record<string, unknown>) =>
+    t.status === "succeeded"
+  )
+    .reduce(
+      (s: number, t: Record<string, unknown>) =>
+        s + (Number(t.amount_cents) ?? 0),
+      0,
+    );
   const totalTransactions = all.length;
-  const succeededTransactions = all.filter((t: Record<string, unknown>) => t.status === "succeeded").length;
-  const failedTransactions = all.filter((t: Record<string, unknown>) => t.status === "failed").length;
-  const pendingTransactions = all.filter((t: Record<string, unknown>) => t.status === "pending").length;
-  const successRate = totalTransactions > 0 ? (succeededTransactions / totalTransactions) * 100 : 0;
+  const succeededTransactions = all.filter((t: Record<string, unknown>) =>
+    t.status === "succeeded"
+  ).length;
+  const failedTransactions =
+    all.filter((t: Record<string, unknown>) => t.status === "failed").length;
+  const pendingTransactions =
+    all.filter((t: Record<string, unknown>) => t.status === "pending").length;
+  const successRate = totalTransactions > 0
+    ? (succeededTransactions / totalTransactions) * 100
+    : 0;
 
-  const byType = all.reduce((acc: Record<string, { count: number; revenue: number; succeeded: number; failed: number }>, t: Record<string, unknown>) => {
-    const type = (t.transaction_type as string) ?? "unknown";
-    if (!acc[type]) acc[type] = { count: 0, revenue: 0, succeeded: 0, failed: 0 };
-    acc[type].count += 1;
-    if (t.status === "succeeded") { acc[type].revenue += Number(t.amount_cents) ?? 0; acc[type].succeeded += 1; }
-    if (t.status === "failed") acc[type].failed += 1;
-    return acc;
-  }, {});
+  const byType = all.reduce(
+    (
+      acc: Record<
+        string,
+        { count: number; revenue: number; succeeded: number; failed: number }
+      >,
+      t: Record<string, unknown>,
+    ) => {
+      const type = (t.transaction_type as string) ?? "unknown";
+      if (!acc[type]) {
+        acc[type] = { count: 0, revenue: 0, succeeded: 0, failed: 0 };
+      }
+      acc[type].count += 1;
+      if (t.status === "succeeded") {
+        acc[type].revenue += Number(t.amount_cents) ?? 0;
+        acc[type].succeeded += 1;
+      }
+      if (t.status === "failed") {
+        acc[type].failed += 1;
+      }
+      return acc;
+    },
+    {},
+  );
 
-  const byStatus = all.reduce((acc: Record<string, number>, t: Record<string, unknown>) => {
-    const status = (t.status as string) ?? "unknown";
-    acc[status] = (acc[status] ?? 0) + 1;
-    return acc;
-  }, {});
+  const byStatus = all.reduce(
+    (acc: Record<string, number>, t: Record<string, unknown>) => {
+      const status = (t.status as string) ?? "unknown";
+      acc[status] = (acc[status] ?? 0) + 1;
+      return acc;
+    },
+    {},
+  );
 
   const dailyRevenue = all
     .filter((t: Record<string, unknown>) => t.status === "succeeded")
     .reduce((acc: Record<string, number>, t: Record<string, unknown>) => {
-      const date = (new Date(t.created_at as string).toISOString().split("T")[0]) ?? "";
+      const date =
+        (new Date(t.created_at as string).toISOString().split("T")[0]) ?? "";
       acc[date] = (acc[date] ?? 0) + (Number(t.amount_cents) ?? 0);
       return acc;
     }, {});
@@ -155,7 +201,14 @@ paymentsRouter.get("/analytics", async (c) => {
     );
 
   return c.json({
-    kpis: { totalRevenue, totalTransactions, succeededTransactions, failedTransactions, pendingTransactions, successRate: Math.round(successRate * 100) / 100 },
+    kpis: {
+      totalRevenue,
+      totalTransactions,
+      succeededTransactions,
+      failedTransactions,
+      pendingTransactions,
+      successRate: Math.round(successRate * 100) / 100,
+    },
     breakdowns: { byType, byStatus },
     timeSeries: { dailyRevenue },
     failedQueue,
@@ -186,7 +239,10 @@ paymentsRouter.get("/transactions", async (c) => {
   let query = supabaseAdmin
     .schema("core")
     .from("payment_transactions")
-    .select("*,organization:organizations(id,name),user:profiles(id,display_name)", { count: "exact" })
+    .select(
+      "*,organization:organizations(id,name),user:profiles(id,display_name)",
+      { count: "exact" },
+    )
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
@@ -197,7 +253,12 @@ paymentsRouter.get("/transactions", async (c) => {
   if (endDate) query = query.lte("created_at", endDate);
 
   const { data, error, count } = await query;
-  if (error) return c.json({ error: `Failed to load transactions: ${error.message}` }, 500);
+  if (error) {
+    return c.json(
+      { error: `Failed to load transactions: ${error.message}` },
+      500,
+    );
+  }
 
   // biome-ignore lint/suspicious/noExplicitAny: Supabase query result row
   const items = (data ?? []).map((row: any) => ({
@@ -241,7 +302,9 @@ paymentsRouter.get("/transactions/export", async (c) => {
   let query = supabaseAdmin
     .schema("core")
     .from("payment_transactions")
-    .select("*,organization:organizations(id,name),user:profiles(id,display_name)")
+    .select(
+      "*,organization:organizations(id,name),user:profiles(id,display_name)",
+    )
     .order("created_at", { ascending: false });
 
   if (organizationId) query = query.eq("organization_id", organizationId);
@@ -251,7 +314,12 @@ paymentsRouter.get("/transactions/export", async (c) => {
   if (endDate) query = query.lte("created_at", endDate);
 
   const { data, error } = await query;
-  if (error) return c.json({ error: `Failed to export transactions: ${error.message}` }, 500);
+  if (error) {
+    return c.json(
+      { error: `Failed to export transactions: ${error.message}` },
+      500,
+    );
+  }
 
   // biome-ignore lint/suspicious/noExplicitAny: Supabase query result row
   const transactions = (data ?? []).map((row: any) => ({
@@ -271,16 +339,48 @@ paymentsRouter.get("/transactions/export", async (c) => {
   }));
 
   if (format === "json") {
-    return c.json({ format: "json", data: JSON.stringify(transactions, null, 2), contentType: "application/json" });
+    return c.json({
+      format: "json",
+      data: JSON.stringify(transactions, null, 2),
+      contentType: "application/json",
+    });
   }
 
   if (transactions.length === 0) {
     return c.json({ format: "csv", data: "", contentType: "text/csv" });
   }
 
-  const headers = ["ID", "Organization", "User", "Amount (cents)", "Currency", "Type", "Status", "Failure Reason", "Stripe Payment Intent ID", "Created At", "Succeeded At", "Failed At", "Refunded At"];
+  const headers = [
+    "ID",
+    "Organization",
+    "User",
+    "Amount (cents)",
+    "Currency",
+    "Type",
+    "Status",
+    "Failure Reason",
+    "Stripe Payment Intent ID",
+    "Created At",
+    "Succeeded At",
+    "Failed At",
+    "Refunded At",
+  ];
   const csvRows = transactions.map((t: Record<string, unknown>) =>
-    [t.id, t.organizationName, t.userName, String(t.amountCents), t.currency, t.transactionType, t.status, t.failureReason, t.stripePaymentIntentId, t.createdAt, t.succeededAt, t.failedAt, t.refundedAt]
+    [
+      t.id,
+      t.organizationName,
+      t.userName,
+      String(t.amountCents),
+      t.currency,
+      t.transactionType,
+      t.status,
+      t.failureReason,
+      t.stripePaymentIntentId,
+      t.createdAt,
+      t.succeededAt,
+      t.failedAt,
+      t.refundedAt,
+    ]
       .map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`)
       .join(",")
   );
@@ -303,7 +403,9 @@ paymentsRouter.get("/payment-methods", async (c) => {
   if (!user?.id) return c.json({ error: "Unauthorized" }, 401);
 
   const organizationId = c.req.query("organizationId");
-  if (!organizationId) return c.json({ error: "organizationId is required" }, 400);
+  if (!organizationId) {
+    return c.json({ error: "organizationId is required" }, 400);
+  }
 
   const supabaseAdmin = getServiceClient();
   const { data: method, error } = await supabaseAdmin
@@ -314,7 +416,12 @@ paymentsRouter.get("/payment-methods", async (c) => {
     .is("deleted_at", null)
     .maybeSingle();
 
-  if (error) return c.json({ error: `Failed to load payment method: ${error.message}` }, 500);
+  if (error) {
+    return c.json(
+      { error: `Failed to load payment method: ${error.message}` },
+      500,
+    );
+  }
   if (!method) return c.json(null);
 
   return c.json({
@@ -349,7 +456,11 @@ paymentsRouter.delete("/payment-methods/:id", async (c) => {
     .is("deleted_at", null)
     .maybeSingle();
 
-  if (fetchError) return c.json({ error: `Failed to load payment method: ${fetchError.message}` }, 500);
+  if (fetchError) {
+    return c.json({
+      error: `Failed to load payment method: ${fetchError.message}`,
+    }, 500);
+  }
   if (!method) return c.json({ error: "Payment method not found" }, 404);
 
   // Detach from Stripe (best effort)
@@ -366,7 +477,11 @@ paymentsRouter.delete("/payment-methods/:id", async (c) => {
     .update({ deleted_at: new Date().toISOString() })
     .eq("id", methodId);
 
-  if (deleteError) return c.json({ error: `Failed to delete payment method: ${deleteError.message}` }, 500);
+  if (deleteError) {
+    return c.json({
+      error: `Failed to delete payment method: ${deleteError.message}`,
+    }, 500);
+  }
 
   await supabaseAdmin
     .schema("core")
@@ -388,13 +503,19 @@ paymentsRouter.post("/setup-intent", async (c) => {
 
   const body = await c.req.json();
   const { organizationId } = body;
-  if (!organizationId) return c.json({ error: "organizationId is required" }, 400);
+  if (!organizationId) {
+    return c.json({ error: "organizationId is required" }, 400);
+  }
 
   const supabaseAdmin = getServiceClient();
 
   try {
     const stripe = await loadStripeClient(supabaseAdmin);
-    const customerId = await getOrCreateStripeCustomer(supabaseAdmin, stripe, organizationId);
+    const customerId = await getOrCreateStripeCustomer(
+      supabaseAdmin,
+      stripe,
+      organizationId,
+    );
 
     const setupIntent = await stripe.setupIntents.create({
       customer: customerId,
@@ -402,9 +523,14 @@ paymentsRouter.post("/setup-intent", async (c) => {
       usage: "off_session",
     });
 
-    return c.json({ clientSecret: setupIntent.client_secret, setupIntentId: setupIntent.id });
+    return c.json({
+      clientSecret: setupIntent.client_secret,
+      setupIntentId: setupIntent.id,
+    });
   } catch (e) {
-    return c.json({ error: e instanceof Error ? e.message : "Failed to create setup intent" }, 500);
+    return c.json({
+      error: e instanceof Error ? e.message : "Failed to create setup intent",
+    }, 500);
   }
 });
 
@@ -419,14 +545,25 @@ paymentsRouter.post("/save-payment-method", async (c) => {
 
   const body = await c.req.json();
   const { organizationId, paymentMethodId } = body;
-  if (!organizationId || !paymentMethodId) return c.json({ error: "organizationId and paymentMethodId are required" }, 400);
+  if (!organizationId || !paymentMethodId) {
+    return c.json(
+      { error: "organizationId and paymentMethodId are required" },
+      400,
+    );
+  }
 
   const supabaseAdmin = getServiceClient();
 
   try {
     const stripe = await loadStripeClient(supabaseAdmin);
-    const customerId = await getOrCreateStripeCustomer(supabaseAdmin, stripe, organizationId);
-    const paymentMethod = await stripe.paymentMethods.attach(paymentMethodId, { customer: customerId });
+    const customerId = await getOrCreateStripeCustomer(
+      supabaseAdmin,
+      stripe,
+      organizationId,
+    );
+    const paymentMethod = await stripe.paymentMethods.attach(paymentMethodId, {
+      customer: customerId,
+    });
 
     // Soft delete existing payment method
     await supabaseAdmin
@@ -451,7 +588,8 @@ paymentsRouter.post("/save-payment-method", async (c) => {
         billing_name: paymentMethod.billing_details?.name ?? null,
         billing_email: paymentMethod.billing_details?.email ?? null,
         billing_phone: paymentMethod.billing_details?.phone ?? null,
-        billing_country: paymentMethod.billing_details?.address?.country ?? null,
+        billing_country: paymentMethod.billing_details?.address?.country ??
+          null,
         is_default: true,
         created_by: user.id,
         metadata: paymentMethod.metadata ?? {},
@@ -460,7 +598,9 @@ paymentsRouter.post("/save-payment-method", async (c) => {
       .maybeSingle();
 
     if (insertError || !saved) {
-      return c.json({ error: insertError?.message ?? "Failed to create payment method record" }, 500);
+      return c.json({
+        error: insertError?.message ?? "Failed to create payment method record",
+      }, 500);
     }
 
     await supabaseAdmin
@@ -478,7 +618,9 @@ paymentsRouter.post("/save-payment-method", async (c) => {
       isDefault: saved.is_default,
     });
   } catch (e) {
-    return c.json({ error: e instanceof Error ? e.message : "Failed to save payment method" }, 500);
+    return c.json({
+      error: e instanceof Error ? e.message : "Failed to save payment method",
+    }, 500);
   }
 });
 
@@ -500,18 +642,29 @@ paymentsRouter.get("/receipts/:transactionId", async (c) => {
   const { data: transaction, error } = await supabaseAdmin
     .schema("core")
     .from("payment_transactions")
-    .select("*,organization:organizations(id,name,address),user:profiles(id,display_name)")
+    .select(
+      "*,organization:organizations(id,name,address),user:profiles(id,display_name)",
+    )
     .eq("id", transactionId)
     .maybeSingle();
 
-  if (error) return c.json({ error: `Failed to load transaction: ${error.message}` }, 500);
+  if (error) {
+    return c.json(
+      { error: `Failed to load transaction: ${error.message}` },
+      500,
+    );
+  }
   if (!transaction) return c.json({ error: "Transaction not found" }, 404);
 
   const formatCurrency = (cents: number, currency: string): string =>
-    new Intl.NumberFormat("en-US", { style: "currency", currency: currency.toUpperCase() }).format(cents / 100);
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency.toUpperCase(),
+    }).format(cents / 100);
 
   const formatTransactionType = (type: string): string =>
-    type.split("_").map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+    type.split("_").map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
 
   return c.json({
     transactionId: transaction.id,
@@ -543,7 +696,9 @@ paymentsRouter.get("/credits", async (c) => {
   if (!user?.id) return c.json({ error: "Unauthorized" }, 401);
 
   const organizationId = c.req.query("organizationId");
-  if (!organizationId) return c.json({ error: "organizationId is required" }, 400);
+  if (!organizationId) {
+    return c.json({ error: "organizationId is required" }, 400);
+  }
 
   const supabaseAdmin = getServiceClient();
   const { data: credits, error } = await supabaseAdmin
@@ -553,7 +708,12 @@ paymentsRouter.get("/credits", async (c) => {
     .eq("organization_id", organizationId)
     .maybeSingle();
 
-  if (error) return c.json({ error: `Failed to load account credits: ${error.message}` }, 500);
+  if (error) {
+    return c.json(
+      { error: `Failed to load account credits: ${error.message}` },
+      500,
+    );
+  }
 
   if (!credits) {
     return c.json({
@@ -587,13 +747,22 @@ paymentsRouter.post("/credits/deposit", async (c) => {
 
   const body = await c.req.json();
   const { organizationId, amountCents, paymentMethodId } = body;
-  if (!organizationId || !amountCents) return c.json({ error: "organizationId and amountCents are required" }, 400);
+  if (!organizationId || !amountCents) {
+    return c.json(
+      { error: "organizationId and amountCents are required" },
+      400,
+    );
+  }
 
   const supabaseAdmin = getServiceClient();
 
   try {
     const stripe = await loadStripeClient(supabaseAdmin);
-    const customerId = await getOrCreateStripeCustomer(supabaseAdmin, stripe, organizationId);
+    const customerId = await getOrCreateStripeCustomer(
+      supabaseAdmin,
+      stripe,
+      organizationId,
+    );
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountCents,
@@ -602,7 +771,10 @@ paymentsRouter.post("/credits/deposit", async (c) => {
       payment_method: paymentMethodId,
       confirm: Boolean(paymentMethodId),
       description: `Account credit deposit - ${amountCents / 100} USD`,
-      metadata: { organization_id: organizationId, transaction_type: "credit_deposit" },
+      metadata: {
+        organization_id: organizationId,
+        transaction_type: "credit_deposit",
+      },
     });
 
     const { data: transaction, error: txError } = await supabaseAdmin
@@ -616,13 +788,17 @@ paymentsRouter.post("/credits/deposit", async (c) => {
         currency: "usd",
         transaction_type: "credit_deposit",
         status: paymentIntent.status === "succeeded" ? "succeeded" : "pending",
-        succeeded_at: paymentIntent.status === "succeeded" ? new Date().toISOString() : null,
+        succeeded_at: paymentIntent.status === "succeeded"
+          ? new Date().toISOString()
+          : null,
       })
       .select("id,status,stripe_payment_intent_id")
       .single();
 
     if (txError || !transaction) {
-      return c.json({ error: txError?.message ?? "Failed to record transaction" }, 500);
+      return c.json({
+        error: txError?.message ?? "Failed to record transaction",
+      }, 500);
     }
 
     return c.json({
@@ -632,7 +808,9 @@ paymentsRouter.post("/credits/deposit", async (c) => {
       stripePaymentIntentId: paymentIntent.id,
     }, 201);
   } catch (e) {
-    return c.json({ error: e instanceof Error ? e.message : "Failed to deposit credits" }, 500);
+    return c.json({
+      error: e instanceof Error ? e.message : "Failed to deposit credits",
+    }, 500);
   }
 });
 
@@ -646,7 +824,9 @@ paymentsRouter.get("/credits/ledger", async (c) => {
   if (!user?.id) return c.json({ error: "Unauthorized" }, 401);
 
   const organizationId = c.req.query("organizationId");
-  if (!organizationId) return c.json({ error: "organizationId is required" }, 400);
+  if (!organizationId) {
+    return c.json({ error: "organizationId is required" }, 400);
+  }
 
   const supabaseAdmin = getServiceClient();
   const limit = parseInt(c.req.query("limit") ?? "50", 10);
@@ -664,7 +844,12 @@ paymentsRouter.get("/credits/ledger", async (c) => {
   if (transactionType) query = query.eq("transaction_type", transactionType);
 
   const { data, error, count } = await query;
-  if (error) return c.json({ error: `Failed to load credit ledger: ${error.message}` }, 500);
+  if (error) {
+    return c.json(
+      { error: `Failed to load credit ledger: ${error.message}` },
+      500,
+    );
+  }
 
   const items = (data ?? []).map((row: Record<string, unknown>) => ({
     id: row.id,

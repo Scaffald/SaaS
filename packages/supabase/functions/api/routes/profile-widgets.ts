@@ -4,11 +4,11 @@
  * Supports viewing own profile and other users' profiles
  */
 
-import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { authMiddleware } from '../middleware/auth.ts'
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { authMiddleware } from "../middleware/auth.ts";
 
-const app = new OpenAPIHono()
-app.use('*', authMiddleware)
+const app = new OpenAPIHono();
+app.use("*", authMiddleware);
 
 // ============================================================================
 // Schemas
@@ -17,7 +17,7 @@ app.use('*', authMiddleware)
 const _errorResponseSchema = z.object({
   error: z.string(),
   message: z.string().optional(),
-}).openapi('ErrorResponse')
+}).openapi("ErrorResponse");
 
 // ============================================================================
 // Routes
@@ -28,10 +28,10 @@ const _errorResponseSchema = z.object({
  * Get general profile information
  */
 const generalInfoRoute = createRoute({
-  method: 'get',
-  path: '/general-info',
-  tags: ['Profile Widgets'],
-  summary: 'Get general profile info',
+  method: "get",
+  path: "/general-info",
+  tags: ["Profile Widgets"],
+  summary: "Get general profile info",
   request: {
     query: z.object({
       userId: z.string().uuid().optional(),
@@ -39,9 +39,9 @@ const generalInfoRoute = createRoute({
   },
   responses: {
     200: {
-      description: 'General profile information',
+      description: "General profile information",
       content: {
-        'application/json': {
+        "application/json": {
           schema: z.object({
             id: z.string().uuid(),
             username: z.string().nullable(),
@@ -61,52 +61,60 @@ const generalInfoRoute = createRoute({
     },
   },
   security: [{ bearerAuth: [] }],
-})
+});
 
 app.openapi(generalInfoRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
-  const { userId } = c.req.valid('query')
+  const supabase = c.get("supabase");
+  const user = c.get("user");
+  const { userId } = c.req.valid("query");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
-  const targetUserId = userId || user.id
+  const targetUserId = userId || user.id;
 
   const { data, error } = await supabase
-    .schema('core')
-    .from('users')
-    .select('id, username, slug, avatar_path, avatar_url, about, headline, display_name, industry_id, years_of_experience, open_to_work')
-    .eq('id', targetUserId)
-    .single()
+    .schema("core")
+    .from("users")
+    .select(
+      "id, username, slug, avatar_path, avatar_url, about, headline, display_name, industry_id, years_of_experience, open_to_work",
+    )
+    .eq("id", targetUserId)
+    .single();
 
   if (error) {
     // No row found (e.g. profile not yet created) → 404 so frontend can show "Complete your profile"
-    if (error.code === 'PGRST116') {
+    if (error.code === "PGRST116") {
       return c.json(
-        { error: 'profile_not_found', message: 'Profile not found. Complete your profile to get started.' },
-        404
-      )
+        {
+          error: "profile_not_found",
+          message: "Profile not found. Complete your profile to get started.",
+        },
+        404,
+      );
     }
-    return c.json({ error: 'Failed to fetch profile', message: error.message }, 500)
+    return c.json(
+      { error: "Failed to fetch profile", message: error.message },
+      500,
+    );
   }
 
   return c.json({
     ...data,
     calculatedYearsOfExperience: data.years_of_experience || 0,
-  })
-})
+  });
+});
 
 /**
  * GET /v1/profiles/widgets/experience
  * Get work experience
  */
 const experienceRoute = createRoute({
-  method: 'get',
-  path: '/experience',
-  tags: ['Profile Widgets'],
-  summary: 'Get work experience',
+  method: "get",
+  path: "/experience",
+  tags: ["Profile Widgets"],
+  summary: "Get work experience",
   request: {
     query: z.object({
       userId: z.string().uuid().optional(),
@@ -114,9 +122,9 @@ const experienceRoute = createRoute({
   },
   responses: {
     200: {
-      description: 'Work experience entries',
+      description: "Work experience entries",
       content: {
-        'application/json': {
+        "application/json": {
           schema: z.array(z.object({
             id: z.string().uuid(),
             user_id: z.string().uuid(),
@@ -137,42 +145,45 @@ const experienceRoute = createRoute({
     },
   },
   security: [{ bearerAuth: [] }],
-})
+});
 
 app.openapi(experienceRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
-  const { userId } = c.req.valid('query')
+  const supabase = c.get("supabase");
+  const user = c.get("user");
+  const { userId } = c.req.valid("query");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
-  const targetUserId = userId || user.id
+  const targetUserId = userId || user.id;
 
   const { data, error } = await supabase
-    .schema('core')
-    .from('user_experience')
-    .select('*')
-    .eq('user_id', targetUserId)
-    .order('start_date', { ascending: false })
+    .schema("core")
+    .from("user_experience")
+    .select("*")
+    .eq("user_id", targetUserId)
+    .order("start_date", { ascending: false });
 
   if (error) {
-    return c.json({ error: 'Failed to fetch experience', message: error.message }, 500)
+    return c.json({
+      error: "Failed to fetch experience",
+      message: error.message,
+    }, 500);
   }
 
-  return c.json(data || [])
-})
+  return c.json(data || []);
+});
 
 /**
  * GET /v1/profiles/widgets/education
  * Get education
  */
 const educationRoute = createRoute({
-  method: 'get',
-  path: '/education',
-  tags: ['Profile Widgets'],
-  summary: 'Get education',
+  method: "get",
+  path: "/education",
+  tags: ["Profile Widgets"],
+  summary: "Get education",
   request: {
     query: z.object({
       userId: z.string().uuid().optional(),
@@ -180,9 +191,9 @@ const educationRoute = createRoute({
   },
   responses: {
     200: {
-      description: 'Education entries',
+      description: "Education entries",
       content: {
-        'application/json': {
+        "application/json": {
           schema: z.array(z.object({
             id: z.string().uuid(),
             user_id: z.string().uuid(),
@@ -202,42 +213,45 @@ const educationRoute = createRoute({
     },
   },
   security: [{ bearerAuth: [] }],
-})
+});
 
 app.openapi(educationRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
-  const { userId } = c.req.valid('query')
+  const supabase = c.get("supabase");
+  const user = c.get("user");
+  const { userId } = c.req.valid("query");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
-  const targetUserId = userId || user.id
+  const targetUserId = userId || user.id;
 
   const { data, error } = await supabase
-    .schema('core')
-    .from('user_education')
-    .select('*')
-    .eq('user_id', targetUserId)
-    .order('start_date', { ascending: false })
+    .schema("core")
+    .from("user_education")
+    .select("*")
+    .eq("user_id", targetUserId)
+    .order("start_date", { ascending: false });
 
   if (error) {
-    return c.json({ error: 'Failed to fetch education', message: error.message }, 500)
+    return c.json({
+      error: "Failed to fetch education",
+      message: error.message,
+    }, 500);
   }
 
-  return c.json(data || [])
-})
+  return c.json(data || []);
+});
 
 /**
  * GET /v1/profiles/widgets/skills
  * Get technical skills
  */
 const skillsRoute = createRoute({
-  method: 'get',
-  path: '/skills',
-  tags: ['Profile Widgets'],
-  summary: 'Get skills',
+  method: "get",
+  path: "/skills",
+  tags: ["Profile Widgets"],
+  summary: "Get skills",
   request: {
     query: z.object({
       userId: z.string().uuid().optional(),
@@ -245,12 +259,12 @@ const skillsRoute = createRoute({
   },
   responses: {
     200: {
-      description: 'Skills',
+      description: "Skills",
       content: {
-        'application/json': {
+        "application/json": {
           schema: z.array(z.object({
             id: z.string().uuid(),
-            taxonomy: z.enum(['csi', 'onet']),
+            taxonomy: z.enum(["csi", "onet"]),
             name: z.string(),
             label: z.string(),
             displayCode: z.string().nullable(),
@@ -264,42 +278,45 @@ const skillsRoute = createRoute({
     },
   },
   security: [{ bearerAuth: [] }],
-})
+});
 
 app.openapi(skillsRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
-  const { userId } = c.req.valid('query')
+  const supabase = c.get("supabase");
+  const user = c.get("user");
+  const { userId } = c.req.valid("query");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
-  const targetUserId = userId || user.id
+  const targetUserId = userId || user.id;
 
   const { data, error } = await supabase
-    .schema('core')
-    .from('user_skills')
-    .select('*')
-    .eq('user_id', targetUserId)
-    .in('skill_taxonomy', ['csi', 'onet'])
+    .schema("core")
+    .from("user_skills")
+    .select("*")
+    .eq("user_id", targetUserId)
+    .in("skill_taxonomy", ["csi", "onet"]);
 
   if (error) {
-    return c.json({ error: 'Failed to fetch skills', message: error.message }, 500)
+    return c.json(
+      { error: "Failed to fetch skills", message: error.message },
+      500,
+    );
   }
 
-  return c.json(data || [])
-})
+  return c.json(data || []);
+});
 
 /**
  * GET /v1/profiles/widgets/certifications
  * Get certifications
  */
 const certificationsRoute = createRoute({
-  method: 'get',
-  path: '/certifications',
-  tags: ['Profile Widgets'],
-  summary: 'Get certifications',
+  method: "get",
+  path: "/certifications",
+  tags: ["Profile Widgets"],
+  summary: "Get certifications",
   request: {
     query: z.object({
       userId: z.string().uuid().optional(),
@@ -307,9 +324,9 @@ const certificationsRoute = createRoute({
   },
   responses: {
     200: {
-      description: 'Certifications',
+      description: "Certifications",
       content: {
-        'application/json': {
+        "application/json": {
           schema: z.array(z.object({
             id: z.string().uuid(),
             user_id: z.string().uuid(),
@@ -328,47 +345,50 @@ const certificationsRoute = createRoute({
     },
   },
   security: [{ bearerAuth: [] }],
-})
+});
 
 app.openapi(certificationsRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
-  const { userId } = c.req.valid('query')
+  const supabase = c.get("supabase");
+  const user = c.get("user");
+  const { userId } = c.req.valid("query");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
-  const targetUserId = userId || user.id
+  const targetUserId = userId || user.id;
 
   const { data, error } = await supabase
-    .schema('core')
-    .from('user_certifications')
-    .select('*')
-    .eq('user_id', targetUserId)
-    .eq('is_active', true)
+    .schema("core")
+    .from("user_certifications")
+    .select("*")
+    .eq("user_id", targetUserId)
+    .eq("is_active", true);
 
   if (error) {
-    return c.json({ error: 'Failed to fetch certifications', message: error.message }, 500)
+    return c.json({
+      error: "Failed to fetch certifications",
+      message: error.message,
+    }, 500);
   }
 
-  return c.json(data || [])
-})
+  return c.json(data || []);
+});
 
 /**
  * GET /v1/profiles/widgets/preferences
  * Get work preferences (own profile only)
  */
 const preferencesRoute = createRoute({
-  method: 'get',
-  path: '/preferences',
-  tags: ['Profile Widgets'],
-  summary: 'Get work preferences',
+  method: "get",
+  path: "/preferences",
+  tags: ["Profile Widgets"],
+  summary: "Get work preferences",
   responses: {
     200: {
-      description: 'Work preferences',
+      description: "Work preferences",
       content: {
-        'application/json': {
+        "application/json": {
           schema: z.object({
             availability: z.string().nullable().optional(),
             preferred_work_locations: z.array(z.string()).nullable().optional(),
@@ -388,28 +408,31 @@ const preferencesRoute = createRoute({
     },
   },
   security: [{ bearerAuth: [] }],
-})
+});
 
 app.openapi(preferencesRoute, async (c) => {
-  const supabase = c.get('supabase')
-  const user = c.get('user')
+  const supabase = c.get("supabase");
+  const user = c.get("user");
 
   if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   const { data, error } = await supabase
-    .schema('core')
-    .from('preferences')
-    .select('*')
-    .eq('user_id', user.id)
-    .single()
+    .schema("core")
+    .from("preferences")
+    .select("*")
+    .eq("user_id", user.id)
+    .single();
 
   if (error) {
-    return c.json({ error: 'Failed to fetch preferences', message: error.message }, 500)
+    return c.json({
+      error: "Failed to fetch preferences",
+      message: error.message,
+    }, 500);
   }
 
-  return c.json(data || {})
-})
+  return c.json(data || {});
+});
 
-export default app
+export default app;

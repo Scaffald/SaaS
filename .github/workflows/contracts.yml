@@ -28,7 +28,6 @@ jobs:
               - 'tests/reports/contracts/**'
               - 'vitest.contracts.config.ts'
               - '.github/workflows/contracts.yml'
-              - 'packages/ui/src/components/address/providers/**'
               - 'packages/supabase/functions/trpc/routers/resume.router.ts'
               - 'packages/supabase/functions/trpc/routers/personality-assessment.router.ts'
               - 'packages/supabase/functions/trpc/routers/stripe-settings.router.ts'
@@ -45,11 +44,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          submodules: true
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
-        with:
-          version: 10.20.0
 
       - name: Setup Node.js
         uses: actions/setup-node@v6

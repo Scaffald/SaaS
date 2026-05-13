@@ -3,16 +3,16 @@
  * User inquiries and support tickets
  */
 
-import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import { authMiddleware } from '../middleware/auth.ts'
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { authMiddleware } from "../middleware/auth.ts";
 
-const app = new OpenAPIHono()
-app.use('*', authMiddleware)
+const app = new OpenAPIHono();
+app.use("*", authMiddleware);
 
 const _errorResponseSchema = z.object({
   error: z.string(),
   message: z.string().optional(),
-})
+});
 
 /**
  * GET /v1/inquiries
@@ -20,24 +20,25 @@ const _errorResponseSchema = z.object({
  */
 app.openapi(
   createRoute({
-    method: 'get',
-    path: '/',
-    tags: ['Inquiries'],
-    summary: 'List inquiries',
+    method: "get",
+    path: "/",
+    tags: ["Inquiries"],
+    summary: "List inquiries",
     request: {
       query: z.object({
-        direction: z.enum(['sent', 'received']).optional(),
-        status: z.enum(['pending', 'responded', 'archived']).optional(),
-        inquiry_type: z.enum(['general', 'job_inquiry', 'support', 'feedback']).optional(),
+        direction: z.enum(["sent", "received"]).optional(),
+        status: z.enum(["pending", "responded", "archived"]).optional(),
+        inquiry_type: z.enum(["general", "job_inquiry", "support", "feedback"])
+          .optional(),
         page: z.coerce.number().optional(),
         limit: z.coerce.number().optional(),
       }),
     },
     responses: {
       200: {
-        description: 'Inquiries list',
+        description: "Inquiries list",
         content: {
-          'application/json': {
+          "application/json": {
             schema: z.object({
               data: z.array(z.any()),
               pagination: z.object({
@@ -54,35 +55,42 @@ app.openapi(
     security: [{ bearerAuth: [] }],
   }),
   async (c) => {
-    const supabase = c.get('supabase')
-    const user = c.get('user')
-    const { direction, status, page = 1, limit = 20 } = c.req.valid('query')
+    const supabase = c.get("supabase");
+    const user = c.get("user");
+    const { direction, status, page = 1, limit = 20 } = c.req.valid("query");
 
     if (!user) {
-      return c.json({ error: 'Unauthorized' }, 401)
+      return c.json({ error: "Unauthorized" }, 401);
     }
 
-    let query = supabase.schema('core').from('inquiries').select('*', { count: 'exact' })
+    let query = supabase.schema("core").from("inquiries").select("*", {
+      count: "exact",
+    });
 
-    if (direction === 'sent') {
-      query = query.eq('sender_id', user.id)
-    } else if (direction === 'received') {
-      query = query.eq('recipient_id', user.id)
+    if (direction === "sent") {
+      query = query.eq("sender_id", user.id);
+    } else if (direction === "received") {
+      query = query.eq("recipient_id", user.id);
     } else {
-      query = query.or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`)
+      query = query.or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`);
     }
 
     if (status) {
-      query = query.eq('status', status)
+      query = query.eq("status", status);
     }
 
-    const offset = (page - 1) * limit
-    query = query.range(offset, offset + limit - 1).order('created_at', { ascending: false })
+    const offset = (page - 1) * limit;
+    query = query.range(offset, offset + limit - 1).order("created_at", {
+      ascending: false,
+    });
 
-    const { data, error, count } = await query
+    const { data, error, count } = await query;
 
     if (error) {
-      return c.json({ error: 'Failed to fetch inquiries', message: error.message }, 500)
+      return c.json({
+        error: "Failed to fetch inquiries",
+        message: error.message,
+      }, 500);
     }
 
     return c.json({
@@ -93,9 +101,9 @@ app.openapi(
         limit,
         total_pages: Math.ceil((count || 0) / limit),
       },
-    })
-  }
-)
+    });
+  },
+);
 
 /**
  * POST /v1/inquiries
@@ -103,19 +111,24 @@ app.openapi(
  */
 app.openapi(
   createRoute({
-    method: 'post',
-    path: '/',
-    tags: ['Inquiries'],
-    summary: 'Create inquiry',
+    method: "post",
+    path: "/",
+    tags: ["Inquiries"],
+    summary: "Create inquiry",
     request: {
       body: {
         content: {
-          'application/json': {
+          "application/json": {
             schema: z.object({
               recipient_id: z.string().uuid(),
               subject: z.string().optional(),
               message: z.string().optional(),
-              inquiry_type: z.enum(['general', 'job_inquiry', 'support', 'feedback']).optional(),
+              inquiry_type: z.enum([
+                "general",
+                "job_inquiry",
+                "support",
+                "feedback",
+              ]).optional(),
               job_id: z.string().uuid().optional(),
               template_id: z.string().uuid().optional(),
             }),
@@ -125,9 +138,9 @@ app.openapi(
     },
     responses: {
       201: {
-        description: 'Inquiry created',
+        description: "Inquiry created",
         content: {
-          'application/json': {
+          "application/json": {
             schema: z.object({ data: z.any() }),
           },
         },
@@ -136,36 +149,39 @@ app.openapi(
     security: [{ bearerAuth: [] }],
   }),
   async (c) => {
-    const supabase = c.get('supabase')
-    const user = c.get('user')
-    const body = c.req.valid('json')
+    const supabase = c.get("supabase");
+    const user = c.get("user");
+    const body = c.req.valid("json");
 
     if (!user) {
-      return c.json({ error: 'Unauthorized' }, 401)
+      return c.json({ error: "Unauthorized" }, 401);
     }
 
     const { data, error } = await supabase
-      .schema('core')
-      .from('inquiries')
+      .schema("core")
+      .from("inquiries")
       .insert({
         sender_id: user.id,
         recipient_id: body.recipient_id,
-        subject: body.subject || 'Inquiry',
-        message: body.message || '',
-        inquiry_type: body.inquiry_type || 'general',
+        subject: body.subject || "Inquiry",
+        message: body.message || "",
+        inquiry_type: body.inquiry_type || "general",
         job_id: body.job_id,
         template_id: body.template_id,
-        status: 'pending',
+        status: "pending",
       })
       .select()
-      .single()
+      .single();
 
     if (error) {
-      return c.json({ error: 'Failed to create inquiry', message: error.message }, 500)
+      return c.json({
+        error: "Failed to create inquiry",
+        message: error.message,
+      }, 500);
     }
 
-    return c.json({ data }, 201)
-  }
-)
+    return c.json({ data }, 201);
+  },
+);
 
-export default app
+export default app;
