@@ -1,5 +1,6 @@
 import { useToast } from "@scaffald/ui";
 import { useRequestWorkerDeletionMutation } from "@scf/core/utils/account-deletion-sdk-hooks";
+import { useSessionContext } from "@scf/core/utils/supabase/useSessionContext";
 import { AlertTriangle, Trash2 } from "lucide-react-native";
 import { useState } from "react";
 import {
@@ -21,19 +22,23 @@ export function AccountDeletionPanel() {
   const [reason, setReason] = useState("");
   const [confirmText, setConfirmText] = useState("");
   const toast = useToast();
+  const { signOut } = useSessionContext();
 
   const deletionMutation = useRequestWorkerDeletionMutation({
     onSuccess: () => {
       toast.show({
         title: "Account deletion requested",
         message:
-          "Your account deletion request has been submitted. You will be logged out shortly.",
+          "Your data is being deleted. You'll be signed out now; deletion completes within 30 days.",
         duration: 5000,
       });
       setIsOpen(false);
       setReason("");
       setConfirmText("");
-      // In production, redirect to logout or show confirmation page
+      // Apple Guideline 5.1.1(v): the in-app flow must end with the user
+      // signed out — they should not have to take further action to leave
+      // the session that no longer maps to a backing account.
+      void signOut();
     },
     onError: (error: { message?: string }) => {
       toast.show({
