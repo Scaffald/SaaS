@@ -11,6 +11,10 @@ import { clearAllAuthStorage } from '@scf/core/utils/auth/clearAuthStorage'
 import { clearSentryUser, setSentryUser } from '@scf/core/utils/sentry'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { useCookieConsentState } from '@scf/core/utils/cookieConsent'
+import {
+  requestTrackingAuthorization,
+  useTrackingAuthorization,
+} from '@scf/core/utils/privacy'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import NetInfo from '@react-native-community/netinfo'
 import type { Session } from '@supabase/auth-js'
@@ -50,6 +54,18 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
   const [isLoading, setIsLoading] = useState(true)
   const { isReady: isConsentReady, hasConsentedTo } = useCookieConsentState()
   const hasPerformanceConsent = isConsentReady && hasConsentedTo(PERFORMANCE_CATEGORY_ID)
+  // App Tracking Transparency (iOS). `canLinkIdentity` is true on platforms
+  // where ATT does not apply (web, Android) and on iOS only when the user
+  // tapped "Allow". When false we keep anonymous analytics flowing but skip
+  // PostHog identify/alias and strip PII from Sentry — Apple's definition of
+  // "tracking" is specifically about cross-app data linking, so anonymous
+  // capture is allowed but linking to a stable user id is not.
+  const {
+    status: trackingStatus,
+    isApplicable: isTrackingApplicable,
+    canLinkIdentity: canLinkAnalyticsIdentity,
+  } = useTrackingAuthorization()
+  const hasRequestedTrackingRef = useRef(false)
   const lastSignedInUserRef = useRef<string | null>(null)
   const previousUserIdRef = useRef<string | null>(initialSession?.user?.id ?? null)
   const lastSignOutReasonRef = useRef<'sign_out' | 'auth_cleared' | 'consent_revoked' | null>(null)
@@ -226,35 +242,41 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
 
         if (session?.user) {
           const storedDistinctId = await AsyncStorage.getItem(ANALYTICS_ANONYMOUS_ID_STORAGE_KEY)
-          if (storedDistinctId && storedDistinctId !== session.user.id) {
-            aliasAnalyticsUser(session.user.id)
+          // Only link analytics identity when ATT permits it (always true on
+          // web/Android, only when "Allow" on iOS). When denied we keep the
+          // anonymous distinct id PostHog already generated and let capture
+          // events flow without binding them to the supabase user id.
+          if (canLinkAnalyticsIdentity) {
+            if (storedDistinctId && storedDistinctId !== session.user.id) {
+              aliasAnalyticsUser(session.user.id)
+            }
+
+            const traits: Record<string, string | number | boolean | null> = {
+              created_at: session.user.created_at,
+            }
+
+            if (session.user.email) {
+              traits.email = session.user.email
+            }
+
+            if (session.user.email_confirmed_at) {
+              traits.email_confirmed_at = session.user.email_confirmed_at
+            }
+
+            if (session.user.phone) {
+              traits.phone = session.user.phone
+            }
+
+            const authProvider =
+              session.user.app_metadata?.provider ?? session.user.user_metadata?.provider ?? null
+            if (authProvider) {
+              traits.auth_provider = authProvider
+            }
+
+            identifyAnalyticsUser(session.user.id, traits)
+
+            await AsyncStorage.removeItem(ANALYTICS_ANONYMOUS_ID_STORAGE_KEY)
           }
-
-          const traits: Record<string, string | number | boolean | null> = {
-            created_at: session.user.created_at,
-          }
-
-          if (session.user.email) {
-            traits.email = session.user.email
-          }
-
-          if (session.user.email_confirmed_at) {
-            traits.email_confirmed_at = session.user.email_confirmed_at
-          }
-
-          if (session.user.phone) {
-            traits.phone = session.user.phone
-          }
-
-          const authProvider =
-            session.user.app_metadata?.provider ?? session.user.user_metadata?.provider ?? null
-          if (authProvider) {
-            traits.auth_provider = authProvider
-          }
-
-          identifyAnalyticsUser(session.user.id, traits)
-
-          await AsyncStorage.removeItem(ANALYTICS_ANONYMOUS_ID_STORAGE_KEY)
           const provider =
             session.user.app_metadata?.provider ??
             (session.user.identities && session.user.identities.length > 0
@@ -296,11 +318,34 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
     return () => {
       cancelled = true
     }
-  }, [hasPerformanceConsent, session?.user])
+  }, [hasPerformanceConsent, session?.user, canLinkAnalyticsIdentity])
 
-  // Sentry user context (independent of user consent - always active for error tracking)
+  // App Tracking Transparency prompt (iOS only). Fires once per app install,
+  // after the user has signed in AND given GDPR-style cookie consent — at
+  // that point the user has already seen our value proposition and the
+  // Apple HIG context requirement is satisfied. The function is idempotent
+  // (no-op after first decision); the ref guards against React strict-mode
+  // double-invocation.
+  useEffect(() => {
+    if (!isTrackingApplicable) return
+    if (hasRequestedTrackingRef.current) return
+    if (!isConsentReady || !session?.user) return
+    if (trackingStatus !== 'not-determined') return
+    hasRequestedTrackingRef.current = true
+    void requestTrackingAuthorization()
+  }, [isTrackingApplicable, isConsentReady, session?.user, trackingStatus])
+
+  // Sentry user context. Error reports themselves are not "tracking" under
+  // Apple's definition (Guideline 5.1.2(i)) — but linking errors to a stable
+  // user identity (id + email) is. When ATT is denied we keep error capture
+  // but strip the user object so Apple's reviewers can't argue we link
+  // user-level data across sessions without consent.
   useEffect(() => {
     if (session?.user) {
+      if (!canLinkAnalyticsIdentity) {
+        clearSentryUser()
+        return
+      }
       const traits: Record<string, unknown> = {
         created_at: session.user.created_at,
       }
@@ -319,7 +364,7 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
     } else {
       clearSentryUser()
     }
-  }, [session?.user])
+  }, [session?.user, canLinkAnalyticsIdentity])
 
   // Auth state change listener with proper typing
   useEffect(() => {

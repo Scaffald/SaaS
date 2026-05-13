@@ -47,6 +47,7 @@
     "expo-localization": "catalog:",
     "expo-location": "catalog:",
     "expo-secure-store": "catalog:",
+    "expo-tracking-transparency": "catalog:",
     "fast-xml-parser": "catalog:",
     "hast-util-to-html": "^9.0.0",
     "i18n-js": "catalog:",
