@@ -80,11 +80,24 @@ export function ReputationDashboardPage() {
       <Separator />
 
       {/* Gift Karma */}
-      <Stack gap={12}>
-        <Text style={{ fontSize: 18, fontWeight: '600' }}>Gift Karma</Text>
-        <Text style={{ color: colors.text[t].secondary }}>
-          Send karma to community members who helped you. Max 10 per gift, 5 gifts per day.
-        </Text>
+      <Stack
+        gap={16}
+        style={{
+          padding: 20,
+          borderWidth: 1,
+          borderColor: colors.border[t].default,
+          borderRadius: 16,
+          backgroundColor: colors.bg[t].default,
+        }}
+      >
+        <Stack gap={4}>
+          <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text[t].primary }}>
+            Gift Karma
+          </Text>
+          <Text style={{ fontSize: 14, color: colors.text[t].secondary }}>
+            Send karma to community members who helped you. Max 10 per gift, 5 gifts per day.
+          </Text>
+        </Stack>
         <MemberPicker
           selected={giftReceiver}
           onSelect={setGiftReceiver}
@@ -96,25 +109,28 @@ export function ReputationDashboardPage() {
             value={giftAmount}
             onChangeText={setGiftAmount}
             keyboardType="numeric"
-            style={{ flex: 1, minWidth: 100 }}
+            style={{ flex: 1, minWidth: 120 }}
           />
         </Row>
         <Input placeholder="Optional message" value={giftMessage} onChangeText={setGiftMessage} />
-        <Button
-          variant="filled"
-          size="sm"
-          onPress={() => {
-            if (!giftReceiver) return
-            giftKarma.mutate({
-              receiver_id: giftReceiver.id,
-              amount: parseInt(giftAmount, 10) || 1,
-              message: giftMessage || undefined,
-            })
-          }}
-          disabled={!giftReceiver || !giftAmount || giftKarma.isPending}
-        >
-          Send Karma
-        </Button>
+        <Row justify="flex-end">
+          <Button
+            variant="filled"
+            color="primary"
+            size="md"
+            onPress={() => {
+              if (!giftReceiver) return
+              giftKarma.mutate({
+                receiver_id: giftReceiver.id,
+                amount: parseInt(giftAmount, 10) || 1,
+                message: giftMessage || undefined,
+              })
+            }}
+            disabled={!giftReceiver || !giftAmount || giftKarma.isPending}
+          >
+            Send Karma
+          </Button>
+        </Row>
       </Stack>
 
       <Separator />

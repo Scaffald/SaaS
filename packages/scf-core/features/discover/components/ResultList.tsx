@@ -39,14 +39,25 @@ type ResultListProps = {
 
 /** Map TalentProfile → DirectoryCard props */
 function profileToDirectoryProps(profile: TalentProfile) {
-  const metrics: DirectoryCardMetric[] = []
-  if (profile.score > 0) metrics.push({ value: profile.score, label: 'Score' })
-  if (profile.experienceYears > 0)
-    metrics.push({
-      value: `${profile.experienceYears} ${profile.experienceYears === 1 ? 'year' : 'years'}`,
+  // Always emit fixed-position columns so values align across cards in the list
+  // even when individual fields are missing. Empty values render as em-dash.
+  const metrics: DirectoryCardMetric[] = [
+    {
+      value: profile.score > 0 ? profile.score : '—',
+      label: 'Score',
+    },
+    {
+      value:
+        profile.experienceYears > 0
+          ? `${profile.experienceYears} ${profile.experienceYears === 1 ? 'year' : 'years'}`
+          : '—',
       label: 'Experience',
-    })
-  if (profile.hourlyRate > 0) metrics.push({ value: `$${profile.hourlyRate}`, label: 'Rate' })
+    },
+    {
+      value: profile.hourlyRate > 0 ? `$${profile.hourlyRate}` : '—',
+      label: 'Rate',
+    },
+  ]
 
   const badges: DirectoryCardBadge[] = [
     ...profile.certifications.map((cert) => ({

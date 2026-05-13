@@ -61,7 +61,7 @@ export function SuggestedContactsWidget() {
     <DashboardWidget>
       <Text
         style={{
-          fontSize: 16,
+          fontSize: 18,
           fontWeight: '700',
           color: colors.text[theme].primary,
           marginBottom: 4,
@@ -69,7 +69,7 @@ export function SuggestedContactsWidget() {
       >
         Suggested Contacts
       </Text>
-      <Stack gap={20}>
+      <Stack gap={16}>
         {contacts.map((follow) => {
           const follower = follow.follower
           const id = follower?.id ?? follow.follower_id
@@ -99,7 +99,7 @@ export function SuggestedContactsWidget() {
                 <Stack gap={2} flex={1}>
                   <Text
                     style={{
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: '700',
                       color: colors.text[theme].primary,
                     }}
@@ -110,7 +110,7 @@ export function SuggestedContactsWidget() {
                   {headline ? (
                     <Text
                       style={{
-                        fontSize: 10,
+                        fontSize: 12,
                         color: colors.text[theme].secondary,
                       }}
                       numberOfLines={1}
