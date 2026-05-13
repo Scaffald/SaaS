@@ -50,7 +50,7 @@
   "dependencies": {
     "@babel/runtime": "catalog:",
     "@expo-google-fonts/roboto": "^0.4.2",
-    "@expo-google-fonts/roboto-serif": "^0.4.2",
+    "@expo-google-fonts/roboto-serif": "^0.4.3",
     "@expo/dom-webview": "~55.0.5",
     "@expo/ui": "~55.0.12",
     "@hookform/resolvers": "catalog:",
