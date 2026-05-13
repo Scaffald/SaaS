@@ -49,8 +49,8 @@ catalogs:
       specifier: ~7946.0.16
       version: 7946.0.16
     '@types/mapbox-gl':
-      specifier: ~2.7.21
-      version: 2.7.21
+      specifier: ~3.5.0
+      version: 3.5.0
     '@types/node':
       specifier: ~20.0.0
       version: 20.0.0
@@ -157,8 +157,8 @@ catalogs:
       specifier: ^4.4.3
       version: 4.5.1
     mapbox-gl:
-      specifier: ~3.16.0
-      version: 3.16.0
+      specifier: ~3.23.1
+      version: 3.23.1
     react-dropzone:
       specifier: ~14.3.8
       version: 14.3.8
@@ -1065,7 +1065,7 @@ importers:
         version: 2.2.1
       mapbox-gl:
         specifier: 'catalog:'
-        version: 3.16.0
+        version: 3.23.1
       parse-numeric-range:
         specifier: ^1.0.0
         version: 1.3.0
@@ -1138,7 +1138,7 @@ importers:
         version: 7946.0.16
       '@types/mapbox-gl':
         specifier: 'catalog:'
-        version: 2.7.21
+        version: 3.5.0
       '@types/node':
         specifier: 'catalog:'
         version: 20.0.0
@@ -3974,10 +3974,6 @@ packages:
   '@leichtgewicht/ip-codec@2.0.5':
     resolution: {integrity: sha512-Vo+PSpZG2/fmgmiNzYK9qWRh8h/CHrwD0mo1h1DzL4yzHNSfWYujGTYsWGreD000gcgmZ7K4Ys6Tx9TxtsKdDw==}
 
-  '@mapbox/jsonlint-lines-primitives@2.0.2':
-    resolution: {integrity: sha512-rY0o9A5ECsTQRVhv7tL/OyDpGAoUB4tTvLiW1DSzQGq4bvTPhNw1VpSNjDJc5GFZ2XuyOtSWSVN05qOtcD71qQ==}
-    engines: {node: '>= 0.6'}
-
   '@mapbox/mapbox-gl-supported@3.0.0':
     resolution: {integrity: sha512-2XghOwu16ZwPJLOFVuIOaLbN0iKMn867evzXFyf0P22dqugezfJwLmdanAgU25ITvz1TvOfVP4jsDImlDJzcWg==}
 
@@ -3992,10 +3988,6 @@ packages:
 
   '@mapbox/vector-tile@2.0.4':
     resolution: {integrity: sha512-AkOLcbgGTdXScosBWwmmD7cDlvOjkg/DetGva26pIRiZPdeJYjYKarIlb4uxVzi6bwHO6EWH82eZ5Nuv4T5DUg==}
-
-  '@mapbox/whoots-js@3.1.0':
-    resolution: {integrity: sha512-Es6WcD0nO5l+2BOQS4uLfNPYQaNDfbot3X1XUoloz+x0mPDS3eeORZJl06HXjwBG1fOGwCRnzK88LMdxKRrd6Q==}
-    engines: {node: '>=6.0.0'}
 
   '@mdx-js/mdx@3.1.1':
     resolution: {integrity: sha512-f6ZO2ifpwAQIpzGWaBQT2TXxPv6z3RBzQKpVftEWN78Vl/YweF1uwussDx8ECAXVtr3Rs89fKyG9YlzUs9DyGQ==}
@@ -6438,11 +6430,9 @@ packages:
   '@types/linkify-it@5.0.0':
     resolution: {integrity: sha512-sVDA58zAw4eWAffKOaQH5/5j3XeayukzDk+ewSsnv3p4yJEZHCCzMDiZM8e0OUrRvmpGZ85jf4yDHkHsgBNr9Q==}
 
-  '@types/mapbox-gl@2.7.21':
-    resolution: {integrity: sha512-Dx9MuF2kKgT/N22LsMUB4b3acFZh9clVqz9zv1fomoiPoBrJolwYxpWA/9LPO/2N0xWbKi4V+pkjTaFkkx/4wA==}
-
-  '@types/mapbox__point-geometry@0.1.4':
-    resolution: {integrity: sha512-mUWlSxAmYLfwnRBmgYV86tgYmMIICX4kza8YnE/eIlywGe2XoOxlpVnXWwir92xRLjwyarqwpu2EJKD2pk0IUA==}
+  '@types/mapbox-gl@3.5.0':
+    resolution: {integrity: sha512-3wVAUTC6q1UKatLP9YxFBnGJWi3neJUF9OKeyRdUf/BsYjZAP35xmZkL4zogVJbO3vdExuSVYCAkzUXjpjdhOg==}
+    deprecated: This is a stub types definition. mapbox-gl provides its own type definitions, so you do not need this installed.
 
   '@types/markdown-it@14.1.2':
     resolution: {integrity: sha512-promo4eFwuiW+TfGxhi+0x3czqTYJkG8qB17ZUJiVF10Xm7NLVRSLUsfRTU/6h1e24VvRnXCx+hG7li58lkzog==}
@@ -10540,8 +10530,8 @@ packages:
   map-or-similar@1.5.0:
     resolution: {integrity: sha512-0aF7ZmVon1igznGI4VS30yugpduQW3y3GkcgGJOp7d8x8QrizhigUxjI/m2UojsXXto+jLAH3KSz+xOJTiORjg==}
 
-  mapbox-gl@3.16.0:
-    resolution: {integrity: sha512-rluV1Zp/0oHf1Y9BV+nePRNnKyTdljko3E19CzO5rBqtQaNUYS0ePCMPRtxOuWRwSdKp3f9NWJkOCjemM8nmjw==}
+  mapbox-gl@3.23.1:
+    resolution: {integrity: sha512-J5M32GunL5KcxvV3ZyLJdr7xtcQ3afAO3VjitLW0v2UVfHjXhq9NO4tkTpn4Dknqwq/pXZG7j1WBfmddLCA26w==}
 
   markdown-extensions@2.0.0:
     resolution: {integrity: sha512-o5vL7aDWatOTX8LzaS1WMoaoxIiLRQJuIKKe2wAw6IeULDHaqbiqiggmx+pKvZDb1Sj+pE46Sn1T7lCqfFtg1Q==}
@@ -10581,8 +10571,8 @@ packages:
   marky@1.3.0:
     resolution: {integrity: sha512-ocnPZQLNpvbedwTy9kNrQEsknEfgvcLMvOtz3sFeWApDq1MXH1TqkCIx58xlpESsfwQOnuBO9beyQuNGzVvuhQ==}
 
-  martinez-polygon-clipping@0.7.4:
-    resolution: {integrity: sha512-jBEwrKtA0jTagUZj2bnmb4Yg2s4KnJGRePStgI7bAVjtcipKiF39R4LZ2V/UT61jMYWrTcBhPazexeqd6JAVtw==}
+  martinez-polygon-clipping@0.8.1:
+    resolution: {integrity: sha512-9PLLMzMPI6ihHox4Ns6LpVBLpRc7sbhULybZ/wyaY8sY3ECNe2+hxm1hA2/9bEEpRrdpjoeduBuZLg2aq1cSIQ==}
 
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
@@ -13301,10 +13291,6 @@ packages:
     resolution: {integrity: sha512-DuGdB+Po43Q5Jxwpzt1lhyFSYKryqoNjQSA9M92tyw0lyHIOur+XCalOUe0KTJpyqzT8+fQ5A0Jf7vCx/NKmIg==}
     engines: {node: '>=20.0.0'}
 
-  serialize-to-js@3.1.2:
-    resolution: {integrity: sha512-owllqNuDDEimQat7EPG0tH7JjO090xKNzUtYz6X+Sk2BXDnOCilDdNLwjWeFywG9xkJul1ULvtUQa9O4pUaY0w==}
-    engines: {node: '>=4.0.0'}
-
   serve-handler@6.1.6:
     resolution: {integrity: sha512-x5RL9Y2p5+Sh3D38Fh9i/iQ5ZK+e4xuXRd/pGbM4D13tgo/MGwbttUk8emytcr1YYzBYs+apnUngBDFYfpjPuQ==}
 
@@ -13954,9 +13940,6 @@ packages:
   tinypool@1.1.1:
     resolution: {integrity: sha512-Zba82s87IFq9A9XmjiX5uZA/ARWDrB03OHlq+Vw1fSdt0I+4/Kutwy8BP4Y/y/aORMo61FQ0vIb5j44vSo5Pkg==}
     engines: {node: ^18.0.0 || >=20.0.0}
-
-  tinyqueue@1.2.3:
-    resolution: {integrity: sha512-Qz9RgWuO9l8lT+Y9xvbzhPT2efIUIFd69N7eF7tJ9lnQl0iLj1M7peK7IoUGZL9DJHw9XftqLreccfxcQgYLxA==}
 
   tinyqueue@3.0.0:
     resolution: {integrity: sha512-gRa9gwYU3ECmQYv3lslts5hxuIa90veaEcxDYuu3QGOIAEM2mOZkVHp48ANJuu1CURtRdHKUBY5Lm1tHV+sD4g==}
@@ -18860,8 +18843,6 @@ snapshots:
 
   '@leichtgewicht/ip-codec@2.0.5': {}
 
-  '@mapbox/jsonlint-lines-primitives@2.0.2': {}
-
   '@mapbox/mapbox-gl-supported@3.0.0': {}
 
   '@mapbox/point-geometry@1.1.0': {}
@@ -18875,8 +18856,6 @@ snapshots:
       '@mapbox/point-geometry': 1.1.0
       '@types/geojson': 7946.0.16
       pbf: 4.0.1
-
-  '@mapbox/whoots-js@3.1.0': {}
 
   '@mdx-js/mdx@3.1.1':
     dependencies:
@@ -21948,11 +21927,9 @@ snapshots:
 
   '@types/linkify-it@5.0.0': {}
 
-  '@types/mapbox-gl@2.7.21':
+  '@types/mapbox-gl@3.5.0':
     dependencies:
-      '@types/geojson': 7946.0.16
-
-  '@types/mapbox__point-geometry@0.1.4': {}
+      mapbox-gl: 3.23.1
 
   '@types/markdown-it@14.1.2':
     dependencies:
@@ -26694,18 +26671,15 @@ snapshots:
 
   map-or-similar@1.5.0: {}
 
-  mapbox-gl@3.16.0:
+  mapbox-gl@3.23.1:
     dependencies:
-      '@mapbox/jsonlint-lines-primitives': 2.0.2
       '@mapbox/mapbox-gl-supported': 3.0.0
       '@mapbox/point-geometry': 1.1.0
       '@mapbox/tiny-sdf': 2.0.7
       '@mapbox/unitbezier': 0.0.1
       '@mapbox/vector-tile': 2.0.4
-      '@mapbox/whoots-js': 3.1.0
       '@types/geojson': 7946.0.16
       '@types/geojson-vt': 3.2.5
-      '@types/mapbox__point-geometry': 0.1.4
       '@types/pbf': 3.0.5
       '@types/supercluster': 7.1.3
       cheap-ruler: 4.0.0
@@ -26715,12 +26689,11 @@ snapshots:
       gl-matrix: 3.4.4
       grid-index: 1.1.0
       kdbush: 4.0.2
-      martinez-polygon-clipping: 0.7.4
+      martinez-polygon-clipping: 0.8.1
       murmurhash-js: 1.0.0
       pbf: 4.0.1
       potpack: 2.1.0
       quickselect: 3.0.0
-      serialize-to-js: 3.1.2
       supercluster: 8.0.1
       tinyqueue: 3.0.0
 
@@ -26771,11 +26744,11 @@ snapshots:
 
   marky@1.3.0: {}
 
-  martinez-polygon-clipping@0.7.4:
+  martinez-polygon-clipping@0.8.1:
     dependencies:
       robust-predicates: 2.0.4
       splaytree: 0.1.4
-      tinyqueue: 1.2.3
+      tinyqueue: 3.0.0
 
   math-intrinsics@1.1.0: {}
 
@@ -30366,8 +30339,6 @@ snapshots:
 
   serialize-javascript@7.0.4: {}
 
-  serialize-to-js@3.1.2: {}
-
   serve-handler@6.1.6:
     dependencies:
       bytes: 3.0.0
@@ -31130,8 +31101,6 @@ snapshots:
       picomatch: 4.0.4
 
   tinypool@1.1.1: {}
-
-  tinyqueue@1.2.3: {}
 
   tinyqueue@3.0.0: {}
 

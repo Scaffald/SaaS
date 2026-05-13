@@ -34,7 +34,7 @@ catalog:
   '@trpc/server': ~11.8.0
   '@ts-react/form': ~1.6.4
   '@types/geojson': ~7946.0.16
-  '@types/mapbox-gl': ~2.7.21
+  '@types/mapbox-gl': ~3.5.0
   '@types/node': ~20.0.0
   '@types/react': ~19.2.0
   awesome-phonenumber: ~7.6.0
@@ -73,7 +73,7 @@ catalog:
   expo-web-browser: ~55.0.14
   fast-xml-parser: ~5.7.0
   i18n-js: ^4.4.3
-  mapbox-gl: ~3.16.0
+  mapbox-gl: ~3.23.1
   moti: ~0.25.3
   msw: ~2.12.3
   openapi-typescript: ~7.4.4
