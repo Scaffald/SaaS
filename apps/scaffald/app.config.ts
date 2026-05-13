@@ -85,7 +85,7 @@ export default {
     splash: {
       image: "./assets/splash.png",
       contentFit: "contain",
-      backgroundColor: "#ffffff",
+      backgroundColor: "#E9FCFF",
     },
     updates: {
       fallbackToCacheTimeout: 0,

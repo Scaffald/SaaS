@@ -1,8 +1,6 @@
 import { useFollowers } from '@scf/core/utils/engagement-sdk-hooks'
-import { columnsFromTanStack } from '@scf/core/utils/table-columns'
-import type { ColumnDef } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
-import { Avatar, Input, SkeletonList, Table, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { Avatar, Input, SkeletonList, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 import type { Follow } from '@scaffald/sdk/resources/follows'
@@ -26,49 +24,6 @@ export function FollowersList() {
       return name.toLowerCase().includes(search)
     })
   }, [followers, searchTerm])
-
-  const columnDefs = useMemo<ColumnDef<Follow>[]>(
-    () => [
-      {
-        accessorKey: 'follower',
-        header: 'User',
-        cell: ({ row }) => {
-          const follow = row.original
-          const follower = follow.follower
-          const name = follower
-            ? `${follower.first_name || ''} ${follower.last_name || ''}`.trim() || 'Unknown'
-            : 'Unknown'
-          const avatar = follower?.avatar_url
-
-          return (
-            <Row align="center" gap={8}>
-              <Avatar
-                size={32}
-                src={avatar ? { uri: avatar } : undefined}
-                initials={!avatar ? name.charAt(0).toUpperCase() : undefined}
-                color="success"
-              />
-              <Text>{name}</Text>
-            </Row>
-          )
-        },
-      },
-      {
-        accessorKey: 'created_at',
-        header: 'Following Since',
-        cell: ({ row }) => {
-          const date = row.original.created_at
-          return <Text style={{ color: colors.text[t].secondary }}>{date ? new Date(date).toLocaleDateString() : '-'}</Text>
-        },
-      },
-    ],
-    [t]
-  )
-
-  const tableColumns = useMemo(
-    () => columnsFromTanStack<Follow & Record<string, unknown>>(columnDefs as ColumnDef<Follow & Record<string, unknown>>[]),
-    [columnDefs]
-  )
 
   if (isLoading) {
     return <SkeletonList count={4} variant="profile" />
@@ -102,12 +57,55 @@ export function FollowersList() {
           </Text>
         </Stack>
       ) : (
-        <Table
-          columns={tableColumns}
-          data={filteredFollowers as (Follow & Record<string, unknown>)[]}
-          pageSize={20}
-          emptyMessage="No followers found"
-        />
+        <Stack
+          gap={0}
+          style={{
+            borderWidth: 1,
+            borderColor: colors.border[t].default,
+            borderRadius: 12,
+            overflow: 'hidden',
+            backgroundColor: colors.bg[t].default,
+          }}
+        >
+          {filteredFollowers.map((follow: Follow, idx: number) => {
+            const follower = follow.follower
+            const name = follower
+              ? `${follower.first_name || ''} ${follower.last_name || ''}`.trim() || 'Unknown'
+              : 'Unknown'
+            const avatar = follower?.avatar_url
+            const date = follow.created_at ? new Date(follow.created_at).toLocaleDateString() : '-'
+            const isLast = idx === filteredFollowers.length - 1
+
+            return (
+              <Row
+                key={follow.id}
+                align="center"
+                gap={12}
+                style={{
+                  paddingVertical: 12,
+                  paddingHorizontal: 16,
+                  borderBottomWidth: isLast ? 0 : 1,
+                  borderBottomColor: colors.border[t].subtle,
+                }}
+              >
+                <Avatar
+                  size={40}
+                  src={avatar ? { uri: avatar } : undefined}
+                  initials={!avatar ? name.charAt(0).toUpperCase() : undefined}
+                  color="success"
+                />
+                <Stack gap={2} style={{ flex: 1, minWidth: 0 }}>
+                  <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text[t].primary }} numberOfLines={1}>
+                    {name}
+                  </Text>
+                  <Text style={{ fontSize: 12, color: colors.text[t].secondary }} numberOfLines={1}>
+                    Following since {date}
+                  </Text>
+                </Stack>
+              </Row>
+            )
+          })}
+        </Stack>
       )}
     </Stack>
   )

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Image } from 'react-native'
+import { Image, Pressable, Platform } from 'react-native'
 import { Button, Input, Row, Spinner, Stack, Text, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { Check, X } from 'lucide-react-native'
@@ -140,73 +140,96 @@ export function MemberPicker({ selected, onSelect, disabled }: MemberPickerProps
           <Spinner size="sm" />
         </Stack>
       ) : filteredMembers.length === 0 ? (
-        <Text style={{ color: colors.text[t].secondary, fontSize: 13 }}>
-          {search ? 'No members match.' : 'No members yet.'}
-        </Text>
+        <Stack
+          align="center"
+          justify="center"
+          style={{
+            paddingVertical: 24,
+            paddingHorizontal: 16,
+            borderWidth: 1,
+            borderColor: colors.border[t].default,
+            borderRadius: 12,
+            backgroundColor: colors.bg[t].muted,
+          }}
+        >
+          <Text style={{ color: colors.text[t].secondary, fontSize: 14 }}>
+            {search ? 'No members match.' : 'No members yet.'}
+          </Text>
+        </Stack>
       ) : (
         <Stack
-          gap={2}
+          gap={0}
           style={{
             borderWidth: 1,
             borderColor: colors.border[t].default,
-            borderRadius: 8,
-            maxHeight: 240,
+            borderRadius: 12,
+            maxHeight: 320,
             overflow: 'hidden',
+            backgroundColor: colors.bg[t].default,
           }}
         >
-          {filteredMembers.map((m) => (
-            <Button
-              key={m.id}
-              variant="outline"
-              size="sm"
-              onPress={() => onSelect(m)}
-              disabled={disabled}
-              style={{
-                borderRadius: 0,
-                borderWidth: 0,
-                borderBottomWidth: 1,
-                borderBottomColor: colors.border[t].subtle,
-                justifyContent: 'flex-start',
-                paddingVertical: 10,
-                paddingHorizontal: 12,
-              }}
-            >
-              <Row align="center" gap={8} style={{ flex: 1 }}>
-                {m.avatar_url ? (
-                  <Image
-                    source={{ uri: m.avatar_url }}
-                    style={{ width: 24, height: 24, borderRadius: 12 }}
-                  />
-                ) : (
-                  <Stack
-                    align="center"
-                    justify="center"
-                    style={{
-                      width: 24,
-                      height: 24,
-                      borderRadius: 12,
-                      backgroundColor: colors.info[500],
-                    }}
-                  >
-                    <Text style={{ color: '#fff', fontWeight: '600', fontSize: 11 }}>
-                      {(m.display_name ?? '?').slice(0, 1).toUpperCase()}
-                    </Text>
+          {filteredMembers.map((m, idx) => {
+            const isLast = idx === filteredMembers.length - 1
+            return (
+              <Pressable
+                key={m.id}
+                onPress={() => onSelect(m)}
+                disabled={disabled}
+                style={({ pressed }) => ({
+                  paddingVertical: 10,
+                  paddingHorizontal: 12,
+                  borderBottomWidth: isLast ? 0 : 1,
+                  borderBottomColor: colors.border[t].subtle,
+                  backgroundColor: pressed ? colors.bg[t].muted : 'transparent',
+                  opacity: disabled ? 0.5 : 1,
+                  ...(Platform.OS === 'web' ? ({ cursor: 'pointer' } as object) : {}),
+                })}
+              >
+                <Row align="center" gap={10}>
+                  {m.avatar_url ? (
+                    <Image
+                      source={{ uri: m.avatar_url }}
+                      style={{ width: 32, height: 32, borderRadius: 16 }}
+                    />
+                  ) : (
+                    <Stack
+                      align="center"
+                      justify="center"
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: 16,
+                        backgroundColor: colors.info[500],
+                      }}
+                    >
+                      <Text style={{ color: '#fff', fontWeight: '600', fontSize: 13 }}>
+                        {(m.display_name ?? '?').slice(0, 1).toUpperCase()}
+                      </Text>
+                    </Stack>
+                  )}
+                  <Stack gap={2} style={{ flex: 1, minWidth: 0 }}>
+                    <Row align="center" gap={6}>
+                      <Text
+                        style={{ fontSize: 14, fontWeight: '600', color: colors.text[t].primary }}
+                        numberOfLines={1}
+                      >
+                        {m.display_name ?? 'Member'}
+                      </Text>
+                      {m.is_verified ? <Check size={14} color={colors.info[500]} /> : null}
+                    </Row>
+                    {m.headline ? (
+                      <Text
+                        style={{ fontSize: 12, color: colors.text[t].secondary }}
+                        numberOfLines={1}
+                      >
+                        {m.headline}
+                      </Text>
+                    ) : null}
                   </Stack>
-                )}
-                <Stack gap={1} style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 13, fontWeight: '600' }}>
-                    {m.display_name ?? 'Member'}
-                  </Text>
-                  {m.headline ? (
-                    <Text style={{ fontSize: 11, color: colors.text[t].secondary }}>
-                      {m.headline}
-                    </Text>
-                  ) : null}
-                </Stack>
-                {m.is_verified ? <Check size={14} color={colors.info[500]} /> : null}
-              </Row>
-            </Button>
-          ))}
+                </Row>
+              </Pressable>
+            )
+          })}
         </Stack>
       )}
     </Stack>

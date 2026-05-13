@@ -1,11 +1,9 @@
 import { useFollowing, useUnfollowUserMutation } from '@scf/core/utils/engagement-sdk-hooks'
-import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import type { Follow } from '@scaffald/sdk/resources/follows'
-import type { ColumnDef } from '@tanstack/react-table'
 import { useToast, useThemeContext } from '@scaffald/ui'
 import { UserMinus } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
-import { Avatar, Button, Input, SkeletonList, Table, Text, Row, Stack } from '@scaffald/ui'
+import { Avatar, Button, Input, SkeletonList, Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -58,65 +56,6 @@ export function FollowingList() {
     [unfollowMutation]
   )
 
-  const columnDefs = useMemo<ColumnDef<Follow & Record<string, unknown>>[]>(
-    () => [
-      {
-        accessorKey: 'followee',
-        header: 'User',
-        cell: ({ row }) => {
-          const follow = row.original
-          const followee = follow.followee
-          const name = followee?.name || 'Unknown'
-          const avatar = followee?.avatar_url
-
-          return (
-            <Row align="center" gap={8}>
-              <Avatar
-                size={32}
-                src={avatar ? { uri: avatar } : undefined}
-                initials={!avatar ? name.charAt(0).toUpperCase() : undefined}
-                color="primary"
-              />
-              <Text>{name}</Text>
-            </Row>
-          )
-        },
-      },
-      {
-        accessorKey: 'created_at',
-        header: 'Following Since',
-        cell: ({ row }) => {
-          const date = row.original.created_at
-          return <Text style={{ color: colors.text[t].secondary }}>{date ? new Date(date).toLocaleDateString() : '-'}</Text>
-        },
-      },
-      {
-        id: 'actions',
-        header: 'Actions',
-        cell: ({ row }) => {
-          const follow = row.original
-          return (
-            <Button
-              size="sm"
-              variant="outline"
-              iconStart={UserMinus}
-              onPress={() => handleUnfollow(follow.id, follow.followee_id)}
-              disabled={unfollowMutation.isPending}
-            >
-              Unfollow
-            </Button>
-          )
-        },
-      },
-    ],
-    [t, unfollowMutation.isPending, handleUnfollow]
-  )
-
-  const tableColumns = useMemo(
-    () => columnsFromTanStack<Follow & Record<string, unknown>>(columnDefs),
-    [columnDefs]
-  )
-
   if (isLoading) {
     return <SkeletonList count={4} variant="profile" />
   }
@@ -149,12 +88,62 @@ export function FollowingList() {
           </Text>
         </Stack>
       ) : (
-        <Table
-          columns={tableColumns}
-          data={filteredFollowing as (Follow & Record<string, unknown>)[]}
-          pageSize={20}
-          emptyMessage="No users found"
-        />
+        <Stack
+          gap={0}
+          style={{
+            borderWidth: 1,
+            borderColor: colors.border[t].default,
+            borderRadius: 12,
+            overflow: 'hidden',
+            backgroundColor: colors.bg[t].default,
+          }}
+        >
+          {filteredFollowing.map((follow: Follow, idx: number) => {
+            const followee = follow.followee
+            const name = followee?.name || 'Unknown'
+            const avatar = followee?.avatar_url
+            const date = follow.created_at ? new Date(follow.created_at).toLocaleDateString() : '-'
+            const isLast = idx === filteredFollowing.length - 1
+
+            return (
+              <Row
+                key={follow.id}
+                align="center"
+                gap={12}
+                style={{
+                  paddingVertical: 12,
+                  paddingHorizontal: 16,
+                  borderBottomWidth: isLast ? 0 : 1,
+                  borderBottomColor: colors.border[t].subtle,
+                }}
+              >
+                <Avatar
+                  size={40}
+                  src={avatar ? { uri: avatar } : undefined}
+                  initials={!avatar ? name.charAt(0).toUpperCase() : undefined}
+                  color="primary"
+                />
+                <Stack gap={2} style={{ flex: 1, minWidth: 0 }}>
+                  <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text[t].primary }} numberOfLines={1}>
+                    {name}
+                  </Text>
+                  <Text style={{ fontSize: 12, color: colors.text[t].secondary }} numberOfLines={1}>
+                    Following since {date}
+                  </Text>
+                </Stack>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  iconStart={UserMinus}
+                  onPress={() => handleUnfollow(follow.id, follow.followee_id)}
+                  disabled={unfollowMutation.isPending}
+                >
+                  Unfollow
+                </Button>
+              </Row>
+            )
+          })}
+        </Stack>
       )}
     </Stack>
   )

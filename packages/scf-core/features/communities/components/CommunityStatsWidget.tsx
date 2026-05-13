@@ -32,8 +32,8 @@ function StatRow({
   onPress?: () => void
 }) {
   const content = (
-    <Row align="center" justify="space-between" style={{ paddingVertical: 8 }}>
-      <Row align="center" gap={8}>
+    <Row align="center" justify="space-between" style={{ paddingVertical: 10, width: '100%' }}>
+      <Row align="center" gap={10} style={{ flex: 1, minWidth: 0 }}>
         {icon}
         <Text size="md" style={{ color: colors.text[theme].secondary }}>
           {label}
@@ -47,7 +47,12 @@ function StatRow({
 
   if (onPress) {
     return (
-      <Button variant="text" onPress={onPress} style={{ paddingHorizontal: 0 }}>
+      <Button
+        variant="text"
+        onPress={onPress}
+        fullWidth
+        style={{ paddingHorizontal: 0, justifyContent: 'flex-start' }}
+      >
         {content}
       </Button>
     )

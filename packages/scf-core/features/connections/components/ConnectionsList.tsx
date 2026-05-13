@@ -1,12 +1,10 @@
 import { useConnections, useRemoveConnectionMutation } from '@scf/core/utils/engagement-sdk-hooks'
-import { columnsFromTanStack } from '@scf/core/utils/table-columns'
 import type { Connection } from '@scaffald/sdk/resources/connections'
-import type { ColumnDef } from '@tanstack/react-table'
 import { useToast, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { Download, Trash2 } from 'lucide-react-native'
 import { useCallback, useMemo, useState } from 'react'
-import { Avatar, Button, Input, SkeletonList, Table, Text, Row, Stack } from '@scaffald/ui'
+import { Avatar, Button, Input, SkeletonList, Text, Row, Stack } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 
 export function ConnectionsList() {
@@ -87,7 +85,6 @@ export function ConnectionsList() {
       .map((row: string[]) => row.map((cell: string) => `"${cell}"`).join(','))
       .join('\n')
 
-    // Web-only CSV export
     if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       const blob = new Blob([csvContent], { type: 'text/csv' })
       const url = URL.createObjectURL(blob)
@@ -109,71 +106,6 @@ export function ConnectionsList() {
       })
     }
   }
-
-  const columnDefs = useMemo<ColumnDef<Connection>[]>(
-    () => [
-      {
-        accessorKey: 'user',
-        header: 'User',
-        cell: ({ row }) => {
-          const conn = row.original
-          const requesterName =
-            `${conn.requester?.first_name || ''} ${conn.requester?.last_name || ''}`.trim()
-          const addresseeName =
-            `${conn.addressee?.first_name || ''} ${conn.addressee?.last_name || ''}`.trim()
-          const name = requesterName || addresseeName || 'Unknown'
-          const avatar = conn.requester?.avatar_url || conn.addressee?.avatar_url
-
-          return (
-            <Row align="center" gap={8}>
-              <Avatar
-                size={32}
-                src={avatar ? { uri: avatar } : undefined}
-                initials={!avatar ? name.charAt(0).toUpperCase() : undefined}
-                color="info"
-              />
-              <Text>{name}</Text>
-            </Row>
-          )
-        },
-      },
-      {
-        accessorKey: 'created_at',
-        header: 'Connected Since',
-        cell: ({ row }) => {
-          const date = row.original.created_at
-          return <Text style={{ color: colors.text[t].secondary }}>{date ? new Date(date).toLocaleDateString() : '-'}</Text>
-        },
-      },
-      {
-        id: 'actions',
-        header: 'Actions',
-        cell: ({ row }) => {
-          const conn = row.original
-          return (
-            <Button
-              size="sm"
-              variant="outline"
-              iconStart={Trash2}
-              onPress={() => handleRemove(conn.id)}
-              disabled={removeConnectionMutation.isPending}
-            >
-              Remove
-            </Button>
-          )
-        },
-      },
-    ],
-    [t, removeConnectionMutation.isPending, handleRemove]
-  )
-
-  const tableColumns = useMemo(
-    () =>
-      columnsFromTanStack<Connection & Record<string, unknown>>(
-        columnDefs as ColumnDef<Connection & Record<string, unknown>>[]
-      ),
-    [columnDefs]
-  )
 
   if (isLoading) {
     return <SkeletonList count={4} variant="profile" />
@@ -215,12 +147,65 @@ export function ConnectionsList() {
           </Text>
         </Stack>
       ) : (
-        <Table
-          columns={tableColumns}
-          data={filteredConnections as (Connection & Record<string, unknown>)[]}
-          pageSize={20}
-          emptyMessage="No connections found"
-        />
+        <Stack
+          gap={0}
+          style={{
+            borderWidth: 1,
+            borderColor: colors.border[t].default,
+            borderRadius: 12,
+            overflow: 'hidden',
+            backgroundColor: colors.bg[t].default,
+          }}
+        >
+          {filteredConnections.map((conn: Connection, idx: number) => {
+            const requesterName =
+              `${conn.requester?.first_name || ''} ${conn.requester?.last_name || ''}`.trim()
+            const addresseeName =
+              `${conn.addressee?.first_name || ''} ${conn.addressee?.last_name || ''}`.trim()
+            const name = requesterName || addresseeName || 'Unknown'
+            const avatar = conn.requester?.avatar_url || conn.addressee?.avatar_url
+            const date = conn.created_at ? new Date(conn.created_at).toLocaleDateString() : '-'
+            const isLast = idx === filteredConnections.length - 1
+
+            return (
+              <Row
+                key={conn.id}
+                align="center"
+                gap={12}
+                style={{
+                  paddingVertical: 12,
+                  paddingHorizontal: 16,
+                  borderBottomWidth: isLast ? 0 : 1,
+                  borderBottomColor: colors.border[t].subtle,
+                }}
+              >
+                <Avatar
+                  size={40}
+                  src={avatar ? { uri: avatar } : undefined}
+                  initials={!avatar ? name.charAt(0).toUpperCase() : undefined}
+                  color="info"
+                />
+                <Stack gap={2} style={{ flex: 1, minWidth: 0 }}>
+                  <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text[t].primary }} numberOfLines={1}>
+                    {name}
+                  </Text>
+                  <Text style={{ fontSize: 12, color: colors.text[t].secondary }} numberOfLines={1}>
+                    Connected {date}
+                  </Text>
+                </Stack>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  iconStart={Trash2}
+                  onPress={() => handleRemove(conn.id)}
+                  disabled={removeConnectionMutation.isPending}
+                >
+                  Remove
+                </Button>
+              </Row>
+            )
+          })}
+        </Stack>
       )}
     </Stack>
   )

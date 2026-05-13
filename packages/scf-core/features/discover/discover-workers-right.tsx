@@ -47,7 +47,7 @@ function WorkerGrowthWidget({ theme }: { theme: 'light' | 'dark' }) {
           <Text
             style={{
               fontWeight: '700',
-              fontSize: 14,
+              fontSize: 18,
               color: colors.text[theme].primary,
             }}
           >
@@ -69,7 +69,7 @@ function WorkerGrowthWidget({ theme }: { theme: 'light' | 'dark' }) {
           </Text>
           <Text
             style={{
-              fontSize: 12,
+              fontSize: 13,
               fontWeight: '500',
               color: colors.text[theme].tertiary,
             }}
@@ -116,7 +116,7 @@ function TopTradesWidget({ theme }: { theme: 'light' | 'dark' }) {
         <Text
           style={{
             fontWeight: '700',
-            fontSize: 14,
+            fontSize: 18,
             color: colors.text[theme].primary,
           }}
         >
@@ -129,7 +129,7 @@ function TopTradesWidget({ theme }: { theme: 'light' | 'dark' }) {
               <Row justify="space-between" align="center">
                 <Text
                   style={{
-                    fontSize: 12,
+                    fontSize: 13,
                     fontWeight: '600',
                     color: colors.text[theme].primary,
                   }}
@@ -138,7 +138,7 @@ function TopTradesWidget({ theme }: { theme: 'light' | 'dark' }) {
                 </Text>
                 <Text
                   style={{
-                    fontSize: 12,
+                    fontSize: 13,
                     fontWeight: '600',
                     color: colors.text[theme].secondary,
                   }}
@@ -186,11 +186,11 @@ function CommunityHubWidget({ theme }: { theme: 'light' | 'dark' }) {
     <Card variant="glass" glassMaterial="thin" padding="lg" radius="xl">
       <Stack gap={16}>
         <Row gap={8} align="center">
-          <Users size={16} color={colors.text[theme].secondary} />
+          <Users size={18} color={colors.text[theme].secondary} />
           <Text
             style={{
               fontWeight: '700',
-              fontSize: 14,
+              fontSize: 18,
               color: colors.text[theme].primary,
             }}
           >
@@ -210,21 +210,21 @@ function CommunityHubWidget({ theme }: { theme: 'light' | 'dark' }) {
         >
           <Text
             style={{
-              fontSize: 10,
+              fontSize: 11,
               fontWeight: '700',
               textTransform: 'uppercase',
               letterSpacing: 1.2,
               color: colors.text[theme].secondary,
-              marginBottom: 4,
+              marginBottom: 6,
             }}
           >
             Growth Tip
           </Text>
           <Text
             style={{
-              fontSize: 12,
+              fontSize: 13,
               fontWeight: '500',
-              lineHeight: 18,
+              lineHeight: 19,
               color: colors.text[theme].primary,
             }}
           >
@@ -234,7 +234,7 @@ function CommunityHubWidget({ theme }: { theme: 'light' | 'dark' }) {
         </View>
 
         {/* Suggested Contacts */}
-        <Stack gap={10}>
+        <Stack gap={12}>
           <Text
             style={{
               fontSize: 11,
@@ -248,12 +248,12 @@ function CommunityHubWidget({ theme }: { theme: 'light' | 'dark' }) {
           </Text>
           {SUGGESTED_CONTACTS.map((contact) => (
             <Row key={contact.name} justify="space-between" align="center">
-              <Row gap={10} align="center">
+              <Row gap={10} align="center" style={{ flex: 1, minWidth: 0 }}>
                 <View
                   style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: 16,
+                    width: 36,
+                    height: 36,
+                    borderRadius: 18,
                     backgroundColor: theme === 'dark'
                       ? colors.gray[700]
                       : colors.gray[200],
@@ -263,7 +263,7 @@ function CommunityHubWidget({ theme }: { theme: 'light' | 'dark' }) {
                 >
                   <Text
                     style={{
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: '600',
                       color: colors.text[theme].secondary,
                     }}
@@ -271,21 +271,23 @@ function CommunityHubWidget({ theme }: { theme: 'light' | 'dark' }) {
                     {contact.name.charAt(0)}
                   </Text>
                 </View>
-                <Stack gap={1}>
+                <Stack gap={2} style={{ flex: 1, minWidth: 0 }}>
                   <Text
                     style={{
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: '700',
                       color: colors.text[theme].primary,
                     }}
+                    numberOfLines={1}
                   >
                     {contact.name}
                   </Text>
                   <Text
                     style={{
-                      fontSize: 10,
+                      fontSize: 12,
                       color: colors.text[theme].tertiary,
                     }}
+                    numberOfLines={1}
                   >
                     {contact.role}
                   </Text>
@@ -293,9 +295,11 @@ function CommunityHubWidget({ theme }: { theme: 'light' | 'dark' }) {
               </Row>
               <Text
                 style={{
-                  fontSize: 10,
+                  fontSize: 12,
                   fontWeight: '700',
                   color: colors.text[theme].secondary,
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.5,
                 }}
               >
                 Connect
