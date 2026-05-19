@@ -22,7 +22,7 @@ type DashboardPageProps = Omit<DashboardLayoutProps, 'breadcrumbItems'> & {
   pageTitle?: string | (() => string | null)
   /** Dependency list for re-computing dynamic page titles */
   pageTitleDeps?: ReadonlyArray<unknown>
-  /** Optional formatter for web document.title */
+  /** Optional formatter for the web page title (used by `setDocumentTitle`) */
   formatDocumentTitle?: (title: string) => string
 }
 

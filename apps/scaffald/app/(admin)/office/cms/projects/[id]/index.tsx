@@ -7,11 +7,12 @@ import {
 } from '@scf/core/utils/projects-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { CheckCircle, Clock, Eye, EyeOff, Plus, XCircle } from 'lucide-react-native'
-import { useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Button, Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 
 export default function ProjectDetailPage() {
   const { id } = useLocalSearchParams<{ id: string }>()
+  const router = useRouter()
   const queryClient = useQueryClient()
 
   const { data, isLoading } = useProject(id as string, { enabled: !!id })
@@ -128,8 +129,7 @@ export default function ProjectDetailPage() {
               <Text>{project.name}</Text>
               <Button
                 onPress={() => {
-                  // Navigate to edit page
-                  window.location.href = RouteBuilder.projectEdit(project.id)
+                  router.push(RouteBuilder.projectEdit(project.id))
                 }}
               >
                 Edit

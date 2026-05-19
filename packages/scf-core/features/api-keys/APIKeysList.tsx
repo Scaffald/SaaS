@@ -17,6 +17,7 @@ import {
   useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { copyToClipboard as copyText } from '@scf/core/utils/clipboard'
 import { Copy, Key, MoreVertical, Plus, Trash2 } from 'lucide-react-native'
 import { format } from 'date-fns'
 
@@ -53,7 +54,7 @@ export function APIKeysList({
   const [copiedKeyId, setCopiedKeyId] = useState<string | null>(null)
 
   const copyToClipboard = (text: string, keyId: string) => {
-    navigator.clipboard.writeText(text)
+    void copyText(text)
     setCopiedKeyId(keyId)
     setTimeout(() => setCopiedKeyId(null), 2000)
   }

@@ -1,7 +1,8 @@
 import { ExternalLink, Link as LinkIcon, Upload, X } from 'lucide-react-native'
-import { type ChangeEvent, useState } from 'react'
+import { useState } from 'react'
 import { Button, Card, Input, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { openExternalLink, pickFile } from '@scf/core/utils/platform'
 
 interface CertificationProofCardProps {
   certificationTitle: string
@@ -30,9 +31,9 @@ export function CertificationProofCard({
   const [urlInput, setUrlInput] = useState(proofValue || '')
   const [uploading, setUploading] = useState(false)
 
-  const handleFileSelect = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
+  const handlePickAndUpload = async () => {
+    const [picked] = await pickFile({ accept: '.pdf,.jpg,.jpeg,.png' })
+    if (!picked?.file) return
 
     setUploading(true)
     try {
@@ -41,7 +42,7 @@ export function CertificationProofCard({
         const base64 = reader.result as string
         await onSaveProof('file', base64)
       }
-      reader.readAsDataURL(file)
+      reader.readAsDataURL(picked.file)
     } catch (error) {
       console.error('File upload error:', error)
     } finally {
@@ -108,22 +109,12 @@ export function CertificationProofCard({
           </Stack>
         ) : (
           <Stack gap={12}>
-            <Button
-              onPress={() => document.getElementById('cert-file-input')?.click()}
-              disabled={uploading}
-            >
+            <Button onPress={handlePickAndUpload} disabled={uploading}>
               <Row gap={8} align="center">
                 <Upload size="lg" />
                 <Text>{uploading ? 'Uploading...' : 'Choose File'}</Text>
               </Row>
             </Button>
-            <input
-              id="cert-file-input"
-              type="file"
-              accept=".pdf,.jpg,.jpeg,.png"
-              style={{ display: 'none' }}
-              onChange={handleFileSelect}
-            />
             <Text style={{ color: colors.text[t].secondary, textAlign: 'center' }}>
               Accepted formats: PDF, JPG, PNG
             </Text>
@@ -138,7 +129,9 @@ export function CertificationProofCard({
                 size="sm"
                 style={{ flex: 1 }}
                 variant="outline"
-                onPress={() => proofType === 'url' && window.open(proofValue, '_blank')}
+                onPress={() => {
+                  if (proofType === 'url' && proofValue) openExternalLink(proofValue)
+                }}
               >
                 <Row gap={8} align="center">
                   <ExternalLink size="lg" />

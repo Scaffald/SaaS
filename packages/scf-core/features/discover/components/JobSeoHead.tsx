@@ -1,4 +1,5 @@
 import { Platform } from 'react-native'
+import { setDocumentTitle } from '@scf/core/utils/platform'
 import type { Job, ExternalJob } from '@scaffald/sdk'
 
 /**
@@ -54,10 +55,7 @@ export function JobSeoHead({ job, canonicalUrl }: JobSeoHeadProps) {
         ? [job.location.city, job.location.state].filter(Boolean).join(', ')
         : ''
 
-  // Update document title
-  if (typeof document !== 'undefined') {
-    document.title = pageTitle
-  }
+  setDocumentTitle(pageTitle)
 
   return (
     <>

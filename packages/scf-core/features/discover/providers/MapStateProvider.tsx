@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
   createContext,
   type ReactNode,
@@ -8,8 +7,8 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { Platform } from 'react-native'
 import { useIsomorphicLayoutEffect } from '@scf/core/hooks/useIsomorphicLayoutEffect'
+import { kvStorage } from '@scf/core/utils/platform'
 
 /**
  * Map state interface for persisting search location, filters, and UI preferences
@@ -80,47 +79,23 @@ interface PersistedMapState {
   data: MapState
 }
 
-// Platform-specific storage functions
 const getStoredState = async (): Promise<MapState | null> => {
-  if (Platform.OS === 'web') {
-    if (typeof window === 'undefined') return null
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY)
-      if (!stored) return null
+  try {
+    const stored = await kvStorage.get(STORAGE_KEY)
+    if (!stored) return null
 
-      const parsed = JSON.parse(stored) as PersistedMapState
+    const parsed = JSON.parse(stored) as PersistedMapState
 
-      // Check expiry (24 hours)
-      const now = Date.now()
-      if (now - parsed.timestamp > EXPIRY_MS) {
-        localStorage.removeItem(STORAGE_KEY)
-        return null
-      }
-
-      return parsed.data
-    } catch (error) {
-      console.warn('MapStateProvider: unable to parse stored state', error)
+    // Check expiry (24 hours)
+    if (Date.now() - parsed.timestamp > EXPIRY_MS) {
+      await kvStorage.remove(STORAGE_KEY)
       return null
     }
-  } else {
-    try {
-      const stored = await AsyncStorage.getItem(STORAGE_KEY)
-      if (!stored) return null
 
-      const parsed = JSON.parse(stored) as PersistedMapState
-
-      // Check expiry (24 hours)
-      const now = Date.now()
-      if (now - parsed.timestamp > EXPIRY_MS) {
-        await AsyncStorage.removeItem(STORAGE_KEY)
-        return null
-      }
-
-      return parsed.data
-    } catch (error) {
-      console.warn('MapStateProvider: unable to parse stored state', error)
-      return null
-    }
+    return parsed.data
+  } catch (error) {
+    console.warn('MapStateProvider: unable to parse stored state', error)
+    return null
   }
 }
 
@@ -131,18 +106,9 @@ const setStoredState = (state: MapState) => {
     data: state,
   }
 
-  if (Platform.OS === 'web') {
-    if (typeof window === 'undefined') return
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(persisted))
-    } catch (error) {
-      console.warn('MapStateProvider: unable to store state', error)
-    }
-  } else {
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(persisted)).catch((error) => {
-      console.warn('MapStateProvider: unable to store state', error)
-    })
-  }
+  void kvStorage.set(STORAGE_KEY, JSON.stringify(persisted)).catch((error) => {
+    console.warn('MapStateProvider: unable to store state', error)
+  })
 }
 
 // Start early state loading
@@ -230,16 +196,9 @@ export const MapStateProvider = ({ children }: { children: ReactNode }) => {
 
   const clearState = useCallback(() => {
     setStateInternal(defaultState)
-    // Also clear from storage
-    if (Platform.OS === 'web') {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem(STORAGE_KEY)
-      }
-    } else {
-      AsyncStorage.removeItem(STORAGE_KEY).catch(() => {
-        // Ignore errors
-      })
-    }
+    void kvStorage.remove(STORAGE_KEY).catch(() => {
+      // Ignore errors
+    })
   }, [])
 
   const contextValue = useMemo<MapStateContextValue>(

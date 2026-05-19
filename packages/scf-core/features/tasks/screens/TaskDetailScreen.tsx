@@ -30,6 +30,7 @@ import { colors } from '@scaffald/ui/tokens'
 import { ArrowLeft, Trash2 } from 'lucide-react-native'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
+import { confirmDialog } from '@scf/core/utils/platform'
 import type { Task, TaskPriority, TaskStatus } from '@scaffald/sdk'
 
 import {
@@ -151,12 +152,15 @@ export function TaskDetailScreen({ taskId, orgSlug }: TaskDetailScreenProps) {
     setTeamSlug(task.team_slug ?? '')
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!task) return
-    // Inline confirm via window.confirm on web; no-op on native (will land later).
-    if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
-      if (!window.confirm(`Delete task "${task.title}"? This cannot be undone.`)) return
-    }
+    const ok = await confirmDialog({
+      title: 'Delete task?',
+      message: `Delete task "${task.title}"? This cannot be undone.`,
+      confirmLabel: 'Delete',
+      destructive: true,
+    })
+    if (!ok) return
     deleteMutation.mutate(task.id)
   }
 

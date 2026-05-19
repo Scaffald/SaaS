@@ -1,4 +1,5 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
+import { openExternalLink } from '@scf/core/utils/platform'
 import { formatDateRange } from '@scf/core/features/profile/utils/date-formatting'
 import { useConnectionStatus } from '@scf/core/features/user-profile/hooks/useConnectionStatus'
 import { useFollowStatus } from '@scf/core/features/user-profile/hooks/useFollowStatus'
@@ -334,9 +335,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
 
   const handleOpenInNewTab = () => {
     if (!userId) return
-    if (typeof window !== 'undefined') {
-      window.open(buildPath(ROUTES.DASHBOARD.USER, { userId }), '_blank')
-    }
+    openExternalLink(buildPath(ROUTES.DASHBOARD.USER, { userId }))
   }
 
   const formatHourlyRate = (cents: number | null) => {

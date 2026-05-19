@@ -5,7 +5,8 @@ import { colors } from '@scaffald/ui/tokens'
 import { Users, X, Check, Loader } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useState, useCallback } from 'react'
-import { Pressable, View, Text, ScrollView, Platform } from 'react-native'
+import { Platform, Pressable, View, Text, ScrollView } from 'react-native'
+import { reloadPage } from '@scf/core/utils/platform'
 
 const DEMO_ACCOUNTS = [
   { label: 'Clay (Admin)', email: 'clay@unicorn.love', role: 'Platform Admin', seeded: true },
@@ -50,11 +51,11 @@ export function AccountSwitcher() {
         }
         setIsOpen(false)
         setSwitching(null)
-        if (Platform.OS === 'web') {
-          window.location.href = '/'
-        } else {
-          router.replace('/')
-        }
+        // Replace navigation, then force a reload on web so providers
+        // re-read the new auth session cleanly. Native re-uses the existing
+        // provider tree.
+        router.replace('/')
+        reloadPage()
       } catch (e) {
         console.error('Account switch error:', e)
         setSwitching(null)

@@ -7,6 +7,7 @@
 import { useState } from 'react'
 import { Stack } from '@scaffald/ui'
 import { useToast } from '@scaffald/ui'
+import { confirmDialog } from '@scf/core/utils/platform'
 import { APIKeysList } from './APIKeysList'
 import { APIKeyCreateModal } from './APIKeyCreateModal'
 import { APIKeyScopesManager } from './APIKeyScopesManager'
@@ -94,12 +95,13 @@ export function DeveloperPortal() {
   }
 
   const handleRevokeKey = async (keyId: string) => {
-    // Confirm before revoking
-    if (
-      !window.confirm('Are you sure you want to revoke this API key? This action cannot be undone.')
-    ) {
-      return
-    }
+    const ok = await confirmDialog({
+      title: 'Revoke API key?',
+      message: 'Are you sure you want to revoke this API key? This action cannot be undone.',
+      confirmLabel: 'Revoke',
+      destructive: true,
+    })
+    if (!ok) return
 
     try {
       await revokeKey.mutateAsync(keyId)

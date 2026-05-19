@@ -1,4 +1,5 @@
 import { useConnections, useRemoveConnectionMutation } from '@scf/core/utils/engagement-sdk-hooks'
+import { downloadFile } from '@scf/core/utils/platform'
 import type { Connection } from '@scaffald/sdk/resources/connections'
 import { useToast, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
@@ -85,13 +86,13 @@ export function ConnectionsList() {
       .map((row: string[]) => row.map((cell: string) => `"${cell}"`).join(','))
       .join('\n')
 
-    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+    if (typeof window !== 'undefined' && typeof Blob !== 'undefined') {
       const blob = new Blob([csvContent], { type: 'text/csv' })
       const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `connections-${new Date().toISOString().split('T')[0]}.csv`
-      link.click()
+      void downloadFile({
+        url,
+        filename: `connections-${new Date().toISOString().split('T')[0]}.csv`,
+      })
       URL.revokeObjectURL(url)
       toast.show({
         title: 'Success',

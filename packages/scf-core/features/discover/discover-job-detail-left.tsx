@@ -8,6 +8,7 @@ import { ExternalLink } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { Button, Skeleton, SkeletonBox, SkeletonText, Text, Stack, Row } from '@scaffald/ui'
+import { openExternalLink } from '@scf/core/utils/platform'
 
 interface DiscoverJobDetailLeftProps {
   jobId: string
@@ -290,12 +291,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
               job_id: job.id,
               url: job.url || null,
             })
-            if (job.url) {
-              // Open external URL
-              if (typeof window !== 'undefined') {
-                window.open(job.url, '_blank')
-              }
-            }
+            if (job.url) openExternalLink(job.url)
           }}
         >
           <Row gap={8} align="center">

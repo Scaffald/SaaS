@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { ScrollView } from "react-native";
+import { Platform, ScrollView } from "react-native";
 import {
   Button,
   Card,
@@ -235,9 +235,9 @@ export function NotificationPopover({
       }
     };
 
-    if (typeof window !== "undefined") {
-      window.addEventListener("keydown", handleEscape);
-      return () => window.removeEventListener("keydown", handleEscape);
+    if (Platform.OS === "web" && typeof window !== "undefined") {
+      window.addEventListener("keydown", handleEscape); // platform-allow: gated by Platform.OS === 'web'
+      return () => window.removeEventListener("keydown", handleEscape); // platform-allow: gated by Platform.OS === 'web'
     }
   }, [open]);
 

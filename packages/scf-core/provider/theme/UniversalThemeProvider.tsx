@@ -1,9 +1,9 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { StatusBar } from 'expo-status-bar'
 import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from 'react'
 import { Appearance, Platform, useColorScheme } from 'react-native'
 import { useIsomorphicLayoutEffect } from '@scf/core/hooks/useIsomorphicLayoutEffect'
+import { kvStorage } from '@scf/core/utils/platform'
 import { colors } from '@scaffald/ui/tokens'
 
 type ThemeProviderProps = {
@@ -18,37 +18,18 @@ export const ThemeContext = createContext<ThemeContextValue>(null)
 
 type ThemeName = 'light' | 'dark' | 'system'
 
-// Platform-specific theme storage
 const getStoredTheme = async (): Promise<ThemeName | null> => {
-  if (Platform.OS === 'web') {
-    if (typeof window === 'undefined') return null
-    try {
-      return localStorage.getItem('@preferred_theme') as ThemeName | null
-    } catch {
-      return null
-    }
-  } else {
-    try {
-      return (await AsyncStorage.getItem('@preferred_theme')) as ThemeName | null
-    } catch {
-      return null
-    }
+  try {
+    return (await kvStorage.get('@preferred_theme')) as ThemeName | null
+  } catch {
+    return null
   }
 }
 
 const setStoredTheme = (theme: ThemeName) => {
-  if (Platform.OS === 'web') {
-    if (typeof window === 'undefined') return
-    try {
-      localStorage.setItem('@preferred_theme', theme)
-    } catch {
-      // Ignore storage errors
-    }
-  } else {
-    AsyncStorage.setItem('@preferred_theme', theme).catch(() => {
-      // Ignore storage errors
-    })
-  }
+  void kvStorage.set('@preferred_theme', theme).catch(() => {
+    // Ignore storage errors
+  })
 }
 
 // Platform-specific system theme detection

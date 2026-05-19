@@ -11,8 +11,8 @@ import {
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
-import * as WebBrowser from 'expo-web-browser'
-import { Image, Platform, Pressable, View } from 'react-native'
+import { Image, Pressable, View } from 'react-native'
+import { openExternalLink } from '@scf/core/utils/platform'
 
 function NewsItem({
   item,
@@ -24,13 +24,7 @@ function NewsItem({
   const { theme } = useThemeContext()
 
   const handlePress = () => {
-    const url = item.link
-    if (!url) return
-    if (Platform.OS === 'web') {
-      window.open(url, '_blank', 'noopener')
-    } else {
-      WebBrowser.openBrowserAsync(url).catch(() => {})
-    }
+    if (item.link) openExternalLink(item.link, { inApp: true })
   }
 
   return (

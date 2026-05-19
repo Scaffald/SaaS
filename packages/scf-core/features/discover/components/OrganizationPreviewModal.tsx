@@ -1,4 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
+import { openExternalLink } from '@scf/core/utils/platform'
 import {
   useOrganization,
   useOrganizationOpenJobsCount,
@@ -55,9 +56,7 @@ export function OrganizationPreviewModal({
 
   const handleOpenInNewTab = () => {
     if (!organizationId) return
-    if (typeof window !== 'undefined') {
-      window.open(`${ROUTES.JOBS.path}?org=${organizationId}`, '_blank')
-    }
+    openExternalLink(`${ROUTES.JOBS.path}?org=${organizationId}`)
   }
 
   const formatAddress = (address: unknown) => {
@@ -188,9 +187,7 @@ export function OrganizationPreviewModal({
                   }}
                   onPress={() => {
                     const url = (organization as { website_url?: string }).website_url
-                    if (url && typeof window !== 'undefined') {
-                      window.open(url, '_blank')
-                    }
+                    if (url) openExternalLink(url)
                   }}
                 >
                   {(organization as { website_url?: string }).website_url?.replace(/^https?:\/\//, '')}

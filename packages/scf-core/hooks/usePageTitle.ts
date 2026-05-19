@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native'
 import type { NavigationProp, ParamListBase } from '@react-navigation/native'
 import { useEffect, useMemo } from 'react'
-import { Platform } from 'react-native'
+import { setDocumentTitle } from '@scf/core/utils/platform'
 
 declare const __DEV__: boolean | undefined
 
@@ -97,9 +97,6 @@ export function usePageTitle({
     }
 
     navigation.setOptions({ title: safeTitle })
-
-    if (Platform.OS === 'web' && typeof document !== 'undefined') {
-      document.title = formatDocumentTitle(safeTitle)
-    }
+    setDocumentTitle(formatDocumentTitle(safeTitle))
   }, [navigation, safeTitle, formatDocumentTitle])
 }

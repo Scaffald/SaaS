@@ -1,7 +1,6 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { useCurrentUser } from '@scf/core/utils/profile-general-sdk-hooks'
 import { useGeneralInfoWidget, useSkillsWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
-import { redirect } from '@scf/core/utils/redirect'
 import {
   Button,
   DashboardWidgetHeader,
@@ -19,9 +18,9 @@ import {
 import { colors } from '@scaffald/ui/tokens'
 import { AlertCircle, RefreshCw } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import * as WebBrowser from 'expo-web-browser'
+import { openExternalLink } from '@scf/core/utils/platform'
 import { useMemo, useState } from 'react'
-import { Image, Platform, Pressable } from 'react-native'
+import { Image, Pressable } from 'react-native'
 import type { NewsItem, NewsWidgetProps } from './config/types'
 import { useAggregatedNews } from './hooks/useNewsFeed'
 import { useNewsIndustryResolution } from './hooks/useNewsIndustryResolution'
@@ -377,21 +376,7 @@ export function NewsWidget({
       return
     }
 
-    try {
-      if (Platform.OS === 'web') {
-        window.open(article.link, '_blank', 'noopener,noreferrer')
-      } else {
-        await WebBrowser.openBrowserAsync(article.link, {
-          enableBarCollapsing: true,
-          dismissButtonStyle: 'close',
-          toolbarColor: '#0f172a',
-          controlsColor: '#2563eb',
-        })
-      }
-    } catch (browserError) {
-      console.warn('Failed to open article in web browser, redirecting:', browserError)
-      redirect(article.link)
-    }
+    openExternalLink(article.link, { inApp: true })
   }
 
   const handleViewAll = () => {

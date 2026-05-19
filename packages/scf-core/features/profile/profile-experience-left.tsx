@@ -27,6 +27,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { H4, Input, Spinner, Text, TextArea, Row, Stack } from "@scaffald/ui";
 import { Pressable } from "react-native";
+import { useUnsavedChangesPrompt } from "@scf/core/utils/platform";
 import {
   CAREER_LEVEL_OPTIONS,
   createNewExperienceEntry,
@@ -149,20 +150,7 @@ export function ProfileExperienceLeft() {
     }
   }, [experienceQuery.data, experienceSummaryQuery.data, reset]);
 
-  // Browser navigation guard - prevent data loss on page close/navigation
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isDirty) {
-        e.preventDefault();
-        e.returnValue = ""; // Required for Chrome
-      }
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [isDirty]);
+  useUnsavedChangesPrompt(isDirty);
 
   // Handle edit mode - entries are already loaded in form from API
   // When editingEntryId is set, the entry should already exist in form fields

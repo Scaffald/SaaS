@@ -384,9 +384,9 @@ export const DiscoverMapScreen = () => {
     const handleResize = () => {
       updateHoverCardPosition(activePinId)
     }
-    window.addEventListener('resize', handleResize)
+    window.addEventListener('resize', handleResize) // platform-allow: gated by Platform.OS !== 'web' return
     return () => {
-      window.removeEventListener('resize', handleResize)
+      window.removeEventListener('resize', handleResize) // platform-allow: gated by Platform.OS !== 'web' return
     }
   }, [hoverCardVisible, activePinId, updateHoverCardPosition])
 

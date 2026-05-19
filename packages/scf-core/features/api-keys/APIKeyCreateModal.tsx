@@ -22,6 +22,7 @@ import {
   useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { copyToClipboard as copyText } from '@scf/core/utils/clipboard'
 import { AlertCircle, CheckCircle, Copy } from 'lucide-react-native'
 import { format, addMonths } from 'date-fns'
 
@@ -182,7 +183,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
 
   const copyToClipboard = () => {
     if (createdKey) {
-      navigator.clipboard.writeText(createdKey.key)
+      void copyText(createdKey.key)
       setKeyCopied(true)
     }
   }

@@ -6,6 +6,7 @@ import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
 import { Button, Separator, Skeleton, SkeletonAvatar, SkeletonBox, SkeletonText, Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { openExternalLink } from '@scf/core/utils/platform'
 
 type DiscoverEmployerDetailLeftProps = {
   employerId: string
@@ -166,11 +167,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
             size="md"
             variant="outline"
             iconStart={ExternalLink}
-            onPress={() => {
-              if (typeof window !== 'undefined') {
-                window.open(websiteUrl, '_blank')
-              }
-            }}
+            onPress={() => openExternalLink(websiteUrl)}
           >
             Visit Website
           </Button>

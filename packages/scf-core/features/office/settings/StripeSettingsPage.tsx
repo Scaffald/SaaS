@@ -1,4 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
+import { copyToClipboard } from '@scf/core/utils/clipboard'
 import { useToast, useThemeContext } from '@scaffald/ui'
 import { useEffect, useMemo, useState } from 'react'
 import {
@@ -133,24 +134,13 @@ export function StripeSettingsPage() {
 
   const handleCopyWebhook = async () => {
     if (!webhookUrl) return
-    const canCopy = typeof navigator !== 'undefined' && Boolean(navigator?.clipboard?.writeText)
-
-    if (!canCopy) {
-      toast.show({
-        title: 'Error',
-        message: 'Clipboard access is not available on this device.',
-        variant: 'error',
-      })
-      return
-    }
-
-    try {
-      await navigator.clipboard.writeText(webhookUrl)
+    const success = await copyToClipboard(webhookUrl)
+    if (success) {
       toast.show({
         title: 'Copied',
         message: 'Webhook endpoint copied to clipboard',
       })
-    } catch {
+    } else {
       toast.show({
         title: 'Error',
         message: 'Unable to copy to clipboard',

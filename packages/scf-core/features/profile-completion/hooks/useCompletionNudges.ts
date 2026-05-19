@@ -1,4 +1,5 @@
 import { usePersonalizedBenefits } from '@scf/core/utils/profile-completion-sdk-hooks'
+import { sessionKvStorage } from '@scf/core/utils/platform'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 export interface PersonalizedBenefit {
@@ -31,9 +32,7 @@ export function useCompletionNudges(): UseCompletionNudgesReturn {
   const storedIdRef = useRef<string | null>(null)
 
   useEffect(() => {
-    if (typeof sessionStorage !== 'undefined') {
-      storedIdRef.current = sessionStorage.getItem(SESSION_STORAGE_KEY)
-    }
+    storedIdRef.current = sessionKvStorage.get(SESSION_STORAGE_KEY)
 
     if (benefits.length === 0) {
       setCurrentIndex(0)
@@ -75,9 +74,7 @@ export function useCompletionNudges(): UseCompletionNudgesReturn {
 
   useEffect(() => {
     if (!currentBenefit) return
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.setItem(SESSION_STORAGE_KEY, currentBenefit.id)
-    }
+    sessionKvStorage.set(SESSION_STORAGE_KEY, currentBenefit.id)
   }, [currentBenefit])
 
   return {

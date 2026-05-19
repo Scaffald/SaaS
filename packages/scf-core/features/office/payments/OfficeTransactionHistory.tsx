@@ -4,6 +4,7 @@ import {
 } from "@scf/core/utils/payments-sdk-hooks";
 import type { PaymentTransaction } from "@scaffald/sdk";
 import { columnsFromTanStack } from "@scf/core/utils/table-columns";
+import { downloadFile } from "@scf/core/utils/platform";
 import { ResponsiveSelect, Table, useThemeContext } from "@scaffald/ui";
 import { Download, FileText, RefreshCw } from "lucide-react-native";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -85,12 +86,10 @@ export function OfficeTransactionHistory() {
         type: result.data.contentType,
       });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `transactions-${new Date().toISOString().split("T")[0]}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      void downloadFile({
+        url,
+        filename: `transactions-${new Date().toISOString().split("T")[0]}.csv`,
+      });
       URL.revokeObjectURL(url);
     }
   };

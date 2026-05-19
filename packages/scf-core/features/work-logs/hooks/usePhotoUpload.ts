@@ -111,7 +111,7 @@ const toWorkLogPhoto = (record: Record<string, unknown>): WorkLogPhoto => {
 };
 
 const createCanvas = (width: number, height: number) => {
-  const canvas = document.createElement("canvas");
+  const canvas = document.createElement("canvas"); // platform-allow: callers only fire from compressWebImage (web-only File blobs)
   canvas.width = width;
   canvas.height = height;
   const context = canvas.getContext("2d");

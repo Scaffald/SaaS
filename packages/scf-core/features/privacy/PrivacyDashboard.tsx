@@ -13,6 +13,7 @@
 import { useState } from "react";
 import { Button, ScrollView, Spinner, Text, Row, Stack, useThemeContext } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
+import { openExternalLink, reloadPage } from "@scf/core/utils/platform";
 import {
   useCCPADataSummary,
   useCCPAMyRequests,
@@ -72,7 +73,7 @@ export function PrivacyDashboard() {
         <Text style={{ color: colors.text[theme].secondary, textAlign: "center" }}>
           {dataError?.message || historyError?.message || appsError?.message}
         </Text>
-        <Button onPress={() => window.location.reload()} variant="outline">
+        <Button onPress={reloadPage} variant="outline">
           Retry
         </Button>
       </Stack>
@@ -229,21 +230,19 @@ export function PrivacyDashboard() {
           <Stack gap={8}>
             <Text
               style={{ color: colors.info[600] }}
-              onPress={() => window.open("/privacy-policy", "_blank")}
+              onPress={() => openExternalLink("/privacy-policy")}
             >
               Read our full Privacy Policy
             </Text>
             <Text
               style={{ color: colors.info[600] }}
-              onPress={() => window.open("/terms", "_blank")}
+              onPress={() => openExternalLink("/terms")}
             >
               Terms of Service
             </Text>
             <Text
               style={{ color: colors.info[600] }}
-              onPress={() =>
-                window.open("https://oag.ca.gov/privacy/ccpa", "_blank")
-              }
+              onPress={() => openExternalLink("https://oag.ca.gov/privacy/ccpa")}
             >
               Learn more about CCPA
             </Text>
@@ -256,7 +255,7 @@ export function PrivacyDashboard() {
             Questions about your privacy? Contact our Privacy Team at{" "}
             <Text
               style={{ color: colors.info[600] }}
-              onPress={() => window.open("mailto:privacy@scaffald.com")}
+              onPress={() => openExternalLink("mailto:privacy@scaffald.com")}
             >
               privacy@scaffald.com
             </Text>
