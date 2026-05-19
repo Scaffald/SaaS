@@ -33,7 +33,7 @@ function getStrengthLabel(pct: number): 'Advanced' | 'Intermediate' | 'Beginner'
 
 export function ProfileStrengthCard() {
   const { theme } = useThemeContext()
-  const { completionData, isLoading } = useProfileCompletion()
+  const { completionData, isLoading, isError } = useProfileCompletion()
 
   if (isLoading) {
     return (
@@ -49,7 +49,13 @@ export function ProfileStrengthCard() {
     )
   }
 
-  const completion = completionData?.completionPercentage ?? 0
+  // Don't conflate a fetch failure or pre-data state with "0% complete" — the
+  // user would have no way to tell a true zero from a network error.
+  if (isError || !completionData) {
+    return null
+  }
+
+  const completion = completionData.completionPercentage ?? 0
   const label = getStrengthLabel(completion)
   const badgeColor =
     completion >= 80
