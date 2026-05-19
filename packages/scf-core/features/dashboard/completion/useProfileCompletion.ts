@@ -26,7 +26,7 @@ export interface ProfileCompletionData {
 }
 
 export const useProfileCompletion = () => {
-  const { data: status, isLoading } = useCompletionStatus()
+  const { data: status, isLoading, isError, error } = useCompletionStatus()
 
   const completionData = useMemo((): ProfileCompletionData | null => {
     if (!status) return null
@@ -62,5 +62,7 @@ export const useProfileCompletion = () => {
   return {
     completionData,
     isLoading,
+    isError,
+    error,
   }
 }
