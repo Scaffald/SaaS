@@ -199,21 +199,35 @@ app.openapi(
       return c.json({ error: "Unauthorized" }, 401);
     }
 
+    // Translate SDK shape → DB schema shape.
+    // SDK uses entryType single_day|date_range and time_entries {start_time,end_time};
+    // DB schema (core.work_logs) uses entry_type daily|project|task and
+    // time_entries {start,end}. See DOGFOODING-BUGS.md for the rename plan.
+    const entryTypeForDb = body.entryType === "date_range" ? "project" : "daily";
+    const timeEntriesForDb = (body.timeEntries ?? []).map(
+      (e: { start_time?: string; end_time?: string; start?: string; end?: string }) => ({
+        start: e.start ?? e.start_time,
+        end: e.end ?? e.end_time,
+      }),
+    );
+    const visibilityForDb = body.visibility === "organization"
+      ? "private"
+      : (body.visibility || "private");
+
     const { data, error } = await supabase
       .schema("core")
       .from("work_logs")
       .insert({
         user_id: user.id,
         project_id: body.projectId,
-        entry_type: body.entryType,
+        entry_type: entryTypeForDb,
         log_date: body.logDate,
-        time_entries: body.timeEntries,
+        time_entries: timeEntriesForDb,
         tasks_completed: body.tasksCompleted,
         skills_used: body.skillsUsed,
         work_description: body.workDescription,
-        visibility: body.visibility || "private",
+        visibility: visibilityForDb,
         status: "draft",
-        total_hours: 0, // Calculate from time_entries
       })
       .select()
       .single();
