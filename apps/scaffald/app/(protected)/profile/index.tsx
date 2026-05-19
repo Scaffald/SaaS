@@ -1,4 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
+import { ProfileStrengthCard } from '@scf/core/features/dashboard/completion'
 import { IdVerificationWidget } from '@scf/core/features/id-verification'
 import { ProfilePage } from '@scf/core/features/profile/ProfilePage'
 import { ProfileCertificationsHighlightProvider } from '@scf/core/features/profile/profile-certifications-highlight-context'
@@ -30,6 +31,9 @@ export default function ProfileIndexScreen() {
         breadcrumbs={[{ route: ROUTES.PROFILE }]}
         leftContent={
           <Stack gap={16}>
+            {/* SC-39 Phase D: Profile Strength surface on the Profile tab.
+                Uses the same canonical algorithm as the dashboard widgets. */}
+            <ProfileStrengthCard />
             <GeneralInfoWidget userId={user.id} showEdit />
             <ExperienceWidget userId={user.id} showEdit />
             <EducationWidget userId={user.id} showEdit />
