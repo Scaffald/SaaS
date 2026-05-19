@@ -89,27 +89,29 @@ Weekly Friday browser smoke (45 min, manual):
   has ≥2 logs
 - Bug list has ≥10 entries
 
-### Phase 3 — Build the missing PM primitives (week 2–3)
+### Phase 3.1 — Build the missing PM primitives (done)
 
-Phase 2's [DOGFOODING-IDEAS.md](DOGFOODING-IDEAS.md) will surface a stable
-list of things we wish the product did. Likely candidates:
+Tasks + Punchlists landed on 2026-05-18:
 
-- **Tasks** — first-class entity scoped to project/team, with assignee,
-  status, due date. Linked bidirectionally to logs.
-- **Punchlists** — collections of tasks for a milestone/sprint.
-- **Team association on logs** — add `team_id` (or join table) to
-  `core.work_logs`. Today the dogfood script puts `[team:slug]` in the
-  description as a workaround.
-- **Mentions + comments on logs** — partially modeled in
-  `core.work_log_conversations`; ship the UI.
-- **Project model rename** — `core.construction_projects` → `core.projects`
-  with a `kind` discriminator.
-- **Work Logs → Logs in schema/SDK** — UI already uses "Logs"; back end
-  catches up. Larger blast radius, so it lands after the loop is stable.
+- DB schema: [packages/supabase/migrations/325_tasks_and_punchlists.sql](../../packages/supabase/migrations/325_tasks_and_punchlists.sql) — `core.tasks`, `core.punchlists`, junction `core.work_log_tasks`, RLS, indexes, updated_at + completed_at auto-stamp triggers.
+- API:
+  [packages/supabase/functions/api/routes/tasks.ts](../../packages/supabase/functions/api/routes/tasks.ts)
+  (CRUD + `POST /:id/complete` with optional `workLogId` link),
+  [packages/supabase/functions/api/routes/punchlists.ts](../../packages/supabase/functions/api/routes/punchlists.ts) (CRUD).
+- Markdown → product migration: [scripts/migrate-dogfood-md-to-tasks.ts](../../scripts/migrate-dogfood-md-to-tasks.ts) reads the open/fixed/shipped entries from DOGFOODING-{BUGS,IDEAS}.md and creates 3 punchlists + 14 tasks. Result is snapshotted in [packages/supabase/seeds/012_seed-dogfood-tasks.sql](../../packages/supabase/seeds/012_seed-dogfood-tasks.sql) so `pnpm supa db reset` reproduces the demo.
+- Markdown files are now thin stubs pointing at the in-product Tasks. They can be deleted entirely once Phase 3.2 ships a UI.
 
-When in-product Tasks ships, **migrate the markdown bug/idea lists into the
-product itself and delete the markdown files**. That migration is the proof
-point that the product replaces Linear for our own use.
+### Phase 3 backlog (Phase 3.2 and beyond)
+
+- **Tasks/Punchlists UI** — list, detail, create form, kanban. Until this ships, the markdown stubs link to the raw API.
+- **Team association on logs** — add `team_id` (or join table) to `core.work_logs`. Today the dogfood script puts `[team:slug]` in the description as a workaround.
+- **Mentions + comments on logs** — partially modeled in `core.work_log_conversations`; ship the UI.
+- **Project model rename** — `core.construction_projects` → `core.projects` with a `kind` discriminator.
+- **Work Logs → Logs in schema/SDK** — UI already uses "Logs"; back end catches up. Larger blast radius, so it lands after the loop is stable.
+- **Remaining work-log SDK methods** — getOverview, getProjectRollup, addCollaborator, addComment, uploadPhoto, etc. SDK exposes them; API doesn't implement.
+
+Each of these is now also a Task in the **Dogfood Ideas** punchlist —
+the product is now the source of truth.
 
 ### Phase 4 — Production deployment & continued use (week 4+)
 

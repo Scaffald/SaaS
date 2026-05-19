@@ -29,6 +29,8 @@ import backgroundChecksRouter from "./routes/background-checks.ts";
 import backgroundChecksAdminRouter from "./routes/background-checks-admin.ts";
 import inquiriesRouter from "./routes/inquiries.ts";
 import workLogsRouter from "./routes/work-logs.ts";
+import tasksRouter from "./routes/tasks.ts";
+import punchlistsRouter from "./routes/punchlists.ts";
 import organizationsRouter from "./routes/organizations.ts";
 import webhooksRouter from "./routes/webhooks.ts";
 import reviewsRouter from "./routes/reviews.ts";
@@ -130,6 +132,8 @@ app.route("/v1/background-checks", backgroundChecksRouter);
 app.route("/v1/background-checks/admin", backgroundChecksAdminRouter); // Background checks
 app.route("/v1/inquiries", inquiriesRouter); // User inquiries
 app.route("/v1/work-logs", workLogsRouter); // Work logs
+app.route("/v1/tasks", tasksRouter); // Tasks (Phase 3 dogfood)
+app.route("/v1/punchlists", punchlistsRouter); // Punchlists (Phase 3 dogfood)
 app.route("/v1/organizations", organizationsRouter); // Organizations
 app.route("/v1/organizations", organizationsExtendedRouter); // Organizations extended (invitations, folders, locations, audit log, etc.)
 app.route("/v1/ccpa", ccpaRouter); // CCPA compliance
