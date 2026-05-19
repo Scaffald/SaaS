@@ -85,7 +85,7 @@ export const ConsentStep = memo(function ConsentStep({
                     userAgent:
                       consent.userAgent ??
                       (typeof navigator !== 'undefined'
-                        ? navigator.userAgent
+                        ? navigator.userAgent // platform-allow: typeof guard above
                         : `app/${Platform.OS}`),
                   })
                 }

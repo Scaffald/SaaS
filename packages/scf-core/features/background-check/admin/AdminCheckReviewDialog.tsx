@@ -11,10 +11,10 @@ import type {
 } from '@scaffald/sdk'
 import { DialogCompound as Dialog } from '@scf/core/components/ui/DialogCompound'
 import { Button } from '@scaffald/ui'
+import { openExternalLink } from '@scf/core/utils/platform'
 import { CheckCircle2, DownloadCloud, RefreshCcw } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Linking } from 'react-native'
 import { ResponsiveSelect } from '@scaffald/ui'
 import {
   Input,
@@ -250,11 +250,7 @@ export function AdminCheckReviewDialog({
   )
 
   const openSignedUrl = useCallback((url: string) => {
-    if (typeof window !== 'undefined') {
-      window.open(url, '_blank', 'noopener,noreferrer')
-      return
-    }
-    void Linking.openURL(url)
+    openExternalLink(url)
   }, [])
 
   const handleDownloadDocument = useCallback(

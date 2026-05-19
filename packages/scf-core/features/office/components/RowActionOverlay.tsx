@@ -1,6 +1,6 @@
 import { Eye, Pencil, X } from "lucide-react-native";
 import { useEffect, useRef } from "react";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import { Button, Row, useThemeContext } from "@scaffald/ui";
 import { DeleteButton } from "./DeleteButton";
 import { DuplicateButton } from "./DuplicateButton";
@@ -60,37 +60,35 @@ export function RowActionOverlay<TData>({
   const { theme } = useThemeContext();
   const overlayRef = useRef<View>(null);
 
-  // Handle Escape key
+  // Handle Escape key (web only — native uses a back-button modal pattern)
   useEffect(() => {
+    if (Platform.OS !== "web" || typeof document === "undefined") return;
+
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-      }
+      if (e.key === "Escape") onClose();
     };
 
-    document.addEventListener("keydown", handleEscape);
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
-    };
+    document.addEventListener("keydown", handleEscape); // platform-allow: gated above by Platform.OS !== 'web'
+    return () => document.removeEventListener("keydown", handleEscape); // platform-allow: gated above by Platform.OS !== 'web'
   }, [onClose]);
 
-  // Handle outside click
+  // Handle outside click (web only)
   useEffect(() => {
+    if (Platform.OS !== "web" || typeof document === "undefined") return;
+
     const handleClickOutside = (e: MouseEvent) => {
       const el = overlayRef.current as unknown as HTMLElement | null;
-      if (el && !el.contains(e.target as Node)) {
-        onClose();
-      }
+      if (el && !el.contains(e.target as Node)) onClose();
     };
 
     // Use setTimeout to avoid immediate dismissal on the click that opened the overlay
     const timeoutId = setTimeout(() => {
-      document.addEventListener("click", handleClickOutside);
+      document.addEventListener("click", handleClickOutside); // platform-allow: gated above by Platform.OS !== 'web'
     }, 0);
 
     return () => {
       clearTimeout(timeoutId);
-      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("click", handleClickOutside); // platform-allow: gated above by Platform.OS !== 'web'
     };
   }, [onClose]);
 

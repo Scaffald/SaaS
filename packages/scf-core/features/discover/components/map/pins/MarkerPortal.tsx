@@ -18,7 +18,7 @@ export function MarkerPortal({
   children,
 }: MarkerPortalProps) {
   const [el] = useState(() => {
-    const div = document.createElement('div')
+    const div = document.createElement('div') // platform-allow: only imported by MapAdapter.web.tsx
     div.style.pointerEvents = 'auto'
     return div
   })

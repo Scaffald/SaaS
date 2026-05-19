@@ -1,7 +1,14 @@
 /**
  * OAuth Passthrough Utilities
- * Google/Apple OAuth passthrough for seamless authorization
+ * Google/Apple OAuth passthrough for seamless authorization.
+ *
+ * The OAuth consent flow is inherently web-only — these helpers store the
+ * pending authorization in a session-scoped key/value store and trigger a
+ * same-origin navigation on web. On native, `continueOAuthFlowIfPending()`
+ * returns false (no `window.location` to navigate).
  */
+
+import { openExternalLink, sessionKvStorage } from '@scf/core/utils/platform'
 
 const PENDING_AUTH_KEY = 'oauth_pending_authorization'
 
@@ -19,21 +26,15 @@ interface PendingAuthorization {
  * Store pending OAuth authorization in session storage
  */
 export function storePendingAuthorization(auth: PendingAuthorization): void {
-  if (typeof window !== 'undefined' && window.sessionStorage) {
-    window.sessionStorage.setItem(PENDING_AUTH_KEY, JSON.stringify(auth))
-  }
+  sessionKvStorage.set(PENDING_AUTH_KEY, JSON.stringify(auth))
 }
 
 /**
  * Retrieve pending OAuth authorization from session storage
  */
 export function getPendingAuthorization(): PendingAuthorization | null {
-  if (typeof window === 'undefined' || !window.sessionStorage) {
-    return null
-  }
-
   try {
-    const stored = window.sessionStorage.getItem(PENDING_AUTH_KEY)
+    const stored = sessionKvStorage.get(PENDING_AUTH_KEY)
     if (!stored) return null
 
     const auth: PendingAuthorization = JSON.parse(stored)
@@ -54,9 +55,7 @@ export function getPendingAuthorization(): PendingAuthorization | null {
  * Clear pending OAuth authorization from session storage
  */
 export function clearPendingAuthorization(): void {
-  if (typeof window !== 'undefined' && window.sessionStorage) {
-    window.sessionStorage.removeItem(PENDING_AUTH_KEY)
-  }
+  sessionKvStorage.remove(PENDING_AUTH_KEY)
 }
 
 /**
@@ -64,12 +63,12 @@ export function clearPendingAuthorization(): void {
  */
 export async function continueOAuthFlowIfPending(): Promise<boolean> {
   const pendingAuth = getPendingAuthorization()
-  if (!pendingAuth) {
-    return false
-  }
+  if (!pendingAuth) return false
 
-  // Redirect to consent screen or complete authorization
-  const consentUrl = new URL('/oauth/consent', window.location.origin)
+  // Native deep-linking is out of scope for the OAuth web flow.
+  if (typeof window === 'undefined' || !window.location) return false // platform-allow: same-origin redirect needs window.location.origin
+
+  const consentUrl = new URL('/oauth/consent', window.location.origin) // platform-allow: web-only consent redirect
   consentUrl.searchParams.set('client_id', pendingAuth.client_id)
   consentUrl.searchParams.set('redirect_uri', pendingAuth.redirect_uri)
   consentUrl.searchParams.set('state', pendingAuth.state)
@@ -77,6 +76,6 @@ export async function continueOAuthFlowIfPending(): Promise<boolean> {
   consentUrl.searchParams.set('code_challenge', pendingAuth.code_challenge)
   consentUrl.searchParams.set('code_challenge_method', pendingAuth.code_challenge_method)
 
-  window.location.href = consentUrl.toString()
+  openExternalLink(consentUrl.toString())
   return true
 }

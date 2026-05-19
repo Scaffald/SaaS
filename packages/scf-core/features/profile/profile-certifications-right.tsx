@@ -19,6 +19,7 @@ import {
 } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable } from "react-native";
+import { openExternalLink, pickFile } from "@scf/core/utils/platform";
 import { Card, H4, Input, ScrollView, Text, Row, Stack } from "@scaffald/ui";
 import { useProfileCertificationsHighlight } from "./profile-certifications-highlight-context";
 
@@ -532,7 +533,7 @@ export function ProfileCertificationsRight() {
                                       "certifications",
                                       cert.certificate_file_path
                                     );
-                                  if (url) window.open(url, "_blank");
+                                  if (url) openExternalLink(url);
                                 }}
                               >
                                 View
@@ -571,17 +572,11 @@ export function ProfileCertificationsRight() {
                               <Button
                                 style={{ flex: 1 }}
                                 iconStart={Upload}
-                                onPress={() => {
-                                  // Trigger file input
-                                  const input = document.createElement("input");
-                                  input.type = "file";
-                                  input.accept = ".pdf,.jpg,.jpeg,.png";
-                                  input.onchange = (e) => {
-                                    const file = (e.target as HTMLInputElement)
-                                      .files?.[0];
-                                    handleFileSelect(cert.id, file || null);
-                                  };
-                                  input.click();
+                                onPress={async () => {
+                                  const [picked] = await pickFile({
+                                    accept: ".pdf,.jpg,.jpeg,.png",
+                                  });
+                                  handleFileSelect(cert.id, picked?.file ?? null);
                                 }}
                                 variant={
                                   selectedFiles[cert.id] ? "filled" : "outline"

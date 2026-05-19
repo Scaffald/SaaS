@@ -18,9 +18,10 @@ const RING_PADDING = 5
 
 const KEYFRAMES_ID = 'scf-pin-ring-keyframes'
 function ensureKeyframes() {
+  // platform-allow: only imported by MapAdapter.web.tsx; native bundle never includes this file.
   if (typeof document === 'undefined') return
-  if (document.getElementById(KEYFRAMES_ID)) return
-  const style = document.createElement('style')
+  if (document.getElementById(KEYFRAMES_ID)) return // platform-allow: web-only
+  const style = document.createElement('style') // platform-allow: web-only
   style.id = KEYFRAMES_ID
   style.textContent = `
     @keyframes scf-pin-ring-pulse {
@@ -29,14 +30,14 @@ function ensureKeyframes() {
       100% { transform: scale(1.55); opacity: 0; }
     }
   `
-  document.head.appendChild(style)
+  document.head.appendChild(style) // platform-allow: web-only
 }
 
 let measureCtx: CanvasRenderingContext2D | null = null
 function measureLabelWidth(label: string): number {
   if (typeof document === 'undefined') return 0
   if (!measureCtx) {
-    const c = document.createElement('canvas')
+    const c = document.createElement('canvas') // platform-allow: only imported by MapAdapter.web.tsx
     measureCtx = c.getContext('2d')
   }
   if (!measureCtx) return 0

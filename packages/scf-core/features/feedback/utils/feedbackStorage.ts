@@ -1,27 +1,10 @@
 import type { FeedbackPendingSubmission } from '@scf/schemas/feedback'
-import { Platform } from 'react-native'
+import { kvStorage } from '@scf/core/utils/platform'
 
 const STORAGE_KEY = '@scf-scaffald/feedback/pending-submissions'
 
-type AsyncStorageModule = typeof import('@react-native-async-storage/async-storage')
-
-let asyncStorageInstance: AsyncStorageModule['default'] | null = null
-
-async function getAsyncStorage() {
-  if (asyncStorageInstance) {
-    return asyncStorageInstance
-  }
-
-  const module = await import('@react-native-async-storage/async-storage')
-  asyncStorageInstance = module.default
-  return asyncStorageInstance
-}
-
 function parseQueue(raw: string | null): FeedbackPendingSubmission[] {
-  if (!raw) {
-    return []
-  }
-
+  if (!raw) return []
   try {
     const parsed = JSON.parse(raw)
     if (Array.isArray(parsed)) {
@@ -35,16 +18,7 @@ function parseQueue(raw: string | null): FeedbackPendingSubmission[] {
 
 async function readQueue(): Promise<FeedbackPendingSubmission[]> {
   try {
-    if (Platform.OS === 'web') {
-      if (typeof window === 'undefined') {
-        return []
-      }
-      return parseQueue(window.localStorage.getItem(STORAGE_KEY))
-    }
-
-    const storage = await getAsyncStorage()
-    const raw = await storage.getItem(STORAGE_KEY)
-    return parseQueue(raw)
+    return parseQueue(await kvStorage.get(STORAGE_KEY))
   } catch (error) {
     console.error('[feedbackStorage] Unable to read queue', error)
     return []
@@ -52,17 +26,8 @@ async function readQueue(): Promise<FeedbackPendingSubmission[]> {
 }
 
 async function writeQueue(queue: FeedbackPendingSubmission[]): Promise<void> {
-  const serialized = JSON.stringify(queue)
   try {
-    if (Platform.OS === 'web') {
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(STORAGE_KEY, serialized)
-      }
-      return
-    }
-
-    const storage = await getAsyncStorage()
-    await storage.setItem(STORAGE_KEY, serialized)
+    await kvStorage.set(STORAGE_KEY, JSON.stringify(queue))
   } catch (error) {
     console.error('[feedbackStorage] Unable to persist queue', error)
   }
@@ -79,9 +44,7 @@ export async function addPendingFeedback(submission: FeedbackPendingSubmission):
 }
 
 export async function updatePendingFeedback(submission: FeedbackPendingSubmission): Promise<void> {
-  if (!submission.id) {
-    return
-  }
+  if (!submission.id) return
   const queue = await readQueue()
   const nextQueue = queue.map((item) => (item.id === submission.id ? submission : item))
   await writeQueue(nextQueue)

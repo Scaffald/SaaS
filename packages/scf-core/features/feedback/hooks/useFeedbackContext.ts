@@ -34,17 +34,17 @@ function getWebBrowserInfo(): Pick<
     }
   }
 
-  const userAgent = navigator.userAgent ?? 'unknown'
+  const userAgent = navigator.userAgent ?? 'unknown' // platform-allow: caller gates on Platform.OS === 'web'
   const parser = new UAParser(userAgent)
   const browser = parser.getBrowser()
   const os = parser.getOS()
 
   const screenResolution =
     window.screen?.width && window.screen?.height
-      ? `${window.screen.width}x${window.screen.height}`
+      ? `${window.screen.width}x${window.screen.height}` // platform-allow: web-only
       : null
 
-  const viewportSize = `${window.innerWidth}x${window.innerHeight}`
+  const viewportSize = `${window.innerWidth}x${window.innerHeight}` // platform-allow: web-only
 
   return {
     userAgent,
@@ -95,7 +95,7 @@ export function useFeedbackContext(pageTitleOverride?: string): FeedbackContextP
 
   useEffect(() => {
     if (Platform.OS === 'web' && typeof document !== 'undefined') {
-      setPageTitle(document.title ?? null)
+      setPageTitle(document.title ?? null) // platform-allow: gated by Platform.OS === 'web'
     } else {
       setPageTitle(null)
     }

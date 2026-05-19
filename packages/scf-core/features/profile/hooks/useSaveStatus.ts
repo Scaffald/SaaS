@@ -1,6 +1,7 @@
 import type { SaveStatus } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
+import { useUnsavedChangesPrompt } from '@scf/core/utils/platform'
 
 /**
  * Hook for tracking save status across profile pages
@@ -59,17 +60,7 @@ export function useSaveStatus(isAdding: boolean, isRemoving: boolean) {
     }
   }, [saveStatus])
 
-  // Browser navigation guard
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (hasUnsavedChanges) {
-        e.preventDefault()
-        e.returnValue = '' // Required for Chrome
-      }
-    }
-    window.addEventListener('beforeunload', handleBeforeUnload)
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
-  }, [hasUnsavedChanges])
+  useUnsavedChangesPrompt(hasUnsavedChanges)
 
   // Handle forced save before navigation
   const handleForcedSave = async (): Promise<boolean> => {

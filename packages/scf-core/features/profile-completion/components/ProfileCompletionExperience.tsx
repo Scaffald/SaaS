@@ -1,6 +1,7 @@
 import { ROUTES } from '@scf/core/constants/routes'
 import { ProfileWizard } from '@scf/core/features/profile-wizard/components/ProfileWizard'
 import { useDismissNudgeMutation } from '@scf/core/utils/profile-completion-sdk-hooks'
+import { sessionKvStorage } from '@scf/core/utils/platform'
 import { Sheet, SheetContent, SheetHeader } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -42,9 +43,7 @@ export function ProfileCompletionExperience() {
 
     if (dismissedThisSessionRef.current) return
 
-    const stored =
-      typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_MODAL_KEY) : null
-    const hasDismissedThisSession = stored === 'true'
+    const hasDismissedThisSession = sessionKvStorage.get(SESSION_MODAL_KEY) === 'true'
 
     if (!hasDismissedThisSession && status.shouldShowWizard) {
       setModalMode(status.modalMode ?? 'progress-reminder')
@@ -86,9 +85,7 @@ export function ProfileCompletionExperience() {
   const dismissModal = useCallback(
     (reason = 'user_dismissed_modal') => {
       setIsModalOpen(false)
-      if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.setItem(SESSION_MODAL_KEY, 'true')
-      }
+      sessionKvStorage.set(SESSION_MODAL_KEY, 'true')
       dismissedThisSessionRef.current = true
       recordDismiss(reason)
     },
@@ -106,9 +103,7 @@ export function ProfileCompletionExperience() {
 
   const handleWidgetStart = useCallback(() => {
     setIsWizardOpen(true)
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.setItem(SESSION_MODAL_KEY, 'true')
-    }
+    sessionKvStorage.set(SESSION_MODAL_KEY, 'true')
   }, [])
 
   const handleUploadResume = useCallback(() => {

@@ -21,6 +21,7 @@ import { colors } from "@scaffald/ui/tokens";
 import { workerPalette } from "@scf/core/components/ui/styles";
 import { Award, PlusCircle, UploadCloud } from "lucide-react-native";
 import { useToast } from "@scaffald/ui";
+import { pickFile } from "@scf/core/utils/platform";
 import { useCallback, useEffect, useState } from "react";
 import { Pressable } from "react-native";
 import {
@@ -139,23 +140,17 @@ export function ProfileCertificationsLeft({
     });
   }, []);
 
-  const handleCustomFileSelect = useCallback(() => {
-    if (typeof document === "undefined") {
+  const handleCustomFileSelect = useCallback(async () => {
+    const [picked] = await pickFile({ accept: ".pdf,.jpg,.jpeg,.png" });
+    if (!picked) return;
+    if (!picked.file) {
       toast.show({
         title: "Upload Unsupported",
         message: "File uploads are only available on web right now.",
       });
       return;
     }
-
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".pdf,.jpg,.jpeg,.png";
-    input.onchange = (event) => {
-      const file = (event.target as HTMLInputElement).files?.[0] ?? null;
-      setCustomForm((prev) => ({ ...prev, file }));
-    };
-    input.click();
+    setCustomForm((prev) => ({ ...prev, file: picked.file }));
   }, [toast]);
 
   const handleClearCustomFile = useCallback(() => {

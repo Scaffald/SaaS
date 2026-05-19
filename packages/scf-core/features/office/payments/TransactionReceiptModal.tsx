@@ -1,4 +1,5 @@
 import { useTransactionReceipt } from '@scf/core/utils/payments-sdk-hooks'
+import { downloadFile } from '@scf/core/utils/platform'
 import { Modal, ModalHeader, ModalContent, ModalActions, useThemeContext } from '@scaffald/ui'
 import { Card, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
@@ -36,12 +37,7 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
 
       const blob = new Blob([receiptText], { type: 'text/plain' })
       const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `${receiptQuery.data.receiptNumber}.txt`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
+      void downloadFile({ url, filename: `${receiptQuery.data.receiptNumber}.txt` })
       URL.revokeObjectURL(url)
     }
   }

@@ -1,4 +1,5 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
+import { openExternalLink } from '@scf/core/utils/platform'
 import {
   useOrganization,
   useOrganizationOpenJobsCount,
@@ -153,7 +154,7 @@ function WorkerPreview({ pinId, visible }: { pinId: string; visible: boolean }) 
         size="sm"
         variant="filled"
         color="primary"
-        onPress={() => window.open(profileUrl, '_blank', 'noopener,noreferrer')}
+        onPress={() => openExternalLink(profileUrl)}
         iconEnd={ExternalLink}
       >
         View Profile
@@ -219,7 +220,7 @@ function OrganizationPreview({ pinId, visible }: { pinId: string; visible: boole
         size="sm"
         variant="filled"
         color="primary"
-        onPress={() => window.open(profileUrl, '_blank', 'noopener,noreferrer')}
+        onPress={() => openExternalLink(profileUrl)}
         iconEnd={ExternalLink}
       >
         View Organization
@@ -272,10 +273,7 @@ function JobPreview({ job }: { job: JobMapPin }) {
         size="sm"
         variant="filled"
         color="primary"
-        onPress={() => {
-          const url = buildPath(ROUTES.JOBS.DETAIL, { id: job.id })
-          window.open(url, '_blank', 'noopener,noreferrer')
-        }}
+        onPress={() => openExternalLink(buildPath(ROUTES.JOBS.DETAIL, { id: job.id }))}
         iconEnd={ExternalLink}
       >
         View Job Details

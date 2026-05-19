@@ -4,6 +4,7 @@ import {
 } from '@scf/core/utils/personality-assessment-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { copyToClipboard } from '@scf/core/utils/clipboard'
+import { getCanonicalUrl } from '@scf/core/utils/platform'
 import { Calendar, Copy, Lock, Share2, X } from 'lucide-react-native'
 import { useToast, useThemeContext } from '@scaffald/ui'
 import { useMemo, useState } from 'react'
@@ -29,9 +30,10 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
 
   const generateShareToken = useGenerateShareTokenMutation({
     onSuccess: (data: { token: string }) => {
-      // Build share URL
-      const baseUrl = typeof window !== 'undefined' && window.location ? window.location.origin : ''
-      const shareUrl = `${baseUrl}/assessments/ipip/shared/${data.token}`
+      // Build share URL — only meaningful on web; native users won't reach this codepath.
+      const shareUrl =
+        getCanonicalUrl(`/assessments/ipip/shared/${data.token}`) ??
+        `/assessments/ipip/shared/${data.token}`
       setShareLink(shareUrl)
       toast.show({
         title: 'Share link created!',

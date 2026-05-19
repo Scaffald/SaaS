@@ -1,4 +1,13 @@
-import { useCallback, useEffect, useState } from 'react'
+/**
+ * useUserLocation hook
+ *
+ * Web: uses `navigator.geolocation` and the Permissions API.
+ * Native: uses `expo-location` with prompt-based permission flow.
+ *
+ * Metro resolves `.web.ts` / `.native.ts` at build time. This file defines
+ * only the shared shape — it is never bundled (TypeScript uses it only for
+ * `import` resolution).
+ */
 
 export interface UserLocation {
   latitude: number
@@ -13,78 +22,15 @@ export interface LocationState {
   permissionStatus: 'granted' | 'denied' | 'prompt' | 'unknown'
 }
 
-export const useUserLocation = () => {
-  const [state, setState] = useState<LocationState>({
-    location: null,
-    isLoading: false,
-    error: null,
-    permissionStatus: 'unknown',
-  })
+export interface UseUserLocationReturn extends LocationState {
+  requestLocation: () => Promise<UserLocation | null>
+  checkPermissionStatus: () => Promise<void>
+}
 
-  const requestLocation = useCallback(async () => {
-    setState((prev) => ({ ...prev, isLoading: true, error: null }))
-    try {
-      if (!navigator.geolocation) {
-        throw new Error('Geolocation is not supported by this browser')
-      }
+export type UseUserLocation = () => UseUserLocationReturn
 
-      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 300000, // 5 minutes
-        })
-      })
-
-      const location: UserLocation = {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-        accuracy: position.coords.accuracy,
-      }
-
-      setState({
-        location,
-        isLoading: false,
-        error: null,
-        permissionStatus: 'granted',
-      })
-
-      return location
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to get location'
-
-      setState((prev) => ({
-        ...prev,
-        isLoading: false,
-        error: errorMessage,
-        permissionStatus: errorMessage.includes('permission') ? 'denied' : 'unknown',
-      }))
-
-      throw error
-    }
-  }, [])
-
-  const checkPermissionStatus = useCallback(async () => {
-    // Web doesn't have a direct way to check permission status
-    // We'll try to get the position with a very short timeout to check
-    try {
-      await new Promise<GeolocationPosition>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 1 })
-      })
-      setState((prev) => ({ ...prev, permissionStatus: 'granted' }))
-    } catch (_error) {
-      setState((prev) => ({ ...prev, permissionStatus: 'denied' }))
-    }
-  }, [])
-
-  // Check permission status on mount
-  useEffect(() => {
-    checkPermissionStatus()
-  }, [checkPermissionStatus])
-
-  return {
-    ...state,
-    requestLocation,
-    checkPermissionStatus,
-  }
+export const useUserLocation: UseUserLocation = () => {
+  throw new Error(
+    '[useUserLocation] platform-specific module was not resolved; check Metro config'
+  )
 }

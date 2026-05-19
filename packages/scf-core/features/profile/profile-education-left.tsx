@@ -22,7 +22,8 @@ import { UniversityAutocomplete } from "@scf/core/components/university";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDown, Plus, X } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
+import { useUnsavedChangesPrompt } from "@scf/core/utils/platform";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
   H4,
@@ -318,7 +319,7 @@ export function ProfileEducationLeft({
         // Scroll to the entry after a short delay to ensure it's rendered
         setTimeout(() => {
           const element = entryRefs.current[entryId];
-          if (element && typeof window !== "undefined") {
+          if (element && Platform.OS === "web" && typeof window !== "undefined") {
             // Scroll to the entry (web only)
             element.scrollIntoView({ behavior: "smooth", block: "center" });
             // Focus the first input in the entry after another short delay
@@ -336,20 +337,7 @@ export function ProfileEducationLeft({
     }
   }, [editingEntryId, fields, watch, handleUniversitySearch]);
 
-  // Browser navigation guard - prevent data loss on page close/navigation
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isDirty) {
-        e.preventDefault();
-        e.returnValue = ""; // Required for Chrome
-      }
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [isDirty]);
+  useUnsavedChangesPrompt(isDirty);
 
   const onSubmit = async (data: EducationProfileFormData) => {
     setIsLoading(true);

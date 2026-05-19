@@ -16,11 +16,11 @@ import {
   RichTextEditor,
   SkeletonForm,
 } from "@scaffald/ui";
-import { useSafeToast } from "@scf/core/hooks/useSafeToast";
+import { useToast } from "@scaffald/ui";
+import { useUnsavedChangesPrompt } from "@scf/core/utils/platform";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { JSONContent } from "@tiptap/core";
 import { useEffect, useRef, useState } from "react";
-import { Platform } from "react-native";
 import { Controller, useForm } from "react-hook-form";
 import {
   Input,
@@ -55,13 +55,13 @@ export function ProfileGeneralLeft() {
   const [isLoading, setIsLoading] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const originalDataRef = useRef<GeneralProfileFormData | null>(null);
-  const toast = useSafeToast();
   const queryClient = useQueryClient();
   const syncStatus = useAdaptiveProfileSync(300);
   const isSyncing = syncStatus === "syncing";
 
   // Fetch and update profile data using SDK
   const { data: profileData, isLoading: isLoadingProfile } = useGeneralInfo();
+  const toast = useToast();
   const updateProfileMutation = useUpdateGeneralInfoMutationWithSync();
 
   const uploadAvatarMutation = useUploadAvatarMutation({
@@ -70,8 +70,10 @@ export function ProfileGeneralLeft() {
       startProfileSync();
     },
     onSuccess: async (data: { avatarPath: string }) => {
-      toast.show("Avatar Uploaded", {
+      toast.show({
+        title: "Avatar Uploaded",
         message: "Your avatar has been uploaded successfully!",
+        variant: "success",
       });
       setValue("avatar_path", data.avatarPath);
       await invalidateProfileQueries(queryClient);
@@ -79,11 +81,13 @@ export function ProfileGeneralLeft() {
     onError: (error: unknown) => {
       console.error("Error uploading avatar:", error);
       failProfileSync();
-      toast.show("Upload Error", {
+      toast.show({
+        title: "Upload Error",
         message:
           error instanceof Error
             ? error.message
             : "Failed to upload avatar. Please try again.",
+        variant: "error",
       });
     },
     onSettled: (_data: { avatarPath: string } | undefined, error: unknown) => {
@@ -155,20 +159,7 @@ export function ProfileGeneralLeft() {
     });
   }, [isDirty, errors]);
 
-  // Browser navigation guard - prevent data loss on page close/navigation
-  useEffect(() => {
-    if (Platform.OS !== 'web' || typeof window === "undefined") return;
-
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isDirty) {
-        e.preventDefault();
-        e.returnValue = ""; // Required for Chrome
-      }
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [isDirty]);
+  useUnsavedChangesPrompt(isDirty);
 
   const onSubmit = async (data: GeneralProfileFormData) => {
     console.log("🟢 Form submission started");
@@ -238,8 +229,10 @@ export function ProfileGeneralLeft() {
                   });
                 } catch (error) {
                   console.error("Error processing image:", error);
-                  toast.show("Error", {
+                  toast.show({
+                    title: "Error",
                     message: "Failed to process image. Please try again.",
+                    variant: "error",
                   });
                 }
               } else {
@@ -250,8 +243,10 @@ export function ProfileGeneralLeft() {
             size={120}
             disabled={uploadAvatarMutation.isPending}
             onCropError={(message) =>
-              toast.show("Error", {
+              toast.show({
+                title: "Error",
                 message,
+                variant: "error",
               })
             }
             placeholder="Upload Avatar"

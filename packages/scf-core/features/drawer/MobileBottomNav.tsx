@@ -36,8 +36,8 @@ const PILL_BORDER_RADIUS = 32
 
 /** Dev override — visit any page with ?forceMobile=1 on web to test mobile layout. */
 function shouldForceMobile(): boolean {
-  if (typeof window === 'undefined' || !window.location) return false
-  return new URLSearchParams(window.location.search).has('forceMobile')
+  if (typeof window === 'undefined' || !window.location) return false // platform-allow: web-only dev flag
+  return new URLSearchParams(window.location.search).has('forceMobile') // platform-allow: web-only dev flag
 }
 
 function getActiveSectionIndex(pathname: string): number {

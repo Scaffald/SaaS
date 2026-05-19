@@ -59,8 +59,8 @@ export function DrawerLayout(props: DrawerLayoutProps) {
  * needing DevTools device toolbar.
  */
 function shouldForceMobile(): boolean {
-  if (typeof window === 'undefined' || !window.location) return false
-  return new URLSearchParams(window.location.search).has('forceMobile')
+  if (typeof window === 'undefined' || !window.location) return false // platform-allow: web-only dev flag
+  return new URLSearchParams(window.location.search).has('forceMobile') // platform-allow: web-only dev flag
 }
 
 function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: DrawerLayoutProps) {

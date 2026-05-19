@@ -2,13 +2,12 @@ import { DashboardPage } from "@scf/core/features/dashboard/DashboardPage";
 import type { NewsItem } from "@scf/core/features/news";
 import { useAggregatedNews } from "@scf/core/features/news/hooks/useNewsFeed";
 import { useNewsIndustryResolution } from "@scf/core/features/news/hooks/useNewsIndustryResolution";
-import { redirect } from "@scf/core/utils/redirect";
 import { AlertCircle, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react-native";
 import { Button, Row, Spinner, Stack, Text } from "@scaffald/ui";
+import { openExternalLink } from "@scf/core/utils/platform";
 import { useRouter } from "expo-router";
-import * as WebBrowser from "expo-web-browser";
 import { useMemo, useState } from "react";
-import { Image, Platform, Pressable, StyleSheet, View, type TextStyle, type ViewStyle } from "react-native";
+import { Image, Pressable, StyleSheet, View, type TextStyle, type ViewStyle } from "react-native";
 import { colors } from "@scaffald/ui/tokens";
 import { useThemeContext } from "@scaffald/ui";
 
@@ -378,22 +377,8 @@ export default function NewsPage() {
 
   const selectedItem = items[selectedIndex] ?? null;
 
-  const handleOpenArticle = async (article: { link: string }) => {
-    try {
-      if (Platform.OS === "web") {
-        window.open(article.link, "_blank", "noopener,noreferrer");
-      } else {
-        await WebBrowser.openBrowserAsync(article.link, {
-          controlsColor: "#2563eb",
-          dismissButtonStyle: "close",
-          enableBarCollapsing: true,
-          toolbarColor: "#0f172a",
-        });
-      }
-    } catch (browserError) {
-      console.warn("Failed to open article:", browserError);
-      redirect(article.link);
-    }
+  const handleOpenArticle = (article: { link: string }) => {
+    openExternalLink(article.link, { inApp: true });
   };
 
   // Page header — shown in left column above the featured panel

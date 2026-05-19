@@ -4,6 +4,7 @@
  */
 
 import { useGrantConsentMutation } from '@scf/core/utils/oauth-sdk-hooks'
+import { openExternalLink } from '@scf/core/utils/platform'
 import { useUser } from '@scf/core/utils/useUser'
 import {
   Button,
@@ -77,7 +78,7 @@ export function ConsentScreen({
 
       // Redirect to client app
       if (result.redirect_url) {
-        window.location.href = result.redirect_url
+        openExternalLink(result.redirect_url)
       }
 
       onAuthorize?.()
@@ -98,7 +99,7 @@ export function ConsentScreen({
     if (onDeny) {
       onDeny()
     } else {
-      window.location.href = redirectUrl.toString()
+      openExternalLink(redirectUrl.toString())
     }
   }
 

@@ -6,6 +6,7 @@ import { JobSeoHead } from '@scf/core/features/discover/components/JobSeoHead'
 import { useJobBySlug } from '@scf/core/utils/useJobBySlug'
 import type { BreadcrumbItemData } from '@scaffald/ui'
 import { useLocalSearchParams } from 'expo-router'
+import { getCanonicalUrl } from '@scf/core/utils/platform'
 import { Spinner, Text, Stack } from '@scaffald/ui'
 
 /**
@@ -71,10 +72,8 @@ export default function PublicJobDetailPage() {
   // Use existing job detail screen component
   const { left, right } = DiscoverJobDetailScreen({ jobId: jobData.id })
 
-  // Build canonical URL for SEO
-  const canonicalUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}/jobs/${slug}`
-    : undefined
+  // Build canonical URL for SEO (web only; native has no concept of a canonical URL)
+  const canonicalUrl = getCanonicalUrl(`/jobs/${slug}`)
 
   return (
     <>

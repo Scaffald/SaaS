@@ -19,6 +19,7 @@ import {
   Stack,
   useThemeContext,
 } from "@scaffald/ui";
+import { reloadPage } from "@scf/core/utils/platform";
 import {
   useCCPAComplianceMetrics,
   useCCPAAdminRequests,
@@ -480,7 +481,7 @@ export function CCPAAdminDashboard() {
         >
           {metricsError?.message || requestsError?.message}
         </Text>
-        <Button onPress={() => window.location.reload()} variant="outline">
+        <Button onPress={reloadPage} variant="outline">
           Retry
         </Button>
       </Stack>
