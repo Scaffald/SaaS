@@ -36,12 +36,15 @@ applyZodErrorMap()
 const POLICY_VERSION = '1'
 
 const LoginSchema = z.object({
-  // `.trim()` runs before `.email()` so autofill / copy-paste values with
-  // surrounding whitespace ("user@example.com ") don't trip the resolver
-  // before reaching the submit handlers' own normalization.
+  // `.trim()` first so autofill / copy-paste values with surrounding whitespace
+  // ("user@example.com ") don't trip validation.
+  // `.min(1, required)` before `.email()` so an empty submit reports
+  // "Email is required" rather than the generic "invalid email" message —
+  // the resolver runs each rule in order and surfaces the first failure.
   email: z
     .string()
     .trim()
+    .min(1, i18n.t('validation.email.required'))
     .email(i18n.t('validation.email.invalid'))
     .describe(i18n.t('auth.login.emailPlaceholder')),
   password: z.string().optional(),
@@ -97,24 +100,18 @@ export const LoginScreen = () => {
     if (!hasAgreed) return
     setIsSubmitting(true)
 
-    const trimmedEmail = data.email?.trim()
+    // Email required/format validation runs in the resolver before this is
+    // called, so by the time we're here `data.email` is a non-empty,
+    // trimmed, valid address.
+    const normalizedEmail = data.email.toLowerCase()
     const password = data.password ?? ''
 
-    if (!trimmedEmail) {
-      form.setError('email', { type: 'custom', message: t('validation.email.required') })
-      setIsSubmitting(false)
-      return
-    }
     if (!password) {
       form.setError('password', { type: 'custom', message: 'Password is required.' })
       setIsSubmitting(false)
       return
     }
-
-    const normalizedEmail = trimmedEmail.toLowerCase()
-    const emailDomain = normalizedEmail.includes('@')
-      ? (normalizedEmail.split('@')[1] ?? 'unknown')
-      : 'unknown'
+    const emailDomain = normalizedEmail.split('@')[1] ?? 'unknown'
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -146,18 +143,9 @@ export const LoginScreen = () => {
     if (!hasAgreed) return
     setIsSubmitting(true)
 
-    const trimmedEmail = data.email?.trim()
-
-    if (!trimmedEmail) {
-      form.setError('email', { type: 'custom', message: t('validation.email.required') })
-      setIsSubmitting(false)
-      return
-    }
-
-    const normalizedEmail = trimmedEmail.toLowerCase()
-    const emailDomain = normalizedEmail.includes('@')
-      ? (normalizedEmail.split('@')[1] ?? 'unknown')
-      : 'unknown'
+    // Resolver guarantees data.email is non-empty, trimmed, and valid.
+    const normalizedEmail = data.email.toLowerCase()
+    const emailDomain = normalizedEmail.split('@')[1] ?? 'unknown'
 
     try {
       const redirectTo = process.env.EXPO_PUBLIC_URL
