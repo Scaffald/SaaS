@@ -341,6 +341,177 @@ app.openapi(
 );
 
 /**
+ * GET /v1/work-logs/projects
+ * List project options available for creating work logs.
+ * Returns construction_projects in orgs the caller is a member of (and the
+ * caller's own); fed into the project picker on the log create form.
+ */
+app.openapi(
+  createRoute({
+    method: "get",
+    path: "/projects",
+    tags: ["Work Logs"],
+    summary: "List project options for work logs",
+    request: {
+      query: z.object({
+        organizationId: z.string().uuid().optional(),
+        search: z.string().optional(),
+        includeArchived: z.coerce.boolean().optional(),
+      }),
+    },
+    responses: {
+      200: {
+        description: "Project options",
+        content: { "application/json": { schema: z.array(z.any()) } },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const supabase = c.get("supabase");
+    const user = c.get("user");
+    const { organizationId, search, includeArchived } = c.req.valid("query");
+
+    if (!user) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    // Resolve orgs the user belongs to so we can scope.
+    const { data: memberships } = await supabase
+      .schema("core")
+      .from("role_assignments")
+      .select("scope_org_id")
+      .eq("user_id", user.id)
+      .not("scope_org_id", "is", null);
+    const userOrgIds = (memberships ?? [])
+      .map((m) => m.scope_org_id)
+      .filter((id): id is string => typeof id === "string");
+
+    if (organizationId && !userOrgIds.includes(organizationId)) {
+      return c.json({
+        error: "Forbidden",
+        message: "You do not have access to the requested organization.",
+      }, 403);
+    }
+
+    // Use service client so admins see all org projects (mirrors LIST behavior).
+    const adminClient = getServiceClient();
+    let query = adminClient
+      .schema("core")
+      .from("construction_projects")
+      .select("id, name, status, is_archived, organization_id, project_number");
+
+    if (organizationId) {
+      query = query.eq("organization_id", organizationId);
+    } else if (userOrgIds.length > 0) {
+      query = query.in("organization_id", userOrgIds);
+    } else {
+      return c.json([]);
+    }
+
+    if (!includeArchived) {
+      query = query.eq("is_archived", false);
+    }
+    if (search && search.trim().length > 0) {
+      query = query.ilike("name", `%${search.trim()}%`);
+    }
+
+    query = query.order("name", { ascending: true });
+
+    const { data, error } = await query;
+    if (error) {
+      return c.json({ error: "Failed to list projects", message: error.message }, 500);
+    }
+
+    return c.json(
+      (data ?? []).map((p) => ({
+        id: p.id,
+        name: p.name,
+        status: p.status,
+        isArchived: p.is_archived,
+        organizationId: p.organization_id,
+        projectNumber: p.project_number,
+      })),
+    );
+  },
+);
+
+/**
+ * GET /v1/work-logs/:workLogId
+ * Fetch a single work log by id. Visibility is enforced by RLS (own logs +
+ * collaborator logs).
+ */
+app.openapi(
+  createRoute({
+    method: "get",
+    path: "/{workLogId}",
+    tags: ["Work Logs"],
+    summary: "Get work log by id",
+    request: { params: z.object({ workLogId: z.string().uuid() }) },
+    responses: {
+      200: {
+        description: "Work log",
+        content: { "application/json": { schema: z.any() } },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const supabase = c.get("supabase");
+    const user = c.get("user");
+    const { workLogId } = c.req.valid("param");
+
+    if (!user) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    // First try with the user's client (RLS-scoped: own + collaborator).
+    let { data, error } = await supabase
+      .schema("core")
+      .from("work_logs")
+      .select("*")
+      .eq("id", workLogId)
+      .maybeSingle();
+
+    // If not visible directly, fall back to the org-admin path: fetch with
+    // service role and check the caller is a member of the log's org.
+    if (!data) {
+      const adminClient = getServiceClient();
+      const { data: log } = await adminClient
+        .schema("core")
+        .from("work_logs")
+        .select("*, construction_projects!inner(organization_id)")
+        .eq("id", workLogId)
+        .maybeSingle();
+      if (log) {
+        const orgId = (log.construction_projects as { organization_id: string } | null)?.organization_id;
+        if (orgId) {
+          const { data: memberships } = await supabase
+            .schema("core")
+            .from("role_assignments")
+            .select("scope_org_id")
+            .eq("user_id", user.id)
+            .eq("scope_org_id", orgId);
+          if (memberships && memberships.length > 0) {
+            const { construction_projects: _omit, ...rest } = log as Record<string, unknown> & {
+              construction_projects?: unknown;
+            };
+            data = rest;
+            error = null;
+          }
+        }
+      }
+    }
+
+    if (error || !data) {
+      return c.json({ error: "Not found", message: error?.message }, 404);
+    }
+
+    return c.json(data);
+  },
+);
+
+/**
  * POST /v1/work-logs/:workLogId/submit
  * Submit a draft work log for verification.
  * Only the owner can submit; only draft logs can transition.
