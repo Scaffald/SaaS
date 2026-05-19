@@ -57,18 +57,21 @@ ships. If an issue slips, move the label to the next version.
 ### Status flow
 
 ```
-Triage → Todo → In Progress → In Review → Done → In QA → Verified
-                                              ↘ Canceled
+Triage → Todo → In Progress → In Github → In TestFlight → Done
+                                                       ↘ Canceled
 ```
 
-- **Done**: PR merged to `main`. Code is in the repo but not on TestFlight.
-- **In QA**: a TestFlight build containing this issue exists. QA can test it.
-- **Verified**: QA signed off. Safe to promote to production / App Store.
+- **In Github**: PR merged to `main`. Code is in the repo but not on
+  TestFlight yet. Author is effectively done with the work.
+- **In TestFlight**: a TestFlight build containing this issue exists. QA can
+  test it. This is the QA team's "ready to sign off" queue.
+- **Done**: QA has validated the change against the TestFlight build. Safe
+  to promote to production / App Store.
 
-> The "In QA" and "Verified" states must be added in Linear team settings
-> (the Linear MCP doesn't expose state creation via API). They should both be
-> created with the `started` and `completed` type respectively. Once added,
-> the release script (see below) automates the `Done → In QA` transition.
+> The "In Github" and "In TestFlight" states are configured in Linear team
+> settings. Once they exist, the release script's bulk-promotion step can
+> move all `vX.Y.Z`-labeled `In Github` issues to `In TestFlight` after a
+> successful release cut.
 
 ### Don't QA against `main`
 
@@ -82,8 +85,8 @@ between releases is unstable by design.
 The full sequence to ship `scaffald-app vX.Y.Z`:
 
 1. **Confirm the version label is right.** Look at Linear `vX.Y.Z`-labeled
-   `Done` issues. Anything still `In Progress` or `In Review` should either
-   land before the cut or be moved to the next version's label.
+   `In Github` issues. Anything still `In Progress` should either land
+   before the cut or be moved to the next version's label.
 2. **Bump the version.**
    ```bash
    pnpm release:app X.Y.Z
@@ -97,13 +100,13 @@ The full sequence to ship `scaffald-app vX.Y.Z`:
    pnpm --filter scaffald-app eas:build:dev:device:ios
    ```
 4. **Submit to TestFlight** when the build is green.
-5. **Promote Linear issues.** Move every `vX.Y.Z`-labeled `Done` issue to
-   `In QA`. (The release script can do this via the Linear API once it's
-   wired up.)
+5. **Promote Linear issues.** Move every `vX.Y.Z`-labeled `In Github` issue
+   to `In TestFlight`. (The release script can do this via the Linear API
+   once it's wired up.)
 6. **QA tests against the TestFlight build.** As each issue is validated,
-   move it to `Verified`.
+   move it to `Done`.
 7. **Production promotion** happens out of band (App Store submission) once
-   all `vX.Y.Z` issues are `Verified`.
+   all `vX.Y.Z` issues are `Done`.
 
 ### Submodule pointer bumps
 

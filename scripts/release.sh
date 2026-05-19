@@ -118,8 +118,8 @@ git tag -a "$TAG" -m "scaffald-app v${VERSION}
 
 Cut via scripts/release.sh. See docs/agents/RELEASE-PROCESS.md.
 
-Linear: all issues with label v${VERSION} should now be moved to In QA
-once the TestFlight build is live."
+Linear: all v${VERSION}-labeled issues currently in 'In Github' should
+move to 'In TestFlight' once this TestFlight build is live."
 
 echo "✓ commit + tag created locally."
 
@@ -140,7 +140,7 @@ fi
 echo
 echo "  Next:"
 echo "    1. Wait for the EAS build to finish, then submit to TestFlight."
-echo "    2. Move every Linear issue labeled v${VERSION} (status=Done) to In QA."
+echo "    2. Move every v${VERSION}-labeled Linear issue from 'In Github' to 'In TestFlight'."
 echo "    3. QA tests against the TestFlight build."
-echo "    4. As issues are validated, move them to Verified."
+echo "    4. As issues are validated, QA moves them to 'Done'."
 echo
