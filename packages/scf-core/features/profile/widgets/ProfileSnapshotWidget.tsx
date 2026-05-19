@@ -1,12 +1,8 @@
 import { ROUTES } from "@scf/core/constants/routes";
+import { useProfileCompletion } from "@scf/core/features/dashboard/completion/useProfileCompletion";
 import { useCurrentUser } from "@scf/core/utils/profile-general-sdk-hooks";
 import { openPublicProfileInNewTab } from "@scf/core/utils/publicProfileUrl";
-import {
-  useGeneralInfoWidget,
-  useExperienceWidget,
-  useCertificationsWidget,
-  useEducationWidget,
-} from "@scf/core/utils/profile-widgets-sdk-hooks";
+import { useGeneralInfoWidget } from "@scf/core/utils/profile-widgets-sdk-hooks";
 import { getAvatarUrl } from "@scf/core/utils/supabase/storage";
 import type { ScaffaldError } from "@scaffald/sdk";
 import {
@@ -47,28 +43,14 @@ export function ProfileSnapshotWidget() {
     { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
   );
 
-  const { data: experience, isLoading: loadingExperience } =
-    useExperienceWidget(
-      { userId: user?.id },
-      { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
-    );
+  // SC-39 Phase B: single source of truth via /profile.getStatus.
+  const { completionData, isLoading: loadingCompletion } = useProfileCompletion();
 
-  const { data: certifications, isLoading: loadingCerts } =
-    useCertificationsWidget(
-      { userId: user?.id },
-      { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
-    );
+  const isLoading = loadingGeneral || loadingCompletion;
 
-  const { data: education, isLoading: loadingEducation } = useEducationWidget(
-    { userId: user?.id },
-    { enabled: !!user?.id, staleTime: 5 * 60 * 1000 }
+  const incompleteIds = new Set(
+    (completionData?.items ?? []).filter((i) => !i.complete).map((i) => i.id),
   );
-
-  const isLoading =
-    loadingGeneral ||
-    loadingExperience ||
-    loadingCerts ||
-    loadingEducation;
 
   const isProfileNotFound =
     generalInfoError &&
@@ -174,20 +156,7 @@ export function ProfileSnapshotWidget() {
     );
   }
 
-  // Calculate profile completion
-  const calculateCompletion = (): number => {
-    let completed = 0;
-    const total = 6;
-    if (generalInfo?.about) completed++;
-    if (generalInfo?.headline) completed++;
-    if (generalInfo?.years_of_experience !== null) completed++;
-    if (experience && experience.length > 0) completed++;
-    if (education && education.length > 0) completed++;
-    if (certifications && certifications.length > 0) completed++;
-    return Math.round((completed / total) * 100);
-  };
-
-  const completion = calculateCompletion();
+  const completion = completionData?.completionPercentage ?? 0;
 
   const displayName =
     generalInfo.display_name ||
@@ -197,10 +166,6 @@ export function ProfileSnapshotWidget() {
 
   const strengthLabel =
     completion >= 80 ? "Advanced" : completion >= 40 ? "Intermediate" : "Beginner";
-
-  const hasCerts = certifications && certifications.length > 0;
-  const hasExperience = experience && experience.length > 0;
-  const hasEducation = education && education.length > 0;
 
   return (
     <DashboardWidget gap={32}>
@@ -319,7 +284,7 @@ export function ProfileSnapshotWidget() {
 
         {/* Actions */}
         <Row gap={12} wrap>
-          {!hasCerts && (
+          {incompleteIds.has("certifications") && (
             <Button
               variant="outline"
               color="gray"
@@ -331,7 +296,7 @@ export function ProfileSnapshotWidget() {
               Add Certification
             </Button>
           )}
-          {!hasExperience && (
+          {incompleteIds.has("experience") && (
             <Button
               variant="outline"
               color="gray"
@@ -343,7 +308,7 @@ export function ProfileSnapshotWidget() {
               Update Experience
             </Button>
           )}
-          {!hasEducation && (
+          {incompleteIds.has("education") && (
             <Button
               variant="outline"
               color="gray"
