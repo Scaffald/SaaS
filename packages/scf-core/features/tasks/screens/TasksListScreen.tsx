@@ -1,9 +1,9 @@
 /**
  * TasksListScreen
  *
- * Read-mostly Tasks page grouped by Punchlist. Supports a status segmented
- * filter, search, and inline status toggle (todo ↔ done). Intentionally
- * narrower than WorkLogListScreen — create / detail flows are deferred.
+ * Tasks page grouped by Punchlist. Status segmented filter, title +
+ * description search, and inline status toggle (todo ↔ done). Task title
+ * links to the detail page; "+ New task" button links to the create form.
  *
  * Used by `apps/scaffald/app/(protected)/employers/org/[slug]/tasks/index.tsx`.
  */
@@ -28,8 +28,9 @@ import {
   useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import { CheckCircle2, Circle, Inbox, Search } from 'lucide-react-native'
+import { CheckCircle2, Circle, Inbox, Plus, Search } from 'lucide-react-native'
 import { useQueryClient } from '@tanstack/react-query'
+import { useRouter } from 'expo-router'
 
 import {
   useCompleteTaskMutation,
@@ -93,10 +94,11 @@ interface TasksListScreenProps {
   orgSlug?: string
 }
 
-export function TasksListScreen({ organizationId }: TasksListScreenProps) {
+export function TasksListScreen({ organizationId, orgSlug }: TasksListScreenProps) {
   const themeCtx = useThemeContext()
   const theme: Theme = themeCtx?.theme === 'dark' ? 'dark' : 'light'
   const queryClient = useQueryClient()
+  const router = useRouter()
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
   const [search, setSearch] = useState('')
@@ -175,12 +177,25 @@ export function TasksListScreen({ organizationId }: TasksListScreenProps) {
   return (
     <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
       <Stack padding={16} gap={16}>
-        <Stack gap={4}>
-          <Heading level={2}>Tasks</Heading>
-          <Caption color="tertiary">
-            {isLoading ? 'Loading…' : `${totalCount} task${totalCount === 1 ? '' : 's'}`}
-          </Caption>
-        </Stack>
+        <Row align="center" gap={12}>
+          <Stack flex={1} gap={4}>
+            <Heading level={2}>Tasks</Heading>
+            <Caption color="tertiary">
+              {isLoading ? 'Loading…' : `${totalCount} task${totalCount === 1 ? '' : 's'}`}
+            </Caption>
+          </Stack>
+          {orgSlug ? (
+            <Button
+              variant="filled"
+              onPress={() => router.push(`/employers/org/${orgSlug}/tasks/create`)}
+            >
+              <Row align="center" gap={6}>
+                <Plus size={14} color="#ffffff" />
+                <Text style={{ color: '#ffffff' }}>New task</Text>
+              </Row>
+            </Button>
+          ) : null}
+        </Row>
 
         <Stack gap={12}>
           <SegmentedControl
@@ -213,7 +228,7 @@ export function TasksListScreen({ organizationId }: TasksListScreenProps) {
             <Paragraph color="tertiary">
               {statusFilter !== 'all' || search
                 ? 'Try clearing the filters above.'
-                : 'Create the first task via the API: POST /v1/tasks.'}
+                : 'Use the + New task button to file the first one.'}
             </Paragraph>
             {(statusFilter !== 'all' || search) && (
               <Button
@@ -224,6 +239,17 @@ export function TasksListScreen({ organizationId }: TasksListScreenProps) {
                 }}
               >
                 Clear filters
+              </Button>
+            )}
+            {orgSlug && statusFilter === 'all' && !search && (
+              <Button
+                variant="filled"
+                onPress={() => router.push(`/employers/org/${orgSlug}/tasks/create`)}
+              >
+                <Row align="center" gap={6}>
+                  <Plus size={14} color="#ffffff" />
+                  <Text style={{ color: '#ffffff' }}>New task</Text>
+                </Row>
               </Button>
             )}
           </Stack>
@@ -250,6 +276,11 @@ export function TasksListScreen({ organizationId }: TasksListScreenProps) {
                       task={t}
                       theme={theme}
                       onToggle={() => toggleStatus(t)}
+                      onOpen={
+                        orgSlug
+                          ? () => router.push(`/employers/org/${orgSlug}/tasks/${t.id}`)
+                          : undefined
+                      }
                       isToggling={
                         (completeMutation.isPending && completeMutation.variables?.taskId === t.id) ||
                         (updateMutation.isPending && updateMutation.variables?.taskId === t.id)
@@ -270,10 +301,11 @@ interface TaskCardProps {
   task: Task
   theme: Theme
   onToggle: () => void
+  onOpen?: () => void
   isToggling: boolean
 }
 
-function TaskCard({ task, theme, onToggle, isToggling }: TaskCardProps) {
+function TaskCard({ task, theme, onToggle, onOpen, isToggling }: TaskCardProps) {
   const due = formatDueDate(task.due_date)
   const isDone = task.status === 'done'
   return (
@@ -294,12 +326,20 @@ function TaskCard({ task, theme, onToggle, isToggling }: TaskCardProps) {
             )}
           </Button>
           <Stack flex={1} gap={4}>
-            <Paragraph
-              weight="semibold"
-              style={isDone ? { textDecorationLine: 'line-through', opacity: 0.65 } : undefined}
+            <Button
+              variant="text"
+              size="sm"
+              onPress={() => onOpen?.()}
+              disabled={!onOpen}
+              aria-label={`Open task ${task.title}`}
             >
-              {task.title}
-            </Paragraph>
+              <Paragraph
+                weight="semibold"
+                style={isDone ? { textDecorationLine: 'line-through', opacity: 0.65 } : undefined}
+              >
+                {task.title}
+              </Paragraph>
+            </Button>
             {task.description ? (
               <Caption color="tertiary" numberOfLines={2}>
                 {task.description}
