@@ -21,7 +21,6 @@ import {
   useThemeContext,
 } from '@scaffald/ui'
 import { colors, spacing } from '@scaffald/ui/tokens'
-import { zodResolver } from '@hookform/resolvers/zod'
 import type { AuthChangeEvent, Session } from '@supabase/auth-js'
 import { Lock, Mail } from 'lucide-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -79,16 +78,25 @@ export const LoginScreen = () => {
   }, [params?.email, router, params])
 
   const form = useForm<z.infer<typeof LoginSchema>>({
-    // SC-52: wire zod resolver so the email format validation in LoginSchema
-    // is actually enforced. onBlur gives the user feedback as soon as they
-    // leave the field without yelling at them while they type.
-    resolver: zodResolver(LoginSchema),
-    mode: 'onBlur',
+    // SC-52 hotfix: zodResolver v3.1.0 is incompatible with Zod 4's issue
+    // shape ({ origin, code, format, pattern }) — it throws instead of
+    // populating fieldState.error on blur. We do the email format check
+    // manually below in each submit handler using `LoginSchema.shape.email
+    // .safeParse(...)`, which still works on Zod 4 because `.issues[]` and
+    // `.success` are unchanged. Re-wire the resolver after bumping
+    // @hookform/resolvers to a Zod-4 compatible major.
     defaultValues: {
       email: params?.email || '',
       password: '',
     },
   })
+
+  // Returns translated error message if invalid, null if valid. Uses the
+  // LoginSchema's email field so format rules live in one place.
+  function validateEmailFormat(email: string): string | null {
+    const result = LoginSchema.shape.email.safeParse(email)
+    return result.success ? null : (result.error.issues[0]?.message ?? t('validation.email.invalid'))
+  }
 
   async function signInWithPassword(data: z.infer<typeof LoginSchema>) {
     if (!hasAgreed) return
@@ -99,6 +107,12 @@ export const LoginScreen = () => {
 
     if (!trimmedEmail) {
       form.setError('email', { type: 'custom', message: t('validation.email.required') })
+      setIsSubmitting(false)
+      return
+    }
+    const formatError = validateEmailFormat(trimmedEmail)
+    if (formatError) {
+      form.setError('email', { type: 'custom', message: formatError })
       setIsSubmitting(false)
       return
     }
@@ -147,6 +161,12 @@ export const LoginScreen = () => {
 
     if (!trimmedEmail) {
       form.setError('email', { type: 'custom', message: t('validation.email.required') })
+      setIsSubmitting(false)
+      return
+    }
+    const formatError = validateEmailFormat(trimmedEmail)
+    if (formatError) {
+      form.setError('email', { type: 'custom', message: formatError })
       setIsSubmitting(false)
       return
     }
