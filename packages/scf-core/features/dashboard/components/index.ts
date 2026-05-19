@@ -8,7 +8,6 @@ export { MobileDashboardTabs } from './MobileDashboardTabs'
 export { MobileGrowthTip } from './MobileGrowthTip'
 export { ProfileHero } from './ProfileHero'
 export { ProfileActivityWidget } from './ProfileActivityWidget'
-export { ProfileIdentityWidget } from './ProfileIdentityWidget'
 export { RecentActivityWidget } from './RecentActivityWidget'
 export { SuggestedContactsWidget } from './SuggestedContactsWidget'
 export {
