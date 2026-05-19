@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
 const TO_EMAIL = process.env.CONTACT_FORM_TO ?? 'hello@scaffald.com'
 
 export async function POST(req: NextRequest) {
@@ -9,6 +8,11 @@ export async function POST(req: NextRequest) {
   if (!body?.name || !body?.email || !body?.company || !body?.orgType) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
+
+  if (!process.env.RESEND_API_KEY) {
+    return NextResponse.json({ error: 'Email not configured' }, { status: 503 })
+  }
+  const resend = new Resend(process.env.RESEND_API_KEY)
 
   const { name, email, company, orgType, orgTypeOther, message } = body
 
