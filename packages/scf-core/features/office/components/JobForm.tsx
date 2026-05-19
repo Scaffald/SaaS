@@ -975,15 +975,15 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             />
           </Stack>
 
-          {/* Minimum Elevate Score */}
+          {/* Minimum Scaffald Score */}
           <ScoreThresholdSection
             minimumScore={formData.minimum_score}
             onUpdate={handleScoreUpdate}
           />
 
-          {/* Elevate Teams */}
+          {/* Scaffald Teams */}
           <Stack gap={8}>
-            <Text>Elevate Teams</Text>
+            <Text>Scaffald Teams</Text>
             {!formData.organization_id ? (
               <Text style={{ color: colors.text[theme].secondary }}>
                 Select an organization to load available teams.

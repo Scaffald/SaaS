@@ -66,7 +66,7 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
         />
       </Row>
       <Text style={{ color: colors.text[theme].secondary }}>
-        Based on Elevate score, work authorization and required skills
+        Based on Scaffald Score, work authorization and required skills
       </Text>
 
       {/* Criteria (only show when enabled) */}
