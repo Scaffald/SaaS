@@ -95,11 +95,24 @@ The full sequence to ship `scaffald-app vX.Y.Z`:
    `chore(release): bump scaffald-app to X.Y.Z`, creates tag `app-vX.Y.Z`,
    and pushes both. (See [scripts/release.sh](../../scripts/release.sh) —
    build out as needed.)
-3. **Trigger the EAS build.**
+3. **Trigger the EAS build (and auto-submit).**
    ```bash
-   pnpm --filter scaffald-app eas:build:dev:device:ios
+   pnpm ship:ios
    ```
-4. **Submit to TestFlight** when the build is green.
+   This script (in `scripts/ship-ios.sh`) validates the production env
+   *before* kicking off EAS so you don't burn 20 minutes on a build that's
+   guaranteed to fail. It checks:
+   - `.env.production` exists and has every `EXPO_PUBLIC_*` var that
+     `eas.json` doesn't already hardcode (Mapbox, Google OAuth, etc.).
+   - The Mapbox token actually works (live ping to the geocoding API).
+   - The EAS server-side secret `POSTHOG_KEY_PROD` is registered.
+   - You're on `main` (warns if not).
+
+   Then runs `eas build --profile production --platform ios --non-interactive --no-wait --auto-submit`
+   so the build queues on EAS and auto-submits to TestFlight when complete.
+   Pass `--yes` to skip the confirmation prompt, `--no-build` for a
+   validation-only dry run.
+4. **TestFlight submission is automatic** with `--auto-submit`.
 5. **Once the TestFlight build is live, promote Linear issues:**
    ```bash
    LINEAR_API_KEY=lin_api_xxx pnpm release:promote X.Y.Z
