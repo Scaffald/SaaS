@@ -7,15 +7,21 @@ type SectionProgressSummary = {
   id: string
   title: string
   completed: boolean
+  weight?: number
+  missingFields?: string[]
 }
 
 interface ChecklistItem {
-  id: string
+  id: ProfileWizardStepId
   title: string
   description: string
   complete: boolean
   actionRoute?: string
   actionLabel?: string
+  /** Section weight from the backend — higher means more impact on overall score. */
+  weight: number
+  /** Specific field paths the backend says are still empty. */
+  missingFields: string[]
 }
 
 export interface ProfileCompletionData {
@@ -42,6 +48,8 @@ export const useProfileCompletion = () => {
           description: metadata.description,
           complete: section.completed,
           actionRoute: metadata.route,
+          weight: section.weight ?? 0,
+          missingFields: section.missingFields ?? [],
         }
       }
     )
