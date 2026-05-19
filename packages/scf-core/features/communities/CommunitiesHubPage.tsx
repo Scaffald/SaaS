@@ -5,12 +5,11 @@ import { useDebounce } from '@scf/core/utils/useDebounce'
 import { PageHeader } from '@scf/core/components/PageHeader'
 import type { FilterPillConfig } from '@scf/core/components/PageHeader'
 import { SortDropdown } from '@scf/core/features/discover/components/SortDropdown'
-import { CommunitiesBottomToolbar } from './CommunitiesBottomToolbar'
-import type { CommunitySortBy } from './CommunitiesBottomToolbar'
 import { AllCommunitiesList } from './components/AllCommunitiesList'
 import { MyCommunitiesList } from './components/MyCommunitiesList'
 
 type TabValue = 'all' | 'my'
+type CommunitySortBy = 'most_active' | 'name' | 'newest'
 
 const sortOptions = [
   { value: 'most_active', label: 'Most Active' },
@@ -117,18 +116,6 @@ export function CommunitiesHubPage() {
           </Tabs.Content>
         </Tabs.Item>
       </Tabs>
-
-      {/* Mobile: bottom toolbar for search + sort */}
-      {isMobile && (
-        <CommunitiesBottomToolbar
-          searchValue={searchQuery}
-          onSearchChange={setSearchQuery}
-          sortBy={sortBy}
-          onSortChange={setSortBy}
-          hasFilters={hasFilters}
-          onReset={handleReset}
-        />
-      )}
     </Stack>
   )
 }
