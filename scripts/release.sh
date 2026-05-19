@@ -125,9 +125,11 @@ echo "✓ commit + tag created locally."
 
 # --- push -----------------------------------------------------------------
 if [ "$NO_PUSH" = "0" ]; then
-  git push origin main
-  SKIP_PREPUSH=1 git push origin "$TAG"
-  echo "✓ pushed main and ${TAG} to origin."
+  # --atomic = either both refs land on origin or neither does. Prevents the
+  # "main is bumped but no tag" state where the release commit ships
+  # untaggable — breaks "one tag = one shippable build".
+  git push --atomic origin main "$TAG"
+  echo "✓ pushed main and ${TAG} atomically to origin."
 fi
 
 # --- optional EAS build ---------------------------------------------------
