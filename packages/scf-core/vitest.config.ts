@@ -54,8 +54,6 @@ merged.test.exclude = [
   'packages/scf-core/features/office/teams/components/__tests__/TeamInviteModal.test.tsx',
   'packages/scf-core/features/office/teams/components/__tests__/TeamForm.test.tsx',
   'packages/scf-core/features/office/teams/components/__tests__/TeamMembersList.test.tsx',
-  'packages/scf-core/features/profile-completion/components/__tests__/ProfileCompletionModal.test.tsx',
-  'packages/scf-core/features/profile-completion/components/__tests__/EnhancedProfileCompletionWidget.test.tsx',
   'packages/scf-core/features/profile-wizard/components/steps/__tests__/ExperienceStep.test.tsx',
   'packages/scf-core/features/office/applications/components/__tests__/ApplicationsFilters.test.tsx',
   'packages/scf-core/features/profile/widgets/__tests__/PortfolioManager.test.tsx',
