@@ -12,6 +12,8 @@
     "affected:typecheck": "nx affected -t typecheck --exclude=@scaffald/integration-test",
     "android": "pnpm --filter scaffald-app android",
     "prebuild": "pnpm --filter scaffald-app prebuild && pnpm setup-sentry",
+    "release:app": "./scripts/release.sh",
+    "release:promote": "./scripts/release-promote-linear.mjs",
     "build": "pnpm locales:validate && nx run-many -t build --exclude=@scaffald/ui-docs,scaffald",
     "check": "pnpm locales:validate && nx run-many -t lint --exclude=@scaffald/integration-test && cross-env NODE_OPTIONS=--max-old-space-size=4096 nx run-many -t typecheck --parallel=1 --exclude=@scaffald/integration-test",
     "check:affected": "pnpm locales:validate && nx affected -t lint --exclude=@scaffald/integration-test && nx affected -t typecheck --parallel=1 --exclude=@scaffald/integration-test",
