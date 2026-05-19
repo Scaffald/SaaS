@@ -3,7 +3,7 @@ import {
   organizationSettingsSchema,
 } from "@scf/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, type Resolver, useForm } from "react-hook-form";
 import { useState } from "react";
 import {
   Button,
@@ -152,7 +152,8 @@ export function OrganizationSettingsPanel({
   const usage = useOrganizationStorageUsage(organizationId);
   const updateMutation = useUpdateOrganizationSettings();
   const form = useForm<OrganizationSettingsInput>({
-    resolver: zodResolver(organizationSettingsSchema),
+    // SC-59: cast required for @hookform/resolvers v5 — see useFeedbackForm for context.
+    resolver: zodResolver(organizationSettingsSchema) as unknown as Resolver<OrganizationSettingsInput>,
     values: settings
       ? {
           timezone: settings.timezone,

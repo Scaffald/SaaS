@@ -24,7 +24,7 @@ import {
   X,
 } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Controller, type Resolver, useFieldArray, useForm } from "react-hook-form";
 import { H4, Input, Spinner, Text, TextArea, Row, Stack } from "@scaffald/ui";
 import { Pressable } from "react-native";
 import { useUnsavedChangesPrompt } from "@scf/core/utils/platform";
@@ -101,7 +101,8 @@ export function ProfileExperienceLeft() {
     trigger,
     formState: { errors, isDirty },
   } = useForm<ExperienceProfileFormData>({
-    resolver: zodResolver(experienceProfileSchema),
+    // SC-59: cast required for @hookform/resolvers v5 — see useFeedbackForm for context.
+    resolver: zodResolver(experienceProfileSchema) as unknown as Resolver<ExperienceProfileFormData>,
     defaultValues: experienceProfileDefaults,
     mode: "onChange",
   });
