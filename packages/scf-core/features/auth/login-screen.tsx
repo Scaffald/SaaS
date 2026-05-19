@@ -36,8 +36,12 @@ applyZodErrorMap()
 const POLICY_VERSION = '1'
 
 const LoginSchema = z.object({
+  // `.trim()` runs before `.email()` so autofill / copy-paste values with
+  // surrounding whitespace ("user@example.com ") don't trip the resolver
+  // before reaching the submit handlers' own normalization.
   email: z
     .string()
+    .trim()
     .email(i18n.t('validation.email.invalid'))
     .describe(i18n.t('auth.login.emailPlaceholder')),
   password: z.string().optional(),
