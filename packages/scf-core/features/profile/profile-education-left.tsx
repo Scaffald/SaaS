@@ -24,7 +24,7 @@ import { ChevronDown, Plus, X } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Platform, View } from "react-native";
 import { useUnsavedChangesPrompt } from "@scf/core/utils/platform";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Controller, type Resolver, useFieldArray, useForm } from "react-hook-form";
 import {
   H4,
   Input,
@@ -139,7 +139,8 @@ export function ProfileEducationLeft({
     watch,
     formState: { errors, isDirty },
   } = useForm<EducationProfileFormData>({
-    resolver: zodResolver(educationProfileSchema),
+    // SC-59: cast required for @hookform/resolvers v5 — see useFeedbackForm for context.
+    resolver: zodResolver(educationProfileSchema) as unknown as Resolver<EducationProfileFormData>,
     defaultValues: educationProfileDefaults,
     mode: "onChange",
   });

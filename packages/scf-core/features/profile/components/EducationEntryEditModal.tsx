@@ -20,7 +20,7 @@ import { UniversityAutocomplete } from "@scf/core/components/university";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@scaffald/ui";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, type Resolver, useForm } from "react-hook-form";
 import {
   Input,
   Label,
@@ -124,7 +124,8 @@ export function EducationEntryEditModal({
     watch,
     formState: { errors, isDirty },
   } = useForm<EducationEntryFormValues>({
-    resolver: zodResolver(singleEducationEntrySchema),
+    // SC-59: cast required for @hookform/resolvers v5 — see useFeedbackForm for context.
+    resolver: zodResolver(singleEducationEntrySchema) as unknown as Resolver<EducationEntryFormValues>,
     mode: "onChange",
   });
 

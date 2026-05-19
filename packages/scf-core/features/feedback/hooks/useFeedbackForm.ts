@@ -7,7 +7,7 @@ import {
 } from '@scf/schemas/feedback'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMemo, useState } from 'react'
-import { type UseFormReturn, useForm } from 'react-hook-form'
+import { type Resolver, type UseFormReturn, useForm } from 'react-hook-form'
 import { Platform } from 'react-native'
 import { z } from 'zod'
 
@@ -47,7 +47,12 @@ export interface UseFeedbackFormResult {
 
 export function useFeedbackForm(): UseFeedbackFormResult {
   const form = useForm<FeedbackFormValues>({
-    resolver: zodResolver(feedbackFormSchema),
+    // SC-59: @hookform/resolvers v5 tightened Resolver to
+    // Resolver<TInput, TContext, TOutput> where TInput is derived from the
+    // schema's strict input shape. Our FeedbackFormValues is looser
+    // (FeedbackType | undefined for the initial state); cast keeps the
+    // runtime resolver but suppresses the cosmetic type clash.
+    resolver: zodResolver(feedbackFormSchema) as unknown as Resolver<FeedbackFormValues>,
     defaultValues: {
       feedbackType: undefined,
       feedbackText: '',

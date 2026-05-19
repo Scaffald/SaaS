@@ -2,7 +2,7 @@ import { type OrganizationInvite, organizationInviteSchema } from '@scf/schemas'
 import { Table, type TableColumn, type TableRowData, useThemeContext } from '@scaffald/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMemo } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, type Resolver, useForm } from 'react-hook-form'
 import {
   Button,
   Card,
@@ -40,7 +40,8 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
   const inviteMutation = useInviteOrganizationMember()
 
   const form = useForm<OrganizationInvite>({
-    resolver: zodResolver(organizationInviteSchema),
+    // SC-59: cast required for @hookform/resolvers v5 — see useFeedbackForm for context.
+    resolver: zodResolver(organizationInviteSchema) as unknown as Resolver<OrganizationInvite>,
     defaultValues: { email: '', roleName: 'member', message: '' },
   })
 

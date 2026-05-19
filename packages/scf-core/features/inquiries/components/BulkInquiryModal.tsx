@@ -21,7 +21,7 @@ import { colors } from '@scaffald/ui/tokens'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast } from '@scaffald/ui'
 import { useState } from 'react'
-import { Controller, FormProvider, useForm } from 'react-hook-form'
+import { Controller, FormProvider, type Resolver, useForm } from 'react-hook-form'
 import { InquiryHelpSidebar } from './InquiryHelpSidebar'
 
 interface BulkInquiryModalProps {
@@ -59,7 +59,8 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
   } | null>(null)
 
   const form = useForm<BulkInquiryInput>({
-    resolver: zodResolver(bulkInquirySchema),
+    // SC-59: cast required for @hookform/resolvers v5 — see useFeedbackForm for context.
+    resolver: zodResolver(bulkInquirySchema) as unknown as Resolver<BulkInquiryInput>,
     mode: 'onChange',
     defaultValues: {
       employmentType: undefined,

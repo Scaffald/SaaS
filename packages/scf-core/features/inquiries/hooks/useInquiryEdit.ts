@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast } from '@scaffald/ui'
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo } from 'react'
-import { useForm } from 'react-hook-form'
+import { type Resolver, useForm } from 'react-hook-form'
 
 export interface UseInquiryEditOptions {
   inquiryId: string
@@ -28,7 +28,8 @@ export function useInquiryEdit({
   const queryClient = useQueryClient()
 
   const form = useForm<InquiryCreateInput>({
-    resolver: zodResolver(inquiryCreateSchema),
+    // SC-59: cast required for @hookform/resolvers v5 — see useFeedbackForm for context.
+    resolver: zodResolver(inquiryCreateSchema) as unknown as Resolver<InquiryCreateInput>,
     mode: 'onChange',
     defaultValues: useMemo(
       () =>

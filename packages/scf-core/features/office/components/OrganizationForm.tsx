@@ -13,7 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast, useThemeContext } from '@scaffald/ui'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, type Resolver, useForm } from 'react-hook-form'
 import { Button, Input, ScrollView, Spinner, Text, Row, Stack } from '@scaffald/ui'
 import { ResponsiveSelect } from '@scaffald/ui'
 import { OrganizationCreditsPanel } from '../payments/OrganizationCreditsPanel'
@@ -80,7 +80,8 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
     watch,
     reset,
   } = useForm<OrganizationFormData>({
-    resolver: zodResolver(organizationCreateSchema),
+    // SC-59: cast required for @hookform/resolvers v5 — see useFeedbackForm for context.
+    resolver: zodResolver(organizationCreateSchema) as unknown as Resolver<OrganizationFormData>,
     defaultValues: initialData || {
       name: '',
       slug: '',

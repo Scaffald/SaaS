@@ -21,11 +21,12 @@ import {
   useThemeContext,
 } from '@scaffald/ui'
 import { colors, spacing } from '@scaffald/ui/tokens'
+import { zodResolver } from '@hookform/resolvers/zod'
 import type { AuthChangeEvent, Session } from '@supabase/auth-js'
 import { Lock, Mail } from 'lucide-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
-import { Controller, FormProvider, useForm } from 'react-hook-form'
+import { Controller, FormProvider, type Resolver, useForm } from 'react-hook-form'
 import { Pressable, Text } from 'react-native'
 import { z } from 'zod'
 import { SocialLogin } from './components/SocialLogin'
@@ -35,12 +36,15 @@ applyZodErrorMap()
 const POLICY_VERSION = '1'
 
 const LoginSchema = z.object({
-  // `.trim()` runs before `.email()` so autofill / copy-paste values with
-  // surrounding whitespace ("user@example.com ") don't trip the resolver
-  // before reaching the submit handlers' own normalization.
+  // `.trim()` first so autofill / copy-paste values with surrounding whitespace
+  // ("user@example.com ") don't trip validation.
+  // `.min(1, required)` before `.email()` so an empty submit reports
+  // "Email is required" rather than the generic "invalid email" message —
+  // the resolver runs each rule in order and surfaces the first failure.
   email: z
     .string()
     .trim()
+    .min(1, i18n.t('validation.email.required'))
     .email(i18n.t('validation.email.invalid'))
     .describe(i18n.t('auth.login.emailPlaceholder')),
   password: z.string().optional(),
@@ -77,55 +81,37 @@ export const LoginScreen = () => {
     }
   }, [params?.email, router, params])
 
-  const form = useForm<z.infer<typeof LoginSchema>>({
-    // SC-52 hotfix: zodResolver v3.1.0 is incompatible with Zod 4's issue
-    // shape ({ origin, code, format, pattern }) — it throws instead of
-    // populating fieldState.error on blur. We do the email format check
-    // manually below in each submit handler using `LoginSchema.shape.email
-    // .safeParse(...)`, which still works on Zod 4 because `.issues[]` and
-    // `.success` are unchanged. Re-wire the resolver after bumping
-    // @hookform/resolvers to a Zod-4 compatible major.
+  type LoginValues = z.infer<typeof LoginSchema>
+  const form = useForm<LoginValues>({
+    // SC-59: resolver is back. @hookform/resolvers was bumped to v5.2.2
+    // which understands Zod 4's issue shape. Cast is required because
+    // v5's Resolver<TInput, TCtx, TOutput> derives TInput from the
+    // schema's strict input — our form values type matches the schema
+    // output at runtime so this is safe.
+    resolver: zodResolver(LoginSchema) as unknown as Resolver<LoginValues>,
+    mode: 'onBlur',
     defaultValues: {
       email: params?.email || '',
       password: '',
     },
   })
 
-  // Returns translated error message if invalid, null if valid. Uses the
-  // LoginSchema's email field so format rules live in one place.
-  function validateEmailFormat(email: string): string | null {
-    const result = LoginSchema.shape.email.safeParse(email)
-    return result.success ? null : (result.error.issues[0]?.message ?? t('validation.email.invalid'))
-  }
-
   async function signInWithPassword(data: z.infer<typeof LoginSchema>) {
     if (!hasAgreed) return
     setIsSubmitting(true)
 
-    const trimmedEmail = data.email?.trim()
+    // Email required/format validation runs in the resolver before this is
+    // called, so by the time we're here `data.email` is a non-empty,
+    // trimmed, valid address.
+    const normalizedEmail = data.email.toLowerCase()
     const password = data.password ?? ''
 
-    if (!trimmedEmail) {
-      form.setError('email', { type: 'custom', message: t('validation.email.required') })
-      setIsSubmitting(false)
-      return
-    }
-    const formatError = validateEmailFormat(trimmedEmail)
-    if (formatError) {
-      form.setError('email', { type: 'custom', message: formatError })
-      setIsSubmitting(false)
-      return
-    }
     if (!password) {
       form.setError('password', { type: 'custom', message: 'Password is required.' })
       setIsSubmitting(false)
       return
     }
-
-    const normalizedEmail = trimmedEmail.toLowerCase()
-    const emailDomain = normalizedEmail.includes('@')
-      ? (normalizedEmail.split('@')[1] ?? 'unknown')
-      : 'unknown'
+    const emailDomain = normalizedEmail.split('@')[1] ?? 'unknown'
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -157,24 +143,9 @@ export const LoginScreen = () => {
     if (!hasAgreed) return
     setIsSubmitting(true)
 
-    const trimmedEmail = data.email?.trim()
-
-    if (!trimmedEmail) {
-      form.setError('email', { type: 'custom', message: t('validation.email.required') })
-      setIsSubmitting(false)
-      return
-    }
-    const formatError = validateEmailFormat(trimmedEmail)
-    if (formatError) {
-      form.setError('email', { type: 'custom', message: formatError })
-      setIsSubmitting(false)
-      return
-    }
-
-    const normalizedEmail = trimmedEmail.toLowerCase()
-    const emailDomain = normalizedEmail.includes('@')
-      ? (normalizedEmail.split('@')[1] ?? 'unknown')
-      : 'unknown'
+    // Resolver guarantees data.email is non-empty, trimmed, and valid.
+    const normalizedEmail = data.email.toLowerCase()
+    const emailDomain = normalizedEmail.split('@')[1] ?? 'unknown'
 
     try {
       const redirectTo = process.env.EXPO_PUBLIC_URL

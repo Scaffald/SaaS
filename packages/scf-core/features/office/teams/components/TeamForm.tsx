@@ -11,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast, useThemeContext } from "@scaffald/ui";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, type Resolver, useForm } from "react-hook-form";
 import { ResponsiveSelect } from "@scaffald/ui";
 import {
   Button,
@@ -141,7 +141,8 @@ export function TeamForm({
     setValue,
     reset,
   } = useForm<TeamFormValues>({
-    resolver: zodResolver(teamFormSchema),
+    // SC-59: cast required for @hookform/resolvers v5 — see useFeedbackForm for context.
+    resolver: zodResolver(teamFormSchema) as unknown as Resolver<TeamFormValues>,
     defaultValues,
   });
 

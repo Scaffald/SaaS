@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNetInfo } from "@react-native-community/netinfo";
 import { useToast } from "@scaffald/ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import { type Resolver, useFieldArray, useForm, useWatch } from "react-hook-form";
 
 import {
   type CreateWorkLogInput,
@@ -220,7 +220,8 @@ export const useWorkLogForm = ({
   };
 
   const form = useForm<CreateWorkLogInput>({
-    resolver: zodResolver(createWorkLogSchema),
+    // SC-59: cast required for @hookform/resolvers v5 — see useFeedbackForm for context.
+    resolver: zodResolver(createWorkLogSchema) as unknown as Resolver<CreateWorkLogInput>,
     defaultValues,
     mode: "onChange",
   });
