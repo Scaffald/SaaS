@@ -1,6 +1,6 @@
 {
   "name": "scaffald-app",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "expo-router/entry",
   "scripts": {
     "adb:reverse": "adb reverse tcp:8081 tcp:8081",
