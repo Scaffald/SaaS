@@ -167,7 +167,7 @@
     "@babel/runtime": "catalog:",
     "@expo-google-fonts/roboto": "^0.4.2",
     "@expo-google-fonts/roboto-serif": "^0.4.3",
-    "@expo/ui": "~55.0.6",
+    "@expo/ui": "~55.0.17",
     "@hookform/resolvers": "catalog:",
     "@react-native-async-storage/async-storage": "catalog:",
     "@react-native-community/netinfo": "11.5.2",
