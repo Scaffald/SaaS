@@ -100,9 +100,14 @@ The full sequence to ship `scaffald-app vX.Y.Z`:
    pnpm --filter scaffald-app eas:build:dev:device:ios
    ```
 4. **Submit to TestFlight** when the build is green.
-5. **Promote Linear issues.** Move every `vX.Y.Z`-labeled `In Github` issue
-   to `In TestFlight`. (The release script can do this via the Linear API
-   once it's wired up.)
+5. **Once the TestFlight build is live, promote Linear issues:**
+   ```bash
+   LINEAR_API_KEY=lin_api_xxx pnpm release:promote X.Y.Z
+   ```
+   This finds every issue with label `vX.Y.Z` in state `In Github` and moves
+   it to `In TestFlight` in one batch. The API key lives at
+   [Linear → Settings → Account → Security](https://linear.app/settings/account/security).
+   Pass `--dry-run` to preview without writing.
 6. **QA tests against the TestFlight build.** As each issue is validated,
    move it to `Done`.
 7. **Production promotion** happens out of band (App Store submission) once
