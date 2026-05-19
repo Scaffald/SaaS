@@ -101,9 +101,24 @@ Tasks + Punchlists landed on 2026-05-18:
 - Markdown → product migration: [scripts/migrate-dogfood-md-to-tasks.ts](../../scripts/migrate-dogfood-md-to-tasks.ts) reads the open/fixed/shipped entries from DOGFOODING-{BUGS,IDEAS}.md and creates 3 punchlists + 14 tasks. Result is snapshotted in [packages/supabase/seeds/012_seed-dogfood-tasks.sql](../../packages/supabase/seeds/012_seed-dogfood-tasks.sql) so `pnpm supa db reset` reproduces the demo.
 - Markdown files are now thin stubs pointing at the in-product Tasks. They can be deleted entirely once Phase 3.2 ships a UI.
 
-### Phase 3 backlog (Phase 3.2 and beyond)
+### Phase 3.2 — Tasks UI list page (done)
 
-- **Tasks/Punchlists UI** — list, detail, create form, kanban. Until this ships, the markdown stubs link to the raw API.
+The read-mostly list page is live at
+[employers/org/[slug]/tasks](../../apps/scaffald/app/(protected)/employers/org/%5Bslug%5D/tasks/index.tsx).
+It groups tasks by punchlist, supports the status segmented filter + a
+search box, and allows toggling status `todo ↔ done` inline via the
+SDK's `complete` / `update` methods. Detail and create flows are
+intentionally deferred to future sessions — the read path is what
+unblocks the dogfood loop's "where do my entries live" question.
+
+SDK + hooks shipped in the prior commit; the `packages/sdk` submodule
+is on local branch `dogfood/add-tasks-punchlists` (push when ready).
+
+### Phase 3 backlog (3.3 and beyond)
+
+- **Tasks UI: detail page** — click into a task to see full description, edit, link to logs.
+- **Tasks UI: create form** — currently only the API path exists.
+- **Tasks UI: kanban view** — drag-between-columns by status.
 - **Team association on logs** — add `team_id` (or join table) to `core.work_logs`. Today the dogfood script puts `[team:slug]` in the description as a workaround.
 - **Mentions + comments on logs** — partially modeled in `core.work_log_conversations`; ship the UI.
 - **Project model rename** — `core.construction_projects` → `core.projects` with a `kind` discriminator.
