@@ -92,6 +92,10 @@ test-results.log
 # build artifacts
 **/dist/
 
+# Next.js
+**/.next/
+**/next-env.d.ts
+
 # NX project graph outputs
 output.html
 static/
