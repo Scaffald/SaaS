@@ -1,4 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
+import { usePersonalizedBenefits } from '@scf/core/utils/profile-completion-sdk-hooks'
 import { useMemo } from 'react'
 import { useProfileCompletion } from './useProfileCompletion'
 
@@ -64,26 +65,53 @@ const engagementTips: GrowthCard[] = [
 
 export function useGrowthCards() {
   const { completionData, isLoading } = useProfileCompletion()
+  // SC-39 Phase E: prefer personalized "why complete this?" copy when the
+  // backend has it for a given section. Falls back to the static
+  // sectionMetadata description when no matching benefit exists.
+  const { data: benefitsData } = usePersonalizedBenefits()
+
+  const benefitBySection = useMemo(() => {
+    const map = new Map<string, { description: string; opportunityCount: number }>()
+    for (const b of benefitsData?.benefits ?? []) {
+      if (!map.has(b.relatedSection)) {
+        map.set(b.relatedSection, {
+          description: b.description,
+          opportunityCount: b.opportunityCount,
+        })
+      }
+    }
+    return map
+  }, [benefitsData])
 
   const cards = useMemo<GrowthCard[]>(() => {
     if (!completionData) return []
 
-    const incomplete = completionData.items.filter((item) => !item.complete)
+    // Highest-weight sections first — the most-impactful nudge leads.
+    const incomplete = completionData.items
+      .filter((item) => !item.complete)
+      .sort((a, b) => b.weight - a.weight)
 
     if (incomplete.length > 0) {
-      return incomplete.map((item) => ({
-        id: `profile.${item.id}`,
-        kind: 'profile' as const,
-        eyebrow: 'Profile strength',
-        title: item.title,
-        body: item.description,
-        ctaLabel: item.actionLabel ?? `Complete ${item.title}`,
-        ctaRoute: item.actionRoute,
-      }))
+      return incomplete.map((item) => {
+        const benefit = benefitBySection.get(item.id)
+        const eyebrow =
+          benefit && benefit.opportunityCount > 0
+            ? `+${benefit.opportunityCount} match${benefit.opportunityCount === 1 ? '' : 'es'}`
+            : 'Profile strength'
+        return {
+          id: `profile.${item.id}`,
+          kind: 'profile' as const,
+          eyebrow,
+          title: item.title,
+          body: benefit?.description ?? item.description,
+          ctaLabel: item.actionLabel ?? `Complete ${item.title}`,
+          ctaRoute: item.actionRoute,
+        }
+      })
     }
 
     return engagementTips
-  }, [completionData])
+  }, [completionData, benefitBySection])
 
   return {
     cards,
