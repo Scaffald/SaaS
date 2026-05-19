@@ -1,7 +1,7 @@
 ---
 pillar: "CI & Deployment"
 status: active
-last_verified: 2026-03-10
+last_verified: 2026-05-19
 packages:
   - .github/workflows/
   - project.json
@@ -13,7 +13,7 @@ key_files:
   - pnpm-workspace.yaml
   - vitest.config.ts
 critical_constraints:
-  - "@hookform/resolvers must be ~3.1.0 — squash merges can silently revert this to 5.x"
+  - "@hookform/resolvers is pinned to ~5.2.2 — works with Zod 4 schemas. All useForm call sites need an `as unknown as Resolver<X>` cast on the zodResolver result."
   - "Vitest 4 pool config is top-level (minThreads/maxThreads), NOT nested in poolOptions"
   - "All imports must use exact casing that matches filesystem (macOS hides case errors)"
   - "NX root project needs no-op targets in project.json to prevent infinite recursion"
@@ -23,19 +23,55 @@ critical_constraints:
 
 ## @hookform/resolvers Version Pin
 
-**CRITICAL:** The pnpm workspace catalog must have `@hookform/resolvers: ~3.1.0` (NOT `~5.x`).
+**Current:** `@hookform/resolvers: ~5.2.2` in the pnpm workspace catalog.
+See [PR #258](https://github.com/Unicorn/UNI-Construct/pull/258) for the
+v3 → v5 migration.
 
-- v5.x requires `react-hook-form@^8` — we use `react-hook-form@7.x`
-- Symptom: `Two different types with this name exist, but they are unrelated` for `Resolver<X>`
-- **Cause:** Squash merges from branches that had v5 in their lockfile silently revert the catalog
+### Why v5 (and why the cast)
+
+Zod 4 (`zod: ~4.1.13`) introduces a new issue shape
+(`{origin, code, format, pattern, ...}`) that the v3 resolver can't map
+to react-hook-form's `FieldError`. v3.1.0 throws the issue array
+uncaught on blur — a P1 user-facing crash. v3.10.0 didn't fix it
+either; real Zod 4 support landed in v4.0+ via the Standard-Schema
+refactor. v5.2.2 is the current stable.
+
+v5's `Resolver` generic tightened from `Resolver<TFieldValues, TContext>`
+to `Resolver<TInput, TContext, TOutput>`. Several form types in this
+codebase use the loose input shape on `useForm<X>` but compute against
+the schema's stricter output. The pragmatic fix is a cast at each
+call site:
+
+```ts
+import type { Resolver } from 'react-hook-form'
+
+const form = useForm<MyFormValues>({
+  // Cast required for @hookform/resolvers v5 — schema output is the
+  // strict shape; MyFormValues is the looser input shape at render time.
+  resolver: zodResolver(MySchema) as unknown as Resolver<MyFormValues>,
+  // ...
+})
+```
+
+The cast is safe at runtime (zodResolver still validates correctly) but
+silences a cosmetic TS mismatch between input vs. output types. A proper
+fix would split each form's input/output types explicitly; that's a
+separate stabilization task.
 
 ### Post-Squash-Merge Verification
 
 After every squash merge to main, run:
 ```bash
-grep "@hookform/resolvers" pnpm-lock.yaml  # must show 3.1.x
+grep "@hookform/resolvers" pnpm-lock.yaml  # must show 5.2.x
 pnpm exec nx run scf-core:typecheck        # must pass
 ```
+
+### Login form has tightest validation
+
+`packages/scf-core/features/auth/login-screen.tsx` uses `mode: 'onBlur'`
+and chains `.trim().min(1).email()` in the schema — so empty submits
+report "Email is required" rather than the generic format error. Pattern
+worth copying for forms that need similar UX.
 
 ## Stripe Version Pin
 
