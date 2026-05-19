@@ -39,6 +39,11 @@ app.openapi(
         organizationId: z.string().uuid().optional(),
         dateFrom: z.string().optional(),
         dateTo: z.string().optional(),
+        // Accept comma-separated or repeated values; coerce to array.
+        statuses: z.union([z.string(), z.array(z.string())]).optional(),
+        search: z.string().optional(),
+        sortField: z.enum(["log_date", "created_at", "updated_at", "total_hours"]).optional(),
+        sortDirection: z.enum(["asc", "desc"]).optional(),
       }),
     },
     responses: {
@@ -62,13 +67,28 @@ app.openapi(
   async (c) => {
     const supabase = c.get("supabase");
     const user = c.get("user");
-    const { page = 1, pageSize = 20, projectId, organizationId } = c.req.valid(
-      "query",
-    );
+    const {
+      page = 1,
+      pageSize = 20,
+      projectId,
+      organizationId,
+      dateFrom,
+      dateTo,
+      statuses,
+      search,
+      sortField = "log_date",
+      sortDirection = "desc",
+    } = c.req.valid("query");
 
     if (!user) {
       return c.json({ error: "Unauthorized" }, 401);
     }
+
+    const statusList = Array.isArray(statuses)
+      ? statuses
+      : typeof statuses === "string" && statuses.length > 0
+      ? statuses.split(",").map((s) => s.trim()).filter(Boolean)
+      : undefined;
 
     let query = supabase.schema("core").from("work_logs").select("*", {
       count: "exact",
@@ -124,10 +144,24 @@ app.openapi(
       query = query.eq("user_id", user.id);
     }
 
+    // Common filters (apply to both user-scope and org-scope queries)
+    if (statusList && statusList.length > 0) {
+      query = query.in("status", statusList);
+    }
+    if (dateFrom) {
+      query = query.gte("log_date", dateFrom);
+    }
+    if (dateTo) {
+      query = query.lte("log_date", dateTo);
+    }
+    if (search && search.trim().length > 0) {
+      query = query.ilike("work_description", `%${search.trim()}%`);
+    }
+
     const offset = (page - 1) * pageSize;
-    query = query.range(offset, offset + pageSize - 1).order("log_date", {
-      ascending: false,
-    });
+    query = query
+      .range(offset, offset + pageSize - 1)
+      .order(sortField, { ascending: sortDirection === "asc" });
 
     const { data, error, count } = await query;
 

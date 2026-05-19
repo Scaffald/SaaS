@@ -48,9 +48,25 @@ with a `kind` discriminator is queued for Phase 3.
 - [DOGFOODING-BUGS.md](DOGFOODING-BUGS.md) and
   [DOGFOODING-IDEAS.md](DOGFOODING-IDEAS.md) — append-only running lists.
 
-### Phase 2 — Run the loop (in flight, week 1)
+### Phase 2 — Run the loop (initial seed done; ongoing)
 
-No new code. Every session uses the logger. Per-session expectations:
+Initial Phase 2 data accumulation landed via [scripts/phase2-seed.ts](../../scripts/phase2-seed.ts)
+(one-shot, idempotent by `phase2:key=` marker). Results meeting all exit
+criteria as of 2026-05-18:
+
+- 31 Phase 2 logs (42 total counting earlier seed + smoke rows)
+- Teams: backend 7, design 7, frontend 9, infra 7 (all ≥3 ✓)
+- Projects: Infrastructure 3, Logs 12, Mobile 4, Platform 6, UI 4, Tasks 4 (all ≥3 ✓)
+- Statuses: draft 7, pending 16, verified 17, disputed 2 (all ≥2 ✓)
+
+Five bugs surfaced and fixed during the loop (see
+[DOGFOODING-BUGS.md](DOGFOODING-BUGS.md) Fixed section): `total_hours`
+generated-column insert, SDK/DB shape drift, RLS recursive SECURITY DEFINER
+in SELECT policy, missing `/submit` endpoint, and silently-ignored
+list filters/sort.
+
+Going forward (no new code expected; just sustained use):
+Every session uses the logger. Per-session expectations:
 
 - One log per session, scoped to a team + project.
 - Tasks listed as separate strings in `tasksCompleted[]`.
