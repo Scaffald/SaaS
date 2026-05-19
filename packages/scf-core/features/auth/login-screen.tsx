@@ -21,6 +21,7 @@ import {
   useThemeContext,
 } from '@scaffald/ui'
 import { colors, spacing } from '@scaffald/ui/tokens'
+import { zodResolver } from '@hookform/resolvers/zod'
 import type { AuthChangeEvent, Session } from '@supabase/auth-js'
 import { Lock, Mail } from 'lucide-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -35,8 +36,12 @@ applyZodErrorMap()
 const POLICY_VERSION = '1'
 
 const LoginSchema = z.object({
+  // `.trim()` runs before `.email()` so autofill / copy-paste values with
+  // surrounding whitespace ("user@example.com ") don't trip the resolver
+  // before reaching the submit handlers' own normalization.
   email: z
     .string()
+    .trim()
     .email(i18n.t('validation.email.invalid'))
     .describe(i18n.t('auth.login.emailPlaceholder')),
   password: z.string().optional(),
@@ -50,7 +55,8 @@ export const LoginScreen = () => {
   const router = useRouter()
   useRedirectAfterSignIn()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [hasAgreed, setHasAgreed] = useState(true)
+  // SC-51: consent must be explicit — default to unchecked.
+  const [hasAgreed, setHasAgreed] = useState(false)
   const [usePassword, setUsePassword] = useState(false)
   const requestMagicLink = useRequestMagicLinkMutation()
   const { t } = useTranslation()
@@ -73,6 +79,11 @@ export const LoginScreen = () => {
   }, [params?.email, router, params])
 
   const form = useForm<z.infer<typeof LoginSchema>>({
+    // SC-52: wire zod resolver so the email format validation in LoginSchema
+    // is actually enforced. onBlur gives the user feedback as soon as they
+    // leave the field without yelling at them while they type.
+    resolver: zodResolver(LoginSchema),
+    mode: 'onBlur',
     defaultValues: {
       email: params?.email || '',
       password: '',
