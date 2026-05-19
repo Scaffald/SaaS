@@ -1,7 +1,7 @@
 ---
 pillar: "CI & Deployment"
 status: active
-last_verified: 2026-03-10
+last_verified: 2026-05-19
 packages:
   - .github/workflows/
   - project.json
@@ -13,7 +13,7 @@ key_files:
   - pnpm-workspace.yaml
   - vitest.config.ts
 critical_constraints:
-  - "@hookform/resolvers must be ~3.1.0 — squash merges can silently revert this to 5.x"
+  - "@hookform/resolvers is pinned to ~5.2.2 — works with Zod 4 schemas. Forms whose declared TFieldValues drifts from the schema's `z.input` shape need an `as unknown as Resolver<X>` cast; forms where they align (e.g. PrerequisiteWidget) do NOT need the cast."
   - "Vitest 4 pool config is top-level (minThreads/maxThreads), NOT nested in poolOptions"
   - "All imports must use exact casing that matches filesystem (macOS hides case errors)"
   - "NX root project needs no-op targets in project.json to prevent infinite recursion"
@@ -23,19 +23,80 @@ critical_constraints:
 
 ## @hookform/resolvers Version Pin
 
-**CRITICAL:** The pnpm workspace catalog must have `@hookform/resolvers: ~3.1.0` (NOT `~5.x`).
+**Current:** `@hookform/resolvers: ~5.2.2` in the pnpm workspace catalog.
+See [PR #258](https://github.com/Unicorn/UNI-Construct/pull/258) for the
+v3 → v5 migration.
 
-- v5.x requires `react-hook-form@^8` — we use `react-hook-form@7.x`
-- Symptom: `Two different types with this name exist, but they are unrelated` for `Resolver<X>`
-- **Cause:** Squash merges from branches that had v5 in their lockfile silently revert the catalog
+### Why v5
+
+Zod 4 (`zod: ~4.1.13`) introduces a new issue shape
+(`{origin, code, format, pattern, ...}`) that the v3 resolver can't map
+to react-hook-form's `FieldError`. v3.1.0 throws the issue array
+uncaught on blur — a P1 user-facing crash. v3.10.0 didn't fix it
+either; real Zod 4 support landed in v4.0+ via the Standard-Schema
+refactor. v5.2.2 is the current stable.
+
+### When the cast is needed (and when it isn't)
+
+v5's `Resolver` generic tightened from `Resolver<TFieldValues, TContext>`
+to `Resolver<TInput, TContext, TOutput>`. Whether you need a cast
+depends on whether the form's declared `TFieldValues` matches the
+schema's `z.input<typeof Schema>` shape.
+
+**No cast needed** when the form's value type comes directly from the
+schema and the schema has no input/output divergence:
+
+```ts
+// PrerequisiteWidget — TFieldValues IS z.infer<typeof prerequisitesSchema>,
+// and the schema has no transforms that make input ≠ output. Clean.
+const form = useForm<PrerequisitesFormData>({
+  resolver: zodResolver(prerequisitesSchema),
+  defaultValues: prerequisitesDefaults,
+})
+```
+
+**Cast required** when the form's declared `TFieldValues` is looser
+than the schema's input (often by listing fields as optional that the
+schema marks required — pre-existing type drift in the codebase that
+v3 hid):
+
+```ts
+import type { Resolver } from 'react-hook-form'
+
+// useWorkLogForm — TFieldValues has `is_remote?: boolean` (optional)
+// but the schema's z.input has `is_remote: boolean` (required).
+// Pre-existing form/schema mismatch; cast silences the cosmetic TS error.
+const form = useForm<CreateWorkLogInput>({
+  resolver:
+    zodResolver(createWorkLogSchema) as unknown as Resolver<CreateWorkLogInput>,
+  defaultValues,
+})
+```
+
+The cast is safe at runtime (zodResolver still validates correctly).
+A proper long-term fix is to align each affected form's declared values
+type with the schema's `z.input` (or split input/output types
+explicitly) — separate stabilization task. Don't add the cast where it
+isn't needed; cast-by-default would mask real future type regressions.
+
+In PR [#258](https://github.com/Unicorn/UNI-Construct/pull/258) the cast
+was applied to ~11 call sites that actually broke under v5; the rest
+(PrerequisiteWidget, several others) were left clean.
 
 ### Post-Squash-Merge Verification
 
 After every squash merge to main, run:
 ```bash
-grep "@hookform/resolvers" pnpm-lock.yaml  # must show 3.1.x
+grep "@hookform/resolvers" pnpm-lock.yaml  # must show 5.2.x
 pnpm exec nx run scf-core:typecheck        # must pass
 ```
+
+### Login form has tightest validation
+
+`packages/scf-core/features/auth/login-screen.tsx` uses `mode: 'onBlur'`
+and chains `.trim().min(1).email()` in the schema — so empty submits
+report "Email is required" rather than the generic format error. Pattern
+worth copying for forms that need similar UX.
 
 ## Stripe Version Pin
 
