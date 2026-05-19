@@ -27,6 +27,7 @@
 
 import { parseArgs } from 'node:util'
 import { createClient } from '@supabase/supabase-js'
+import { Scaffald } from '@scaffald/sdk'
 
 const TEAM_SLUGS = ['design', 'frontend', 'backend', 'infra'] as const
 type TeamSlug = (typeof TEAM_SLUGS)[number]
@@ -49,14 +50,6 @@ const SUPABASE_ANON_KEY =
   process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ||
   process.env.SUPABASE_ANON_KEY ||
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
-
-// Service role key — used because the `work_logs_insert_self` RLS policy
-// (`auth.uid() = user_id`) currently fails even with a valid user JWT.
-// See DOGFOODING-BUGS.md for the open bug. Once that is fixed, switch back
-// to the user JWT path (already implemented; just swap `supabaseToken`).
-const SUPABASE_SERVICE_ROLE_KEY =
-  process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  'sb_secret_N7UND0UgjKTVK-Uodkm0Hg_xSvEMPvz'
 
 const API_BASE =
   process.env.EXPO_PUBLIC_SCAFFALD_API_URL ||
@@ -184,9 +177,7 @@ async function main() {
   const email = process.env.DOGFOOD_LOG_AS_EMAIL || args.as || 'clay@unicorn.love'
   const password = process.env.DOGFOOD_LOG_PASSWORD || 'password123'
 
-  // 1. Resolve the user.id for the email we're logging as.
-  //    Use the anon client to sign in (also acts as a sanity check that the
-  //    user exists with the expected password).
+  // 1. Sign in via Supabase to get a JWT for the user we're logging as.
   const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: false, autoRefreshToken: false },
   })
@@ -194,53 +185,35 @@ async function main() {
     email,
     password,
   })
-  if (authError || !authData.session?.user?.id) {
+  if (authError || !authData.session?.access_token) {
     die(
       `auth failed for ${email}: ${authError?.message ?? 'no session returned'}\n` +
         `Is Supabase running? Try: pnpm supa start`,
     )
   }
-  const userId = authData.session.user.id
 
   // 2. Build the description with a [team:slug] prefix so we can filter later.
   //    work_logs has no team_id column today — feature gap, see DOGFOODING-IDEAS.md.
   const fullDescription = `[team:${team}] ${args.description}`
 
-  // 3. Insert via service-role supabase-js client.
-  //    WHY NOT THE SDK / API: as of 2026-05-18, POST /v1/work-logs has
-  //    multiple bugs (schema/SDK drift) AND the RLS `work_logs_insert_self`
-  //    policy fails even for a correctly-authenticated user JWT. Both are
-  //    tracked in DOGFOODING-BUGS.md. Once they're fixed, the cleaner path is
-  //    `new Scaffald({ supabaseToken: session.access_token }).workLogs.create(...)`.
-  const db = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-    auth: { persistSession: false, autoRefreshToken: false },
-    db: { schema: 'core' },
+  // 3. Create via the SDK against the public API surface. The handler at
+  //    `packages/supabase/functions/api/routes/work-logs.ts` translates the
+  //    SDK shape (single_day / start_time-end_time / etc) to the DB schema.
+  const client = new Scaffald({
+    supabaseToken: authData.session.access_token,
+    baseUrl: API_BASE,
   })
 
-  const { data: log, error: insertError } = await db
-    .from('work_logs')
-    .insert({
-      user_id: userId,
-      project_id: projectId,
-      entry_type: 'daily',
-      log_date: logDate,
-      time_entries: [
-        (() => {
-          const t = hoursToTimeEntry(hours)
-          return { start: t.start_time, end: t.end_time }
-        })(),
-      ],
-      tasks_completed: tasksCompleted,
-      work_description: fullDescription,
-      visibility: 'private',
-      status: 'draft',
-    })
-    .select()
-    .single()
-
-  if (insertError || !log) {
-    die(`insert failed: ${insertError?.message ?? 'unknown error'}`)
-  }
+  const log = await client.workLogs.create({
+    projectId,
+    entryType: 'single_day',
+    logDate,
+    timeEntries: [hoursToTimeEntry(hours)],
+    workDescription: fullDescription,
+    tasksCompleted,
+    visibility: 'private',
+    showOnProfile: false,
+  })
 
   console.log(`\n✓ Created log ${log.id}`)
   console.log(`  user:        ${email}`)
@@ -252,22 +225,12 @@ async function main() {
 
   // 4. Optionally submit for verification (status → pending_verification)
   if (args.submit) {
-    const { data: submitted, error: submitError } = await db
-      .from('work_logs')
-      .update({ status: 'pending_verification', submitted_at: new Date().toISOString() })
-      .eq('id', log.id)
-      .select()
-      .single()
-    if (submitError || !submitted) {
-      die(`submit failed: ${submitError?.message ?? 'unknown error'}`)
-    }
+    const submitted = await client.workLogs.submit({ workLogId: log.id })
     console.log(`  submitted:   ${submitted.status}`)
   }
 
   console.log(`\n  URL: ${UI_BASE}/employers/org/${ORG_SLUG}/logs/${log.id}`)
   console.log()
-  // Silence unused vars (API_BASE is here for the eventual SDK path)
-  void API_BASE
 }
 
 main().catch((err) => {

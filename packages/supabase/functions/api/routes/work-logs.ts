@@ -306,4 +306,59 @@ app.openapi(
   },
 );
 
+/**
+ * POST /v1/work-logs/:workLogId/submit
+ * Submit a draft work log for verification.
+ * Only the owner can submit; only draft logs can transition.
+ */
+app.openapi(
+  createRoute({
+    method: "post",
+    path: "/{workLogId}/submit",
+    tags: ["Work Logs"],
+    summary: "Submit work log for verification",
+    request: {
+      params: z.object({ workLogId: z.string().uuid() }),
+    },
+    responses: {
+      200: {
+        description: "Work log submitted",
+        content: { "application/json": { schema: z.any() } },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const supabase = c.get("supabase");
+    const user = c.get("user");
+    const { workLogId } = c.req.valid("param");
+
+    if (!user) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    const { data, error } = await supabase
+      .schema("core")
+      .from("work_logs")
+      .update({
+        status: "pending_verification",
+        submitted_at: new Date().toISOString(),
+      })
+      .eq("id", workLogId)
+      .eq("user_id", user.id)
+      .eq("status", "draft")
+      .select()
+      .single();
+
+    if (error || !data) {
+      return c.json({
+        error: "Failed to submit work log",
+        message: error?.message ?? "Not found or not in draft status",
+      }, 404);
+    }
+
+    return c.json(data);
+  },
+);
+
 export default app;
