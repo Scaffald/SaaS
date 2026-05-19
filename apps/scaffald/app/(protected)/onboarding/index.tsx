@@ -1,4 +1,5 @@
 import { ROUTES } from "@scf/core/constants/routes";
+import { US_STATES } from "@scf/core/constants/us-states";
 import { ControlledAddressForm } from "@scf/core/forms";
 import { useUserLocation } from "@scf/core/hooks";
 import {
@@ -55,7 +56,10 @@ export default function OnboardingPage() {
   useEffect(() => {
     const t = setTimeout(() => {
       requestLocation()
-        .then((loc) => setProximity({ lat: loc.latitude, lng: loc.longitude }))
+        .then((loc) => {
+          if (!loc) return;
+          setProximity({ lat: loc.latitude, lng: loc.longitude });
+        })
         .catch(() => {});
     }, 1500);
     return () => clearTimeout(t);
@@ -163,16 +167,27 @@ export default function OnboardingPage() {
   };
 
   return (
-    <ScrollView>
-      <Stack justify="center" align="center" padding={16} minHeight="100vh">
-        <Stack maxWidth={600} width="100%" gap={12} padding={12}>
-          <Stack gap={8}>
-            <Text color="gray">Complete Your Profile</Text>
-            <Text color="gray">
-              Please complete these required fields to continue using Scaffald
-            </Text>
-          </Stack>
-
+    <Stack flex={1}>
+      {/* SC-54: sticky header — sits outside the ScrollView so the title and
+          subtitle stay anchored while the form scrolls beneath them. */}
+      <Stack
+        padding={16}
+        style={{
+          borderBottomWidth: 1,
+          borderBottomColor: "rgba(0, 0, 0, 0.08)",
+          backgroundColor: "white",
+        }}
+      >
+        <Stack maxWidth={600} width="100%" gap={4} style={{ alignSelf: "center" }}>
+          <Text weight="semibold">Complete Your Profile</Text>
+          <Text color="gray" size="sm">
+            Please complete these required fields to continue using Scaffald
+          </Text>
+        </Stack>
+      </Stack>
+      <ScrollView style={{ flex: 1 }}>
+        <Stack justify="center" align="center" padding={16}>
+          <Stack maxWidth={600} width="100%" gap={12} padding={12}>
           {isCheckingStatus ? (
             <Stack gap={10} align="center">
               <Spinner size="lg" color="primary" />
@@ -271,19 +286,16 @@ export default function OnboardingPage() {
                   placeholder="Search for your address..."
                   manualFieldsVariant="expand"
                   proximity={proximity}
-                  error={
-                    errors.address?.street?.message ||
-                    errors.address?.city?.message
-                  }
+                  lockedCountry="United States"
+                  stateOptions={US_STATES}
+                  fieldErrors={{
+                    street: errors.address?.street?.message,
+                    city: errors.address?.city?.message,
+                    state: errors.address?.state?.message,
+                    zip: errors.address?.zip?.message,
+                    country: errors.address?.country?.message,
+                  }}
                 />
-                {errors.address && (
-                  <Text color="red">
-                    {errors.address.street?.message ||
-                      errors.address.city?.message ||
-                      errors.address.state?.message ||
-                      errors.address.zip?.message}
-                  </Text>
-                )}
               </Stack>
 
               <Separator />
@@ -406,8 +418,9 @@ export default function OnboardingPage() {
               </Button>
             </>
           )}
+          </Stack>
         </Stack>
-      </Stack>
-    </ScrollView>
+      </ScrollView>
+    </Stack>
   );
 }

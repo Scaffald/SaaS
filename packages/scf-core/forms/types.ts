@@ -61,6 +61,18 @@ export interface ControlledAddressFormProps<TFieldValues extends FieldValues = F
   manualFieldsVariant?: 'always' | 'expand'
   expandLabel?: string
   collapseLabel?: string
+  /** Force a specific country and disable the Country field. */
+  lockedCountry?: string
+  /** Render the State field as a dropdown of these options. */
+  stateOptions?: Array<{ value: string; label: string }>
+  /** Per-field error messages for inline validation feedback. */
+  fieldErrors?: {
+    street?: string
+    city?: string
+    state?: string
+    zip?: string
+    country?: string
+  }
 
   // Optional callbacks
   onAddressSelect?: (address: AddressResult) => void

@@ -57,6 +57,9 @@ export function ControlledAddressForm<
   manualFieldsVariant,
   expandLabel,
   collapseLabel,
+  lockedCountry,
+  stateOptions,
+  fieldErrors,
 }: ControlledAddressFormProps<TFieldValues>) {
   const mapboxToken =
     apiKey ??
@@ -291,6 +294,9 @@ export function ControlledAddressForm<
         manualFieldsVariant={manualFieldsVariant}
         expandLabel={expandLabel}
         collapseLabel={collapseLabel}
+        lockedCountry={lockedCountry}
+        stateOptions={stateOptions}
+        fieldErrors={fieldErrors}
       />
     </Stack>
   );

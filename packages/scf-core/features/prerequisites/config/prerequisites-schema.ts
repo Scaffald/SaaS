@@ -24,12 +24,24 @@ export const prerequisitesSchema = z.object({
   first_name: z.string().min(1, 'First name is required').max(50, 'First name too long'),
   last_name: z.string().min(1, 'Last name is required').max(50, 'Last name too long'),
 
-  // Full address required
+  // Full address required. SC-58: reject gibberish inputs (single char, all
+  // digits in street, ZIP `00000`, free-text state, etc).
   address: z.object({
-    street: z.string().min(1, 'Street address is required'),
-    city: z.string().min(1, 'City is required'),
-    state: z.string().min(1, 'State is required'),
-    zip: z.string().min(1, 'ZIP code is required'),
+    street: z
+      .string()
+      .min(3, 'Street address is required')
+      .regex(/[a-zA-Z]/, 'Street address must contain letters'),
+    city: z
+      .string()
+      .min(2, 'City is required')
+      .regex(/[a-zA-Z]/, 'City must contain letters'),
+    state: z
+      .string()
+      .regex(/^[A-Z]{2}$/, 'Select a valid US state'),
+    zip: z
+      .string()
+      .regex(/^\d{5}$/, 'ZIP code must be 5 digits')
+      .refine((z) => z !== '00000', 'Please enter a valid ZIP code'),
     country: z.string().min(1, 'Country is required'),
     latitude: z.number().optional(),
     longitude: z.number().optional(),
