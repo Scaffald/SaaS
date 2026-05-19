@@ -41,17 +41,16 @@ done
 ENV_FILE=".env.production"
 PROJECT_DIR="apps/scaffald"
 
-# Required EXPO_PUBLIC_* vars that the production profile in eas.json does
-# *not* set, so they must come from .env.production at build time.
+# EXPO_PUBLIC_* vars that the app actually reads from process.env *and* aren't
+# already set by eas.json's production profile. Only list things grep
+# confirms are referenced in apps/ or packages/. Cruft env keys (style URLs,
+# Google Maps key, Supabase redirect URI) live in .env files but no code
+# reads them — don't block builds on those.
 REQUIRED_VARS=(
   EXPO_PUBLIC_MAPBOX_TOKEN
-  EXPO_PUBLIC_MAPBOX_API_URL
-  EXPO_PUBLIC_MAPBOX_STYLE_URL
-  EXPO_PUBLIC_GOOGLE_MAPS_KEY
   EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID
   EXPO_PUBLIC_GOOGLE_IOS_SCHEME
   EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
-  EXPO_PUBLIC_SUPABASE_REDIRECT_URI
 )
 
 # Recommended but not strictly required — app.config.ts has fallbacks.
@@ -149,17 +148,19 @@ fi
 
 # --- check EAS server-side secrets ----------------------------------------
 # EAS holds POSTHOG_KEY_PROD as a secret because eas.json references ${POSTHOG_KEY_PROD}.
-# We can't read its value from here, but we can verify it's registered.
+# Warn (don't block) if missing — the build will still complete; PostHog
+# analytics just won't fire. Remove the ${POSTHOG_KEY_PROD} reference from
+# eas.json if you genuinely don't want PostHog in production.
 echo -n "  Verifying EAS secret POSTHOG_KEY_PROD is registered… "
 if (cd "$PROJECT_DIR" && pnpm exec eas secret:list --json 2>/dev/null \
       | grep -q '"name": *"POSTHOG_KEY_PROD"'); then
   echo "ok"
 else
   echo "MISSING"
-  echo "✗ EAS secret POSTHOG_KEY_PROD is not registered. Add it with:"
-  echo "    cd $PROJECT_DIR && pnpm exec eas secret:create --name POSTHOG_KEY_PROD --value <value>"
-  echo "  (Or skip this check if you don't use PostHog in production.)"
-  exit 1
+  echo "⚠  EAS secret POSTHOG_KEY_PROD is not registered. PostHog analytics"
+  echo "   won't fire in this build. To set it:"
+  echo "     cd $PROJECT_DIR && pnpm exec eas secret:create --name POSTHOG_KEY_PROD --value <value>"
+  echo "   Or remove the \${POSTHOG_KEY_PROD} reference from apps/scaffald/eas.json."
 fi
 
 echo
