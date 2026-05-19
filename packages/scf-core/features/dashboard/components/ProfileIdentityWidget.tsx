@@ -1,12 +1,7 @@
 import { ROUTES } from '@scf/core/constants/routes'
+import { useProfileCompletion } from '@scf/core/features/dashboard/completion/useProfileCompletion'
 import { useCurrentUser } from '@scf/core/utils/profile-general-sdk-hooks'
-import {
-  useGeneralInfoWidget,
-  useExperienceWidget,
-  useSkillsWidget,
-  useCertificationsWidget,
-  useEducationWidget,
-} from '@scf/core/utils/profile-widgets-sdk-hooks'
+import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { openPublicProfileInNewTab } from '@scf/core/utils/publicProfileUrl'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
 import type { ScaffaldError } from '@scaffald/sdk'
@@ -28,26 +23,6 @@ import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import { ScrollView } from 'react-native'
 
-function calculateCompletion(
-  generalInfo: Record<string, unknown> | null,
-  experience: unknown[] | undefined,
-  education: unknown[] | undefined,
-  skills: unknown[] | undefined,
-  certifications: unknown[] | undefined
-): number {
-  if (!generalInfo) return 0
-  let completed = 0
-  const total = 7
-  if (generalInfo.about) completed++
-  if (generalInfo.headline) completed++
-  if (generalInfo.years_of_experience !== null && generalInfo.years_of_experience !== undefined) completed++
-  if (experience && experience.length > 0) completed++
-  if (education && education.length > 0) completed++
-  if (skills && skills.length > 0) completed++
-  if (certifications && certifications.length > 0) completed++
-  return Math.round((completed / total) * 100)
-}
-
 function getCompletionLabel(pct: number): string {
   if (pct >= 80) return 'Advanced'
   if (pct >= 50) return 'Intermediate'
@@ -61,16 +36,16 @@ export function ProfileIdentityWidget() {
 
   const { data: generalInfo, isLoading: loadingGeneral, isError: generalInfoError, error: generalInfoErr, refetch: refetchGeneral } =
     useGeneralInfoWidget({ userId: user?.id }, { enabled: !!user?.id, staleTime: 5 * 60 * 1000 })
-  const { data: experience, isLoading: loadingExperience } =
-    useExperienceWidget({ userId: user?.id }, { enabled: !!user?.id, staleTime: 5 * 60 * 1000 })
-  const { data: skills, isLoading: loadingSkills } =
-    useSkillsWidget({ userId: user?.id }, { enabled: !!user?.id, staleTime: 5 * 60 * 1000 })
-  const { data: certifications, isLoading: loadingCerts } =
-    useCertificationsWidget({ userId: user?.id }, { enabled: !!user?.id, staleTime: 5 * 60 * 1000 })
-  const { data: education, isLoading: loadingEducation } =
-    useEducationWidget({ userId: user?.id }, { enabled: !!user?.id, staleTime: 5 * 60 * 1000 })
+  // SC-39 Phase B: single source of truth via /profile.getStatus.
+  // Section progress drives both the percentage and the conditional CTAs below.
+  const { completionData, isLoading: loadingCompletion } = useProfileCompletion()
 
-  const isLoading = loadingGeneral || loadingExperience || loadingSkills || loadingCerts || loadingEducation
+  const isLoading = loadingGeneral || loadingCompletion
+
+  // Sections whose `completed` flag is false drive the "what to add next" CTAs.
+  const incompleteIds = new Set(
+    (completionData?.items ?? []).filter((i) => !i.complete).map((i) => i.id),
+  )
 
   // Loading skeleton
   if (isLoading) {
@@ -157,14 +132,7 @@ export function ProfileIdentityWidget() {
       ? `${generalInfo.privateData.first_name} ${generalInfo.privateData.last_name}`
       : generalInfo.username)
 
-  const completion = calculateCompletion(
-    generalInfo as unknown as Record<string, unknown>,
-    experience as unknown[] | undefined,
-    education as unknown[] | undefined,
-    skills as unknown[] | undefined,
-    certifications as unknown[] | undefined
-  )
-
+  const completion = completionData?.completionPercentage ?? 0
   const completionLabel = getCompletionLabel(completion)
   const badgeColor = completion >= 80
     ? { bg: colors.emerald[100], text: colors.emerald[700] }
@@ -295,7 +263,7 @@ export function ProfileIdentityWidget() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ gap: 10 }}
           >
-            {(!certifications || certifications.length === 0) && (
+            {incompleteIds.has('certifications') && (
               <Button
                 variant="outline"
                 color="gray"
@@ -305,7 +273,7 @@ export function ProfileIdentityWidget() {
                 Add Certification
               </Button>
             )}
-            {(!experience || experience.length === 0) && (
+            {incompleteIds.has('experience') && (
               <Button
                 variant="outline"
                 color="gray"
@@ -315,7 +283,7 @@ export function ProfileIdentityWidget() {
                 Update Experience
               </Button>
             )}
-            {(!education || education.length === 0) && (
+            {incompleteIds.has('education') && (
               <Button
                 variant="outline"
                 color="gray"

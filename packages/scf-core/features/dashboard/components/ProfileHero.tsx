@@ -57,20 +57,11 @@ export function ProfileHero() {
       .slice(0, 2) || '?'
   const slug = data?.slug
   const isVerified = data?.idVerificationBadge?.badge_status === 'active'
-  const rawCompletionPct = completionData?.completionPercentage ?? 0
-
-  // Baseline credit for signals the user has already provided just by having an
-  // account — so the meter never shows 0% when the profile is clearly started.
-  const hasName =
-    !!(firstName && lastName) ||
-    (!!data?.display_name && data.display_name !== 'Your profile')
-  const hasAvatar = !!avatarUrl
-  const baselinePct =
-    5 + // account exists (we wouldn't be rendering otherwise)
-    (hasName ? 5 : 0) +
-    (hasAvatar ? 5 : 0) +
-    (isVerified ? 5 : 0)
-  const completionPct = Math.min(100, Math.max(rawCompletionPct, baselinePct))
+  // SC-39 Phase B: single source of truth from /profile.getStatus. The
+  // previous baseline-padding logic (5% per account/name/avatar/verified)
+  // diverged from the other Profile Strength widgets and showed a different
+  // number for the same user. Trust the backend.
+  const completionPct = completionData?.completionPercentage ?? 0
 
   return (
     <DashboardWidget>
