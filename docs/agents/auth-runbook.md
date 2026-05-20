@@ -1,8 +1,9 @@
 # Auth runbook
 
 Operational steps for the auth surface — Apple secret rotation, Google
-OAuth verification, common breakages and their fixes. Most of this is
-dashboard-only work that can't be automated from the repo.
+OAuth verification, common breakages and their fixes. Some of this is
+dashboard-only work that can't be automated from the repo; the Apple
+rotation is mostly automated via GitHub Actions (see below).
 
 ## Apple client secret rotation (180-day cadence)
 
@@ -11,9 +12,55 @@ Apple OAuth uses a JWT signed with our private `.p8` key as the
 and silently breaks Apple sign-in when it expires (this is the SC-60 root
 cause). CI checks the expiry daily via
 [`.github/workflows/apple-secret-expiry.yml`](../../.github/workflows/apple-secret-expiry.yml)
-and fails when <21 days remain.
+— prints a warning at 30 days remaining and fails the build at 21 days.
 
-### Rotate
+### Auto-rotation (preferred)
+
+The [`Rotate Apple secret`](../../.github/workflows/apple-secret-rotate.yml)
+workflow handles the propagation parts. You still mint the JWT locally
+(the `.p8` private key is intentionally **not** stored in CI — anyone
+with it can forge Apple tokens for our team).
+
+One-time setup (do once, then forget):
+
+- Add repository **secret** `SUPABASE_ACCESS_TOKEN` — generate at
+  https://supabase.com/dashboard/account/tokens. Needs `projects:write`
+  scope so the workflow can PATCH each project's auth config.
+- Add repository **variables** (not secrets, these are just IDs):
+  - `SUPABASE_PROJECT_REF_DEV` = `pmtdqrfpumqwkdhpgwcz`
+  - `SUPABASE_PROJECT_REF_PREVIEW` = `uhjkipdwayqfihkanabk`
+  - `SUPABASE_PROJECT_REF_PROD` = `qmfmpcyxsihhfttvqpbw`
+- Confirm the existing `APPLE_SECRET` repository secret is set (used by
+  the expiry-check workflow).
+
+Each rotation, when CI warns at 30 days (or any time you want):
+
+1. Generate a fresh JWT locally:
+   ```bash
+   pnpm node scripts/supabase-apple-auth-generate.js --token-only
+   ```
+   Copy the printed token.
+2. Run the rotation workflow:
+   - GitHub → Actions → "Rotate Apple secret" → "Run workflow"
+   - Paste the JWT into `new_apple_secret` input
+   - Optionally check `dry_run` first to validate without pushing
+3. The workflow:
+   - Validates the JWT (rejects anything with <90 days remaining)
+   - PATCHes the 3 Supabase projects via Management API
+   - Updates the `APPLE_SECRET` GitHub Actions secret
+4. **Update EAS Secrets manually** (workflow doesn't have an Expo token):
+   ```bash
+   eas secret:create --scope project --name APPLE_SECRET \
+     --type string --value <jwt> --force --non-interactive
+   ```
+5. **Update your local `.env*` files** with the new JWT — these are
+   gitignored per-developer files. Each contributor running locally needs
+   to do this once on their own machine.
+6. Smoke test Apple sign-in on https://app.scaffald.com and an iOS
+   build. The old secret is invalidated as soon as the Supabase
+   Dashboard step lands.
+
+### Manual rotation fallback
 
 1. Generate a fresh 180-day JWT:
    ```bash
@@ -27,21 +74,31 @@ and fails when <21 days remain.
    - Production: https://supabase.com/dashboard/project/qmfmpcyxsihhfttvqpbw/auth/providers
    Click "Update" on each. The change takes effect immediately.
 
-3. Update `.env` files (so local dev / contributors / CI stay in sync):
+3. Update `.env` files on your local machine (these are **gitignored**,
+   so this only affects your local dev environment — each contributor
+   running the app locally needs to update their own files):
    - `.env`, `.env.dev`, `.env.dev-local`, `.env.preview`, `.env.production`
    - Replace `APPLE_SECRET="..."` with the new JWT.
 
-4. Update the **GitHub Actions secret** `APPLE_SECRET` (used by the
-   expiry-check workflow):
-   - https://github.com/<org>/<repo>/settings/secrets/actions → edit `APPLE_SECRET`.
-
-5. Verify locally:
+4. Update **EAS Secrets** (used during native builds):
    ```bash
-   APPLE_SECRET="..."pnpm tsx scripts/check-apple-secret-expiry.ts
+   eas secret:create --scope project --name APPLE_SECRET \
+     --type string --value <jwt> --force --non-interactive
+   ```
+
+5. Update the **GitHub Actions secret** `APPLE_SECRET` (used by the
+   expiry-check workflow):
+   ```bash
+   gh secret set APPLE_SECRET --body <jwt> --repo <org>/<repo>
+   ```
+
+6. Verify locally:
+   ```bash
+   APPLE_SECRET="..." pnpm tsx scripts/check-apple-secret-expiry.ts
    # Expect "ok" with ~180 days remaining
    ```
 
-6. Smoke test: Apple sign-in on https://app.scaffald.com and the iOS
+7. Smoke test: Apple sign-in on https://app.scaffald.com and the iOS
    build. The previous secret is invalidated as soon as the dashboard
    value is replaced, so do this within minutes of rotating.
 

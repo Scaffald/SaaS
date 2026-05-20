@@ -1,7 +1,57 @@
 // generate-apple-secret.js
-import fs from 'fs'
-import jwt from 'jsonwebtoken'
-import path from 'path'
+//
+// Produces an Apple OAuth client_secret JWT (ES256) for Supabase Auth.
+// Uses Node's built-in crypto module — no jsonwebtoken dependency — so the
+// same script runs in CI without installing anything.
+
+import crypto from 'node:crypto'
+import fs from 'node:fs'
+import path from 'node:path'
+
+const base64UrlEncode = (input) => {
+  const buf = typeof input === 'string' ? Buffer.from(input) : input
+  return buf
+    .toString('base64')
+    .replace(/=+$/g, '')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+}
+
+// JOSE ES256 signatures must be the raw `r || s` concatenation (64 bytes).
+// Node's sign() returns DER-encoded ECDSA — convert before emitting.
+const derToJose = (der) => {
+  let offset = 2
+  if (der[1] & 0x80) offset += der[1] & 0x7f
+  const readInt = () => {
+    if (der[offset++] !== 0x02) throw new Error('Malformed ECDSA signature')
+    let len = der[offset++]
+    while (len > 32 && der[offset] === 0x00) {
+      offset++
+      len--
+    }
+    const value = der.subarray(offset, offset + len)
+    offset += len
+    return value
+  }
+  const r = readInt()
+  const s = readInt()
+  const out = Buffer.alloc(64)
+  r.copy(out, 32 - r.length)
+  s.copy(out, 64 - s.length)
+  return out
+}
+
+const signJwtEs256 = (claims, privateKeyPem, kid) => {
+  const header = base64UrlEncode(JSON.stringify({ alg: 'ES256', kid, typ: 'JWT' }))
+  const payload = base64UrlEncode(JSON.stringify(claims))
+  const signingInput = `${header}.${payload}`
+  const signer = crypto.createSign('SHA256')
+  signer.update(signingInput)
+  signer.end()
+  const der = signer.sign({ key: privateKeyPem, format: 'pem' })
+  const sig = base64UrlEncode(derToJose(der))
+  return `${signingInput}.${sig}`
+}
 
 const DEFAULTS = {
   teamId: 'DAC62CF44G',
@@ -20,9 +70,11 @@ Options:
   --key <keyId>             Apple Auth Key ID (default: ${DEFAULTS.keyId})
   --client <clientId>       Services ID / Client ID (default: ${DEFAULTS.clientId})
   --key-path <path>         Path to .p8 private key (default: ${DEFAULTS.privateKeyPath})
+  --key-inline <pem>        Inline PEM (overrides --key-path; for CI use)
   --audience <audience>     Audience claim (default: ${DEFAULTS.audience})
   --expires-in-days <days>  Token validity in days (default: ${DEFAULTS.expiryDays})
   --expires-in-seconds <s>  Token validity in seconds (overrides --expires-in-days)
+  --token-only              Print only the JWT to stdout (for piping in scripts)
   --config                  Print Supabase configuration identifiers and exit
   --help                    Show this help message
 
@@ -30,6 +82,7 @@ Examples:
   pnpm node scripts/supabase-apple-auth-generate.js
   pnpm node scripts/supabase-apple-auth-generate.js --key-path ./certs/AuthKey_P9JV7GWQNZ.p8
   pnpm node scripts/supabase-apple-auth-generate.js --expires-in-days 90
+  NEW=$(pnpm node scripts/supabase-apple-auth-generate.js --token-only)
 `.trim()
 
 const SUPABASE_CONFIG_IDENTIFIERS = ['DAC62CF44G.com.scaffald.app', 'DAC62CF44G.com.scaffald.auth']
@@ -40,10 +93,12 @@ const parseArgs = (argv) => {
     keyId: DEFAULTS.keyId,
     clientId: DEFAULTS.clientId,
     privateKeyPath: DEFAULTS.privateKeyPath,
+    privateKeyInline: null,
     audience: DEFAULTS.audience,
     expiresInSeconds: DEFAULTS.expiryDays * 24 * 60 * 60,
     showHelp: false,
     showConfig: false,
+    tokenOnly: false,
   }
 
   const entries = [...argv]
@@ -62,6 +117,12 @@ const parseArgs = (argv) => {
         break
       case '--key-path':
         args.privateKeyPath = entries.shift()
+        break
+      case '--key-inline':
+        args.privateKeyInline = entries.shift()
+        break
+      case '--token-only':
+        args.tokenOnly = true
         break
       case '--audience':
         args.audience = entries.shift()
@@ -115,19 +176,26 @@ const main = () => {
       return
     }
 
-    const resolvedKeyPath = path.resolve(process.cwd(), args.privateKeyPath)
-
-    if (!fs.existsSync(resolvedKeyPath)) {
-      throw new Error(
-        `Private key not found at ${resolvedKeyPath}. Pass --key-path to point to your AuthKey .p8 file.`
-      )
+    let privateKey
+    let keySource
+    if (args.privateKeyInline) {
+      privateKey = args.privateKeyInline.replace(/\\n/g, '\n')
+      keySource = '<inline>'
+    } else {
+      const resolvedKeyPath = path.resolve(process.cwd(), args.privateKeyPath)
+      if (!fs.existsSync(resolvedKeyPath)) {
+        throw new Error(
+          `Private key not found at ${resolvedKeyPath}. Pass --key-path to point to your AuthKey .p8 file, or --key-inline for CI use.`
+        )
+      }
+      privateKey = fs.readFileSync(resolvedKeyPath, 'utf8')
+      keySource = resolvedKeyPath
     }
 
-    const privateKey = fs.readFileSync(resolvedKeyPath, 'utf8')
     const issuedAt = Math.floor(Date.now() / 1000)
     const expiresAt = issuedAt + args.expiresInSeconds
 
-    const token = jwt.sign(
+    const token = signJwtEs256(
       {
         iss: args.teamId,
         iat: issuedAt,
@@ -136,11 +204,13 @@ const main = () => {
         sub: args.clientId,
       },
       privateKey,
-      {
-        algorithm: 'ES256',
-        keyid: args.keyId,
-      }
+      args.keyId
     )
+
+    if (args.tokenOnly) {
+      process.stdout.write(token)
+      return
+    }
 
     console.log('✅ Apple Sign In JWT generated successfully\n')
     console.log(`Team ID:        ${args.teamId}`)
@@ -149,7 +219,7 @@ const main = () => {
     console.log(`Audience:       ${args.audience}`)
     console.log(`Issued At:      ${new Date(issuedAt * 1000).toISOString()}`)
     console.log(`Expires At:     ${new Date(expiresAt * 1000).toISOString()}`)
-    console.log(`Private Key:    ${resolvedKeyPath}`)
+    console.log(`Private Key:    ${keySource}`)
     console.log('\nToken:\n')
     console.log(token)
   } catch (error) {
