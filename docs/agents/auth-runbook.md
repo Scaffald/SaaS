@@ -14,7 +14,41 @@ cause). CI checks the expiry daily via
 [`.github/workflows/apple-secret-expiry.yml`](../../.github/workflows/apple-secret-expiry.yml)
 — prints a warning at 30 days remaining and fails the build at 21 days.
 
-### Auto-rotation (preferred)
+### Local mode (when GitHub Actions billing is blocked)
+
+If `gh workflow run "Rotate Apple secret"` is unavailable (billing
+exhausted, account suspended, etc.), the same end-to-end rotation runs
+locally:
+
+```bash
+SUPABASE_ACCESS_TOKEN=sbp_... pnpm tsx scripts/rotate-apple-secret.ts
+# Or with --dry-run to validate without writing anything.
+```
+
+What that does in one shot:
+1. Generates a fresh 180-day JWT from `certs/apple-auth-signer.p8`.
+2. Validates remaining lifetime is > 90 days.
+3. PATCHes the 3 Supabase projects (dev / preview / prod) via Management API.
+4. Updates the `APPLE_SECRET` GitHub Actions secret (`gh secret set`).
+5. Updates EAS env `APPLE_SECRET` for production / preview / development
+   (`eas env:create --force` in `apps/scaffald`).
+6. Rewrites `APPLE_SECRET` in any local gitignored `.env*` files.
+
+The daily 30-day warning runs as a **launchd agent** on the operator's
+Mac. Install once:
+
+```bash
+bash scripts/install-apple-secret-watcher.sh           # install (idempotent)
+bash scripts/install-apple-secret-watcher.sh uninstall # remove
+```
+
+The agent fires `scripts/apple-secret-watch.sh` at 09:00 local time
+every day; the watcher decodes the local `APPLE_SECRET` and pops a
+macOS notification if the secret is within the 30-day warn band or the
+21-day error band. Verify with `launchctl list | grep apple-secret`;
+logs at `~/Library/Logs/scaffald/apple-secret-watch.log`.
+
+### Auto-rotation (preferred, when CI is healthy)
 
 The [`Rotate Apple secret`](../../.github/workflows/apple-secret-rotate.yml)
 workflow handles the propagation parts. You still mint the JWT locally
