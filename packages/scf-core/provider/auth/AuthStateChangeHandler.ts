@@ -30,19 +30,29 @@ const useProactiveSessionValidation = () => {
           data: { session },
         } = await supabase.auth.getSession()
 
-        if (session?.expires_at) {
-          const expired = isSessionExpired(session.expires_at)
+        if (!session?.expires_at) return
+        if (!isSessionExpired(session.expires_at)) return
 
-          if (expired) {
-            console.log('[AuthStateChangeHandler] Session expired detected on app focus')
-            console.log('[AuthStateChangeHandler] Triggering comprehensive cleanup')
+        // SC-60 hardening: before signing the user out, try Supabase's
+        // refresh path. With `autoRefreshToken: true` the SDK normally
+        // refreshes silently — this fallback handles the focus-near-expiry
+        // race where the timer hasn't fired yet. Only if refresh actually
+        // fails do we cascade into a full sign-out.
+        console.log('[AuthStateChangeHandler] Session near/past expiry; attempting refresh')
+        const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession()
 
-            const queryClient = getGlobalQueryClient()
-            await clearAllAuthStorage(queryClient || undefined)
-
-            console.log('[AuthStateChangeHandler] Cleanup completed - user will be redirected')
-          }
+        if (!refreshError && refreshed?.session) {
+          console.log('[AuthStateChangeHandler] Silent refresh succeeded')
+          return
         }
+
+        console.log(
+          '[AuthStateChangeHandler] Refresh failed, performing comprehensive cleanup',
+          refreshError?.message
+        )
+        const queryClient = getGlobalQueryClient()
+        await clearAllAuthStorage(queryClient || undefined)
+        console.log('[AuthStateChangeHandler] Cleanup completed - user will be redirected')
       } catch (error) {
         console.error('[AuthStateChangeHandler] Error checking session validity:', error)
       }
