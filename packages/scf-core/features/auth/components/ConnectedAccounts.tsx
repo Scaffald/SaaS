@@ -31,7 +31,7 @@ import {
   useThemeContext,
   useToast,
 } from '@scaffald/ui'
-import { colors } from '@scaffald/ui/tokens'
+import { colors, spacing } from '@scaffald/ui/tokens'
 
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { useConnectedAccounts } from '../hooks/useConnectedAccounts'
@@ -45,8 +45,16 @@ export function ConnectedAccounts() {
   const themeKey = theme === 'dark' ? 'dark' : 'light'
   const secondaryText = colors.text[themeKey].secondary
 
-  const { identities, isLoading, isMutating, link, unlink, isLastIdentity } =
-    useConnectedAccounts()
+  const {
+    identities,
+    isLoading,
+    isMutating,
+    error: fetchError,
+    refresh,
+    link,
+    unlink,
+    isLastIdentity,
+  } = useConnectedAccounts()
   const [pendingUnlink, setPendingUnlink] = useState<UserIdentity | null>(null)
 
   const linkedProviders = new Set(identities.map((i) => i.provider))
@@ -99,7 +107,22 @@ export function ConnectedAccounts() {
 
       {isLoading ? (
         <Card padding="md">
-          <Text size="sm">{t('common.loading')}</Text>
+          <Text size="sm">{t('common.status.loading')}</Text>
+        </Card>
+      ) : fetchError ? (
+        // Codex feedback (#269): surface getUserIdentities failures so the
+        // user sees a retriable error instead of an "empty" state that
+        // looks like they have no providers connected and nudges them
+        // into linking attempts they don't actually need.
+        <Card padding="md" data-testid="connected-accounts-error">
+          <Stack gap={spacing[8]}>
+            <Text size="sm" style={{ color: colors.fg[themeKey].error }}>
+              {t('auth.connectedAccounts.fetchError')}
+            </Text>
+            <Button variant="outline" onPress={() => void refresh()}>
+              {t('common.actions.retry')}
+            </Button>
+          </Stack>
         </Card>
       ) : (
         <Stack gap={12}>
@@ -217,7 +240,7 @@ export function ConnectedAccounts() {
                 color: 'error',
               }}
               secondaryAction={{
-                label: t('common.cancel'),
+                label: t('common.actions.cancel'),
                 onPress: () => setPendingUnlink(null),
                 variant: 'outline',
               }}
