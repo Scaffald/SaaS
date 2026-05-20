@@ -19,6 +19,7 @@ import {
   Row,
   Stack,
   useThemeContext,
+  useToast,
 } from '@scaffald/ui'
 import { colors, spacing } from '@scaffald/ui/tokens'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -54,9 +55,15 @@ export const LoginScreen = () => {
   const renderCount = useRef(0)
   renderCount.current++
   console.log(`[LoginScreen] render #${renderCount.current}`)
-  const params = useLocalSearchParams<{ email?: string }>()
+  const params = useLocalSearchParams<{
+    email?: string
+    oauth_error?: string
+    oauth_error_code?: string
+    oauth_error_description?: string
+  }>()
   const router = useRouter()
   useRedirectAfterSignIn()
+  useSurfaceOAuthCallbackError(params)
   const [isSubmitting, setIsSubmitting] = useState(false)
   // SC-51: consent must be explicit — default to unchecked.
   const [hasAgreed, setHasAgreed] = useState(false)
@@ -294,7 +301,7 @@ export const LoginScreen = () => {
                 </Paragraph>
               </Pressable>
 
-              <SocialLogin />
+              <SocialLogin hasAgreed={hasAgreed} />
               <Paragraph size="sm" style={{ color: cardTextSecondary }}>
                 {t('auth.login.socialDescription')}
               </Paragraph>
@@ -375,4 +382,45 @@ function useRedirectAfterSignIn() {
       subscription.unsubscribe()
     }
   }, [router, recordTerms])
+}
+
+/**
+ * SC-60: When the OAuth callback redirects here with error params, show a
+ * toast and strip the params from the URL so the user gets a clear signal
+ * and a clean state for retry.
+ */
+function useSurfaceOAuthCallbackError(params: {
+  oauth_error?: string
+  oauth_error_code?: string
+  oauth_error_description?: string
+}) {
+  const toast = useToast()
+  const router = useRouter()
+  const { t } = useTranslation()
+  const shownRef = useRef(false)
+
+  const error = params?.oauth_error
+  const errorCode = params?.oauth_error_code
+  const errorDescription = params?.oauth_error_description
+
+  useEffect(() => {
+    if (shownRef.current) return
+    if (!error && !errorCode && !errorDescription) return
+    shownRef.current = true
+
+    const reason = (errorDescription || errorCode || error || '').trim()
+    const message = reason
+      ? t('auth.errors.oauthCallbackErrorWithReason', { reason })
+      : t('auth.errors.oauthCallbackError')
+
+    toast.show({ message, variant: 'error', duration: 6000 })
+    captureEvent('auth_callback_error_surfaced', {
+      error: error ?? null,
+      error_code: errorCode ?? null,
+      error_description: errorDescription ?? null,
+    })
+
+    // Clean the URL so a refresh doesn't replay the toast.
+    router.replace(ROUTES.AUTH.LOGIN.path)
+  }, [error, errorCode, errorDescription, toast, router, t])
 }

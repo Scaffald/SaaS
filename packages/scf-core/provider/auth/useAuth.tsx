@@ -1,4 +1,5 @@
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
+import { isSessionExpired } from '@scf/core/utils/auth/clearAuthStorage'
 import type { SessionContextHelper } from './AuthProvider'
 
 /**
@@ -82,10 +83,11 @@ export const useAuthAdvanced = () => {
 
     // Session helpers
     getAccessToken: () => session?.access_token || null,
+    // Consolidated with clearAuthStorage.isSessionExpired so the 60s buffer
+    // is consistent everywhere (audit finding 2.9 P2).
     isSessionExpired: () => {
       if (!session) return true
-      const now = Date.now() / 1000
-      return session.expires_at ? now > session.expires_at : false
+      return isSessionExpired(session.expires_at)
     },
   }
 }

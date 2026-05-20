@@ -8,8 +8,9 @@ declare global {
 
       EXPO_PUBLIC_URL: string;
 
-      EXPO_PUBLIC_GOOGLE_SIGN_IN_WEB_CLIENT_ID: string;
-      EXPO_PUBLIC_GOOGLE_URL_SCHEME: string;
+      EXPO_PUBLIC_GOOGLE_IOS_SCHEME: string;
+      EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID: string;
+      EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: string;
 
       EXPO_PUBLIC_SUPABASE_URL: string;
       EXPO_PUBLIC_SUPABASE_ANON_KEY: string;

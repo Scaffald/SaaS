@@ -9,6 +9,17 @@ import { useTranslation } from "@scf/core/utils/useTranslation";
 import { useToast } from "@scaffald/ui";
 import { logger } from "@scf/core";
 
+/**
+ * Builds the post-OAuth redirect URL. Normalizes trailing slashes so we
+ * don't accidentally produce `…//auth/callback` if EXPO_PUBLIC_URL is
+ * misconfigured (audit finding 2.2 P2).
+ */
+function buildCallbackUrl(): string | undefined {
+  const base = process.env.EXPO_PUBLIC_URL;
+  if (!base) return undefined;
+  return `${base.replace(/\/+$/, "")}/auth/callback`;
+}
+
 export function useSocialAuthHandlers() {
   const { t } = useTranslation();
   const toast = useToast();
@@ -18,7 +29,7 @@ export function useSocialAuthHandlers() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${process.env.EXPO_PUBLIC_URL}/auth/callback`,
+        redirectTo: buildCallbackUrl(),
       },
     });
     if (error) {
@@ -33,7 +44,12 @@ export function useSocialAuthHandlers() {
         variant: "error",
         duration: 5000,
       });
+      return;
     }
+    // Successful initiation — supabase-js redirects the browser via
+    // window.location.href. The success event is captured on the
+    // /auth/callback round-trip return.
+    captureEvent("auth_social_sign_in_initiated", { provider: "google" });
   }, [t, toast]);
 
   const onApplePress = useCallback(async () => {
@@ -41,7 +57,7 @@ export function useSocialAuthHandlers() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "apple",
       options: {
-        redirectTo: `${process.env.EXPO_PUBLIC_URL}/auth/callback`,
+        redirectTo: buildCallbackUrl(),
       },
     });
     if (error) {
@@ -56,7 +72,9 @@ export function useSocialAuthHandlers() {
         variant: "error",
         duration: 5000,
       });
+      return;
     }
+    captureEvent("auth_social_sign_in_initiated", { provider: "apple" });
   }, [t, toast]);
 
   return { onGooglePress, onApplePress };
