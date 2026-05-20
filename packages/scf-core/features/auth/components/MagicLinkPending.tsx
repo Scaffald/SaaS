@@ -20,7 +20,9 @@ type MagicLinkPendingProps = {
 }
 
 export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
-  const [code, setCode] = useState<number>()
+  // Stored as string so leading zeros in OTPs aren't dropped (Supabase
+  // issues 6-digit OTPs uniformly at random, ~10% start with 0).
+  const [code, setCode] = useState<string>()
   const [codeEntered, setCodeEntered] = useState(false)
   const [verified, setVerified] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -31,7 +33,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
   const { theme } = useThemeContext()
 
   const handleEnter = useCallback(
-    async (enteredCode: number) => {
+    async (enteredCode: string) => {
       setCode(enteredCode)
       setIsSubmitting(true)
       setError(null)
@@ -43,7 +45,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
 
         const { error } = await supabase.auth.verifyOtp({
           email,
-          token: enteredCode.toString(),
+          token: enteredCode,
           type: 'email',
         })
 
