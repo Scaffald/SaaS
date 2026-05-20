@@ -48,6 +48,37 @@ export const eventSchemas = {
     error_code: z.string().nullable().optional(),
     error_description: z.string().nullable().optional(),
   }),
+  // SC-62: manual identity-linking funnel for the connected-accounts UI.
+  // `_initiated` fires when supabase-js has returned the OAuth URL and is
+  // about to navigate; the matching success event comes from the callback
+  // round-trip back to the settings page.
+  auth_identity_link_started: z.object({
+    provider: z.enum(['google', 'apple']),
+  }),
+  auth_identity_link_initiated: z.object({
+    provider: z.enum(['google', 'apple']),
+  }),
+  auth_identity_link_failed: z.object({
+    provider: z.enum(['google', 'apple']),
+    error_code: z.string().nullable().optional(),
+    message: z.string().nullable().optional(),
+  }),
+  auth_identity_unlink_started: z.object({
+    provider: z.string(),
+  }),
+  auth_identity_unlink_succeeded: z.object({
+    provider: z.string(),
+  }),
+  auth_identity_unlink_failed: z.object({
+    provider: z.string(),
+    error_code: z.string().nullable().optional(),
+    message: z.string().nullable().optional(),
+  }),
+  // SC-62 Phase 3: shown once when an Apple-relay-email user lands post-signup.
+  auth_apple_relay_banner_shown: z.object({}),
+  auth_apple_relay_banner_dismissed: z.object({
+    action: z.enum(['dismiss', 'sign_out']),
+  }),
   user_signed_in: z.object({
     provider: z.string(),
     is_new_user: z.boolean(),
