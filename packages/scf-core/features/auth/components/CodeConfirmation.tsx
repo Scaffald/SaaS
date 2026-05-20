@@ -9,7 +9,13 @@ import { CodeConfirmationInput, type FormFields } from './CodeConfirmationInput'
 interface CodeConfirmationProps {
   codeSize: number
   secureText?: boolean
-  onEnter: (code: number) => void
+  /**
+   * Called with the joined digits as a string. Must stay a string — converting
+   * to a number drops leading zeros (e.g. `045171` → `45171`), which causes
+   * Supabase verifyOtp to silently reject the OTP as invalid/expired. Affects
+   * ~1 in 10 OTPs since Supabase issues uniformly-random 6-digit codes.
+   */
+  onEnter: (code: string) => void
 }
 
 export function CodeConfirmation({ codeSize, secureText, onEnter }: CodeConfirmationProps) {
@@ -35,7 +41,7 @@ export function CodeConfirmation({ codeSize, secureText, onEnter }: CodeConfirma
   }
 
   const onSubmit = handleSubmit((data) => {
-    const code = Number(Object.values(data).join(''))
+    const code = Object.values(data).join('')
     onEnter(code)
   })
 
