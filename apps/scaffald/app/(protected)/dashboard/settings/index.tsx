@@ -4,6 +4,7 @@
  */
 
 import { ROUTES } from '@scf/core/constants/routes'
+import { ConnectedAccounts } from '@scf/core/features/auth/components/ConnectedAccounts'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { AccountDeletionPanel } from '@scf/core/features/profile/components/AccountDeletionPanel'
 import { AuthorizedAppsList } from '@scf/core/features/oauth/components/AuthorizedAppsList'
@@ -45,6 +46,10 @@ export default function SettingsPage() {
               </Text>
               <AuthorizedAppsList />
             </Stack>
+
+            <Separator />
+
+            <ConnectedAccounts />
 
             <Separator />
 

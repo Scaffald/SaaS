@@ -1,4 +1,5 @@
 import { Stack, useResponsive } from '@scaffald/ui'
+import { AppleRelayBanner } from '@scf/core/features/auth/components/AppleRelayBanner'
 import {
   ProfileHero,
   GrowthCard,
@@ -20,6 +21,7 @@ export function DashboardIndexLeft() {
   if (isMobile) {
     return (
       <Stack gap={16}>
+        <AppleRelayBanner />
         <ProfileHero />
         <GrowthCard />
         <MobileDashboardTabs />
@@ -29,6 +31,7 @@ export function DashboardIndexLeft() {
 
   return (
     <Stack gap={20}>
+      <AppleRelayBanner />
       <AnalyticsWidget />
       <CommunitiesWidget />
       <CompactNewsWidget />
