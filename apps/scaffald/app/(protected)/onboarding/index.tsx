@@ -25,6 +25,7 @@ import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pressable, ScrollView } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   type PrerequisitesFormData,
   prerequisitesDefaults,
@@ -50,6 +51,7 @@ export default function OnboardingPage() {
   const { isMobile } = useResponsive();
   const toast = useToast();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { requestLocation } = useUserLocation();
 
   // Optionally bias address autocomplete by user location (after a short delay to avoid blocking or prompting immediately)
@@ -171,8 +173,10 @@ export default function OnboardingPage() {
       {/* SC-54: sticky header — sits outside the ScrollView so the title and
           subtitle stay anchored while the form scrolls beneath them. */}
       <Stack
-        padding={16}
         style={{
+          paddingTop: insets.top + 16,
+          paddingHorizontal: 16,
+          paddingBottom: 16,
           borderBottomWidth: 1,
           borderBottomColor: "rgba(0, 0, 0, 0.08)",
           backgroundColor: "white",
