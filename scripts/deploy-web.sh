@@ -110,6 +110,14 @@ if [ -z "${SKIP_BUILD}" ]; then
   # overrides it (dev.env points to localhost during local dev).
   export EXPO_PUBLIC_URL="${APP_URL}"
 
+  # Purge Metro/Haste caches. Metro keys its persistent cache on source
+  # file content, not on env vars — so back-to-back `deploy-web.sh dev`
+  # then `deploy-web.sh prod` would otherwise serve the dev-built bundle
+  # (with dev Supabase URL + dev anon key) to prod. (Incident 2026-05-21.)
+  rm -rf apps/scaffald/dist apps/scaffald/.expo/web \
+    "${TMPDIR:-/tmp}/metro-cache" "${TMPDIR:-/tmp}"/metro-file-map-* \
+    "${TMPDIR:-/tmp}"/haste-map-* 2>/dev/null || true
+
   pnpm web:build
 
   cd apps/scaffald
