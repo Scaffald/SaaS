@@ -77,14 +77,12 @@ CREATE POLICY review_links_owner_delete ON core.review_links
   FOR DELETE TO authenticated
   USING (subject_user_id = auth.uid());
 
--- Anon SELECT is granted because the public review-submit Edge
--- Function needs to read the row to validate the token. The Edge
--- Function always provides the exact token in its WHERE clause, so
--- in practice this exposes nothing the holder didn't already know.
--- Tokens are 32+ chars of random entropy (see API layer).
-CREATE POLICY review_links_anon_select ON core.review_links
-  FOR SELECT TO anon
-  USING (TRUE);
+-- Deliberately no anon SELECT policy. The public review-submit Edge
+-- Function uses the service role (which bypasses RLS) to look up by
+-- token, so direct anon SELECT access isn't needed — and granting it
+-- would expose tokens to enumeration via the Supabase REST API. All
+-- anon access flows through the API layer, where future rate
+-- limiting and anti-bot live.
 
 -- =========================================================
 -- core.reviews: allow nullable author + relax UNIQUE

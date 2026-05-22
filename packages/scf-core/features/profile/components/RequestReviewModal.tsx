@@ -136,8 +136,17 @@ export function RequestReviewModal({ visible, onClose }: RequestReviewModalProps
     [handleCopy, toast]
   )
 
-  // Active links = non-revoked, non-expired
-  const activeLinks = (links ?? []).filter((l) => !l.is_revoked)
+  // Active links = non-revoked, not expired, and not maxed-out.
+  // The submit API rejects expired/limit-reached tokens, so surfacing
+  // them in the QR/Share UI would just produce confusing failures for
+  // recipients.
+  const now = Date.now()
+  const activeLinks = (links ?? []).filter((l) => {
+    if (l.is_revoked) return false
+    if (l.expires_at && new Date(l.expires_at).getTime() <= now) return false
+    if (l.max_uses != null && l.used_count >= l.max_uses) return false
+    return true
+  })
   const latestLink = activeLinks[0] ?? null
 
   return (

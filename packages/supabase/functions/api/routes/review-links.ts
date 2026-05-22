@@ -397,6 +397,48 @@ app.openapi(
       }
     }
 
+    // Atomic slot claim — only succeeds if no concurrent submission has
+    // incremented `used_count` since we read it. This is the
+    // single source of truth for max_uses enforcement; the earlier
+    // validation block produces nicer error messages but cannot be
+    // trusted against concurrent traffic on the same token.
+    //
+    // PostgREST translates chained `.eq()` filters into a `WHERE`
+    // clause; combined with the matching `used_count` predicate, this
+    // is a compare-and-swap. If another caller has incremented in the
+    // window between SELECT and UPDATE, the predicate misses, the
+    // update affects 0 rows, and we refuse the submission.
+    const { data: claimed, error: claimError } = await service
+      .schema("core")
+      .from("review_links")
+      .update({
+        used_count: link.used_count + 1,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", link.id)
+      .eq("used_count", link.used_count)
+      .eq("is_revoked", false)
+      .select("id")
+      .maybeSingle();
+
+    if (claimError) {
+      return c.json(
+        { error: "Failed to claim slot", message: claimError.message },
+        500,
+      );
+    }
+    if (!claimed) {
+      // Another submission landed in the validation window, OR the link
+      // was revoked between our SELECT and UPDATE. Either way the
+      // caller should re-try (which will fail validation cleanly).
+      return c.json(
+        {
+          error: "This link was just used by someone else. Please ask for a new one.",
+        },
+        409,
+      );
+    }
+
     const metadata = {
       status: "submitted" as const,
       via_review_link: link.id,
@@ -423,6 +465,19 @@ app.openapi(
       .single();
 
     if (insertError || !inserted) {
+      // The slot was already claimed (used_count incremented). Refund
+      // it so the link doesn't burn a slot on a failed write — best
+      // effort; if this fails too, the worst case is one wasted slot.
+      await service
+        .schema("core")
+        .from("review_links")
+        .update({
+          used_count: link.used_count,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", link.id)
+        .eq("used_count", link.used_count + 1);
+
       return c.json(
         {
           error: "Failed to submit review",
@@ -431,17 +486,6 @@ app.openapi(
         500,
       );
     }
-
-    // Increment used_count. Best effort — even if this fails the review
-    // has been recorded.
-    await service
-      .schema("core")
-      .from("review_links")
-      .update({
-        used_count: link.used_count + 1,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", link.id);
 
     // Look up the slug so the success screen can deep-link to the
     // public profile.
