@@ -31,6 +31,11 @@ type IconLike = ComponentType<{ size?: number; color?: string }>
 
 type MobileDrawerSectionsProps = {
   organizations?: OrganizationMembership[] | null
+  /**
+   * SC-17: when false (worker), the Organizations section is hidden unless the
+   * user already has memberships. Office users always see the section.
+   */
+  hasOfficeRole?: boolean
   onNavigate?: (href: string) => void
   onSettingsPress: () => void
   onLogoutPress: () => void
@@ -38,6 +43,7 @@ type MobileDrawerSectionsProps = {
 
 export function MobileDrawerSections({
   organizations,
+  hasOfficeRole = false,
   onNavigate,
   onSettingsPress,
   onLogoutPress,
@@ -52,36 +58,41 @@ export function MobileDrawerSections({
     [onNavigate, router]
   )
 
+  const hasMemberships = !!organizations && organizations.length > 0
+  const showOrganizations = hasOfficeRole || hasMemberships
+
   return (
     <Stack gap={20} width="100%">
       <DrawerNotificationsFeed onNavigate={() => onNavigate?.(ROUTES.DASHBOARD.NOTIFICATIONS.path)} />
 
-      <Section title="Organizations">
-        {organizations && organizations.length > 0 ? (
-          organizations.map((org) => (
-            <DrawerRow
-              key={org.organization_id}
-              icon={Building2}
-              label={org.organization_name || 'Untitled organization'}
-              onPress={() =>
-                go(
-                  ROUTES.EMPLOYERS.ORG.DETAIL.path.replace(':slug', org.organization_slug)
-                )
-              }
-            />
-          ))
-        ) : null}
-        <DrawerRow
-          icon={Plus}
-          label="Create business profile"
-          onPress={() => go(ROUTES.EMPLOYERS.CREATE.path)}
-        />
-        <DrawerRow
-          icon={Mail}
-          label="Invitations"
-          onPress={() => go(ROUTES.EMPLOYERS.INVITATIONS.path)}
-        />
-      </Section>
+      {showOrganizations ? (
+        <Section title="Organizations">
+          {hasMemberships
+            ? organizations!.map((org) => (
+                <DrawerRow
+                  key={org.organization_id}
+                  icon={Building2}
+                  label={org.organization_name || 'Untitled organization'}
+                  onPress={() =>
+                    go(
+                      ROUTES.EMPLOYERS.ORG.DETAIL.path.replace(':slug', org.organization_slug)
+                    )
+                  }
+                />
+              ))
+            : null}
+          <DrawerRow
+            icon={Plus}
+            label="Create business profile"
+            onPress={() => go(ROUTES.EMPLOYERS.CREATE.path)}
+          />
+          <DrawerRow
+            icon={Mail}
+            label="Invitations"
+            onPress={() => go(ROUTES.EMPLOYERS.INVITATIONS.path)}
+          />
+        </Section>
+      ) : null}
 
       <Section title="Account">
         <DrawerRow icon={SettingsIcon} label="Settings" onPress={onSettingsPress} />

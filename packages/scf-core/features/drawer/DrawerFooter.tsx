@@ -1,17 +1,20 @@
-import { useThemeSetting } from '@scf/core/provider/theme/UniversalThemeProvider'
+// SC-28: Theme toggle hidden for MVP (light-only). Restore the import and
+// the toggle button below once dark mode is reinstated.
+// import { useThemeSetting } from '@scf/core/provider/theme/UniversalThemeProvider'
 import { supabase } from '@scf/core/utils/supabase/client'
-import { LogOut, Moon, Sun } from 'lucide-react-native'
+import { LogOut } from 'lucide-react-native'
+// import { LogOut, Moon, Sun } from 'lucide-react-native'
 import type { GestureResponderEvent } from 'react-native'
 import { Button, Row, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 
 /**
- * DrawerFooter component renders fixed action buttons at the bottom of the drawer
- * Includes theme toggle button and logout button
+ * DrawerFooter component renders fixed action buttons at the bottom of the drawer.
+ * Theme toggle is hidden for MVP — see SC-28.
  */
 export const DrawerFooter = () => {
   const { theme } = useThemeContext()
-  const { resolvedTheme, toggle } = useThemeSetting()
+  // const { resolvedTheme, toggle } = useThemeSetting()
 
   const handleLogout = async (event?: GestureResponderEvent) => {
     event?.preventDefault()
@@ -22,12 +25,12 @@ export const DrawerFooter = () => {
     }
   }
 
-  const handleThemeToggle = (event?: GestureResponderEvent) => {
-    event?.preventDefault()
-    toggle()
-  }
+  // const handleThemeToggle = (event?: GestureResponderEvent) => {
+  //   event?.preventDefault()
+  //   toggle()
+  // }
 
-  const isDark = resolvedTheme === 'dark'
+  // const isDark = resolvedTheme === 'dark'
   const iconColor = colors.fg[theme].active
 
   return (
@@ -37,11 +40,11 @@ export const DrawerFooter = () => {
         paddingVertical: 12,
         borderTopWidth: 1,
         borderTopColor: colors.border[theme].default,
-        justifyContent: 'space-between',
+        justifyContent: 'flex-end',
         alignItems: 'center',
       }}
     >
-      {/* Theme Toggle Button */}
+      {/* SC-28: Theme toggle hidden for MVP (light-only).
       <Button
         size="sm"
         variant="outline"
@@ -51,6 +54,7 @@ export const DrawerFooter = () => {
       >
         {isDark ? <Sun size={20} color={iconColor} /> : <Moon size={20} color={iconColor} />}
       </Button>
+      */}
 
       {/* Logout Button */}
       <Button

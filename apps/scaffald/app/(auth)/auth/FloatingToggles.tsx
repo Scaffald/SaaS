@@ -2,7 +2,9 @@ import { supportedLocales, type SupportedLocale } from '@scf/core/locales'
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import { Moon, Sun } from 'lucide-react-native'
+// SC-28: Theme toggle hidden for MVP (light-only). Restore the import and
+// <ThemeToggleButton /> render below once dark mode is reinstated.
+// import { Moon, Sun } from 'lucide-react-native'
 import { Platform, Pressable, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
@@ -18,31 +20,32 @@ function cycleLocale(current: SupportedLocale): SupportedLocale {
   return supportedLocales[next] ?? 'en'
 }
 
-function ThemeToggleButton() {
-  const { theme, toggleTheme } = useThemeContext()
-  return (
-    <Pressable
-      onPress={toggleTheme}
-      style={{
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: colors.bg[theme].subtle,
-        borderWidth: 1,
-        borderColor: colors.border[theme].default,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-      accessibilityLabel={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}
-    >
-      {theme === 'light' ? (
-        <Moon size={18} color={colors.text[theme].secondary} />
-      ) : (
-        <Sun size={18} color={colors.text[theme].secondary} />
-      )}
-    </Pressable>
-  )
-}
+// SC-28: ThemeToggleButton hidden for MVP (light-only).
+// function ThemeToggleButton() {
+//   const { theme, toggleTheme } = useThemeContext()
+//   return (
+//     <Pressable
+//       onPress={toggleTheme}
+//       style={{
+//         width: 40,
+//         height: 40,
+//         borderRadius: 20,
+//         backgroundColor: colors.bg[theme].subtle,
+//         borderWidth: 1,
+//         borderColor: colors.border[theme].default,
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//       }}
+//       accessibilityLabel={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}
+//     >
+//       {theme === 'light' ? (
+//         <Moon size={18} color={colors.text[theme].secondary} />
+//       ) : (
+//         <Sun size={18} color={colors.text[theme].secondary} />
+//       )}
+//     </Pressable>
+//   )
+// }
 
 function LocaleToggleButton() {
   const { theme } = useThemeContext()
@@ -97,7 +100,7 @@ export function AuthFloatingToggles() {
       }}
     >
       <LocaleToggleButton />
-      <ThemeToggleButton />
+      {/* SC-28: <ThemeToggleButton /> hidden for MVP (light-only). */}
     </View>
   )
 }
