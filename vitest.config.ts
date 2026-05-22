@@ -89,14 +89,10 @@ export default defineConfig({
         find: /^react-native\//,
         replacement: reactNativeMockPath,
       },
-      // More specific @scf/core aliases must come before the generic @scf/core
-      {
-        find: "@scf/core/constants/routes",
-        replacement: resolve(
-          workspaceRoot,
-          "tests/infrastructure/vitest/mocks/routes.ts",
-        ),
-      },
+      // (Removed) @scf/core/constants/routes mock alias.
+      // The real routes module loads fine in jsdom now that lucide-react-native
+      // and locales are mocked. Tests that exercise route helpers (drawer
+      // isActivePath, navigation/routeHierarchy) need the full tree to pass.
       {
         find: "@scf/core",
         replacement: resolve(workspaceRoot, "packages/scf-core"),
