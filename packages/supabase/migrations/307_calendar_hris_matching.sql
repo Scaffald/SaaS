@@ -94,18 +94,22 @@ CREATE TABLE IF NOT EXISTS core.scheduling_links (
 );
 
 -- Triggers
+DROP TRIGGER IF EXISTS trg_calendar_connections_updated ON core.calendar_connections;
 CREATE TRIGGER trg_calendar_connections_updated
   BEFORE UPDATE ON core.calendar_connections
   FOR EACH ROW EXECUTE FUNCTION core.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS trg_interview_availability_updated ON core.interview_availability;
 CREATE TRIGGER trg_interview_availability_updated
   BEFORE UPDATE ON core.interview_availability
   FOR EACH ROW EXECUTE FUNCTION core.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS trg_interview_slots_updated ON core.interview_slots;
 CREATE TRIGGER trg_interview_slots_updated
   BEFORE UPDATE ON core.interview_slots
   FOR EACH ROW EXECUTE FUNCTION core.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS trg_interview_bookings_updated ON core.interview_bookings;
 CREATE TRIGGER trg_interview_bookings_updated
   BEFORE UPDATE ON core.interview_bookings
   FOR EACH ROW EXECUTE FUNCTION core.update_updated_at_column();
@@ -128,29 +132,37 @@ ALTER TABLE core.interview_slots ENABLE ROW LEVEL SECURITY;
 ALTER TABLE core.interview_bookings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE core.scheduling_links ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS calendar_connections_user ON core.calendar_connections;
 CREATE POLICY calendar_connections_user ON core.calendar_connections
   FOR ALL USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS interview_availability_user ON core.interview_availability;
 CREATE POLICY interview_availability_user ON core.interview_availability
   FOR ALL USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS interview_slots_select ON core.interview_slots;
 CREATE POLICY interview_slots_select ON core.interview_slots
   FOR SELECT USING (auth.uid() = proposed_by OR auth.uid() IN (
     SELECT candidate_id FROM core.interview_bookings WHERE slot_id = id
   ));
 
+DROP POLICY IF EXISTS interview_slots_insert ON core.interview_slots;
 CREATE POLICY interview_slots_insert ON core.interview_slots
   FOR INSERT WITH CHECK (auth.uid() = proposed_by);
 
+DROP POLICY IF EXISTS interview_bookings_select ON core.interview_bookings;
 CREATE POLICY interview_bookings_select ON core.interview_bookings
   FOR SELECT USING (auth.uid() = candidate_id);
 
+DROP POLICY IF EXISTS interview_bookings_insert ON core.interview_bookings;
 CREATE POLICY interview_bookings_insert ON core.interview_bookings
   FOR INSERT WITH CHECK (auth.uid() = candidate_id);
 
+DROP POLICY IF EXISTS scheduling_links_select ON core.scheduling_links;
 CREATE POLICY scheduling_links_select ON core.scheduling_links
   FOR SELECT USING (auth.uid() = created_by);
 
+DROP POLICY IF EXISTS scheduling_links_insert ON core.scheduling_links;
 CREATE POLICY scheduling_links_insert ON core.scheduling_links
   FOR INSERT WITH CHECK (auth.uid() = created_by);
 
@@ -209,10 +221,12 @@ CREATE TABLE IF NOT EXISTS core.hris_employee_mappings (
 );
 
 -- Triggers
+DROP TRIGGER IF EXISTS trg_hris_connections_updated ON core.hris_connections;
 CREATE TRIGGER trg_hris_connections_updated
   BEFORE UPDATE ON core.hris_connections
   FOR EACH ROW EXECUTE FUNCTION core.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS trg_hris_employee_mappings_updated ON core.hris_employee_mappings;
 CREATE TRIGGER trg_hris_employee_mappings_updated
   BEFORE UPDATE ON core.hris_employee_mappings
   FOR EACH ROW EXECUTE FUNCTION core.update_updated_at_column();
@@ -267,6 +281,7 @@ CREATE TABLE IF NOT EXISTS core.background_check_events (
 );
 
 -- Triggers
+DROP TRIGGER IF EXISTS trg_bg_check_providers_updated ON core.background_check_providers;
 CREATE TRIGGER trg_bg_check_providers_updated
   BEFORE UPDATE ON core.background_check_providers
   FOR EACH ROW EXECUTE FUNCTION core.update_updated_at_column();
@@ -392,9 +407,11 @@ CREATE INDEX IF NOT EXISTS idx_job_occupation_mappings_onet ON core.job_occupati
 ALTER TABLE core.job_match_scores ENABLE ROW LEVEL SECURITY;
 ALTER TABLE core.job_occupation_mappings ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS job_match_scores_select ON core.job_match_scores;
 CREATE POLICY job_match_scores_select ON core.job_match_scores
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS job_occupation_mappings_select ON core.job_occupation_mappings;
 CREATE POLICY job_occupation_mappings_select ON core.job_occupation_mappings
   FOR SELECT USING (TRUE);
 

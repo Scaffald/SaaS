@@ -76,6 +76,86 @@ pnpm supa db reset       # Reset database (runs all migrations + seeds)
 pnpm supa migration new  # Create new migration file
 ```
 
+## Deploying migrations to dev / preview / prod
+
+Each env has its own wrapper. Always link first, dry-run, then push:
+
+```bash
+cd packages
+pnpx supabase link --project-ref <env-ref>
+pnpx supabase db push --linked --dry-run --yes   # always read this first
+pnpx supabase db push --linked --yes
+```
+
+Project refs:
+
+| Env | Ref | Notes |
+|---|---|---|
+| dev | `pmtdqrfpumqwkdhpgwcz` | History was misaligned pre-2026-05-22, see audit |
+| preview | `uhjkipdwayqfihkanabk` | Use as the gold-standard reference schema |
+| prod | `qmfmpcyxsihhfttvqpbw` | Same realignment as dev pre-2026-05-22 |
+
+### `db push` says "Remote migration versions not found in local"
+
+Two known causes:
+
+1. **Version-format drift.** The `supabase_migrations.schema_migrations`
+   table has rows with `NNN_descriptor_name` format, but CLI v2.x+ writes
+   `NNN` (numeric prefix only). Symptom: CLI lists every remote row
+   as missing-in-local but the files clearly exist. Fix is a one-shot
+   SQL update applied via Supabase dashboard SQL editor:
+   ```sql
+   UPDATE supabase_migrations.schema_migrations
+      SET version = split_part(version, '_', 1)
+    WHERE version ~ '^[0-9]+_';
+   ```
+   Then `db push` works.
+
+2. **Stale rows from an older tool.** Remote has rows like
+   `20251121083706` that don't match any local file. Revert them:
+   ```bash
+   pnpx supabase migration repair --status reverted \
+     20251121083706 20251121090000 ... --linked
+   ```
+
+See `docs/agents/audits/2026-05-22-supabase-schema-drift.md` for the
+full investigation that surfaced both.
+
+### `migration repair --status applied` is a record-only operation
+
+`repair` writes a row into `supabase_migrations.schema_migrations`. It
+does **not** run the migration's SQL. Only use it when the migration
+has *already been applied via some other path* (dashboard, older CLI,
+psql) and you're just teaching the history table about it. **Never
+use it to "skip" a migration whose SQL hasn't run** — the schema will
+diverge from the history.
+
+### Migration idempotency
+
+If a migration might be re-run during catch-up reconciliation, it must
+tolerate existing objects:
+
+- `CREATE TABLE IF NOT EXISTS`
+- `CREATE INDEX IF NOT EXISTS`
+- `ALTER TABLE ... ADD COLUMN IF NOT EXISTS`
+- `DROP POLICY IF EXISTS X; CREATE POLICY X ...` (the only "if not
+  exists" pattern for policies)
+- `CREATE OR REPLACE FUNCTION`
+- For types/enums, guard with `DO $$ BEGIN IF NOT EXISTS (SELECT FROM
+  pg_type WHERE typname = 'X') THEN CREATE TYPE X AS ENUM ...; END IF;
+  END $$;`
+
+The drift audit (2026-05-22) found ~12 migrations that weren't idempotent
+and need hardening before they can be re-applied. Each gets its own PR
+that adds the guards and re-tests.
+
+### Nightly drift detection
+
+`.github/workflows/supabase-drift-audit.yml` runs nightly against all
+three envs and fails if any env has drift between local + remote
+migration history. Re-link a project (or break the CI run) only after
+confirming the env is in sync.
+
 ## Environment Variables
 
 - Edge functions read env vars via `Deno.env.get('VAR_NAME')`

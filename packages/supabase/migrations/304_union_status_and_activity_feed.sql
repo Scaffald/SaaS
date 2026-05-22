@@ -60,6 +60,7 @@ CREATE INDEX IF NOT EXISTS idx_application_activity_actor
 -- RLS policies for application_activity
 ALTER TABLE core.application_activity ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view activity for applications in their org" ON core.application_activity;
 CREATE POLICY "Users can view activity for applications in their org"
   ON core.application_activity FOR SELECT
   USING (
@@ -70,6 +71,7 @@ CREATE POLICY "Users can view activity for applications in their org"
     )
   );
 
+DROP POLICY IF EXISTS "Users can insert activity for applications in their org" ON core.application_activity;
 CREATE POLICY "Users can insert activity for applications in their org"
   ON core.application_activity FOR INSERT
   WITH CHECK (
@@ -81,6 +83,7 @@ CREATE POLICY "Users can insert activity for applications in their org"
   );
 
 -- Service role bypass
+DROP POLICY IF EXISTS "Service role full access to application_activity" ON core.application_activity;
 CREATE POLICY "Service role full access to application_activity"
   ON core.application_activity FOR ALL TO service_role
   USING (true) WITH CHECK (true);

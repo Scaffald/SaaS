@@ -109,6 +109,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trigger_update_api_keys_updated_at ON core.api_keys;
 CREATE TRIGGER trigger_update_api_keys_updated_at
   BEFORE UPDATE ON core.api_keys
   FOR EACH ROW
@@ -122,6 +123,7 @@ ALTER TABLE core.api_keys ENABLE ROW LEVEL SECURITY;
 ALTER TABLE core.api_key_usage ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Service role has full access (for API authentication middleware)
+DROP POLICY IF EXISTS api_keys_service_role_all ON core.api_keys;
 CREATE POLICY api_keys_service_role_all
   ON core.api_keys
   FOR ALL
@@ -129,6 +131,7 @@ CREATE POLICY api_keys_service_role_all
   USING (true)
   WITH CHECK (true);
 
+DROP POLICY IF EXISTS api_key_usage_service_role_all ON core.api_key_usage;
 CREATE POLICY api_key_usage_service_role_all
   ON core.api_key_usage
   FOR ALL
@@ -137,6 +140,7 @@ CREATE POLICY api_key_usage_service_role_all
   WITH CHECK (true);
 
 -- Policy: Authenticated users can view their organization's keys
+DROP POLICY IF EXISTS api_keys_select_own_org ON core.api_keys;
 CREATE POLICY api_keys_select_own_org
   ON core.api_keys
   FOR SELECT
@@ -151,6 +155,7 @@ CREATE POLICY api_keys_select_own_org
   );
 
 -- Policy: Org members can insert keys (role check done at API layer)
+DROP POLICY IF EXISTS api_keys_insert_org_member ON core.api_keys;
 CREATE POLICY api_keys_insert_org_member
   ON core.api_keys
   FOR INSERT
@@ -165,6 +170,7 @@ CREATE POLICY api_keys_insert_org_member
   );
 
 -- Policy: Org members can update keys (role check done at API layer)
+DROP POLICY IF EXISTS api_keys_update_org_member ON core.api_keys;
 CREATE POLICY api_keys_update_org_member
   ON core.api_keys
   FOR UPDATE
@@ -187,6 +193,7 @@ CREATE POLICY api_keys_update_org_member
   );
 
 -- Policy: Org members can delete keys (role check done at API layer)
+DROP POLICY IF EXISTS api_keys_delete_org_member ON core.api_keys;
 CREATE POLICY api_keys_delete_org_member
   ON core.api_keys
   FOR DELETE
@@ -201,6 +208,7 @@ CREATE POLICY api_keys_delete_org_member
   );
 
 -- Policy: Users can view usage for their organization's keys
+DROP POLICY IF EXISTS api_key_usage_select_own_org ON core.api_key_usage;
 CREATE POLICY api_key_usage_select_own_org
   ON core.api_key_usage
   FOR SELECT
