@@ -120,6 +120,14 @@ describe('LoginScreen', () => {
     vi.restoreAllMocks()
   })
 
+  // SC-65: helper — simulate user checking the Terms checkbox. The form
+  // fields are always enabled, but submission still requires consent.
+  function acceptTerms(container: HTMLElement) {
+    const checkbox = container.querySelector('[role="checkbox"]') as HTMLElement | null
+    if (!checkbox) throw new Error('Terms checkbox not found')
+    fireEvent.click(checkbox)
+  }
+
   it('renders login form', async () => {
     const { LoginScreen } = await import('../login-screen')
     const { getByPlaceholderText } = render(<LoginScreen />)
@@ -131,7 +139,7 @@ describe('LoginScreen', () => {
     const LoginScreen = mod.LoginScreen
     mockMutateAsync.mockResolvedValue({ mode: 'magic_link' })
 
-    const { getByPlaceholderText, getByRole } = render(<LoginScreen />)
+    const { container, getByPlaceholderText, getByRole } = render(<LoginScreen />)
 
     // Router should clear the email param after mount
     await waitFor(() => {
@@ -140,6 +148,8 @@ describe('LoginScreen', () => {
 
     const input = getByPlaceholderText('your@email.acme')
     fireEvent.change(input, { target: { value: ' Person@Example.com ' } })
+
+    acceptTerms(container)
 
     const submitButton = getByRole('button', { name: /sign in or register/i })
     fireEvent.click(submitButton)
@@ -165,10 +175,12 @@ describe('LoginScreen', () => {
     const error = new TRPCClientError('Email already in use')
     mockMutateAsync.mockRejectedValue(error)
 
-    const { getByPlaceholderText, getByRole, findByText } = render(<LoginScreen />)
+    const { container, getByPlaceholderText, getByRole, findByText } = render(<LoginScreen />)
 
     const input = getByPlaceholderText('your@email.acme')
     fireEvent.change(input, { target: { value: 'duplicate@example.com' } })
+
+    acceptTerms(container)
 
     fireEvent.click(getByRole('button', { name: /sign in or register/i }))
 
@@ -185,13 +197,36 @@ describe('LoginScreen', () => {
     const { LoginScreen } = await import('../login-screen')
     mockMutateAsync.mockRejectedValue(new Error('Network down'))
 
-    const { getByPlaceholderText, getByRole, findByText } = render(<LoginScreen />)
+    const { container, getByPlaceholderText, getByRole, findByText } = render(<LoginScreen />)
 
     const input = getByPlaceholderText('your@email.acme')
     fireEvent.change(input, { target: { value: 'user@example.com' } })
 
+    acceptTerms(container)
+
     fireEvent.click(getByRole('button', { name: /sign in or register/i }))
 
     expect(await findByText('Network down')).toBeInTheDocument()
+  })
+
+  it('SC-65: surfaces inline consent error and blocks submit when Terms is unchecked', async () => {
+    const { LoginScreen } = await import('../login-screen')
+    mockMutateAsync.mockResolvedValue({ mode: 'magic_link' })
+
+    const { getByPlaceholderText, getByRole, findByText, queryByText } = render(
+      <LoginScreen />
+    )
+
+    // No inline error before any submit attempt.
+    expect(queryByText('auth.errors.mustAcceptTerms')).not.toBeInTheDocument()
+
+    const input = getByPlaceholderText('your@email.acme')
+    fireEvent.change(input, { target: { value: 'user@example.com' } })
+
+    // Submit without checking Terms — inline error appears, no magic link.
+    fireEvent.click(getByRole('button', { name: /sign in or register/i }))
+
+    expect(await findByText('auth.errors.mustAcceptTerms')).toBeInTheDocument()
+    expect(mockMutateAsync).not.toHaveBeenCalled()
   })
 })

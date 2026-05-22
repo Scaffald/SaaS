@@ -1,47 +1,40 @@
 import { useCallback } from 'react'
 import { useSocialAuthHandlers } from '../hooks/useSocialAuthHandlers'
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import { SocialLoginGroup, useToast } from '@scaffald/ui'
+import { SocialLoginGroup } from '@scaffald/ui'
 import { Platform } from 'react-native'
 
 type SocialLoginProps = {
   /**
-   * When false, the buttons are disabled. SC-51 / SC-60: social auth must be
-   * gated on terms acceptance just like the password and magic-link flows.
+   * Callback invoked when the user taps a social provider without having
+   * accepted the Terms checkbox. The parent surfaces the consent error
+   * inline next to the checkbox (SC-65). When `undefined`, consent is
+   * assumed and the social handlers run immediately.
    */
-  hasAgreed: boolean
+  onConsentMissing?: () => void
 }
 
-export function SocialLogin({ hasAgreed }: SocialLoginProps) {
+export function SocialLogin({ onConsentMissing }: SocialLoginProps) {
   const { t } = useTranslation()
-  const toast = useToast()
   const { onGooglePress, onApplePress } = useSocialAuthHandlers()
 
-  // Defense in depth: even if a caller forgets to gate the UI, the handlers
-  // refuse to proceed without consent.
+  // SC-65: defense in depth — handlers refuse to proceed when the parent
+  // signals missing consent (via the presence of the callback).
   const guardedGoogle = useCallback(() => {
-    if (!hasAgreed) {
-      toast.show({
-        message: t('auth.errors.mustAcceptTerms'),
-        variant: 'error',
-        duration: 4000,
-      })
+    if (onConsentMissing) {
+      onConsentMissing()
       return
     }
     void onGooglePress()
-  }, [hasAgreed, onGooglePress, toast, t])
+  }, [onConsentMissing, onGooglePress])
 
   const guardedApple = useCallback(() => {
-    if (!hasAgreed) {
-      toast.show({
-        message: t('auth.errors.mustAcceptTerms'),
-        variant: 'error',
-        duration: 4000,
-      })
+    if (onConsentMissing) {
+      onConsentMissing()
       return
     }
     void onApplePress()
-  }, [hasAgreed, onApplePress, toast, t])
+  }, [onConsentMissing, onApplePress])
 
   return (
     <SocialLoginGroup
@@ -51,7 +44,6 @@ export function SocialLogin({ hasAgreed }: SocialLoginProps) {
       googleText={t('auth.login.googleButton')}
       appleText={t('auth.login.appleButton')}
       showApple={Platform.OS === 'web' || Platform.OS === 'ios'}
-      disabled={!hasAgreed}
     />
   )
 }

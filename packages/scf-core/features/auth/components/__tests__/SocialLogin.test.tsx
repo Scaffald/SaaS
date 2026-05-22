@@ -2,13 +2,10 @@ import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-const toastShowMock = vi.fn()
-
 vi.mock('@scaffald/ui', async () => {
   const actual = await vi.importActual('@scaffald/ui')
   return {
     ...actual,
-    useToast: () => ({ show: toastShowMock }),
     SocialLoginGroup: ({
       orLabel,
       googleText,
@@ -16,7 +13,6 @@ vi.mock('@scaffald/ui', async () => {
       showApple,
       onGooglePress,
       onApplePress,
-      disabled,
     }: {
       orLabel?: string
       googleText?: string
@@ -24,14 +20,12 @@ vi.mock('@scaffald/ui', async () => {
       showApple?: boolean
       onGooglePress?: () => void
       onApplePress?: () => void
-      disabled?: boolean
     }) => (
       <div data-testid="social-login-group">
         <span data-testid="or-label">{orLabel}</span>
         <span data-testid="google-text">{googleText}</span>
         <span data-testid="apple-text">{appleText}</span>
         <span data-testid="show-apple">{String(showApple)}</span>
-        <span data-testid="disabled">{String(disabled)}</span>
         <button data-testid="google-button" type="button" onClick={onGooglePress}>
           Google
         </button>
@@ -66,48 +60,37 @@ describe('SocialLogin', () => {
     vi.clearAllMocks()
   })
 
-  it('renders SocialLoginGroup with disabled=true when consent not granted', async () => {
+  it('routes Google/Apple presses to onConsentMissing when provided (no provider call)', async () => {
     const { SocialLogin } = await import('../SocialLogin')
-    const { getByTestId } = render(<SocialLogin hasAgreed={false} />)
-
-    expect(getByTestId('social-login-group')).toBeInTheDocument()
-    expect(getByTestId('or-label')).toHaveTextContent('common.or')
-    expect(getByTestId('disabled')).toHaveTextContent('true')
-  })
-
-  it('enables SocialLoginGroup when consent is granted', async () => {
-    const { SocialLogin } = await import('../SocialLogin')
-    const { getByTestId } = render(<SocialLogin hasAgreed={true} />)
-    expect(getByTestId('disabled')).toHaveTextContent('false')
-  })
-
-  it('blocks Google/Apple handlers and shows consent toast when not agreed', async () => {
-    const { SocialLogin } = await import('../SocialLogin')
-    const { getByTestId } = render(<SocialLogin hasAgreed={false} />)
+    const onConsentMissing = vi.fn()
+    const { getByTestId } = render(<SocialLogin onConsentMissing={onConsentMissing} />)
 
     getByTestId('google-button').click()
     getByTestId('apple-button').click()
 
     expect(mockOnGooglePress).not.toHaveBeenCalled()
     expect(mockOnApplePress).not.toHaveBeenCalled()
-    expect(toastShowMock).toHaveBeenCalledWith({
-      message: 'auth.errors.mustAcceptTerms',
-      variant: 'error',
-      duration: 4000,
-    })
-    expect(toastShowMock).toHaveBeenCalledTimes(2)
+    expect(onConsentMissing).toHaveBeenCalledTimes(2)
   })
 
-  it('forwards to Google/Apple handlers when consent is granted', async () => {
+  it('forwards to Google/Apple handlers when onConsentMissing is undefined', async () => {
     const { SocialLogin } = await import('../SocialLogin')
-    const { getByTestId } = render(<SocialLogin hasAgreed={true} />)
+    const { getByTestId } = render(<SocialLogin />)
 
     getByTestId('google-button').click()
     expect(mockOnGooglePress).toHaveBeenCalledTimes(1)
 
     getByTestId('apple-button').click()
     expect(mockOnApplePress).toHaveBeenCalledTimes(1)
+  })
 
-    expect(toastShowMock).not.toHaveBeenCalled()
+  it('passes through translated labels and platform flag', async () => {
+    const { SocialLogin } = await import('../SocialLogin')
+    const { getByTestId } = render(<SocialLogin />)
+
+    expect(getByTestId('or-label')).toHaveTextContent('common.or')
+    expect(getByTestId('google-text')).toHaveTextContent('auth.login.googleButton')
+    expect(getByTestId('apple-text')).toHaveTextContent('auth.login.appleButton')
+    expect(getByTestId('show-apple')).toHaveTextContent('true')
   })
 })
