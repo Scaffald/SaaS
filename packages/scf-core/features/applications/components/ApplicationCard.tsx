@@ -1,10 +1,35 @@
 import type { Application } from '@scaffald/sdk/resources/applications'
 import { formatDistanceToNow } from 'date-fns'
-import { Briefcase, Clock, DollarSign, MapPin } from 'lucide-react-native'
+import { Briefcase, CheckCircle2, Clock, DollarSign, MapPin, Sparkles } from 'lucide-react-native'
 import { Link } from 'expo-router'
 import { DashboardWidget, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { ApplicationStatusBadge } from './ApplicationStatusBadge'
+
+/**
+ * SC-37: status-driven next-step nudge. Returns `null` for terminal /
+ * passive states so the card stays clean — only renders when there's
+ * a meaningful action the worker can take.
+ */
+function getNextStep(status: Application['status']): {
+  label: string
+  tone: 'primary' | 'success'
+} | null {
+  switch (status) {
+    case 'reviewing':
+      return { label: 'Employer is reviewing your application', tone: 'primary' }
+    case 'inquired':
+      return { label: 'New message from the employer — respond when ready', tone: 'primary' }
+    case 'interview':
+      return { label: 'Prep for your interview', tone: 'primary' }
+    case 'offer':
+      return { label: 'Offer received — respond to the employer', tone: 'success' }
+    case 'hired':
+      return { label: 'You were hired — congrats!', tone: 'success' }
+    default:
+      return null
+  }
+}
 
 interface ApplicationCardProps {
   application: Application
@@ -53,6 +78,10 @@ export function ApplicationCard({ application }: ApplicationCardProps) {
     job?.pay_range_type
   )
   const employmentType = formatEmploymentType(job?.employment_type)
+  const nextStep = getNextStep(application.status)
+  const nextStepColor =
+    nextStep?.tone === 'success' ? colors.success[600] : colors.primary[600]
+  const NextStepIcon = nextStep?.tone === 'success' ? CheckCircle2 : Sparkles
 
   return (
     <Link
@@ -110,6 +139,15 @@ export function ApplicationCard({ application }: ApplicationCardProps) {
             </Row>
           )}
         </Row>
+
+        {nextStep && (
+          <Row gap={6} align="center">
+            <NextStepIcon size={14} color={nextStepColor} />
+            <Text style={{ color: nextStepColor, fontSize: 13, fontWeight: '500', flex: 1 }}>
+              {nextStep.label}
+            </Text>
+          </Row>
+        )}
       </DashboardWidget>
     </Link>
   )
