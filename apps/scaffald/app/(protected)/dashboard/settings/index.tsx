@@ -7,6 +7,7 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { ConnectedAccounts } from '@scf/core/features/auth/components/ConnectedAccounts'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import { AccountDeletionPanel } from '@scf/core/features/profile/components/AccountDeletionPanel'
+import { VanityUrlSection } from '@scf/core/features/profile/components/VanityUrlSection'
 import { AuthorizedAppsList } from '@scf/core/features/oauth/components/AuthorizedAppsList'
 import { PrivacyDataScreen } from '@scf/core/features/privacy/PrivacyDataScreen'
 import { Separator, Stack, Text } from '@scaffald/ui'
@@ -25,6 +26,21 @@ export default function SettingsPage() {
       leftContent={
         <ScrollView>
           <Stack gap={sectionGap} paddingBottom="xl">
+            {/* SC-40: public profile slug + sharing live alongside other
+                account settings so workers can find them outside the
+                /profile/general accordion. */}
+            <Stack gap={12}>
+              <Text size="xl">Public profile</Text>
+              <Text color="gray">
+                Your public profile is shareable via a unique URL. Claim a name,
+                review the change history, and share via the Share button on your
+                profile screen.
+              </Text>
+              <VanityUrlSection />
+            </Stack>
+
+            <Separator />
+
             <SettingsNotificationsSection />
 
             <Separator />

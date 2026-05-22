@@ -5,14 +5,18 @@ import { ProfilePage } from '@scf/core/features/profile/ProfilePage'
 import { ProfileCertificationsHighlightProvider } from '@scf/core/features/profile/profile-certifications-highlight-context'
 import { ProfileCertificationsRight } from '@scf/core/features/profile/profile-certifications-right'
 import { ProfileSkillsSection } from '@scf/core/features/profile/components/ProfileSkillsSection'
+import { SharePublicProfileModal } from '@scf/core/features/profile/components/SharePublicProfileModal'
 import {
   EducationWidget,
   ExperienceWidget,
   GeneralInfoWidget,
   PreferencesWidget,
 } from '@scf/core/features/profile/widgets'
+import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
-import { Stack } from '@scaffald/ui'
+import { Button, Row, Stack } from '@scaffald/ui'
+import { Share2 } from 'lucide-react-native'
+import { useState } from 'react'
 
 /**
  * Profile Index - Own profile view
@@ -20,6 +24,8 @@ import { Stack } from '@scaffald/ui'
  */
 export default function ProfileIndexScreen() {
   const { user } = useUser()
+  const [shareOpen, setShareOpen] = useState(false)
+  const { data: profile } = useGeneralInfoWidget()
 
   if (!user) {
     return null
@@ -31,6 +37,21 @@ export default function ProfileIndexScreen() {
         breadcrumbs={[{ route: ROUTES.PROFILE }]}
         leftContent={
           <Stack gap={16}>
+            {/* SC-40: surface the public profile / QR / share affordance
+                above the strength card so it's the first thing the worker
+                sees on their own profile. Modal handles the empty-slug
+                case with a CTA to /dashboard/settings. */}
+            <Row justify="flex-end">
+              <Button
+                variant="outline"
+                iconStart={Share2}
+                onPress={() => setShareOpen(true)}
+                accessibilityLabel="Share my public profile"
+              >
+                Share profile
+              </Button>
+            </Row>
+
             {/* SC-39 Phase D: Profile Strength surface on the Profile tab.
                 Uses the same canonical algorithm as the dashboard widgets. */}
             <ProfileStrengthCard />
@@ -47,6 +68,12 @@ export default function ProfileIndexScreen() {
             <PreferencesWidget showEdit />
           </Stack>
         }
+      />
+      <SharePublicProfileModal
+        visible={shareOpen}
+        onClose={() => setShareOpen(false)}
+        slug={profile?.slug ?? null}
+        displayName={profile?.display_name ?? profile?.username ?? null}
       />
     </ProfileCertificationsHighlightProvider>
   )

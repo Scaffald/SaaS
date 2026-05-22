@@ -9,6 +9,7 @@ import {
   SkillsWidget,
   WorkLogPortfolioWidget,
 } from "@scf/core/features/profile/widgets";
+import { PublicProfilePrintButton } from "@scf/core/features/profile/components/PublicProfilePrintButton";
 import { PublishedPostsGallery } from "@scf/core/features/communities/components/PublishedPostsGallery";
 import { ProfileScaffoldScore } from "@scf/core/features/communities/components/ProfileScaffoldScore";
 import { useAuth } from "@scf/core/provider/auth/useAuth";
@@ -17,7 +18,7 @@ import { useRecordViewMutation } from "@scf/core/utils/profile-views-sdk-hooks";
 import type { BreadcrumbItemData } from "@scaffald/ui";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect } from "react";
-import { Spinner, Text, Stack } from "@scaffald/ui";
+import { Row, Spinner, Text, Stack } from "@scaffald/ui";
 
 /**
  * Public User Profile Route (Vanity URL)
@@ -150,6 +151,11 @@ export default function PublicUserProfilePage() {
       breadcrumbItems={breadcrumbItems}
       leftContent={
         <Stack gap={16}>
+          {/* SC-40 Phase B: Download PDF via browser print. Web-only;
+              hidden during print via the `data-print-hide` attribute. */}
+          <Row justify="flex-end">
+            <PublicProfilePrintButton />
+          </Row>
           <GeneralInfoWidget userId={profileData.id} showEdit={false} />
           {visibility.work_experience && (
             <ExperienceWidget userId={profileData.id} showEdit={false} />
