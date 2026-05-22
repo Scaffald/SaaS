@@ -1,0 +1,80 @@
+name: Supabase migration drift audit
+
+# Nightly check that each Supabase environment's `supabase_migrations.schema_migrations`
+# history matches the files in `packages/supabase/migrations/`. Catches the
+# class of drift surfaced during the v1.3.0 release (see
+# docs/agents/audits/2026-05-22-supabase-schema-drift.md).
+#
+# For each env, the job runs `supabase db push --dry-run --linked` and asserts
+# that the CLI's output does NOT contain "Remote migration versions not found
+# in local migrations directory" or "Found local migration files to be
+# inserted before the last migration". Either signals drift.
+
+on:
+  schedule:
+    - cron: '0 5 * * *'  # 05:00 UTC nightly — after EU deploys, before US standup
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+jobs:
+  drift-audit:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+          - name: dev
+            project_ref: pmtdqrfpumqwkdhpgwcz
+          - name: preview
+            project_ref: uhjkipdwayqfihkanabk
+          - name: prod
+            project_ref: qmfmpcyxsihhfttvqpbw
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link to ${{ matrix.env.name }}
+        working-directory: packages
+        run: |
+          supabase link --project-ref ${{ matrix.env.project_ref }}
+
+      - name: Migration list + parse
+        working-directory: packages
+        run: |
+          supabase migration list --linked > /tmp/migration-list.txt 2>&1
+          cat /tmp/migration-list.txt
+
+      - name: Detect drift via dry-run push
+        working-directory: packages
+        run: |
+          set +e
+          output=$(supabase db push --linked --dry-run --yes 2>&1)
+          echo "$output"
+          set -e
+
+          if echo "$output" | grep -q "Remote migration versions not found in local migrations directory"; then
+            echo "::error::${{ matrix.env.name }}: remote has versions not in local migrations dir. See docs/agents/audits/2026-05-22-supabase-schema-drift.md for the known root cause + remediation."
+            exit 1
+          fi
+
+          if echo "$output" | grep -q "Found local migration files to be inserted before the last migration"; then
+            echo "::error::${{ matrix.env.name }}: local has out-of-order migrations missing from remote. Apply via 'supabase db push --include-all' or repair history."
+            exit 1
+          fi
+
+          if echo "$output" | grep -q "Would push these migrations"; then
+            echo "::warning::${{ matrix.env.name }}: local migrations are not yet applied to remote. List above."
+            exit 1
+          fi
+
+          echo "${{ matrix.env.name }}: clean — local and remote history in sync."
