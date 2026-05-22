@@ -8,6 +8,7 @@
  */
 
 export { CertificationsWidget } from './CertificationsWidget'
+export { CommunityBadgesWidget } from './CommunityBadgesWidget'
 export { EducationWidget } from './EducationWidget'
 export { ExperienceWidget } from './ExperienceWidget'
 export { GeneralInfoWidget } from './GeneralInfoWidget'
