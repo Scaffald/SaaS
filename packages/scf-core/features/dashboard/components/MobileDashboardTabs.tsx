@@ -1,7 +1,9 @@
 import { InquiryOverviewWidget } from '@scf/core/features/inquiries/components/InquiryOverviewWidget'
 import { Stack, useResponsive } from '@scaffald/ui'
 import { CommunitiesWidget } from './CommunitiesWidget'
-import { CompactNewsWidget } from './CompactNewsWidget'
+// SC-16: News module removed from mobile Home for MVP. Restore by uncommenting
+// the import + render below once the news experience is reintroduced.
+// import { CompactNewsWidget } from './CompactNewsWidget'
 
 /**
  * Mobile dashboard content stack.
@@ -17,7 +19,7 @@ export function MobileDashboardTabs() {
     <Stack gap={12}>
       <InquiryOverviewWidget />
       <CommunitiesWidget />
-      <CompactNewsWidget />
+      {/* <CompactNewsWidget /> */}
     </Stack>
   )
 }

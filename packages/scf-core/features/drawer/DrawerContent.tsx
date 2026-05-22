@@ -184,6 +184,7 @@ export const DrawerContent = ({
           {isSmall && !isCollapsed ? (
             <MobileDrawerSections
               organizations={orgMemberships ?? null}
+              hasOfficeRole={hasOfficeRole}
               onNavigate={() => onClose?.()}
               onSettingsPress={handleSettingsPress}
               onLogoutPress={handleLogoutPress}

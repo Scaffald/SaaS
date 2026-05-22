@@ -19,6 +19,7 @@ import type { ReactNode } from 'react'
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 /** Bridges UniversalThemeProvider (scf-core) to scaffald-ui ThemeProvider so one source drives both. */
 function ThemeBridge({ children }: { children: ReactNode }) {
@@ -92,32 +93,34 @@ export default function DashboardLayout() {
   }
 
   return (
-    <UniversalThemeProvider>
-      <ThemeBridge>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-            <Provider initialSession={initialSession}>
-              <ErrorBoundary
-                context={{
-                  environment: process.env.APP_ENV,
-                  route: segments.join('/') || '/',
-                }}
-              >
-                <Stack
-                  screenOptions={{
-                    headerShown: false,
+    <SafeAreaProvider>
+      <UniversalThemeProvider>
+        <ThemeBridge>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+              <Provider initialSession={initialSession}>
+                <ErrorBoundary
+                  context={{
+                    environment: process.env.APP_ENV,
+                    route: segments.join('/') || '/',
                   }}
                 >
-                  <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                  <Stack.Screen name="(public)" options={{ headerShown: false }} />
-                  <Stack.Screen name="(protected)" options={{ headerShown: false }} />
-                  <Stack.Screen name="(admin)" options={{ headerShown: false }} />
-                </Stack>
-              </ErrorBoundary>
-            </Provider>
-          </View>
-        </GestureHandlerRootView>
-      </ThemeBridge>
-    </UniversalThemeProvider>
+                  <Stack
+                    screenOptions={{
+                      headerShown: false,
+                    }}
+                  >
+                    <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                    <Stack.Screen name="(public)" options={{ headerShown: false }} />
+                    <Stack.Screen name="(protected)" options={{ headerShown: false }} />
+                    <Stack.Screen name="(admin)" options={{ headerShown: false }} />
+                  </Stack>
+                </ErrorBoundary>
+              </Provider>
+            </View>
+          </GestureHandlerRootView>
+        </ThemeBridge>
+      </UniversalThemeProvider>
+    </SafeAreaProvider>
   )
 }
