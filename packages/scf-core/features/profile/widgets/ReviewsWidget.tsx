@@ -14,15 +14,23 @@ import {
   Row,
   Stack,
   useThemeContext,
+  useToast,
 } from '@scaffald/ui'
 import { randomUUID } from 'expo-crypto'
-import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from 'lucide-react-native'
-import { useState } from 'react'
+import { MessageSquarePlus, Pin, PinOff, Shield, Star, ThumbsDown, ThumbsUp } from 'lucide-react-native'
+import { useMemo, useState } from 'react'
+import { Pressable } from 'react-native'
 import { colors } from '@scaffald/ui/tokens'
 import { workerPalette } from '@scf/core/components/ui/styles'
 import { Pill } from '@scf/core/components/ui/CardPrimitives'
 import { ReviewWizard } from '../../reviews/components/ReviewWizard'
 import { ReviewImpactSummary } from '../../reviews/components/ReviewImpactSummary'
+import {
+  REVIEW_PIN_LIMIT,
+  usePinReviewMutation,
+  usePinnedReviews,
+  useUnpinReviewMutation,
+} from '../../reviews/hooks/useReviewPins'
 import type { ProfileWidgetProps } from './types'
 
 interface CategoryRating {
@@ -53,6 +61,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
   const t = theme === 'dark' ? 'dark' : 'light' as const
   const pal = workerPalette[t]
   const { user: currentUser } = useUser()
+  const toast = useToast()
 
   // Fetch profile data for review modal
   const { data: profile } = useUserProfile(userId)
@@ -72,6 +81,51 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
     },
     { enabled: !!userId }
   )
+
+  // SC-30: pin/unpin state for the subject's own profile.
+  const isOwnProfile = !!currentUser?.id && currentUser.id === userId
+  const { data: pins } = usePinnedReviews(userId)
+  const pinReview = usePinReviewMutation(userId)
+  const unpinReview = useUnpinReviewMutation(userId)
+
+  const pinPositionByReviewId = useMemo(() => {
+    const map = new Map<string, number>()
+    for (const pin of pins ?? []) map.set(pin.review_id, pin.position)
+    return map
+  }, [pins])
+  const pinCount = pinPositionByReviewId.size
+  const atPinCap = pinCount >= REVIEW_PIN_LIMIT
+
+  /** Pick the lowest free position 0..2 for a new pin, or null if full. */
+  const nextFreePosition = (): number | null => {
+    const taken = new Set(pinPositionByReviewId.values())
+    for (let i = 0; i < REVIEW_PIN_LIMIT; i++) if (!taken.has(i)) return i
+    return null
+  }
+
+  const handleTogglePin = (reviewId: string) => {
+    if (!isOwnProfile) return
+    const currentPosition = pinPositionByReviewId.get(reviewId)
+    if (currentPosition !== undefined) {
+      unpinReview.mutate(reviewId, {
+        onError: (err) => toast.show({ variant: 'error', title: 'Could not unpin', message: (err as Error).message }),
+      })
+      return
+    }
+    const slot = nextFreePosition()
+    if (slot === null) {
+      toast.show({
+        variant: 'info',
+        title: 'Pin limit reached',
+        message: `You can pin up to ${REVIEW_PIN_LIMIT} reviews. Unpin one to make room.`,
+      })
+      return
+    }
+    pinReview.mutate(
+      { reviewId, position: slot },
+      { onError: (err) => toast.show({ variant: 'error', title: 'Could not pin', message: (err as Error).message }) },
+    )
+  }
 
   const showCompact = variant === 'compact'
 
@@ -209,7 +263,21 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
         categoryRatings.length
       : 0
 
-  const reviewsToShow = showCompact ? reviews.slice(0, 2) : reviews
+  // SC-30: pinned reviews float to the top (in pin order); rest by recency.
+  const orderedReviews = useMemo(() => {
+    const list = [...reviews]
+    list.sort((a: Review, b: Review) => {
+      const pa = pinPositionByReviewId.get(a.id)
+      const pb = pinPositionByReviewId.get(b.id)
+      if (pa !== undefined && pb !== undefined) return pa - pb
+      if (pa !== undefined) return -1
+      if (pb !== undefined) return 1
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    })
+    return list
+  }, [reviews, pinPositionByReviewId])
+
+  const reviewsToShow = showCompact ? orderedReviews.slice(0, 2) : orderedReviews
 
   return (
     <>
@@ -315,7 +383,11 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
           {/* Reviews List */}
           <Stack gap={12}>
             <Text style={{ color: colors.text[theme].secondary }}>Reviews ({totalReviews})</Text>
-            {reviewsToShow.map((review: Review) => (
+            {reviewsToShow.map((review: Review) => {
+              const isPinned = pinPositionByReviewId.has(review.id)
+              const canPinAction = isOwnProfile && (isPinned || !atPinCap)
+              const pinBusy = pinReview.isPending || unpinReview.isPending
+              return (
               <Card key={review.id} variant="outlined" backgroundColor={colors.bg[theme].subtle}>
                 <Stack gap={12} padding="md">
                   <Row justify="space-between" align="flex-start">
@@ -326,9 +398,32 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                           <Shield size={14} color={pal.accent} />
                           <Pill label="VERIFIED" bgColor={pal.pillBg} textColor={pal.pillText} />
                         </Row>
+                        {isPinned ? (
+                          <Pill label="PINNED" bgColor={pal.pillBg} textColor={pal.pillText} />
+                        ) : null}
                       </Row>
                     </Stack>
-                    <Text style={{ color: colors.text[theme].secondary }}>{new Date(review.created_at).toLocaleDateString()}</Text>
+                    <Row gap={8} align="center">
+                      <Text style={{ color: colors.text[theme].secondary }}>{new Date(review.created_at).toLocaleDateString()}</Text>
+                      {isOwnProfile ? (
+                        <Pressable
+                          accessibilityRole="button"
+                          accessibilityLabel={isPinned ? 'Unpin from profile' : 'Pin to profile'}
+                          disabled={!canPinAction || pinBusy}
+                          onPress={() => handleTogglePin(review.id)}
+                          hitSlop={8}
+                          style={({ pressed }) => ({
+                            opacity: !canPinAction ? 0.35 : pressed ? 0.6 : 1,
+                          })}
+                        >
+                          {isPinned ? (
+                            <PinOff size={18} color={pal.accent} />
+                          ) : (
+                            <Pin size={18} color={canPinAction ? pal.accent : colors.text[theme].secondary} />
+                          )}
+                        </Pressable>
+                      ) : null}
+                    </Row>
                   </Row>
 
                   {/* Overall Rating */}
@@ -373,7 +468,8 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                   )}
                 </Stack>
               </Card>
-            ))}
+              )
+            })}
 
             {showCompact && reviews.length > 2 && (
               <Text style={{ color: pal.accent, cursor: 'pointer' }}>
