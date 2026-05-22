@@ -30,6 +30,25 @@ const expoUpdatesMockPath = resolve(
 export default defineConfig({
   plugins,
   resolve: {
+    // Metro resolves `.web.ts` / `.web.tsx` (and `.native.*` on device) at
+    // build time so platform-specific modules (kvStorage, useUserLocation,
+    // pickFile, ...) can ship a shared stub + per-platform implementation.
+    // Vitest doesn't run Metro, so without this list the bare `.ts` stub
+    // wins and tests either throw or get a no-op implementation. We pin
+    // browser-flavored extensions ahead of bare ones to match Metro on web.
+    extensions: [
+      ".web.mjs",
+      ".web.js",
+      ".web.ts",
+      ".web.jsx",
+      ".web.tsx",
+      ".mjs",
+      ".js",
+      ".ts",
+      ".jsx",
+      ".tsx",
+      ".json",
+    ],
     alias: [
       // Force single React instance across all packages (pnpm scoped modules workaround)
       { find: /^react$/, replacement: resolve(workspaceRoot, "node_modules/react") },
