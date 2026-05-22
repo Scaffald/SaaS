@@ -2,6 +2,7 @@ import { DashboardLayout } from "@scf/core/components/layouts";
 import { buildPath, ROUTES } from "@scf/core/constants/routes";
 import {
   CertificationsWidget,
+  CommunityBadgesWidget,
   EducationWidget,
   ExperienceWidget,
   GeneralInfoWidget,
@@ -157,6 +158,7 @@ export default function PublicUserProfilePage() {
             <PublicProfilePrintButton />
           </Row>
           <GeneralInfoWidget userId={profileData.id} showEdit={false} />
+          <CommunityBadgesWidget userId={profileData.id} showEdit={false} />
           {visibility.work_experience && (
             <ExperienceWidget userId={profileData.id} showEdit={false} />
           )}

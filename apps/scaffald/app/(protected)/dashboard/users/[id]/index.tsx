@@ -2,6 +2,7 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
 import {
   CertificationsWidget,
+  CommunityBadgesWidget,
   EducationWidget,
   ExperienceWidget,
   GeneralInfoWidget,
@@ -101,6 +102,7 @@ export default function UserProfilePage() {
       leftContent={
         <Stack gap={16}>
           <GeneralInfoWidget userId={id} showEdit={false} />
+          <CommunityBadgesWidget userId={id} showEdit={false} />
           <ExperienceWidget userId={id} showEdit={false} />
           <EducationWidget userId={id} showEdit={false} />
         </Stack>

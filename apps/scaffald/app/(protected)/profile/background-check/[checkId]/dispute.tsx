@@ -5,7 +5,7 @@ import { RefreshCcw } from 'lucide-react-native'
 import { Stack as ExpoStack, useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useMemo } from 'react'
 import { ScrollView } from 'react-native'
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { Button, Row, Spinner, Stack, Text } from '@scaffald/ui'
 
 type BackgroundCheckSummary = BackgroundCheck
@@ -13,7 +13,6 @@ type BackgroundCheckSummary = BackgroundCheck
 export default function BackgroundCheckDisputeScreen() {
   const { checkId } = useLocalSearchParams<{ checkId?: string }>()
   const router = useRouter()
-  const insets = useSafeAreaInsets()
 
   const checksQuery = useBackgroundChecks({
     enabled: true,
@@ -42,7 +41,7 @@ export default function BackgroundCheckDisputeScreen() {
           title: 'Dispute background check',
         }}
       />
-      <SafeAreaView style={{ flex: 1, paddingTop: insets.top }}>
+      <SafeAreaView style={{ flex: 1 }}>
         <ScrollView style={{ flex: 1 }}>
           <Stack gap={16} padding={16}>
             {checksQuery.isLoading && (
