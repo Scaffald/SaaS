@@ -69,10 +69,10 @@ merged.test.exclude = [
   'packages/scf-core/features/resume/components/__tests__/ResumeImportWidget.test.tsx',
   // Tests with assertion mismatches requiring deeper implementation alignment
   // 'packages/scf-core/features/drawer/__tests__/DrawerLink.chevron.test.tsx',
-  // TODO: production bug in routeHierarchy.findHierarchyInfoInNested
-  // (doesn't recurse into nodes that have both a .path and children, so
-  // e.g. getRouteDepth('/office/cms') returns 0). Re-include after fix.
-  'packages/scf-core/utils/navigation/__tests__/routeHierarchy.test.ts',
+  // Re-enabled: routeHierarchy + flattenRoutes now recurse into
+  // navigable parents (e.g. /office) so descendants (/office/cms/...)
+  // appear in the hierarchy. Dynamic paths resolve via stricter regex.
+  // 'packages/scf-core/utils/navigation/__tests__/routeHierarchy.test.ts',
   'packages/scf-core/features/profile-wizard/hooks/__tests__/useProfileWizard.test.ts',
   'packages/scf-core/features/resume/hooks/__tests__/useResumeWizard.test.ts',
   'packages/scf-core/features/office/applications/hooks/__tests__/useApplicationStatusChange.test.ts',

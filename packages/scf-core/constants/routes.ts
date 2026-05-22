@@ -1305,18 +1305,31 @@ export function buildPath(route: RouteConfig, params: RouteParams = {}): string 
 // ============================================================================
 
 /**
- * Helper function to flatten nested routes for iteration
- * This will be replaced by the new helper functions in task 2
+ * Helper function to flatten nested routes for iteration.
+ *
+ * A node may be BOTH navigable (have its own `.path`) and have nested
+ * route children — e.g. ROUTES.OFFICE has `path: '/office'` and contains
+ * CMS/APPLICATIONS/TEAMS as sub-routes. The previous implementation
+ * stopped at any node that passed `isRouteConfig` and never walked into
+ * its children, which silently dropped every descendant of a navigable
+ * parent from the flat list (e.g. `/office/cms/workers` was unreachable
+ * from `flattenRoutes`). Walk children unconditionally so the flat list
+ * is a true union of every navigable node in the tree.
  */
 function flattenRoutesForHelper(routeNode: RouteNode): RouteConfig[] {
   const routes: RouteConfig[] = []
 
   if (isRouteConfig(routeNode)) {
     routes.push(routeNode)
-  } else {
-    for (const value of Object.values(routeNode)) {
-      routes.push(...flattenRoutesForHelper(value))
-    }
+  }
+
+  // Walk any child entries that are themselves routes/nodes. Skip
+  // primitive properties (path/title/icon/etc.) so they don't get
+  // misinterpreted as child routes.
+  for (const [key, value] of Object.entries(routeNode)) {
+    if (key === 'path' || key === 'titleKey' || key === 'title' || key === 'icon') continue
+    if (!value || typeof value !== 'object') continue
+    routes.push(...flattenRoutesForHelper(value as RouteNode))
   }
 
   return routes
@@ -1432,18 +1445,22 @@ export function flattenRoutes(
   const routes: RouteConfig[] = []
   const { hidden = true, filter } = options
 
+  // A node may be navigable (have its own `.path`) AND have nested
+  // children. Include the navigable node itself, then always walk its
+  // child entries so descendants aren't silently dropped. See the
+  // matching note on flattenRoutesForHelper for the rationale.
   if (isRouteConfig(routeNode)) {
-    // Terminal route
     if (hidden || !routeNode.hidden) {
       if (!filter || filter(routeNode)) {
         routes.push(routeNode)
       }
     }
-  } else {
-    // Non-terminal route - traverse children
-    for (const value of Object.values(routeNode)) {
-      routes.push(...flattenRoutes(value, options))
-    }
+  }
+
+  for (const [key, value] of Object.entries(routeNode)) {
+    if (key === 'path' || key === 'titleKey' || key === 'title' || key === 'icon') continue
+    if (!value || typeof value !== 'object') continue
+    routes.push(...flattenRoutes(value as RouteNode, options))
   }
 
   return routes
