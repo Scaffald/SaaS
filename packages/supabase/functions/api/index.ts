@@ -34,6 +34,7 @@ import punchlistsRouter from "./routes/punchlists.ts";
 import organizationsRouter from "./routes/organizations.ts";
 import webhooksRouter from "./routes/webhooks.ts";
 import reviewsRouter from "./routes/reviews.ts";
+import reviewLinksRouter from "./routes/review-links.ts";
 import projectsRouter from "./routes/projects.ts";
 import employersRouter from "./routes/employers.ts";
 import onetRouter from "./routes/onet.ts";
@@ -140,6 +141,7 @@ app.route("/v1/ccpa", ccpaRouter); // CCPA compliance
 app.route("/v1/payments", paymentsRouter); // Payment analytics, transactions, payment methods, credits
 app.route("/v1/webhooks", webhooksRouter); // Webhooks
 app.route("/reviews", reviewsRouter); // Reviews
+app.route("/v1/reviews/links", reviewLinksRouter); // SC-38: shareable review-request tokens (anon submission)
 app.route("/v1/projects", projectsRouter); // Projects
 app.route("/v1/employers", employersRouter); // Employers
 app.route("/v1/onet", onetRouter); // O*NET data

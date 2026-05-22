@@ -5,6 +5,7 @@ import { ProfilePage } from '@scf/core/features/profile/ProfilePage'
 import { ProfileCertificationsHighlightProvider } from '@scf/core/features/profile/profile-certifications-highlight-context'
 import { ProfileCertificationsRight } from '@scf/core/features/profile/profile-certifications-right'
 import { ProfileSkillsSection } from '@scf/core/features/profile/components/ProfileSkillsSection'
+import { RequestReviewModal } from '@scf/core/features/profile/components/RequestReviewModal'
 import { SharePublicProfileModal } from '@scf/core/features/profile/components/SharePublicProfileModal'
 import {
   EducationWidget,
@@ -15,7 +16,7 @@ import {
 import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import { Button, Row, Stack } from '@scaffald/ui'
-import { Share2 } from 'lucide-react-native'
+import { MessageSquarePlus, Share2 } from 'lucide-react-native'
 import { useState } from 'react'
 
 /**
@@ -25,6 +26,7 @@ import { useState } from 'react'
 export default function ProfileIndexScreen() {
   const { user } = useUser()
   const [shareOpen, setShareOpen] = useState(false)
+  const [requestReviewOpen, setRequestReviewOpen] = useState(false)
   const { data: profile } = useGeneralInfoWidget()
 
   if (!user) {
@@ -41,7 +43,15 @@ export default function ProfileIndexScreen() {
                 above the strength card so it's the first thing the worker
                 sees on their own profile. Modal handles the empty-slug
                 case with a CTA to /dashboard/settings. */}
-            <Row justify="flex-end">
+            <Row justify="flex-end" gap={8} wrap>
+              <Button
+                variant="outline"
+                iconStart={MessageSquarePlus}
+                onPress={() => setRequestReviewOpen(true)}
+                accessibilityLabel="Request a review"
+              >
+                Request review
+              </Button>
               <Button
                 variant="outline"
                 iconStart={Share2}
@@ -74,6 +84,10 @@ export default function ProfileIndexScreen() {
         onClose={() => setShareOpen(false)}
         slug={profile?.slug ?? null}
         displayName={profile?.display_name ?? profile?.username ?? null}
+      />
+      <RequestReviewModal
+        visible={requestReviewOpen}
+        onClose={() => setRequestReviewOpen(false)}
       />
     </ProfileCertificationsHighlightProvider>
   )
