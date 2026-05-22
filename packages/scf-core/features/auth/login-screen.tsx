@@ -67,6 +67,10 @@ export const LoginScreen = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   // SC-51: consent must be explicit — default to unchecked.
   const [hasAgreed, setHasAgreed] = useState(false)
+  // SC-65: form fields stay enabled; consent is validated on submit.
+  // attemptedSubmit flips true the first time a user tries to submit without
+  // consent and gates the inline error display on the checkbox.
+  const [attemptedSubmit, setAttemptedSubmit] = useState(false)
   const [usePassword, setUsePassword] = useState(false)
   const requestMagicLink = useRequestMagicLinkMutation()
   const { t } = useTranslation()
@@ -104,7 +108,6 @@ export const LoginScreen = () => {
   })
 
   async function signInWithPassword(data: z.infer<typeof LoginSchema>) {
-    if (!hasAgreed) return
     setIsSubmitting(true)
 
     // Email required/format validation runs in the resolver before this is
@@ -147,7 +150,6 @@ export const LoginScreen = () => {
   }
 
   async function sendMagicLink(data: z.infer<typeof LoginSchema>) {
-    if (!hasAgreed) return
     setIsSubmitting(true)
 
     // Resolver guarantees data.email is non-empty, trimmed, and valid.
@@ -191,7 +193,22 @@ export const LoginScreen = () => {
     }
   }
 
-  const handleSubmit = form.handleSubmit(usePassword ? signInWithPassword : sendMagicLink)
+  const innerSubmit = form.handleSubmit(usePassword ? signInWithPassword : sendMagicLink)
+
+  // SC-65: gate submission on consent without disabling the form. If the user
+  // hasn't agreed, surface the inline checkbox error and stop here; otherwise
+  // run the underlying form submit.
+  const handleSubmit = () => {
+    if (!hasAgreed) {
+      setAttemptedSubmit(true)
+      return
+    }
+    return innerSubmit()
+  }
+
+  const handleConsentMissing = () => {
+    setAttemptedSubmit(true)
+  }
 
   return (
     <FormProvider {...form}>
@@ -235,7 +252,6 @@ export const LoginScreen = () => {
                     iconStart={Mail}
                     error={!!error}
                     errorMessage={error?.message}
-                    disabled={!hasAgreed}
                   />
                 )}
               />
@@ -256,7 +272,6 @@ export const LoginScreen = () => {
                       iconStart={Lock}
                       error={!!error}
                       errorMessage={error?.message}
-                      disabled={!hasAgreed}
                     />
                   )}
                 />
@@ -264,12 +279,12 @@ export const LoginScreen = () => {
 
               <Button
                 onPress={handleSubmit}
-                disabled={!hasAgreed || isSubmitting || requestMagicLink.isPending}
+                disabled={isSubmitting || requestMagicLink.isPending}
                 color="primary"
                 variant="filled"
                 style={{
                   alignSelf: 'stretch',
-                  opacity: !hasAgreed || isSubmitting || requestMagicLink.isPending ? 0.5 : 1,
+                  opacity: isSubmitting || requestMagicLink.isPending ? 0.5 : 1,
                 }}
               >
                 {isSubmitting || requestMagicLink.isPending
@@ -301,18 +316,50 @@ export const LoginScreen = () => {
                 </Paragraph>
               </Pressable>
 
-              <SocialLogin hasAgreed={hasAgreed} />
+              <SocialLogin onConsentMissing={hasAgreed ? undefined : handleConsentMissing} />
               <Paragraph size="sm" style={{ color: cardTextSecondary }}>
                 {t('auth.login.socialDescription')}
               </Paragraph>
 
-              {/* Legal consent checkbox */}
+              {/* SC-66: cross-device OTP entry. Routes to /auth/verify with
+                  no email param; MagicLinkPending renders an inline email
+                  Input + uses it for verifyOtp. */}
+              <Pressable
+                onPress={() => router.push(ROUTES.AUTH.VERIFY.path)}
+                accessibilityRole="link"
+                accessibilityLabel={t('auth.login.useOneTimeCode')}
+              >
+                <Paragraph
+                  size="sm"
+                  style={{
+                    color: cardLinkColor,
+                    textDecorationLine: 'underline',
+                    textAlign: 'center',
+                  }}
+                >
+                  {t('auth.login.useOneTimeCode')}
+                </Paragraph>
+              </Pressable>
+
+              {/* Legal consent checkbox — SC-65: form stays live; on submit
+                  without consent we flip attemptedSubmit and show the
+                  Checkbox's error variant inline. */}
               <Stack gap={spacing[4]}>
-                <Pressable onPress={() => setHasAgreed(!hasAgreed)}>
+                <Pressable
+                  onPress={() => {
+                    const next = !hasAgreed
+                    setHasAgreed(next)
+                    if (next) setAttemptedSubmit(false)
+                  }}
+                >
                   <Row gap={spacing[10]} align="center">
                     <Checkbox
                       checked={hasAgreed}
-                      onChange={setHasAgreed}
+                      onChange={(next) => {
+                        setHasAgreed(next)
+                        if (next) setAttemptedSubmit(false)
+                      }}
+                      error={attemptedSubmit && !hasAgreed}
                     />
                     <Paragraph size="xs" style={{ color: cardTextTertiary, flex: 1, lineHeight: 18 }}>
                       {'I agree to the '}
@@ -343,9 +390,13 @@ export const LoginScreen = () => {
                     </Paragraph>
                   </Row>
                 </Pressable>
-                {!hasAgreed && (
-                  <Paragraph size="xs" style={{ color: colors.fg.light.error }}>
-                    You must agree to the Terms and Privacy Policy to continue.
+                {attemptedSubmit && !hasAgreed && (
+                  <Paragraph
+                    size="xs"
+                    accessibilityRole="alert"
+                    style={{ color: colors.fg.light.error }}
+                  >
+                    {t('auth.errors.mustAcceptTerms')}
                   </Paragraph>
                 )}
               </Stack>

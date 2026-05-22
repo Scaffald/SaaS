@@ -1,31 +1,21 @@
 import { MagicLinkPending } from '@scf/core/features/auth/components/MagicLinkPending'
-import { ROUTES } from '@scf/core/constants/routes'
 import { WelcomeScreen } from '@scf/core/features/auth/welcome-screen'
 import { Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { useEffect } from 'react'
+import { useLocalSearchParams } from 'expo-router'
 import { useWindowDimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Screen() {
   const params = useLocalSearchParams<{ email?: string }>()
-  const router = useRouter()
-  const email = typeof params.email === 'string' ? params.email : undefined
+  // SC-66: email may be absent when the user arrived via the
+  // "Use one-time code" link on the login screen. MagicLinkPending
+  // renders an inline email Input in that case.
+  const email = typeof params.email === 'string' && params.email.trim() ? params.email : undefined
   const { width } = useWindowDimensions()
   const isSmallScreen = width < 640
   const { theme } = useThemeContext()
   const screenBg = { flex: 1, backgroundColor: colors.bg[theme].default }
-
-  useEffect(() => {
-    if (!email?.trim()) {
-      router.replace(ROUTES.AUTH.LOGIN.path)
-    }
-  }, [email, router])
-
-  if (!email?.trim()) {
-    return null
-  }
 
   return (
     <SafeAreaView style={screenBg} edges={['top', 'bottom', 'left', 'right']}>
