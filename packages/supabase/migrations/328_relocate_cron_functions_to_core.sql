@@ -105,8 +105,12 @@ $$;
 -- =========================================================
 DO $$
 BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'pg_cron') THEN
-    RAISE NOTICE 'SC-68: pg_cron extension not available; skipping re-schedule.';
+  -- Gate on whether pg_cron is actually installed in this database.
+  -- pg_available_extensions only reports installability, not installation,
+  -- so it falsely admits envs where CREATE EXTENSION pg_cron has not run
+  -- and `cron.job` does not exist (Codex P1 review on PR #283).
+  IF to_regclass('cron.job') IS NULL THEN
+    RAISE NOTICE 'SC-68: pg_cron not installed in this database (cron.job absent); skipping re-schedule.';
     RETURN;
   END IF;
 
