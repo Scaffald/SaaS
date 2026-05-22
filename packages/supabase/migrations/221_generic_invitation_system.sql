@@ -169,16 +169,19 @@ ALTER TABLE core.generic_invitations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE core.user_relationships ENABLE ROW LEVEL SECURITY;
 
 -- invitation_rules: Viewable by authenticated users, editable by admins
+DROP POLICY IF EXISTS "invitation_rules_select_authenticated" ON core.invitation_rules;
 CREATE POLICY "invitation_rules_select_authenticated" ON core.invitation_rules
   FOR SELECT TO authenticated
   USING (is_active = true);
 
+DROP POLICY IF EXISTS "invitation_rules_admin_all" ON core.invitation_rules;
 CREATE POLICY "invitation_rules_admin_all" ON core.invitation_rules
   FOR ALL TO service_role
   USING (true)
   WITH CHECK (true);
 
 -- generic_invitations: Users can see invitations they sent or received
+DROP POLICY IF EXISTS "generic_invitations_select_own" ON core.generic_invitations;
 CREATE POLICY "generic_invitations_select_own" ON core.generic_invitations
   FOR SELECT TO authenticated
   USING (
@@ -187,10 +190,12 @@ CREATE POLICY "generic_invitations_select_own" ON core.generic_invitations
     invitee_email = (SELECT email FROM auth.users WHERE id = auth.uid())
   );
 
+DROP POLICY IF EXISTS "generic_invitations_insert_own" ON core.generic_invitations;
 CREATE POLICY "generic_invitations_insert_own" ON core.generic_invitations
   FOR INSERT TO authenticated
   WITH CHECK (inviter_id = auth.uid());
 
+DROP POLICY IF EXISTS "generic_invitations_update_own" ON core.generic_invitations;
 CREATE POLICY "generic_invitations_update_own" ON core.generic_invitations
   FOR UPDATE TO authenticated
   USING (
@@ -200,14 +205,17 @@ CREATE POLICY "generic_invitations_update_own" ON core.generic_invitations
   );
 
 -- user_relationships: Users can see relationships they're part of
+DROP POLICY IF EXISTS "user_relationships_select_own" ON core.user_relationships;
 CREATE POLICY "user_relationships_select_own" ON core.user_relationships
   FOR SELECT TO authenticated
   USING (source_user_id = auth.uid() OR target_user_id = auth.uid());
 
+DROP POLICY IF EXISTS "user_relationships_insert_authenticated" ON core.user_relationships;
 CREATE POLICY "user_relationships_insert_authenticated" ON core.user_relationships
   FOR INSERT TO authenticated
   WITH CHECK (source_user_id = auth.uid());
 
+DROP POLICY IF EXISTS "user_relationships_update_own" ON core.user_relationships;
 CREATE POLICY "user_relationships_update_own" ON core.user_relationships
   FOR UPDATE TO authenticated
   USING (source_user_id = auth.uid() OR target_user_id = auth.uid());
@@ -226,10 +234,12 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Apply triggers
+DROP TRIGGER IF EXISTS update_invitation_rules_updated_at ON core.invitation_rules;
 CREATE TRIGGER update_invitation_rules_updated_at
   BEFORE UPDATE ON core.invitation_rules
   FOR EACH ROW EXECUTE FUNCTION core.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_user_relationships_updated_at ON core.user_relationships;
 CREATE TRIGGER update_user_relationships_updated_at
   BEFORE UPDATE ON core.user_relationships
   FOR EACH ROW EXECUTE FUNCTION core.update_updated_at_column();

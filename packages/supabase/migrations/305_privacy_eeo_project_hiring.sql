@@ -37,11 +37,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_privacy_request_deadline ON core.privacy_data_requests;
 CREATE TRIGGER trg_privacy_request_deadline
   BEFORE INSERT ON core.privacy_data_requests
   FOR EACH ROW EXECUTE FUNCTION core.set_privacy_request_deadline();
 
 -- Updated_at trigger
+DROP TRIGGER IF EXISTS trg_privacy_request_updated ON core.privacy_data_requests;
 CREATE TRIGGER trg_privacy_request_updated
   BEFORE UPDATE ON core.privacy_data_requests
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
@@ -59,6 +61,7 @@ CREATE TABLE IF NOT EXISTS core.privacy_opt_outs (
   UNIQUE (user_id, category)
 );
 
+DROP TRIGGER IF EXISTS trg_opt_out_updated ON core.privacy_opt_outs;
 CREATE TRIGGER trg_opt_out_updated
   BEFORE UPDATE ON core.privacy_opt_outs
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
@@ -73,15 +76,19 @@ CREATE INDEX IF NOT EXISTS idx_privacy_opt_outs_user ON core.privacy_opt_outs (u
 ALTER TABLE core.privacy_data_requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE core.privacy_opt_outs ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS privacy_requests_select ON core.privacy_data_requests;
 CREATE POLICY privacy_requests_select ON core.privacy_data_requests
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS privacy_requests_insert ON core.privacy_data_requests;
 CREATE POLICY privacy_requests_insert ON core.privacy_data_requests
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS privacy_opt_outs_select ON core.privacy_opt_outs;
 CREATE POLICY privacy_opt_outs_select ON core.privacy_opt_outs
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS privacy_opt_outs_upsert ON core.privacy_opt_outs;
 CREATE POLICY privacy_opt_outs_upsert ON core.privacy_opt_outs
   FOR ALL USING (auth.uid() = user_id);
 
@@ -132,9 +139,11 @@ ALTER TABLE core.eeo_self_identification ENABLE ROW LEVEL SECURITY;
 ALTER TABLE core.eeo_reports ENABLE ROW LEVEL SECURITY;
 
 -- Users can only see their own EEO data
+DROP POLICY IF EXISTS eeo_self_id_select ON core.eeo_self_identification;
 CREATE POLICY eeo_self_id_select ON core.eeo_self_identification
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS eeo_self_id_insert ON core.eeo_self_identification;
 CREATE POLICY eeo_self_id_insert ON core.eeo_self_identification
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
@@ -196,10 +205,12 @@ CREATE TABLE IF NOT EXISTS core.hiring_project_crew (
 );
 
 -- Updated_at triggers
+DROP TRIGGER IF EXISTS trg_hiring_projects_updated ON core.hiring_projects;
 CREATE TRIGGER trg_hiring_projects_updated
   BEFORE UPDATE ON core.hiring_projects
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
 
+DROP TRIGGER IF EXISTS trg_hiring_project_roles_updated ON core.hiring_project_roles;
 CREATE TRIGGER trg_hiring_project_roles_updated
   BEFORE UPDATE ON core.hiring_project_roles
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();

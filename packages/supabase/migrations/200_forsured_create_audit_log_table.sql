@@ -89,38 +89,38 @@ CREATE TABLE IF NOT EXISTS audit_log (
 -- =============================================================================
 
 -- Primary query patterns
-CREATE INDEX idx_audit_log_created_at ON audit_log(created_at DESC);
-CREATE INDEX idx_audit_log_category ON audit_log(category);
-CREATE INDEX idx_audit_log_action ON audit_log(action);
-CREATE INDEX idx_audit_log_severity ON audit_log(severity);
-CREATE INDEX idx_audit_log_user ON audit_log(user_id);
-CREATE INDEX idx_audit_log_org ON audit_log(organization_id);
-CREATE INDEX idx_audit_log_table ON audit_log(table_name);
-CREATE INDEX idx_audit_log_record ON audit_log(record_id);
-CREATE INDEX idx_audit_log_resource ON audit_log(resource_type);
-CREATE INDEX idx_audit_log_request ON audit_log(request_id);
-CREATE INDEX idx_audit_log_session ON audit_log(session_id);
-CREATE INDEX idx_audit_log_status ON audit_log(status);
-CREATE INDEX idx_audit_log_ip ON audit_log(ip_address);
+CREATE INDEX IF NOT EXISTS idx_audit_log_created_at ON audit_log(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_log_category ON audit_log(category);
+CREATE INDEX IF NOT EXISTS idx_audit_log_action ON audit_log(action);
+CREATE INDEX IF NOT EXISTS idx_audit_log_severity ON audit_log(severity);
+CREATE INDEX IF NOT EXISTS idx_audit_log_user ON audit_log(user_id);
+CREATE INDEX IF NOT EXISTS idx_audit_log_org ON audit_log(organization_id);
+CREATE INDEX IF NOT EXISTS idx_audit_log_table ON audit_log(table_name);
+CREATE INDEX IF NOT EXISTS idx_audit_log_record ON audit_log(record_id);
+CREATE INDEX IF NOT EXISTS idx_audit_log_resource ON audit_log(resource_type);
+CREATE INDEX IF NOT EXISTS idx_audit_log_request ON audit_log(request_id);
+CREATE INDEX IF NOT EXISTS idx_audit_log_session ON audit_log(session_id);
+CREATE INDEX IF NOT EXISTS idx_audit_log_status ON audit_log(status);
+CREATE INDEX IF NOT EXISTS idx_audit_log_ip ON audit_log(ip_address);
 
 -- GIN index for JSONB metadata searches
-CREATE INDEX idx_audit_log_metadata ON audit_log USING gin(metadata);
+CREATE INDEX IF NOT EXISTS idx_audit_log_metadata ON audit_log USING gin(metadata);
 
 -- Hash integrity index
-CREATE INDEX idx_audit_log_hash ON audit_log(current_hash);
-CREATE INDEX idx_audit_log_archived ON audit_log(archived_at) WHERE archived_at IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_audit_log_hash ON audit_log(current_hash);
+CREATE INDEX IF NOT EXISTS idx_audit_log_archived ON audit_log(archived_at) WHERE archived_at IS NOT NULL;
 
 -- Composite indexes for common queries
-CREATE INDEX idx_audit_log_user_created ON audit_log(user_id, created_at DESC);
-CREATE INDEX idx_audit_log_org_created ON audit_log(organization_id, created_at DESC);
-CREATE INDEX idx_audit_log_category_created ON audit_log(category, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_log_user_created ON audit_log(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_log_org_created ON audit_log(organization_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_log_category_created ON audit_log(category, created_at DESC);
 
 -- Partial indexes for specific use cases
-CREATE INDEX idx_audit_log_failures ON audit_log(created_at DESC)
+CREATE INDEX IF NOT EXISTS idx_audit_log_failures ON audit_log(created_at DESC)
   WHERE status = 'failure';
-CREATE INDEX idx_audit_log_security_events ON audit_log(created_at DESC)
+CREATE INDEX IF NOT EXISTS idx_audit_log_security_events ON audit_log(created_at DESC)
   WHERE category = 'security';
-CREATE INDEX idx_audit_log_critical ON audit_log(created_at DESC)
+CREATE INDEX IF NOT EXISTS idx_audit_log_critical ON audit_log(created_at DESC)
   WHERE severity IN ('critical', 'high');
 
 -- =============================================================================
@@ -212,6 +212,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS audit_log_hash_trigger ON audit_log;
 CREATE TRIGGER audit_log_hash_trigger
   BEFORE INSERT ON audit_log
   FOR EACH ROW
@@ -232,12 +233,14 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Prevent UPDATE operations
+DROP TRIGGER IF EXISTS audit_log_prevent_update ON audit_log;
 CREATE TRIGGER audit_log_prevent_update
   BEFORE UPDATE ON audit_log
   FOR EACH ROW
   EXECUTE FUNCTION prevent_audit_log_modification();
 
 -- Prevent DELETE operations
+DROP TRIGGER IF EXISTS audit_log_prevent_delete ON audit_log;
 CREATE TRIGGER audit_log_prevent_delete
   BEFORE DELETE ON audit_log
   FOR EACH ROW
@@ -254,6 +257,7 @@ ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Allow INSERT for authenticated users (logging events)
 -- Note: In production, this should be restricted to a service account
+DROP POLICY IF EXISTS "Allow authenticated users to insert audit logs" ON audit_log;
 CREATE POLICY "Allow authenticated users to insert audit logs"
   ON audit_log
   FOR INSERT
@@ -262,6 +266,7 @@ CREATE POLICY "Allow authenticated users to insert audit logs"
 
 -- Policy: Users can view their own audit logs (limited categories)
 -- Excludes sensitive categories (admin, system, security)
+DROP POLICY IF EXISTS "Users can view own audit logs" ON audit_log;
 CREATE POLICY "Users can view own audit logs"
   ON audit_log
   FOR SELECT
@@ -273,6 +278,7 @@ CREATE POLICY "Users can view own audit logs"
   );
 
 -- Policy: Service role can read all (for archival and reporting)
+DROP POLICY IF EXISTS "Service role can read all audit logs" ON audit_log;
 CREATE POLICY "Service role can read all audit logs"
   ON audit_log
   FOR SELECT
@@ -298,9 +304,9 @@ CREATE TABLE IF NOT EXISTS audit_log_archive_index (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
 
-CREATE INDEX idx_archive_index_date ON audit_log_archive_index(start_date, end_date);
-CREATE INDEX idx_archive_index_tier ON audit_log_archive_index(storage_tier);
-CREATE INDEX idx_archive_index_checksum ON audit_log_archive_index(checksum);
+CREATE INDEX IF NOT EXISTS idx_archive_index_date ON audit_log_archive_index(start_date, end_date);
+CREATE INDEX IF NOT EXISTS idx_archive_index_tier ON audit_log_archive_index(storage_tier);
+CREATE INDEX IF NOT EXISTS idx_archive_index_checksum ON audit_log_archive_index(checksum);
 
 COMMENT ON TABLE audit_log_archive_index IS 'Metadata index for archived audit logs in S3 (warm/cold storage)';
 COMMENT ON COLUMN audit_log_archive_index.storage_tier IS 'Storage tier: hot (PostgreSQL 0-90 days), warm (S3 Standard 90 days-2 years), cold (S3 Glacier 2-7 years)';
@@ -407,24 +413,35 @@ REVOKE UPDATE, DELETE ON audit_log FROM authenticated;
 -- INITIAL DATA / TESTING
 -- =============================================================================
 
--- Insert a genesis audit log record (first record in the chain)
-INSERT INTO audit_log (
-  category,
-  action,
-  severity,
-  metadata,
-  status
-) VALUES (
-  'system',
-  'audit_system_initialized',
-  'info',
-  jsonb_build_object(
-    'version', '1.0',
-    'migration', '001_create_audit_log_table.sql',
-    'initialized_at', NOW()
-  ),
-  'success'
-);
+-- Insert a genesis audit log record (first record in the chain).
+-- Guarded so re-running this migration during catch-up reconciliation does not
+-- add a second genesis row (which would break the hash chain).
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM audit_log
+    WHERE category = 'system'
+      AND action = 'audit_system_initialized'
+  ) THEN
+    INSERT INTO audit_log (
+      category,
+      action,
+      severity,
+      metadata,
+      status
+    ) VALUES (
+      'system',
+      'audit_system_initialized',
+      'info',
+      jsonb_build_object(
+        'version', '1.0',
+        'migration', '001_create_audit_log_table.sql',
+        'initialized_at', NOW()
+      ),
+      'success'
+    );
+  END IF;
+END $$;
 
 -- =============================================================================
 -- MIGRATION COMPLETE

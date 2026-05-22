@@ -8,7 +8,7 @@
 -- 1. skill_snapshots — point-in-time captures of a user's skill state
 -- ─────────────────────────────────────────────────────────────────────────────
 
-CREATE TABLE core.skill_snapshots (
+CREATE TABLE IF NOT EXISTS core.skill_snapshots (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id         UUID NOT NULL REFERENCES core.users(id) ON DELETE CASCADE,
 
@@ -31,11 +31,11 @@ CREATE TABLE core.skill_snapshots (
 );
 
 -- Fast lookups: user's snapshots in reverse chronological order
-CREATE INDEX idx_skill_snapshots_user_date
+CREATE INDEX IF NOT EXISTS idx_skill_snapshots_user_date
   ON core.skill_snapshots(user_id, created_at DESC);
 
 -- Find snapshots by trigger
-CREATE INDEX idx_skill_snapshots_trigger
+CREATE INDEX IF NOT EXISTS idx_skill_snapshots_trigger
   ON core.skill_snapshots(trigger_type, trigger_id)
   WHERE trigger_id IS NOT NULL;
 
@@ -46,7 +46,7 @@ COMMENT ON TABLE core.skill_snapshots IS
 -- 2. skill_evidence — proof items linked to specific skills
 -- ─────────────────────────────────────────────────────────────────────────────
 
-CREATE TABLE core.skill_evidence (
+CREATE TABLE IF NOT EXISTS core.skill_evidence (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id         UUID NOT NULL REFERENCES core.users(id) ON DELETE CASCADE,
 
@@ -84,16 +84,16 @@ CREATE TABLE core.skill_evidence (
 );
 
 -- User's evidence items
-CREATE INDEX idx_skill_evidence_user
+CREATE INDEX IF NOT EXISTS idx_skill_evidence_user
   ON core.skill_evidence(user_id);
 
 -- Evidence by soft skill
-CREATE INDEX idx_skill_evidence_soft_skill
+CREATE INDEX IF NOT EXISTS idx_skill_evidence_soft_skill
   ON core.skill_evidence(soft_skill_id)
   WHERE soft_skill_id IS NOT NULL;
 
 -- Evidence by hard skill
-CREATE INDEX idx_skill_evidence_hard_skill
+CREATE INDEX IF NOT EXISTS idx_skill_evidence_hard_skill
   ON core.skill_evidence(skill_taxonomy, skill_ref_id)
   WHERE skill_taxonomy IS NOT NULL;
 
@@ -108,6 +108,7 @@ ALTER TABLE core.skill_snapshots ENABLE ROW LEVEL SECURITY;
 ALTER TABLE core.skill_evidence ENABLE ROW LEVEL SECURITY;
 
 -- skill_snapshots: users can read their own + public profiles can be viewed
+DROP POLICY IF EXISTS skill_snapshots_select ON core.skill_snapshots;
 CREATE POLICY skill_snapshots_select ON core.skill_snapshots
   FOR SELECT TO authenticated
   USING (
@@ -122,6 +123,7 @@ CREATE POLICY skill_snapshots_select ON core.skill_snapshots
     )
   );
 
+DROP POLICY IF EXISTS skill_snapshots_insert ON core.skill_snapshots;
 CREATE POLICY skill_snapshots_insert ON core.skill_snapshots
   FOR INSERT TO authenticated
   WITH CHECK (auth.uid() = user_id);
@@ -129,15 +131,18 @@ CREATE POLICY skill_snapshots_insert ON core.skill_snapshots
 -- No user update/delete — snapshots are immutable audit records
 -- Only service_role can modify (for system-generated snapshots)
 
+DROP POLICY IF EXISTS skill_snapshots_select_service_role ON core.skill_snapshots;
 CREATE POLICY skill_snapshots_select_service_role ON core.skill_snapshots
   FOR SELECT TO service_role
   USING (true);
 
+DROP POLICY IF EXISTS skill_snapshots_insert_service_role ON core.skill_snapshots;
 CREATE POLICY skill_snapshots_insert_service_role ON core.skill_snapshots
   FOR INSERT TO service_role
   WITH CHECK (true);
 
 -- skill_evidence: owner full CRUD, others read via profile visibility
+DROP POLICY IF EXISTS skill_evidence_select ON core.skill_evidence;
 CREATE POLICY skill_evidence_select ON core.skill_evidence
   FOR SELECT TO authenticated
   USING (
@@ -152,19 +157,23 @@ CREATE POLICY skill_evidence_select ON core.skill_evidence
     )
   );
 
+DROP POLICY IF EXISTS skill_evidence_insert ON core.skill_evidence;
 CREATE POLICY skill_evidence_insert ON core.skill_evidence
   FOR INSERT TO authenticated
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS skill_evidence_update ON core.skill_evidence;
 CREATE POLICY skill_evidence_update ON core.skill_evidence
   FOR UPDATE TO authenticated
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS skill_evidence_delete ON core.skill_evidence;
 CREATE POLICY skill_evidence_delete ON core.skill_evidence
   FOR DELETE TO authenticated
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS skill_evidence_service_role ON core.skill_evidence;
 CREATE POLICY skill_evidence_service_role ON core.skill_evidence
   FOR ALL TO service_role
   USING (true)

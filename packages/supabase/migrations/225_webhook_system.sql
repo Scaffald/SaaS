@@ -52,8 +52,8 @@ CREATE TABLE IF NOT EXISTS public.webhooks (
 );
 
 -- Indexes
-CREATE INDEX idx_webhooks_organization ON public.webhooks(organization_id) WHERE is_active = true;
-CREATE INDEX idx_webhooks_events ON public.webhooks USING GIN (events);
+CREATE INDEX IF NOT EXISTS idx_webhooks_organization ON public.webhooks(organization_id) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_webhooks_events ON public.webhooks USING GIN (events);
 
 -- ================================================================
 -- WEBHOOK_DELIVERIES TABLE
@@ -103,10 +103,10 @@ CREATE TABLE IF NOT EXISTS public.webhook_deliveries (
 );
 
 -- Indexes
-CREATE INDEX idx_webhook_deliveries_webhook ON public.webhook_deliveries(webhook_id);
-CREATE INDEX idx_webhook_deliveries_status ON public.webhook_deliveries(status, next_retry_at) WHERE status IN ('pending', 'retrying');
-CREATE INDEX idx_webhook_deliveries_event ON public.webhook_deliveries(event_type, event_id);
-CREATE INDEX idx_webhook_deliveries_created ON public.webhook_deliveries(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_webhook_deliveries_webhook ON public.webhook_deliveries(webhook_id);
+CREATE INDEX IF NOT EXISTS idx_webhook_deliveries_status ON public.webhook_deliveries(status, next_retry_at) WHERE status IN ('pending', 'retrying');
+CREATE INDEX IF NOT EXISTS idx_webhook_deliveries_event ON public.webhook_deliveries(event_type, event_id);
+CREATE INDEX IF NOT EXISTS idx_webhook_deliveries_created ON public.webhook_deliveries(created_at DESC);
 
 -- ================================================================
 -- WEBHOOK_EVENTS TABLE
@@ -134,9 +134,9 @@ CREATE TABLE IF NOT EXISTS public.webhook_events (
 );
 
 -- Indexes
-CREATE INDEX idx_webhook_events_organization ON public.webhook_events(organization_id, created_at DESC);
-CREATE INDEX idx_webhook_events_type ON public.webhook_events(event_type, created_at DESC);
-CREATE INDEX idx_webhook_events_event_id ON public.webhook_events(event_id);
+CREATE INDEX IF NOT EXISTS idx_webhook_events_organization ON public.webhook_events(organization_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_webhook_events_type ON public.webhook_events(event_type, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_webhook_events_event_id ON public.webhook_events(event_id);
 
 -- ================================================================
 -- FUNCTIONS
@@ -151,6 +151,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS update_webhooks_updated_at ON public.webhooks;
 CREATE TRIGGER update_webhooks_updated_at
     BEFORE UPDATE ON public.webhooks
     FOR EACH ROW
@@ -182,6 +183,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS update_webhook_stats_on_delivery ON public.webhook_deliveries;
 CREATE TRIGGER update_webhook_stats_on_delivery
     AFTER UPDATE OF status ON public.webhook_deliveries
     FOR EACH ROW
@@ -261,6 +263,7 @@ ALTER TABLE public.webhook_deliveries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.webhook_events ENABLE ROW LEVEL SECURITY;
 
 -- Webhooks: Organization members can view and manage
+DROP POLICY IF EXISTS webhooks_select_policy ON public.webhooks;
 CREATE POLICY webhooks_select_policy ON public.webhooks
     FOR SELECT
     USING (
@@ -271,6 +274,7 @@ CREATE POLICY webhooks_select_policy ON public.webhooks
         )
     );
 
+DROP POLICY IF EXISTS webhooks_insert_policy ON public.webhooks;
 CREATE POLICY webhooks_insert_policy ON public.webhooks
     FOR INSERT
     WITH CHECK (
@@ -282,6 +286,7 @@ CREATE POLICY webhooks_insert_policy ON public.webhooks
         )
     );
 
+DROP POLICY IF EXISTS webhooks_update_policy ON public.webhooks;
 CREATE POLICY webhooks_update_policy ON public.webhooks
     FOR UPDATE
     USING (
@@ -293,6 +298,7 @@ CREATE POLICY webhooks_update_policy ON public.webhooks
         )
     );
 
+DROP POLICY IF EXISTS webhooks_delete_policy ON public.webhooks;
 CREATE POLICY webhooks_delete_policy ON public.webhooks
     FOR DELETE
     USING (
@@ -305,6 +311,7 @@ CREATE POLICY webhooks_delete_policy ON public.webhooks
     );
 
 -- Webhook Deliveries: Read-only for organization members
+DROP POLICY IF EXISTS webhook_deliveries_select_policy ON public.webhook_deliveries;
 CREATE POLICY webhook_deliveries_select_policy ON public.webhook_deliveries
     FOR SELECT
     USING (
@@ -317,6 +324,7 @@ CREATE POLICY webhook_deliveries_select_policy ON public.webhook_deliveries
     );
 
 -- Webhook Events: Read-only for organization members
+DROP POLICY IF EXISTS webhook_events_select_policy ON public.webhook_events;
 CREATE POLICY webhook_events_select_policy ON public.webhook_events
     FOR SELECT
     USING (
