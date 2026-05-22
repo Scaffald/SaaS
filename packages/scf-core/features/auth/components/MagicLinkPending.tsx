@@ -4,11 +4,11 @@ import { translateError } from '@scf/core/utils/errors/translateError'
 import { getBaseUrl } from '@scf/core/utils/getBaseUrl'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { useTranslation } from '@scf/core/utils/useTranslation'
-import { ArrowLeft, CheckCircle2 } from 'lucide-react-native'
+import { ArrowLeft, CheckCircle2, Mail } from 'lucide-react-native'
 import { router } from 'expo-router'
 import { useCallback, useState } from 'react'
 import { Pressable } from 'react-native'
-import { Box, Paragraph, Row, Spinner, Stack, useThemeContext } from '@scaffald/ui'
+import { Box, Input, Paragraph, Row, Spinner, Stack, useThemeContext } from '@scaffald/ui'
 import { colors, spacing } from '@scaffald/ui/tokens'
 
 import { CodeConfirmation } from './CodeConfirmation'
@@ -19,7 +19,17 @@ type MagicLinkPendingProps = {
   email?: string
 }
 
-export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
+// Minimal RFC-compliant email check. Matches the Zod rule used on the
+// login screen — kept inline so verifying via OTP doesn't pull in the
+// login screen's zod resolver bundle.
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+export const MagicLinkPending = ({ email: emailProp }: MagicLinkPendingProps) => {
+  // SC-66: when arrived via "Use one-time code" from the login screen,
+  // the email is not in the route params. Capture it inline so the OTP
+  // can be verified against the right address.
+  const [enteredEmail, setEnteredEmail] = useState('')
+  const [emailError, setEmailError] = useState<string | null>(null)
   // Stored as string so leading zeros in OTPs aren't dropped (Supabase
   // issues 6-digit OTPs uniformly at random, ~10% start with 0).
   const [code, setCode] = useState<string>()
@@ -32,19 +42,34 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
   const { t } = useTranslation()
   const { theme } = useThemeContext()
 
+  const resolveEmail = useCallback((): string | null => {
+    const candidate = (emailProp ?? enteredEmail).trim().toLowerCase()
+    if (!candidate) {
+      setEmailError(t('auth.verify.emailRequired'))
+      return null
+    }
+    if (!EMAIL_REGEX.test(candidate)) {
+      setEmailError(t('auth.verify.emailInvalid'))
+      return null
+    }
+    setEmailError(null)
+    return candidate
+  }, [emailProp, enteredEmail, t])
+
   const handleEnter = useCallback(
     async (enteredCode: string) => {
+      const targetEmail = resolveEmail()
+      if (!targetEmail) {
+        setCodeKey((k) => k + 1)
+        return
+      }
       setCode(enteredCode)
       setIsSubmitting(true)
       setError(null)
 
       try {
-        if (!email) {
-          throw new Error(t('auth.verify.missingEmail'))
-        }
-
         const { error } = await supabase.auth.verifyOtp({
-          email,
+          email: targetEmail,
           token: enteredCode,
           type: 'email',
         })
@@ -79,26 +104,28 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
         setIsSubmitting(false)
       }
     },
-    [email, t]
+    [resolveEmail, t]
   )
 
   const handleResendComplete = useCallback(() => {}, [])
 
   const handleResendClick = useCallback(async () => {
-    if (!email) return
+    const targetEmail = resolveEmail()
+    if (!targetEmail) return
     setError(null)
     setCodeKey((k) => k + 1)
     try {
       await requestMagicLink.mutateAsync({
-        email: email.trim().toLowerCase(),
+        email: targetEmail,
         redirectTo: getBaseUrl(),
       })
     } catch (err) {
       setError(translateError(err))
     }
-  }, [email, requestMagicLink])
+  }, [requestMagicLink, resolveEmail])
 
-  const displayEmail = email ?? t('auth.verify.fallbackEmail')
+  const hasInlineEmailInput = !emailProp
+  const displayEmail = emailProp ?? enteredEmail.trim() ?? t('auth.verify.fallbackEmail')
 
   return (
     <Stack
@@ -137,7 +164,29 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
           gap={spacing[16]}
           style={{ opacity: code !== undefined ? 0 : 1, width: '100%' }}
         >
-          <EmailHeader email={displayEmail} />
+          {hasInlineEmailInput ? (
+            <Stack gap={spacing[8]} style={{ width: '100%' }}>
+              <Paragraph size="sm" style={{ color: colors.text[theme].secondary }}>
+                {t('auth.verify.emailRequiredCaption')}
+              </Paragraph>
+              <Input
+                placeholder={t('auth.verify.emailPlaceholder')}
+                value={enteredEmail}
+                onChangeText={(next: string) => {
+                  setEnteredEmail(next)
+                  if (emailError) setEmailError(null)
+                }}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+                iconStart={Mail}
+                error={!!emailError}
+                errorMessage={emailError ?? undefined}
+              />
+            </Stack>
+          ) : (
+            <EmailHeader email={displayEmail} />
+          )}
 
           <Box style={{ width: '100%' }}>
             <CodeConfirmation key={codeKey} codeSize={6} secureText={false} onEnter={handleEnter} />
