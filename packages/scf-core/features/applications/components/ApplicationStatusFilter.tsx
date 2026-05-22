@@ -26,23 +26,36 @@ export function getStatusesForFilter(filter: FilterGroup): string[] | null {
 interface ApplicationStatusFilterProps {
   selected: FilterGroup
   onSelect: (filter: FilterGroup) => void
+  /**
+   * SC-37: optional per-filter counts. When provided, each chip's label is
+   * suffixed with the parenthetical count (e.g. `Active (5)`).
+   */
+  counts?: Partial<Record<FilterGroup, number>>
 }
 
-export function ApplicationStatusFilter({ selected, onSelect }: ApplicationStatusFilterProps) {
+export function ApplicationStatusFilter({
+  selected,
+  onSelect,
+  counts,
+}: ApplicationStatusFilterProps) {
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       <Row gap={8}>
-        {FILTER_OPTIONS.map((option) => (
-          <Button
-            key={option.key}
-            size="sm"
-            variant={selected === option.key ? undefined : 'outline'}
-            color={selected === option.key ? 'primary' : undefined}
-            onPress={() => onSelect(option.key)}
-          >
-            {option.label}
-          </Button>
-        ))}
+        {FILTER_OPTIONS.map((option) => {
+          const count = counts?.[option.key]
+          const showCount = typeof count === 'number'
+          return (
+            <Button
+              key={option.key}
+              size="sm"
+              variant={selected === option.key ? undefined : 'outline'}
+              color={selected === option.key ? 'primary' : undefined}
+              onPress={() => onSelect(option.key)}
+            >
+              {showCount ? `${option.label} (${count})` : option.label}
+            </Button>
+          )
+        })}
       </Row>
     </ScrollView>
   )
