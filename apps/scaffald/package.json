@@ -98,6 +98,7 @@
     "react-native": "catalog:",
     "react-native-dotenv": "catalog:",
     "react-native-gesture-handler": "catalog:",
+    "react-native-qrcode-svg": "catalog:",
     "react-native-safe-area-context": "catalog:",
     "react-native-screens": "catalog:",
     "react-native-svg": "catalog:",

@@ -52,7 +52,7 @@ export function VanityUrlSection() {
     onSuccess: (data: UpdateSlugResult) => {
       toast.show({
         title: 'Vanity URL Updated',
-        message: `Your profile URL has been updated to /u/${data.slug}`,
+        message: `Your profile URL has been updated to /users/${data.slug}`,
       })
       setIsEditing(false)
       setSlugInput('')
@@ -157,7 +157,7 @@ export function VanityUrlSection() {
   const handleCopyUrl = async () => {
     if (!profileData?.slug) return
 
-    const vanityUrl = `https://scaffald.com/u/${profileData.slug}`
+    const vanityUrl = `https://scaffald.com/users/${profileData.slug}`
     const success = await copyToClipboard(vanityUrl)
 
     if (success) {
@@ -242,7 +242,7 @@ export function VanityUrlSection() {
           <Stack gap={8}>
             <Text>Your Profile URL</Text>
             <Input
-              value={`scaffald.com/u/${currentSlug}`}
+              value={`scaffald.com/users/${currentSlug}`}
               editable={false}
               iconEnd={Copy}
               iconEndOnPress={handleCopyUrl}
@@ -276,7 +276,7 @@ export function VanityUrlSection() {
           {isEditing ? (
             <Stack gap={8}>
               <Row gap={8} align="center">
-                <Text style={{ color: '#414e62' }}>/u/</Text>
+                <Text style={{ color: '#414e62' }}>/users/</Text>
                 <Input
                   style={{ flex: 1 }}
                   value={slugInput}
@@ -357,7 +357,7 @@ export function VanityUrlSection() {
             <Input
               value={currentSlug || ''}
               editable={false}
-              externalAddon="scaffald.com/u/"
+              externalAddon="scaffald.com/users/"
               placeholder="No vanity URL set"
             />
           )}
