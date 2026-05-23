@@ -33,7 +33,8 @@ merged.test.exclude = [
   'packages/scf-core/features/auth/__tests__/login-screen.test.tsx',
   'packages/scf-core/features/discover/components/__tests__/FilterBar.test.tsx',
   'packages/scf-core/features/dashboard/components/__tests__/TeamInvitationList.test.tsx',
-  'packages/scf-core/utils/__tests__/useAllOrganizations.test.ts',
+  // Rewritten to mock SDK hook (useOfficeOrganizations) instead of tRPC api.
+  // 'packages/scf-core/utils/__tests__/useAllOrganizations.test.ts',
   'packages/scf-core/features/discover/hooks/__tests__/useLocationHooks.test.ts',
   // Tests that need tRPC-to-SDK migration (mock old API but implementation uses SDK hooks)
   'packages/scf-core/features/discover/hooks/__tests__/useFindNearestResults.test.ts',
@@ -44,7 +45,9 @@ merged.test.exclude = [
   'packages/scf-core/features/ipip-assessment/hooks/__tests__/useIPIPResults.test.tsx',
   'packages/scf-core/features/background-check/hooks/__tests__/useDispute.test.tsx',
   'packages/scf-core/features/inquiries/components/__tests__/InquiryCommentThread.test.tsx',
-  'packages/scf-core/features/profile-import/hooks/__tests__/useImportData.test.ts',
+  // Rewritten to mock SDK hook (profile-import-sdk-hooks.useImportData) and
+  // updated assertions for current positional-id normalization behavior.
+  // 'packages/scf-core/features/profile-import/hooks/__tests__/useImportData.test.ts',
   'packages/scf-core/features/profile-completion/hooks/__tests__/useCompletionStatus.test.ts',
   'packages/scf-core/features/riasec-assessment/RIASECAssessmentWizard.test.tsx',
   // Tests with complex component rendering differences needing individual updates
