@@ -23,43 +23,40 @@ vi.mock('@scaffald/ui', async (importOriginal) => ({
   }),
 }))
 
-vi.mock('@scf/core/utils/api', () => ({
-  api: {
-    onet: {
-      getOccupationStatus: {
-        useQuery: () => mockGetOccupationStatus(),
-      },
-      saveCareerAssessment: {
-        useMutation: (callbacks?: { onSuccess?: () => void; onError?: (error: { message?: string }) => void }) => {
-          if (callbacks) {
-            mockSaveCareerAssessment.mockImplementation(async (data: unknown) => {
-              try {
-                callbacks.onSuccess?.()
-                return { success: true }
-              } catch (error) {
-                callbacks.onError?.(error as { message?: string })
-                throw error
-              }
-            })
-          }
-          return {
-            mutate: mockSaveCareerAssessment,
-            isPending: false,
-          }
-        },
-      },
-    },
-    useUtils: () => ({
-      onet: {
-        getOccupationStatus: {
-          invalidate: mockInvalidate,
-        },
-      },
-    }),
+// Component now uses '@scf/core/utils/onet-sdk-hooks'.
+vi.mock('@scf/core/utils/onet-sdk-hooks', () => ({
+  useOccupationStatus: () => mockGetOccupationStatus(),
+  useSaveCareerAssessmentMutation: (callbacks?: { onSuccess?: () => void; onError?: (error: { message?: string }) => void }) => {
+    if (callbacks) {
+      mockSaveCareerAssessment.mockImplementation(async () => {
+        try {
+          callbacks.onSuccess?.()
+          return { success: true }
+        } catch (error) {
+          callbacks.onError?.(error as { message?: string })
+          throw error
+        }
+      })
+    }
+    return {
+      mutate: mockSaveCareerAssessment,
+      isPending: false,
+    }
   },
 }))
 
-// Mock AssessmentWizard
+vi.mock('@tanstack/react-query', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@tanstack/react-query')>()
+  return {
+    ...actual,
+    useQueryClient: () => ({
+      invalidateQueries: () => mockInvalidate(),
+    }),
+  }
+})
+
+// Mock AssessmentWizard + companion helpers the wizard imports
+// (useAssessmentSave, toError).
 vi.mock('@scf/core/features/assessments', () => ({
   AssessmentWizard: ({ children, title, description, isLoading, error }: {
     children: React.ReactNode
@@ -78,6 +75,16 @@ vi.mock('@scf/core/features/assessments', () => ({
       </div>
     )
   },
+  // Real signature: useAssessmentSave({ useMutation, queryKeys,
+  // successTitle, successMessage, errorFallback, onSuccess, ... })
+  // returns the underlying useMutation invocation. Pass through here so
+  // the wizard exercises the SDK-mock mutation we set up above.
+  useAssessmentSave: <T,>(opts: {
+    useMutation: (cb?: { onSuccess?: () => void; onError?: (err: T) => void }) => unknown
+    onSuccess?: () => void
+    queryKeys?: unknown[]
+  }) => opts.useMutation({ onSuccess: opts.onSuccess }),
+  toError: (err: unknown) => (err instanceof Error ? err : new Error(String(err))),
 }))
 
 // Mock OccupationSearch

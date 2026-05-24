@@ -82,6 +82,10 @@ merged.test.exclude = [
   'packages/scf-core/features/profile/widgets/__tests__/PortfolioManager.test.tsx',
   // Tests that mock old tRPC API but component uses SDK hooks directly
   'packages/scf-core/features/occupation-assessment/OccupationAssessmentWidget.test.tsx',
+  // TODO: SDK + assessments + react-query mocks done; tests now reach the
+  // render path but assert on data-testids that no longer appear in the
+  // rendered output (AssessmentWizard markup drifted). Needs assertion
+  // rewrites per-test against current DOM.
   'packages/scf-core/features/occupation-assessment/OccupationAssessmentWizard.test.tsx',
   'packages/scf-core/features/riasec-assessment/RIASECAssessmentWidget.test.tsx',
   'packages/scf-core/features/career-assessment/components/RiasecQuickAssessment.test.tsx',
