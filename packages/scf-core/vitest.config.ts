@@ -52,7 +52,8 @@ merged.test.exclude = [
   // Rewritten to mock SDK hook (profile-import-sdk-hooks.useImportData) and
   // updated assertions for current positional-id normalization behavior.
   // 'packages/scf-core/features/profile-import/hooks/__tests__/useImportData.test.ts',
-  'packages/scf-core/features/profile-completion/hooks/__tests__/useCompletionStatus.test.ts',
+  // Rewritten: mock profile-completion-sdk-hooks; isPending replaces isLoading.
+  // 'packages/scf-core/features/profile-completion/hooks/__tests__/useCompletionStatus.test.ts',
   'packages/scf-core/features/riasec-assessment/RIASECAssessmentWizard.test.tsx',
   // Tests with complex component rendering differences needing individual updates
   'packages/scf-core/features/discover/components/__tests__/ResultsRail.test.tsx',
@@ -86,7 +87,9 @@ merged.test.exclude = [
   // navigable parents (e.g. /office) so descendants (/office/cms/...)
   // appear in the hierarchy. Dynamic paths resolve via stricter regex.
   // 'packages/scf-core/utils/navigation/__tests__/routeHierarchy.test.ts',
-  'packages/scf-core/features/profile-wizard/hooks/__tests__/useProfileWizard.test.ts',
+  // Rewritten: mock profile-wizard-sdk-hooks; 2 tests skipped pending
+  // assertion rewrite (SDK internal invalidate not surfaced by test mock).
+  // 'packages/scf-core/features/profile-wizard/hooks/__tests__/useProfileWizard.test.ts',
   // Rewritten: mock '@scf/core/utils/resume-sdk-hooks' (useResumeWizardState,
   // useSaveResumeSectionMutation, useUpdateResumeProgressMutation); isPending.
   // 'packages/scf-core/features/resume/hooks/__tests__/useResumeWizard.test.ts',
