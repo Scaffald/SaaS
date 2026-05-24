@@ -1,5 +1,4 @@
-import { useNavigation } from '@react-navigation/native'
-import type { NavigationProp, ParamListBase } from '@react-navigation/native'
+import { useNavigation, type NavigationProp, type ParamListBase } from "expo-router/react-navigation";
 import { useEffect, useMemo } from 'react'
 import { setDocumentTitle } from '@scf/core/utils/platform'
 
