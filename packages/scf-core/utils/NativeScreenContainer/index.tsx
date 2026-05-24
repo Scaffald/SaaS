@@ -1,6 +1,6 @@
 /* c8 ignore file */
 
-import { useScrollToTop } from '@react-navigation/native'
+import { useScrollToTop } from "expo-router/react-navigation"
 import { type ComponentProps, type RefObject, useRef } from 'react'
 import { ScrollView } from '@scaffald/ui'
 

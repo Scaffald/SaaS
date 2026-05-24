@@ -40,7 +40,7 @@ export default function AdminLayout() {
   if (isLoading || isCheckingPrereqs || !sessionReady) {
     return (
       <Stack
-        style={{ ...StyleSheet.absoluteFillObject, backgroundColor: colors.bg[resolvedTheme].default }}
+        style={{ ...StyleSheet.absoluteFill, backgroundColor: colors.bg[resolvedTheme].default }}
         justify="center"
         align="center"
       >

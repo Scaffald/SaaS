@@ -29,7 +29,7 @@
     "format": "biome format ./app",
     "format:fix": "biome format --write ./app",
     "ios": "pnpm ios:check-xcode-version && pnpm ios:run",
-    "ios:check-xcode-version": "sh -c 'XC_VERSION=$(xcodebuild -version | grep Xcode | awk \"{print \\$2}\"); if [ $(echo $XC_VERSION | awk \"{print int(\\$1)}\") -lt 16 ]; then echo \"⚠️ Xcode ≥ 16 is required for Expo SDK 53. You have $XC_VERSION. You can bypass this check by running \\\"pnpm ios:run\\\" but you may encounter native build errors.\"; exit 1; fi'",
+    "ios:check-xcode-version": "sh -c 'XC_VERSION=$(xcodebuild -version | awk \"/^Xcode/ {print \\$2}\"); MIN_XC=26.4; if [ \"$(printf \"%s\\n%s\\n\" \"$MIN_XC\" \"$XC_VERSION\" | sort -V | head -n1)\" != \"$MIN_XC\" ]; then echo \"⚠️ Xcode ≥ $MIN_XC is required for Expo SDK 56. You have $XC_VERSION. You can bypass this check by running \\\"pnpm ios:run\\\" but you may encounter native build errors.\"; exit 1; fi'",
     "ios:run": "cross-env LANG=en_US.UTF-8 RCT_NEW_ARCH_ENABLED=1 expo run:ios",
     "lint": "biome lint ./app",
     "lint:fix": "biome lint --write ./app",
@@ -51,11 +51,11 @@
     "@babel/runtime": "catalog:",
     "@expo-google-fonts/roboto": "^0.4.2",
     "@expo-google-fonts/roboto-serif": "^0.4.3",
-    "@expo/dom-webview": "~55.0.5",
-    "@expo/ui": "~55.0.17",
+    "@expo/dom-webview": "~56.0.5",
+    "@expo/ui": "~56.0.13",
     "@hookform/resolvers": "catalog:",
     "@react-native-async-storage/async-storage": "catalog:",
-    "@react-native-community/netinfo": "11.5.2",
+    "@react-native-community/netinfo": "catalog:",
     "@react-native-google-signin/google-signin": "catalog:",
     "@rnmapbox/maps": "catalog:",
     "@sentry/react": "^10.28.0",
@@ -64,6 +64,7 @@
     "burnt": "catalog:",
     "expo": "catalog:",
     "expo-apple-authentication": "catalog:",
+    "expo-blur": "catalog:",
     "expo-build-properties": "catalog:",
     "expo-clipboard": "catalog:",
     "expo-constants": "catalog:",
@@ -71,7 +72,6 @@
     "expo-dev-client": "catalog:",
     "expo-device": "catalog:",
     "expo-document-picker": "catalog:",
-    "expo-blur": "catalog:",
     "expo-font": "catalog:",
     "expo-glass-effect": "catalog:",
     "expo-image": "catalog:",
@@ -99,12 +99,14 @@
     "react-native-dotenv": "catalog:",
     "react-native-gesture-handler": "catalog:",
     "react-native-qrcode-svg": "catalog:",
+    "react-native-reanimated": "4.3.1",
     "react-native-safe-area-context": "catalog:",
     "react-native-screens": "catalog:",
     "react-native-svg": "catalog:",
     "react-native-url-polyfill": "catalog:",
     "react-native-web": "catalog:",
-    "react-native-webview": "catalog:"
+    "react-native-webview": "catalog:",
+    "react-native-worklets": "0.8.3"
   },
   "devDependencies": {
     "@babel/core": "catalog:",
@@ -115,5 +117,12 @@
     "react-native-clean-project": "catalog:",
     "serve": "catalog:",
     "typescript": "catalog:"
+  },
+  "expo": {
+    "install": {
+      "exclude": [
+        "typescript"
+      ]
+    }
   }
 }

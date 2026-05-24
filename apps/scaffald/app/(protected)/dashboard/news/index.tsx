@@ -61,11 +61,11 @@ function FeaturedPanel({
         <View style={styles.featuredImageWrap}>
           <Image
             source={hasImage && item.image ? { uri: item.image } : undefined}
-            style={StyleSheet.absoluteFillObject}
+            style={StyleSheet.absoluteFill}
             resizeMode="cover"
             onError={() => setImgError(true)}
           />
-          <View style={[StyleSheet.absoluteFillObject, styles.imageOverlay]} />
+          <View style={[StyleSheet.absoluteFill, styles.imageOverlay]} />
           {item.category ? (
             <View style={styles.imageCategoryWrap}>
               <Text style={styles.imageCategoryText}>
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   imageOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: "rgba(0,0,0,0.3)",
   },
   imageCategoryWrap: {

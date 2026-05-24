@@ -57,7 +57,7 @@ export default function ProtectedLayout() {
       <View style={{ flex: 1 }}>
         {!isReady ? (
           <Stack
-            style={{ ...StyleSheet.absoluteFillObject, backgroundColor: colors.bg[resolvedTheme].default }}
+            style={{ ...StyleSheet.absoluteFill, backgroundColor: colors.bg[resolvedTheme].default }}
             justify="center"
             align="center"
           >

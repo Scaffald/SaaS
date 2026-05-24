@@ -382,7 +382,14 @@ export default {
         },
       ],
       "expo-router",
-      "expo-build-properties",
+      [
+        "expo-build-properties",
+        {
+          ios: {
+            deploymentTarget: "16.4",
+          },
+        },
+      ],
       "expo-font",
       [
         "@rnmapbox/maps",

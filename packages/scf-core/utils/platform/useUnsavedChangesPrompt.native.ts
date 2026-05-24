@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Alert } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation } from "expo-router/react-navigation"
 import type { UseUnsavedChangesPrompt } from './useUnsavedChangesPrompt'
 
 export const useUnsavedChangesPrompt: UseUnsavedChangesPrompt = (isDirty) => {

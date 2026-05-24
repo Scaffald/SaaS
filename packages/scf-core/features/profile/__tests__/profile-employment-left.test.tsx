@@ -19,12 +19,12 @@ const mockToastShow = vi.fn();
 const mockInvalidateProfileQueries = vi.fn();
 
 const press = (element: HTMLElement) => {
-  fireEvent.press(element);
+  fireEvent.press(element as unknown as Parameters<typeof fireEvent.press>[0]);
 };
 
 const isChecked = (element: HTMLElement) => {
   if ("checked" in element) {
-    return Boolean((element as HTMLInputElement).checked);
+    return Boolean((element as unknown as HTMLInputElement).checked);
   }
   return element.getAttribute("aria-checked") === "true";
 };
@@ -575,10 +575,10 @@ describe("ProfileEmploymentLeft", () => {
 
     const residentSwitch = getByRole("switch", {
       name: /us resident/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     const passportSwitch = getByRole("switch", {
       name: /us passport/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
 
     press(residentSwitch);
     press(passportSwitch);
@@ -596,17 +596,17 @@ describe("ProfileEmploymentLeft", () => {
 
     const driversSwitch = getByRole("switch", {
       name: /driver/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(driversSwitch);
 
     const classACheckbox = getByRole("checkbox", {
       name: /class a/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(classACheckbox);
 
     const residentSwitch = getByRole("switch", {
       name: /us resident/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(residentSwitch);
 
     expect(mockMutate).toHaveBeenCalledWith(
@@ -622,7 +622,7 @@ describe("ProfileEmploymentLeft", () => {
 
     const slider = getByRole("slider", {
       name: /travel slider/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     expect(slider).toBeInstanceOf(HTMLElement);
 
     press(slider);
@@ -637,7 +637,7 @@ describe("ProfileEmploymentLeft", () => {
     // Travel slider is always visible (no toggle needed)
     const slider = getByRole("slider", {
       name: /travel slider/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     expect(slider.getAttribute("aria-valuemin")).toBe("10");
     expect(slider.getAttribute("aria-valuemax")).toBe("250");
     expect(slider.getAttribute("aria-valuenow")).toBe("25");
@@ -652,13 +652,13 @@ describe("ProfileEmploymentLeft", () => {
 
     const driversSwitch = getByRole("switch", {
       name: /driver/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(driversSwitch);
 
     for (const option of DRIVERS_LICENSE_OPTIONS) {
       const checkbox = getByRole("checkbox", {
         name: new RegExp(option, "i"),
-      }) as HTMLElement;
+      }) as unknown as HTMLElement;
       expect(checkbox).toBeInstanceOf(HTMLElement);
     }
   });
@@ -673,7 +673,7 @@ describe("ProfileEmploymentLeft", () => {
 
     const passportSwitch = getByRole("switch", {
       name: /us passport/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(passportSwitch);
 
     await waitFor(
@@ -692,7 +692,7 @@ describe("ProfileEmploymentLeft", () => {
     rerender(<ProfileEmploymentLeft />);
 
     expect(
-      isChecked(getByRole("switch", { name: /us passport/i }) as HTMLElement)
+      isChecked(getByRole("switch", { name: /us passport/i }) as unknown as HTMLElement)
     ).toBe(true);
   });
 
@@ -705,11 +705,11 @@ describe("ProfileEmploymentLeft", () => {
 
     const driversSwitch = getByRole("switch", {
       name: /driver/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
 
     expect(isChecked(driversSwitch)).toBe(true);
     expect(
-      isChecked(getByRole("checkbox", { name: /class a/i }) as HTMLElement)
+      isChecked(getByRole("checkbox", { name: /class a/i }) as unknown as HTMLElement)
     ).toBe(true);
   });
 
@@ -723,7 +723,7 @@ describe("ProfileEmploymentLeft", () => {
 
     const driversSwitch = getByRole("switch", {
       name: /driver/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(driversSwitch);
 
     // With atomic save, expanding without selecting does not call mutate
@@ -736,7 +736,7 @@ describe("ProfileEmploymentLeft", () => {
 
     const militarySwitch = getByRole("switch", {
       name: /military/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     expect(isChecked(militarySwitch)).toBe(false);
 
     press(militarySwitch);
@@ -744,10 +744,10 @@ describe("ProfileEmploymentLeft", () => {
 
     const activeDutyCheckbox = getByRole("checkbox", {
       name: /active duty/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     const veteranCheckbox = getByRole("checkbox", {
       name: /veteran/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
 
     press(activeDutyCheckbox);
     press(veteranCheckbox);
@@ -769,17 +769,17 @@ describe("ProfileEmploymentLeft", () => {
 
     const militarySwitch = getByRole("switch", {
       name: /military/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(militarySwitch);
 
     const reserveCheckbox = getByRole("checkbox", {
       name: /reserve/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(reserveCheckbox);
 
     const residentSwitch = getByRole("switch", {
       name: /us resident/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(residentSwitch);
 
     expect(mockMutate).toHaveBeenCalledWith(
@@ -794,12 +794,12 @@ describe("ProfileEmploymentLeft", () => {
 
     const militarySwitch = getByRole("switch", {
       name: /military/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(militarySwitch);
 
     const nationalGuardCheckbox = getByRole("checkbox", {
       name: /national guard/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(nationalGuardCheckbox);
 
     expect(mockMutate).toHaveBeenCalledWith(
@@ -825,15 +825,15 @@ describe("ProfileEmploymentLeft", () => {
 
     const militarySwitch = getByRole("switch", {
       name: /military/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     expect(isChecked(militarySwitch)).toBe(true);
 
     const activeDutyCheckbox = getByRole("checkbox", {
       name: /active duty/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     const nationalGuardCheckbox = getByRole("checkbox", {
       name: /national guard/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
 
     expect(isChecked(activeDutyCheckbox)).toBe(true);
     expect(isChecked(nationalGuardCheckbox)).toBe(true);
@@ -844,13 +844,13 @@ describe("ProfileEmploymentLeft", () => {
 
     const militarySwitch = getByRole("switch", {
       name: /military/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(militarySwitch);
 
     for (const option of MILITARY_STATUS_OPTIONS) {
       const checkbox = getByRole("checkbox", {
         name: new RegExp(option, "i"),
-      }) as HTMLElement;
+      }) as unknown as HTMLElement;
       expect(checkbox).toBeInstanceOf(HTMLElement);
     }
   });
@@ -861,7 +861,7 @@ describe("ProfileEmploymentLeft", () => {
 
     const availabilitySwitch = getByRole("switch", {
       name: /available for work/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     expect(isChecked(availabilitySwitch)).toBe(false);
 
     press(availabilitySwitch);
@@ -869,10 +869,10 @@ describe("ProfileEmploymentLeft", () => {
 
     const partTimeCheckbox = getByRole("checkbox", {
       name: /part-time/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     const fullTimeCheckbox = getByRole("checkbox", {
       name: /full-time/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
 
     press(partTimeCheckbox);
     press(fullTimeCheckbox);
@@ -894,17 +894,17 @@ describe("ProfileEmploymentLeft", () => {
 
     const availabilitySwitch = getByRole("switch", {
       name: /available for work/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(availabilitySwitch);
 
     const contractCheckbox = getByRole("checkbox", {
       name: /contract/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(contractCheckbox);
 
     const passportSwitch = getByRole("switch", {
       name: /us passport/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(passportSwitch);
 
     expect(mockMutate).toHaveBeenCalledWith(
@@ -919,12 +919,12 @@ describe("ProfileEmploymentLeft", () => {
 
     const availabilitySwitch = getByRole("switch", {
       name: /available for work/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(availabilitySwitch);
 
     const weekendCheckbox = getByRole("checkbox", {
       name: /weekend/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(weekendCheckbox);
 
     expect(mockMutate).toHaveBeenCalledWith(
@@ -954,18 +954,18 @@ describe("ProfileEmploymentLeft", () => {
 
     const availabilitySwitch = getByRole("switch", {
       name: /available for work/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     expect(isChecked(availabilitySwitch)).toBe(true);
 
     const partTimeCheckbox = getByRole("checkbox", {
       name: /part-time/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     const fullTimeCheckbox = getByRole("checkbox", {
       name: /full-time/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     const dayShiftCheckbox = getByRole("checkbox", {
       name: /day shift/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
 
     expect(isChecked(partTimeCheckbox)).toBe(true);
     expect(isChecked(fullTimeCheckbox)).toBe(true);
@@ -977,13 +977,13 @@ describe("ProfileEmploymentLeft", () => {
 
     const availabilitySwitch = getByRole("switch", {
       name: /available for work/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(availabilitySwitch);
 
     for (const option of AVAILABILITY_OPTIONS) {
       const checkbox = getByRole("checkbox", {
         name: new RegExp(option, "i"),
-      }) as HTMLElement;
+      }) as unknown as HTMLElement;
       expect(checkbox).toBeInstanceOf(HTMLElement);
     }
   });
@@ -993,29 +993,29 @@ describe("ProfileEmploymentLeft", () => {
 
     const driversSwitch = getByRole("switch", {
       name: /driver/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(driversSwitch);
     const classACheckbox = getByRole("checkbox", {
       name: /class a/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(classACheckbox);
 
     const militarySwitch = getByRole("switch", {
       name: /military/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(militarySwitch);
     const activeDutyCheckbox = getByRole("checkbox", {
       name: /active duty/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(activeDutyCheckbox);
 
     const availabilitySwitch = getByRole("switch", {
       name: /available for work/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(availabilitySwitch);
     const partTimeCheckbox = getByRole("checkbox", {
       name: /part-time/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(partTimeCheckbox);
 
     expect(mockMutate).toHaveBeenCalledWith(
@@ -1040,7 +1040,7 @@ describe("ProfileEmploymentLeft", () => {
 
     const driversSwitch = getByRole("switch", {
       name: /driver/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(driversSwitch);
 
     // Expanding the section does not call mutate until user selects an option or collapses
@@ -1085,14 +1085,14 @@ describe("ProfileEmploymentLeft", () => {
 
     const hourlyRateInput = getByPlaceholderText(
       /enter your hourly rate/i
-    ) as HTMLInputElement;
+    ) as unknown as HTMLInputElement;
 
     // Test max value (200)
-    fireEvent(hourlyRateInput, "changeText", "200");
+    fireEvent(hourlyRateInput as unknown as Parameters<typeof fireEvent>[0], "changeText", "200");
     expect(hourlyRateInput.value).toBe("200");
 
     // Test over max value (should be limited by schema)
-    fireEvent(hourlyRateInput, "changeText", "250");
+    fireEvent(hourlyRateInput as unknown as Parameters<typeof fireEvent>[0], "changeText", "250");
     // The form should handle this validation
   });
 
@@ -1106,9 +1106,9 @@ describe("ProfileEmploymentLeft", () => {
 
     const hourlyRateInput = getByPlaceholderText(
       /enter your hourly rate/i
-    ) as HTMLInputElement;
+    ) as unknown as HTMLInputElement;
 
-    fireEvent(hourlyRateInput, "changeText", "45.50");
+    fireEvent(hourlyRateInput as unknown as Parameters<typeof fireEvent>[0], "changeText", "45.50");
     // Value may be formatted, so just check it contains the number
     expect(hourlyRateInput.value).toMatch(/45/);
   });
@@ -1118,17 +1118,17 @@ describe("ProfileEmploymentLeft", () => {
     const { getByTestId, getByRole } = renderEmploymentForm();
 
     const locationCount = getByTestId("location-count");
-    expect(locationCount.textContent).toContain("Locations: 0");
+    expect((locationCount as unknown as HTMLElement).textContent).toContain("Locations: 0");
 
     // Add 3 locations
     const addLocationButton = getByRole("button", {
       name: /add location/i,
-    }) as HTMLButtonElement;
+    }) as unknown as HTMLButtonElement;
     press(addLocationButton);
     press(addLocationButton);
     press(addLocationButton);
 
-    expect(locationCount.textContent).toContain("Locations: 3");
+    expect((locationCount as unknown as HTMLElement).textContent).toContain("Locations: 3");
   });
 
   it("validates form submission with all required fields", async () => {
@@ -1142,7 +1142,7 @@ describe("ProfileEmploymentLeft", () => {
 
     const residentSwitch = getByRole("switch", {
       name: /us resident/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(residentSwitch);
 
     expect(mockMutate).toHaveBeenCalledWith(
@@ -1226,7 +1226,7 @@ describe("ProfileEmploymentLeft", () => {
 
     const residentSwitch = getByRole("switch", {
       name: /us resident/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(residentSwitch);
 
     expect(mockMutate).toHaveBeenCalledWith(
@@ -1246,7 +1246,7 @@ describe("ProfileEmploymentLeft", () => {
 
     const passportSwitch = getByRole("switch", {
       name: /us passport/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(passportSwitch);
 
     await waitFor(
@@ -1262,7 +1262,7 @@ describe("ProfileEmploymentLeft", () => {
 
     const updatedPassportSwitch = getByRole("switch", {
       name: /us passport/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     expect(isChecked(updatedPassportSwitch)).toBe(true);
   });
 
@@ -1283,13 +1283,13 @@ describe("ProfileEmploymentLeft", () => {
 
     const hourlyRateInput = getByPlaceholderText(
       /enter your hourly rate/i
-    ) as HTMLInputElement;
+    ) as unknown as HTMLInputElement;
 
-    fireEvent(hourlyRateInput, "changeText", "25.50");
+    fireEvent(hourlyRateInput as unknown as Parameters<typeof fireEvent>[0], "changeText", "25.50");
     // Value may be formatted, so just check it contains the number
     expect(hourlyRateInput.value).toMatch(/25/);
 
-    fireEvent(hourlyRateInput, "changeText", "");
+    fireEvent(hourlyRateInput as unknown as Parameters<typeof fireEvent>[0], "changeText", "");
     expect(hourlyRateInput.value).toBe("");
   });
 
@@ -1298,9 +1298,9 @@ describe("ProfileEmploymentLeft", () => {
 
     const hourlyRateInput = getByPlaceholderText(
       /enter your hourly rate/i
-    ) as HTMLInputElement;
+    ) as unknown as HTMLInputElement;
 
-    fireEvent(hourlyRateInput, "changeText", "45.75");
+    fireEvent(hourlyRateInput as unknown as Parameters<typeof fireEvent>[0], "changeText", "45.75");
     // Value may be formatted, so just check it contains the number
     expect(hourlyRateInput.value).toMatch(/45/);
   });
@@ -1309,16 +1309,16 @@ describe("ProfileEmploymentLeft", () => {
     const { getByTestId, getByRole } = renderEmploymentForm();
 
     const locationCount = getByTestId("location-count");
-    expect(locationCount.textContent).toContain("Locations: 0");
+    expect((locationCount as unknown as HTMLElement).textContent).toContain("Locations: 0");
 
     const addLocationButton = getByRole("button", {
       name: /add location/i,
-    }) as HTMLButtonElement;
+    }) as unknown as HTMLButtonElement;
     press(addLocationButton);
-    expect(locationCount.textContent).toContain("Locations: 1");
+    expect((locationCount as unknown as HTMLElement).textContent).toContain("Locations: 1");
 
     press(addLocationButton);
-    expect(locationCount.textContent).toContain("Locations: 2");
+    expect((locationCount as unknown as HTMLElement).textContent).toContain("Locations: 2");
   });
 
   it("handles travel distance slider value changes", () => {
@@ -1326,7 +1326,7 @@ describe("ProfileEmploymentLeft", () => {
 
     const slider = getByRole("slider", {
       name: /travel slider/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     expect(slider).toBeInstanceOf(HTMLElement);
 
     getByText("25 miles");
@@ -1341,19 +1341,19 @@ describe("ProfileEmploymentLeft", () => {
 
     const residentSwitch = getByRole("switch", {
       name: /us resident/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     const passportSwitch = getByRole("switch", {
       name: /us passport/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     const driversSwitch = getByRole("switch", {
       name: /driver/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     const militarySwitch = getByRole("switch", {
       name: /military/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     const availabilitySwitch = getByRole("switch", {
       name: /available for work/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
 
     press(residentSwitch);
     press(passportSwitch);
@@ -1381,20 +1381,20 @@ describe("ProfileEmploymentLeft", () => {
 
     const driversSwitch = getByRole("switch", {
       name: /driver/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(driversSwitch);
     const classACheckbox = getByRole("checkbox", {
       name: /class a/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(classACheckbox);
 
     const militarySwitch = getByRole("switch", {
       name: /military/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(militarySwitch);
     const veteranCheckbox = getByRole("checkbox", {
       name: /veteran/i,
-    }) as HTMLElement;
+    }) as unknown as HTMLElement;
     press(veteranCheckbox);
 
     expect(mockMutate).toHaveBeenCalledWith(
