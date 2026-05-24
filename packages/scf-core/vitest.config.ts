@@ -102,7 +102,8 @@ merged.test.exclude = [
   // rendered output (AssessmentWizard markup drifted). Needs assertion
   // rewrites per-test against current DOM.
   'packages/scf-core/features/occupation-assessment/OccupationAssessmentWizard.test.tsx',
-  'packages/scf-core/features/riasec-assessment/RIASECAssessmentWidget.test.tsx',
+  // Rewritten: mock onet-sdk-hooks.useRIASECStatus.
+  // 'packages/scf-core/features/riasec-assessment/RIASECAssessmentWidget.test.tsx',
   // Re-enabled: simple Slider component test. 2 tests skipped (slider mock
   // shape / duplicate text in DOM).
   // 'packages/scf-core/features/career-assessment/components/RiasecQuickAssessment.test.tsx',
@@ -114,6 +115,9 @@ merged.test.exclude = [
   // 'packages/scf-core/features/ipip-assessment/__tests__/IPIPAssessmentWizard.test.tsx',
   // Rewritten: mock profile-import-sdk-hooks + react-query useQueryClient.
   // 'packages/scf-core/features/profile-import/components/__tests__/ImportReviewScreen.test.tsx',
+  // TODO: SDK mock swap done; 11 of 16 tests fail with deeper render-shape
+  // drift (data-testid="dashboard-widget" not emitted by mocked
+  // DashboardWidget; "Portfolio" copy missing). Needs per-assertion review.
   'packages/scf-core/features/profile/widgets/__tests__/PortfolioGallery.test.tsx',
   // Rewritten: add resume-sdk-hooks.useHasUploadedResume mock.
   // 'packages/scf-core/features/resume/components/__tests__/ResumeImportWidget.test.tsx',

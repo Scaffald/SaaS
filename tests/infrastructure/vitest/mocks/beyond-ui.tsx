@@ -234,6 +234,8 @@ export const Fieldset = createEl('fieldset')
 export const ModalHeader = createEl('div')
 export const ModalActions = createEl('div')
 export const AssessmentHeader = createEl('div')
+export const DashboardWidgetHeader = createEl('div')
+export const DashboardWidgetFooter = createEl('div')
 
 // Navigation / structural primitives (commonly imported by tests)
 export const Breadcrumb = createEl('nav')
