@@ -73,7 +73,10 @@ merged.test.exclude = [
   // Tests with complex component rendering differences needing individual updates
   // Re-enabled: needed violet + fontSize/lineHeight/fontWeight tokens. 1 test skipped (multiple Stack ancestors).
   // 'packages/scf-core/features/discover/components/__tests__/ResultsRail.test.tsx',
-  'packages/scf-core/features/discover/components/__tests__/UserProfilePanel.test.tsx',
+  // Re-enabled: mock user-profiles-sdk-hooks.useUserProfilePreview;
+  // signature update from { userId } → positional userId. 18/25 pass,
+  // 7 skipped with TODOs (Avatar shape, Button onPress wiring, X close).
+  // 'packages/scf-core/features/discover/components/__tests__/UserProfilePanel.test.tsx',
   // Rewritten: modal data-testid changed from "worker-preview-modal" to
   // "responsive-modal" (matches the beyond-ui ResponsiveModal stub).
   // 'packages/scf-core/features/discover/components/__tests__/WorkerPreviewModal.enhanced.test.tsx',
@@ -98,10 +101,13 @@ merged.test.exclude = [
   // Re-enabled: mock onet-sdk-hooks.useOccupationStatus + getAllByText for
   // the duplicate "Loading..." rendered by both the Spinner stub and the
   // component's label span.
-  // TODO: SDK + assessments + react-query mocks done; tests now reach the
-  // render path but assert on data-testids that no longer appear in the
-  // rendered output (AssessmentWizard markup drifted). Needs assertion
-  // rewrites per-test against current DOM.
+  // TODO: SDK + react-query mocks ready, but vi.mock for the
+  // AssessmentWizard barrel (and the deep path) doesn't override the
+  // real component — it renders its full column layout under jsdom,
+  // burying the children data-testids the tests query for. Either
+  // rewrite assertions to walk the real DOM (see IPIPAssessmentWizard
+  // test for the pattern) or set up a global __mocks__ for the
+  // component path.
   'packages/scf-core/features/occupation-assessment/OccupationAssessmentWizard.test.tsx',
   // Rewritten: mock onet-sdk-hooks.useRIASECStatus.
   // 'packages/scf-core/features/riasec-assessment/RIASECAssessmentWidget.test.tsx',
