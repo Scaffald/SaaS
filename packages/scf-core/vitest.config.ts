@@ -75,7 +75,9 @@ merged.test.exclude = [
   // Re-enabled: needed violet + fontSize/lineHeight/fontWeight tokens. 1 test skipped (multiple Stack ancestors).
   // 'packages/scf-core/features/discover/components/__tests__/ResultsRail.test.tsx',
   'packages/scf-core/features/discover/components/__tests__/UserProfilePanel.test.tsx',
-  'packages/scf-core/features/discover/components/__tests__/WorkerPreviewModal.enhanced.test.tsx',
+  // Rewritten: modal data-testid changed from "worker-preview-modal" to
+  // "responsive-modal" (matches the beyond-ui ResponsiveModal stub).
+  // 'packages/scf-core/features/discover/components/__tests__/WorkerPreviewModal.enhanced.test.tsx',
   // Rewritten: removed dead @scf/core/utils/api mock (SDK mocks already
   // present via @scaffald/sdk/react).
   // 'packages/scf-core/features/office/teams/components/__tests__/TeamInviteModal.test.tsx',
