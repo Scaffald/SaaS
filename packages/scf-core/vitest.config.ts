@@ -47,7 +47,8 @@ merged.test.exclude = [
   // payload field rename (reason/details), toast shape (title/variant), and
   // queryKey shape (['backgroundChecks', 'list'|'detail'|'disputes', ...]).
   // 'packages/scf-core/features/background-check/hooks/__tests__/useDispute.test.tsx',
-  'packages/scf-core/features/inquiries/components/__tests__/InquiryCommentThread.test.tsx',
+  // Rewritten: removed dead @scf/core/utils/api mock (SDK mock present).
+  // 'packages/scf-core/features/inquiries/components/__tests__/InquiryCommentThread.test.tsx',
   // Rewritten to mock SDK hook (profile-import-sdk-hooks.useImportData) and
   // updated assertions for current positional-id normalization behavior.
   // 'packages/scf-core/features/profile-import/hooks/__tests__/useImportData.test.ts',
@@ -57,8 +58,11 @@ merged.test.exclude = [
   'packages/scf-core/features/discover/components/__tests__/ResultsRail.test.tsx',
   'packages/scf-core/features/discover/components/__tests__/UserProfilePanel.test.tsx',
   'packages/scf-core/features/discover/components/__tests__/WorkerPreviewModal.enhanced.test.tsx',
-  'packages/scf-core/features/office/teams/components/__tests__/TeamInviteModal.test.tsx',
-  'packages/scf-core/features/office/teams/components/__tests__/TeamForm.test.tsx',
+  // Rewritten: removed dead @scf/core/utils/api mock (SDK mocks already
+  // present via @scaffald/sdk/react).
+  // 'packages/scf-core/features/office/teams/components/__tests__/TeamInviteModal.test.tsx',
+  // Rewritten: mock '@scaffald/sdk/react' (useCreateTeam, useUpdateTeam).
+  // 'packages/scf-core/features/office/teams/components/__tests__/TeamForm.test.tsx',
   // Rewritten: mock teams-sdk-hooks (useTeamMembers, useTeamWorkload, mutations).
   // 'packages/scf-core/features/office/teams/components/__tests__/TeamMembersList.test.tsx',
   'packages/scf-core/features/profile-wizard/components/steps/__tests__/ExperienceStep.test.tsx',

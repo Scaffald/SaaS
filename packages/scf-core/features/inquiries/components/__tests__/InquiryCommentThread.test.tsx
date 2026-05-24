@@ -4,18 +4,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const addCommentMock = vi.fn()
 const markCommentReadMock = vi.fn()
 
-vi.mock('@scf/core/utils/api', () => ({
-  api: {
-    inquiries: {
-      addComment: {
-        useMutation: () => ({ mutateAsync: addCommentMock, isLoading: false }),
-      },
-      markCommentRead: {
-        useMutation: () => ({ mutateAsync: markCommentReadMock, isLoading: false }),
-      },
-    },
-  },
-}))
+// Old @scf/core/utils/api mock removed — component uses
+// '@scf/core/utils/inquiries-sdk-hooks' which is mocked below.
 
 vi.mock('@scf/core/utils/useUser', () => ({
   useUser: () => ({ user: { id: 'user-1' } }),
@@ -127,7 +117,8 @@ describe('InquiryCommentThread', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Mark as read' }))
 
     await waitFor(() => {
-      expect(markCommentReadMock).toHaveBeenCalledWith({ commentId: 'comment-3' })
+      // SDK mutation now takes a bare comment id, not { commentId } object.
+      expect(markCommentReadMock).toHaveBeenCalledWith('comment-3')
     })
   })
 })
