@@ -72,7 +72,8 @@ merged.test.exclude = [
   // 'packages/scf-core/features/profile-completion/hooks/__tests__/useCompletionStatus.test.ts',
   'packages/scf-core/features/riasec-assessment/RIASECAssessmentWizard.test.tsx',
   // Tests with complex component rendering differences needing individual updates
-  'packages/scf-core/features/discover/components/__tests__/ResultsRail.test.tsx',
+  // Re-enabled: needed violet + fontSize/lineHeight/fontWeight tokens. 1 test skipped (multiple Stack ancestors).
+  // 'packages/scf-core/features/discover/components/__tests__/ResultsRail.test.tsx',
   'packages/scf-core/features/discover/components/__tests__/UserProfilePanel.test.tsx',
   'packages/scf-core/features/discover/components/__tests__/WorkerPreviewModal.enhanced.test.tsx',
   // Rewritten: removed dead @scf/core/utils/api mock (SDK mocks already
@@ -82,7 +83,8 @@ merged.test.exclude = [
   // 'packages/scf-core/features/office/teams/components/__tests__/TeamForm.test.tsx',
   // Rewritten: mock teams-sdk-hooks (useTeamMembers, useTeamWorkload, mutations).
   // 'packages/scf-core/features/office/teams/components/__tests__/TeamMembersList.test.tsx',
-  'packages/scf-core/features/profile-wizard/components/steps/__tests__/ExperienceStep.test.tsx',
+  // Re-enabled: no changes needed; base infra was sufficient. 11/11.
+  // 'packages/scf-core/features/profile-wizard/components/steps/__tests__/ExperienceStep.test.tsx',
   // Rewritten: merged duplicate @scaffald/ui mock so ResponsiveSelect stub
   // wins. Second vi.mock for same module was overriding the first.
   // 'packages/scf-core/features/office/applications/components/__tests__/ApplicationsFilters.test.tsx',
