@@ -69,7 +69,11 @@ merged.test.exclude = [
   // 'packages/scf-core/features/profile-import/hooks/__tests__/useImportData.test.ts',
   // Rewritten: mock profile-completion-sdk-hooks; isPending replaces isLoading.
   // 'packages/scf-core/features/profile-completion/hooks/__tests__/useCompletionStatus.test.ts',
-  'packages/scf-core/features/riasec-assessment/RIASECAssessmentWizard.test.tsx',
+  // Re-enabled: tRPC→SDK mock swap (onet-sdk-hooks.useRIASECStatus +
+  // useSaveCareerAssessmentMutation) + react-query useQueryClient +
+  // toError null-passthrough. 3/8 pass, 5 skipped with TODOs for copy
+  // drift, Button onPress wiring, scoped useToast mock.
+  // 'packages/scf-core/features/riasec-assessment/RIASECAssessmentWizard.test.tsx',
   // Tests with complex component rendering differences needing individual updates
   // Re-enabled: needed violet + fontSize/lineHeight/fontWeight tokens. 1 test skipped (multiple Stack ancestors).
   // 'packages/scf-core/features/discover/components/__tests__/ResultsRail.test.tsx',
@@ -101,14 +105,11 @@ merged.test.exclude = [
   // Re-enabled: mock onet-sdk-hooks.useOccupationStatus + getAllByText for
   // the duplicate "Loading..." rendered by both the Spinner stub and the
   // component's label span.
-  // TODO: SDK + react-query mocks ready, but vi.mock for the
-  // AssessmentWizard barrel (and the deep path) doesn't override the
-  // real component — it renders its full column layout under jsdom,
-  // burying the children data-testids the tests query for. Either
-  // rewrite assertions to walk the real DOM (see IPIPAssessmentWizard
-  // test for the pattern) or set up a global __mocks__ for the
-  // component path.
-  'packages/scf-core/features/occupation-assessment/OccupationAssessmentWizard.test.tsx',
+  // Re-enabled: toError mock was forcing AssessmentWizard into the
+  // error branch for null inputs (new Error('null')). Fixed to mirror
+  // the real toError null-passthrough. 2/6 pass, 4 skipped with TODOs
+  // for copy drift, missing icon stub, and Button onPress wiring.
+  // 'packages/scf-core/features/occupation-assessment/OccupationAssessmentWizard.test.tsx',
   // Rewritten: mock onet-sdk-hooks.useRIASECStatus.
   // 'packages/scf-core/features/riasec-assessment/RIASECAssessmentWidget.test.tsx',
   // Re-enabled: simple Slider component test. 2 tests skipped (slider mock
