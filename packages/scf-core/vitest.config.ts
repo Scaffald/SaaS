@@ -59,9 +59,12 @@ merged.test.exclude = [
   'packages/scf-core/features/discover/components/__tests__/WorkerPreviewModal.enhanced.test.tsx',
   'packages/scf-core/features/office/teams/components/__tests__/TeamInviteModal.test.tsx',
   'packages/scf-core/features/office/teams/components/__tests__/TeamForm.test.tsx',
-  'packages/scf-core/features/office/teams/components/__tests__/TeamMembersList.test.tsx',
+  // Rewritten: mock teams-sdk-hooks (useTeamMembers, useTeamWorkload, mutations).
+  // 'packages/scf-core/features/office/teams/components/__tests__/TeamMembersList.test.tsx',
   'packages/scf-core/features/profile-wizard/components/steps/__tests__/ExperienceStep.test.tsx',
-  'packages/scf-core/features/office/applications/components/__tests__/ApplicationsFilters.test.tsx',
+  // Rewritten: merged duplicate @scaffald/ui mock so ResponsiveSelect stub
+  // wins. Second vi.mock for same module was overriding the first.
+  // 'packages/scf-core/features/office/applications/components/__tests__/ApplicationsFilters.test.tsx',
   'packages/scf-core/features/profile/widgets/__tests__/PortfolioManager.test.tsx',
   // Tests that mock old tRPC API but component uses SDK hooks directly
   'packages/scf-core/features/occupation-assessment/OccupationAssessmentWidget.test.tsx',
@@ -86,9 +89,12 @@ merged.test.exclude = [
   // Rewritten: mock applications-sdk-hooks + react-query.useQueryClient;
   // updated assertions for nested mutation payload { id, params: { status } }.
   // 'packages/scf-core/features/office/applications/hooks/__tests__/useApplicationStatusChange.test.ts',
-  'packages/scf-core/features/office/teams/components/__tests__/TeamActivityFeed.test.tsx',
-  'packages/scf-core/features/office/teams/components/__tests__/TeamAnalyticsSummary.test.tsx',
-  'packages/scf-core/features/office/teams/components/__tests__/TeamCommentThread.test.tsx',
+  // Rewritten: mock teams-sdk-hooks.{useTeamActivityFeed, usePostTeamCommentMutation}.
+  // 'packages/scf-core/features/office/teams/components/__tests__/TeamActivityFeed.test.tsx',
+  // Rewritten: mock teams-sdk-hooks.useTeamAnalyticsOverview (was tRPC api).
+  // 'packages/scf-core/features/office/teams/components/__tests__/TeamAnalyticsSummary.test.tsx',
+  // Rewritten: mock teams-sdk-hooks + merged duplicate @scaffald/ui mock.
+  // 'packages/scf-core/features/office/teams/components/__tests__/TeamCommentThread.test.tsx',
 ]
 
 export default merged

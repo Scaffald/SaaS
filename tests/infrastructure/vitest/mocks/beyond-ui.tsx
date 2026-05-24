@@ -228,6 +228,8 @@ export const Portal = ({
 export const EmptyState = createEl('div')
 export const Fieldset = createEl('fieldset')
 export const ModalHeader = createEl('div')
+export const ModalActions = createEl('div')
+export const AssessmentHeader = createEl('div')
 export const ResponsiveModal = ({
   children,
   open,

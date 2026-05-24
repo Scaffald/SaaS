@@ -83,14 +83,9 @@ vi.mock('@scaffald/ui', async () => {
   }
 })
 
-vi.mock('@scf/core/utils/api', () => ({
-  api: {
-    teams: {
-      analytics: {
-        overview: { useQuery: mockUseQuery },
-      },
-    },
-  },
+// Component now imports useTeamAnalyticsOverview from teams-sdk-hooks.
+vi.mock('@scf/core/utils/teams-sdk-hooks', () => ({
+  useTeamAnalyticsOverview: (...args: unknown[]) => mockUseQuery(...args),
 }))
 
 vi.mock('lucide-react-native', async (importOriginal) => ({

@@ -15,22 +15,21 @@ const mockUseUtils = vi.fn(() => ({
   },
 }))
 
-vi.mock('@scf/core/utils/api', () => ({
-  api: {
-    teams: {
-      analytics: {
-        comments: { useQuery: mockUseQuery },
-        postComment: { useMutation: mockUseMutation },
-      },
-    },
-    useUtils: mockUseUtils,
-  },
+// Component now uses teams-sdk-hooks + react-query useQueryClient.
+vi.mock('@scf/core/utils/teams-sdk-hooks', () => ({
+  useTeamComments: (...args: unknown[]) => mockUseQuery(...args),
+  usePostTeamCommentMutation: (...args: unknown[]) => mockUseMutation(...args),
 }))
 
-vi.mock('@scaffald/ui', () => ({
-  useToast: () => ({ show: mockShow }),
-}))
+vi.mock('@tanstack/react-query', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@tanstack/react-query')>()
+  return {
+    ...actual,
+    useQueryClient: () => mockUseUtils(),
+  }
+})
 
+// Single merged @scaffald/ui mock — duplicate vi.mock calls would clobber.
 vi.mock('@scaffald/ui', async () => {
   const actual = await vi.importActual('@scaffald/ui')
 
@@ -70,6 +69,7 @@ vi.mock('@scaffald/ui', async () => {
     Card,
     Spinner,
     useMedia: () => ({ sm: false }),
+    useToast: () => ({ show: mockShow }),
   }
 })
 
