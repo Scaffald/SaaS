@@ -112,7 +112,8 @@ merged.test.exclude = [
   'packages/scf-core/features/office/components/__tests__/OrganizationForm.test.tsx',
   // Rewritten: mock personality-assessment-sdk-hooks + react-query useQueryClient.
   // 'packages/scf-core/features/ipip-assessment/__tests__/IPIPAssessmentWizard.test.tsx',
-  'packages/scf-core/features/profile-import/components/__tests__/ImportReviewScreen.test.tsx',
+  // Rewritten: mock profile-import-sdk-hooks + react-query useQueryClient.
+  // 'packages/scf-core/features/profile-import/components/__tests__/ImportReviewScreen.test.tsx',
   'packages/scf-core/features/profile/widgets/__tests__/PortfolioGallery.test.tsx',
   // Rewritten: add resume-sdk-hooks.useHasUploadedResume mock.
   // 'packages/scf-core/features/resume/components/__tests__/ResumeImportWidget.test.tsx',
