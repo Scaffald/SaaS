@@ -6,54 +6,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const SelectChangeContext = createContext<(value: string) => void>(() => {})
 
-vi.mock('@scaffald/ui', () => ({
-  Row: ({ children }: { children: ReactNode }) => <div data-testid="xstack">{children}</div>,
-  Stack: ({ children }: { children: ReactNode }) => <div data-testid="ystack">{children}</div>,
-  Text: ({ children }: { children: ReactNode }) => <span>{children}</span>,
-  Button: ({
-    children,
-    onPress,
-    chromeless: _chromeless,
-    ...rest
-  }: {
-    children: ReactNode
-    onPress?: () => void
-    chromeless?: boolean
-  }) => (
-    <button type="button" onClick={onPress} {...rest}>
-      {children}
-    </button>
-  ),
-  ResponsiveSelect: ({
-    value,
-    onValueChange,
-    options,
-    placeholder,
-    'data-testid': dataTestId,
-    testID,
-  }: {
-    value?: string | null
-    onValueChange: (value: string) => void
-    options: Array<{ value: string; label: string }>
-    placeholder?: string
-    'data-testid'?: string
-    testID?: string
-  }) => (
-    <select
-      data-testid={dataTestId ?? testID ?? 'responsive-select'}
-      value={value ?? ''}
-      onChange={(event) => onValueChange(event.target.value)}
-    >
-      {placeholder && <option value="">{placeholder}</option>}
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
-  ),
-}))
-
+// Single merged @scaffald/ui mock. Previously this file declared two
+// vi.mock('@scaffald/ui', ...) calls; only the last won, dropping the
+// ResponsiveSelect stub and surfacing the real component (which doesn't
+// expose the data-testid the test queries).
 vi.mock('@scaffald/ui', async () => {
   const actual = await vi.importActual<typeof import('@scaffald/ui')>('@scaffald/ui')
 
@@ -106,6 +62,51 @@ vi.mock('@scaffald/ui', async () => {
 
   return {
     ...actual,
+    Row: ({ children }: { children: ReactNode }) => <div data-testid="xstack">{children}</div>,
+    Stack: ({ children }: { children: ReactNode }) => <div data-testid="ystack">{children}</div>,
+    Text: ({ children }: { children: ReactNode }) => <span>{children}</span>,
+    Button: ({
+      children,
+      onPress,
+      chromeless: _chromeless,
+      ...rest
+    }: {
+      children: ReactNode
+      onPress?: () => void
+      chromeless?: boolean
+    }) => (
+      <button type="button" onClick={onPress} {...rest}>
+        {children}
+      </button>
+    ),
+    ResponsiveSelect: ({
+      value,
+      onValueChange,
+      options,
+      placeholder,
+      'data-testid': dataTestId,
+      testID,
+    }: {
+      value?: string | null
+      onValueChange: (value: string) => void
+      options: Array<{ value: string; label: string }>
+      placeholder?: string
+      'data-testid'?: string
+      testID?: string
+    }) => (
+      <select
+        data-testid={dataTestId ?? testID ?? 'responsive-select'}
+        value={value ?? ''}
+        onChange={(event) => onValueChange(event.target.value)}
+      >
+        {placeholder && <option value="">{placeholder}</option>}
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    ),
     Select: SelectRoot,
   }
 })

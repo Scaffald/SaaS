@@ -61,17 +61,22 @@ function findRouteKeyInNested(
   }
 
   for (const [key, value] of Object.entries(routeNode)) {
-    if (value && typeof value === 'object' && 'path' in value) {
-      const routeConfig = value as RouteConfig
-      if (routeConfig.path === targetPath) {
-        // Return the full path as key (e.g., "DASHBOARD.PROFILE.GENERAL")
-        return ((currentPath.length > 0 ? `${currentPath.join('.')}.` : '') + key) as RouteKey
-      }
-    } else if (typeof value === 'object' && value !== null) {
-      const result = findRouteKeyInNested(value, targetPath, [...currentPath, key])
-      if (result) {
-        return result
-      }
+    if (!value || typeof value !== 'object') continue
+
+    const isNavigable = 'path' in (value as Record<string, unknown>) &&
+      typeof (value as { path?: string }).path === 'string'
+
+    if (isNavigable && (value as RouteConfig).path === targetPath) {
+      // Return the full path as key (e.g., "DASHBOARD.PROFILE.GENERAL")
+      return ((currentPath.length > 0 ? `${currentPath.join('.')}.` : '') + key) as RouteKey
+    }
+
+    // Always recurse — descendants of a navigable parent are reachable
+    // through this iteration regardless of whether the parent matches.
+    const childPath = isNavigable ? [...currentPath, key] : currentPath
+    const result = findRouteKeyInNested(value, targetPath, childPath)
+    if (result) {
+      return result
     }
   }
 
@@ -121,7 +126,14 @@ function buildRouteNode(
   }
 }
 
-// Find hierarchy info by traversing nested structure
+// Find hierarchy info by traversing nested structure.
+//
+// A node is "navigable" when it has a `.path` string of its own. The depth
+// of a navigable node is its position in the chain of navigable ancestors.
+// Routes are nested inside containers that may themselves be navigable
+// (e.g. ROUTES.OFFICE.path = '/office' AND ROUTES.OFFICE.CMS.path =
+// '/office/cms'), so we always recurse into every object value — matching
+// or not — so we can find descendants that live inside a navigable parent.
 function findHierarchyInfoInNested(
   routeNode: unknown,
   targetPath: string,
@@ -133,30 +145,34 @@ function findHierarchyInfoInNested(
   }
 
   for (const [key, value] of Object.entries(routeNode)) {
-    if (value && typeof value === 'object' && 'path' in value) {
+    if (!value || typeof value !== 'object') continue
+
+    const nodePath = (value as { path?: string }).path
+    const isNavigable = typeof nodePath === 'string'
+
+    if (isNavigable && nodePath === targetPath) {
       const routeConfig = value as RouteConfig
-      if (routeConfig.path === targetPath) {
-        const routeKey = ((ancestors.length > 0 ? `${ancestors.join('.')}.` : '') + key) as RouteKey
-        const node = buildRouteNode(value, key, ancestors)
-        if (!node) return undefined
+      const routeKey = ((ancestors.length > 0 ? `${ancestors.join('.')}.` : '') + key) as RouteKey
+      const node = buildRouteNode(value, key, ancestors)
+      if (!node) return undefined
 
-        return {
-          key: routeKey,
-          path: routeConfig.path,
-          depth,
-          ancestors,
-          node,
-        }
+      return {
+        key: routeKey,
+        path: routeConfig.path,
+        depth,
+        ancestors,
+        node,
       }
-    } else if (typeof value === 'object' && value !== null) {
-      // Check if this node has a path (it's a navigable parent)
-      const parentPath = (value as { path?: string }).path
-      const newAncestors = parentPath ? [...ancestors, key] : ancestors
+    }
 
-      const result = findHierarchyInfoInNested(value, targetPath, newAncestors, depth + 1)
-      if (result) {
-        return result
-      }
+    // Always recurse — descendants of a navigable parent (e.g. /office/cms
+    // inside /office) live one level deeper. A non-navigable grouping
+    // object keeps the same ancestor chain and depth.
+    const childAncestors = isNavigable ? [...ancestors, key] : ancestors
+    const childDepth = isNavigable ? depth + 1 : depth
+    const result = findHierarchyInfoInNested(value, targetPath, childAncestors, childDepth)
+    if (result) {
+      return result
     }
   }
 
@@ -188,8 +204,29 @@ const _getAncestorKeyAtDepth = (
 const _isDescendantOf = (_info: TraversalResult, _ancestorKey: RouteKey): boolean => false
 
 export const getRouteDepth = (path: string): number => {
-  const hierarchyEntry = getHierarchyInfoForPath(path)
-  return hierarchyEntry?.depth ?? 0
+  // Try exact match first.
+  const exact = getHierarchyInfoForPath(path)
+  if (exact) return exact.depth
+
+  // Fallback: resolve a substituted dynamic path (e.g. /office/cms/jobs/123/edit)
+  // to its templated source (/office/cms/jobs/:id/edit). matchesRoute() is
+  // permissive (prefix match for non-exact routes), so we use a stricter
+  // regex of our own and pick the most-specific match (longest pattern).
+  const normalized = path.endsWith('/') && path !== '/' ? path.slice(0, -1) : path
+  const strictMatch = (route: RouteConfig) => {
+    const pattern = route.path.replace(/:[^/]+/g, '[^/]+')
+    return new RegExp(`^${pattern}$`).test(normalized)
+  }
+  const candidates = getAllRoutes().filter(strictMatch)
+  if (candidates.length > 0) {
+    // Prefer the longest pattern — that's the most-specific template
+    // for a path like /office/cms/jobs/123/edit, which matches
+    // /office/cms/jobs/:id/edit, not /office/cms/jobs/:id.
+    candidates.sort((a, b) => b.path.length - a.path.length)
+    const info = getHierarchyInfoForPath(candidates[0].path)
+    if (info) return info.depth
+  }
+  return 0
 }
 
 export const getChildRoutes = (parentPath: string, _routeMap: RouteMap = ROUTES): RouteConfig[] => {

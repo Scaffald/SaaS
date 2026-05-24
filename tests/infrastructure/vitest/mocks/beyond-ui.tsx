@@ -96,8 +96,12 @@ export const Checkbox = ({
   onChange?: (val: boolean) => void
   [key: string]: unknown
 }) =>
+  // Expose role="checkbox" so tests can target it via the ARIA role —
+  // the real beyond-ui Checkbox is built on top of an accessible control
+  // that surfaces this role.
   createElement('input', {
     type: 'checkbox',
+    role: 'checkbox',
     checked: checked ?? false,
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange?.(e.target.checked),
     ...rest,
@@ -228,6 +232,47 @@ export const Portal = ({
 export const EmptyState = createEl('div')
 export const Fieldset = createEl('fieldset')
 export const ModalHeader = createEl('div')
+export const ModalActions = createEl('div')
+export const AssessmentHeader = createEl('div')
+export const DashboardWidgetHeader = createEl('div')
+export const DashboardWidgetFooter = createEl('div')
+
+// Navigation / structural primitives (commonly imported by tests)
+export const Breadcrumb = createEl('nav')
+export const BreadcrumbList = createEl('ol')
+export const BreadcrumbItem = createEl('li')
+export const BreadcrumbLink = createEl('a')
+export const BreadcrumbPage = createEl('span')
+export const BreadcrumbSeparator = createEl('span')
+export const BreadcrumbEllipsis = createEl('span')
+export const TabList = createEl('div')
+export const Tab = createEl('div')
+export const TabPanel = createEl('div')
+export const TooltipTrigger = createEl('span')
+export const TooltipContent = createEl('span')
+export const Popover = createEl('div')
+export const PopoverTrigger = createEl('div')
+export const PopoverContent = createEl('div')
+export const Dialog = createEl('div')
+export const DialogTrigger = createEl('div')
+export const DialogContent = createEl('div')
+export const DialogTitle = createEl('h2')
+export const DialogDescription = createEl('p')
+export const DialogClose = createEl('button')
+export const Divider = createEl('hr')
+export const Grid = createEl('div')
+export const Flex = createEl('div')
+export const Container = createEl('div')
+export const Section = createEl('section')
+export const Heading = createEl('h2')
+export const Subheading = createEl('h3')
+export const Caption = createEl('p')
+export const Pill = createEl('span')
+export const Tag = createEl('span')
+export const ProgressIndicator = createEl('div')
+export const Skeleton = createEl('div')
+export const Toast = createEl('div')
+export const ToastContainer = createEl('div')
 export const ResponsiveModal = ({
   children,
   open,
@@ -318,6 +363,14 @@ export function useTheme() {
 
 export function useToast() {
   return { show: () => {}, dismiss: () => {}, success: () => {}, error: () => {} }
+}
+
+export function useResponsive() {
+  return { isMobile: false, isTablet: false, isDesktop: true, breakpoint: 'lg' as const }
+}
+
+export function useMedia() {
+  return { sm: false, md: false, lg: true }
 }
 
 export function useWindowDimensions() {

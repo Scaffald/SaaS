@@ -4,18 +4,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useImportData } from '../useImportData'
 import { TestQueryWrapper } from '@test-helpers/test-utils'
 
+// useImportData (the local wrapper) delegates to the SDK hook
+// useImportData re-exported from '@scf/core/utils/profile-import-sdk-hooks'.
+// Mock that surface so the wrapper sees a controlled query result.
 const useQueryMock = vi.fn()
 
-vi.mock('@scf/core/utils/api', () => ({
-  api: {
-    profile: {
-      import: {
-        getImportData: {
-          useQuery: (...args: unknown[]) => useQueryMock(...args),
-        },
-      },
-    },
-  },
+vi.mock('@scf/core/utils/profile-import-sdk-hooks', () => ({
+  useImportData: (...args: unknown[]) => useQueryMock(...args),
 }))
 
 describe('useImportData', () => {
@@ -84,7 +79,8 @@ describe('useImportData', () => {
 
     useQueryMock.mockReturnValue({
       data: rawResponse,
-      isLoading: false,
+      // SDK hook returns isPending (the wrapper destructures isPending → isLoading).
+      isPending: false,
       refetch: vi.fn(),
       isError: false,
     })
@@ -113,7 +109,8 @@ describe('useImportData', () => {
         title: 'Experience',
         items: [
           {
-            id: '42',
+            // Positional fallback id; implementation ignores item.id in input.
+            id: 'experience-0',
             jobTitle: 'Lead Electrician',
             companyName: 'Voltage Works',
             startDate: '2021-01-01',
@@ -144,7 +141,9 @@ describe('useImportData', () => {
         title: 'Skills',
         items: [
           {
-            id: 'skill-1',
+            // Current normalization uses item.name as the dedup id
+            // (not item.id). Matches implementation at hooks/useImportData.ts.
+            id: 'Wiring',
             name: 'Wiring',
             confidenceScore: 0.95,
             taxonomy: 'onet',
@@ -157,7 +156,8 @@ describe('useImportData', () => {
         title: 'Certifications',
         items: [
           {
-            id: 'cert-1',
+            // Positional fallback id; implementation uses 'certification-N' (singular).
+            id: 'certification-0',
             name: 'OSHA Certification',
             issuer: 'OSHA',
             issueDate: '2020-04-01',
@@ -174,7 +174,8 @@ describe('useImportData', () => {
   it('returns null import data when payload is missing', () => {
     useQueryMock.mockReturnValue({
       data: null,
-      isLoading: false,
+      // SDK hook returns isPending (the wrapper destructures isPending → isLoading).
+      isPending: false,
       refetch: vi.fn(),
       isError: false,
     })

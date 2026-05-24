@@ -28,28 +28,28 @@ const mutateAsyncMock = vi.fn(async (payload: unknown) => {
   return { ok: true }
 })
 
-vi.mock('@scf/core/utils/api', () => ({
-  api: {
-    useUtils: () => ({
-      applications: {
-        getUserApplications: {
-          invalidate: invalidateMock,
-        },
-      },
-    }),
-    applications: {
-      update: {
-        useMutation: (callbacks?: typeof mutationCallbacks) => {
-          mutationCallbacks = callbacks ?? {}
-          return {
-            mutateAsync: mutateAsyncMock,
-            isPending: false,
-          }
-        },
-      },
-    },
+// The hook now uses '@scf/core/utils/applications-sdk-hooks'
+// (useUpdateApplicationMutation) + @tanstack/react-query's useQueryClient
+// for invalidation. Mock both surfaces.
+vi.mock('@scf/core/utils/applications-sdk-hooks', () => ({
+  useUpdateApplicationMutation: (callbacks?: typeof mutationCallbacks) => {
+    mutationCallbacks = callbacks ?? {}
+    return {
+      mutateAsync: mutateAsyncMock,
+      isPending: false,
+    }
   },
 }))
+
+vi.mock('@tanstack/react-query', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@tanstack/react-query')>()
+  return {
+    ...actual,
+    useQueryClient: () => ({
+      invalidateQueries: invalidateMock,
+    }),
+  }
+})
 
 const { useApplicationStatusChange } = await import('../useApplicationStatusChange')
 
@@ -77,9 +77,10 @@ describe('useApplicationStatusChange', () => {
       expect(mutateAsyncMock).toHaveBeenCalledTimes(1)
     })
 
+    // Implementation now nests the mutation params: { id, params: { status } }.
     expect(lastMutationPayload).toEqual({
-      application_id: 'app-1',
-      status: 'reviewing',
+      id: 'app-1',
+      params: { status: 'reviewing' },
     })
     expect(invalidateMock).toHaveBeenCalled()
     expect(result.current.pendingChange).toBeNull()
@@ -138,8 +139,8 @@ describe('useApplicationStatusChange', () => {
     })
 
     expect(mutateAsyncMock).toHaveBeenCalledWith({
-      application_id: 'app-3',
-      status: 'hired',
+      id: 'app-3',
+      params: { status: 'hired' },
     })
     expect(result.current.pendingChange).toBeNull()
   })

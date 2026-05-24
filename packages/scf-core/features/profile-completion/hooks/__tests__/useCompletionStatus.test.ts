@@ -4,9 +4,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useCompletionStatus } from '../useCompletionStatus'
 import { TestQueryWrapper } from '@test-helpers/test-utils'
 
+// SDK hook return shape uses `isPending` (the wrapper destructures
+// isPending → isLoading). Tests that toggle the "loading" state must
+// set isPending, not isLoading.
 const mockGetStatusQuery = {
   data: undefined as unknown,
-  isLoading: false,
+  isPending: false,
   isError: false,
   refetch: vi.fn().mockResolvedValue({}),
 }
@@ -17,14 +20,9 @@ const mockUser = {
   },
 }
 
-vi.mock('@scf/core/utils/api', () => ({
-  api: {
-    profile: {
-      getStatus: {
-        useQuery: vi.fn(() => mockGetStatusQuery),
-      },
-    },
-  },
+// Hook now delegates to '@scf/core/utils/profile-completion-sdk-hooks'.
+vi.mock('@scf/core/utils/profile-completion-sdk-hooks', () => ({
+  useCompletionStatus: vi.fn(() => mockGetStatusQuery),
 }))
 
 vi.mock('@scf/core/utils/useUser', () => ({
@@ -43,13 +41,13 @@ vi.mock('../constants/sectionMetadata', () => ({
 describe('useCompletionStatus', () => {
   beforeEach(() => {
     mockGetStatusQuery.data = undefined
-    mockGetStatusQuery.isLoading = false
+    mockGetStatusQuery.isPending = false
     mockGetStatusQuery.isError = false
     mockGetStatusQuery.refetch.mockClear()
   })
 
   it('returns null status when data is loading', () => {
-    mockGetStatusQuery.isLoading = true
+    mockGetStatusQuery.isPending = true
 
     const { result } = renderHook(() => useCompletionStatus(), { wrapper: TestQueryWrapper })
 
@@ -245,7 +243,7 @@ describe('useCompletionStatus', () => {
   })
 
   it('handles loading state', () => {
-    mockGetStatusQuery.isLoading = true
+    mockGetStatusQuery.isPending = true
 
     const { result } = renderHook(() => useCompletionStatus(), { wrapper: TestQueryWrapper })
 

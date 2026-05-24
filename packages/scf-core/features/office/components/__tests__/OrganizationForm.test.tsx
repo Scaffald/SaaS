@@ -24,26 +24,29 @@ const updateLocationVisibilityMock = vi.hoisted(() => ({
 const toastMock = vi.hoisted(() => ({ show: vi.fn() }))
 const routerMock = vi.hoisted(() => ({ push: vi.fn() }))
 
-vi.mock('@scf/core/utils/api', () => ({
-  api: {
-    office: {
-      createOrganization: { useMutation: createOrganizationMock.useMutation },
-      updateOrganization: { useMutation: updateOrganizationMock.useMutation },
-    },
-    organizations: {
-      getOrganization: { useQuery: getOrganizationQueryMock.useQuery },
-      getProjectsWithOverrides: { useQuery: getProjectsWithOverridesQueryMock.useQuery },
-      updateLocationVisibility: { useMutation: updateLocationVisibilityMock.useMutation },
-    },
-    useUtils: () => ({
-      organizations: {
-        getOrganization: {
-          invalidate: vi.fn(),
-        },
-      },
-    }),
-  },
+// Component now uses office-organizations-sdk-hooks + organizations-sdk-hooks.
+vi.mock('@scf/core/utils/office-organizations-sdk-hooks', () => ({
+  useCreateOfficeOrganizationMutation: createOrganizationMock.useMutation,
+  useUpdateOfficeOrganizationMutation: updateOrganizationMock.useMutation,
 }))
+
+vi.mock('@scf/core/utils/organizations-sdk-hooks', () => ({
+  useOrganization: getOrganizationQueryMock.useQuery,
+  useOrganizationProjectsWithOverrides: getProjectsWithOverridesQueryMock.useQuery,
+  useUpdateLocationVisibilityMutation: updateLocationVisibilityMock.useMutation,
+}))
+
+vi.mock('@scf/core/utils/jobs-sdk-context', () => ({
+  useScaffaldJobsClient: () => ({}),
+}))
+
+vi.mock('@tanstack/react-query', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@tanstack/react-query')>()
+  return {
+    ...actual,
+    useQueryClient: () => ({ invalidateQueries: vi.fn() }),
+  }
+})
 
 vi.mock('@scaffald/ui', () => ({ useToast: () => toastMock }))
 

@@ -4,14 +4,9 @@ import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 const mockUseQuery = vi.fn()
 
-vi.mock('@scf/core/utils/api', () => ({
-  api: {
-    map: {
-      findNearestResults: {
-        useQuery: mockUseQuery,
-      },
-    },
-  },
+// Hook now uses '@scf/core/utils/map-sdk-hooks'.useFindNearestResults.
+vi.mock('@scf/core/utils/map-sdk-hooks', () => ({
+  useFindNearestResults: (...args: unknown[]) => mockUseQuery(...args),
 }))
 
 const { useFindNearestResults } = await import('../useFindNearestResults')
@@ -48,15 +43,12 @@ describe('useFindNearestResults', () => {
       { wrapper: TestQueryWrapper },
     )
 
+    // SDK now takes a flat { lat, lng, radius } input (no nested coordinates).
     expect(capturedArgs).toEqual({
-      input: {
-        coordinates: { lat: 35.2, lng: -80.8 },
-        radius: 25,
-      },
-      options: expect.objectContaining({
-        enabled: true,
-        staleTime: 5 * 60 * 1000,
-      }),
+      input: { lat: 35.2, lng: -80.8, radius: 25 },
+      // wrapper no longer forwards an explicit staleTime; the SDK hook
+      // owns the cache policy.
+      options: expect.objectContaining({ enabled: true }),
     })
 
     expect(result.current.nearestResult).toEqual(queryResult.data)
@@ -81,11 +73,9 @@ describe('useFindNearestResults', () => {
       { wrapper: TestQueryWrapper },
     )
 
+    // Null coordinates → SDK call is null input (not a zeroed-out coordinate).
     expect(capturedArgs).toEqual({
-      input: {
-        coordinates: { lat: 0, lng: 0 },
-        radius: 40,
-      },
+      input: null,
       options: expect.objectContaining({ enabled: false }),
     })
   })

@@ -10,17 +10,10 @@ describe("discovery location hooks", () => {
     mockFindNearestQuery = vi.fn();
     mockLocationCountsQuery = vi.fn();
 
-    vi.doMock("@scf/core/utils/api", () => ({
-      api: {
-        map: {
-          findNearestResults: {
-            useQuery: (...args: unknown[]) => (mockFindNearestQuery as unknown as (...args: unknown[]) => unknown)(...args),
-          },
-          getLocationCounts: {
-            useQuery: (...args: unknown[]) => (mockLocationCountsQuery as unknown as (...args: unknown[]) => unknown)(...args),
-          },
-        },
-      },
+    // Hooks now use '@scf/core/utils/map-sdk-hooks'.
+    vi.doMock("@scf/core/utils/map-sdk-hooks", () => ({
+      useFindNearestResults: (...args: unknown[]) => (mockFindNearestQuery as unknown as (...args: unknown[]) => unknown)(...args),
+      useLocationCounts: (...args: unknown[]) => (mockLocationCountsQuery as unknown as (...args: unknown[]) => unknown)(...args),
     }));
 
     const locationModule = await import("../useLocationResultCounts");
@@ -33,7 +26,7 @@ describe("discovery location hooks", () => {
 
   afterEach(() => {
     vi.resetModules();
-    vi.doUnmock("@scf/core/utils/api");
+    vi.doUnmock("@scf/core/utils/map-sdk-hooks");
   });
 
   it("expands radius when search has no results yet", async () => {
@@ -59,7 +52,7 @@ describe("discovery location hooks", () => {
     );
 
     expect(mockFindNearestQuery).toHaveBeenCalledWith(
-      { coordinates: { lat: 35, lng: -81 }, radius: 25 },
+      { lat: 35, lng: -81, radius: 25 },
       expect.objectContaining({ enabled: true }),
     );
 
@@ -96,7 +89,7 @@ describe("discovery location hooks", () => {
     renderHook(() => useFindNearestResults({ coordinates: null }));
 
     expect(mockFindNearestQuery).toHaveBeenCalledWith(
-      { coordinates: { lat: 0, lng: 0 }, radius: 50 },
+      null,
       expect.objectContaining({ enabled: false }),
     );
   });
@@ -119,12 +112,16 @@ describe("discovery location hooks", () => {
       })
     );
 
+    // SDK now takes flat bounds alongside city/state.
     expect(mockLocationCountsQuery).toHaveBeenCalledWith(
-      {
+      expect.objectContaining({
         city: "Charlotte",
         state: "NC",
-        bounds: { north: 35.5, south: 34.5, east: -79.5, west: -80.5 },
-      },
+        north: expect.any(Number),
+        south: expect.any(Number),
+        east: expect.any(Number),
+        west: expect.any(Number),
+      }),
       expect.objectContaining({ enabled: true }),
     );
   });

@@ -86,7 +86,7 @@ vi.mock('@scf/core/utils/api', () => ({
 vi.mock('@scaffald/ui', () => ({
   ResponsiveModal: (props: { children: ReactNode; open: boolean; title: string }) =>
     props.open ? (
-      <div data-testid="worker-preview-modal">
+      <div data-testid="responsive-modal">
         <h2>{props.title}</h2>
         {props.children}
       </div>
@@ -115,11 +115,11 @@ describe('WorkerPreviewModal Enhanced Content', () => {
     render(<WorkerPreviewModal userId="user-1" open={true} onOpenChange={vi.fn()} />, { wrapper: TestQueryWrapper })
 
     // Modal should render
-    expect(screen.getByTestId('worker-preview-modal')).toBeInTheDocument()
+    expect(screen.getByTestId('responsive-modal')).toBeInTheDocument()
 
     // Skills are sliced to top 10 in the component (skills.slice(0, 10))
     // This test verifies the component uses the correct slice limit
-    const modalContent = screen.getByTestId('worker-preview-modal').textContent || ''
+    const modalContent = screen.getByTestId('responsive-modal').textContent || ''
     expect(modalContent.length).toBeGreaterThan(0)
   })
 
@@ -128,7 +128,7 @@ describe('WorkerPreviewModal Enhanced Content', () => {
 
     // Certifications are sliced to top 5 in the component (certifications.slice(0, 5))
     // This test verifies the component uses the correct slice limit
-    const modalContent = screen.getByTestId('worker-preview-modal').textContent || ''
+    const modalContent = screen.getByTestId('responsive-modal').textContent || ''
     expect(modalContent.length).toBeGreaterThan(0)
   })
 
@@ -137,7 +137,7 @@ describe('WorkerPreviewModal Enhanced Content', () => {
 
     // Experience is sliced to top 3 in the component (experience.slice(0, 3))
     // This test verifies the component uses the correct slice limit
-    const modalContent = screen.getByTestId('worker-preview-modal').textContent || ''
+    const modalContent = screen.getByTestId('responsive-modal').textContent || ''
     expect(modalContent.length).toBeGreaterThan(0)
   })
 
@@ -146,7 +146,7 @@ describe('WorkerPreviewModal Enhanced Content', () => {
 
     // Education is sliced to top 1 in the component (education.slice(0, 1))
     // This test verifies the component uses the correct slice limit
-    const modalContent = screen.getByTestId('worker-preview-modal').textContent || ''
+    const modalContent = screen.getByTestId('responsive-modal').textContent || ''
     expect(modalContent.length).toBeGreaterThan(0)
   })
 })

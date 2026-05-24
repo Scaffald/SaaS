@@ -1,29 +1,24 @@
 import { describe, expect, it, vi } from 'vitest'
 
-const useQueryMock = vi.fn()
+// Mock the SDK hook the wrapper delegates to. useAllOrganizations
+// used to wrap a tRPC client query; it now wraps the SDK hook
+// useOfficeOrganizations. The test just verifies the delegation.
+const useOfficeOrganizationsMock = vi.fn()
 
-vi.mock('../api', () => ({
-  api: {
-    office: {
-      getOrganizations: {
-        useQuery: useQueryMock,
-      },
-    },
-  },
+vi.mock('../office-organizations-sdk-hooks', () => ({
+  useOfficeOrganizations: useOfficeOrganizationsMock,
 }))
 
 describe('useAllOrganizations', () => {
-  it('delegates to the office getOrganizations query', async () => {
+  it('delegates to useOfficeOrganizations', async () => {
     const expected = { data: [], isPending: false }
-    useQueryMock.mockReturnValue(expected)
+    useOfficeOrganizationsMock.mockReturnValue(expected)
     const { useAllOrganizations } = await import('../useAllOrganizations')
 
     const result = useAllOrganizations()
 
     expect(result).toBe(expected)
-    expect(useQueryMock).toHaveBeenCalledTimes(1)
-    expect(useQueryMock).toHaveBeenCalledWith()
+    expect(useOfficeOrganizationsMock).toHaveBeenCalledTimes(1)
+    expect(useOfficeOrganizationsMock).toHaveBeenCalledWith()
   })
 })
-
-

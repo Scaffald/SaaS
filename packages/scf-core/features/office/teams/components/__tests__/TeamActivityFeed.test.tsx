@@ -87,17 +87,23 @@ vi.mock('@scaffald/ui', () => {
   }
 })
 
-vi.mock('@scf/core/utils/api', () => ({
-  api: {
-    teams: {
-      analytics: {
-        activity: { useInfiniteQuery: mockUseInfiniteQuery },
-        postComment: { useMutation: mockUseMutation },
-      },
-    },
-    useUtils: mockUseUtils,
-  },
+// Component now uses teams-sdk-hooks: useTeamActivityFeed (replaces
+// the infinite-query mock) and usePostTeamCommentMutation. Cache
+// invalidation goes through @tanstack/react-query's useQueryClient.
+vi.mock('@scf/core/utils/teams-sdk-hooks', () => ({
+  useTeamActivityFeed: (...args: unknown[]) => mockUseInfiniteQuery(...args),
+  usePostTeamCommentMutation: (...args: unknown[]) => mockUseMutation(...args),
 }))
+
+vi.mock('@tanstack/react-query', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@tanstack/react-query')>()
+  return {
+    ...actual,
+    // Wrap in an arrow to defer the mockUseUtils lookup until call time
+    // (vi.mock is hoisted above the const declaration).
+    useQueryClient: () => mockUseUtils(),
+  }
+})
 
 vi.mock('@scaffald/ui', async () => {
   const actual = await vi.importActual('@scaffald/ui')

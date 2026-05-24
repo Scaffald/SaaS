@@ -8,20 +8,13 @@ const mockUseMutation = vi.fn()
 const mockShow = vi.fn()
 const mockPush = vi.fn()
 
-vi.mock('@scf/core/utils/api', () => ({
-  api: {
-    teams: {
-      members: {
-        list: { useQuery: mockUseQuery },
-        remove: { useMutation: mockUseMutation },
-        selfRemove: { useMutation: mockUseMutation },
-        transferOwnership: { useMutation: mockUseMutation },
-      },
-      analytics: {
-        workload: { useQuery: mockUseQuery },
-      },
-    },
-  },
+// Component now uses teams-sdk-hooks (5 named hooks).
+vi.mock('@scf/core/utils/teams-sdk-hooks', () => ({
+  useTeamMembers: (...args: unknown[]) => mockUseQuery(...args),
+  useTeamWorkload: (...args: unknown[]) => mockUseQuery(...args),
+  useTransferTeamOwnershipMutation: (...args: unknown[]) => mockUseMutation(...args),
+  useSelfRemoveFromTeamMutation: (...args: unknown[]) => mockUseMutation(...args),
+  useRemoveTeamMemberMutation: (...args: unknown[]) => mockUseMutation(...args),
 }))
 
 vi.mock('@scaffald/ui', () => ({
