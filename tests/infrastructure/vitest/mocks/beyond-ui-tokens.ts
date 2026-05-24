@@ -18,6 +18,19 @@ export const spacing = {
   28: 28, 32: 32, 40: 40, 48: 48, 64: 64, 80: 80, 96: 96, 128: 128,
 }
 
+export const namedSpacing = {
+  none: 0,
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 20,
+  '2xl': 24,
+  '3xl': 32,
+  '4xl': 40,
+  '5xl': 48,
+}
+
 export const gap = {
   none: 0, xs: 4, sm: 8, md: 12, lg: 16, xl: 20, '2xl': 24, '3xl': 32,
   '4xl': 40, '5xl': 48, '6xl': 64, '7xl': 80, '8xl': 96, '9xl': 128,

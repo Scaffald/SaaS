@@ -95,11 +95,15 @@ merged.test.exclude = [
   'packages/scf-core/features/occupation-assessment/OccupationAssessmentWizard.test.tsx',
   'packages/scf-core/features/riasec-assessment/RIASECAssessmentWidget.test.tsx',
   'packages/scf-core/features/career-assessment/components/RiasecQuickAssessment.test.tsx',
+  // TODO: SDK mocks done but render path hits an infinite loop (OOM
+  // after 5min). Likely a hook chain that re-renders forever in the
+  // mock-only environment. Needs targeted investigation.
   'packages/scf-core/features/office/components/__tests__/OrganizationForm.test.tsx',
   'packages/scf-core/features/ipip-assessment/__tests__/IPIPAssessmentWizard.test.tsx',
   'packages/scf-core/features/profile-import/components/__tests__/ImportReviewScreen.test.tsx',
   'packages/scf-core/features/profile/widgets/__tests__/PortfolioGallery.test.tsx',
-  'packages/scf-core/features/resume/components/__tests__/ResumeImportWidget.test.tsx',
+  // Rewritten: add resume-sdk-hooks.useHasUploadedResume mock.
+  // 'packages/scf-core/features/resume/components/__tests__/ResumeImportWidget.test.tsx',
   // Tests with assertion mismatches requiring deeper implementation alignment
   // 'packages/scf-core/features/drawer/__tests__/DrawerLink.chevron.test.tsx',
   // Re-enabled: routeHierarchy + flattenRoutes now recurse into

@@ -19,6 +19,12 @@ vi.mock('../../hooks/useResumeWizard', () => ({
   useResumeWizard: vi.fn(),
 }))
 
+// Component now uses '@scf/core/utils/resume-sdk-hooks'.useHasUploadedResume.
+// Bind to the test's resumeQueryMock so each test can drive query state.
+vi.mock('@scf/core/utils/resume-sdk-hooks', () => ({
+  useHasUploadedResume: (...args: unknown[]) => resumeQueryMock(...args),
+}))
+
 vi.mock('lucide-react-native', async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),
   // Icons used by ResumeImportWidget
@@ -155,8 +161,12 @@ describe('ResumeImportWidget', () => {
 
     fireEvent.click(screen.getByTestId('resume-modal'))
 
+    // expo-router push now takes an object { pathname, params } not a
+    // pre-formatted query-string path.
     expect(pushMock).toHaveBeenCalledWith(
-      '/profile/resume/review?resumeId=resume-generated'
+      expect.objectContaining({
+        params: expect.objectContaining({ resumeId: 'resume-generated' }),
+      })
     )
     expect(screen.queryByTestId('resume-modal')).not.toBeInTheDocument()
   })
