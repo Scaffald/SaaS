@@ -12,14 +12,9 @@ vi.mock('expo-router', () => ({
   }),
 }))
 
-vi.mock('@scf/core/utils/api', () => ({
-  api: {
-    onet: {
-      getOccupationStatus: {
-        useQuery: () => mockGetOccupationStatus(),
-      },
-    },
-  },
+// Component now uses '@scf/core/utils/onet-sdk-hooks'.useOccupationStatus.
+vi.mock('@scf/core/utils/onet-sdk-hooks', () => ({
+  useOccupationStatus: () => mockGetOccupationStatus(),
 }))
 
 // Beyond UI mock
@@ -85,7 +80,8 @@ describe('OccupationAssessmentWidget', () => {
     renderWithProviders(<OccupationAssessmentWidget />)
 
     expect(screen.getByTestId('spinner')).toBeInTheDocument()
-    expect(screen.getByText('Loading...')).toBeInTheDocument()
+    // Spinner stub and component each render "Loading...", so match both.
+    expect(screen.getAllByText('Loading...').length).toBeGreaterThan(0)
   })
 
   it('should navigate to assessment route when button is clicked', () => {

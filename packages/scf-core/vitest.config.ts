@@ -95,7 +95,9 @@ merged.test.exclude = [
   // Merge the mocks into one and simplify the inline types.
   'packages/scf-core/features/profile/widgets/__tests__/PortfolioManager.test.tsx',
   // Tests that mock old tRPC API but component uses SDK hooks directly
-  'packages/scf-core/features/occupation-assessment/OccupationAssessmentWidget.test.tsx',
+  // Re-enabled: mock onet-sdk-hooks.useOccupationStatus + getAllByText for
+  // the duplicate "Loading..." rendered by both the Spinner stub and the
+  // component's label span.
   // TODO: SDK + assessments + react-query mocks done; tests now reach the
   // render path but assert on data-testids that no longer appear in the
   // rendered output (AssessmentWizard markup drifted). Needs assertion
