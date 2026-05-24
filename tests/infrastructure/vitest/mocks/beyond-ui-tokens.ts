@@ -23,6 +23,25 @@ export const gap = {
   '4xl': 40, '5xl': 48, '6xl': 64, '7xl': 80, '8xl': 96, '9xl': 128,
 }
 
+// Glassmorphic / vibrant accent palette referenced by some surfaces.
+// Same shape as `colors` (semantic.theme.variant) for consumer parity.
+const glassPalette = {
+  separator: '#e4e7ec',
+  primaryFill: 'rgba(255,255,255,0.7)',
+  secondaryFill: 'rgba(255,255,255,0.5)',
+  tertiaryFill: 'rgba(255,255,255,0.35)',
+  primaryText: '#141c25',
+  secondaryText: '#344051',
+  tertiaryText: '#637083',
+  accent: '#1d7282',
+  pillBg: 'rgba(29,114,130,0.15)',
+  pillText: '#1d7282',
+}
+export const glassVibrantColors = {
+  light: glassPalette,
+  dark: { ...glassPalette, separator: '#344051', primaryText: '#ffffff', secondaryText: '#e4e7ec', tertiaryText: '#97a1af' },
+}
+
 export const colors = {
   white: '#ffffff',
   primary: { 50: '#e8f6f9', 100: '#bde9f0', 200: '#7fd1de', 300: '#3fb5c7', 400: '#1e96a8', 500: '#1d7282', 600: '#125b69', 700: '#034550', 800: '#022d38', 900: '#011d24' },

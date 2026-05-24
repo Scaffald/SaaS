@@ -30,11 +30,15 @@ merged.test.include = ['packages/scf-core/**/*.{test,spec}.{ts,tsx}']
 // TODO: Update these tests to match the current SDK-based implementation.
 merged.test.exclude = [
   ...(merged.test.exclude ?? []),
-  'packages/scf-core/features/auth/__tests__/login-screen.test.tsx',
+  // Rewritten: mock auth-sdk-hooks (useRequestMagicLinkMutation) +
+  // cookieConsent.useRecordTermsAcceptanceMutation.
+  // 'packages/scf-core/features/auth/__tests__/login-screen.test.tsx',
   // Rewritten: added useThemeContext to local mock. 1 layout test skipped
   // (component no longer uses $md responsive prop the mock translated).
   // 'packages/scf-core/features/discover/components/__tests__/FilterBar.test.tsx',
-  'packages/scf-core/features/dashboard/components/__tests__/TeamInvitationList.test.tsx',
+  // Rewritten: needed glassVibrantColors added to tokens mock; 2 status-
+  // text assertions skipped (component shows iconic chips now).
+  // 'packages/scf-core/features/dashboard/components/__tests__/TeamInvitationList.test.tsx',
   // Rewritten to mock SDK hook (useOfficeOrganizations) instead of tRPC api.
   // 'packages/scf-core/utils/__tests__/useAllOrganizations.test.ts',
   // Rewritten: mock map-sdk-hooks; flat SDK call shape (no nested coordinates/bounds).

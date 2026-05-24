@@ -96,8 +96,12 @@ export const Checkbox = ({
   onChange?: (val: boolean) => void
   [key: string]: unknown
 }) =>
+  // Expose role="checkbox" so tests can target it via the ARIA role —
+  // the real beyond-ui Checkbox is built on top of an accessible control
+  // that surfaces this role.
   createElement('input', {
     type: 'checkbox',
+    role: 'checkbox',
     checked: checked ?? false,
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange?.(e.target.checked),
     ...rest,
