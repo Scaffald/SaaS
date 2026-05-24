@@ -88,6 +88,10 @@ merged.test.exclude = [
   // Rewritten: merged duplicate @scaffald/ui mock so ResponsiveSelect stub
   // wins. Second vi.mock for same module was overriding the first.
   // 'packages/scf-core/features/office/applications/components/__tests__/ApplicationsFilters.test.tsx',
+  // TODO: 3 duplicate vi.mock('@scaffald/ui', ...) calls in one file with
+  // complex inline TS intersection types ({ ... } & Record<string, unknown>)
+  // confuse esbuild's transform and emit a SyntaxError before any test runs.
+  // Merge the mocks into one and simplify the inline types.
   'packages/scf-core/features/profile/widgets/__tests__/PortfolioManager.test.tsx',
   // Tests that mock old tRPC API but component uses SDK hooks directly
   'packages/scf-core/features/occupation-assessment/OccupationAssessmentWidget.test.tsx',
