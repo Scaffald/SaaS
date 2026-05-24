@@ -31,7 +31,9 @@ merged.test.include = ['packages/scf-core/**/*.{test,spec}.{ts,tsx}']
 merged.test.exclude = [
   ...(merged.test.exclude ?? []),
   'packages/scf-core/features/auth/__tests__/login-screen.test.tsx',
-  'packages/scf-core/features/discover/components/__tests__/FilterBar.test.tsx',
+  // Rewritten: added useThemeContext to local mock. 1 layout test skipped
+  // (component no longer uses $md responsive prop the mock translated).
+  // 'packages/scf-core/features/discover/components/__tests__/FilterBar.test.tsx',
   'packages/scf-core/features/dashboard/components/__tests__/TeamInvitationList.test.tsx',
   // Rewritten to mock SDK hook (useOfficeOrganizations) instead of tRPC api.
   // 'packages/scf-core/utils/__tests__/useAllOrganizations.test.ts',
