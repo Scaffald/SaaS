@@ -29,7 +29,7 @@
     "format": "biome format ./app",
     "format:fix": "biome format --write ./app",
     "ios": "pnpm ios:check-xcode-version && pnpm ios:run",
-    "ios:check-xcode-version": "sh -c 'XC_VERSION=$(xcodebuild -version | grep Xcode | awk \"{print \\$2}\"); if [ $(echo $XC_VERSION | awk \"{print int(\\$1)}\") -lt 26 ]; then echo \"⚠️ Xcode ≥ 26.4 is required for Expo SDK 56. You have $XC_VERSION. You can bypass this check by running \\\"pnpm ios:run\\\" but you may encounter native build errors.\"; exit 1; fi'",
+    "ios:check-xcode-version": "sh -c 'XC_VERSION=$(xcodebuild -version | awk \"/^Xcode/ {print \\$2}\"); MIN_XC=26.4; if [ \"$(printf \"%s\\n%s\\n\" \"$MIN_XC\" \"$XC_VERSION\" | sort -V | head -n1)\" != \"$MIN_XC\" ]; then echo \"⚠️ Xcode ≥ $MIN_XC is required for Expo SDK 56. You have $XC_VERSION. You can bypass this check by running \\\"pnpm ios:run\\\" but you may encounter native build errors.\"; exit 1; fi'",
     "ios:run": "cross-env LANG=en_US.UTF-8 RCT_NEW_ARCH_ENABLED=1 expo run:ios",
     "lint": "biome lint ./app",
     "lint:fix": "biome lint --write ./app",

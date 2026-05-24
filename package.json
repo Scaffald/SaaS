@@ -277,6 +277,8 @@
   "pnpm": {
     "overrides": {
       "@supabase/supabase-js": "~2.86.0",
+      "@tanstack/query-core": "5.90.20",
+      "@tanstack/react-query": "5.90.21",
       "@types/react": "19.2.14",
       "@types/react-dom": "19.2.3",
       "axios@<=1.13.4": ">=1.13.5",
@@ -292,6 +294,7 @@
       "minimatch@<3.1.4": ">=3.1.4",
       "minimatch@>=5.0.0 <5.1.8": ">=5.1.8",
       "minimatch@>=10.0.0 <10.2.3": ">=10.2.3",
+      "msw": "2.12.14",
       "js-yaml@>=4.0.0 <4.1.1": ">=4.1.1",
       "lodash@>=4.0.0 <=4.17.22": ">=4.17.23",
       "lodash-es@>=4.0.0 <=4.17.22": ">=4.17.23",
