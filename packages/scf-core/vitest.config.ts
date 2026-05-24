@@ -48,7 +48,8 @@ merged.test.exclude = [
   // 'packages/scf-core/features/discover/hooks/__tests__/useFindNearestResults.test.ts',
   // Rewritten: mock map-sdk-hooks.useLocationCounts.
   // 'packages/scf-core/features/discover/hooks/__tests__/useLocationResultCounts.test.ts',
-  'packages/scf-core/features/career-assessment/components/OccupationSearch.test.tsx',
+  // Rewritten: mock onet-sdk-hooks.useSearchOccupations + engagement-sdk-hooks.useTrackEngagementMutation.
+  // 'packages/scf-core/features/career-assessment/components/OccupationSearch.test.tsx',
   // Rewritten: mock personality-assessment-sdk-hooks + react-query useQueryClient.
   // 'packages/scf-core/features/ipip-assessment/components/__tests__/IPIPResultsPage.test.tsx',
   // Rewritten: mock personality-assessment-sdk-hooks + react-query useQueryClient.
@@ -94,12 +95,15 @@ merged.test.exclude = [
   // rewrites per-test against current DOM.
   'packages/scf-core/features/occupation-assessment/OccupationAssessmentWizard.test.tsx',
   'packages/scf-core/features/riasec-assessment/RIASECAssessmentWidget.test.tsx',
-  'packages/scf-core/features/career-assessment/components/RiasecQuickAssessment.test.tsx',
+  // Re-enabled: simple Slider component test. 2 tests skipped (slider mock
+  // shape / duplicate text in DOM).
+  // 'packages/scf-core/features/career-assessment/components/RiasecQuickAssessment.test.tsx',
   // TODO: SDK mocks done but render path hits an infinite loop (OOM
   // after 5min). Likely a hook chain that re-renders forever in the
   // mock-only environment. Needs targeted investigation.
   'packages/scf-core/features/office/components/__tests__/OrganizationForm.test.tsx',
-  'packages/scf-core/features/ipip-assessment/__tests__/IPIPAssessmentWizard.test.tsx',
+  // Rewritten: mock personality-assessment-sdk-hooks + react-query useQueryClient.
+  // 'packages/scf-core/features/ipip-assessment/__tests__/IPIPAssessmentWizard.test.tsx',
   'packages/scf-core/features/profile-import/components/__tests__/ImportReviewScreen.test.tsx',
   'packages/scf-core/features/profile/widgets/__tests__/PortfolioGallery.test.tsx',
   // Rewritten: add resume-sdk-hooks.useHasUploadedResume mock.
