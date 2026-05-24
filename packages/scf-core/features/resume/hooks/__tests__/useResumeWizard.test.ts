@@ -19,30 +19,23 @@ const refetchMock = vi.fn(async () => ({ data: wizardState }));
 const saveSectionMutateAsync = vi.fn();
 const updateProgressMutateAsync = vi.fn();
 
-vi.mock("@scf/core/utils/api", () => ({
-  api: {
-    resume: {
-      getWizardState: {
-        useQuery: vi.fn(() => ({
-          data: wizardState,
-          isLoading: false,
-          refetch: refetchMock,
-        })),
-      },
-      saveSection: {
-        useMutation: () => ({
-          mutateAsync: saveSectionMutateAsync,
-          isLoading: false,
-        }),
-      },
-      updateProgress: {
-        useMutation: () => ({
-          mutateAsync: updateProgressMutateAsync,
-          isLoading: false,
-        }),
-      },
-    },
-  },
+// Hook now imports from '@scf/core/utils/resume-sdk-hooks':
+//   useResumeWizardState, useSaveResumeSectionMutation,
+//   useUpdateResumeProgressMutation
+vi.mock("@scf/core/utils/resume-sdk-hooks", () => ({
+  useResumeWizardState: vi.fn(() => ({
+    data: wizardState,
+    isPending: false,
+    refetch: refetchMock,
+  })),
+  useSaveResumeSectionMutation: () => ({
+    mutateAsync: saveSectionMutateAsync,
+    isPending: false,
+  }),
+  useUpdateResumeProgressMutation: () => ({
+    mutateAsync: updateProgressMutateAsync,
+    isPending: false,
+  }),
 }));
 
 const RESUME_ID = 'resume-123';

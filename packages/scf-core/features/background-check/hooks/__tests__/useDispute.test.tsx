@@ -45,22 +45,34 @@ const mocks = vi.hoisted(() => {
   }
 })
 
-vi.mock('@scf/core/utils/api', () => ({
-  api: {
-    backgroundChecks: {
-      listDisputesForCheck: { useQuery: mocks.listDisputesQuery },
-      createUploadUrl: { useMutation: mocks.createUploadUrlUseMutation },
-      submitDispute: { useMutation: mocks.submitDisputeUseMutation },
-    },
-    useUtils: vi.fn(() => ({
-      backgroundChecks: {
-        listChecks: { invalidate: mocks.invalidateListChecks },
-        getCheck: { invalidate: mocks.invalidateGetCheck },
-        listDisputesForCheck: { invalidate: mocks.invalidateListDisputes },
-      },
-    })),
-  },
+// Hook now imports from '@scf/core/utils/background-checks-sdk-hooks':
+//   useBackgroundCheckDisputes (replaces listDisputesForCheck.useQuery)
+//   useCreateDocumentUploadUrlMutation (replaces createUploadUrl.useMutation)
+//   useSubmitBackgroundCheckDisputeMutation (replaces submitDispute.useMutation)
+// Cache invalidation is now via @tanstack/react-query's useQueryClient
+// (queryClient.invalidateQueries) instead of api.useUtils. Mock that too.
+vi.mock('@scf/core/utils/background-checks-sdk-hooks', () => ({
+  useBackgroundCheckDisputes: mocks.listDisputesQuery,
+  useCreateDocumentUploadUrlMutation: mocks.createUploadUrlUseMutation,
+  useSubmitBackgroundCheckDisputeMutation: mocks.submitDisputeUseMutation,
 }))
+
+vi.mock('@tanstack/react-query', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@tanstack/react-query')>()
+  return {
+    ...actual,
+    useQueryClient: () => ({
+      // Map queryKey shape from useDispute back to legacy invalidate-helper mocks.
+      // useDispute uses: ['backgroundChecks', 'list' | 'detail' | 'disputes', ...]
+      invalidateQueries: (opts: { queryKey?: unknown[] }) => {
+        const second = opts.queryKey?.[1]
+        if (second === 'list') mocks.invalidateListChecks()
+        else if (second === 'detail') mocks.invalidateGetCheck()
+        else if (second === 'disputes') mocks.invalidateListDisputes()
+      },
+    }),
+  }
+})
 
 vi.mock('@scf/core/utils/supabase/client', () => ({
   supabase: {
@@ -257,25 +269,26 @@ describe('useDispute hook', () => {
       file_size: file.size,
     })
     expect(mocks.storageUpload).toHaveBeenCalledTimes(1)
+    // Field names normalized to `reason` / `details` in the SDK payload.
     expect(mocks.submitDisputeMutateAsync).toHaveBeenCalledWith({
       background_check_id: 'check-123',
-      dispute_reason: 'Records contain inaccurate findings',
-      dispute_details: 'Automated test submission describing incorrect findings.',
-      supporting_documents: [
-        { document_type: 'dispute_supporting_1', file_path: 'user/check/document.pdf' },
-      ],
+      reason: 'Records contain inaccurate findings',
+      details: 'Automated test submission describing incorrect findings.',
+      // SDK payload simplified: supporting_documents is now a flat string[] of file paths.
+      supporting_documents: ['user/check/document.pdf'],
     })
-    expect(mocks.toastShow).toHaveBeenCalledWith('Dispute submitted', {
+    // Beyond-UI toast API: title is an option, variant replaces type.
+    expect(mocks.toastShow).toHaveBeenCalledWith({
+      title: 'Dispute submitted',
       message: 'Our compliance team will review your request shortly.',
-      type: 'success',
+      variant: 'success',
     })
+    // Cache invalidation now flows through @tanstack/react-query's
+    // queryClient.invalidateQueries(); the test's mocked useQueryClient maps
+    // the queryKey prefix back to the legacy invalidate-helper mocks.
     expect(mocks.invalidateListChecks).toHaveBeenCalledTimes(1)
-    expect(mocks.invalidateGetCheck).toHaveBeenCalledWith({
-      background_check_id: 'check-123',
-    })
-    expect(mocks.invalidateListDisputes).toHaveBeenCalledWith({
-      background_check_id: 'check-123',
-    })
+    expect(mocks.invalidateGetCheck).toHaveBeenCalledTimes(1)
+    expect(mocks.invalidateListDisputes).toHaveBeenCalledTimes(1)
     expect(result.current.attachments).toHaveLength(0)
   })
 

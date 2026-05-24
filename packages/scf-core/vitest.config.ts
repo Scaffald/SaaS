@@ -43,7 +43,10 @@ merged.test.exclude = [
   'packages/scf-core/features/ipip-assessment/components/__tests__/IPIPResultsPage.test.tsx',
   'packages/scf-core/features/ipip-assessment/components/__tests__/ShareResults.test.tsx',
   'packages/scf-core/features/ipip-assessment/hooks/__tests__/useIPIPResults.test.tsx',
-  'packages/scf-core/features/background-check/hooks/__tests__/useDispute.test.tsx',
+  // Rewritten: mock background-checks-sdk-hooks + react-query.useQueryClient;
+  // payload field rename (reason/details), toast shape (title/variant), and
+  // queryKey shape (['backgroundChecks', 'list'|'detail'|'disputes', ...]).
+  // 'packages/scf-core/features/background-check/hooks/__tests__/useDispute.test.tsx',
   'packages/scf-core/features/inquiries/components/__tests__/InquiryCommentThread.test.tsx',
   // Rewritten to mock SDK hook (profile-import-sdk-hooks.useImportData) and
   // updated assertions for current positional-id normalization behavior.
@@ -77,8 +80,12 @@ merged.test.exclude = [
   // appear in the hierarchy. Dynamic paths resolve via stricter regex.
   // 'packages/scf-core/utils/navigation/__tests__/routeHierarchy.test.ts',
   'packages/scf-core/features/profile-wizard/hooks/__tests__/useProfileWizard.test.ts',
-  'packages/scf-core/features/resume/hooks/__tests__/useResumeWizard.test.ts',
-  'packages/scf-core/features/office/applications/hooks/__tests__/useApplicationStatusChange.test.ts',
+  // Rewritten: mock '@scf/core/utils/resume-sdk-hooks' (useResumeWizardState,
+  // useSaveResumeSectionMutation, useUpdateResumeProgressMutation); isPending.
+  // 'packages/scf-core/features/resume/hooks/__tests__/useResumeWizard.test.ts',
+  // Rewritten: mock applications-sdk-hooks + react-query.useQueryClient;
+  // updated assertions for nested mutation payload { id, params: { status } }.
+  // 'packages/scf-core/features/office/applications/hooks/__tests__/useApplicationStatusChange.test.ts',
   'packages/scf-core/features/office/teams/components/__tests__/TeamActivityFeed.test.tsx',
   'packages/scf-core/features/office/teams/components/__tests__/TeamAnalyticsSummary.test.tsx',
   'packages/scf-core/features/office/teams/components/__tests__/TeamCommentThread.test.tsx',
