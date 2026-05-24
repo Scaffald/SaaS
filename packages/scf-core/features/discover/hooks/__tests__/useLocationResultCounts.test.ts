@@ -4,14 +4,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // Mock tRPC API - use vi.hoisted to avoid initialization issues
 const mockUseQuery = vi.hoisted(() => vi.fn());
 
-vi.mock("@scf/core/utils/api", () => ({
-  api: {
-    map: {
-      getLocationCounts: {
-        useQuery: mockUseQuery,
-      },
-    },
-  },
+// Hook now uses '@scf/core/utils/map-sdk-hooks'.useLocationCounts.
+vi.mock("@scf/core/utils/map-sdk-hooks", () => ({
+  useLocationCounts: (...args: unknown[]) => mockUseQuery(...args),
 }));
 
 import {
@@ -40,15 +35,14 @@ describe("useLocationResultCounts", () => {
       { wrapper: TestQueryWrapper },
     );
 
-    // The hook should calculate bounds from coordinates
+    // SDK now takes flat bounds {north, south, east, west} alongside
+    // city/state — not nested { bounds: {...} }.
     expect(mockUseQuery).toHaveBeenCalledWith(
       expect.objectContaining({
-        bounds: expect.objectContaining({
-          north: expect.any(Number),
-          south: expect.any(Number),
-          east: expect.any(Number),
-          west: expect.any(Number),
-        }),
+        north: expect.any(Number),
+        south: expect.any(Number),
+        east: expect.any(Number),
+        west: expect.any(Number),
       }),
       expect.any(Object),
     );

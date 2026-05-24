@@ -35,10 +35,13 @@ merged.test.exclude = [
   'packages/scf-core/features/dashboard/components/__tests__/TeamInvitationList.test.tsx',
   // Rewritten to mock SDK hook (useOfficeOrganizations) instead of tRPC api.
   // 'packages/scf-core/utils/__tests__/useAllOrganizations.test.ts',
-  'packages/scf-core/features/discover/hooks/__tests__/useLocationHooks.test.ts',
+  // Rewritten: mock map-sdk-hooks; flat SDK call shape (no nested coordinates/bounds).
+  // 'packages/scf-core/features/discover/hooks/__tests__/useLocationHooks.test.ts',
   // Tests that need tRPC-to-SDK migration (mock old API but implementation uses SDK hooks)
-  'packages/scf-core/features/discover/hooks/__tests__/useFindNearestResults.test.ts',
-  'packages/scf-core/features/discover/hooks/__tests__/useLocationResultCounts.test.ts',
+  // Rewritten: mock map-sdk-hooks.useFindNearestResults.
+  // 'packages/scf-core/features/discover/hooks/__tests__/useFindNearestResults.test.ts',
+  // Rewritten: mock map-sdk-hooks.useLocationCounts.
+  // 'packages/scf-core/features/discover/hooks/__tests__/useLocationResultCounts.test.ts',
   'packages/scf-core/features/career-assessment/components/OccupationSearch.test.tsx',
   // Rewritten: mock personality-assessment-sdk-hooks + react-query useQueryClient.
   // 'packages/scf-core/features/ipip-assessment/components/__tests__/IPIPResultsPage.test.tsx',
