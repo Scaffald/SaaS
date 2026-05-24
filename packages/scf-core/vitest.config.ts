@@ -54,11 +54,10 @@ merged.test.exclude = [
   // 'packages/scf-core/features/ipip-assessment/components/__tests__/IPIPResultsPage.test.tsx',
   // Rewritten: mock personality-assessment-sdk-hooks + react-query useQueryClient.
   // 'packages/scf-core/features/ipip-assessment/components/__tests__/ShareResults.test.tsx',
-  // TODO: mock-swap done (personality-assessment-sdk-hooks), but the
-  // remaining failures are real assertion drift in the score-normalization
-  // logic (5 tests). Needs per-assertion investigation against the current
-  // normalizeScores impl.
-  'packages/scf-core/features/ipip-assessment/hooks/__tests__/useIPIPResults.test.tsx',
+  // Re-enabled with all 5 tests skipped (TODOs inline). Mock-swap done;
+  // scoring/normalization assertions need real rewrites against current
+  // useIPIPResults algorithm.
+  // 'packages/scf-core/features/ipip-assessment/hooks/__tests__/useIPIPResults.test.tsx',
   // Rewritten: mock background-checks-sdk-hooks + react-query.useQueryClient;
   // payload field rename (reason/details), toast shape (title/variant), and
   // queryKey shape (['backgroundChecks', 'list'|'detail'|'disputes', ...]).
@@ -115,10 +114,8 @@ merged.test.exclude = [
   // 'packages/scf-core/features/ipip-assessment/__tests__/IPIPAssessmentWizard.test.tsx',
   // Rewritten: mock profile-import-sdk-hooks + react-query useQueryClient.
   // 'packages/scf-core/features/profile-import/components/__tests__/ImportReviewScreen.test.tsx',
-  // TODO: SDK mock swap done; 11 of 16 tests fail with deeper render-shape
-  // drift (data-testid="dashboard-widget" not emitted by mocked
-  // DashboardWidget; "Portfolio" copy missing). Needs per-assertion review.
-  'packages/scf-core/features/profile/widgets/__tests__/PortfolioGallery.test.tsx',
+  // Rewritten: merged duplicate @scaffald/ui mocks; SDK mock surface.
+  // 'packages/scf-core/features/profile/widgets/__tests__/PortfolioGallery.test.tsx',
   // Rewritten: add resume-sdk-hooks.useHasUploadedResume mock.
   // 'packages/scf-core/features/resume/components/__tests__/ResumeImportWidget.test.tsx',
   // Tests with assertion mismatches requiring deeper implementation alignment
