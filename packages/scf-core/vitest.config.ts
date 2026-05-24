@@ -40,8 +40,14 @@ merged.test.exclude = [
   'packages/scf-core/features/discover/hooks/__tests__/useFindNearestResults.test.ts',
   'packages/scf-core/features/discover/hooks/__tests__/useLocationResultCounts.test.ts',
   'packages/scf-core/features/career-assessment/components/OccupationSearch.test.tsx',
-  'packages/scf-core/features/ipip-assessment/components/__tests__/IPIPResultsPage.test.tsx',
-  'packages/scf-core/features/ipip-assessment/components/__tests__/ShareResults.test.tsx',
+  // Rewritten: mock personality-assessment-sdk-hooks + react-query useQueryClient.
+  // 'packages/scf-core/features/ipip-assessment/components/__tests__/IPIPResultsPage.test.tsx',
+  // Rewritten: mock personality-assessment-sdk-hooks + react-query useQueryClient.
+  // 'packages/scf-core/features/ipip-assessment/components/__tests__/ShareResults.test.tsx',
+  // TODO: mock-swap done (personality-assessment-sdk-hooks), but the
+  // remaining failures are real assertion drift in the score-normalization
+  // logic (5 tests). Needs per-assertion investigation against the current
+  // normalizeScores impl.
   'packages/scf-core/features/ipip-assessment/hooks/__tests__/useIPIPResults.test.tsx',
   // Rewritten: mock background-checks-sdk-hooks + react-query.useQueryClient;
   // payload field rename (reason/details), toast shape (title/variant), and

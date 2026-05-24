@@ -44,17 +44,10 @@ const archetypeQueryResult: {
 const mockGetAssessmentStatus = vi.fn(() => assessmentQueryResult)
 const mockGetArchetype = vi.fn(() => archetypeQueryResult)
 
-vi.mock('@scf/core/utils/api', () => ({
-  api: {
-    personalityAssessment: {
-      getAssessmentStatus: {
-        useQuery: () => mockGetAssessmentStatus(),
-      },
-      getArchetype: {
-        useQuery: () => mockGetArchetype(),
-      },
-    },
-  },
+// Hook now uses '@scf/core/utils/personality-assessment-sdk-hooks'.
+vi.mock('@scf/core/utils/personality-assessment-sdk-hooks', () => ({
+  useAssessmentStatus: () => mockGetAssessmentStatus(),
+  useGetArchetype: () => mockGetArchetype(),
 }))
 
 const DOMAINS: IPIPDomain[] = ['A', 'E', 'N', 'C', 'O']
