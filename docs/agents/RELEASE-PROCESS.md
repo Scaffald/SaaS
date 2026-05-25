@@ -115,12 +115,18 @@ The full sequence to ship `scaffald-app vX.Y.Z`:
 4. **TestFlight submission is automatic** with `--auto-submit`.
 5. **Once the TestFlight build is live, promote Linear issues:**
    ```bash
-   LINEAR_API_KEY=lin_api_xxx pnpm release:promote X.Y.Z
+   pnpm release:promote X.Y.Z
    ```
    This finds every issue with label `vX.Y.Z` in state `In Github` and moves
-   it to `In TestFlight` in one batch. The API key lives at
-   [Linear → Settings → Account → Security](https://linear.app/settings/account/security).
-   Pass `--dry-run` to preview without writing.
+   it to `In TestFlight` in one batch. Pass `--dry-run` to preview without
+   writing.
+
+   **Where the key lives:** `LINEAR_API_KEY` is stored in the project root's
+   gitignored `.env.production` file. The `release:promote` pnpm script
+   auto-loads it via `dotenv -e .env.production --`, so no manual env var
+   is needed. If you ever need a fresh key, generate one at
+   [Linear → Settings → Account → Security](https://linear.app/settings/account/security)
+   and append it to `.env.production` (see `.env.template` for the format).
 6. **QA tests against the TestFlight build.** As each issue is validated,
    move it to `Done`.
 7. **Production promotion** happens out of band (App Store submission) once
