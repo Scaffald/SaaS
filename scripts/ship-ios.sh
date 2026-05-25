@@ -147,19 +147,22 @@ else
 fi
 
 # --- check EAS server-side secrets ----------------------------------------
-# EAS holds POSTHOG_KEY_PROD as a secret because eas.json references ${POSTHOG_KEY_PROD}.
-# Warn (don't block) if missing — the build will still complete; PostHog
-# analytics just won't fire. Remove the ${POSTHOG_KEY_PROD} reference from
-# eas.json if you genuinely don't want PostHog in production.
-echo -n "  Verifying EAS secret POSTHOG_KEY_PROD is registered… "
-if (cd "$PROJECT_DIR" && pnpm exec eas secret:list --json 2>/dev/null \
-      | grep -q '"name": *"POSTHOG_KEY_PROD"'); then
+# EAS holds POSTHOG_KEY_PROD as a project env var because eas.json references
+# ${POSTHOG_KEY_PROD}. Warn (don't block) if missing — the build will still
+# complete; PostHog analytics just won't fire. Remove the
+# ${POSTHOG_KEY_PROD} reference from eas.json if you don't want PostHog.
+#
+# Uses `eas env:list` (the post-secret:list-deprecation command). The output
+# prints one VAR=value (or VAR=***** for secrets) per line per environment.
+echo -n "  Verifying EAS env var POSTHOG_KEY_PROD is registered (production)… "
+if (cd "$PROJECT_DIR" && pnpm exec eas env:list --environment production --format short 2>/dev/null \
+      | grep -q '^POSTHOG_KEY_PROD='); then
   echo "ok"
 else
   echo "MISSING"
-  echo "⚠  EAS secret POSTHOG_KEY_PROD is not registered. PostHog analytics"
-  echo "   won't fire in this build. To set it:"
-  echo "     cd $PROJECT_DIR && pnpm exec eas secret:create --name POSTHOG_KEY_PROD --value <value>"
+  echo "⚠  EAS env var POSTHOG_KEY_PROD is not registered for the production"
+  echo "   environment. PostHog analytics won't fire in this build. To set it:"
+  echo "     cd $PROJECT_DIR && pnpm exec eas env:create production --name POSTHOG_KEY_PROD --value <value> --visibility secret"
   echo "   Or remove the \${POSTHOG_KEY_PROD} reference from apps/scaffald/eas.json."
 fi
 
