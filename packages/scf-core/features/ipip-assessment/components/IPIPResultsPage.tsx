@@ -56,7 +56,7 @@ export function IPIPResultsPage() {
   if (results.error && !results.hasPartialResults) {
     return (
       <Stack gap={16} padding={32} align="center" accessibilityLiveRegion="assertive">
-        <AlertCircle size="sm" color={t === 'dark' ? colors.error[300] : colors.error[600]} />
+        <AlertCircle size={20} color={t === 'dark' ? colors.error[300] : colors.error[600]} />
         <Text color={t === 'dark' ? colors.error[300] : colors.error[600]}>Error Loading Results</Text>
         <Text color={colors.text[t].secondary} align="center">
           {results.error.message || 'Unable to load your assessment results. Please try again.'}
@@ -169,7 +169,7 @@ export function IPIPResultsPage() {
           borderColor={colors.border[t].default}
         >
           <Row align="center" gap={8}>
-            <AlertCircle size="sm" color={t === 'dark' ? colors.yellow[300] : colors.yellow[600]} />
+            <AlertCircle size={16} color={t === 'dark' ? colors.yellow[300] : colors.yellow[600]} />
             <Text color={t === 'dark' ? colors.yellow[300] : colors.yellow[600]}>Partial Data Available</Text>
           </Row>
           <Text color={t === 'dark' ? colors.yellow[300] : colors.yellow[600]}>
