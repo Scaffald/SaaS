@@ -75,7 +75,7 @@ catalog:
   fast-xml-parser: ~5.7.0
   i18n-js: ^4.4.3
   mapbox-gl: ~3.23.1
-  moti: ~0.25.3
+  moti: ~0.30.0
   msw: ~2.12.3
   openapi-typescript: ~7.4.4
   react: 19.2.3
