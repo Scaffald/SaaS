@@ -52,11 +52,18 @@ pnpx supabase functions deploy api job-import news \
   --use-api
 
 # 3. Smoke the health endpoint to confirm the deploy + secrets took effect.
+#    `-f` makes curl exit non-zero on HTTP 4xx/5xx so a broken deploy
+#    doesn't silently print a green "✓ complete" message. `--max-time`
+#    bounds a hung server; `--retry 2 --retry-delay 2` covers the typical
+#    cold-start window after a fresh deploy without needing a long sleep.
 echo
 echo "→ Smoking /v1/health on $ENV…"
 HEALTH_URL="https://$PROJECT_REF.supabase.co/functions/v1/api/v1/health"
-sleep 2  # give the new function instance a moment to cold-start
-curl -s "$HEALTH_URL" | head -c 500
+if ! curl -fsS --max-time 15 --retry 2 --retry-delay 2 "$HEALTH_URL" | head -c 500; then
+  echo
+  echo "✗ /v1/health smoke failed against $HEALTH_URL. Deploy may have shipped but the function is unreachable or returning an error status." >&2
+  exit 1
+fi
 echo
 echo
 echo "✓ $ENV deploy complete."

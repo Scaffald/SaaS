@@ -122,12 +122,14 @@ async function main() {
       options: {
         team: { type: 'string' },
         project: { type: 'string' },
+        projectId: { type: 'string' },
         hours: { type: 'string' },
         description: { type: 'string' },
         tasks: { type: 'string' },
         submit: { type: 'boolean', default: false },
         date: { type: 'string' },
         as: { type: 'string' },
+        list: { type: 'boolean', default: false },
         help: { type: 'boolean', default: false },
       },
       allowPositionals: false,
@@ -143,8 +145,35 @@ async function main() {
     return
   }
 
+  // --list mode: sign in, fetch /v1/work-logs/projects, print and exit.
+  // Use this to discover a valid --projectId on dev/preview/prod where the
+  // hardcoded PROJECT_IDS map's local-only UUIDs won't resolve.
+  if (args.list) {
+    const email = process.env.DOGFOOD_LOG_AS_EMAIL || args.as || 'clay@unicorn.love'
+    const password = process.env.DOGFOOD_LOG_PASSWORD || 'password123'
+    const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    })
+    const { data, error } = await authClient.auth.signInWithPassword({ email, password })
+    if (error || !data.session?.access_token) {
+      die(`auth failed for ${email}: ${error?.message ?? 'no session returned'}`)
+    }
+    const client = new Scaffald({
+      supabaseToken: data.session.access_token,
+      baseUrl: API_BASE,
+    })
+    const projects = await client.workLogs.getProjectOptions({})
+    console.log(`\nProjects visible to ${email} (${API_BASE}):\n`)
+    for (const p of projects) {
+      console.log(`  ${p.id}  ${p.name}${p.isArchived ? ' (archived)' : ''}`)
+    }
+    console.log('')
+    return
+  }
+
   if (!args.team) die('--team is required')
-  if (!args.project) die('--project is required')
+  if (!args.project && !args.projectId)
+    die('--project (named, local only) or --projectId (uuid) is required')
   if (!args.hours) die('--hours is required')
   if (!args.description) die('--description is required')
 
@@ -153,9 +182,19 @@ async function main() {
     die(`--team must be one of: ${TEAM_SLUGS.join(', ')}`)
   }
 
-  const projectId = PROJECT_IDS[args.project]
+  // --projectId wins over --project. The PROJECT_IDS map's hardcoded UUIDs
+  // are only seeded on local Supabase (seeds/011_seed-real-org-structure.sql);
+  // pass --projectId <uuid> when logging against dev / preview / prod.
+  // Use --list to discover valid project UUIDs for the current env.
+  const projectId = args.projectId || PROJECT_IDS[args.project as string]
   if (!projectId) {
-    die(`--project must be one of: ${Object.keys(PROJECT_IDS).join(', ')}`)
+    die(
+      `--project must be one of: ${Object.keys(PROJECT_IDS).join(', ')}, ` +
+        `or pass --projectId <uuid> directly. Use --list to discover valid UUIDs.`,
+    )
+  }
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(projectId)) {
+    die(`--projectId must be a uuid; got "${projectId}"`)
   }
 
   const hours = Number(args.hours)
@@ -217,7 +256,7 @@ async function main() {
 
   console.log(`\n✓ Created log ${log.id}`)
   console.log(`  user:        ${email}`)
-  console.log(`  project:     ${args.project}`)
+  console.log(`  project:     ${args.project ?? projectId}`)
   console.log(`  team:        ${team}`)
   console.log(`  date:        ${logDate}`)
   console.log(`  hours:       ${hours}`)
