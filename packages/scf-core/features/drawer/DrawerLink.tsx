@@ -148,7 +148,7 @@ export const DrawerLink = ({
           </Row>
         )}
         {!item.isExpandable && item.hasChevron && (
-          <ChevronRight size="md" color={active ? activeFg : colors.icon[resolvedTheme].subtle} />
+          <ChevronRight size={18} color={active ? activeFg : colors.icon[resolvedTheme].subtle} />
         )}
       </Row>
     )
@@ -322,9 +322,9 @@ export const DrawerLink = ({
                   {title}
                 </Paragraph>
                 {item.isOnCooldown ? (
-                  <Clock size="md" color={active ? activeFg : colors.info[600]} />
+                  <Clock size={16} color={active ? activeFg : colors.info[600]} />
                 ) : item.isCompleted ? (
-                  <Check size="md" color={active ? activeFg : colors.success[600]} />
+                  <Check size={16} color={active ? activeFg : colors.success[600]} />
                 ) : null}
               </View>
             )
