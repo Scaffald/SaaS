@@ -1,0 +1,88 @@
+name: Supabase edge function deploy-skew audit
+
+# Nightly check that each deployed edge function reports a GIT_COMMIT
+# matching origin/main. Catches the class of skew surfaced during the
+# v1.4.0 dogfood attempt where CI was billing-blocked and dev/preview
+# functions ran weeks-old code (missing /v1/work-logs/projects and the
+# total_hours insert fix).
+#
+# Mirrors the existing supabase-drift-audit.yml pattern.
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # 06:00 UTC nightly — after the schema-drift audit
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-skew-audit:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+          - name: dev
+            project_ref: pmtdqrfpumqwkdhpgwcz
+          - name: preview
+            project_ref: uhjkipdwayqfihkanabk
+          - name: prod
+            project_ref: qmfmpcyxsihhfttvqpbw
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0  # need full history to compute commit age
+
+      - name: Fetch /v1/health from ${{ matrix.env.name }}
+        id: health
+        run: |
+          set -e
+          URL="https://${{ matrix.env.project_ref }}.supabase.co/functions/v1/api/v1/health"
+          echo "→ $URL"
+          response=$(curl -fsS --max-time 10 "$URL")
+          echo "$response"
+          commit=$(echo "$response" | python3 -c "import json,sys; print(json.load(sys.stdin).get('commit','unknown'))")
+          deployed_at=$(echo "$response" | python3 -c "import json,sys; print(json.load(sys.stdin).get('deployedAt','unknown'))")
+          echo "commit=$commit" >> $GITHUB_OUTPUT
+          echo "deployed_at=$deployed_at" >> $GITHUB_OUTPUT
+
+      - name: Compare to origin/main
+        env:
+          ENV_NAME: ${{ matrix.env.name }}
+          DEPLOYED_COMMIT: ${{ steps.health.outputs.commit }}
+          DEPLOYED_AT: ${{ steps.health.outputs.deployed_at }}
+        run: |
+          set -e
+          main_short=$(git rev-parse --short origin/main)
+
+          echo "Deployed commit on $ENV_NAME: $DEPLOYED_COMMIT"
+          echo "Current origin/main:        $main_short"
+          echo "Deployed at:                $DEPLOYED_AT"
+
+          if [ "$DEPLOYED_COMMIT" = "unknown" ]; then
+            echo "::error::$ENV_NAME: function reports GIT_COMMIT=unknown. Deploy via ./scripts/deploy-functions.sh $ENV_NAME to bake the commit into project secrets."
+            exit 1
+          fi
+
+          if [ "$DEPLOYED_COMMIT" = "$main_short" ]; then
+            echo "✓ $ENV_NAME is in sync with main."
+            exit 0
+          fi
+
+          # Out of sync — check age. > 7 days is a hard fail; < 7 days is a warning.
+          if ! git cat-file -e "$DEPLOYED_COMMIT" 2>/dev/null; then
+            echo "::warning::$ENV_NAME: deployed commit $DEPLOYED_COMMIT not in repo history. Possibly a force-push since deploy; can't compute age."
+            exit 0
+          fi
+
+          age_days=$(( ( $(date -u +%s) - $(git log -1 --format=%ct "$DEPLOYED_COMMIT") ) / 86400 ))
+          echo "Deploy age: $age_days days"
+
+          if [ "$age_days" -gt 7 ]; then
+            echo "::error::$ENV_NAME: deployed commit is $age_days days behind main. Run \`pnpm deploy:functions:$ENV_NAME\` to re-deploy."
+            exit 1
+          fi
+
+          echo "::warning::$ENV_NAME: deployed commit lags main by $age_days days (within tolerance of 7)."
