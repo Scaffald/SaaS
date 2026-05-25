@@ -128,7 +128,7 @@ export const ProjectSelector = memo(function ProjectSelector({
             borderWidth: 1,
           }}
         >
-          <AlertCircle size="md" color={t === "dark" ? colors.error[300] : colors.error[600]} />
+          <AlertCircle size={20} color={t === "dark" ? colors.error[300] : colors.error[600]} />
           <Text style={{ flex: 1, color: t === "dark" ? colors.error[300] : colors.error[600] }}>
             {error}
           </Text>

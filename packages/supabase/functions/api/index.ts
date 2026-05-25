@@ -101,6 +101,21 @@ app.use("*", authMiddleware); // Global auth middleware (handles both JWT and AP
 app.use("*", rateLimitMiddleware); // Rate limit API key requests
 app.use("*", trackApiKeyUsage); // Track API key usage
 
+// Cold-start timestamp; baked into the bundle when the function instance boots.
+const FUNCTION_BOOTED_AT = new Date().toISOString();
+
+// Public health endpoint — auth middleware skips paths ending in `/health`.
+// Returns the deployed git commit so we can detect deployment skew without
+// having to drive the UI. Set GIT_COMMIT via the deploy script:
+//   pnpx supabase functions deploy api --no-verify-jwt --env-file ...
+// or via `pnpm deploy:functions:{dev,preview,prod}` which inject it.
+app.get("/v1/health", (c) =>
+  c.json({
+    commit: Deno.env.get("GIT_COMMIT") ?? "unknown",
+    deployedAt: Deno.env.get("DEPLOYED_AT") ?? FUNCTION_BOOTED_AT,
+  }),
+);
+
 // Routes
 app.route("/v1/jobs", jobsRouter);
 app.route("/oauth", oauthRouter); // OAuth 2.0 authorization server
