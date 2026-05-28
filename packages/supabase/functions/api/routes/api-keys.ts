@@ -272,7 +272,7 @@ app.get("/", requireAuth, async (c) => {
 
 app.get("/:id", requireAuth, async (c) => {
   try {
-    const keyId = c.param("id");
+    const keyId = c.req.param("id");
     const user = c.get("user");
     const apiKey = c.get("apiKey");
     const supabase = c.get("supabase");
@@ -343,7 +343,7 @@ app.get("/:id", requireAuth, async (c) => {
 
 app.patch("/:id", requireAuth, async (c) => {
   try {
-    const keyId = c.param("id");
+    const keyId = c.req.param("id");
     const body = await c.req.json();
     const input = UpdateApiKeySchema.parse(body);
 
@@ -444,7 +444,7 @@ app.patch("/:id", requireAuth, async (c) => {
 
 app.delete("/:id", requireAuth, async (c) => {
   try {
-    const keyId = c.param("id");
+    const keyId = c.req.param("id");
     const user = c.get("user");
     const supabase = c.get("supabase");
 
@@ -527,7 +527,7 @@ app.delete("/:id", requireAuth, async (c) => {
 
 app.get("/:id/usage", requireAuth, async (c) => {
   try {
-    const keyId = c.param("id");
+    const keyId = c.req.param("id");
     const days = Number.parseInt(c.req.query("days") || "30", 10);
     const user = c.get("user");
     const apiKey = c.get("apiKey");
