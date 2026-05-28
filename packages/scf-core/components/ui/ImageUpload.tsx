@@ -486,7 +486,7 @@ export function ImageUpload({
       {/* Error Message */}
       {error && (
         <Row gap={8} align="center" padding={8} style={{ backgroundColor: t === 'dark' ? colors.error[900] : colors.error[50], borderRadius: 12 }}>
-          <AlertCircle size="lg" color={colors.error[500]} />
+          <AlertCircle size={24} color={colors.error[500]} />
           <Text style={{ color: colors.error[500], flex: 1 }}>
             {error}
           </Text>

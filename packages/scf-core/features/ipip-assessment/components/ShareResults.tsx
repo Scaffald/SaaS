@@ -146,7 +146,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
         aria-live="polite"
       >
         <Row align="center" gap={8}>
-          <Lock size="sm" color={colors.text[theme].secondary} />
+          <Lock size={16} color={colors.text[theme].secondary} />
           <Text style={{ color: colors.text[theme].secondary }}>Complete Assessment to Share</Text>
         </Row>
         <Text style={{ color: colors.text[theme].secondary }}>
@@ -167,7 +167,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
     >
       <Stack gap={8}>
         <Row align="center" gap={8}>
-          <Share2 size="sm" color={colors.text[theme].secondary} />
+          <Share2 size={16} color={colors.text[theme].secondary} />
           <Text style={{ color: colors.text[theme].secondary }}>Share Your Results</Text>
         </Row>
         <Text style={{ color: colors.text[theme].secondary }}>
@@ -327,7 +327,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
             aria-live="polite"
           >
             <Row align="center" gap={8}>
-              <Calendar size="sm" color={theme === 'light' ? colors.yellow[700] : colors.yellow[300]} />
+              <Calendar size={16} color={theme === 'light' ? colors.yellow[700] : colors.yellow[300]} />
               <Text style={{ color: theme === 'light' ? colors.yellow[700] : colors.yellow[300] }}>Retake Available Soon</Text>
             </Row>
             <Text style={{ color: theme === 'light' ? colors.yellow[600] : colors.yellow[400] }}>

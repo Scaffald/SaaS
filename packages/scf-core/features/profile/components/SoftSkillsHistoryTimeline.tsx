@@ -162,7 +162,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
           style={{ backgroundColor: t === 'dark' ? colors.info[900] : colors.info[50], borderColor: colors.border[t].info }}
         >
           <Row gap={8} align="center">
-            <Calendar size="md" color={colors.fg[t].info} />
+            <Calendar size={20} color={colors.fg[t].info} />
             <Text style={{ color: colors.info[600] }}>Version {versions[0].version}</Text>
             {versions[0].selfAssessedAt && (
               <Text style={{ color: colors.fg[t].info }}>• {formatDate(versions[0].selfAssessedAt)}</Text>
@@ -240,7 +240,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                           </Row>
                           {version.selfAssessedAt && (
                             <Row gap={8} align="center">
-                              <Calendar size="md" color={colors.icon[t].subtle} />
+                              <Calendar size={20} color={colors.icon[t].subtle} />
                               <Text style={{ color: colors.text[t].secondary }}>
                                 {formatDate(version.selfAssessedAt)}
                                 {daysAgo && ` • ${daysAgo}`}
@@ -249,7 +249,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                           )}
                         </Stack>
                       </Row>
-                      {isSelected && <TrendingUp size="lg" color={colors.fg[t].info} />}
+                      {isSelected && <TrendingUp size={24} color={colors.fg[t].info} />}
                     </Row>
 
                     {/* Category Averages */}

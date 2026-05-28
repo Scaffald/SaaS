@@ -311,11 +311,11 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
               <Paragraph size="sm" color={colors.text[theme].tertiary}>
                 Total Requests
               </Paragraph>
-              <Activity size="lg" color={colors.icon[theme].info} />
+              <Activity size={24} color={colors.icon[theme].info} />
             </Row>
             <H3>{data.metrics.totalRequests.toLocaleString()}</H3>
             <Row align="center" gap={8}>
-              <TrendingUp size="md" color={colors.fg[theme].success} />
+              <TrendingUp size={20} color={colors.fg[theme].success} />
               <Paragraph size="sm" color={colors.fg[theme].success}>
                 +12% from last period
               </Paragraph>
@@ -330,7 +330,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
               <Paragraph size="sm" color={colors.text[theme].tertiary}>
                 Success Rate
               </Paragraph>
-              <CheckCircle size="lg" color={colors.icon[theme].success} />
+              <CheckCircle size={24} color={colors.icon[theme].success} />
             </Row>
             <H3>{successRate}%</H3>
             <Row align="center" gap={8}>
@@ -348,11 +348,11 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
               <Paragraph size="sm" color={colors.text[theme].tertiary}>
                 Avg Response Time
               </Paragraph>
-              <Clock size="lg" color={colors.icon[theme].warning} />
+              <Clock size={24} color={colors.icon[theme].warning} />
             </Row>
             <H3>{data.metrics.averageResponseTime}ms</H3>
             <Row align="center" gap={8}>
-              <ArrowDown size="md" color={colors.fg[theme].success} />
+              <ArrowDown size={20} color={colors.fg[theme].success} />
               <Paragraph size="sm" color={colors.fg[theme].success}>
                 8% faster
               </Paragraph>
@@ -367,7 +367,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
               <Paragraph size="sm" color={colors.text[theme].tertiary}>
                 Failed Requests
               </Paragraph>
-              <XCircle size="lg" color={colors.icon[theme].error} />
+              <XCircle size={24} color={colors.icon[theme].error} />
             </Row>
             <H3>{data.metrics.failedRequests}</H3>
             <Row align="center" gap={8}>
@@ -439,7 +439,7 @@ export function APIKeyUsageChart({ apiKeyId, onClose }: APIKeyUsageChartProps) {
         <Stack gap={16}>
           <Row justify="space-between" align="center">
             <H4>Request Volume</H4>
-            <BarChart3 size="lg" color={colors.icon[theme].info} />
+            <BarChart3 size={24} color={colors.icon[theme].info} />
           </Row>
 
           {/* Simple bar chart */}

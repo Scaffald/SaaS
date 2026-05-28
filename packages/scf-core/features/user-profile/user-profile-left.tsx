@@ -118,9 +118,9 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
                 {syncStatus === "syncing" ? (
                   <Spinner variant="ios" size="sm" color="primary" />
                 ) : syncStatus === "error" ? (
-                  <AlertTriangle size="md" color={t === 'dark' ? colors.error[300] : colors.error[600]} />
+                  <AlertTriangle size={20} color={t === 'dark' ? colors.error[300] : colors.error[600]} />
                 ) : (
-                  <CheckCircle size="md" color={t === 'dark' ? colors.green[300] : colors.green[600]} />
+                  <CheckCircle size={20} color={t === 'dark' ? colors.green[300] : colors.green[600]} />
                 )}
                 <Text
                   color={

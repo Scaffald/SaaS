@@ -162,7 +162,7 @@ export const JobCard = memo(
       if (location) {
         metadataItems.push({
           key: 'location',
-          icon: <MapPin size="md" color={isSelected ? colors.text[t].quaternary : colors.text[t].secondary} />,
+          icon: <MapPin size={20} color={isSelected ? colors.text[t].quaternary : colors.text[t].secondary} />,
           label: location,
         })
       }
@@ -170,7 +170,7 @@ export const JobCard = memo(
       if (employment) {
         metadataItems.push({
           key: 'employment',
-          icon: <Briefcase size="md" color={isSelected ? colors.text[t].quaternary : colors.text[t].secondary} />,
+          icon: <Briefcase size={20} color={isSelected ? colors.text[t].quaternary : colors.text[t].secondary} />,
           label: employment,
         })
       }
@@ -178,7 +178,7 @@ export const JobCard = memo(
       if (postedTime) {
         metadataItems.push({
           key: 'posted',
-          icon: <Clock size="md" color={isSelected ? colors.text[t].quaternary : colors.text[t].tertiary} />,
+          icon: <Clock size={20} color={isSelected ? colors.text[t].quaternary : colors.text[t].tertiary} />,
           label: postedTime,
         })
       }
@@ -236,7 +236,7 @@ export const JobCard = memo(
                   )}
                   {organization && (
                     <Row gap={8} align="center">
-                      <Building2 size="lg" color={isSelected ? colors.text[t].quaternary : colors.text[t].primary} />
+                      <Building2 size={24} color={isSelected ? colors.text[t].quaternary : colors.text[t].primary} />
                       <Text color={isSelected ? colors.text[t].quaternary : colors.text[t].primary}>{organization.name}</Text>
                     </Row>
                   )}
@@ -280,7 +280,7 @@ export const JobCard = memo(
           {/* Pay range */}
           {payRange && (
             <Row gap={6} align="center">
-              <DollarSign size="lg" color={t === 'dark' ? colors.green[300] : colors.green[600]} />
+              <DollarSign size={24} color={t === 'dark' ? colors.green[300] : colors.green[600]} />
               <Text color={t === 'dark' ? colors.green[300] : colors.green[600]}>{payRange}</Text>
             </Row>
           )}

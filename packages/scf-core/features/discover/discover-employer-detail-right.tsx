@@ -340,7 +340,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
 
       {isLoading ? (
         <Row gap={8} align="center">
-          <Loader2 size="md" color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
+          <Loader2 size={20} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
           <Text style={{ color: colors.text[t].secondary }}>Loading organization context...</Text>
         </Row>
       ) : (
@@ -409,7 +409,7 @@ function OrganizationSnapshot({
   return (
     <Stack gap={8}>
       <Row gap={8} align="center">
-        <CheckCircle2 size="md" color={t === 'dark' ? colors.green[300] : colors.green[600]} />
+        <CheckCircle2 size={20} color={t === 'dark' ? colors.green[300] : colors.green[600]} />
         <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[600] }}>{name}</Text>
       </Row>
       {createdAt && <Text style={{ color: colors.text[t].secondary }}>Onboarded {createdAt}</Text>}

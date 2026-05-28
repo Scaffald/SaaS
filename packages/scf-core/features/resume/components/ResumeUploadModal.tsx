@@ -470,7 +470,7 @@ export function ResumeUploadModal({
             padding="sm"
             borderRadius={12}
           >
-            <CheckCircle2 color={colors.fg[theme].success} size="lg" />
+            <CheckCircle2 color={colors.fg[theme].success} size={24} />
             <Text color={colors.success[600]}>
               Resume uploaded successfully. Redirecting...
             </Text>
@@ -485,7 +485,7 @@ export function ResumeUploadModal({
             padding="sm"
             borderRadius={12}
           >
-            <AlertCircle color={colors.fg[theme].error} size="lg" />
+            <AlertCircle color={colors.fg[theme].error} size={24} />
             <Text color={colors.error[600]}>{errorMessage}</Text>
           </Row>
         )}

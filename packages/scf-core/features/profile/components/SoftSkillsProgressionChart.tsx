@@ -159,11 +159,11 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
   const getTrendIcon = (trend: SkillProgression['trend']) => {
     switch (trend) {
       case 'improved':
-        return <ArrowUp size="md" color={t === 'light' ? colors.green[700] : colors.green[300]} />
+        return <ArrowUp size={20} color={t === 'light' ? colors.green[700] : colors.green[300]} />
       case 'declined':
-        return <ArrowDown size="md" color={t === 'light' ? colors.error[700] : colors.error[300]} />
+        return <ArrowDown size={20} color={t === 'light' ? colors.error[700] : colors.error[300]} />
       case 'stable':
-        return <ArrowRight size="md" color={colors.text[t].tertiary} />
+        return <ArrowRight size={20} color={colors.text[t].tertiary} />
       default:
         return null
     }
