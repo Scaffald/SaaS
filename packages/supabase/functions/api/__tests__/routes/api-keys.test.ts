@@ -25,6 +25,14 @@ import {
 } from "../setup.ts";
 
 /**
+ * Unique email per call/run — fixed emails (admin@example.com etc.) collide with
+ * users left over from earlier tests or prior runs, so admin.createUser fails.
+ */
+function uniqEmail(prefix: string): string {
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
+}
+
+/**
  * Helper to create a test user with organization membership
  */
 async function createTestUserWithOrg(overrides: {
@@ -257,7 +265,7 @@ Deno.test("POST /v1/api-keys - returns 403 if authenticated with API key", async
 Deno.test("POST /v1/api-keys - returns 403 if user not in organization", async () => {
   markTestStart();
 
-  const user = await registerUserWithMagicLink("no-org@example.com");
+  const user = await registerUserWithMagicLink(uniqEmail("no-org"));
   assert(user !== null);
 
   const client = createTestClient({ authToken: user.token });
@@ -364,7 +372,7 @@ Deno.test("GET /v1/api-keys - lists keys for API key authentication", async () =
 Deno.test("GET /v1/api-keys - returns 403 if user not in organization", async () => {
   markTestStart();
 
-  const user = await registerUserWithMagicLink("no-org-list@example.com");
+  const user = await registerUserWithMagicLink(uniqEmail("no-org-list"));
   assert(user !== null);
 
   const client = createTestClient({ authToken: user.token });
@@ -432,8 +440,8 @@ Deno.test("GET /v1/api-keys/:id - returns 404 if key not found", async () => {
 Deno.test("GET /v1/api-keys/:id - returns 403 if user not in same organization", async () => {
   markTestStart();
 
-  const user1 = await createTestUserWithOrg({ email: "user1@example.com" });
-  const user2 = await createTestUserWithOrg({ email: "user2@example.com" });
+  const user1 = await createTestUserWithOrg({ email: uniqEmail("user1") });
+  const user2 = await createTestUserWithOrg({ email: uniqEmail("user2") });
 
   const apiKey = await createTestApiKey({
     organization_id: user1.organization.id,
@@ -514,11 +522,11 @@ Deno.test("PATCH /v1/api-keys/:id - returns 403 if not org admin", async () => {
   markTestStart();
 
   const admin = await createTestUserWithOrg({
-    email: "admin@example.com",
+    email: uniqEmail("admin"),
     user_type: "employer",
   });
   const user = await createTestUserWithOrg({
-    email: "jobseeker@example.com",
+    email: uniqEmail("jobseeker"),
     user_type: "job_seeker",
   });
 
@@ -641,11 +649,11 @@ Deno.test("DELETE /v1/api-keys/:id - returns 403 if not org admin", async () => 
   markTestStart();
 
   const admin = await createTestUserWithOrg({
-    email: "admin@example.com",
+    email: uniqEmail("admin"),
     user_type: "employer",
   });
   const user = await createTestUserWithOrg({
-    email: "user@example.com",
+    email: uniqEmail("user"),
     user_type: "job_seeker",
   });
 
@@ -797,10 +805,10 @@ Deno.test("GET /v1/api-keys/:id/usage - returns 403 if not in same organization"
   markTestStart();
 
   const user1 = await createTestUserWithOrg({
-    email: "user1-usage@example.com",
+    email: uniqEmail("user1-usage"),
   });
   const user2 = await createTestUserWithOrg({
-    email: "user2-usage@example.com",
+    email: uniqEmail("user2-usage"),
   });
 
   const apiKey = await createTestApiKey({

@@ -5,6 +5,7 @@
 
 import { Hono } from "hono";
 import { z } from "zod";
+import { createClient } from "@supabase/supabase-js";
 import {
   generateApiKey,
   getKeyPrefix,
@@ -13,6 +14,17 @@ import {
 import { requireAuth } from "../middleware/auth.ts";
 
 const app = new Hono();
+
+// Service-role client for key existence/ownership lookups. GET /:id and usage
+// must locate a key regardless of the caller's org so the explicit access check
+// can return 403 (not a misleading 404) for cross-org access. The access check
+// gates what's actually returned, so no key data leaks to unauthorized callers.
+function adminClient() {
+  return createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+  );
+}
 
 // ============================================================================
 // Schemas
@@ -278,7 +290,7 @@ app.get("/:id", requireAuth, async (c) => {
     const supabase = c.get("supabase");
 
     // Get the API key
-    const { data: key, error } = await supabase
+    const { data: key, error } = await adminClient()
       .schema("core")
       .from("api_keys")
       .select("*, organization:organizations(id, name, slug)")
@@ -545,7 +557,7 @@ app.get("/:id/usage", requireAuth, async (c) => {
     const supabase = c.get("supabase");
 
     // Verify access to this key
-    const { data: key } = await supabase
+    const { data: key } = await adminClient()
       .schema("core")
       .from("api_keys")
       .select("organization_id")
