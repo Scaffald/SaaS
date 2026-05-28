@@ -301,14 +301,17 @@ app.get("/:id", requireAuth, async (c) => {
     if (apiKey && apiKey.organizationId === key.organization_id) {
       hasAccess = true;
     } else if (user) {
-      const { data: profile } = await supabase
+      const { data: membership } = await supabase
         .schema("core")
         .from("team_members")
-        .select("organization_id")
+        .select("team:teams(organization_id)")
         .eq("user_id", user.id)
+        .limit(1)
         .single();
 
-      if (profile && profile.organization_id === key.organization_id) {
+      // biome-ignore lint/suspicious/noExplicitAny: Supabase embedded-relation typing
+      const userOrgId = (membership?.team as any)?.organization_id;
+      if (userOrgId && userOrgId === key.organization_id) {
         hasAccess = true;
       }
     }
@@ -361,20 +364,24 @@ app.patch("/:id", requireAuth, async (c) => {
       );
     }
 
-    // Get user's organization
-    const { data: profile } = await supabase
+    // Get user's organization + role via their team membership
+    const { data: membership } = await supabase
       .schema("core")
       .from("team_members")
-      .select("organization_id, user_type")
+      .select("team:teams(organization_id), role:team_roles(key)")
       .eq("user_id", user.id)
+      .limit(1)
       .single();
 
-    if (!profile?.organization_id) {
+    // biome-ignore lint/suspicious/noExplicitAny: Supabase embedded-relation typing
+    const organizationId = (membership?.team as any)?.organization_id;
+    if (!organizationId) {
       return c.json({ error: "Forbidden" }, 403);
     }
 
-    // Only org admins can update keys
-    if (!["employer", "organization_admin"].includes(profile.user_type)) {
+    // Only org admins (team_admin role) can update keys
+    // biome-ignore lint/suspicious/noExplicitAny: Supabase embedded-relation typing
+    if ((membership?.role as any)?.key !== "team_admin") {
       return c.json(
         {
           error: "Forbidden",
@@ -394,7 +401,7 @@ app.patch("/:id", requireAuth, async (c) => {
         scopes: input.scopes,
       })
       .eq("id", keyId)
-      .eq("organization_id", profile.organization_id)
+      .eq("organization_id", organizationId)
       .select(
         "id, name, key_prefix, scopes, rate_limit_tier, is_active, last_used_at, created_at, expires_at",
       )
@@ -459,20 +466,24 @@ app.delete("/:id", requireAuth, async (c) => {
       );
     }
 
-    // Get user's organization
-    const { data: profile } = await supabase
+    // Get user's organization + role via their team membership
+    const { data: membership } = await supabase
       .schema("core")
       .from("team_members")
-      .select("organization_id, user_type")
+      .select("team:teams(organization_id), role:team_roles(key)")
       .eq("user_id", user.id)
+      .limit(1)
       .single();
 
-    if (!profile?.organization_id) {
+    // biome-ignore lint/suspicious/noExplicitAny: Supabase embedded-relation typing
+    const organizationId = (membership?.team as any)?.organization_id;
+    if (!organizationId) {
       return c.json({ error: "Forbidden" }, 403);
     }
 
-    // Only org admins can delete keys
-    if (!["employer", "organization_admin"].includes(profile.user_type)) {
+    // Only org admins (team_admin role) can delete keys
+    // biome-ignore lint/suspicious/noExplicitAny: Supabase embedded-relation typing
+    if ((membership?.role as any)?.key !== "team_admin") {
       return c.json(
         {
           error: "Forbidden",
@@ -488,7 +499,7 @@ app.delete("/:id", requireAuth, async (c) => {
       .from("api_keys")
       .update({ is_active: false })
       .eq("id", keyId)
-      .eq("organization_id", profile.organization_id)
+      .eq("organization_id", organizationId)
       .select("id, name")
       .single();
 
@@ -550,14 +561,17 @@ app.get("/:id/usage", requireAuth, async (c) => {
     if (apiKey && apiKey.organizationId === key.organization_id) {
       hasAccess = true;
     } else if (user) {
-      const { data: profile } = await supabase
+      const { data: membership } = await supabase
         .schema("core")
         .from("team_members")
-        .select("organization_id")
+        .select("team:teams(organization_id)")
         .eq("user_id", user.id)
+        .limit(1)
         .single();
 
-      if (profile && profile.organization_id === key.organization_id) {
+      // biome-ignore lint/suspicious/noExplicitAny: Supabase embedded-relation typing
+      const userOrgId = (membership?.team as any)?.organization_id;
+      if (userOrgId && userOrgId === key.organization_id) {
         hasAccess = true;
       }
     }
