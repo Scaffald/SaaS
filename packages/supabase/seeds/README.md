@@ -6,6 +6,13 @@ This directory contains all seed data for development and testing environments. 
 
 When you run `pnpm supa db reset`, Supabase applies all migrations and then runs **every `seeds/*.sql` file** in alphabetical order (see `config.toml` → `[db.seed]` → `sql_paths = ['./seeds/*.sql']`). There is no single `seed.sql` orchestrator; the glob runs each `.sql` file directly.
 
+> ⚠️ **Reference data is NOT seeded by `db reset`.** The CSI MasterFormat taxonomy
+> (`data.masterformat`), `core.skills`, and O*NET occupations (`onet.occupation_data`)
+> come from the **TypeScript** seeder, not the SQL seeds. After a `db reset` you must
+> also run `pnpm supa:seed` — or use `pnpm supa:reset`, which chains
+> `db reset` → `supa seed` → tests. Without it, **skill search returns nothing**
+> (empty taxonomy) and O*NET search is unavailable.
+
 ## Seed Files
 
 ### Core Seeds (run automatically on `pnpm supa db reset`)
@@ -27,7 +34,6 @@ These files run in glob order when you run `pnpm supa db reset`:
 ### Optional/Specialized Seeds (Run Manually)
 - **`seed-affiliates.sql`** – Affiliate program partners (OSHA, NIMS, etc.)
 - **`seed-soft-skills.sql`** – Soft skills taxonomy (35 skills across 4 categories)
-- **`seed-test-users.sql`** – Three specific test users for manual testing
 - **`seed-super-admins.sql`** – Super admin role assignments for core team
 - **`seed-job-feeds.sql`** – External RSS job feed configurations
 
@@ -72,7 +78,7 @@ Use this sequence to get a consistent database and run API tests:
 
 1. **Start Supabase** (if not already): `pnpm supa start`
 2. **Reset DB and run SQL seeds**: `pnpm supa db reset` (applies migrations and runs all `seeds/*.sql`)
-3. **Optional – TypeScript reference data**: `pnpm supa:seed` (CSI, jobs, O*NET, etc.). Only needed for tests that require O*NET, CSI, or external jobs.
+3. **TypeScript reference data**: `pnpm supa:seed` (CSI MasterFormat, `core.skills`, O*NET, jobs, etc.). Required for anything touching skills — **skill search returns empty without it**. Only skip if you're certain your tests don't hit skills/O*NET/CSI.
 4. **Serve the API** (separate terminal): `pnpm supa functions serve api` (or see [API_TESTING_GUIDE](../../../docs/API_TESTING_GUIDE.md)) so smoke script and REST tests can hit the API.
 
 You can also use the helper script from repo root: `pnpm supa:seed:api` (or `./scripts/seed-for-api-testing.sh`). Use `FULL_SEED=1` to run the TypeScript seeder after reset.
@@ -96,9 +102,6 @@ pnpm supa db seed --file seeds/seed-affiliates.sql
 
 # Add only soft skills
 pnpm supa db seed --file seeds/seed-soft-skills.sql
-
-# Add test users
-pnpm supa db seed --file seeds/seed-test-users.sql
 ```
 
 ### Refreshing Data
@@ -204,16 +207,18 @@ pnpm supa db seed
 - **Professionalism**: 9 skills (work ethic, leadership, etc.)
 - **Technical**: 7 skills (craftsmanship, innovation, etc.)
 
-### seed-test-users.sql
-Three specific test users for manual testing:
-- `testuser1@example.com` - John Smith (Construction) - Password: `TestUser123!`
-- `testuser2@example.com` - Sarah Johnson (Manufacturing) - Password: `TestUser123!`
-- `testuser3@example.com` - Mike Wilson (Transportation) - Password: `TestUser123!`
+### Local login credentials
 
-**Note**: The 50 users in seed-users.sql use:
-- Usernames: `seeduser_1` through `seeduser_50`
-- Emails: `firstname.lastname.N@example.test` (e.g. `marcus.washington.1@example.test`)
-- Password: `SeedUser123!` (for all seed users)
+All seeded auth users share the password **`password123`** (see
+`002_seed-users.sql`, `004_seed-unicorn-org.sql`, `005_seed-demo-prerequisites.sql`,
+`007_seed-wizard-org.sql`). Handy accounts for local testing:
+
+- `test@example.com` / `test123456` — API test user (`002a_seed-api-test-user.sql`)
+- `marcus.rivera@example.test` / `password123` — onboarded Construction worker (good for skills/profile testing)
+- `@unicorn.love` users (clay, zach, marc, test) / `password123` — super-admins / employer demo
+
+> There is no `seed-test-users.sql`, and no `testuser1@example.com`. Earlier docs
+> referencing `TestUser123!` / `SeedUser123!` were inaccurate — the seeds use `password123`.
 
 ### seed-super-admins.sql
 Assigns super_admin role to core team members (production emails only)
