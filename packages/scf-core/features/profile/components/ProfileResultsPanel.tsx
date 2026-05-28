@@ -1,4 +1,4 @@
-import { DashboardWidget } from '@scaffald/ui'
+import { Button, DashboardWidget } from '@scaffald/ui'
 import type { ComponentType, ReactNode } from 'react'
 import { ScrollView, Spinner, Text, Stack, type StackProps, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
@@ -10,6 +10,12 @@ interface ProfileResultsPanelProps extends StackProps {
   title?: string
   /** Whether data is loading */
   isLoading?: boolean
+  /** Whether the fetch failed (shown before empty/children) */
+  isError?: boolean
+  /** Error state message */
+  errorMessage?: string
+  /** Retry handler; shows a Retry button when provided */
+  onRetry?: () => void
   /** Whether results are empty */
   isEmpty?: boolean
   /** Empty state icon */
@@ -41,6 +47,9 @@ export function ProfileResultsPanel({
   children,
   title,
   isLoading = false,
+  isError = false,
+  errorMessage,
+  onRetry,
   isEmpty = false,
   emptyIcon: EmptyIcon,
   emptyMessage,
@@ -60,6 +69,17 @@ export function ProfileResultsPanel({
             <Stack align="center" justify="center" padding={32} gap={12}>
               <Spinner variant="ios" size="lg" />
               <Text style={{ color: '#414e62' }}>Loading...</Text>
+            </Stack>
+          ) : isError ? (
+            <Stack align="center" justify="center" padding={32} gap={12}>
+              <Text style={{ color: '#ef4444', textAlign: 'center' }}>
+                {errorMessage || "Couldn't load this section. Please try again."}
+              </Text>
+              {onRetry && (
+                <Button size="sm" variant="outline" onPress={onRetry}>
+                  Retry
+                </Button>
+              )}
             </Stack>
           ) : isEmpty ? (
             <Stack align="center" justify="center" padding={32} gap={12}>

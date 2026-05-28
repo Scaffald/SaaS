@@ -53,8 +53,12 @@ export function ProfileSkillsRight() {
   const previousSkillsRef = useRef<string[]>([]);
 
   // Fetch user's skills
-  const { data: userSkillsData, isPending: isLoadingSkills } =
-    useUserSkillsMultiTaxonomy();
+  const {
+    data: userSkillsData,
+    isPending: isLoadingSkills,
+    isError: isSkillsError,
+    refetch: refetchSkills,
+  } = useUserSkillsMultiTaxonomy();
 
   // React Query client for cache invalidation
   const queryClient = useQueryClient();
@@ -271,6 +275,9 @@ export function ProfileSkillsRight() {
       <ProfileResultsPanel
         title="Your Skills"
         isLoading={isLoadingSkills}
+        isError={isSkillsError}
+        onRetry={() => refetchSkills()}
+        errorMessage="Couldn't load your skills. Please try again."
         isEmpty={userSkills.length === 0}
         emptyIcon={Award as ComponentType<{ size?: number; color?: string }>}
         emptyMessage="No skills added yet. Use the form on the left to add your first skill."

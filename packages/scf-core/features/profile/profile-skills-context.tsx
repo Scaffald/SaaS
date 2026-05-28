@@ -213,8 +213,10 @@ export function ProfileSkillsProvider({
 
         return skills;
       } catch (error) {
+        // Re-throw so the search UI can show an error state + retry instead of
+        // silently rendering "No skills found" (which masked the SC-91 404).
         console.error("Search error:", error);
-        return [];
+        throw error;
       }
     },
     [selectedIndustryId, trackEventMutation] // Only depends on primitive values
