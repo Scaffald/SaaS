@@ -121,7 +121,6 @@ app.route("/v1/jobs", jobsRouter);
 app.route("/oauth", oauthRouter); // OAuth 2.0 authorization server
 app.route("/v1/oauth", oauthManagementRouter); // OAuth app management
 app.route("/v1/applications", applicationsRouter);
-app.route("/v1/profiles", profilesRouter);
 app.route("/v1/api-keys", apiKeysRouter); // API key management
 app.route("/v1/auth", authRouter); // Authentication endpoints
 app.route("/v1/industries", industriesRouter); // Industry lookup
@@ -141,6 +140,11 @@ app.route("/v1/profiles/portfolio", portfolioRouter); // Portfolio items
 app.route("/v1/profiles/widgets", profileWidgetsRouter); // Profile widgets
 app.route("/v1/profiles/completion", profileCompletionRouter); // Profile completion tracking
 app.route("/v1/profiles/import", profileImportRouter); // Profile import
+// Mount the generic /v1/profiles router AFTER every /v1/profiles/<sub> router
+// above: its GET /{username} is a greedy single-segment match that otherwise
+// shadows base routes like /v1/profiles/experience (treating "experience" as a
+// username → 404). Keep this last among the /v1/profiles* mounts.
+app.route("/v1/profiles", profilesRouter);
 app.route("/v1/profile-views", profileViewsRouter); // Profile views tracking
 app.route("/v1/symbolicate", symbolicateRouter); // Symbolicate stub (Expo/Metro; no-op)
 app.route("/symbolicate", symbolicateRouter); // Same stub for clients that call /api/symbolicate
