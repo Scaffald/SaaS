@@ -88,12 +88,15 @@ async function createTestUserWithOrg(overrides: {
   }
 
   // Create team member. team_members uses role_id now (no organization_id/role/
-  // user_type columns); use the global team_admin role for org-admin access.
-  const { data: adminRole } = await admin
+  // user_type columns). Map the requested user_type to a team role so non-admin
+  // cases still exercise the org-admin 403 paths: job_seeker -> member,
+  // employer/organization_admin -> team_admin.
+  const roleKey = overrides.user_type === "job_seeker" ? "member" : "team_admin";
+  const { data: teamRole } = await admin
     .schema("core")
     .from("team_roles")
     .select("id")
-    .eq("key", "team_admin")
+    .eq("key", roleKey)
     .is("organization_id", null)
     .limit(1)
     .single();
@@ -104,7 +107,7 @@ async function createTestUserWithOrg(overrides: {
     .insert({
       team_id: team.id,
       user_id: authUser.user.id,
-      role_id: adminRole?.id,
+      role_id: teamRole?.id,
     });
 
   // Get auth token

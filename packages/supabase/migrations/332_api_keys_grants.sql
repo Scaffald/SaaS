@@ -7,10 +7,18 @@
 -- function uses service_role) and the REST api-key tests.
 --
 -- Grant the privileges the existing policies assume. RLS still scopes the rows.
+--
+-- core.api_key_usage has the same gap: migration 222 enabled RLS + policies
+-- (api_key_usage_select_own_org, api_key_usage_service_role_all) but no grants.
+-- The usage tracker inserts via service_role and GET /v1/api-keys/:id/usage reads
+-- as an authenticated org member, so both 500'd on "permission denied" too.
 
 BEGIN;
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON core.api_keys TO authenticated;
 GRANT ALL ON core.api_keys TO service_role;
+
+GRANT SELECT ON core.api_key_usage TO authenticated;
+GRANT ALL ON core.api_key_usage TO service_role;
 
 COMMIT;
