@@ -95,8 +95,8 @@ app.openapi(getTopLevelRoute, async (c) => {
   }
 
   let query = supabase
-    .schema("core")
-    .from("certification_catalog")
+    .schema("data")
+    .from("certifications")
     .select("*")
     .eq("is_active", true);
 
@@ -161,8 +161,8 @@ app.openapi(getChildrenRoute, async (c) => {
   }
 
   const { data, error } = await supabase
-    .schema("core")
-    .from("certification_catalog")
+    .schema("data")
+    .from("certifications")
     .select("*")
     .eq("parent_id", parent_id)
     .eq("is_active", true)
@@ -212,10 +212,10 @@ app.openapi(getUserTreeRoute, async (c) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  const { data, error } = await supabase
+  const { data: userCerts, error } = await supabase
     .schema("core")
     .from("user_certifications")
-    .select("*, catalog:certification_catalog(*)")
+    .select("*")
     .eq("user_id", user.id)
     .eq("is_active", true);
 
@@ -226,17 +226,53 @@ app.openapi(getUserTreeRoute, async (c) => {
     );
   }
 
+  // The catalog lives in data.certifications (FK: user_certifications.certification_id).
+  // Fetched in a second query rather than a PostgREST embed because the base table is
+  // in `core` and the catalog in `data`, and `core.certifications` is an unrelated table
+  // whose name would make an embed hint ambiguous.
+  type CatalogRow = { id: string; depth: number; parent_id?: string | null };
+  const certIds = [
+    ...new Set(
+      ((userCerts || []) as Array<{ certification_id?: string }>)
+        .map((u) => u.certification_id)
+        .filter((id): id is string => Boolean(id)),
+    ),
+  ];
+  const catalogById: Record<string, CatalogRow> = {};
+  if (certIds.length > 0) {
+    const { data: catalogRows, error: catalogError } = await supabase
+      .schema("data")
+      .from("certifications")
+      .select("*")
+      .in("id", certIds);
+
+    if (catalogError) {
+      return c.json(
+        { error: "Failed to fetch tree", message: catalogError.message },
+        500,
+      );
+    }
+
+    for (const row of (catalogRows || []) as CatalogRow[]) {
+      catalogById[row.id] = row;
+    }
+  }
+
   // Organize by depth
   type CertWithCatalog = {
+    certification_id?: string;
     catalog?: { depth: number; parent_id?: string | null };
   };
   const depth0: CertWithCatalog[] = [];
   const depth1ByParent: Record<string, CertWithCatalog[]> = {};
   const depth2ByParent: Record<string, CertWithCatalog[]> = {};
 
-  for (const cert of (data || []) as CertWithCatalog[]) {
-    const catalog = cert.catalog;
+  for (const baseCert of (userCerts || []) as CertWithCatalog[]) {
+    const catalog = baseCert.certification_id
+      ? catalogById[baseCert.certification_id]
+      : undefined;
     if (!catalog) continue;
+    const cert: CertWithCatalog = { ...baseCert, catalog };
 
     if (catalog.depth === 0) {
       depth0.push(cert);
