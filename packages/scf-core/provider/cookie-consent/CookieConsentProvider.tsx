@@ -67,7 +67,7 @@ export const CookieConsentProvider = ({ children }: { children: ReactNode }) => 
       {children}
       {typeof window !== 'undefined' && (
         <>
-          <CookieConsentBanner />
+          <CookieConsentBanner privacyPolicyUrl="/auth/privacy" />
           <CookiePreferencesDialog />
         </>
       )}

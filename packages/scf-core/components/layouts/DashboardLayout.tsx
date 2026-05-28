@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Platform, ScrollView } from 'react-native'
-import { Grid, Row, Stack, useThemeContext, useResponsive } from '@scaffald/ui'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Grid, Row, Stack, useThemeContext, useResponsive, useBottomBarContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { Breadcrumb, type BreadcrumbItemData } from '@scaffald/ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
@@ -34,6 +35,12 @@ export const DashboardLayout = ({
 }: DashboardLayoutProps) => {
   const { isDesktop } = useResponsive()
   const { theme } = useThemeContext()
+  const insets = useSafeAreaInsets()
+  // The mobile bottom nav floats over content (position: fixed/absolute at
+  // bottom: 0). Pad the scroll content so the last item isn't clipped (SC-89).
+  // navBarHeight is 0 when the nav isn't mounted (desktop), so this is a no-op there.
+  const { navBarHeight } = useBottomBarContext()
+  const bottomNavInset = navBarHeight > 0 ? navBarHeight + insets.bottom : 0
   const contentPadding = isDesktop ? 32 : 16
   const verticalPadding = isDesktop ? 32 : 16
   const columnGap = isDesktop ? 32 : 16
@@ -68,7 +75,7 @@ export const DashboardLayout = ({
       style={bgStyle}
       showsVerticalScrollIndicator={false}
     >
-      <Stack gap={20} paddingTop={verticalPadding} paddingBottom={verticalPadding}>
+      <Stack gap={20} paddingTop={verticalPadding} paddingBottom={verticalPadding + bottomNavInset}>
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
           <Row paddingHorizontal={contentPadding}>

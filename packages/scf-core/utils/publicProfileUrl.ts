@@ -5,7 +5,10 @@ import { openExternalLink } from './platform'
  * Public profile path (no origin). Use for same-origin navigation or with getPublicProfileFullUrl for external/new tab.
  */
 export function getPublicProfilePath(slug: string): string {
-  return `/u/${slug}`
+  // Must match the actual route — apps/scaffald/app/(public)/users/[slug].tsx
+  // (ROUTES.PUBLIC_PROFILE.path === '/users/:slug'). The old '/u/:slug' had no
+  // matching route and produced an "Unmatched route" error (SC-74).
+  return `/users/${slug}`
 }
 
 /**

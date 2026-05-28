@@ -86,8 +86,22 @@ function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: Drawer
   const { data: profileData } = useGeneralInfoWidget()
   const avatarUrl = profileData?.avatar_url ?? profileData?.avatar_path ?? undefined
   const firstName = profileData?.privateData?.first_name ?? ''
-  const avatarInitials = (firstName.charAt(0) || 'U').toUpperCase()
-  const avatarAlt = profileData?.display_name ?? firstName
+  const lastName = profileData?.privateData?.last_name ?? ''
+  // Match ProfileHero's name + initials logic so the header avatar and the
+  // dashboard profile card never disagree (SC-87): first+last when both exist,
+  // otherwise fall back to display_name / username.
+  const avatarName =
+    firstName && lastName
+      ? `${firstName} ${lastName}`
+      : (profileData?.display_name ?? profileData?.username ?? '')
+  const avatarInitials =
+    avatarName
+      .split(/\s+/)
+      .map((part) => part[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2) || 'U'
+  const avatarAlt = profileData?.display_name ?? avatarName
   const isVerified = profileData?.idVerificationBadge?.badge_status === 'active'
 
   const [searchActive, setSearchActive] = useState(false)
