@@ -1206,6 +1206,10 @@ const searchParentSkillsBodySchema = z.object({
   query: z.string().min(1, "Search query is required"),
   industryId: z.string().uuid(),
   limit: z.number().min(1).max(50).optional(),
+  // Which taxonomies to search. Defaults to ["csi"] when omitted.
+  // "csi" → CSI MasterFormat + core skills (search_parent_skills RPC).
+  // "onet" → O*NET occupations (onet.occupation_data) returned as skill items.
+  taxonomies: z.array(z.enum(["csi", "onet"])).optional(),
 });
 
 const searchParentSkillItemSchema = z
@@ -1259,27 +1263,83 @@ const searchParentSkillsRoute = createRoute({
 app.openapi(searchParentSkillsRoute, async (c) => {
   const supabase = c.get("supabase");
   const user = c.get("user");
-  const { query, industryId, limit } = c.req.valid("json");
+  const { query, industryId, limit, taxonomies } = c.req.valid("json");
 
   if (!user) {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  const { data, error } = await supabase.rpc("search_parent_skills", {
-    p_query: query,
-    p_industry_id: industryId,
-    p_limit: limit ?? 20,
-  });
+  const lim = limit ?? 20;
+  const active = taxonomies && taxonomies.length > 0 ? taxonomies : ["csi"];
+  const wantCsi = active.includes("csi");
+  const wantOnet = active.includes("onet");
 
-  if (error) {
-    console.error("Error searching parent skills:", error);
-    return c.json(
-      { error: "Failed to search parent skills", message: error.message },
-      500,
+  let csiResults: unknown[] = [];
+  let onetResults: unknown[] = [];
+
+  if (wantCsi) {
+    const { data, error } = await supabase.rpc("search_parent_skills", {
+      p_query: query,
+      p_industry_id: industryId,
+      p_limit: lim,
+    });
+    if (error) {
+      console.error("Error searching parent skills (csi):", error);
+      return c.json(
+        { error: "Failed to search parent skills", message: error.message },
+        500,
+      );
+    }
+    csiResults = data ?? [];
+  }
+
+  if (wantOnet) {
+    // O*NET occupations as skill items. The id/code is the O*NET-SOC code
+    // (contains a dash, e.g. "47-2152.00"), which the client uses to infer the
+    // "onet" taxonomy on select and to set onet_occupation_id when adding.
+    const { data, error } = await supabase
+      .schema("onet")
+      .from("occupation_data")
+      .select("onetsoc_code, title")
+      .ilike("title", `%${query}%`)
+      .limit(lim);
+    if (error) {
+      console.error("Error searching parent skills (onet):", error);
+      return c.json(
+        { error: "Failed to search O*NET occupations", message: error.message },
+        500,
+      );
+    }
+    onetResults = (data ?? []).map(
+      (o: { onetsoc_code: string; title: string }) => ({
+        skill_id: o.onetsoc_code,
+        skill_name: o.title,
+        csi_display: null,
+        csi_code: null,
+        active: true,
+        child_count: 0,
+        parent_id: null,
+        parent_name: null,
+        depth: 0,
+        hierarchy_path: o.title,
+      }),
     );
   }
 
-  return c.json({ skills: data ?? [] });
+  // Interleave when both taxonomies are requested so neither dominates the list.
+  let skills: unknown[];
+  if (wantCsi && wantOnet) {
+    skills = [];
+    const max = Math.max(csiResults.length, onetResults.length);
+    for (let i = 0; i < max; i++) {
+      if (i < csiResults.length) skills.push(csiResults[i]);
+      if (i < onetResults.length) skills.push(onetResults[i]);
+    }
+  } else {
+    skills = wantOnet ? onetResults : csiResults;
+  }
+
+  return c.json({ skills: skills.slice(0, lim) });
 });
 
 /**

@@ -156,11 +156,13 @@ export function ProfileSkillsProvider({
       }
 
       try {
-        // Use searchParentSkills (cascading approach)
+        // Use searchParentSkills (cascading approach). Pass the selected
+        // taxonomies (csi/onet) through so O*NET occupation search works.
         const result = await searchParentSkillsMutationRef.current.mutateAsync({
           query,
           industryId: selectedIndustryId,
           limit: 20,
+          taxonomies: taxonomies as Array<"csi" | "onet">,
         });
 
         // Map results to ParentSkill format (now includes hierarchy information)
@@ -211,8 +213,10 @@ export function ProfileSkillsProvider({
 
         return skills;
       } catch (error) {
+        // Re-throw so the search UI can show an error state + retry instead of
+        // silently rendering "No skills found" (which masked the SC-91 404).
         console.error("Search error:", error);
-        return [];
+        throw error;
       }
     },
     [selectedIndustryId, trackEventMutation] // Only depends on primitive values

@@ -31,6 +31,11 @@ interface SimpleSkillAutocompleteProps {
   placeholder?: string
   /** Existing skill IDs to highlight or filter */
   existingSkillIds?: string[]
+  /**
+   * Opaque token that re-triggers the search when it changes (without the user
+   * editing the query) — e.g. when the CSI/O*NET taxonomy filters toggle.
+   */
+  searchSignal?: string
 }
 
 /**
@@ -45,6 +50,7 @@ export function SimpleSkillAutocomplete({
   isLoading = false,
   placeholder = 'Search for a skill...',
   existingSkillIds = [],
+  searchSignal,
 }: SimpleSkillAutocompleteProps) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
@@ -53,6 +59,8 @@ export function SimpleSkillAutocomplete({
   const [isSearching, setIsSearching] = useState(false)
   const debouncedValue = useDebounceValue(value, 300)
   const [showResults, setShowResults] = useState(false)
+  const [hasError, setHasError] = useState(false)
+  const [retryNonce, setRetryNonce] = useState(0)
 
   // Use ref to store latest onSearch without causing re-renders
   const onSearchRef = useRef(onSearch)
@@ -76,12 +84,15 @@ export function SimpleSkillAutocomplete({
         const searchResults = await onSearchRef.current(debouncedValue)
         if (isMounted) {
           setResults(searchResults)
+          setHasError(false)
           setShowResults(true)
         }
       } catch (error) {
         console.error('Search error:', error)
         if (isMounted) {
           setResults([])
+          setHasError(true)
+          setShowResults(true)
         }
       } finally {
         if (isMounted) {
@@ -95,7 +106,8 @@ export function SimpleSkillAutocomplete({
     return () => {
       isMounted = false
     }
-  }, [debouncedValue])
+    // searchSignal re-runs the search when taxonomy filters change mid-query.
+  }, [debouncedValue, retryNonce, searchSignal])
 
   // Hide results when input is cleared
   useEffect(() => {
@@ -178,6 +190,15 @@ export function SimpleSkillAutocomplete({
                     </Pressable>
                   )
                 })
+              ) : hasError ? (
+                <Stack padding="md" align="center" gap={8}>
+                  <Text style={{ color: colors.text[t].secondary, textAlign: 'center' }}>
+                    Couldn't load results. Check your connection and try again.
+                  </Text>
+                  <Button size="sm" variant="outline" onPress={() => setRetryNonce((n) => n + 1)}>
+                    Retry
+                  </Button>
+                </Stack>
               ) : (
                 <Stack padding="md" align="center">
                   <Text style={{ color: colors.text[t].secondary }}>No skills found</Text>
