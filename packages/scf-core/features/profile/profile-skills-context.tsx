@@ -156,11 +156,13 @@ export function ProfileSkillsProvider({
       }
 
       try {
-        // Use searchParentSkills (cascading approach)
+        // Use searchParentSkills (cascading approach). Pass the selected
+        // taxonomies (csi/onet) through so O*NET occupation search works.
         const result = await searchParentSkillsMutationRef.current.mutateAsync({
           query,
           industryId: selectedIndustryId,
           limit: 20,
+          taxonomies: taxonomies as Array<"csi" | "onet">,
         });
 
         // Map results to ParentSkill format (now includes hierarchy information)
