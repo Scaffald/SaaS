@@ -53,7 +53,6 @@ async function createTestUserWithOrg(overrides: {
     .insert({
       name: `Test Org ${timestamp}`,
       slug: `test-org-${timestamp}`,
-      type: "employer",
     })
     .select()
     .single();
@@ -62,6 +61,16 @@ async function createTestUserWithOrg(overrides: {
     throw new Error("Failed to create organization");
   }
 
+  // Global "member" team role for the required default_role_id.
+  const { data: memberRole } = await admin
+    .schema("core")
+    .from("team_roles")
+    .select("id")
+    .eq("key", "member")
+    .is("organization_id", null)
+    .limit(1)
+    .single();
+
   // Create team
   const { data: team } = await admin
     .schema("core")
@@ -69,6 +78,7 @@ async function createTestUserWithOrg(overrides: {
     .insert({
       organization_id: org.id,
       name: "Default Team",
+      default_role_id: memberRole?.id,
     })
     .select()
     .single();
@@ -77,16 +87,27 @@ async function createTestUserWithOrg(overrides: {
     throw new Error("Failed to create team");
   }
 
-  // Create team member
+  // Create team member. team_members uses role_id now (no organization_id/role/
+  // user_type columns). Map the requested user_type to a team role so non-admin
+  // cases still exercise the org-admin 403 paths: job_seeker -> member,
+  // employer/organization_admin -> team_admin.
+  const roleKey = overrides.user_type === "job_seeker" ? "member" : "team_admin";
+  const { data: teamRole } = await admin
+    .schema("core")
+    .from("team_roles")
+    .select("id")
+    .eq("key", roleKey)
+    .is("organization_id", null)
+    .limit(1)
+    .single();
+
   await admin
     .schema("core")
     .from("team_members")
     .insert({
       team_id: team.id,
       user_id: authUser.user.id,
-      organization_id: org.id,
-      user_type: overrides.user_type || "employer",
-      role: "admin",
+      role_id: teamRole?.id,
     });
 
   // Get auth token
