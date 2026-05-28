@@ -1,5 +1,22 @@
 # UI audit findings — 2026-05-26
 
+> **Resolution — updated 2026-05-28 (v1.6.0): audit closed.** Every finding is
+> either fixed-and-merged or verified non-reproducing against healthy data.
+>
+> - **Fixed & merged (In Github):** B6→[SC-82], B7→[SC-83], B8→[SC-84],
+>   P2→[SC-86], P3→[SC-87], P4→[SC-88], P5→[SC-89], profile drawer→[SC-74].
+> - **Verified non-reproducing — environment artifacts, no code change (B1–B5, P1):**
+>   the "stuck on Loading / persistent skeleton" cluster. Re-checked 2026-05-28 on a
+>   seeded, schema-aligned local env while authenticated: `/jobs`, `/employers`,
+>   `/communities/reputation`, `/profile/resume`, the new-user `/onboarding` form, and
+>   the dashboard Communities section all render correctly with data or graceful empty
+>   states. The original audit ran against `.env.dev`, which had the pre-2026-05-22
+>   migration/schema drift (see `docs/agents/audits/2026-05-22-supabase-schema-drift.md`)
+>   → hung queries + sparse data. The list screens already show empty states (not
+>   infinite skeletons) when data is empty, and the protected layout now surfaces a 15s
+>   "Retry" instead of an infinite spinner — so this failure mode is structurally handled.
+> - **Deferred to v1.6.1 as planned:** P6–P7, nits N1–N4.
+
 > iOS-viewport sweep (390×844) of every route in `apps/scaffald/app/` plus an
 > unauthenticated pass. 40 screenshots captured via
 > [`scripts/audit/ui-sweep.mjs`](../../../scripts/audit/ui-sweep.mjs). Auth: clay@unicorn.love
