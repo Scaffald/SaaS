@@ -209,7 +209,7 @@ Deno.test("POST /v1/applications - returns 400 if application deadline passed", 
   const { data: org } = await admin
     .schema("core")
     .from("organizations")
-    .insert({ name: "Test Org", slug: `test-${Date.now()}`, type: "employer" })
+    .insert({ name: "Test Org", slug: `test-${Date.now()}` })
     .select()
     .single();
 

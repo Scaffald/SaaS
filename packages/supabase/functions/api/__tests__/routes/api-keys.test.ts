@@ -53,7 +53,6 @@ async function createTestUserWithOrg(overrides: {
     .insert({
       name: `Test Org ${timestamp}`,
       slug: `test-org-${timestamp}`,
-      type: "employer",
     })
     .select()
     .single();
@@ -62,6 +61,16 @@ async function createTestUserWithOrg(overrides: {
     throw new Error("Failed to create organization");
   }
 
+  // Global "member" team role for the required default_role_id.
+  const { data: memberRole } = await admin
+    .schema("core")
+    .from("team_roles")
+    .select("id")
+    .eq("key", "member")
+    .is("organization_id", null)
+    .limit(1)
+    .single();
+
   // Create team
   const { data: team } = await admin
     .schema("core")
@@ -69,6 +78,7 @@ async function createTestUserWithOrg(overrides: {
     .insert({
       organization_id: org.id,
       name: "Default Team",
+      default_role_id: memberRole?.id,
     })
     .select()
     .single();

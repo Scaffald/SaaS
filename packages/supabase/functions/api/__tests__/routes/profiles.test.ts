@@ -85,13 +85,6 @@ async function createTestOrganizationProfile(overrides: {
     .insert({
       slug,
       name: overrides.name || "Test Organization",
-      description: "Test organization description",
-      type: "employer",
-      industry: "Technology",
-      size: "50-100",
-      location: "San Francisco, CA",
-      founded_year: 2020,
-      is_public: overrides.is_public !== undefined ? overrides.is_public : true,
     })
     .select()
     .single();

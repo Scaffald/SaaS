@@ -48,7 +48,6 @@ Deno.test("JOB FLOW: Complete job discovery to application submission", async ()
     .insert({
       name: `Tech Company ${timestamp}`,
       slug: `tech-company-${timestamp}`,
-      type: "employer",
     })
     .select()
     .single();
@@ -252,7 +251,6 @@ Deno.test("JOB FLOW: Duplicate application prevention and re-application", async
     .insert({
       name: `Company ${timestamp}`,
       slug: `company-${timestamp}`,
-      type: "employer",
     })
     .select()
     .single();
@@ -343,7 +341,6 @@ Deno.test("JOB FLOW: Application deadline enforcement", async () => {
     .insert({
       name: `Deadline Company ${timestamp}`,
       slug: `deadline-company-${timestamp}`,
-      type: "employer",
     })
     .select()
     .single();
@@ -408,7 +405,6 @@ Deno.test("JOB FLOW: Progressive job search refinement", async () => {
     .insert({
       name: `Job Board ${timestamp}`,
       slug: `job-board-${timestamp}`,
-      type: "employer",
     })
     .select()
     .single();

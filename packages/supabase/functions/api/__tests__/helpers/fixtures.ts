@@ -63,7 +63,6 @@ export async function createTestOrganization(overrides: {
     .insert({
       name,
       slug,
-      type: "employer",
     })
     .select()
     .single();
@@ -184,6 +183,7 @@ export async function createTestApplication(overrides: {
  */
 export async function createTestApiKey(overrides: {
   organization_id?: string;
+  created_by?: string;
   name?: string;
   environment?: "test" | "live";
   tier?: "free" | "pro" | "enterprise";
@@ -197,6 +197,13 @@ export async function createTestApiKey(overrides: {
   if (!organizationId) {
     const org = await createTestOrganization();
     organizationId = org.id;
+  }
+
+  // api_keys.created_by is NOT NULL — create a user if the caller didn't supply one.
+  let createdBy = overrides.created_by;
+  if (!createdBy) {
+    const u = await createTestUser();
+    createdBy = u.id;
   }
 
   // Generate API key (sk_test_ or sk_live_ prefix)
@@ -219,14 +226,14 @@ export async function createTestApiKey(overrides: {
     .from("api_keys")
     .insert({
       organization_id: organizationId,
+      created_by: createdBy,
       name: overrides.name || `Test API Key ${generateTestId()}`,
       key_hash: keyHash,
       key_prefix: keyPrefix.slice(0, -1), // Remove trailing underscore
-      environment,
       scopes: overrides.scopes || ["jobs:read", "applications:write"],
-      tier: overrides.tier || "free",
+      rate_limit_tier: overrides.tier || "free",
       expires_at: overrides.expires_at || null,
-      active: true,
+      is_active: true,
     })
     .select()
     .single();

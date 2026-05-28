@@ -331,9 +331,17 @@ Deno.test("AUTH FLOW: API key creation and usage", async () => {
     .insert({
       name: `Test Org ${timestamp}`,
       slug: `test-org-${timestamp}`,
-      type: "employer",
     })
     .select()
+    .single();
+
+  const { data: memberRole } = await admin
+    .schema("core")
+    .from("team_roles")
+    .select("id")
+    .eq("key", "member")
+    .is("organization_id", null)
+    .limit(1)
     .single();
 
   const { data: team } = await admin
@@ -342,6 +350,7 @@ Deno.test("AUTH FLOW: API key creation and usage", async () => {
     .insert({
       organization_id: org!.id,
       name: "Default Team",
+      default_role_id: memberRole?.id,
     })
     .select()
     .single();
