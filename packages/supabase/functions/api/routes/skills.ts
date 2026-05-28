@@ -965,7 +965,7 @@ app.openapi(getUserSkillsMTRoute, async (c) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  const { data: skills, error } = await supabase
+  const { data: rows, error } = await supabase
     .schema("core")
     .from("user_skills")
     .select("*")
@@ -981,7 +981,82 @@ app.openapi(getUserSkillsMTRoute, async (c) => {
     );
   }
 
-  return c.json({ skills: skills || [] });
+  const userRows = (rows ?? []) as Array<{
+    skill_taxonomy: string;
+    csi_skill_id: string | null;
+    onet_occupation_id: string | null;
+    [key: string]: unknown;
+  }>;
+
+  // Enrich each row with skill_details (name/code) from its taxonomy source.
+  // The profile UI filters out rows lacking skill_details.name, so raw
+  // user_skills rows would otherwise vanish from "Your Skills".
+  const csiIds = [
+    ...new Set(userRows.filter((r) => r.csi_skill_id).map((r) => r.csi_skill_id)),
+  ] as string[];
+  const onetIds = [
+    ...new Set(
+      userRows.filter((r) => r.onet_occupation_id).map((r) =>
+        (r.onet_occupation_id as string).trim()
+      ),
+    ),
+  ];
+
+  const csiMap = new Map<string, { name: string; code_key: string; code_display: string; depth: number | null }>();
+  if (csiIds.length > 0) {
+    const { data: csi } = await supabase
+      .schema("data")
+      .from("masterformat")
+      .select("id, name, code_key, code_display, depth")
+      .in("id", csiIds);
+    for (const m of csi ?? []) csiMap.set(m.id, m);
+  }
+
+  const onetMap = new Map<string, { onetsoc_code: string; title: string }>();
+  if (onetIds.length > 0) {
+    const { data: onet } = await supabase
+      .schema("onet")
+      .from("occupation_data")
+      .select("onetsoc_code, title")
+      .in("onetsoc_code", onetIds);
+    for (const o of onet ?? []) onetMap.set(o.onetsoc_code.trim(), o);
+  }
+
+  const skills = userRows.map((r) => {
+    let skill_details: {
+      code: string;
+      display_code: string;
+      name: string;
+      hierarchy_level: number | null;
+    } | null = null;
+
+    if (r.skill_taxonomy === "csi" && r.csi_skill_id) {
+      const m = csiMap.get(r.csi_skill_id);
+      if (m) {
+        skill_details = {
+          code: m.code_key,
+          display_code: m.code_display,
+          name: m.name,
+          hierarchy_level: m.depth ?? null,
+        };
+      }
+    } else if (r.skill_taxonomy === "onet" && r.onet_occupation_id) {
+      const code = (r.onet_occupation_id as string).trim();
+      const o = onetMap.get(code);
+      if (o) {
+        skill_details = {
+          code,
+          display_code: code,
+          name: o.title,
+          hierarchy_level: null,
+        };
+      }
+    }
+
+    return { ...r, skill_details };
+  });
+
+  return c.json({ skills });
 });
 
 /**
