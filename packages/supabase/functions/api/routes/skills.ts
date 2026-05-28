@@ -967,9 +967,11 @@ app.openapi(getUserSkillsMTRoute, async (c) => {
 
   const { data: skills, error } = await supabase
     .schema("core")
-    .from("user_skills_multi_taxonomy")
+    .from("user_skills")
     .select("*")
-    .eq("user_id", user.id);
+    .eq("user_id", user.id)
+    // CSI/O*NET rows only — exclude soft-skill and trade entries in user_skills.
+    .in("skill_taxonomy", ["csi", "onet"]);
 
   if (error) {
     console.error("Error fetching multi-taxonomy skills:", error);
@@ -1047,7 +1049,7 @@ app.openapi(addSkillMTRoute, async (c) => {
   }
 
   const { error } = await supabase.schema("core").from(
-    "user_skills_multi_taxonomy",
+    "user_skills",
   ).insert(insertData);
 
   if (error) {
@@ -1103,7 +1105,7 @@ app.openapi(removeSkillMTRoute, async (c) => {
 
   const { error } = await supabase
     .schema("core")
-    .from("user_skills_multi_taxonomy")
+    .from("user_skills")
     .delete()
     .eq("id", userSkillId)
     .eq("user_id", user.id);
@@ -1117,6 +1119,92 @@ app.openapi(removeSkillMTRoute, async (c) => {
   }
 
   return c.body(null, 204);
+});
+
+/**
+ * POST /v1/profiles/skills/search-parents
+ * Cascading skill search across CSI MasterFormat (data.masterformat) and
+ * core.skills via the search_parent_skills RPC. Ported from the legacy tRPC
+ * router so the REST SDK's skills.searchParentSkills() resolves instead of 404ing.
+ */
+const searchParentSkillsBodySchema = z.object({
+  query: z.string().min(1, "Search query is required"),
+  industryId: z.string().uuid(),
+  limit: z.number().min(1).max(50).optional(),
+});
+
+const searchParentSkillItemSchema = z
+  .object({
+    skill_id: z.string(),
+    skill_name: z.string(),
+    csi_display: z.string().nullable(),
+    csi_code: z.array(z.string()).nullable(),
+    active: z.boolean(),
+    child_count: z.number(),
+    parent_id: z.string().nullable(),
+    parent_name: z.string().nullable(),
+    depth: z.number(),
+    hierarchy_path: z.string().nullable(),
+  })
+  .openapi("SearchParentSkillItem");
+
+const searchParentSkillsResponseSchema = z
+  .object({ skills: z.array(searchParentSkillItemSchema) })
+  .openapi("SearchParentSkillsResponse");
+
+const searchParentSkillsRoute = createRoute({
+  method: "post",
+  path: "/search-parents",
+  tags: ["Skills"],
+  summary: "Search parent skills",
+  description:
+    "Cascading skill search across CSI MasterFormat and core skills via the search_parent_skills RPC.",
+  request: {
+    body: {
+      content: {
+        "application/json": { schema: searchParentSkillsBodySchema },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "Matching parent skills",
+      content: {
+        "application/json": { schema: searchParentSkillsResponseSchema },
+      },
+    },
+    401: {
+      description: "Unauthorized",
+      content: { "application/json": { schema: errorResponseSchema } },
+    },
+  },
+  security: [{ bearerAuth: [] }],
+});
+
+app.openapi(searchParentSkillsRoute, async (c) => {
+  const supabase = c.get("supabase");
+  const user = c.get("user");
+  const { query, industryId, limit } = c.req.valid("json");
+
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  const { data, error } = await supabase.rpc("search_parent_skills", {
+    p_query: query,
+    p_industry_id: industryId,
+    p_limit: limit ?? 20,
+  });
+
+  if (error) {
+    console.error("Error searching parent skills:", error);
+    return c.json(
+      { error: "Failed to search parent skills", message: error.message },
+      500,
+    );
+  }
+
+  return c.json({ skills: data ?? [] });
 });
 
 /**
