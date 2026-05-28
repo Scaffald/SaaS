@@ -31,6 +31,11 @@ interface SimpleSkillAutocompleteProps {
   placeholder?: string
   /** Existing skill IDs to highlight or filter */
   existingSkillIds?: string[]
+  /**
+   * Opaque token that re-triggers the search when it changes (without the user
+   * editing the query) — e.g. when the CSI/O*NET taxonomy filters toggle.
+   */
+  searchSignal?: string
 }
 
 /**
@@ -45,6 +50,7 @@ export function SimpleSkillAutocomplete({
   isLoading = false,
   placeholder = 'Search for a skill...',
   existingSkillIds = [],
+  searchSignal,
 }: SimpleSkillAutocompleteProps) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
@@ -100,7 +106,8 @@ export function SimpleSkillAutocomplete({
     return () => {
       isMounted = false
     }
-  }, [debouncedValue, retryNonce])
+    // searchSignal re-runs the search when taxonomy filters change mid-query.
+  }, [debouncedValue, retryNonce, searchSignal])
 
   // Hide results when input is cleared
   useEffect(() => {

@@ -89,6 +89,8 @@ export function SkillSearchForm({
         isLoading={isSearching}
         placeholder="Search for a skill (e.g., Concrete, Plumbing)..."
         existingSkillIds={existingSkillIds}
+        // Re-run the search when the taxonomy filters change mid-query.
+        searchSignal={`${searchCSI ? 'csi' : ''},${searchONET ? 'onet' : ''}`}
       />
     </Stack>
   )
