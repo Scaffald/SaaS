@@ -167,7 +167,6 @@ export const DrawerContent = ({
             fallbackInitial={fallbackInitial}
             slug={generalInfo?.slug ?? undefined}
             onEditProfilePress={handleProfilePress}
-            onLogoutPress={handleLogoutPress}
           />
         ) : null}
 
@@ -253,7 +252,6 @@ type DrawerProfileCardProps = {
   fallbackInitial: string
   slug?: string | null
   onEditProfilePress: () => void
-  onLogoutPress: () => void
 }
 
 const nameTextStyle = (theme: 'light' | 'dark') => ({
@@ -274,7 +272,6 @@ const DrawerProfileCard = ({
   fallbackInitial,
   slug,
   onEditProfilePress,
-  onLogoutPress,
 }: DrawerProfileCardProps) => {
   const { theme } = useThemeContext()
   const avatarSize = 48
@@ -358,15 +355,6 @@ const DrawerProfileCard = ({
             accessibilityLabel="Edit profile"
           >
             <Text style={{ ...linkTextStyle, color: colors.primary[500] }}>Edit profile</Text>
-          </Pressable>
-          <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>|</Text>
-          <Pressable
-            onPress={onLogoutPress}
-            style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
-            accessibilityRole="button"
-            accessibilityLabel="Log out"
-          >
-            <Text style={{ ...linkTextStyle, color: colors.error[500] }}>Logout</Text>
           </Pressable>
         </Row>
       </Stack>

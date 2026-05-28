@@ -3,6 +3,7 @@ import {
   Box,
   Stack,
   Text,
+  useCookieConsent,
   type OnboardingStepInfo,
 } from '@scaffald/ui'
 import { ScaffaldLogo } from '@scf/core/assets'
@@ -138,6 +139,10 @@ const createMobileSlides = (): OnboardingStepInfo[] =>
   }))
 
 export const WelcomeScreen = ({ onOnboarded, brandedPanel = false }: WelcomeScreenProps = {}) => {
+  // Reserve room beneath the carousel controls so the floating cookie consent
+  // banner can't overlap the primary CTA on mobile (SC-82).
+  const { shouldShowBanner, bannerHeight } = useCookieConsent()
+  const carouselBottomInset = shouldShowBanner && bannerHeight > 0 ? bannerHeight + 12 : 0
 
   // Branded auth panel: dark testimonial carousel
   if (brandedPanel) {
@@ -162,7 +167,13 @@ export const WelcomeScreen = ({ onOnboarded, brandedPanel = false }: WelcomeScre
 
   return (
     <Box flex={1}>
-      <Onboarding overlay="dark" autoSwipe={true} onOnboarded={onOnboarded} steps={steps} />
+      <Onboarding
+        overlay="dark"
+        autoSwipe={true}
+        onOnboarded={onOnboarded}
+        steps={steps}
+        extraBottomInset={carouselBottomInset}
+      />
     </Box>
   )
 }

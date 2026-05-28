@@ -24,6 +24,7 @@ import {
 import { Row, Stack, Text, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { ROUTES } from '@scf/core/constants/routes'
+import { openExternalLink } from '@scf/core/utils/platform'
 import type { OrganizationMembership } from '@scf/core/utils/useOrganizations'
 import { DrawerNotificationsFeed } from './DrawerNotificationsFeed'
 
@@ -99,7 +100,10 @@ export function MobileDrawerSections({
         <DrawerRow
           icon={HelpCircle}
           label="Help & support"
-          onPress={() => go(ROUTES.DASHBOARD.SETTINGS.path)}
+          onPress={() => {
+            openExternalLink('mailto:support@scaffald.com')
+            onNavigate?.('mailto:support@scaffald.com')
+          }}
         />
         <DrawerRow
           icon={LogOut}
