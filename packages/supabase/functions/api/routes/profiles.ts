@@ -35,6 +35,52 @@ app.get("/current", requireAuth, async (c) => {
   }
   return c.json({ id: user.id, email: user.email ?? null }, 200);
 });
+// GET /v1/profiles/slug/history - vanity-URL slug change history + 30-day cooldown
+// (SDK: getSlugHistory). Ported from the legacy tRPC vanity router so the Vanity
+// URL panel resolves instead of 404ing.
+app.get("/slug/history", requireAuth, async (c) => {
+  const supabase = c.get("supabase");
+  const user = c.get("user");
+  if (!user) {
+    return c.json(
+      { error: "Unauthorized", message: "Authentication required" },
+      401,
+    );
+  }
+
+  const { data: history, error } = await supabase
+    .schema("core")
+    .from("slug_change_history")
+    .select("old_slug, new_slug, changed_at")
+    .eq("user_id", user.id)
+    .order("changed_at", { ascending: false })
+    .limit(10);
+
+  if (error) {
+    console.error("Error fetching slug history:", error);
+    return c.json(
+      { error: "Failed to fetch slug history", message: error.message },
+      500,
+    );
+  }
+
+  // 30-day cooldown between slug changes (mirrors updateSlug enforcement).
+  const lastChange = history?.[0];
+  let nextChangeAllowed: string | null = null;
+  let daysRemaining: number | null = null;
+  if (lastChange) {
+    const daysSinceChange = (Date.now() -
+      new Date(lastChange.changed_at).getTime()) / (1000 * 60 * 60 * 24);
+    if (daysSinceChange < 30) {
+      daysRemaining = Math.ceil(30 - daysSinceChange);
+      nextChangeAllowed = new Date(
+        new Date(lastChange.changed_at).getTime() + 30 * 24 * 60 * 60 * 1000,
+      ).toISOString();
+    }
+  }
+
+  return c.json({ history: history ?? [], nextChangeAllowed, daysRemaining });
+});
 // GET /v1/profiles/general - general profile (SDK: getGeneralInfo)
 app.get("/general", requireAuth, async (c) => {
   const supabase = c.get("supabase");
