@@ -96,7 +96,7 @@ export function TeamInvitationList({
                 <Text>{teamName}</Text>
                 <Text style={{ color: colors.text[t].secondary }}>{organizationName}</Text>
                 <Row gap={8} align="center" marginTop={8}>
-                  <Clock size="md" color={colors.text[t].tertiary} />
+                  <Clock size={20} color={colors.text[t].tertiary} />
                   <Text style={{ color: colors.text[t].secondary }}>
                     Sent {sentAt ?? 'recently'}
                     {expiresAt ? ` · Expires ${expiresAt}` : null}

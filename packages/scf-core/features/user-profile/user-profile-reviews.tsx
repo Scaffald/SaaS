@@ -210,7 +210,7 @@ export function UserProfileReviews({
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={randomUUID()}
-                      size="md"
+                      size={20}
                       color={t === "dark" ? colors.yellow[300] : colors.yellow[600]}
                       fill={
                         i < Math.floor(overallRating)
@@ -267,7 +267,7 @@ export function UserProfileReviews({
                 style={{ backgroundColor: t === "dark" ? colors.green[900] : colors.green[100] }}
                 borderRadius={12}
               >
-                <ThumbsUp size="md" color={t === "dark" ? colors.green[300] : colors.green[600]} />
+                <ThumbsUp size={20} color={t === "dark" ? colors.green[300] : colors.green[600]} />
                 <Text style={{ color: t === "dark" ? colors.green[300] : colors.green[600] }}>{recommendCount} Recommend</Text>
               </Row>
               <Row
@@ -278,7 +278,7 @@ export function UserProfileReviews({
                 style={{ backgroundColor: t === "dark" ? colors.rose[900] : colors.rose[100] }}
                 borderRadius={12}
               >
-                <ThumbsDown size="md" color={t === "dark" ? colors.rose[300] : colors.rose[600]} />
+                <ThumbsDown size={20} color={t === "dark" ? colors.rose[300] : colors.rose[600]} />
                 <Text style={{ color: t === "dark" ? colors.rose[300] : colors.rose[600] }}>{notRecommendCount} Don't Recommend</Text>
               </Row>
             </Row>
@@ -303,7 +303,7 @@ export function UserProfileReviews({
                         style={{ backgroundColor: t === "dark" ? colors.blue[900] : colors.blue[100] }}
                         borderRadius={8}
                       >
-                        <Shield size="sm" color={t === "dark" ? colors.blue[300] : colors.blue[600]} />
+                        <Shield size={16} color={t === "dark" ? colors.blue[300] : colors.blue[600]} />
                         <Text style={{ color: t === "dark" ? colors.blue[300] : colors.blue[600] }}>VERIFIED</Text>
                       </Row>
                     </Row>
@@ -326,7 +326,7 @@ export function UserProfileReviews({
                         return (
                           <Star
                             key={randomUUID()}
-                            size="md"
+                            size={20}
                             color={t === "dark" ? colors.yellow[300] : colors.yellow[600]}
                             fill={
                               i < Math.floor(avgRating)
@@ -349,12 +349,12 @@ export function UserProfileReviews({
                   <Row gap={8} align="center">
                     {review.reaction === 1 ? (
                       <>
-                        <ThumbsUp size="md" color={t === "dark" ? colors.green[300] : colors.green[600]} />
+                        <ThumbsUp size={20} color={t === "dark" ? colors.green[300] : colors.green[600]} />
                         <Text style={{ color: t === "dark" ? colors.green[300] : colors.green[600] }}>Recommends this person</Text>
                       </>
                     ) : (
                       <>
-                        <ThumbsDown size="md" color={t === "dark" ? colors.rose[300] : colors.rose[600]} />
+                        <ThumbsDown size={20} color={t === "dark" ? colors.rose[300] : colors.rose[600]} />
                         <Text style={{ color: t === "dark" ? colors.rose[300] : colors.rose[600] }}>Does not recommend</Text>
                       </>
                     )}

@@ -53,7 +53,7 @@ export function UserProfileExperience({
                 <Row gap={12} wrap>
                   {(exp.start_date || exp.end_date) && (
                     <Row gap={8} align="center">
-                      <Calendar size="md" color={colors.text[t].secondary} />
+                      <Calendar size={20} color={colors.text[t].secondary} />
                       <Text color={colors.text[t].secondary}>
                         {formatDate(exp.start_date)} -{" "}
                         {exp.is_current ? "Present" : formatDate(exp.end_date)}
@@ -62,7 +62,7 @@ export function UserProfileExperience({
                   )}
                   {exp.location && (
                     <Row gap={8} align="center">
-                      <MapPin size="md" color={colors.text[t].secondary} />
+                      <MapPin size={20} color={colors.text[t].secondary} />
                       <Text color={colors.text[t].secondary}>{exp.location}</Text>
                     </Row>
                   )}

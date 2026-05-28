@@ -343,7 +343,7 @@ export function AdminCheckReviewDialog({
                 </Text>
                 <Button size="sm" variant="outline" onPress={() => detailQuery.refetch()}>
                   <Row gap={8} align="center">
-                    <RefreshCcw size="md" />
+                    <RefreshCcw size={20} />
                     <Text>Retry</Text>
                   </Row>
                 </Button>
@@ -406,7 +406,7 @@ export function AdminCheckReviewDialog({
                       align="center"
                       gap={8}
                     >
-                      <CheckCircle2 size="md" color={statusColors.text} />
+                      <CheckCircle2 size={20} color={statusColors.text} />
                       <Text style={{ color: statusColors.text }}>{statusMeta.label}</Text>
                     </Row>
                   ) : null}
@@ -556,7 +556,7 @@ export function AdminCheckReviewDialog({
                                 {isDocumentLoading ? (
                                   <Spinner variant="ios" size="sm" />
                                 ) : (
-                                  <DownloadCloud size="md" />
+                                  <DownloadCloud size={20} />
                                 )}
                                 <Text>{isDocumentLoading ? 'Preparing…' : 'View'}</Text>
                               </Row>

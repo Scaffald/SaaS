@@ -404,9 +404,9 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
         >
         <Row align="center" gap={8} style={{ flex: 1 }}>
           {isExpanded ? (
-            <ChevronUp size="md" color={colors.text[theme].tertiary} />
+            <ChevronUp size={20} color={colors.text[theme].tertiary} />
           ) : (
-            <ChevronDown size="md" color={colors.text[theme].tertiary} />
+            <ChevronDown size={20} color={colors.text[theme].tertiary} />
           )}
           <Text>{title}</Text>
           {isAccepted && (
@@ -418,13 +418,13 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               align="center"
               gap={4}
             >
-              <Check size="sm" color={colors.success[700]} />
+              <Check size={16} color={colors.success[700]} />
               <Text style={{ color: colors.success[700] }}>Accepted</Text>
             </Row>
           )}
           {commentCount > 0 && (
             <Row align="center" gap={4}>
-              <MessageSquare size="md" color={colors.text[theme].tertiary} />
+              <MessageSquare size={20} color={colors.text[theme].tertiary} />
               <Text style={{ color: colors.text[theme].tertiary }}>{commentCount}</Text>
             </Row>
           )}

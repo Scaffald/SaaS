@@ -65,7 +65,7 @@ export default function BackgroundCheckDisputeScreen() {
                   onPress={() => checksQuery.refetch()}
                 >
                   <Row gap={8} align="center">
-                    <RefreshCcw size="lg" />
+                    <RefreshCcw size={24} />
                     <Text size="sm">Retry</Text>
                   </Row>
                 </Button>
@@ -88,7 +88,7 @@ export default function BackgroundCheckDisputeScreen() {
                     onPress={() => checksQuery.refetch()}
                   >
                     <Row gap={8} align="center">
-                      <RefreshCcw size="lg" />
+                      <RefreshCcw size={24} />
                       <Text size="sm">Refresh</Text>
                     </Row>
                   </Button>

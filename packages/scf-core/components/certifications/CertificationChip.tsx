@@ -44,7 +44,7 @@ export function CertificationChip({
         disabled={disabled}
         style={{ opacity: disabled ? 0.5 : 1 }}
       >
-        <X size="lg" />
+        <X size={24} />
       </Button>
     </Row>
   )

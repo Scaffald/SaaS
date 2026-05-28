@@ -180,7 +180,7 @@ export function ComparisonColumn({
                 gap={4}
               >
                 {status.accepted ? (
-                  <Check size="sm" color={colors.fg[theme].success} />
+                  <Check size={16} color={colors.fg[theme].success} />
                 ) : (
                   <Text color={colors.text[theme].tertiary}>○</Text>
                 )}
@@ -252,13 +252,13 @@ export function ComparisonColumn({
         />
         {getSectionStatus('employment').accepted && (
           <Row align="center" gap={4} marginTop={4}>
-            <Check size="md" color={colors.fg[theme].success} />
+            <Check size={20} color={colors.fg[theme].success} />
             <Text color={colors.fg[theme].success}>Accepted</Text>
           </Row>
         )}
         {getCommentCount('employment') > 0 && (
           <Row align="center" gap={4} marginTop={4}>
-            <MessageSquare size="md" color={colors.fg[theme].info} />
+            <MessageSquare size={20} color={colors.fg[theme].info} />
             <Text color={colors.fg[theme].info}>
               {getCommentCount('employment')} comment
               {getCommentCount('employment') !== 1 ? 's' : ''}
@@ -284,13 +284,13 @@ export function ComparisonColumn({
         />
         {getSectionStatus('compensation').accepted && (
           <Row align="center" gap={4} marginTop={4}>
-            <Check size="md" color={colors.fg[theme].success} />
+            <Check size={20} color={colors.fg[theme].success} />
             <Text color={colors.fg[theme].success}>Accepted</Text>
           </Row>
         )}
         {getCommentCount('compensation') > 0 && (
           <Row align="center" gap={4} marginTop={4}>
-            <MessageSquare size="md" color={colors.fg[theme].info} />
+            <MessageSquare size={20} color={colors.fg[theme].info} />
             <Text color={colors.fg[theme].info}>
               {getCommentCount('compensation')} comment
               {getCommentCount('compensation') !== 1 ? 's' : ''}
@@ -319,13 +319,13 @@ export function ComparisonColumn({
           ))}
           {getSectionStatus('capabilities').accepted && (
             <Row align="center" gap={4} marginTop={4}>
-              <Check size="md" color={colors.fg[theme].success} />
+              <Check size={20} color={colors.fg[theme].success} />
               <Text color={colors.fg[theme].success}>Accepted</Text>
             </Row>
           )}
           {getCommentCount('capabilities') > 0 && (
             <Row align="center" gap={4} marginTop={4}>
-              <MessageSquare size="md" color={colors.fg[theme].info} />
+              <MessageSquare size={20} color={colors.fg[theme].info} />
               <Text color={colors.fg[theme].info}>
                 {getCommentCount('capabilities')} comment
                 {getCommentCount('capabilities') !== 1 ? 's' : ''}

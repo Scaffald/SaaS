@@ -205,7 +205,7 @@ export function PhotoCard({
       <Stack gap={12} style={{ padding: 8 }}>
         <Row align="center" justify="space-between" gap={12}>
           <Row gap={8} align="center">
-            <Tag size="md" color={colors.fg[theme].subtle} />
+            <Tag size={20} color={colors.fg[theme].subtle} />
             <Text>{typeOption?.label ?? "Uncategorized"}</Text>
           </Row>
           <Row gap={8}>

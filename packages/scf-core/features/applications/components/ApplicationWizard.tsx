@@ -227,7 +227,7 @@ export function ApplicationWizard({
           }}
         >
           <Row gap={8} align="center">
-            <AlertCircle size="lg" color={theme === "light" ? colors.error[700] : colors.error[300]} />
+            <AlertCircle size={24} color={theme === "light" ? colors.error[700] : colors.error[300]} />
             <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300], flex: 1 }}>
               {submitError.message || 'An error occurred'}
             </Text>

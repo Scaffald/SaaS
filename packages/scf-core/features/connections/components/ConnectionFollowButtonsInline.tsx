@@ -245,7 +245,7 @@ export function ConnectionFollowButtonsInline({
   if (isLoading) {
     return (
       <Row gap={8} align="center">
-        <Loader2 size="md" color={colors.text[t].secondary} />
+        <Loader2 size={20} color={colors.text[t].secondary} />
         <Text style={{ color: colors.text[t].secondary }}>Loading...</Text>
       </Row>
     )

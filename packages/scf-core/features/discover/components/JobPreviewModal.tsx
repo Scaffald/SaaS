@@ -128,7 +128,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
               <Text style={{ color: colors.text[t].secondary }}>{job.title}</Text>
               {job.organization?.name && (
                 <Row gap={8} align="center">
-                  <Building2 size="md" color={colors.text[t].tertiary} />
+                  <Building2 size={20} color={colors.text[t].tertiary} />
                   <Text style={{ color: colors.text[t].secondary }}>{job.organization.name}</Text>
                 </Row>
               )}

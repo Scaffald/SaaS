@@ -77,7 +77,7 @@ function AcceptanceBadge({ acceptedBy, acceptedAt }: AcceptanceBadgeProps) {
       align="center"
       gap={8}
     >
-      <Check size="md" color="white" />
+      <Check size={20} color="white" />
       <Text style={{ color: 'white' }}>{`Accepted on ${formatDate(acceptedAt)}`}</Text>
     </Row>
   )

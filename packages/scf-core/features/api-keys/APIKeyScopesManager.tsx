@@ -201,7 +201,7 @@ export function APIKeyScopesManager({
                 style={{ backgroundColor: t === 'dark' ? colors.orange[900] : colors.orange[50], borderColor: t === 'dark' ? colors.orange[700] : colors.orange[300], borderWidth: 1 }}
               >
                 <Row align="center" gap={8}>
-                  <AlertCircle size="lg" color={t === 'dark' ? colors.orange[300] : colors.orange[600]} />
+                  <AlertCircle size={24} color={t === 'dark' ? colors.orange[300] : colors.orange[600]} />
                   <Paragraph style={{ color: t === 'dark' ? colors.orange[300] : colors.orange[600] }}>
                     This API key is revoked. Updating scopes will not re-activate it.
                   </Paragraph>
@@ -233,7 +233,7 @@ export function APIKeyScopesManager({
                 {/* Read Permissions */}
                 <Stack gap={12}>
                   <Row align="center" gap={8}>
-                    <Shield size="lg" color={t === 'dark' ? colors.green[300] : colors.green[600]} />
+                    <Shield size={24} color={t === 'dark' ? colors.green[300] : colors.green[600]} />
                     <H4>Read Permissions</H4>
                   </Row>
                   <Stack gap={8}>
@@ -291,7 +291,7 @@ export function APIKeyScopesManager({
                 {/* Write Permissions */}
                 <Stack gap={12}>
                   <Row align="center" gap={8}>
-                    <Lock size="lg" color={t === 'dark' ? colors.orange[300] : colors.orange[600]} />
+                    <Lock size={24} color={t === 'dark' ? colors.orange[300] : colors.orange[600]} />
                     <H4>Write Permissions</H4>
                   </Row>
                   <Stack gap={8}>
@@ -410,7 +410,7 @@ export function APIKeyScopesManager({
                   <Paragraph style={{ color: t === 'dark' ? colors.yellow[300] : colors.yellow[600] }}>Pending Changes</Paragraph>
                   {getAddedScopes().length > 0 && (
                     <Row gap={8} align="center">
-                      <CheckCircle size="md" color={t === 'dark' ? colors.green[300] : colors.green[600]} />
+                      <CheckCircle size={20} color={t === 'dark' ? colors.green[300] : colors.green[600]} />
                       <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
                         Adding: {getAddedScopes().join(', ')}
                       </Paragraph>
@@ -418,7 +418,7 @@ export function APIKeyScopesManager({
                   )}
                   {getRemovedScopes().length > 0 && (
                     <Row gap={8} align="center">
-                      <XCircle size="md" color={t === 'dark' ? colors.rose[300] : colors.rose[600]} />
+                      <XCircle size={20} color={t === 'dark' ? colors.rose[300] : colors.rose[600]} />
                       <Paragraph size="sm" style={{ color: colors.text[t].secondary }}>
                         Removing: {getRemovedScopes().join(', ')}
                       </Paragraph>
@@ -458,7 +458,7 @@ export function APIKeyScopesManager({
                 }}
               >
                 <Row align="center" gap={8}>
-                  <CheckCircle size="lg" color={t === 'dark' ? colors.green[300] : colors.green[600]} />
+                  <CheckCircle size={24} color={t === 'dark' ? colors.green[300] : colors.green[600]} />
                   <Paragraph style={{ color: t === 'dark' ? colors.green[300] : colors.green[600] }}>Scopes updated successfully!</Paragraph>
                 </Row>
               </Card>

@@ -294,7 +294,7 @@ export function IdVerificationRequestPanel({
 
       <Stack gap={8} padding="sm" borderRadius={16} style={{ backgroundColor: colors.bg[t].muted }}>
         <Row gap={8} align="center">
-          <ShieldCheck size="md" color={colors.text[t].secondary} />
+          <ShieldCheck size={20} color={colors.text[t].secondary} />
           <Text style={{ color: colors.text[t].secondary }}>What happens next?</Text>
         </Row>
         <Text style={{ color: colors.text[t].secondary }}>

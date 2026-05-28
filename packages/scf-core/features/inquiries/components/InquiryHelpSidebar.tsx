@@ -9,7 +9,7 @@ export function InquiryHelpSidebar() {
   return (
     <Stack gap={16}>
       <Row align="center" gap={8}>
-        <HelpCircle size="lg" color={colors.text[t].tertiary} />
+        <HelpCircle size={24} color={colors.text[t].tertiary} />
         <Text>Help & Tips</Text>
       </Row>
 
@@ -53,7 +53,7 @@ export function InquiryHelpSidebar() {
         {/* Negotiation Help */}
         <Stack gap={8} padding="sm" style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50], borderRadius: 12 }}>
           <Row align="center" gap={8}>
-            <Info size="md" color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
+            <Info size={20} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
             <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[700] }}>About Negotiation</Text>
           </Row>
           <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[700] }}>
