@@ -142,7 +142,7 @@ export function WorkLogPortfolioWidget({
                       borderRadius={16}
                       backgroundColor={t === 'dark' ? colors.green[900] : colors.green[50]}
                     >
-                      <ShieldCheck size="md" color={t === 'dark' ? colors.green[300] : colors.green[600]} />
+                      <ShieldCheck size={20} color={t === 'dark' ? colors.green[300] : colors.green[600]} />
                       <Text color={t === 'dark' ? colors.green[300] : colors.green[600]}>Verified by Scaffald</Text>
                     </Row>
                   </Row>

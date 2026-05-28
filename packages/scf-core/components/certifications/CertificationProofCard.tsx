@@ -68,7 +68,7 @@ export function CertificationProofCard({
         <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
           <Text>Add Proof</Text>
           <Button size="sm" variant="text" onPress={onClose}>
-            <X size="lg" />
+            <X size={24} />
           </Button>
         </Row>
 
@@ -111,7 +111,7 @@ export function CertificationProofCard({
           <Stack gap={12}>
             <Button onPress={handlePickAndUpload} disabled={uploading}>
               <Row gap={8} align="center">
-                <Upload size="lg" />
+                <Upload size={24} />
                 <Text>{uploading ? 'Uploading...' : 'Choose File'}</Text>
               </Row>
             </Button>
@@ -134,7 +134,7 @@ export function CertificationProofCard({
                 }}
               >
                 <Row gap={8} align="center">
-                  <ExternalLink size="lg" />
+                  <ExternalLink size={24} />
                   <Text size="sm">{proofType === 'url' ? 'View Link' : 'View File'}</Text>
                 </Row>
               </Button>

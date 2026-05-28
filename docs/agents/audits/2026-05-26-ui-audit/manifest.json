@@ -1,0 +1,412 @@
+{
+  "baseUrl": "http://localhost:8081",
+  "startedAt": "2026-05-26T21:28:55.467Z",
+  "finishedAt": "2026-05-26T21:39:51.846Z",
+  "viewport": {
+    "width": 390,
+    "height": 664
+  },
+  "user": "clay@unicorn.love",
+  "captures": [
+    {
+      "group": "root",
+      "name": "index",
+      "path": "/",
+      "url": "http://localhost:8081/",
+      "screenshot": "root/index.png",
+      "finalUrl": "http://localhost:8081/",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:28:59.605Z"
+    },
+    {
+      "group": "auth",
+      "name": "login",
+      "path": "/auth",
+      "url": "http://localhost:8081/auth",
+      "screenshot": "auth/login.png",
+      "finalUrl": "http://localhost:8081/dashboard",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:29:18.948Z"
+    },
+    {
+      "group": "auth",
+      "name": "terms",
+      "path": "/auth/terms",
+      "url": "http://localhost:8081/auth/terms",
+      "screenshot": "auth/terms.png",
+      "finalUrl": "http://localhost:8081/dashboard",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:29:38.261Z"
+    },
+    {
+      "group": "auth",
+      "name": "privacy",
+      "path": "/auth/privacy",
+      "url": "http://localhost:8081/auth/privacy",
+      "screenshot": "auth/privacy.png",
+      "finalUrl": "http://localhost:8081/dashboard",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:29:57.594Z"
+    },
+    {
+      "group": "auth",
+      "name": "success",
+      "path": "/auth/success",
+      "url": "http://localhost:8081/auth/success",
+      "screenshot": "auth/success.png",
+      "finalUrl": "http://localhost:8081/dashboard",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:30:16.880Z"
+    },
+    {
+      "group": "auth",
+      "name": "verify",
+      "path": "/auth/verify",
+      "url": "http://localhost:8081/auth/verify",
+      "screenshot": "auth/verify.png",
+      "finalUrl": "http://localhost:8081/dashboard",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:30:36.260Z"
+    },
+    {
+      "group": "public",
+      "name": "team-invitation",
+      "path": "/teams/invitations/accept",
+      "url": "http://localhost:8081/teams/invitations/accept",
+      "screenshot": "public/team-invitation.png",
+      "finalUrl": "http://localhost:8081/teams/invitations/accept",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:30:40.735Z"
+    },
+    {
+      "group": "protected",
+      "name": "dashboard",
+      "path": "/dashboard",
+      "url": "http://localhost:8081/dashboard",
+      "screenshot": "protected/dashboard.png",
+      "finalUrl": "http://localhost:8081/dashboard",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:31:00.034Z"
+    },
+    {
+      "group": "protected",
+      "name": "search",
+      "path": "/search",
+      "url": "http://localhost:8081/search",
+      "screenshot": "protected/search.png",
+      "finalUrl": "http://localhost:8081/search",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:31:19.066Z"
+    },
+    {
+      "group": "protected",
+      "name": "assessments",
+      "path": "/assessments",
+      "url": "http://localhost:8081/assessments",
+      "screenshot": "protected/assessments.png",
+      "finalUrl": "http://localhost:8081/assessments",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:31:38.418Z"
+    },
+    {
+      "group": "protected",
+      "name": "onboarding",
+      "path": "/onboarding",
+      "url": "http://localhost:8081/onboarding",
+      "screenshot": "protected/onboarding.png",
+      "finalUrl": "http://localhost:8081/search",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:32:07.814Z"
+    },
+    {
+      "group": "employers",
+      "name": "list",
+      "path": "/employers",
+      "url": "http://localhost:8081/employers",
+      "screenshot": "employers/list.png",
+      "finalUrl": "http://localhost:8081/employers",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:32:26.992Z"
+    },
+    {
+      "group": "employers",
+      "name": "create",
+      "path": "/employers/create",
+      "url": "http://localhost:8081/employers/create",
+      "screenshot": "employers/create.png",
+      "finalUrl": "http://localhost:8081/search",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:32:31.585Z"
+    },
+    {
+      "group": "employers",
+      "name": "invitations",
+      "path": "/employers/invitations",
+      "url": "http://localhost:8081/employers/invitations",
+      "screenshot": "employers/invitations.png",
+      "finalUrl": "http://localhost:8081/employers/invitations",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:32:50.766Z"
+    },
+    {
+      "group": "workers",
+      "name": "list",
+      "path": "/workers",
+      "url": "http://localhost:8081/workers",
+      "screenshot": "workers/list.png",
+      "finalUrl": "http://localhost:8081/workers",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:33:10.227Z"
+    },
+    {
+      "group": "workers",
+      "name": "map",
+      "path": "/workers/map",
+      "url": "http://localhost:8081/workers/map",
+      "screenshot": "workers/map.png",
+      "finalUrl": "http://localhost:8081/workers/map",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:33:29.349Z"
+    },
+    {
+      "group": "jobs",
+      "name": "list",
+      "path": "/jobs",
+      "url": "http://localhost:8081/jobs",
+      "screenshot": "jobs/list.png",
+      "finalUrl": "http://localhost:8081/jobs",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:33:48.501Z"
+    },
+    {
+      "group": "communities",
+      "name": "list",
+      "path": "/communities",
+      "url": "http://localhost:8081/communities",
+      "screenshot": "communities/list.png",
+      "finalUrl": "http://localhost:8081/communities",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:34:07.718Z"
+    },
+    {
+      "group": "communities",
+      "name": "reputation",
+      "path": "/communities/reputation",
+      "url": "http://localhost:8081/communities/reputation",
+      "screenshot": "communities/reputation.png",
+      "finalUrl": "http://localhost:8081/search",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:34:12.258Z"
+    },
+    {
+      "group": "communities",
+      "name": "bookmarks",
+      "path": "/communities/bookmarks",
+      "url": "http://localhost:8081/communities/bookmarks",
+      "screenshot": "communities/bookmarks.png",
+      "finalUrl": "http://localhost:8081/communities/bookmarks",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:34:31.410Z"
+    },
+    {
+      "group": "profile",
+      "name": "overview",
+      "path": "/profile",
+      "url": "http://localhost:8081/profile",
+      "screenshot": "profile/overview.png",
+      "finalUrl": "http://localhost:8081/profile",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:34:50.598Z"
+    },
+    {
+      "group": "profile",
+      "name": "general",
+      "path": "/profile/general",
+      "url": "http://localhost:8081/profile/general",
+      "screenshot": "profile/general.png",
+      "finalUrl": "http://localhost:8081/search",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:34:55.066Z"
+    },
+    {
+      "group": "profile",
+      "name": "verification",
+      "path": "/profile/verification",
+      "url": "http://localhost:8081/profile/verification",
+      "screenshot": "profile/verification.png",
+      "finalUrl": "http://localhost:8081/profile/verification",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:35:14.082Z"
+    },
+    {
+      "group": "profile",
+      "name": "id-verification",
+      "path": "/profile/id-verification",
+      "url": "http://localhost:8081/profile/id-verification",
+      "screenshot": "profile/id-verification.png",
+      "finalUrl": "http://localhost:8081/profile/verification",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:35:33.102Z"
+    },
+    {
+      "group": "profile",
+      "name": "import-review",
+      "path": "/profile/import-review",
+      "url": "http://localhost:8081/profile/import-review",
+      "screenshot": "profile/import-review.png",
+      "finalUrl": "http://localhost:8081/profile/resume",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:35:52.165Z"
+    },
+    {
+      "group": "profile",
+      "name": "experience",
+      "path": "/profile/experience",
+      "url": "http://localhost:8081/profile/experience",
+      "screenshot": "profile/experience.png",
+      "finalUrl": "http://localhost:8081/search",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:35:56.734Z"
+    },
+    {
+      "group": "profile",
+      "name": "employment",
+      "path": "/profile/employment",
+      "url": "http://localhost:8081/profile/employment",
+      "screenshot": "profile/employment.png",
+      "finalUrl": "http://localhost:8081/profile/resume",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:36:15.829Z"
+    },
+    {
+      "group": "profile",
+      "name": "education",
+      "path": "/profile/education",
+      "url": "http://localhost:8081/profile/education",
+      "screenshot": "profile/education.png",
+      "finalUrl": "http://localhost:8081/profile/experience",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:36:35.143Z"
+    },
+    {
+      "group": "profile",
+      "name": "certifications",
+      "path": "/profile/certifications",
+      "url": "http://localhost:8081/profile/certifications",
+      "screenshot": "profile/certifications.png",
+      "finalUrl": "http://localhost:8081/profile/skills",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:37:04.750Z"
+    },
+    {
+      "group": "profile",
+      "name": "skills",
+      "path": "/profile/skills",
+      "url": "http://localhost:8081/profile/skills",
+      "screenshot": "profile/skills.png",
+      "finalUrl": "http://localhost:8081/profile/skills",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:37:34.553Z"
+    },
+    {
+      "group": "profile",
+      "name": "resume",
+      "path": "/profile/resume",
+      "url": "http://localhost:8081/profile/resume",
+      "screenshot": "profile/resume.png",
+      "finalUrl": "http://localhost:8081/search",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:37:39.049Z"
+    },
+    {
+      "group": "profile",
+      "name": "resume-review",
+      "path": "/profile/resume/review",
+      "url": "http://localhost:8081/profile/resume/review",
+      "screenshot": "profile/resume-review.png",
+      "finalUrl": "http://localhost:8081/profile/resume/review",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:37:57.989Z"
+    },
+    {
+      "group": "profile",
+      "name": "background-check",
+      "path": "/profile/background-check",
+      "url": "http://localhost:8081/profile/background-check",
+      "screenshot": "profile/background-check.png",
+      "finalUrl": "http://localhost:8081/profile/verification",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:38:17.089Z"
+    },
+    {
+      "group": "profile",
+      "name": "background-check-initiate",
+      "path": "/profile/background-check/initiate",
+      "url": "http://localhost:8081/profile/background-check/initiate",
+      "screenshot": "profile/background-check-initiate.png",
+      "finalUrl": "http://localhost:8081/profile/background-check/initiate",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:38:36.090Z"
+    },
+    {
+      "group": "admin",
+      "name": "office",
+      "path": "/office",
+      "url": "http://localhost:8081/office",
+      "screenshot": "admin/office.png",
+      "finalUrl": "http://localhost:8081/dashboard",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:39:05.554Z"
+    },
+    {
+      "group": "unauth",
+      "name": "welcome-or-redirect",
+      "path": "/",
+      "url": "http://localhost:8081/",
+      "screenshot": "unauth/welcome-or-redirect.png",
+      "finalUrl": "http://localhost:8081/auth",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:39:34.306Z"
+    },
+    {
+      "group": "unauth",
+      "name": "login",
+      "path": "/auth",
+      "url": "http://localhost:8081/auth",
+      "screenshot": "unauth/login.png",
+      "finalUrl": "http://localhost:8081/auth",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:39:38.861Z"
+    },
+    {
+      "group": "unauth",
+      "name": "terms",
+      "path": "/auth/terms",
+      "url": "http://localhost:8081/auth/terms",
+      "screenshot": "unauth/terms.png",
+      "finalUrl": "http://localhost:8081/auth/terms",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:39:43.188Z"
+    },
+    {
+      "group": "unauth",
+      "name": "privacy",
+      "path": "/auth/privacy",
+      "url": "http://localhost:8081/auth/privacy",
+      "screenshot": "unauth/privacy.png",
+      "finalUrl": "http://localhost:8081/auth/privacy",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:39:47.574Z"
+    },
+    {
+      "group": "unauth",
+      "name": "verify",
+      "path": "/auth/verify",
+      "url": "http://localhost:8081/auth/verify",
+      "screenshot": "unauth/verify.png",
+      "finalUrl": "http://localhost:8081/auth/verify",
+      "status": 200,
+      "capturedAt": "2026-05-26T21:39:51.843Z"
+    }
+  ]
+}

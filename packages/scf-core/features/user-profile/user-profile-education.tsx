@@ -47,7 +47,7 @@ export function UserProfileEducation({ education }: UserProfileEducationProps) {
                 {edu.institution_name && <Text style={{ color: colors.text[t].secondary }}>{edu.institution_name}</Text>}
                 {(edu.start_date || edu.end_date) && (
                   <Row gap={8} align="center">
-                    <Calendar size="md" color={colors.text[t].secondary} />
+                    <Calendar size={20} color={colors.text[t].secondary} />
                     <Text style={{ color: colors.text[t].secondary }}>
                       {formatDate(edu.start_date)} -{' '}
                       {edu.is_current ? 'Present' : formatDate(edu.end_date)}

@@ -73,7 +73,7 @@ export function BackgroundCheckNavigationMenu() {
 
                 <Row gap={8} align="center">
                   <Text style={{ color: isActive ? (t === 'dark' ? colors.blue[100] : colors.blue[900]) : colors.text[t].primary }}>View workspace</Text>
-                  <ArrowRight size="md" color={isActive ? (t === 'dark' ? colors.blue[300] : colors.blue[600]) : colors.text[t].secondary} />
+                  <ArrowRight size={20} color={isActive ? (t === 'dark' ? colors.blue[300] : colors.blue[600]) : colors.text[t].secondary} />
                 </Row>
               </Stack>
             </Link>

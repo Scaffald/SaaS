@@ -123,7 +123,7 @@ export function UserProfilePanel({
               {preview.headline && <Text style={{ color: colors.text[t].secondary }}>{preview.headline}</Text>}
               {preview.location && (
                 <Row gap={4} align="center" marginTop={4}>
-                  <MapPin size="md" color={colors.text[t].secondary} />
+                  <MapPin size={20} color={colors.text[t].secondary} />
                   <Text style={{ color: colors.text[t].secondary }}>{preview.location}</Text>
                 </Row>
               )}

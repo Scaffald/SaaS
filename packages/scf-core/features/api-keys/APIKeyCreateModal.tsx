@@ -336,7 +336,7 @@ export function APIKeyCreateModal({ isOpen, onClose, onCreate }: APIKeyCreateMod
                   }}
                 >
                   <Row align="center" gap={8}>
-                    <AlertCircle size="lg" color={colors.fg[theme].error} />
+                    <AlertCircle size={24} color={colors.fg[theme].error} />
                     <Paragraph color={colors.fg[theme].error}>{error}</Paragraph>
                   </Row>
                 </Card>

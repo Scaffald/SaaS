@@ -44,7 +44,7 @@ export function UserProfileCertifications({ certifications }: UserProfileCertifi
                 )}
                 {(cert.issue_date || cert.expiration_date) && (
                   <Row gap={8} align="center">
-                    <Calendar size="md" color={colors.text[t].secondary} />
+                    <Calendar size={20} color={colors.text[t].secondary} />
                     <Text style={{ color: colors.text[t].secondary }}>
                       {cert.issue_date && `Issued ${formatDate(cert.issue_date)}`}
                       {cert.issue_date && cert.expiration_date && ' • '}

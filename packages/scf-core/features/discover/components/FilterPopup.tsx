@@ -151,9 +151,9 @@ export const FilterPopup = ({
                     <Row justify="space-between" align="center" flex={1}>
                       <Text>{getSectionHeaderText()}</Text>
                       {openSections.has('show') ? (
-                        <ChevronDown size="md" />
+                        <ChevronDown size={20} />
                       ) : (
-                        <ChevronRight size="md" />
+                        <ChevronRight size={20} />
                       )}
                     </Row>
                   </Button>

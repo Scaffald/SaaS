@@ -121,7 +121,7 @@ export function OrganizationPreviewModal({
                 align="center"
                 borderWidth={1}
               >
-                <Briefcase size="md" color={t === 'dark' ? colors.green[300] : colors.green[600]} />
+                <Briefcase size={20} color={t === 'dark' ? colors.green[300] : colors.green[600]} />
                 <Text style={{ color: t === 'dark' ? colors.green[300] : colors.green[700] }}>
                   {jobsCount} Open {jobsCount === 1 ? 'Position' : 'Positions'}
                 </Text>
@@ -179,7 +179,7 @@ export function OrganizationPreviewModal({
             <>
               <Separator />
               <Row gap={8} align="center">
-                <ExternalLink size="md" color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
+                <ExternalLink size={20} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
                 <Text
                   style={{
                     color: t === 'dark' ? colors.blue[300] : colors.blue[600],

@@ -318,7 +318,7 @@ export function ImportReviewScreen() {
         <CardHeader>
           <Stack gap={12}>
             <Row gap={12} align="flex-start" wrap>
-              <Info size="lg" color={colors.icon[theme].info} />
+              <Info size={24} color={colors.icon[theme].info} />
               <Stack flex={1} gap={8}>
                 <Row gap={8} align="center">
                   <H5>Imported data overview</H5>
@@ -331,7 +331,7 @@ export function ImportReviewScreen() {
                 <Row gap={12} wrap>
                   <Row gap={8} align="center">
                     <Clock
-                      size="md"
+                      size={20}
                       color={
                         expiresInLabel?.status === "expired"
                           ? colors.fg[theme].error

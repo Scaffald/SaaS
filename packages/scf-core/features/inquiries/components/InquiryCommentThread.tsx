@@ -172,7 +172,7 @@ export function InquiryCommentThread({
           borderRadius={12}
           style={{ backgroundColor: t === 'dark' ? colors.blue[900] : colors.blue[50] }}
         >
-          <MessageSquare size="md" color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
+          <MessageSquare size={20} color={t === 'dark' ? colors.blue[300] : colors.blue[600]} />
           <Text style={{ color: t === 'dark' ? colors.blue[300] : colors.blue[600] }}>
             {`${unreadComments.length} new comment${unreadComments.length > 1 ? 's' : ''}`}
           </Text>

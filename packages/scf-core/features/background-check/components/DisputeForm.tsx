@@ -237,7 +237,7 @@ export function DisputeForm({
               style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
               borderRadius={12}
             >
-              <AlertCircle size="md" color={theme === "light" ? colors.error[700] : colors.error[300]} />
+              <AlertCircle size={20} color={theme === "light" ? colors.error[700] : colors.error[300]} />
               <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{attachmentError}</Text>
             </Row>
           ) : null}
@@ -289,7 +289,7 @@ export function DisputeForm({
             style={{ backgroundColor: theme === "light" ? colors.error[50] : colors.error[900] }}
             borderRadius={12}
           >
-            <AlertCircle size="md" color={theme === "light" ? colors.error[700] : colors.error[300]} />
+            <AlertCircle size={20} color={theme === "light" ? colors.error[700] : colors.error[300]} />
             <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>{submissionError}</Text>
           </Row>
         ) : null}

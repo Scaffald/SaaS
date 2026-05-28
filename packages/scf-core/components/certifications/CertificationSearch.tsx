@@ -207,7 +207,7 @@ export function CertificationSearch({
                       gap={8}
                       testID="cert-search-section-depth0"
                     >
-                      <Award size="lg" color={colors.text[t].secondary} />
+                      <Award size={24} color={colors.text[t].secondary} />
                       <Text style={{ color: colors.text[t].secondary }}>Top Level Categories</Text>
                     </Row>
                     {groupedResults.depth0.map((cert) => (
@@ -251,7 +251,7 @@ export function CertificationSearch({
                       gap={8}
                       testID="cert-search-section-depth1"
                     >
-                      <Award size="lg" color={colors.text[t].secondary} />
+                      <Award size={24} color={colors.text[t].secondary} />
                       <Text style={{ color: colors.text[t].secondary }}>
                         {parentId === 'none'
                           ? 'Categories'
@@ -299,7 +299,7 @@ export function CertificationSearch({
                       gap={8}
                       testID="cert-search-section-depth2"
                     >
-                      <Award size="lg" color={colors.text[t].secondary} />
+                      <Award size={24} color={colors.text[t].secondary} />
                       <Text style={{ color: colors.text[t].secondary }}>
                         {parentId === 'none'
                           ? 'Specific Certifications'
