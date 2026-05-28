@@ -5,6 +5,12 @@
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { authMiddleware } from "../middleware/auth.ts";
+import {
+  completionPercentage as sumCompletionPercentage,
+  getSectionStatuses,
+  milestoneBadges,
+  nextMilestone,
+} from "../lib/profile-completion-calc.ts";
 
 const app = new OpenAPIHono();
 app.use("*", authMiddleware);
@@ -84,70 +90,78 @@ app.openapi(getStatusRoute, async (c) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  // Fetch profile completion data
-  const { data: profile } = await supabase
-    .schema("core")
-    .from("user_profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
+  // Pull the data the weighted section algorithm needs. Mirrors the canonical
+  // tRPC implementation: profile fields + headline + counts across the
+  // skills/certifications/education/experience tables (all schema "core").
+  const [
+    profileRes,
+    userRes,
+    skillsRes,
+    certificationsRes,
+    educationRes,
+    experienceRes,
+  ] = await Promise.all([
+    supabase
+      .schema("core")
+      .from("profile")
+      .select("first_name, last_name, address, preferred_work_locations, education_level")
+      .eq("user_id", user.id)
+      .maybeSingle(),
+    supabase
+      .schema("core")
+      .from("users")
+      .select("headline")
+      .eq("id", user.id)
+      .maybeSingle(),
+    supabase.schema("core").from("user_skills").select("id").eq("user_id", user.id),
+    supabase
+      .schema("core")
+      .from("user_certifications")
+      .select("id")
+      .eq("user_id", user.id),
+    supabase.schema("core").from("user_education").select("id").eq("user_id", user.id),
+    supabase
+      .schema("core")
+      .from("user_experience")
+      .select("job_title, company_name")
+      .eq("user_id", user.id),
+  ]);
 
-  // Calculate completion (simplified version)
-  const sections = [
-    { id: "general", title: "General Info", weight: 20 },
-    { id: "skills", title: "Skills", weight: 20 },
-    { id: "experience", title: "Experience", weight: 20 },
-    { id: "certifications", title: "Certifications", weight: 15 },
-    { id: "preferences", title: "Preferences", weight: 15 },
-    { id: "education", title: "Education", weight: 10 },
-  ];
+  // PGRST116 = "no rows" from .maybeSingle(); treat as empty, surface anything else.
+  const realError = [
+    profileRes.error,
+    userRes.error,
+    skillsRes.error,
+    certificationsRes.error,
+    educationRes.error,
+    experienceRes.error,
+  ].find((e) => e && e.code !== "PGRST116");
+  if (realError) {
+    console.error("[profileCompletion] getStatus query failed", realError);
+    return c.json(
+      { error: "Failed to compute completion status", message: realError.message },
+      500,
+    );
+  }
 
-  let completedWeight = 0;
-  const sectionProgress = sections.map((section) => {
-    // Simplified: mark as complete if profile has basic data
-    const completed = profile &&
-      (section.id === "general" ? !!profile.headline : false);
-    if (completed) completedWeight += section.weight;
-    return {
-      ...section,
-      completed,
-      missingFields: completed ? [] : ["Required fields"],
-    };
+  const sectionProgress = getSectionStatuses({
+    profile: profileRes.data ?? null,
+    headline: userRes.data?.headline,
+    skillsCount: skillsRes.data?.length ?? 0,
+    certificationsCount: certificationsRes.data?.length ?? 0,
+    educationCount: educationRes.data?.length ?? 0,
+    experience: (experienceRes.data ?? []) as Array<Record<string, unknown>>,
   });
 
-  const completionPercentage = Math.round(completedWeight);
-  const incompleteSections = sectionProgress.filter((s) => !s.completed).map(
-    (s) => s.id,
-  );
+  const completionPercentage = sumCompletionPercentage(sectionProgress);
+  const completedWeight = completionPercentage;
+  const incompleteSections = sectionProgress
+    .filter((s) => !s.completed)
+    .map((s) => s.id);
 
   return c.json({
     completionPercentage,
-    milestoneBadges: [
-      {
-        id: "25",
-        threshold: 25,
-        achieved: completionPercentage >= 25,
-        reachedAt: null,
-      },
-      {
-        id: "50",
-        threshold: 50,
-        achieved: completionPercentage >= 50,
-        reachedAt: null,
-      },
-      {
-        id: "75",
-        threshold: 75,
-        achieved: completionPercentage >= 75,
-        reachedAt: null,
-      },
-      {
-        id: "100",
-        threshold: 100,
-        achieved: completionPercentage >= 100,
-        reachedAt: null,
-      },
-    ],
+    milestoneBadges: milestoneBadges(completionPercentage),
     sectionProgress,
     incompleteSections,
     hasReachedFiftyPercent: completionPercentage >= 50,
@@ -160,9 +174,7 @@ app.openapi(getStatusRoute, async (c) => {
     summary: {
       completedWeight,
       remainingWeight: 100 - completedWeight,
-      nextMilestone: completionPercentage >= 100
-        ? null
-        : Math.ceil(completionPercentage / 25) * 25,
+      nextMilestone: nextMilestone(completionPercentage),
     },
     updatedAt: new Date().toISOString(),
   });

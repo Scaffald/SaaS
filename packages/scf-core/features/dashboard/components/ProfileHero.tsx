@@ -166,6 +166,9 @@ export function ProfileHero() {
               flexDirection: 'row',
               alignItems: 'center',
               gap: 8,
+              // Keep intrinsic width so the row scrolls instead of shrinking
+              // buttons and clipping longer labels (e.g. "Assessments" → "As…") (SC-88).
+              flexShrink: 0,
               backgroundColor: colors.bg[theme].default,
               borderRadius: 20,
               paddingHorizontal: 14,
