@@ -138,9 +138,13 @@ export function GeneralInfoWidget({
   const showPrivateInfo = !!data.privateData;
   const badge = data.idVerificationBadge;
 
+  // Treat the viewed profile as "self" when it's the current user's, even if the
+  // caller didn't pass isOwnProfile (e.g. the profile overview passes only userId).
+  const isSelf =
+    isOwnProfile || (!!currentUser?.id && currentUser.id === userId);
+
   // Only show "Add Review" button if viewing someone else's profile
-  const canLeaveReview =
-    showButtons && !isOwnProfile && currentUser?.id !== userId;
+  const canLeaveReview = showButtons && !isSelf;
 
   const handleLeaveReview = () => {
     setShowReviewModal(true);
@@ -177,7 +181,7 @@ export function GeneralInfoWidget({
                 ) : null}
                 <ConnectionFollowButtonsInline
                   targetUserId={userId || ""}
-                  isOwnProfile={isOwnProfile}
+                  isOwnProfile={isSelf}
                 />
                 {canLeaveReview && (
                   <Button
