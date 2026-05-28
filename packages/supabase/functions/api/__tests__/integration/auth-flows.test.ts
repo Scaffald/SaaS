@@ -355,15 +355,22 @@ Deno.test("AUTH FLOW: API key creation and usage", async () => {
     .select()
     .single();
 
+  const { data: tmAdminRole } = await admin
+    .schema("core")
+    .from("team_roles")
+    .select("id")
+    .eq("key", "team_admin")
+    .is("organization_id", null)
+    .limit(1)
+    .single();
+
   await admin
     .schema("core")
     .from("team_members")
     .insert({
       team_id: team!.id,
       user_id: authUser!.user.id,
-      organization_id: org!.id,
-      user_type: "employer",
-      role: "admin",
+      role_id: tmAdminRole?.id,
     });
 
   const { data: session } = await admin.auth.signInWithPassword({

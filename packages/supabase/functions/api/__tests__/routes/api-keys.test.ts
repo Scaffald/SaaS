@@ -87,16 +87,24 @@ async function createTestUserWithOrg(overrides: {
     throw new Error("Failed to create team");
   }
 
-  // Create team member
+  // Create team member. team_members uses role_id now (no organization_id/role/
+  // user_type columns); use the global team_admin role for org-admin access.
+  const { data: adminRole } = await admin
+    .schema("core")
+    .from("team_roles")
+    .select("id")
+    .eq("key", "team_admin")
+    .is("organization_id", null)
+    .limit(1)
+    .single();
+
   await admin
     .schema("core")
     .from("team_members")
     .insert({
       team_id: team.id,
       user_id: authUser.user.id,
-      organization_id: org.id,
-      user_type: overrides.user_type || "employer",
-      role: "admin",
+      role_id: adminRole?.id,
     });
 
   // Get auth token
