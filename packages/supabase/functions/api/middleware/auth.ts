@@ -142,8 +142,11 @@ export async function authMiddleware(c: Context, next: Next) {
         console.error("Failed to update API key last_used_at:", error);
       });
 
-    // Create a regular Supabase client (with anon key)
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    // API-key requests are server-to-server and already validated above. Use the
+    // service-role client so RLS-protected reads work (e.g. core.api_keys grants
+    // only authenticated/service_role — an anon client gets permission denied →
+    // 404/500). Handlers scope every query by apiKey.organizationId.
+    const supabase = serviceClient;
 
     // Add to Hono context
     c.set("supabase", supabase);

@@ -4,6 +4,11 @@
  */
 
 import { createAdminClient, getTestStartTime } from "../setup.ts";
+import {
+  generateApiKey,
+  getApiKeyPrefix,
+  hashApiKey,
+} from "../../utils/crypto.ts";
 
 /**
  * Generate unique test identifier
@@ -206,20 +211,12 @@ export async function createTestApiKey(overrides: {
     createdBy = u.id;
   }
 
-  // Generate API key (sk_test_ or sk_live_ prefix)
+  // Generate a properly-formatted key (sk_{test|live}_{32 base62}) with the SAME
+  // utils the auth middleware validates + hashes with. A hand-rolled key fails
+  // validateApiKeyFormat in the middleware, so api-key auth never recognizes it.
   const environment = overrides.environment || "test";
-  const keyPrefix = environment === "test" ? "sk_test_" : "sk_live_";
-  const keySecret = generateTestId();
-  const rawKey = `${keyPrefix}${keySecret}`;
-
-  // Hash the key (SHA-256)
-  const encoder = new TextEncoder();
-  const data = encoder.encode(rawKey);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const keyHash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join(
-    "",
-  );
+  const rawKey = generateApiKey(environment);
+  const keyHash = await hashApiKey(rawKey);
 
   const { data: apiKeyData, error } = await admin
     .schema("core")
@@ -229,7 +226,7 @@ export async function createTestApiKey(overrides: {
       created_by: createdBy,
       name: overrides.name || `Test API Key ${generateTestId()}`,
       key_hash: keyHash,
-      key_prefix: keyPrefix.slice(0, -1), // Remove trailing underscore
+      key_prefix: getApiKeyPrefix(rawKey).replace("...", ""),
       scopes: overrides.scopes || ["jobs:read", "applications:write"],
       rate_limit_tier: overrides.tier || "free",
       expires_at: overrides.expires_at || null,

@@ -25,8 +25,11 @@ export function generateApiKey(environment: 'test' | 'live' = 'live'): string {
   const randomBytes = new Uint8Array(24)
   crypto.getRandomValues(randomBytes)
 
-  // Convert to base62 (alphanumeric only, URL-safe)
-  const randomPart = base62Encode(randomBytes)
+  // Convert to base62 (alphanumeric only, URL-safe). base62Encode pads to a
+  // 32-char minimum, but 24 bytes can encode to 33 chars (~64% of the time),
+  // which fails validateApiKeyFormat's exact-32 check and makes the key unusable
+  // for api-key auth. Keep the low 32 digits so the result is always exactly 32.
+  const randomPart = base62Encode(randomBytes).slice(-32)
 
   return `${prefix}_${randomPart}`
 }

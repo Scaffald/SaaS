@@ -61,14 +61,18 @@ export class TestClient {
       ...customHeaders,
     };
 
-    // Add auth header (JWT takes precedence over API key)
-    if (this.authToken) {
-      headers["Authorization"] = `Bearer ${this.authToken}`;
-    } else if (this.apiKey) {
-      headers["Authorization"] = `Bearer ${this.apiKey}`;
-    } else {
-      // Use anon key as fallback
-      headers["Authorization"] = `Bearer ${TEST_SUPABASE_ANON_KEY}`;
+    // An explicit Authorization in customHeaders wins — e.g. api-key-auth tests
+    // pass `Bearer sk_...` per request. Only fall back to the client's token/key
+    // (or anon) when the caller didn't set one.
+    if (headers["Authorization"] === undefined) {
+      if (this.authToken) {
+        headers["Authorization"] = `Bearer ${this.authToken}`;
+      } else if (this.apiKey) {
+        headers["Authorization"] = `Bearer ${this.apiKey}`;
+      } else {
+        // Use anon key as fallback
+        headers["Authorization"] = `Bearer ${TEST_SUPABASE_ANON_KEY}`;
+      }
     }
 
     return headers;

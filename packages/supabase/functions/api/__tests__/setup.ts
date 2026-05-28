@@ -32,6 +32,7 @@ export function createTestSupabaseClient(authToken?: string): SupabaseClient {
     : {};
 
   return createClient(TEST_SUPABASE_URL, TEST_SUPABASE_ANON_KEY, {
+    auth: { autoRefreshToken: false, persistSession: false },
     global: { headers },
   });
 }
@@ -40,7 +41,9 @@ export function createTestSupabaseClient(authToken?: string): SupabaseClient {
  * Create an admin Supabase client
  */
 export function createAdminClient(): SupabaseClient {
-  return createClient(TEST_SUPABASE_URL, TEST_SUPABASE_SERVICE_KEY);
+  return createClient(TEST_SUPABASE_URL, TEST_SUPABASE_SERVICE_KEY, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
 }
 
 /**
