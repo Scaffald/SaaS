@@ -100,7 +100,7 @@ catalog:
   react-native-webview: 13.16.1
   react-refresh: ~0.14.0
   serve: ~14.2.5
-  supabase: 2.65.2
+  supabase: 2.102.0
   superjson: ~2.2.6
   swr: ~2.4.1
   tsup: ~8.5.1
