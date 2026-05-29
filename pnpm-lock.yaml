@@ -43,8 +43,8 @@ catalogs:
       specifier: ~11.17.0
       version: 11.17.0
     '@trpc/server':
-      specifier: ~11.8.0
-      version: 11.8.1
+      specifier: ~11.17.0
+      version: 11.17.0
     '@types/geojson':
       specifier: ~7946.0.16
       version: 7946.0.16
@@ -337,7 +337,7 @@ importers:
         version: 2.27.2(@tiptap/pm@2.27.2)
       '@trpc/server':
         specifier: 'catalog:'
-        version: 11.8.1(typescript@5.9.3)
+        version: 11.17.0(typescript@5.9.3)
       babel-plugin-module-resolver:
         specifier: 'catalog:'
         version: 4.1.0
@@ -635,7 +635,7 @@ importers:
         version: 10.53.1(react@19.2.3)
       '@trpc/server':
         specifier: 'catalog:'
-        version: 11.8.1(typescript@5.9.3)
+        version: 11.17.0(typescript@5.9.3)
       babel-plugin-module-resolver:
         specifier: 'catalog:'
         version: 4.1.0
@@ -1031,10 +1031,10 @@ importers:
         version: 8.20.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@trpc/client':
         specifier: 'catalog:'
-        version: 11.17.0(@trpc/server@11.8.1(typescript@5.9.3))(typescript@5.9.3)
+        version: 11.17.0(@trpc/server@11.17.0(typescript@5.9.3))(typescript@5.9.3)
       '@trpc/react-query':
         specifier: 'catalog:'
-        version: 11.17.0(@tanstack/react-query@5.90.21(react@19.2.3))(@trpc/client@11.17.0(@trpc/server@11.8.1(typescript@5.9.3))(typescript@5.9.3))(@trpc/server@11.8.1(typescript@5.9.3))(react@19.2.3)(typescript@5.9.3)
+        version: 11.17.0(@tanstack/react-query@5.90.21(react@19.2.3))(@trpc/client@11.17.0(@trpc/server@11.17.0(typescript@5.9.3))(typescript@5.9.3))(@trpc/server@11.17.0(typescript@5.9.3))(react@19.2.3)(typescript@5.9.3)
       awesome-phonenumber:
         specifier: 'catalog:'
         version: 7.6.0
@@ -1339,7 +1339,7 @@ importers:
         version: 2.86.2
       '@trpc/server':
         specifier: 'catalog:'
-        version: 11.8.1(typescript@5.9.3)
+        version: 11.17.0(typescript@5.9.3)
       adm-zip:
         specifier: ^0.5.17
         version: 0.5.17
@@ -6398,8 +6398,9 @@ packages:
       react: 19.2.3
       typescript: '>=5.7.2'
 
-  '@trpc/server@11.8.1':
-    resolution: {integrity: sha512-P4rzZRpEL7zDFgjxK65IdyH0e41FMFfTkQkuq0BA5tKcr7E6v9/v38DEklCpoDN6sPiB1Sigy/PUEzHENhswDA==}
+  '@trpc/server@11.17.0':
+    resolution: {integrity: sha512-jbAOUe0PpUTCYqziyu+8vYXZdDXPudZgnEhWCQ2NjKnVEjfE93RqHTt1oycZJv/HNf51YlRXfEEwSIAbb161rw==}
+    hasBin: true
     peerDependencies:
       typescript: '>=5.7.2'
 
@@ -21513,7 +21514,9 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
+      - bufferutil
       - supports-color
+      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
@@ -23031,20 +23034,20 @@ snapshots:
       prosemirror-transform: 1.12.0
       prosemirror-view: 1.41.8
 
-  '@trpc/client@11.17.0(@trpc/server@11.8.1(typescript@5.9.3))(typescript@5.9.3)':
+  '@trpc/client@11.17.0(@trpc/server@11.17.0(typescript@5.9.3))(typescript@5.9.3)':
     dependencies:
-      '@trpc/server': 11.8.1(typescript@5.9.3)
+      '@trpc/server': 11.17.0(typescript@5.9.3)
       typescript: 5.9.3
 
-  '@trpc/react-query@11.17.0(@tanstack/react-query@5.90.21(react@19.2.3))(@trpc/client@11.17.0(@trpc/server@11.8.1(typescript@5.9.3))(typescript@5.9.3))(@trpc/server@11.8.1(typescript@5.9.3))(react@19.2.3)(typescript@5.9.3)':
+  '@trpc/react-query@11.17.0(@tanstack/react-query@5.90.21(react@19.2.3))(@trpc/client@11.17.0(@trpc/server@11.17.0(typescript@5.9.3))(typescript@5.9.3))(@trpc/server@11.17.0(typescript@5.9.3))(react@19.2.3)(typescript@5.9.3)':
     dependencies:
       '@tanstack/react-query': 5.90.21(react@19.2.3)
-      '@trpc/client': 11.17.0(@trpc/server@11.8.1(typescript@5.9.3))(typescript@5.9.3)
-      '@trpc/server': 11.8.1(typescript@5.9.3)
+      '@trpc/client': 11.17.0(@trpc/server@11.17.0(typescript@5.9.3))(typescript@5.9.3)
+      '@trpc/server': 11.17.0(typescript@5.9.3)
       react: 19.2.3
       typescript: 5.9.3
 
-  '@trpc/server@11.8.1(typescript@5.9.3)':
+  '@trpc/server@11.17.0(typescript@5.9.3)':
     dependencies:
       typescript: 5.9.3
 
@@ -24115,7 +24118,7 @@ snapshots:
 
   babel-plugin-macros@3.1.0:
     dependencies:
-      '@babel/runtime': 7.28.6
+      '@babel/runtime': 7.29.2
       cosmiconfig: 7.1.0
       resolve: 1.22.12
 
