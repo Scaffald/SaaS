@@ -512,12 +512,13 @@ app.openapi(getApplicationRoute, async (c) => {
     );
   }
 
-  return c.json({
-    data: {
+  return c.json(
+    {
       ...application,
       status: mapDbStatus(application.status as string),
     },
-  }, 200);
+    200,
+  );
 });
 
 /**
@@ -1403,7 +1404,9 @@ app.openapi(sendMessageRoute, async (c) => {
   const { data: application, error: appError } = await supabase
     .schema("core")
     .from("applications")
-    .select("id, user_id")
+    .select(
+      "id, user_id, job_id, job:jobs!job_id(organization_id, organization:organizations!organization_id(owner_user_id))",
+    )
     .eq("id", id)
     .single();
 
@@ -1411,9 +1414,32 @@ app.openapi(sendMessageRoute, async (c) => {
     return c.json({ error: "Not Found", message: "Application not found" }, 404);
   }
 
-  // Only the applicant or someone with org access may post. RLS should enforce
-  // this too, but failing early gives a cleaner error.
-  if (application.user_id !== user.id) {
+  // Allow the applicant OR org owner/role_assignee to reply. The read route
+  // permits the same set, so a recruiter previously could load the thread but
+  // not respond — every reply 403'd before this access check ran.
+  const isApplicant = application.user_id === user.id;
+  let hasOrgAccess = false;
+  if (!isApplicant) {
+    const orgId = (application.job as { organization_id?: string } | null)
+      ?.organization_id;
+    const ownerId = (
+      application.job as { organization?: { owner_user_id?: string } | null } | null
+    )?.organization?.owner_user_id;
+    if (ownerId === user.id) {
+      hasOrgAccess = true;
+    } else if (orgId) {
+      const { data: roleAssignment } = await supabase
+        .schema("core")
+        .from("role_assignments")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("scope_org_id", orgId)
+        .maybeSingle();
+      if (roleAssignment) hasOrgAccess = true;
+    }
+  }
+
+  if (!isApplicant && !hasOrgAccess) {
     return c.json(
       { error: "Forbidden", message: "You cannot post in this application thread" },
       403,
