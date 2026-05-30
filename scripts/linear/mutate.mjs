@@ -49,68 +49,237 @@ async function gql(query, variables) {
   return json.data
 }
 
-// ---------- Coordination comment text ----------
-const V17_SHIPPED_COMMENT = `**Backlog hygiene — 2026-05-30**
+// ---------- Pre-audit ticket builders ----------
+// Phase B of the v1.8.0 worker-flow repair sweep. See
+// docs/agents/handoffs/2026-05-30-v1.8.0-plan.md.
+//
+// Each finding gets filed in Triage with title `[pre-audit/SC-XX] …` so
+// Phase D can find them and promote/close in a single batch.
+//
+// Severity → Linear priority:  blocker=2 (high), polish=3 (medium), nit=4 (low).
+// We don't use priority 1 (urgent) here — pre-audit findings aren't urgent
+// until Phase D approves them.
 
-This ticket's fix landed on \`main\` as part of the v1.7.0 profile-API repair cluster:
+const SEV_PRIORITY = { blocker: 2, polish: 3, nit: 4 }
 
-- SC-90 / SC-91 / SC-92 / SC-93 → [#311](https://github.com/Unicorn/UNI-Construct/pull/311) (\`22abc3b3c\`)
-- SC-94 / SC-95 / SC-96 → [#312](https://github.com/Unicorn/UNI-Construct/pull/312) (\`cdada8c01\`)
-- SC-97 / SC-99 → [#313](https://github.com/Unicorn/UNI-Construct/pull/313) (\`4c5af3ee6\`)
+function preAuditIssue(sourceTicket, finding) {
+  const { title, severity, file, fix, notes } = finding
+  return {
+    kind: 'create-issue',
+    title: `[pre-audit/${sourceTicket}] ${title}`,
+    description: `**Source:** Phase B pre-audit for [${sourceTicket}](https://linear.app/scaffald/issue/${sourceTicket.toLowerCase()}). See [v1.8.0 plan](https://github.com/Unicorn/UNI-Construct/blob/main/docs/agents/handoffs/2026-05-30-v1.8.0-plan.md).
 
-Moving to **In Github** to match reality. Will be promoted to **In TestFlight** when the \`app-v1.7.0\` cut ships.`
+**Severity:** \`${severity}\`
+**File:** \`${file}\`
+**Fix:** ${fix}${notes ? `\n\n**Notes:** ${notes}` : ''}
 
-const V18_SCOPE_COMMENT = `**Release planning — 2026-05-30**
+This is a draft from the code-level pre-audit. It will be promoted to a real \`v1.8.0\` fix ticket in Phase D once Boris's manual audit confirms scope, or closed if it's out of MVP per [SC-13](https://linear.app/scaffald/issue/sc-13).`,
+    priority: SEV_PRIORITY[severity],
+    state: 'Triage',
+  }
+}
 
-Labeling for **v1.8.0 — worker-flow repair sweep**. v1.8.0 is the audit-then-fix release led by @boris:
+const PREAUDIT_DROP_COMMENT = (sourceTicket, findings) => `**Phase B pre-audit drop — 2026-05-30**
 
-- **Audit phase:** SC-18, SC-19, SC-20, SC-21 produce findings.
-- **Consolidation:** SC-22 rolls findings up; fix tickets created from there inherit \`v1.8.0\`.
-- **Scope gate:** SC-13 (mobile-first worker MVP scope doc) defines what's in vs out.
+Code-level pre-audit of this flow produced ${findings.length} finding${findings.length === 1 ? '' : 's'}, filed as draft tickets in Triage with prefix \`[pre-audit/${sourceTicket}]\`. Each has a file:line ref and a 1-line fix suggestion.
 
-Child fix tickets filed from this audit should also be labeled \`v1.8.0\` so \`pnpm release:promote 1.8.0\` picks them up cleanly.`
+Severity breakdown:
+${['blocker', 'polish', 'nit'].map((sev) => {
+  const n = findings.filter((f) => f.severity === sev).length
+  return n > 0 ? `- ${n} × \`${sev}\`` : null
+}).filter(Boolean).join('\n')}
+
+These are **inputs to your manual audit**, not replacements. Validate / extend / dispute as you walk the flow. SC-22 consolidates everything for the Phase D scope cut.
+
+Plan doc: \`docs/agents/handoffs/2026-05-30-v1.8.0-plan.md\``
+
+// ---------- Findings ----------
+const SC19_FINDINGS = [
+  {
+    title: 'POST /v1/applications response contract mismatch (wrapped { data })',
+    severity: 'blocker',
+    file: 'packages/supabase/functions/api/routes/applications.ts:413 vs packages/sdk/src/resources/applications.ts:170-171',
+    fix: 'Either unwrap in SDK `create()` or change server POST to return the unwrapped `application` object (matches GET behavior).',
+  },
+  {
+    title: 'Missing application API routes — upload-url, confirm-upload, messages',
+    severity: 'blocker',
+    file: 'packages/sdk/src/resources/applications.ts:230-269 (declared) vs packages/supabase/functions/api/routes/applications.ts (not implemented)',
+    fix: 'Implement POST /v1/applications/upload-url, /confirm-upload, GET /:id/messages, POST /:id/messages — or remove SDK stubs if not MVP.',
+    notes: 'Same class as v1.7.0 SC-91. Unported tRPC handlers.',
+  },
+  {
+    title: 'QuickApplyModal cannot retry on submit failure — submit button locked',
+    severity: 'blocker',
+    file: 'packages/scf-core/features/applications/components/QuickApplyModal.tsx:116-138',
+    fix: 'Re-enable Submit on error path, or add an explicit Retry control. Currently user must close + reopen the modal.',
+  },
+  {
+    title: 'Custom application questions hardcoded empty — TODO never resolved',
+    severity: 'blocker',
+    file: 'packages/scf-core/features/applications/components/ApplicationWizard.tsx:100',
+    fix: 'Populate from `job.custom_application_questions` returned by the job details API. Jobs with custom questions currently submit without them.',
+  },
+  {
+    title: 'getMyForJob() swallows all errors, returns null — UI cannot distinguish "no app" from "API down"',
+    severity: 'polish',
+    file: 'packages/sdk/src/resources/applications.ts:199-207',
+    fix: 'Let real 404s through (truly no application); re-throw or surface other errors instead of collapsing to null.',
+  },
+  {
+    title: 'ApplicationWizard step navigation continues after save failure — silent data loss',
+    severity: 'polish',
+    file: 'packages/scf-core/features/applications/hooks/useApplicationForm.ts:245-251',
+    fix: 'nextStep/previousStep should toast on auto-save failure and offer retry before advancing.',
+  },
+  {
+    title: 'HTTP client refuses POST retries even when idempotencyKey is set',
+    severity: 'polish',
+    file: 'packages/sdk/src/http/client.ts:132-136',
+    fix: 'Allow retries for POST when an idempotency key is provided (idempotent retry is safe).',
+  },
+  {
+    title: 'STATUS_DB_TO_API mapping incomplete — non-mapped statuses leak through',
+    severity: 'polish',
+    file: 'packages/supabase/functions/api/routes/applications.ts:18-25',
+    fix: 'Map all DB statuses (offer/interview/hired/...) or validate exhaustively at the boundary.',
+  },
+  {
+    title: 'Webhook delivery failures logged only — no operator visibility',
+    severity: 'nit',
+    file: 'packages/supabase/functions/api/routes/applications.ts:891-910',
+    fix: 'Surface webhook delivery status separately (202 + status endpoint, or alerting hook) so silent ATS-integration failures are visible.',
+  },
+  {
+    title: 'Application create never attaches idempotency key — retries unsafe',
+    severity: 'nit',
+    file: 'packages/sdk/src/resources/applications.ts:170-171',
+    fix: 'Generate a deterministic key from `job_id + user_id` and pass to `post()`. Unblocks the retry fix above.',
+  },
+]
+
+const SC20_FINDINGS = [
+  {
+    title: 'Onboarding accepts ToS / Privacy Policy without UI — legal/compliance gap',
+    severity: 'blocker',
+    file: 'apps/scaffald/app/(protected)/onboarding/index.tsx:145-146, packages/scf-core/features/prerequisites/config/prerequisites-schema.ts:59-60',
+    fix: 'Render Checkboxes for both fields, .refine() they are true before submit. Currently the form defaults them to false and the server still records accepted_*_at timestamps.',
+  },
+  {
+    title: 'Industries lookup error state not handled — UI shows "No industries available" on API failure',
+    severity: 'polish',
+    file: 'apps/scaffald/app/(protected)/onboarding/index.tsx:78-79, 378-408',
+    fix: 'Check `industriesData.isError` alongside `isLoadingIndustries`; render error + retry instead of an empty state.',
+  },
+  {
+    title: 'onSubmit error path has no user-visible feedback beyond console.error',
+    severity: 'polish',
+    file: 'apps/scaffald/app/(protected)/onboarding/index.tsx:160-169',
+    fix: 'Verify completeMutation.onError actually shows a toast users can act on; add retry guidance.',
+  },
+  {
+    title: 'Legal-acceptance fields in form schema not in SDK CompletePrerequisitesParams — silent strip',
+    severity: 'nit',
+    file: 'packages/scf-core/features/prerequisites/config/prerequisites-schema.ts:59-60 vs packages/sdk/src/resources/prerequisites.ts:104-109',
+    fix: 'Pick one source of truth. Either add fields to SDK params, or move legal acceptance to a dedicated consent path.',
+  },
+]
+
+const SC21_FINDINGS = [
+  {
+    title: 'Cert API: 8 mutation routes called by UI not implemented in REST — all return 404',
+    severity: 'blocker',
+    file: 'packages/supabase/functions/api/routes/certifications.ts (missing): add-category, toggle-specific, remove-top-level, update-proof, save, upload-file, delete-file, delete',
+    fix: 'Port from packages/supabase/functions/trpc/routers/profile/certifications.router.ts (lines 245-360). Same shape as v1.7.0 SC-91 fix.',
+    notes: 'Largest single finding in the pre-audit. All cert editing is broken until these land.',
+  },
+  {
+    title: 'Wrong parent_id passed to removeCert mutation — sends cert ID instead of parent',
+    severity: 'blocker',
+    file: 'packages/scf-core/features/profile/profile-certifications-right.tsx:179',
+    fix: 'Compute actual parent ID from the cert tree (or pass null if top-level). The current code passes cert.certification_id as both certification_id and parent_id.',
+  },
+  {
+    title: 'Sync state stuck "syncing" after custom cert save error — UI mismatch',
+    severity: 'blocker',
+    file: 'packages/scf-core/features/profile/profile-certifications-left.tsx:294-305',
+    fix: 'Confirm failProfileSync() is called in the catch and that the sync store reflects it visually — currently the in-progress indicator persists.',
+  },
+  {
+    title: 'Proof update handlers swallow errors — no toast, button locked',
+    severity: 'blocker',
+    file: 'packages/scf-core/features/profile/profile-certifications-right.tsx:151-153, 167-169, 182-184',
+    fix: 'Add toast on catch and clear loading state so the user can retry.',
+  },
+  {
+    title: 'CertificationProofCard upload/save errors not surfaced',
+    severity: 'polish',
+    file: 'packages/scf-core/components/certifications/CertificationProofCard.tsx:46-49, 58-62',
+    fix: 'Pass toast prop down, show user-facing error on upload or save failure.',
+  },
+  {
+    title: 'Cert toggle mutation has no error handling — silent failure on 404',
+    severity: 'polish',
+    file: 'packages/scf-core/features/profile/profile-certifications-left.tsx:539-548',
+    fix: 'Wrap toggleCert.mutateAsync in try/catch with toast; especially important until the missing route above lands.',
+  },
+]
+
+const SC18_FINDINGS = [
+  {
+    title: 'PATCH /office-jobs allows reassigning a job to an org the user does not own',
+    severity: 'blocker',
+    file: 'packages/supabase/functions/api/routes/office-jobs.ts:419-421',
+    fix: 'If input.organization_id is provided, verify the requester has admin access to that org before applying.',
+    notes: 'Likely out-of-MVP per SC-13 (employer-side), but this is a privilege escalation — worth flagging for separate hardening pass.',
+  },
+  {
+    title: 'Job posting form missing UI for employment_type, remote_option, pay_range',
+    severity: 'blocker',
+    file: 'packages/scf-core/features/office/components/JobForm.tsx (Details section missing fields stored in state)',
+    fix: 'Add selectors for employment type + remote option, and pay range inputs. Critical for discovery filters.',
+  },
+  {
+    title: 'Title/description length constraints drift between REST and shared schemas',
+    severity: 'polish',
+    file: 'packages/supabase/functions/api/routes/office-jobs.ts:221-222 vs packages/supabase/functions/api/routes/_shared/job-schemas.ts:20-22',
+    fix: 'Use the shared schema constraints (.min(3) / .min(10)) in the REST endpoint instead of .min(1).',
+  },
+  {
+    title: '"Save as draft" disable logic does not match server validation',
+    severity: 'polish',
+    file: 'packages/scf-core/features/office/components/JobForm.tsx:1277-1285',
+    fix: 'Mirror server constraints in the button disable predicate so users do not click into a guaranteed-fail submission.',
+  },
+  {
+    title: 'JobForm.handleSubmit casts a generic Record to mutation params type unsafely',
+    severity: 'polish',
+    file: 'packages/scf-core/features/office/components/JobForm.tsx:483',
+    fix: 'Use a Zod-validated builder so missing required fields are caught at compile time, not at the server.',
+  },
+  {
+    title: 'Debug console.log on every location selection — leaks into production',
+    severity: 'nit',
+    file: 'packages/scf-core/features/office/components/JobForm.tsx:960',
+    fix: 'Remove, or wrap in `if (__DEV__) { ... }`.',
+  },
+]
 
 // ---------- Plan ----------
 // Each step has: kind + params. Resolved at runtime against fetched IDs.
 const PLAN = [
-  // ───── Phase 1 — state-sync v1.7.0 (PRs #311/#312/#313 already merged) ─────
-  // SC-90..SC-99 (no SC-98) currently sit in Todo despite their fixes being on
-  // main. Move them to In Github so release:promote 1.7.0 can pick them up
-  // once the app-v1.7.0 TestFlight cut ships.
-  { kind: 'comment', issue: 'SC-90', body: V17_SHIPPED_COMMENT },
-  { kind: 'move-state', issue: 'SC-90', toState: 'In Github' },
-  { kind: 'comment', issue: 'SC-91', body: V17_SHIPPED_COMMENT },
-  { kind: 'move-state', issue: 'SC-91', toState: 'In Github' },
-  { kind: 'comment', issue: 'SC-92', body: V17_SHIPPED_COMMENT },
-  { kind: 'move-state', issue: 'SC-92', toState: 'In Github' },
-  { kind: 'comment', issue: 'SC-93', body: V17_SHIPPED_COMMENT },
-  { kind: 'move-state', issue: 'SC-93', toState: 'In Github' },
-  { kind: 'comment', issue: 'SC-94', body: V17_SHIPPED_COMMENT },
-  { kind: 'move-state', issue: 'SC-94', toState: 'In Github' },
-  { kind: 'comment', issue: 'SC-95', body: V17_SHIPPED_COMMENT },
-  { kind: 'move-state', issue: 'SC-95', toState: 'In Github' },
-  { kind: 'comment', issue: 'SC-96', body: V17_SHIPPED_COMMENT },
-  { kind: 'move-state', issue: 'SC-96', toState: 'In Github' },
-  { kind: 'comment', issue: 'SC-97', body: V17_SHIPPED_COMMENT },
-  { kind: 'move-state', issue: 'SC-97', toState: 'In Github' },
-  { kind: 'comment', issue: 'SC-99', body: V17_SHIPPED_COMMENT },
-  { kind: 'move-state', issue: 'SC-99', toState: 'In Github' },
+  // Pre-audit ticket drops, grouped by source audit ticket.
+  ...SC19_FINDINGS.map((f) => preAuditIssue('SC-19', f)),
+  { kind: 'comment', issue: 'SC-19', body: PREAUDIT_DROP_COMMENT('SC-19', SC19_FINDINGS) },
 
-  // ───── Phase 2 — define v1.8.0 as the worker-flow audit-then-fix release ─────
-  // Boris's audit cluster (SC-18..22) + SC-13 scope doc get the v1.8.0 label.
-  // SC-23 (web→mobile mapping) stays unlabeled — it's prep for later releases,
-  // not a v1.8.0 deliverable.
-  { kind: 'add-label', issue: 'SC-13', label: 'v1.8.0' },
-  { kind: 'add-label', issue: 'SC-18', label: 'v1.8.0' },
-  { kind: 'add-label', issue: 'SC-19', label: 'v1.8.0' },
-  { kind: 'add-label', issue: 'SC-20', label: 'v1.8.0' },
-  { kind: 'add-label', issue: 'SC-21', label: 'v1.8.0' },
-  { kind: 'add-label', issue: 'SC-22', label: 'v1.8.0' },
+  ...SC20_FINDINGS.map((f) => preAuditIssue('SC-20', f)),
+  { kind: 'comment', issue: 'SC-20', body: PREAUDIT_DROP_COMMENT('SC-20', SC20_FINDINGS) },
 
-  // Pin the release intent in a comment on the consolidation ticket — SC-22 is
-  // where the audit outputs converge, so it's the natural home for the v1.8.0
-  // scope note.
-  { kind: 'comment', issue: 'SC-22', body: V18_SCOPE_COMMENT },
+  ...SC21_FINDINGS.map((f) => preAuditIssue('SC-21', f)),
+  { kind: 'comment', issue: 'SC-21', body: PREAUDIT_DROP_COMMENT('SC-21', SC21_FINDINGS) },
+
+  ...SC18_FINDINGS.map((f) => preAuditIssue('SC-18', f)),
+  { kind: 'comment', issue: 'SC-18', body: PREAUDIT_DROP_COMMENT('SC-18', SC18_FINDINGS) },
 ]
 
 // ---------- Resolution ----------
