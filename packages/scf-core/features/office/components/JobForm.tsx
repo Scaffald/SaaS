@@ -957,7 +957,6 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
               value={formData.location}
               onChange={(text: string) => setFormData({ ...formData, location: text })}
               onAddressSelect={(address: AddressResult) => {
-                console.log('Selected job location:', address)
                 setFormData({
                   ...formData,
                   location: address.formattedAddress,

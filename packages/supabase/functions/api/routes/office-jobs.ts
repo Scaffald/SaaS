@@ -218,8 +218,15 @@ app.get("/", zValidator("query", listJobsQuerySchema), async (c) => {
 
 const createJobBodySchema = z.object({
   organization_id: z.string().uuid("Invalid organization ID"),
-  title: z.string().min(1),
-  description: z.string().min(1),
+  // SC-122: match the shared schema in functions/_shared/job-schemas.ts so the
+  // REST surface and the tRPC surface reject the same inputs. Was .min(1) /
+  // .min(1) with no max — the UI's "Save as Draft" enabled with 1-char titles
+  // that the shared schema rejects elsewhere.
+  title: z
+    .string()
+    .min(3, "Title must be at least 3 characters")
+    .max(100, "Title must be less than 100 characters"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
   status: z.enum(["draft", "open", "paused", "closed"]).default("draft"),
   employment_type: z.enum([
     "full_time",
@@ -391,6 +398,25 @@ app.patch("/:id", zValidator("json", updateJobBodySchema), async (c) => {
     }
   }
 
+  // SC-120: reject org reassignment that the existing-org access check above
+  // doesn't cover. Without this, a user with access to org A could move a job
+  // to org B (where they have no permission) by including organization_id in
+  // the PATCH body. Cross-org moves should go through a dedicated handler
+  // that verifies access to the destination org.
+  if (
+    input.organization_id !== undefined &&
+    input.organization_id !== existingJob.organization_id
+  ) {
+    return c.json(
+      {
+        error: "Bad Request",
+        message:
+          "Changing organization_id via PATCH is not supported. Use the org-transfer flow.",
+      },
+      400,
+    );
+  }
+
   const updateData: Record<string, unknown> = {};
   if (input.title !== undefined) updateData.title = input.title;
   if (input.description !== undefined) {
@@ -415,9 +441,6 @@ app.patch("/:id", zValidator("json", updateJobBodySchema), async (c) => {
   }
   if (input.pay_range_type !== undefined) {
     updateData.pay_range_type = input.pay_range_type;
-  }
-  if (input.organization_id !== undefined) {
-    updateData.organization_id = input.organization_id;
   }
 
   const { data: job, error } = await supabaseAdmin

@@ -1,7 +1,7 @@
 import type { ApplicationStepType, AttachmentMetadata } from '@scf/schemas'
 import { ApplicationStep } from '@scf/schemas'
 import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
-import { SaveStatusIndicator, useThemeContext } from '@scaffald/ui'
+import { SaveStatusIndicator, useThemeContext, useToast } from '@scaffald/ui'
 import { AlertCircle } from 'lucide-react-native'
 import { useEffect, useRef, useState } from 'react'
 import { Button, Text, Row, Stack } from '@scaffald/ui'
@@ -76,6 +76,7 @@ export function ApplicationWizard({
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [submittedApplicationId, setSubmittedApplicationId] = useState<string | null>(null)
   const { theme } = useThemeContext()
+  const toast = useToast()
 
   const {
     currentStep,
@@ -97,8 +98,29 @@ export function ApplicationWizard({
     saveError,
   } = useApplicationForm(jobId)
 
-  // TODO: Fetch actual custom questions for this job
-  const customQuestions: CustomQuestion[] = [] // Replace with actual data fetch
+  // TODO: Fetch actual custom questions for this job (blocked on SDK Job type
+  // exposing custom_application_questions — tracked separately).
+  const customQuestions: CustomQuestion[] = []
+
+  // SC-105: surface auto-save failures the user might otherwise miss. The
+  // wizard's SaveStatusIndicator shows an icon, but a toast forces them to
+  // notice before they leave the wizard with unsaved data on the server.
+  const lastReportedSaveErrorRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (saveError && saveError !== lastReportedSaveErrorRef.current) {
+      lastReportedSaveErrorRef.current = saveError
+      toast.show({
+        title: "Couldn't save your progress",
+        message:
+          saveError === 'Failed to save'
+            ? 'Your changes will be retried — check your connection.'
+            : saveError,
+        variant: 'error',
+      })
+    } else if (!saveError) {
+      lastReportedSaveErrorRef.current = null
+    }
+  }, [saveError, toast])
 
   // Track application started for engagement analytics
   const trackEventMutation = useTrackEngagementMutation()
