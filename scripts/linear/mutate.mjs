@@ -50,101 +50,67 @@ async function gql(query, variables) {
 }
 
 // ---------- Coordination comment text ----------
-const AUDIT_COORDINATION_COMMENT = `**Coordination — 2026-05-26**
+const V17_SHIPPED_COMMENT = `**Backlog hygiene — 2026-05-30**
 
-The mobile team is running a parallel **iOS-viewport audit** as part of the v1.6.0 plan ([handoff doc](https://github.com/Unicorn/UNI-Construct/blob/main/docs/agents/handoffs/2026-05-26-v1.6.0-plan.md)). It will sweep every route in \`apps/scaffald/app/\` at 390×844 (iPhone 14) via Playwright, then verify the top offenders on the iOS simulator.
+This ticket's fix landed on \`main\` as part of the v1.7.0 profile-API repair cluster:
 
-This audit is **complementary to this ticket**, not a replacement. It catches layout/UX issues a manual flow review can miss (and vice versa). The output feeds directly into **SC-22** as machine-captured input alongside your manual notes.
+- SC-90 / SC-91 / SC-92 / SC-93 → [#311](https://github.com/Unicorn/UNI-Construct/pull/311) (\`22abc3b3c\`)
+- SC-94 / SC-95 / SC-96 → [#312](https://github.com/Unicorn/UNI-Construct/pull/312) (\`cdada8c01\`)
+- SC-97 / SC-99 → [#313](https://github.com/Unicorn/UNI-Construct/pull/313) (\`4c5af3ee6\`)
 
-No action requested from you — flagging so we don't duplicate effort. Findings will land in \`docs/agents/audits/2026-05-26-ui-audit/findings.md\` and be filed as Tasks under Unicorn → Dogfood Bugs (Open).`
+Moving to **In Github** to match reality. Will be promoted to **In TestFlight** when the \`app-v1.7.0\` cut ships.`
 
-const HYGIENE_COMMENT_SHIPPED = (release) => `**Backlog hygiene — 2026-05-26**
+const V18_SCOPE_COMMENT = `**Release planning — 2026-05-30**
 
-This ticket has been shipped as part of \`app-${release}\` and is live on TestFlight. Moving to **Done** — feel free to reopen if there's outstanding work.
+Labeling for **v1.8.0 — worker-flow repair sweep**. v1.8.0 is the audit-then-fix release led by @boris:
 
-Audit trail: see \`scripts/linear-backlog.mjs\` snapshot + git tag \`app-${release}\`.`
+- **Audit phase:** SC-18, SC-19, SC-20, SC-21 produce findings.
+- **Consolidation:** SC-22 rolls findings up; fix tickets created from there inherit \`v1.8.0\`.
+- **Scope gate:** SC-13 (mobile-first worker MVP scope doc) defines what's in vs out.
+
+Child fix tickets filed from this audit should also be labeled \`v1.8.0\` so \`pnpm release:promote 1.8.0\` picks them up cleanly.`
 
 // ---------- Plan ----------
 // Each step has: kind + params. Resolved at runtime against fetched IDs.
 const PLAN = [
-  // 1. Coordination comments on Boris's audit cluster + SC-23 mapping
-  { kind: 'comment', issue: 'SC-18', body: AUDIT_COORDINATION_COMMENT },
-  { kind: 'comment', issue: 'SC-19', body: AUDIT_COORDINATION_COMMENT },
-  { kind: 'comment', issue: 'SC-20', body: AUDIT_COORDINATION_COMMENT },
-  { kind: 'comment', issue: 'SC-21', body: AUDIT_COORDINATION_COMMENT },
-  { kind: 'comment', issue: 'SC-22', body: AUDIT_COORDINATION_COMMENT },
-  { kind: 'comment', issue: 'SC-23', body: AUDIT_COORDINATION_COMMENT },
+  // ───── Phase 1 — state-sync v1.7.0 (PRs #311/#312/#313 already merged) ─────
+  // SC-90..SC-99 (no SC-98) currently sit in Todo despite their fixes being on
+  // main. Move them to In Github so release:promote 1.7.0 can pick them up
+  // once the app-v1.7.0 TestFlight cut ships.
+  { kind: 'comment', issue: 'SC-90', body: V17_SHIPPED_COMMENT },
+  { kind: 'move-state', issue: 'SC-90', toState: 'In Github' },
+  { kind: 'comment', issue: 'SC-91', body: V17_SHIPPED_COMMENT },
+  { kind: 'move-state', issue: 'SC-91', toState: 'In Github' },
+  { kind: 'comment', issue: 'SC-92', body: V17_SHIPPED_COMMENT },
+  { kind: 'move-state', issue: 'SC-92', toState: 'In Github' },
+  { kind: 'comment', issue: 'SC-93', body: V17_SHIPPED_COMMENT },
+  { kind: 'move-state', issue: 'SC-93', toState: 'In Github' },
+  { kind: 'comment', issue: 'SC-94', body: V17_SHIPPED_COMMENT },
+  { kind: 'move-state', issue: 'SC-94', toState: 'In Github' },
+  { kind: 'comment', issue: 'SC-95', body: V17_SHIPPED_COMMENT },
+  { kind: 'move-state', issue: 'SC-95', toState: 'In Github' },
+  { kind: 'comment', issue: 'SC-96', body: V17_SHIPPED_COMMENT },
+  { kind: 'move-state', issue: 'SC-96', toState: 'In Github' },
+  { kind: 'comment', issue: 'SC-97', body: V17_SHIPPED_COMMENT },
+  { kind: 'move-state', issue: 'SC-97', toState: 'In Github' },
+  { kind: 'comment', issue: 'SC-99', body: V17_SHIPPED_COMMENT },
+  { kind: 'move-state', issue: 'SC-99', toState: 'In Github' },
 
-  // 2. Move SC-18 from Triage → Todo (active scope, not just a triage idea)
-  { kind: 'move-state', issue: 'SC-18', toState: 'Todo' },
+  // ───── Phase 2 — define v1.8.0 as the worker-flow audit-then-fix release ─────
+  // Boris's audit cluster (SC-18..22) + SC-13 scope doc get the v1.8.0 label.
+  // SC-23 (web→mobile mapping) stays unlabeled — it's prep for later releases,
+  // not a v1.8.0 deliverable.
+  { kind: 'add-label', issue: 'SC-13', label: 'v1.8.0' },
+  { kind: 'add-label', issue: 'SC-18', label: 'v1.8.0' },
+  { kind: 'add-label', issue: 'SC-19', label: 'v1.8.0' },
+  { kind: 'add-label', issue: 'SC-20', label: 'v1.8.0' },
+  { kind: 'add-label', issue: 'SC-21', label: 'v1.8.0' },
+  { kind: 'add-label', issue: 'SC-22', label: 'v1.8.0' },
 
-  // 3. Label SC-74 with v1.6.0 (drawer bugs — clear v1.6.0 work)
-  { kind: 'add-label', issue: 'SC-74', label: 'v1.6.0' },
-
-  // 4. Close shipped v1.3.0 stragglers (PRs all landed)
-  { kind: 'comment', issue: 'SC-37', body: HYGIENE_COMMENT_SHIPPED('v1.3.0') },
-  { kind: 'move-state', issue: 'SC-37', toState: 'Done' },
-  { kind: 'comment', issue: 'SC-40', body: HYGIENE_COMMENT_SHIPPED('v1.3.0') },
-  { kind: 'move-state', issue: 'SC-40', toState: 'Done' },
-  { kind: 'comment', issue: 'SC-65', body: HYGIENE_COMMENT_SHIPPED('v1.3.0') },
-  { kind: 'move-state', issue: 'SC-65', toState: 'Done' },
-  { kind: 'comment', issue: 'SC-66', body: HYGIENE_COMMENT_SHIPPED('v1.3.0') },
-  { kind: 'move-state', issue: 'SC-66', toState: 'Done' },
-
-  // 5. Close shipped v1.1.0 In TestFlight stragglers — only the ones confirmed
-  //    in git log app-v1.0.1..app-v1.1.0:
-  //    SC-54, SC-56, SC-57, SC-58 → #254
-  //    SC-59 → #258
-  //    SC-53 (meta polish), SC-55 (Mapbox) — held back for manual review
-  { kind: 'comment', issue: 'SC-54', body: HYGIENE_COMMENT_SHIPPED('v1.1.0') },
-  { kind: 'move-state', issue: 'SC-54', toState: 'Done' },
-  { kind: 'comment', issue: 'SC-56', body: HYGIENE_COMMENT_SHIPPED('v1.1.0') },
-  { kind: 'move-state', issue: 'SC-56', toState: 'Done' },
-  { kind: 'comment', issue: 'SC-57', body: HYGIENE_COMMENT_SHIPPED('v1.1.0') },
-  { kind: 'move-state', issue: 'SC-57', toState: 'Done' },
-  { kind: 'comment', issue: 'SC-58', body: HYGIENE_COMMENT_SHIPPED('v1.1.0') },
-  { kind: 'move-state', issue: 'SC-58', toState: 'Done' },
-  { kind: 'comment', issue: 'SC-59', body: HYGIENE_COMMENT_SHIPPED('v1.1.0') },
-  { kind: 'move-state', issue: 'SC-59', toState: 'Done' },
-
-  // 6. Create reminder tickets for Android + iPad audit (parked in Backlog)
-  {
-    kind: 'create-issue',
-    title: 'Audit: Android viewport + native parity (post v1.6.0)',
-    description: `Once v1.6.0 (iOS-viewport audit + cleanup) ships, run the equivalent sweep on Android.
-
-**Scope:**
-* Playwright sweep at common Android viewports (360×800 Pixel 7, 412×915 Pixel 7 Pro)
-* Real-device or emulator pass on top 10 offenders
-* Verify safe-area handling, back-gesture behavior, status-bar contrast, soft-keyboard interaction
-
-**Inputs:**
-* iOS audit findings in \`docs/agents/audits/2026-05-26-ui-audit/findings.md\` — likely many of the same bugs
-* v1.6.0 release notes
-
-**Filed:** 2026-05-26 as reminder during v1.6.0 plan.`,
-    priority: 3, // medium
-    state: 'Triage',
-  },
-  {
-    kind: 'create-issue',
-    title: 'Audit: iPad viewport + tablet layouts (post v1.6.0)',
-    description: `Once v1.6.0 ships, run a second-viewport audit at iPad sizes to catch tablet-specific layout breaks.
-
-**Scope:**
-* Playwright sweep at 768×1024 (iPad portrait) and 1024×768 (iPad landscape)
-* Real iPad simulator pass on top offenders
-* Check split-view / multitasking behavior
-* Validate that content doesn't just stretch — tablet-appropriate layouts where it matters
-
-**Inputs:**
-* iOS audit findings in \`docs/agents/audits/2026-05-26-ui-audit/findings.md\`
-* v1.6.0 release notes
-
-**Filed:** 2026-05-26 as reminder during v1.6.0 plan.`,
-    priority: 4, // low
-    state: 'Triage',
-  },
+  // Pin the release intent in a comment on the consolidation ticket — SC-22 is
+  // where the audit outputs converge, so it's the natural home for the v1.8.0
+  // scope note.
+  { kind: 'comment', issue: 'SC-22', body: V18_SCOPE_COMMENT },
 ]
 
 // ---------- Resolution ----------
