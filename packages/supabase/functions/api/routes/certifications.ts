@@ -55,7 +55,9 @@ const userCertificationSchema = z.object({
 
 // Freeform legacy shape — matches packages/sdk/src/resources/certifications.ts
 // LegacyCertification. id is optional on inserts (omitted on create, present
-// on updates).
+// on updates). is_active / verification_status default the same way the shared
+// tRPC schema does so clients generated from that contract can omit them
+// without getting a 400 from the newly-ported REST route.
 const legacyCertificationSchema = z.object({
   id: z.string().optional(),
   user_id: z.string().optional(),
@@ -67,8 +69,8 @@ const legacyCertificationSchema = z.object({
   credential_url: z.string().nullable().optional(),
   certificate_file_path: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
-  is_active: z.boolean(),
-  verification_status: z.string(),
+  is_active: z.boolean().default(true),
+  verification_status: z.string().default("unverified"),
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
 });
