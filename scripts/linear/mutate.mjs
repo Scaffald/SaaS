@@ -49,52 +49,73 @@ async function gql(query, variables) {
   return json.data
 }
 
-// ---------- Pre-audit ticket builders ----------
-// Phase B of the v1.8.0 worker-flow repair sweep. See
-// docs/agents/handoffs/2026-05-30-v1.8.0-plan.md.
-//
-// Each finding gets filed in Triage with title `[pre-audit/SC-XX] …` so
-// Phase D can find them and promote/close in a single batch.
-//
-// Severity → Linear priority:  blocker=2 (high), polish=3 (medium), nit=4 (low).
-// We don't use priority 1 (urgent) here — pre-audit findings aren't urgent
-// until Phase D approves them.
+// ---------- v1.8.0 ship sync ----------
+// Sweeping Linear state after PRs #326/#327/#328/#329 merged on 2026-05-30:
+// - 12 fixed tickets → label v1.8.0, move to In Github, comment with PR ref
+// - 3 false positives → close with explanation
+// - Deferred ones stay in Triage with their [pre-audit] prefix; tagging each
+//   with a comment so the next planner can find them by surface (SDK,
+//   nit, OOS).
 
-const SEV_PRIORITY = { blocker: 2, polish: 3, nit: 4 }
+const FIX_COMMENT = (pr, summary) => `**Shipped — 2026-05-30**
 
-function preAuditIssue(sourceTicket, finding) {
-  const { title, severity, file, fix, notes } = finding
-  return {
-    kind: 'create-issue',
-    title: `[pre-audit/${sourceTicket}] ${title}`,
-    description: `**Source:** Phase B pre-audit for [${sourceTicket}](https://linear.app/scaffald/issue/${sourceTicket.toLowerCase()}). See [v1.8.0 plan](https://github.com/Unicorn/UNI-Construct/blob/main/docs/agents/handoffs/2026-05-30-v1.8.0-plan.md).
+Fixed and merged on \`main\` via PR [#${pr}](https://github.com/Unicorn/UNI-Construct/pull/${pr}). ${summary}
 
-**Severity:** \`${severity}\`
-**File:** \`${file}\`
-**Fix:** ${fix}${notes ? `\n\n**Notes:** ${notes}` : ''}
+Moving to **In Github** + labeling \`v1.8.0\`. Will be promoted to **In TestFlight** when the \`app-v1.8.0\` cut ships.`
 
-This is a draft from the code-level pre-audit. It will be promoted to a real \`v1.8.0\` fix ticket in Phase D once Boris's manual audit confirms scope, or closed if it's out of MVP per [SC-13](https://linear.app/scaffald/issue/sc-13).`,
-    priority: SEV_PRIORITY[severity],
-    state: 'Triage',
-  }
-}
+const FALSE_POSITIVE_COMMENT = (explanation) => `**Reviewed — 2026-05-30**
 
-const PREAUDIT_DROP_COMMENT = (sourceTicket, findings) => `**Phase B pre-audit drop — 2026-05-30**
+This finding from the v1.8.0 pre-audit is a **false positive**. ${explanation}
 
-Code-level pre-audit of this flow produced ${findings.length} finding${findings.length === 1 ? '' : 's'}, filed as draft tickets in Triage with prefix \`[pre-audit/${sourceTicket}]\`. Each has a file:line ref and a 1-line fix suggestion.
+Closing as Done. No code change was needed.`
 
-Severity breakdown:
-${['blocker', 'polish', 'nit'].map((sev) => {
-  const n = findings.filter((f) => f.severity === sev).length
-  return n > 0 ? `- ${n} × \`${sev}\`` : null
-}).filter(Boolean).join('\n')}
+const DEFERRED_COMMENT = (reason) => `**Deferred from v1.8.0 — 2026-05-30**
 
-These are **inputs to your manual audit**, not replacements. Validate / extend / dispute as you walk the flow. SC-22 consolidates everything for the Phase D scope cut.
+This pre-audit finding is real but won't ship in v1.8.0: ${reason}
 
-Plan doc: \`docs/agents/handoffs/2026-05-30-v1.8.0-plan.md\``
+Leaving in Triage with the \`[pre-audit]\` prefix so the next release planner can re-evaluate scope.`
 
-// ---------- Findings ----------
-const SC19_FINDINGS = [
+// ---------- Fix transitions ----------
+// 12 tickets where the pre-audit finding was real and the fix shipped on main.
+// Each gets a comment, the v1.8.0 label, and a state move Triage → In Github.
+
+const FIXED = [
+  { ticket: 'SC-100', pr: 328, summary: 'Application create / retrieve / update / withdraw now return unwrapped Application objects matching the SDK contract; useApplicationForm.createDraft no longer throws "no ID returned".' },
+  { ticket: 'SC-101', pr: 328, summary: 'Ported POST /upload-url, /confirm-upload, GET + POST /:id/messages. Resume uploads and the recruiter message thread now work end-to-end (and the POST handler permits org owners + role_assignees, not just the applicant).' },
+  { ticket: 'SC-105', pr: 329, summary: 'ApplicationWizard toasts on auto-save failure so users notice errors that previously only showed as a small status icon.' },
+  { ticket: 'SC-110', pr: 327, summary: 'Onboarding now renders ToS + Privacy Policy checkboxes; both must be true to submit. Server enforces via z.literal(true), and GET /check.isComplete folds in hasAcceptedPrivacy + hasAcceptedTerms so legacy users get bounced back to the form.' },
+  { ticket: 'SC-111', pr: 327, summary: 'Industries query exposes isError + refetch; the section renders a red error message with a Retry button instead of the misleading "No industries available" empty-state.' },
+  { ticket: 'SC-114', pr: 326, summary: 'Migration 334 adds freeform name + issuing_organization columns. All 8 missing REST routes ported (add-category, toggle-specific, remove-top-level, update-proof, save, upload-file, delete-file, delete). The /save schema defaults is_active + verification_status to match the shared tRPC contract.' },
+  { ticket: 'SC-115', pr: 326, summary: 'Cert tree flatten now preserves parent_id from the depth1ByParent / depth2ByParent map keys; handleRemove sends the correct parent_id to toggle-specific.' },
+  { ticket: 'SC-117', pr: 326, summary: 'handleSaveFile / handleSaveUrl / handleRemove now toast with the real error message instead of silently console.error-ing.' },
+  { ticket: 'SC-118', pr: 326, summary: 'CertificationProofCard wraps FileReader in a Promise so onloadend rejections propagate to the try/catch; adds toast feedback for both upload and URL save failures.' },
+  { ticket: 'SC-120', pr: 329, summary: 'PATCH /office-jobs/:id now rejects any inbound organization_id change as 400. Was a privilege-escalation gap: existing-org access check ran but destination-org access did not.' },
+  { ticket: 'SC-122', pr: 329, summary: 'office-jobs createJobBodySchema tightened to match the shared schema (.min(3) / .min(10) / .max(100) for title and description).' },
+  { ticket: 'SC-125', pr: 329, summary: 'Removed a stray console.log("Selected job location:", address) from JobForm.' },
+]
+
+const FALSE_POSITIVES = [
+  { ticket: 'SC-102', explanation: 'QuickApplyModal.tsx:130-138 already calls `setIsSubmitting(false)` in the mutation\'s `onError` handler, so the Submit button re-enables after a failure and users can retry. The pre-audit agent missed the onError flow.' },
+  { ticket: 'SC-116', explanation: 'profile-certifications-left.tsx:294-305 already calls `failProfileSync()` in the catch block, so the sync UI state is correctly cleared on error. The pre-audit agent flagged the file/line but missed the existing handling.' },
+  { ticket: 'SC-119', explanation: 'profile-certifications-left.tsx:531-568 already wraps `toggleCert.mutateAsync` in a try/catch with toast + failProfileSync. The pre-audit agent flagged the mutateAsync call site without noticing it was inside an existing try/catch.' },
+]
+
+const DEFERRED = [
+  { ticket: 'SC-103', reason: 'Real bug (custom_application_questions hardcoded empty in ApplicationWizard:100). Requires the SDK Job type to expose the field, which means a submodule PR + tsup rebuild + pointer bump.' },
+  { ticket: 'SC-104', reason: 'Real polish (getMyForJob silently returns null on any error). Lives in the SDK submodule.' },
+  { ticket: 'SC-106', reason: 'Real polish (POST retries refused even with idempotency key). Lives in the SDK HTTP client submodule.' },
+  { ticket: 'SC-107', reason: 'Real polish (STATUS_DB_TO_API mapping incomplete). Cosmetic API surface drift; low end-user impact.' },
+  { ticket: 'SC-108', reason: 'Nit (webhook delivery failures only logged). Operational visibility — addressable when we wire alerting.' },
+  { ticket: 'SC-109', reason: 'Nit (application create never attaches idempotency key). Paired with SC-106; lands when that ships.' },
+  { ticket: 'SC-112', reason: 'Mostly-correct (onSubmit error feedback). The completeMutation.onError already toasts; refinement is cosmetic.' },
+  { ticket: 'SC-113', reason: 'Nit (legal fields in form schema not in SDK CompletePrerequisitesParams). Pass-through works via structural typing; SDK alignment lands when the submodule updates.' },
+  { ticket: 'SC-121', reason: 'Out-of-MVP per SC-13 — employer-side flow. Form fields (employment_type / remote_option / pay_range) are real gaps but the employer flow is not part of the mobile-first worker MVP for v1.8.0.' },
+  { ticket: 'SC-123', reason: 'Polish (draft button validation drift). Code-quality refinement on the employer JobForm; low priority for v1.8.0.' },
+  { ticket: 'SC-124', reason: 'Polish (unsafe handleSubmit cast). Code-quality refinement.' },
+]
+
+// ---------- (Legacy) Pre-audit findings — kept for reference, not in PLAN ----------
+const _SC19_FINDINGS_LEGACY = [
   {
     title: 'POST /v1/applications response contract mismatch (wrapped { data })',
     severity: 'blocker',
@@ -158,7 +179,7 @@ const SC19_FINDINGS = [
   },
 ]
 
-const SC20_FINDINGS = [
+const _SC20_FINDINGS_LEGACY = [
   {
     title: 'Onboarding accepts ToS / Privacy Policy without UI — legal/compliance gap',
     severity: 'blocker',
@@ -185,7 +206,7 @@ const SC20_FINDINGS = [
   },
 ]
 
-const SC21_FINDINGS = [
+const _SC21_FINDINGS_LEGACY = [
   {
     title: 'Cert API: 8 mutation routes called by UI not implemented in REST — all return 404',
     severity: 'blocker',
@@ -225,7 +246,7 @@ const SC21_FINDINGS = [
   },
 ]
 
-const SC18_FINDINGS = [
+const _SC18_FINDINGS_LEGACY = [
   {
     title: 'PATCH /office-jobs allows reassigning a job to an org the user does not own',
     severity: 'blocker',
@@ -268,18 +289,24 @@ const SC18_FINDINGS = [
 // ---------- Plan ----------
 // Each step has: kind + params. Resolved at runtime against fetched IDs.
 const PLAN = [
-  // Pre-audit ticket drops, grouped by source audit ticket.
-  ...SC19_FINDINGS.map((f) => preAuditIssue('SC-19', f)),
-  { kind: 'comment', issue: 'SC-19', body: PREAUDIT_DROP_COMMENT('SC-19', SC19_FINDINGS) },
+  // Fixed: comment, label v1.8.0, move Triage → In Github.
+  ...FIXED.flatMap(({ ticket, pr, summary }) => [
+    { kind: 'comment', issue: ticket, body: FIX_COMMENT(pr, summary) },
+    { kind: 'add-label', issue: ticket, label: 'v1.8.0' },
+    { kind: 'move-state', issue: ticket, toState: 'In Github' },
+  ]),
 
-  ...SC20_FINDINGS.map((f) => preAuditIssue('SC-20', f)),
-  { kind: 'comment', issue: 'SC-20', body: PREAUDIT_DROP_COMMENT('SC-20', SC20_FINDINGS) },
+  // False positives: comment, move Triage → Done. No label.
+  ...FALSE_POSITIVES.flatMap(({ ticket, explanation }) => [
+    { kind: 'comment', issue: ticket, body: FALSE_POSITIVE_COMMENT(explanation) },
+    { kind: 'move-state', issue: ticket, toState: 'Done' },
+  ]),
 
-  ...SC21_FINDINGS.map((f) => preAuditIssue('SC-21', f)),
-  { kind: 'comment', issue: 'SC-21', body: PREAUDIT_DROP_COMMENT('SC-21', SC21_FINDINGS) },
-
-  ...SC18_FINDINGS.map((f) => preAuditIssue('SC-18', f)),
-  { kind: 'comment', issue: 'SC-18', body: PREAUDIT_DROP_COMMENT('SC-18', SC18_FINDINGS) },
+  // Deferred: comment with reason. State stays Triage so the next planner
+  // can re-evaluate. No label change.
+  ...DEFERRED.map(({ ticket, reason }) => ({
+    kind: 'comment', issue: ticket, body: DEFERRED_COMMENT(reason),
+  })),
 ]
 
 // ---------- Resolution ----------
