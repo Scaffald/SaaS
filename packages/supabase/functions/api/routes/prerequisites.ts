@@ -58,6 +58,17 @@ const completePrerequisitesRequestSchema = z
     address: addressSchema,
     user_types: z.array(z.enum(["worker", "employer", "customer"])).min(1),
     industry_id: z.string().min(1),
+    // SC-110: explicit legal acceptance. Server enforces in addition to the
+    // client schema so a stale or stripped client can't bypass — previously the
+    // handler stamped accepted_*_at timestamps unconditionally on completion.
+    accepts_privacy_policy: z
+      .literal(true, {
+        errorMap: () => ({ message: "You must accept the Privacy Policy" }),
+      }),
+    accepts_terms_of_service: z
+      .literal(true, {
+        errorMap: () => ({ message: "You must accept the Terms of Service" }),
+      }),
   })
   .openapi("CompletePrerequisitesRequest");
 
@@ -202,7 +213,13 @@ app.openapi(checkRoute, async (c) => {
     const hasAcceptedPrivacy = !!preferences?.accepted_privacy_policy_at;
     const hasAcceptedTerms = !!preferences?.accepted_terms_of_service_at;
 
-    const isComplete = hasName && hasAddress && hasUserTypes && hasIndustry;
+    // Legal acceptance is now part of the completion contract — without this,
+    // legacy users with all profile fields but no ToS/PP timestamps would be
+    // marked complete by /check, bypass the redirect-to-onboarding gate in the
+    // protected/onboarding layouts, and never get a chance to check the boxes
+    // that POST /complete now requires.
+    const isComplete = hasName && hasAddress && hasUserTypes && hasIndustry &&
+      hasAcceptedPrivacy && hasAcceptedTerms;
 
     return c.json({
       isComplete: !!isComplete,

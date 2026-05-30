@@ -74,9 +74,15 @@ export default function OnboardingPage() {
     refetch: refetchStatus,
   } = usePrerequisites();
 
-  // Fetch industries for dropdown
-  const { data: industriesData, isLoading: isLoadingIndustries } =
-    useIndustries();
+  // Fetch industries for dropdown. SC-111: surface the error state with a
+  // retry — the previous form showed "No industries available" on a failed
+  // query, which read as empty data instead of a network issue.
+  const {
+    data: industriesData,
+    isLoading: isLoadingIndustries,
+    isError: isIndustriesError,
+    refetch: refetchIndustries,
+  } = useIndustries();
 
   // Complete prerequisites mutation
   const completeMutation = useCompletePrerequisites({
@@ -384,6 +390,19 @@ export default function OnboardingPage() {
                           <Spinner size="sm" />
                           <Text color="gray">Loading industries...</Text>
                         </Row>
+                      ) : isIndustriesError ? (
+                        <Stack gap={8}>
+                          <Text color="red">
+                            Couldn't load industries. Check your connection and try again.
+                          </Text>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onPress={() => refetchIndustries()}
+                          >
+                            Retry
+                          </Button>
+                        </Stack>
                       ) : industriesData?.data &&
                         industriesData.data.length > 0 ? (
                         <ResponsiveSelect
@@ -405,6 +424,75 @@ export default function OnboardingPage() {
                 />
                 {errors.industry_id && (
                   <Text color="red">{errors.industry_id.message}</Text>
+                )}
+              </Stack>
+
+              <Separator />
+
+              {/* SC-110: legal acceptance — both required, defaults false.
+                  The server now rejects submissions where either is false,
+                  so this is real validation not cosmetic. */}
+              <Stack gap={12}>
+                <Controller
+                  name="accepts_privacy_policy"
+                  control={control}
+                  render={({ field }) => (
+                    <Row gap={12} align="center">
+                      <Checkbox
+                        checked={!!field.value}
+                        onChange={(checked: boolean) => field.onChange(checked)}
+                        size="md"
+                      />
+                      <Pressable
+                        onPress={() => field.onChange(!field.value)}
+                        accessibilityRole="button"
+                        style={({ pressed }) => ({
+                          flexShrink: 1,
+                          opacity: pressed ? 0.7 : 1,
+                        })}
+                      >
+                        <Text>
+                          I agree to the Privacy Policy *
+                        </Text>
+                      </Pressable>
+                    </Row>
+                  )}
+                />
+                {errors.accepts_privacy_policy && (
+                  <Text color="red">
+                    {errors.accepts_privacy_policy.message}
+                  </Text>
+                )}
+
+                <Controller
+                  name="accepts_terms_of_service"
+                  control={control}
+                  render={({ field }) => (
+                    <Row gap={12} align="center">
+                      <Checkbox
+                        checked={!!field.value}
+                        onChange={(checked: boolean) => field.onChange(checked)}
+                        size="md"
+                      />
+                      <Pressable
+                        onPress={() => field.onChange(!field.value)}
+                        accessibilityRole="button"
+                        style={({ pressed }) => ({
+                          flexShrink: 1,
+                          opacity: pressed ? 0.7 : 1,
+                        })}
+                      >
+                        <Text>
+                          I agree to the Terms of Service *
+                        </Text>
+                      </Pressable>
+                    </Row>
+                  )}
+                />
+                {errors.accepts_terms_of_service && (
+                  <Text color="red">
+                    {errors.accepts_terms_of_service.message}
+                  </Text>
                 )}
               </Stack>
 
