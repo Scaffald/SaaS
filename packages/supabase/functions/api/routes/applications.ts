@@ -91,12 +91,13 @@ const withdrawRequestSchema = z
   })
   .openapi("WithdrawRequest");
 
-// Application response wrapper
-const applicationResponseSchema = z
-  .object({
-    data: applicationSchema,
-  })
-  .openapi("ApplicationResponse");
+// SC-100: the SDK's `client.applications.{create,retrieve,update,withdraw}`
+// methods expect the unwrapped Application object directly. The old shape was
+// `{ data: Application }`, which made `result.id` undefined at every call site
+// (notably useApplicationForm.createDraft at line 110, which then threw
+// "Failed to create application: no ID returned"). list() / getActivity() stay
+// wrapped because their SDK callers expect `{ data: [], ... }`.
+const applicationResponseSchema = applicationSchema.openapi("ApplicationResponse");
 
 // List applications response
 const listApplicationsResponseSchema = z
@@ -410,7 +411,7 @@ app.openapi(createApplicationRoute, async (c) => {
   // Trigger webhook for application.created event
   await triggerWebhook("application.created", application, c);
 
-  return c.json({ data: application }, 201);
+  return c.json(application, 201);
 });
 
 /**
@@ -511,12 +512,13 @@ app.openapi(getApplicationRoute, async (c) => {
     );
   }
 
-  return c.json({
-    data: {
+  return c.json(
+    {
       ...application,
       status: mapDbStatus(application.status as string),
     },
-  }, 200);
+    200,
+  );
 });
 
 /**
@@ -662,7 +664,7 @@ app.openapi(updateApplicationRoute, async (c) => {
   // Trigger webhook for application.updated event
   await triggerWebhook("application.updated", application, c);
 
-  return c.json({ data: application }, 200);
+  return c.json(application, 200);
 });
 
 /**
@@ -814,7 +816,7 @@ app.openapi(withdrawApplicationRoute, async (c) => {
   // Trigger webhook for application.withdrawn event
   await triggerWebhook("application.withdrawn", application, c);
 
-  return c.json({ data: application }, 200);
+  return c.json(application, 200);
 });
 
 /**
@@ -1032,6 +1034,446 @@ app.openapi(getActivityRoute, async (c) => {
   }
 
   return c.json({ data: activity ?? [] }, 200);
+});
+
+// ─────────────────────────────────────────────────────────────────────────
+// SC-101: ports of the tRPC application file-upload + messaging routes that
+// the SDK has been declaring but the REST API never implemented. Without
+// these the wizard's resume upload and the application messaging thread were
+// 404'd in production.
+// ─────────────────────────────────────────────────────────────────────────
+
+const attachmentTypeEnum = z.enum([
+  "resume",
+  "cover_letter",
+  "portfolio",
+  "assessment",
+  "video_interview",
+]);
+
+/**
+ * POST /v1/applications/upload-url
+ * Mint a presigned upload URL for an application attachment.
+ */
+const getUploadUrlRoute = createRoute({
+  method: "post",
+  path: "/upload-url",
+  tags: ["Applications"],
+  summary: "Get upload URL",
+  middleware: requireAuth,
+  request: {
+    body: {
+      content: {
+        "application/json": {
+          schema: z.object({
+            application_id: z.string().uuid(),
+            attachment_type: attachmentTypeEnum,
+            filename: z.string().min(1),
+            content_type: z.string().min(1),
+          }),
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "Signed upload URL",
+      content: {
+        "application/json": {
+          schema: z.object({
+            uploadUrl: z.string(),
+            path: z.string(),
+          }),
+        },
+      },
+    },
+  },
+  security: [{ bearerAuth: [] }],
+});
+
+app.openapi(getUploadUrlRoute, async (c) => {
+  const supabase = c.get("supabase");
+  const user = c.get("user");
+  const { application_id, attachment_type, filename } = c.req.valid("json");
+
+  if (!user) {
+    return c.json({ error: "Unauthorized", message: "Authentication required" }, 401);
+  }
+
+  const { data: application } = await supabase
+    .schema("core")
+    .from("applications")
+    .select("user_id, job_id")
+    .eq("id", application_id)
+    .single();
+
+  if (!application || application.user_id !== user.id) {
+    return c.json(
+      {
+        error: "Forbidden",
+        message: "You can only upload files to your own applications",
+      },
+      403,
+    );
+  }
+
+  const filePath = `${user.id}/${application.job_id}/${application_id}/${attachment_type}/${filename}`;
+
+  const { data, error } = await supabase.storage
+    .from("application-attachments")
+    .createSignedUploadUrl(filePath);
+
+  if (error) {
+    return c.json(
+      { error: "Internal Server Error", message: "Failed to generate upload URL" },
+      500,
+    );
+  }
+
+  return c.json({ uploadUrl: data.signedUrl, path: filePath });
+});
+
+/**
+ * POST /v1/applications/confirm-upload
+ * Record that a file finished uploading and attach it to the application.
+ */
+const confirmUploadRoute = createRoute({
+  method: "post",
+  path: "/confirm-upload",
+  tags: ["Applications"],
+  summary: "Confirm uploaded attachment",
+  middleware: requireAuth,
+  request: {
+    body: {
+      content: {
+        "application/json": {
+          schema: z.object({
+            application_id: z.string().uuid(),
+            attachment_type: attachmentTypeEnum,
+            path: z.string().min(1),
+            filename: z.string().min(1),
+            size: z.number().int().nonnegative(),
+            mime_type: z.string().min(1),
+          }),
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "Application with attachment recorded",
+      content: {
+        "application/json": {
+          schema: applicationResponseSchema,
+        },
+      },
+    },
+  },
+  security: [{ bearerAuth: [] }],
+});
+
+app.openapi(confirmUploadRoute, async (c) => {
+  const supabase = c.get("supabase");
+  const user = c.get("user");
+  const input = c.req.valid("json");
+
+  if (!user) {
+    return c.json({ error: "Unauthorized", message: "Authentication required" }, 401);
+  }
+
+  const { data: application } = await supabase
+    .schema("core")
+    .from("applications")
+    .select("user_id, attachment_metadata")
+    .eq("id", input.application_id)
+    .single();
+
+  if (!application || application.user_id !== user.id) {
+    return c.json(
+      { error: "Forbidden", message: "You can only update your own applications" },
+      403,
+    );
+  }
+
+  const attachments =
+    (application.attachment_metadata as Record<string, unknown>) || {};
+  attachments[input.attachment_type] = {
+    path: input.path,
+    filename: input.filename,
+    size: input.size,
+    mime_type: input.mime_type,
+    uploaded_at: new Date().toISOString(),
+  };
+
+  const { data: updated, error } = await supabase
+    .schema("core")
+    .from("applications")
+    .update({ attachment_metadata: attachments })
+    .eq("id", input.application_id)
+    .select()
+    .single();
+
+  if (error) {
+    return c.json(
+      { error: "Internal Server Error", message: error.message },
+      500,
+    );
+  }
+
+  return c.json(updated, 200);
+});
+
+/**
+ * GET /v1/applications/:id/messages
+ * Fetch the application thread. Either the applicant or someone with
+ * organization access (owner or role_assignment) may read.
+ */
+const getMessagesRoute = createRoute({
+  method: "get",
+  path: "/{id}/messages",
+  tags: ["Applications"],
+  summary: "Get application messages",
+  middleware: requireAuth,
+  request: { params: z.object({ id: z.string().uuid() }) },
+  responses: {
+    200: {
+      description: "Messages",
+      content: {
+        "application/json": {
+          schema: z.object({
+            data: z.array(
+              z.object({
+                id: z.string().uuid(),
+                application_id: z.string().uuid(),
+                sender_id: z.string().uuid(),
+                body: z.string(),
+                created_at: z.string(),
+                sender_name: z.string().optional(),
+                sender_role: z.enum(["applicant", "recruiter", "system"]).optional(),
+              }),
+            ),
+          }),
+        },
+      },
+    },
+  },
+  security: [{ bearerAuth: [] }],
+});
+
+app.openapi(getMessagesRoute, async (c) => {
+  const supabase = c.get("supabase");
+  const user = c.get("user");
+  const { id } = c.req.valid("param");
+
+  if (!user) {
+    return c.json({ error: "Unauthorized", message: "Authentication required" }, 401);
+  }
+
+  const { data: application, error: appError } = await supabase
+    .schema("core")
+    .from("applications")
+    .select(
+      "id, user_id, job_id, job:jobs!job_id(organization_id, organization:organizations!organization_id(owner_user_id))",
+    )
+    .eq("id", id)
+    .single();
+
+  if (appError || !application) {
+    return c.json({ error: "Not Found", message: "Application not found" }, 404);
+  }
+
+  const isApplicant = application.user_id === user.id;
+  let hasOrgAccess = false;
+  if (!isApplicant) {
+    const orgId = (application.job as { organization_id?: string } | null)
+      ?.organization_id;
+    const ownerId = (
+      application.job as { organization?: { owner_user_id?: string } | null } | null
+    )?.organization?.owner_user_id;
+    if (ownerId === user.id) {
+      hasOrgAccess = true;
+    } else if (orgId) {
+      const { data: roleAssignment } = await supabase
+        .schema("core")
+        .from("role_assignments")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("scope_org_id", orgId)
+        .maybeSingle();
+      if (roleAssignment) hasOrgAccess = true;
+    }
+  }
+
+  if (!isApplicant && !hasOrgAccess) {
+    return c.json(
+      { error: "Forbidden", message: "You do not have access to this application" },
+      403,
+    );
+  }
+
+  const { data: messages, error } = await supabase
+    .schema("core")
+    .from("application_messages")
+    .select(
+      `id, body, created_at, author_user_id, author:users!author_user_id(id, display_name, username)`,
+    )
+    .eq("application_id", id)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    return c.json(
+      { error: "Internal Server Error", message: error.message },
+      500,
+    );
+  }
+
+  // Shape to the SDK's ApplicationMessage contract — author_user_id → sender_id,
+  // computed sender_role from whether the author is the applicant.
+  const data = (messages || []).map(
+    (msg: {
+      id: string;
+      body: string;
+      created_at: string;
+      author_user_id: string;
+      author: { display_name?: string; username?: string } | null;
+    }) => ({
+      id: msg.id,
+      application_id: id,
+      sender_id: msg.author_user_id,
+      body: msg.body,
+      created_at: msg.created_at,
+      sender_name: msg.author?.display_name || msg.author?.username,
+      sender_role: (msg.author_user_id === application.user_id
+        ? "applicant"
+        : "recruiter") as "applicant" | "recruiter",
+    }),
+  );
+
+  return c.json({ data }, 200);
+});
+
+/**
+ * POST /v1/applications/:id/messages
+ * Send a message into the application thread.
+ */
+const sendMessageRoute = createRoute({
+  method: "post",
+  path: "/{id}/messages",
+  tags: ["Applications"],
+  summary: "Send application message",
+  middleware: requireAuth,
+  request: {
+    params: z.object({ id: z.string().uuid() }),
+    body: {
+      content: {
+        "application/json": {
+          schema: z.object({ body: z.string().min(1) }),
+        },
+      },
+    },
+  },
+  responses: {
+    201: {
+      description: "Message created",
+      content: {
+        "application/json": {
+          schema: z.object({
+            id: z.string().uuid(),
+            application_id: z.string().uuid(),
+            sender_id: z.string().uuid(),
+            body: z.string(),
+            created_at: z.string(),
+          }),
+        },
+      },
+    },
+  },
+  security: [{ bearerAuth: [] }],
+});
+
+app.openapi(sendMessageRoute, async (c) => {
+  const supabase = c.get("supabase");
+  const user = c.get("user");
+  const { id } = c.req.valid("param");
+  const { body } = c.req.valid("json");
+
+  if (!user) {
+    return c.json({ error: "Unauthorized", message: "Authentication required" }, 401);
+  }
+
+  const { data: application, error: appError } = await supabase
+    .schema("core")
+    .from("applications")
+    .select(
+      "id, user_id, job_id, job:jobs!job_id(organization_id, organization:organizations!organization_id(owner_user_id))",
+    )
+    .eq("id", id)
+    .single();
+
+  if (appError || !application) {
+    return c.json({ error: "Not Found", message: "Application not found" }, 404);
+  }
+
+  // Allow the applicant OR org owner/role_assignee to reply. The read route
+  // permits the same set, so a recruiter previously could load the thread but
+  // not respond — every reply 403'd before this access check ran.
+  const isApplicant = application.user_id === user.id;
+  let hasOrgAccess = false;
+  if (!isApplicant) {
+    const orgId = (application.job as { organization_id?: string } | null)
+      ?.organization_id;
+    const ownerId = (
+      application.job as { organization?: { owner_user_id?: string } | null } | null
+    )?.organization?.owner_user_id;
+    if (ownerId === user.id) {
+      hasOrgAccess = true;
+    } else if (orgId) {
+      const { data: roleAssignment } = await supabase
+        .schema("core")
+        .from("role_assignments")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("scope_org_id", orgId)
+        .maybeSingle();
+      if (roleAssignment) hasOrgAccess = true;
+    }
+  }
+
+  if (!isApplicant && !hasOrgAccess) {
+    return c.json(
+      { error: "Forbidden", message: "You cannot post in this application thread" },
+      403,
+    );
+  }
+
+  const { data: message, error } = await supabase
+    .schema("core")
+    .from("application_messages")
+    .insert({
+      application_id: id,
+      author_user_id: user.id,
+      body,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    return c.json(
+      { error: "Internal Server Error", message: error.message },
+      500,
+    );
+  }
+
+  return c.json(
+    {
+      id: message.id,
+      application_id: id,
+      sender_id: user.id,
+      body: message.body,
+      created_at: message.created_at,
+    },
+    201,
+  );
 });
 
 // Generate OpenAPI documentation
