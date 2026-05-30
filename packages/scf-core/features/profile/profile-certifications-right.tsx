@@ -20,7 +20,7 @@ import {
 import { useState } from "react";
 import { Pressable } from "react-native";
 import { openExternalLink, pickFile } from "@scf/core/utils/platform";
-import { Card, H4, Input, ScrollView, Text, Row, Stack } from "@scaffald/ui";
+import { Card, H4, Input, ScrollView, Text, Row, Stack, useToast } from "@scaffald/ui";
 import { useProfileCertificationsHighlight } from "./profile-certifications-highlight-context";
 
 interface UserCertification {
@@ -28,6 +28,10 @@ interface UserCertification {
   certification_id: string;
   credential_url: string | null;
   certificate_file_path: string | null;
+  // Populated when flattening depth1ByParent / depth2ByParent — the API tree's
+  // map key is the catalog parent_id, which the toggle-specific / remove-top-level
+  // endpoints need to identify the parent in the user's certification chain.
+  parent_id?: string | null;
   catalog: {
     title: string;
     description: string | null;
@@ -57,6 +61,7 @@ export function ProfileCertificationsRight() {
   const { highlights: recentlyChangedCerts } =
     useProfileCertificationsHighlight();
   const queryClient = useQueryClient();
+  const toast = useToast();
 
   const { data: certTree } = useUserCertificationTree();
 
@@ -91,17 +96,18 @@ export function ProfileCertificationsRight() {
     const depth1: UserCertification[] = [];
     const depth2: UserCertification[] = [];
 
-    // Flatten depth 1 certifications
-    for (const items of Object.values(typedTree.depth1ByParent || {})) {
+    // Preserve parent_id from the map key — depth1's parent is a depth-0 cert,
+    // depth2's parent is a depth-1 cert. Without this, handleRemove can't tell
+    // toggle-specific which parent the cert sits under (SC-115).
+    for (const [parentId, items] of Object.entries(typedTree.depth1ByParent || {})) {
       if (Array.isArray(items)) {
-        depth1.push(...items);
+        depth1.push(...items.map((item) => ({ ...item, parent_id: parentId })));
       }
     }
 
-    // Flatten depth 2 certifications
-    for (const items of Object.values(typedTree.depth2ByParent || {})) {
+    for (const [parentId, items] of Object.entries(typedTree.depth2ByParent || {})) {
       if (Array.isArray(items)) {
-        depth2.push(...items);
+        depth2.push(...items.map((item) => ({ ...item, parent_id: parentId })));
       }
     }
 
@@ -148,8 +154,20 @@ export function ProfileCertificationsRight() {
         content_type: file.type,
       });
       setSelectedFiles((prev) => ({ ...prev, [userCertId]: null }));
+      toast.show({
+        title: "Certificate uploaded",
+        message: `${file.name} attached to your certification.`,
+      });
     } catch (error) {
       console.error("Error saving file:", error);
+      toast.show({
+        title: "Upload failed",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Couldn't attach that file. Try again.",
+        variant: "error",
+      });
     }
   };
 
@@ -164,8 +182,20 @@ export function ProfileCertificationsRight() {
         credential_url: url,
       });
       setUrlInputs((prev) => ({ ...prev, [userCertId]: "" }));
+      toast.show({
+        title: "Credential URL saved",
+        message: "Link attached to your certification.",
+      });
     } catch (error) {
       console.error("Error saving URL:", error);
+      toast.show({
+        title: "Couldn't save URL",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Check the link and try again.",
+        variant: "error",
+      });
     }
   };
 
@@ -173,14 +203,35 @@ export function ProfileCertificationsRight() {
     const confirmed = confirm(`Remove ${userCert.catalog.title}?`);
     if (!confirmed) return;
 
+    // SC-115: parent_id is the catalog-id of the depth-1 category that owns
+    // this depth-2 cert. The flatten step above attaches it; if it's missing
+    // the row was unexpectedly orphaned — bail rather than send a wrong id.
+    if (!userCert.parent_id) {
+      toast.show({
+        title: "Can't remove this certification",
+        message:
+          "It's missing a parent category. Refresh and try again, or report this if it persists.",
+        variant: "error",
+      });
+      return;
+    }
+
     try {
       await removeCert.mutateAsync({
         certification_id: userCert.certification_id,
-        parent_id: userCert.certification_id, // This will be the depth 1 category
+        parent_id: userCert.parent_id,
         checked: false,
       });
     } catch (error) {
       console.error("Error removing certification:", error);
+      toast.show({
+        title: "Couldn't remove",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Try again in a moment.",
+        variant: "error",
+      });
     }
   };
 
