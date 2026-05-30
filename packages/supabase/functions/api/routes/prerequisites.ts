@@ -213,7 +213,13 @@ app.openapi(checkRoute, async (c) => {
     const hasAcceptedPrivacy = !!preferences?.accepted_privacy_policy_at;
     const hasAcceptedTerms = !!preferences?.accepted_terms_of_service_at;
 
-    const isComplete = hasName && hasAddress && hasUserTypes && hasIndustry;
+    // Legal acceptance is now part of the completion contract — without this,
+    // legacy users with all profile fields but no ToS/PP timestamps would be
+    // marked complete by /check, bypass the redirect-to-onboarding gate in the
+    // protected/onboarding layouts, and never get a chance to check the boxes
+    // that POST /complete now requires.
+    const isComplete = hasName && hasAddress && hasUserTypes && hasIndustry &&
+      hasAcceptedPrivacy && hasAcceptedTerms;
 
     return c.json({
       isComplete: !!isComplete,
