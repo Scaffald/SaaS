@@ -1,6 +1,6 @@
 import { ExternalLink, Link as LinkIcon, Upload, X } from 'lucide-react-native'
 import { useState } from 'react'
-import { Button, Card, Input, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
+import { Button, Card, Input, Text, Row, Stack, useThemeContext, useToast } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { openExternalLink, pickFile } from '@scf/core/utils/platform'
 
@@ -27,24 +27,38 @@ export function CertificationProofCard({
 }: CertificationProofCardProps) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
+  const toast = useToast()
   const [mode, setMode] = useState<'file' | 'url'>(proofType || 'url')
   const [urlInput, setUrlInput] = useState(proofValue || '')
   const [uploading, setUploading] = useState(false)
 
   const handlePickAndUpload = async () => {
     const [picked] = await pickFile({ accept: '.pdf,.jpg,.jpeg,.png' })
-    if (!picked?.file) return
+    const file = picked?.file
+    if (!file) return
 
     setUploading(true)
     try {
-      const reader = new FileReader()
-      reader.onloadend = async () => {
-        const base64 = reader.result as string
-        await onSaveProof('file', base64)
-      }
-      reader.readAsDataURL(picked.file)
+      // Read as base64 via a Promise so an onloadend rejection propagates to
+      // this try/catch — the previous form ran the await inside the FileReader
+      // callback, where errors were silently dropped.
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result as string)
+        reader.onerror = () => reject(reader.error ?? new Error('File read failed'))
+        reader.readAsDataURL(file)
+      })
+      await onSaveProof('file', base64)
     } catch (error) {
       console.error('File upload error:', error)
+      toast.show({
+        title: 'Upload failed',
+        message:
+          error instanceof Error
+            ? error.message
+            : "Couldn't attach that file. Try again.",
+        variant: 'error',
+      })
     } finally {
       setUploading(false)
     }
@@ -57,6 +71,14 @@ export function CertificationProofCard({
       await onSaveProof('url', urlInput)
     } catch (error) {
       console.error('URL save error:', error)
+      toast.show({
+        title: "Couldn't save URL",
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Check the link and try again.',
+        variant: 'error',
+      })
     } finally {
       setUploading(false)
     }
