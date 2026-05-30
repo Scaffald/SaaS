@@ -55,9 +55,16 @@ export const prerequisitesSchema = z.object({
   // Primary industry required
   industry_id: z.string().min(1, 'Please select your primary industry'),
 
-  // Required for API completion
-  accepts_privacy_policy: z.boolean(),
-  accepts_terms_of_service: z.boolean(),
+  // SC-110: legal acceptance must be explicit (defaults to false; the form
+  // renders required checkboxes for both). The API mirrors this validation —
+  // it will reject submissions with either field false rather than silently
+  // stamp accepted_*_at timestamps.
+  accepts_privacy_policy: z
+    .boolean()
+    .refine((v) => v === true, 'You must accept the Privacy Policy'),
+  accepts_terms_of_service: z
+    .boolean()
+    .refine((v) => v === true, 'You must accept the Terms of Service'),
 })
 
 export type PrerequisitesFormData = z.infer<typeof prerequisitesSchema>

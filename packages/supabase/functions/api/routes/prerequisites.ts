@@ -58,6 +58,17 @@ const completePrerequisitesRequestSchema = z
     address: addressSchema,
     user_types: z.array(z.enum(["worker", "employer", "customer"])).min(1),
     industry_id: z.string().min(1),
+    // SC-110: explicit legal acceptance. Server enforces in addition to the
+    // client schema so a stale or stripped client can't bypass — previously the
+    // handler stamped accepted_*_at timestamps unconditionally on completion.
+    accepts_privacy_policy: z
+      .literal(true, {
+        errorMap: () => ({ message: "You must accept the Privacy Policy" }),
+      }),
+    accepts_terms_of_service: z
+      .literal(true, {
+        errorMap: () => ({ message: "You must accept the Terms of Service" }),
+      }),
   })
   .openapi("CompletePrerequisitesRequest");
 
