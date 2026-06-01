@@ -288,22 +288,64 @@ const _SC18_FINDINGS_LEGACY = [
 
 // ---------- Plan ----------
 // Each step has: kind + params. Resolved at runtime against fetched IDs.
+
+// ---------- 2026-06-01 prod hotfix: communities PostgREST schema drift ----------
+// File a single ticket recording the prod 500-error fix on Communities endpoints.
+// Triage 2026-06-01 found prod's PostgREST `db_schema` was missing `community`,
+// while dev/preview both had it. PATCHed via Management API; verified by direct
+// PostgREST query + `/api/v1/communities/posts/published?limit=5` returning 200.
+// No code change; pure config drift. Filed directly as Done.
+
+const COMMUNITIES_POSTGREST_BODY = `**Symptom:** \`app.scaffald.com\` returned 500 on every Communities API call: \`GET /api/v1/communities/posts/published\`, \`GET /api/v1/communities/my\`, \`GET /api/v1/communities/reputation/me\`. Triaged 2026-06-01 from prod console errors.
+
+**Root cause:** Prod PostgREST's \`db_schema\` and \`db_extra_search_path\` did not include \`community\`, while dev and preview both did. The \`community\` schema and its 11 tables existed on prod (restored at some point after the [2026-05-25 schema-drift audit](https://github.com/Unicorn/UNI-Construct/blob/main/docs/agents/audits/2026-05-25-supabase-schema-drift-extended.md)), but PostgREST refused to serve them because the schema was not exposed. Edge-function handlers calling \`supabase.schema("community").from(...)\` got back 500s.
+
+**Before / after:**
+
+\`\`\`
+prod (before):  db_schema = "auth,public,core,storage,data,onet,engagement"
+prod (after):   db_schema = "auth,public,core,storage,data,onet,engagement,community"
+
+prod (before):  db_extra_search_path = "public,core,data,onet,engagement"
+prod (after):   db_extra_search_path = "public,core,data,onet,engagement,community"
+\`\`\`
+
+**Fix:** \`PATCH https://api.supabase.com/v1/projects/qmfmpcyxsihhfttvqpbw/postgrest\` with the updated values. PostgREST restarted and started serving the schema.
+
+**Verified live:**
+- Direct PostgREST: \`GET /rest/v1/communities?select=id,slug\` with \`Accept-Profile: community\` returns the 3 seeded communities (cosmetology, electrical, plumbing) ✓
+- Edge function: \`GET /functions/v1/api/v1/communities/posts/published?limit=5\` returns \`{"data":[],"next_cursor":null}\` (200) ✓
+
+**Followup:**
+- The 2026-05-25 audit's planned ticket "Restore community schema on prod" is **obsolete** — schema is intact.
+- Remaining audit findings still stand: engagement rollups missing on prod (§D), search_path hardening (SC-69), \`cms.welcome_slides\` orphan (§E).
+
+🤖 Triaged and patched by Claude Code on 2026-06-01.`
+
 const PLAN = [
-  // Fixed: comment, label v1.8.0, move Triage → In Github.
+  {
+    kind: 'create-issue',
+    title: 'Prod PostgREST not exposing `community` schema (3-endpoint 500s)',
+    description: COMMUNITIES_POSTGREST_BODY,
+    priority: 1, // Urgent
+    state: 'Done', // already patched live
+  },
+]
+
+// ---------- 2026-05-30 v1.8.0 ship sync (historical snapshot) ----------
+// Sweeping Linear state after PRs #326/#327/#328/#329 merged on 2026-05-30.
+// Kept for reference; the arrays above (FIXED/FALSE_POSITIVES/DEFERRED) drove
+// the previous PLAN. Restored by re-wiring PLAN to the spread below.
+const _PLAN_V180_SNAPSHOT = [
   ...FIXED.flatMap(({ ticket, pr, summary }) => [
     { kind: 'comment', issue: ticket, body: FIX_COMMENT(pr, summary) },
     { kind: 'add-label', issue: ticket, label: 'v1.8.0' },
     { kind: 'move-state', issue: ticket, toState: 'In Github' },
   ]),
-
-  // False positives: comment, move Triage → Done. No label.
   ...FALSE_POSITIVES.flatMap(({ ticket, explanation }) => [
     { kind: 'comment', issue: ticket, body: FALSE_POSITIVE_COMMENT(explanation) },
     { kind: 'move-state', issue: ticket, toState: 'Done' },
   ]),
-
-  // Deferred: comment with reason. State stays Triage so the next planner
-  // can re-evaluate. No label change.
   ...DEFERRED.map(({ ticket, reason }) => ({
     kind: 'comment', issue: ticket, body: DEFERRED_COMMENT(reason),
   })),
