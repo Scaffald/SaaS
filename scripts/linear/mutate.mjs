@@ -323,39 +323,52 @@ App Store release containing \`v${version}\` is live. Closing as Done.`
 const V160_SHIPPED = ['SC-74', 'SC-82', 'SC-83', 'SC-84', 'SC-86', 'SC-87', 'SC-88', 'SC-89']
 const V110_SHIPPED = ['SC-55', 'SC-53']
 
-// ---------- 2026-06-09 SC-112 + SC-123 + SC-124 ship ----------
-// PR #334: onboarding error toast tightened, JobForm draft floor mirrors
-// the server, and the unsafe Record cast in handleSubmit is replaced
-// with a typed OfficeCreateJobParams builder.
+// ---------- 2026-06-09 SC-103/104/106/109/113/121 ship ----------
+// PR #335 bumps @scaffald/sdk submodule to the v1.9.0 SDK batch
+// (Scaffald/sdk#5) and wires up SC-103's client-side use of
+// custom_application_questions. PR #336 adds the missing form
+// controls for SC-121 (employment_type, remote_option, pay_range).
 
-const SC112_SHIPPED_COMMENT = `**Shipped — 2026-06-09**
+const SDK_BUMP_COMMENT = (summary) => `**Shipped — 2026-06-09**
 
-Fixed via PR [#334](https://github.com/Unicorn/UNI-Construct/pull/334).
+Landed via SDK PR [Scaffald/sdk#5](https://github.com/Scaffald/sdk/pull/5) and downstream submodule-bump PR [#335](https://github.com/Unicorn/UNI-Construct/pull/335).
 
-The form-level \`catch\` in \`onSubmit\` only \`console.error\`s, so \`completeMutation.onError\`'s toast was the only user-visible signal of submission failure. Tightened the toast: title is now problem-first (\`"Couldn't save profile"\` instead of generic \`"Error"\`), the fallback message names *connection* and *retry* as the next action, and the duration is bumped to 10s so the user has time to read it and tap Submit again.
-
-Moving to **In Github** for the v1.9.0 cut.`
-
-const SC123_SHIPPED_COMMENT = `**Shipped — 2026-06-09**
-
-Fixed via PR [#334](https://github.com/Unicorn/UNI-Construct/pull/334).
-
-The Save-as-Draft and Post buttons in \`JobForm\` enabled on truthy \`title\` / non-empty \`description\`, which was laxer than the server's \`createJobBodySchema\` (\`.min(3) / .max(100)\` title, \`.min(10)\` description per SC-122). A new memoized \`meetsDraftMinimums\` mirrors the server floor (\`title.trim() >= 3\`, \`descriptionPlainText.trim() >= 10\`, org set) and both buttons reuse it. Post still additionally requires location + a valid future-dated scheduled-publish-at.
+${summary}
 
 Moving to **In Github** for the v1.9.0 cut.`
 
-const SC124_SHIPPED_COMMENT = `**Shipped — 2026-06-09**
+const SC103_SUMMARY =
+  '\`Job.custom_application_questions\` is now exposed on the typed SDK surface (column has existed in core.jobs since migration 145; server returns it via select("*")). ApplicationWizard reads it through `useJobDetails(jobId).data?.custom_application_questions ?? []`, replacing the hardcoded empty array + TODO that previously dropped every per-job custom question on the floor.'
 
-Fixed via PR [#334](https://github.com/Unicorn/UNI-Construct/pull/334).
+const SC104_SUMMARY =
+  '`applications.getMyForJob` no longer collapses every error to `null`. 404 still maps to null (no application exists), but 500s / 401s / network errors propagate so the UI can render a real error state instead of an identical empty state.'
 
-\`handleSubmit\` built a generic \`Record<string, unknown>\` and double-cast \`as unknown as Parameters<typeof createJob.mutate>[0]\` into the typed mutation params, so a missing required field surfaced only at the server 400. Replaced with \`buildJobParams(asDraft)\` that returns a typed \`OfficeCreateJobParams\` literal — both create and update mutation call sites are now type-checked end-to-end, no \`unknown\` casts. The old for-loop dropped unrecognized form fields silently anyway (Zod strips unknown keys on the server), so the new typed builder is behaviorally equivalent for valid inputs.
+const SC106_SUMMARY =
+  'HTTP client now retries POST when an `Idempotency-Key` is set — server dedupes, so the existing 408/429/5xx backoff is safe to extend. Same key is threaded through every retry attempt.'
+
+const SC109_SUMMARY =
+  '`applications.create` attaches a per-call `Idempotency-Key` (UUID via crypto.randomUUID with a Date+random fallback). Paired with the SC-106 retry change, a transient 5xx during application submission no longer risks a double-create.'
+
+const SC113_SUMMARY =
+  '`CompletePrerequisitesParams` now declares `accepts_privacy_policy` and `accepts_terms_of_service` (boolean). Server already enforces truthiness (z.literal(true) from SC-110); the SDK type was the only path that could silently strip them from a typed builder.'
+
+const SC121_SHIPPED_COMMENT = `**Shipped — 2026-06-09**
+
+Fixed via PR [#336](https://github.com/Unicorn/UNI-Construct/pull/336).
+
+The JobForm carried \`employment_type\`, \`remote_option\`, \`pay_range_min_cents\`, \`pay_range_max_cents\`, \`pay_range_type\` in form state and the server's \`createJobBodySchema\` accepted them — but no UI control rendered them, so jobs always shipped with the fields null and worker-side discovery couldn't filter on them.
+
+Added between Location and Minimum Scaffald Score: an Employment-type select, a Work-arrangement select, and a Pay-range row (min $ + max $ + type select). Cents stored in state, dollars shown. All enums match \`OfficeCreateJobParams\` exactly so the typed builder from SC-124 picks them up without casts.
 
 Moving to **In Github** for the v1.9.0 cut.`
 
 const V190_SHIPPED = [
-  { ticket: 'SC-112', comment: SC112_SHIPPED_COMMENT },
-  { ticket: 'SC-123', comment: SC123_SHIPPED_COMMENT },
-  { ticket: 'SC-124', comment: SC124_SHIPPED_COMMENT },
+  { ticket: 'SC-103', comment: SDK_BUMP_COMMENT(SC103_SUMMARY) },
+  { ticket: 'SC-104', comment: SDK_BUMP_COMMENT(SC104_SUMMARY) },
+  { ticket: 'SC-106', comment: SDK_BUMP_COMMENT(SC106_SUMMARY) },
+  { ticket: 'SC-109', comment: SDK_BUMP_COMMENT(SC109_SUMMARY) },
+  { ticket: 'SC-113', comment: SDK_BUMP_COMMENT(SC113_SUMMARY) },
+  { ticket: 'SC-121', comment: SC121_SHIPPED_COMMENT },
 ]
 
 const PLAN = [
