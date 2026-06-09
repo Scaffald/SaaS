@@ -236,7 +236,7 @@
     "@babel/core": "catalog:",
     "@biomejs/biome": "catalog:",
     "@expo/metro-runtime": "catalog:",
-    "@nx/js": "^22.4.5",
+    "@nx/js": "^22.7.5",
     "@nx/vite": "^22.7.0",
     "@nx/vitest": "^22.4.5",
     "@nx/workspace": "^22.7.1",
