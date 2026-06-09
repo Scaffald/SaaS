@@ -323,19 +323,43 @@ App Store release containing \`v${version}\` is live. Closing as Done.`
 const V160_SHIPPED = ['SC-74', 'SC-82', 'SC-83', 'SC-84', 'SC-86', 'SC-87', 'SC-88', 'SC-89']
 const V110_SHIPPED = ['SC-55', 'SC-53']
 
+// ---------- 2026-06-09 SC-127 ship ----------
+// PR #332: matched partial unique index on core.reviews(kind, subject_type,
+// subject_id, author_user_id) in seed 008. Migration 326 had relaxed the
+// UNIQUE constraint to a partial index (WHERE author_user_id IS NOT NULL)
+// for anon reviews; the seed never updated its ON CONFLICT spec.
+
+const SC127_SHIPPED_COMMENT = `**Shipped — 2026-06-09**
+
+Fixed via PR [#332](https://github.com/Unicorn/UNI-Construct/pull/332). Root cause: migration 326 (\`review_links_and_anon_reviews\`) replaced the table-level UNIQUE on \`core.reviews(kind, subject_type, subject_id, author_user_id)\` with a *partial* unique index (\`idx_reviews_unique_authored\`) gated by \`WHERE author_user_id IS NOT NULL\` — Postgres can't infer a partial index from a plain ON CONFLICT spec, so seed 008 aborted with SQLSTATE 42P10 and halted the chain.
+
+Fix: appended \`WHERE author_user_id IS NOT NULL\` to the three seed-008 ON CONFLICT clauses on \`core.reviews\` so the planner resolves the partial index. Verified end-to-end via \`pnpm supa db reset\` — full seed chain (008..013) now applies cleanly.
+
+Moving to **In Github** for the v1.9.0 cut.`
+
+const V190_SHIPPED = [
+  { ticket: 'SC-127', comment: SC127_SHIPPED_COMMENT },
+]
+
 const PLAN = [
-  // v1.9.0 scoping (12 tickets × 3 steps = 36)
+  // SC-127 ship: comment + move to In Github
+  ...V190_SHIPPED.flatMap(({ ticket, comment }) => [
+    { kind: 'comment', issue: ticket, body: comment },
+    { kind: 'move-state', issue: ticket, toState: 'In Github' },
+  ]),
+]
+
+// Previous PLAN (v1.9.0 scoping + release close) kept for reference.
+const _PLAN_V190_SCOPE_SNAPSHOT = [
   ...V190_TICKETS.flatMap((ticket) => [
     { kind: 'comment', issue: ticket, body: V190_SCOPE_COMMENT },
     { kind: 'add-label', issue: ticket, label: 'v1.9.0' },
     { kind: 'move-state', issue: ticket, toState: 'Todo' },
   ]),
-  // Close shipped v1.6.0 (8 tickets × 2 steps = 16)
   ...V160_SHIPPED.flatMap((ticket) => [
     { kind: 'comment', issue: ticket, body: RELEASE_CLOSE_COMMENT('1.6.0') },
     { kind: 'move-state', issue: ticket, toState: 'Done' },
   ]),
-  // Close shipped v1.1.0 (2 tickets × 2 steps = 4)
   ...V110_SHIPPED.flatMap((ticket) => [
     { kind: 'comment', issue: ticket, body: RELEASE_CLOSE_COMMENT('1.1.0') },
     { kind: 'move-state', issue: ticket, toState: 'Done' },
