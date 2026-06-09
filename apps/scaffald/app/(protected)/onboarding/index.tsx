@@ -97,11 +97,18 @@ export default function OnboardingPage() {
       router.replace(ROUTES.DASHBOARD.path);
     },
     onError: (error: { message?: string }) => {
-      console.error("Error completing prerequisites:", error);
+      // SC-112: the form-level catch in onSubmit only console.errors; this
+      // toast is the *only* user-visible signal that the submission failed.
+      // Keep the title actionable ("Couldn't save profile" reads as the
+      // problem; "Error" reads as the type) and hold long enough that the
+      // user has time to read it and tap Submit again.
       toast.show({
-        title: "Error",
-        message: error.message || "Failed to save profile. Please try again.",
+        title: "Couldn't save profile",
+        message:
+          error.message ||
+          "Something went wrong on our end. Check your connection and tap Submit to try again.",
         variant: "error",
+        duration: 10000,
       });
     },
   });
