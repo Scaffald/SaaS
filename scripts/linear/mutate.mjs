@@ -289,60 +289,57 @@ const _SC18_FINDINGS_LEGACY = [
 // ---------- Plan ----------
 // Each step has: kind + params. Resolved at runtime against fetched IDs.
 
-// ---------- 2026-06-02 followup: seed 008 ON CONFLICT bug ----------
-// Surfaced while running `pnpm supa db reset` mid-session to re-seed the
-// software-projects rows the dogfood-log script depends on. Seed 008
-// (cross-org-demo) failed with `ON CONFLICT specification (SQLSTATE 42P10)`
-// — column(s) listed in ON CONFLICT don't have a matching unique constraint.
-// Blocks subsequent seeds (009, 010, 011) from running, which means a fresh
-// local clone has no software projects and `dogfood-log` immediately fails
-// with `work_logs_project_id_fkey` violation. Real bug. Triage.
+// ---------- 2026-06-09 v1.9.0 scoping + v1.6.0/v1.1.0 release close ----------
+// Planning the v1.9.0 release: a polish/correctness pass over the v1.8.0
+// pre-audit findings still sitting in Triage. Each ticket gets a v1.9.0
+// label, a scoping comment, and moves Triage → Todo.
+//
+// Same pass closes shipped tickets: v1.6.0 + v1.1.0 In TestFlight → Done.
+//
+// Re-runs are safe: add-label is idempotent in Linear's API; move-state on
+// an already-moved ticket is a no-op; only the comment will duplicate.
 
-const SEED_008_BODY = `**Symptom:** \`pnpm supa db reset\` fails at seed 008 with:
+const V190_SCOPE_COMMENT = `**Scoped to v1.9.0 — 2026-06-09**
 
-\`\`\`
-Seeding data from supabase/seeds/008_seed-cross-org-demo.sql...
-failed to send batch: ERROR: there is no unique or exclusion constraint
-matching the ON CONFLICT specification (SQLSTATE 42P10)
-\`\`\`
+Pulling this deferred v1.8.0 pre-audit finding into the v1.9.0 polish/correctness pass. Labeling \`v1.9.0\` and moving to **Todo**.
 
-This halts the seed chain before \`011_seed-real-org-structure.sql\` runs, so a fresh local clone has **no software projects** (the \`e000000x\` rows in \`core.construction_projects\` that the dogfood-log script depends on). Reproduces 100% on a fresh \`supa start\` + \`supa db reset\`.
+See [[SC-18]] / [[SC-19]] / [[SC-20]] for the audit parents.`
 
-**Impact:**
+const V190_TICKETS = [
+  // SC-19 apply-flow findings
+  'SC-103', 'SC-104', 'SC-106', 'SC-107', 'SC-108', 'SC-109',
+  // SC-20 profile/onboarding findings
+  'SC-112', 'SC-113',
+  // SC-18 job-posting findings
+  'SC-121', 'SC-123', 'SC-124',
+  // Dev-env bug surfaced 2026-06-02
+  'SC-127',
+]
 
-- \`pnpm supa db reset\` is broken end-to-end on a fresh clone.
-- \`scripts/dogfood-log.ts\` then fails with \`insert or update on table "work_logs" violates foreign key constraint "work_logs_project_id_fkey"\` because the project UUIDs it hardcodes don't exist.
-- New contributors hit both errors immediately and can't dogfood-log without a workaround.
+const RELEASE_CLOSE_COMMENT = (version) => `**Released — 2026-06-09**
 
-**Workaround used 2026-06-02:**
+App Store release containing \`v${version}\` is live. Closing as Done.`
 
-\`\`\`bash
-docker exec -i supabase_db_scaffald psql -U postgres -d postgres \\
-  < packages/supabase/seeds/011_seed-real-org-structure.sql
-\`\`\`
-
-Bypasses 008 and applies 011 directly. Verified: software projects now visible via \`pnpm tsx scripts/dogfood-log.ts --list\`.
-
-**Root cause (to investigate):** seed 008 has 32 \`ON CONFLICT\` clauses (\`grep -nE "ON CONFLICT" packages/supabase/seeds/008_seed-cross-org-demo.sql\`). Some target composite keys like \`(job_id, user_id)\`, \`(requester_user_id, addressee_user_id)\`, \`(kind, subject_type, subject_id, author_user_id)\`. Likely one of these references a unique constraint that was either renamed or never created. Bisect: comment out blocks and re-run \`docker exec ... psql\` until the failing INSERT is isolated.
-
-**Fix path:** either (a) add the missing unique constraint to the target table in a new migration, or (b) change the failing INSERT to use the column set that does have a unique constraint, or (c) drop the ON CONFLICT clause if duplicates are impossible by construction.
-
-**Repro:**
-
-1. Fresh clone (or \`supa db reset\` on existing local).
-2. \`pnpm supa start && pnpm supa db reset\`.
-3. Observe failure at "Seeding data from supabase/seeds/008_seed-cross-org-demo.sql...".
-
-🤖 Surfaced and triaged by Claude Code on 2026-06-02 while dogfood-logging SC-126's hotfix session.`
+const V160_SHIPPED = ['SC-74', 'SC-82', 'SC-83', 'SC-84', 'SC-86', 'SC-87', 'SC-88', 'SC-89']
+const V110_SHIPPED = ['SC-55', 'SC-53']
 
 const PLAN = [
-  {
-    kind: 'create-issue',
-    title: 'Seed `008_seed-cross-org-demo.sql` ON CONFLICT mismatch breaks `pnpm supa db reset` + dogfood-log',
-    description: SEED_008_BODY,
-    priority: 2, // High
-    state: 'Triage',
-  },
+  // v1.9.0 scoping (12 tickets × 3 steps = 36)
+  ...V190_TICKETS.flatMap((ticket) => [
+    { kind: 'comment', issue: ticket, body: V190_SCOPE_COMMENT },
+    { kind: 'add-label', issue: ticket, label: 'v1.9.0' },
+    { kind: 'move-state', issue: ticket, toState: 'Todo' },
+  ]),
+  // Close shipped v1.6.0 (8 tickets × 2 steps = 16)
+  ...V160_SHIPPED.flatMap((ticket) => [
+    { kind: 'comment', issue: ticket, body: RELEASE_CLOSE_COMMENT('1.6.0') },
+    { kind: 'move-state', issue: ticket, toState: 'Done' },
+  ]),
+  // Close shipped v1.1.0 (2 tickets × 2 steps = 4)
+  ...V110_SHIPPED.flatMap((ticket) => [
+    { kind: 'comment', issue: ticket, body: RELEASE_CLOSE_COMMENT('1.1.0') },
+    { kind: 'move-state', issue: ticket, toState: 'Done' },
+  ]),
 ]
 
 // ---------- 2026-05-30 v1.8.0 ship sync (historical snapshot) ----------
