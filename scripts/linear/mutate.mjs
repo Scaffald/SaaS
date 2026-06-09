@@ -289,46 +289,59 @@ const _SC18_FINDINGS_LEGACY = [
 // ---------- Plan ----------
 // Each step has: kind + params. Resolved at runtime against fetched IDs.
 
-// ---------- 2026-06-01 prod hotfix: communities PostgREST schema drift ----------
-// File a single ticket recording the prod 500-error fix on Communities endpoints.
-// Triage 2026-06-01 found prod's PostgREST `db_schema` was missing `community`,
-// while dev/preview both had it. PATCHed via Management API; verified by direct
-// PostgREST query + `/api/v1/communities/posts/published?limit=5` returning 200.
-// No code change; pure config drift. Filed directly as Done.
+// ---------- 2026-06-02 followup: seed 008 ON CONFLICT bug ----------
+// Surfaced while running `pnpm supa db reset` mid-session to re-seed the
+// software-projects rows the dogfood-log script depends on. Seed 008
+// (cross-org-demo) failed with `ON CONFLICT specification (SQLSTATE 42P10)`
+// — column(s) listed in ON CONFLICT don't have a matching unique constraint.
+// Blocks subsequent seeds (009, 010, 011) from running, which means a fresh
+// local clone has no software projects and `dogfood-log` immediately fails
+// with `work_logs_project_id_fkey` violation. Real bug. Triage.
 
-const COMMUNITIES_POSTGREST_BODY = `**Symptom:** \`app.scaffald.com\` returned 500 on every Communities API call: \`GET /api/v1/communities/posts/published\`, \`GET /api/v1/communities/my\`, \`GET /api/v1/communities/reputation/me\`. Triaged 2026-06-01 from prod console errors.
-
-**Root cause:** Prod PostgREST's \`db_schema\` and \`db_extra_search_path\` did not include \`community\`, while dev and preview both did. The \`community\` schema and its 11 tables existed on prod (restored at some point after the [2026-05-25 schema-drift audit](https://github.com/Unicorn/UNI-Construct/blob/main/docs/agents/audits/2026-05-25-supabase-schema-drift-extended.md)), but PostgREST refused to serve them because the schema was not exposed. Edge-function handlers calling \`supabase.schema("community").from(...)\` got back 500s.
-
-**Before / after:**
+const SEED_008_BODY = `**Symptom:** \`pnpm supa db reset\` fails at seed 008 with:
 
 \`\`\`
-prod (before):  db_schema = "auth,public,core,storage,data,onet,engagement"
-prod (after):   db_schema = "auth,public,core,storage,data,onet,engagement,community"
-
-prod (before):  db_extra_search_path = "public,core,data,onet,engagement"
-prod (after):   db_extra_search_path = "public,core,data,onet,engagement,community"
+Seeding data from supabase/seeds/008_seed-cross-org-demo.sql...
+failed to send batch: ERROR: there is no unique or exclusion constraint
+matching the ON CONFLICT specification (SQLSTATE 42P10)
 \`\`\`
 
-**Fix:** \`PATCH https://api.supabase.com/v1/projects/qmfmpcyxsihhfttvqpbw/postgrest\` with the updated values. PostgREST restarted and started serving the schema.
+This halts the seed chain before \`011_seed-real-org-structure.sql\` runs, so a fresh local clone has **no software projects** (the \`e000000x\` rows in \`core.construction_projects\` that the dogfood-log script depends on). Reproduces 100% on a fresh \`supa start\` + \`supa db reset\`.
 
-**Verified live:**
-- Direct PostgREST: \`GET /rest/v1/communities?select=id,slug\` with \`Accept-Profile: community\` returns the 3 seeded communities (cosmetology, electrical, plumbing) ✓
-- Edge function: \`GET /functions/v1/api/v1/communities/posts/published?limit=5\` returns \`{"data":[],"next_cursor":null}\` (200) ✓
+**Impact:**
 
-**Followup:**
-- The 2026-05-25 audit's planned ticket "Restore community schema on prod" is **obsolete** — schema is intact.
-- Remaining audit findings still stand: engagement rollups missing on prod (§D), search_path hardening (SC-69), \`cms.welcome_slides\` orphan (§E).
+- \`pnpm supa db reset\` is broken end-to-end on a fresh clone.
+- \`scripts/dogfood-log.ts\` then fails with \`insert or update on table "work_logs" violates foreign key constraint "work_logs_project_id_fkey"\` because the project UUIDs it hardcodes don't exist.
+- New contributors hit both errors immediately and can't dogfood-log without a workaround.
 
-🤖 Triaged and patched by Claude Code on 2026-06-01.`
+**Workaround used 2026-06-02:**
+
+\`\`\`bash
+docker exec -i supabase_db_scaffald psql -U postgres -d postgres \\
+  < packages/supabase/seeds/011_seed-real-org-structure.sql
+\`\`\`
+
+Bypasses 008 and applies 011 directly. Verified: software projects now visible via \`pnpm tsx scripts/dogfood-log.ts --list\`.
+
+**Root cause (to investigate):** seed 008 has 32 \`ON CONFLICT\` clauses (\`grep -nE "ON CONFLICT" packages/supabase/seeds/008_seed-cross-org-demo.sql\`). Some target composite keys like \`(job_id, user_id)\`, \`(requester_user_id, addressee_user_id)\`, \`(kind, subject_type, subject_id, author_user_id)\`. Likely one of these references a unique constraint that was either renamed or never created. Bisect: comment out blocks and re-run \`docker exec ... psql\` until the failing INSERT is isolated.
+
+**Fix path:** either (a) add the missing unique constraint to the target table in a new migration, or (b) change the failing INSERT to use the column set that does have a unique constraint, or (c) drop the ON CONFLICT clause if duplicates are impossible by construction.
+
+**Repro:**
+
+1. Fresh clone (or \`supa db reset\` on existing local).
+2. \`pnpm supa start && pnpm supa db reset\`.
+3. Observe failure at "Seeding data from supabase/seeds/008_seed-cross-org-demo.sql...".
+
+🤖 Surfaced and triaged by Claude Code on 2026-06-02 while dogfood-logging SC-126's hotfix session.`
 
 const PLAN = [
   {
     kind: 'create-issue',
-    title: 'Prod PostgREST not exposing `community` schema (3-endpoint 500s)',
-    description: COMMUNITIES_POSTGREST_BODY,
-    priority: 1, // Urgent
-    state: 'Done', // already patched live
+    title: 'Seed `008_seed-cross-org-demo.sql` ON CONFLICT mismatch breaks `pnpm supa db reset` + dogfood-log',
+    description: SEED_008_BODY,
+    priority: 2, // High
+    state: 'Triage',
   },
 ]
 
