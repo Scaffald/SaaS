@@ -80,7 +80,7 @@ catalog:
   openapi-typescript: ~7.4.4
   react: 19.2.3
   react-dom: ^19.2.3
-  react-dropzone: ~14.3.8
+  react-dropzone: ~15.0.0
   react-hook-form: ~7.67.0
   react-native: 0.85.3
   react-native-action-sheet: ~2.2.0
