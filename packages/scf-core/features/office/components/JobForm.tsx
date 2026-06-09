@@ -1005,6 +1005,114 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             />
           </Stack>
 
+          {/* SC-121: employment_type, remote_option, pay_range — these fields
+              live on createJobBodySchema (server) and OfficeCreateJobParams
+              (SDK) but had no UI surface in the form, so jobs always shipped
+              with `employment_type = null` / `remote_option = null` / no pay
+              range. Workers couldn't filter by them on the discovery side. */}
+          <Row gap={8}>
+            <Stack gap={8} flex={1}>
+              <Text>Employment type</Text>
+              <ResponsiveSelect
+                value={formData.employment_type ?? ''}
+                onValueChange={(value: string) =>
+                  setFormData({ ...formData, employment_type: value || undefined })
+                }
+                placeholder="Select"
+                label="Employment type"
+                options={[
+                  { value: 'full_time', label: 'Full-time' },
+                  { value: 'part_time', label: 'Part-time' },
+                  { value: 'contract', label: 'Contract' },
+                  { value: 'temp', label: 'Temporary' },
+                  { value: 'intern', label: 'Internship' },
+                ]}
+              />
+            </Stack>
+            <Stack gap={8} flex={1}>
+              <Text>Work arrangement</Text>
+              <ResponsiveSelect
+                value={formData.remote_option ?? ''}
+                onValueChange={(value: string) =>
+                  setFormData({ ...formData, remote_option: value || undefined })
+                }
+                placeholder="Select"
+                label="Work arrangement"
+                options={[
+                  { value: 'on_site', label: 'On-site' },
+                  { value: 'hybrid', label: 'Hybrid' },
+                  { value: 'remote', label: 'Remote' },
+                ]}
+              />
+            </Stack>
+          </Row>
+
+          <Stack gap={8}>
+            <Text>Pay range</Text>
+            <Row gap={8}>
+              <Stack gap={4} flex={1}>
+                <Input
+                  data-testid="job-pay-min-input"
+                  placeholder="Min ($)"
+                  keyboardType="numeric"
+                  value={
+                    typeof formData.pay_range_min_cents === 'number'
+                      ? (formData.pay_range_min_cents / 100).toString()
+                      : ''
+                  }
+                  onChangeText={(text: string) => {
+                    const parsed = parseFloat(text)
+                    setFormData({
+                      ...formData,
+                      pay_range_min_cents: Number.isFinite(parsed)
+                        ? Math.max(0, Math.round(parsed * 100))
+                        : undefined,
+                    })
+                  }}
+                  disabled={isLoading}
+                />
+              </Stack>
+              <Stack gap={4} flex={1}>
+                <Input
+                  data-testid="job-pay-max-input"
+                  placeholder="Max ($)"
+                  keyboardType="numeric"
+                  value={
+                    typeof formData.pay_range_max_cents === 'number'
+                      ? (formData.pay_range_max_cents / 100).toString()
+                      : ''
+                  }
+                  onChangeText={(text: string) => {
+                    const parsed = parseFloat(text)
+                    setFormData({
+                      ...formData,
+                      pay_range_max_cents: Number.isFinite(parsed)
+                        ? Math.max(0, Math.round(parsed * 100))
+                        : undefined,
+                    })
+                  }}
+                  disabled={isLoading}
+                />
+              </Stack>
+              <Stack gap={4} flex={1}>
+                <ResponsiveSelect
+                  value={formData.pay_range_type ?? ''}
+                  onValueChange={(value: string) =>
+                    setFormData({ ...formData, pay_range_type: value || undefined })
+                  }
+                  placeholder="Type"
+                  label="Pay range type"
+                  options={[
+                    { value: 'hourly', label: 'Hourly' },
+                    { value: 'salary', label: 'Salary' },
+                    { value: 'contract', label: 'Contract' },
+                    { value: 'project', label: 'Project' },
+                  ]}
+                />
+              </Stack>
+            </Row>
+          </Stack>
+
           {/* Minimum Scaffald Score */}
           <ScoreThresholdSection
             minimumScore={formData.minimum_score}
