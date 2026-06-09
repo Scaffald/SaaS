@@ -323,31 +323,39 @@ App Store release containing \`v${version}\` is live. Closing as Done.`
 const V160_SHIPPED = ['SC-74', 'SC-82', 'SC-83', 'SC-84', 'SC-86', 'SC-87', 'SC-88', 'SC-89']
 const V110_SHIPPED = ['SC-55', 'SC-53']
 
-// ---------- 2026-06-09 SC-107 + SC-108 ship ----------
-// PR #333: exhaustive DB↔API status maps + fix for two functional guard
-// bugs in update/withdraw + structured webhook delivery logging.
+// ---------- 2026-06-09 SC-112 + SC-123 + SC-124 ship ----------
+// PR #334: onboarding error toast tightened, JobForm draft floor mirrors
+// the server, and the unsafe Record cast in handleSubmit is replaced
+// with a typed OfficeCreateJobParams builder.
 
-const SC107_SHIPPED_COMMENT = `**Shipped — 2026-06-09**
+const SC112_SHIPPED_COMMENT = `**Shipped — 2026-06-09**
 
-Fixed via PR [#333](https://github.com/Unicorn/UNI-Construct/pull/333).
+Fixed via PR [#334](https://github.com/Unicorn/UNI-Construct/pull/334).
 
-\`STATUS_DB_TO_API\` and \`STATUS_API_TO_DB\` are now exhaustive maps keyed by typed \`DbStatus\` / \`ApiStatus\` unions — the \`?? raw\` fallback is gone, so adding a new DB status without updating the API surface is a compile error. \`z.enum(API_STATUSES)\` replaces three hand-typed string-literal unions in the schemas.
-
-Audit surfaced **two real functional bugs** with the same root cause: the update guard (line 637) and the withdraw guard (line 784) compared \`existing.status\` (raw DB value) against API names. That rejected every update/withdraw of \`new\`/\`screen\`-state applications. Both guards now compare against DB-level constants; error messages still map back to API for the user.
+The form-level \`catch\` in \`onSubmit\` only \`console.error\`s, so \`completeMutation.onError\`'s toast was the only user-visible signal of submission failure. Tightened the toast: title is now problem-first (\`"Couldn't save profile"\` instead of generic \`"Error"\`), the fallback message names *connection* and *retry* as the next action, and the duration is bumped to 10s so the user has time to read it and tap Submit again.
 
 Moving to **In Github** for the v1.9.0 cut.`
 
-const SC108_SHIPPED_COMMENT = `**Shipped — 2026-06-09**
+const SC123_SHIPPED_COMMENT = `**Shipped — 2026-06-09**
 
-Fixed via PR [#333](https://github.com/Unicorn/UNI-Construct/pull/333).
+Fixed via PR [#334](https://github.com/Unicorn/UNI-Construct/pull/334).
 
-\`triggerWebhook\` now emits **structured JSON** to stderr in three distinct failure cases — non-2xx HTTP response, fetch exception, and outer trigger exception. Each line carries \`severity: "error"\`, \`component: "webhook_delivery"\`, plus \`event\`, \`webhook_id\`, \`webhook_url\`, and the failure-specific context (http_status + response_body or error message). The \`core.webhook_deliveries\` table stays the durable record; the structured log is the new alerting surface — operator dashboards / log aggregation can pick up ATS webhook regressions without anyone reading the table by hand.
+The Save-as-Draft and Post buttons in \`JobForm\` enabled on truthy \`title\` / non-empty \`description\`, which was laxer than the server's \`createJobBodySchema\` (\`.min(3) / .max(100)\` title, \`.min(10)\` description per SC-122). A new memoized \`meetsDraftMinimums\` mirrors the server floor (\`title.trim() >= 3\`, \`descriptionPlainText.trim() >= 10\`, org set) and both buttons reuse it. Post still additionally requires location + a valid future-dated scheduled-publish-at.
+
+Moving to **In Github** for the v1.9.0 cut.`
+
+const SC124_SHIPPED_COMMENT = `**Shipped — 2026-06-09**
+
+Fixed via PR [#334](https://github.com/Unicorn/UNI-Construct/pull/334).
+
+\`handleSubmit\` built a generic \`Record<string, unknown>\` and double-cast \`as unknown as Parameters<typeof createJob.mutate>[0]\` into the typed mutation params, so a missing required field surfaced only at the server 400. Replaced with \`buildJobParams(asDraft)\` that returns a typed \`OfficeCreateJobParams\` literal — both create and update mutation call sites are now type-checked end-to-end, no \`unknown\` casts. The old for-loop dropped unrecognized form fields silently anyway (Zod strips unknown keys on the server), so the new typed builder is behaviorally equivalent for valid inputs.
 
 Moving to **In Github** for the v1.9.0 cut.`
 
 const V190_SHIPPED = [
-  { ticket: 'SC-107', comment: SC107_SHIPPED_COMMENT },
-  { ticket: 'SC-108', comment: SC108_SHIPPED_COMMENT },
+  { ticket: 'SC-112', comment: SC112_SHIPPED_COMMENT },
+  { ticket: 'SC-123', comment: SC123_SHIPPED_COMMENT },
+  { ticket: 'SC-124', comment: SC124_SHIPPED_COMMENT },
 ]
 
 const PLAN = [
