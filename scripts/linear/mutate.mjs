@@ -323,26 +323,35 @@ App Store release containing \`v${version}\` is live. Closing as Done.`
 const V160_SHIPPED = ['SC-74', 'SC-82', 'SC-83', 'SC-84', 'SC-86', 'SC-87', 'SC-88', 'SC-89']
 const V110_SHIPPED = ['SC-55', 'SC-53']
 
-// ---------- 2026-06-09 SC-127 ship ----------
-// PR #332: matched partial unique index on core.reviews(kind, subject_type,
-// subject_id, author_user_id) in seed 008. Migration 326 had relaxed the
-// UNIQUE constraint to a partial index (WHERE author_user_id IS NOT NULL)
-// for anon reviews; the seed never updated its ON CONFLICT spec.
+// ---------- 2026-06-09 SC-107 + SC-108 ship ----------
+// PR #333: exhaustive DB↔API status maps + fix for two functional guard
+// bugs in update/withdraw + structured webhook delivery logging.
 
-const SC127_SHIPPED_COMMENT = `**Shipped — 2026-06-09**
+const SC107_SHIPPED_COMMENT = `**Shipped — 2026-06-09**
 
-Fixed via PR [#332](https://github.com/Unicorn/UNI-Construct/pull/332). Root cause: migration 326 (\`review_links_and_anon_reviews\`) replaced the table-level UNIQUE on \`core.reviews(kind, subject_type, subject_id, author_user_id)\` with a *partial* unique index (\`idx_reviews_unique_authored\`) gated by \`WHERE author_user_id IS NOT NULL\` — Postgres can't infer a partial index from a plain ON CONFLICT spec, so seed 008 aborted with SQLSTATE 42P10 and halted the chain.
+Fixed via PR [#333](https://github.com/Unicorn/UNI-Construct/pull/333).
 
-Fix: appended \`WHERE author_user_id IS NOT NULL\` to the three seed-008 ON CONFLICT clauses on \`core.reviews\` so the planner resolves the partial index. Verified end-to-end via \`pnpm supa db reset\` — full seed chain (008..013) now applies cleanly.
+\`STATUS_DB_TO_API\` and \`STATUS_API_TO_DB\` are now exhaustive maps keyed by typed \`DbStatus\` / \`ApiStatus\` unions — the \`?? raw\` fallback is gone, so adding a new DB status without updating the API surface is a compile error. \`z.enum(API_STATUSES)\` replaces three hand-typed string-literal unions in the schemas.
+
+Audit surfaced **two real functional bugs** with the same root cause: the update guard (line 637) and the withdraw guard (line 784) compared \`existing.status\` (raw DB value) against API names. That rejected every update/withdraw of \`new\`/\`screen\`-state applications. Both guards now compare against DB-level constants; error messages still map back to API for the user.
+
+Moving to **In Github** for the v1.9.0 cut.`
+
+const SC108_SHIPPED_COMMENT = `**Shipped — 2026-06-09**
+
+Fixed via PR [#333](https://github.com/Unicorn/UNI-Construct/pull/333).
+
+\`triggerWebhook\` now emits **structured JSON** to stderr in three distinct failure cases — non-2xx HTTP response, fetch exception, and outer trigger exception. Each line carries \`severity: "error"\`, \`component: "webhook_delivery"\`, plus \`event\`, \`webhook_id\`, \`webhook_url\`, and the failure-specific context (http_status + response_body or error message). The \`core.webhook_deliveries\` table stays the durable record; the structured log is the new alerting surface — operator dashboards / log aggregation can pick up ATS webhook regressions without anyone reading the table by hand.
 
 Moving to **In Github** for the v1.9.0 cut.`
 
 const V190_SHIPPED = [
-  { ticket: 'SC-127', comment: SC127_SHIPPED_COMMENT },
+  { ticket: 'SC-107', comment: SC107_SHIPPED_COMMENT },
+  { ticket: 'SC-108', comment: SC108_SHIPPED_COMMENT },
 ]
 
 const PLAN = [
-  // SC-127 ship: comment + move to In Github
+  // Ship comment + move to In Github
   ...V190_SHIPPED.flatMap(({ ticket, comment }) => [
     { kind: 'comment', issue: ticket, body: comment },
     { kind: 'move-state', issue: ticket, toState: 'In Github' },
