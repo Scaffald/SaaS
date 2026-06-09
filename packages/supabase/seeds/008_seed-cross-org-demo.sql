@@ -154,7 +154,7 @@ SELECT 'review', 'user', derek.id, clay.id, 4,
   'Derek ran our shared subcontractor crew on the Metro project. Excellent coordination, always on top of safety. Would work with him again.'
 FROM (SELECT id FROM auth.users WHERE email = 'derek.johnson@wizard.construction') derek
 CROSS JOIN (SELECT id FROM auth.users WHERE email = 'clay@unicorn.love') clay
-ON CONFLICT (kind, subject_type, subject_id, author_user_id) DO NOTHING;
+ON CONFLICT (kind, subject_type, subject_id, author_user_id) WHERE author_user_id IS NOT NULL DO NOTHING;
 
 -- Brian Carter recommends Zach
 INSERT INTO core.reviews (kind, subject_type, subject_id, author_user_id, rating, headline, body)
@@ -163,7 +163,7 @@ SELECT 'recommendation', 'user', zach.id, brian.id, 5,
   'Zach managed the joint venture phase of our Ann Arbor dormitory project. His communication and scheduling skills are top-notch. Highly recommend for any PM role.'
 FROM (SELECT id FROM auth.users WHERE email = 'zach@unicorn.love') zach
 CROSS JOIN (SELECT id FROM auth.users WHERE email = 'brian.carter@wizard.construction') brian
-ON CONFLICT (kind, subject_type, subject_id, author_user_id) DO NOTHING;
+ON CONFLICT (kind, subject_type, subject_id, author_user_id) WHERE author_user_id IS NOT NULL DO NOTHING;
 
 -- Sarah Mitchell reviews Marcus Rivera
 INSERT INTO core.reviews (kind, subject_type, subject_id, author_user_id, rating, headline, body)
@@ -172,7 +172,7 @@ SELECT 'review', 'user', marcus.id, sarah.id, 4,
   'Marcus did plumbing rough-in on our Dearborn retrofit. Clean work, showed up on time every day, and caught a code issue before inspection. Solid tradesman.'
 FROM (SELECT id FROM auth.users WHERE email = 'marcus.rivera@example.test') marcus
 CROSS JOIN (SELECT id FROM auth.users WHERE email = 'sarah.mitchell@wizard.construction') sarah
-ON CONFLICT (kind, subject_type, subject_id, author_user_id) DO NOTHING;
+ON CONFLICT (kind, subject_type, subject_id, author_user_id) WHERE author_user_id IS NOT NULL DO NOTHING;
 
 -- =========================================================
 -- 4. COMMUNITY (Construction Pros community + memberships + posts)
