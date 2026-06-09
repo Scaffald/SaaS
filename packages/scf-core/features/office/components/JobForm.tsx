@@ -1,9 +1,20 @@
+import type { OfficeCreateJobParams, OfficeUpdateJobParams } from '@scaffald/sdk'
 import { useTeams } from '@scaffald/sdk/react'
 import { useAllOrganizations } from '@scf/core/utils/useAllOrganizations'
 import {
   useOfficeCreateJobMutation,
   useOfficeUpdateJobMutation,
 } from '@scf/core/utils/jobs-sdk-hooks'
+
+// SC-122 / SC-123: shared with `createJobBodySchema` on the server
+// (packages/supabase/functions/api/routes/office-jobs.ts) so the disable
+// predicate on the draft button matches what the API will accept.
+const JOB_TITLE_MIN_LENGTH = 3
+const JOB_DESCRIPTION_MIN_LENGTH = 10
+
+type EmploymentType = NonNullable<OfficeCreateJobParams['employment_type']>
+type RemoteOption = NonNullable<OfficeCreateJobParams['remote_option']>
+type PayRangeType = NonNullable<OfficeCreateJobParams['pay_range_type']>
 import {
   useSearchParentSkillsMutation,
   usePrimaryIndustry,
@@ -437,52 +448,72 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     setFormData((prev) => ({ ...prev, ...data }))
   }
 
-  const handleSubmit = (asDraft = true) => {
-    // Build submit data, excluding empty strings for optional enums
-    // Convert description to plain text or JSON based on API expectations
-    const descriptionValue = formData.description
-      ? typeof formData.description === 'string'
-        ? formData.description
-        : extractPlainText(formData.description as JSONContent)
-      : ''
+  // SC-123 / SC-124: derive both the plain-text description (for the
+  // disable predicate and for submission) and a fully-typed params object
+  // from `formData`. Previously `handleSubmit` built a generic
+  // `Record<string, unknown>` and double-cast through `unknown` into the
+  // mutation params, so a missing required field (title / description /
+  // organization_id) was only caught by the server 400 — and the
+  // Save-as-draft button didn't enforce the same minimums as the server.
+  const descriptionPlainText = useMemo(() => {
+    if (!formData.description) return ''
+    return typeof formData.description === 'string'
+      ? formData.description
+      : extractPlainText(formData.description as JSONContent)
+  }, [formData.description])
 
-    // If scheduled_publish_at is set, always keep as draft (cron will publish it)
-    // Otherwise, use the asDraft parameter
+  const meetsDraftMinimums =
+    formData.title.trim().length >= JOB_TITLE_MIN_LENGTH &&
+    descriptionPlainText.trim().length >= JOB_DESCRIPTION_MIN_LENGTH &&
+    !!formData.organization_id
+
+  const buildJobParams = (asDraft: boolean): OfficeCreateJobParams => {
     const shouldBeDraft = asDraft || !!formData.scheduled_publish_at
-
-    const submitData: Record<string, unknown> = {
-      title: formData.title,
-      description: descriptionValue,
+    const params: OfficeCreateJobParams = {
       organization_id: formData.organization_id,
-      status: shouldBeDraft ? ('draft' as const) : ('open' as const),
+      title: formData.title,
+      description: descriptionPlainText,
+      status: shouldBeDraft ? 'draft' : 'open',
+    }
+    if (formData.employment_type) {
+      params.employment_type = formData.employment_type as EmploymentType
+    }
+    if (formData.remote_option) {
+      params.remote_option = formData.remote_option as RemoteOption
+    }
+    if (formData.position_level) params.position_level = formData.position_level
+    if (formData.location) params.location = formData.location
+    if (typeof formData.pay_range_min_cents === 'number') {
+      params.pay_range_min_cents = formData.pay_range_min_cents
+    }
+    if (typeof formData.pay_range_max_cents === 'number') {
+      params.pay_range_max_cents = formData.pay_range_max_cents
+    }
+    if (formData.pay_range_type) {
+      params.pay_range_type = formData.pay_range_type as PayRangeType
+    }
+    return params
+  }
+
+  const handleSubmit = (asDraft = true) => {
+    if (!meetsDraftMinimums) {
+      // The disable predicate should have caught this, but guard anyway —
+      // mirrors the server-side createJobBodySchema floor.
+      toast.show({
+        title: 'Missing required fields',
+        message: `Title must be at least ${JOB_TITLE_MIN_LENGTH} characters, description at least ${JOB_DESCRIPTION_MIN_LENGTH}, and an organization is required.`,
+        variant: 'error',
+      })
+      return
     }
 
-    // Include all optional fields if they have values
-    for (const key of Object.keys(formData)) {
-      const value = formData[key as keyof JobFormData]
-      if (
-        value !== undefined &&
-        value !== '' &&
-        value !== null &&
-        key !== 'title' &&
-        key !== 'description' &&
-        key !== 'organization_id'
-      ) {
-        // Handle arrays
-        if (Array.isArray(value)) {
-          if (value.length > 0) {
-            submitData[key] = value
-          }
-        } else {
-          submitData[key] = value
-        }
-      }
-    }
+    const params = buildJobParams(asDraft)
 
     if (mode === 'create') {
-      createJob.mutate(submitData as unknown as Parameters<typeof createJob.mutate>[0])
+      createJob.mutate(params)
     } else if (jobId) {
-      updateJob.mutate({ id: jobId, params: submitData } as Parameters<typeof updateJob.mutate>[0])
+      const updateParams: OfficeUpdateJobParams = { ...params }
+      updateJob.mutate({ id: jobId, params: updateParams })
     }
   }
 
@@ -1273,15 +1304,9 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             data-testid="job-save-draft-button"
             style={{ flex: 1 }}
             onPress={() => handleSubmit(true)}
-            disabled={
-              isLoading ||
-              !formData.title ||
-              !formData.description ||
-              !formData.organization_id ||
-              (typeof formData.description === 'object' &&
-                formData.description !== null &&
-                extractPlainText(formData.description).trim().length === 0)
-            }
+            // SC-123: mirror the server's createJobBodySchema floor so a
+            // tap can't bypass into a guaranteed-fail submission.
+            disabled={isLoading || !meetsDraftMinimums}
           >
             {isLoading && <Spinner variant="ios" />}
             {!isLoading && 'Save as Draft'}
@@ -1292,12 +1317,12 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             variant="filled"
             color="primary"
             onPress={() => handleSubmit(false)}
+            // SC-123: same floor as Save-as-draft plus a location and a
+            // valid (future) scheduled-publish-at if set.
             disabled={Boolean(
               isLoading ||
-                !formData.title ||
-                !formData.description ||
+                !meetsDraftMinimums ||
                 !formData.location ||
-                !formData.organization_id ||
                 (formData.scheduled_publish_at &&
                   new Date(formData.scheduled_publish_at) <= new Date())
             )}
