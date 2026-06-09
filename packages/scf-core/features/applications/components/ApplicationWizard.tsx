@@ -1,9 +1,10 @@
 import type { ApplicationStepType, AttachmentMetadata } from '@scf/schemas'
 import { ApplicationStep } from '@scf/schemas'
 import { useTrackEngagementMutation } from '@scf/core/utils/engagement-sdk-hooks'
+import { useJobDetails } from '@scf/core/utils/jobs-sdk-hooks'
 import { SaveStatusIndicator, useThemeContext, useToast } from '@scaffald/ui'
 import { AlertCircle } from 'lucide-react-native'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Button, Text, Row, Stack } from '@scaffald/ui'
 import { ScrollView } from 'react-native'
 import { colors } from '@scaffald/ui/tokens'
@@ -98,9 +99,16 @@ export function ApplicationWizard({
     saveError,
   } = useApplicationForm(jobId)
 
-  // TODO: Fetch actual custom questions for this job (blocked on SDK Job type
-  // exposing custom_application_questions — tracked separately).
-  const customQuestions: CustomQuestion[] = []
+  // SC-103: pull the job's configured custom questions instead of the
+  // previously-hardcoded empty array. The SDK's `Job` type now exposes
+  // `custom_application_questions` (column added in migration 145, returned
+  // by GET /v1/jobs/:id via `select("*")`). Falls back to [] for jobs that
+  // haven't configured any questions.
+  const { data: jobDetails } = useJobDetails(jobId)
+  const customQuestions = useMemo<CustomQuestion[]>(
+    () => jobDetails?.custom_application_questions ?? [],
+    [jobDetails?.custom_application_questions],
+  )
 
   // SC-105: surface auto-save failures the user might otherwise miss. The
   // wizard's SaveStatusIndicator shows an icon, but a toast forces them to
