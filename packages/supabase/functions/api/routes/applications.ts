@@ -14,14 +14,79 @@ app.use("*", authMiddleware);
  * Zod Schemas for Applications API
  */
 
-// DB status → API status mapping
-const STATUS_DB_TO_API: Record<string, string> = {
+// Application status namespaces — single source of truth.
+//
+// DB side: enum is gated by `applications_status_check` (migration 112).
+// API side: renames `new` → `pending` and `screen` → `reviewing` for the
+// public surface; the rest pass through 1:1. Both maps are exhaustive so
+// adding a new DB status without updating the API surface is a compile
+// error, not a silent fall-through.
+//
+// SC-107: previously these were partial Record<string, string> maps with
+// a `?? raw` fallback, which made the namespace boundary leaky.
+
+const DB_STATUSES = [
+  "new",
+  "screen",
+  "inquired",
+  "interview",
+  "offer",
+  "hired",
+  "rejected",
+  "withdrawn",
+] as const;
+type DbStatus = typeof DB_STATUSES[number];
+
+const API_STATUSES = [
+  "pending",
+  "reviewing",
+  "inquired",
+  "interview",
+  "offer",
+  "hired",
+  "rejected",
+  "withdrawn",
+] as const;
+type ApiStatus = typeof API_STATUSES[number];
+
+const STATUS_DB_TO_API: Record<DbStatus, ApiStatus> = {
   new: "pending",
   screen: "reviewing",
+  inquired: "inquired",
+  interview: "interview",
+  offer: "offer",
+  hired: "hired",
+  rejected: "rejected",
+  withdrawn: "withdrawn",
 };
 
-function mapDbStatus(dbStatus: string): string {
-  return STATUS_DB_TO_API[dbStatus] ?? dbStatus;
+const STATUS_API_TO_DB: Record<ApiStatus, DbStatus> = {
+  pending: "new",
+  reviewing: "screen",
+  inquired: "inquired",
+  interview: "interview",
+  offer: "offer",
+  hired: "hired",
+  rejected: "rejected",
+  withdrawn: "withdrawn",
+};
+
+function mapDbStatus(dbStatus: string): ApiStatus {
+  if (dbStatus in STATUS_DB_TO_API) {
+    return STATUS_DB_TO_API[dbStatus as DbStatus];
+  }
+  // Defensive: unknown DB status means the DB schema drifted past the API
+  // contract. Log so operators see it and return the raw value as-is rather
+  // than crashing the response (best-effort surface).
+  console.error(
+    JSON.stringify({
+      severity: "error",
+      component: "applications_status_map",
+      message: "Unmapped DB status encountered",
+      db_status: dbStatus,
+    }),
+  );
+  return dbStatus as ApiStatus;
 }
 
 // Job summary embedded in application responses
@@ -51,16 +116,7 @@ const applicationSchema = z
     id: z.string().uuid(),
     job_id: z.string().uuid(),
     user_id: z.string().uuid(),
-    status: z.enum([
-      "pending",
-      "reviewing",
-      "inquired",
-      "interview",
-      "offer",
-      "hired",
-      "rejected",
-      "withdrawn",
-    ]),
+    status: z.enum(API_STATUSES),
     screening_answers: z.record(z.string(), z.unknown()).nullable(),
     attachment_metadata: z.record(z.string(), z.unknown()).nullable(),
     completed_steps: z.array(z.string()).nullable(),
@@ -131,16 +187,7 @@ const listApplicationsRoute = createRoute({
   middleware: requireAuth,
   request: {
     query: z.object({
-      status: z.enum([
-        "pending",
-        "reviewing",
-        "inquired",
-        "interview",
-        "offer",
-        "hired",
-        "rejected",
-        "withdrawn",
-      ]).optional(),
+      status: z.enum(API_STATUSES).optional(),
       limit: z.coerce.number().int().min(1).max(100).optional().default(20),
       offset: z.coerce.number().int().min(0).optional().default(0),
     }),
@@ -174,12 +221,9 @@ app.openapi(listApplicationsRoute, async (c) => {
     );
   }
 
-  // Map API status filter back to DB status for querying
-  const STATUS_API_TO_DB: Record<string, string> = {
-    pending: "new",
-    reviewing: "screen",
-  };
-  const dbStatus = status ? (STATUS_API_TO_DB[status] ?? status) : undefined;
+  // Map API status filter back to DB status for querying. The full,
+  // exhaustive map lives at the top of the file (SC-107).
+  const dbStatus = status ? STATUS_API_TO_DB[status] : undefined;
 
   let query = supabase
     .schema("core")
@@ -634,11 +678,15 @@ app.openapi(updateApplicationRoute, async (c) => {
   }
 
   // Check if application can be updated
-  if (!["pending", "reviewing"].includes(existing.status)) {
+  // SC-107: `existing.status` is the raw DB value (`new`/`screen`/…), not
+  // the API surface alias. Comparing against API names always rejected
+  // updates of just-created applications.
+  const UPDATABLE_DB_STATUSES: DbStatus[] = ["new", "screen"];
+  if (!UPDATABLE_DB_STATUSES.includes(existing.status as DbStatus)) {
     return c.json(
       {
         error: "Bad Request",
-        message: `Cannot update application with status: ${existing.status}`,
+        message: `Cannot update application with status: ${mapDbStatus(existing.status as string)}`,
       },
       400,
     );
@@ -781,11 +829,13 @@ app.openapi(withdrawApplicationRoute, async (c) => {
   }
 
   // Check if application can be withdrawn
-  if (!["pending", "reviewing", "inquired"].includes(existing.status)) {
+  // SC-107: see the update guard — `existing.status` is the raw DB value.
+  const WITHDRAWABLE_DB_STATUSES: DbStatus[] = ["new", "screen", "inquired"];
+  if (!WITHDRAWABLE_DB_STATUSES.includes(existing.status as DbStatus)) {
     return c.json(
       {
         error: "Bad Request",
-        message: `Cannot withdraw application with status: ${existing.status}`,
+        message: `Cannot withdraw application with status: ${mapDbStatus(existing.status as string)}`,
       },
       400,
     );
@@ -877,7 +927,28 @@ async function triggerWebhook(
           body: JSON.stringify(webhookPayload),
         });
 
-        // Log webhook delivery
+        const responseBody = await response.text();
+
+        // SC-108: structured logging on non-2xx so operator dashboards /
+        // alerts can pick up ATS webhook regressions instead of relying on
+        // someone reading the `core.webhook_deliveries` table by hand.
+        if (!response.ok) {
+          console.error(
+            JSON.stringify({
+              severity: "error",
+              component: "webhook_delivery",
+              outcome: "http_error",
+              event,
+              webhook_id: webhook.id,
+              webhook_url: webhook.url,
+              http_status: response.status,
+              response_body: responseBody.slice(0, 500),
+            }),
+          );
+        }
+
+        // Log webhook delivery (table is the durable record; logs are the
+        // alerting surface).
         await supabase
           .schema("core")
           .from("webhook_deliveries")
@@ -887,11 +958,25 @@ async function triggerWebhook(
             payload: webhookPayload,
             status: response.ok ? "delivered" : "failed",
             http_status: response.status,
-            response_body: await response.text(),
+            response_body: responseBody,
             delivered_at: new Date().toISOString(),
           });
       } catch (error) {
-        console.error(`Webhook delivery failed for ${webhook.url}:`, error);
+        const errorMessage = error instanceof Error
+          ? error.message
+          : "Unknown error";
+
+        console.error(
+          JSON.stringify({
+            severity: "error",
+            component: "webhook_delivery",
+            outcome: "fetch_exception",
+            event,
+            webhook_id: webhook.id,
+            webhook_url: webhook.url,
+            error: errorMessage,
+          }),
+        );
 
         // Log failed delivery
         await supabase
@@ -902,15 +987,21 @@ async function triggerWebhook(
             event,
             payload: webhookPayload,
             status: "failed",
-            error_message: error instanceof Error
-              ? error.message
-              : "Unknown error",
+            error_message: errorMessage,
             delivered_at: new Date().toISOString(),
           });
       }
     }
   } catch (error) {
-    console.error("Error triggering webhooks:", error);
+    console.error(
+      JSON.stringify({
+        severity: "error",
+        component: "webhook_delivery",
+        outcome: "trigger_exception",
+        event,
+        error: error instanceof Error ? error.message : "Unknown error",
+      }),
+    );
   }
 }
 
