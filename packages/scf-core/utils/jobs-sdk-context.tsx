@@ -53,13 +53,15 @@ export function ScaffaldJobsSdkProviderFromSession({ children }: { children: Rea
     if (!baseUrl) {
       return { baseUrl: 'https://api.scaffald.com', apiKey: 'dummy' }
     }
+    // anonKey is plumbed through the SDK's typed config so HttpClient sends
+    // the `apikey` header that Supabase Kong requires on /functions/v1/*.
     // Use valid credentials whenever available, even while loading.
     // Fall back to anonKey or dummy so the context always has a non-null client —
     // otherwise hooks using useScaffald() throw during the loading window because
     // this inner provider shadows the outer ScaffaldProviderFromSession context.
     const token = session?.access_token?.trim()
-    if (token) return { baseUrl, supabaseToken: token }
-    if (anonKey) return { baseUrl, apiKey: anonKey }
+    if (token) return { baseUrl, supabaseToken: token, anonKey }
+    if (anonKey) return { baseUrl, anonKey }
     return { baseUrl, apiKey: 'dummy' }
   }, [session?.access_token, baseUrl, anonKey])
 
