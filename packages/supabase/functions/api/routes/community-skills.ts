@@ -72,22 +72,27 @@ const searchSkillsRoute = createRoute({
 
 app.openapi(searchSkillsRoute, async (c) => {
   const supabase = c.get("supabase") as SupabaseClient;
-  const { q, community_id, limit } = c.req.valid("query");
+  const { q, limit } = c.req.valid("query");
 
-  // Use full-text search on the skill taxonomy
+  // Case-insensitive substring match on name + description so the tag picker
+  // returns results as the user types. The previous `tsv` full-text/websearch
+  // match only hit complete stemmed words, so partial input like "plu", "carp",
+  // or "elec" returned nothing and the picker looked broken (SC-128 #5).
+  // PostgREST .or() treats , ( ) . as syntax — strip them from the term first.
+  const safeQ = q.replace(/[,().]/g, " ").trim();
+  const pattern = `%${safeQ}%`;
+
+  // No community_id narrowing: the search intentionally spans the whole active
+  // taxonomy so generic (community_id IS NULL) tags surface alongside any
+  // community-specific ones, which is what "include generic tags" calls for.
   const query = supabase
     .schema("community")
     .from("skill_taxonomy")
     .select("id, name, slug, tier, parent_id, community_id, description")
     .eq("is_active", true)
-    .textSearch("tsv", q, { type: "websearch" })
+    .or(`name.ilike.${pattern},description.ilike.${pattern}`)
+    .order("name", { ascending: true })
     .limit(limit);
-
-  if (community_id) {
-    // Filter to skills within this community's tree
-    // For simplicity, get all skills and filter by ancestry
-    // A more efficient approach would use the search_skill_taxonomy function
-  }
 
   const { data: skills, error } = await query;
 

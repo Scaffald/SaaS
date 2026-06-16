@@ -11,7 +11,16 @@ import { useUser } from '@scf/core/provider/auth/useAuth'
 const BUCKET = 'community-media'
 const MAX_IMAGES = 6
 const MAX_SIZE_MB = 10
+// Note: the `community-media` bucket allowlist accepts `image/jpeg` (not the
+// `image/jpg` some pickers report) — normalizeMime() below maps jpg → jpeg so
+// the upload isn't rejected with a confusing 400 (SC-128 #6).
 const ACCEPT_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
+
+/** Map picker-reported aliases to the canonical mime the storage bucket accepts. */
+function normalizeMime(mimeType: string): string {
+  const m = mimeType.toLowerCase()
+  return m === 'image/jpg' ? 'image/jpeg' : m
+}
 
 export interface PostMediaUploadProps {
   value: string[]
@@ -59,15 +68,16 @@ export function PostMediaUpload({ value, onChange, disabled }: PostMediaUploadPr
 
   const uploadOne = useCallback(
     async (blob: Blob, mimeType: string, fileNameHint: string): Promise<string> => {
-      const validation = validateFile(mimeType, blob.size)
+      const normalized = normalizeMime(mimeType)
+      const validation = validateFile(normalized, blob.size)
       if (validation) throw new Error(validation)
 
-      const ext = (mimeType.split('/')[1] || fileNameHint.split('.').pop() || 'jpg').toLowerCase()
+      const ext = (normalized.split('/')[1] || fileNameHint.split('.').pop() || 'jpg').toLowerCase()
       const path = buildPath(ext)
 
       const { data, error: uploadError } = await supabase.storage
         .from(BUCKET)
-        .upload(path, blob, { contentType: mimeType, upsert: false })
+        .upload(path, blob, { contentType: normalized, upsert: false })
 
       if (uploadError) throw new Error(uploadError.message)
 
