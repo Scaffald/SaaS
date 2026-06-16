@@ -1,5 +1,5 @@
-import { useMemo, useEffect } from 'react'
-import { Text, Stack, Spinner, useThemeContext } from '@scaffald/ui'
+import { useMemo, useEffect, useState } from 'react'
+import { Text, Stack, Spinner, useThemeContext, useToast } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import type { Href } from 'expo-router'
@@ -19,15 +19,32 @@ export function AllCommunitiesList({ searchQuery, sortBy, onFilteredCountChange 
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
   const router = useRouter()
+  const toast = useToast()
   const queryClient = useQueryClient()
 
   const { data, isLoading } = useCommunities()
   const communities = data?.data ?? []
 
+  // The list endpoint does not return per-community membership, so track joins
+  // optimistically here: once a join succeeds the card flips to "Joined" and the
+  // Join button no longer lingers (SC-128 #1). `pendingId` drives the per-card
+  // loading state without disabling every other card.
+  const [joinedIds, setJoinedIds] = useState<Set<string>>(new Set())
+  const [pendingId, setPendingId] = useState<string | null>(null)
+
   const joinMutation = useJoinCommunityMutation({
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
+      setJoinedIds((prev) => new Set(prev).add(variables.communityId))
       queryClient.invalidateQueries({ queryKey: ['communities'] })
     },
+    onError: (error) => {
+      toast.show({
+        title: "Couldn't join",
+        message: error.message || 'Please try again.',
+        variant: 'error',
+      })
+    },
+    onSettled: () => setPendingId(null),
   })
 
   const filtered = useMemo(() => {
@@ -81,8 +98,13 @@ export function AllCommunitiesList({ searchQuery, sortBy, onFilteredCountChange 
         <CommunityCard
           key={community.id}
           community={community}
+          isMember={joinedIds.has(community.id)}
+          isJoining={pendingId === community.id}
           onPress={() => router.push(RouteBuilder.communityDetail(community.slug) as Href)}
-          onJoin={() => joinMutation.mutate({ communityId: community.id })}
+          onJoin={() => {
+            setPendingId(community.id)
+            joinMutation.mutate({ communityId: community.id })
+          }}
         />
       ))}
     </Stack>

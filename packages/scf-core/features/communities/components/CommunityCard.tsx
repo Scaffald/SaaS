@@ -10,6 +10,10 @@ interface CommunityCardProps {
   onPress: () => void
   /** Show Join button (for "All" tab) */
   onJoin?: () => void
+  /** Whether the current user is already a member — hides the Join button */
+  isMember?: boolean
+  /** Whether a join request for this community is in flight */
+  isJoining?: boolean
   /** Show "Verified" badge and joined date (for "My" tab) */
   joinedAt?: string
   isVerified?: boolean
@@ -19,6 +23,8 @@ export function CommunityCard({
   community,
   onPress,
   onJoin,
+  isMember,
+  isJoining,
   joinedAt,
   isVerified,
 }: CommunityCardProps) {
@@ -26,14 +32,25 @@ export function CommunityCard({
   const t = theme === 'dark' ? 'dark' : 'light'
   const pal = communityPalette[t]
 
-  // When there's a Join button, avoid Card pressable to prevent nested <button> in HTML.
-  // Use a Pressable wrapper (renders as <div>) instead.
-  const hasInteractiveTrailing = !!onJoin
+  // The Join affordance only exists in the "All" tab (onJoin provided) and only
+  // while the user is not yet a member. Once joined, swap to a "Joined" pill so
+  // the button no longer lingers after a successful join.
+  const showJoin = !!onJoin && !isMember
 
-  const trailing = onJoin ? (
-    <Button variant="outline" size="sm" onPress={onJoin}>
-      Join
+  // When there's an interactive Join button, avoid Card pressable to prevent a
+  // nested <button> in HTML. Use a Pressable wrapper (renders as <div>) instead.
+  const hasInteractiveTrailing = showJoin
+
+  const trailing = showJoin ? (
+    <Button variant="outline" size="sm" disabled={isJoining} onPress={onJoin}>
+      {isJoining ? 'Joining…' : 'Join'}
     </Button>
+  ) : onJoin && isMember ? (
+    <Pill
+      label="Joined"
+      bgColor={t === 'dark' ? colors.success[900] : colors.success[100]}
+      textColor={colors.success[600]}
+    />
   ) : isVerified ? (
     <Pill
       label="Verified"

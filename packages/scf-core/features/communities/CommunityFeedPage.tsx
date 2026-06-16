@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react'
-import { Text, Stack, Row, Card, Button, Spinner, useThemeContext } from '@scaffald/ui'
+import { Text, Stack, Row, Card, Button, Spinner, useThemeContext, useToast } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
+import { ChevronLeft } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import type { Href } from 'expo-router'
 import { RouteBuilder } from '@scf/core/constants/routes'
@@ -21,6 +22,7 @@ export function CommunityFeedPage({ slug }: Props) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
   const router = useRouter()
+  const toast = useToast()
   const queryClient = useQueryClient()
   const { data: communityData, isLoading: isCommunityLoading } = useCommunity(slug)
   const community = communityData?.data
@@ -39,11 +41,25 @@ export function CommunityFeedPage({ slug }: Props) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['communities'] })
     },
+    onError: (error) => {
+      toast.show({
+        title: "Couldn't join",
+        message: error.message || 'Please try again.',
+        variant: 'error',
+      })
+    },
   })
 
   const leaveMutation = useLeaveCommunityMutation({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['communities'] })
+    },
+    onError: (error) => {
+      toast.show({
+        title: "Couldn't leave",
+        message: error.message || 'Please try again.',
+        variant: 'error',
+      })
     },
   })
 
@@ -71,12 +87,27 @@ export function CommunityFeedPage({ slug }: Props) {
 
   return (
     <Stack gap={16}>
+      {/* Back navigation — these screens render with headerShown: false */}
+      {router.canGoBack() && (
+        <Button
+          variant="text"
+          size="sm"
+          iconStart={ChevronLeft}
+          onPress={() => router.back()}
+          style={{ alignSelf: 'flex-start' }}
+        >
+          Back
+        </Button>
+      )}
+
       {/* Community Header */}
       <Card variant="glass" glassMaterial="thin" padding="lg">
         <Stack gap={8}>
           <Row align="center" justify="space-between" style={{ flexWrap: 'wrap', gap: 12 }}>
             <Stack gap={2} style={{ flex: 1, minWidth: 200 }}>
-              <Text style={{ fontSize: 24, fontWeight: '700' }}>{community.name}</Text>
+              <Text style={{ fontSize: 24, fontWeight: '700', flexShrink: 1 }} numberOfLines={2}>
+                {community.name}
+              </Text>
               <Text style={{ color: colors.text[t].secondary }}>{community.description}</Text>
             </Stack>
             {community.is_member ? (
@@ -91,18 +122,20 @@ export function CommunityFeedPage({ slug }: Props) {
                 <Button
                   variant="outline"
                   size="sm"
+                  disabled={leaveMutation.isPending}
                   onPress={() => leaveMutation.mutate(community.id)}
                 >
-                  Leave
+                  {leaveMutation.isPending ? 'Leaving…' : 'Leave'}
                 </Button>
               </Row>
             ) : (
               <Button
                 variant="filled"
                 size="sm"
+                disabled={joinMutation.isPending}
                 onPress={() => joinMutation.mutate({ communityId: community.id })}
               >
-                Join Community
+                {joinMutation.isPending ? 'Joining…' : 'Join Community'}
               </Button>
             )}
           </Row>

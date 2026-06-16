@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { ScrollView } from 'react-native'
-import { Text, Stack, Row, Button, Input, Separator, useThemeContext } from '@scaffald/ui'
+import { Text, Stack, Row, Button, Input, Separator, useThemeContext, useToast } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import { useQueryClient } from '@tanstack/react-query'
@@ -33,6 +33,7 @@ export function PostComposer({ communitySlug }: Props) {
   const { theme } = useThemeContext()
   const t = theme === 'dark' ? 'dark' : 'light'
   const router = useRouter()
+  const toast = useToast()
   const queryClient = useQueryClient()
   const { data: communityData } = useCommunity(communitySlug)
   const community = communityData?.data
@@ -51,13 +52,37 @@ export function PostComposer({ communitySlug }: Props) {
       // Auto-submit for moderation
       if (data.data?.id) {
         submitPost.mutate(data.data.id)
+      } else {
+        // Draft saved but the server returned no id to submit — surface it
+        // instead of silently leaving the user on a filled-out form.
+        toast.show({
+          title: 'Post saved as draft',
+          message: "We couldn't submit it for review automatically. Try again from the community.",
+          variant: 'warning',
+        })
       }
+    },
+    onError: (error) => {
+      toast.show({
+        title: "Couldn't create your post",
+        message: error.message || 'Something went wrong. Please try again.',
+        variant: 'error',
+      })
     },
   })
 
   const submitPost = useSubmitPostMutation({
     onSuccess: () => {
       router.back()
+    },
+    onError: (error) => {
+      // The draft was created; only the moderation submit failed.
+      toast.show({
+        title: 'Saved, but not submitted',
+        message:
+          error.message || 'Your post was saved as a draft but could not be submitted for review.',
+        variant: 'error',
+      })
     },
   })
 
