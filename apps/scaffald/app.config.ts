@@ -390,6 +390,14 @@ export default {
           },
         },
       ],
+      // AppCheckCore (Swift pod, pulled in transitively via
+      // @react-native-google-signin) needs its non-modular deps to generate
+      // module maps when built as static libraries, or `pod install` fails:
+      // "AppCheckCore depends upon GoogleUtilities and RecaptchaInterop, which
+      // do not define modules". expo-build-properties@56 has no `extraPods`
+      // option, so a local plugin patches the Podfile. Surfaces on EAS
+      // (precompiled modules / static libs), not always locally.
+      "./plugins/withModularHeaders",
       "expo-font",
       [
         "@rnmapbox/maps",
