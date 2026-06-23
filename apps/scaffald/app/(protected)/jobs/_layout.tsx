@@ -20,6 +20,7 @@ export default function JobsLayout() {
       <DrawerLayout protectionComponent={null}>
         <Stack.Screen name="index" options={{ title: 'Search Jobs' }} />
         <Stack.Screen name="[id]" options={{ title: 'Job Detail' }} />
+        <Stack.Screen name="saved/index" options={{ title: 'Saved Jobs' }} />
         <Stack.Screen name="applications/index" options={{ title: 'Applications' }} />
         <Stack.Screen
           name="applications/[applicationId]/inquiry"

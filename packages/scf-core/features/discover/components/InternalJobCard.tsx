@@ -1,4 +1,6 @@
 import { useCalculateSoftSkillsMatch } from '@scf/core/utils/jobs-sdk-hooks'
+import { Pressable, View } from 'react-native'
+import { SaveJobButton } from './SaveJobButton'
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { Card, extractPlainText, useThemeContext } from '@scaffald/ui'
 import { Briefcase, Building2, Clock, DollarSign, MapPin } from 'lucide-react-native'
@@ -193,11 +195,18 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
   }
 
   return (
-    <Card pressable onPress={handleCardPress} padding="md" variant="glass" glassMaterial="thin" testID="job-card">
+    <Card padding="md" variant="glass" glassMaterial="thin" testID="job-card">
+      <View style={{ position: 'relative' }}>
+      <Pressable
+        onPress={handleCardPress}
+        accessibilityRole="button"
+        accessibilityLabel={`View ${job.title}`}
+      >
       <Stack gap={12}>
         {/* Header */}
         <Stack gap={8}>
-          <Row justify="space-between" align="center">
+          {/* paddingRight reserves space for the absolutely-positioned save button */}
+          <Row justify="space-between" align="center" style={{ paddingRight: 36 }}>
             <Stack flex={1} gap={4}>
               <Text style={{ fontWeight: '600', fontSize: 15 }}>{job.title}</Text>
               {job.organization && (
@@ -300,6 +309,11 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
           </Row>
         )}
       </Stack>
+      </Pressable>
+      <View style={{ position: 'absolute', top: 0, right: 0 }}>
+        <SaveJobButton jobId={job.id} size={18} />
+      </View>
+      </View>
     </Card>
   )
 }

@@ -391,6 +391,12 @@ const ROUTES_CONFIG = {
       protected: true,
       exact: true,
     },
+    SAVED: {
+      path: '/jobs/saved',
+      titleKey: 'routes.dashboard.discover.jobs.saved',
+      protected: true,
+      exact: true,
+    },
   },
 
   /** @deprecated Use EMPLOYERS.ORG instead — kept for backward compatibility */

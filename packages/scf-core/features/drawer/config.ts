@@ -133,6 +133,7 @@ export const generateDashboardDrawerItems = (
   // Jobs - expandable with applications and optional My Listings
   const jobSubItems: DrawerItemConfig[] = [
     { key: 'jobs-index', titleKey: ROUTES.JOBS.titleKey, href: ROUTES.JOBS.path, exact: true },
+    { key: 'jobs-saved', titleKey: 'navigation.jobsSaved', href: ROUTES.JOBS.SAVED.path },
     { key: 'jobs-applications', titleKey: ROUTES.JOBS.APPLICATIONS.titleKey, href: ROUTES.JOBS.APPLICATIONS.path },
   ]
   if (memberships && memberships.length > 0) {
