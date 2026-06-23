@@ -541,7 +541,61 @@ Reassigning from Robin to @clay. The UI-kit refactor is the build half of the en
 
 Plan: \`docs/agents/handoffs/2026-06-16-v1.11.0-plan.md\` (revised 2026-06-23).`
 
+// ---------- 2026-06-23 file outstanding findings ----------
+const CI_BILLING_DESC = `Every GitHub Actions job on \`Unicorn/UNI-Construct\` fails within ~3s with:
+
+> The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings.
+
+CI has been red on this basis since ~2026-03-30. **No PR can be gated by CI** — recent merges (e.g. PR #355, SC-128) relied on local validation (\`pnpm prepush\` + \`tsc\` + runtime smoke) and a \`gh pr merge --admin\` override.
+
+**Fix:** resolve the org billing / spending limit (GitHub → Org → Billing & plans). Until then, local is the gate and admin-merge is the documented path.
+
+**Impact:** correctness regressions can land unguarded; no automated typecheck/test/e2e on PRs.`
+
+const SDK_SPLITBRAIN_DESC = `In local Expo Web, the Supabase **auth/REST client** and the **Scaffald SDK** resolve their base URLs independently (\`getSupabaseApiBaseUrl()\` in \`packages/scf-core/utils/jobs-sdk-context.tsx\` + \`provider/scaffald/ScaffaldProviderFromSession.tsx\`). They can diverge:
+
+- auth/REST → local \`127.0.0.1:54321\` (from \`EXPO_PUBLIC_SUPABASE_URL\`)
+- SDK → the **remote dev project** (baked from a prior \`pnpm web:remote\` run via \`EXPO_PUBLIC_SCAFFALD_API_URL\`)
+
+A **stale Metro cache** is the trigger — \`pnpm web\` doesn't clear it (only \`expo start -c\` does). Result: every SDK data call 401/500s and a fully-onboarded user is bounced to \`/onboarding\` (the prerequisites check hits the wrong backend). Cost a long debug detour during the 2026-06-23 audit.
+
+**Repro + analysis:** \`docs/agents/audits/2026-06-23-ui-audit/findings.md\` (F4).
+**Fix options:** (a) make \`pnpm web\` cache-safe when env changes; (b) warn at boot if \`EXPO_PUBLIC_SUPABASE_URL\` and the derived SDK base URL point at different hosts.`
+
+const UIDOCS_DESC = `\`nx run @scaffald/ui-docs:build\` (the \`packages/ui/docs-site\` Docusaurus site, in the Scaffald/ui submodule) fails:
+
+> ValidationError: Progress Plugin has been initialized using an options object that does not match the API schema … options has an unknown property 'name' / 'color' / 'reporters' / 'reporter'
+
+A Docusaurus 3.9.2 × webpack version incompatibility — **unrelated to app code**. It surfaces as a failed task in \`pnpm prepush\` affected-build (non-blocking: the prepush stamp still writes; all other targets pass).
+
+**Fix:** align the docusaurus/webpack versions in Scaffald/ui, or migrate the ProgressPlugin options. Low priority (docs site only).`
+
 const PLAN = [
+  {
+    kind: 'create-issue',
+    title: 'CI: GitHub Actions jobs never start — account billing block',
+    description: CI_BILLING_DESC,
+    state: 'Triage',
+    priority: 2,
+  },
+  {
+    kind: 'create-issue',
+    title: 'Local web dev: auth and Scaffald SDK can target different Supabase projects (stale Metro cache)',
+    description: SDK_SPLITBRAIN_DESC,
+    state: 'Triage',
+    priority: 3,
+  },
+  {
+    kind: 'create-issue',
+    title: '@scaffald/ui-docs Docusaurus build fails (webpack ProgressPlugin schema)',
+    description: UIDOCS_DESC,
+    state: 'Triage',
+    priority: 4,
+  },
+]
+
+// Previous PLAN (SC-27 takeover) kept for reference.
+const _PLAN_SC27_TAKEOVER_SNAPSHOT = [
   { kind: 'comment', issue: 'SC-27', body: SC27_TAKEOVER },
   { kind: 'reassign', issue: 'SC-27', assignee: 'clay' },
 ]

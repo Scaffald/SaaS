@@ -89,6 +89,7 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
       }
       padding="md"
       variant={job.featured ? 'elevated' : 'surface'}
+      testID="job-card"
     >
       <Stack gap={12}>
         {/* Header */}
