@@ -30,6 +30,10 @@ export default function JobsLayout() {
           name="applications/[applicationId]/index"
           options={{ title: 'Application Detail' }}
         />
+        <Stack.Screen
+          name="applications/[applicationId]/messages"
+          options={{ title: 'Messages' }}
+        />
         <Stack.Screen name="my-listings/index" options={{ title: 'My Listings' }} />
       </DrawerLayout>
     </ErrorBoundary>
