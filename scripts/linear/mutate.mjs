@@ -481,9 +481,91 @@ const SC128_RELABEL = `**Re-scoped to v1.10.3 — 2026-06-16**
 
 Shipping these community-flow fixes as a standalone **1.10.3 patch** rather than holding for the design-gated v1.11.0 feature batch. Relabeling v1.11.0 → v1.10.3; v1.11.0 stays reserved for SC-26/27/33/34/36.`
 
+const SC128_RELEASE_STATUS = `**v1.10.2 release status — 2026-06-17**
+
+Shipped to **web + prod edge functions** (tag \`app-v1.10.2\`, commit \`4ce3de4dd\`):
+- Web → S3 \`app-scaffald-com\` + CloudFront invalidation (live).
+- Edge functions → prod Supabase; \`/v1/health\` confirms the commit (the #5 search fix is live in prod).
+
+**Mobile/TestFlight build is blocked** — 3 consecutive EAS iOS builds errored at the *Install pods* phase (\`UNKNOWN_ERROR\`), incl. one with \`--clear-cache\`. Diagnosed as an **EAS-infra issue, not our code**: a clean local prebuild + \`pod install\` succeeds; the entire delta since the last good build (1.10.0, 6/11) is JS/TS only (no Expo/RN/native changes, eas.json unchanged, same build image). No code fix applies — re-run \`pnpm ship:ios --yes\` once EAS infra recovers (check status.expo.dev / the Install-pods build log). Build ID d85215a4.
+
+Staying **In Github** (not promoting to In TestFlight — no successful build yet). Promote with \`pnpm release:promote 1.10.2\` once the TestFlight build lands.`
+
+const SC128_BUILD_BLOCKED = `**iOS build blocked — needs human/EAS review (2026-06-18)**
+
+Correcting the earlier "retry when infra recovers" note — it is **not transient**. **5 EAS production iOS builds** (over 2 days) all errored at the *Install pods* phase (~3 min, generic \`UNKNOWN_ERROR\`). Ruled out:
+- **Transient infra** — failed again a full day later.
+- **Stale cache** — \`--clear-cache\` failed identically.
+- **EAS image** — switching to \`latest\` failed identically (reverted to the pinned tag).
+- **Our code** — clean local \`expo prebuild --clean\` + \`pod install\` *succeeds*; the delta since the last good build (1.10.0, 6/11) is JS-only.
+
+The exact failing pod is only in the EAS dashboard *Install-pods* log (proprietary encoding; not decodable via CLI/curl/WebFetch). **Next step is human:** open the dashboard log (build \`1c1eab4d\` or \`c4c5875e\`) to identify the pod, or escalate to EAS support — not more retries.
+
+Web + prod edge functions for 1.10.2 are already live; only the iOS/TestFlight leg is blocked. Staying **In Github**.`
+
+const SC128_SHIPPED = `**Resolved + shipped to TestFlight — 2026-06-18**
+
+iOS build unblocked. Root cause (from the Install-pods log): \`AppCheckCore\` (Swift pod, transitive via @react-native-google-signin) needs \`GoogleUtilities\` + \`RecaptchaInterop\` to generate module maps when built as static libraries on EAS's precompiled-modules path — a transitive CocoaPods version drifted since 1.10.0 built (no Podfile.lock in a CNG app). Fixed by a config plugin (\`plugins/withModularHeaders.js\`, commit \`8735a2382\`) declaring both pods \`:modular_headers => true\`.
+
+EAS build \`3d48bb2c\` (build 11002, v1.10.2) **FINISHED** and is auto-submitting to TestFlight; tag \`app-v1.10.2\` repointed to the built commit. Promoted to **In TestFlight**.
+
+All three legs of 1.10.2 are shipped (web + prod functions + iOS). Remaining: QA the community flow against the TestFlight build, then → Done.`
+
+// ---------- 2026-06-23 v1.11.0 backlog groom ----------
+// Phase 0 cleared (33 In-TestFlight → Done; only SC-128 + SC-99 remained).
+// Decision (with @clay): engineering takes over the design track rather than
+// wait on external design availability, and we groom the rest of the backlog.
+// See docs/agents/handoffs/2026-06-16-v1.11.0-plan.md (revised 2026-06-23).
+// Re-runs: reassign + move-state are no-ops if already applied; comments dup.
+
+const TAKEOVER_COMMENT = `**Taken over by engineering — 2026-06-23**
+
+Reassigning from Dušan to @clay. Per the revised v1.11.0 plan, we're not waiting on external design availability — **engineering owns the design→build chain** for the Worker MVP screens. Phase 0 (the 33-issue QA clean-slate) is cleared, so this is unblocked.
+
+Plan: \`docs/agents/handoffs/2026-06-16-v1.11.0-plan.md\` (revised 2026-06-23).`
+
+const SC128_CLOSE = `**Closing — 2026-06-23 backlog groom**
+
+Community-flow fixes (all 7 findings) shipped to TestFlight in v1.10.2 on 2026-06-18 (config-plugin unblock, commit \`8735a2382\`) and were runtime-verified locally before merge (PR [#353](https://github.com/Unicorn/UNI-Construct/pull/353)). Promoting to **Done** as part of the v1.11.0 groom. Re-open if device QA on the TestFlight build surfaces a regression in the join/leave/post-create transient states.`
+
+const SC99_DEFER = `**Deferred — 2026-06-23 backlog groom**
+
+Acceptance still not met: the ticket's real ask — fold the CSI/skills reference seed into \`pnpm supa db reset\` — remains undone (a fresh reset still yields empty CSI/skills taxonomy; reference data needs a separate \`pnpm supa:seed\`). The legal-acceptance seed gap in \`005_seed-demo-prerequisites.sql\` was fixed 2026-06-23 (separate concern). Moving **In TestFlight → Triage** so it's out of the QA queue until the CSI/skills fold is scoped. P4.`
+
+// ---------- 2026-06-23 take over SC-27 (Robin/hjelmeir) ----------
+// Completes the engineering-owned design/build track: the UI-kit refactor
+// moves from Robin to @clay alongside the design tickets taken over earlier.
+const SC27_TAKEOVER = `**Taken over by engineering — 2026-06-23**
+
+Reassigning from Robin to @clay. The UI-kit refactor is the build half of the engineering-owned v1.11.0 track (designs SC-33/34/36 already moved to @clay). Inventory prep landed in [#340](https://github.com/Unicorn/UNI-Construct/pull/340) (\`scripts/audit/2026-06-10/UI-KIT-INVENTORY.md\`).
+
+Plan: \`docs/agents/handoffs/2026-06-16-v1.11.0-plan.md\` (revised 2026-06-23).`
+
 const PLAN = [
-  { kind: 'add-label', issue: 'SC-128', label: 'v1.10.2' },
-  { kind: 'remove-label', issue: 'SC-128', label: 'v1.10.3' },
+  { kind: 'comment', issue: 'SC-27', body: SC27_TAKEOVER },
+  { kind: 'reassign', issue: 'SC-27', assignee: 'clay' },
+]
+
+// Previous PLAN (2026-06-23 full backlog groom) kept for reference.
+const _PLAN_GROOM_SNAPSHOT = [
+  // 1. Take over Dušan's design tickets (engineering-owned design track).
+  ...['SC-33', 'SC-34', 'SC-36'].flatMap((issue) => [
+    { kind: 'comment', issue, body: TAKEOVER_COMMENT },
+    { kind: 'reassign', issue, assignee: 'clay' },
+  ]),
+  // 2. Track-A active states (work that can start now without new designs).
+  { kind: 'move-state', issue: 'SC-36', toState: 'In Progress' }, // interaction states + cookie-banner fix
+  { kind: 'move-state', issue: 'SC-27', toState: 'In Progress' }, // UI-kit refactor (prep done in #340)
+  // 3. Close-outs.
+  { kind: 'comment', issue: 'SC-128', body: SC128_CLOSE },
+  { kind: 'move-state', issue: 'SC-128', toState: 'Done' },
+  { kind: 'comment', issue: 'SC-99', body: SC99_DEFER },
+  { kind: 'move-state', issue: 'SC-99', toState: 'Triage' },
+]
+
+// Previous PLAN (SC-128 shipped-to-TestFlight comment) kept for reference.
+const _PLAN_SC128_SHIPPED_SNAPSHOT = [
+  { kind: 'comment', issue: 'SC-128', body: SC128_SHIPPED },
 ]
 
 // Previous PLAN (Phase-0 verification sweep) kept for reference.
@@ -588,6 +670,36 @@ async function resolveTeamId() {
   return data.teams.nodes[0].id
 }
 
+// Resolve a Linear user by a loose query (display name, full name, or email
+// substring). Errors on no match or ambiguous (>1) match so a typo can't
+// silently reassign to the wrong person.
+async function resolveUserId(query) {
+  const data = await gql(
+    `query($q: String!) {
+      users(filter: { or: [
+        { displayName: { containsIgnoreCase: $q } },
+        { name: { containsIgnoreCase: $q } },
+        { email: { containsIgnoreCase: $q } }
+      ] }) { nodes { id name displayName email } }
+    }`,
+    { q: query },
+  )
+  const nodes = data.users.nodes
+  if (nodes.length === 0) throw new Error(`User "${query}" not found in Linear`)
+  if (nodes.length > 1) {
+    const exact = nodes.find(
+      (u) =>
+        u.displayName?.toLowerCase() === query.toLowerCase() ||
+        u.email?.toLowerCase() === query.toLowerCase(),
+    )
+    if (exact) return { id: exact.id, label: exact.displayName || exact.email }
+    throw new Error(
+      `User "${query}" is ambiguous: ${nodes.map((u) => u.displayName || u.email).join(', ')}`,
+    )
+  }
+  return { id: nodes[0].id, label: nodes[0].displayName || nodes[0].email }
+}
+
 // ---------- Execution ----------
 async function exec(step) {
   if (step.kind === 'comment') {
@@ -630,6 +742,17 @@ async function exec(step) {
     await gql(
       `mutation($id: String!, $labelId: String!) { issueRemoveLabel(id: $id, labelId: $labelId) { success } }`,
       { id: issue.id, labelId },
+    )
+  } else if (step.kind === 'reassign') {
+    const [issue, user] = await Promise.all([
+      resolveIssueId(step.issue),
+      resolveUserId(step.assignee),
+    ])
+    console.log(`  👤 reassign ${step.issue} → ${user.label}`)
+    if (DRY) return
+    await gql(
+      `mutation($id: String!, $input: IssueUpdateInput!) { issueUpdate(id: $id, input: $input) { success } }`,
+      { id: issue.id, input: { assigneeId: user.id } },
     )
   } else if (step.kind === 'create-issue') {
     const [teamId, stateId] = await Promise.all([
