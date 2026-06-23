@@ -6,7 +6,8 @@
 -- 1. Creates auth.users entries for the 4 unseeded demo accounts
 -- 2. Populates core.profile (first_name, last_name, address, geo)
 -- 3. Sets core.users.industry_id (construction)
--- 4. Sets core.preferences (user_types, prerequisites_completed_at)
+-- 4. Sets core.preferences (user_types, prerequisites_completed_at,
+--    accepted_privacy_policy_at, accepted_terms_of_service_at)
 -- =========================================================
 
 BEGIN;
@@ -202,7 +203,14 @@ WITH demo_prefs AS (
 UPDATE core.preferences pref
 SET
   user_types = dp.user_types,
-  prerequisites_completed_at = NOW()
+  prerequisites_completed_at = NOW(),
+  -- Legal acceptances are part of the onboarding gate (the prerequisites
+  -- check requires both timestamps). Without these a fresh `supa db reset`
+  -- leaves demo users stuck on /onboarding. See scripts/audit/README.md.
+  accepted_privacy_policy_at = NOW(),
+  accepted_terms_of_service_at = NOW(),
+  privacy_policy_version = '1.0',
+  terms_of_service_version = '1.0'
 FROM demo_prefs dp
 JOIN auth.users au ON au.email = dp.email
 WHERE pref.user_id = au.id;

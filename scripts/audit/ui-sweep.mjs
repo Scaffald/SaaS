@@ -34,6 +34,11 @@ const OUT_DIR =
 const HEADLESS = process.env.AUDIT_HEADFUL !== '1'
 const EMAIL = process.env.AUDIT_EMAIL || 'clay@unicorn.love'
 const PASSWORD = process.env.AUDIT_PASSWORD || 'password123'
+// Cold Metro web compile on a freshly-started dev server can take 60-90s
+// before the login form renders. Generous default; override for slow machines.
+const LOGIN_TIMEOUT = Number(process.env.AUDIT_LOGIN_TIMEOUT) || 90000
+// Repo root (this file lives at scripts/audit/, so two levels up).
+const PROJECT_ROOT = resolve(__dirname, '..', '..')
 
 // iPhone 14 — 390x844, dpr 3.
 const IPHONE = devices['iPhone 14'] || {
@@ -133,7 +138,7 @@ async function performLoginAndSaveState(browser) {
     baseURL: BASE_URL,
   })
   const page = await context.newPage()
-  await page.goto(`${BASE_URL}/auth`, { waitUntil: 'commit', timeout: 30000 })
+  await page.goto(`${BASE_URL}/auth`, { waitUntil: 'commit', timeout: 60000 })
   await page.waitForLoadState('domcontentloaded')
 
   // Accept cookies if banner appears.
@@ -147,10 +152,14 @@ async function performLoginAndSaveState(browser) {
   } catch {}
 
   // Login UI is magic-link by default. Toggle to password, check Terms, submit.
+  // The first request to a freshly-started Expo Web dev server triggers a cold
+  // Metro compile (8k+ modules, can take 60-90s) before anything renders — so
+  // this first waitFor doubles as "wait for the bundle to compile." Override
+  // with AUDIT_LOGIN_TIMEOUT if your machine is slower.
   const emailInput = page.locator(
     'input[type="email"], input[autocomplete="email"], input[placeholder*="mail" i]',
   ).first()
-  await emailInput.waitFor({ timeout: 15000 })
+  await emailInput.waitFor({ timeout: LOGIN_TIMEOUT })
   await emailInput.fill(EMAIL)
 
   // Toggle to password mode (Pressable with text "Sign in with password").
@@ -166,14 +175,35 @@ async function performLoginAndSaveState(browser) {
   // After toggle the link below now reads "Use email link instead", so the
   // only remaining "Sign in" text is the submit button.
   await page.getByText('Sign in', { exact: true }).first().click()
-  await page.waitForURL((url) => !url.pathname.startsWith('/auth'), {
-    timeout: 30000,
-  }).catch(async () => {
+
+  // Race the post-login redirect against a visible auth error. The common
+  // failure is "Failed to fetch" — the app can't reach its Supabase backend
+  // (EXPO_PUBLIC_SUPABASE_URL points at local 54321 but `pnpm supa start`
+  // isn't running, or the creds don't exist in the target project). Detecting
+  // it surfaces an actionable message instead of a 30s "did not redirect".
+  const authError = page
+    .getByText(/failed to fetch|invalid login|invalid credentials|unable to|network error/i)
+    .first()
+  const redirected = await Promise.race([
+    page
+      .waitForURL((url) => !url.pathname.startsWith('/auth'), { timeout: 30000 })
+      .then(() => true)
+      .catch(() => false),
+    authError
+      .waitFor({ timeout: 30000 })
+      .then(() => 'error')
+      .catch(() => false),
+  ])
+  if (redirected !== true) {
     const stuckPath = join(OUT_DIR, '_login-stuck.png')
     ensureDir(dirname(stuckPath))
     await page.screenshot({ path: stuckPath, fullPage: true })
-    throw new Error(`Login did not redirect off /auth. Screenshot: ${stuckPath}`)
-  })
+    const hint =
+      redirected === 'error'
+        ? `auth backend error visible on page. Is \`pnpm supa start\` running and does ${EMAIL} exist in the target project? (app uses EXPO_PUBLIC_SUPABASE_URL)`
+        : `login did not redirect off /auth within 30s`
+    throw new Error(`Login failed: ${hint}. Screenshot: ${stuckPath}`)
+  }
   const state = await context.storageState()
   await context.close()
   return state
@@ -278,6 +308,55 @@ async function captureDynamicRoute(page, dyn, manifest) {
   }
 }
 
+// ---------- Preflight ----------
+// Read a var from process.env, falling back to the repo-root .env file the app
+// loads (EXPO_PUBLIC_SUPABASE_URL / _ANON_KEY). Avoids a hard dep on the env
+// being exported into this script's shell.
+function envVar(name) {
+  if (process.env[name]) return process.env[name]
+  const envPath = resolve(PROJECT_ROOT, '.env')
+  if (!existsSync(envPath)) return undefined
+  const line = readFileSync(envPath, 'utf8')
+    .split('\n')
+    .find((l) => l.startsWith(`${name}=`))
+  return line ? line.slice(name.length + 1).replace(/^["']|["']$/g, '').trim() : undefined
+}
+
+// The app's data layer is the `api` edge function. If it's down, login still
+// works (that's core auth) but every protected route's prerequisites check
+// fails and the guard redirects to /onboarding — so the sweep silently
+// captures the onboarding gate everywhere instead of the real screens. Fail
+// fast with the fix instead.
+async function preflightApi() {
+  const url = process.env.AUDIT_API_URL || envVar('EXPO_PUBLIC_SUPABASE_URL') || 'http://localhost:54321'
+  const anon = envVar('EXPO_PUBLIC_SUPABASE_ANON_KEY')
+  const healthUrl = `${url.replace(/\/$/, '')}/functions/v1/api/v1/health`
+  let status = 0
+  try {
+    const res = await fetch(healthUrl, {
+      headers: anon ? { apikey: anon } : {},
+      signal: AbortSignal.timeout(8000),
+    })
+    status = res.status
+  } catch (err) {
+    throw new Error(
+      `api edge function unreachable at ${healthUrl} (${err.message}). ` +
+        `Run \`pnpm supa functions serve api\` in a separate terminal — without ` +
+        `it, every protected route redirects to /onboarding and the sweep only ` +
+        `captures the onboarding gate.`,
+    )
+  }
+  if (status !== 200) {
+    throw new Error(
+      `api edge function returned ${status} at ${healthUrl} (expected 200). ` +
+        `Run \`pnpm supa functions serve api\` — data calls (incl. the ` +
+        `prerequisites check) are failing, so protected routes redirect to ` +
+        `/onboarding.`,
+    )
+  }
+  console.log(`  ✓ api edge function healthy (${healthUrl})`)
+}
+
 // ---------- Main ----------
 async function main() {
   console.log(`  iOS-viewport UI audit`)
@@ -285,6 +364,8 @@ async function main() {
   console.log(`  out:  ${OUT_DIR}`)
   console.log(`  user: ${EMAIL}\n`)
   ensureDir(OUT_DIR)
+
+  await preflightApi()
 
   const browser = await chromium.launch({ headless: HEADLESS })
 

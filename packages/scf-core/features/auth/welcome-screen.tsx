@@ -67,6 +67,11 @@ const textShadow = {
   textShadowRadius: 3,
 }
 
+// Fallback space reserved beneath the carousel controls while the cookie
+// consent banner measures itself (its real height replaces this once known).
+// Sized to clear the banner card (~3 stacked button rows + copy + insets).
+const ESTIMATED_COOKIE_BANNER_INSET = 220
+
 function AuthTestimonialContent({ quote, author, role }: Omit<TestimonialSlide, 'initials'>) {
   return (
     <Stack
@@ -140,9 +145,16 @@ const createMobileSlides = (): OnboardingStepInfo[] =>
 
 export const WelcomeScreen = ({ onOnboarded, brandedPanel = false }: WelcomeScreenProps = {}) => {
   // Reserve room beneath the carousel controls so the floating cookie consent
-  // banner can't overlap the primary CTA on mobile (SC-82).
+  // banner can't overlap the primary CTA on mobile (SC-82). `bannerHeight` is 0
+  // until the banner measures itself on layout, so reserve a generous estimate
+  // during that first-paint window — otherwise the banner overlaps the
+  // Continue/Skip CTAs until the measurement lands (SC-36 / audit F2).
   const { shouldShowBanner, bannerHeight } = useCookieConsent()
-  const carouselBottomInset = shouldShowBanner && bannerHeight > 0 ? bannerHeight + 12 : 0
+  const carouselBottomInset = shouldShowBanner
+    ? bannerHeight > 0
+      ? bannerHeight + 12
+      : ESTIMATED_COOKIE_BANNER_INSET
+    : 0
 
   // Branded auth panel: dark testimonial carousel
   if (brandedPanel) {
