@@ -570,6 +570,19 @@ A Docusaurus 3.9.2 × webpack version incompatibility — **unrelated to app cod
 
 **Fix:** align the docusaurus/webpack versions in Scaffald/ui, or migrate the ProgressPlugin options. Low priority (docs site only).`
 
+// ---------- 2026-06-23 close v1.12.0 shipped ----------
+const V1120_DONE = {
+  'SC-133': 'Shipped (PR #358): notifications center screen + push registration; My Applications surfaced.',
+  'SC-134': 'Shipped (PR #359 + Scaffald/sdk#8): Saved Jobs — bookmark on cards + Saved Jobs screen, on core.follows.',
+  'SC-135': 'Shipped (PR #360): worker messaging thread on applications.',
+  'SC-136': 'Shipped (PR #362): Workers/Employers ModeSelector + office reachable on mobile (role-gated). Folds in SC-26.',
+  'SC-137': 'Shipped (PR #361 + Scaffald/sdk#9 + migration 335): worker interview self-scheduling (token flow). Note: migration 335 must be applied to remote/preview/prod.',
+}
+const _PLAN_V1120_DONE = Object.entries(V1120_DONE).flatMap(([issue, body]) => [
+  { kind: 'comment', issue, body: `**Done — 2026-06-23 (v1.12.0)**\n\n${body}` },
+  { kind: 'move-state', issue, toState: 'Done' },
+])
+
 // ---------- 2026-06-23 close v1.11.0 shipped + open v1.12.0 ----------
 const V1110_DONE = {
   'SC-27': 'Shipped: 546 dead `@scaffald/ui` barrel exports hidden (Scaffald/ui#10 → UNI-Construct#355). tsc clean across consumers, app renders.',
@@ -583,7 +596,8 @@ const v1120Issue = (title, description, priority) => ({
   kind: 'create-issue', title, description, state: 'Todo', priority, label: V1120_LABEL,
 })
 
-const PLAN = [
+const PLAN = _PLAN_V1120_DONE
+const _PLAN_CLOSE_V1110 = [
   // Close shipped v1.11.0 work.
   ...Object.entries(V1110_DONE).flatMap(([issue, body]) => [
     { kind: 'comment', issue, body: `**Done — 2026-06-23**\n\n${body}` },
