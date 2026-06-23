@@ -12,11 +12,16 @@ import {
   Button,
   Card,
   Separator,
+  Spinner,
   Text,
   Row,
   Stack,
   useThemeContext,
 } from '@scaffald/ui'
+import {
+  useBookSlotMutation,
+  useSchedulingLink,
+} from '@scf/core/utils/scheduling-sdk-hooks'
 import { colors } from '@scaffald/ui/tokens'
 import {
   Calendar,
@@ -135,24 +140,75 @@ function SlotCard({ slot, isSelected, onSelect }: { slot: AvailableSlot; isSelec
 // Main Component
 // ============================================================================
 
-export function SelfScheduleScreen() {
+export interface SelfScheduleScreenProps {
+  /** Scheduling link token. When provided, real slots are fetched + booked;
+   *  without it the screen shows mock data (office preview/demo). */
+  token?: string
+}
+
+export function SelfScheduleScreen({ token }: SelfScheduleScreenProps = {}) {
   const { theme } = useThemeContext()
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null)
   const [isBooked, setIsBooked] = useState(false)
 
+  const live = !!token
+  const linkQuery = useSchedulingLink(token, { enabled: live })
+  const book = useBookSlotMutation(token ?? '')
+
+  const orgName = live ? linkQuery.data?.organizationName ?? 'the employer' : MOCK_ORG_NAME
+  const jobTitle = live ? linkQuery.data?.jobTitle ?? 'this position' : MOCK_JOB_TITLE
+  const slots: AvailableSlot[] = live
+    ? (linkQuery.data?.slots ?? []).map((s) => ({
+        id: s.id,
+        slot_start: s.slot_start,
+        slot_end: s.slot_end,
+        location_type: s.location_type,
+        location_details: s.location_details ?? undefined,
+        meeting_link: s.meeting_link ?? undefined,
+      }))
+    : MOCK_AVAILABLE_SLOTS
+
   // Group slots by date
   const slotsByDate = useMemo(() => {
     const groups: Record<string, AvailableSlot[]> = {}
-    for (const slot of MOCK_AVAILABLE_SLOTS) {
+    for (const slot of slots) {
       const dateKey = new Date(slot.slot_start).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
       if (!groups[dateKey]) groups[dateKey] = []
       groups[dateKey].push(slot)
     }
     return groups
-  }, [])
+  }, [slots])
+
+  const handleConfirm = () => {
+    if (!selectedSlotId) return
+    if (live) book.mutate(selectedSlotId, { onSuccess: () => setIsBooked(true) })
+    else setIsBooked(true)
+  }
+
+  if (live && linkQuery.isLoading) {
+    return (
+      <Stack align="center" justify="center" gap={12} style={{ paddingVertical: 64 }}>
+        <Spinner size="lg" />
+        <Text style={{ color: colors.text[theme].secondary }}>Loading available times…</Text>
+      </Stack>
+    )
+  }
+
+  if (live && linkQuery.isError) {
+    return (
+      <Stack align="center" gap={6} style={{ padding: 32 }}>
+        <Text weight="semibold" style={{ color: colors.text[theme].primary, textAlign: 'center' }}>
+          This scheduling link isn't available
+        </Text>
+        <Text size="sm" style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
+          {linkQuery.error?.message || 'It may have expired or already been used.'}
+        </Text>
+      </Stack>
+    )
+  }
 
   if (isBooked) {
-    const bookedSlot = MOCK_AVAILABLE_SLOTS.find((s) => s.id === selectedSlotId)
+    const bookedSlot = slots.find((s) => s.id === selectedSlotId)
     return (
       <ScrollView showsVerticalScrollIndicator={false}>
         <Stack gap={24} align="center" style={{ paddingVertical: 60, paddingHorizontal: 20 }}>
@@ -164,7 +220,7 @@ export function SelfScheduleScreen() {
               Interview Booked!
             </Text>
             <Text style={{ color: colors.text[theme].secondary, fontSize: 15, textAlign: 'center' }}>
-              Your interview with {MOCK_ORG_NAME} has been scheduled.
+              Your interview with {orgName} has been scheduled.
             </Text>
           </Stack>
           {bookedSlot && (
@@ -207,12 +263,20 @@ export function SelfScheduleScreen() {
             Schedule Your Interview
           </Text>
           <Text style={{ color: colors.text[theme].secondary, fontSize: 15, textAlign: 'center' }}>
-            {MOCK_ORG_NAME} — {MOCK_JOB_TITLE}
+            {orgName} — {jobTitle}
           </Text>
           <Text style={{ color: colors.text[theme].tertiary, fontSize: 14, textAlign: 'center' }}>
             Select a time that works best for you
           </Text>
         </Stack>
+
+        {slots.length === 0 ? (
+          <Stack align="center" gap={6} style={{ paddingVertical: 32 }}>
+            <Text size="sm" style={{ color: colors.text[theme].secondary, textAlign: 'center' }}>
+              No interview times are available yet. Check back soon.
+            </Text>
+          </Stack>
+        ) : null}
 
         {/* Slot Groups */}
         {Object.entries(slotsByDate).map(([date, slots]) => (
@@ -232,15 +296,21 @@ export function SelfScheduleScreen() {
         ))}
 
         {/* Confirm Button */}
-        <Button
-          variant="filled"
-          color="primary"
-          size="lg"
-          disabled={!selectedSlotId}
-          onPress={() => setIsBooked(true)}
-        >
-          {selectedSlotId ? 'Confirm Selection' : 'Select a Time Slot'}
-        </Button>
+        {slots.length > 0 ? (
+          <Button
+            variant="filled"
+            color="primary"
+            size="lg"
+            disabled={!selectedSlotId || book.isPending}
+            onPress={handleConfirm}
+          >
+            {book.isPending
+              ? 'Confirming…'
+              : selectedSlotId
+                ? 'Confirm Selection'
+                : 'Select a Time Slot'}
+          </Button>
+        ) : null}
 
         <Text style={{ color: colors.text[theme].tertiary, fontSize: 12, textAlign: 'center' }}>
           All times shown in your local timezone
