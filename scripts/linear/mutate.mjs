@@ -570,28 +570,43 @@ A Docusaurus 3.9.2 × webpack version incompatibility — **unrelated to app cod
 
 **Fix:** align the docusaurus/webpack versions in Scaffald/ui, or migrate the ProgressPlugin options. Low priority (docs site only).`
 
+// ---------- 2026-06-23 close v1.11.0 shipped + open v1.12.0 ----------
+const V1110_DONE = {
+  'SC-27': 'Shipped: 546 dead `@scaffald/ui` barrel exports hidden (Scaffald/ui#10 → UNI-Construct#355). tsc clean across consumers, app renders.',
+  'SC-36': 'Shipped: cookie-banner overlap fix (#355) + Button md 40→44 touch target (Scaffald/ui#11 → #357). Browser-verified.',
+  'SC-33': 'Implemented (engineering-owned, no separate Figma pass): Home renders profile-strength widget + carousel + quick actions; healthy in the 2026-06-23 audit. Closing.',
+  'SC-34': 'Implemented (engineering-owned): Jobs browse→detail→apply verified end-to-end; F3 search suggestions + job-card testID shipped (#355/#356). Closing.',
+}
+
+const V1120_LABEL = 'v1.12.0'
+const v1120Issue = (title, description, priority) => ({
+  kind: 'create-issue', title, description, state: 'Todo', priority, label: V1120_LABEL,
+})
+
 const PLAN = [
-  {
-    kind: 'create-issue',
-    title: 'CI: GitHub Actions jobs never start — account billing block',
-    description: CI_BILLING_DESC,
-    state: 'Triage',
-    priority: 2,
-  },
-  {
-    kind: 'create-issue',
-    title: 'Local web dev: auth and Scaffald SDK can target different Supabase projects (stale Metro cache)',
-    description: SDK_SPLITBRAIN_DESC,
-    state: 'Triage',
-    priority: 3,
-  },
-  {
-    kind: 'create-issue',
-    title: '@scaffald/ui-docs Docusaurus build fails (webpack ProgressPlugin schema)',
-    description: UIDOCS_DESC,
-    state: 'Triage',
-    priority: 4,
-  },
+  // Close shipped v1.11.0 work.
+  ...Object.entries(V1110_DONE).flatMap(([issue, body]) => [
+    { kind: 'comment', issue, body: `**Done — 2026-06-23**\n\n${body}` },
+    { kind: 'move-state', issue, toState: 'Done' },
+  ]),
+  // Open v1.12.0 feature epics (one per PR; SC-26 already exists for the switcher).
+  v1120Issue('Worker My Jobs hub: surface My Applications + notifications center + push registration',
+    'PR1 of v1.12.0. Surface the already-built `ApplicationsList` (/jobs/applications) into worker nav; verify/polish the notifications center (/dashboard/notifications); wire `useNotificationDeviceRegistration` on app startup. See docs/agents/handoffs (v1.12.0 plan).', 2),
+  v1120Issue('Saved Jobs: bookmark + revisit (follows-job)',
+    'PR2 of v1.12.0. Reuse `core.follows` (followee_type=job). SDK followJob/unfollowJob/isJobSaved/listSavedJobs; extend follows API list/status for job type; bookmark button on job card+detail; Saved Jobs screen + route + nav.', 2),
+  v1120Issue('Worker messaging on applications',
+    'PR3 of v1.12.0. Backend+SDK+employer MessagesTab exist. Extract a shared MessageThread; worker messages screen tied to an application; link from ApplicationCard.', 2),
+  v1120Issue('Surface office/ATS on mobile via Workers/Employers switcher (with SC-26)',
+    'PR4 of v1.12.0. WorkerEmployerContext + switcher UI; gate office by role not viewport; office quick-links from /employers/org/[slug]. Folds in SC-26.', 3),
+  v1120Issue('Worker interview self-scheduling (wire SelfScheduleScreen)',
+    'PR5 of v1.12.0. Tables + employer UI exist; worker SelfScheduleScreen is on mock data. Add SDK interview-bookings resource; wire real slot list + booking mutation.', 3),
+]
+
+// Previous PLAN (file SC-130/131/132) kept for reference.
+const _PLAN_FILE_FINDINGS_SNAPSHOT = [
+  { kind: 'create-issue', title: 'CI: GitHub Actions jobs never start — account billing block', description: CI_BILLING_DESC, state: 'Triage', priority: 2 },
+  { kind: 'create-issue', title: 'Local web dev: auth and Scaffald SDK can target different Supabase projects (stale Metro cache)', description: SDK_SPLITBRAIN_DESC, state: 'Triage', priority: 3 },
+  { kind: 'create-issue', title: '@scaffald/ui-docs Docusaurus build fails (webpack ProgressPlugin schema)', description: UIDOCS_DESC, state: 'Triage', priority: 4 },
 ]
 
 // Previous PLAN (SC-27 takeover) kept for reference.
@@ -809,11 +824,12 @@ async function exec(step) {
       { id: issue.id, input: { assigneeId: user.id } },
     )
   } else if (step.kind === 'create-issue') {
-    const [teamId, stateId] = await Promise.all([
+    const [teamId, stateId, labelId] = await Promise.all([
       resolveTeamId(),
       resolveStateId(step.state),
+      step.label ? resolveLabelId(step.label) : Promise.resolve(null),
     ])
-    console.log(`  ✨ create: "${step.title}" (${step.state})`)
+    console.log(`  ✨ create: "${step.title}" (${step.state}${step.label ? `, ${step.label}` : ''})`)
     if (DRY) return
     const result = await gql(
       `mutation($input: IssueCreateInput!) { issueCreate(input: $input) { success issue { identifier url } } }`,
@@ -824,6 +840,7 @@ async function exec(step) {
           description: step.description,
           priority: step.priority,
           stateId,
+          ...(labelId ? { labelIds: [labelId] } : {}),
         },
       },
     )

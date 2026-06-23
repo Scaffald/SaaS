@@ -1,12 +1,12 @@
 import { DashboardPage } from '@scf/core/features/dashboard/DashboardPage'
-import { SettingsNotificationsSection } from '@scf/core/features/notifications/SettingsNotificationsSection'
+import { NotificationsCenterScreen } from '@scf/core/features/notifications/NotificationsCenterScreen'
 
 export default function NotificationsPage() {
   return (
     <DashboardPage
       showBreadcrumb={false}
       pageTitle="Notifications"
-      leftContent={<SettingsNotificationsSection />}
+      leftContent={<NotificationsCenterScreen />}
     />
   )
 }
