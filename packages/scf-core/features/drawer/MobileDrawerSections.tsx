@@ -27,6 +27,7 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { openExternalLink } from '@scf/core/utils/platform'
 import type { OrganizationMembership } from '@scf/core/utils/useOrganizations'
 import { DrawerNotificationsFeed } from './DrawerNotificationsFeed'
+import { ModeSelector } from './ModeSelector'
 
 type IconLike = ComponentType<{ size?: number; color?: string }>
 
@@ -65,6 +66,8 @@ export function MobileDrawerSections({
   return (
     <Stack gap={20} width="100%">
       <DrawerNotificationsFeed onNavigate={() => onNavigate?.(ROUTES.DASHBOARD.NOTIFICATIONS.path)} />
+
+      <ModeSelector onNavigate={(href) => onNavigate?.(href)} />
 
       {showOrganizations ? (
         <Section title="Organizations">
