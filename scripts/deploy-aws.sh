@@ -175,10 +175,11 @@ EOF
     echo ""
 }
 
-FORCE_REBUILD=false
-if [ "$ENV" == "preview" ] || [ "$ENV" == "production" ]; then
-    FORCE_REBUILD=true
-fi
+# Always force a clean rebuild. Previously only preview/production force-rebuilt,
+# so a `dev` deploy reused a stale `dist` from a prior session/env and silently
+# shipped an old bundle (e.g. v1.12.0 dev shipped without the new frontend until
+# caught in QA). Rebuilding every env guarantees the served bundle matches HEAD.
+FORCE_REBUILD=true
 
 echo -e "${BLUE}═══════════════════════════════════════${NC}"
 echo -e "${BLUE}🚀 AWS Deployment - $ENV_LABEL${NC}"
