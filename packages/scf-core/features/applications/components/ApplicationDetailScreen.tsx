@@ -13,6 +13,7 @@ import {
   Briefcase,
   DollarSign,
   MapPin,
+  MessageSquare,
   Wifi,
 } from 'lucide-react-native'
 import { useQueryClient } from '@tanstack/react-query'
@@ -165,15 +166,27 @@ export function ApplicationDetailScreen({ applicationId }: ApplicationDetailScre
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <Stack gap={20} padding="md">
-        {/* Back button */}
-        <Button
-          size="sm"
-          variant="outline"
-          iconStart={ArrowLeft}
-          onPress={() => router.push(ROUTES.JOBS.APPLICATIONS.path as never)}
-        >
-          Back to Applications
-        </Button>
+        {/* Back button + Messages */}
+        <Row justify="space-between" align="center" gap={8}>
+          <Button
+            size="sm"
+            variant="outline"
+            iconStart={ArrowLeft}
+            onPress={() => router.push(ROUTES.JOBS.APPLICATIONS.path as never)}
+          >
+            Back to Applications
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            iconStart={MessageSquare}
+            onPress={() =>
+              router.push(`/jobs/applications/${applicationId}/messages` as never)
+            }
+          >
+            Messages
+          </Button>
+        </Row>
 
         {/* Header */}
         <DashboardWidget gap={12}>
