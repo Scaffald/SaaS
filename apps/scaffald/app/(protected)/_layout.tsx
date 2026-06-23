@@ -2,6 +2,7 @@ import { ROUTES } from '@scf/core/constants/routes'
 import { useProtectedRoute } from '@scf/core/utils/auth/useProtectedRoute'
 import { useSessionContext } from '@scf/core/utils/supabase/useSessionContext'
 import { usePrerequisitesCheck } from '@scf/core/utils/prerequisites-sdk-hooks'
+import { useNotificationDeviceRegistration } from '@scf/core/hooks/useNotificationDeviceRegistration'
 import { Slot, useRouter, useSegments } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
@@ -56,6 +57,11 @@ export default function ProtectedLayout() {
   const isReady = isOnboardingRoute
     ? !isLoading && sessionReady
     : !isLoading && !isCheckingPrereqs && sessionReady
+
+  // Register this device for push once the user is authenticated + session-ready,
+  // so application-status / message / job-match notifications can be delivered.
+  // The hook no-ops on web and when disabled.
+  useNotificationDeviceRegistration(!!user && sessionReady)
 
   // Resilience: a slow or never-resolving prereqs/session query must not strand
   // the user on an infinite spinner (the failure mode behind the 2026-05-26 audit's
