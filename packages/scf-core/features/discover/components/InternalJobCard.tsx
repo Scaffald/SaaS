@@ -193,7 +193,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
   }
 
   return (
-    <Card pressable onPress={handleCardPress} padding="md" variant="glass" glassMaterial="thin">
+    <Card pressable onPress={handleCardPress} padding="md" variant="glass" glassMaterial="thin" testID="job-card">
       <Stack gap={12}>
         {/* Header */}
         <Stack gap={8}>

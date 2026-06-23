@@ -80,7 +80,19 @@ warn on env mismatch, and (b) a note in the app README.
   comment an export statement only if every symbol it exports is in the dead
   set, then build packages/ui + typecheck all 4 wrapper packages + both apps.
 
-## Next
-- File F4 (split-brain) per the README filing-script flow.
-- Capture the jobs **detail + apply** flow (the dynamic-route selector found no
-  job card to click — verify the card's testid/href).
+## SC-34 jobs flow — verified complete (2026-06-23)
+Triage found **no bug**: job cards are pressable and navigate to `/jobs/[id]`;
+the apply flow (QuickApplyModal / ApplicationWizard) is wired. The audit's
+dynamic capture failed only because RN-web cards aren't `<a>` tags and lacked a
+`testID`. Added `testID="job-card"` to `InternalJobCard` + `ExternalJobCard`
+(→ `data-testid` on web). Re-verified: 11 cards on `/jobs`, click →
+`/jobs/<uuid>`, **Apply Now** renders (`jobs/detail-first.png`), 0 page errors.
+Home dashboard (SC-33) also reviewed — healthy, no gaps.
+
+## Outstanding (filed / scoped)
+- **SC-130** CI billing block · **SC-131** split-brain SDK URL (F4) ·
+  **SC-132** ui-docs build — all filed to Triage 2026-06-23.
+- **SC-36 touch targets** — remaining SC-36 work; needs a design-system call
+  (blanket `hitSlop` risks overlapping adjacent buttons; bumping Button `md`
+  36/40/44 → 44 is a visual change). Not a quick mechanical fix.
+- **SC-26** Workers/Employers switcher — net-new component (Track B).
