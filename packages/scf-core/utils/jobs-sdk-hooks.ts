@@ -7,6 +7,7 @@ import { useMutation, useQuery, type UseMutationOptions } from '@tanstack/react-
 import { useScaffaldJobsClient } from './jobs-sdk-context'
 import type { OfficeListJobsParams, OfficeCreateJobParams, OfficeUpdateJobParams, ListApplicationsParams, OfficeJob, GetUploadUrlParams, ConfirmUploadParams, SendMessageParams, CreateApplicationParams, UpdateApplicationParams } from '@scaffald/sdk'
 import type { Job } from '@scaffald/sdk/resources/jobs'
+import type { Follow } from '@scaffald/sdk'
 
 /** Office list jobs (office role). Organization/team filtering. */
 export function useOfficeListJobs(
@@ -66,6 +67,61 @@ export function usePublishedJobs(
     enabled: !!client && options?.enabled !== false,
     staleTime: 5 * 60 * 1000,
     placeholderData: (previousData) => previousData,
+  })
+}
+
+/** Whether the current user has saved (bookmarked) a job. */
+export function useIsJobSaved(jobId: string | undefined, options?: { enabled?: boolean }) {
+  const client = useScaffaldJobsClient()
+  return useQuery({
+    queryKey: ['jobs', 'saved-status', jobId],
+    queryFn: async () => {
+      if (!client || !jobId) throw new Error('Missing client or jobId')
+      return client.follows.getJobFollowStatus(jobId)
+    },
+    enabled: !!client && !!jobId && options?.enabled !== false,
+    staleTime: 60 * 1000,
+  })
+}
+
+/** The current user's saved-job follow rows (followee_id = job id). */
+export function useSavedJobIds(
+  params?: { limit?: number; offset?: number },
+  options?: { enabled?: boolean }
+) {
+  const client = useScaffaldJobsClient()
+  return useQuery({
+    queryKey: ['jobs', 'saved-list', params],
+    queryFn: async () => {
+      if (!client) throw new Error('Missing client')
+      return client.follows.listSavedJobs(params)
+    },
+    enabled: !!client && options?.enabled !== false,
+    staleTime: 60 * 1000,
+  })
+}
+
+/** Save (bookmark) a job. mutate(jobId). */
+export function useSaveJobMutation(options?: UseMutationOptions<Follow, Error, string>) {
+  const client = useScaffaldJobsClient()
+  return useMutation({
+    mutationFn: async (jobId: string) => {
+      if (!client) throw new Error('Missing client')
+      return client.follows.followJob(jobId)
+    },
+    ...options,
+  })
+}
+
+/** Remove a saved job. mutate(jobId). */
+export function useUnsaveJobMutation(options?: UseMutationOptions<void, Error, string>) {
+  const client = useScaffaldJobsClient()
+  return useMutation({
+    mutationFn: async (jobId: string) => {
+      if (!client) throw new Error('Missing client')
+      return client.follows.unfollowJob(jobId)
+    },
+    ...options,
   })
 }
 
