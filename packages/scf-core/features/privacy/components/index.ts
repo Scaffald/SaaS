@@ -19,5 +19,3 @@ export type { DataRequestType } from './DataRequestForm'
 
 export { OptOutManager } from './OptOutManager'
 export type { OptOutCategory } from './OptOutManager'
-
-export { TrackingAuthorizationSection } from './TrackingAuthorizationSection'

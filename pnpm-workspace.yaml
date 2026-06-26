@@ -69,7 +69,6 @@ catalog:
   expo-splash-screen: ~56.0.10
   expo-status-bar: ~56.0.4
   expo-system-ui: ~56.0.5
-  expo-tracking-transparency: ~56.0.5
   expo-updates: ~56.0.16
   expo-web-browser: ~56.0.5
   fast-xml-parser: ~5.7.0

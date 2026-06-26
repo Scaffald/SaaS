@@ -59,6 +59,7 @@
       "distribution": "store",
       "env": {
         "APP_ENV": "production",
+        "APP_IOS_BUILD_NUMBER": "11201",
         "EXPO_PUBLIC_POSTHOG_API_KEY": "${POSTHOG_KEY_PROD}",
         "EXPO_PUBLIC_POSTHOG_HOST": "https://app.posthog.com",
         "EXPO_PUBLIC_SENTRY_DSN_NATIVE": "https://11f32683d2e167d8de8e350e7a33a5e3@o1019232.ingest.us.sentry.io/4510467560964096",
