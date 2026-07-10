@@ -77,7 +77,7 @@ jobs:
         run: pnpm --filter @scaffald/ui build
 
       - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v2
+        uses: supabase/setup-cli@v3
         with:
           version: latest
 
@@ -173,7 +173,7 @@ jobs:
           pnpm exec playwright install --with-deps chromium
 
       - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v2
+        uses: supabase/setup-cli@v3
         with:
           version: latest
 
