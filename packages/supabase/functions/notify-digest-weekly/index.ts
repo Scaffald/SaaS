@@ -2,7 +2,7 @@ import { serve } from 'https://deno.land/std@0.223.0/http/server'
 
 import { corsHeaders, createCorsResponse } from '../_shared/cors'
 import { processDigestQueue } from '../_shared/notifications/digest'
-import { createServiceSupabaseClient } from '../_shared/notifications/utils'
+import { createServiceSupabaseClient } from '../_shared/notifications/utils.ts'
 
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {

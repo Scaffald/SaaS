@@ -8,7 +8,7 @@ import {
   type NotificationEventPayload,
   notificationEventSchema,
 } from '../_shared/notifications/types'
-import { createServiceSupabaseClient } from '../_shared/notifications/utils'
+import { createServiceSupabaseClient } from '../_shared/notifications/utils.ts'
 
 const SENDGRID_ENDPOINT = 'https://api.sendgrid.com/v3/mail/send'
 

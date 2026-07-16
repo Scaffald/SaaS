@@ -12,7 +12,7 @@ import {
   createServiceSupabaseClient,
   isValidDeliveryStatus,
   recordDeliveryEvent,
-} from '../_shared/notifications/utils'
+} from '../_shared/notifications/utils.ts'
 
 interface DeliveryRecord extends NotificationDeliveryRow {
   notification: NotificationRow

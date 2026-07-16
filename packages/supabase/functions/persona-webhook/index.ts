@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 import { corsHeaders } from '../_shared/cors'
 import { addMonths, mergeMetadata, patchPersonaMetadata } from '../_shared/id-verification-utils'
-import { createServiceSupabaseClient } from '../_shared/notifications/utils'
+import { createServiceSupabaseClient } from '../_shared/notifications/utils.ts'
 
 const SIGNATURE_HEADER = 'persona-signature'
 const SUCCESS_STATUSES = ['approved', 'completed', 'passed', 'succeeded']
