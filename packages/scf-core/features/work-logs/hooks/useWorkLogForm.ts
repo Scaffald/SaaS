@@ -20,10 +20,11 @@ import {
 } from "@scf/schemas";
 import type { OfflineWorkLog } from "../types/offline";
 import { useOfflineWorkLogs } from "./useOfflineWorkLogs";
+import { calculateTotalHours } from "../utils/time-entries";
 
 const DEFAULT_TIME_ENTRY = {
-  start: "",
-  end: "",
+  start: "08:00",
+  end: "16:30",
 };
 
 const formatDateToISO = (date: Date): string => {
@@ -31,33 +32,6 @@ const formatDateToISO = (date: Date): string => {
   const month = `${date.getMonth() + 1}`.padStart(2, "0");
   const day = `${date.getDate()}`.padStart(2, "0");
   return `${year}-${month}-${day}`;
-};
-
-const calculateTotalHours = (
-  entries: Array<{ start: string; end: string }>
-): number => {
-  return entries.reduce((total, entry) => {
-    const [startHour, startMinute] = entry.start.split(":").map(Number);
-    const [endHour, endMinute] = entry.end.split(":").map(Number);
-
-    if (
-      Number.isNaN(startHour) ||
-      Number.isNaN(startMinute) ||
-      Number.isNaN(endHour) ||
-      Number.isNaN(endMinute)
-    ) {
-      return total;
-    }
-
-    const startMinutes = startHour * 60 + startMinute;
-    const endMinutes = endHour * 60 + endMinute;
-
-    if (endMinutes <= startMinutes) {
-      return total;
-    }
-
-    return total + (endMinutes - startMinutes) / 60;
-  }, 0);
 };
 
 const buildUpdatePayloadFromCreate = (
