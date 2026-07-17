@@ -10,7 +10,7 @@ import {
   ResponsiveSelect,
   useThemeContext,
 } from '@scaffald/ui'
-import { CheckCircle2 } from 'lucide-react-native'
+import { Check, CheckCircle2 } from 'lucide-react-native'
 import { useToast } from '@scaffald/ui'
 import { useCallback, useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
@@ -96,9 +96,9 @@ export function QuickApplyModal({
 }: QuickApplyModalProps) {
   const [formData, setFormData] = useState<Partial<ScreeningAnswers>>({
     current_location: '',
-    willing_to_relocate: false,
+    willing_to_relocate: undefined,
     years_experience: undefined,
-    is_authorized_to_work: false,
+    is_authorized_to_work: undefined,
     earliest_start_date: '',
   })
   const [errors, setErrors] = useState<Partial<Record<keyof ScreeningAnswers, string>>>({})
@@ -141,9 +141,9 @@ export function QuickApplyModal({
   const handleClose = useCallback(() => {
     setFormData({
       current_location: '',
-      willing_to_relocate: false,
+      willing_to_relocate: undefined,
       years_experience: undefined,
-      is_authorized_to_work: false,
+      is_authorized_to_work: undefined,
       earliest_start_date: '',
     })
     setErrors({})
@@ -162,6 +162,13 @@ export function QuickApplyModal({
             newErrors.current_location = 'Current location is required'
           } else {
             newErrors.current_location = undefined
+          }
+          break
+        case 'willing_to_relocate':
+          if (value === undefined || value === null) {
+            newErrors.willing_to_relocate = 'Please indicate whether you are willing to relocate'
+          } else {
+            newErrors.willing_to_relocate = undefined
           }
           break
         case 'years_experience':
@@ -222,6 +229,9 @@ export function QuickApplyModal({
     if (!formData.current_location?.trim()) {
       validationErrors.current_location = 'Current location is required'
     }
+    if (formData.willing_to_relocate === undefined || formData.willing_to_relocate === null) {
+      validationErrors.willing_to_relocate = 'Please indicate whether you are willing to relocate'
+    }
     if (formData.years_experience === undefined || formData.years_experience === null) {
       validationErrors.years_experience = 'Years of experience is required'
     }
@@ -242,6 +252,7 @@ export function QuickApplyModal({
     // Submit application
     // At this point, all fields are validated and guaranteed to be present
     const currentLocation = formData.current_location || ''
+    const willingToRelocate = formData.willing_to_relocate ?? false
     const yearsExperience = formData.years_experience ?? 0
     const isAuthorized = formData.is_authorized_to_work ?? false
     const earliestStartDate = formData.earliest_start_date || ''
@@ -251,7 +262,7 @@ export function QuickApplyModal({
       await submitMutation.mutateAsync({
         job_id: jobId,
         current_location: currentLocation,
-        willing_to_relocate: formData.willing_to_relocate || false,
+        willing_to_relocate: willingToRelocate,
         years_experience: yearsExperience,
         is_authorized_to_work: isAuthorized,
         earliest_start_date: earliestStartDate,
@@ -318,7 +329,7 @@ export function QuickApplyModal({
                 {/* Current Location */}
                 <Stack gap={8}>
                   <Label htmlFor="current_location">
-                    You current location <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
+                    Your current location <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>*</Text>
                   </Label>
                   {mapboxProvider ? (
                     <AddressAutocomplete
@@ -357,10 +368,12 @@ export function QuickApplyModal({
                   <Row gap={12}>
                     <Button
                       size="md"
-                      color={formData.willing_to_relocate ? 'primary' : undefined}
-                      variant={formData.willing_to_relocate ? undefined : 'outline'}
+                      variant="outline"
+                      color={formData.willing_to_relocate === true ? 'success' : undefined}
+                      iconStart={formData.willing_to_relocate === true ? Check : undefined}
                       onPress={() => {
                         setFormData((prev) => ({ ...prev, willing_to_relocate: true }))
+                        validateField('willing_to_relocate', true)
                       }}
                       disabled={isSubmitting}
                       style={{ flex: 1 }}
@@ -369,10 +382,12 @@ export function QuickApplyModal({
                     </Button>
                     <Button
                       size="md"
-                      color={!formData.willing_to_relocate ? 'primary' : undefined}
-                      variant={!formData.willing_to_relocate ? undefined : 'outline'}
+                      variant="outline"
+                      color={formData.willing_to_relocate === false ? 'success' : undefined}
+                      iconStart={formData.willing_to_relocate === false ? Check : undefined}
                       onPress={() => {
                         setFormData((prev) => ({ ...prev, willing_to_relocate: false }))
+                        validateField('willing_to_relocate', false)
                       }}
                       disabled={isSubmitting}
                       style={{ flex: 1 }}
@@ -380,6 +395,11 @@ export function QuickApplyModal({
                       No
                     </Button>
                   </Row>
+                  {errors.willing_to_relocate && (
+                    <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>
+                      {errors.willing_to_relocate}
+                    </Text>
+                  )}
                 </Stack>
 
                 {/* Years of Experience */}
@@ -449,8 +469,9 @@ export function QuickApplyModal({
                   <Row gap={12}>
                     <Button
                       size="md"
-                      color={formData.is_authorized_to_work ? 'primary' : undefined}
-                      variant={formData.is_authorized_to_work ? undefined : 'outline'}
+                      variant="outline"
+                      color={formData.is_authorized_to_work === true ? 'success' : undefined}
+                      iconStart={formData.is_authorized_to_work === true ? Check : undefined}
                       onPress={() => {
                         setFormData((prev) => ({ ...prev, is_authorized_to_work: true }))
                         validateField('is_authorized_to_work', true)
@@ -462,8 +483,9 @@ export function QuickApplyModal({
                     </Button>
                     <Button
                       size="md"
-                      color={!formData.is_authorized_to_work ? 'primary' : undefined}
-                      variant={!formData.is_authorized_to_work ? undefined : 'outline'}
+                      variant="outline"
+                      color={formData.is_authorized_to_work === false ? 'success' : undefined}
+                      iconStart={formData.is_authorized_to_work === false ? Check : undefined}
                       onPress={() => {
                         setFormData((prev) => ({ ...prev, is_authorized_to_work: false }))
                         validateField('is_authorized_to_work', false)
