@@ -9,6 +9,11 @@ import { useQueryClient } from '@tanstack/react-query'
 import type { Community } from '@scaffald/sdk/resources/communities'
 import { CommunityCard } from './CommunityCard'
 
+// The list endpoint returns `is_member` alongside every community (#383), but
+// the SDK's `Community` type (packages/sdk, a separate repo) hasn't picked up
+// the field yet. Extend it locally rather than widening the shared type.
+type CommunityWithMembership = Community & { is_member?: boolean }
+
 type AllCommunitiesListProps = {
   searchQuery: string
   sortBy: string
@@ -23,12 +28,14 @@ export function AllCommunitiesList({ searchQuery, sortBy, onFilteredCountChange 
   const queryClient = useQueryClient()
 
   const { data, isLoading } = useCommunities()
-  const communities = data?.data ?? []
+  const communities: CommunityWithMembership[] = data?.data ?? []
 
-  // The list endpoint does not return per-community membership, so track joins
-  // optimistically here: once a join succeeds the card flips to "Joined" and the
-  // Join button no longer lingers (SC-128 #1). `pendingId` drives the per-card
-  // loading state without disabling every other card.
+  // The list endpoint now returns `is_member` per community (see #383), so the
+  // initial membership state for each card comes straight from the response.
+  // We still track newly-joined ids locally so a successful join flips the
+  // button to "Joined" immediately without waiting on a refetch (SC-128 #1).
+  // `pendingId` drives the per-card loading state without disabling every
+  // other card.
   const [joinedIds, setJoinedIds] = useState<Set<string>>(new Set())
   const [pendingId, setPendingId] = useState<string | null>(null)
 
@@ -52,7 +59,7 @@ export function AllCommunitiesList({ searchQuery, sortBy, onFilteredCountChange 
     if (searchQuery.trim()) {
       const lower = searchQuery.toLowerCase()
       result = result.filter(
-        (c: Community) =>
+        (c: CommunityWithMembership) =>
           c.name.toLowerCase().includes(lower) || c.description?.toLowerCase().includes(lower)
       )
     }
@@ -94,11 +101,11 @@ export function AllCommunitiesList({ searchQuery, sortBy, onFilteredCountChange 
 
   return (
     <Stack gap={12}>
-      {filtered.map((community: Community) => (
+      {filtered.map((community) => (
         <CommunityCard
           key={community.id}
           community={community}
-          isMember={joinedIds.has(community.id)}
+          isMember={joinedIds.has(community.id) || Boolean(community.is_member)}
           isJoining={pendingId === community.id}
           onPress={() => router.push(RouteBuilder.communityDetail(community.slug) as Href)}
           onJoin={() => {

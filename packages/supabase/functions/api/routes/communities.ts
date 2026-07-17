@@ -5,6 +5,7 @@
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { authMiddleware } from "../middleware/auth.ts";
+import { mergeMembership } from "../lib/community-membership.ts";
 
 const app = new OpenAPIHono();
 
@@ -31,12 +32,17 @@ const communitySchema = z
     post_count: z.number().int(),
     is_active: z.boolean(),
     created_at: z.string(),
+    // Whether the authenticated viewer is a member of this community. Shared
+    // across list and detail responses so both surfaces agree on membership
+    // state (see #383 — the list previously omitted this, causing the
+    // communities list to always show "Join" even for communities the user
+    // had already joined).
+    is_member: z.boolean(),
   })
   .openapi("Community");
 
 const communityDetailSchema = communitySchema
   .extend({
-    is_member: z.boolean(),
     is_verified: z.boolean(),
     membership_id: z.string().uuid().nullable(),
   })
@@ -103,6 +109,7 @@ const listCommunitiesRoute = createRoute({
 
 app.openapi(listCommunitiesRoute, async (c) => {
   const supabase = c.get("supabase");
+  const user = c.get("user");
   const { limit, offset } = c.req.valid("query");
 
   const { data, error } = await supabase
@@ -127,7 +134,33 @@ app.openapi(listCommunitiesRoute, async (c) => {
     .select("*", { count: "exact", head: true })
     .eq("is_active", true);
 
-  return c.json({ data: data || [], total: count || 0 });
+  // Batch-fetch the viewer's memberships for this page of communities so the
+  // list agrees with the detail route on membership state (#383). A single
+  // `.in(...)` query avoids N+1 lookups.
+  const memberCommunityIds = new Set<string>();
+  if (user && data && data.length > 0) {
+    const { data: memberships, error: membershipError } = await supabase
+      .schema("community")
+      .from("memberships")
+      .select("community_id")
+      .eq("user_id", user.id)
+      .in("community_id", data.map((cm) => cm.id));
+
+    if (membershipError) {
+      console.error("Error fetching memberships for list:", membershipError);
+    } else {
+      for (const m of memberships || []) {
+        memberCommunityIds.add(m.community_id);
+      }
+    }
+  }
+
+  const communitiesWithMembership = mergeMembership(
+    data || [],
+    memberCommunityIds,
+  );
+
+  return c.json({ data: communitiesWithMembership, total: count || 0 });
 });
 
 // ============================================================================
@@ -210,7 +243,9 @@ app.openapi(myCommunitiesRoute, async (c) => {
       if (!community) return null;
       return {
         community_id: m.community_id,
-        community,
+        // Every entry here comes from the user's own memberships, so the
+        // nested community is always one they've joined.
+        community: { ...community, is_member: true },
         joined_at: m.joined_at ?? null,
         is_verified: m.is_verified || false,
         membership_id: m.id,
