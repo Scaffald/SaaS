@@ -8,7 +8,8 @@
     "zod": "https://deno.land/x/zod@v3.22.4/mod.ts",
     "@hono/zod-validator": "npm:@hono/zod-validator@0.4.2",
     "@scf/supabase/types": "../../types.ts",
-    "mammoth": "npm:mammoth@1.6.0"
+    "mammoth": "npm:mammoth@1.6.0",
+    "pdf-lib": "npm:pdf-lib@1.17.1"
   },
   "tasks": {
     "dev": "deno run --allow-all --watch index.ts",
