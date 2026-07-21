@@ -3,8 +3,6 @@ import { formatDate } from "@scf/core/features/profile/utils/date-formatting";
 import { useWorkLogs, useWorkLogsOverview } from "@scf/core/utils/work-logs-sdk-hooks";
 import {
   Activity,
-  ArrowDownAZ,
-  ArrowDownZA,
   Camera,
   ChevronLeft,
   ChevronRight,
@@ -13,7 +11,6 @@ import {
   MessagesSquare,
   Plus,
   Search,
-  SlidersHorizontal,
 } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -22,13 +19,12 @@ import {
   Button,
   Caption,
   Card,
-  Dropdown,
-  DropdownItem,
+  Chip,
   H4,
   Heading,
   Input,
   Paragraph,
-  SegmentedControl,
+  ResponsiveSelect,
   Separator,
   Skeleton,
   SkeletonBox,
@@ -36,6 +32,7 @@ import {
   Text,
   Row,
   Stack,
+  useResponsive,
   useThemeContext,
 } from "@scaffald/ui";
 import { colors } from "@scaffald/ui/tokens";
@@ -151,12 +148,13 @@ export function WorkLogListScreen({ organizationId, orgSlug }: WorkLogListScreen
   const { theme } = useThemeContext();
   const t: Theme = theme === "dark" ? "dark" : "light";
 
+  const { isDesktop } = useResponsive();
+
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [sortIndex, setSortIndex] = useState(0);
   const [page, setPage] = useState(0);
-  const [sortMenuOpen, setSortMenuOpen] = useState(false);
 
   const sort = SORT_OPTIONS[sortIndex] ?? SORT_OPTIONS[0];
 
@@ -222,7 +220,6 @@ export function WorkLogListScreen({ organizationId, orgSlug }: WorkLogListScreen
   const showAnalytics = items.length > 0 || listQuery.isLoading;
   const isFiltering = statusFilter !== "all" || searchQuery.length >= 2;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
-  const selectedStatusIndex = Math.max(0, STATUS_FILTERS.indexOf(statusFilter));
 
   const groupedItems = useMemo(() => {
     const buckets = new Map<DateBucket, WorkLogListItem[]>();
@@ -256,19 +253,37 @@ export function WorkLogListScreen({ organizationId, orgSlug }: WorkLogListScreen
       }
     >
       <Stack gap={16} style={{ padding: 16 }} flex={1}>
-        <Row justify="space-between" align="center" gap={16}>
-          <Paragraph size="sm" color="secondary" style={{ flexShrink: 1 }}>
-            Track and review your daily work history, collaborate with
-            teammates, and manage verification.
-          </Paragraph>
-          <Button
-            size="md"
-            iconStart={Plus}
-            onPress={() => router.push(createPath)}
-          >
-            New Work Log
-          </Button>
-        </Row>
+        {isDesktop ? (
+          <Row justify="space-between" align="center" gap={16}>
+            <Paragraph size="sm" color="secondary" style={{ flexShrink: 1 }}>
+              Track and review your daily work history, collaborate with
+              teammates, and manage verification.
+            </Paragraph>
+            <Button
+              size="md"
+              color="primary"
+              iconStart={Plus}
+              onPress={() => router.push(createPath)}
+            >
+              New Work Log
+            </Button>
+          </Row>
+        ) : (
+          <Stack gap={12}>
+            <Paragraph size="sm" color="secondary">
+              Track and review your daily work history, collaborate with
+              teammates, and manage verification.
+            </Paragraph>
+            <Button
+              size="md"
+              color="primary"
+              iconStart={Plus}
+              onPress={() => router.push(createPath)}
+            >
+              New Work Log
+            </Button>
+          </Stack>
+        )}
 
         {hasOfflineQueue && (
           <OfflineSyncCard
@@ -290,24 +305,18 @@ export function WorkLogListScreen({ organizationId, orgSlug }: WorkLogListScreen
         )}
 
         <FilterBar
-          t={t}
           searchInput={searchInput}
           onSearchChange={setSearchInput}
-          selectedStatusIndex={selectedStatusIndex}
-          onStatusChange={(i) => {
-            setStatusFilter(STATUS_FILTERS[i] ?? "all");
-            setPage(0);
-          }}
-          sortLabel={sort.label}
-          sortDirection={sort.direction}
-          sortMenuOpen={sortMenuOpen}
-          onSortMenuOpenChange={setSortMenuOpen}
-          onSortSelect={(idx) => {
-            setSortIndex(idx);
-            setSortMenuOpen(false);
+          statusFilter={statusFilter}
+          onStatusChange={(status) => {
+            setStatusFilter(status);
             setPage(0);
           }}
           sortIndex={sortIndex}
+          onSortSelect={(idx) => {
+            setSortIndex(idx);
+            setPage(0);
+          }}
         />
 
         <Separator />
@@ -420,33 +429,22 @@ function OfflineSyncCard({ t, count, isSyncing, disabled, onSync }: OfflineSyncC
 }
 
 interface FilterBarProps {
-  t: Theme;
   searchInput: string;
   onSearchChange: (value: string) => void;
-  selectedStatusIndex: number;
-  onStatusChange: (index: number) => void;
-  sortLabel: string;
-  sortDirection: SortDirection;
-  sortMenuOpen: boolean;
-  onSortMenuOpenChange: (open: boolean) => void;
-  onSortSelect: (index: number) => void;
+  statusFilter: StatusFilter;
+  onStatusChange: (status: StatusFilter) => void;
   sortIndex: number;
+  onSortSelect: (index: number) => void;
 }
 
 function FilterBar({
-  t,
   searchInput,
   onSearchChange,
-  selectedStatusIndex,
+  statusFilter,
   onStatusChange,
-  sortLabel,
-  sortDirection,
-  sortMenuOpen,
-  onSortMenuOpenChange,
-  onSortSelect,
   sortIndex,
+  onSortSelect,
 }: FilterBarProps) {
-  const SortIcon = sortDirection === "asc" ? ArrowDownAZ : ArrowDownZA;
   return (
     <Stack gap={12}>
       <Row gap={12} align="center" wrap>
@@ -458,44 +456,38 @@ function FilterBar({
             onChangeText={onSearchChange}
           />
         </Stack>
-        <Dropdown
-          open={sortMenuOpen}
-          onOpenChange={onSortMenuOpenChange}
-          trigger={
-            <Row
-              gap={8}
-              align="center"
-              style={{
-                paddingHorizontal: 12,
-                paddingVertical: 8,
-                borderRadius: 8,
-                borderWidth: 1,
-                borderColor: colors.border[t].default,
-                backgroundColor: colors.bg[t].default,
-              }}
-            >
-              <SortIcon size={16} color={colors.text[t].secondary} />
-              <Text size="sm">{sortLabel}</Text>
-              <SlidersHorizontal size={14} color={colors.text[t].tertiary} />
-            </Row>
-          }
-        >
-          {SORT_OPTIONS.map((opt, idx) => (
-            <DropdownItem
-              key={`${opt.field}-${opt.direction}`}
-              selected={idx === sortIndex}
-              onPress={() => onSortSelect(idx)}
-            >
-              {opt.label}
-            </DropdownItem>
-          ))}
-        </Dropdown>
+        <Row width={190}>
+          <ResponsiveSelect
+            value={String(sortIndex)}
+            onValueChange={(value) => {
+              const idx = Number(value);
+              if (Number.isInteger(idx) && SORT_OPTIONS[idx]) {
+                onSortSelect(idx);
+              }
+            }}
+            placeholder="Sort by"
+            size="sm"
+            options={SORT_OPTIONS.map((opt, idx) => ({
+              value: String(idx),
+              label: opt.label,
+            }))}
+          />
+        </Row>
       </Row>
-      <SegmentedControl
-        segments={STATUS_FILTERS.map((s) => STATUS_FILTER_LABELS[s])}
-        selectedIndex={selectedStatusIndex}
-        onSelectionChange={onStatusChange}
-      />
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <Row gap={8}>
+          {STATUS_FILTERS.map((status) => (
+            <Chip
+              key={status}
+              size="sm"
+              selected={status === statusFilter}
+              onPress={() => onStatusChange(status)}
+            >
+              {STATUS_FILTER_LABELS[status]}
+            </Chip>
+          ))}
+        </Row>
+      </ScrollView>
     </Stack>
   );
 }
@@ -888,7 +880,7 @@ function EmptyState({ t, onCreate }: EmptyStateProps) {
             and collaborating with your team.
           </Paragraph>
         </Stack>
-        <Button size="md" iconStart={Plus} onPress={onCreate}>
+        <Button size="md" color="primary" iconStart={Plus} onPress={onCreate}>
           Record Work Log
         </Button>
       </Stack>

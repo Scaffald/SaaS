@@ -22,8 +22,8 @@ import type { OfflineWorkLog } from "../types/offline";
 import { useOfflineWorkLogs } from "./useOfflineWorkLogs";
 
 const DEFAULT_TIME_ENTRY = {
-  start: "",
-  end: "",
+  start: "08:00",
+  end: "16:30",
 };
 
 const formatDateToISO = (date: Date): string => {
@@ -33,26 +33,24 @@ const formatDateToISO = (date: Date): string => {
   return `${year}-${month}-${day}`;
 };
 
-const calculateTotalHours = (
+// Strict HH:MM only — partial input while typing ("", "08", "08:")
+// must not contribute to the total (or worse, render as NaN).
+const parseTimeToMinutes = (value: string): number | null => {
+  const match = /^(\d{1,2}):(\d{2})$/.exec(value);
+  if (!match) {
+    return null;
+  }
+  return Number(match[1]) * 60 + Number(match[2]);
+};
+
+export const calculateTotalHours = (
   entries: Array<{ start: string; end: string }>
 ): number => {
   return entries.reduce((total, entry) => {
-    const [startHour, startMinute] = entry.start.split(":").map(Number);
-    const [endHour, endMinute] = entry.end.split(":").map(Number);
+    const startMinutes = parseTimeToMinutes(entry.start);
+    const endMinutes = parseTimeToMinutes(entry.end);
 
-    if (
-      Number.isNaN(startHour) ||
-      Number.isNaN(startMinute) ||
-      Number.isNaN(endHour) ||
-      Number.isNaN(endMinute)
-    ) {
-      return total;
-    }
-
-    const startMinutes = startHour * 60 + startMinute;
-    const endMinutes = endHour * 60 + endMinute;
-
-    if (endMinutes <= startMinutes) {
+    if (startMinutes === null || endMinutes === null || endMinutes <= startMinutes) {
       return total;
     }
 

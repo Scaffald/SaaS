@@ -21,6 +21,65 @@ const _errorResponseSchema = z.object({
   message: z.string().optional(),
 });
 
+const WORK_LOG_STATUSES = [
+  "draft",
+  "pending_verification",
+  "verified",
+  "disputed",
+] as const;
+
+type SupabaseClientLike = ReturnType<typeof getServiceClient>;
+
+/**
+ * Resolve a work log the caller may access: their own or a collaborator log
+ * (via RLS), falling back to service-role + org-membership check for org
+ * admins. Returns the log row (without the joined project) or null.
+ */
+async function resolveAccessibleWorkLog(
+  supabase: SupabaseClientLike,
+  userId: string,
+  workLogId: string,
+): Promise<Record<string, unknown> | null> {
+  const { data } = await supabase
+    .schema("core")
+    .from("work_logs")
+    .select("*")
+    .eq("id", workLogId)
+    .maybeSingle();
+  if (data) {
+    return data;
+  }
+
+  const adminClient = getServiceClient();
+  const { data: log } = await adminClient
+    .schema("core")
+    .from("work_logs")
+    .select("*, construction_projects!inner(organization_id)")
+    .eq("id", workLogId)
+    .maybeSingle();
+  if (!log) {
+    return null;
+  }
+  const orgId = (log.construction_projects as { organization_id: string } | null)
+    ?.organization_id;
+  if (!orgId) {
+    return null;
+  }
+  const { data: memberships } = await supabase
+    .schema("core")
+    .from("role_assignments")
+    .select("scope_org_id")
+    .eq("user_id", userId)
+    .eq("scope_org_id", orgId);
+  if (!memberships || memberships.length === 0) {
+    return null;
+  }
+  const { construction_projects: _omit, ...rest } = log as Record<string, unknown> & {
+    construction_projects?: unknown;
+  };
+  return rest;
+}
+
 /**
  * GET /v1/work-logs
  * List work logs
@@ -68,7 +127,7 @@ app.openapi(
     const supabase = c.get("supabase");
     const user = c.get("user");
     const {
-      page = 1,
+      page = 0,
       pageSize = 20,
       projectId,
       organizationId,
@@ -158,7 +217,9 @@ app.openapi(
       query = query.ilike("work_description", `%${search.trim()}%`);
     }
 
-    const offset = (page - 1) * pageSize;
+    // The SDK/UI paginate 0-based (list screen starts at page=0); a 1-based
+    // offset here made the first page query range(-20,-1) and return [].
+    const offset = Math.max(0, page) * pageSize;
     query = query
       .range(offset, offset + pageSize - 1)
       .order(sortField, { ascending: sortDirection === "asc" });
@@ -437,6 +498,113 @@ app.openapi(
 );
 
 /**
+ * GET /v1/work-logs/overview
+ * Status summary + totals for the caller's own work logs. Feeds the
+ * "Quick summary" banner on the Logs list screen.
+ * Registered before GET /{workLogId} so "overview" isn't parsed as an id.
+ */
+app.openapi(
+  createRoute({
+    method: "get",
+    path: "/overview",
+    tags: ["Work Logs"],
+    summary: "Work log overview for the current user",
+    request: {
+      query: z.object({
+        dateFrom: z.string().optional(),
+        dateTo: z.string().optional(),
+      }),
+    },
+    responses: {
+      200: {
+        description: "Work log overview",
+        content: {
+          "application/json": {
+            schema: z.object({
+              statusSummary: z.record(z.object({
+                count: z.number(),
+                hours: z.number(),
+              })),
+              totalHours: z.number(),
+              totalEntries: z.number(),
+              recentActivity: z.array(z.any()),
+            }),
+          },
+        },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const supabase = c.get("supabase");
+    const user = c.get("user");
+    const { dateFrom, dateTo } = c.req.valid("query");
+
+    if (!user) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    let query = supabase
+      .schema("core")
+      .from("work_logs")
+      .select("status, total_hours")
+      .eq("user_id", user.id);
+    if (dateFrom) {
+      query = query.gte("log_date", dateFrom);
+    }
+    if (dateTo) {
+      query = query.lte("log_date", dateTo);
+    }
+
+    const { data: rows, error } = await query;
+    if (error) {
+      return c.json({
+        error: "Failed to fetch work log overview",
+        message: error.message,
+      }, 500);
+    }
+
+    // The banner dereferences every status key unguarded — always emit all four.
+    const statusSummary: Record<string, { count: number; hours: number }> = {};
+    for (const status of WORK_LOG_STATUSES) {
+      statusSummary[status] = { count: 0, hours: 0 };
+    }
+    let totalHours = 0;
+    for (const row of rows ?? []) {
+      const hours = typeof row.total_hours === "number" ? row.total_hours : 0;
+      totalHours += hours;
+      const bucket = statusSummary[row.status as string];
+      if (bucket) {
+        bucket.count += 1;
+        bucket.hours += hours;
+      }
+    }
+
+    let recentQuery = supabase
+      .schema("core")
+      .from("work_logs")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("updated_at", { ascending: false })
+      .limit(5);
+    if (dateFrom) {
+      recentQuery = recentQuery.gte("log_date", dateFrom);
+    }
+    if (dateTo) {
+      recentQuery = recentQuery.lte("log_date", dateTo);
+    }
+    const { data: recentActivity } = await recentQuery;
+
+    return c.json({
+      statusSummary,
+      totalHours,
+      totalEntries: (rows ?? []).length,
+      recentActivity: recentActivity ?? [],
+    });
+  },
+);
+
+/**
  * GET /v1/work-logs/:workLogId
  * Fetch a single work log by id. Visibility is enforced by RLS (own logs +
  * collaborator logs).
@@ -465,49 +633,138 @@ app.openapi(
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    // First try with the user's client (RLS-scoped: own + collaborator).
-    let { data, error } = await supabase
-      .schema("core")
-      .from("work_logs")
-      .select("*")
-      .eq("id", workLogId)
-      .maybeSingle();
+    const data = await resolveAccessibleWorkLog(supabase, user.id, workLogId);
 
-    // If not visible directly, fall back to the org-admin path: fetch with
-    // service role and check the caller is a member of the log's org.
     if (!data) {
-      const adminClient = getServiceClient();
-      const { data: log } = await adminClient
-        .schema("core")
-        .from("work_logs")
-        .select("*, construction_projects!inner(organization_id)")
-        .eq("id", workLogId)
-        .maybeSingle();
-      if (log) {
-        const orgId = (log.construction_projects as { organization_id: string } | null)?.organization_id;
-        if (orgId) {
-          const { data: memberships } = await supabase
-            .schema("core")
-            .from("role_assignments")
-            .select("scope_org_id")
-            .eq("user_id", user.id)
-            .eq("scope_org_id", orgId);
-          if (memberships && memberships.length > 0) {
-            const { construction_projects: _omit, ...rest } = log as Record<string, unknown> & {
-              construction_projects?: unknown;
-            };
-            data = rest;
-            error = null;
-          }
-        }
-      }
-    }
-
-    if (error || !data) {
-      return c.json({ error: "Not found", message: error?.message }, 404);
+      return c.json({ error: "Not found" }, 404);
     }
 
     return c.json(data);
+  },
+);
+
+/**
+ * GET /v1/work-logs/:workLogId/conversation
+ * List the conversation (comments) on a work log, oldest first.
+ */
+app.openapi(
+  createRoute({
+    method: "get",
+    path: "/{workLogId}/conversation",
+    tags: ["Work Logs"],
+    summary: "Get work log conversation",
+    request: { params: z.object({ workLogId: z.string().uuid() }) },
+    responses: {
+      200: {
+        description: "Conversation entries",
+        content: { "application/json": { schema: z.array(z.any()) } },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const supabase = c.get("supabase");
+    const user = c.get("user");
+    const { workLogId } = c.req.valid("param");
+
+    if (!user) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    const workLog = await resolveAccessibleWorkLog(supabase, user.id, workLogId);
+    if (!workLog) {
+      return c.json({ error: "Not found" }, 404);
+    }
+
+    // Access is established above; read with service role so org admins see
+    // the full thread regardless of conversation-level RLS.
+    const adminClient = getServiceClient();
+    const { data, error } = await adminClient
+      .schema("core")
+      .from("work_log_conversations")
+      .select("*, user:users!user_id(display_name, username)")
+      .eq("work_log_id", workLogId)
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      return c.json({
+        error: "Failed to fetch conversation",
+        message: error.message,
+      }, 500);
+    }
+
+    return c.json(data ?? []);
+  },
+);
+
+/**
+ * POST /v1/work-logs/:workLogId/comments
+ * Add a comment to a work log's conversation.
+ */
+app.openapi(
+  createRoute({
+    method: "post",
+    path: "/{workLogId}/comments",
+    tags: ["Work Logs"],
+    summary: "Add work log comment",
+    request: {
+      params: z.object({ workLogId: z.string().uuid() }),
+      body: {
+        content: {
+          "application/json": {
+            schema: z.object({
+              content: z.string().min(1),
+              // Accepted for SDK compatibility; work_log_conversations has no
+              // parent_comment_id column, so threading is ignored for now.
+              parentCommentId: z.string().optional(),
+            }),
+          },
+        },
+      },
+    },
+    responses: {
+      201: {
+        description: "Comment created",
+        content: { "application/json": { schema: z.any() } },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const supabase = c.get("supabase");
+    const user = c.get("user");
+    const { workLogId } = c.req.valid("param");
+    const body = c.req.valid("json");
+
+    if (!user) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    const workLog = await resolveAccessibleWorkLog(supabase, user.id, workLogId);
+    if (!workLog) {
+      return c.json({ error: "Not found" }, 404);
+    }
+
+    const adminClient = getServiceClient();
+    const { data, error } = await adminClient
+      .schema("core")
+      .from("work_log_conversations")
+      .insert({
+        work_log_id: workLogId,
+        user_id: user.id,
+        message: body.content.trim(),
+      })
+      .select("*, user:users!user_id(display_name, username)")
+      .single();
+
+    if (error || !data) {
+      return c.json({
+        error: "Failed to add comment",
+        message: error?.message,
+      }, 500);
+    }
+
+    return c.json(data, 201);
   },
 );
 
