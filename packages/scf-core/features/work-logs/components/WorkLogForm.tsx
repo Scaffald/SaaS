@@ -461,6 +461,7 @@ export function WorkLogForm({
           <Button
             iconStart={Save}
             size="lg"
+            color="primary"
             onPress={() => submit()}
             disabled={isSubmitting}
           >

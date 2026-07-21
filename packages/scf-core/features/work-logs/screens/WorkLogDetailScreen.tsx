@@ -16,6 +16,7 @@ import {
 import { useUserSkills } from "@scf/core/utils/profile-skills-sdk-hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { buildSkillLookup } from "../utils/data-normalizers";
+import { calculateTotalHours } from "../hooks/useWorkLogForm";
 import { ToggleSwitch } from "@scaffald/ui";
 import {
   Activity,
@@ -978,24 +979,5 @@ function ConversationEntry({ entry }: ConversationEntryProps) {
   );
 }
 
-const computeEntryHours = (start: string, end: string): number => {
-  const [startHour, startMinute] = start.split(":").map(Number);
-  const [endHour, endMinute] = end.split(":").map(Number);
-
-  if (
-    Number.isNaN(startHour) ||
-    Number.isNaN(startMinute) ||
-    Number.isNaN(endHour) ||
-    Number.isNaN(endMinute)
-  ) {
-    return 0;
-  }
-
-  const startMinutes = startHour * 60 + startMinute;
-  const endMinutes = endHour * 60 + endMinute;
-  if (endMinutes <= startMinutes) {
-    return 0;
-  }
-
-  return (endMinutes - startMinutes) / 60;
-};
+const computeEntryHours = (start: string, end: string): number =>
+  calculateTotalHours([{ start, end }]);
