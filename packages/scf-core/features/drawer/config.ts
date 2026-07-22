@@ -301,15 +301,12 @@ export const MOBILE_SECTIONS: MobileSection[] = [
     label: 'Home',
     icon: Home,
     route: ROUTES.DASHBOARD.path,
-    matchPrefixes: [
-      '/dashboard',
-      // Sections that no longer have their own tab still highlight Home
-      // when the user lands on them via a Home-tab widget link.
-      '/workers',
-      '/employers',
-      '/assessments',
-      '/profile',
-    ],
+    // Only the dashboard is "Home". Sections without their own tab
+    // (/profile, /employers, /workers, /assessments) used to be listed here,
+    // which left Home lit up while the user was somewhere else entirely —
+    // including employer screens in employer mode (#385). They now match no
+    // tab, and getActiveSectionIndex returns -1 so nothing is highlighted.
+    matchPrefixes: ['/dashboard'],
     subItems: [],
   },
   {

@@ -40,6 +40,7 @@ function shouldForceMobile(): boolean {
   return new URLSearchParams(window.location.search).has('forceMobile') // platform-allow: web-only dev flag
 }
 
+/** Index of the tab owning `pathname`, or -1 when the route isn't a tab section. */
 function getActiveSectionIndex(pathname: string): number {
   for (let i = 0; i < MOBILE_SECTIONS.length; i++) {
     const section = MOBILE_SECTIONS[i]
@@ -49,7 +50,8 @@ function getActiveSectionIndex(pathname: string): number {
       }
     }
   }
-  return 0
+  // Previously fell back to 0, so Profile/employer screens lit up Home (#385).
+  return -1
 }
 
 // ── GlassTabBar ──
@@ -244,6 +246,9 @@ export function MobileBottomNav() {
               width: indicatorWidth,
               borderRadius: ACTIVE_INDICATOR_RADIUS,
               backgroundColor: activeBg,
+              // No tab owns this route (e.g. Profile, employer screens) —
+              // hide the pill rather than stranding it on Home (#385).
+              opacity: activeIndex < 0 ? 0 : 1,
             }}
           />
 
