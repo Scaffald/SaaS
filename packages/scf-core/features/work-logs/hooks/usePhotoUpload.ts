@@ -495,11 +495,17 @@ export const usePhotoUpload = ({
 
         setUploadProgress(55);
 
+        // uploadToSignedUrl wants (path, token); the API returns them as
+        // `path` + `token` (uploadUrl/photoId kept for the SDK response type).
+        const signedUpload = uploadResponse as typeof uploadResponse & {
+          path?: string;
+          token?: string;
+        };
         const { error: storageError } = await supabase.storage
           .from(WORK_LOG_PHOTO_BUCKET)
           .uploadToSignedUrl(
-            uploadResponse.uploadUrl,
-            uploadResponse.photoId,
+            signedUpload.path ?? signedUpload.uploadUrl,
+            signedUpload.token ?? signedUpload.photoId,
             payload.data,
             {
               contentType: payload.mimeType,
@@ -563,7 +569,11 @@ export const usePhotoUpload = ({
             ? updates.caption
             : updates.caption ?? undefined,
         displayOrder: updates.displayOrder,
-      });
+        // The API accepts photoType; the SDK param type lags behind.
+        ...(updates.photoType !== undefined
+          ? { photoType: updates.photoType }
+          : {}),
+      } as Parameters<typeof updateMetadataMutation.mutateAsync>[0]);
       await refresh();
     },
     [refresh, updateMetadataMutation, workLogId]

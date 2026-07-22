@@ -710,7 +710,17 @@ app.openapi(
       return c.json({ error: "Not found" }, 404);
     }
 
-    return c.json(data);
+    // The photo gallery reads `workLog.photos` from this response.
+    const adminClient = getServiceClient();
+    const { data: photos } = await adminClient
+      .schema("core")
+      .from("work_log_photos")
+      .select("*")
+      .eq("work_log_id", workLogId)
+      .order("display_order", { ascending: true })
+      .order("created_at", { ascending: true });
+
+    return c.json({ ...data, photos: photos ?? [] });
   },
 );
 
@@ -1617,6 +1627,501 @@ app.openapi(
         .toISOString(),
       storagePath,
     });
+  },
+);
+
+const WORK_LOG_PHOTO_BUCKET = "work-log-photos";
+const SIGNED_UPLOAD_URL_TTL_SECONDS = 60 * 5;
+const DEFAULT_STORAGE_LIMIT_BYTES = 104_857_600;
+
+type WorkLogRole = "owner" | "editor" | "viewer";
+
+/**
+ * Resolve the caller's role on a work log: owner, editor (edit collaborator)
+ * or viewer (view collaborator / org member). Null when inaccessible.
+ */
+async function resolveWorkLogRole(
+  supabase: SupabaseClientLike,
+  userId: string,
+  workLogId: string,
+): Promise<{ workLog: Record<string, unknown>; role: WorkLogRole } | null> {
+  const workLog = await resolveAccessibleWorkLog(supabase, userId, workLogId);
+  if (!workLog) {
+    return null;
+  }
+  if (workLog.user_id === userId) {
+    return { workLog, role: "owner" };
+  }
+  const adminClient = getServiceClient();
+  const { data: collaborator } = await adminClient
+    .schema("core")
+    .from("work_log_collaborators")
+    .select("permission_level")
+    .eq("work_log_id", workLogId)
+    .eq("collaborator_user_id", userId)
+    .maybeSingle();
+  return {
+    workLog,
+    role: collaborator?.permission_level === "edit" ? "editor" : "viewer",
+  };
+}
+
+/** Adjust the owner's work-log photo storage usage by delta bytes. */
+async function adjustPhotoStorageUsage(
+  adminClient: SupabaseClientLike,
+  ownerId: string,
+  deltaBytes: number,
+): Promise<void> {
+  const { data: usage } = await adminClient
+    .schema("core")
+    .from("user_storage_usage")
+    .select("work_log_photos_bytes")
+    .eq("user_id", ownerId)
+    .maybeSingle();
+  if (usage) {
+    await adminClient
+      .schema("core")
+      .from("user_storage_usage")
+      .update({
+        work_log_photos_bytes: Math.max(
+          0,
+          (usage.work_log_photos_bytes ?? 0) + deltaBytes,
+        ),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("user_id", ownerId);
+  } else if (deltaBytes > 0) {
+    await adminClient.schema("core").from("user_storage_usage").insert({
+      user_id: ownerId,
+      work_log_photos_bytes: deltaBytes,
+      portfolio_photos_bytes: 0,
+      certification_files_bytes: 0,
+    });
+  }
+}
+
+/**
+ * POST /v1/work-logs/:workLogId/photos
+ * Register a photo and return a signed upload URL. Owner or edit collaborator.
+ */
+app.openapi(
+  createRoute({
+    method: "post",
+    path: "/{workLogId}/photos",
+    tags: ["Work Logs"],
+    summary: "Create signed upload for a work log photo",
+    request: {
+      params: z.object({ workLogId: z.string().uuid() }),
+      body: {
+        content: {
+          "application/json": {
+            schema: z.object({
+              fileName: z.string().min(1),
+              mimeType: z.string().min(1),
+              fileSizeBytes: z.number().int().positive(),
+              caption: z.string().optional(),
+              photoType: z.enum(["before", "progress", "after", "general"])
+                .optional(),
+              displayOrder: z.number().int().min(0).optional(),
+              showOnProfile: z.boolean().optional(),
+              takenAt: z.string().optional(),
+            }),
+          },
+        },
+      },
+    },
+    responses: {
+      201: {
+        description: "Signed upload created",
+        content: { "application/json": { schema: z.any() } },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const supabase = c.get("supabase");
+    const user = c.get("user");
+    const { workLogId } = c.req.valid("param");
+    const body = c.req.valid("json");
+
+    if (!user) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    const access = await resolveWorkLogRole(supabase, user.id, workLogId);
+    if (!access) {
+      return c.json({ error: "Not found" }, 404);
+    }
+    if (access.role === "viewer") {
+      return c.json({
+        error: "Forbidden",
+        message: "You do not have permission to upload photos for this work log.",
+      }, 403);
+    }
+
+    const adminClient = getServiceClient();
+    const ownerId = access.workLog.user_id as string;
+
+    const { data: usage } = await adminClient
+      .schema("core")
+      .from("user_storage_usage")
+      .select("work_log_photos_bytes, storage_limit_bytes")
+      .eq("user_id", ownerId)
+      .maybeSingle();
+    const currentUsage = usage?.work_log_photos_bytes ?? 0;
+    const storageLimit = usage?.storage_limit_bytes ?? DEFAULT_STORAGE_LIMIT_BYTES;
+    if (currentUsage + body.fileSizeBytes > storageLimit) {
+      return c.json({
+        error: "Storage limit reached",
+        message: "Remove existing photos or contact support.",
+      }, 400);
+    }
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const filePath = `${ownerId}/${workLogId}/${timestamp}-${sanitizeFileName(body.fileName)}`;
+
+    const { data: signedUpload, error: signedUrlError } = await adminClient
+      .storage
+      .from(WORK_LOG_PHOTO_BUCKET)
+      .createSignedUploadUrl(filePath);
+    if (signedUrlError || !signedUpload) {
+      return c.json({
+        error: "Unable to create upload URL",
+        message: signedUrlError?.message,
+      }, 500);
+    }
+
+    const { data: photo, error: insertError } = await adminClient
+      .schema("core")
+      .from("work_log_photos")
+      .insert({
+        work_log_id: workLogId,
+        file_path: filePath,
+        file_size_bytes: body.fileSizeBytes,
+        caption: body.caption ?? null,
+        photo_type: body.photoType ?? null,
+        display_order: body.displayOrder ?? 0,
+        show_on_profile: body.showOnProfile ?? false,
+        taken_at: body.takenAt ?? null,
+      })
+      .select()
+      .single();
+    if (insertError || !photo) {
+      return c.json({
+        error: "Failed to record photo metadata",
+        message: insertError?.message,
+      }, 500);
+    }
+
+    await adjustPhotoStorageUsage(adminClient, ownerId, body.fileSizeBytes);
+    await recordAuditLog(adminClient, {
+      workLogId,
+      userId: user.id,
+      action: "photo_added",
+      newValue: { photo_id: photo.id, file_path: filePath },
+    });
+
+    // `path` + `token` are the real signed-upload inputs
+    // (supabase.storage.uploadToSignedUrl(path, token, data)); photoId is the
+    // row id. uploadUrl kept for the SDK's UploadPhotoResponse type.
+    return c.json({
+      photoId: photo.id,
+      uploadUrl: signedUpload.signedUrl,
+      token: signedUpload.token,
+      path: filePath,
+      expiresAt: new Date(Date.now() + SIGNED_UPLOAD_URL_TTL_SECONDS * 1000)
+        .toISOString(),
+      photo,
+    }, 201);
+  },
+);
+
+/**
+ * Resolve a photo row and the caller's role on its work log.
+ */
+async function resolvePhotoAccess(
+  supabase: SupabaseClientLike,
+  userId: string,
+  photoId: string,
+): Promise<
+  | {
+    photo: Record<string, unknown>;
+    workLog: Record<string, unknown>;
+    role: WorkLogRole;
+  }
+  | null
+> {
+  const adminClient = getServiceClient();
+  const { data: photo } = await adminClient
+    .schema("core")
+    .from("work_log_photos")
+    .select("*")
+    .eq("id", photoId)
+    .maybeSingle();
+  if (!photo) {
+    return null;
+  }
+  const access = await resolveWorkLogRole(
+    supabase,
+    userId,
+    photo.work_log_id as string,
+  );
+  if (!access) {
+    return null;
+  }
+  return { photo, workLog: access.workLog, role: access.role };
+}
+
+/**
+ * PATCH /v1/work-logs/photos/:photoId
+ * Update photo metadata. Owner or edit collaborator.
+ */
+app.openapi(
+  createRoute({
+    method: "patch",
+    path: "/photos/{photoId}",
+    tags: ["Work Logs"],
+    summary: "Update work log photo metadata",
+    request: {
+      params: z.object({ photoId: z.string().uuid() }),
+      body: {
+        content: {
+          "application/json": {
+            schema: z.object({
+              caption: z.string().nullable().optional(),
+              photoType: z.enum(["before", "progress", "after", "general"])
+                .nullable().optional(),
+              displayOrder: z.number().int().min(0).optional(),
+            }),
+          },
+        },
+      },
+    },
+    responses: {
+      200: {
+        description: "Photo updated",
+        content: { "application/json": { schema: z.any() } },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const supabase = c.get("supabase");
+    const user = c.get("user");
+    const { photoId } = c.req.valid("param");
+    const body = c.req.valid("json");
+
+    if (!user) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    const access = await resolvePhotoAccess(supabase, user.id, photoId);
+    if (!access) {
+      return c.json({ error: "Not found" }, 404);
+    }
+    if (access.role === "viewer") {
+      return c.json({
+        error: "Forbidden",
+        message: "You do not have permission to update this photo.",
+      }, 403);
+    }
+
+    const updates: Record<string, unknown> = {};
+    if (body.caption !== undefined) updates.caption = body.caption;
+    if (body.photoType !== undefined) updates.photo_type = body.photoType;
+    if (body.displayOrder !== undefined) {
+      updates.display_order = body.displayOrder;
+    }
+    if (Object.keys(updates).length === 0) {
+      return c.json({
+        error: "Invalid request",
+        message: "No metadata fields provided for update.",
+      }, 400);
+    }
+
+    const adminClient = getServiceClient();
+    const { data, error } = await adminClient
+      .schema("core")
+      .from("work_log_photos")
+      .update(updates)
+      .eq("id", photoId)
+      .select()
+      .single();
+    if (error || !data) {
+      return c.json({
+        error: "Failed to update photo metadata",
+        message: error?.message,
+      }, 500);
+    }
+
+    return c.json(data);
+  },
+);
+
+/**
+ * PATCH /v1/work-logs/photos/:photoId/visibility
+ * Toggle a photo's profile visibility. Owner only.
+ */
+app.openapi(
+  createRoute({
+    method: "patch",
+    path: "/photos/{photoId}/visibility",
+    tags: ["Work Logs"],
+    summary: "Update work log photo visibility",
+    request: {
+      params: z.object({ photoId: z.string().uuid() }),
+      body: {
+        content: {
+          "application/json": {
+            schema: z.object({
+              // SDK sends visibility public|private|organization; the DB
+              // column is boolean show_on_profile. Accept either form.
+              visibility: z.enum(["public", "private", "organization"])
+                .optional(),
+              showOnProfile: z.boolean().optional(),
+            }),
+          },
+        },
+      },
+    },
+    responses: {
+      200: {
+        description: "Photo visibility updated",
+        content: { "application/json": { schema: z.any() } },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const supabase = c.get("supabase");
+    const user = c.get("user");
+    const { photoId } = c.req.valid("param");
+    const body = c.req.valid("json");
+
+    if (!user) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    const showOnProfile = body.showOnProfile ?? (body.visibility === "public");
+    if (body.showOnProfile === undefined && body.visibility === undefined) {
+      return c.json({
+        error: "Invalid request",
+        message: "visibility or showOnProfile is required.",
+      }, 400);
+    }
+
+    const access = await resolvePhotoAccess(supabase, user.id, photoId);
+    if (!access) {
+      return c.json({ error: "Not found" }, 404);
+    }
+    if (access.role !== "owner") {
+      return c.json({
+        error: "Forbidden",
+        message: "Only the owner can change photo visibility.",
+      }, 403);
+    }
+
+    const adminClient = getServiceClient();
+    const { data, error } = await adminClient
+      .schema("core")
+      .from("work_log_photos")
+      .update({ show_on_profile: showOnProfile })
+      .eq("id", photoId)
+      .select()
+      .single();
+    if (error || !data) {
+      return c.json({
+        error: "Failed to update photo visibility",
+        message: error?.message,
+      }, 500);
+    }
+
+    return c.json(data);
+  },
+);
+
+/**
+ * DELETE /v1/work-logs/photos/:photoId
+ * Delete a photo (storage objects + row). Owner or edit collaborator.
+ */
+app.openapi(
+  createRoute({
+    method: "delete",
+    path: "/photos/{photoId}",
+    tags: ["Work Logs"],
+    summary: "Delete work log photo",
+    request: { params: z.object({ photoId: z.string().uuid() }) },
+    responses: {
+      200: {
+        description: "Photo deleted",
+        content: {
+          "application/json": {
+            schema: z.object({ success: z.boolean() }),
+          },
+        },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const supabase = c.get("supabase");
+    const user = c.get("user");
+    const { photoId } = c.req.valid("param");
+
+    if (!user) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    const access = await resolvePhotoAccess(supabase, user.id, photoId);
+    if (!access) {
+      return c.json({ error: "Not found" }, 404);
+    }
+    if (access.role === "viewer") {
+      return c.json({
+        error: "Forbidden",
+        message: "You do not have permission to delete this photo.",
+      }, 403);
+    }
+
+    const adminClient = getServiceClient();
+    const filePaths = [
+      access.photo.file_path,
+      access.photo.thumbnail_path,
+      access.photo.medium_path,
+    ].filter((value): value is string =>
+      typeof value === "string" && value.length > 0
+    );
+    if (filePaths.length > 0) {
+      const { error: removeError } = await adminClient.storage
+        .from(WORK_LOG_PHOTO_BUCKET)
+        .remove(filePaths);
+      if (removeError) {
+        console.warn("[work-logs] failed to delete photo storage objects:", removeError.message);
+      }
+    }
+
+    const { error: deleteError } = await adminClient
+      .schema("core")
+      .from("work_log_photos")
+      .delete()
+      .eq("id", photoId);
+    if (deleteError) {
+      return c.json({
+        error: "Failed to delete photo record",
+        message: deleteError.message,
+      }, 500);
+    }
+
+    const photoBytes = Number(access.photo.file_size_bytes ?? 0);
+    if (photoBytes > 0) {
+      await adjustPhotoStorageUsage(
+        adminClient,
+        access.workLog.user_id as string,
+        -photoBytes,
+      );
+    }
+
+    return c.json({ success: true });
   },
 );
 
