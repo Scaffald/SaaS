@@ -1,0 +1,11 @@
+{
+  "//": "Root Deno config. Exists so `deno lint`/`deno fmt` in the Deno-based edge-function jobs can resolve the npm-linked pnpm workspace at the repo root (they abort at startup without a workspace deno.json). Deno tooling is scoped to Supabase edge functions; the rest of the monorepo is Node/pnpm.",
+  "nodeModulesDir": "auto",
+  "lint": {
+    "include": ["packages/supabase/functions/"],
+    "exclude": ["packages/supabase/functions/**/__tests__/"]
+  },
+  "fmt": {
+    "include": ["packages/supabase/functions/"]
+  }
+}

@@ -992,7 +992,9 @@ app.openapi(getUserSkillsMTRoute, async (c) => {
   // The profile UI filters out rows lacking skill_details.name, so raw
   // user_skills rows would otherwise vanish from "Your Skills".
   const csiIds = [
-    ...new Set(userRows.filter((r) => r.csi_skill_id).map((r) => r.csi_skill_id)),
+    ...new Set(
+      userRows.filter((r) => r.csi_skill_id).map((r) => r.csi_skill_id),
+    ),
   ] as string[];
   const onetIds = [
     ...new Set(
@@ -1002,7 +1004,15 @@ app.openapi(getUserSkillsMTRoute, async (c) => {
     ),
   ];
 
-  const csiMap = new Map<string, { name: string; code_key: string; code_display: string; depth: number | null }>();
+  const csiMap = new Map<
+    string,
+    {
+      name: string;
+      code_key: string;
+      code_display: string;
+      depth: number | null;
+    }
+  >();
   if (csiIds.length > 0) {
     const { data: csi } = await supabase
       .schema("data")

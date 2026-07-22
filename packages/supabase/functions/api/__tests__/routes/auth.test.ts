@@ -17,13 +17,12 @@ import {
   type TestResponse,
 } from "../helpers/test-client.ts";
 import {
-  cleanupCurrentTestData,
   createAdminClient,
   getLatestEmail,
   markTestStart,
   registerUserWithMagicLink,
 } from "../setup.ts";
-import { createTestUser } from "../helpers/fixtures.ts";
+import { cleanupCurrentTestData, createTestUser } from "../helpers/fixtures.ts";
 
 // ============================================================================
 // POST /v1/auth/magic-link - Request magic link

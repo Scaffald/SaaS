@@ -86,6 +86,8 @@ export async function createTestJob(overrides: {
   organization_id?: string;
   title?: string;
   description?: string;
+  // DB check constraint allows draft|open|paused|closed. "published" is the
+  // API-level alias for "open" (see routes/jobs.ts) — map it before insert.
   status?: "draft" | "open" | "paused" | "closed" | "published";
   employment_type?: "full_time" | "part_time" | "contract" | "temp" | "intern";
   remote_option?: "on_site" | "hybrid" | "remote";
@@ -109,7 +111,9 @@ export async function createTestJob(overrides: {
       organization_id: organizationId,
       title: overrides.title || `Test Job ${testId}`,
       description: overrides.description || "This is a test job description",
-      status: overrides.status || "published",
+      status: overrides.status === "published" || !overrides.status
+        ? "open"
+        : overrides.status,
       employment_type: overrides.employment_type || "full_time",
       remote_option: overrides.remote_option || "remote",
       location: overrides.location || "San Francisco, CA",
@@ -133,6 +137,15 @@ export async function createTestJob(overrides: {
 /**
  * Create a test application
  */
+// DB check constraint (migration 112) — API-level names like "pending" and
+// "reviewing" map through STATUS_API_TO_DB in routes/applications.ts.
+const APPLICATION_API_TO_DB_STATUS: Record<string, string> = {
+  pending: "new",
+  reviewing: "screen",
+  interviewing: "interview",
+  accepted: "hired",
+};
+
 export async function createTestApplication(overrides: {
   job_id?: string;
   user_id?: string;
@@ -168,7 +181,8 @@ export async function createTestApplication(overrides: {
     .insert({
       job_id: jobId,
       user_id: userId,
-      status: overrides.status || "pending",
+      status: APPLICATION_API_TO_DB_STATUS[overrides.status ?? "pending"] ??
+        overrides.status ?? "new",
       type: overrides.type || "quick",
       screening_answers: {},
       custom_answers: {},

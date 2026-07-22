@@ -1,10 +1,8 @@
+import { assertEquals } from "https://deno.land/std@0.208.0/assert/mod.ts";
 import {
-  assertEquals,
-} from "https://deno.land/std@0.208.0/assert/mod.ts";
-import {
+  type CompletionInputs,
   completionPercentage,
   getSectionStatuses,
-  type CompletionInputs,
   milestoneBadges,
   nextMilestone,
 } from "../../lib/profile-completion-calc.ts";
@@ -91,11 +89,19 @@ Deno.test("preferences complete via address OR preferred locations", () => {
     ...EMPTY,
     profile: { preferred_work_locations: ["Remote"] },
   });
-  assertEquals(byLocations.find((s) => s.id === "preferences")?.completed, true);
+  assertEquals(
+    byLocations.find((s) => s.id === "preferences")?.completed,
+    true,
+  );
 });
 
 Deno.test("milestones + nextMilestone track the percentage", () => {
-  assertEquals(milestoneBadges(55).map((m) => m.achieved), [true, true, false, false]);
+  assertEquals(milestoneBadges(55).map((m) => m.achieved), [
+    true,
+    true,
+    false,
+    false,
+  ]);
   assertEquals(nextMilestone(55), 75);
   assertEquals(nextMilestone(100), null);
 });

@@ -433,7 +433,8 @@ app.openapi(
       // caller should re-try (which will fail validation cleanly).
       return c.json(
         {
-          error: "This link was just used by someone else. Please ask for a new one.",
+          error:
+            "This link was just used by someone else. Please ask for a new one.",
         },
         409,
       );

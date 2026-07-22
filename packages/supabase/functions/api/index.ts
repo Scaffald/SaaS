@@ -114,8 +114,7 @@ app.get("/v1/health", (c) =>
   c.json({
     commit: Deno.env.get("GIT_COMMIT") ?? "unknown",
     deployedAt: Deno.env.get("DEPLOYED_AT") ?? FUNCTION_BOOTED_AT,
-  }),
-);
+  }));
 
 // Routes
 app.route("/v1/jobs", jobsRouter);

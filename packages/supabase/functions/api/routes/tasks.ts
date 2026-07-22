@@ -42,7 +42,8 @@ app.openapi(
         search: z.string().optional(),
         page: z.coerce.number().optional(),
         pageSize: z.coerce.number().optional(),
-        sortField: z.enum(["created_at", "updated_at", "due_date", "priority"]).optional(),
+        sortField: z.enum(["created_at", "updated_at", "due_date", "priority"])
+          .optional(),
         sortDirection: z.enum(["asc", "desc"]).optional(),
       }),
     },
@@ -88,11 +89,15 @@ app.openapi(
       .select("*", { count: "exact" });
 
     if (q.organizationId) query = query.eq("organization_id", q.organizationId);
-    if (q.assigneeUserId) query = query.eq("assignee_user_id", q.assigneeUserId);
+    if (q.assigneeUserId) {
+      query = query.eq("assignee_user_id", q.assigneeUserId);
+    }
     if (q.projectId) query = query.eq("project_id", q.projectId);
     if (q.punchlistId) query = query.eq("punchlist_id", q.punchlistId);
     if (q.teamSlug) query = query.eq("team_slug", q.teamSlug);
-    if (statusList && statusList.length > 0) query = query.in("status", statusList);
+    if (statusList && statusList.length > 0) {
+      query = query.in("status", statusList);
+    }
     if (q.search && q.search.trim().length > 0) {
       const needle = q.search.trim();
       query = query.or(`title.ilike.%${needle}%,description.ilike.%${needle}%`);
@@ -105,7 +110,10 @@ app.openapi(
 
     const { data, error, count } = await query;
     if (error) {
-      return c.json({ error: "Failed to list tasks", message: error.message }, 500);
+      return c.json(
+        { error: "Failed to list tasks", message: error.message },
+        500,
+      );
     }
     return c.json({
       tasks: data ?? [],
@@ -148,7 +156,10 @@ app.openapi(
       },
     },
     responses: {
-      201: { description: "Task created", content: { "application/json": { schema: z.any() } } },
+      201: {
+        description: "Task created",
+        content: { "application/json": { schema: z.any() } },
+      },
     },
     security: [{ bearerAuth: [] }],
   }),
@@ -179,7 +190,10 @@ app.openapi(
       .single();
 
     if (error || !data) {
-      return c.json({ error: "Failed to create task", message: error?.message }, 500);
+      return c.json(
+        { error: "Failed to create task", message: error?.message },
+        500,
+      );
     }
     return c.json(data, 201);
   },
@@ -196,7 +210,10 @@ app.openapi(
     summary: "Get task by id",
     request: { params: z.object({ taskId: z.string().uuid() }) },
     responses: {
-      200: { description: "Task", content: { "application/json": { schema: z.any() } } },
+      200: {
+        description: "Task",
+        content: { "application/json": { schema: z.any() } },
+      },
     },
     security: [{ bearerAuth: [] }],
   }),
@@ -249,7 +266,10 @@ app.openapi(
       },
     },
     responses: {
-      200: { description: "Task updated", content: { "application/json": { schema: z.any() } } },
+      200: {
+        description: "Task updated",
+        content: { "application/json": { schema: z.any() } },
+      },
     },
     security: [{ bearerAuth: [] }],
   }),
@@ -266,7 +286,9 @@ app.openapi(
     if (body.status !== undefined) patch.status = body.status;
     if (body.priority !== undefined) patch.priority = body.priority;
     if (body.dueDate !== undefined) patch.due_date = body.dueDate;
-    if (body.assigneeUserId !== undefined) patch.assignee_user_id = body.assigneeUserId;
+    if (body.assigneeUserId !== undefined) {
+      patch.assignee_user_id = body.assigneeUserId;
+    }
     if (body.projectId !== undefined) patch.project_id = body.projectId;
     if (body.punchlistId !== undefined) patch.punchlist_id = body.punchlistId;
     if (body.teamSlug !== undefined) patch.team_slug = body.teamSlug;
@@ -283,7 +305,10 @@ app.openapi(
       .select()
       .single();
     if (error || !data) {
-      return c.json({ error: "Failed to update task", message: error?.message }, 404);
+      return c.json(
+        { error: "Failed to update task", message: error?.message },
+        404,
+      );
     }
     return c.json(data);
   },
@@ -316,7 +341,10 @@ app.openapi(
       .delete()
       .eq("id", taskId);
     if (error) {
-      return c.json({ error: "Failed to delete task", message: error.message }, 403);
+      return c.json(
+        { error: "Failed to delete task", message: error.message },
+        403,
+      );
     }
     return c.body(null, 204);
   },
@@ -344,7 +372,10 @@ app.openapi(
       },
     },
     responses: {
-      200: { description: "Task completed", content: { "application/json": { schema: z.any() } } },
+      200: {
+        description: "Task completed",
+        content: { "application/json": { schema: z.any() } },
+      },
     },
     security: [{ bearerAuth: [] }],
   }),
@@ -363,7 +394,10 @@ app.openapi(
       .select()
       .single();
     if (updErr || !task) {
-      return c.json({ error: "Failed to complete task", message: updErr?.message }, 404);
+      return c.json({
+        error: "Failed to complete task",
+        message: updErr?.message,
+      }, 404);
     }
 
     if (body.workLogId) {

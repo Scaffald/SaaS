@@ -71,10 +71,12 @@ jobs:
           ANON_KEY="${{ secrets.SUPABASE_ANON_KEY_LOCAL || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' }}"
           timeout 600 bash -c "until curl -sf http://127.0.0.1:54321/functions/v1/api/health -H \"apikey: \$ANON_KEY\" 2>/dev/null | grep -q ok; do sleep 2; done"
 
-      - name: Seed database
-        run: |
-          cd packages
-          supabase db seed
+      # NOTE: seed data is applied automatically by `supabase start` via the
+      # [db.seed] block in packages/supabase/config.toml (enabled = true,
+      # sql_paths = ./seeds/*.sql). There is intentionally no explicit seed
+      # step here: the previous `supabase db seed` aborted every run — `seed`
+      # is not a valid `supabase db` subcommand in the pinned CLI — which left
+      # this job with no signal for months (#400).
 
       - name: Run Unit Tests
         continue-on-error: true
