@@ -16,9 +16,21 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
+import { createClient } from "@supabase/supabase-js";
 import { authMiddleware } from "../middleware/auth.ts";
 
 const app = new Hono();
+
+// OAuth protocol endpoints are server-authoritative: client credentials,
+// authorization codes and tokens live in core.oauth_* tables that only
+// service_role may read (no anon/authenticated grants). The request-scoped
+// RLS client can never see them — every handler here made all OAuth flows
+// fail with invalid_client/401 until switched to the service client.
+function getServiceClient() {
+  const url = Deno.env.get("SUPABASE_URL") ?? "";
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+  return createClient(url, key);
+}
 
 // =============================================================================
 // Validation Schemas
@@ -169,7 +181,7 @@ app.post(
   async (c) => {
     const input = c.req.valid("json");
     const user = c.get("user");
-    const supabase = c.get("supabase");
+    const supabase = getServiceClient();
 
     // If user not authenticated, return pending auth info for session storage
     if (!user) {
@@ -238,14 +250,16 @@ app.post(
       );
     }
 
-    // Validate user permissions using database function
-    const { data: authorizedScopes, error: scopeError } = await supabase.rpc(
-      "validate_oauth_scope",
-      {
-        p_user_id: user.id,
-        p_requested_scopes: requestedScopes,
-      },
-    );
+    // Validate user permissions using database function (lives in core).
+    const { data: authorizedScopes, error: scopeError } = await supabase
+      .schema("core")
+      .rpc(
+        "validate_oauth_scope",
+        {
+          p_user_id: user.id,
+          p_requested_scopes: requestedScopes,
+        },
+      );
 
     if (scopeError || !authorizedScopes || authorizedScopes.length === 0) {
       return c.json(
@@ -265,7 +279,11 @@ app.post(
       .gt("expires_at", new Date().toISOString())
       .single();
 
-    const needsConsent = app.status !== "trusted" || !existingConsent;
+    // Trusted (first-party) apps skip the consent screen entirely. Everyone
+    // else needs consent unless a valid, unrevoked grant already exists.
+    // (Was `||`, which forced consent even for trusted apps with no prior
+    // grant — the trusted fast-path could never trigger.)
+    const needsConsent = app.status !== "trusted" && !existingConsent;
 
     if (needsConsent) {
       // Return consent_required flag for UI to show consent screen
@@ -350,7 +368,7 @@ app.post(
  */
 app.post("/token", zValidator("form", tokenSchema), async (c) => {
   const input = c.req.valid("form");
-  const supabase = c.get("supabase");
+  const supabase = getServiceClient();
 
   // Authenticate client
   const { data: app, error: appError } = await supabase
@@ -367,9 +385,13 @@ app.post("/token", zValidator("form", tokenSchema), async (c) => {
     );
   }
 
-  // Verify client secret (simplified - should use bcrypt in production)
-  // TODO: Implement proper bcrypt verification
-  if (!app.client_secret_hash) {
+  // Verify client secret (SHA-256 hex, matching how secrets are stored;
+  // bcrypt would be stronger but this must at least actually compare).
+  // Previously only checked that a hash EXISTED — any secret was accepted.
+  if (
+    !app.client_secret_hash ||
+    (await sha256Hash(input.client_secret)) !== app.client_secret_hash
+  ) {
     return c.json(
       oauthError("invalid_client", "Invalid client credentials"),
       401,
@@ -644,7 +666,7 @@ app.post("/token", zValidator("form", tokenSchema), async (c) => {
  */
 app.post("/revoke", zValidator("form", revokeSchema), async (c) => {
   const input = c.req.valid("form");
-  const supabase = c.get("supabase");
+  const supabase = getServiceClient();
 
   // Authenticate client
   const { data: app, error: appError } = await supabase
@@ -654,7 +676,10 @@ app.post("/revoke", zValidator("form", revokeSchema), async (c) => {
     .eq("client_id", input.client_id)
     .single();
 
-  if (appError || !app) {
+  if (
+    appError || !app || !app.client_secret_hash ||
+    (await sha256Hash(input.client_secret)) !== app.client_secret_hash
+  ) {
     return c.json(
       oauthError("invalid_client", "Invalid client credentials"),
       401,
@@ -702,7 +727,7 @@ app.post("/revoke", zValidator("form", revokeSchema), async (c) => {
  */
 app.post("/introspect", zValidator("form", introspectSchema), async (c) => {
   const input = c.req.valid("form");
-  const supabase = c.get("supabase");
+  const supabase = getServiceClient();
 
   // Authenticate client
   const { data: app, error: appError } = await supabase
@@ -712,7 +737,10 @@ app.post("/introspect", zValidator("form", introspectSchema), async (c) => {
     .eq("client_id", input.client_id)
     .single();
 
-  if (appError || !app) {
+  if (
+    appError || !app || !app.client_secret_hash ||
+    (await sha256Hash(input.client_secret)) !== app.client_secret_hash
+  ) {
     return c.json({ active: false }, 401);
   }
 
@@ -750,36 +778,58 @@ app.post("/introspect", zValidator("form", introspectSchema), async (c) => {
  */
 app.get("/userinfo", authMiddleware, async (c) => {
   const user = c.get("user");
-  const supabase = c.get("supabase");
+  const supabase = getServiceClient();
 
   if (!user) {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
-  // Fetch user profile
-  const { data: profile, error } = await supabase
-    .schema("core")
-    .from("user_profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
+  // Names live in core.profile (keyed by user_id); avatar/display live in
+  // core.users. (Was reading core.user_profiles, which holds career data and
+  // no name columns, so every field came back undefined.)
+  const [{ data: profile }, { data: account }] = await Promise.all([
+    supabase
+      .schema("core")
+      .from("profile")
+      .select("first_name, last_name, updated_at")
+      .eq("user_id", user.id)
+      .single(),
+    supabase
+      .schema("core")
+      .from("users")
+      .select("avatar_url, display_name, updated_at")
+      .eq("id", user.id)
+      .single(),
+  ]);
 
-  if (error || !profile) {
+  if (!profile && !account) {
     return c.json({
       sub: user.id,
       email: user.email,
     });
   }
 
-  return c.json({
+  const firstName = profile?.first_name ?? undefined;
+  const lastName = profile?.last_name ?? undefined;
+  const fullName = [firstName, lastName].filter(Boolean).join(" ") ||
+    account?.display_name || undefined;
+  const updatedRaw = profile?.updated_at ?? account?.updated_at;
+
+  // Omit optional OIDC claims that have no value rather than emitting nulls,
+  // so consumers can distinguish "unset" from present.
+  const claims: Record<string, unknown> = {
     sub: user.id,
     email: user.email,
-    name: `${profile.first_name} ${profile.last_name}`,
-    given_name: profile.first_name,
-    family_name: profile.last_name,
-    picture: profile.avatar_url,
-    updated_at: Math.floor(new Date(profile.updated_at).getTime() / 1000),
-  });
+  };
+  if (fullName) claims.name = fullName;
+  if (firstName) claims.given_name = firstName;
+  if (lastName) claims.family_name = lastName;
+  if (account?.avatar_url) claims.picture = account.avatar_url;
+  if (updatedRaw) {
+    claims.updated_at = Math.floor(new Date(updatedRaw).getTime() / 1000);
+  }
+
+  return c.json(claims);
 });
 
 export default app;

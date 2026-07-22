@@ -518,7 +518,11 @@ app.openapi(addCategoryRoute, async (c) => {
     .maybeSingle();
 
   if (existing) {
-    return c.json({ success: true, certification: existing, alreadyExists: true });
+    return c.json({
+      success: true,
+      certification: existing,
+      alreadyExists: true,
+    });
   }
 
   const { data, error } = await supabase
@@ -618,7 +622,9 @@ app.openapi(toggleSpecificRoute, async (c) => {
         .select("id")
         .single();
       if (reactivateError) {
-        throw new Error(`Failed to reactivate ${context}: ${reactivateError.message}`);
+        throw new Error(
+          `Failed to reactivate ${context}: ${reactivateError.message}`,
+        );
       }
       return reactivated;
     }
@@ -666,7 +672,10 @@ app.openapi(toggleSpecificRoute, async (c) => {
       await ensureActive(parentCatalog.id, "parent category");
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      return c.json({ error: "Failed to ensure parent chain", message: msg }, 500);
+      return c.json(
+        { error: "Failed to ensure parent chain", message: msg },
+        500,
+      );
     }
 
     const { data: cert, error: certError } = await supabase
@@ -680,7 +689,10 @@ app.openapi(toggleSpecificRoute, async (c) => {
       .single();
 
     if (certError || !cert) {
-      return c.json({ error: "Not Found", message: "Certification not found" }, 404);
+      return c.json(
+        { error: "Not Found", message: "Certification not found" },
+        404,
+      );
     }
 
     const { data: existing } = await supabase
@@ -791,7 +803,10 @@ app.openapi(removeTopLevelRoute, async (c) => {
     .single();
 
   if (catalogError || !topLevelCatalog) {
-    return c.json({ error: "Not Found", message: "Top-level certification not found" }, 404);
+    return c.json({
+      error: "Not Found",
+      message: "Top-level certification not found",
+    }, 404);
   }
 
   const { data: descendants } = await supabase
@@ -826,7 +841,9 @@ app.openapi(removeTopLevelRoute, async (c) => {
       success: false,
       needsConfirmation: true,
       affectedCount: affectedCount - 1,
-      message: `Removing this will also remove ${affectedCount - 1} related certification(s)`,
+      message: `Removing this will also remove ${
+        affectedCount - 1
+      } related certification(s)`,
     });
   }
 
@@ -911,7 +928,10 @@ app.openapi(updateProofRoute, async (c) => {
     .single();
 
   if (certError || !userCert) {
-    return c.json({ error: "Not Found", message: "Certification not found" }, 404);
+    return c.json(
+      { error: "Not Found", message: "Certification not found" },
+      404,
+    );
   }
 
   if (input.proof_type === "url") {
@@ -931,7 +951,11 @@ app.openapi(updateProofRoute, async (c) => {
       }, 500);
     }
 
-    return c.json({ success: true, proofType: "url", url: input.credential_url });
+    return c.json({
+      success: true,
+      proofType: "url",
+      url: input.credential_url,
+    });
   }
 
   // File proof.
@@ -942,14 +966,16 @@ app.openapi(updateProofRoute, async (c) => {
     }, 400);
   }
 
-  const base64Data = input.certificate_file.split(",")[1] ?? input.certificate_file;
+  const base64Data = input.certificate_file.split(",")[1] ??
+    input.certificate_file;
   const binaryString = atob(base64Data);
   const bytes = new Uint8Array(binaryString.length);
   for (let i = 0; i < binaryString.length; i++) {
     bytes[i] = binaryString.charCodeAt(i);
   }
 
-  const sanitizedFileName = input.file_name.replace(/[^a-zA-Z0-9.-]/g, "_").substring(0, 50);
+  const sanitizedFileName = input.file_name.replace(/[^a-zA-Z0-9.-]/g, "_")
+    .substring(0, 50);
   const uniqueFileName = `${user.id}/cert-${Date.now()}-${sanitizedFileName}`;
 
   const { error: uploadError } = await supabase.storage
@@ -1153,7 +1179,10 @@ app.openapi(uploadCertificationFileRoute, async (c) => {
     bytes[i] = binaryString.charCodeAt(i);
   }
 
-  const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, "_").substring(0, 50);
+  const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, "_").substring(
+    0,
+    50,
+  );
   const uniqueFileName = `${user.id}/cert-${Date.now()}-${sanitizedFileName}`;
 
   const { error: uploadError } = await supabase.storage
@@ -1323,7 +1352,10 @@ app.openapi(deleteCertificationRoute, async (c) => {
     .single();
 
   if (fetchError) {
-    return c.json({ error: "Not Found", message: "Certification not found" }, 404);
+    return c.json(
+      { error: "Not Found", message: "Certification not found" },
+      404,
+    );
   }
 
   if (cert.certificate_file_path) {

@@ -153,7 +153,9 @@ const withdrawRequestSchema = z
 // (notably useApplicationForm.createDraft at line 110, which then threw
 // "Failed to create application: no ID returned"). list() / getActivity() stay
 // wrapped because their SDK callers expect `{ data: [], ... }`.
-const applicationResponseSchema = applicationSchema.openapi("ApplicationResponse");
+const applicationResponseSchema = applicationSchema.openapi(
+  "ApplicationResponse",
+);
 
 // List applications response
 const listApplicationsResponseSchema = z
@@ -686,7 +688,9 @@ app.openapi(updateApplicationRoute, async (c) => {
     return c.json(
       {
         error: "Bad Request",
-        message: `Cannot update application with status: ${mapDbStatus(existing.status as string)}`,
+        message: `Cannot update application with status: ${
+          mapDbStatus(existing.status as string)
+        }`,
       },
       400,
     );
@@ -835,7 +839,9 @@ app.openapi(withdrawApplicationRoute, async (c) => {
     return c.json(
       {
         error: "Bad Request",
-        message: `Cannot withdraw application with status: ${mapDbStatus(existing.status as string)}`,
+        message: `Cannot withdraw application with status: ${
+          mapDbStatus(existing.status as string)
+        }`,
       },
       400,
     );
@@ -1188,7 +1194,10 @@ app.openapi(getUploadUrlRoute, async (c) => {
   const { application_id, attachment_type, filename } = c.req.valid("json");
 
   if (!user) {
-    return c.json({ error: "Unauthorized", message: "Authentication required" }, 401);
+    return c.json(
+      { error: "Unauthorized", message: "Authentication required" },
+      401,
+    );
   }
 
   const { data: application } = await supabase
@@ -1208,7 +1217,8 @@ app.openapi(getUploadUrlRoute, async (c) => {
     );
   }
 
-  const filePath = `${user.id}/${application.job_id}/${application_id}/${attachment_type}/${filename}`;
+  const filePath =
+    `${user.id}/${application.job_id}/${application_id}/${attachment_type}/${filename}`;
 
   const { data, error } = await supabase.storage
     .from("application-attachments")
@@ -1216,7 +1226,10 @@ app.openapi(getUploadUrlRoute, async (c) => {
 
   if (error) {
     return c.json(
-      { error: "Internal Server Error", message: "Failed to generate upload URL" },
+      {
+        error: "Internal Server Error",
+        message: "Failed to generate upload URL",
+      },
       500,
     );
   }
@@ -1269,7 +1282,10 @@ app.openapi(confirmUploadRoute, async (c) => {
   const input = c.req.valid("json");
 
   if (!user) {
-    return c.json({ error: "Unauthorized", message: "Authentication required" }, 401);
+    return c.json(
+      { error: "Unauthorized", message: "Authentication required" },
+      401,
+    );
   }
 
   const { data: application } = await supabase
@@ -1281,7 +1297,10 @@ app.openapi(confirmUploadRoute, async (c) => {
 
   if (!application || application.user_id !== user.id) {
     return c.json(
-      { error: "Forbidden", message: "You can only update your own applications" },
+      {
+        error: "Forbidden",
+        message: "You can only update your own applications",
+      },
       403,
     );
   }
@@ -1340,7 +1359,8 @@ const getMessagesRoute = createRoute({
                 body: z.string(),
                 created_at: z.string(),
                 sender_name: z.string().optional(),
-                sender_role: z.enum(["applicant", "recruiter", "system"]).optional(),
+                sender_role: z.enum(["applicant", "recruiter", "system"])
+                  .optional(),
               }),
             ),
           }),
@@ -1357,7 +1377,10 @@ app.openapi(getMessagesRoute, async (c) => {
   const { id } = c.req.valid("param");
 
   if (!user) {
-    return c.json({ error: "Unauthorized", message: "Authentication required" }, 401);
+    return c.json(
+      { error: "Unauthorized", message: "Authentication required" },
+      401,
+    );
   }
 
   const { data: application, error: appError } = await supabase
@@ -1370,7 +1393,10 @@ app.openapi(getMessagesRoute, async (c) => {
     .single();
 
   if (appError || !application) {
-    return c.json({ error: "Not Found", message: "Application not found" }, 404);
+    return c.json(
+      { error: "Not Found", message: "Application not found" },
+      404,
+    );
   }
 
   const isApplicant = application.user_id === user.id;
@@ -1379,7 +1405,9 @@ app.openapi(getMessagesRoute, async (c) => {
     const orgId = (application.job as { organization_id?: string } | null)
       ?.organization_id;
     const ownerId = (
-      application.job as { organization?: { owner_user_id?: string } | null } | null
+      application.job as
+        | { organization?: { owner_user_id?: string } | null }
+        | null
     )?.organization?.owner_user_id;
     if (ownerId === user.id) {
       hasOrgAccess = true;
@@ -1397,7 +1425,10 @@ app.openapi(getMessagesRoute, async (c) => {
 
   if (!isApplicant && !hasOrgAccess) {
     return c.json(
-      { error: "Forbidden", message: "You do not have access to this application" },
+      {
+        error: "Forbidden",
+        message: "You do not have access to this application",
+      },
       403,
     );
   }
@@ -1489,7 +1520,10 @@ app.openapi(sendMessageRoute, async (c) => {
   const { body } = c.req.valid("json");
 
   if (!user) {
-    return c.json({ error: "Unauthorized", message: "Authentication required" }, 401);
+    return c.json(
+      { error: "Unauthorized", message: "Authentication required" },
+      401,
+    );
   }
 
   const { data: application, error: appError } = await supabase
@@ -1502,7 +1536,10 @@ app.openapi(sendMessageRoute, async (c) => {
     .single();
 
   if (appError || !application) {
-    return c.json({ error: "Not Found", message: "Application not found" }, 404);
+    return c.json(
+      { error: "Not Found", message: "Application not found" },
+      404,
+    );
   }
 
   // Allow the applicant OR org owner/role_assignee to reply. The read route
@@ -1514,7 +1551,9 @@ app.openapi(sendMessageRoute, async (c) => {
     const orgId = (application.job as { organization_id?: string } | null)
       ?.organization_id;
     const ownerId = (
-      application.job as { organization?: { owner_user_id?: string } | null } | null
+      application.job as
+        | { organization?: { owner_user_id?: string } | null }
+        | null
     )?.organization?.owner_user_id;
     if (ownerId === user.id) {
       hasOrgAccess = true;
@@ -1532,7 +1571,10 @@ app.openapi(sendMessageRoute, async (c) => {
 
   if (!isApplicant && !hasOrgAccess) {
     return c.json(
-      { error: "Forbidden", message: "You cannot post in this application thread" },
+      {
+        error: "Forbidden",
+        message: "You cannot post in this application thread",
+      },
       403,
     );
   }

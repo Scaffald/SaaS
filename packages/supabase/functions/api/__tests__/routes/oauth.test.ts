@@ -87,19 +87,23 @@ async function createTestOAuthApp(overrides: {
     ownerId = authUser.user.id;
   }
 
-  const { data: app } = await admin
+  // core.oauth_apps has no owner_id column — ownership is owner_email +
+  // created_by (see migration for oauth_apps). `name` is NOT NULL.
+  const { data: app, error: appError } = await admin
     .schema("core")
     .from("oauth_apps")
     .insert({
+      name: `test-oauth-app-${timestamp}`,
       client_id: clientId,
       client_secret_hash: clientSecretHash,
       display_name: overrides.display_name || "Test OAuth App",
       description: "Test app description",
-      owner_id: ownerId,
+      owner_email: `oauth-owner-${timestamp}@example.com`,
+      created_by: ownerId,
       status: overrides.status || "active",
       redirect_uris: overrides.redirect_uris ||
         ["https://example.com/callback"],
-      allowed_scopes: overrides.allowed_scopes || ["profile:read", "jobs:read"],
+      allowed_scopes: overrides.allowed_scopes || ["read:profile", "read:jobs"],
       homepage_url: "https://example.com",
       privacy_policy_url: "https://example.com/privacy",
       terms_of_service_url: "https://example.com/terms",
@@ -108,8 +112,15 @@ async function createTestOAuthApp(overrides: {
     .select()
     .single();
 
+  if (appError || !app) {
+    throw new Error(
+      `Failed to create test OAuth app: ${appError?.message ?? "no row"}`,
+    );
+  }
+
   return {
     ...app,
+    owner_id: ownerId,
     client_secret: clientSecret, // Include raw secret for testing
   };
 }
@@ -154,7 +165,7 @@ async function createTestAuthorizationCode(overrides: {
       oauth_app_id: overrides.oauth_app_id,
       user_id: overrides.user_id,
       redirect_uri: overrides.redirect_uri || "https://example.com/callback",
-      scopes: overrides.scopes || ["profile:read", "jobs:read"],
+      scopes: overrides.scopes || ["read:profile", "read:jobs"],
       code_challenge: overrides.code_challenge || pkce.challenge,
       code_challenge_method: "S256",
       expires_at: overrides.expires_at ||
@@ -208,7 +219,7 @@ async function createTestOAuthToken(overrides: {
       token_type: overrides.token_type,
       oauth_app_id: overrides.oauth_app_id,
       user_id: overrides.user_id || null,
-      scopes: overrides.scopes || ["profile:read", "jobs:read"],
+      scopes: overrides.scopes || ["read:profile", "read:jobs"],
       expires_at: overrides.expires_at ||
         new Date(Date.now() + 3600 * 1000).toISOString(),
       revoked_at: overrides.revoked_at !== undefined
@@ -242,13 +253,13 @@ Deno.test("POST /oauth/authorize - returns authentication_required if no user", 
     client_id: app.client_id,
     redirect_uri: "https://example.com/callback",
     response_type: "code",
-    scope: "profile:read jobs:read",
+    scope: "read:profile read:jobs",
     state: "random-state-123",
     code_challenge: pkce.challenge,
     code_challenge_method: "S256",
   });
 
-  assertSuccessResponse(response);
+  assertStatus(response, 200);
   assertEquals(response.body.authentication_required, true);
   assertExists(response.body.pending_auth);
   assertEquals(response.body.pending_auth.client_id, app.client_id);
@@ -269,7 +280,7 @@ Deno.test("POST /oauth/authorize - returns unauthorized_client for invalid clien
     client_id: crypto.randomUUID(), // Random invalid client_id
     redirect_uri: "https://example.com/callback",
     response_type: "code",
-    scope: "profile:read",
+    scope: "read:profile",
     state: "random-state-123",
     code_challenge: pkce.challenge,
     code_challenge_method: "S256",
@@ -295,7 +306,7 @@ Deno.test("POST /oauth/authorize - returns 403 for suspended app", async () => {
     client_id: app.client_id,
     redirect_uri: "https://example.com/callback",
     response_type: "code",
-    scope: "profile:read",
+    scope: "read:profile",
     state: "random-state-123",
     code_challenge: pkce.challenge,
     code_challenge_method: "S256",
@@ -323,7 +334,7 @@ Deno.test("POST /oauth/authorize - returns error for redirect_uri mismatch", asy
     client_id: app.client_id,
     redirect_uri: "https://evil.com/callback", // Wrong redirect
     response_type: "code",
-    scope: "profile:read",
+    scope: "read:profile",
     state: "random-state-123",
     code_challenge: pkce.challenge,
     code_challenge_method: "S256",
@@ -343,7 +354,7 @@ Deno.test("POST /oauth/authorize - returns error for unauthorized scopes", async
   assert(user !== null);
 
   const app = await createTestOAuthApp({
-    allowed_scopes: ["profile:read"],
+    allowed_scopes: ["read:profile"],
   });
   const pkce = await generatePKCE();
 
@@ -352,7 +363,7 @@ Deno.test("POST /oauth/authorize - returns error for unauthorized scopes", async
     client_id: app.client_id,
     redirect_uri: "https://example.com/callback",
     response_type: "code",
-    scope: "profile:read admin:write", // admin:write not allowed
+    scope: "read:profile admin:write", // admin:write not allowed
     state: "random-state-123",
     code_challenge: pkce.challenge,
     code_challenge_method: "S256",
@@ -378,13 +389,13 @@ Deno.test("POST /oauth/authorize - returns consent_required for non-trusted app"
     client_id: app.client_id,
     redirect_uri: "https://example.com/callback",
     response_type: "code",
-    scope: "profile:read",
+    scope: "read:profile",
     state: "random-state-123",
     code_challenge: pkce.challenge,
     code_challenge_method: "S256",
   });
 
-  assertSuccessResponse(response);
+  assertStatus(response, 200);
   assertEquals(response.body.consent_required, true);
   assertExists(response.body.oauth_app_id);
   assertExists(response.body.app);
@@ -408,13 +419,13 @@ Deno.test("POST /oauth/authorize - returns redirect_url for trusted app", async 
     client_id: app.client_id,
     redirect_uri: "https://example.com/callback",
     response_type: "code",
-    scope: "profile:read",
+    scope: "read:profile",
     state: "random-state-123",
     code_challenge: pkce.challenge,
     code_challenge_method: "S256",
   });
 
-  assertSuccessResponse(response);
+  assertStatus(response, 200);
   assertEquals(response.body.consent_required, false);
   assertExists(response.body.redirect_url);
 
@@ -438,7 +449,7 @@ Deno.test("POST /oauth/authorize - validates required fields", async () => {
   const response = await client.post("/oauth/authorize", {
     redirect_uri: "https://example.com/callback",
     response_type: "code",
-    scope: "profile:read",
+    scope: "read:profile",
     state: "random-state-123",
     code_challenge: "challenge",
     code_challenge_method: "S256",
@@ -485,7 +496,7 @@ Deno.test("POST /oauth/token - exchanges authorization code for tokens", async (
     },
   );
 
-  assertSuccessResponse(response);
+  assertStatus(response, 200);
   assertExists(response.body.access_token);
   assertEquals(response.body.token_type, "Bearer");
   assertEquals(response.body.expires_in, 3600);
@@ -711,7 +722,7 @@ Deno.test("POST /oauth/token - refreshes token successfully", async () => {
     },
   );
 
-  assertSuccessResponse(response);
+  assertStatus(response, 200);
   assertExists(response.body.access_token);
   assertExists(response.body.refresh_token);
   assertEquals(response.body.token_type, "Bearer");
@@ -776,7 +787,7 @@ Deno.test("POST /oauth/token - issues token for client_credentials grant", async
   markTestStart();
 
   const app = await createTestOAuthApp({
-    allowed_scopes: ["api:read", "api:write"],
+    allowed_scopes: ["read:profile", "write:profile"],
   });
 
   const client = createTestClient();
@@ -784,7 +795,7 @@ Deno.test("POST /oauth/token - issues token for client_credentials grant", async
     "/oauth/token",
     new URLSearchParams({
       grant_type: "client_credentials",
-      scope: "api:read",
+      scope: "read:profile",
       client_id: app.client_id,
       client_secret: app.client_secret,
     }),
@@ -795,12 +806,12 @@ Deno.test("POST /oauth/token - issues token for client_credentials grant", async
     },
   );
 
-  assertSuccessResponse(response);
+  assertStatus(response, 200);
   assertExists(response.body.access_token);
   assertEquals(response.body.token_type, "Bearer");
   assertEquals(response.body.expires_in, 3600);
   assertEquals(response.body.refresh_token, undefined); // No refresh token
-  assertEquals(response.body.scope, "api:read");
+  assertEquals(response.body.scope, "read:profile");
 
   await cleanupCurrentTestData();
 });
@@ -809,7 +820,7 @@ Deno.test("POST /oauth/token - validates scopes for client_credentials", async (
   markTestStart();
 
   const app = await createTestOAuthApp({
-    allowed_scopes: ["api:read"],
+    allowed_scopes: ["read:profile"],
   });
 
   const client = createTestClient();
@@ -817,7 +828,7 @@ Deno.test("POST /oauth/token - validates scopes for client_credentials", async (
     "/oauth/token",
     new URLSearchParams({
       grant_type: "client_credentials",
-      scope: "api:read admin:write", // admin:write not allowed
+      scope: "read:profile admin:write", // admin:write not allowed
       client_id: app.client_id,
       client_secret: app.client_secret,
     }),
@@ -838,7 +849,7 @@ Deno.test("POST /oauth/token - uses default scopes if none requested", async () 
   markTestStart();
 
   const app = await createTestOAuthApp({
-    allowed_scopes: ["api:read", "api:write"],
+    allowed_scopes: ["read:profile", "write:profile"],
   });
 
   const client = createTestClient();
@@ -857,10 +868,10 @@ Deno.test("POST /oauth/token - uses default scopes if none requested", async () 
     },
   );
 
-  assertSuccessResponse(response);
+  assertStatus(response, 200);
   // Should include all allowed scopes
-  assert(response.body.scope.includes("api:read"));
-  assert(response.body.scope.includes("api:write"));
+  assert(response.body.scope.includes("read:profile"));
+  assert(response.body.scope.includes("write:profile"));
 
   await cleanupCurrentTestData();
 });
@@ -900,7 +911,7 @@ Deno.test("POST /oauth/revoke - revokes token successfully", async () => {
     },
   );
 
-  assertSuccessResponse(response);
+  assertStatus(response, 200);
   assertEquals(response.body.success, true);
 
   // Verify token is revoked
@@ -939,7 +950,7 @@ Deno.test("POST /oauth/revoke - returns 200 for invalid token (RFC 7009)", async
   );
 
   // Per RFC 7009, should return 200 even for invalid token
-  assertSuccessResponse(response);
+  assertStatus(response, 200);
   assertEquals(response.body.success, true);
 
   await cleanupCurrentTestData();
@@ -985,7 +996,7 @@ Deno.test("POST /oauth/introspect - returns active:true for valid token", async 
     oauth_app_id: app.id,
     user_id: user.userId,
     token_type: "access_token",
-    scopes: ["profile:read", "jobs:read"],
+    scopes: ["read:profile", "read:jobs"],
   });
 
   const client = createTestClient();
@@ -1003,9 +1014,9 @@ Deno.test("POST /oauth/introspect - returns active:true for valid token", async 
     },
   );
 
-  assertSuccessResponse(response);
+  assertStatus(response, 200);
   assertEquals(response.body.active, true);
-  assertEquals(response.body.scope, "profile:read jobs:read");
+  assertEquals(response.body.scope, "read:profile read:jobs");
   assertEquals(response.body.client_id, app.client_id);
   assertEquals(response.body.token_type, "access_token");
   assertExists(response.body.exp);
@@ -1034,7 +1045,7 @@ Deno.test("POST /oauth/introspect - returns active:false for invalid token", asy
     },
   );
 
-  assertSuccessResponse(response);
+  assertStatus(response, 200);
   assertEquals(response.body.active, false);
 
   await cleanupCurrentTestData();
@@ -1071,7 +1082,7 @@ Deno.test("POST /oauth/introspect - returns active:false for expired token", asy
     },
   );
 
-  assertSuccessResponse(response);
+  assertStatus(response, 200);
   assertEquals(response.body.active, false);
 
   await cleanupCurrentTestData();
@@ -1108,7 +1119,7 @@ Deno.test("POST /oauth/introspect - returns active:false for revoked token", asy
     },
   );
 
-  assertSuccessResponse(response);
+  assertStatus(response, 200);
   assertEquals(response.body.active, false);
 
   await cleanupCurrentTestData();
@@ -1127,22 +1138,26 @@ Deno.test("GET /oauth/userinfo - returns user profile for authenticated user", a
   );
   assert(user !== null);
 
-  // Create user profile
+  // Names live in core.profile (keyed by user_id); avatar on core.users.
+  // Upsert because signup triggers may already have created these rows.
   await admin
     .schema("core")
-    .from("user_profiles")
-    .insert({
-      id: user.userId,
-      username: "testuserinfo",
+    .from("profile")
+    .upsert({
+      user_id: user.userId,
       first_name: "John",
       last_name: "Doe",
-      avatar_url: "https://example.com/avatar.jpg",
-    });
+    }, { onConflict: "user_id" });
+  await admin
+    .schema("core")
+    .from("users")
+    .update({ avatar_url: "https://example.com/avatar.jpg" })
+    .eq("id", user.userId);
 
   const client = createTestClient({ authToken: user.token });
   const response = await client.get("/oauth/userinfo");
 
-  assertSuccessResponse(response);
+  assertStatus(response, 200);
   assertEquals(response.body.sub, user.userId);
   assertExists(response.body.email);
   assertEquals(response.body.given_name, "John");
@@ -1180,7 +1195,7 @@ Deno.test("GET /oauth/userinfo - returns basic info if profile not found", async
   const client = createTestClient({ authToken: user.token });
   const response = await client.get("/oauth/userinfo");
 
-  assertSuccessResponse(response);
+  assertStatus(response, 200);
   assertEquals(response.body.sub, user.userId);
   assertExists(response.body.email);
   // Should only have basic claims without profile

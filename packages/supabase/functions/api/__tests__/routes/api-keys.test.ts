@@ -29,7 +29,9 @@ import {
  * users left over from earlier tests or prior runs, so admin.createUser fails.
  */
 function uniqEmail(prefix: string): string {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
+  return `${prefix}-${Date.now()}-${
+    Math.random().toString(36).slice(2, 8)
+  }@example.com`;
 }
 
 /**
@@ -99,7 +101,9 @@ async function createTestUserWithOrg(overrides: {
   // user_type columns). Map the requested user_type to a team role so non-admin
   // cases still exercise the org-admin 403 paths: job_seeker -> member,
   // employer/organization_admin -> team_admin.
-  const roleKey = overrides.user_type === "job_seeker" ? "member" : "team_admin";
+  const roleKey = overrides.user_type === "job_seeker"
+    ? "member"
+    : "team_admin";
   const { data: teamRole } = await admin
     .schema("core")
     .from("team_roles")

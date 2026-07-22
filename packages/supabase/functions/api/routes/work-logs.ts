@@ -91,8 +91,9 @@ async function resolveAccessibleWorkLog(
   if (!log) {
     return null;
   }
-  const orgId = (log.construction_projects as { organization_id: string } | null)
-    ?.organization_id;
+  const orgId =
+    (log.construction_projects as { organization_id: string } | null)
+      ?.organization_id;
   if (!orgId) {
     return null;
   }
@@ -105,9 +106,11 @@ async function resolveAccessibleWorkLog(
   if (!memberships || memberships.length === 0) {
     return null;
   }
-  const { construction_projects: _omit, ...rest } = log as Record<string, unknown> & {
-    construction_projects?: unknown;
-  };
+  const { construction_projects: _omit, ...rest } = log as
+    & Record<string, unknown>
+    & {
+      construction_projects?: unknown;
+    };
   return rest;
 }
 
@@ -132,7 +135,12 @@ app.openapi(
         // Accept comma-separated or repeated values; coerce to array.
         statuses: z.union([z.string(), z.array(z.string())]).optional(),
         search: z.string().optional(),
-        sortField: z.enum(["log_date", "created_at", "updated_at", "total_hours"]).optional(),
+        sortField: z.enum([
+          "log_date",
+          "created_at",
+          "updated_at",
+          "total_hours",
+        ]).optional(),
         sortDirection: z.enum(["asc", "desc"]).optional(),
       }),
     },
@@ -552,7 +560,10 @@ app.openapi(
 
     const { data, error } = await query;
     if (error) {
-      return c.json({ error: "Failed to list projects", message: error.message }, 500);
+      return c.json({
+        error: "Failed to list projects",
+        message: error.message,
+      }, 500);
     }
 
     return c.json(
@@ -752,7 +763,11 @@ app.openapi(
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    const workLog = await resolveAccessibleWorkLog(supabase, user.id, workLogId);
+    const workLog = await resolveAccessibleWorkLog(
+      supabase,
+      user.id,
+      workLogId,
+    );
     if (!workLog) {
       return c.json({ error: "Not found" }, 404);
     }
@@ -821,7 +836,11 @@ app.openapi(
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    const workLog = await resolveAccessibleWorkLog(supabase, user.id, workLogId);
+    const workLog = await resolveAccessibleWorkLog(
+      supabase,
+      user.id,
+      workLogId,
+    );
     if (!workLog) {
       return c.json({ error: "Not found" }, 404);
     }
@@ -912,7 +931,11 @@ app.openapi(
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    const workLog = await resolveAccessibleWorkLog(supabase, user.id, workLogId);
+    const workLog = await resolveAccessibleWorkLog(
+      supabase,
+      user.id,
+      workLogId,
+    );
     if (!workLog) {
       return c.json({ error: "Not found" }, 404);
     }
@@ -980,7 +1003,11 @@ app.openapi(
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    const workLog = await resolveAccessibleWorkLog(supabase, user.id, workLogId);
+    const workLog = await resolveAccessibleWorkLog(
+      supabase,
+      user.id,
+      workLogId,
+    );
     if (!workLog) {
       return c.json({ error: "Not found" }, 404);
     }
@@ -1381,7 +1408,9 @@ async function buildExportSnapshot(
   const { data: collaboratorRows } = await adminClient
     .schema("core")
     .from("work_log_collaborators")
-    .select("collaborator_user_id, permission_level, user:users!collaborator_user_id(display_name, username)")
+    .select(
+      "collaborator_user_id, permission_level, user:users!collaborator_user_id(display_name, username)",
+    )
     .eq("work_log_id", workLogId)
     .order("invited_at", { ascending: true });
 
@@ -1417,7 +1446,8 @@ async function buildExportSnapshot(
 
   const tasks = Array.isArray(workLog.tasks_completed)
     ? (workLog.tasks_completed as unknown[]).filter(
-      (task): task is string => typeof task === "string" && task.trim().length > 0,
+      (task): task is string =>
+        typeof task === "string" && task.trim().length > 0,
     )
     : [];
   const skillIds = Array.isArray(workLog.skills_used)
@@ -1437,7 +1467,10 @@ async function buildExportSnapshot(
         .select("*")
         .in("id", skillIds);
       // deno-lint-ignore no-explicit-any
-      const enriched = await enrichUserSkills(adminClient as any, userSkillRows ?? []);
+      const enriched = await enrichUserSkills(
+        adminClient as any,
+        userSkillRows ?? [],
+      );
       skills = enriched.map((skill) => skill.label);
       skillSummaries = enriched.map((skill) => ({
         id: skill.id,
@@ -1463,14 +1496,21 @@ async function buildExportSnapshot(
     workLog: workLog as any,
     ownerName,
     ownerEmail,
-    projectName: resolveStringField(projectRecord, ["name", "title", "project_name"]),
+    projectName: resolveStringField(projectRecord, [
+      "name",
+      "title",
+      "project_name",
+    ]),
     projectIdentifier: resolveStringField(projectRecord, [
       "project_code",
       "job_number",
       "slug",
       "reference_code",
     ]),
-    organizationName: resolveStringField(organizationRecord, ["name", "display_name"]),
+    organizationName: resolveStringField(organizationRecord, [
+      "name",
+      "display_name",
+    ]),
     organizationIdentifier: resolveStringField(organizationRecord, [
       "slug",
       "external_id",
@@ -1539,7 +1579,11 @@ app.openapi(
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    const workLog = await resolveAccessibleWorkLog(supabase, user.id, workLogId);
+    const workLog = await resolveAccessibleWorkLog(
+      supabase,
+      user.id,
+      workLogId,
+    );
     if (!workLog) {
       return c.json({ error: "Not found" }, 404);
     }
@@ -1755,7 +1799,8 @@ app.openapi(
     if (access.role === "viewer") {
       return c.json({
         error: "Forbidden",
-        message: "You do not have permission to upload photos for this work log.",
+        message:
+          "You do not have permission to upload photos for this work log.",
       }, 403);
     }
 
@@ -1769,7 +1814,8 @@ app.openapi(
       .eq("user_id", ownerId)
       .maybeSingle();
     const currentUsage = usage?.work_log_photos_bytes ?? 0;
-    const storageLimit = usage?.storage_limit_bytes ?? DEFAULT_STORAGE_LIMIT_BYTES;
+    const storageLimit = usage?.storage_limit_bytes ??
+      DEFAULT_STORAGE_LIMIT_BYTES;
     if (currentUsage + body.fileSizeBytes > storageLimit) {
       return c.json({
         error: "Storage limit reached",
@@ -1778,7 +1824,9 @@ app.openapi(
     }
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const filePath = `${ownerId}/${workLogId}/${timestamp}-${sanitizeFileName(body.fileName)}`;
+    const filePath = `${ownerId}/${workLogId}/${timestamp}-${
+      sanitizeFileName(body.fileName)
+    }`;
 
     const { data: signedUpload, error: signedUrlError } = await adminClient
       .storage
@@ -2096,7 +2144,10 @@ app.openapi(
         .from(WORK_LOG_PHOTO_BUCKET)
         .remove(filePaths);
       if (removeError) {
-        console.warn("[work-logs] failed to delete photo storage objects:", removeError.message);
+        console.warn(
+          "[work-logs] failed to delete photo storage objects:",
+          removeError.message,
+        );
       }
     }
 

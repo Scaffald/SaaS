@@ -75,11 +75,16 @@ app.openapi(
     }
 
     const offset = (page - 1) * pageSize;
-    query = query.range(offset, offset + pageSize - 1).order("created_at", { ascending: false });
+    query = query.range(offset, offset + pageSize - 1).order("created_at", {
+      ascending: false,
+    });
 
     const { data, error, count } = await query;
     if (error) {
-      return c.json({ error: "Failed to list punchlists", message: error.message }, 500);
+      return c.json({
+        error: "Failed to list punchlists",
+        message: error.message,
+      }, 500);
     }
     return c.json({
       punchlists: data ?? [],
@@ -114,7 +119,10 @@ app.openapi(
       },
     },
     responses: {
-      201: { description: "Punchlist created", content: { "application/json": { schema: z.any() } } },
+      201: {
+        description: "Punchlist created",
+        content: { "application/json": { schema: z.any() } },
+      },
     },
     security: [{ bearerAuth: [] }],
   }),
@@ -140,7 +148,10 @@ app.openapi(
       .single();
 
     if (error || !data) {
-      return c.json({ error: "Failed to create punchlist", message: error?.message }, 500);
+      return c.json({
+        error: "Failed to create punchlist",
+        message: error?.message,
+      }, 500);
     }
     return c.json(data, 201);
   },
@@ -154,7 +165,10 @@ app.openapi(
     summary: "Get punchlist by id",
     request: { params: z.object({ punchlistId: z.string().uuid() }) },
     responses: {
-      200: { description: "Punchlist", content: { "application/json": { schema: z.any() } } },
+      200: {
+        description: "Punchlist",
+        content: { "application/json": { schema: z.any() } },
+      },
     },
     security: [{ bearerAuth: [] }],
   }),
@@ -200,7 +214,10 @@ app.openapi(
       },
     },
     responses: {
-      200: { description: "Updated", content: { "application/json": { schema: z.any() } } },
+      200: {
+        description: "Updated",
+        content: { "application/json": { schema: z.any() } },
+      },
     },
     security: [{ bearerAuth: [] }],
   }),
@@ -229,7 +246,10 @@ app.openapi(
       .select()
       .single();
     if (error || !data) {
-      return c.json({ error: "Failed to update punchlist", message: error?.message }, 404);
+      return c.json({
+        error: "Failed to update punchlist",
+        message: error?.message,
+      }, 404);
     }
     return c.json(data);
   },
@@ -257,7 +277,10 @@ app.openapi(
       .delete()
       .eq("id", punchlistId);
     if (error) {
-      return c.json({ error: "Failed to delete punchlist", message: error.message }, 403);
+      return c.json({
+        error: "Failed to delete punchlist",
+        message: error.message,
+      }, 403);
     }
     return c.body(null, 204);
   },

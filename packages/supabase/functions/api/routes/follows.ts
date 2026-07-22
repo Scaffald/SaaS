@@ -635,7 +635,10 @@ app.openapi(unfollowJobRoute, async (c) => {
 
   if (error) {
     console.error("Error unsaving job:", error);
-    return c.json({ error: "Failed to unsave job", message: error.message }, 500);
+    return c.json(
+      { error: "Failed to unsave job", message: error.message },
+      500,
+    );
   }
 
   return c.body(null, 204);

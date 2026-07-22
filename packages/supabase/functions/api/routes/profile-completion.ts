@@ -104,7 +104,9 @@ app.openapi(getStatusRoute, async (c) => {
     supabase
       .schema("core")
       .from("profile")
-      .select("first_name, last_name, address, preferred_work_locations, education_level")
+      .select(
+        "first_name, last_name, address, preferred_work_locations, education_level",
+      )
       .eq("user_id", user.id)
       .maybeSingle(),
     supabase
@@ -113,13 +115,19 @@ app.openapi(getStatusRoute, async (c) => {
       .select("headline")
       .eq("id", user.id)
       .maybeSingle(),
-    supabase.schema("core").from("user_skills").select("id").eq("user_id", user.id),
+    supabase.schema("core").from("user_skills").select("id").eq(
+      "user_id",
+      user.id,
+    ),
     supabase
       .schema("core")
       .from("user_certifications")
       .select("id")
       .eq("user_id", user.id),
-    supabase.schema("core").from("user_education").select("id").eq("user_id", user.id),
+    supabase.schema("core").from("user_education").select("id").eq(
+      "user_id",
+      user.id,
+    ),
     supabase
       .schema("core")
       .from("user_experience")
@@ -139,7 +147,10 @@ app.openapi(getStatusRoute, async (c) => {
   if (realError) {
     console.error("[profileCompletion] getStatus query failed", realError);
     return c.json(
-      { error: "Failed to compute completion status", message: realError.message },
+      {
+        error: "Failed to compute completion status",
+        message: realError.message,
+      },
       500,
     );
   }

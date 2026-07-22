@@ -112,9 +112,14 @@ export class TestClient {
       headers: this.buildHeaders(options.headers),
     };
 
-    // Add body for non-GET requests
+    // Add body for non-GET requests. Form bodies (URLSearchParams, used by
+    // the OAuth endpoints) and pre-encoded strings must pass through as-is —
+    // JSON.stringify(new URLSearchParams(...)) silently becomes "{}".
     if (options.body && method !== "GET") {
-      requestOptions.body = JSON.stringify(options.body);
+      requestOptions.body = options.body instanceof URLSearchParams ||
+          typeof options.body === "string"
+        ? options.body
+        : JSON.stringify(options.body);
     }
 
     // Make request with timeout

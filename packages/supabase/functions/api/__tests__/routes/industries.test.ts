@@ -75,7 +75,7 @@ Deno.test("GET /v1/industries/:slug - returns 404 for unknown slug", async () =>
   await cleanupCurrentTestData();
 });
 
-Deno.test("GET /v1/industries - requires authentication", async () => {
+Deno.test("GET /v1/industries - readable without a user token (public reference data)", async () => {
   markTestStart();
 
   const client = createTestClient();
@@ -84,6 +84,8 @@ Deno.test("GET /v1/industries - requires authentication", async () => {
     headers: { Authorization: "" },
   });
 
-  assertStatus(response, 401);
+  // The auth middleware admits anon-key requests; industries are public
+  // reference data used pre-auth (onboarding), so this returns 200.
+  assertStatus(response, 200);
   await cleanupCurrentTestData();
 });
