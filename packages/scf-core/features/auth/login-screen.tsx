@@ -360,6 +360,7 @@ export const LoginScreen = () => {
                         if (next) setAttemptedSubmit(false)
                       }}
                       error={attemptedSubmit && !hasAgreed}
+                      accessibilityLabel="I agree to the Terms of Service and Privacy Policy"
                     />
                     <Paragraph size="xs" style={{ color: cardTextTertiary, flex: 1, lineHeight: 18 }}>
                       {'I agree to the '}

@@ -193,7 +193,7 @@ export const DrawerLink = ({
   if (collapsed && depth === 0) {
     return (
       <Link href={item.href} asChild>
-        <Pressable>
+        <Pressable accessibilityLabel={title}>
           {({ pressed }) => (
             <View
               style={{
@@ -219,7 +219,7 @@ export const DrawerLink = ({
     return (
       <Stack>
         <Link href={item.href} asChild>
-          <Pressable>
+          <Pressable accessibilityLabel={title}>
             {({ hovered }: { pressed: boolean; hovered?: boolean }) => {
               const isHighlighted = active || hovered
               return (
@@ -273,7 +273,7 @@ export const DrawerLink = ({
   if (depth > 0) {
     return (
       <Link href={item.href} asChild>
-        <Pressable>
+        <Pressable accessibilityLabel={title}>
           {({ hovered }: { pressed: boolean; hovered?: boolean }) => {
             const isHighlighted = active || hovered
             const leftPad = 54 + (Math.max(0, depth - 1)) * 20
@@ -338,7 +338,7 @@ export const DrawerLink = ({
   const renderExpandableItem = () => (
     <Stack>
       <Link href={item.href} asChild>
-        <Pressable>
+        <Pressable accessibilityLabel={title}>
           {({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => (
             <View style={itemStyle(active, pressed, resolvedTheme, activeBg, 16)}>
               {renderContent(hovered)}
@@ -382,7 +382,7 @@ export const DrawerLink = ({
   // Default: simple nav link
   return (
     <Link href={item.href} asChild>
-      <Pressable>
+      <Pressable accessibilityLabel={title}>
         {({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => (
           <View style={itemStyle(active, pressed, resolvedTheme, activeBg)}>
             {renderContent(hovered)}
