@@ -206,6 +206,8 @@ function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: Drawer
               <Pressable
                 onPress={closeSearch}
                 hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel="Close search"
                 style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1, padding: 4 })}
               >
                 <ArrowLeft size={22} color={colors.icon[theme].default} />
@@ -246,6 +248,8 @@ function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: Drawer
                   <Pressable
                     onPress={() => setSearchQuery('')}
                     hitSlop={8}
+                    accessibilityRole="button"
+                    accessibilityLabel="Clear search"
                     style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
                   >
                     <X size={16} color={colors.icon[theme].muted} />
