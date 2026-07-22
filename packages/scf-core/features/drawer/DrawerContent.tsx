@@ -99,11 +99,13 @@ export const DrawerContent = ({
   const handleLogoutPress = useCallback(async () => {
     try {
       await supabase.auth.signOut()
-      handleNavigate(pathname)
+      // Land returning users on the login screen, not the 3-slide marketing
+      // carousel + cookie banner (#387).
+      router.replace(ROUTES.AUTH.LOGIN.path)
     } catch (error) {
       console.error('Error signing out from drawer:', error)
     }
-  }, [handleNavigate, pathname])
+  }, [router])
 
   const footerIconSize = 22
 

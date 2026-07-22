@@ -165,14 +165,34 @@ export function PreferencesWidget({
             <Stack gap={8}>
               <Text>Work Authorization</Text>
               <Stack gap={4}>
+                {/* The wizard/seed stores `false` for questions the user never
+                    answered, so a red ✗ asserted a negative for merely-missing
+                    data (#387). Only assert the positive; anything else reads
+                    as "Not provided" in muted styling. */}
                 {data.us_resident !== null && (
-                  <Text color={colors.text[theme].secondary}>
-                    {data.us_resident ? "✓" : "✗"} US Resident
+                  <Text
+                    color={
+                      data.us_resident
+                        ? colors.text[theme].secondary
+                        : colors.text[theme].tertiary
+                    }
+                  >
+                    {data.us_resident
+                      ? "✓ US Resident"
+                      : "US Resident: Not provided"}
                   </Text>
                 )}
                 {data.us_passport !== null && (
-                  <Text color={colors.text[theme].secondary}>
-                    {data.us_passport ? "✓" : "✗"} US Passport
+                  <Text
+                    color={
+                      data.us_passport
+                        ? colors.text[theme].secondary
+                        : colors.text[theme].tertiary
+                    }
+                  >
+                    {data.us_passport
+                      ? "✓ US Passport"
+                      : "US Passport: Not provided"}
                   </Text>
                 )}
                 {data.authorized_countries &&
