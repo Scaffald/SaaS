@@ -1,5 +1,7 @@
 {
   "lock": false,
+  "//nodeModulesDir": "Required so `deno lint`/`deno fmt` resolve the npm: imports below without a pre-existing node_modules. The Lint REST API Code job runs from this dir and does NOT run pnpm install, so without this deno aborts at startup with 'Linking npm packages requires ... nodeModulesDir' (#399).",
+  "nodeModulesDir": "auto",
   "imports": {
     "hono": "npm:hono@^4.0.0",
     "hono/": "npm:hono@^4.0.0/",
