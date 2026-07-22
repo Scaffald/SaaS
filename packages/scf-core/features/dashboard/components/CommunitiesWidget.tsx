@@ -1,4 +1,5 @@
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
+import { FeedImage } from '@scf/core/components/FeedImage'
 import {
   useCommunities,
   useCommunityFeed,
@@ -171,7 +172,7 @@ function PostPreview({
         </Text>
       ) : null}
       {thumb ? (
-        <Image
+        <FeedImage
           source={{ uri: thumb }}
           style={{
             width: '100%',

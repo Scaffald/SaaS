@@ -1,3 +1,4 @@
+import { FeedImage } from '@scf/core/components/FeedImage'
 import { useState, useCallback } from 'react'
 import { ScrollView, Image } from 'react-native'
 import { Text, Stack, Row, Card, Button, Spinner, Separator, Avatar, Input, useThemeContext } from '@scaffald/ui'
@@ -107,7 +108,7 @@ export function PostDetailPage({ postId }: Props) {
                       backgroundColor: colors.bg[t].muted,
                     }}
                   >
-                    <Image
+                    <FeedImage
                       source={{ uri: url }}
                       style={{ width: '100%', height: '100%' }}
                       resizeMode="cover"

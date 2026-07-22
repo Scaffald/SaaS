@@ -1,3 +1,4 @@
+import { FeedImage } from '@scf/core/components/FeedImage'
 import { Text, Stack, Row, Card, Avatar, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { Image } from 'react-native'
@@ -69,7 +70,7 @@ export function PostCard({ post, onPress }: Props) {
                   backgroundColor: colors.bg[t].muted,
                 }}
               >
-                <Image
+                <FeedImage
                   source={{ uri: url }}
                   style={{ width: '100%', height: '100%' }}
                   resizeMode="cover"

@@ -1,3 +1,4 @@
+import { FeedImage } from '@scf/core/components/FeedImage'
 import { useState } from 'react'
 import { Image, Pressable } from 'react-native'
 import { Text, Stack, Row, H4, Spinner, DashboardWidget, useThemeContext } from '@scaffald/ui'
@@ -131,7 +132,7 @@ function PolaroidCard({
           }}
         >
           {thumbnail && !imgError ? (
-            <Image
+            <FeedImage
               source={{ uri: thumbnail }}
               style={{ width: '100%', height: '100%' }}
               resizeMode="cover"
