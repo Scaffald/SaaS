@@ -139,16 +139,28 @@ vi.mock('@scaffald/ui', async () => {
       children,
       onPress,
       disabled,
+      iconStart,
+      color,
       ...rest
     }: {
       children?: React.ReactNode
       onPress?: () => void
       disabled?: boolean
+      iconStart?: unknown
+      color?: string
       [key: string]: unknown
     }) =>
       React.createElement(
         'button',
-        { type: 'button', disabled, onClick: onPress, ...rest },
+        {
+          type: 'button',
+          disabled,
+          onClick: onPress,
+          color,
+          'data-selected': color === 'success' ? 'true' : 'false',
+          'data-has-icon': iconStart ? 'true' : 'false',
+          ...rest,
+        },
         children,
       ),
   }
@@ -169,7 +181,9 @@ describe('QuickApplyModal', () => {
   // Fill all required form fields using mock UI elements
   const fillRequiredFields = () => {
     fireEvent.change(screen.getByTestId('address-input'), { target: { value: 'New York' } })
+    fireEvent.click(screen.getAllByText('Yes')[0]) // Willing to relocate
     fireEvent.change(screen.getByTestId('years_experience'), { target: { value: '1-3' } })
+    fireEvent.click(screen.getAllByText('Yes')[1]) // Authorized to work
     fireEvent.change(screen.getByTestId('earliest_start_date'), { target: { value: 'Immediately' } })
   }
 
@@ -219,6 +233,69 @@ describe('QuickApplyModal', () => {
     })
 
     expect(mockMutateAsync).not.toHaveBeenCalled()
+  })
+
+  it('renders the screening toggles with neither Yes nor No pre-selected', () => {
+    render(<QuickApplyModal {...defaultProps} />)
+
+    // Two toggle groups: "Willing to relocate" and "Authorized to work"
+    const yesButtons = screen.getAllByText('Yes').map((el) => el.closest('button'))
+    const noButtons = screen.getAllByText('No').map((el) => el.closest('button'))
+
+    for (const button of [...yesButtons, ...noButtons]) {
+      expect(button).toHaveAttribute('data-selected', 'false')
+    }
+  })
+
+  it('blocks submission and shows a validation error when relocation question is unanswered', async () => {
+    render(<QuickApplyModal {...defaultProps} />)
+
+    fireEvent.change(screen.getByTestId('address-input'), { target: { value: 'New York' } })
+    fireEvent.change(screen.getByTestId('years_experience'), { target: { value: '1-3' } })
+    fireEvent.click(screen.getAllByText('Yes')[1]) // Authorized to work
+    fireEvent.change(screen.getByTestId('earliest_start_date'), { target: { value: 'Immediately' } })
+
+    fireEvent.click(screen.getByText('Submit'))
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Please indicate whether you are willing to relocate'),
+      ).toBeInTheDocument()
+    })
+
+    expect(mockMutateAsync).not.toHaveBeenCalled()
+  })
+
+  it('blocks submission when work authorization question is unanswered', async () => {
+    render(<QuickApplyModal {...defaultProps} />)
+
+    fireEvent.change(screen.getByTestId('address-input'), { target: { value: 'New York' } })
+    fireEvent.click(screen.getAllByText('Yes')[0]) // Willing to relocate
+    fireEvent.change(screen.getByTestId('years_experience'), { target: { value: '1-3' } })
+    fireEvent.change(screen.getByTestId('earliest_start_date'), { target: { value: 'Immediately' } })
+
+    fireEvent.click(screen.getByText('Submit'))
+
+    await waitFor(() => {
+      expect(screen.getByText('Work authorization status is required')).toBeInTheDocument()
+    })
+
+    expect(mockMutateAsync).not.toHaveBeenCalled()
+  })
+
+  it('marks a screening toggle as selected once answered', () => {
+    render(<QuickApplyModal {...defaultProps} />)
+
+    const relocateNoButton = screen.getAllByText('No')[0].closest('button')
+    expect(relocateNoButton).toHaveAttribute('data-selected', 'false')
+
+    fireEvent.click(relocateNoButton as HTMLButtonElement)
+
+    expect(relocateNoButton).toHaveAttribute('data-selected', 'true')
+    expect(screen.getAllByText('Yes')[0].closest('button')).toHaveAttribute(
+      'data-selected',
+      'false',
+    )
   })
 
   it('submits application when all required fields are filled', async () => {
