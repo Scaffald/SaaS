@@ -21,7 +21,7 @@ import {
   mergeChannelSets,
   planRouting,
   upsertDigestQueue,
-} from '../_shared/notifications/utils'
+} from '../_shared/notifications/utils.ts'
 
 interface PublishResult {
   recipientId: string

@@ -4,7 +4,7 @@ import { corsHeaders } from '../_shared/cors'
 import { notifyIdVerificationExpirationReminder } from '../_shared/id-verification-notifications'
 import { readReminderTimestamp, writeReminderTimestamp } from '../_shared/id-verification-utils'
 import type { NotificationSupabaseClient } from '../_shared/notifications/types'
-import { createServiceSupabaseClient } from '../_shared/notifications/utils'
+import { createServiceSupabaseClient } from '../_shared/notifications/utils.ts'
 
 type ReminderWindow = 30 | 7
 

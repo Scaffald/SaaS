@@ -8,7 +8,7 @@ import {
   createServiceSupabaseClient,
   normalizeMetadata,
   recordDeliveryEvent,
-} from '../_shared/notifications/utils'
+} from '../_shared/notifications/utils.ts'
 
 const expo = new Expo({
   accessToken: Deno.env.get('EXPO_ACCESS_TOKEN') ?? undefined,

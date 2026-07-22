@@ -1,7 +1,7 @@
 import { serve } from 'https://deno.land/std@0.223.0/http/server'
 import { notifyBackgroundCheckExpirationReminder } from '../_shared/background-check-notifications'
 import { corsHeaders, createCorsResponse } from '../_shared/cors'
-import { createServiceSupabaseClient } from '../_shared/notifications/utils'
+import { createServiceSupabaseClient } from '../_shared/notifications/utils.ts'
 
 const DAY_MS = 86_400_000
 const REMINDER_WINDOWS = [

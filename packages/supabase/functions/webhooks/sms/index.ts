@@ -6,7 +6,7 @@ import {
   createServiceSupabaseClient,
   isValidDeliveryStatus,
   recordDeliveryEvent,
-} from '../../_shared/notifications/utils'
+} from '../../_shared/notifications/utils.ts'
 
 const STATUS_MAP: Record<string, { status?: string; event: 'accepted' | 'delivered' | 'failed' }> =
   {

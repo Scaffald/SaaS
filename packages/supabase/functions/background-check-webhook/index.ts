@@ -11,7 +11,7 @@ import {
 import { corsHeaders } from '../_shared/cors'
 import { createNationSearchClient } from '../_shared/nationsearch/client'
 import type { NotificationSupabaseClient } from '../_shared/notifications/types'
-import { createServiceSupabaseClient } from '../_shared/notifications/utils'
+import { createServiceSupabaseClient } from '../_shared/notifications/utils.ts'
 
 const SIGNATURE_HEADER = 'x-nationsearch-signature'
 const IDEMPOTENCY_HEADER = 'x-nationsearch-idempotency'
