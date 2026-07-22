@@ -1,3 +1,4 @@
+import { formatRelativeDate as sharedRelativeDate } from '@scf/core/utils/relative-date'
 import { ROUTES, buildPath } from '@scf/core/constants/routes'
 import { Card, Text, Row, Stack, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
@@ -47,15 +48,13 @@ interface ExternalJobCardProps {
 function formatRelativeDate(dateString?: string): string | null {
   if (!dateString) return null
   const date = new Date(dateString)
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
-  if (diffDays === 0) return 'Today'
-  if (diffDays === 1) return 'Yesterday'
-  if (diffDays < 7) return `${diffDays} days ago`
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`
-  return date.toLocaleDateString()
+  const diffDays = Math.floor(
+    (Date.now() - date.getTime()) / (1000 * 60 * 60 * 24)
+  )
+  // Past ~a month, an absolute date is more useful than "2 months ago" here.
+  if (diffDays >= 30) return date.toLocaleDateString()
+  // Shared helper pluralizes correctly ("1 week ago", not "1 weeks ago") (#387).
+  return sharedRelativeDate(dateString)
 }
 
 function formatCompensation(job: ExternalJob): string | null {

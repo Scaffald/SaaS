@@ -117,13 +117,26 @@ function GlassTabBar({
     )
   }
 
-  // Web: CSS backdrop-filter via GlassSurface
+  // Web: CSS backdrop-filter via GlassSurface.
+  // "thin" (45% white) let page text read straight through the bar on every
+  // scrolled screen (#378) — backdrop-filter blur isn't enough on its own.
+  // "thick" (88%) keeps the glass look while staying legible over content.
   return (
     <GlassSurface
-      material="thin"
+      material="thick"
       radius="3xl"
       elevated
-      style={[styles.webSurface, { boxShadow: '0 6px 24px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)' } as object]}
+      style={[
+        styles.webSurface,
+        {
+          boxShadow: '0 6px 24px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)',
+          // Near-opaque backing: even at material="thick" (84%) scrolled text
+          // stayed legible through the pill (#378). Keeps the backdrop blur
+          // for depth at the edges while making the surface itself read solid.
+          backgroundColor:
+            theme === 'dark' ? 'rgba(28,28,30,0.97)' : 'rgba(252,251,249,0.97)',
+        } as object,
+      ]}
     >
       {children}
     </GlassSurface>
