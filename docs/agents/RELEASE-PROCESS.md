@@ -1,5 +1,12 @@
 # Release Process
 
+> **⚠️ Tracker migrated (2026-07-16):** Linear is deprecated — tracking now
+> lives in GitHub Issues + the [Scaffald project board](https://github.com/orgs/Unicorn/projects/9).
+> See [TRACKING.md](TRACKING.md). Read the Linear steps below as their board
+> equivalents: `vX.Y.Z` Linear label → GitHub `vX.Y.Z` issue label; "In Github"
+> / "In TestFlight" state moves → board Status column moves;
+> `pnpm release:promote` → bulk board-status update.
+
 Coordinated version tagging across git, Linear, commits, and TestFlight. The
 goal is a single audit trail per release so we always know: what code shipped,
 what tickets it covered, what's been QA'd, and what's safe to roll back to.

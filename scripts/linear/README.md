@@ -1,4 +1,10 @@
-# scripts/linear/
+# scripts/linear/ (DEPRECATED)
+
+> **⚠️ Deprecated 2026-07-16:** tracking moved to GitHub Issues + the
+> [Scaffald project board](https://github.com/orgs/Unicorn/projects/9) — see
+> [docs/agents/TRACKING.md](../../docs/agents/TRACKING.md). The open SC backlog
+> was migrated to issues #368–#377 and canceled in Linear. These scripts are
+> kept only for reading Linear history; do not file new work there.
 
 Generic Linear toolkit for the Scaffald (SC) team. Reuses
 `LINEAR_API_KEY` from `.env.production` (gitignored, parent worktree).
