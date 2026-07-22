@@ -257,10 +257,14 @@ export function WorkLogDetailScreen() {
     if (!workLog?.time_entries || !Array.isArray(workLog.time_entries)) {
       return [];
     }
-    return workLog.time_entries.map((entry) => ({
-      start: entry.start_time,
-      end: entry.end_time,
-    }));
+    // The API returns DB-shaped entries {start,end}; the SDK type says
+    // {start_time,end_time}. Tolerate both until the schemas are realigned.
+    return (workLog.time_entries as unknown as Array<Record<string, string | undefined>>).map(
+      (entry) => ({
+        start: entry.start ?? entry.start_time ?? "",
+        end: entry.end ?? entry.end_time ?? "",
+      })
+    );
   }, [workLog?.time_entries]);
 
   const timeEntryItems = useMemo(

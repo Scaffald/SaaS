@@ -6,6 +6,13 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { createClient } from "@supabase/supabase-js";
 import { authMiddleware } from "../middleware/auth.ts";
+import {
+  buildWorkLogCsv,
+  buildWorkLogPdf,
+  type WorkLogExportSnapshot,
+  type WorkLogExportTimeEntry,
+} from "../../_shared/work-log-export.ts";
+import { enrichUserSkills } from "../../trpc/routers/utils/skill-enrichment.ts";
 
 function getServiceClient() {
   const url = Deno.env.get("SUPABASE_URL") ?? "";
@@ -29,6 +36,30 @@ const WORK_LOG_STATUSES = [
 ] as const;
 
 type SupabaseClientLike = ReturnType<typeof getServiceClient>;
+
+// Translate SDK shape → DB schema shape.
+// SDK uses entryType single_day|date_range, time_entries {start_time,end_time}
+// and visibility private|organization|public; DB (core.work_logs) uses
+// entry_type daily|project|task, time_entries {start,end} and
+// visibility public|private. See the schema-realign dogfood task.
+type SdkTimeEntry = {
+  start_time?: string;
+  end_time?: string;
+  start?: string;
+  end?: string;
+};
+
+const entryTypeToDb = (entryType: string | undefined): string =>
+  entryType === "date_range" ? "project" : "daily";
+
+const timeEntriesToDb = (entries: SdkTimeEntry[]) =>
+  entries.map((e) => ({
+    start: e.start ?? e.start_time,
+    end: e.end ?? e.end_time,
+  }));
+
+const visibilityToDb = (visibility: string | undefined): string =>
+  visibility === "organization" ? "private" : (visibility || "private");
 
 /**
  * Resolve a work log the caller may access: their own or a collaborator log
@@ -294,20 +325,14 @@ app.openapi(
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    // Translate SDK shape → DB schema shape.
-    // SDK uses entryType single_day|date_range and time_entries {start_time,end_time};
-    // DB schema (core.work_logs) uses entry_type daily|project|task and
-    // time_entries {start,end}. See DOGFOODING-BUGS.md for the rename plan.
-    const entryTypeForDb = body.entryType === "date_range" ? "project" : "daily";
-    const timeEntriesForDb = (body.timeEntries ?? []).map(
-      (e: { start_time?: string; end_time?: string; start?: string; end?: string }) => ({
-        start: e.start ?? e.start_time,
-        end: e.end ?? e.end_time,
-      }),
-    );
-    const visibilityForDb = body.visibility === "organization"
-      ? "private"
-      : (body.visibility || "private");
+    // core.work_logs.project_id is NOT NULL; fail fast with a 400 instead of
+    // surfacing the constraint violation as a 500.
+    if (!body.projectId) {
+      return c.json({
+        error: "Invalid request",
+        message: "projectId is required to create a work log.",
+      }, 400);
+    }
 
     const { data, error } = await supabase
       .schema("core")
@@ -315,13 +340,13 @@ app.openapi(
       .insert({
         user_id: user.id,
         project_id: body.projectId,
-        entry_type: entryTypeForDb,
+        entry_type: entryTypeToDb(body.entryType),
         log_date: body.logDate,
-        time_entries: timeEntriesForDb,
+        time_entries: timeEntriesToDb(body.timeEntries ?? []),
         tasks_completed: body.tasksCompleted,
         skills_used: body.skillsUsed,
         work_description: body.workDescription,
-        visibility: visibilityForDb,
+        visibility: visibilityToDb(body.visibility),
         status: "draft",
       })
       .select()
@@ -354,9 +379,18 @@ app.openapi(
         content: {
           "application/json": {
             schema: z.object({
+              projectId: z.string().uuid().optional(),
+              entryType: z.enum(["single_day", "date_range"]).optional(),
+              logDate: z.string().optional(),
+              endDate: z.string().optional(),
+              timeEntries: z.array(z.any()).min(1).optional(),
+              tasksCompleted: z.array(z.string()).optional(),
+              skillsUsed: z.array(z.string()).optional(),
               workDescription: z.string().optional(),
               visibility: z.enum(["private", "organization", "public"])
                 .optional(),
+              showOnProfile: z.boolean().optional(),
+              showDateRangeOnProfile: z.boolean().optional(),
             }),
           },
         },
@@ -384,17 +418,54 @@ app.openapi(
       return c.json({ error: "Unauthorized" }, 401);
     }
 
+    // PATCH semantics: only map fields the caller actually sent.
+    const update: Record<string, unknown> = {};
+    if (body.projectId !== undefined) update.project_id = body.projectId;
+    if (body.entryType !== undefined) {
+      update.entry_type = entryTypeToDb(body.entryType);
+    }
+    if (body.logDate !== undefined) update.log_date = body.logDate;
+    if (body.timeEntries !== undefined) {
+      update.time_entries = timeEntriesToDb(body.timeEntries);
+    }
+    if (body.tasksCompleted !== undefined) {
+      update.tasks_completed = body.tasksCompleted;
+    }
+    if (body.skillsUsed !== undefined) update.skills_used = body.skillsUsed;
+    if (body.workDescription !== undefined) {
+      update.work_description = body.workDescription;
+    }
+    if (body.visibility !== undefined) {
+      update.visibility = visibilityToDb(body.visibility);
+    }
+    if (body.showOnProfile !== undefined) {
+      update.show_on_profile = body.showOnProfile;
+    }
+    if (body.showDateRangeOnProfile !== undefined) {
+      update.show_date_range_on_profile = body.showDateRangeOnProfile;
+    }
+
+    if (Object.keys(update).length === 0) {
+      return c.json({
+        error: "Invalid request",
+        message: "At least one updatable field must be provided.",
+      }, 400);
+    }
+
     const { data, error } = await supabase
       .schema("core")
       .from("work_logs")
-      .update(body)
+      .update(update)
       .eq("id", workLogId)
       .eq("user_id", user.id)
       .select()
       .single();
 
     if (error || !data) {
-      return c.json({ error: "Failed to update work log" }, 500);
+      return c.json({
+        error: "Failed to update work log",
+        message: error?.message,
+      }, 500);
     }
 
     return c.json(data);
@@ -768,6 +839,370 @@ app.openapi(
   },
 );
 
+const COLLABORATOR_SELECT = `
+  id,
+  work_log_id,
+  collaborator_user_id,
+  permission_level,
+  invited_at,
+  created_at,
+  user:users!collaborator_user_id(id, display_name, username, avatar_url)
+`;
+
+/** Best-effort audit trail; failures must not fail the request. */
+async function recordAuditLog(
+  supabase: SupabaseClientLike,
+  entry: {
+    workLogId: string;
+    userId: string;
+    action: string;
+    newValue?: Record<string, unknown> | null;
+  },
+): Promise<void> {
+  try {
+    await supabase
+      .schema("core")
+      .from("work_log_audit_log")
+      .insert({
+        work_log_id: entry.workLogId,
+        user_id: entry.userId,
+        action: entry.action,
+        new_value: entry.newValue ?? null,
+      });
+  } catch (err) {
+    console.error("[work-logs] audit log write failed:", err);
+  }
+}
+
+/**
+ * GET /v1/work-logs/:workLogId/collaborators
+ * List collaborators on a work log.
+ */
+app.openapi(
+  createRoute({
+    method: "get",
+    path: "/{workLogId}/collaborators",
+    tags: ["Work Logs"],
+    summary: "List work log collaborators",
+    request: { params: z.object({ workLogId: z.string().uuid() }) },
+    responses: {
+      200: {
+        description: "Collaborators",
+        content: { "application/json": { schema: z.array(z.any()) } },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const supabase = c.get("supabase");
+    const user = c.get("user");
+    const { workLogId } = c.req.valid("param");
+
+    if (!user) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    const workLog = await resolveAccessibleWorkLog(supabase, user.id, workLogId);
+    if (!workLog) {
+      return c.json({ error: "Not found" }, 404);
+    }
+
+    const adminClient = getServiceClient();
+    const { data, error } = await adminClient
+      .schema("core")
+      .from("work_log_collaborators")
+      .select(COLLABORATOR_SELECT)
+      .eq("work_log_id", workLogId)
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      return c.json({
+        error: "Failed to load collaborators",
+        message: error.message,
+      }, 500);
+    }
+
+    return c.json(data ?? []);
+  },
+);
+
+/**
+ * POST /v1/work-logs/:workLogId/collaborators
+ * Add a collaborator. Owner only.
+ */
+app.openapi(
+  createRoute({
+    method: "post",
+    path: "/{workLogId}/collaborators",
+    tags: ["Work Logs"],
+    summary: "Add work log collaborator",
+    request: {
+      params: z.object({ workLogId: z.string().uuid() }),
+      body: {
+        content: {
+          "application/json": {
+            schema: z.object({
+              collaboratorUserId: z.string().uuid(),
+              // SDK sends `role`; the schemas package uses `permissionLevel`.
+              // Accept either; both map to DB permission_level view|edit.
+              role: z.enum(["view", "edit"]).optional(),
+              permissionLevel: z.enum(["view", "edit"]).optional(),
+            }),
+          },
+        },
+      },
+    },
+    responses: {
+      201: {
+        description: "Collaborator added",
+        content: { "application/json": { schema: z.any() } },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const supabase = c.get("supabase");
+    const user = c.get("user");
+    const { workLogId } = c.req.valid("param");
+    const body = c.req.valid("json");
+
+    if (!user) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    const workLog = await resolveAccessibleWorkLog(supabase, user.id, workLogId);
+    if (!workLog) {
+      return c.json({ error: "Not found" }, 404);
+    }
+    if (workLog.user_id !== user.id) {
+      return c.json({
+        error: "Forbidden",
+        message: "Only the owner can manage collaborators.",
+      }, 403);
+    }
+    if (body.collaboratorUserId === user.id) {
+      return c.json({
+        error: "Invalid request",
+        message: "You are already the owner of this work log.",
+      }, 400);
+    }
+
+    const adminClient = getServiceClient();
+
+    const { data: collaboratorUser } = await adminClient
+      .schema("core")
+      .from("users")
+      .select("id")
+      .eq("id", body.collaboratorUserId)
+      .maybeSingle();
+    if (!collaboratorUser) {
+      return c.json({
+        error: "Invalid request",
+        message: "Collaborator user does not exist.",
+      }, 400);
+    }
+
+    const { data: existing } = await adminClient
+      .schema("core")
+      .from("work_log_collaborators")
+      .select("id")
+      .eq("work_log_id", workLogId)
+      .eq("collaborator_user_id", body.collaboratorUserId)
+      .maybeSingle();
+    if (existing) {
+      return c.json({
+        error: "Conflict",
+        message: "Collaborator already added to this work log.",
+      }, 409);
+    }
+
+    const permissionLevel = body.role ?? body.permissionLevel ?? "view";
+    const { data, error } = await adminClient
+      .schema("core")
+      .from("work_log_collaborators")
+      .insert({
+        work_log_id: workLogId,
+        collaborator_user_id: body.collaboratorUserId,
+        permission_level: permissionLevel,
+      })
+      .select(COLLABORATOR_SELECT)
+      .single();
+
+    if (error || !data) {
+      return c.json({
+        error: "Failed to add collaborator",
+        message: error?.message,
+      }, 500);
+    }
+
+    await recordAuditLog(adminClient, {
+      workLogId,
+      userId: user.id,
+      action: "collaborator_added",
+      newValue: {
+        collaborator_user_id: body.collaboratorUserId,
+        permission_level: permissionLevel,
+      },
+    });
+
+    return c.json(data, 201);
+  },
+);
+
+/**
+ * Resolve a collaborator row and assert the caller owns its work log.
+ */
+async function resolveOwnedCollaborator(
+  userId: string,
+  collaboratorId: string,
+): Promise<
+  | { row: Record<string, unknown>; error?: never; status?: never }
+  | { row?: never; error: string; status: 403 | 404 }
+> {
+  const adminClient = getServiceClient();
+  const { data: row } = await adminClient
+    .schema("core")
+    .from("work_log_collaborators")
+    .select("*, work_log:work_logs!work_log_id(user_id)")
+    .eq("id", collaboratorId)
+    .maybeSingle();
+  if (!row) {
+    return { error: "Not found", status: 404 };
+  }
+  const ownerId = (row.work_log as { user_id: string } | null)?.user_id;
+  if (ownerId !== userId) {
+    return { error: "Only the owner can manage collaborators.", status: 403 };
+  }
+  return { row };
+}
+
+/**
+ * PATCH /v1/work-logs/collaborators/:collaboratorId
+ * Update a collaborator's permission level. Owner only.
+ */
+app.openapi(
+  createRoute({
+    method: "patch",
+    path: "/collaborators/{collaboratorId}",
+    tags: ["Work Logs"],
+    summary: "Update work log collaborator",
+    request: {
+      params: z.object({ collaboratorId: z.string().uuid() }),
+      body: {
+        content: {
+          "application/json": {
+            schema: z.object({
+              role: z.enum(["view", "edit"]).optional(),
+              permissionLevel: z.enum(["view", "edit"]).optional(),
+            }),
+          },
+        },
+      },
+    },
+    responses: {
+      200: {
+        description: "Collaborator updated",
+        content: { "application/json": { schema: z.any() } },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const user = c.get("user");
+    const { collaboratorId } = c.req.valid("param");
+    const body = c.req.valid("json");
+
+    if (!user) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    const permissionLevel = body.role ?? body.permissionLevel;
+    if (!permissionLevel) {
+      return c.json({
+        error: "Invalid request",
+        message: "role (view|edit) is required.",
+      }, 400);
+    }
+
+    const resolved = await resolveOwnedCollaborator(user.id, collaboratorId);
+    if (resolved.error) {
+      return c.json({ error: resolved.error }, resolved.status);
+    }
+
+    const adminClient = getServiceClient();
+    const { data, error } = await adminClient
+      .schema("core")
+      .from("work_log_collaborators")
+      .update({ permission_level: permissionLevel })
+      .eq("id", collaboratorId)
+      .select(COLLABORATOR_SELECT)
+      .single();
+
+    if (error || !data) {
+      return c.json({
+        error: "Failed to update collaborator",
+        message: error?.message,
+      }, 500);
+    }
+
+    return c.json(data);
+  },
+);
+
+/**
+ * DELETE /v1/work-logs/collaborators/:collaboratorId
+ * Remove a collaborator. Owner only.
+ */
+app.openapi(
+  createRoute({
+    method: "delete",
+    path: "/collaborators/{collaboratorId}",
+    tags: ["Work Logs"],
+    summary: "Remove work log collaborator",
+    request: { params: z.object({ collaboratorId: z.string().uuid() }) },
+    responses: {
+      200: {
+        description: "Collaborator removed",
+        content: {
+          "application/json": {
+            schema: z.object({ success: z.boolean() }),
+          },
+        },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const user = c.get("user");
+    const { collaboratorId } = c.req.valid("param");
+
+    if (!user) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    const resolved = await resolveOwnedCollaborator(user.id, collaboratorId);
+    if (resolved.error) {
+      return c.json({ error: resolved.error }, resolved.status);
+    }
+
+    const adminClient = getServiceClient();
+    const { error } = await adminClient
+      .schema("core")
+      .from("work_log_collaborators")
+      .delete()
+      .eq("id", collaboratorId);
+
+    if (error) {
+      return c.json({
+        error: "Failed to remove collaborator",
+        message: error.message,
+      }, 500);
+    }
+
+    return c.json({ success: true });
+  },
+);
+
 /**
  * POST /v1/work-logs/:workLogId/submit
  * Submit a draft work log for verification.
@@ -820,6 +1255,368 @@ app.openapi(
     }
 
     return c.json(data);
+  },
+);
+
+const WORK_LOG_EXPORT_BUCKET = "work-log-exports";
+const SIGNED_EXPORT_URL_TTL_SECONDS = 60 * 10;
+
+const sanitizeFileName = (fileName: string): string =>
+  fileName
+    .trim()
+    .replace(/[^a-zA-Z0-9_.-]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+const toMinutesFromTimeString = (value: string): number => {
+  const match = /^(\d{1,2}):(\d{2})$/.exec(value);
+  if (!match) {
+    return Number.NaN;
+  }
+  return Number(match[1]) * 60 + Number(match[2]);
+};
+
+const parseExportTimeEntries = (raw: unknown): WorkLogExportTimeEntry[] => {
+  if (!Array.isArray(raw)) {
+    return [];
+  }
+  const entries: WorkLogExportTimeEntry[] = [];
+  for (const candidate of raw) {
+    if (typeof candidate !== "object" || candidate === null) {
+      continue;
+    }
+    const entry = candidate as Record<string, unknown>;
+    const start = typeof entry.start === "string" ? entry.start : null;
+    const end = typeof entry.end === "string" ? entry.end : null;
+    if (!start || !end) {
+      continue;
+    }
+    const startMinutes = toMinutesFromTimeString(start);
+    const endMinutes = toMinutesFromTimeString(end);
+    if (Number.isNaN(startMinutes) || Number.isNaN(endMinutes)) {
+      continue;
+    }
+    entries.push({
+      start,
+      end,
+      durationHours: Math.max(endMinutes - startMinutes, 0) / 60,
+      breakMinutes: 0,
+      description: null,
+    });
+  }
+  return entries;
+};
+
+const resolveStringField = (
+  source: Record<string, unknown> | null | undefined,
+  keys: string[],
+): string | null => {
+  if (!source) {
+    return null;
+  }
+  for (const key of keys) {
+    const value = source[key];
+    if (typeof value === "string" && value.trim().length > 0) {
+      return value;
+    }
+  }
+  return null;
+};
+
+const getUserDisplayName = async (
+  supabase: SupabaseClientLike,
+  userId: string,
+): Promise<string> => {
+  const { data } = await supabase
+    .schema("core")
+    .from("users")
+    .select("display_name, username")
+    .eq("id", userId)
+    .maybeSingle();
+  return data?.display_name?.trim() || data?.username?.trim() || "Member";
+};
+
+async function buildExportSnapshot(
+  adminClient: SupabaseClientLike,
+  workLog: Record<string, unknown>,
+  ownerEmail: string | null,
+): Promise<WorkLogExportSnapshot> {
+  const workLogId = workLog.id as string;
+  const ownerId = workLog.user_id as string;
+  const ownerName = await getUserDisplayName(adminClient, ownerId);
+
+  let projectRecord: Record<string, unknown> | null = null;
+  if (typeof workLog.project_id === "string") {
+    const { data } = await adminClient
+      .schema("core")
+      .from("construction_projects")
+      .select("*")
+      .eq("id", workLog.project_id)
+      .maybeSingle();
+    projectRecord = data ?? null;
+  }
+
+  let organizationRecord: Record<string, unknown> | null = null;
+  const organizationId = resolveStringField(projectRecord, ["organization_id"]);
+  if (organizationId) {
+    const { data } = await adminClient
+      .schema("core")
+      .from("organizations")
+      .select("*")
+      .eq("id", organizationId)
+      .maybeSingle();
+    organizationRecord = data ?? null;
+  }
+
+  const { data: collaboratorRows } = await adminClient
+    .schema("core")
+    .from("work_log_collaborators")
+    .select("collaborator_user_id, permission_level, user:users!collaborator_user_id(display_name, username)")
+    .eq("work_log_id", workLogId)
+    .order("invited_at", { ascending: true });
+
+  const collaborators: WorkLogExportSnapshot["collaborators"] = (
+    collaboratorRows ?? []
+  )
+    .filter((row) => typeof row.collaborator_user_id === "string")
+    .map((row) => {
+      const userRecord = row.user as {
+        display_name?: string | null;
+        username?: string | null;
+      } | null;
+      return {
+        userId: row.collaborator_user_id as string,
+        displayName: userRecord?.display_name?.trim() ||
+          userRecord?.username?.trim() || "Member",
+        permissionLevel: (row.permission_level as "view" | "edit") ?? "view",
+      };
+    });
+
+  const [{ count: photoCount }, { count: commentCount }] = await Promise.all([
+    adminClient
+      .schema("core")
+      .from("work_log_photos")
+      .select("id", { count: "exact", head: true })
+      .eq("work_log_id", workLogId),
+    adminClient
+      .schema("core")
+      .from("work_log_conversations")
+      .select("id", { count: "exact", head: true })
+      .eq("work_log_id", workLogId),
+  ]);
+
+  const tasks = Array.isArray(workLog.tasks_completed)
+    ? (workLog.tasks_completed as unknown[]).filter(
+      (task): task is string => typeof task === "string" && task.trim().length > 0,
+    )
+    : [];
+  const skillIds = Array.isArray(workLog.skills_used)
+    ? (workLog.skills_used as unknown[]).filter(
+      (skill): skill is string =>
+        typeof skill === "string" && skill.trim().length > 0,
+    )
+    : [];
+
+  let skills: string[] = [];
+  let skillSummaries: WorkLogExportSnapshot["skillSummaries"] = [];
+  if (skillIds.length > 0) {
+    try {
+      const { data: userSkillRows } = await adminClient
+        .schema("core")
+        .from("user_skills")
+        .select("*")
+        .in("id", skillIds);
+      // deno-lint-ignore no-explicit-any
+      const enriched = await enrichUserSkills(adminClient as any, userSkillRows ?? []);
+      skills = enriched.map((skill) => skill.label);
+      skillSummaries = enriched.map((skill) => ({
+        id: skill.id,
+        label: skill.label,
+        taxonomy: skill.taxonomy,
+        tradeId: skill.tradeId,
+        tradeName: skill.tradeName,
+        tradeSlug: skill.tradeSlug,
+      }));
+    } catch (err) {
+      console.error("[work-logs] skill enrichment failed for export:", err);
+    }
+  }
+
+  const totalHours = typeof workLog.total_hours === "number"
+    ? workLog.total_hours
+    : workLog.total_hours
+    ? Number(workLog.total_hours)
+    : 0;
+
+  return {
+    // deno-lint-ignore no-explicit-any
+    workLog: workLog as any,
+    ownerName,
+    ownerEmail,
+    projectName: resolveStringField(projectRecord, ["name", "title", "project_name"]),
+    projectIdentifier: resolveStringField(projectRecord, [
+      "project_code",
+      "job_number",
+      "slug",
+      "reference_code",
+    ]),
+    organizationName: resolveStringField(organizationRecord, ["name", "display_name"]),
+    organizationIdentifier: resolveStringField(organizationRecord, [
+      "slug",
+      "external_id",
+      "short_code",
+    ]),
+    totalHours,
+    tasks,
+    skills,
+    skillSummaries,
+    timeEntries: parseExportTimeEntries(workLog.time_entries),
+    collaborators,
+    photoCount: photoCount ?? 0,
+    commentCount: commentCount ?? 0,
+  };
+}
+
+/**
+ * POST /v1/work-logs/:workLogId/export
+ * Generate a PDF or CSV export and return a short-lived signed download URL.
+ * Owner only (matches the legacy tRPC procedure).
+ */
+app.openapi(
+  createRoute({
+    method: "post",
+    path: "/{workLogId}/export",
+    tags: ["Work Logs"],
+    summary: "Export work log as PDF or CSV",
+    request: {
+      params: z.object({ workLogId: z.string().uuid() }),
+      body: {
+        content: {
+          "application/json": {
+            schema: z.object({
+              format: z.enum(["pdf", "csv"]).default("csv"),
+            }),
+          },
+        },
+      },
+    },
+    responses: {
+      200: {
+        description: "Export generated",
+        content: {
+          "application/json": {
+            schema: z.object({
+              fileName: z.string(),
+              mimeType: z.string(),
+              byteLength: z.number(),
+              downloadUrl: z.string(),
+              expiresAt: z.string(),
+              storagePath: z.string(),
+            }),
+          },
+        },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  }),
+  async (c) => {
+    const supabase = c.get("supabase");
+    const user = c.get("user");
+    const { workLogId } = c.req.valid("param");
+    const { format } = c.req.valid("json");
+
+    if (!user) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    const workLog = await resolveAccessibleWorkLog(supabase, user.id, workLogId);
+    if (!workLog) {
+      return c.json({ error: "Not found" }, 404);
+    }
+    if (workLog.user_id !== user.id) {
+      return c.json({
+        error: "Forbidden",
+        message: "Only the owner can export this work log.",
+      }, 403);
+    }
+
+    const adminClient = getServiceClient();
+    const snapshot = await buildExportSnapshot(
+      adminClient,
+      workLog,
+      typeof user.email === "string" ? user.email : null,
+    );
+
+    const baseNameParts = [
+      "work-log",
+      (workLog.log_date as string | null) ?? null,
+      workLogId.slice(0, 8),
+    ].filter(Boolean) as string[];
+    const proposedName = sanitizeFileName(baseNameParts.join("-"));
+    const fileBaseName = proposedName.length > 0
+      ? proposedName
+      : `work-log-${workLogId.slice(0, 8)}`;
+
+    let fileBytes: Uint8Array;
+    let mimeType: string;
+    let extension: "pdf" | "csv";
+    if (format === "pdf") {
+      fileBytes = await buildWorkLogPdf(snapshot);
+      mimeType = "application/pdf";
+      extension = "pdf";
+    } else {
+      fileBytes = new TextEncoder().encode(buildWorkLogCsv(snapshot));
+      mimeType = "text/csv";
+      extension = "csv";
+    }
+
+    const timestampSuffix = new Date()
+      .toISOString()
+      .replace(/[-:TZ.]/g, "")
+      .slice(0, 14);
+    const storagePath =
+      `${user.id}/${workLogId}/${fileBaseName}-${timestampSuffix}.${extension}`;
+
+    const { error: uploadError } = await adminClient.storage
+      .from(WORK_LOG_EXPORT_BUCKET)
+      .upload(storagePath, fileBytes, {
+        contentType: mimeType,
+        upsert: true,
+      });
+    if (uploadError) {
+      return c.json({
+        error: "Failed to persist work log export",
+        message: uploadError.message,
+      }, 500);
+    }
+
+    const { data: signedUrlData, error: signedUrlError } = await adminClient
+      .storage
+      .from(WORK_LOG_EXPORT_BUCKET)
+      .createSignedUrl(storagePath, SIGNED_EXPORT_URL_TTL_SECONDS);
+    if (signedUrlError || !signedUrlData?.signedUrl) {
+      return c.json({
+        error: "Failed to generate download link",
+        message: signedUrlError?.message,
+      }, 500);
+    }
+
+    await recordAuditLog(adminClient, {
+      workLogId,
+      userId: user.id,
+      action: "export_generated",
+      newValue: { format: extension, storagePath },
+    });
+
+    return c.json({
+      fileName: `${fileBaseName}.${extension}`,
+      mimeType,
+      byteLength: fileBytes.length,
+      downloadUrl: signedUrlData.signedUrl,
+      expiresAt: new Date(Date.now() + SIGNED_EXPORT_URL_TTL_SECONDS * 1000)
+        .toISOString(),
+      storagePath,
+    });
   },
 );
 
