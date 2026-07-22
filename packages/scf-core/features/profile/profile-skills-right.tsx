@@ -280,7 +280,7 @@ export function ProfileSkillsRight() {
         errorMessage="Couldn't load your skills. Please try again."
         isEmpty={userSkills.length === 0}
         emptyIcon={Award as ComponentType<{ size?: number; color?: string }>}
-        emptyMessage="No skills added yet. Use the form on the left to add your first skill."
+        emptyMessage="No skills added yet. Use the form above to add your first skill."
       >
         <Stack gap={12}>
           {userSkills.map(

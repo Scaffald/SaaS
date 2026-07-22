@@ -76,6 +76,13 @@ export function useUniversalSearch(rawQuery: string): {
           setSkillResults([])
           setSkillsLoading(false)
         },
+        // Belt-and-braces: guarantee the loading flag settles even if a
+        // callback above is skipped — a stuck skillsLoading pinned the whole
+        // screen on a spinner (#381).
+        onSettled: () => {
+          if (cancelled) return
+          setSkillsLoading(false)
+        },
       }
     )
     return () => {
@@ -86,7 +93,10 @@ export function useUniversalSearch(rawQuery: string): {
   }, [query, hasQuery])
 
   const groups = useMemo<UniversalSearchGroup[]>(() => {
-    const jobs = (jobsData as { jobs?: Record<string, unknown>[] } | undefined)?.jobs ?? []
+    // jobs.list() resolves to { data, total } — this read `.jobs`, so the
+    // Jobs group was permanently empty and search was a dead end (#381).
+    const jobs =
+      (jobsData as { data?: Record<string, unknown>[] } | undefined)?.data ?? []
     const jobResults: UniversalSearchResult[] = jobs.slice(0, PER_GROUP_LIMIT).map((job) => {
       const j = job as {
         id: string

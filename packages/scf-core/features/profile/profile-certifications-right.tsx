@@ -240,7 +240,7 @@ export function ProfileCertificationsRight() {
       <Stack gap={16}>
         <ProfileSectionIntro
           title="Certifications"
-          description="Search and add certifications on the left. You can attach proof (file or URL) and manage them here."
+          description="Search for a certification to add it. You can attach proof (file or URL) and manage them here."
         />
         <DashboardWidget>
         <Stack gap={16} align="center" paddingTop={32}>
@@ -248,7 +248,7 @@ export function ProfileCertificationsRight() {
           <Stack gap={8} align="center">
             <H4>Your Certifications</H4>
             <Text style={{ color: colors.text[theme].secondary }}>
-              Search and add certifications on the left
+              Search for a certification to add it
             </Text>
           </Stack>
         </Stack>
@@ -261,7 +261,7 @@ export function ProfileCertificationsRight() {
     <Stack gap={16}>
       <ProfileSectionIntro
         title="Certifications"
-        description="Search and add certifications on the left. You can attach proof (file or URL) and manage them here."
+        description="Search for a certification to add it. You can attach proof (file or URL) and manage them here."
       />
       <DashboardWidget>
       <Stack gap={16}>

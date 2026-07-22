@@ -21,6 +21,7 @@ import { useEffect, useMemo, useRef, type ReactNode } from 'react'
 import { Animated, Easing, type LayoutChangeEvent, Platform, Pressable, StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { MOBILE_SECTIONS, type MobileSection } from './config'
+import { useAppMode } from '@scf/core/utils/useAppMode'
 
 // ── Constants ──
 
@@ -40,6 +41,7 @@ function shouldForceMobile(): boolean {
   return new URLSearchParams(window.location.search).has('forceMobile') // platform-allow: web-only dev flag
 }
 
+/** Index of the tab owning `pathname`, or -1 when the route isn't a tab section. */
 function getActiveSectionIndex(pathname: string): number {
   for (let i = 0; i < MOBILE_SECTIONS.length; i++) {
     const section = MOBILE_SECTIONS[i]
@@ -49,7 +51,8 @@ function getActiveSectionIndex(pathname: string): number {
       }
     }
   }
-  return 0
+  // Previously fell back to 0, so Profile/employer screens lit up Home (#385).
+  return -1
 }
 
 // ── GlassTabBar ──
@@ -117,13 +120,26 @@ function GlassTabBar({
     )
   }
 
-  // Web: CSS backdrop-filter via GlassSurface
+  // Web: CSS backdrop-filter via GlassSurface.
+  // "thin" (45% white) let page text read straight through the bar on every
+  // scrolled screen (#378) — backdrop-filter blur isn't enough on its own.
+  // "thick" (88%) keeps the glass look while staying legible over content.
   return (
     <GlassSurface
-      material="thin"
+      material="thick"
       radius="3xl"
       elevated
-      style={[styles.webSurface, { boxShadow: '0 6px 24px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)' } as object]}
+      style={[
+        styles.webSurface,
+        {
+          boxShadow: '0 6px 24px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)',
+          // Near-opaque backing: even at material="thick" (84%) scrolled text
+          // stayed legible through the pill (#378). Keeps the backdrop blur
+          // for depth at the edges while making the surface itself read solid.
+          backgroundColor:
+            theme === 'dark' ? 'rgba(28,28,30,0.97)' : 'rgba(252,251,249,0.97)',
+        } as object,
+      ]}
     >
       {children}
     </GlassSurface>
@@ -139,8 +155,12 @@ export function MobileBottomNav() {
   const insets = useSafeAreaInsets()
   const pathname = usePathname()
   const router = useRouter()
+  const { mode } = useAppMode()
 
-  const visible = isMobile || shouldForceMobile()
+  // Employer mode hides the worker tab bar (Home/Jobs/Community) instead of
+  // implying worker context on employer screens (#385). Employer navigation
+  // lives in the drawer until a dedicated employer tab set is designed.
+  const visible = (isMobile || shouldForceMobile()) && mode !== 'employer'
 
   // Register nav height so page-level BottomBars can offset above the pill.
   // PILL_HEIGHT (56) + paddingTop (8) + gap (8) = 72.
@@ -231,6 +251,9 @@ export function MobileBottomNav() {
               width: indicatorWidth,
               borderRadius: ACTIVE_INDICATOR_RADIUS,
               backgroundColor: activeBg,
+              // No tab owns this route (e.g. Profile, employer screens) —
+              // hide the pill rather than stranding it on Home (#385).
+              opacity: activeIndex < 0 ? 0 : 1,
             }}
           />
 

@@ -35,11 +35,30 @@ const findRouteForPath = (path: string | null): RouteConfig | null => {
 
   const normalizedPath = path === '' ? '/' : path
 
-  return (
-    ALL_ROUTES.find((route) => route.path === normalizedPath) ??
-    ALL_ROUTES.find((route) => matchesRoute(normalizedPath, route)) ??
-    null
-  )
+  const exact = ALL_ROUTES.find((route) => route.path === normalizedPath)
+  if (exact) {
+    return exact
+  }
+
+  // Non-exact routes prefix-match, so an ancestor like /employers used to win
+  // over /employers/org/:slug/logs/create purely by flatten order — giving
+  // detail/create screens their section's title ("Employers" on the Record
+  // Work Log page) (#385). Prefer the most specific matching route: most
+  // static (non-param) segments first — so .../logs/create beats
+  // .../logs/:workLogId — then longest path as the tie-break.
+  const matches = ALL_ROUTES.filter((route) => matchesRoute(normalizedPath, route))
+  if (matches.length === 0) {
+    return null
+  }
+  const staticSegments = (route: RouteConfig) =>
+    route.path.split('/').filter((s) => s && !s.startsWith(':')).length
+  return matches.reduce((best, route) => {
+    const byStatic = staticSegments(route) - staticSegments(best)
+    if (byStatic !== 0) {
+      return byStatic > 0 ? route : best
+    }
+    return route.path.length > best.path.length ? route : best
+  })
 }
 
 export function DashboardPage({

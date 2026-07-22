@@ -5,6 +5,7 @@ import { usePathname } from '@scf/core/utils/usePathname'
 import { openPublicProfileInNewTab } from '@scf/core/utils/publicProfileUrl'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { getAvatarUrl } from '@scf/core/utils/supabase/storage'
+import { getInitials } from '@scf/core/features/discover/utils/getInitials'
 import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
 import { useUser } from '@scf/core/utils/useUser'
 import {
@@ -72,8 +73,10 @@ export const DrawerContent = ({
   const avatarUri =
     getAvatarUrl(profile?.avatar_path) ??
     (typeof user?.user_metadata?.avatar_url === 'string' ? user.user_metadata.avatar_url : null)
+  // charAt(0) showed a single "M" for "Marcus Rivera" while the header showed
+  // "MR" — use the shared helper so all surfaces agree (#384).
   const fallbackInitial =
-    displayName && displayName.trim().length > 0 ? displayName.trim().charAt(0).toUpperCase() : 'U'
+    displayName && displayName.trim().length > 0 ? getInitials(displayName) : 'U'
 
   const handleNavigate = useCallback(
     (_href: string, _event?: GestureResponderEvent) => {

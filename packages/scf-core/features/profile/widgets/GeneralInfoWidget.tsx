@@ -6,6 +6,7 @@ import { useUserProfile } from "@scf/core/utils/user-profiles-sdk-hooks";
 import { useUser } from "@scf/core/utils/useUser";
 import { openPublicProfileInNewTab } from "@scf/core/utils/publicProfileUrl";
 import { getAvatarUrl } from "@scf/core/utils/supabase/storage";
+import { getInitials } from "@scf/core/features/discover/utils/getInitials";
 import {
   Avatar,
   Button,
@@ -202,7 +203,9 @@ export function GeneralInfoWidget({
             <Avatar
               size={40}
               src={getAvatarUrl(data.avatar_path) || data.avatar_url || ""}
-              initials={displayName ? displayName.slice(0, 2).toUpperCase() : undefined}
+              // slice(0, 2) rendered "MA" for "Marcus Rivera" — use the shared
+              // helper so every surface shows first+last initials (#384).
+              initials={displayName ? getInitials(displayName) : undefined}
             />
 
             <Stack gap={4} align="center">
