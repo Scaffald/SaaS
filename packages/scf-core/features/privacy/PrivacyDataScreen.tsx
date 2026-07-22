@@ -51,7 +51,6 @@ import {
   useCCPASetOptOutMutation,
 } from '@scf/core/utils/ccpa-sdk-hooks'
 import type { CCPARequestType, CCPAOptOutCategory } from '@scaffald/sdk'
-import { TrackingAuthorizationSection } from './components/TrackingAuthorizationSection'
 
 // ============================================================================
 // Helper Components
@@ -235,9 +234,6 @@ export function PrivacyDataScreen() {
             </Stack>
           </Row>
         </Card>
-
-        {/* iOS App Tracking Transparency status (renders nothing on Android/web) */}
-        <TrackingAuthorizationSection />
 
         {/* Data Summary */}
         <Stack gap={12}>

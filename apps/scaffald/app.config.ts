@@ -63,30 +63,6 @@ const EXPO_PUBLIC_SENTRY_DSN_WEB = process.env.EXPO_PUBLIC_SENTRY_DSN_WEB;
 // Fallback for app.config.ts (only used during build, not in client bundle)
 const POSTHOG_HOST = EXPO_PUBLIC_POSTHOG_HOST || "https://app.posthog.com";
 
-// Privacy manifest needs the actual tracking-host list. Sentry's ingest host
-// is encoded in the DSN (e.g. `https://abc@o12345.ingest.us.sentry.io/...`),
-// so we parse it out instead of duplicating a string that can drift. The
-// PostHog host is configured via env and is already a bare hostname or URL.
-const safeHostname = (value: string | undefined): string | undefined => {
-  if (!value) return undefined;
-  try {
-    return new URL(value.startsWith("http") ? value : `https://${value}`)
-      .hostname;
-  } catch {
-    return undefined;
-  }
-};
-
-const TRACKING_DOMAINS = Array.from(
-  new Set(
-    [
-      safeHostname(EXPO_PUBLIC_POSTHOG_HOST),
-      safeHostname(POSTHOG_HOST),
-      safeHostname(EXPO_PUBLIC_SENTRY_DSN_NATIVE),
-    ].filter((value): value is string => Boolean(value))
-  )
-);
-
 const IOS_BUNDLE_BASE = "com.scaffald.app";
 const ANDROID_PACKAGE_BASE = "com.scaffald.app";
 const iosBundleIdentifier = IS_PRODUCTION
@@ -143,14 +119,12 @@ export default {
           "Scaffald accesses your photos so you can upload a profile picture and attach images to job listings.",
         NSCameraUsageDescription:
           "Scaffald uses the camera so you can take a profile photo or capture jobsite images for listings.",
-        // App Tracking Transparency (Apple Guideline 5.1.2(i)). The string is
-        // also configured via the expo-tracking-transparency plugin below; we
-        // duplicate it here so EAS/`expo prebuild` cannot produce a binary
-        // without it. Wording follows Apple's HIG: lead with the user benefit,
-        // not the company benefit. See packages/scf-core/utils/privacy/ for
-        // the runtime request flow.
-        NSUserTrackingUsageDescription:
-          "Allow Scaffald to use your activity so we can keep your account in sync across devices and improve the experience with anonymous usage analytics.",
+        // No NSUserTrackingUsageDescription: Scaffald does not "track" under
+        // Apple Guideline 5.1.2(i). PostHog (first-party product analytics,
+        // geoip disabled) and Sentry (error monitoring) are first-party
+        // service providers — no IDFA, no ad networks, no data brokers, no
+        // cross-app linking. Analytics identity is gated on the in-app
+        // performance/cookie consent, not ATT.
       },
       // Apple Privacy Manifest (PrivacyInfo.xcprivacy). Required since
       // May 2024 — Expo merges this dict into the file it generates at
@@ -158,23 +132,16 @@ export default {
       // See app-store-assets/privacy-checklist.md for the source-of-truth
       // mapping.
       privacyManifests: {
-        // We ship App Tracking Transparency (Path B). The Boolean must be
-        // true whenever we *might* link identifiers across apps/sites for
-        // advertising — Apple errs on the side of requiring this even when
-        // analytics are the only consumer. The runtime decision is
-        // user-controlled via the ATT prompt.
-        NSPrivacyTracking: true,
-        // Domains Scaffald may exchange tracking-relevant data with. Apple
-        // will inspect this list against outbound TLS traffic at review time;
-        // if the binary contacts a tracking host not listed here, the
-        // submission is rejected. Built from PostHog + Sentry env config so
-        // we cannot drift if an org rotates hosts. If the env is missing at
-        // build time, fall back to the public clouds so the manifest is
-        // never empty.
-        NSPrivacyTrackingDomains:
-          TRACKING_DOMAINS.length > 0
-            ? TRACKING_DOMAINS
-            : ["us.i.posthog.com", "app.posthog.com"],
+        // Scaffald does not track (Apple Guideline 5.1.2(i)). Data goes only
+        // to first-party service providers (PostHog product analytics with
+        // geoip disabled, Sentry error monitoring) — never combined with
+        // other companies' data for advertising and never shared with a data
+        // broker. Therefore NSPrivacyTracking is false and there are no
+        // NSPrivacyTrackingDomains. If a true cross-app/advertising tracker
+        // is ever added, flip this to true, re-add NSPrivacyTrackingDomains,
+        // re-add the ATT key + expo-tracking-transparency plugin, and flag
+        // the relevant data types' NSPrivacyCollectedDataTypeTracking.
+        NSPrivacyTracking: false,
         // Required-reason API declarations. Expo prebuild already populates
         // entries for APIs used by installed pods (UserDefaults, file
         // timestamps, system boot time, disk space). They are listed here
@@ -252,7 +219,7 @@ export default {
           {
             NSPrivacyCollectedDataType: "NSPrivacyCollectedDataTypeUserID",
             NSPrivacyCollectedDataTypeLinked: true,
-            NSPrivacyCollectedDataTypeTracking: true,
+            NSPrivacyCollectedDataTypeTracking: false,
             NSPrivacyCollectedDataTypePurposes: [
               "NSPrivacyCollectedDataTypePurposeAppFunctionality",
               "NSPrivacyCollectedDataTypePurposeAnalytics",
@@ -261,7 +228,7 @@ export default {
           {
             NSPrivacyCollectedDataType: "NSPrivacyCollectedDataTypeDeviceID",
             NSPrivacyCollectedDataTypeLinked: true,
-            NSPrivacyCollectedDataTypeTracking: true,
+            NSPrivacyCollectedDataTypeTracking: false,
             NSPrivacyCollectedDataTypePurposes: [
               "NSPrivacyCollectedDataTypePurposeAnalytics",
             ],
@@ -269,7 +236,7 @@ export default {
           {
             NSPrivacyCollectedDataType: "NSPrivacyCollectedDataTypeProductInteraction",
             NSPrivacyCollectedDataTypeLinked: true,
-            NSPrivacyCollectedDataTypeTracking: true,
+            NSPrivacyCollectedDataTypeTracking: false,
             NSPrivacyCollectedDataTypePurposes: [
               "NSPrivacyCollectedDataTypePurposeAnalytics",
               "NSPrivacyCollectedDataTypePurposeProductPersonalization",
@@ -368,19 +335,6 @@ export default {
         },
       ],
       "expo-apple-authentication",
-      [
-        "expo-tracking-transparency",
-        {
-          // Required by Apple Guideline 5.1.2(i). The runtime prompt is
-          // triggered post-onboarding from packages/scf-core/utils/privacy/
-          // so the user sees the in-app context card immediately before the
-          // system dialog (HIG recommendation). Until the user resolves the
-          // prompt, identify/alias calls into PostHog and Sentry setUser are
-          // skipped — see AuthProvider.
-          userTrackingPermission:
-            "Allow Scaffald to use your activity so we can keep your account in sync across devices and improve the experience with anonymous usage analytics.",
-        },
-      ],
       "expo-router",
       [
         "expo-build-properties",
