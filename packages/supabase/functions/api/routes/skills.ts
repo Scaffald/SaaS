@@ -1214,7 +1214,9 @@ app.openapi(removeSkillMTRoute, async (c) => {
  */
 const searchParentSkillsBodySchema = z.object({
   query: z.string().min(1, "Search query is required"),
-  industryId: z.string().uuid(),
+  // Optional: universal search (#381) has no industry context. The
+  // search_parent_skills RPC ignores a NULL industry, searching all skills.
+  industryId: z.string().uuid().optional(),
   limit: z.number().min(1).max(50).optional(),
   // Which taxonomies to search. Defaults to ["csi"] when omitted.
   // "csi" → CSI MasterFormat + core skills (search_parent_skills RPC).
@@ -1290,7 +1292,7 @@ app.openapi(searchParentSkillsRoute, async (c) => {
   if (wantCsi) {
     const { data, error } = await supabase.rpc("search_parent_skills", {
       p_query: query,
-      p_industry_id: industryId,
+      p_industry_id: industryId ?? null,
       p_limit: lim,
     });
     if (error) {

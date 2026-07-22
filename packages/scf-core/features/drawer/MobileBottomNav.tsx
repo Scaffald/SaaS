@@ -21,6 +21,7 @@ import { useEffect, useMemo, useRef, type ReactNode } from 'react'
 import { Animated, Easing, type LayoutChangeEvent, Platform, Pressable, StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { MOBILE_SECTIONS, type MobileSection } from './config'
+import { useAppMode } from '@scf/core/utils/useAppMode'
 
 // ── Constants ──
 
@@ -154,8 +155,12 @@ export function MobileBottomNav() {
   const insets = useSafeAreaInsets()
   const pathname = usePathname()
   const router = useRouter()
+  const { mode } = useAppMode()
 
-  const visible = isMobile || shouldForceMobile()
+  // Employer mode hides the worker tab bar (Home/Jobs/Community) instead of
+  // implying worker context on employer screens (#385). Employer navigation
+  // lives in the drawer until a dedicated employer tab set is designed.
+  const visible = (isMobile || shouldForceMobile()) && mode !== 'employer'
 
   // Register nav height so page-level BottomBars can offset above the pill.
   // PILL_HEIGHT (56) + paddingTop (8) + gap (8) = 72.
