@@ -51,8 +51,12 @@ export function PrerequisiteWidget() {
   } = usePrerequisites();
 
   // Fetch industries for dropdown
-  const { data: industriesData, isLoading: isLoadingIndustries } =
-    useIndustries();
+  const {
+    data: industriesData,
+    isLoading: isLoadingIndustries,
+    isError: isIndustriesError,
+    refetch: refetchIndustries,
+  } = useIndustries();
 
   // Complete prerequisites mutation
   const completeMutation = useCompletePrerequisites({
@@ -336,6 +340,30 @@ export function PrerequisiteWidget() {
                           })
                         )}
                       />
+                    ) : isIndustriesError ? (
+                      // Distinguish "reference API failed" from "genuinely
+                      // empty" — previously both said "No industries
+                      // available" with no way to recover (#387).
+                      <Stack gap={8}>
+                        <Text
+                          style={{
+                            color:
+                              theme === "light"
+                                ? colors.error[700]
+                                : colors.error[300],
+                          }}
+                        >
+                          Couldn't load industries. Check your connection and
+                          try again.
+                        </Text>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onPress={() => refetchIndustries()}
+                        >
+                          Retry
+                        </Button>
+                      </Stack>
                     ) : (
                       <Text style={{ color: colors.text[theme].secondary }}>
                         No industries available

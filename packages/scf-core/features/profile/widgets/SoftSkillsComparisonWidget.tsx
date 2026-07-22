@@ -238,8 +238,11 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
     )
   }
 
-  // Show incomplete state with CTA when assessment is not complete
-  if (!isCompleted && showCTA) {
+  // Show incomplete state when assessment is not complete. The explainer
+  // renders regardless of showCTA — previously a caller without showCTA fell
+  // through to a bare "Soft Skills Analysis" header with an Edit button and
+  // no content at all (#387). Only the CTA button itself is gated.
+  if (!isCompleted) {
     return (
       <DashboardWidget>
         <Stack gap={12}>
@@ -254,15 +257,17 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
             matching.
           </Text>
           <Text style={metaStyle}>{completionCount} of 25 skills rated</Text>
-          <Button
-            variant="outline"
-            color="gray"
-            size="sm"
-            fullWidth
-            onPress={handleNavigateToAssessment}
-          >
-            Complete Soft Skills Assessment
-          </Button>
+          {showCTA && (
+            <Button
+              variant="outline"
+              color="gray"
+              size="sm"
+              fullWidth
+              onPress={handleNavigateToAssessment}
+            >
+              Complete Soft Skills Assessment
+            </Button>
+          )}
         </Stack>
       </DashboardWidget>
     )
