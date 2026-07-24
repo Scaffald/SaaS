@@ -80,14 +80,23 @@ export function ScaffaldJobsSdkProviderFromSession({ children }: { children: Rea
         'prerequisites',
         'apiKeys',
         'webhooks',
+        'notifications',
       ]
       queryClient.invalidateQueries({
         predicate: (query) => {
           const key = query.queryKey
+          if (!Array.isArray(key)) return false
+          // Some SDK hooks key their queries as [resource, ...] (e.g. 'profiles'),
+          // others wrap them as ['scaffald', resource, ...] (e.g. 'notifications',
+          // 'apiKeys') — check both shapes so queries fetched with dummy/anon auth
+          // during the session-loading window actually get refetched once the
+          // real session is ready, regardless of which shape the hook uses.
+          const [first, second] = key
+          if (typeof first === 'string' && sdkQueryKeyPrefixes.includes(first)) return true
           return (
-            Array.isArray(key) &&
-            typeof key[0] === 'string' &&
-            sdkQueryKeyPrefixes.includes(key[0])
+            first === 'scaffald' &&
+            typeof second === 'string' &&
+            sdkQueryKeyPrefixes.includes(second)
           )
         },
       })
