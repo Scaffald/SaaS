@@ -353,7 +353,7 @@ Deno.test({
   fn() {
     const data = createMockUserData(1)
     data.personalInformation.firstName = 'José'
-    data.personalInformation.lastName = 'O'Brien"
+    data.personalInformation.lastName = "O'Brien"
     data.personalInformation.address = {
       street: '123 Straße',
       city: 'München',

@@ -98,7 +98,7 @@ Deno.test({
       );
 
       const error = response[0]?.error;
-      assertExists(error, 'Expected NOT_FOUND when disputing another user's check");
+      assertExists(error, "Expected NOT_FOUND when disputing another user's check");
       assertEquals(error?.data?.code, "NOT_FOUND");
     });
   },

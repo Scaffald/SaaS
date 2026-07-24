@@ -419,7 +419,7 @@ Deno.test({
       requestType: 'access',
       userId: '987fcdeb-51a2-43d9-b789-12345678abcd',
       userEmail: 'josé.o\'brien@example.com',
-      userName: 'José O'Brien",
+      userName: "José O'Brien",
     }
 
     // Should not throw when handling special characters

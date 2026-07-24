@@ -58,7 +58,7 @@ Deno.test({
     assertEquals(
       GPC_CONFIG.ENABLED_VALUE,
       '1',
-      'Enabled value should be '1' per GPC specification'
+      "Enabled value should be '1' per GPC specification"
     )
   },
 })
@@ -484,12 +484,12 @@ Deno.test({
 // ========================================================
 
 Deno.test({
-  name: 'GPC - Source identifier is "gpc"',
+  name: 'GPC - Source identifier is "gpc_signal"',
   fn() {
     assertEquals(
       GPC_CONFIG.SOURCE,
-      'gpc',
-      'Source should be 'gpc' for audit trail'
+      'gpc_signal',
+      "Source should be 'gpc_signal' for audit trail"
     )
   },
 })

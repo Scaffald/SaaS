@@ -49,7 +49,7 @@ Deno.test({
   },
 });
 
-type IPIPDomain = "A" | "E' | 'N' | 'C' | 'O';
+type IPIPDomain = "A" | "E" | "N" | "C" | "O";
 
 interface TestAnswer {
   id: string;

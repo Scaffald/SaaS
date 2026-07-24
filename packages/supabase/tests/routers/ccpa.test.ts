@@ -228,7 +228,7 @@ Deno.test({
     const response = await callTRPCEndpoint(
       'ccpa.requestCorrection',
       {
-        correctionDetails: 'Please update my profile name from 'Test' to "Updated Test"',
+        correctionDetails: "Please update my profile name from 'Test' to \"Updated Test\"",
       },
       { type: 'mutation', authToken: token }
     )
