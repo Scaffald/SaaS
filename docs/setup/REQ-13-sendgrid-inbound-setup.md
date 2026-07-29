@@ -1,5 +1,15 @@
 # REQ-13: SendGrid Inbound Parse & Email Template Setup
 
+> **Outbound email is no longer SendGrid.** Every sender moved to Resend on
+> 2026-07-29 — see [RESEND.md](./RESEND.md). The `SENDGRID_API_KEY`,
+> `SENDGRID_FROM_EMAIL`, `SENDGRID_FROM_NAME` and template variables described
+> in §4 below are no longer read by any code, and the SendGrid transactional
+> template in §1 is unused: the app builds its own HTML.
+>
+> What remains valid here is **inbound parse** — receiving mail at
+> `INBOUND_EMAIL_BASE_DOMAIN` and posting it to a webhook — which was never
+> migrated. Read the rest of this document for inbound only.
+
 This guide covers the manual configuration steps required to complete the Contractor Invitation Email with Insurance Document Upload feature.
 
 ## Table of Contents
