@@ -12,8 +12,12 @@ import { colors } from '@scaffald/ui/tokens'
 import { useRouter } from 'expo-router'
 import { TrendingUp } from 'lucide-react-native'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Animated, View } from 'react-native'
+import { Animated, Platform, View } from 'react-native'
 import { useGrowthCards } from '../completion/useGrowthCards'
+
+// react-native-web has no native animated module, so requesting the native
+// driver there only logs a "falling back to JS-based animation" warning.
+const USE_NATIVE_DRIVER = Platform.OS !== 'web'
 
 export function GrowthCard() {
   const { theme } = useThemeContext()
@@ -27,13 +31,13 @@ export function GrowthCard() {
       Animated.timing(fadeAnim, {
         toValue: 0,
         duration: 200,
-        useNativeDriver: true,
+        useNativeDriver: USE_NATIVE_DRIVER,
       }).start(() => {
         setIndex(newIndex)
         Animated.timing(fadeAnim, {
           toValue: 1,
           duration: 300,
-          useNativeDriver: true,
+          useNativeDriver: USE_NATIVE_DRIVER,
         }).start()
       })
     },
@@ -62,21 +66,20 @@ export function GrowthCard() {
   }
 
   const titleColor = isEngagement ? '#fff' : colors.text[theme].primary
-  const bodyColor = isEngagement
-    ? 'rgba(255,255,255,0.9)'
-    : colors.text[theme].secondary
-  const eyebrowColor = isEngagement
-    ? 'rgba(255,255,255,0.75)'
-    : colors.text[theme].tertiary
+  const bodyColor = isEngagement ? 'rgba(255,255,255,0.9)' : colors.text[theme].secondary
+  const eyebrowColor = isEngagement ? 'rgba(255,255,255,0.75)' : colors.text[theme].tertiary
   const chevronColor = isEngagement ? '#fff' : undefined
   const dotOn = isEngagement ? '#fff' : undefined
   const dotOff = isEngagement ? 'rgba(255,255,255,0.3)' : undefined
-  const counterColor = isEngagement
-    ? 'rgba(255,255,255,0.6)'
-    : colors.text[theme].tertiary
+  const counterColor = isEngagement ? 'rgba(255,255,255,0.6)' : colors.text[theme].tertiary
 
   const widgetStyle = isEngagement
-    ? { backgroundColor: colors.success[600], borderColor: 'transparent', overflow: 'hidden' as const, position: 'relative' as const }
+    ? {
+        backgroundColor: colors.success[600],
+        borderColor: 'transparent',
+        overflow: 'hidden' as const,
+        position: 'relative' as const,
+      }
     : undefined
 
   return (
@@ -139,12 +142,7 @@ export function GrowthCard() {
         </Stack>
       </Animated.View>
 
-      <Button
-        variant="filled"
-        color="primary"
-        fullWidth
-        onPress={handleCTA}
-      >
+      <Button variant="filled" color="primary" fullWidth onPress={handleCTA}>
         {card.ctaLabel}
       </Button>
 

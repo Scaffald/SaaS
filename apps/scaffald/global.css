@@ -1,0 +1,147 @@
+/*
+ * Global web stylesheet.
+ *
+ * Imported from app/_layout.tsx so Metro emits it as a real <link rel="stylesheet">
+ * in the document head. That keeps it out of the react-native-web component tree —
+ * rendering <style> or <link> inside that tree causes a hydration mismatch that
+ * blanks the entire page.
+ */
+
+/* --- Fonts -----------------------------------------------------------------
+ * Self-hosted WOFF2 rather than expo-font, which registers TTFs from JS after
+ * hydration: server-rendered text painted in a fallback face and then reflowed.
+ * WOFF2 is also ~2.6x smaller than the TTFs (711 KB -> 277 KB for four weights).
+ */
+@font-face {
+  font-family: 'Roboto';
+  src: url('/fonts/Roboto-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Roboto';
+  src: url('/fonts/Roboto-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Roboto';
+  src: url('/fonts/Roboto-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+/* The kit registers some weights under their own family name as well. */
+@font-face {
+  font-family: 'Roboto-Medium';
+  src: url('/fonts/Roboto-Medium.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Roboto-Bold';
+  src: url('/fonts/Roboto-Bold.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Roboto Serif';
+  src: url('/fonts/RobotoSerif-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+/* The login screen asks for the raw @expo-google-fonts export name. */
+@font-face {
+  font-family: 'RobotoSerif_400Regular';
+  src: url('/fonts/RobotoSerif-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Raw DOM elements (headings, skip link, marquee) don't inherit RN's font. */
+body {
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+}
+
+/* --- Focus ------------------------------------------------------------------
+ * react-native-web sets `outline: none` on every pressable, leaving no visible
+ * keyboard focus indicator at all (WCAG 2.4.7). `:focus-visible` restores one
+ * for keyboard users without showing a ring on mouse clicks.
+ */
+:where(
+  a, button, [role='button'], [role='link'], [role='tab'], [role='radio'],
+  input, textarea, select, [tabindex]
+):focus-visible {
+  outline: 2px solid #3fb5c7 !important;
+  outline-offset: 2px !important;
+  border-radius: 4px;
+}
+
+/* --- Skip link -------------------------------------------------------------- */
+.scaffald-skip-link {
+  position: absolute;
+  left: 12px;
+  top: -64px;
+  z-index: 1000;
+  padding: 12px 20px;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #034550;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  transition: top 120ms ease-in;
+}
+.scaffald-skip-link:focus {
+  top: 12px;
+}
+
+/* --- Hero trade ticker ------------------------------------------------------
+ * Runs on the compositor and costs no JS; the markup is in the server HTML
+ * either way.
+ */
+@keyframes scaffald-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.scaffald-marquee-track {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  animation: scaffald-marquee 45s linear infinite;
+  will-change: transform;
+}
+.scaffald-marquee-viewport:hover .scaffald-marquee-track {
+  animation-play-state: paused;
+}
+
+/* --- Motion ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .scaffald-marquee-track {
+    animation: none;
+    flex-wrap: wrap;
+    white-space: normal;
+    justify-content: center;
+  }
+  .scaffald-marquee-viewport {
+    overflow: visible;
+  }
+}

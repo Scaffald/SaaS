@@ -53,7 +53,7 @@ cd infra/aws/route53
 ### 3. Verify Records in Route53
 ```bash
 aws route53 list-resource-record-sets \
-  --hosted-zone-id Z0610739109YR6SDKL45L \
+  --hosted-zone-id Z03807932GT9W30LQ0T67 \
   --profile scaffald
 ```
 

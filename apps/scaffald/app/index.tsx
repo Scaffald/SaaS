@@ -1,12 +1,43 @@
-import { AUTH_ROUTES, ROUTES } from '@scf/core/constants/routes'
+import { LandingScreen } from '@scf/core/features/marketing'
 import { continueOAuthFlowIfPending } from '@scf/core/features/oauth/utils/passthrough'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { usePrerequisitesCheck } from '@scf/core/utils/prerequisites-sdk-hooks'
 import { useUser } from '@scf/core/utils/useUser'
 import { useLocalSearchParams, useRouter, useSegments } from 'expo-router'
+import type { GenerateMetadataFunction } from 'expo-server'
 import { useEffect, useState } from 'react'
 import { Platform } from 'react-native'
 import { Text, Stack } from '@scaffald/ui'
+import { SITE_ORIGIN } from '../utils/public-content-loader'
+import { OG_IMAGE } from '../utils/og'
+import { resolveRootRoute, shouldRenderLanding, type RootRouteInput } from '../utils/root-route'
+import { MarketingJsonLd } from '../components/MarketingJsonLd'
+
+const TITLE = 'Scaffald — Hiring built for the skilled trades'
+const DESCRIPTION =
+  'Scaffald connects skilled trade workers with great employers. Skills-based search, verified certifications, shareable worker profiles, and two-way reviews.'
+
+// `/` is the marketing landing page for logged-out visitors, so it carries the
+// site-level metadata.
+export const generateMetadata: GenerateMetadataFunction = () => ({
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: SITE_ORIGIN },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: SITE_ORIGIN,
+    siteName: 'Scaffald',
+    type: 'website',
+    images: OG_IMAGE,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: TITLE,
+    description: DESCRIPTION,
+    images: OG_IMAGE.url,
+  },
+})
 
 export default function RootIndex() {
   const { user, isPending } = useUser()
@@ -28,6 +59,16 @@ export default function RootIndex() {
   const { data: prereqStatus, isLoading: isCheckingPrereqs } = usePrerequisitesCheck({
     enabled: !!user && !isVerifying, // Only check when user is authenticated and not verifying
   })
+
+  // Every `/` routing decision runs through this one pure input; see
+  // utils/root-route.ts and tests/root-route.test.ts.
+  const routeInput: RootRouteInput = {
+    platform: Platform.OS === 'web' ? 'web' : (Platform.OS as 'ios' | 'android'),
+    isServerRender: typeof window === 'undefined',
+    isPending,
+    hasUser: !!user,
+    prerequisitesComplete: isCheckingPrereqs ? undefined : !!prereqStatus?.isComplete,
+  }
 
   // Check if router is ready
   useEffect(() => {
@@ -109,20 +150,14 @@ export default function RootIndex() {
             // OAuth flow will handle redirect
             return
           }
-
-          // Check prerequisites and route accordingly
-          if (!prereqStatus?.isComplete) {
-            console.log('Prerequisites incomplete, navigating to onboarding')
-            router.replace(ROUTES.ONBOARDING.path)
-          } else {
-            console.log('Prerequisites complete, navigating to dashboard')
-            router.replace(ROUTES.DASHBOARD.path)
-          }
-        } else {
-          console.log('Navigating to auth for unauthenticated user')
-          router.replace(AUTH_ROUTES.LOGIN.path)
         }
-        // Only mark as navigated after navigation succeeds
+
+        const decision = resolveRootRoute(routeInput)
+        if (decision.type === 'redirect') {
+          router.replace(decision.path)
+        }
+        // 'landing' stays put (web, logged out); 'wait' re-evaluates on the
+        // next render once auth or prerequisites resolve.
         setHasNavigated(true)
       } catch (error) {
         console.error('Navigation error:', error)
@@ -165,6 +200,18 @@ export default function RootIndex() {
         <Text color="red">Verification failed: {verificationError}</Text>
         <Text>Please try requesting a new magic link.</Text>
       </Stack>
+    )
+  }
+
+  // Web + logged out (including every server render, which is anonymous by
+  // definition) renders the marketing landing in place. Native redirects to
+  // the welcome/login flow instead — see resolveRootRoute.
+  if (shouldRenderLanding(routeInput)) {
+    return (
+      <>
+        <MarketingJsonLd />
+        <LandingScreen />
+      </>
     )
   }
 

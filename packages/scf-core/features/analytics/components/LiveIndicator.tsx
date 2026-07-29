@@ -1,7 +1,11 @@
 import { Row, Text, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useEffect, useRef } from 'react'
-import { Animated, StyleSheet } from 'react-native'
+import { Animated, Platform, StyleSheet } from 'react-native'
+
+// react-native-web has no native animated module, so requesting the native
+// driver there only logs a "falling back to JS-based animation" warning.
+const USE_NATIVE_DRIVER = Platform.OS !== 'web'
 
 interface LiveIndicatorProps {
   count: number
@@ -15,8 +19,16 @@ export function LiveIndicator({ count }: LiveIndicatorProps) {
   useEffect(() => {
     const animation = Animated.loop(
       Animated.sequence([
-        Animated.timing(pulseAnim, { toValue: 0.3, duration: 1000, useNativeDriver: true }),
-        Animated.timing(pulseAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
+        Animated.timing(pulseAnim, {
+          toValue: 0.3,
+          duration: 1000,
+          useNativeDriver: USE_NATIVE_DRIVER,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: USE_NATIVE_DRIVER,
+        }),
       ])
     )
     animation.start()
@@ -28,7 +40,9 @@ export function LiveIndicator({ count }: LiveIndicatorProps) {
   return (
     <Row gap={6} align="center">
       <Animated.View style={[styles.dot, { opacity: pulseAnim }]} />
-      <Text style={{ fontSize: 12, color: colors.text[resolvedTheme].secondary, fontWeight: '500' }}>
+      <Text
+        style={{ fontSize: 12, color: colors.text[resolvedTheme].secondary, fontWeight: '500' }}
+      >
         {count} viewing now
       </Text>
     </Row>

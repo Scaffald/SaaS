@@ -39,7 +39,7 @@ const sampleIdentity = (provider: string) => ({
 
 describe('useConnectedAccounts', () => {
   beforeEach(() => {
-    process.env.EXPO_PUBLIC_URL = 'https://app.scaffald.com'
+    process.env.EXPO_PUBLIC_URL = 'https://scaffald.com'
     getUserIdentitiesMock.mockResolvedValue({
       data: { identities: [sampleIdentity('email'), sampleIdentity('google')] },
       error: null,
@@ -94,7 +94,7 @@ describe('useConnectedAccounts', () => {
     expect(res.ok).toBe(true)
     expect(linkIdentityMock).toHaveBeenCalledWith({
       provider: 'google',
-      options: { redirectTo: 'https://app.scaffald.com/dashboard/settings?linked=success' },
+      options: { redirectTo: 'https://scaffald.com/dashboard/settings?linked=success' },
     })
     expect(captureEventMock).toHaveBeenCalledWith('auth_identity_link_started', {
       provider: 'google',

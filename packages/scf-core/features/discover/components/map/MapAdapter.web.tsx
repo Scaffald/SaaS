@@ -3,7 +3,6 @@ import { createRoot, type Root } from 'react-dom/client'
 import { useColorScheme, View } from 'react-native'
 import type { MapContainerRef, ViewportBounds } from '@scaffald/ui'
 import mapboxgl from 'mapbox-gl'
-import 'mapbox-gl/dist/mapbox-gl.css'
 
 import { PIN_COLORS, type MapPinCategory } from './pinColors'
 import { SelectedPinRing, getSelectedPinLabel } from './pins/SelectedPinRing'
@@ -21,6 +20,30 @@ const logger = {
   error: console.error,
   warn: console.warn,
 }
+
+/**
+ * Mapbox's stylesheet is injected on demand rather than imported.
+ *
+ * A static `import 'mapbox-gl/dist/mapbox-gl.css'` gets collected into Metro's
+ * global CSS bundle, which the SSR shell then links from *every* page — 40 KB
+ * of render-blocking map styling on the marketing landing page, which has no
+ * map. Injecting here means only routes that actually mount a map pay for it.
+ */
+const MAPBOX_CSS_HREF = '/vendor/mapbox-gl.css'
+
+function ensureMapboxStylesheet() {
+  if (typeof document === 'undefined') return
+  if (document.querySelector(`link[href="${MAPBOX_CSS_HREF}"]`)) return
+
+  const link = document.createElement('link')
+  link.rel = 'stylesheet'
+  link.href = MAPBOX_CSS_HREF
+  document.head.appendChild(link)
+}
+
+// Runs when this module is first evaluated — i.e. when a map-bearing route
+// loads its chunk, before any map instance is constructed.
+ensureMapboxStylesheet()
 
 // --- Types ---
 

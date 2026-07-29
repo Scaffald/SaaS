@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Authenticated surfaces — nothing useful for crawlers and often slow to render.
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /employers
+Disallow: /onboarding
+Disallow: /settings
+Disallow: /messages
+Disallow: /notifications
+Disallow: /auth
+Disallow: /api/
+
+Sitemap: https://scaffald.com/sitemap.xml

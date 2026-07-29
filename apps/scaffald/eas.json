@@ -66,7 +66,7 @@
         "EXPO_PUBLIC_SENTRY_DSN_WEB": "https://549714752feca37523a21ba85bb14760@o1019232.ingest.us.sentry.io/4510467545759744",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFtZm1wY3l4c2loaGZ0dHZxcGJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyNzM0NDgsImV4cCI6MjA3Mzg0OTQ0OH0.yOcIfcYXm2TvHI0cGJaEH45etEQ0iceqTfC4nat_pKs",
         "EXPO_PUBLIC_SUPABASE_URL": "https://auth.scaffald.com",
-        "EXPO_PUBLIC_URL": "https://app.scaffald.com"
+        "EXPO_PUBLIC_URL": "https://scaffald.com"
       },
       "ios": {
         "buildConfiguration": "Release",
