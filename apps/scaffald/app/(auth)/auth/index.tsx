@@ -1,3 +1,4 @@
+import { IntentBanner } from '@scf/core/features/auth/components/IntentBanner'
 import { LoginScreen } from '@scf/core/features/auth/login-screen'
 import { WelcomeScreen } from '@scf/core/features/auth/welcome-screen'
 import { Row, Stack, useThemeContext } from '@scaffald/ui'
@@ -54,7 +55,15 @@ export default function Screen() {
             <WelcomeScreen brandedPanel />
           </Stack>
         )}
-        <Stack flex={2} justify="center" align="center" padding={24} style={{ minWidth: 0 }}>
+        <Stack
+          flex={2}
+          justify="center"
+          align="center"
+          padding={24}
+          gap={16}
+          style={{ minWidth: 0 }}
+        >
+          <IntentBanner />
           <LoginScreen />
         </Stack>
       </Row>
