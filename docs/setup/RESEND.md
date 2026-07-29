@@ -55,13 +55,34 @@ One key, set in three places. They are separate runtimes and share nothing.
 echo 'RESEND_API_KEY=re_...' >> .env
 
 # 2. Supabase edge functions — notifications, invitations, webhook
-npx supabase secrets set RESEND_API_KEY=re_... --project-ref qmfmpcyxsihhfttvqpbw
+SUPABASE_ACCESS_TOKEN="$(grep -m1 '^SUPABASE_PAT=' .env | cut -d= -f2-)" \
+npx supabase secrets set \
+  RESEND_API_KEY="$(grep -m1 '^RESEND_API_KEY=' .env | cut -d= -f2-)" \
+  --project-ref qmfmpcyxsihhfttvqpbw
 
 # 3. EAS Hosting — the contact form. Repeat per environment.
 cd apps/scaffald
 npx eas-cli@latest env:create --scope project --name RESEND_API_KEY \
-  --value re_... --type secret --environment production
+  --value "$(grep -m1 '^RESEND_API_KEY=' ../../.env | cut -d= -f2-)" \
+  --type secret --environment production
 ```
+
+**`supabase secrets` needs `SUPABASE_ACCESS_TOKEN` set explicitly.** Unlike
+`projects list` and `functions list`, which happily use the CLI's stored
+login, the `secrets` subcommand fails with
+
+```
+Invalid access token format. Must be like `sbp_0102...1920`.
+```
+
+before it makes any network call. This repo keeps the token in `.env` as
+`SUPABASE_PAT`, not `SUPABASE_ACCESS_TOKEN`, which is why the mapping above
+is needed. The error names a format problem, so it reads like a corrupt
+token — the token is fine, the CLI just is not finding one.
+
+Pull values out of `.env` individually rather than `set -a; . ./.env`.
+Sourcing the whole file exports several dozen variables into the command's
+environment, and some of them collide with names the tooling reads.
 
 **EAS Hosting reads environment variables at deploy time, not request time.**
 Setting the variable changes nothing until the next `eas deploy`.
