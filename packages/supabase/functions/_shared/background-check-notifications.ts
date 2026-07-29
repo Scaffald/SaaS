@@ -357,7 +357,7 @@ function resolveAppBaseUrl(): string {
     getEnvValue('EXPO_PUBLIC_URL') ??
     getEnvValue('SUPABASE_SITE_URL') ??
     getEnvValue('SITE_URL') ??
-    'https://app.scaffald.com'
+    'https://scaffald.com'
   )
 }
 

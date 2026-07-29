@@ -32,7 +32,7 @@ const ORIGINAL_URL = process.env.EXPO_PUBLIC_URL
 
 describe('useSocialAuthHandlers (web)', () => {
   beforeEach(() => {
-    process.env.EXPO_PUBLIC_URL = 'https://app.scaffald.com'
+    process.env.EXPO_PUBLIC_URL = 'https://scaffald.com'
   })
 
   afterEach(() => {
@@ -55,7 +55,7 @@ describe('useSocialAuthHandlers (web)', () => {
 
     expect(signInWithOAuthMock).toHaveBeenCalledWith({
       provider: 'google',
-      options: { redirectTo: 'https://app.scaffald.com/auth/callback' },
+      options: { redirectTo: 'https://scaffald.com/auth/callback' },
     })
     expect(captureEventMock).toHaveBeenCalledWith('auth_social_sign_in_started', { provider: 'google' })
     expect(captureEventMock).toHaveBeenCalledWith('auth_social_sign_in_initiated', { provider: 'google' })
@@ -63,7 +63,7 @@ describe('useSocialAuthHandlers (web)', () => {
   })
 
   it('strips trailing slash from EXPO_PUBLIC_URL before appending /auth/callback', async () => {
-    process.env.EXPO_PUBLIC_URL = 'https://app.scaffald.com/'
+    process.env.EXPO_PUBLIC_URL = 'https://scaffald.com/'
     signInWithOAuthMock.mockResolvedValueOnce({ data: { url: 'x' }, error: null })
     const { useSocialAuthHandlers } = await import('../useSocialAuthHandlers')
     const { result } = renderHook(() => useSocialAuthHandlers())
@@ -74,7 +74,7 @@ describe('useSocialAuthHandlers (web)', () => {
 
     expect(signInWithOAuthMock).toHaveBeenCalledWith({
       provider: 'google',
-      options: { redirectTo: 'https://app.scaffald.com/auth/callback' },
+      options: { redirectTo: 'https://scaffald.com/auth/callback' },
     })
   })
 

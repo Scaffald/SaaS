@@ -18,7 +18,9 @@ export function resolveAppBaseUrl(): string {
     }
   }
 
-  return 'https://app.scaffald.com'
+  // Last-resort default. The apex is the canonical origin since the 2026-07-28
+  // cutover; app.scaffald.com only 301s here now.
+  return 'https://scaffald.com'
 }
 
 export function normalizeBaseUrl(url: string): string {
