@@ -1,0 +1,12 @@
+{
+  "name": "scaffald-web-server",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Runtime dependencies for the Expo SSR web server. Used by the Dockerfile to install only what server/index.js needs.",
+  "main": "index.js",
+  "dependencies": {
+    "compression": "^1.7.4",
+    "expo-server": "~56.0.4",
+    "express": "^4.22.2"
+  }
+}

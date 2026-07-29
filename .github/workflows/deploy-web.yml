@@ -3,7 +3,7 @@ name: Deploy Web App
 on:
   push:
     branches:
-      - prod       # → production (app.scaffald.com)
+      - prod       # → production (scaffald.com)
       - preview    # → preview (preview.scaffald.com)
       - main       # → dev (dev.scaffald.com)
   workflow_dispatch:
@@ -98,7 +98,7 @@ jobs:
           EXPO_PUBLIC_SUPABASE_URL: ${{ github.ref == 'refs/heads/prod' && secrets.EXPO_PUBLIC_SUPABASE_URL || github.ref == 'refs/heads/preview' && secrets.PREVIEW_EXPO_PUBLIC_SUPABASE_URL || secrets.DEV_EXPO_PUBLIC_SUPABASE_URL }}
           EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ github.ref == 'refs/heads/prod' && secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY || github.ref == 'refs/heads/preview' && secrets.PREVIEW_EXPO_PUBLIC_SUPABASE_ANON_KEY || secrets.DEV_EXPO_PUBLIC_SUPABASE_ANON_KEY }}
           # App URL
-          EXPO_PUBLIC_URL: ${{ github.ref == 'refs/heads/prod' && 'https://app.scaffald.com' || github.ref == 'refs/heads/preview' && 'https://preview.scaffald.com' || 'https://dev.scaffald.com' }}
+          EXPO_PUBLIC_URL: ${{ github.ref == 'refs/heads/prod' && 'https://scaffald.com' || github.ref == 'refs/heads/preview' && 'https://preview.scaffald.com' || 'https://dev.scaffald.com' }}
           # Google OAuth — shared across all environments (same GCP project)
           EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: ${{ secrets.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID }}
           EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID: ${{ secrets.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID }}
@@ -113,9 +113,15 @@ jobs:
         run: |
           echo "🏗️ Building for $APP_ENV..."
           pnpm web:build
-          echo "/* /index.html 200" > dist/_redirects
+          # web.output is 'server': the export is dist/client + dist/server and
+          # there is no static index.html. Fail loudly if that ever changes
+          # shape, rather than shipping something unservable.
+          if [ ! -f dist/server/_expo/routes.json ]; then
+            echo "❌ Expected an SSR export (dist/server/_expo/routes.json missing)."
+            echo "   Check web.output in app.config.ts."
+            exit 1
+          fi
           echo "✅ Build complete ($(du -sh dist | cut -f1))"
-          ls -la dist/
 
       # ===== UPLOAD ARTIFACT =====
       - name: 📦 Upload artifact
@@ -152,18 +158,26 @@ jobs:
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           PROJECT_ID: ${{ github.ref == 'refs/heads/prod' && secrets.SUPABASE_PROJECT_ID || github.ref == 'refs/heads/preview' && secrets.PREVIEW_SUPABASE_BRANCH_ID || secrets.DEV_SUPABASE_BRANCH_ID }}
-          APP_URL: ${{ github.ref == 'refs/heads/prod' && 'https://app.scaffald.com' || github.ref == 'refs/heads/preview' && 'https://preview.scaffald.com' || 'https://dev.scaffald.com' }}
+          APP_URL: ${{ github.ref == 'refs/heads/prod' && 'https://scaffald.com' || github.ref == 'refs/heads/preview' && 'https://preview.scaffald.com' || 'https://dev.scaffald.com' }}
+          # Production keeps the legacy app.scaffald.com origin authorised
+          # alongside the apex: it 301s to the apex but old links, saved
+          # bookmarks and stale OAuth entries still land there.
+          EXTRA_ALLOWED: ${{ github.ref == 'refs/heads/prod' && 'https://app.scaffald.com,https://app.scaffald.com/auth/callback,https://www.scaffald.com,https://www.scaffald.com/auth/callback' || '' }}
         run: |
           if [ -z "$SUPABASE_ACCESS_TOKEN" ] || [ -z "$PROJECT_ID" ]; then
             echo "⏭️ Supabase secrets not configured — skipping auth URL config"
             exit 0
+          fi
+          ALLOW_LIST="$APP_URL,$APP_URL/auth/callback"
+          if [ -n "$EXTRA_ALLOWED" ]; then
+            ALLOW_LIST="$ALLOW_LIST,$EXTRA_ALLOWED"
           fi
           echo "🔐 Configuring auth URLs for $APP_URL..."
           RESPONSE=$(curl -s -w "\n%{http_code}" -X PATCH \
             "https://api.supabase.com/v1/projects/$PROJECT_ID/config/auth" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"site_url\":\"$APP_URL\",\"uri_allow_list\":\"$APP_URL,$APP_URL/auth/callback\"}")
+            -d "{\"site_url\":\"$APP_URL\",\"uri_allow_list\":\"$ALLOW_LIST\"}")
           HTTP_CODE=$(echo "$RESPONSE" | tail -1)
           BODY=$(echo "$RESPONSE" | head -1)
           if [ "$HTTP_CODE" = "200" ]; then
@@ -173,77 +187,59 @@ jobs:
           fi
         continue-on-error: true
 
-      # ===== DEPLOY TO AWS =====
-      - name: ☁️ Deploy to S3 + CloudFront
+      # ===== DEPLOY TO EAS HOSTING =====
+      # All environments run the SSR app on EAS Hosting. prod is promoted to the
+      # production URL (fronted by CloudFront on the apex); dev/preview get
+      # named aliases that dev.scaffald.com / preview.scaffald.com CNAME to.
+      #
+      # The old S3 + CloudFront sync was removed on 2026-07-28: since the switch
+      # to web.output 'server' the export has no static index.html, so syncing
+      # dist/ to a bucket produced an unservable site.
+      - name: 🚀 Deploy to EAS Hosting
+        working-directory: apps/scaffald
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.SCAFFALD_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.SCAFFALD_AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.SCAFFALD_AWS_REGION || 'us-east-1' }}
-          AWS_ENV: ${{ github.ref == 'refs/heads/prod' && 'production' || github.ref == 'refs/heads/preview' && 'preview' || 'dev' }}
-          AWS_S3_BUCKET: ${{ github.ref == 'refs/heads/prod' && secrets.SCAFFALD_AWS_S3_BUCKET_PROD || github.ref == 'refs/heads/preview' && secrets.SCAFFALD_AWS_S3_BUCKET_PREVIEW || secrets.SCAFFALD_AWS_S3_BUCKET_DEV }}
-          AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ github.ref == 'refs/heads/prod' && secrets.SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD || github.ref == 'refs/heads/preview' && secrets.SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_PREVIEW || secrets.SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV }}
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          DEPLOY_ALIAS: ${{ github.ref == 'refs/heads/preview' && 'preview' || 'dev' }}
         run: |
-          if [ -z "$AWS_ACCESS_KEY_ID" ]; then
-            echo "⏭️ AWS secrets not configured — skipping deploy"
-            exit 0
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "❌ EXPO_TOKEN not configured — cannot deploy."
+            exit 1
+          fi
+          if [ "${{ github.ref }}" = "refs/heads/prod" ]; then
+            echo "🚀 Deploying to EAS production (scaffald.com)"
+            npx eas-cli@latest deploy --prod --non-interactive
+          else
+            echo "🚀 Deploying to EAS alias: $DEPLOY_ALIAS"
+            npx eas-cli@latest deploy --alias "$DEPLOY_ALIAS" --non-interactive
           fi
 
-          aws sts get-caller-identity
-
-          echo "🚀 Deploying to $AWS_ENV → s3://$AWS_S3_BUCKET"
-
-          # Assets: long cache
-          aws s3 sync apps/scaffald/dist s3://$AWS_S3_BUCKET \
-            --delete \
-            --exclude "*.html" --exclude "_redirects" --exclude "_headers" --exclude "*.map" \
-            --cache-control "public, max-age=31536000, immutable"
-
-          # HTML: no cache
-          aws s3 sync apps/scaffald/dist s3://$AWS_S3_BUCKET \
-            --delete \
-            --include "*.html" \
-            --cache-control "public, max-age=0, must-revalidate" \
-            --content-type "text/html"
-
-          # Support files
-          for f in _redirects _headers; do
-            [ -f "apps/scaffald/dist/$f" ] && \
-              aws s3 cp "apps/scaffald/dist/$f" "s3://$AWS_S3_BUCKET/$f"
-          done
-
-          # Invalidate CloudFront
-          if [ -n "$AWS_CLOUDFRONT_DISTRIBUTION_ID" ]; then
-            INV_ID=$(aws cloudfront create-invalidation \
-              --distribution-id "$AWS_CLOUDFRONT_DISTRIBUTION_ID" \
-              --paths "/*" --query 'Invalidation.Id' --output text)
-            echo "✅ Cache invalidation: $INV_ID"
-          fi
 
       # ===== SMOKE TEST =====
       - name: 🧪 Smoke test
         if: github.ref == 'refs/heads/prod' || github.ref == 'refs/heads/preview' || github.ref == 'refs/heads/main'
         env:
-          APP_ENV: ${{ github.ref == 'refs/heads/prod' && 'production' || github.ref == 'refs/heads/preview' && 'preview' || 'dev' }}
-          DISTRIBUTION_ID: ${{ github.ref == 'refs/heads/prod' && secrets.SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD || github.ref == 'refs/heads/preview' && secrets.SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_PREVIEW || secrets.SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.SCAFFALD_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.SCAFFALD_AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.SCAFFALD_AWS_REGION || 'us-east-1' }}
+          SITE_URL: ${{ github.ref == 'refs/heads/prod' && 'https://scaffald.com' || github.ref == 'refs/heads/preview' && 'https://preview.scaffald.com' || 'https://dev.scaffald.com' }}
         run: |
-          # Wait up to 3 minutes for CloudFront invalidation to begin propagating
-          if [ -z "$DISTRIBUTION_ID" ]; then
-            echo "⏭️ No distribution ID — skipping smoke test"
-            exit 0
-          fi
-          echo "⏳ Waiting 30s for CloudFront to start propagating..."
+          # Production is edge-cached and dev/preview CNAME straight to EAS, so
+          # a new deploy is live within about a minute.
+          echo "⏳ Waiting 30s for the deploy to become reachable..."
           sleep 30
-          CF_DOMAIN=$(aws cloudfront get-distribution \
-            --id "$DISTRIBUTION_ID" \
-            --query 'Distribution.DomainName' --output text \
-            --region us-east-1 2>/dev/null || echo "")
-          if [ -n "$CF_DOMAIN" ]; then
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://$CF_DOMAIN/" || echo "000")
-            echo "HTTP status from https://$CF_DOMAIN/: $STATUS"
-            [ "$STATUS" = "200" ] && echo "✅ Smoke test passed" || echo "⚠️ Unexpected status $STATUS (may still be propagating)"
+          FAILED=0
+          for path in / /privacy /robots.txt /sitemap.xml; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$SITE_URL$path" || echo "000")
+            echo "  $path -> $STATUS"
+            [ "$STATUS" = "200" ] || FAILED=1
+          done
+          # SSR must actually render, not just return 200 with an empty shell.
+          BODY=$(curl -s --max-time 30 "$SITE_URL/" || echo "")
+          if ! echo "$BODY" | grep -q "<title>"; then
+            echo "❌ No <title> in server output — generateMetadata is not running."
+            FAILED=1
+          fi
+          if [ "$FAILED" = "1" ]; then
+            echo "⚠️ Smoke test found problems (may still be propagating)."
+          else
+            echo "✅ Smoke test passed"
           fi
         continue-on-error: true
 

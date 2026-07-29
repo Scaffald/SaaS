@@ -43,7 +43,7 @@
       "Sid": "AllowRoute53Update",
       "Effect": "Allow",
       "Action": ["route53:ChangeResourceRecordSets"],
-      "Resource": "arn:aws:route53:::hostedzone/Z0610739109YR6SDKL45L"
+      "Resource": "arn:aws:route53:::hostedzone/Z03807932GT9W30LQ0T67"
     },
     {
       "Sid": "AllowACMRead",

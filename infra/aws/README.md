@@ -171,7 +171,7 @@ The deployment requires IAM permissions defined in `infra/aws/iam/deploy-policy.
 
 ## 3. Route53 Hosted Zone
 
-- Hosted zone: `scaffald.com` (`Id=Z0610739109YR6SDKL45L`)
+- Hosted zone: `scaffald.com` (`Id=Z03807932GT9W30LQ0T67`)
 - AWS nameservers to delegate at your registrar:
   - `ns-1505.awsdns-60.org`
   - `ns-1590.awsdns-06.co.uk`
@@ -214,7 +214,7 @@ cd infra/aws/route53
 **Option 2: Using AWS CLI directly**
 ```bash
 aws route53 change-resource-record-sets \
-  --hosted-zone-id Z0610739109YR6SDKL45L \
+  --hosted-zone-id Z03807932GT9W30LQ0T67 \
   --change-batch file://infra/aws/route53/scaffald-complete-records.json \
   --profile scaffald
 ```
@@ -223,7 +223,7 @@ aws route53 change-resource-record-sets \
 ```bash
 # List all records in Route53
 aws route53 list-resource-record-sets \
-  --hosted-zone-id Z0610739109YR6SDKL45L \
+  --hosted-zone-id Z03807932GT9W30LQ0T67 \
   --profile scaffald
 
 # Test DNS resolution (after nameserver switch)
