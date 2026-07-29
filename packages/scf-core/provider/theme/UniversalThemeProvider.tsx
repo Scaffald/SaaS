@@ -1,4 +1,4 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from "expo-router/react-navigation"
+import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router/react-navigation'
 import { StatusBar } from 'expo-status-bar'
 import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from 'react'
 import { Appearance, Platform, useColorScheme } from 'react-native'
@@ -78,7 +78,11 @@ export const UniversalThemeProvider = ({ children }: { children: ReactNode }) =>
     } satisfies ThemeContextValue
   }, [current, systemTheme])
 
-  if (current === null) {
+  // Native-only gate. `typeof window` is also defined during client hydration,
+  // so blanking here mismatched the server-rendered HTML (React #418).
+  // `themeContext.current` already falls back to 'system', so web can render
+  // before the stored theme resolves.
+  if (current === null && Platform.OS !== 'web') {
     return null // Render nothing until theme is loaded
   }
 

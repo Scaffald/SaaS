@@ -1,23 +1,24 @@
+import '../global.css'
 import { ErrorBoundary } from '@scf/core/components/ErrorBoundary'
 import { getVersionDebugPayload } from '@scf/core/constants/appVersion'
-import { loadThemePromise, Provider, UniversalThemeProvider, useThemeSetting, ThemeContext } from '@scf/core/provider'
+import {
+  loadThemePromise,
+  Provider,
+  UniversalThemeProvider,
+  useThemeSetting,
+  ThemeContext,
+} from '@scf/core/provider'
 import { initSentry } from '@scf/core/utils/sentry'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { logger } from '@scf/core'
 import { ThemeProvider } from '@scaffald/ui'
 import type { ResolvedThemeMode } from '@scaffald/ui'
-import {
-  Roboto_400Regular,
-  Roboto_500Medium,
-  Roboto_700Bold,
-  useFonts,
-} from '@expo-google-fonts/roboto'
-import { RobotoSerif_400Regular } from '@expo-google-fonts/roboto-serif'
+import { useAppFonts } from '../utils/useAppFonts'
 import type { Session } from '@supabase/auth-js'
 import { SplashScreen, Stack, useSegments } from 'expo-router'
 import type { ReactNode } from 'react'
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
-import { View } from 'react-native'
+import { Platform, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
@@ -48,12 +49,7 @@ SplashScreen.preventAutoHideAsync()
 
 export default function DashboardLayout() {
   const segments = useSegments()
-  const [fontLoaded] = useFonts({
-    Roboto: Roboto_400Regular,
-    'Roboto-Medium': Roboto_500Medium,
-    'Roboto-Bold': Roboto_700Bold,
-    'Roboto Serif': RobotoSerif_400Regular,
-  })
+  const [fontLoaded] = useAppFonts()
 
   const [themeLoaded, setThemeLoaded] = useState(false)
   const [sessionLoadAttempted, setSessionLoadAttempted] = useState(false)
@@ -88,7 +84,13 @@ export default function DashboardLayout() {
     }
   }, [fontLoaded, sessionLoadAttempted, themeLoaded])
 
-  if (!themeLoaded || !fontLoaded || !sessionLoadAttempted) {
+  // The readiness gate is native-only. Branching on `typeof window` looks like
+  // a server check but is also false during client hydration, so the client's
+  // first pass returned null against a fully server-rendered document — a
+  // hydration mismatch (React #418) that made React discard the SSR payload on
+  // every route. Web needs no gate regardless: fonts come from CSS
+  // (useAppFonts.web) and theme/session both render from server-safe defaults.
+  if (Platform.OS !== 'web' && (!themeLoaded || !fontLoaded || !sessionLoadAttempted)) {
     return null
   }
 

@@ -275,6 +275,7 @@ export default {
     web: {
       favicon: "./assets/favicon.png",
       bundler: "metro",
+      output: "server",
       name: "Scaffald",
       shortName: "Scaffald",
       description: "Modern hiring for technical trades",
@@ -335,7 +336,14 @@ export default {
         },
       ],
       "expo-apple-authentication",
-      "expo-router",
+      [
+        "expo-router",
+        {
+          unstable_useServerRendering: true,
+          unstable_useServerDataLoaders: true,
+          // NOTE: asyncRoutes is disabled — see below.
+        },
+      ],
       [
         "expo-build-properties",
         {
