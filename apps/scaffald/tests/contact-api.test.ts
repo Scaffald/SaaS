@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 /**
  * The contact endpoint is public, unauthenticated, and relays text into email —
- * so its abuse guards are the part worth testing. SendGrid is a third party, so
+ * so its abuse guards are the part worth testing. Resend is a third party, so
  * its HTTP call is stubbed; everything else is exercised for real.
  *
  * The module keeps rate-limit state in memory, so each test re-imports it fresh
@@ -36,7 +36,7 @@ async function loadRoute() {
 }
 
 beforeEach(() => {
-  process.env.SENDGRID_API_KEY = 'test-key'
+  process.env.RESEND_API_KEY = 'test-key'
   vi.stubGlobal(
     'fetch',
     vi.fn(async () => new Response(JSON.stringify({ id: 'stub' }), { status: 200 }))
@@ -47,7 +47,7 @@ afterEach(() => {
   vi.unstubAllGlobals()
   // `process.env.X = undefined` stores the *string* "undefined", which is
   // truthy — the variable has to be deleted to simulate an unset key.
-  delete process.env.SENDGRID_API_KEY
+  delete process.env.RESEND_API_KEY
 })
 
 describe('validation', () => {
@@ -58,7 +58,7 @@ describe('validation', () => {
     expect(res.status).toBe(200)
     await expect(res.json()).resolves.toEqual({ ok: true })
     expect(fetch).toHaveBeenCalledTimes(1)
-    expect(vi.mocked(fetch).mock.calls[0][0]).toBe('https://api.sendgrid.com/v3/mail/send')
+    expect(vi.mocked(fetch).mock.calls[0][0]).toBe('https://api.resend.com/emails')
   })
 
   test.each(['name', 'email', 'company', 'orgType'])(
@@ -100,7 +100,7 @@ describe('validation', () => {
   })
 
   test('reports a configuration problem rather than failing silently', async () => {
-    delete process.env.SENDGRID_API_KEY
+    delete process.env.RESEND_API_KEY
     const { POST } = await loadRoute()
     const res = await POST(request(VALID))
 
@@ -189,14 +189,14 @@ describe('email payload', () => {
     return JSON.parse(String((init as RequestInit).body))
   }
 
-  const sentText = () => String(sentPayload().content[0].value)
+  const sentText = () => String(sentPayload().text)
 
   test('sets reply-to to the submitter and includes their message', async () => {
     const { POST } = await loadRoute()
     await POST(request({ ...VALID, message: 'We need three welders in March.' }))
     const payload = sentPayload()
 
-    expect(payload.reply_to.email).toBe(VALID.email)
+    expect(payload.reply_to).toBe(VALID.email)
     expect(payload.subject).toContain(VALID.company)
     expect(sentText()).toContain('We need three welders in March.')
     expect(sentText()).toContain(VALID.name)
@@ -208,16 +208,15 @@ describe('email payload', () => {
     const { POST } = await loadRoute()
     await POST(request(VALID))
 
-    expect(sentPayload().from.email).not.toBe(VALID.email)
-    expect(sentPayload().from.email).toMatch(/@scaffald\.com$/)
+    expect(sentPayload().from).not.toContain(VALID.email)
+    expect(sentPayload().from).toMatch(/<[^>]+@scaffald\.com>$/)
   })
 
   test('addresses exactly one recipient', async () => {
     const { POST } = await loadRoute()
     await POST(request(VALID))
 
-    expect(sentPayload().personalizations).toHaveLength(1)
-    expect(sentPayload().personalizations[0].to).toHaveLength(1)
+    expect(sentPayload().to).toHaveLength(1)
   })
 
   test('truncates oversized input before relaying it', async () => {

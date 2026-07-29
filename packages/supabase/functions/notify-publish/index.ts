@@ -157,7 +157,7 @@ serve(async (req) => {
           supabase,
           notification.id,
           'email',
-          'sendgrid',
+          'resend',
           {
             email: contacts.email,
             subject: event.title,

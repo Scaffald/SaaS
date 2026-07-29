@@ -1,22 +1,20 @@
 /**
  * Contact form handler for the marketing landing page.
  *
- * Replaces the Next.js route from the retired marketing site, which sent via
- * Resend. This sends via SendGrid instead: it is the transport the app's
- * notification emails already use (see
- * packages/supabase/functions/_shared/notifications/adapters/email.ts), so the
- * contact form inherits an account that is already warmed and SPF-authorized
- * rather than introducing a second sending domain to authenticate.
+ * Sends via Resend, the same transport as the app's notification email (see
+ * packages/supabase/functions/_shared/notifications/adapters/email.ts), so
+ * there is one account to fund, one domain to authenticate, and one place to
+ * look when mail goes missing.
  *
  * Uses the HTTP API directly rather than the SDK so this stays dependency-free
  * and runs on any server runtime (Node, workerd, Bun).
  */
 
-const SENDGRID_ENDPOINT = 'https://api.sendgrid.com/v3/mail/send'
+const RESEND_ENDPOINT = 'https://api.resend.com/emails'
 
 const TO_EMAIL = process.env.CONTACT_FORM_TO ?? 'hello@scaffald.com'
-// Must be a verified sender on the SendGrid account. Matches the notification
-// adapter's default so both surfaces send as the same identity.
+// Must be on a verified Resend domain. Matches the notification adapter's
+// default so both surfaces send as the same identity.
 const FROM_EMAIL = process.env.CONTACT_FORM_FROM ?? 'notifications@scaffald.com'
 const FROM_NAME = process.env.CONTACT_FORM_FROM_NAME ?? 'Scaffald'
 
@@ -105,9 +103,9 @@ export async function POST(request: Request): Promise<Response> {
     return json({ error: 'Invalid email address' }, 400)
   }
 
-  const apiKey = process.env.SENDGRID_API_KEY
+  const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) {
-    console.error('[contact] SENDGRID_API_KEY is not configured')
+    console.error('[contact] RESEND_API_KEY is not configured')
     return json({ error: 'Email not configured' }, 503)
   }
 
@@ -121,26 +119,25 @@ export async function POST(request: Request): Promise<Response> {
   ].join('\n')
 
   try {
-    const res = await fetch(SENDGRID_ENDPOINT, {
+    const res = await fetch(RESEND_ENDPOINT, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        personalizations: [{ to: [{ email: TO_EMAIL }] }],
-        from: { email: FROM_EMAIL, name: FROM_NAME },
+        from: `${FROM_NAME} <${FROM_EMAIL}>`,
+        to: [TO_EMAIL],
         // The submitter is never the sender — that would fail SPF and DMARC for
         // their domain. Replying to the notification reaches them instead.
-        reply_to: { email, name: name || undefined },
+        reply_to: email,
         subject: `New contact form submission — ${company}`,
-        content: [{ type: 'text/plain', value: text }],
+        text,
       }),
     })
 
-    // SendGrid answers a successful send with 202 and an empty body.
     if (!res.ok) {
-      console.error('[contact] SendGrid rejected the request:', res.status, await res.text())
+      console.error('[contact] Resend rejected the request:', res.status, await res.text())
       return json({ error: 'Failed to send' }, 502)
     }
 

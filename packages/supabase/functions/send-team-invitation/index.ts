@@ -10,7 +10,7 @@ import {
 } from '../_shared/notifications/types'
 import { createServiceSupabaseClient } from '../_shared/notifications/utils.ts'
 
-const SENDGRID_ENDPOINT = 'https://api.sendgrid.com/v3/mail/send'
+const RESEND_ENDPOINT = 'https://api.resend.com/emails'
 
 const payloadSchema = z.object({
   invitationId: z.string().uuid(),
@@ -132,30 +132,24 @@ async function sendPlainEmail(
   to: string,
   content: { subject: string; text: string; html: string }
 ): Promise<EmailResult> {
-  const apiKey = Deno.env.get('SENDGRID_API_KEY')
+  const apiKey = Deno.env.get('RESEND_API_KEY')
   if (!apiKey) {
-    return { ok: false, status: 'failed', error: 'Missing SENDGRID_API_KEY environment variable.' }
+    return { ok: false, status: 'failed', error: 'Missing RESEND_API_KEY environment variable.' }
   }
 
-  const fromEmail = Deno.env.get('SENDGRID_FROM_EMAIL') ?? 'notifications@scaffald.com'
-  const fromName = Deno.env.get('SENDGRID_FROM_NAME') ?? 'Scaffald'
+  const fromEmail = Deno.env.get('RESEND_FROM_EMAIL') ?? 'notifications@scaffald.com'
+  const fromName = Deno.env.get('RESEND_FROM_NAME') ?? 'Scaffald'
 
   const payload = {
-    personalizations: [
-      {
-        to: [{ email: to }],
-      },
-    ],
-    from: { email: fromEmail, name: fromName },
+    from: `${fromName} <${fromEmail}>`,
+    to: [to],
     subject: content.subject,
-    content: [
-      { type: 'text/plain', value: content.text },
-      { type: 'text/html', value: content.html },
-    ],
+    text: content.text,
+    html: content.html,
   }
 
   try {
-    const response = await fetch(SENDGRID_ENDPOINT, {
+    const response = await fetch(RESEND_ENDPOINT, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${apiKey}`,
@@ -164,11 +158,13 @@ async function sendPlainEmail(
       body: JSON.stringify(payload),
     })
 
-    if (response.ok || response.status === 202) {
+    if (response.ok) {
+      // Resend returns the id in the body, unlike SendGrid's x-message-id header.
+      const body = (await response.json().catch(() => null)) as { id?: string } | null
       return {
         ok: true,
         status: 'sent',
-        providerMessageId: response.headers.get('x-message-id'),
+        providerMessageId: body?.id ?? null,
       }
     }
 
@@ -176,7 +172,7 @@ async function sendPlainEmail(
     return {
       ok: false,
       status: 'failed',
-      error: `SendGrid responded with status ${response.status}: ${errorBody}`,
+      error: `Resend responded with status ${response.status}: ${errorBody}`,
     }
   } catch (error) {
     return {

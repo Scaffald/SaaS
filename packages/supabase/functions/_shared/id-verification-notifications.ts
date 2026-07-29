@@ -122,7 +122,7 @@ export async function notifyIdVerificationExpirationReminder(
     return
   }
 
-  await enqueueDelivery(supabase, notification.id, 'email', 'sendgrid', {
+  await enqueueDelivery(supabase, notification.id, 'email', 'resend', {
     email,
     subject,
     text: lines.join('\n\n'),
