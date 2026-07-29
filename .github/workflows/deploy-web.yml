@@ -200,17 +200,24 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           DEPLOY_ALIAS: ${{ github.ref == 'refs/heads/preview' && 'preview' || 'dev' }}
+          # `--prod` and `--alias` control which URL the deployment is promoted
+          # to. They do NOT select which EAS environment's variables are loaded
+          # — that is `--environment`, and without it the worker starts with no
+          # environment variables at all. Server-side config (RESEND_API_KEY)
+          # then reads as undefined and the API routes fail at runtime while the
+          # deploy itself reports success.
+          DEPLOY_ENVIRONMENT: ${{ github.ref == 'refs/heads/prod' && 'production' || github.ref == 'refs/heads/preview' && 'preview' || 'development' }}
         run: |
           if [ -z "$EXPO_TOKEN" ]; then
             echo "❌ EXPO_TOKEN not configured — cannot deploy."
             exit 1
           fi
           if [ "${{ github.ref }}" = "refs/heads/prod" ]; then
-            echo "🚀 Deploying to EAS production (scaffald.com)"
-            npx eas-cli@latest deploy --prod --non-interactive
+            echo "🚀 Deploying to EAS production (scaffald.com), env: $DEPLOY_ENVIRONMENT"
+            npx eas-cli@latest deploy --prod --environment "$DEPLOY_ENVIRONMENT" --non-interactive
           else
-            echo "🚀 Deploying to EAS alias: $DEPLOY_ALIAS"
-            npx eas-cli@latest deploy --alias "$DEPLOY_ALIAS" --non-interactive
+            echo "🚀 Deploying to EAS alias: $DEPLOY_ALIAS, env: $DEPLOY_ENVIRONMENT"
+            npx eas-cli@latest deploy --alias "$DEPLOY_ALIAS" --environment "$DEPLOY_ENVIRONMENT" --non-interactive
           fi
 
 

@@ -62,9 +62,26 @@ npx supabase secrets set \
 
 # 3. EAS Hosting — the contact form. Repeat per environment.
 cd apps/scaffald
-npx eas-cli@latest env:create --scope project --name RESEND_API_KEY \
+npx eas-cli@latest env:set --name RESEND_API_KEY \
   --value "$(grep -m1 '^RESEND_API_KEY=' ../../.env | cut -d= -f2-)" \
-  --type secret --environment production
+  --type string --visibility sensitive --scope project \
+  --environment production --non-interactive
+```
+
+**Use `--visibility sensitive`, not `secret`.** A `secret` variable is only
+decryptable inside the EAS *build* environment, so the EAS Hosting worker
+receives nothing and `process.env.RESEND_API_KEY` is undefined at runtime —
+the deploy succeeds and the API route returns 503. `sensitive` is still
+hidden from the UI and from logs. The mistake is not recoverable in place:
+`env:update --visibility` on a secret variable fails with "type == SECRET
+can't be decrypted", so the variable has to be deleted and re-set.
+
+**Deploy with `--environment`.** `--prod` and `--alias` choose which URL the
+deployment is promoted to; they do not load environment variables. Without
+`--environment production` the worker starts with none:
+
+```bash
+npx eas-cli@latest deploy --prod --environment production --non-interactive
 ```
 
 **`supabase secrets` needs `SUPABASE_ACCESS_TOKEN` set explicitly.** Unlike
