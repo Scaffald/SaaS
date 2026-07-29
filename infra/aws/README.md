@@ -246,7 +246,21 @@ dig www.scaffald.com CNAME
 
 ## 4. SES (Email)
 
-- Domain verified: `alerts.scaffald.com`
+> **SES lives in a different AWS account from everything else here.** The
+> config set's SNS topic is `arn:aws:sns:us-east-1:625030017471:...`, whereas
+> Route53, S3 and CloudFront are in **827046730742** — the account the
+> `scaffald` profile and the CI deploy keys authenticate to. Listing SES
+> identities with those credentials returns zero in every region, which looks
+> like the domain was never verified. It was verified, just elsewhere. Use the
+> right credentials before concluding SES is broken, and do not delete the
+> `alerts.scaffald.com` records in Route53 on the strength of an empty listing.
+>
+> **Nothing in the application sends through SES.** Notification email goes
+> through SendGrid (`packages/supabase/functions/_shared/notifications/adapters/email.ts`),
+> as does the marketing contact form. SES is provisioned but unused; the "next
+> steps" below were never completed.
+
+- Domain verified: `alerts.scaffald.com` (in account 625030017471)
   - TXT: `_amazonses.alerts.scaffald.com = mJgyMJb0eMplU6Dsb5lngH6cr7HNCWwkWfHncACUq/c=`
   - DKIM CNAMEs:
     - `p6ieaar322qoeqp3pua7q7z2qx3g3igv._domainkey` → `p6ieaar322qoeqp3pua7q7z2qx3g3igv.dkim.amazonses.com`
