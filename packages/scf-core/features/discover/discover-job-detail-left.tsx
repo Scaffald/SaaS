@@ -187,16 +187,6 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
             Apply Now
           </Button>
 
-          <Button
-            size="md"
-            variant="outline"
-            onPress={() => {
-              router.push(ROUTES.JOBS.path)
-            }}
-          >
-            Back to Jobs
-          </Button>
-
           {showQuickApply && (
             <QuickApplyModal
               jobId={job.id}
@@ -299,16 +289,6 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
             <Text>Apply on External Site</Text>
           </Row>
         </Button>
-
-        <Button
-          size="md"
-          variant="outline"
-          onPress={() => {
-            router.push(ROUTES.JOBS.path)
-          }}
-        >
-          Back to Jobs
-        </Button>
       </Stack>
     )
   }
@@ -320,6 +300,10 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
         <Text color="secondary" style={{ textAlign: 'center' }}>
           Application link not available
         </Text>
+        {/* Kept deliberately: this is a dead-end state with no other way out.
+            The duplicate back buttons alongside the apply CTAs were removed
+            (#392) because the breadcrumb and the OS back gesture already
+            cover those; here there is nothing else. */}
         <Button
           size="md"
           color="primary"
