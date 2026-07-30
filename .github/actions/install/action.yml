@@ -1,5 +1,14 @@
 name: 'Install'
-description: 'Install and pre-build'
+description: 'Standard setup: pnpm, Node, and a frozen-lockfile install'
+
+inputs:
+  build-workspace-packages:
+    description: >-
+      Build @scaffald/sdk and @scaffald/ui. Required before any typecheck, since
+      consumers resolve them through their built dist/. Skip it for jobs that
+      only need node_modules (dedupe checks, script runners).
+    required: false
+    default: 'false'
 
 runs:
   using: composite
@@ -8,7 +17,7 @@ runs:
       uses: pnpm/action-setup@v6
 
     - name: Setup Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v7
       with:
         node-version: 22
         cache: 'pnpm'
@@ -16,3 +25,10 @@ runs:
     - name: Install Dependencies
       shell: bash
       run: pnpm install --frozen-lockfile
+
+    - name: Build workspace packages
+      if: inputs.build-workspace-packages == 'true'
+      shell: bash
+      run: |
+        pnpm --filter @scaffald/sdk build
+        pnpm --filter @scaffald/ui build

@@ -15,6 +15,10 @@ on:
       - 'scripts/test-api-local.ts'
       - 'scripts/deno.json'
 
+permissions:
+  contents: read
+  pull-requests: write # the benchmark job comments results on the PR
+
 # Cancel in-progress runs for the same workflow
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -181,6 +185,9 @@ jobs:
     name: Performance Benchmarks
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # `needs: test` so the two jobs don't boot their own Supabase stacks in
+    # parallel — that was ~5 minutes of duplicate Docker pull and init per PR.
+    needs: test
     # Only run on PRs to main
     if: github.event_name == 'pull_request' && github.base_ref == 'main'
 
@@ -290,6 +297,7 @@ jobs:
   status-check:
     name: All Tests Passed
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: [test, lint, security]
     if: always()
 

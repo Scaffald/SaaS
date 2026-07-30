@@ -1,14 +1,79 @@
 # Dependabot version updates. Automerge is enabled via .github/workflows/dependabot-automerge.yml.
+#
+# Grouping matters here for cost, not just tidiness. Ungrouped, this config could
+# open 15 concurrent single-dependency PRs, each triggering the full CI fan-out;
+# one weekly wave ran to roughly a thousand runner-minutes. Grouped, a wave is
+# four PRs plus one for actions.
 version: 2
 updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 10
+      day: "monday"
+    open-pull-requests-limit: 4
+    groups:
+      react-ecosystem:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+          - "@testing-library/*"
+        update-types: ["minor", "patch"]
+      dev-tooling:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+          - "@biomejs/*"
+          - "typescript"
+          - "tsup"
+          - "tsx"
+          - "@nx/*"
+          - "nx"
+          - "esbuild"
+          - "playwright"
+          - "@playwright/*"
+          - "msw"
+        update-types: ["minor", "patch"]
+      backend:
+        patterns:
+          - "@supabase/*"
+          - "posthog-*"
+          - "@sentry/*"
+          - "@trpc/*"
+          - "@tanstack/*"
+          - "zod"
+          - "superjson"
+        update-types: ["minor", "patch"]
+      # Catch-all. Without this, anything unmatched above still opens its own PR,
+      # which is what actually drives the count.
+      everything-else:
+        patterns:
+          - "*"
+        update-types: ["minor", "patch"]
+    ignore:
+      # The Expo/RN family moves as ONE coordinated bump — see #483 and
+      # apps/scaffald/EXPO_SDK_56_UPGRADE_PLAN.md. Dependabot cannot express the
+      # peer-dependency matrix, so each single-package PR breaks `pnpm install`
+      # once merged. SDK upgrades get their own atomic PR and plan doc.
+      - dependency-name: "expo"
+      - dependency-name: "expo-*"
+      - dependency-name: "@expo/*"
+      - dependency-name: "react-native"
+      - dependency-name: "react-native-*"
+      - dependency-name: "babel-preset-expo"
+      # Majors are never safe to automerge here; raise them deliberately.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 5
+      day: "monday"
+    open-pull-requests-limit: 1
+    groups:
+      actions:
+        patterns:
+          - "*"

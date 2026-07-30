@@ -30,6 +30,9 @@ on:
         type: boolean
 
 # Avoid stacking concurrent EAS triggers for the same ref
+permissions:
+  contents: read
+
 concurrency:
   group: eas-ios-${{ github.ref }}
   cancel-in-progress: false
