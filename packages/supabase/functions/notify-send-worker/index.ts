@@ -1,18 +1,19 @@
-import { serve } from 'https://deno.land/std@0.223.0/http/server'
+import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
 
-import { corsHeaders, createCorsResponse } from '../_shared/cors'
-import { getAdapter } from '../_shared/notifications/adapters/index'
+import { corsHeaders, createCorsResponse } from '../_shared/cors.ts'
+import { getAdapter } from '../_shared/notifications/adapters/index.ts'
 import {
   NotificationChannel,
   NotificationDeliveryRow,
   NotificationRow,
-} from '../_shared/notifications/types'
+} from '../_shared/notifications/types.ts'
 import {
   calculateNextAttempt,
   createServiceSupabaseClient,
   isValidDeliveryStatus,
   recordDeliveryEvent,
 } from '../_shared/notifications/utils.ts'
+import { requireServiceAuth } from '../_shared/notifications/auth.ts'
 
 interface DeliveryRecord extends NotificationDeliveryRow {
   notification: NotificationRow
@@ -36,6 +37,11 @@ serve(async (req) => {
   if (req.method !== 'POST') {
     return jsonResponse({ error: 'Method not allowed' }, 405)
   }
+
+  // Internal infrastructure: only the service role key may drive this. See
+  // _shared/notifications/auth.ts for why verify_jwt is not enough.
+  const authError = requireServiceAuth(req)
+  if (authError) return authError
 
   const supabase = createServiceSupabaseClient()
   const nowIso = new Date().toISOString()

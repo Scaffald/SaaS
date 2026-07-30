@@ -44,10 +44,21 @@ pnpx supabase secrets set --project-ref "$PROJECT_REF" \
   "GIT_COMMIT=$GIT_COMMIT" \
   "DEPLOYED_AT=$DEPLOYED_AT"
 
-# 2. Deploy the three edge functions in lockstep — matches deploy-web.yml.
+# 2. Deploy the edge functions in lockstep — matches deploy-web.yml.
+#    The notify-* set is the notification pipeline (issue #436): notify-publish
+#    fans events out, notify-send-worker drains core.notification_deliveries on
+#    a pg_cron minute tick, the rest are cron-driven scanners and digests.
+#    webhooks-email receives Resend delivery events (Svix-signed).
+#    All notify functions self-authenticate against the service role key —
+#    see functions/_shared/notifications/auth.ts.
 echo
-echo "→ Deploying api, job-import, news functions…"
-pnpx supabase functions deploy api job-import news \
+echo "→ Deploying edge functions…"
+pnpx supabase functions deploy \
+  api job-import news \
+  notify-publish notify-send-worker notify-check-receipts \
+  notify-digest-daily notify-digest-weekly \
+  notify-background-check-expiration notify-id-verification-expiration \
+  send-team-invitation webhooks-email \
   --project-ref "$PROJECT_REF" \
   --use-api
 

@@ -1,7 +1,7 @@
-import { serve } from 'https://deno.land/std@0.223.0/http/server'
+import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
 
-import { corsHeaders, createCorsResponse } from '../../_shared/cors'
-import type { NotificationChannel } from '../../_shared/notifications/types'
+import { corsHeaders, createCorsResponse } from '../../_shared/cors.ts'
+import type { NotificationChannel } from '../../_shared/notifications/types.ts'
 import {
   createServiceSupabaseClient,
   isValidDeliveryStatus,

@@ -1,14 +1,15 @@
-import { serve } from 'https://deno.land/std@0.223.0/http/server'
+import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
 import { Expo } from 'expo-server-sdk'
 
-import { corsHeaders, createCorsResponse } from '../_shared/cors'
-import { NotificationChannel } from '../_shared/notifications/types'
+import { corsHeaders, createCorsResponse } from '../_shared/cors.ts'
+import { NotificationChannel } from '../_shared/notifications/types.ts'
 import {
   chunkArray,
   createServiceSupabaseClient,
   normalizeMetadata,
   recordDeliveryEvent,
 } from '../_shared/notifications/utils.ts'
+import { requireServiceAuth } from '../_shared/notifications/auth.ts'
 
 const expo = new Expo({
   accessToken: Deno.env.get('EXPO_ACCESS_TOKEN') ?? undefined,
@@ -32,6 +33,11 @@ serve(async (req) => {
   if (req.method !== 'POST') {
     return jsonResponse({ error: 'Method not allowed' }, 405)
   }
+
+  // Internal infrastructure: only the service role key may drive this. See
+  // _shared/notifications/auth.ts for why verify_jwt is not enough.
+  const authError = requireServiceAuth(req)
+  if (authError) return authError
 
   const supabase = createServiceSupabaseClient()
 

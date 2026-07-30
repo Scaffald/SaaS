@@ -1,13 +1,13 @@
-import { serve } from 'https://deno.land/std@0.223.0/http/server'
+import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
 import { z } from 'zod'
 
-import { buildAppUrl, resolveAppBaseUrl } from '../_shared/app-url'
-import { corsHeaders, createCorsResponse } from '../_shared/cors'
-import { wrapInBrandedTemplate, EMAIL_COLORS } from '../_shared/email-template'
+import { buildAppUrl, resolveAppBaseUrl } from '../_shared/app-url.ts'
+import { corsHeaders, createCorsResponse } from '../_shared/cors.ts'
+import { wrapInBrandedTemplate, EMAIL_COLORS } from '../_shared/email-template.ts'
 import {
   type NotificationEventPayload,
   notificationEventSchema,
-} from '../_shared/notifications/types'
+} from '../_shared/notifications/types.ts'
 import { createServiceSupabaseClient } from '../_shared/notifications/utils.ts'
 
 const RESEND_ENDPOINT = 'https://api.resend.com/emails'
