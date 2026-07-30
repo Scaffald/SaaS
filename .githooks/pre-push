@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Pre-push hook: stamp-only verification (instant).
+# Pre-push hook: protected-branch guard, then stamp-only verification (instant).
 #
-# This hook does NOT run checks itself. It only verifies that `pnpm prepush`
-# was run for the current HEAD. If the stamp is missing, it fails fast with
-# instructions — no SSH timeout risk.
+# Beyond the guard below, this hook does NOT run checks itself. It only verifies
+# that `pnpm prepush` was run for the current HEAD. If the stamp is missing, it
+# fails fast with instructions — no SSH timeout risk.
 #
 # Workflow:
 #   1. pnpm prepush          (runs build + test, writes stamp on success)
@@ -13,6 +13,62 @@
 # Skip with: git push --no-verify, SKIP_HOOKS=1, or SKIP_PREPUSH=1
 
 set -e
+
+# ---------------------------------------------------------------------------
+# Protected-branch guard
+#
+# main only advances through a merged PR; preview and prod only through a
+# deliberate, watched deploy. This blocks the realistic accidents: pushing
+# straight to main, and force-pushing or deleting a deploy branch.
+#
+# It reads the ref pairs git feeds the hook on stdin rather than checking the
+# current branch, so `git push origin HEAD:main` from a feature branch is
+# caught too.
+#
+# Deliberately NOT covered by SKIP_HOOKS/SKIP_PREPUSH: those are routine for
+# skipping lint and tests, and a rail that a routine flag switches off is not a
+# rail. Intentional pushes use ALLOW_PUSH_TO_MAIN=1.
+#
+# This is a deterrent, not enforcement — `--no-verify` bypasses it and it does
+# not exist in a clone that never ran `pnpm install`. Server-side rules are in
+# .github/rulesets/main.json, pending a plan that supports them.
+# ---------------------------------------------------------------------------
+PROTECTED_REFS=" refs/heads/main refs/heads/preview refs/heads/prod "
+
+if [ "${ALLOW_PUSH_TO_MAIN:-}" != "1" ]; then
+  while read -r local_ref local_sha remote_ref remote_sha; do
+    [ -n "$remote_ref" ] || continue
+    case "$PROTECTED_REFS" in
+      *" $remote_ref "*) ;;
+      *) continue ;;
+    esac
+
+    branch="${remote_ref#refs/heads/}"
+
+    # An all-zero local sha means "delete this remote ref".
+    case "$local_sha" in
+      *[!0]*) action="push to" ;;
+      *)      action="DELETE" ;;
+    esac
+
+    echo "❌ Pre-push: refusing to $action the protected branch '$branch'."
+    echo ""
+    if [ "$branch" = "main" ]; then
+      echo "   main advances through a merged pull request:"
+      echo "     git push origin HEAD:your-branch && gh pr create"
+    else
+      echo "   '$branch' is a deploy branch — pushing it deploys to"
+      echo "   $([ "$branch" = "prod" ] && echo "scaffald.com" || echo "preview.scaffald.com")."
+      echo "   Fast-forward it deliberately, and watch the run:"
+      echo "     ALLOW_PUSH_TO_MAIN=1 git push origin origin/main:$branch"
+      echo "     gh run watch --repo Scaffald/SaaS"
+    fi
+    echo ""
+    echo "   If you really mean it:"
+    echo "     ALLOW_PUSH_TO_MAIN=1 git push ..."
+    exit 1
+  done
+fi
 
 # Quick-skip
 if [ "${SKIP_HOOKS:-}" = "1" ] || [ "${SKIP_PREPUSH:-}" = "1" ]; then

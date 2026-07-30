@@ -5,9 +5,40 @@ These hooks run automatically when using this repository.
 | Hook | Runs | What it does |
 |------|------|--------------|
 | **pre-commit** | Before each commit | Lint + typecheck (affected packages, single nx invocation) |
-| **pre-push** | Before each push | Stamp-only verification (instant pass/fail) |
+| **pre-push** | Before each push | Protected-branch guard, then stamp-only verification (instant pass/fail) |
 
 Hooks are activated via `git config core.hooksPath .githooks`, which is set automatically by `pnpm install` (prepare script).
+
+## Protected branches
+
+The pre-push hook refuses to push to — or delete — `main`, `preview` and `prod`.
+
+- **`main`** advances through a merged pull request, never a direct push.
+- **`preview` / `prod`** are deploy branches: pushing them triggers
+  [deploy-web.yml](../.github/workflows/deploy-web.yml) against
+  `preview.scaffald.com` / `scaffald.com`, and `prod` also kicks off a
+  production iOS build. Fast-forward them deliberately, and watch the run.
+
+The guard inspects the refs git hands the hook on stdin, not the current
+branch — so `git push origin HEAD:main` from a feature branch is caught too.
+
+```bash
+# Intentional deploy-branch fast-forward
+ALLOW_PUSH_TO_MAIN=1 git push origin origin/main:preview
+gh run watch --repo Scaffald/SaaS
+```
+
+`SKIP_HOOKS` / `SKIP_PREPUSH` do **not** disable this guard. They are routine
+for skipping lint and tests, and a rail that a routine flag switches off is not
+a rail — only `ALLOW_PUSH_TO_MAIN=1` bypasses it.
+
+**This is a deterrent, not enforcement.** `git push --no-verify` skips every
+hook, and none of this exists in a clone that never ran `pnpm install`. Real
+server-side protection lives in
+[.github/rulesets/main.json](../.github/rulesets/main.json) and is waiting on a
+GitHub plan that supports rulesets for private repos — see that file's header.
+[main-guard.yml](../.github/workflows/main-guard.yml) is the backstop that
+catches whatever slips through.
 
 ## Push workflow
 
@@ -54,8 +85,9 @@ pnpm precommit:skip -m "wip"
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `SKIP_HOOKS` | — | Set to `1` to skip all hooks |
+| `SKIP_HOOKS` | — | Set to `1` to skip all hooks (not the protected-branch guard) |
 | `SKIP_PRECOMMIT` | — | Set to `1` to skip pre-commit only |
-| `SKIP_PREPUSH` | — | Set to `1` to skip pre-push only |
+| `SKIP_PREPUSH` | — | Set to `1` to skip the pre-push stamp check (not the protected-branch guard) |
+| `ALLOW_PUSH_TO_MAIN` | — | Set to `1` to allow a deliberate push to `main`/`preview`/`prod` |
 | `PRECOMMIT_TIMEOUT` | `90` | Timeout in seconds for pre-commit checks |
 | `NX_PARALLEL` | `5` | Number of parallel NX tasks during hooks |
