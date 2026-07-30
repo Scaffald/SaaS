@@ -1,0 +1,14 @@
+# Code owners for Scaffald/SaaS
+#
+# On the org's current GitHub plan this only auto-*requests* review on a PR —
+# nothing enforces that the review happens. It becomes real once
+# .github/rulesets/main.json is applied (see that file's header for why it
+# isn't yet). It is committed now so the ruleset works the moment it lands.
+
+* @thinkclay
+
+# Anything that can change what runs in CI, what deploys, or what the hooks
+# allow — the blast radius is the whole repo, so review these deliberately.
+/.github/          @thinkclay
+/.githooks/        @thinkclay
+/scripts/          @thinkclay

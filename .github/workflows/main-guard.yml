@@ -1,0 +1,100 @@
+name: Main Guard
+
+# Backstop for direct pushes to main.
+#
+# The pre-push hook in .githooks/ is the first line of defence, but it is only a
+# deterrent: `--no-verify` skips it, it does not exist in a clone that never ran
+# `pnpm install`, and it cannot see a commit made through the GitHub web UI.
+# This job runs server-side and notices what the hook missed.
+#
+# It is detective, not preventive — the commit has already landed by the time
+# this runs. The preventive version is .github/rulesets/main.json, which needs a
+# GitHub plan that supports rulesets on private repos. Delete this workflow once
+# that ruleset is applied and enforcing.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+concurrency:
+  group: main-guard-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Landed via pull request
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    # semantic-release pushes `chore(release): x.y.z` straight to main by design
+    # (@semantic-release/git in .releaserc). Its commits carry [skip ci], so this
+    # workflow should not even be triggered for them — this is belt and braces in
+    # case that ever changes.
+    if: >-
+      github.actor != 'github-actions[bot]' &&
+      !startsWith(github.event.head_commit.message, 'chore(release):')
+
+    steps:
+      - name: Check the commit belongs to a merged PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.sha }}
+          REPO: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+          MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          set -euo pipefail
+
+          SHORT="${SHA:0:8}"
+
+          # `commits/{sha}/pulls` lists the PRs a commit belongs to. A squash-
+          # merged PR's commit resolves to that PR; a direct push resolves to
+          # nothing.
+          COUNT=$(gh api "repos/$REPO/commits/$SHA/pulls" \
+            --jq '[.[] | select(.merged_at != null)] | length')
+
+          if [ "$COUNT" -gt 0 ]; then
+            echo "✅ $SHORT landed via a merged pull request."
+            exit 0
+          fi
+
+          echo "::error::$SHORT was pushed directly to main by @$ACTOR — no merged PR."
+
+          # Don't stack duplicates if the same commit is somehow re-reported.
+          EXISTING=$(gh issue list --repo "$REPO" --state open \
+            --search "$SHORT in:title" --json number --jq 'length')
+
+          if [ "$EXISTING" -eq 0 ]; then
+            BODY=$(printf '%s\n' \
+              "\`$SHA\` landed on \`main\` without a merged pull request." \
+              "" \
+              "| | |" \
+              "|---|---|" \
+              "| **Author** | @$ACTOR |" \
+              "| **Commit** | [\`$SHORT\`](https://github.com/$REPO/commit/$SHA) |" \
+              "| **Message** | $MESSAGE |" \
+              "" \
+              "This was caught after the fact — \`main\` is not protected server-side," \
+              "because the org's GitHub plan does not support rulesets on private" \
+              "repositories. The apply-ready ruleset is committed at" \
+              "\`.github/rulesets/main.json\`." \
+              "" \
+              "**If this was an accident**, open a PR that reverts it." \
+              "**If it was deliberate**, close this issue with a note saying why, so" \
+              "the signal stays meaningful.")
+
+            gh issue create --repo "$REPO" \
+              --title "Direct push to main: $SHORT" \
+              --label bug \
+              --body "$BODY"
+            echo "📣 Opened an issue."
+          else
+            echo "📣 An open issue already covers this commit."
+          fi
+
+          exit 1
