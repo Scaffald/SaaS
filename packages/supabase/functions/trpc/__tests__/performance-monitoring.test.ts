@@ -9,14 +9,14 @@
 import {
   assertEquals,
   assertExists,
-} from 'https://deno.land/std@0.208.0/assert/mod';
+} from 'https://deno.land/std@0.208.0/assert/mod.ts';
 import {
   getPerformanceMonitor,
   PerformanceMonitor,
   type RequestMetric,
   resetPerformanceMonitor,
   withTiming,
-} from '../routers/utils/performance-monitoring';
+} from '../routers/utils/performance-monitoring.ts';
 
 Deno.test({
   name: "PerformanceMonitor - should create monitor with default options",

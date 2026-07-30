@@ -3,7 +3,7 @@ import {
   assertExists,
 } from 'jsr:@std/assert';
 
-import { callTRPCEndpoint, getUserIdFromToken, loadCachedTokens } from '../setup';
+import { callTRPCEndpoint, getUserIdFromToken, loadCachedTokens } from '../setup.ts';
 
 Deno.test({
   name: "Notifications router - list requires authentication",

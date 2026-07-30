@@ -3,8 +3,8 @@ import {
   assertExists,
 } from 'jsr:@std/assert';
 
-import { callTRPCEndpoint } from '../setup';
-import { setupTeamManagementFixture } from './seed-utils';
+import { callTRPCEndpoint } from '../setup.ts';
+import { setupTeamManagementFixture } from './seed-utils.ts';
 
 Deno.test({
   name: "Team jobs - list assignments for job",

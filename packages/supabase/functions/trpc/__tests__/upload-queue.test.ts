@@ -10,13 +10,13 @@ import {
   assertEquals,
   assertExists,
   assertRejects,
-} from 'https://deno.land/std@0.208.0/assert/mod';
+} from 'https://deno.land/std@0.208.0/assert/mod.ts';
 import {
   createUploadQueue,
   type QueueMetrics,
   UploadQueue,
   type UploadResult,
-} from '../routers/utils/upload-queue';
+} from '../routers/utils/upload-queue.ts';
 
 // Helper to create a mock upload handler
 function createMockHandler(

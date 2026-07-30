@@ -1,8 +1,11 @@
-import { assertEquals } from 'https://deno.land/std@0.218.0/assert/mod';
+import { assertEquals } from 'https://deno.land/std@0.218.0/assert/mod.ts';
 
-import { appRouter } from '../routers/_app';
-import { createAdminClient } from './setup';
-import { getTestContext, requireAuthSetup } from './test-context';
+// _app.ts deliberately re-exports only the AppRouter *type* (see its header:
+// the value/type split exists to dodge TS4023). The runtime router instance
+// lives in _app-impl.ts.
+import { appRouter } from '../routers/_app-impl.ts';
+import { createAdminClient } from './setup.ts';
+import { getTestContext, requireAuthSetup } from './test-context.ts';
 
 Deno.test({
   name: "notifications preferences can be saved and restored",

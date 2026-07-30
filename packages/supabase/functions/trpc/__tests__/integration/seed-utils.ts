@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
-import { createAdminClient, createTestClient, loadCachedTokens, TEST_USERS } from '../setup'
+import { createAdminClient, createTestClient, loadCachedTokens, TEST_USERS } from '../setup.ts'
 
 interface ProfileDefaults {
   displayName: string

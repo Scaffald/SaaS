@@ -9,14 +9,14 @@
 import {
   assertEquals,
   assertExists,
-} from 'https://deno.land/std@0.208.0/assert/mod';
+} from 'https://deno.land/std@0.208.0/assert/mod.ts';
 import {
   createDocumentCache,
   DocumentCache,
   DocumentMetadataCache,
   getDocumentCache,
   resetDocumentCache,
-} from '../routers/utils/document-cache';
+} from '../routers/utils/document-cache.ts';
 
 // Helper to create test document metadata
 function createTestDocument(id: string) {

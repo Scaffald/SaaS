@@ -12,7 +12,7 @@ import {
   assert,
   assertEquals,
   assertExists,
-} from 'https://deno.land/std@0.208.0/assert/mod';
+} from 'https://deno.land/std@0.208.0/assert/mod.ts';
 
 const SUPABASE_URL = 'http://127.0.0.1:54321';
 const ANON_KEY =

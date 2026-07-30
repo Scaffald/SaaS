@@ -3,9 +3,9 @@ import {
   assertExists,
 } from 'jsr:@std/assert';
 
-import { callTRPCEndpoint, loadCachedTokens } from '../setup';
-import { ensureOfficeAdminAccess, setupTeamManagementFixture } from './seed-utils';
-import { createAdminClient } from '../setup';
+import { callTRPCEndpoint, loadCachedTokens } from '../setup.ts';
+import { ensureOfficeAdminAccess, setupTeamManagementFixture } from './seed-utils.ts';
+import { createAdminClient } from '../setup.ts';
 
 Deno.test({
   name: "Office router - listUsers requires admin token",
