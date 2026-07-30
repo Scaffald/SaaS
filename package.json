@@ -183,7 +183,7 @@
     "@rnmapbox/maps": "catalog:",
     "@scaffald/sdk": "link:packages/sdk",
     "@scaffald/ui": "link:packages/ui",
-    "@sentry/react": "^10.55.0",
+    "@sentry/react": "^10.69.0",
     "@stripe/react-stripe-js": "^5.6.0",
     "@stripe/stripe-js": "^8.7.0",
     "@tiptap/core": "^2.27.2",

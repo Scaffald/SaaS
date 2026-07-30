@@ -37,7 +37,7 @@ catalog:
   '@types/mapbox-gl': ~3.5.0
   '@types/node': ~20.0.0
   '@types/react': ~19.2.0
-  awesome-phonenumber: ~7.6.0
+  awesome-phonenumber: ~7.8.0
   babel-loader: ~8.3.0
   babel-plugin-module-resolver: ~4.1.0
   babel-preset-expo: ~56.0.12
