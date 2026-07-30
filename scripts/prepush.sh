@@ -113,11 +113,19 @@ if [ "$AUTOLINK_STATUS" -ne 0 ]; then
   printf '%s\n' "$AUTOLINK_OUT" | sed 's/^/     /'
 fi
 
+# A pnpm override silently outranks the catalog entry of the same name; when
+# they disagree the catalog lies about what installs. Three shipped incidents
+# (#453, #501, #511) — see scripts/check-override-catalog-alignment.mjs.
+echo "🔍 Checking pnpm overrides against the catalog…"
+node scripts/check-override-catalog-alignment.mjs
+ALIGN_STATUS=$?
+
 FAILED=""
 [ "$BUILD_STATUS" -ne 0 ] && FAILED="$FAILED build"
 [ "$TEST_STATUS" -ne 0 ]  && FAILED="$FAILED test"
 [ "$DENO_STATUS" -ne 0 ]  && FAILED="$FAILED deno-parse"
 [ "$AUTOLINK_STATUS" -ne 0 ] && FAILED="$FAILED expo-autolinking"
+[ "$ALIGN_STATUS" -ne 0 ] && FAILED="$FAILED override-catalog"
 
 if [ -n "$FAILED" ]; then
   echo
