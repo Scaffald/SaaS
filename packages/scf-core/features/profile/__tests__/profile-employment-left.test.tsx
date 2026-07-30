@@ -68,197 +68,11 @@ vi.mock("../utils/profile-sync-store", () => ({
   useAdaptiveProfileSync: () => "idle",
 }));
 
-vi.mock("@scaffald/ui", () => ({
-  useToast: () => ({
-    show: mockToastShow,
-  }),
-}));
-
-vi.mock("@scaffald/ui", () => {
-  const View = ({
-    children,
-    ...rest
-  }: { children?: ReactNode } & Record<string, unknown>) => (
-    <div {...rest}>{children}</div>
-  );
-
-  const Text = ({
-    children,
-    ...rest
-  }: {
-    children?: ReactNode;
-  } & Record<string, unknown>) => <span {...rest}>{children}</span>;
-
-  type ButtonProps = {
-    children: ReactNode;
-    onPress?: () => void;
-    disabled?: boolean;
-    variant?: string;
-    opacity?: number;
-    space?: string;
-  };
-
-  type ButtonComponent = ((props: ButtonProps) => ReactElement | null) & {
-    Text: (props: { children: ReactNode }) => ReactElement | null;
-    Icon: (props: { children: ReactNode }) => ReactElement | null;
-  };
-
-  const Button: ButtonComponent = Object.assign(
-    ({ children, onPress, disabled }: ButtonProps) => (
-      <button
-        type="button"
-        aria-disabled={disabled ? "true" : undefined}
-        onClick={disabled ? undefined : onPress}
-      >
-        {typeof children === "string" ? <Text>{children}</Text> : children}
-      </button>
-    ),
-    {
-      Text: ({ children }: { children: ReactNode }) => <Text>{children}</Text>,
-      Icon: ({ children }: { children: ReactNode }) => <View>{children}</View>,
-    }
-  );
-
-  return {
-    Button: Button,
-    DashboardWidget: ({ children }: { children: ReactNode }) => (
-      <View>{children}</View>
-    ),
-    CustomCheckbox: ({
-      "aria-label": ariaLabel,
-      checked,
-      onCheckedChange,
-      testID,
-    }: {
-      "aria-label"?: string;
-      checked: boolean;
-      onCheckedChange: (checked: boolean) => void;
-      testID?: string;
-    }) => (
-      <label>
-        <input
-          type="checkbox"
-          aria-label={ariaLabel}
-          checked={checked}
-          data-testid={testID}
-          onChange={() => onCheckedChange(!checked)}
-        />
-        <Text>{checked ? "✓" : "□"}</Text>
-      </label>
-    ),
-    ToggleCard: forwardRef<
-      HTMLDivElement,
-      {
-        title: string;
-        description?: string;
-        checked: boolean;
-        onCheckedChange: (checked: boolean) => void;
-        expandedContent?: ReactNode;
-        cardPressDisabled?: boolean;
-        testID?: string;
-      }
-    >(
-      (
-        {
-          title,
-          description,
-          checked,
-          onCheckedChange,
-          expandedContent,
-          cardPressDisabled = false,
-          testID,
-        },
-        ref
-      ) => (
-        <View ref={ref}>
-          <button
-            type="button"
-            aria-label={`${title} card`}
-            data-testid={testID ? `${testID}-card` : undefined}
-            onClick={() => {
-              if (!cardPressDisabled) {
-                onCheckedChange(!checked);
-              }
-            }}
-          >
-            <Text>{title}</Text>
-          </button>
-          <button
-            type="button"
-            role="switch"
-            aria-label={title}
-            aria-checked={checked}
-            data-testid={testID}
-            onClick={() => onCheckedChange(!checked)}
-          >
-            <Text>{checked ? "On" : "Off"}</Text>
-          </button>
-          {description ? <Text>{description}</Text> : null}
-          {checked ? expandedContent : null}
-        </View>
-      )
-    ),
-    LocationListInput: ({
-      value = [],
-      onChange,
-    }: {
-      value?: string[];
-      onChange: (next: string[]) => void;
-    }) => (
-      <View>
-        <Text data-testid="location-count">Locations: {value.length}</Text>
-        <button
-          type="button"
-          aria-label="Add location"
-          onClick={() => onChange([...value, `Location ${value.length + 1}`])}
-        >
-          <Text>Add Location</Text>
-        </button>
-      </View>
-    ),
-    ConfirmationDialog: () => null,
-    RangeSliderCard: ({
-      icon: _icon,
-      title,
-      description,
-      value,
-      onValueChange,
-      min: _min,
-      max: _max,
-      formatValue,
-    }: {
-      icon?: ReactNode;
-      title: string;
-      description?: string;
-      value: number;
-      onValueChange: (value: number) => void;
-      min?: number;
-      max?: number;
-      formatValue?: (v: number) => string;
-    }) => (
-      <View>
-        <Text>{title}</Text>
-        {description && <Text>{description}</Text>}
-        <button
-          type="button"
-          role="slider"
-          aria-label="Travel slider"
-          aria-valuemin={_min ?? 10}
-          aria-valuenow={value}
-          aria-valuemax={_max ?? 250}
-          onClick={() => onValueChange(value + 5)}
-        >
-          <Text>{formatValue ? formatValue(value) : `${value} miles`}</Text>
-        </button>
-      </View>
-    ),
-    SkeletonForm: ({ fields }: { fields: number }) => (
-      <View>
-        <Text>Skeleton Form ({fields} fields)</Text>
-      </View>
-    ),
-  };
-});
+// NOTE: this file used to declare three separate vi.mock("@scaffald/ui") calls.
+// Only one registration survives per module path, so the other two were dead —
+// and the surviving one exported `useToast` alone, which is why every render
+// died on `No "Stack" export is defined on the "@scaffald/ui" mock`. They are
+// now a single factory below; `useToast` is folded into it.
 
 vi.mock("@scaffald/ui", async () => {
   const actual = await vi.importActual("@scaffald/ui")
@@ -482,6 +296,9 @@ vi.mock("@scaffald/ui", async () => {
 
   return {
     ...actual,
+    useToast: () => ({
+      show: mockToastShow,
+    }),
     Stack: createView(),
     Row: createView(),
     Card: createView(),

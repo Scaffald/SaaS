@@ -369,6 +369,24 @@ export function useResponsive() {
   return { isMobile: false, isTablet: false, isDesktop: true, breakpoint: 'lg' as const }
 }
 
+// BottomBar. The real useBottomBarContext reads a context with a default value,
+// so it never throws — but it was missing here entirely, and vitest turns an
+// absent export on a mocked module into a hard error. DashboardLayout and
+// MobileBottomNav both consume it, so every suite rendering a dashboard screen
+// died on "No useBottomBarContext export is defined on the @scaffald/ui mock".
+export const BottomBarProvider = ({ children }: { children?: ReactNode }) =>
+  createElement(React.Fragment, null, children)
+
+export function useBottomBarContext() {
+  return {
+    globalBarHidden: false,
+    registerPageBar: () => {},
+    unregisterPageBar: () => {},
+    navBarHeight: 0,
+    setNavBarHeight: () => {},
+  }
+}
+
 export function useMedia() {
   return { sm: false, md: false, lg: true }
 }

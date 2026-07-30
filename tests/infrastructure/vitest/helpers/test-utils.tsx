@@ -1,6 +1,7 @@
 import type { ReactElement, ReactNode } from 'react';
 import { render, type RenderOptions } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { FormTestWrapper } from './form-setup';
 import { BeyondUIThemeWrapper } from './theme-setup';
 
@@ -13,11 +14,27 @@ function createTestQueryClient() {
   });
 }
 
+/**
+ * Safe-area metrics for jsdom.
+ *
+ * `useSafeAreaInsets()` throws "No safe area value available" unless a provider
+ * is above it, and in jsdom the provider never measures a frame — so it has to
+ * be seeded. These are the library's own documented test/SSR values: a 390x844
+ * viewport with zero insets. No test asserts on inset values, so zeros keep
+ * layout assertions independent of device chrome.
+ */
+const TEST_SAFE_AREA_METRICS = {
+  frame: { x: 0, y: 0, width: 390, height: 844 },
+  insets: { top: 0, left: 0, right: 0, bottom: 0 },
+};
+
 export function TestQueryWrapper({ children }: { children: ReactNode }) {
   const queryClient = createTestQueryClient();
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
+      <SafeAreaProvider initialMetrics={TEST_SAFE_AREA_METRICS}>
+        {children}
+      </SafeAreaProvider>
     </QueryClientProvider>
   );
 }

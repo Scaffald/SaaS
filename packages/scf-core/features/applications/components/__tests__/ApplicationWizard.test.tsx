@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ApplicationWizard } from '../ApplicationWizard'
+import { TestQueryWrapper } from '@test-helpers/test-utils'
 
 const mockOnSuccess = vi.fn()
 const mockOnCancel = vi.fn()
@@ -149,7 +150,7 @@ describe('ApplicationWizard', () => {
   })
 
   it('renders wizard with header and progress indicator', () => {
-    render(<ApplicationWizard {...defaultProps} />)
+    render(<ApplicationWizard {...defaultProps} />, { wrapper: TestQueryWrapper })
 
     expect(screen.getByText(/Apply to Software Engineer/)).toBeInTheDocument()
     expect(screen.getByText('Tech Corp')).toBeInTheDocument()
@@ -157,14 +158,14 @@ describe('ApplicationWizard', () => {
   })
 
   it('renders screening step initially', () => {
-    render(<ApplicationWizard {...defaultProps} />)
+    render(<ApplicationWizard {...defaultProps} />, { wrapper: TestQueryWrapper })
 
     expect(screen.getByTestId('screening-step')).toBeInTheDocument()
   })
 
   it('navigates to attachments step when no custom questions', () => {
     mockUseApplicationForm.currentStep = 'screening'
-    render(<ApplicationWizard {...defaultProps} />)
+    render(<ApplicationWizard {...defaultProps} />, { wrapper: TestQueryWrapper })
 
     const continueButton = screen.getByText('Continue Screening')
     fireEvent.click(continueButton)
@@ -174,21 +175,21 @@ describe('ApplicationWizard', () => {
 
   it('renders custom questions step when current step is custom_questions', () => {
     mockUseApplicationForm.currentStep = 'custom_questions'
-    render(<ApplicationWizard {...defaultProps} />)
+    render(<ApplicationWizard {...defaultProps} />, { wrapper: TestQueryWrapper })
 
     expect(screen.getByTestId('custom-questions-step')).toBeInTheDocument()
   })
 
   it('renders attachments step', () => {
     mockUseApplicationForm.currentStep = 'attachments'
-    render(<ApplicationWizard {...defaultProps} />)
+    render(<ApplicationWizard {...defaultProps} />, { wrapper: TestQueryWrapper })
 
     expect(screen.getByTestId('attachments-step')).toBeInTheDocument()
   })
 
   it('renders review step', () => {
     mockUseApplicationForm.currentStep = 'review'
-    render(<ApplicationWizard {...defaultProps} />)
+    render(<ApplicationWizard {...defaultProps} />, { wrapper: TestQueryWrapper })
 
     expect(screen.getByTestId('review-step')).toBeInTheDocument()
   })
@@ -196,7 +197,7 @@ describe('ApplicationWizard', () => {
   it('submits application and shows success step', async () => {
     mockUseApplicationForm.currentStep = 'review'
     mockUseApplicationForm.submitApplication = vi.fn().mockResolvedValue({ success: true, applicationId: 'app-123' })
-    render(<ApplicationWizard {...defaultProps} />)
+    render(<ApplicationWizard {...defaultProps} />, { wrapper: TestQueryWrapper })
 
     const submitButton = screen.getByText('Submit Application')
     fireEvent.click(submitButton)
@@ -213,14 +214,14 @@ describe('ApplicationWizard', () => {
 
   it('displays error when submit fails', () => {
     mockUseApplicationForm.submitError = { message: 'Submission failed' } as Error
-    render(<ApplicationWizard {...defaultProps} />)
+    render(<ApplicationWizard {...defaultProps} />, { wrapper: TestQueryWrapper })
 
     expect(screen.getByText('Submission failed')).toBeInTheDocument()
   })
 
   it('displays save status indicator', () => {
     mockUseApplicationForm.isSaving = true
-    render(<ApplicationWizard {...defaultProps} />)
+    render(<ApplicationWizard {...defaultProps} />, { wrapper: TestQueryWrapper })
 
     expect(screen.getByTestId('save-status')).toBeInTheDocument()
   })
