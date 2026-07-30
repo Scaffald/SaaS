@@ -278,6 +278,11 @@
     "vitest-mock-extended": "^3.1.0"
   },
   "packageManager": "pnpm@10.28.2",
+  "pnpmOverrideNotes": {
+    "_": "Why non-obvious entries in pnpm.overrides exist. pnpm parses every overrides key as a package selector, so the notes cannot live inline. Most entries are CVE bumps and are self-explanatory from their range syntax; these are not.",
+    "@docusaurus/plugin-ideal-image, @docusaurus/theme-mermaid": "#377. packages/sdk/docs-site pins every @docusaurus/* dep to an exact 3.9.2 except these two, which carry caret ranges and so floated to 3.10.x. Docusaurus refuses to load an official package whose version differs from core's — 'Invalid name=docusaurus-theme-mermaid version number=3.10.1' — and the build died. Pinned here rather than in the submodule so the fix needs no submodule PR + pointer bump. Bump all @docusaurus/* together, or drop these two once the submodule pins them itself.",
+    "webpackbar": "#377. @docusaurus/bundler asks for webpackbar ^6.0.1, whose plugin does super({name, color, reporters, reporter}) into webpack's ProgressPlugin. webpack 5.107 (what resolves here; docusaurus only requires ^5.95.0) validates those options with additionalProperties:false and permits none of them, so both docs builds failed on a schema error. webpackbar 7 passes only activeModules + handler, both valid. Its peer range is 'webpack 3 || 4 || 5', so this is forward-compatible; drop it when docusaurus moves to 7 itself."
+  },
   "pnpm": {
     "overrides": {
       "@supabase/supabase-js": "~2.86.0",
@@ -288,6 +293,8 @@
       "axios@<=1.13.4": ">=1.13.5",
       "baseline-browser-mapping": ">=2.9.19",
       "esbuild@<=0.24.2": ">=0.25.0",
+      "@docusaurus/plugin-ideal-image": "3.9.2",
+      "@docusaurus/theme-mermaid": "3.9.2",
       "@expo/dom-webview": "56.0.5",
       "expo-modules-autolinking": "56.0.12",
       "expo-modules-core": "56.0.12",
@@ -320,7 +327,8 @@
       "tar@<=7.5.10": ">=7.5.11",
       "undici@>=7.0.0 <7.24.0": ">=7.24.0",
       "undici@<6.23.0": ">=6.23.0",
-      "vite@>=7.1.0 <=7.1.10": ">=7.1.11"
+      "vite@>=7.1.0 <=7.1.10": ">=7.1.11",
+      "webpackbar": "7.0.0"
     },
     "patchedDependencies": {
       "check-dependency-version-consistency": "patches/check-dependency-version-consistency.patch"

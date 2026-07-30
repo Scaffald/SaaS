@@ -21,13 +21,14 @@ set -uo pipefail
 
 cd "$(git rev-parse --show-toplevel)"
 
-# Builds known to fail for reasons outside this repo. Each needs an issue, so
-# the list stays a record of work rather than a place failures go to die.
-#   docs-site        — Docusaurus theme-mermaid 3.10.1 vs core 3.9.2, in the
-#                      packages/sdk submodule
-#   @scaffald/ui-docs — webpack ProgressPlugin schema mismatch, in the
-#                      packages/ui submodule (#377)
-BUILD_EXCLUDES="scaffald,docs-site,@scaffald/ui-docs"
+# `scaffald` is the Expo app: its build is the full Metro web export, minutes
+# long, and CI covers it on the deploy path. Everything else builds here.
+#
+# Both docs sites used to be excluded too, for dependency-resolution failures
+# rather than anything wrong in their own source (#377). Both are fixed by
+# pnpm overrides in the root package.json — see the comments there — so they
+# are back under pre-push coverage.
+BUILD_EXCLUDES="scaffald"
 TEST_EXCLUDES="@scaffald/integration-test,@scaffald/ui,scf-core,scaffald"
 
 export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=4096}"
