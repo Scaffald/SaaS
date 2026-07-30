@@ -5,6 +5,12 @@ import { rateLimiter } from "../middleware/rate-limiter.ts";
 
 const app = new OpenAPIHono();
 
+function getServiceClient() {
+  const url = Deno.env.get("SUPABASE_URL") ?? "";
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+  return createClient(url, key);
+}
+
 // Apply auth middleware to all routes
 app.use("*", authMiddleware);
 
@@ -655,6 +661,94 @@ const getProfileRoute = createRoute({
   ],
 });
 
+type UserSkillRow = {
+  csi_skill_id?: string | null;
+  onet_occupation_id?: string | null;
+  soft_skill_id?: string | null;
+};
+
+/**
+ * Resolve core.user_skills rows to display names.
+ *
+ * There is no core.skills relationship to embed: user_skills_taxonomy_check
+ * makes every row point at exactly one catalog — data.masterformat (csi),
+ * onet.occupation_data (onet), or core.soft_skills (soft_skills). Ids are
+ * batched per catalog so this stays three queries regardless of row count.
+ *
+ * Takes the *caller's* client, not the service client: these are public
+ * reference tables that already grant SELECT to anon, and core.soft_skills
+ * grants nothing to service_role, so reading them as service_role fails.
+ */
+async function resolveSkillNames(
+  // deno-lint-ignore no-explicit-any
+  catalogs: any,
+  rows: UserSkillRow[],
+): Promise<string[]> {
+  // onet_occupation_id is CHAR(10), so it comes back blank-padded.
+  const onetCode = (row: UserSkillRow) =>
+    row.onet_occupation_id?.trim() || null;
+
+  const unique = (values: (string | null | undefined)[]) => [
+    ...new Set(values.filter((v): v is string => Boolean(v))),
+  ];
+
+  const csiIds = unique(rows.map((r) => r.csi_skill_id));
+  const softIds = unique(rows.map((r) => r.soft_skill_id));
+  const onetCodes = unique(rows.map(onetCode));
+
+  const names = new Map<string, string>();
+  const lookups: Promise<void>[] = [];
+
+  if (csiIds.length) {
+    lookups.push(
+      catalogs.schema("data").from("masterformat").select("id, name").in(
+        "id",
+        csiIds,
+      ).then(({ data }: { data: { id: string; name: string }[] | null }) => {
+        for (const row of data ?? []) names.set(`csi:${row.id}`, row.name);
+      }),
+    );
+  }
+
+  if (softIds.length) {
+    lookups.push(
+      catalogs.schema("core").from("soft_skills").select("id, name").in(
+        "id",
+        softIds,
+      ).then(({ data }: { data: { id: string; name: string }[] | null }) => {
+        for (const row of data ?? []) names.set(`soft:${row.id}`, row.name);
+      }),
+    );
+  }
+
+  if (onetCodes.length) {
+    lookups.push(
+      catalogs.schema("onet").from("occupation_data").select(
+        "onetsoc_code, title",
+      ).in("onetsoc_code", onetCodes).then(
+        (
+          { data }: { data: { onetsoc_code: string; title: string }[] | null },
+        ) => {
+          for (const row of data ?? []) {
+            names.set(`onet:${row.onetsoc_code.trim()}`, row.title);
+          }
+        },
+      ),
+    );
+  }
+
+  await Promise.all(lookups);
+
+  return rows
+    .map((row) => {
+      if (row.csi_skill_id) return names.get(`csi:${row.csi_skill_id}`);
+      if (row.soft_skill_id) return names.get(`soft:${row.soft_skill_id}`);
+      const onet = onetCode(row);
+      return onet ? names.get(`onet:${onet}`) : undefined;
+    })
+    .filter((name): name is string => Boolean(name));
+}
+
 app.openapi(getProfileRoute, async (c) => {
   const supabase = c.get("supabase");
   const { username } = c.req.valid("param");
@@ -699,39 +793,78 @@ app.openapi(getProfileRoute, async (c) => {
     );
   }
 
-  // Get location from core.profile (PII table)
-  const { data: privateProfile } = await supabase
+  // The rest of the public profile lives in tables an anonymous caller cannot
+  // read for itself: core.profile grants nothing to anon, and core.user_skills
+  // and core.user_certifications have no anon grant either. Read them with the
+  // service client and project ONLY the fields ProfileSchema already declares
+  // public — never spread one of these rows into the response.
+  const service = getServiceClient();
+
+  // Get location from core.profile (PII table — `location` alone is public)
+  const { data: privateProfile } = await service
     .schema("core")
     .from("profile")
     .select("location")
     .eq("user_id", user.id)
-    .single();
+    .maybeSingle();
 
-  // Get user skills
-  const { data: skills } = await supabase
+  // Get user skills (resolved against whichever taxonomy each row names)
+  const { data: skillRows } = await service
     .schema("core")
     .from("user_skills")
-    .select("skill:skills(name)")
+    .select("csi_skill_id, onet_occupation_id, soft_skill_id")
     .eq("user_id", user.id)
     .limit(20);
 
-  // Get user certifications (join certifications for name and issuing_organization)
-  const { data: certRows } = await supabase
+  const skills = await resolveSkillNames(supabase, skillRows ?? []);
+
+  // Get user certifications. The catalog (data.certifications) carries no
+  // issuer, so name/issuer come from the freeform columns on the join row;
+  // rows that only reference the catalog fall back to its title. The
+  // user_certifications_catalog_or_freeform check allows either shape.
+  const { data: certRows } = await service
     .schema("core")
     .from("user_certifications")
-    .select("certifications(name, issuing_organization), issue_date")
+    .select("name, issuing_organization, certification_id, issue_date")
     .eq("user_id", user.id)
     .eq("is_active", true)
     .limit(10);
 
-  const certifications = (certRows || []).map((
-    row: {
-      certifications?: { name?: string; issuing_organization?: string } | null;
-      issue_date?: string;
-    },
-  ) => ({
-    name: row.certifications?.name ?? "",
-    issuer: row.certifications?.issuing_organization ?? null,
+  type UserCertRow = {
+    name?: string | null;
+    issuing_organization?: string | null;
+    certification_id?: string | null;
+    issue_date?: string | null;
+  };
+
+  const certRowList = (certRows ?? []) as UserCertRow[];
+
+  const catalogIds = [
+    ...new Set(
+      certRowList
+        .filter((row) => !row.name && row.certification_id)
+        .map((row) => row.certification_id as string),
+    ),
+  ];
+
+  const catalogTitles = new Map<string, string>();
+  if (catalogIds.length) {
+    const { data: catalogRows } = await supabase
+      .schema("data")
+      .from("certifications")
+      .select("id, title")
+      .in("id", catalogIds);
+    for (const row of (catalogRows ?? []) as { id: string; title: string }[]) {
+      catalogTitles.set(row.id, row.title);
+    }
+  }
+
+  const certifications = certRowList.map((row) => ({
+    name: row.name ??
+      (row.certification_id
+        ? catalogTitles.get(row.certification_id) ?? ""
+        : ""),
+    issuer: row.issuing_organization ?? null,
     issued_at: row.issue_date ?? null,
   }));
 
@@ -755,9 +888,7 @@ app.openapi(getProfileRoute, async (c) => {
     {
       data: {
         ...profile,
-        skills: skills?.map((s: { skill?: { name?: string } | null }) =>
-          s.skill?.name
-        ).filter(Boolean) || [],
+        skills,
         certifications,
       },
     },

@@ -15,7 +15,45 @@ import {
   createTestClient,
 } from "../helpers/test-client.ts";
 import { cleanupCurrentTestData } from "../helpers/fixtures.ts";
-import { createAdminClient, getAuthToken, markTestStart } from "../setup.ts";
+import {
+  createAdminClient,
+  createTestSupabaseClient,
+  getAuthToken,
+  markTestStart,
+} from "../setup.ts";
+
+/**
+ * Delete a leftover @example.com auth user by address.
+ *
+ * GoTrue has no get-user-by-email admin call, so this pages listUsers. Only
+ * reached when createUser reports a duplicate, so the scan cost is rare. The
+ * @example.com guard mirrors cleanupTestAuthUsersAfter: pointing
+ * SUPABASE_URL at a real project must not let a fixture delete a real user.
+ */
+async function deleteAuthUserByEmail(
+  // deno-lint-ignore no-explicit-any
+  admin: any,
+  email: string,
+): Promise<void> {
+  if (!email.toLowerCase().endsWith("@example.com")) return;
+
+  const perPage = 200;
+  for (let page = 1; page <= 20; page++) {
+    const { data, error } = await admin.auth.admin.listUsers({ page, perPage });
+    if (error) return;
+
+    const users: { id: string; email?: string }[] = data?.users ?? [];
+    const match = users.find(
+      (u) => (u.email ?? "").toLowerCase() === email.toLowerCase(),
+    );
+    if (match) {
+      await admin.auth.admin.deleteUser(match.id);
+      return;
+    }
+
+    if (users.length < perPage) return;
+  }
+}
 
 /**
  * Helper to create a test user profile (uses core.users + core.profile)
@@ -30,38 +68,74 @@ async function createTestUserProfile(overrides: {
   const timestamp = Date.now();
   const username = overrides.username || `testuser${timestamp}`;
 
-  // Create user in auth
-  const { data: authUser } = await admin.auth.admin.createUser({
-    email: `${username}@example.com`,
+  const email = `${username}@example.com`;
+
+  // Create user in auth. Callers that pass a fixed username (johndoe) reuse a
+  // fixed email, so a run that died before cleanupCurrentTestData leaves the
+  // GoTrue user behind and every later run fails here. Drop the stale one and
+  // retry once rather than requiring a manual database cleanup between runs.
+  let authUser = await admin.auth.admin.createUser({
+    email,
     password: "testpass123",
     email_confirm: true,
   });
 
-  const userId = authUser.user.id;
+  if (authUser.error?.message.includes("already been registered")) {
+    await deleteAuthUserByEmail(admin, email);
+    authUser = await admin.auth.admin.createUser({
+      email,
+      password: "testpass123",
+      email_confirm: true,
+    });
+  }
 
-  // Create core.users row (public profile)
-  await admin
+  if (authUser.error || !authUser.data?.user) {
+    throw new Error(
+      `Failed to create auth user ${username}: ${
+        authUser.error?.message ?? "no user returned"
+      }`,
+    );
+  }
+
+  const userId = authUser.data.user.id;
+
+  // The core.handle_new_user trigger on auth.users already created the
+  // core.users and core.profile rows, with display_name defaulted to the
+  // username. Upsert (not insert) to overwrite them with the seed values a
+  // plain insert would lose to a users_pkey/profile_pkey conflict.
+  const { error: userError } = await admin
     .schema("core")
     .from("users")
-    .insert({
+    .upsert({
       id: userId,
       username,
       display_name: overrides.full_name || "Test User",
       bio: "Test bio",
       headline: "Software Engineer",
       years_of_experience: 5,
-      created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-    });
+    }, { onConflict: "id" });
 
-  // Create core.profile row (location etc.)
-  await admin
+  if (userError) {
+    throw new Error(
+      `Failed to seed core.users for ${username}: ${userError.message}`,
+    );
+  }
+
+  // Seed core.profile row (location etc.)
+  const { error: profileError } = await admin
     .schema("core")
     .from("profile")
-    .insert({
+    .upsert({
       user_id: userId,
       location: "San Francisco, CA",
-    });
+    }, { onConflict: "user_id" });
+
+  if (profileError) {
+    throw new Error(
+      `Failed to seed core.profile for ${username}: ${profileError.message}`,
+    );
+  }
 
   return { id: userId, username };
 }
@@ -168,35 +242,57 @@ Deno.test("GET /v1/profiles/:username - includes user skills", async () => {
   const admin = createAdminClient();
   const profile = await createTestUserProfile();
 
-  // Add skills
-  const { data: skill1 } = await admin
-    .schema("core")
-    .from("skills")
-    .insert({ name: "JavaScript" })
-    .select()
-    .single();
+  // core.user_skills is a taxonomy table, not a join to a free-form skill
+  // list: user_skills_taxonomy_check makes every row name exactly one catalog.
+  // Link rows from the soft-skills catalog that migration 001 seeds, rather
+  // than inventing catalog entries — reference data is not cleaned up between
+  // runs, so a fixture that writes it poisons the next run.
+  //
+  // Read that catalog as anon, not via `admin`: core.soft_skills grants SELECT
+  // to anon and authenticated but not to service_role.
+  const { data: catalog, error: catalogError } =
+    await createTestSupabaseClient()
+      .schema("core")
+      .from("soft_skills")
+      .select("id, name")
+      .order("name")
+      .limit(2);
 
-  const { data: skill2 } = await admin
-    .schema("core")
-    .from("skills")
-    .insert({ name: "TypeScript" })
-    .select()
-    .single();
+  if (catalogError || !catalog || catalog.length < 2) {
+    throw new Error(
+      `Expected at least 2 core.soft_skills rows: ${
+        catalogError?.message ?? `got ${catalog?.length ?? 0}`
+      }`,
+    );
+  }
 
-  await admin
+  const { error: linkError } = await admin
     .schema("core")
     .from("user_skills")
-    .insert([
-      { user_id: profile.id, skill_id: skill1.id },
-      { user_id: profile.id, skill_id: skill2.id },
-    ]);
+    .insert(
+      (catalog as { id: string }[]).map((skill) => ({
+        user_id: profile.id,
+        skill_taxonomy: "soft_skills",
+        soft_skill_id: skill.id,
+      })),
+    );
+
+  if (linkError) {
+    throw new Error(`Failed to link user skills: ${linkError.message}`);
+  }
 
   const client = createTestClient();
   const response = await client.get(`/v1/profiles/${profile.username}`);
 
   assertSuccessResponse(response);
-  assert(response.body.data.skills.includes("JavaScript"));
-  assert(response.body.data.skills.includes("TypeScript"));
+  for (const skill of catalog as { name: string }[]) {
+    assert(
+      response.body.data.skills.includes(skill.name),
+      `expected skills to include '${skill.name}', got ${
+        JSON.stringify(response.body.data.skills)
+      }`,
+    );
+  }
 
   await cleanupCurrentTestData();
 });
@@ -207,27 +303,25 @@ Deno.test("GET /v1/profiles/:username - includes user certifications", async () 
   const admin = createAdminClient();
   const profile = await createTestUserProfile();
 
-  // Create a certification in the catalog, then link via user_certifications
-  const { data: cert } = await admin
-    .schema("core")
-    .from("certifications")
-    .insert({
-      name: "AWS Certified Developer",
-      slug: "aws-certified-developer",
-      issuing_organization: "Amazon Web Services",
-    })
-    .select()
-    .single();
-
-  await admin
+  // certification_id references data.certifications, which has no issuer
+  // column at all — a certification with an issuer is stored in the freeform
+  // name/issuing_organization columns, the other shape
+  // user_certifications_catalog_or_freeform allows. Seeding it this way also
+  // keeps the fixture from writing catalog rows that outlive the run.
+  const { error: certError } = await admin
     .schema("core")
     .from("user_certifications")
     .insert({
       user_id: profile.id,
-      certification_id: cert.id,
+      name: "AWS Certified Developer",
+      issuing_organization: "Amazon Web Services",
       issue_date: "2024-01-01",
       is_active: true,
     });
+
+  if (certError) {
+    throw new Error(`Failed to seed user certification: ${certError.message}`);
+  }
 
   const client = createTestClient();
   const response = await client.get(`/v1/profiles/${profile.username}`);
