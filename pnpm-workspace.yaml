@@ -15,23 +15,36 @@ packages:
 
 catalog:
   '@babel/core': ~7.29.0
-  '@babel/runtime': ~7.28.4
+  '@babel/runtime': ~7.29.7
+  # Held at 2.4.x. 2.5.x turns on lint/correctness/noUnsafeOptionalChaining,
+  # which errors (not warns) at two sites where a type assertion defeats an
+  # otherwise-real null guard: packages/supabase completion.router.ts:513 and
+  # packages/ui useFilePicker.ts:42. The second is in the ui submodule, so the
+  # bump needs a cross-repo PR + pointer bump first. See #510.
   '@biomejs/biome': ~2.4.9
   '@expo/metro-runtime': ~56.0.12
-  '@hookform/resolvers': ~5.4.0
+  '@hookform/resolvers': ~5.5.7
   '@react-native-async-storage/async-storage': 2.2.0
   '@react-native-community/netinfo': 12.0.1
-  '@react-native-google-signin/google-signin': ~16.0.0
+  '@react-native-google-signin/google-signin': ~16.1.2
+  # Held at 10.1.x deliberately. 10.3.x pulls MapboxCommon 24.x, which Mapbox
+  # serves only from its gated downloads API and needs a SECRET (sk.) token with
+  # DOWNLOADS:READ. RNMapboxMapsDownloadToken in app.config.ts falls back to the
+  # public EXPO_PUBLIC_MAPBOX_TOKEN (pk.), which 403s, and MAPBOX_DOWNLOADS_TOKEN
+  # is set in no env file and in no EAS environment. Bumping this breaks the iOS
+  # build at `pod install`. See #509 — provision the token first.
   '@rnmapbox/maps': ~10.1.45
-  # Held at 2.86 by a pnpm override; the catalog said ~2.100.1 and was simply
-  # ignored. Aligned so the pin is visible rather than silently overridden. #453
-  '@supabase/supabase-js': ~2.86.0
+  # Kept in lockstep with the pnpm override of the same name in package.json.
+  # An override silently outranks this catalog entry, so a bump here alone is a
+  # no-op — that drift was #453, and dependabot re-introduced it bumping this
+  # to ~2.110.9 while the override still read ~2.86.0. Move both together.
+  '@supabase/supabase-js': ~2.110.9
   '@tanstack/react-query': 5.90.21
-  '@tanstack/react-table': ~8.20.5
-  '@trpc/client': ~11.17.0
-  '@trpc/react-query': ~11.17.0
-  '@trpc/server': ~11.17.0
-  '@ts-react/form': ~1.6.4
+  '@tanstack/react-table': ~8.21.3
+  '@trpc/client': ~11.18.0
+  '@trpc/react-query': ~11.18.0
+  '@trpc/server': ~11.18.0
+  '@ts-react/form': ~1.8.3
   '@types/geojson': ~7946.0.16
   '@types/mapbox-gl': ~3.5.0
   '@types/node': ~20.0.0
@@ -64,7 +77,9 @@ catalog:
   expo-linking: ~56.0.14
   expo-localization: ~56.0.6
   expo-location: ~56.0.17
-  expo-modules-core: 56.0.12
+  # Mirrors the pnpm override of the same name; the override outranks this, so
+  # they must move together or this line silently means nothing (#501).
+  expo-modules-core: 56.0.22
   expo-notifications: ~56.0.13
   expo-router: ~56.2.6
   expo-secure-store: ~56.0.4
@@ -73,16 +88,16 @@ catalog:
   expo-system-ui: ~56.0.5
   expo-updates: ~56.0.16
   expo-web-browser: ~56.0.5
-  fast-xml-parser: ~5.7.0
+  fast-xml-parser: ~5.10.1
   i18n-js: ^4.4.3
-  mapbox-gl: ~3.23.1
+  mapbox-gl: ~3.27.0
   moti: ~0.30.0
   msw: 2.12.14
   openapi-typescript: ~7.4.4
   react: 19.2.3
   react-dom: ^19.2.3
   react-dropzone: ~15.0.0
-  react-hook-form: ~7.78.0
+  react-hook-form: ~7.83.0
   react-native: 0.85.3
   react-native-action-sheet: ~2.2.0
   react-native-chart-kit: ~6.12.0
@@ -99,11 +114,11 @@ catalog:
   react-native-url-polyfill: ~3.0.0
   react-native-web: ^0.21.1
   react-native-webview: 13.16.1
-  react-refresh: ~0.14.0
+  react-refresh: ~0.18.0
   serve: ~14.2.5
-  supabase: 2.102.0
+  supabase: 2.110.0
   superjson: ~2.2.6
-  swr: ~2.4.1
+  swr: ~2.4.2
   tsup: ~8.5.1
   tsx: ~4.19.3
   typescript: ~5.9.3
@@ -111,7 +126,7 @@ catalog:
   # bypassed the catalog), 4.0.18 (ai-pipeline via this entry) and 4.1.7 (root).
   vitest: ~4.1.10
   zod: ~4.1.13
-  zustand: ~5.0.2
+  zustand: ~5.0.14
 
 ignoredBuiltDependencies:
   - esbuild
