@@ -24,7 +24,7 @@
   "dependencies": {
     "@supabase/supabase-js": "catalog:",
     "@trpc/server": "catalog:",
-    "adm-zip": "^0.5.17",
+    "adm-zip": "^0.6.0",
     "csv-parse": "^6.2.1",
     "pdf-lib": "^1.17.1",
     "pg-copy-streams": "^7.0.0",
