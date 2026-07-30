@@ -9,7 +9,6 @@
 #
 # Allow-list:
 #   - `*.web.{ts,tsx}` — Metro resolves these only on web
-#   - `apps/web/**` — Next.js web app, never bundled for native
 #   - `packages/ui/src/platform/web/**` — explicit web-only hooks
 #   - `packages/scf-core/utils/platform/**` — the primitives themselves
 #   - test/setup files and `*.stories.*`
@@ -42,7 +41,6 @@ PRUNE_PATHS=(
   '*/.next'
   '*/.expo'
   '*/.storybook'
-  'apps/web'
   # UI primitives — own DOM access internally, guarded by Platform.OS.
   'packages/ui'
   # The platform-primitive module itself.
@@ -51,6 +49,11 @@ PRUNE_PATHS=(
   # Platform.OS — these are the *correct* home for divergence. Feature code
   # imports them by name and does not see the branching.
   'packages/scf-core/utils/clipboard.ts'
+  # Resolves the absolute origin for links that leave the app (clipboard, QR,
+  # share sheet). Reads window.location.origin on web so a link copied in dev
+  # points at the dev machine; native reads EXPO_PUBLIC_URL. Consolidated here
+  # from a duplicate in SharePublicProfileModal.
+  'packages/scf-core/utils/publicProfileUrl.ts'
   'packages/scf-core/utils/auth/clearAuthStorage.ts'
   'packages/scf-core/utils/cookieConsent'
   'packages/scf-core/utils/location'
@@ -62,7 +65,6 @@ PRUNE_PATHS=(
   'packages/sdk/docs-site'
   'packages/sdk/examples'
   'packages/sdk/src/react/hooks.ts'
-  'packages/ui-docs'
   '*/__tests__'
   '*/tests'
 )

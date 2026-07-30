@@ -26,7 +26,11 @@ owns its own version line:
 | `scaffald-app` (mobile) | `apps/scaffald/package.json` `version` | `app-vX.Y.Z` | `app-v1.1.0` |
 | `@scaffald/ui` (submodule) | `packages/ui` submodule pointer + its own tags | `vX.Y.Z` in submodule | `v2.4.0` |
 | `@scaffald/sdk` | `packages/sdk/package.json` | `sdk-vX.Y.Z` | `sdk-v0.3.0` |
-| `@scaffald/web` | `apps/web/package.json` | `web-vX.Y.Z` | `web-v0.1.0` |
+
+The web build no longer has a version line of its own. `@scaffald/web` was the
+Next.js marketing site at `apps/web`; the marketing pages moved into the Expo
+app in July 2026 and the package was deleted, so the web deploy now ships from
+`apps/scaffald` under the `app-vX.Y.Z` tag along with everything else.
 
 **One git tag = one shippable build.** The tag points at the exact commit
 whose `package.json` matches the version. The tag is created at the moment we

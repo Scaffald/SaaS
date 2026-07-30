@@ -13,15 +13,15 @@
 import {
   assertEquals,
   assertExists,
-} from '../shared/assert';
+} from '../shared/assert.ts';
 
 import {
   estimatePDFSize,
   type PDFGenerationOptions,
   type PDFGenerationResult,
-} from '../../functions/trpc/routers/ccpa/pdf-generator';
+} from '../../functions/trpc/routers/ccpa/pdf-generator.ts';
 
-import type { UserDataExport } from '../../functions/trpc/routers/ccpa/types';
+import type { UserDataExport } from '../../functions/trpc/routers/ccpa/types.ts';
 
 // ========================================================
 // TEST DATA

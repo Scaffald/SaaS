@@ -13,7 +13,7 @@
 import {
   assertEquals,
   assertExists,
-} from '../shared/assert';
+} from '../shared/assert.ts';
 
 import {
   GPC_CONFIG,
@@ -24,7 +24,7 @@ import {
   type GPCSignalResult,
   type GPCOptOutResult,
   type GPCStatus,
-} from '../../functions/trpc/routers/ccpa/gpc';
+} from '../../functions/trpc/routers/ccpa/gpc.ts';
 
 // ========================================================
 // CONFIGURATION TESTS
@@ -486,10 +486,15 @@ Deno.test({
 Deno.test({
   name: 'GPC - Source identifier is "gpc_signal"',
   fn() {
+    // Constrained by the schema, not by preference: core.ccpa_opt_outs.source
+    // is the core.ccpa_opt_out_source enum, whose members are user_request,
+    // gpc_signal and admin. The plain 'gpc' this used to expect belongs to
+    // core.privacy_opt_outs (migration 305), a different table that the GPC
+    // code path never writes to.
     assertEquals(
       GPC_CONFIG.SOURCE,
       'gpc_signal',
-      "Source should be 'gpc_signal' for audit trail"
+      "Source must match the core.ccpa_opt_out_source enum"
     )
   },
 })

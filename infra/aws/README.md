@@ -171,7 +171,7 @@ The deployment requires IAM permissions defined in `infra/aws/iam/deploy-policy.
 
 ## 3. Route53 Hosted Zone
 
-- Hosted zone: `scaffald.com` (`Id=Z0610739109YR6SDKL45L`)
+- Hosted zone: `scaffald.com` (`Id=Z03807932GT9W30LQ0T67`)
 - AWS nameservers to delegate at your registrar:
   - `ns-1505.awsdns-60.org`
   - `ns-1590.awsdns-06.co.uk`
@@ -214,7 +214,7 @@ cd infra/aws/route53
 **Option 2: Using AWS CLI directly**
 ```bash
 aws route53 change-resource-record-sets \
-  --hosted-zone-id Z0610739109YR6SDKL45L \
+  --hosted-zone-id Z03807932GT9W30LQ0T67 \
   --change-batch file://infra/aws/route53/scaffald-complete-records.json \
   --profile scaffald
 ```
@@ -223,7 +223,7 @@ aws route53 change-resource-record-sets \
 ```bash
 # List all records in Route53
 aws route53 list-resource-record-sets \
-  --hosted-zone-id Z0610739109YR6SDKL45L \
+  --hosted-zone-id Z03807932GT9W30LQ0T67 \
   --profile scaffald
 
 # Test DNS resolution (after nameserver switch)
@@ -246,7 +246,21 @@ dig www.scaffald.com CNAME
 
 ## 4. SES (Email)
 
-- Domain verified: `alerts.scaffald.com`
+> **SES lives in a different AWS account from everything else here.** The
+> config set's SNS topic is `arn:aws:sns:us-east-1:625030017471:...`, whereas
+> Route53, S3 and CloudFront are in **827046730742** — the account the
+> `scaffald` profile and the CI deploy keys authenticate to. Listing SES
+> identities with those credentials returns zero in every region, which looks
+> like the domain was never verified. It was verified, just elsewhere. Use the
+> right credentials before concluding SES is broken, and do not delete the
+> `alerts.scaffald.com` records in Route53 on the strength of an empty listing.
+>
+> **Nothing in the application sends through SES.** Notification email goes
+> through SendGrid (`packages/supabase/functions/_shared/notifications/adapters/email.ts`),
+> as does the marketing contact form. SES is provisioned but unused; the "next
+> steps" below were never completed.
+
+- Domain verified: `alerts.scaffald.com` (in account 625030017471)
   - TXT: `_amazonses.alerts.scaffald.com = mJgyMJb0eMplU6Dsb5lngH6cr7HNCWwkWfHncACUq/c=`
   - DKIM CNAMEs:
     - `p6ieaar322qoeqp3pua7q7z2qx3g3igv._domainkey` → `p6ieaar322qoeqp3pua7q7z2qx3g3igv.dkim.amazonses.com`

@@ -1,6 +1,6 @@
 {
   "name": "scaffald-app",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "main": "expo-router/entry",
   "scripts": {
     "adb:reverse": "adb reverse tcp:8081 tcp:8081",
@@ -45,9 +45,12 @@
     "web": "expo start --web",
     "web:build": "expo export --platform web",
     "web:build:release": "pnpm web:build",
-    "web:serve": "serve dist"
+    "web:serve": "expo serve",
+    "web:server": "node server/index.js"
   },
   "dependencies": {
+    "compression": "^1.7.4",
+    "express": "^4.22.2",
     "@babel/runtime": "catalog:",
     "@expo-google-fonts/roboto": "^0.4.2",
     "@expo-google-fonts/roboto-serif": "^0.4.3",

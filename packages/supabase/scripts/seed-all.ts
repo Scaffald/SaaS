@@ -462,6 +462,96 @@ async function displayStats() {
   console.log(`${'='.repeat(50)}\n`)
 }
 
+/**
+ * Attach CSI trade skills to the seeded workers.
+ *
+ * seeds/014_seed-worker-profiles.sql fills in everything else, but its trade
+ * skills join data.masterformat, which no SQL seed populates — CSI codes come
+ * from seed-csi.ts, which runs in this script, *after* `db reset` has already
+ * run the SQL seeds. So on a bare reset those rows are silently skipped.
+ *
+ * Re-running the SQL file would be the obvious fix and is not available:
+ * `psql` is not installed on a default macOS machine, and `supabase db query`
+ * rejects multi-statement files ("cannot insert multiple commands into a
+ * prepared statement"). Both were tried. Doing the insert through supabase-js
+ * matches how every other step here works and needs neither.
+ *
+ * Idempotent: skips any (user, skill) pair that already exists.
+ */
+async function seedWorkerTradeSkills(): Promise<boolean> {
+  console.log('\n👷 Attaching trade skills to seeded workers...\n')
+
+  // Worker ids, not emails: core.users has no email column (auth.users does),
+  // and these are fixed constants in 005_seed-demo-prerequisites.sql, so they
+  // are stable across resets.
+  const MARCUS = '22222222-2222-2222-2222-222222222202'
+  const JAKE = '22222222-2222-2222-2222-222222222203'
+  const CARLOS = '22222222-2222-2222-2222-222222222204'
+
+  // [user id, CSI code_key, proficiency 0-5, years]
+  const ASSIGNMENTS: Array<[string, string, number, number]> = [
+    [MARCUS, '26-00-00-00', 5, 7.5],
+    [MARCUS, '05-00-00-00', 3, 4.0],
+    [MARCUS, '03-00-00-00', 2, 1.5],
+    [CARLOS, '22-00-00-00', 4, 5.0],
+    [JAKE, '06-00-00-00', 3, 2.5],
+  ]
+
+  try {
+    const userIds = [...new Set(ASSIGNMENTS.map(([id]) => id))]
+    const codes = [...new Set(ASSIGNMENTS.map(([, code]) => code))]
+
+    const { data: codeRows, error: codeErr } = await supabase
+      .schema('data').from('masterformat').select('id, code_key').in('code_key', codes)
+    if (codeErr) throw codeErr
+
+    if (!codeRows?.length) {
+      console.log('⏭️  Skipping trade skills (CSI codes not seeded)')
+      return true
+    }
+
+    const codeById = new Map(codeRows.map((c) => [c.code_key, c.id]))
+
+    const { data: existing } = await supabase
+      .schema('core').from('user_skills')
+      .select('user_id, csi_skill_id')
+      .in('user_id', userIds)
+    const seen = new Set((existing ?? []).map((r) => `${r.user_id}:${r.csi_skill_id}`))
+
+    const rows = ASSIGNMENTS
+      .map(([userId, code, proficiency, years]) => ({
+        user_id: userId,
+        csi_skill_id: codeById.get(code),
+        skill_taxonomy: 'csi',
+        proficiency_level: proficiency,
+        years_experience: years,
+        self_assessed_at: new Date().toISOString(),
+      }))
+      .filter((r) => r.user_id && r.csi_skill_id && !seen.has(`${r.user_id}:${r.csi_skill_id}`))
+
+    if (rows.length === 0) {
+      console.log('✅ Trade skills already present')
+      return true
+    }
+
+    const { error: insertErr } = await supabase.schema('core').from('user_skills').insert(rows)
+    if (insertErr) throw insertErr
+
+    console.log(`✅ Attached ${rows.length} trade skills`)
+    return true
+  } catch (error) {
+    // Demo fixtures, not reference data — warn rather than abort the seed.
+    const detail =
+      error instanceof Error
+        ? error.message
+        : typeof error === 'object' && error !== null
+          ? JSON.stringify(error)
+          : String(error)
+    console.warn(`⚠️  Trade skills skipped: ${detail}`)
+    return true
+  }
+}
+
 async function main() {
   console.log('🌱 Starting Database Seeding...\n')
 
@@ -518,6 +608,10 @@ async function main() {
 
   // Verify certifications
   await verifyCertifications()
+
+  // Needs the CSI codes from step 1. Everything else about these profiles is
+  // handled by seeds/014_seed-worker-profiles.sql during `db reset`.
+  await seedWorkerTradeSkills()
 
   // Seed jobs
   console.log(`\n${'='.repeat(50)}`)

@@ -204,6 +204,20 @@ async function main() {
     db: { schema: 'core' },
   })
 
+  // Team ids are needed for core.work_logs.team_id (#425). Resolved by slug
+  // rather than hardcoded: seed team ids are random per reset, unlike PROJECTS.
+  // Team slugs are org-namespaced, so `design` is stored as `unicorn-design`.
+  const { data: teamRows, error: teamErr } = await admin
+    .from('teams')
+    .select('id, slug')
+    .like('slug', 'unicorn-%')
+  if (teamErr) {
+    console.warn(`! could not resolve teams: ${teamErr.message} — logs will have no team`)
+  }
+  const TEAM_IDS = new Map<string, string>(
+    (teamRows ?? []).map((t: { id: string; slug: string }) => [t.slug.replace(/^unicorn-/, ''), t.id])
+  )
+
   // Detect already-seeded keys by searching descriptions
   const { data: existing } = await admin
     .from('work_logs')
@@ -235,12 +249,17 @@ async function main() {
       userClients.set(email, client)
     }
 
-    const decoratedDesc = `[team:${e.team}] [phase2:key=${e.key}] ${e.description}`
+    // [team:slug] is gone — team association is core.work_logs.team_id as of
+    // migration 339 (#425). The [phase2:key=...] prefix stays: it is this
+    // script's idempotency marker, matched with a %...% wildcard above, so its
+    // position does not matter.
+    const decoratedDesc = `[phase2:key=${e.key}] ${e.description}`
     const projectId = PROJECTS[e.project]
 
     try {
       const log = await client.workLogs.create({
         projectId,
+        teamId: TEAM_IDS.get(e.team) ?? null,
         entryType: 'single_day',
         logDate: dateNDaysAgo(e.daysAgo),
         timeEntries: [hoursToTimeEntry(e.hours)],

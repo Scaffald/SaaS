@@ -168,7 +168,7 @@ export async function notifyBackgroundCheckExpirationReminder(
 
     if (workerNotification && workerEmail) {
       try {
-        await enqueueDelivery(supabase, workerNotification.id, 'email', 'sendgrid', {
+        await enqueueDelivery(supabase, workerNotification.id, 'email', 'resend', {
           email: workerEmail,
           subject,
           text: workerLines.join('\n\n'),
@@ -250,7 +250,7 @@ export async function notifyBackgroundCheckExpirationReminder(
 
       if (requesterNotification && requesterEmail) {
         try {
-          await enqueueDelivery(supabase, requesterNotification.id, 'email', 'sendgrid', {
+          await enqueueDelivery(supabase, requesterNotification.id, 'email', 'resend', {
             email: requesterEmail,
             subject,
             text: requesterLines.join('\n\n'),
@@ -357,7 +357,7 @@ function resolveAppBaseUrl(): string {
     getEnvValue('EXPO_PUBLIC_URL') ??
     getEnvValue('SUPABASE_SITE_URL') ??
     getEnvValue('SITE_URL') ??
-    'https://app.scaffald.com'
+    'https://scaffald.com'
   )
 }
 
@@ -795,7 +795,7 @@ export async function notifyBackgroundCheckStatusChange(
 
       if (notification && workerEmail && workerEmailContent) {
         try {
-          await enqueueDelivery(supabase, notification.id, 'email', 'sendgrid', {
+          await enqueueDelivery(supabase, notification.id, 'email', 'resend', {
             email: workerEmail,
             subject: workerEmailContent.subject,
             text: workerEmailContent.text,
@@ -863,7 +863,7 @@ export async function notifyBackgroundCheckStatusChange(
 
         if (notification && requesterEmail && requesterEmailContent) {
           try {
-            await enqueueDelivery(supabase, notification.id, 'email', 'sendgrid', {
+            await enqueueDelivery(supabase, notification.id, 'email', 'resend', {
               email: requesterEmail,
               subject: requesterEmailContent.subject,
               text: requesterEmailContent.text,
@@ -946,7 +946,7 @@ export async function notifyBackgroundCheckInvitation(
 
     if (workerNotification && workerEmail && workerEmailContent) {
       try {
-        await enqueueDelivery(supabase, workerNotification.id, 'email', 'sendgrid', {
+        await enqueueDelivery(supabase, workerNotification.id, 'email', 'resend', {
           email: workerEmail,
           subject: workerEmailContent.subject,
           text: workerEmailContent.text,
@@ -1019,7 +1019,7 @@ export async function notifyBackgroundCheckInvitation(
 
       if (inviterNotification && inviterEmail && requesterEmailContent) {
         try {
-          await enqueueDelivery(supabase, inviterNotification.id, 'email', 'sendgrid', {
+          await enqueueDelivery(supabase, inviterNotification.id, 'email', 'resend', {
             email: inviterEmail,
             subject: requesterEmailContent.subject,
             text: requesterEmailContent.text,

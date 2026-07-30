@@ -17,9 +17,9 @@
         "EXPO_PUBLIC_POSTHOG_HOST": "https://app.posthog.com",
         "EXPO_PUBLIC_SENTRY_DSN_NATIVE": "https://11f32683d2e167d8de8e350e7a33a5e3@o1019232.ingest.us.sentry.io/4510467560964096",
         "EXPO_PUBLIC_SENTRY_DSN_WEB": "https://549714752feca37523a21ba85bb14760@o1019232.ingest.us.sentry.io/4510467545759744",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY",
-        "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
-        "EXPO_PUBLIC_URL": "TODO",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtdGRxcmZwdW1xd2tkaHBnd2N6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxNjI1NTQsImV4cCI6MjA4OTczODU1NH0.0ki7wpWYZkveeGZPXkPQ05JKR2q_c_ny2iMyX50BeP0",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://pmtdqrfpumqwkdhpgwcz.supabase.co",
+        "EXPO_PUBLIC_URL": "https://dev.scaffald.com",
         "NODE_ENV": "development"
       },
       "ios": {
@@ -66,7 +66,7 @@
         "EXPO_PUBLIC_SENTRY_DSN_WEB": "https://549714752feca37523a21ba85bb14760@o1019232.ingest.us.sentry.io/4510467545759744",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFtZm1wY3l4c2loaGZ0dHZxcGJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyNzM0NDgsImV4cCI6MjA3Mzg0OTQ0OH0.yOcIfcYXm2TvHI0cGJaEH45etEQ0iceqTfC4nat_pKs",
         "EXPO_PUBLIC_SUPABASE_URL": "https://auth.scaffald.com",
-        "EXPO_PUBLIC_URL": "https://app.scaffald.com"
+        "EXPO_PUBLIC_URL": "https://scaffald.com"
       },
       "ios": {
         "buildConfiguration": "Release",
@@ -89,9 +89,9 @@
         "EXPO_PUBLIC_POSTHOG_HOST": "https://app.posthog.com",
         "EXPO_PUBLIC_SENTRY_DSN_NATIVE": "https://11f32683d2e167d8de8e350e7a33a5e3@o1019232.ingest.us.sentry.io/4510467560964096",
         "EXPO_PUBLIC_SENTRY_DSN_WEB": "https://549714752feca37523a21ba85bb14760@o1019232.ingest.us.sentry.io/4510467545759744",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY",
-        "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
-        "EXPO_PUBLIC_URL": "TODO",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVoamtpcGR3YXlxZmloa2FuYWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxNjI0ODYsImV4cCI6MjA4OTczODQ4Nn0.6FN_xR20t2dfDxxbwzUBqbYtcvIqqDt3kGsAof_9DnI",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://uhjkipdwayqfihkanabk.supabase.co",
+        "EXPO_PUBLIC_URL": "https://preview.scaffald.com",
         "NODE_ENV": "staging"
       },
       "ios": {

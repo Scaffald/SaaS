@@ -1,12 +1,12 @@
-import { serve } from 'https://deno.land/std@0.223.0/http/server'
+import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
 import { ZodError } from 'zod'
 
-import { corsHeaders, createCorsResponse } from '../_shared/cors'
+import { corsHeaders, createCorsResponse } from '../_shared/cors.ts'
 import {
   NotificationChannel,
   NotificationEventPayload,
   notificationEventSchema,
-} from '../_shared/notifications/types'
+} from '../_shared/notifications/types.ts'
 import {
   createServiceSupabaseClient,
   enqueueDelivery,
@@ -22,6 +22,7 @@ import {
   planRouting,
   upsertDigestQueue,
 } from '../_shared/notifications/utils.ts'
+import { requireServiceAuth } from '../_shared/notifications/auth.ts'
 
 interface PublishResult {
   recipientId: string
@@ -51,6 +52,11 @@ serve(async (req) => {
   if (req.method !== 'POST') {
     return jsonResponse({ error: 'Method not allowed' }, 405)
   }
+
+  // Internal infrastructure: only the service role key may drive this. See
+  // _shared/notifications/auth.ts for why verify_jwt is not enough.
+  const authError = requireServiceAuth(req)
+  if (authError) return authError
 
   let payload: unknown
 
@@ -157,7 +163,7 @@ serve(async (req) => {
           supabase,
           notification.id,
           'email',
-          'sendgrid',
+          'resend',
           {
             email: contacts.email,
             subject: event.title,

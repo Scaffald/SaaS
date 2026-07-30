@@ -207,6 +207,26 @@ pnpm supa db seed
 - **Professionalism**: 9 skills (work ethic, leadership, etc.)
 - **Technical**: 7 skills (craftsmanship, innovation, etc.)
 
+### Resetting local data
+
+```bash
+pnpm supa:reset      # supa db reset  +  supa:seed
+```
+
+`supa db reset` alone applies migrations and the SQL seeds in this directory,
+but **not** the TypeScript reference seed (`packages/supabase/scripts/seed-all.ts`)
+— CSI/MasterFormat codes, certifications, universities, O*NET and news feeds.
+Those come from `pnpm supa:seed`, which `supa:reset` chains for you.
+
+Two things that look like this gap but are not (#374):
+
+- **Skill search** reads `community.skill_taxonomy`, populated by *migration*
+  318, so it works on a bare `db reset` with no seeding at all.
+- **`core.skills` and `core.certifications` are empty by design.** The data
+  lives in `onet.skills` (62k) and `data.certifications` (69). The `core.*`
+  tables of the same name are unused — check which table a feature reads
+  before concluding a seed is missing.
+
 ### Local login credentials
 
 All seeded auth users share the password **`password123`** (see

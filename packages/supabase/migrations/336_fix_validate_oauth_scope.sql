@@ -1,54 +1,41 @@
 -- =========================================================
--- 336_fix_validate_oauth_scope.sql
--- Repair core.validate_oauth_scope: the original (migration 220) joins
--- core.role_permissions and core.permissions, which never existed in this
--- schema (team management created team_role_permissions instead). Every call
--- errored with `relation "core.role_permissions" does not exist`, breaking the
--- OAuth /authorize scope check for all requests.
+-- 336_fix_validate_oauth_scope.sql — NEUTRALIZED, INTENTIONALLY A NO-OP.
 --
--- The oauth_scopes catalog currently carries empty rbac_permissions for every
--- scope, so the intended model is "any requested scope present in the catalog
--- is authorized." This rewrite drops the dead join and honours rbac_permissions
--- when a future migration populates it (a non-empty requirement yields no
--- authorization until a real permission source is wired up).
+-- This migration was never applied to any environment, and running it now
+-- would reintroduce an authorization bypass. Its body has been removed rather
+-- than left in place behind a warning comment, because a warning only helps
+-- someone who reads it.
+--
+-- What it did
+-- -----------
+-- Migration 220 defined core.validate_oauth_scope with a join against
+-- core.role_permissions / core.permissions — tables that never existed in this
+-- schema (team management created core.team_role_permissions instead). Every
+-- call raised, so OAuth /authorize 403'd on every request.
+--
+-- 336 removed the dead join, and authorized any scope whose rbac_permissions
+-- array was empty. Every scope in the catalog had exactly that, so the effect
+-- was to authorize any catalog scope for any authenticated user — including
+-- ones flagged is_sensitive, such as organizations:write and documents:delete.
+--
+-- Why it is empty rather than deleted
+-- -----------------------------------
+-- Deleting the file would leave a gap that reads like an accident, and this
+-- number is referenced from issue #428, from 338's header, and from the
+-- discussion of the migration ledger in #437. Keeping the slot with an
+-- explanation is more useful than either a silent gap or a live footgun. The
+-- original SQL is in git history if it is ever needed.
+--
+-- What replaced it
+-- ----------------
+-- 338_oauth_scope_real_authorization.sql. It makes an undeclared requirement
+-- mean *denied* rather than *open*, via an explicit is_self_scoped flag, and
+-- classifies both of the live scope vocabularies (see its header). That is the
+-- migration to read, and the one production actually runs.
+--
+-- Verified 2026-07-30: the deployed core.validate_oauth_scope contains
+-- is_self_scoped, which only 338 introduces — proof 336's body never ran.
 -- =========================================================
 
-BEGIN;
-
-CREATE OR REPLACE FUNCTION core.validate_oauth_scope(
-  p_user_id UUID,
-  p_requested_scopes TEXT[]
-)
-RETURNS TEXT[] AS $$
-DECLARE
-  v_authorized_scopes TEXT[] := ARRAY[]::TEXT[];
-  v_scope_record RECORD;
-  v_scope_permissions TEXT[];
-BEGIN
-  -- p_user_id is retained for API/signature compatibility and future
-  -- permission gating; there is no per-user permission table to query today.
-  PERFORM p_user_id;
-
-  FOR v_scope_record IN
-    SELECT scope, rbac_permissions
-    FROM core.oauth_scopes
-    WHERE scope = ANY(p_requested_scopes)
-  LOOP
-    v_scope_permissions := v_scope_record.rbac_permissions;
-
-    -- Scopes with no RBAC requirement are open to any authenticated user.
-    -- Scopes that declare requirements stay unauthorized until a permission
-    -- source exists (fail closed rather than erroring).
-    IF v_scope_permissions IS NULL OR array_length(v_scope_permissions, 1) IS NULL THEN
-      v_authorized_scopes := v_authorized_scopes || v_scope_record.scope;
-    END IF;
-  END LOOP;
-
-  RETURN v_authorized_scopes;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'core';
-
-COMMENT ON FUNCTION core.validate_oauth_scope IS
-  'Returns the subset of requested OAuth scopes the user may be granted. Scopes with empty rbac_permissions are open; scopes with requirements fail closed until a permission source is wired up.';
-
-COMMIT;
+-- Intentionally no statements.
+SELECT 1 WHERE FALSE;

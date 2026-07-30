@@ -69,7 +69,7 @@ export default function OfficeLayout() {
         <Stack.Screen name="violations/index" options={{ title: 'Violation Reports' }} />
         <Stack.Screen name="settings/geographic" options={{ title: 'Geographic Settings' }} />
         <Stack.Screen name="settings/stripe" options={{ title: 'Stripe Payments' }} />
-        <Stack.Screen name="api-keys/page" options={{ title: 'API Keys' }} />
+        <Stack.Screen name="api-keys/index" options={{ title: 'API Keys' }} />
         <Stack.Screen
           name="communities/verification"
           options={{ title: 'Community Verification' }}

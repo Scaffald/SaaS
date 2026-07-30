@@ -15,6 +15,7 @@ import {
   useMarkAsReadMutation,
   useNotifications,
 } from '@scf/core/utils/notifications-sdk-hooks'
+import { toNotificationItems } from '@scf/core/features/notifications/normalize'
 import { ROUTES } from '@scf/core/constants/routes'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -90,27 +91,10 @@ export function DrawerNotificationsFeed({ onNavigate }: DrawerNotificationsFeedP
     },
   })
 
-  const items: FeedItem[] = useMemo(() => {
-    const raw = (notificationsQuery.data as { data?: { items?: unknown[] } } | undefined)?.data
-      ?.items
-    const list = (raw ?? (notificationsQuery.data as { items?: unknown[] } | undefined)?.items) ?? []
-    return (list as Array<Record<string, unknown>>).map((n) => ({
-      id: String(n.id ?? ''),
-      title: String(n.title ?? ''),
-      preview:
-        typeof (n.body as { preview?: string } | undefined)?.preview === 'string'
-          ? String((n.body as { preview?: string }).preview)
-          : typeof n.preview === 'string'
-            ? (n.preview as string)
-            : typeof n.message === 'string'
-              ? (n.message as string)
-              : '',
-      createdAt: String(n.created_at ?? ''),
-      read: Boolean(n.read),
-      severity: ((n.severity as Severity) ?? 'info') as Severity,
-      ctaUrl: typeof n.cta_url === 'string' ? (n.cta_url as string) : undefined,
-    }))
-  }, [notificationsQuery.data])
+  const items: FeedItem[] = useMemo(
+    () => toNotificationItems(notificationsQuery.data),
+    [notificationsQuery.data]
+  )
 
   const handleItemPress = useCallback(
     (item: FeedItem) => {

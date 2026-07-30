@@ -1,9 +1,14 @@
 {
   "importMap": "./import_map.json",
   "compilerOptions": {
-    "lib": ["deno.ns", "deno.window", "deno.worker"]
+    "lib": [
+      "deno.ns",
+      "deno.window",
+      "deno.worker"
+    ]
   },
   "tasks": {
     "test": "deno test --allow-all --config ./deno.json"
-  }
+  },
+  "nodeModulesDir": "auto"
 }

@@ -27,7 +27,7 @@ const APP_BASE_URL = normalizeBaseUrl(
   getEnvValue('EXPO_PUBLIC_URL') ??
     getEnvValue('SUPABASE_SITE_URL') ??
     getEnvValue('SITE_URL') ??
-    'https://app.scaffald.com'
+    'https://scaffald.com'
 )
 
 const PORTAL_URL = `${APP_BASE_URL}${DASHBOARD_PATH}`
@@ -122,7 +122,7 @@ export async function notifyIdVerificationExpirationReminder(
     return
   }
 
-  await enqueueDelivery(supabase, notification.id, 'email', 'sendgrid', {
+  await enqueueDelivery(supabase, notification.id, 'email', 'resend', {
     email,
     subject,
     text: lines.join('\n\n'),

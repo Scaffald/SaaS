@@ -205,7 +205,7 @@ export async function processDigestQueue(
 
     for (const channel of immediateChannels) {
       if (channel === 'email' && contacts.email) {
-        await enqueueDelivery(supabase, notification.id, 'email', 'sendgrid', {
+        await enqueueDelivery(supabase, notification.id, 'email', 'resend', {
           email: contacts.email,
           subject: title,
           templateData: bodyPayload,

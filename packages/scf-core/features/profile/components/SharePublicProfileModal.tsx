@@ -17,6 +17,10 @@
 
 import { ROUTES } from '@scf/core/constants/routes'
 import { copyToClipboard } from '@scf/core/utils/clipboard'
+import {
+  getPublicProfileDisplayUrl,
+  getPublicProfileShareUrl,
+} from '@scf/core/utils/publicProfileUrl'
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import {
   Button,
@@ -47,17 +51,6 @@ type SharePublicProfileModalProps = {
   displayName?: string | null
 }
 
-const DEFAULT_ORIGIN = 'https://scaffald.com'
-
-function resolveOrigin(): string {
-  if (Platform.OS === 'web' && typeof window !== 'undefined') {
-    // Use the current window origin so QR codes generated in dev resolve
-    // back to the same machine; in prod this is scaffald.com anyway.
-    return window.location.origin
-  }
-  return process.env.EXPO_PUBLIC_URL?.replace(/\/$/, '') ?? DEFAULT_ORIGIN
-}
-
 export function SharePublicProfileModal({
   visible,
   onClose,
@@ -69,9 +62,8 @@ export function SharePublicProfileModal({
   const { theme } = useThemeContext()
   const { t: _t } = useTranslation()
 
-  const origin = useMemo(resolveOrigin, [])
-  const vanityUrl = slug ? `${origin}/users/${slug}` : null
-  const displayUrl = slug ? `${origin.replace(/^https?:\/\//, '')}/users/${slug}` : null
+  const vanityUrl = useMemo(() => (slug ? getPublicProfileShareUrl(slug) : null), [slug])
+  const displayUrl = useMemo(() => (slug ? getPublicProfileDisplayUrl(slug) : null), [slug])
 
   const handleCopy = useCallback(async () => {
     if (!vanityUrl) return

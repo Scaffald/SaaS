@@ -1,12 +1,12 @@
 /// <reference lib="deno.ns" />
 
-import { assert, assertEquals, assertExists } from '../shared/assert';
-import { createSeedClient } from '../shared/seeding';
+import { assert, assertEquals, assertExists } from '../shared/assert.ts';
+import { createSeedClient } from '../shared/seeding.ts';
 import {
   callTRPCEndpoint,
   loadCachedTokens,
-} from '../shared/setup';
-import { requireAuthSetup } from '../shared/test-context';
+} from '../shared/setup.ts';
+import { requireAuthSetup } from '../shared/test-context.ts';
 
 if (!Deno.env.get("STRIPE_MOCK_MODE")) {
   Deno.env.set("STRIPE_MOCK_MODE", "1");
@@ -236,7 +236,7 @@ Deno.test({
       },
       {
         type: "query",
-        authToken: tokens.office.token,
+        authToken: tokens.admin.token,
       },
     );
 

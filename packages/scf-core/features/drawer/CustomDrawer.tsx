@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, type ReactNode } from 'react'
-import { Animated, Pressable, StyleSheet, View } from 'react-native'
+import { Animated, Platform, Pressable, StyleSheet, View } from 'react-native'
 import {
   PanGestureHandler,
   State,
@@ -68,7 +68,10 @@ export function CustomDrawer({
     if (permanent) return
     Animated.spring(translateX, {
       toValue: isOpen ? openX : closedX,
-      useNativeDriver: true,
+      // react-native-web has no native animated module, so asking for the
+      // native driver there only earns a "falling back to JS-based animation"
+      // warning on every drawer toggle. Same animation either way.
+      useNativeDriver: Platform.OS !== 'web',
       stiffness: 1000,
       damping: 70,
       mass: 1,

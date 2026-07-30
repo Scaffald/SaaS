@@ -65,12 +65,16 @@ export const CookieConsentProvider = ({ children }: { children: ReactNode }) => 
       onConsentChange={handleConsentChange}
     >
       {children}
-      {typeof window !== 'undefined' && (
-        <>
-          <CookieConsentBanner privacyPolicyUrl="/auth/privacy" />
-          <CookiePreferencesDialog />
-        </>
-      )}
+      {/*
+        Rendered unconditionally. A `typeof window !== 'undefined'` guard here
+        skipped these on the server but kept them on the client's first pass,
+        which is a hydration mismatch (React #418) — React's own error text
+        names this exact branch. Both are safe to server-render: the banner
+        gates on `isReady`, which is false until its storage effect runs, so
+        the server and the client's first render emit the same markup.
+      */}
+      <CookieConsentBanner privacyPolicyUrl="/auth/privacy" />
+      <CookiePreferencesDialog />
     </BeyondCookieConsentProvider>
   )
 }

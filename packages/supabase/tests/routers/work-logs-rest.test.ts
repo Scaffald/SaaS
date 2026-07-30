@@ -9,7 +9,8 @@
  * or the tRPC-only `work-logs.test.ts` would have caught.
  */
 
-import { assertEquals, assertExists } from '../shared/assert'
+import { assertEquals, assertExists } from '../shared/assert.ts'
+import { getUserIdByEmail } from '../shared/test-context.ts'
 
 import {
   TEST_SUPABASE_ANON_KEY,
@@ -18,7 +19,7 @@ import {
   createAdminClient,
   getAuthToken,
   loadCachedTokens,
-} from '../shared/setup'
+} from '../shared/setup.ts'
 
 const REST_BASE = `${TEST_SUPABASE_URL}/functions/v1/api/v1`
 
@@ -73,11 +74,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null
     if (!userId) {
-      const { data, error } = await admin.auth.admin.getUserByEmail(
-        TEST_USERS.regular.email,
-      )
-      if (error) throw error
-      userId = data?.user?.id ?? null
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email)
     }
     assertExists(userId, 'Unable to resolve test user id')
 

@@ -3,10 +3,10 @@
  * Tests for career assessment endpoints including RIASEC scores and occupation management.
  */
 
-import { assertEquals, assertExists } from '../shared/assert';
+import { assertEquals, assertExists } from '../shared/assert.ts';
 
-import { callTRPCEndpoint, loadCachedTokens } from '../shared/setup';
-import { requireAuthSetup } from '../shared/test-context';
+import { callTRPCEndpoint, loadCachedTokens } from '../shared/setup.ts';
+import { requireAuthSetup } from '../shared/test-context.ts';
 
 Deno.test({
   name: "O*NET router - searchOccupations returns array",

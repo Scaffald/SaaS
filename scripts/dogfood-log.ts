@@ -26,7 +26,7 @@
  */
 
 import { parseArgs } from 'node:util'
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { Scaffald } from '@scaffald/sdk'
 
 const TEAM_SLUGS = ['design', 'frontend', 'backend', 'infra'] as const
@@ -113,6 +113,39 @@ function hoursToTimeEntry(hours: number): { start_time: string; end_time: string
     start_time: `${pad(startHour)}:${pad(startMin)}`,
     end_time: `${pad(endHour)}:${pad(endMin)}`,
   }
+}
+
+/**
+ * Resolve a short team name (`frontend`) to a core.teams id.
+ *
+ * Team slugs are namespaced by organization — `frontend` is stored as
+ * `unicorn-frontend` — so the org prefix is applied here rather than assumed by
+ * the caller. Returns null when the team does not exist, so a typo produces a
+ * log without a team rather than a crash, and the caller reports it.
+ */
+async function resolveTeamId(
+  authClient: SupabaseClient,
+  accessToken: string,
+  team: string
+): Promise<string | null> {
+  const slug = `${ORG_SLUG}-${team}`
+  const { data, error } = await authClient
+    .schema('core')
+    .from('teams')
+    .select('id')
+    .eq('slug', slug)
+    .maybeSingle()
+
+  if (error) {
+    console.warn(`  ! could not look up team "${slug}": ${error.message}`)
+    return null
+  }
+  if (!data) {
+    console.warn(`  ! no team with slug "${slug}" — logging without a team`)
+    return null
+  }
+  void accessToken
+  return data.id as string
 }
 
 async function main() {
@@ -231,9 +264,14 @@ async function main() {
     )
   }
 
-  // 2. Build the description with a [team:slug] prefix so we can filter later.
-  //    work_logs has no team_id column today — feature gap, see DOGFOODING-IDEAS.md.
-  const fullDescription = `[team:${team}] ${args.description}`
+  // 2. Resolve the team to a real id. core.work_logs.team_id exists as of
+  //    migration 339 (#425); this used to prepend `[team:slug]` to the
+  //    description, which meant team attribution depended on nobody editing
+  //    free text and could not be indexed or joined.
+  //
+  //    Team slugs are org-prefixed (`unicorn-frontend`), so the short name
+  //    passed as --team is resolved within ORG_SLUG rather than assumed.
+  const teamId = await resolveTeamId(authClient, authData.session.access_token, team)
 
   // 3. Create via the SDK against the public API surface. The handler at
   //    `packages/supabase/functions/api/routes/work-logs.ts` translates the
@@ -248,7 +286,8 @@ async function main() {
     entryType: 'single_day',
     logDate,
     timeEntries: [hoursToTimeEntry(hours)],
-    workDescription: fullDescription,
+    workDescription: args.description as string,
+    teamId,
     tasksCompleted,
     visibility: 'private',
     showOnProfile: false,
@@ -257,7 +296,7 @@ async function main() {
   console.log(`\n✓ Created log ${log.id}`)
   console.log(`  user:        ${email}`)
   console.log(`  project:     ${args.project ?? projectId}`)
-  console.log(`  team:        ${team}`)
+  console.log(`  team:        ${team}${teamId ? '' : '  (unresolved — logged without a team)'}`)
   console.log(`  date:        ${logDate}`)
   console.log(`  hours:       ${hours}`)
   console.log(`  status:      ${log.status}`)

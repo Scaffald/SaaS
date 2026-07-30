@@ -207,3 +207,5 @@ verify_jwt = false
 verify_jwt = false
 [functions.trpc]
 verify_jwt = false
+[functions.webhooks-email]
+verify_jwt = false

@@ -4,7 +4,7 @@
 
 set -e
 
-HOSTED_ZONE_ID="Z0610739109YR6SDKL45L"
+HOSTED_ZONE_ID="Z03807932GT9W30LQ0T67"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 CHANGE_BATCH_FILE="$SCRIPT_DIR/scaffald-complete-records.json"
 AWS_PROFILE="scaffald"

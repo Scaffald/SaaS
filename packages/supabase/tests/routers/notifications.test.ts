@@ -3,10 +3,10 @@
  * Notifications router test coverage.
  */
 
-import { assertEquals, assertExists } from "../shared/assert";
+import { assertEquals, assertExists } from "../shared/assert.ts";
 
-import { callTRPCEndpoint, loadCachedTokens } from "../shared/setup";
-import { requireAuthSetup } from "../shared/test-context";
+import { callTRPCEndpoint, loadCachedTokens } from "../shared/setup.ts";
+import { requireAuthSetup } from "../shared/test-context.ts";
 
 Deno.test({
   name: "Notifications router - list requires authentication",
@@ -255,7 +255,7 @@ Deno.test({
     const tokens = await loadCachedTokens();
     assertExists(tokens, "Auth tokens should be cached");
 
-    const { createAdminClient } = await import("../shared/setup");
+    const { createAdminClient } = await import("../shared/setup.ts");
     const admin = createAdminClient();
 
     // Create test notifications for both users
@@ -388,7 +388,7 @@ Deno.test({
     const tokens = await loadCachedTokens();
     assertExists(tokens, "Auth tokens should be cached");
 
-    const { createAdminClient } = await import("../shared/setup");
+    const { createAdminClient } = await import("../shared/setup.ts");
     const admin = createAdminClient();
 
     const userId = tokens.regular.userId;

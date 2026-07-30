@@ -119,7 +119,7 @@ is on local branch `dogfood/add-tasks-punchlists` (push when ready).
 - **Tasks UI: detail page** — click into a task to see full description, edit, link to logs.
 - **Tasks UI: create form** — currently only the API path exists.
 - **Tasks UI: kanban view** — drag-between-columns by status.
-- **Team association on logs** — add `team_id` (or join table) to `core.work_logs`. Today the dogfood script puts `[team:slug]` in the description as a workaround.
+- ~~**Team association on logs**~~ — done (#425, migration 339). `core.work_logs.team_id` is a real FK to `core.teams`, filterable via `GET /v1/work-logs?teamId=…`. The `[team:slug]` description prefix is gone and existing rows were backfilled.
 - **Mentions + comments on logs** — partially modeled in `core.work_log_conversations`; ship the UI.
 - **Project model rename** — `core.construction_projects` → `core.projects` with a `kind` discriminator.
 - **Work Logs → Logs in schema/SDK** — UI already uses "Logs"; back end catches up. Larger blast radius, so it lands after the loop is stable.

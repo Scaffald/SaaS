@@ -3,18 +3,14 @@ import { normalizeMetadata } from '../utils.ts'
 import { wrapInBrandedTemplate, EMAIL_COLORS } from '../../email-template.ts'
 
 interface SendEmailPayload {
-  personalizations: Array<{
-    to: Array<{ email: string }>
-    dynamic_template_data?: Record<string, unknown>
-  }>
-  from: { email: string; name?: string }
-  subject?: string
-  content?: Array<{ type: string; value: string }>
-  template_id?: string
-  mail_settings?: { sandbox_mode?: { enable: boolean } }
+  from: string
+  to: string[]
+  subject: string
+  html: string
+  text: string
 }
 
-const SENDGRID_ENDPOINT = 'https://api.sendgrid.com/v3/mail/send'
+const RESEND_ENDPOINT = 'https://api.resend.com/emails'
 
 /** Prepend the app base URL if the CTA URL is relative (starts with /). */
 function resolveCtaUrl(url: string | null): string {
@@ -128,28 +124,6 @@ function buildRenewalPlainText(
   return lines.join('\n')
 }
 
-function buildRenewalTemplateData(
-  notification: NotificationRow,
-  body: Record<string, unknown>
-): Record<string, unknown> {
-  return {
-    title: notification.title,
-    message: notification.message ?? notification.title,
-    severity: notification.severity ?? 'info',
-    urgency: SEVERITY_URGENCY[notification.severity ?? 'info'] ?? 'Upcoming',
-    policy_number: body.policy_number ?? null,
-    policy_type: body.policy_type ?? null,
-    carrier_name: body.carrier_name ?? null,
-    expiration_date: body.expiration_date ?? null,
-    company_name: body.company_name ?? null,
-    days_until_expiration: body.interval_days ?? null,
-    interval_days: body.interval_days ?? null,
-    recipient_role: body.recipient_role ?? null,
-    cta_url: resolveCtaUrl(notification.cta_url),
-    cta_label: notification.cta_label ?? 'View Policy',
-  }
-}
-
 function buildEmailPayload(
   metadata: Record<string, unknown>,
   notification: NotificationRow,
@@ -159,35 +133,26 @@ function buildEmailPayload(
   const fromEmail =
     typeof metadata.fromEmail === 'string'
       ? metadata.fromEmail
-      : (Deno.env.get('SENDGRID_FROM_EMAIL') ?? 'notifications@scaffald.com')
+      : (Deno.env.get('RESEND_FROM_EMAIL') ?? 'notifications@scaffald.com')
 
   const fromName =
     typeof metadata.fromName === 'string'
       ? metadata.fromName
-      : (Deno.env.get('SENDGRID_FROM_NAME') ?? 'Scaffald')
-
-  const templateId =
-    typeof metadata.templateId === 'string'
-      ? metadata.templateId
-      : (Deno.env.get('SENDGRID_TEMPLATE_ID') ?? undefined)
+      : (Deno.env.get('RESEND_FROM_NAME') ?? 'Scaffald')
 
   // Cast to string because the DB enum includes policy.renewal via migration
   // but the generated types may not yet reflect it until next type generation.
   const isRenewal = (notification.type as string) === 'policy.renewal'
-
-  const dynamicTemplateData =
-    metadata.templateData && typeof metadata.templateData === 'object'
-      ? (metadata.templateData as Record<string, unknown>)
-      : isRenewal
-        ? buildRenewalTemplateData(notification, notificationBody)
-        : undefined
 
   const htmlBody =
     typeof metadata.html === 'string'
       ? metadata.html
       : isRenewal
         ? buildRenewalHtml(notification, notificationBody)
-        : `<p>${messageFallback}</p>`
+        : // Escaped: notification messages carry user-supplied text (org names,
+          // job titles, dispute reasons), and this is the path every
+          // non-renewal notification takes.
+          `<p>${escapeHtml(messageFallback)}</p>`
 
   const textBody =
     typeof metadata.text === 'string'
@@ -196,54 +161,23 @@ function buildEmailPayload(
         ? buildRenewalPlainText(notification, notificationBody)
         : messageFallback
 
-  const payload: SendEmailPayload = {
-    personalizations: [
-      {
-        to: [
-          {
-            email: String(metadata.email),
-          },
-        ],
-        dynamic_template_data: dynamicTemplateData,
-      },
-    ],
-    from: { email: fromEmail, name: fromName },
+  return {
+    // Resend takes a single RFC 5322 string rather than a name/email pair.
+    from: `${fromName} <${fromEmail}>`,
+    to: [String(metadata.email)],
+    subject: typeof metadata.subject === 'string' ? metadata.subject : notification.title,
+    html: htmlBody,
+    text: textBody,
   }
-
-  if (templateId) {
-    payload.template_id = templateId
-    if (!payload.personalizations[0].dynamic_template_data) {
-      payload.personalizations[0].dynamic_template_data = {
-        title: notification.title,
-        preview: messageFallback,
-        body: notificationBody,
-      }
-    }
-  } else {
-    payload.subject =
-      typeof metadata.subject === 'string' ? metadata.subject : notification.title
-    payload.content = [
-      { type: 'text/plain', value: textBody },
-      { type: 'text/html', value: htmlBody },
-    ]
-  }
-
-  if (Deno.env.get('SENDGRID_SANDBOX_MODE') === 'true') {
-    payload.mail_settings = {
-      sandbox_mode: { enable: true },
-    }
-  }
-
-  return payload
 }
 
 export const emailAdapter: ChannelAdapter = {
   async send({ delivery, notification }) {
-    const apiKey = Deno.env.get('SENDGRID_API_KEY')
+    const apiKey = Deno.env.get('RESEND_API_KEY')
     if (!apiKey) {
       return {
         status: 'failed',
-        error: 'SENDGRID_API_KEY environment variable is not set',
+        error: 'RESEND_API_KEY environment variable is not set',
       }
     }
 
@@ -263,7 +197,7 @@ export const emailAdapter: ChannelAdapter = {
     const payload = buildEmailPayload(metadata, notification, bodyPayload, messageFallback)
 
     try {
-      const response = await fetch(SENDGRID_ENDPOINT, {
+      const response = await fetch(RESEND_ENDPOINT, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${apiKey}`,
@@ -272,16 +206,19 @@ export const emailAdapter: ChannelAdapter = {
         body: JSON.stringify(payload),
       })
 
-      if (response.ok || response.status === 202) {
-        const providerMessageId = response.headers.get('x-message-id') ?? undefined
+      if (response.ok) {
+        // Resend returns the id in the body; SendGrid used an x-message-id
+        // header. The id is what Logs and webhook events key on, so losing it
+        // would make deliveries untraceable.
+        const body = (await response.json().catch(() => null)) as { id?: string } | null
         return {
           status: 'sent',
-          providerMessageId,
+          providerMessageId: body?.id,
           events: [
             {
               kind: 'accepted',
               meta: {
-                provider: 'sendgrid',
+                provider: 'resend',
                 status: response.status,
               },
             },
@@ -291,11 +228,13 @@ export const emailAdapter: ChannelAdapter = {
 
       const errorBody = await response.text()
 
-      const shouldRetry = response.status >= 500
+      // 429 is Resend's rate limit and clears on its own, so it is worth
+      // retrying even though it is not a 5xx.
+      const shouldRetry = response.status >= 500 || response.status === 429
 
       return {
         status: shouldRetry ? 'retry' : 'failed',
-        error: `SendGrid responded with status ${response.status}: ${errorBody}`,
+        error: `Resend responded with status ${response.status}: ${errorBody}`,
       }
     } catch (error) {
       return {

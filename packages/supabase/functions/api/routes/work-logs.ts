@@ -129,6 +129,7 @@ app.openapi(
         page: z.coerce.number().optional(),
         pageSize: z.coerce.number().optional(),
         projectId: z.string().uuid().optional(),
+        teamId: z.string().uuid().optional(),
         organizationId: z.string().uuid().optional(),
         dateFrom: z.string().optional(),
         dateTo: z.string().optional(),
@@ -169,6 +170,7 @@ app.openapi(
       page = 0,
       pageSize = 20,
       projectId,
+      teamId,
       organizationId,
       dateFrom,
       dateTo,
@@ -192,9 +194,6 @@ app.openapi(
       count: "exact",
     });
 
-    if (projectId) {
-      query = query.eq("project_id", projectId);
-    }
 
     if (organizationId) {
       // Check the user is a member of this organization
@@ -243,6 +242,17 @@ app.openapi(
     }
 
     // Common filters (apply to both user-scope and org-scope queries)
+    //
+    // projectId and teamId belong here, not before the branch above: the
+    // org-admin path REBUILDS `query` with the service client, so any filter
+    // applied earlier is discarded. projectId was applied early and was
+    // therefore ignored whenever organizationId was also supplied.
+    if (projectId) {
+      query = query.eq("project_id", projectId);
+    }
+    if (teamId) {
+      query = query.eq("team_id", teamId);
+    }
     if (statusList && statusList.length > 0) {
       query = query.in("status", statusList);
     }
@@ -298,6 +308,7 @@ app.openapi(
           "application/json": {
             schema: z.object({
               projectId: z.string().uuid().optional(),
+              teamId: z.string().uuid().nullish(),
               entryType: z.enum(["single_day", "date_range"]),
               logDate: z.string(),
               endDate: z.string().optional(),
@@ -354,6 +365,7 @@ app.openapi(
         tasks_completed: body.tasksCompleted,
         skills_used: body.skillsUsed,
         work_description: body.workDescription,
+        team_id: body.teamId ?? null,
         visibility: visibilityToDb(body.visibility),
         status: "draft",
       })
@@ -388,6 +400,7 @@ app.openapi(
           "application/json": {
             schema: z.object({
               projectId: z.string().uuid().optional(),
+              teamId: z.string().uuid().nullish(),
               entryType: z.enum(["single_day", "date_range"]).optional(),
               logDate: z.string().optional(),
               endDate: z.string().optional(),
@@ -429,6 +442,8 @@ app.openapi(
     // PATCH semantics: only map fields the caller actually sent.
     const update: Record<string, unknown> = {};
     if (body.projectId !== undefined) update.project_id = body.projectId;
+    // nullish so a caller can explicitly clear the team association.
+    if (body.teamId !== undefined) update.team_id = body.teamId ?? null;
     if (body.entryType !== undefined) {
       update.entry_type = entryTypeToDb(body.entryType);
     }

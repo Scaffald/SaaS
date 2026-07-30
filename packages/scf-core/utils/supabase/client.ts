@@ -1,8 +1,8 @@
 import type { Database } from '@scf/supabase/types'
 import { createClient } from '@supabase/supabase-js'
-import Constants from 'expo-constants'
 import { Platform } from 'react-native'
 import { logger } from '../logger'
+import { getSupabaseAnonKey, getSupabaseAuthUrl } from './api-base-url'
 
 // Platform-specific imports
 type AsyncStorageType = typeof import('@react-native-async-storage/async-storage').default
@@ -19,15 +19,10 @@ if (Platform.OS === 'web') {
   storage = AsyncStorage
 }
 
-// Environment variables validation
-const supabaseExtra = (
-  Constants?.expoConfig?.extra as {
-    supabase?: { url?: string; anonKey?: string }
-  }
-)?.supabase
-
-const resolvedSupabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL ?? supabaseExtra?.url
-const resolvedSupabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? supabaseExtra?.anonKey
+// Resolved through the shared module so this client and the Scaffald SDK
+// cannot drift apart silently — see api-base-url.ts and #376.
+const resolvedSupabaseUrl = getSupabaseAuthUrl()
+const resolvedSupabaseAnonKey = getSupabaseAnonKey()
 
 if (!resolvedSupabaseUrl) {
   throw new Error(

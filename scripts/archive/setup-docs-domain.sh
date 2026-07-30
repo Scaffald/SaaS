@@ -11,7 +11,7 @@ export AWS_DEFAULT_REGION=us-east-1
 
 DOMAIN="docs.scaffald.com"
 BUCKET_NAME="scaffald-sdk-docs"
-HOSTED_ZONE_ID="Z0610739109YR6SDKL45L"
+HOSTED_ZONE_ID="Z03807932GT9W30LQ0T67"
 
 echo ""
 echo "📦 Step 1: Creating S3 bucket..."

@@ -45,6 +45,35 @@ if [[ ! "$ENV" =~ ^(dev|preview|production)$ ]]; then
     exit 1
 fi
 
+# Production on this path is retired and now actively destructive.
+#
+# The web app moved to EAS Hosting in July 2026. The S3 bucket and CloudFront
+# distribution this script still targets for production — app-scaffald-com and
+# E22499AF1OBX1Y — were repurposed into the 301 that sends app.scaffald.com to
+# the apex. Deploying here would upload an app build into the redirect's origin
+# and invalidate the distribution, silently breaking the redirect for every
+# bookmark, OAuth straggler and old email link still pointing at the subdomain.
+#
+# This is not a theoretical path: with no argument, on any branch that is not
+# main/preview/prod, ENV defaults to "production" above. So a bare
+# `./scripts/deploy-aws.sh` on a feature branch used to do exactly this.
+#
+# dev and preview still run — they deploy to their own buckets and are harmless
+# — but both are superseded by the EAS aliases that CI deploys.
+if [ "$ENV" = "production" ]; then
+    echo -e "${RED}❌ Refusing to deploy production over the app.scaffald.com redirect.${NC}"
+    echo
+    echo "   Production web ships from EAS Hosting:"
+    echo "     npx eas-cli@latest deploy --prod --environment production"
+    echo
+    echo "   The --environment flag is required. Without it the worker starts"
+    echo "   with no environment variables at all."
+    echo
+    echo "   app-scaffald-com / E22499AF1OBX1Y now serve the 301 to the apex."
+    echo "   Deploying here would overwrite it. See docs/agents/RELEASE-PROCESS.md."
+    exit 1
+fi
+
 # Environment configuration
 case "$ENV" in
     dev)

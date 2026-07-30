@@ -13,7 +13,7 @@
 import {
   assertEquals,
   assertExists,
-} from '../shared/assert';
+} from '../shared/assert.ts';
 
 import {
   CCPA_NOTIFICATION_TYPES,
@@ -21,7 +21,7 @@ import {
   type CCPANotificationType,
   type CCPARequestInfo,
   type NotificationResult,
-} from '../../functions/trpc/routers/ccpa/notifications';
+} from '../../functions/trpc/routers/ccpa/notifications.ts';
 
 // ========================================================
 // NOTIFICATION TYPE TESTS

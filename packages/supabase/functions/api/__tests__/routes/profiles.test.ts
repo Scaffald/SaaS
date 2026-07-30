@@ -15,7 +15,7 @@ import {
   createTestClient,
 } from "../helpers/test-client.ts";
 import { cleanupCurrentTestData } from "../helpers/fixtures.ts";
-import { createAdminClient, markTestStart } from "../setup.ts";
+import { createAdminClient, getAuthToken, markTestStart } from "../setup.ts";
 
 /**
  * Helper to create a test user profile (uses core.users + core.profile)
@@ -500,6 +500,313 @@ Deno.test("GET /v1/profiles/employers/:slug - returns 404 if not active", async 
   );
 
   await cleanupCurrentTestData();
+});
+
+/**
+ * Vanity URL slug endpoints
+ *
+ * Note: these responses are UNENVELOPED (no `data` key) because the SDK returns
+ * the HTTP body verbatim — so assert with assertStatus, not assertSuccessResponse.
+ */
+
+const SLUG_TEST_PASSWORD = "testpass123";
+let slugUserCounter = 0;
+
+// core.users.slug is globally unique and survives a crashed run, so every slug
+// a test writes is suffixed with a per-run token. Fixed literals collide with
+// leftovers from an earlier run and make these tests flaky.
+const SLUG_RUN = Date.now().toString(36);
+const slugFor = (name: string) => `${name}-${SLUG_RUN}`;
+
+/**
+ * Create a test user, optionally with a slug already set, and sign them in.
+ */
+async function createSlugTestUser(options: { slug?: string } = {}) {
+  const username = `slugtester${Date.now()}${slugUserCounter++}`;
+  const profile = await createTestUserProfile({ username });
+
+  if (options.slug) {
+    const admin = createAdminClient();
+    const { error } = await admin
+      .schema("core")
+      .from("users")
+      .update({ slug: options.slug })
+      .eq("id", profile.id);
+    if (error) {
+      throw new Error(
+        `Failed to seed slug '${options.slug}' for ${username}: ${error.message}`,
+      );
+    }
+  }
+
+  const token = await getAuthToken(
+    `${username}@example.com`,
+    SLUG_TEST_PASSWORD,
+  );
+  if (!token) {
+    throw new Error(`Failed to sign in test user ${username}`);
+  }
+
+  return { ...profile, token };
+}
+
+/**
+ * GET /v1/profiles/slug/check - Check slug availability
+ */
+
+Deno.test("GET /v1/profiles/slug/check - returns available for an unused slug", async () => {
+  markTestStart();
+
+  const user = await createSlugTestUser();
+
+  const client = createTestClient({ authToken: user.token });
+  const response = await client.get("/v1/profiles/slug/check", {
+    query: { slug: slugFor("unused") },
+  });
+
+  assertStatus(response, 200);
+  assertEquals(response.body.available, true);
+  assertEquals(response.body.suggestions, []);
+
+  await cleanupCurrentTestData();
+});
+
+Deno.test("GET /v1/profiles/slug/check - returns unavailable with suggestions when taken", async () => {
+  markTestStart();
+
+  await createSlugTestUser({ slug: slugFor("taken") });
+  const caller = await createSlugTestUser();
+
+  const client = createTestClient({ authToken: caller.token });
+  const response = await client.get("/v1/profiles/slug/check", {
+    query: { slug: slugFor("taken") },
+  });
+
+  assertStatus(response, 200);
+  assertEquals(response.body.available, false);
+  assert(Array.isArray(response.body.suggestions));
+  assert(response.body.suggestions.length > 0);
+  assert(
+    response.body.suggestions.every((s: string) => s !== slugFor("taken")),
+    "suggestions must not include the taken slug",
+  );
+
+  await cleanupCurrentTestData();
+});
+
+Deno.test("GET /v1/profiles/slug/check - caller's own slug counts as available", async () => {
+  markTestStart();
+
+  const user = await createSlugTestUser({ slug: slugFor("own") });
+
+  const client = createTestClient({ authToken: user.token });
+  const response = await client.get("/v1/profiles/slug/check", {
+    query: { slug: slugFor("own") },
+  });
+
+  assertStatus(response, 200);
+  assertEquals(response.body.available, true);
+
+  await cleanupCurrentTestData();
+});
+
+Deno.test("GET /v1/profiles/slug/check - returns 400 for an invalid slug", async () => {
+  markTestStart();
+
+  const user = await createSlugTestUser();
+  const client = createTestClient({ authToken: user.token });
+
+  // Too short (min 3)
+  assertStatus(
+    await client.get("/v1/profiles/slug/check", { query: { slug: "ab" } }),
+    400,
+  );
+  // Illegal characters
+  const invalidChars = await client.get("/v1/profiles/slug/check", {
+    query: { slug: "Not A Slug!" },
+  });
+  assertStatus(invalidChars, 400);
+  assertErrorResponse(invalidChars);
+  // Missing entirely
+  assertStatus(await client.get("/v1/profiles/slug/check"), 400);
+
+  await cleanupCurrentTestData();
+});
+
+Deno.test("GET /v1/profiles/slug/check - returns 401 without auth", async () => {
+  markTestStart();
+
+  const client = createTestClient();
+  const response = await client.get("/v1/profiles/slug/check", {
+    query: { slug: "some-slug" },
+    headers: { Authorization: "" },
+  });
+
+  assertStatus(response, 401);
+  assertErrorResponse(response);
+});
+
+/**
+ * PATCH /v1/profiles/slug - Update own slug
+ */
+
+Deno.test("PATCH /v1/profiles/slug - updates the slug and records history", async () => {
+  markTestStart();
+
+  const user = await createSlugTestUser({ slug: slugFor("before") });
+
+  const client = createTestClient({ authToken: user.token });
+  const response = await client.patch("/v1/profiles/slug", {
+    slug: slugFor("after"),
+  });
+
+  assertStatus(response, 200);
+  assertEquals(response.body.success, true);
+  assertEquals(response.body.slug, slugFor("after"));
+  assertExists(response.body.nextChangeAllowed);
+  // Cooldown ends ~30 days out
+  assert(
+    new Date(response.body.nextChangeAllowed).getTime() > Date.now(),
+    "nextChangeAllowed must be in the future",
+  );
+
+  const admin = createAdminClient();
+  const { data: updated } = await admin
+    .schema("core")
+    .from("users")
+    .select("slug")
+    .eq("id", user.id)
+    .single();
+  assertEquals(updated?.slug, slugFor("after"));
+
+  const { data: history } = await admin
+    .schema("core")
+    .from("slug_change_history")
+    .select("old_slug, new_slug")
+    .eq("user_id", user.id);
+  assertEquals(history?.length, 1);
+  assertEquals(history?.[0].old_slug, slugFor("before"));
+  assertEquals(history?.[0].new_slug, slugFor("after"));
+
+  await cleanupCurrentTestData();
+});
+
+Deno.test("PATCH /v1/profiles/slug - normalizes case and surrounding whitespace", async () => {
+  markTestStart();
+
+  const user = await createSlugTestUser();
+  const client = createTestClient({ authToken: user.token });
+
+  // Uppercase is normalized, not rejected (migration 018 stores lowercase only)
+  const response = await client.patch("/v1/profiles/slug", {
+    slug: `  MixedCase-${SLUG_RUN.toUpperCase()}  `,
+  });
+
+  assertStatus(response, 200);
+  assertEquals(response.body.slug, `mixedcase-${SLUG_RUN}`);
+
+  await cleanupCurrentTestData();
+});
+
+Deno.test("PATCH /v1/profiles/slug - enforces the 30-day cooldown", async () => {
+  markTestStart();
+
+  const user = await createSlugTestUser({ slug: slugFor("cooldown-start") });
+  const client = createTestClient({ authToken: user.token });
+
+  assertStatus(
+    await client.patch("/v1/profiles/slug", {
+      slug: slugFor("cooldown-first"),
+    }),
+    200,
+  );
+
+  const second = await client.patch("/v1/profiles/slug", {
+    slug: slugFor("cooldown-second"),
+  });
+
+  assertStatus(second, 400);
+  assertErrorResponse(second);
+  assert(second.body.message?.includes("30 days"));
+  assertExists(second.body.nextChangeAllowed);
+  assertEquals(second.body.daysRemaining, 30);
+
+  // The slug is unchanged
+  const admin = createAdminClient();
+  const { data: updated } = await admin
+    .schema("core")
+    .from("users")
+    .select("slug")
+    .eq("id", user.id)
+    .single();
+  assertEquals(updated?.slug, slugFor("cooldown-first"));
+
+  await cleanupCurrentTestData();
+});
+
+Deno.test("PATCH /v1/profiles/slug - returns 409 with suggestions when taken", async () => {
+  markTestStart();
+
+  await createSlugTestUser({ slug: slugFor("already-mine") });
+  const caller = await createSlugTestUser({ slug: slugFor("caller") });
+
+  const client = createTestClient({ authToken: caller.token });
+  const response = await client.patch("/v1/profiles/slug", {
+    slug: slugFor("already-mine"),
+  });
+
+  assertStatus(response, 409);
+  assertErrorResponse(response);
+  assert(Array.isArray(response.body.suggestions));
+  assert(response.body.suggestions.length > 0);
+
+  // No history row written for a rejected change
+  const admin = createAdminClient();
+  const { data: history } = await admin
+    .schema("core")
+    .from("slug_change_history")
+    .select("id")
+    .eq("user_id", caller.id);
+  assertEquals(history?.length, 0);
+
+  await cleanupCurrentTestData();
+});
+
+Deno.test("PATCH /v1/profiles/slug - returns 400 for an invalid slug", async () => {
+  markTestStart();
+
+  const user = await createSlugTestUser();
+  const client = createTestClient({ authToken: user.token });
+
+  assertStatus(await client.patch("/v1/profiles/slug", { slug: "ab" }), 400);
+  assertStatus(
+    await client.patch("/v1/profiles/slug", { slug: "not a slug!" }),
+    400,
+  );
+  assertStatus(
+    await client.patch("/v1/profiles/slug", { slug: "a".repeat(51) }),
+    400,
+  );
+
+  const missing = await client.patch("/v1/profiles/slug", {});
+  assertStatus(missing, 400);
+  assertErrorResponse(missing);
+
+  await cleanupCurrentTestData();
+});
+
+Deno.test("PATCH /v1/profiles/slug - returns 401 without auth", async () => {
+  markTestStart();
+
+  const client = createTestClient();
+  const response = await client.patch(
+    "/v1/profiles/slug",
+    { slug: "some-slug" },
+    { headers: { Authorization: "" } },
+  );
+
+  assertStatus(response, 401);
+  assertErrorResponse(response);
 });
 
 console.log("✅ All Profiles API tests passed!");

@@ -2,7 +2,8 @@
  * Work logs router coverage.
  */
 
-import { assert, assertEquals, assertExists } from '../shared/assert';
+import { assert, assertEquals, assertExists } from '../shared/assert.ts';
+import { getUserIdByEmail } from '../shared/test-context.ts';
 
 import {
   TEST_USERS,
@@ -10,7 +11,7 @@ import {
   createAdminClient,
   getAuthToken,
   loadCachedTokens,
-} from '../shared/setup';
+} from '../shared/setup.ts';
 
 Deno.test({
   name: "Work logs router - getById returns NOT_FOUND for unknown work log",
@@ -52,12 +53,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -352,12 +348,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -461,12 +452,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -596,12 +582,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -722,12 +703,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -835,12 +811,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -976,12 +947,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -1109,12 +1075,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -1223,12 +1184,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -1376,12 +1332,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -1497,12 +1448,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -1615,12 +1561,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -1730,12 +1671,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -1847,12 +1783,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -1989,12 +1920,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -2140,12 +2066,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -2275,12 +2196,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -2415,12 +2331,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -2562,12 +2473,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -2688,12 +2594,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -2803,12 +2704,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -2926,12 +2822,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -3061,12 +2952,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -3193,12 +3079,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -3342,12 +3223,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -3464,12 +3340,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -3596,12 +3467,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -3733,12 +3599,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -3865,12 +3726,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
@@ -3997,12 +3853,7 @@ Deno.test({
 
     let userId = cachedTokens?.regular?.userId ?? null;
     if (!userId) {
-      const { data: userResponse, error: userLookupError } = await admin.auth
-        .admin.getUserByEmail(TEST_USERS.regular.email);
-      if (userLookupError) {
-        throw userLookupError;
-      }
-      userId = userResponse?.user?.id ?? null;
+      userId = await getUserIdByEmail(admin, TEST_USERS.regular.email);
     }
 
     assertExists(userId, "Unable to resolve test user id");
