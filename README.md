@@ -14,16 +14,15 @@ We don't provide priority support for Windows, and lesser to Linux, but we do ai
 
 The following are the tested and supported versions of packages:
 
-- Node.js: 18.17.0+
-- pnpm: 10.20.0
-- npm: 9.6.7+
-- TypeScript: 5.9.2
+- Node.js: 22.20.0 (see `.node-version`)
+- pnpm: 10.28.2 (see `packageManager` in package.json)
+- TypeScript: 5.9.3
 
-- React Native: 0.81.5
-- Expo SDK: 54.0.23
+- React Native: 0.85.3
+- Expo SDK: 56 (56.0.18)
 
-- Xcode: 16.2
-- iOS SDK: 18.2
+- Xcode: 26.4+ (enforced by `pnpm --filter scaffald-app ios:check-xcode-version`)
+- iOS SDK: 26.4
 - Android Studio: 2024.3
 - Android SDK: API Level 35
 - CocoaPods: 1.14.3 (avoid 1.15 due to known issues)

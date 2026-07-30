@@ -37,6 +37,7 @@
     "@trpc/react-query": "catalog:",
     "awesome-phonenumber": "catalog:",
     "burnt": "catalog:",
+    "expo": "catalog:",
     "expo-apple-authentication": "catalog:",
     "expo-blur": "catalog:",
     "expo-constants": "catalog:",
