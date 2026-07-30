@@ -25,12 +25,12 @@ catalog:
   '@rnmapbox/maps': ~10.1.45
   # Held at 2.86 by a pnpm override; the catalog said ~2.100.1 and was simply
   # ignored. Aligned so the pin is visible rather than silently overridden. #453
-  '@supabase/supabase-js': ~2.86.0
+  '@supabase/supabase-js': ~2.110.9
   '@tanstack/react-query': 5.90.21
-  '@tanstack/react-table': ~8.20.5
-  '@trpc/client': ~11.17.0
-  '@trpc/react-query': ~11.17.0
-  '@trpc/server': ~11.17.0
+  '@tanstack/react-table': ~8.21.3
+  '@trpc/client': ~11.18.0
+  '@trpc/react-query': ~11.18.0
+  '@trpc/server': ~11.18.0
   '@ts-react/form': ~1.6.4
   '@types/geojson': ~7946.0.16
   '@types/mapbox-gl': ~3.5.0
