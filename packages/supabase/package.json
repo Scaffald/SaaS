@@ -33,10 +33,10 @@
   },
   "devDependencies": {
     "@types/pg": "^8.15.5",
-    "pg": "^8.16.3",
-    "stripe": "20.0.0",
+    "pg": "^8.22.0",
+    "stripe": "20.4.1",
     "supabase": "catalog:",
     "typescript": "catalog:",
-    "uuid": "^14.0.0"
+    "uuid": "^14.0.1"
   }
 }
