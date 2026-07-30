@@ -71,10 +71,53 @@ if [ "$DENO_STATUS" -ne 0 ]; then
   printf '%s\n' "$DENO_OUT" | grep -vE "^(Download|Check) " | tail -12
 fi
 
+# Cheap proxy for "would the web export even start?"
+#
+# The `scaffald` build is excluded above because the Metro web export takes
+# minutes, on the assumption that CI covers it on the deploy path. #501 showed
+# that assumption is not safe: Lighthouse CI is the only workflow that runs
+# `expo export`, and on pull requests it fires only for PRs labelled `ci:full`,
+# which dependency PRs do not get. So a pnpm override pinning
+# expo-modules-autolinking to a version older than the installed @expo/cli
+# expects reached main, and every web deploy failed at Metro config time with
+# `getSupportPackageForPlatform is not a function` — after lint, typecheck and
+# unit tests had all gone green.
+#
+# @expo/cli reaches the autolinking package through this re-export and calls
+# these three functions before bundling anything, so checking they exist costs
+# ~1s and catches the whole class of expo/autolinking version skew. It is a
+# smoke test of the interface, not a substitute for the export itself.
+echo "🔍 Checking Expo autolinking exports match the installed CLI..."
+AUTOLINK_OUT=$(cd apps/scaffald && node -e "
+const required = [
+  'makeCachedDependenciesLinker',
+  'scanDependencyResolutionsForPlatform',
+  'getSupportPackageForPlatform',
+];
+const autolinking = require('expo/internal/unstable-autolinking-exports');
+const missing = required.filter((fn) => typeof autolinking[fn] !== 'function');
+if (missing.length) {
+  console.error('missing from expo-modules-autolinking: ' + missing.join(', '));
+  console.error('expo-modules-autolinking@' + require('expo-modules-autolinking/package.json').version);
+  console.error('expo@' + require('expo/package.json').version + ' expects ' +
+    require('expo/package.json').dependencies['expo-modules-autolinking']);
+  process.exit(1);
+}
+" 2>&1)
+AUTOLINK_STATUS=$?
+
+if [ "$AUTOLINK_STATUS" -ne 0 ]; then
+  echo "   Expo web export would fail before bundling. Align the"
+  echo "   expo-modules-autolinking / expo-modules-core pnpm overrides in the"
+  echo "   root package.json with what the installed expo declares:"
+  printf '%s\n' "$AUTOLINK_OUT" | sed 's/^/     /'
+fi
+
 FAILED=""
 [ "$BUILD_STATUS" -ne 0 ] && FAILED="$FAILED build"
 [ "$TEST_STATUS" -ne 0 ]  && FAILED="$FAILED test"
 [ "$DENO_STATUS" -ne 0 ]  && FAILED="$FAILED deno-parse"
+[ "$AUTOLINK_STATUS" -ne 0 ] && FAILED="$FAILED expo-autolinking"
 
 if [ -n "$FAILED" ]; then
   echo
