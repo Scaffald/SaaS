@@ -1,4 +1,5 @@
-import { Text, Row, Button } from '@scaffald/ui'
+import { Button } from '@scaffald/ui'
+import { ChevronUp } from 'lucide-react-native'
 import { useQueryClient } from '@tanstack/react-query'
 import { useUpvoteMutation, useRemoveUpvoteMutation } from '@scf/core/utils/communities-sdk-hooks'
 
@@ -34,17 +35,21 @@ export function UpvoteButton({ targetType, targetId, count, hasUpvoted }: Props)
 
   const isPending = upvote.isPending || removeUpvote.isPending
 
+  // The arrow goes through iconStart and the count through children, so Button
+  // colors both of them itself. A nested <Text> emits its own color and so loses
+  // the contrast color Button sets for the filled variant — which is what made
+  // this render black-on-black (in light mode too: filled/gray is gray[900] in
+  // both themes).
   return (
     <Button
       variant={hasUpvoted ? 'filled' : 'outline'}
       size="sm"
+      iconStart={ChevronUp}
       onPress={handleToggle}
       disabled={isPending}
+      accessibilityLabel={hasUpvoted ? 'Remove upvote' : 'Upvote'}
     >
-      <Row align="center" gap={4}>
-        <Text style={{ fontSize: 14 }}>▲</Text>
-        <Text style={{ fontSize: 13 }}>{count}</Text>
-      </Row>
+      {String(count)}
     </Button>
   )
 }
