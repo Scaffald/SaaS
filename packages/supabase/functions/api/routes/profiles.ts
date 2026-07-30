@@ -1,4 +1,5 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { createClient } from "@supabase/supabase-js";
 import { authMiddleware, requireAuth } from "../middleware/auth.ts";
 import { rateLimiter } from "../middleware/rate-limiter.ts";
 
@@ -471,6 +472,51 @@ const publicProfileSchema = z
   })
   .openapi("PublicProfile");
 
+// Which profile sections a public viewer may see (core.preferences.profile_visibility)
+const profileVisibilitySchema = z
+  .object({
+    work_experience: z.boolean(),
+    education: z.boolean(),
+    skills: z.boolean(),
+    certifications: z.boolean(),
+    reviews: z.boolean(),
+    contact_info: z.boolean(),
+  })
+  .openapi("ProfileVisibility");
+
+// Vanity-URL profile schema (GET /slug/{slug})
+const profileBySlugSchema = z
+  .object({
+    id: z.string().uuid(),
+    username: z.string(),
+    slug: z.string(),
+    display_name: z.string().nullable(),
+    headline: z.string().nullable(),
+    bio: z.string().nullable(),
+    about: z.unknown(),
+    avatar_url: z.string().nullable(),
+    avatar_path: z.string().nullable(),
+    location: z.string().nullable(),
+    industry_id: z.string().uuid().nullable(),
+    industries: z
+      .object({
+        id: z.string().uuid(),
+        name: z.string(),
+        slug: z.string(),
+      })
+      .nullable(),
+    years_of_experience: z.number().int().nullable(),
+    open_to_work: z.boolean().nullable(),
+    visibility: profileVisibilitySchema,
+    created_at: z.string(),
+    // Aliases matching the PublicProfile shape the SSR loader and JSON-LD use
+    // (see apps/scaffald/utils/public-content-loader.ts). Same mapping the
+    // /{username} route applies: full_name = display_name, current_position = headline.
+    full_name: z.string().nullable(),
+    current_position: z.string().nullable(),
+  })
+  .openapi("ProfileBySlug");
+
 // Organization profile schema
 const organizationProfileSchema = z
   .object({
@@ -714,6 +760,196 @@ app.openapi(getProfileRoute, async (c) => {
         ).filter(Boolean) || [],
         certifications,
       },
+    },
+    200,
+  );
+});
+
+/**
+ * GET /v1/profiles/slug/:slug
+ * Get public profile by vanity slug
+ *
+ * core.users.slug is a separate column from core.users.username: it is seeded
+ * from the username at signup (004_functions.sql) but users can change it
+ * independently via the vanity-URL panel (30-day cooldown, tracked in
+ * core.slug_change_history), so a slug lookup cannot be folded into
+ * GET /{username}. Falls back to a username match so links still resolve for
+ * rows whose slug was never backfilled — 018 skips names that don't fit the
+ * 3-50 char [a-z0-9-] constraint.
+ */
+const getProfileBySlugRoute = createRoute({
+  method: "get",
+  path: "/slug/{slug}",
+  tags: ["Profiles"],
+  summary: "Get public profile by vanity slug",
+  description:
+    "Retrieve public profile information for a user by their vanity slug. Rate limited to 100 requests per 15 minutes.",
+  request: {
+    params: z.object({
+      slug: z.string().min(3).max(50).openapi({
+        description: "Vanity slug (3-50 characters)",
+        example: "john-doe",
+      }),
+    }),
+  },
+  responses: {
+    200: {
+      // Unenveloped, unlike the /{username} and /organizations/{slug} routes:
+      // the SDK returns the response body verbatim, and its ProfileBySlug type
+      // expects the profile fields at the top level. The other unenveloped
+      // routes in this router (/general, /slug/history) work the same way.
+      description: "Public profile data",
+      content: {
+        "application/json": {
+          schema: profileBySlugSchema,
+        },
+      },
+    },
+    404: {
+      description: "Profile not found",
+      content: {
+        "application/json": {
+          schema: errorResponseSchema,
+        },
+      },
+    },
+    429: {
+      description: "Too many requests - rate limit exceeded",
+      content: {
+        "application/json": {
+          schema: rateLimitErrorSchema,
+        },
+      },
+    },
+  },
+  security: [
+    {
+      bearerAuth: [],
+    },
+  ],
+});
+
+// Registered after the static /slug/history route above so that one keeps
+// winning; any future /slug/* static route must also be declared before this.
+app.openapi(getProfileBySlugRoute, async (c) => {
+  const supabase = c.get("supabase");
+  const { slug } = c.req.valid("param");
+
+  const selectColumns = `
+      id,
+      username,
+      slug,
+      display_name,
+      headline,
+      bio,
+      about,
+      avatar_url,
+      avatar_path,
+      open_to_work,
+      years_of_experience,
+      industry_id,
+      industries:industries(id, name, slug),
+      created_at
+    `;
+
+  let { data: user, error: userError } = await supabase
+    .schema("core")
+    .from("users")
+    .select(selectColumns)
+    .eq("slug", slug)
+    .maybeSingle();
+
+  if (!userError && !user) {
+    // Legacy rows without a backfilled slug are still reachable by username.
+    ({ data: user, error: userError } = await supabase
+      .schema("core")
+      .from("users")
+      .select(selectColumns)
+      .eq("username", slug)
+      .maybeSingle());
+  }
+
+  if (userError) {
+    console.error("Error fetching profile by slug:", userError);
+    return c.json(
+      {
+        error: "Internal Server Error",
+        message: userError.message,
+      },
+      500,
+    );
+  }
+
+  if (!user) {
+    return c.json(
+      {
+        error: "Not Found",
+        message: `Profile with slug '${slug}' not found or is not public`,
+      },
+      404,
+    );
+  }
+
+  // Get location from core.profile (PII table)
+  const { data: privateProfile } = await supabase
+    .schema("core")
+    .from("profile")
+    .select("location")
+    .eq("user_id", user.id)
+    .single();
+
+  // Section visibility lives in core.preferences, which is RLS-scoped to the
+  // owner (preferences_own_all). A public viewer's client reads nothing, so use
+  // the service-role client — otherwise every hidden section would fall back to
+  // the permissive default and leak.
+  let visibility = {
+    work_experience: true,
+    education: true,
+    skills: true,
+    certifications: true,
+    reviews: true,
+    contact_info: false,
+  };
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (supabaseUrl && supabaseServiceKey) {
+    const serviceClient = createClient(supabaseUrl, supabaseServiceKey);
+    const { data: preferences } = await serviceClient
+      .schema("core")
+      .from("preferences")
+      .select("profile_visibility")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    if (preferences?.profile_visibility) {
+      visibility = { ...visibility, ...preferences.profile_visibility };
+    }
+  }
+
+  const industries = Array.isArray(user.industries)
+    ? user.industries[0] ?? null
+    : user.industries ?? null;
+
+  return c.json(
+    {
+      id: user.id,
+      username: user.username ?? "",
+      slug: user.slug ?? user.username ?? "",
+      display_name: user.display_name ?? null,
+      headline: user.headline ?? null,
+      bio: user.bio ?? null,
+      about: user.about ?? null,
+      avatar_url: user.avatar_url ?? null,
+      avatar_path: user.avatar_path ?? null,
+      location: privateProfile?.location ?? null,
+      industry_id: user.industry_id ?? null,
+      industries,
+      years_of_experience: user.years_of_experience ?? null,
+      open_to_work: user.open_to_work ?? null,
+      visibility,
+      created_at: user.created_at,
+      // SSR-loader aliases; see profileBySlugSchema.
+      full_name: user.display_name ?? null,
+      current_position: user.headline ?? null,
     },
     200,
   );

@@ -17,6 +17,15 @@ export const SITE_ORIGIN = process.env.EXPO_PUBLIC_URL || 'https://scaffald.com'
 /** Fetch abort budget. Keeps a slow API from stalling the whole page render. */
 const TIMEOUT_MS = 5000
 
+export type ProfileVisibility = {
+  work_experience: boolean
+  education: boolean
+  skills: boolean
+  certifications: boolean
+  reviews: boolean
+  contact_info: boolean
+}
+
 export type PublicProfile = {
   id: string
   username: string | null
@@ -25,6 +34,8 @@ export type PublicProfile = {
   avatar_url: string | null
   location: string | null
   current_position: string | null
+  /** Section visibility, so the server render already honours hidden sections. */
+  visibility?: ProfileVisibility | null
 }
 
 export type PublicJob = {
@@ -51,7 +62,12 @@ export type PublicJob = {
 export const firstParam = (value: string | string[] | undefined): string | undefined =>
   Array.isArray(value) ? value[0] : value
 
-async function getFromApi<T>(path: string): Promise<T | null> {
+/**
+ * @param envelope whether the endpoint wraps its payload in `{ data }`. Most do;
+ *   the SDK-facing ones (e.g. /v1/profiles/slug/{slug}) return it at the top
+ *   level because the SDK hands its callers the response body verbatim.
+ */
+async function getFromApi<T>(path: string, envelope = true): Promise<T | null> {
   if (!SUPABASE_URL || !ANON_KEY) return null
 
   const controller = new AbortController()
@@ -66,8 +82,9 @@ async function getFromApi<T>(path: string): Promise<T | null> {
       signal: controller.signal,
     })
     if (!res.ok) return null
-    const body = (await res.json()) as { data?: T }
-    return body.data ?? null
+    const body = await res.json()
+    if (!envelope) return (body as T) ?? null
+    return (body as { data?: T }).data ?? null
   } catch {
     return null
   } finally {
@@ -76,16 +93,17 @@ async function getFromApi<T>(path: string): Promise<T | null> {
 }
 
 /**
- * NOTE: the API exposes public profiles at /v1/profiles/{username}; there is no
- * /v1/profiles/slug/{slug} route despite the SDK calling one. Vanity slugs
- * currently match usernames, so this resolves correctly today.
+ * Resolves against /v1/profiles/slug/{slug} — the same endpoint the client-side
+ * `useProfileBySlug` query uses — so SSR and hydration agree once a user's
+ * vanity slug diverges from their username. That route also falls back to a
+ * username match, so it stays a superset of /v1/profiles/{username}.
  */
 export async function fetchPublicProfileBySlug(
   slug: string | string[] | undefined
 ): Promise<PublicProfile | null> {
   const resolved = firstParam(slug)
   if (!resolved) return null
-  return getFromApi<PublicProfile>(`/v1/profiles/${encodeURIComponent(resolved)}`)
+  return getFromApi<PublicProfile>(`/v1/profiles/slug/${encodeURIComponent(resolved)}`, false)
 }
 
 export async function fetchPublicJobBySlug(
