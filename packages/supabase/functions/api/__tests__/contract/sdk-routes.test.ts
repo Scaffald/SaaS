@@ -51,10 +51,12 @@ const SDK_METHOD_VERB: Record<string, string> = {
  * Notable clusters, all confirmed by hand:
  *   - jobs: the router defines no POST/PATCH/DELETE at all, so createJob,
  *     updateJob and deleteJob cannot work.
- *   - profiles: `/slug/check` and `PATCH /slug`, so the vanity-URL panel can
- *     read slug history but cannot change a slug.
  *   - `GET /v1/communities/posts/portfolio/:p` — the route exists but is
  *     mounted at `/user/{userId}`; the SDK has the wrong path segment.
+ *
+ * `/v1/profiles/slug/check` and `PATCH /v1/profiles/slug` were on this list
+ * until #441 implemented them; the stale-entry check below is what flagged
+ * them for removal after that merge.
  */
 const KNOWN_GAPS = new Set([
   "DELETE /reviews/:p/draft",
@@ -78,7 +80,6 @@ const KNOWN_GAPS = new Set([
   "GET /v1/profiles/skills/children",
   "GET /v1/profiles/skills/details",
   "GET /v1/profiles/skills/legacy",
-  "GET /v1/profiles/slug/check",
   "GET /v1/skills/evidence",
   "GET /v1/skills/snapshots",
   "GET /v1/skills/snapshots/:p",
@@ -101,7 +102,6 @@ const KNOWN_GAPS = new Set([
   "PATCH /v1/profiles/skills",
   "PATCH /v1/profiles/skills/legacy",
   "PATCH /v1/profiles/skills/multi-taxonomy",
-  "PATCH /v1/profiles/slug",
   "PATCH /v1/skills/evidence/:p",
   "PATCH /v1/webhooks/:p",
   "PATCH /v1/work-logs/:p/profile-visibility",
