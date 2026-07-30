@@ -175,7 +175,15 @@ export function useCreateBulkInquiriesMutation(
 }
 
 /**
- * Get inquiry by application ID
+ * Get inquiry by application ID.
+ *
+ * Resolves to `null` when the application simply has no inquiry yet — a normal
+ * state that callers must render as empty rather than as a failure.
+ *
+ * No `as unknown as InquiryCapabilityClient` cast here: `getByApplication` now
+ * exists on the SDK, so this call is type-checked against the real surface. The
+ * cast is what let this ship broken — it silenced the missing-method error and
+ * the call failed at runtime instead.
  */
 export function useInquiryByApplication(
   applicationId: string | undefined,
@@ -187,7 +195,7 @@ export function useInquiryByApplication(
     queryKey: ['inquiries', 'by-application', applicationId],
     queryFn: async () => {
       if (!client || !applicationId) throw new Error('Missing client or applicationId')
-      return (client.inquiries as unknown as InquiryCapabilityClient).getByApplication(applicationId)
+      return client.inquiries.getByApplication(applicationId)
     },
     enabled: !!client && !!applicationId && options?.enabled !== false,
     staleTime: 60 * 1000, // 1 minute

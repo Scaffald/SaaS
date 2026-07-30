@@ -32,10 +32,24 @@ export default function OfficeApplicationInquiryRoute() {
     );
   }
 
-  if (error || !data || !data.inquiry) {
+  if (error) {
     return (
       <Stack align="center" justify="center" padding={16} gap={8}>
         <Text color="red">Unable to load inquiry</Text>
+        <Text color="secondary">{error.message}</Text>
+      </Stack>
+    );
+  }
+
+  // No inquiry raised against this application yet. This used to share the red
+  // error branch above, so the ordinary case was reported as a failure.
+  if (!data || !data.inquiry) {
+    return (
+      <Stack align="center" justify="center" padding={16} gap={8}>
+        <Text>No inquiry yet</Text>
+        <Text color="secondary">
+          No inquiry has been sent to this candidate.
+        </Text>
       </Stack>
     );
   }
