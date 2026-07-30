@@ -1,4 +1,5 @@
-import { Button, Text } from '@scaffald/ui'
+import { Button } from '@scaffald/ui'
+import { Bookmark } from 'lucide-react-native'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   useBookmarkMutation,
@@ -35,14 +36,19 @@ export function BookmarkButton({ postId, hasBookmarked }: Props) {
 
   const isPending = bookmark.isPending || removeBookmark.isPending
 
+  // Bookmark state reads from the variant plus the icon, so Button owns the
+  // color. A nested <Text> emits its own and loses the contrast color Button
+  // sets for the filled variant — which is what made this render black-on-black
+  // (in light mode too: filled/gray is gray[900] in both themes).
   return (
     <Button
       variant={hasBookmarked ? 'filled' : 'outline'}
       size="sm"
+      iconOnly
+      iconStart={Bookmark}
       onPress={handleToggle}
       disabled={isPending}
-    >
-      <Text style={{ fontSize: 14 }}>{hasBookmarked ? '★' : '☆'}</Text>
-    </Button>
+      accessibilityLabel={hasBookmarked ? 'Remove bookmark' : 'Bookmark'}
+    />
   )
 }
