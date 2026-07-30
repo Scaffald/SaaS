@@ -1,4 +1,5 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { createClient } from "@supabase/supabase-js";
 import { authMiddleware, requireAuth } from "../middleware/auth.ts";
 import { rateLimiter } from "../middleware/rate-limiter.ts";
 
@@ -343,6 +344,81 @@ app.get("/slug/history", requireAuth, async (c) => {
   }
 
   return c.json({ history: history ?? [], nextChangeAllowed, daysRemaining });
+});
+// GET /v1/profiles/slug/:slug - public profile behind a vanity URL
+// (SDK: getProfileBySlug). Public by design — no requireAuth — and registered
+// AFTER the static /slug/* routes above so "check" and "history" are not
+// swallowed as slugs. Response is UNENVELOPED to match SDK ProfileBySlug.
+app.get("/slug/:slug", async (c) => {
+  const supabase = c.get("supabase");
+  const slug = normalizeSlug(c.req.param("slug"));
+  if (!slug) {
+    return c.json(
+      {
+        error: "Bad Request",
+        message:
+          "slug must be 3-50 characters using lowercase letters, numbers and dashes",
+      },
+      400,
+    );
+  }
+
+  const { data: user, error } = await supabase
+    .schema("core")
+    .from("users")
+    .select(
+      "id, username, slug, avatar_path, avatar_url, about, headline, display_name, industry_id, years_of_experience, open_to_work, industries(id, name, slug)",
+    )
+    .eq("slug", slug)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching profile by slug:", error);
+    return c.json(
+      { error: "Internal Server Error", message: error.message },
+      500,
+    );
+  }
+
+  if (!user) {
+    return c.json(
+      { error: "Not Found", message: `Profile with slug '${slug}' not found` },
+      404,
+    );
+  }
+
+  // core.preferences is owner-only under RLS (preferences_own_all), so the
+  // request-scoped client reads nothing here for any visitor except the owner
+  // — which would silently hand every visitor the permissive defaults and
+  // render sections the owner hid. Read the one visibility column with the
+  // service client instead so the owner's settings are actually honoured.
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  let storedVisibility: Record<string, boolean> | null = null;
+  if (supabaseUrl && supabaseServiceKey) {
+    const serviceClient = createClient(supabaseUrl, supabaseServiceKey);
+    const { data: preferences } = await serviceClient
+      .schema("core")
+      .from("preferences")
+      .select("profile_visibility")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    storedVisibility = preferences?.profile_visibility ?? null;
+  }
+
+  // Defaults match migration 018's profile_visibility default. contact_info is
+  // false — fail closed on the only field that exposes PII.
+  const visibility = {
+    work_experience: true,
+    education: true,
+    skills: true,
+    certifications: true,
+    reviews: true,
+    contact_info: false,
+    ...(storedVisibility ?? {}),
+  };
+
+  return c.json({ ...user, visibility }, 200);
 });
 // GET /v1/profiles/general - general profile (SDK: getGeneralInfo)
 app.get("/general", requireAuth, async (c) => {

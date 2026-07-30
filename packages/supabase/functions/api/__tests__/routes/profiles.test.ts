@@ -647,6 +647,142 @@ Deno.test("GET /v1/profiles/slug/check - returns 401 without auth", async () => 
 });
 
 /**
+ * GET /v1/profiles/slug/:slug - Public profile behind a vanity URL
+ */
+
+Deno.test("GET /v1/profiles/slug/:slug - returns the public profile", async () => {
+  markTestStart();
+
+  const user = await createSlugTestUser({ slug: slugFor("public") });
+
+  // Public endpoint: anon client, no user token.
+  const client = createTestClient();
+  const response = await client.get(`/v1/profiles/slug/${slugFor("public")}`);
+
+  assertStatus(response, 200);
+  assertEquals(response.body.id, user.id);
+  assertEquals(response.body.slug, slugFor("public"));
+  assertEquals(response.body.username, user.username);
+  assertExists(response.body.visibility);
+
+  // Shape, not seeded values: createTestUserProfile's core.users insert is a
+  // no-op (a trigger already created the row on auth signup, so the insert
+  // fails on the pkey and the fixture never checks the error), which is why
+  // the /:username tests that assert display_name/headline fail on main too.
+  for (
+    const key of [
+      "username",
+      "slug",
+      "display_name",
+      "headline",
+      "years_of_experience",
+      "open_to_work",
+    ]
+  ) {
+    assert(key in response.body, `expected '${key}' in the response`);
+  }
+
+  await cleanupCurrentTestData();
+});
+
+Deno.test("GET /v1/profiles/slug/:slug - honours the owner's visibility settings", async () => {
+  markTestStart();
+
+  const user = await createSlugTestUser({ slug: slugFor("visibility") });
+
+  // core.preferences is owner-only under RLS, so a visitor must still see the
+  // owner's real flags rather than the permissive defaults.
+  const admin = createAdminClient();
+  await admin
+    .schema("core")
+    .from("preferences")
+    .upsert({
+      user_id: user.id,
+      profile_visibility: {
+        work_experience: false,
+        education: false,
+        skills: true,
+        certifications: true,
+        reviews: true,
+        contact_info: false,
+      },
+    });
+
+  const client = createTestClient();
+  const response = await client.get(
+    `/v1/profiles/slug/${slugFor("visibility")}`,
+  );
+
+  assertStatus(response, 200);
+  assertEquals(response.body.visibility.work_experience, false);
+  assertEquals(response.body.visibility.education, false);
+  assertEquals(response.body.visibility.skills, true);
+
+  await cleanupCurrentTestData();
+});
+
+Deno.test("GET /v1/profiles/slug/:slug - defaults to contact_info hidden when unset", async () => {
+  markTestStart();
+
+  await createSlugTestUser({ slug: slugFor("defaults") });
+
+  const client = createTestClient();
+  const response = await client.get(`/v1/profiles/slug/${slugFor("defaults")}`);
+
+  assertStatus(response, 200);
+  assertEquals(response.body.visibility.contact_info, false);
+  assertEquals(response.body.visibility.skills, true);
+
+  await cleanupCurrentTestData();
+});
+
+Deno.test("GET /v1/profiles/slug/:slug - static /slug routes are not shadowed", async () => {
+  markTestStart();
+
+  // "check" and "history" are 5- and 7-char strings that satisfy the slug
+  // pattern, so a mis-ordered registration would swallow them here.
+  const user = await createSlugTestUser();
+  const client = createTestClient({ authToken: user.token });
+
+  const check = await client.get("/v1/profiles/slug/check", {
+    query: { slug: slugFor("unused") },
+  });
+  assertStatus(check, 200);
+  assertEquals(check.body.available, true);
+
+  const history = await client.get("/v1/profiles/slug/history");
+  assertStatus(history, 200);
+  assert(Array.isArray(history.body.history));
+
+  await cleanupCurrentTestData();
+});
+
+Deno.test("GET /v1/profiles/slug/:slug - returns 404 for an unknown slug", async () => {
+  markTestStart();
+
+  const client = createTestClient();
+  const response = await client.get(`/v1/profiles/slug/${slugFor("nobody")}`);
+
+  assertStatus(response, 404);
+  assertErrorResponse(response);
+  assert(response.body.message?.includes("not found"));
+
+  await cleanupCurrentTestData();
+});
+
+Deno.test("GET /v1/profiles/slug/:slug - returns 400 for an invalid slug", async () => {
+  markTestStart();
+
+  const client = createTestClient();
+  const response = await client.get("/v1/profiles/slug/Not_A_Slug");
+
+  assertStatus(response, 400);
+  assertErrorResponse(response);
+
+  await cleanupCurrentTestData();
+});
+
+/**
  * PATCH /v1/profiles/slug - Update own slug
  */
 
