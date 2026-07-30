@@ -34,14 +34,13 @@ catalog:
   # is set in no env file and in no EAS environment. Bumping this breaks the iOS
   # build at `pod install`. See #509 — provision the token first.
   '@rnmapbox/maps': ~10.1.45
-  # Pinned at 2.86, and kept in lockstep with the pnpm override of the same
-  # name (an override silently outranks this entry — that drift was #453).
-  # Do NOT bump without first raising the EAS builder Node version: 2.110's
-  # @supabase/realtime-js requires a native WebSocket, expo-router calls
-  # createClient under Node while generating the route manifest, and eas.json
-  # pins node 20.19.4 which has no global WebSocket. The iOS EAGER_BUNDLE phase
-  # dies with "Node.js detected but native WebSocket not found" — it passes
-  # locally only because local node is 22.x. See #512.
+  # Pinned at 2.86, in lockstep with the pnpm override of the same name (an
+  # override outranks this entry — #453; lint:overrides now enforces the pair).
+  # The BUILD-TIME blocker that froze this pin is fixed: the client is
+  # lazy-initialized (scf-core/utils/supabase/client.ts) and the EAS builder
+  # runs Node 22, both proven against 2.110.9 with the export:embed harness in
+  # #512. What remains before bumping is RUNTIME validation of the 2.86→2.110
+  # auth/realtime surface in the app itself — do that in its own PR.
   '@supabase/supabase-js': ~2.86.0
   '@tanstack/react-query': 5.90.21
   '@tanstack/react-table': ~8.21.3

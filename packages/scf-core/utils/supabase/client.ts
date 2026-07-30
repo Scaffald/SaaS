@@ -1,4 +1,5 @@
 import type { Database } from '@scf/supabase/types'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@supabase/supabase-js'
 import { Platform } from 'react-native'
 import { logger } from '../logger'
@@ -19,41 +20,79 @@ if (Platform.OS === 'web') {
   storage = AsyncStorage
 }
 
-// Resolved through the shared module so this client and the Scaffald SDK
-// cannot drift apart silently — see api-base-url.ts and #376.
-const resolvedSupabaseUrl = getSupabaseAuthUrl()
-const resolvedSupabaseAnonKey = getSupabaseAnonKey()
+let client: SupabaseClient<Database> | undefined
 
-if (!resolvedSupabaseUrl) {
-  throw new Error(
-    'EXPO_PUBLIC_SUPABASE_URL is not set. Please update the root .env with EXPO_PUBLIC_SUPABASE_URL and restart the server.'
-  )
-}
+// Constructing the client is deferred to first use rather than module load.
+// expo-router evaluates every route module UNDER NODE at build time to
+// generate the server manifest, and this module is reachable from route
+// layouts (useProtectedRoute → useUser → here). A module-scope createClient
+// therefore runs inside the EAS builder's Node — where supabase-js versions
+// past ~2.100 require a native WebSocket global that Node < 22 does not have.
+// That exact chain killed the v1.16.0 iOS build at EAGER_BUNDLE (#512).
+// Nothing at build time *uses* the client, so deferring construction removes
+// the whole class: importing this module must stay side-effect-free.
+function getClient(): SupabaseClient<Database> {
+  if (client) return client
 
-if (!resolvedSupabaseAnonKey) {
-  throw new Error(
-    'EXPO_PUBLIC_SUPABASE_ANON_KEY is not set. Please update the root .env with EXPO_PUBLIC_SUPABASE_ANON_KEY and restart the server.'
-  )
-}
+  // Resolved through the shared module so this client and the Scaffald SDK
+  // cannot drift apart silently — see api-base-url.ts and #376.
+  const supabaseUrl = getSupabaseAuthUrl()
+  const supabaseAnonKey = getSupabaseAnonKey()
 
-const supabaseUrl = resolvedSupabaseUrl
-const supabaseAnonKey = resolvedSupabaseAnonKey
+  if (!supabaseUrl) {
+    throw new Error(
+      'EXPO_PUBLIC_SUPABASE_URL is not set. Please update the root .env with EXPO_PUBLIC_SUPABASE_URL and restart the server.'
+    )
+  }
 
-// Debug logging (development only)
-if (__DEV__) {
-  logger.debug('Supabase client initialized', {
-    platform: Platform.OS,
-    hasUrl: !!supabaseUrl,
-    hasKey: !!supabaseAnonKey,
+  if (!supabaseAnonKey) {
+    throw new Error(
+      'EXPO_PUBLIC_SUPABASE_ANON_KEY is not set. Please update the root .env with EXPO_PUBLIC_SUPABASE_ANON_KEY and restart the server.'
+    )
+  }
+
+  // Debug logging (development only)
+  if (__DEV__) {
+    logger.debug('Supabase client initialized', {
+      platform: Platform.OS,
+      hasUrl: !!supabaseUrl,
+      hasKey: !!supabaseAnonKey,
+    })
+  }
+
+  // Create unified Supabase client with platform-specific storage
+  client = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      storage: storage,
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: Platform.OS === 'web', // Only detect URL sessions on web
+    },
   })
+  return client
 }
 
-// Create unified Supabase client with platform-specific storage
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    storage: storage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: Platform.OS === 'web', // Only detect URL sessions on web
-  },
-})
+// The export keeps the existing `supabase.auth…` / `supabase.from(…)` call
+// sites working unchanged: the proxy builds the real client on first property
+// access and forwards everything to it afterwards.
+export const supabase: SupabaseClient<Database> = new Proxy(
+  {} as SupabaseClient<Database>,
+  {
+    get(_target, prop) {
+      const c = getClient()
+      const value = Reflect.get(c as object, prop, c)
+      return typeof value === 'function' ? (value as (...a: unknown[]) => unknown).bind(c) : value
+    },
+    has(_target, prop) {
+      return prop in (getClient() as object)
+    },
+    ownKeys() {
+      return Reflect.ownKeys(getClient() as object)
+    },
+    getOwnPropertyDescriptor(_target, prop) {
+      const desc = Object.getOwnPropertyDescriptor(getClient() as object, prop)
+      if (desc) desc.configurable = true
+      return desc
+    },
+  }
+)
