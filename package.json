@@ -284,7 +284,7 @@
   },
   "pnpm": {
     "overrides": {
-      "@supabase/supabase-js": "~2.110.9",
+      "@supabase/supabase-js": "~2.86.0",
       "@tanstack/query-core": "5.90.20",
       "@tanstack/react-query": "5.90.21",
       "@types/react": "19.2.14",

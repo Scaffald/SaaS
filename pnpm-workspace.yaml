@@ -34,11 +34,15 @@ catalog:
   # is set in no env file and in no EAS environment. Bumping this breaks the iOS
   # build at `pod install`. See #509 — provision the token first.
   '@rnmapbox/maps': ~10.1.45
-  # Kept in lockstep with the pnpm override of the same name in package.json.
-  # An override silently outranks this catalog entry, so a bump here alone is a
-  # no-op — that drift was #453, and dependabot re-introduced it bumping this
-  # to ~2.110.9 while the override still read ~2.86.0. Move both together.
-  '@supabase/supabase-js': ~2.110.9
+  # Pinned at 2.86, and kept in lockstep with the pnpm override of the same
+  # name (an override silently outranks this entry — that drift was #453).
+  # Do NOT bump without first raising the EAS builder Node version: 2.110's
+  # @supabase/realtime-js requires a native WebSocket, expo-router calls
+  # createClient under Node while generating the route manifest, and eas.json
+  # pins node 20.19.4 which has no global WebSocket. The iOS EAGER_BUNDLE phase
+  # dies with "Node.js detected but native WebSocket not found" — it passes
+  # locally only because local node is 22.x. See #512.
+  '@supabase/supabase-js': ~2.86.0
   '@tanstack/react-query': 5.90.21
   '@tanstack/react-table': ~8.21.3
   '@trpc/client': ~11.18.0
