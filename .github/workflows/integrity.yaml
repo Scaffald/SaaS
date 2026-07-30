@@ -8,6 +8,12 @@ on:
     branches:
       - main
 
+# nrwl/nx-set-shas needs `actions: read` to query the workflow-runs API; the org
+# default workflow token grants contents+packages only.
+permissions:
+  contents: read
+  actions: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true

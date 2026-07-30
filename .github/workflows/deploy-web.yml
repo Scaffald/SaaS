@@ -18,6 +18,13 @@ on:
 env:
   NODE_VERSION: "22"
 
+# nrwl/nx-set-shas queries the workflow-runs API. The org default workflow token
+# grants contents+packages only, so without an explicit `actions: read` this step
+# fails "Resource not accessible by integration" and the whole deploy aborts.
+permissions:
+  contents: read
+  actions: read
+
 # Prevent concurrent deployments to the same environment
 concurrency:
   group: deploy-${{ github.ref_name }}

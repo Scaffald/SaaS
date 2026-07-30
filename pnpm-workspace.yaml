@@ -10,9 +10,6 @@ packages:
   - packages/sdk/docs-site
   - packages/docs-shared
   - packages/scaffald-cli
-  - packages/insurance
-  - packages/compliance
-  - packages/tasks
   - packages/ai-pipeline
   - examples/*
 
