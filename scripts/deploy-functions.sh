@@ -62,19 +62,17 @@ pnpx supabase functions deploy \
   --project-ref "$PROJECT_REF" \
   --use-api
 
-# 3. Smoke the health endpoint to confirm the deploy + secrets took effect.
-#    `-f` makes curl exit non-zero on HTTP 4xx/5xx so a broken deploy
-#    doesn't silently print a green "✓ complete" message. `--max-time`
-#    bounds a hung server; `--retry 2 --retry-delay 2` covers the typical
-#    cold-start window after a fresh deploy without needing a long sleep.
+# 3. Run the full smoke suite (scripts/smoke-remote.sh) so a broken deploy
+#    can't print a green "complete". This replaces the old bare /v1/health
+#    curl: health-only smoke passed while authz, route registration, and the
+#    PostGIS functions were broken (migration 341 era). The suite checks the
+#    health commit against the GIT_COMMIT baked above, so skew fails here too.
 echo
-echo "→ Smoking /v1/health on $ENV…"
-HEALTH_URL="https://$PROJECT_REF.supabase.co/functions/v1/api/v1/health"
-if ! curl -fsS --max-time 15 --retry 2 --retry-delay 2 "$HEALTH_URL" | head -c 500; then
-  echo
-  echo "✗ /v1/health smoke failed against $HEALTH_URL. Deploy may have shipped but the function is unreachable or returning an error status." >&2
+echo "→ Running smoke suite against $ENV…"
+cd "$(git rev-parse --show-toplevel)"
+if ! ./scripts/smoke-remote.sh "$ENV" "$GIT_COMMIT"; then
+  echo "✗ smoke suite failed on $ENV. The functions deployed, but the environment is not healthy." >&2
   exit 1
 fi
-echo
 echo
 echo "✓ $ENV deploy complete."
