@@ -115,7 +115,7 @@
     "supa:dev": "pnpm env-dev pnpm exec supabase --workdir packages",
     "supa:preview": "pnpm env-preview pnpm exec supabase --workdir packages",
     "supa:prod": "pnpm env-prod pnpm exec supabase --workdir packages",
-    "supa:reset": "pnpm supa db reset && pnpm supa seed && pnpm test",
+    "supa:reset": "pnpm supa db reset && pnpm supa:seed",
     "supa:restart": "pnpm supa stop && pnpm supa start",
     "supa:seed": "pnpm env-local pnpm --filter @scf/supabase seed",
     "supa:seed:api": "./scripts/seed-for-api-testing.sh",
