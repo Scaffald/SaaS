@@ -12,6 +12,7 @@ import { Row, Spinner, Stack, Text, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import { useQueryClient } from '@tanstack/react-query'
 import { useMarkAsReadMutation, useNotifications } from '@scf/core/utils/notifications-sdk-hooks'
+import { toNotificationItems } from './normalize'
 
 type Severity = 'critical' | 'important' | 'info'
 
@@ -46,29 +47,6 @@ function formatRelative(value: string): string {
   return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 }
 
-// The list endpoint returns either { data: { items } } or { items } — handle both.
-function extractItems(data: unknown): Item[] {
-  const nested = (data as { data?: { items?: unknown[] } } | undefined)?.data?.items
-  const flat = (data as { items?: unknown[] } | undefined)?.items
-  const list = (nested ?? flat ?? []) as Array<Record<string, unknown>>
-  return list.map((n) => ({
-    id: String(n.id ?? ''),
-    title: String(n.title ?? ''),
-    preview:
-      typeof (n.body as { preview?: string } | undefined)?.preview === 'string'
-        ? String((n.body as { preview?: string }).preview)
-        : typeof n.preview === 'string'
-          ? (n.preview as string)
-          : typeof n.message === 'string'
-            ? (n.message as string)
-            : '',
-    createdAt: String(n.created_at ?? ''),
-    read: Boolean(n.read),
-    severity: ((n.severity as Severity) ?? 'info') as Severity,
-    ctaUrl: typeof n.cta_url === 'string' ? (n.cta_url as string) : undefined,
-  }))
-}
-
 export function NotificationsCenterScreen() {
   const { theme } = useThemeContext()
   const router = useRouter()
@@ -82,7 +60,7 @@ export function NotificationsCenterScreen() {
     },
   })
 
-  const items = useMemo(() => extractItems(query.data), [query.data])
+  const items = useMemo(() => toNotificationItems(query.data), [query.data])
 
   const onPress = useCallback(
     (item: Item) => {
