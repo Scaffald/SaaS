@@ -1,16 +1,27 @@
 /// <reference lib="deno.ns" />
 
-import { assert, assertEquals, assertExists } from '../shared/assert';
-import { createSeedClient } from '../shared/seeding';
+import { assert, assertEquals, assertExists } from '../shared/assert.ts';
+import { createSeedClient } from '../shared/seeding.ts';
 import {
   callTRPCEndpoint,
   loadCachedTokens,
-} from '../shared/setup';
-import { requireAuthSetup } from '../shared/test-context';
+} from '../shared/setup.ts';
+import { requireAuthSetup } from '../shared/test-context.ts';
 
 if (!Deno.env.get("STRIPE_MOCK_MODE")) {
   Deno.env.set("STRIPE_MOCK_MODE", "1");
 }
+
+/*
+ * These suites referenced `tokens.office`, a persona that does not exist:
+ * CachedTokens only ever carries `regular` and `admin`, and nothing creates an
+ * office user. So they never type-checked and never ran. Repointed by intent
+ * rather than uniformly — the ownership tests need a plain user who owns the
+ * org (`regular`), while adminGetAnalytics/adminListTransactions need an
+ * admin caller (`admin`). If a distinct employer persona is wanted later, add
+ * it to TEST_USERS and the auth setup rather than reintroducing a token that
+ * is never populated.
+ */
 
 Deno.test({
   name: "payments.getAccountCredits returns zero balance for new organization",
@@ -111,7 +122,7 @@ Deno.test({
         .from("organizations")
         .insert({
           id: orgId,
-          owner_user_id: tokens.office.userId,
+          owner_user_id: tokens.regular.userId,
           name: `Test Org ${slugSuffix}`,
           slug: `test-org-${slugSuffix}`,
         });
@@ -124,7 +135,7 @@ Deno.test({
         },
         {
           type: "mutation",
-          authToken: tokens.office.token,
+          authToken: tokens.regular.token,
         },
       );
 
@@ -362,7 +373,7 @@ Deno.test({
       undefined,
       {
         type: "query",
-        authToken: tokens.office.token,
+        authToken: tokens.admin.token,
       },
     );
 
@@ -406,7 +417,7 @@ Deno.test({
       },
       {
         type: "query",
-        authToken: tokens.office.token,
+        authToken: tokens.admin.token,
       },
     );
 

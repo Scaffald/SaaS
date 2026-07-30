@@ -1,6 +1,7 @@
-import { assertEquals, assertExists } from '../shared/assert';
-import { loadCachedTokens, callTRPCEndpoint, requireAuthSetup } from '../shared/setup';
-import { createSeedClient } from '../shared/seeding';
+import { assertEquals, assertExists } from '../shared/assert.ts';
+import { loadCachedTokens, callTRPCEndpoint } from '../shared/setup.ts'
+import { requireAuthSetup } from '../shared/test-context.ts';
+import { createSeedClient } from '../shared/seeding.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 async function withSeededBackgroundCheck(
@@ -98,7 +99,7 @@ Deno.test({
       );
 
       const error = response[0]?.error;
-      assertExists(error, 'Expected NOT_FOUND when disputing another user's check");
+      assertExists(error, "Expected NOT_FOUND when disputing another user's check");
       assertEquals(error?.data?.code, "NOT_FOUND");
     });
   },

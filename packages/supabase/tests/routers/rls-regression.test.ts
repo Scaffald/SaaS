@@ -11,7 +11,7 @@
  * Auth tokens must be cached first: run auth.test.ts before this file.
  */
 
-import { assert, assertEquals, assertExists, assertNotEquals } from '../shared/assert'
+import { assert, assertEquals, assertExists, assertNotEquals } from '../shared/assert.ts'
 import {
   createAdminClient,
   createTestClient,
@@ -19,8 +19,8 @@ import {
   registerUserWithMagicLink,
   TEST_SUPABASE_URL,
   TEST_SUPABASE_ANON_KEY,
-} from '../shared/setup'
-import { getTestContext, requireAuthSetup } from '../shared/test-context'
+} from '../shared/setup.ts'
+import { getTestContext, requireAuthSetup } from '../shared/test-context.ts'
 
 // ---------------------------------------------------------------------------
 // Helpers

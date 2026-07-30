@@ -3,10 +3,10 @@
  * Includes messaging endpoints tests (#84).
  */
 
-import { assertEquals, assertExists } from '../shared/assert';
+import { assertEquals, assertExists } from '../shared/assert.ts';
 
-import { callTRPCEndpoint, createAdminClient, loadCachedTokens } from '../shared/setup';
-import { getTestContext, requireAuthSetup } from '../shared/test-context';
+import { callTRPCEndpoint, createAdminClient, loadCachedTokens } from '../shared/setup.ts';
+import { getTestContext, requireAuthSetup } from '../shared/test-context.ts';
 
 const TEST_JOB_ID = '00000000-0000-0000-0000-000000000000';
 const UNKNOWN_APPLICATION_ID = '00000000-0000-0000-0000-000000000000';

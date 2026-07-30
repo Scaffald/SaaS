@@ -351,9 +351,11 @@ export function getTestStartTime(): number {
  * Global test hooks
  */
 export function setupTestHooks() {
-  // Mark test start time before each test
-  if (typeof Deno !== "undefined" && Deno.test) {
-    // Deno test environment - cleanup will be handled per-test
+  // `Deno.test` is always defined when the Deno global is, so testing its
+  // truthiness was dead code (TS2774). Checking the global alone carries the
+  // intended meaning: record the run's start time when loaded under Deno, so
+  // cleanup knows which rows and auth users this run created.
+  if (typeof Deno !== "undefined") {
     markTestStart();
   }
 }

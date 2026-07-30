@@ -86,7 +86,13 @@ export function calculateOTPExpiry(minutes: number = EMAIL_OTP_EXPIRY_MINUTES): 
  */
 export function isVerificationExpired(expiresAt: Date | string): boolean {
   const expiry = typeof expiresAt === 'string' ? new Date(expiresAt) : expiresAt
-  return new Date() > expiry
+  // Inclusive: a code is expired *at* its expiry instant, not one millisecond
+  // after. Strict `>` also made the boundary untestable — asserting on "exactly
+  // now" passed or failed depending on whether a millisecond ticked between
+  // capturing the timestamp and the comparison, so the case was flaky rather
+  // than wrong. Erring toward expired is the right way to be wrong about a
+  // verification code.
+  return new Date() >= expiry
 }
 
 /**

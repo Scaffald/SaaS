@@ -9,7 +9,7 @@
  * Requires: Local Supabase + Mailpit running (`pnpm supa start`).
  */
 
-import { assert, assertEquals, assertExists, assertNotEquals } from '../shared/assert'
+import { assert, assertEquals, assertExists, assertNotEquals } from '../shared/assert.ts'
 import {
   createAdminClient,
   createTestClient,
@@ -20,8 +20,8 @@ import {
   TEST_MAILPIT_URL,
   TEST_SUPABASE_ANON_KEY,
   TEST_SUPABASE_URL,
-} from '../shared/setup'
-import { getTestContext, requireAuthSetup } from '../shared/test-context'
+} from '../shared/setup.ts'
+import { getTestContext, requireAuthSetup } from '../shared/test-context.ts'
 
 function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))

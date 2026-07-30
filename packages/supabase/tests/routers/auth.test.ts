@@ -10,7 +10,7 @@ import {
   assertEquals,
   assertExists,
   assertNotEquals,
-} from '../shared/assert';
+} from '../shared/assert.ts';
 
 import {
   TEST_MAILPIT_URL,
@@ -23,7 +23,7 @@ import {
   loadCachedTokens,
   registerUserWithMagicLink,
   saveCachedTokens,
-} from '../shared/setup';
+} from '../shared/setup.ts';
 
 const TEST_USER_EMAIL = `trpc-auth-${Date.now()}@example.com`;
 const TEST_ADMIN_EMAIL = 'admin@scaffald.dev';

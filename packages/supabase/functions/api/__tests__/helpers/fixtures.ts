@@ -3,6 +3,7 @@
  * Utilities for creating test data in the database
  */
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient, getTestStartTime } from "../setup.ts";
 import {
   generateApiKey,
@@ -316,10 +317,68 @@ export async function cleanupTestDataAfter(timestamp: number) {
       .delete()
       .gte("created_at", timestampStr);
 
-    // Note: Users created via Supabase Auth need to be cleaned separately
-    // This is typically done via the auth admin API
+    await cleanupTestAuthUsersAfter(admin, timestamp);
   } catch (error) {
     console.error("Error cleaning up test data:", error);
+  }
+}
+
+/**
+ * Delete the auth.users records the run created.
+ *
+ * Deleting core.* rows was never enough: fixtures that use a fixed email
+ * (createTestUserProfile({ username: "johndoe" }) -> johndoe@example.com, and
+ * the OAuth and application fixtures) left the GoTrue user behind. The second
+ * use of that email got `{ user: null, error: "A user with this email address
+ * has already been registered" }`, and callers that don't check `error` then
+ * threw on `null.id`. Because `deno test *.test.ts` runs every file in one
+ * process against one database, this bit *across files within a single run*,
+ * not just on local re-runs — the root cause of the ~48 failing route tests
+ * in #411.
+ *
+ * Scoped by BOTH conditions, deliberately:
+ *   - created at or after the run's start timestamp, and
+ *   - an @example.com address (all 93 fixture emails use it).
+ *
+ * Either alone would be enough locally. Together they mean that pointing
+ * SUPABASE_URL at a real project — the defaults are localhost, but they are
+ * env-overridable — cannot delete a real user, because real users are neither
+ * @example.com nor created during the run.
+ */
+async function cleanupTestAuthUsersAfter(
+  admin: SupabaseClient,
+  timestamp: number,
+): Promise<void> {
+  const perPage = 200;
+  const doomed: Array<{ id: string; email: string }> = [];
+
+  // Collect the full list before deleting anything. Deleting mid-pagination
+  // shifts later users into pages already visited, so they would be skipped.
+  for (let page = 1; page <= 20; page++) {
+    const { data, error } = await admin.auth.admin.listUsers({ page, perPage });
+    if (error) {
+      console.error("Error listing auth users for cleanup:", error);
+      return;
+    }
+
+    const users = data?.users ?? [];
+
+    for (const user of users) {
+      const email = (user.email ?? "").toLowerCase();
+      if (!email.endsWith("@example.com")) continue;
+      if (!user.created_at) continue;
+      if (new Date(user.created_at).getTime() < timestamp) continue;
+      doomed.push({ id: user.id, email });
+    }
+
+    if (users.length < perPage) break;
+  }
+
+  for (const user of doomed) {
+    const { error } = await admin.auth.admin.deleteUser(user.id);
+    if (error) {
+      console.error(`Error deleting test auth user ${user.email}:`, error);
+    }
   }
 }
 

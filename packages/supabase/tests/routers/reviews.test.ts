@@ -2,9 +2,9 @@
  * Reviews router baseline coverage.
  */
 
-import { assertEquals, assertExists } from '../shared/assert';
+import { assertEquals, assertExists } from '../shared/assert.ts';
 
-import { callTRPCEndpoint } from '../shared/setup';
+import { callTRPCEndpoint } from '../shared/setup.ts';
 
 Deno.test({
   name: "Reviews router - getSoftSkills returns array",

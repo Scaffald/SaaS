@@ -4,10 +4,10 @@
 
 import { Buffer } from 'node:buffer';
 
-import { assert, assertEquals, assertExists } from '../shared/assert';
+import { assert, assertEquals, assertExists } from '../shared/assert.ts';
 
-import { callTRPCEndpoint, loadCachedTokens } from '../shared/setup';
-import { requireAuthSetup } from '../shared/test-context';
+import { callTRPCEndpoint, loadCachedTokens } from '../shared/setup.ts';
+import { requireAuthSetup } from '../shared/test-context.ts';
 
 const TEST_PDF_CONTENT = `%PDF-1.1
 1 0 obj

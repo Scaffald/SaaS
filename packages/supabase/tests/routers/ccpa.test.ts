@@ -18,7 +18,7 @@ import {
   assertEquals,
   assertExists,
   assertNotEquals,
-} from '../shared/assert';
+} from '../shared/assert.ts';
 
 import {
   TEST_SUPABASE_URL,
@@ -27,7 +27,7 @@ import {
   createTestClient,
   loadCachedTokens,
   registerUserWithMagicLink,
-} from '../shared/setup';
+} from '../shared/setup.ts';
 
 // Test user for CCPA tests
 const TEST_CCPA_EMAIL = `ccpa-test-${Date.now()}@example.com`
@@ -228,7 +228,7 @@ Deno.test({
     const response = await callTRPCEndpoint(
       'ccpa.requestCorrection',
       {
-        correctionDetails: 'Please update my profile name from 'Test' to "Updated Test"',
+        correctionDetails: `Please update my profile name from 'Test' to "Updated Test"`,
       },
       { type: 'mutation', authToken: token }
     )

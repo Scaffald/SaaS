@@ -13,7 +13,7 @@
 import {
   assertEquals,
   assertExists,
-} from '../shared/assert';
+} from '../shared/assert.ts';
 
 import {
   CCPA_NOTIFICATION_TYPES,
@@ -21,7 +21,7 @@ import {
   type CCPANotificationType,
   type CCPARequestInfo,
   type NotificationResult,
-} from '../../functions/trpc/routers/ccpa/notifications';
+} from '../../functions/trpc/routers/ccpa/notifications.ts';
 
 // ========================================================
 // NOTIFICATION TYPE TESTS
@@ -419,7 +419,7 @@ Deno.test({
       requestType: 'access',
       userId: '987fcdeb-51a2-43d9-b789-12345678abcd',
       userEmail: 'josé.o\'brien@example.com',
-      userName: 'José O'Brien",
+      userName: "José O'Brien",
     }
 
     // Should not throw when handling special characters

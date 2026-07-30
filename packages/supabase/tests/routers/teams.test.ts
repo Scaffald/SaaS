@@ -2,9 +2,9 @@
  * Teams router baseline coverage.
  */
 
-import { assertEquals, assertExists } from '../shared/assert';
+import { assertEquals, assertExists } from '../shared/assert.ts';
 
-import { callTRPCEndpoint } from '../shared/setup';
+import { callTRPCEndpoint } from '../shared/setup.ts';
 
 Deno.test({
   name: "Teams router - list requires authentication",

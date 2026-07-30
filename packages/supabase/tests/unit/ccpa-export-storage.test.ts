@@ -12,7 +12,7 @@
 import {
   assertEquals,
   assertExists,
-} from '../shared/assert';
+} from '../shared/assert.ts';
 
 import {
   EXPORT_CONFIG,
@@ -23,7 +23,7 @@ import {
   type SignedUrlResult,
   type DownloadRecord,
   type CleanupResult,
-} from '../../functions/trpc/routers/ccpa/export-storage';
+} from '../../functions/trpc/routers/ccpa/export-storage.ts';
 
 // ========================================================
 // CONFIGURATION TESTS

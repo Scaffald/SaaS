@@ -2,14 +2,14 @@
  * Personality assessment router baseline coverage.
  */
 
-import { assert, assertEquals, assertExists } from '../shared/assert';
+import { assert, assertEquals, assertExists } from '../shared/assert.ts';
 
 import {
   callTRPCEndpoint,
   createAdminClient,
   loadCachedTokens,
-} from '../shared/setup';
-import { requireAuthSetup } from '../shared/test-context';
+} from '../shared/setup.ts';
+import { requireAuthSetup } from '../shared/test-context.ts';
 
 Deno.test({
   name: "Personality assessment - getAssessmentStatus requires authentication",
@@ -49,7 +49,7 @@ Deno.test({
   },
 });
 
-type IPIPDomain = "A" | "E' | 'N' | 'C' | 'O';
+type IPIPDomain = "A" | "E" | "N" | "C" | "O";
 
 interface TestAnswer {
   id: string;

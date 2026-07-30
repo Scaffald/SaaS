@@ -2,10 +2,10 @@
  * Profile router baseline coverage.
  */
 
-import { assertEquals, assertExists } from '../shared/assert';
+import { assertEquals, assertExists } from '../shared/assert.ts';
 
-import { loadCachedTokens } from '../shared/setup';
-import { requireAuthSetup } from '../shared/test-context';
+import { loadCachedTokens } from '../shared/setup.ts';
+import { requireAuthSetup } from '../shared/test-context.ts';
 
 const PROFILE_ENDPOINT = 'http://127.0.0.1:54321/functions/v1/trpc/profile.updateGeneral?batch=1';
 
