@@ -291,6 +291,7 @@
       "@types/react-dom": "19.2.3",
       "axios@<=1.13.4": ">=1.13.5",
       "baseline-browser-mapping": ">=2.9.19",
+      "esbuild": "0.28.0",
       "esbuild@<=0.24.2": ">=0.25.0",
       "@docusaurus/plugin-ideal-image": "3.9.2",
       "@docusaurus/theme-mermaid": "3.9.2",

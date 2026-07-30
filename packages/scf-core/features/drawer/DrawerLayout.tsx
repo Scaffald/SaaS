@@ -1,7 +1,6 @@
 import { useNotificationDeviceRegistration } from '@scf/core/hooks/useNotificationDeviceRegistration'
 import {
   useNotificationPreferences,
-  useNotifications,
   useUnreadCount,
   useMarkAsReadMutation,
 } from '@scf/core/utils/notifications-sdk-hooks'
@@ -79,7 +78,6 @@ function DrawerLayoutInner({ protectionComponent, children, hideDrawer }: Drawer
   const pushEnabled = preferencesData?.data?.push_notifications ?? true
   useNotificationDeviceRegistration(pushEnabled)
 
-  const { data: notificationsData } = useNotifications({ limit: 25 })
   const { data: unreadCountData } = useUnreadCount({ enabled: !!session })
   const unreadCount = unreadCountData?.data?.unread_count ?? 0
 

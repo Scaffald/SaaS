@@ -2,10 +2,17 @@ name: Lighthouse CI
 
 on:
   pull_request:
-    branches: [main, dev]
+    branches: [main]
   push:
-    branches: [main, dev]
+    branches: [main]
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
 
 jobs:
   lighthouse:
@@ -31,18 +38,22 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build application
-        run: pnpm build
-        env:
-          NODE_ENV: production
-
+      # `pnpm build` (nx run-many across every package) used to run here as well.
+      # `web:build` is the only build Lighthouse actually audits, so the extra
+      # pass was ~6 minutes of duplicate work on every run.
       - name: Start server
         run: |
           pnpm web:build
           pnpm web:serve &
           sleep 10
         env:
+          NODE_ENV: production
           PORT: 8081
+          # expo export resolves these at static-render time; without them the
+          # export dies with "EXPO_PUBLIC_SUPABASE_URL is not set" before
+          # Lighthouse measures anything.
+          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.DEV_EXPO_PUBLIC_SUPABASE_URL }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.DEV_EXPO_PUBLIC_SUPABASE_ANON_KEY }}
 
       - name: Run Lighthouse CI
         uses: treosh/lighthouse-ci-action@v12

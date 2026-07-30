@@ -92,9 +92,24 @@ export async function requireAuthSetup(): Promise<void> {
  * Returns null when no user matches, so callers can distinguish "absent" from
  * "lookup failed" (which throws).
  */
+/**
+ * The slice of a service-role client this helper actually touches. Structural
+ * rather than `SupabaseClient`, because the generic parameters vary per suite —
+ * every instantiation satisfies this, so no `any` is needed.
+ */
+type AdminUserLister = {
+  auth: {
+    admin: {
+      listUsers(params: { page: number; perPage: number }): Promise<{
+        data?: { users?: Array<{ id: string; email?: string | null }> } | null
+        error?: unknown
+      }>
+    }
+  }
+}
+
 export async function getUserIdByEmail(
-  // deno-lint-ignore no-explicit-any -- SupabaseClient generics vary per suite.
-  admin: any,
+  admin: AdminUserLister,
   email: string
 ): Promise<string | null> {
   const target = email.toLowerCase()
@@ -105,9 +120,7 @@ export async function getUserIdByEmail(
     if (error) throw error
 
     const users = data?.users ?? []
-    const match = users.find(
-      (u: { email?: string | null }) => (u.email ?? '').toLowerCase() === target
-    )
+    const match = users.find((u) => (u.email ?? '').toLowerCase() === target)
     if (match) return match.id
 
     if (users.length < perPage) return null
