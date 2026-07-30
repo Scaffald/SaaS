@@ -166,10 +166,10 @@
     "version:auto": "node ./scripts/update-app-version.mjs",
     "watch": "nx run-many -t watch",
     "watchman:reset": "watchman watch-del \"$(pwd)\" ; watchman watch-project \"$(pwd)\"",
-    "web": "pnpm --filter scaffald-app web",
+    "web": "node ./scripts/web-dev.mjs",
     "web:build": "pnpm --filter scaffald-app web:build",
-    "web:local": "dotenv -e .env -- pnpm --filter scaffald-app web",
-    "web:remote": "dotenv -e .env.dev -- pnpm --filter scaffald-app web"
+    "web:local": "dotenv -e .env -- node ./scripts/web-dev.mjs",
+    "web:remote": "dotenv -e .env.dev -- node ./scripts/web-dev.mjs"
   },
   "dependencies": {
     "@babel/runtime": "catalog:",

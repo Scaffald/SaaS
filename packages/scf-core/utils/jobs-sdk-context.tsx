@@ -7,33 +7,16 @@
 import { ScaffaldProvider, useScaffaldOrNull } from '@scaffald/sdk/react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useMemo, useEffect, useRef, type ReactNode } from 'react'
-import Constants from 'expo-constants'
+import {
+  getSupabaseAnonKey,
+  getSupabaseApiBaseUrl,
+  warnOnBackendMismatch,
+} from './supabase/api-base-url'
 import { useSessionContext } from './supabase/useSessionContext'
 
 /** Use SDK for jobs when true. Set EXPO_PUBLIC_USE_SDK_JOBS=false to disable. */
 export const USE_SDK_FOR_JOBS =
   typeof process === 'undefined' || process.env?.EXPO_PUBLIC_USE_SDK_JOBS !== 'false'
-
-function getSupabaseApiBaseUrl(): string {
-  // Explicit override for API URL (must include /functions/v1/api for local Supabase)
-  const explicitApiUrl = process.env.EXPO_PUBLIC_SCAFFALD_API_URL
-  if (explicitApiUrl?.trim()) return explicitApiUrl.replace(/\/$/, '')
-
-  const supabaseExtra = (Constants?.expoConfig?.extra as { supabase?: { url?: string } })?.supabase
-  const url = process.env.EXPO_PUBLIC_SUPABASE_URL ?? supabaseExtra?.url
-  if (!url) return ''
-  const base = url.replace(/\/$/, '')
-  // Already includes API path (avoid double-append)
-  if (base.endsWith('/functions/v1/api')) return base
-  // Local Supabase API is at /functions/v1/api - requests to /v1/* alone hit Kong with no CORS
-  return `${base}/functions/v1/api`
-}
-
-function getSupabaseAnonKey(): string {
-  const supabaseExtra = (Constants?.expoConfig?.extra as { supabase?: { anonKey?: string } })
-    ?.supabase
-  return process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? supabaseExtra?.anonKey ?? ''
-}
 
 /**
  * Wraps children with ScaffaldProvider using the current session's access token.
@@ -48,6 +31,8 @@ export function ScaffaldJobsSdkProviderFromSession({ children }: { children: Rea
   const anonKey = useMemo(getSupabaseAnonKey, [])
   // Re-use the QueryClient already in the tree — avoids a duplicate QueryClientProvider.
   const queryClient = useQueryClient()
+
+  warnOnBackendMismatch()
 
   const config = useMemo(() => {
     if (!baseUrl) {
