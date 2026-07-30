@@ -93,11 +93,7 @@ export default function PublicUserProfilePage() {
   const loaderData = useRouteLoaderData<{ profile: PublicProfile | null }>()
 
   // Fetch profile by slug
-  const {
-    data: queriedProfile,
-    isLoading: isQueryLoading,
-    error,
-  } = useProfileBySlug(slug || undefined, {
+  const { data: queriedProfile, isLoading: isQueryLoading } = useProfileBySlug(slug || undefined, {
     enabled: !!slug,
     retry: false, // Don't retry on 404
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
@@ -109,7 +105,7 @@ export default function PublicUserProfilePage() {
     ? {
         ...loaderData.profile,
         display_name: loaderData.profile.full_name,
-        visibility: undefined,
+        visibility: loaderData.profile.visibility ?? undefined,
       }
     : undefined
   const profileData = queriedProfile ?? loaderProfile
@@ -183,8 +179,10 @@ export default function PublicUserProfilePage() {
     )
   }
 
-  // Error state (404 or other error)
-  if (error || !profileData) {
+  // Error state (404 or other error). Keyed on the absence of data rather than
+  // on `error` alone: a failed client query still has the loader's profile to
+  // render, and blanking that out turns a transient fetch failure into a 404.
+  if (!profileData) {
     return (
       <DashboardLayout
         breadcrumbItems={breadcrumbItems}

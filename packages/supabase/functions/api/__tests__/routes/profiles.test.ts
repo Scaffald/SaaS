@@ -67,6 +67,18 @@ async function createTestUserProfile(overrides: {
 }
 
 /**
+ * Set a user's vanity slug. The signup trigger seeds slug from the username, so
+ * slug-vs-username tests have to set it explicitly.
+ */
+async function setUserSlug(userId: string, slug: string | null) {
+  await createAdminClient()
+    .schema("core")
+    .from("users")
+    .update({ slug })
+    .eq("id", userId);
+}
+
+/**
  * Helper to create a test organization profile
  */
 async function createTestOrganizationProfile(overrides: {
@@ -272,6 +284,107 @@ Deno.test("GET /v1/profiles/:username - validates username min length", async ()
   const response = await client.get("/v1/profiles/ab"); // Too short (min 3)
 
   assertStatus(response, 400);
+
+  await cleanupCurrentTestData();
+});
+
+/**
+ * GET /v1/profiles/slug/:slug - Get public user profile by vanity slug
+ */
+
+Deno.test("GET /v1/profiles/slug/:slug - resolves a slug that differs from the username", async () => {
+  markTestStart();
+
+  const profile = await createTestUserProfile({ username: "slugowner" });
+  await setUserSlug(profile.id, "slug-owner-vanity");
+
+  const client = createTestClient();
+  const response = await client.get("/v1/profiles/slug/slug-owner-vanity");
+
+  assertStatus(response, 200);
+  assertEquals(response.body.id, profile.id);
+  assertEquals(response.body.slug, "slug-owner-vanity");
+  assertEquals(response.body.username, "slugowner");
+  assertEquals(response.body.display_name, "Test User");
+  // SSR-loader aliases
+  assertEquals(response.body.full_name, "Test User");
+  assertEquals(response.body.current_position, "Software Engineer");
+  assertExists(response.body.location);
+
+  await cleanupCurrentTestData();
+});
+
+Deno.test("GET /v1/profiles/slug/:slug - falls back to username when no slug matches", async () => {
+  markTestStart();
+
+  const profile = await createTestUserProfile({ username: "noslughere" });
+  await setUserSlug(profile.id, null);
+
+  const client = createTestClient();
+  const response = await client.get("/v1/profiles/slug/noslughere");
+
+  assertStatus(response, 200);
+  assertEquals(response.body.id, profile.id);
+  assertEquals(response.body.username, "noslughere");
+
+  await cleanupCurrentTestData();
+});
+
+Deno.test("GET /v1/profiles/slug/:slug - honours profile_visibility for public viewers", async () => {
+  markTestStart();
+
+  // core.preferences is RLS-scoped to its owner, so this only passes if the
+  // route reads visibility with the service-role client.
+  const profile = await createTestUserProfile({ username: "hiddensections" });
+  await setUserSlug(profile.id, "hidden-sections");
+  await createAdminClient()
+    .schema("core")
+    .from("preferences")
+    .upsert({
+      user_id: profile.id,
+      profile_visibility: {
+        work_experience: true,
+        education: false,
+        skills: true,
+        certifications: true,
+        reviews: false,
+        contact_info: false,
+      },
+    });
+
+  const client = createTestClient();
+  const response = await client.get("/v1/profiles/slug/hidden-sections");
+
+  assertStatus(response, 200);
+  assertEquals(response.body.visibility.education, false);
+  assertEquals(response.body.visibility.reviews, false);
+  assertEquals(response.body.visibility.skills, true);
+
+  await cleanupCurrentTestData();
+});
+
+Deno.test("GET /v1/profiles/slug/:slug - returns 404 if slug does not exist", async () => {
+  markTestStart();
+
+  const client = createTestClient();
+  const response = await client.get("/v1/profiles/slug/no-such-vanity-slug");
+
+  assertStatus(response, 404);
+  assertErrorResponse(response);
+  assert(response.body.message?.includes("not found"));
+
+  await cleanupCurrentTestData();
+});
+
+Deno.test("GET /v1/profiles/slug/history - is not shadowed by the slug route", async () => {
+  markTestStart();
+
+  // /slug/history is the authenticated slug-change-history endpoint; an
+  // unauthenticated call must 401 there rather than 404 as a missing profile.
+  const client = createTestClient();
+  const response = await client.get("/v1/profiles/slug/history");
+
+  assertStatus(response, 401);
 
   await cleanupCurrentTestData();
 });
