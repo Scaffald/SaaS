@@ -45,8 +45,14 @@ with a `kind` discriminator is queued for Phase 3.
   expectation and command.
 - [.claude/skills/dogfood-log/](../../.claude/skills/dogfood-log/) — skill
   that triggers on "log this session" and similar phrases.
-- [DOGFOODING-BUGS.md](DOGFOODING-BUGS.md) and
-  [DOGFOODING-IDEAS.md](DOGFOODING-IDEAS.md) — append-only running lists.
+- ~~`DOGFOODING-BUGS.md` / `DOGFOODING-IDEAS.md`~~ — retired 2026-07-30.
+  These were append-only markdown stopgaps until Tasks shipped. Their
+  contents are now Tasks under the **Dogfood Bugs (Open)**, **Dogfood Bugs
+  (Fixed)** and **Dogfood Ideas** punchlists in the Unicorn org, reseeded by
+  [packages/supabase/seeds/012_seed-dogfood-tasks.sql](../../packages/supabase/seeds/012_seed-dogfood-tasks.sql).
+  Older references to these filenames — in migration 324's comment, in
+  `scripts/phase2-seed.ts`, and inside some seeded Task descriptions — are
+  historical records of when the finding was made; they are not live links.
 
 ### Phase 2 — Run the loop (initial seed done; ongoing)
 
@@ -59,11 +65,10 @@ criteria as of 2026-05-18:
 - Projects: Infrastructure 3, Logs 12, Mobile 4, Platform 6, UI 4, Tasks 4 (all ≥3 ✓)
 - Statuses: draft 7, pending 16, verified 17, disputed 2 (all ≥2 ✓)
 
-Five bugs surfaced and fixed during the loop (see
-[DOGFOODING-BUGS.md](DOGFOODING-BUGS.md) Fixed section): `total_hours`
-generated-column insert, SDK/DB shape drift, RLS recursive SECURITY DEFINER
-in SELECT policy, missing `/submit` endpoint, and silently-ignored
-list filters/sort.
+Five bugs surfaced and fixed during the loop (now the **Dogfood Bugs
+(Fixed)** punchlist): `total_hours` generated-column insert, SDK/DB shape
+drift, RLS recursive SECURITY DEFINER in SELECT policy, missing `/submit`
+endpoint, and silently-ignored list filters/sort.
 
 Going forward (no new code expected; just sustained use):
 Every session uses the logger. Per-session expectations:
@@ -78,8 +83,10 @@ Weekly Friday browser smoke (45 min, manual):
   `http://localhost:8081/employers/org/unicorn/logs/create`.
 - Exercise every filter (status segments, sort, search, date range).
 - Click into 3 random logs.
-- File findings to [DOGFOODING-BUGS.md](DOGFOODING-BUGS.md) and
-  [DOGFOODING-IDEAS.md](DOGFOODING-IDEAS.md).
+- File findings as Tasks in the **Dogfood Bugs (Open)** / **Dogfood Ideas**
+  punchlists at
+  [employers/org/unicorn/tasks](http://localhost:8081/employers/org/unicorn/tasks).
+  Filing them in-product is itself part of the smoke test.
 
 **Exit criteria for Phase 2:**
 - ≥30 real logs in DB
@@ -98,8 +105,15 @@ Tasks + Punchlists landed on 2026-05-18:
   [packages/supabase/functions/api/routes/tasks.ts](../../packages/supabase/functions/api/routes/tasks.ts)
   (CRUD + `POST /:id/complete` with optional `workLogId` link),
   [packages/supabase/functions/api/routes/punchlists.ts](../../packages/supabase/functions/api/routes/punchlists.ts) (CRUD).
-- Markdown → product migration: [scripts/migrate-dogfood-md-to-tasks.ts](../../scripts/migrate-dogfood-md-to-tasks.ts) reads the open/fixed/shipped entries from DOGFOODING-{BUGS,IDEAS}.md and creates 3 punchlists + 14 tasks. Result is snapshotted in [packages/supabase/seeds/012_seed-dogfood-tasks.sql](../../packages/supabase/seeds/012_seed-dogfood-tasks.sql) so `pnpm supa db reset` reproduces the demo.
-- Markdown files are now thin stubs pointing at the in-product Tasks. They can be deleted entirely once Phase 3.2 ships a UI.
+- Markdown → product migration: a one-shot `scripts/migrate-dogfood-md-to-tasks.ts`
+  read the open/fixed/shipped entries out of the two markdown files and created
+  3 punchlists + 14 tasks. It ran once, and both it and its input files were
+  removed on 2026-07-30 — the durable artifact is
+  [packages/supabase/seeds/012_seed-dogfood-tasks.sql](../../packages/supabase/seeds/012_seed-dogfood-tasks.sql),
+  now 3 punchlists + 18 tasks as later sessions have added findings.
+- **Seeding a finding is not optional.** A Task filed only in local dev is
+  destroyed by the next `pnpm supa db reset`; that is how the first copy of the
+  2026-07-30 findings was lost. File in the product, then add it to seed 012.
 
 ### Phase 3.2 — Tasks UI list page (done)
 
