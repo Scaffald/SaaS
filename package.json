@@ -278,9 +278,12 @@
     "vitest-mock-extended": "^3.1.0"
   },
   "packageManager": "pnpm@10.28.2",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "pnpmOverrideNotes": {
     "_": "Why non-obvious entries in pnpm.overrides exist. pnpm parses every overrides key as a package selector, so the notes cannot live inline. Most entries are CVE bumps and are self-explanatory from their range syntax; these are not.",
-    "@docusaurus/plugin-ideal-image, @docusaurus/theme-mermaid": "#377. packages/sdk/docs-site pins every @docusaurus/* dep to an exact 3.9.2 except these two, which carry caret ranges and so floated to 3.10.x. Docusaurus refuses to load an official package whose version differs from core's — 'Invalid name=docusaurus-theme-mermaid version number=3.10.1' — and the build died. Pinned here rather than in the submodule so the fix needs no submodule PR + pointer bump. Bump all @docusaurus/* together, or drop these two once the submodule pins them itself.",
+    "@docusaurus/plugin-ideal-image, @docusaurus/theme-mermaid": "#377. packages/sdk/docs-site pins every @docusaurus/* dep to an exact 3.9.2 except these two, which carry caret ranges and so floated to 3.10.x. Docusaurus refuses to load an official package whose version differs from core's \u2014 'Invalid name=docusaurus-theme-mermaid version number=3.10.1' \u2014 and the build died. Pinned here rather than in the submodule so the fix needs no submodule PR + pointer bump. Bump all @docusaurus/* together, or drop these two once the submodule pins them itself.",
     "webpackbar": "#377. @docusaurus/bundler asks for webpackbar ^6.0.1, whose plugin does super({name, color, reporters, reporter}) into webpack's ProgressPlugin. webpack 5.107 (what resolves here; docusaurus only requires ^5.95.0) validates those options with additionalProperties:false and permits none of them, so both docs builds failed on a schema error. webpackbar 7 passes only activeModules + handler, both valid. Its peer range is 'webpack 3 || 4 || 5', so this is forward-compatible; drop it when docusaurus moves to 7 itself."
   },
   "pnpm": {
