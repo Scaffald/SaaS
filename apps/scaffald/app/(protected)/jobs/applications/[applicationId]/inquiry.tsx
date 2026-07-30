@@ -37,10 +37,23 @@ export default function DashboardApplicationInquiryRoute() {
         <Text>Loading inquiry...</Text>
       </Stack>
     )
-  } else if (error || !data || !data.inquiry) {
+  } else if (error) {
     content = (
       <Stack align="center" justify="center" padding={16} gap={8}>
         <Text color="red">Unable to load inquiry</Text>
+        <Text color="secondary">{error.message}</Text>
+      </Stack>
+    )
+  } else if (!data || !data.inquiry) {
+    // No inquiry raised against this application yet. This used to share the
+    // red error branch above, so the ordinary case — most applications never
+    // have one — was reported to the candidate as a failure.
+    content = (
+      <Stack align="center" justify="center" padding={16} gap={8}>
+        <Text>No inquiry yet</Text>
+        <Text color="secondary">
+          The employer has not sent an inquiry about this application.
+        </Text>
       </Stack>
     )
   } else {

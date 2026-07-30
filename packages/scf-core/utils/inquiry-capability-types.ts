@@ -100,11 +100,19 @@ export interface InquiryDetails {
   inquiry: Record<string, unknown>;
   sections: unknown[];
   comments: InquiryComment[];
-  /** Capability question responses (when present from API) */
+  /**
+   * Capability question responses (when present from API).
+   *
+   * Both response columns are nullable in core.inquiry_capability_responses, so
+   * these admit null. They previously did not, which only went unnoticed because
+   * the `as unknown as InquiryCapabilityClient` cast meant this type was never
+   * actually checked against the SDK's.
+   */
   capabilityResponses?: Array<{
     capability_name: string;
-    response_value?: boolean;
-    response_text?: string;
+    response_value?: boolean | null;
+    response_text?: string | null;
+    [key: string]: unknown;
   }>;
   /** Capability question definitions (when present from API) */
   capabilityQuestions?: Array<{
