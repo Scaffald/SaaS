@@ -12,6 +12,7 @@ import {
   uploadCertificationFileOutputSchema,
 } from '@scf/trpc/schemas'
 import { protectedProcedure, t } from '../../middleware.ts'
+import { orIlike } from '../../../_shared/utils/postgrest.ts'
 
 /**
  * Profile Certifications router - handles certification CRUD and file upload operations
@@ -58,7 +59,7 @@ export const profileCertificationsRouter = t.router({
 
         // Apply search filter if provided
         if (input.search) {
-          query = query.or(`title.ilike.%${input.search}%,description.ilike.%${input.search}%`)
+          query = query.or(orIlike(['title', 'description'], input.search))
         }
 
         // Order by depth, then sort_order

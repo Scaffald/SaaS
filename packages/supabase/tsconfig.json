@@ -3,7 +3,13 @@
     // "lib": ["deno.ns", "deno.unstable"],
     "types": ["node"]
   },
-  "exclude": ["functions/trpc/**/*", "functions.deno/**/*"],
+  "exclude": [
+    "functions/trpc/**/*",
+    "functions.deno/**/*",
+    // Deno test files import from deno.land, which this tsc cannot
+    // resolve. They are typechecked by `deno check` instead.
+    "functions/**/__tests__/**"
+  ],
   "extends": "../../tsconfig.base.json",
   "include": ["functions/_shared/**/*", "../../types/custom-modules.d.ts", "deno-env.d.ts"]
 }

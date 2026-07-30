@@ -8,6 +8,7 @@ import { officeProfilesRouter } from './office/profiles.router.ts'
 import { officeStorageRouter } from './office/storage.router.ts'
 import { officeUniversitiesRouter } from './office/universities.router.ts'
 import { officeTeamsRouter } from './teams.router.ts'
+import { orIlike } from '../../_shared/utils/postgrest.ts'
 
 const RESERVED_ORGANIZATION_SLUGS = new Set([
   'admin',
@@ -1831,7 +1832,7 @@ export const officeRouter = t.router({
         .range(input.offset, input.offset + input.limit - 1)
 
       if (input.search) {
-        query = query.or(`name.ilike.%${input.search}%,slug.ilike.%${input.search}%`)
+        query = query.or(orIlike(['name', 'slug'], input.search))
       }
 
       const { data, error, count } = await query

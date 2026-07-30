@@ -1,4 +1,16 @@
 -- =========================================================
+-- SUPERSEDED BY 338_oauth_scope_real_authorization.sql (issue #428).
+--
+-- This migration was never applied to production — the deployed function still
+-- carried migration 220's broken join, so /authorize 403'd on every request
+-- rather than rubber-stamping. Do NOT apply this file on its own: the function
+-- body below authorizes any scope with empty rbac_permissions, and every scope
+-- in the catalog had exactly that, so running it alone reintroduces the
+-- authorization bypass 338 closes. Replaying the chain in numeric order is
+-- safe, because 338 lands afterwards.
+-- =========================================================
+
+-- =========================================================
 -- 336_fix_validate_oauth_scope.sql
 -- Repair core.validate_oauth_scope: the original (migration 220) joins
 -- core.role_permissions and core.permissions, which never existed in this

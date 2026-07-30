@@ -15,6 +15,7 @@
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { authMiddleware } from "../middleware/auth.ts";
+import { orIlike } from "../../_shared/utils/postgrest.ts";
 
 const app = new OpenAPIHono();
 app.use("*", authMiddleware);
@@ -100,7 +101,7 @@ app.openapi(
     }
     if (q.search && q.search.trim().length > 0) {
       const needle = q.search.trim();
-      query = query.or(`title.ilike.%${needle}%,description.ilike.%${needle}%`);
+      query = query.or(orIlike(["title", "description"], needle));
     }
 
     const offset = (page - 1) * pageSize;

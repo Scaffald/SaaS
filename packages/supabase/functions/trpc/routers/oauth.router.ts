@@ -13,6 +13,7 @@ import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 import { protectedProcedure, publicProcedure, t } from '../middleware.ts'
 import { enforceOfficeRole } from '../middleware.ts'
+import { orIlike } from '../../_shared/utils/postgrest.ts'
 
 // =============================================================================
 // Zod Schemas for OAuth 2.0 Requests
@@ -1084,7 +1085,7 @@ export const oauthRouter = t.router({
         }
 
         if (input.search) {
-          query = query.or(`name.ilike.%${input.search}%,display_name.ilike.%${input.search}%`)
+          query = query.or(orIlike(['name', 'display_name'], input.search))
         }
 
         const { data: apps, error } = await query.order('created_at', { ascending: false })

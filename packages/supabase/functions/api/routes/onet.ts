@@ -5,6 +5,7 @@
 
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { authMiddleware } from "../middleware/auth.ts";
+import { orIlike } from "../../_shared/utils/postgrest.ts";
 
 const app = new OpenAPIHono();
 app.use("*", authMiddleware);
@@ -152,7 +153,7 @@ app.openapi(
       .schema("core")
       .from("onet_occupations")
       .select("*", { count: "exact" })
-      .or(`title.ilike.%${keyword}%,description.ilike.%${keyword}%`)
+      .or(orIlike(["title", "description"], keyword))
       .range(offset, offset + limit - 1);
 
     if (error) {

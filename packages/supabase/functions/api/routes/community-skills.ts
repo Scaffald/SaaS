@@ -6,6 +6,7 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { authMiddleware } from "../middleware/auth.ts";
+import { orIlike } from "../../_shared/utils/postgrest.ts";
 
 const app = new OpenAPIHono();
 
@@ -78,9 +79,10 @@ app.openapi(searchSkillsRoute, async (c) => {
   // returns results as the user types. The previous `tsv` full-text/websearch
   // match only hit complete stemmed words, so partial input like "plu", "carp",
   // or "elec" returned nothing and the picker looked broken (SC-128 #5).
-  // PostgREST .or() treats , ( ) . as syntax — strip them from the term first.
-  const safeQ = q.replace(/[,().]/g, " ").trim();
-  const pattern = `%${safeQ}%`;
+  // PostgREST .or() treats , ( ) as filter syntax. orIlike quotes the term so
+  // they match literally, rather than the previous approach of blanking them
+  // (which turned "Smith, John" into "Smith  John").
+  const safeQ = q.trim();
 
   // No community_id narrowing: the search intentionally spans the whole active
   // taxonomy so generic (community_id IS NULL) tags surface alongside any
@@ -90,7 +92,7 @@ app.openapi(searchSkillsRoute, async (c) => {
     .from("skill_taxonomy")
     .select("id, name, slug, tier, parent_id, community_id, description")
     .eq("is_active", true)
-    .or(`name.ilike.${pattern},description.ilike.${pattern}`)
+    .or(orIlike(["name", "description"], safeQ))
     .order("name", { ascending: true })
     .limit(limit);
 
