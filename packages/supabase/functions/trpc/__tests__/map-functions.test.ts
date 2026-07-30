@@ -432,7 +432,7 @@ Deno.test({
       assertEquals(
         job.status,
         "open",
-        'Job status should be 'open'",
+        "Job status should be 'open'",
       );
 
       console.log(
@@ -488,7 +488,7 @@ Deno.test({
       assertEquals(
         allOpen,
         true,
-        'All jobs should have status 'open'",
+        "All jobs should have status 'open'",
       );
 
       console.log(
