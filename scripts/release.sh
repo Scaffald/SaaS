@@ -142,9 +142,9 @@ fi
 echo
 echo "  Next:"
 echo "    1. Wait for the EAS build to finish, then submit to TestFlight."
-echo "    2. Once live on TestFlight, run:"
-echo "         LINEAR_API_KEY=lin_api_xxx pnpm release:promote ${VERSION}"
-echo "       (moves v${VERSION}-labeled In Github → In TestFlight in one batch)"
+echo "    2. Once live on TestFlight, move the v${VERSION}-labeled issues from"
+echo "       'In Github' to 'In TestFlight' on the board:"
+echo "         https://github.com/orgs/Scaffald/projects/1"
 echo "    3. QA tests against the TestFlight build."
 echo "    4. As issues are validated, QA moves them to 'Done'."
 echo

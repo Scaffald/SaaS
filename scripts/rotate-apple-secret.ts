@@ -26,6 +26,8 @@
  *   APPLE_TEAM_ID          Apple Developer Team ID. Defaults to DAC62CF44G.
  *   APPLE_KEY_ID           Apple Auth Key ID. Defaults to P9JV7GWQNZ.
  *   APPLE_CLIENT_ID        Services ID. Defaults to com.scaffald.auth.
+ *   GITHUB_REPOSITORY      Repo whose APPLE_SECRET is rewritten. Defaults to
+ *                          Scaffald/SaaS; Actions sets this automatically.
  *   --dry-run              Mint + validate the JWT but don't push it anywhere.
  *   --skip-eas             Skip the EAS env update (use when you don't have
  *                          eas CLI auth or when iterating quickly).
@@ -47,6 +49,10 @@ const SUPABASE_PROJECTS: Array<{ env: string; ref: string }> = [
   { env: 'preview', ref: 'uhjkipdwayqfihkanabk' },
   { env: 'prod', ref: 'qmfmpcyxsihhfttvqpbw' },
 ]
+
+// Repo whose Actions secret gets rewritten. GITHUB_REPOSITORY is set
+// automatically inside Actions; the default covers local runs.
+const GH_REPO = process.env.GITHUB_REPOSITORY ?? 'Scaffald/SaaS'
 
 const EAS_ENVIRONMENTS = ['production', 'preview', 'development']
 const EAS_APP_DIR = 'apps/scaffald'
@@ -179,7 +185,7 @@ async function patchSupabaseProject(ref: string, token: string, pat: string): Pr
 // --- GitHub secret ---
 
 function setGhSecret(name: string, value: string): void {
-  const result = spawnSync('gh', ['secret', 'set', name, '--repo', 'Unicorn/UNI-Construct'], {
+  const result = spawnSync('gh', ['secret', 'set', name, '--repo', GH_REPO], {
     input: value,
     encoding: 'utf8',
   })

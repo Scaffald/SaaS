@@ -16,10 +16,10 @@ this checkout, not in a cloud environment.
 | [Feature ideation](#4-feature-ideation) | Mondays, 8:05 PM | issues: `automated,enhancement` |
 | [Security review](#2-security-review) | Tuesdays, 8:05 PM | issues: `automated,security` |
 | [UI/UX audit](#3-uiux-audit) | Wednesdays, 8:05 PM | issues: `automated,UX` |
-| [Weekly improvement](#5-weekly-improvement) | Fridays, 8:05 PM | draft PRs + digest comment on [#394](https://github.com/Unicorn/UNI-Construct/issues/394) |
+| [Weekly improvement](#5-weekly-improvement) | Fridays, 8:05 PM | draft PRs + digest comment on [#394](https://github.com/Scaffald/SaaS/issues/394) |
 
 Times are staggered so the heavy local stacks never overlap. All issues land on
-the [Scaffald project board](https://github.com/orgs/Unicorn/projects/9) in
+the [Scaffald project board](https://github.com/orgs/Scaffald/projects/1) in
 **Triage** (see `docs/agents/TRACKING.md`). Guardrails common to every routine:
 max 5 new issues per run, dedupe before filing, never deploy/push-to-main/merge/
 close, never touch the human's working tree, and every run ends with a dogfood
@@ -70,18 +70,18 @@ STEPS
    that spec once to rule out flake; if it passes on retry, record it as FLAKY
    instead.
 5. File a GitHub issue for each NEW REGRESSION only — one issue per root
-   cause, not per spec. First dedupe: `gh issue list -R Unicorn/UNI-Construct
+   cause, not per spec. First dedupe: `gh issue list -R Scaffald/SaaS
    --state open --label regression --search "<keywords>"`; if a matching open
    issue exists, comment on it instead. Otherwise:
-   `gh issue create -R Unicorn/UNI-Construct -t "<title>" -b "<body>"
+   `gh issue create -R Scaffald/SaaS -t "<title>" -b "<body>"
    -l automated -l bug -l regression`
    Body must be self-contained: the failing command, spec file paths, error
    excerpt, the HEAD commit tested, and the suspect commit range
    (`git log <last-green-commit>..HEAD --oneline` scoped to relevant paths).
    Then add to the board in Triage:
-   `gh project item-add 9 --owner Unicorn --url <issue-url> --format json`
-   `gh project item-edit --project-id PVT_kwDOAGPSF84BdiwM --id <item-id>
-   --field-id PVTSSF_lADOAGPSF84BdiwMzhYDjug --single-select-option-id a9f9ff70`
+   `gh project item-add 1 --owner Scaffald --url <issue-url> --format json`
+   `gh project item-edit --project-id PVT_kwDOD5PrZ84Be5KD --id <item-id>
+   --field-id PVTSSF_lADOD5PrZ84Be5KDzhZQB8A --single-select-option-id a9f9ff70`
    Cap: max 5 new issues per run; put any overflow in the report.
 6. Write the run report to
    ~/.claude/routines/scaffald/daily-regression/<YYYY-MM-DD>.md (create dirs if
@@ -142,7 +142,7 @@ STEPS
    e. packages/scf-core/utils/auth/ — client-side guard changes
       (useProtectedRoute, useRoleProtectedRoute, etc.).
 2. Dependency pass: run `pnpm audit --prod` (no CI workflow runs npm audit —
-   this routine is the only net). Also `gh pr list -R Unicorn/UNI-Construct
+   this routine is the only net). Also `gh pr list -R Scaffald/SaaS
    --label dependencies --state open` and flag security-relevant Dependabot
    PRs stuck unmerged more than 7 days.
 3. Secrets pass: scan the week's diff for hardcoded secrets —
@@ -154,17 +154,17 @@ STEPS
 4. Standing items: read .github/supabase-advisor-issues.md and note any
    advisor findings still unaddressed.
 5. File findings as GitHub issues. Dedupe first (`gh issue list -R
-   Unicorn/UNI-Construct --state open --label security --search
+   Scaffald/SaaS --state open --label security --search
    "<keywords>"`; comment instead of duplicating). Then:
-   `gh issue create -R Unicorn/UNI-Construct -t "<severity>: <title>"
+   `gh issue create -R Scaffald/SaaS -t "<severity>: <title>"
    -b "<body>" -l automated -l security` (add -l "priority: high" or
    -l "priority: urgent" when warranted; add -l agent-ready only when the fix
    is clearly scoped and self-contained). Body: affected file paths, the
    commit that introduced it, concrete exploit/impact scenario, suggested fix
    direction. Add each to the board in Triage:
-   `gh project item-add 9 --owner Unicorn --url <issue-url> --format json`
-   `gh project item-edit --project-id PVT_kwDOAGPSF84BdiwM --id <item-id>
-   --field-id PVTSSF_lADOAGPSF84BdiwMzhYDjug --single-select-option-id a9f9ff70`
+   `gh project item-add 1 --owner Scaffald --url <issue-url> --format json`
+   `gh project item-edit --project-id PVT_kwDOD5PrZ84Be5KD --id <item-id>
+   --field-id PVTSSF_lADOD5PrZ84Be5KDzhZQB8A --single-select-option-id a9f9ff70`
    Cap: max 5 new issues per run; overflow goes in the report.
 6. Write the report to ~/.claude/routines/scaffald/security/<YYYY-MM-DD>.md
    (read last week's first for continuity): surface-by-surface verdict
@@ -230,16 +230,16 @@ STEPS
    page, and walk one create-form up to (but NOT through) submit. Record any
    console errors and broken interactions.
 5. File the top findings (max 5) as GitHub issues. Dedupe first
-   (`gh issue list -R Unicorn/UNI-Construct --state open --label UX --search
+   (`gh issue list -R Scaffald/SaaS --state open --label UX --search
    "<keywords>"`; comment instead of duplicating). Then:
-   `gh issue create -R Unicorn/UNI-Construct -t "<title>" -b "<body>"
+   `gh issue create -R Scaffald/SaaS -t "<title>" -b "<body>"
    -l automated -l UX` (add -l mobile when viewport-specific, -l bug when it
    is broken behavior rather than polish). Body: route, screenshot filename
    within the audit folder, what is wrong, expected behavior, suggested fix
    direction. Add each to the board in Triage:
-   `gh project item-add 9 --owner Unicorn --url <issue-url> --format json`
-   `gh project item-edit --project-id PVT_kwDOAGPSF84BdiwM --id <item-id>
-   --field-id PVTSSF_lADOAGPSF84BdiwMzhYDjug --single-select-option-id a9f9ff70`
+   `gh project item-add 1 --owner Scaffald --url <issue-url> --format json`
+   `gh project item-edit --project-id PVT_kwDOD5PrZ84Be5KD --id <item-id>
+   --field-id PVTSSF_lADOD5PrZ84Be5KDzhZQB8A --single-select-option-id a9f9ff70`
 6. Write the report to ~/.claude/routines/scaffald/uiux/<YYYY-MM-DD>.md:
    routes covered vs the manifest, new-vs-last-week deltas, all findings
    (filed + overflow), console errors from the smoke, and the screenshot
@@ -274,8 +274,8 @@ working tree; never deploy or push anything.
 
 STEPS
 1. Gather inputs:
-   a. Board state: `gh project item-list 9 --owner Unicorn --format json` and
-      `gh issue list -R Unicorn/UNI-Construct --state open --limit 100` —
+   a. Board state: `gh project item-list 1 --owner Scaffald --format json` and
+      `gh issue list -R Scaffald/SaaS --state open --limit 100` —
       note themes, gaps, and what is already proposed.
    b. Roadmap: the Phase 3.3+ / Phase 4 backlog in docs/agents/DOGFOODING.md
       (Tasks detail/create/kanban, team_id on logs, mentions/comments,
@@ -294,17 +294,17 @@ STEPS
    sketch, effort (S/M/L), and risks/dependencies. Prefer ideas that advance
    the dogfooding strategy or the current release arc over novelty.
 3. Dedupe hard: search open issues for each idea
-   (`gh issue list -R Unicorn/UNI-Construct --state open --search "<idea
+   (`gh issue list -R Scaffald/SaaS --state open --search "<idea
    keywords>"`). If an idea already exists as an issue, add a comment
    strengthening it (new evidence, sharper sketch) instead of filing a new
    one.
 4. File each genuinely-new proposal:
-   `gh issue create -R Unicorn/UNI-Construct -t "<title>" -b "<full proposal>"
+   `gh issue create -R Scaffald/SaaS -t "<title>" -b "<full proposal>"
    -l automated -l enhancement` (add -l needs-design when it requires a
    product decision before implementation). Add each to the board in Triage:
-   `gh project item-add 9 --owner Unicorn --url <issue-url> --format json`
-   `gh project item-edit --project-id PVT_kwDOAGPSF84BdiwM --id <item-id>
-   --field-id PVTSSF_lADOAGPSF84BdiwMzhYDjug --single-select-option-id a9f9ff70`
+   `gh project item-add 1 --owner Scaffald --url <issue-url> --format json`
+   `gh project item-edit --project-id PVT_kwDOD5PrZ84Be5KD --id <item-id>
+   --field-id PVTSSF_lADOD5PrZ84Be5KDzhZQB8A --single-select-option-id a9f9ff70`
    Cap: max 5 new issues per run.
 5. Write the report to ~/.claude/routines/scaffald/features/<YYYY-MM-DD>.md
    (read last week's first — do not re-pitch rejected or already-filed
@@ -347,11 +347,11 @@ STEPS
    a. The week's nightly regression reports in
       ~/.claude/routines/scaffald/daily-regression/ — suite green-rate trend
       and recurring flakes.
-   b. CI health: `gh run list -R Unicorn/UNI-Construct --limit 30`, including
+   b. CI health: `gh run list -R Scaffald/SaaS --limit 30`, including
       the scheduled audits (supabase-drift-audit, deploy-skew-audit,
       nightly-skip-audit, weekly-load-tests) — any red streaks?
    c. Issue flow: issues opened vs closed this week
-      (`gh issue list -R Unicorn/UNI-Construct --state all --search
+      (`gh issue list -R Scaffald/SaaS --state all --search
       "created:>=<date-7-days-ago>"` and closed equivalents), and aging of
       open `automated`-labeled issues.
    d. `git log --since='8 days ago' origin/main --oneline` — what shipped.
@@ -359,7 +359,7 @@ STEPS
    a. a recurring flaky or hung test from the regression trend / nightly
       skip-audit;
    b. an open small bug labeled `agent-ready`
-      (`gh issue list -R Unicorn/UNI-Construct --state open -l agent-ready`);
+      (`gh issue list -R Scaffald/SaaS --state open -l agent-ready`);
    c. toolchain/doc drift: `pnpm radium:check` failures, stale .radium/ pillar
       docs, dependency-version inconsistency (`pnpm check:deps`), dead
       scripts, or known doc warts (e.g. unresolved merge-conflict markers in
@@ -372,12 +372,12 @@ STEPS
    the change; verify with `pnpm check:affected` plus the targeted test suite
    for the area. Push the branch (`git push -u origin
    clay/routine-<YYYYMMDD>-<slug>`) and open a DRAFT PR:
-   `gh pr create -R Unicorn/UNI-Construct --draft -t "<title>"
+   `gh pr create -R Scaffald/SaaS --draft -t "<title>"
    -b "<problem / change / verification evidence / Fixes #NNN if applicable>"
    -l automated`
    Then remove the worktree (`git worktree remove /tmp/scaffald-routine-<slug>`).
 4. Post the weekly digest as a comment on the standing digest issue #394
-   (`gh issue comment 394 -R Unicorn/UNI-Construct -b "<digest>"`) covering:
+   (`gh issue comment 394 -R Scaffald/SaaS -b "<digest>"`) covering:
    regression trend, security/UX/feature issues filed this week by the other
    routines, CI health, the draft PRs opened tonight, and one line: "biggest
    risk right now".
@@ -401,7 +401,7 @@ STEPS
   (edit the prompt in the routine — everything else stays the same).
 - **Issue hygiene:** routines cap at 5 issues/run and dedupe before filing;
   if the board still floods, tighten the caps in the prompts.
-- **Digest issue:** [#394](https://github.com/Unicorn/UNI-Construct/issues/394)
+- **Digest issue:** [#394](https://github.com/Scaffald/SaaS/issues/394)
   is pinned and lives on the project board; if it's ever closed, create a new
   standing issue and update prompt 5.
 - **Reports live outside the repo** at `~/.claude/routines/scaffald/<slug>/`
