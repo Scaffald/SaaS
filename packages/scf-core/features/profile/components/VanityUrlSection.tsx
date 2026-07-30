@@ -6,6 +6,7 @@ import {
 import { useGeneralInfoWidget } from '@scf/core/utils/profile-widgets-sdk-hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { copyToClipboard } from '@scf/core/utils/clipboard'
+import { getPublicProfileShareUrl } from '@scf/core/utils/publicProfileUrl'
 import { isReservedSlug, isSlugValid } from '@scf/core/utils/slugify'
 import { Button, DashboardWidget, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
@@ -157,8 +158,7 @@ export function VanityUrlSection() {
   const handleCopyUrl = async () => {
     if (!profileData?.slug) return
 
-    const vanityUrl = `https://scaffald.com/users/${profileData.slug}`
-    const success = await copyToClipboard(vanityUrl)
+    const success = await copyToClipboard(getPublicProfileShareUrl(profileData.slug))
 
     if (success) {
       toast.show({

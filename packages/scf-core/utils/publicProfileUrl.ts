@@ -1,5 +1,41 @@
+import { Platform } from 'react-native'
 import { getBaseUrl } from './getBaseUrl'
 import { openExternalLink } from './platform'
+
+const DEFAULT_ORIGIN = 'https://scaffald.com'
+
+/**
+ * Absolute origin for links we hand to someone else — copied to a clipboard,
+ * rendered into a QR code, put in a share sheet.
+ *
+ * Distinct from getBaseUrl(), which deliberately returns '' on web so callers
+ * navigate same-origin. That is right for navigation and wrong here: a copied
+ * "/users/eric" is useless to the person you send it to.
+ *
+ * On web the current window origin wins so a link copied in local dev resolves
+ * back to the same machine; in production that origin *is* the apex. Native has
+ * no window, so it reads EXPO_PUBLIC_URL and falls back to the apex.
+ */
+export function resolvePublicOrigin(): string {
+  if (Platform.OS === 'web' && typeof window !== 'undefined') {
+    return window.location.origin
+  }
+  return process.env.EXPO_PUBLIC_URL?.replace(/\/$/, '') ?? DEFAULT_ORIGIN
+}
+
+/**
+ * Absolute, shareable URL for a public profile.
+ *
+ * Use this rather than getPublicProfileFullUrl when the URL leaves the app.
+ */
+export function getPublicProfileShareUrl(slug: string): string {
+  return `${resolvePublicOrigin()}${getPublicProfilePath(slug)}`
+}
+
+/** The same URL without its scheme, for display. */
+export function getPublicProfileDisplayUrl(slug: string): string {
+  return getPublicProfileShareUrl(slug).replace(/^https?:\/\//, '')
+}
 
 /**
  * Public profile path (no origin). Use for same-origin navigation or with getPublicProfileFullUrl for external/new tab.

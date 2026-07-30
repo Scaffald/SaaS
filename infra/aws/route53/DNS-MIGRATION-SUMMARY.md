@@ -1,5 +1,37 @@
 # DNS Migration Summary: CloudFlare → Route53
 
+> **HISTORICAL — describes the April 2026 CloudFlare → Route53 move, not the
+> current zone.** Most of the record values below are superseded. Read the
+> "Current state" block first; treat everything after it as a record of how the
+> zone looked in April, kept because the migration rationale and the exported
+> change batches are still the reference for how the zone was assembled.
+>
+> ### Current state (verified against Route53 2026-07-30)
+>
+> Hosted zone `Z03807932GT9W30LQ0T67`. The apex left Wix on 2026-07-28 and now
+> serves the Expo SSR app.
+>
+> | Name | Type | Target |
+> |---|---|---|
+> | `scaffald.com` | A (alias) | `d2i8qcnbvmj1ap.cloudfront.net` — CloudFront `E1JU35IZ18YNEL`, apex SSR app fronted from EAS Hosting |
+> | `www.scaffald.com` | A (alias) | same distribution as the apex |
+> | `app.scaffald.com` | A (alias) | `d1vkl7i37stb04.cloudfront.net` — CloudFront `E22499AF1OBX1Y`, now a **301 to the apex**, not an app origin |
+> | `scaffald.com` | MX | Google Workspace (`aspmx.l.google.com` + 4) — unchanged throughout |
+> | `scaffald.com` | TXT | `v=spf1 include:_spf.google.com ~all` |
+>
+> Changes since this document was written:
+> - The Wix apex A record (`185.230.63.107`) and the `www` → `pointing.wixdns.net`
+>   CNAME are **gone**, replaced by the aliases above.
+> - `staging.scaffald.com` (Vercel CNAME) is **gone**.
+> - `app.scaffald.com` no longer points at CloudFlare IPs, and its distribution
+>   is a redirect. Do not deploy a web build into it — `scripts/deploy-aws.sh`
+>   refuses `production` for exactly this reason. It is kept until roughly
+>   January 2027 so bookmarks, old emails and OAuth stragglers keep working.
+> - Resend records were added for outbound mail: `resend._domainkey` (TXT) and
+>   `send.scaffald.com` (MX → `feedback-smtp.us-east-1.amazonses.com`).
+> - Four Wix/`ascendbywix` DKIM and sender CNAMEs are still present and pending
+>   removal — see issue #435 and `remove-wix-email-records.sh` in this directory.
+
 ## Overview
 All DNS records from CloudFlare for `scaffald.com` have been exported and prepared for migration to AWS Route53.
 

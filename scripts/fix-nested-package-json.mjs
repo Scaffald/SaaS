@@ -1,47 +1,30 @@
 #!/usr/bin/env node
 /**
  * Fix for Expo autolinking issues with nested node_modules
- * 
+ *
  * Expo's autolinking expects package.json to exist in nested node_modules,
  * but pnpm hoisting may not always create it. This script ensures they exist.
+ *
+ * Was `fix-tailwindcss-sucrase.mjs`. It carried a hardcoded list of two
+ * packages to repair — sucrase under tailwindcss, and moti under
+ * @unicornlove/ui — and by 2026-07-30 neither parent existed: tailwindcss left
+ * with the Next.js marketing site, and @unicornlove/ui was renamed
+ * @scaffald/ui long before that. Neither is declared in any package.json in
+ * the workspace. The list was removed and the file renamed for what it
+ * actually does, because a postinstall script named after two packages that
+ * are not installed is worse than no script — it looks load-bearing.
+ *
+ * The generic scan below is the part that still earns its place: it walks
+ * nested node_modules and copies in any missing package.json. It repairs
+ * nothing on a healthy tree, which is the point.
  */
 
 import { existsSync, copyFileSync, readdirSync, statSync } from 'fs';
-import { join, dirname } from 'path';
-
-/**
- * Fix missing package.json files in nested node_modules
- * @param {string} packageName - The package name to look for
- * @param {string} parentPath - The parent package path (e.g., 'tailwindcss' or '@unicornlove/ui')
- */
-function fixNestedPackage(packageName, parentPath) {
-  const src = join('node_modules', packageName, 'package.json');
-  const dest = join('node_modules', parentPath, 'node_modules', packageName, 'package.json');
-  
-  if (existsSync(src) && existsSync(dirname(dest))) {
-    if (!existsSync(dest)) {
-      copyFileSync(src, dest);
-      console.log(`✅ Fixed ${parentPath}/${packageName} package.json for Expo autolinking`);
-      return true;
-    }
-  }
-  return false;
-}
-
-// Fix known issues
-const fixes = [
-  ['sucrase', 'tailwindcss'],
-  ['moti', '@unicornlove/ui'],
-];
+import { join } from 'path';
 
 let fixedCount = 0;
-for (const [pkg, parent] of fixes) {
-  if (fixNestedPackage(pkg, parent)) {
-    fixedCount++;
-  }
-}
 
-// Also scan for any other nested node_modules that might be missing package.json
+// Scan for nested node_modules that are missing a package.json.
 try {
   const rootNodeModules = join('node_modules');
   if (existsSync(rootNodeModules)) {

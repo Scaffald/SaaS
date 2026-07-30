@@ -56,7 +56,7 @@
     "format:fix": "nx format:write",
     "generate": "nx generate",
     "graph": "nx graph",
-    "postinstall": "sh scripts/setup-supabase-bin.sh && node scripts/fix-tailwindcss-sucrase.mjs",
+    "postinstall": "sh scripts/setup-supabase-bin.sh && node scripts/fix-nested-package-json.mjs",
     "ios": "pnpm --filter scaffald-app ios",
     "lint": "nx run-many -t lint --exclude=@scaffald/integration-test && pnpm lint:routes && pnpm lint:sorted-keys",
     "lint:affected": "nx affected -t lint && pnpm lint:routes && pnpm lint:sorted-keys && pnpm lint:platform",

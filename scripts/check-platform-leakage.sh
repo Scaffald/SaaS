@@ -49,6 +49,11 @@ PRUNE_PATHS=(
   # Platform.OS — these are the *correct* home for divergence. Feature code
   # imports them by name and does not see the branching.
   'packages/scf-core/utils/clipboard.ts'
+  # Resolves the absolute origin for links that leave the app (clipboard, QR,
+  # share sheet). Reads window.location.origin on web so a link copied in dev
+  # points at the dev machine; native reads EXPO_PUBLIC_URL. Consolidated here
+  # from a duplicate in SharePublicProfileModal.
+  'packages/scf-core/utils/publicProfileUrl.ts'
   'packages/scf-core/utils/auth/clearAuthStorage.ts'
   'packages/scf-core/utils/cookieConsent'
   'packages/scf-core/utils/location'
