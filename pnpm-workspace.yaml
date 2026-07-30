@@ -16,7 +16,7 @@ packages:
 catalog:
   '@babel/core': ~7.29.0
   '@babel/runtime': ~7.28.4
-  '@biomejs/biome': ~2.4.9
+  '@biomejs/biome': ~2.5.5
   '@expo/metro-runtime': ~56.0.12
   '@hookform/resolvers': ~5.4.0
   '@react-native-async-storage/async-storage': 2.2.0
