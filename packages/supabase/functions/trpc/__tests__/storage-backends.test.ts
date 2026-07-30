@@ -11,14 +11,14 @@ import {
   assertEquals,
   assertExists,
   assertRejects,
-} from 'https://deno.land/std@0.208.0/assert/mod';
+} from 'https://deno.land/std@0.208.0/assert/mod.ts';
 import type {
   IStorageBackend,
   SignedUrlResult,
   StorageBackendType,
   UploadOptions,
   UploadResult,
-} from '../routers/utils/storage-backends/index';
+} from '../routers/utils/storage-backends/index.ts';
 
 // Mock storage backend for testing the interface
 class MockStorageBackend implements IStorageBackend {

@@ -8,8 +8,8 @@
 import {
   assertEquals,
   assertExists,
-} from 'https://deno.land/std@0.208.0/assert/mod';
-import { loadCachedTokens } from '../setup';
+} from 'https://deno.land/std@0.208.0/assert/mod.ts';
+import { loadCachedTokens } from '../setup.ts';
 
 Deno.test({
   name: "Profile - Update with address (tests users table upsert)",

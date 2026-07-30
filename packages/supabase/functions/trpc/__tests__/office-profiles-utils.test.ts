@@ -1,11 +1,11 @@
 import {
   assertEquals,
   assertFalse,
-} from 'https://deno.land/std@0.208.0/assert/mod';
+} from 'https://deno.land/std@0.208.0/assert/mod.ts';
 import {
   parseNudgeHistory,
   parseUIPreferences,
-} from '../routers/office/profiles.router';
+} from '../routers/office/profiles.router.ts';
 
 Deno.test("parseUIPreferences normalizes ghost profile fields", () => {
   const parsed = parseUIPreferences({

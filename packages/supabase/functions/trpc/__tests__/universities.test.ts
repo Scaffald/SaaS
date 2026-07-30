@@ -8,9 +8,9 @@
 import {
   assertEquals,
   assertExists,
-} from 'https://deno.land/std@0.208.0/assert/mod';
-import { callTRPCEndpoint } from './setup';
-import { getTestContext } from './test-context';
+} from 'https://deno.land/std@0.208.0/assert/mod.ts';
+import { callTRPCEndpoint } from './setup.ts';
+import { getTestContext } from './test-context.ts';
 
 Deno.test({
   name: "Universities - Unauthenticated request should fail",

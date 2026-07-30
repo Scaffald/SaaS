@@ -3,7 +3,7 @@ import {
   assertExists,
 } from 'jsr:@std/assert';
 
-import { callTRPCEndpoint } from '../setup';
+import { callTRPCEndpoint } from '../setup.ts';
 
 Deno.test("O*NET - searchOccupations returns matching results", async () => {
   const response = await callTRPCEndpoint(
