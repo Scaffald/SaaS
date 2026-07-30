@@ -9,7 +9,6 @@
 #
 # Allow-list:
 #   - `*.web.{ts,tsx}` — Metro resolves these only on web
-#   - `apps/web/**` — Next.js web app, never bundled for native
 #   - `packages/ui/src/platform/web/**` — explicit web-only hooks
 #   - `packages/scf-core/utils/platform/**` — the primitives themselves
 #   - test/setup files and `*.stories.*`
@@ -42,7 +41,6 @@ PRUNE_PATHS=(
   '*/.next'
   '*/.expo'
   '*/.storybook'
-  'apps/web'
   # UI primitives — own DOM access internally, guarded by Platform.OS.
   'packages/ui'
   # The platform-primitive module itself.
@@ -62,7 +60,6 @@ PRUNE_PATHS=(
   'packages/sdk/docs-site'
   'packages/sdk/examples'
   'packages/sdk/src/react/hooks.ts'
-  'packages/ui-docs'
   '*/__tests__'
   '*/tests'
 )
