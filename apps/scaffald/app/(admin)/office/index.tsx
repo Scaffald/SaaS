@@ -1,3 +1,4 @@
+import { OfficeDeveloperLinks } from '@scf/core/features/office/OfficeDeveloperLinks'
 import { OfficeNotificationsConsole } from '@scf/core/features/office/office-notifications-console'
 import { OfficeStorageDashboard } from '@scf/core/features/office/office-storage-dashboard'
 import { OfficeLayout } from '@scf/core/components/layouts'
@@ -11,6 +12,8 @@ export default function OfficeIndex() {
           <OfficeNotificationsConsole />
           <Separator />
           <OfficeStorageDashboard />
+          <Separator />
+          <OfficeDeveloperLinks />
         </Stack>
       }
     />
