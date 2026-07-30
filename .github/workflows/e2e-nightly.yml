@@ -1,0 +1,85 @@
+name: E2E (nightly)
+
+# Was the `e2e-web` job in scaffald-tests.yml, running on every PR at ~20 minutes
+# with `continue-on-error: true` on the test step — so it could never fail a PR
+# and produced no signal for the minutes it cost.
+#
+# Now it runs nightly, on demand, and on any PR labelled `ci:full`. The
+# continue-on-error is gone: here a failure means something. Per-push coverage
+# for the web app is the smoke test in deploy-web.yml, which exercises four
+# routes plus an SSR <title> assertion on every deploy to main.
+
+on:
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+  pull_request:
+    types: [labeled]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  e2e-web:
+    name: E2E Web Tests (Playwright)
+    # On a PR this runs only when the ci:full label is applied.
+    if: github.event_name != 'pull_request' || github.event.label.name == 'ci:full'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    env:
+      # Local-stack fixtures from the repo's own public supabase-demo keys.
+      EXPO_PUBLIC_SUPABASE_URL: http://localhost:54321
+      EXPO_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+      SUPABASE_SERVICE_ROLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          submodules: true
+
+      - uses: ./.github/actions/install
+
+      - name: Build workspace packages
+        run: pnpm --filter @scaffald/ui build
+
+      - name: Install Playwright browsers
+        run: |
+          cd apps/scaffald
+          pnpm exec playwright install --with-deps chromium
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v3
+        with:
+          version: latest
+
+      - name: Start Supabase local instance
+        run: pnpm supa start
+
+      - name: Wait for Supabase to be ready
+        run: |
+          timeout 60 bash -c 'until curl -f http://localhost:54321/rest/v1/ -H "apikey: ${{ env.EXPO_PUBLIC_SUPABASE_ANON_KEY }}"; do sleep 2; done'
+
+      - name: Run E2E tests
+        run: |
+          cd apps/scaffald
+          pnpm test:e2e
+        env:
+          CI: true
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: playwright-report
+          path: apps/scaffald/playwright-report/
+          retention-days: 30
+
+      - name: Stop Supabase
+        if: always()
+        run: pnpm supa stop || true

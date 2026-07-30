@@ -1,114 +1,89 @@
 # GitHub Actions Workflows
 
-## Monorepo Integrity & Code Quality
+## CI (`ci.yml`)
 
-This workflow runs on every pull request and push to main branch to ensure code quality and monorepo integrity.
+The single workflow that gates pull requests. It replaced `test.yml`
+("Test Suite") and `integrity.yaml` ("Monorepo Integrity & Code Quality"), which
+between them ran typecheck four times and lint three times per PR.
 
-### Jobs
+A cheap `dorny/paths-filter` gate decides which of the real jobs run, so a
+docs-only PR costs about a minute instead of about seventy.
 
-#### 1. Code Quality Checks
-- **Format, Lint & Type Check**: Runs `pnpm check` which includes:
-  - `pnpm format:fix` - Biome code formatting
-  - `pnpm lint:fix` - Biome linting
-  - `pnpm typecheck` - TypeScript type checking via Turbo
-- **Build Verification**: Runs `pnpm build` to ensure all packages build successfully
+| Job | Runs when | What it does |
+|---|---|---|
+| `gate` | always (~20s) | paths-filter, sets `code` / `deps` outputs |
+| `quality` | `code` | `pnpm check` (locales + lint + typecheck, run-many) then `nx run-many -t build` |
+| `unit` | `code` | `pnpm affected:test`, uploads coverage |
+| `integrity` | `deps` | `pnpm dedupe --check`, `check-deps`, project-graph check |
 
-#### 2. Monorepo Integrity Checks
-- **Dependency Deduplication**: Checks for duplicate dependencies in pnpm.lock
-- **pnpm Constraints**: Validates pnpm workspace constraints
-- **Dependency Version Consistency**: Ensures consistent dependency versions across workspaces
-- **Circular Dependencies**: Checks for circular imports across the monorepo
-- **Sherif Linting**: Advanced monorepo linting using sherif
+`unit` covers `apps/scaffald` as well: `apps/scaffald/project.json` declares a
+`test` target on the same vitest config, so `affected:test` picks it up whenever
+`apps/scaffald` or `packages/scf-core` changes.
 
-### Required Status Checks
+### Required status checks
 
-To configure these as required status checks in GitHub:
+Settings → Branches → branch protection for `main`:
 
-1. Go to your repository Settings → Branches
-2. Add a branch protection rule for `main`
-3. Enable "Require status checks to pass before merging"
-4. Add these required status checks:
-   - `Code Quality Checks`
-   - `Monorepo Integrity Checks`
+- `Lint, typecheck & build`
+- `Unit tests`
+- `Monorepo integrity`
+- `Contract Tests / contract-tests`
 
-### Local Development
-
-Before pushing changes, run these commands locally to catch issues early:
+### Local parity
 
 ```bash
-# Run all quality checks (same as CI)
 pnpm check
-
-# Build all packages
-pnpm build
-
-# Check monorepo integrity
-pnpm check-deps
-pnpm lint-sherif
-pnpm check-circular-deps
+pnpm exec nx run-many -t build
+pnpm affected:test
+pnpm dedupe --check
 ```
 
-### Troubleshooting
+## Advisory workflows
 
-If checks fail:
+These do not gate PRs. They run nightly, on `workflow_dispatch`, and on any PR
+labelled **`ci:full`** when you want them before merging.
 
-- **Format/Lint errors**: Run `pnpm check` locally to auto-fix
-- **Type errors**: Fix TypeScript issues in your code
-- **Build errors**: Ensure all packages build with `pnpm build`
-- **Dependency issues**: Run `pnpm dedupe` and `pnpm check-deps`
-- **Circular dependencies**: Review import structure
+| Workflow | Schedule | Notes |
+|---|---|---|
+| `e2e-nightly.yml` | 04:00 UTC | Playwright against a local Supabase stack. Was a per-PR job with `continue-on-error: true`, so it could never fail anything; that flag is gone now |
+| `lighthouse-ci.yml` | 05:00 UTC | Was per-PR at ~20 min with no path filter and nothing gating on the result |
 
-## Test Suite
+Per-push web coverage is the smoke test in `deploy-web.yml`, which exercises
+four routes plus an SSR `<title>` assertion on every deploy to `main`.
 
-The `Test Suite` workflow verifies the Vitest suites and the Supabase Deno integration tests on every push and pull request targeting `main`.
+## REST API Tests (`api-tests.yml`)
 
-### Jobs
+Path-filtered to `packages/supabase/functions/api/**`. Several assertion steps
+are `continue-on-error` on purpose while the suite is under repair — see #411
+(route tests failing on assertion/schema drift), #412 (the old 100% coverage
+gate) and #400 (`supabase db seed` is not a valid subcommand in the pinned CLI).
+`benchmark` has `needs: test` so the two jobs share one Supabase boot.
 
-1. **Setup**
-   - Checkout repository
-   - Install pnpm (version from packageManager field) and Node.js 22 with pnpm caching
-   - Install dependencies via `pnpm install --frozen-lockfile`
-2. **Supabase**
-   - Launches the local Supabase stack with `pnpm supa start`
-   - Waits for the health check to report ready through `pnpm supa status`
-3. **Tests**
-   - Executes `pnpm test` which runs the lint/typecheck pipeline, Vitest suites, and Deno endpoint tests
-   - Uploads `coverage/` artifacts for later inspection
-4. **Teardown**
-   - Streams Supabase logs when the job fails
-   - Stops the Supabase containers to free runner resources
+## Contract Tests (`contracts.yml`)
 
-### Local Parity
-
-Run the same commands locally before pushing:
+Runs only when a PR touches third-party client code (address providers,
+Stripe/OpenAI integrations, SendGrid hooks) or `tests/reports/contracts/`. Runs
+the MSW-backed suite and uploads `contracts/generated` as an artifact.
 
 ```bash
-pnpm supa start
-pnpm test
-pnpm supa stop
-```
-
-When Supabase is already running on your machine the `pnpm test` command will reuse the existing instance, matching the behaviour in CI.
-
-## Contract Tests
-
-This workflow runs only when pull requests touch third-party client code (address providers, Stripe/OpenAI integrations, or SendGrid email hooks) or the `contracts/` directory. It executes the MSW-backed contract suite and uploads the generated `contracts/generated` payloads as artifacts.
-
-### Required Status Checks
-
-Add `Contract Tests / contract-tests` to the branch protection rules for `main` so merges are gated on the contract suite.
-
-### Local Development
-
-Run the contract suite locally before opening a PR that updates any third-party integration:
-
-```
 pnpm test:contracts
 ```
 
 ## Dependabot automerge
 
-The `dependabot-automerge.yml` workflow enables auto-merge (squash) on Dependabot PRs when they are opened or updated. Only **patch** and **minor** version updates are auto-merged; **major** version bumps are left for manual review. Merges occur automatically after required status checks pass.
+`dependabot-automerge.yml` enables squash auto-merge on Dependabot PRs. Only
+patch and minor updates auto-merge; majors are ignored outright in the config.
 
-- **Requires:** Repo **Settings → General → Pull Requests** → **Allow auto-merge** enabled.
-- **Config:** Version updates and schedule are in [`.github/dependabot.yml`](../dependabot.yml).
+- **Requires:** Settings → General → Pull Requests → **Allow auto-merge**.
+- **Config:** [`.github/dependabot.yml`](../dependabot.yml). Updates are grouped
+  (react-ecosystem / dev-tooling / backend / everything-else) so a weekly wave is
+  four PRs rather than up to fifteen. The Expo/React Native family is ignored on
+  purpose — it moves as one coordinated bump, see #483.
+
+## Shared setup
+
+`.github/actions/install` is the composite action for pnpm + Node + a
+frozen-lockfile install. Pass `build-workspace-packages: 'true'` when the job
+needs `@scaffald/sdk` and `@scaffald/ui` built (any typecheck does; a dedupe
+check does not). Prefer it over hand-rolling the setup steps, so caching stays
+consistent across workflows.

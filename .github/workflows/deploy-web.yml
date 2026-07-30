@@ -68,9 +68,10 @@ jobs:
         uses: actions/cache@v6
         with:
           path: .nx/cache
-          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+          # No `-${{ github.sha }}`: it made the primary key unhittable and wrote
+          # a new entry every run, churning the 10 GB repo cache.
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
-            nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
             nx-${{ runner.os }}-
 
       # ===== INSTALL =====

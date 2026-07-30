@@ -22,7 +22,7 @@
     "check": "pnpm locales:validate && nx run-many -t lint --exclude=@scaffald/integration-test && cross-env NODE_OPTIONS=--max-old-space-size=4096 nx run-many -t typecheck --parallel=1 --exclude=@scaffald/integration-test",
     "check:affected": "pnpm locales:validate && nx affected -t lint --exclude=@scaffald/integration-test && nx affected -t typecheck --parallel=1 --exclude=@scaffald/integration-test",
     "check:affected:fast": "nx affected -t lint --exclude=@scaffald/integration-test && nx affected -t typecheck --exclude=@scaffald/integration-test",
-    "check-circular-deps": "nx graph --file=output.html",
+    "check-circular-deps": "nx show projects --json > /dev/null",
     "check-deps": "cross-env NODE_OPTIONS=--max-old-space-size=8192 check-dependency-version-consistency .",
     "deploy": "pnpm prod",
     "deploy:aws": "./scripts/deploy-aws.sh",

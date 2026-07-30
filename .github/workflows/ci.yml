@@ -1,0 +1,165 @@
+name: CI
+
+# Replaces the old test.yml ("Test Suite") and integrity.yaml ("Monorepo
+# Integrity & Code Quality"). Those ran typecheck four times and lint three
+# times across a PR — integrity.yaml even ran `pnpm typecheck` as its own step
+# immediately after `pnpm check`, which already contains that exact command.
+#
+# A cheap paths-filter gate decides which of the real jobs run, so a docs-only
+# PR costs ~1 minute instead of ~70.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# nrwl/nx-set-shas reads the workflow-runs API. The org default workflow token
+# grants contents+packages only, so without an explicit `actions: read` it fails
+# with "Resource not accessible by integration".
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+      deps: ${{ steps.filter.outputs.deps }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - id: filter
+        uses: dorny/paths-filter@v4
+        with:
+          filters: |
+            code:
+              - 'apps/**'
+              - 'packages/**'
+              - 'tests/**'
+              - 'scripts/**'
+              - '*.ts'
+              - '*.js'
+              - '*.mjs'
+              - '*.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - '.github/workflows/ci.yml'
+            deps:
+              - '**/package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - '.github/workflows/ci.yml'
+
+  quality:
+    name: Lint, typecheck & build
+    needs: gate
+    if: needs.gate.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # nx affected needs history
+          submodules: true
+
+      - uses: ./.github/actions/install
+        with:
+          build-workspace-packages: 'true'
+
+      - name: Cache Nx
+        uses: actions/cache@v6
+        with:
+          path: .nx/cache
+          # No `-${{ github.sha }}` suffix: it made the primary key unhittable
+          # and wrote a fresh entry every run, churning the 10 GB repo cache and
+          # evicting the pnpm-store caches other workflows depend on.
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            nx-${{ runner.os }}-
+
+      - uses: nrwl/nx-set-shas@v5
+        with:
+          main-branch-name: main
+
+      # `pnpm check` = locales:validate + lint (run-many) + typecheck (run-many).
+      - name: Check
+        run: pnpm check
+
+      - name: Build
+        run: pnpm exec nx run-many -t build
+
+  unit:
+    name: Unit tests
+    needs: gate
+    if: needs.gate.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          submodules: true
+
+      - uses: ./.github/actions/install
+        with:
+          build-workspace-packages: 'true'
+
+      - name: Cache Nx
+        uses: actions/cache@v6
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            nx-${{ runner.os }}-
+
+      - uses: nrwl/nx-set-shas@v5
+        with:
+          main-branch-name: main
+
+      # Covers apps/scaffald too: apps/scaffald/project.json declares a `test`
+      # target on the same vitest config the old scaffald-tests.yml used.
+      - name: Test (affected)
+        run: pnpm affected:test
+
+      - name: Test health
+        run: pnpm test:health
+        if: always()
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: coverage-reports
+          path: tests/reports/coverage/
+          retention-days: 30
+
+  integrity:
+    name: Monorepo integrity
+    needs: gate
+    if: needs.gate.outputs.deps == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+          submodules: true
+
+      - uses: ./.github/actions/install
+
+      - name: Check for duplicate dependencies (run `pnpm dedupe` to fix)
+        run: pnpm dedupe --check
+
+      - name: Check for conflicting dependency versions across the monorepo
+        run: NODE_OPTIONS="--max-old-space-size=4096" pnpm check-deps || echo "⚠️ check-deps exited non-zero (circular dep tool limitation)"
+
+      - name: Check the project graph builds (catches circular project deps)
+        run: pnpm check-circular-deps

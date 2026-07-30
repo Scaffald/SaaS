@@ -10,9 +10,14 @@ permissions:
   contents: read
   pull-requests: read
 
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
 jobs:
   changes:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     outputs:
       contracts: ${{ steps.filter.outputs.contracts }}
     steps:

@@ -6,6 +6,9 @@ on:
     - cron: '0 2 * * 1'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   load-tests:
     name: API Load Testing
@@ -18,14 +21,17 @@ jobs:
         with:
           submodules: true
 
+      # pnpm must be on PATH before setup-node, or `cache: 'pnpm'` can't resolve
+      # the store and the step errors out. This was inverted, so the job failed
+      # at setup every Monday.
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: 'pnpm'
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v6
 
       - name: Install k6
         run: |
