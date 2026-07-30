@@ -10,6 +10,15 @@ const packageConfig = {
   root: workspaceRoot,
   test: {
     watchExclude: ['**/dist/**'],
+    // The root config uses `pool: "threads"`, which shares one heap across every
+    // file. Over this project's 333 test files nothing is reclaimed between them
+    // and the run dies with a JS heap OOM (SIGABRT) at both 4 GB and 8 GB — no
+    // assertion fails, the process simply runs out of memory. That is why
+    // scf-core is excluded from every aggregate command: it could never finish.
+    //
+    // Forks give each file its own process, so its heap goes away when it exits.
+    // Slower per file, but bounded. With this the full suite completes. See #504.
+    pool: 'forks',
   },
   resolve: {
     alias: [
