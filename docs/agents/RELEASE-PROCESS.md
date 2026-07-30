@@ -1,7 +1,7 @@
 # Release Process
 
 > **⚠️ Tracker migrated (2026-07-16):** Linear is deprecated — tracking now
-> lives in GitHub Issues + the [Scaffald project board](https://github.com/orgs/Unicorn/projects/9).
+> lives in GitHub Issues + the [Scaffald project board](https://github.com/orgs/Scaffald/projects/1).
 > See [TRACKING.md](TRACKING.md). Read the Linear steps below as their board
 > equivalents: `vX.Y.Z` Linear label → GitHub `vX.Y.Z` issue label; "In Github"
 > / "In TestFlight" state moves → board Status column moves;
