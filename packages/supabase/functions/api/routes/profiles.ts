@@ -35,6 +35,269 @@ app.get("/current", requireAuth, async (c) => {
   }
   return c.json({ id: user.id, email: user.email ?? null }, 200);
 });
+/**
+ * Vanity-URL slug helpers (ported from the legacy tRPC vanity router).
+ */
+
+// Slug format enforced by migration 018 (users_slug_format_check): 3-50 chars,
+// lowercase alphanumerics and dashes only.
+const SLUG_PATTERN = /^[a-z0-9-]+$/;
+
+function normalizeSlug(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const slug = value.toLowerCase().trim();
+  if (slug.length < 3 || slug.length > 50) return null;
+  if (!SLUG_PATTERN.test(slug)) return null;
+  return slug;
+}
+
+/**
+ * Generate up to 3 alternative slugs when the requested one is taken.
+ */
+function generateSlugSuggestions(
+  baseSlug: string,
+  existingSlugs: string[],
+): string[] {
+  const suggestions: string[] = [];
+  const existingSet = new Set(existingSlugs.map((s) => s.toLowerCase()));
+
+  // Strategy 1: numeric suffix
+  for (let i = 2; i <= 5; i++) {
+    const candidate = `${baseSlug}-${i}`;
+    if (!existingSet.has(candidate)) {
+      suggestions.push(candidate);
+      if (suggestions.length >= 3) break;
+    }
+  }
+
+  // Strategy 2: common suffixes
+  if (suggestions.length < 3) {
+    for (const suffix of ["dev", "pro", "official"]) {
+      if (suggestions.length >= 3) break;
+      const candidate = `${baseSlug}-${suffix}`;
+      if (!existingSet.has(candidate)) suggestions.push(candidate);
+    }
+  }
+
+  // Strategy 3: drop the dashes
+  if (suggestions.length < 3) {
+    const candidate = baseSlug.replace(/-/g, "");
+    if (candidate.length >= 3 && !existingSet.has(candidate)) {
+      suggestions.push(candidate);
+    }
+  }
+
+  return suggestions.slice(0, 3);
+}
+
+/**
+ * Look up slugs starting with `slug` and turn them into suggestions.
+ */
+// deno-lint-ignore no-explicit-any
+async function suggestAlternatives(
+  supabase: any,
+  slug: string,
+): Promise<string[]> {
+  const { data: similarUsers } = await supabase
+    .schema("core")
+    .from("users")
+    .select("slug")
+    .like("slug", `${slug}%`)
+    .limit(10);
+
+  const existingSlugs = ((similarUsers || []) as { slug?: string | null }[])
+    .map((u) => u.slug || "")
+    .filter(Boolean);
+  return generateSlugSuggestions(slug, existingSlugs);
+}
+
+// GET /v1/profiles/slug/check?slug=... - vanity-URL availability check
+// (SDK: checkSlugAvailability). Registered before the /slug/{slug} param route
+// so it isn't shadowed. Response is UNENVELOPED to match SDK SlugAvailability.
+app.get("/slug/check", requireAuth, async (c) => {
+  const supabase = c.get("supabase");
+  const user = c.get("user");
+  if (!user) {
+    return c.json(
+      { error: "Unauthorized", message: "Authentication required" },
+      401,
+    );
+  }
+
+  const slug = normalizeSlug(c.req.query("slug"));
+  if (!slug) {
+    return c.json(
+      {
+        error: "Bad Request",
+        message:
+          "slug must be 3-50 characters using lowercase letters, numbers and dashes",
+      },
+      400,
+    );
+  }
+
+  // The caller's own slug doesn't count as taken — re-saving it is a no-op.
+  const { data: existingUser, error } = await supabase
+    .schema("core")
+    .from("users")
+    .select("id, slug")
+    .eq("slug", slug)
+    .neq("id", user.id)
+    .maybeSingle();
+
+  if (error && error.code !== "PGRST116") {
+    console.error("Error checking slug availability:", error);
+    return c.json(
+      { error: "Failed to check slug availability", message: error.message },
+      500,
+    );
+  }
+
+  const available = !existingUser;
+
+  return c.json({
+    available,
+    suggestions: available ? [] : await suggestAlternatives(supabase, slug),
+  }, 200);
+});
+// PATCH /v1/profiles/slug - change the caller's vanity slug (SDK: updateSlug).
+// Enforces the same 30-day cooldown as GET /slug/history and records the change
+// in core.slug_change_history. Response is UNENVELOPED (SDK UpdateSlugResponse).
+app.patch("/slug", requireAuth, async (c) => {
+  const supabase = c.get("supabase");
+  const user = c.get("user");
+  if (!user) {
+    return c.json(
+      { error: "Unauthorized", message: "Authentication required" },
+      401,
+    );
+  }
+
+  let input: Record<string, unknown>;
+  try {
+    input = (await c.req.json()) as Record<string, unknown>;
+  } catch {
+    return c.json(
+      { error: "Bad Request", message: "Request body must be valid JSON" },
+      400,
+    );
+  }
+
+  const newSlug = normalizeSlug(input?.slug);
+  if (!newSlug) {
+    return c.json(
+      {
+        error: "Bad Request",
+        message:
+          "slug must be 3-50 characters using lowercase letters, numbers and dashes",
+      },
+      400,
+    );
+  }
+
+  // 30-day cooldown between changes.
+  const { data: lastChange, error: historyError } = await supabase
+    .schema("core")
+    .from("slug_change_history")
+    .select("changed_at")
+    .eq("user_id", user.id)
+    .order("changed_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (historyError && historyError.code !== "PGRST116") {
+    console.error("Error checking slug change history:", historyError);
+    return c.json(
+      {
+        error: "Failed to check slug change history",
+        message: historyError.message,
+      },
+      500,
+    );
+  }
+
+  if (lastChange) {
+    const daysSinceChange = (Date.now() -
+      new Date(lastChange.changed_at).getTime()) / (1000 * 60 * 60 * 24);
+    if (daysSinceChange < 30) {
+      const daysRemaining = Math.ceil(30 - daysSinceChange);
+      const nextChangeAllowed = new Date(
+        new Date(lastChange.changed_at).getTime() + 30 * 24 * 60 * 60 * 1000,
+      ).toISOString();
+      return c.json(
+        {
+          error: "Slug change not allowed yet",
+          message:
+            `Slug can only be changed once every 30 days. Next change available in ${daysRemaining} days.`,
+          nextChangeAllowed,
+          daysRemaining,
+        },
+        400,
+      );
+    }
+  }
+
+  const { data: currentUser } = await supabase
+    .schema("core")
+    .from("users")
+    .select("slug")
+    .eq("id", user.id)
+    .single();
+
+  // Taken by somebody else? Return 409 with alternatives.
+  const { data: existingUser } = await supabase
+    .schema("core")
+    .from("users")
+    .select("id")
+    .eq("slug", newSlug)
+    .maybeSingle();
+
+  if (existingUser && existingUser.id !== user.id) {
+    return c.json(
+      {
+        error: "Conflict",
+        message: `Slug "${newSlug}" is already taken`,
+        suggestions: await suggestAlternatives(supabase, newSlug),
+      },
+      409,
+    );
+  }
+
+  const { error: updateError } = await supabase
+    .schema("core")
+    .from("users")
+    .update({ slug: newSlug, updated_at: new Date().toISOString() })
+    .eq("id", user.id);
+
+  if (updateError) {
+    console.error("Error updating slug:", updateError);
+    return c.json(
+      { error: "Failed to update slug", message: updateError.message },
+      500,
+    );
+  }
+
+  // History is best-effort — a failed insert shouldn't undo a successful change.
+  const { error: historyInsertError } = await supabase
+    .schema("core")
+    .from("slug_change_history")
+    .insert({
+      user_id: user.id,
+      old_slug: currentUser?.slug ?? null,
+      new_slug: newSlug,
+    });
+
+  if (historyInsertError) {
+    console.error("Failed to record slug change history:", historyInsertError);
+  }
+
+  return c.json({
+    success: true,
+    slug: newSlug,
+    nextChangeAllowed: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+      .toISOString(),
+  }, 200);
+});
 // GET /v1/profiles/slug/history - vanity-URL slug change history + 30-day cooldown
 // (SDK: getSlugHistory). Ported from the legacy tRPC vanity router so the Vanity
 // URL panel resolves instead of 404ing.
