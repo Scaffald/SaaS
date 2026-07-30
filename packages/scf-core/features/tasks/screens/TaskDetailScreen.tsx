@@ -27,17 +27,19 @@ import {
   useThemeContext,
 } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
-import { ArrowLeft, Trash2 } from 'lucide-react-native'
+import { ArrowLeft, CheckCircle2, Trash2 } from 'lucide-react-native'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
 import { confirmDialog } from '@scf/core/utils/platform'
 import type { Task, TaskPriority, TaskStatus } from '@scaffald/sdk'
 
 import {
+  useCompleteTaskMutation,
   useDeleteTaskMutation,
   useTask,
   useUpdateTaskMutation,
 } from '@scf/core/utils/tasks-sdk-hooks'
+import { useWorkLogs } from '@scf/core/utils/work-logs-sdk-hooks'
 
 type Theme = 'light' | 'dark'
 
@@ -80,6 +82,8 @@ export function TaskDetailScreen({ taskId, orgSlug }: TaskDetailScreenProps) {
 
   const taskQuery = useTask(taskId)
   const task = taskQuery.data
+
+  const [linkWorkLogId, setLinkWorkLogId] = useState<string | null>(null)
 
   // Local edit state — initialized from the loaded task and reset when it reloads.
   const [title, setTitle] = useState('')
@@ -127,6 +131,34 @@ export function TaskDetailScreen({ taskId, orgSlug }: TaskDetailScreenProps) {
       if (orgSlug) router.replace(`/employers/org/${orgSlug}/tasks`)
     },
   })
+
+  const completeMutation = useCompleteTaskMutation({
+    onSuccess: () => {
+      invalidate()
+      // The linked log's task list changes too.
+      queryClient.invalidateQueries({ queryKey: ['workLogs'] })
+      setLinkWorkLogId(null)
+    },
+  })
+
+  // Recent logs by this user, offered as optional evidence when completing.
+  // Limited to a short list: this is "which log does this task belong to",
+  // not a log browser.
+  const recentLogsQuery = useWorkLogs(
+    { pageSize: 10, sortField: 'log_date', sortDirection: 'desc' },
+    { enabled: task?.status !== 'done' }
+  )
+  // NB: this response envelope is `workLogs`, not `data` — the SDK is not
+  // consistent across resources (notifications uses `data`).
+  const recentLogs = recentLogsQuery.data?.workLogs ?? []
+
+  const handleComplete = () => {
+    if (!task) return
+    completeMutation.mutate({
+      taskId: task.id,
+      ...(linkWorkLogId ? { workLogId: linkWorkLogId } : {}),
+    })
+  }
 
   const handleSave = () => {
     if (!task) return
@@ -254,6 +286,75 @@ export function TaskDetailScreen({ taskId, orgSlug }: TaskDetailScreenProps) {
             </Stack>
           </Box>
         </Row>
+
+        {task.status !== 'done' ? (
+          <>
+            <Separator />
+            <Stack gap={8}>
+              <Caption color="tertiary">Complete</Caption>
+              <Paragraph size="sm" color="secondary">
+                Optionally link a work log as the record of how this got done.
+              </Paragraph>
+
+              {recentLogs.length > 0 ? (
+                <Stack gap={4}>
+                  {recentLogs.map((log) => {
+                    const selected = linkWorkLogId === log.id
+                    return (
+                      <Button
+                        key={log.id}
+                        variant={selected ? 'filled' : 'outline'}
+                        onPress={() => setLinkWorkLogId(selected ? null : log.id)}
+                        disabled={completeMutation.isPending}
+                      >
+                        <Caption color={selected ? 'primary' : 'secondary'}>
+                          {log.log_date} · {log.total_hours ?? 0}h ·{' '}
+                          {(log.work_description ?? 'No description').slice(0, 48)}
+                        </Caption>
+                      </Button>
+                    )
+                  })}
+                </Stack>
+              ) : (
+                <Caption color="tertiary">
+                  {recentLogsQuery.isLoading ? 'Loading your recent logs…' : 'No recent work logs.'}
+                </Caption>
+              )}
+
+              <Row gap={8} align="center" wrap>
+                <Button
+                  variant="filled"
+                  color="success"
+                  onPress={handleComplete}
+                  disabled={completeMutation.isPending}
+                >
+                  <Row align="center" gap={6}>
+                    <CheckCircle2 size={14} color={colors.icon[theme].success} />
+                    <Caption color="secondary">
+                      {completeMutation.isPending
+                        ? 'Completing…'
+                        : linkWorkLogId
+                          ? 'Mark done & link log'
+                          : 'Mark done'}
+                    </Caption>
+                  </Row>
+                </Button>
+                {linkWorkLogId ? (
+                  <Button variant="text" onPress={() => setLinkWorkLogId(null)}>
+                    <Caption color="secondary">Clear selection</Caption>
+                  </Button>
+                ) : null}
+              </Row>
+
+              {completeMutation.error ? (
+                <Caption color="error">
+                  Could not complete: {String(completeMutation.error.message)}
+                </Caption>
+              ) : null}
+            </Stack>
+            <Separator />
+          </>
+        ) : null}
 
         <Row gap={8} align="center" wrap>
           <Button
