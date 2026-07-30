@@ -82,6 +82,44 @@ export default defineConfig({
         ),
       },
       {
+        // expo/src/Expo.fx.tsx does `import './winter'`, whose index is just
+        // `import './runtime'` — and runtime.ts is Metro-only wiring: it pulls
+        // in Fast Refresh / HMR / the Metro message socket, and defines
+        // globalThis.__ExpoImportMetaRegistry. Both of those it does with bare
+        // CommonJS `require('./x')` calls on .ts siblings, which Node cannot
+        // resolve at runtime, so any test importing expo aborted with
+        // "Cannot find module './setupFastRefresh'".
+        //
+        // Aliasing at `./winter` rather than deeper because a `require()` left
+        // in transformed output is executed by Node and never reaches Vite's
+        // resolver — only the ESM `import` is interceptable.
+        //
+        // Nothing is lost: the winter *polyfills* (FormData, TextDecoder, URL,
+        // AbortSignal, ...) are separate modules imported elsewhere; the index
+        // pulls in the runtime alone.
+        find: /^\.\/winter$/,
+        replacement: resolve(
+          workspaceRoot,
+          "tests/infrastructure/vitest/mocks/expo-winter-runtime.ts",
+        ),
+      },
+      {
+        // react-native-safe-area-context ships both a compiled build and raw
+        // TypeScript under src/, and its `react-native`/`source` fields point
+        // at src/index.tsx. Something in the resolve chain picks the source,
+        // and node_modules aren't transformed — so the TS-only `typeof` type
+        // query in SafeArea.types.ts reaches Node as JS and throws
+        // "SyntaxError: Unexpected token 'typeof'". That aborts the whole file
+        // before any test runs, which is why three assessment-wizard suites
+        // reported zero tests rather than failures. Pin the compiled ESM build;
+        // this is the real module, not a mock, so behaviour is unchanged.
+        find: /^react-native-safe-area-context$/,
+        replacement: resolve(
+          workspaceRoot,
+          "node_modules/react-native-safe-area-context/lib/module/index.js",
+        ),
+      },
+      {
         find: "react-native",
         replacement: reactNativeMockPath,
       },
