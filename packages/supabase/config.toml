@@ -48,7 +48,7 @@ file_size_limit = "50MiB"
 # Uses EXPO_PUBLIC_URL env var so each environment gets the correct site URL.
 # Local dev (.env): http://localhost:8081
 # Preview (.env.preview): https://preview.scaffald.com
-# Production (.env.production): https://app.scaffald.com
+# Production (.env.production): https://scaffald.com (apex, since the 2026-07-28 cutover)
 site_url = "env(EXPO_PUBLIC_URL)"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
 additional_redirect_urls = [
@@ -66,6 +66,10 @@ additional_redirect_urls = [
   "https://preview.scaffald.com/auth/callback",
   "https://app.scaffald.com",
   "https://app.scaffald.com/auth/callback",
+  "https://scaffald.com",
+  "https://scaffald.com/auth/callback",
+  "https://www.scaffald.com",
+  "https://www.scaffald.com/auth/callback",
 ]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 seconds (one
 # week).
