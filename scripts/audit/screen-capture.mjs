@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Point-in-time screen capture of app.scaffald.com (or a local dev server)
+ * Point-in-time screen capture of scaffald.com (or a local dev server)
  * at BOTH desktop and mobile viewports. Walks every route, screenshots each
  * full page, writes a manifest. Auth is driven once through the login UI and
  * the resulting storageState is reused for both viewport passes.
@@ -35,7 +35,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = resolve(__dirname, '..', '..')
 
 // ---------- Config ----------
-const BASE_URL = process.env.AUDIT_BASE_URL || 'https://app.scaffald.com'
+const BASE_URL = process.env.AUDIT_BASE_URL || 'https://scaffald.com'
 const OUT_DIR =
   process.env.AUDIT_OUT ||
   resolve(REPO_ROOT, 'screenshots/2026-06-11-app-scaffald')

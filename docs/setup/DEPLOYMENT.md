@@ -6,37 +6,44 @@ Reference for all deployment environments, DNS, AWS, Supabase, and CI/CD configu
 
 | Environment | Git branch | Web URL | Status |
 |-------------|-----------|---------|--------|
-| Production  | `prod`    | https://app.scaffald.com | ✅ Live |
+| Production  | `prod`    | https://scaffald.com | ✅ Live |
 | Preview     | `preview` | https://preview.scaffald.com | ✅ Live |
 | Dev         | `main`    | https://dev.scaffald.com | ✅ Live |
+
+> `app.scaffald.com` is a **301 redirect to the apex** (served by the old
+> production stack). It is not a deploy target — see the warning below.
 
 ---
 
 ## AWS
 
+The web app is served from **EAS Hosting** (Expo SSR) with CloudFront in front
+for DNS/TLS. As-built details and runbook: `docs/agents/SSR-DEPLOY.md`.
+
 ### CloudFront distributions
 
-| Environment | Distribution ID    | Domain alias |
-|-------------|-------------------|--------------|
-| Production  | `E22499AF1OBX1Y`  | app.scaffald.com |
-| Preview     | `E1YYVZYC1XER5O`  | preview.scaffald.com |
-| Dev         | `E3J4DOM99FE5N`   | dev.scaffald.com |
+| Environment | Distribution ID    | Domain alias | Origin |
+|-------------|-------------------|--------------|--------|
+| Production  | `E1JU35IZ18YNEL`  | scaffald.com, www.scaffald.com | `scf-scaffald.expo.app` |
+| Preview     | `E1YYVZYC1XER5O`  | preview.scaffald.com | `scf-scaffald--preview.expo.app` |
+| Dev         | `E3J4DOM99FE5N`   | dev.scaffald.com | `scf-scaffald--dev.expo.app` |
+| Redirect    | `E22499AF1OBX1Y`  | app.scaffald.com | `app-scaffald-com` S3 bucket (301 only) |
 
-### S3 buckets
-
-Bucket names are stored in GitHub secrets:
-- `SCAFFALD_AWS_S3_BUCKET_PROD`
-- `SCAFFALD_AWS_S3_BUCKET_PREVIEW`
-- `SCAFFALD_AWS_S3_BUCKET_DEV`
+> ⚠️ **Never deploy an app build to `app-scaffald-com` / `E22499AF1OBX1Y`.**
+> That bucket's only job is the 301 that sends old bookmarks and OAuth
+> callbacks from `app.scaffald.com` to the apex. Syncing a build there
+> silently replaces the redirect. The legacy scripts that could do this
+> (`deploy-aws.sh`, `deploy-web.sh`) were deleted 2026-08-03.
 
 ### Route 53
 
 Hosted zone: `scaffald.com` — `Z03807932GT9W30LQ0T67`
 
 Current active records:
+- `scaffald.com` + `www.scaffald.com` → ALIAS to `E1JU35IZ18YNEL` CloudFront domain
 - `dev.scaffald.com` → ALIAS to `E3J4DOM99FE5N` CloudFront domain
 - `preview.scaffald.com` → ALIAS to `E1YYVZYC1XER5O` CloudFront domain
-- `app.scaffald.com` → ALIAS to `E22499AF1OBX1Y` CloudFront domain
+- `app.scaffald.com` → ALIAS to `E22499AF1OBX1Y` CloudFront domain (301 redirect)
 - `auth.scaffald.com` → CNAME to Supabase custom domain (production project)
 
 ### IAM / credentials
@@ -143,15 +150,7 @@ for manual deploys.
 
 | Secret | Description |
 |--------|-------------|
-| `SCAFFALD_AWS_ACCESS_KEY_ID` | AWS deploy credentials |
-| `SCAFFALD_AWS_SECRET_ACCESS_KEY` | AWS deploy credentials |
-| `SCAFFALD_AWS_REGION` | AWS region (default `us-east-1`) |
-| `SCAFFALD_AWS_S3_BUCKET_PROD` | S3 bucket for production |
-| `SCAFFALD_AWS_S3_BUCKET_PREVIEW` | S3 bucket for preview |
-| `SCAFFALD_AWS_S3_BUCKET_DEV` | S3 bucket for dev |
-| `SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD` | Overrides default `E22499AF1OBX1Y` |
-| `SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_PREVIEW` | Overrides default `E1YYVZYC1XER5O` |
-| `SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV` | Overrides default `E3J4DOM99FE5N` |
+| `EXPO_TOKEN` | Expo access token — authenticates `eas deploy` |
 | `EXPO_PUBLIC_SUPABASE_URL` | Prod Supabase URL (`https://auth.scaffald.com`) |
 | `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Prod Supabase anon key |
 | `PREVIEW_EXPO_PUBLIC_SUPABASE_URL` | Preview branch URL |
@@ -173,24 +172,22 @@ for manual deploys.
 
 1. Build workspace packages (`@scaffald/ui`, `scf-core`, `scf-schemas`)
 2. Run affected typecheck + lint (non-blocking)
-3. Build web app with environment-specific vars
-4. Upload artifact
-5. Deploy edge functions to the appropriate Supabase project/branch
-6. Sync to S3, invalidate CloudFront
-7. Smoke test against CloudFront domain
+3. Export the SSR web app with environment-specific vars
+4. Deploy edge functions to the appropriate Supabase project/branch
+5. `eas deploy` to EAS Hosting — `--prod` for production, `--alias dev|preview`
+   otherwise, always with the matching `--environment` (required: without it
+   the worker starts with no env vars)
+6. Smoke test against the public domain
 
 ---
 
 ## Local deployment scripts
 
 ```bash
-# Deploy to a specific environment
-pnpm deploy:aws:dev
-pnpm deploy:aws:preview
-pnpm deploy:aws:prod
-
-# Attach a CloudFront alias (once canonical domains are released)
-pnpm deploy:aws:attach-alias <distribution-id> <domain>
+# Deploy the web app to a specific environment (EAS Hosting)
+pnpm deploy:web:dev
+pnpm deploy:web:preview
+pnpm deploy:web:prod    # asks for confirmation
 
 # Push Supabase config to a project/branch
 pnpm supa config push --project-ref <ref>

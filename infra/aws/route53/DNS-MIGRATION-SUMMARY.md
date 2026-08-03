@@ -24,8 +24,8 @@
 >   CNAME are **gone**, replaced by the aliases above.
 > - `staging.scaffald.com` (Vercel CNAME) is **gone**.
 > - `app.scaffald.com` no longer points at CloudFlare IPs, and its distribution
->   is a redirect. Do not deploy a web build into it — `scripts/deploy-aws.sh`
->   refuses `production` for exactly this reason. It is kept until roughly
+>   is a redirect. Do not deploy a web build into it — the legacy S3 sync
+>   scripts that could were deleted 2026-08-03. It is kept until roughly
 >   January 2027 so bookmarks, old emails and OAuth stragglers keep working.
 > - Resend records were added for outbound mail: `resend._domainkey` (TXT) and
 >   `send.scaffald.com` (MX → `feedback-smtp.us-east-1.amazonses.com`).

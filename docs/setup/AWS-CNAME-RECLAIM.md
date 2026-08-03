@@ -1,5 +1,13 @@
 # AWS CloudFront CNAME Conflict Resolution
 
+> **HISTORICAL — RESOLVED.** The CNAMEs were reclaimed and all three
+> subdomains now ALIAS to distributions in our account (827046730742):
+> `dev` → `E3J4DOM99FE5N`, `preview` → `E1YYVZYC1XER5O`, `app` →
+> `E22499AF1OBX1Y` (now a 301 to the apex — see
+> `docs/agents/SSR-DEPLOY.md`). The helper scripts referenced below
+> (`attach-cf-alias.sh`, `setup-aws-infra.sh`, `provision-app-infra.sh`)
+> were deleted 2026-08-03; recover them from git history if ever needed.
+
 ## Problem
 
 The canonical subdomains (`app.scaffald.com`, `preview.scaffald.com`, `dev.scaffald.com`) are

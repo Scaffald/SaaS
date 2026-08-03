@@ -297,7 +297,7 @@ async function main() {
   console.log('\n✅ Rotation complete')
   console.log(`Next expiry: ${new Date(exp * 1000).toISOString()} (${remainingDays} days)`)
   console.log(
-    'Smoke test Apple sign-in on https://app.scaffald.com — the new secret is now live on all 3 Supabase projects.'
+    'Smoke test Apple sign-in on https://scaffald.com — the new secret is now live on all 3 Supabase projects.'
   )
 }
 
