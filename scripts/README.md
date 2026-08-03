@@ -116,18 +116,26 @@ pnpm deploy:reset
 
 **Note:** This functionality is also available in the interactive `pnpm prod` script (option 5).
 
-### `pnpm deploy:aws` / `pnpm deploy:aws:prod`
+### `pnpm deploy:web:dev` / `pnpm deploy:web:preview` / `pnpm deploy:web:prod`
 
-**Local AWS deployment** - Build and deploy web app directly to AWS S3 + CloudFront from local machine.
+**Local web deployment to EAS Hosting** - Same end state as the
+`deploy-web.yml` workflow, run from your shell (for exhausted Actions minutes
+or urgent hotfixes). Exports the SSR app with the matching env file, deploys
+via `eas-cli` with the correct `--environment`, and (prod) invalidates
+CloudFront + smoke-tests.
 
 **Usage:**
 ```bash
 # Preview deployment
-pnpm deploy:aws:preview
+pnpm deploy:web:preview
 
-# Production deployment
-pnpm deploy:aws:prod
+# Production deployment (asks for confirmation)
+pnpm deploy:web:prod
 ```
+
+> The old S3+CloudFront web sync (`deploy:aws:*`) was removed 2026-08: the SSR
+> export can't be served from a bucket, and the prod bucket now hosts the
+> `app.scaffald.com` → apex redirect. See docs/agents/SSR-DEPLOY.md.
 
 ### `pnpm deploy:verify`
 
@@ -257,8 +265,8 @@ pnpm prod
 pnpm prod
 # Select: 2
 
-# Deploy only AWS (preview)
-pnpm deploy:aws:preview
+# Deploy only the web app (preview, EAS Hosting)
+pnpm deploy:web:preview
 ```
 
 ## What Gets Deployed
@@ -281,11 +289,11 @@ pnpm deploy:aws:preview
 - Requires confirmation before seeding
 - Uses production environment variables
 
-### AWS Deployment
-- Deploys to S3 bucket and invalidates CloudFront cache
-- Supports multiple environments (dev, preview, production)
-- Builds workspace packages first
-- Verifies build output before deployment
+### Web Deployment (EAS Hosting)
+- All environments serve the SSR app from EAS Hosting (dev/preview aliases, prod)
+- CI path: `deploy-web.yml` on push to `main`/`preview`/`prod`
+- Local path: `deploy-web-eas.sh` (`pnpm deploy:web:*`)
+- Prod invalidates CloudFront `E1JU35IZ18YNEL` and smoke-tests scaffald.com
 
 ## Troubleshooting
 
@@ -417,7 +425,7 @@ See `packages/supabase/functions/api/AUTH.md` for auth details and route matrix.
 
 One-off codemods and setup scripts live in [scripts/archive/](archive/). Use standard workflows (e.g. `pnpm supa db push`, `pnpm test:api`) for ongoing work. Remaining scripts for specific use cases:
 - `deploy-reset.sh` - Standalone database reset script (`pnpm deploy:reset`)
-- `deploy-aws.sh` - Standalone AWS deployment script (`pnpm deploy:aws`)
+- `deploy-web-eas.sh` - Local web deploy to EAS Hosting (`pnpm deploy:web:*`)
 - `verify-prod-deployment.sh` - Production deployment verification (`pnpm deploy:verify`)
 - `test-api.sh` - Quick REST API health checks (see [API Testing Guide](../docs/API_TESTING_GUIDE.md))
 - `test-api-keys.mjs` / `test-api-keys.sh` - API key validation (local Supabase)

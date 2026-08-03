@@ -50,10 +50,19 @@ hatch if EAS is ever unsuitable.
 Deploy a change:
 
 ```bash
+pnpm deploy:web:prod   # scripts/deploy-web-eas.sh — export + eas deploy + CF invalidation + smoke test
+```
+
+Or by hand (what the script runs):
+
+```bash
 cd apps/scaffald
 APP_ENV=production NODE_ENV=production \
   pnpm exec dotenv -e ../../.env.production -- pnpm exec expo export --platform web
-npx eas-cli@latest deploy --prod --non-interactive
+npx eas-cli@latest deploy --prod --environment production --non-interactive
+# --environment is REQUIRED: --prod only picks the URL. Without --environment
+# the worker starts with no env vars, so server routes (Resend contact form)
+# fail at runtime while the deploy itself reports success.
 # HTML is edge-cached for 60s, so a release is visible within a minute.
 # To publish immediately: aws cloudfront create-invalidation --distribution-id E1JU35IZ18YNEL --paths '/*'
 ```
@@ -149,11 +158,17 @@ them for the **build**, not just the container.
 
 ## Rollback
 
-The previous static pipeline is untouched: `scripts/deploy-aws.sh` and
-`.github/workflows/deploy-web.yml` still build and sync the SPA to
-`app-scaffald-com`. To roll back, point DNS at the old distribution and revert
-`web.output` in `app.config.ts`. Do not delete the S3 buckets or distributions
-until the SSR host has been stable for a full release cycle.
+The previous static pipeline is **retired and deleted** (2026-08-03):
+`scripts/deploy-aws.sh`, `scripts/deploy-web.sh`, and the S3 sync in
+`.github/workflows/deploy-web.yml` are gone — the SSR export has no static
+`index.html`, so a bucket sync produces an unservable site, and the prod
+bucket (`app-scaffald-com` / `E22499AF1OBX1Y`) now serves the 301 that
+redirects `app.scaffald.com` to the apex. Recover the scripts from git
+history if ever needed.
+
+To roll back a bad web release, redeploy the last good commit through the
+same EAS path: `git checkout <good-sha> && pnpm deploy:web:prod` (or promote
+a previous deployment from the [EAS Hosting dashboard](https://expo.dev/projects/ba0f9b47-eb78-494c-a03f-c33b9defa904/hosting/deployments)).
 
 ## Known gaps
 

@@ -1,9 +1,10 @@
 #!/bin/bash
 # Build + package the Expo SSR web app for deployment.
 #
-# Unlike scripts/deploy-aws.sh (which syncs a static SPA export to S3), the app
-# now uses `web.output: 'server'` and needs a Node runtime for server-rendered
-# HTML, generateMetadata, route loaders, and API routes.
+# The app uses `web.output: 'server'` and needs a Node runtime for
+# server-rendered HTML, generateMetadata, route loaders, and API routes —
+# a static S3 sync cannot serve it. (The old deploy-aws.sh SPA sync was
+# deleted 2026-08; deploys go through scripts/deploy-web-eas.sh or CI.)
 #
 # This script builds the export and, optionally, the runtime container image.
 # It intentionally does NOT push or deploy anything — see docs/agents/SSR-DEPLOY.md

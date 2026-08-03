@@ -10,164 +10,37 @@
 - **Setup**: `aws configure --profile scaffald`
 - **Verify**: `aws sts get-caller-identity --profile scaffald`
 
-## 2. Static Frontend Hosting (S3 + CloudFront)
+## 2. Web Hosting (EAS Hosting + CloudFront)
 
-The static web application is hosted on AWS using S3 for storage and CloudFront for CDN distribution. The infrastructure supports multiple environments mapped to git branches.
+**As-built since 2026-07-28** — the web app is the Expo SSR export served from
+**EAS Hosting**, with CloudFront in front for DNS/TLS. There is no S3 bucket in
+the serving path for the app itself. Full runbook: `docs/agents/SSR-DEPLOY.md`.
 
-### Environments
+| Environment | Branch | EAS target | CloudFront | Domain |
+|------------|--------|------------|------------|--------|
+| Development | `main` | alias `scf-scaffald--dev.expo.app` | `E3J4DOM99FE5N` | `dev.scaffald.com` |
+| Preview | `preview` | alias `scf-scaffald--preview.expo.app` | `E1YYVZYC1XER5O` | `preview.scaffald.com` |
+| Production | `prod` | production `scf-scaffald.expo.app` | `E1JU35IZ18YNEL` | `scaffald.com` + `www` |
 
-| Environment | Branch | Bucket | Domain | DNS Setup |
-|------------|--------|--------|--------|-----------|
-| **Development** | `main` | `scaffald-app-dev` | `dev.scaffald.com` | Yes (pending cert validation) |
-| **Preview** | `preview` | `scaffald-app-preview` | `preview.scaffald.com` | Yes (pending cert validation) |
-| **Production** | `prod` | `scaffald-app-prod` | `app.scaffald.com` | Yes (pending cert validation) |
+- **Deploys**: CI via `.github/workflows/deploy-web.yml` (push to the mapped
+  branch), or locally via `pnpm deploy:web:{dev,preview,prod}`
+  (`scripts/deploy-web-eas.sh`). Both pass `--environment` to `eas deploy` —
+  required, or the worker starts with no env vars.
+- **`app.scaffald.com`** is a **301 redirect to the apex**, served by the old
+  production stack (`app-scaffald-com` bucket behind `E22499AF1OBX1Y`).
+  **Never sync a build into that bucket** — it would silently replace the
+  redirect for every old bookmark and OAuth callback.
+- CloudFront origin config that matters (prod): origin request policy must be
+  `Managed-AllViewerExceptHostHeader`, HTML cached by the custom
+  `scaffald-ssr-html` policy (60s default). See `docs/agents/SSR-DEPLOY.md`.
 
-### Infrastructure Components
+### History
 
-Each environment has:
-- **S3 Bucket**: Stores static files with versioning enabled
-- **CloudFront Distribution**: Serves content via CDN
-- **Origin Access Control**: Secures S3 bucket access
-- **Route53 DNS** (preview/prod): Custom domain pointing to CloudFront
-- **SSL Certificate** (preview/prod): ACM certificate for HTTPS
-
-### Initial Setup
-
-Run the infrastructure setup script for each environment:
-
-```bash
-# Development environment
-pnpm deploy:aws:setup:dev
-
-# Preview environment
-pnpm deploy:aws:setup:preview
-
-# Production environment
-pnpm deploy:aws:setup:prod
-```
-
-Or use the script directly:
-
-```bash
-./scripts/setup-aws-infra.sh [dev|preview|production]
-```
-
-This script will:
-1. Create S3 bucket with versioning and public access block
-2. Request/verify SSL certificate (preview/prod only)
-3. Create Origin Access Control for S3
-4. Create CloudFront distribution with optimized cache behaviors
-5. Update S3 bucket policy to allow CloudFront access
-6. Update Route53 DNS record (preview/prod only)
-
-**Note**: CloudFront distribution deployment takes 15-20 minutes. SSL certificate validation may require DNS record updates.
-
-### Deployment
-
-#### Local CLI Deployment
-
-The deployment script automatically detects the environment from your git branch, or you can specify it:
-
-```bash
-# Auto-detect from git branch
-pnpm deploy:aws
-
-# Explicitly specify environment
-pnpm deploy:aws:dev
-pnpm deploy:aws:preview
-pnpm deploy:aws:prod
-```
-
-Or use the script directly:
-
-```bash
-./scripts/deploy-aws.sh [dev|preview|production]
-```
-
-The deployment script will:
-1. Detect or use specified environment
-2. Build the application (if not already built)
-3. Upload files to S3 with appropriate cache headers
-4. Invalidate CloudFront cache
-
-#### Environment Variables
-
-Set these environment variables for local deployment (Scaffald account):
-
-```bash
-export AWS_PROFILE=scaffald
-export AWS_ENV=dev  # or preview, production
-export AWS_S3_BUCKET=scaffald-app-dev  # Optional, auto-detected from ENV
-export AWS_CLOUDFRONT_DISTRIBUTION_ID=<distribution-id>  # Optional, auto-detected
-export AWS_REGION=us-east-1
-```
-
-The script will auto-detect bucket and distribution ID if not set, based on the environment.
-
-#### CI/CD Deployment
-
-GitHub Actions automatically deploys to the correct environment based on branch:
-
-- **`main` branch** → Development environment
-- **`preview` branch** → Preview environment
-- **`prod` branch** → Production environment
-
-**Scaffald AWS secrets** (used by `deploy-web.yml`):
-- `SCAFFALD_AWS_ACCESS_KEY_ID`
-- `SCAFFALD_AWS_SECRET_ACCESS_KEY`
-- `SCAFFALD_AWS_REGION` (optional, defaults to us-east-1)
-- `SCAFFALD_AWS_S3_BUCKET_DEV` (optional, defaults to scaffald-app-dev)
-- `SCAFFALD_AWS_S3_BUCKET_PREVIEW` (optional, defaults to scaffald-app-preview)
-- `SCAFFALD_AWS_S3_BUCKET_PROD` (optional, defaults to scaffald-app-prod)
-- `SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV` (optional)
-- `SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_PREVIEW` (optional)
-- `SCAFFALD_AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD` (optional)
-
-
-### Updating DNS
-
-To update the Route53 DNS record for preview/production:
-
-```bash
-export AWS_CLOUDFRONT_DISTRIBUTION_ID=<distribution-id>
-./scripts/update-route53-dns.sh
-```
-
-### IAM Permissions
-
-The deployment requires IAM permissions defined in `infra/aws/iam/deploy-policy.json`:
-
-- S3: PutObject, DeleteObject, ListBucket
-- CloudFront: CreateInvalidation, GetDistribution
-- Route53: ChangeResourceRecordSets (for DNS updates)
-- ACM: ListCertificates, DescribeCertificate
-
-### Cache Configuration
-
-- **HTML files**: No cache (max-age=0, must-revalidate)
-- **Static assets** (JS/CSS/images): Long cache (1 year, immutable)
-- **404 errors**: Redirect to index.html for SPA routing
-
-### Security
-
-- S3 bucket is private (no public access)
-- CloudFront Origin Access Control restricts S3 access
-- HTTPS only (HTTP redirects to HTTPS)
-- Security headers via CloudFront response headers policy
-
-### Monitoring
-
-- CloudFront metrics available in AWS Console
-- S3 access logs can be enabled for detailed analytics
-- CloudWatch alarms can be set up for distribution errors
-
-### Troubleshooting
-
-**Certificate not issued**: Verify DNS validation records in Route53 and wait for ACM validation.
-
-**CloudFront not updating**: Check cache invalidation status and wait 5-15 minutes for propagation.
-
-**DNS not resolving**: Verify Route53 record points to CloudFront distribution and wait for DNS propagation.
+The pre-SSR static pipeline (S3 + OAC + CloudFront per environment, synced by
+`deploy-aws.sh` / `deploy-web.sh`, provisioned by `setup-aws-infra.sh` /
+`provision-app-infra.sh` / `attach-cf-alias.sh`) was retired 2026-07-28 and the
+scripts were deleted 2026-08-03; recover them from git history if needed. The
+dev/preview distributions above were kept but their origins now point at EAS.
 
 ## 3. Route53 Hosted Zone
 
