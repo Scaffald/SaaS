@@ -10,6 +10,7 @@ import { useUserRoles } from '@scf/core/utils/auth/useUserRoles'
 import { useUser } from '@scf/core/utils/useUser'
 import {
   ExternalLink,
+  LogOut,
   PanelLeftClose,
   PanelRightClose,
   Settings as SettingsIcon,
@@ -134,6 +135,7 @@ export const DrawerContent = ({
   )
 
   const glassTheme: 'light' | 'dark' = theme === 'dark' ? 'dark' : 'light'
+  const FooterContainer = isCollapsed ? Stack : Row
 
   return (
     <View
@@ -172,6 +174,7 @@ export const DrawerContent = ({
             fallbackInitial={fallbackInitial}
             slug={generalInfo?.slug ?? undefined}
             onEditProfilePress={handleProfilePress}
+            onLogoutPress={handleLogoutPress}
           />
         ) : null}
 
@@ -216,11 +219,13 @@ export const DrawerContent = ({
           )}
         </ScrollView>
 
-        {/* Footer controls — pill container (desktop only; mobile has settings inline). */}
+        {/* Footer controls — pill container (desktop only; mobile has settings inline).
+            Collapsed rail is only wide enough for one icon, so stack vertically. */}
         {!isSmall ? (
-          <Row
+          <FooterContainer
             justify={isCollapsed ? 'center' : 'space-between'}
             align="center"
+            gap={isCollapsed ? 16 : 0}
             style={{
               backgroundColor:
                 glassTheme === 'dark' ? 'rgba(80,73,64,0.4)' : 'rgba(200,195,188,0.4)',
@@ -244,7 +249,7 @@ export const DrawerContent = ({
                 )}
               </FooterActionButton>
             ) : null}
-          </Row>
+          </FooterContainer>
         ) : null}
       </Stack>
     </View>
@@ -257,6 +262,7 @@ type DrawerProfileCardProps = {
   fallbackInitial: string
   slug?: string | null
   onEditProfilePress: () => void
+  onLogoutPress: () => void
 }
 
 const nameTextStyle = (theme: 'light' | 'dark') => ({
@@ -277,6 +283,7 @@ const DrawerProfileCard = ({
   fallbackInitial,
   slug,
   onEditProfilePress,
+  onLogoutPress,
 }: DrawerProfileCardProps) => {
   const { theme } = useThemeContext()
   const avatarSize = 48
@@ -363,6 +370,20 @@ const DrawerProfileCard = ({
           </Pressable>
         </Row>
       </Stack>
+      <Pressable
+        onPress={onLogoutPress}
+        hitSlop={8}
+        style={({ pressed }) => ({
+          opacity: pressed ? 0.6 : 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 4,
+        })}
+        accessibilityRole="button"
+        accessibilityLabel="Sign out"
+      >
+        <LogOut size={18} color={colors.icon[theme === 'dark' ? 'dark' : 'light'].default} />
+      </Pressable>
     </Row>
   )
 }
