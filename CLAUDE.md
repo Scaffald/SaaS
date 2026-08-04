@@ -68,3 +68,31 @@ Issues** on `Scaffald/SaaS` with the `agent-ready` label when they are
 self-contained — see [docs/agents/TRACKING.md](docs/agents/TRACKING.md).
 Rule of thumb: if a teammate would triage it on the board, it is an Issue;
 if it is dogfood signal about using Scaffald, it is a Task.
+
+---
+
+## Audits and Investigations → GitHub Issues, not markdown
+
+**When an audit, review, or investigation produces findings, file them as
+GitHub Issues. Do not write them to a markdown file under `docs/plans/` or
+`docs/agents/audits/`.** Plan docs go stale in the repo and nobody triages
+them off a board.
+
+The shape:
+
+1. **Survey first** — `gh label list` and `gh issue list --limit 60` to dedupe
+   against what is already open and to pick labels that actually exist.
+2. **One issue per self-contained finding**, with `file:line` evidence and an
+   acceptance section, so it stands alone without the conversation that
+   produced it. Add `agent-ready` only when it genuinely is self-contained.
+3. **An epic issue** rolling the children up: checkbox list by phase, a
+   dependency graph, a sequencing note, and a "what is genuinely solid"
+   section so the set does not read as a teardown.
+4. **Comment on any existing umbrella issue** pointing at the new epic.
+5. **Milestones carry the version/sprint plan**; the epic carries the narrative.
+
+Reference example: the 2026-08-03 `/office` ATS audit — epic
+[#539](https://github.com/Scaffald/SaaS/issues/539), children #524–#538.
+
+Design specs and architecture proposals are still markdown under
+`docs/plans/` — the rule is about *findings*, not about intent.
