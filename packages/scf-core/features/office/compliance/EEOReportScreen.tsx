@@ -12,6 +12,7 @@ import { ScrollView, Pressable } from 'react-native'
 import { Button, Card, H2, Row, Stack, Tabs, Text, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import {
+  AlertTriangle,
   BarChart3,
   Download,
   FileText,
@@ -56,6 +57,19 @@ interface JobGroupData {
 // ============================================================================
 // Mock Data
 // ============================================================================
+
+/**
+ * Every figure on this screen is fabricated. The real EEO fields landed in
+ * migration 305_privacy_eeo_project_hiring.sql but nothing reads them yet.
+ *
+ * Until that wiring exists (#535), the screen must not present itself as a
+ * compliance record: an EEO report is an artifact people file, and invented
+ * adverse-impact ratios are worse than no ratios at all.
+ *
+ * Deleting this constant is the last step of #535 — the type error it raises
+ * points at every place that still needs real data.
+ */
+const USES_SAMPLE_DATA: boolean = true
 
 const MOCK_JOB_GROUPS: JobGroupData[] = [
   {
@@ -324,6 +338,39 @@ function MetricCard({
   )
 }
 
+/**
+ * Persistent, non-dismissible notice that the figures below are fabricated.
+ * Deliberately not dismissible — the whole point is that someone arriving at
+ * a screenshot of this screen can tell it is not a filing.
+ */
+function SampleDataNotice() {
+  const { theme } = useThemeContext()
+  return (
+    <Card
+      variant="glass"
+      padding="md"
+      style={{
+        backgroundColor: theme === 'dark' ? colors.warning[900] : colors.warning[50],
+        borderWidth: 1,
+        borderColor: colors.fg[theme].warning,
+      }}
+    >
+      <Row gap={12} align="center">
+        <AlertTriangle size={24} color={colors.fg[theme].warning} />
+        <Stack flex={1} gap={2}>
+          <Text style={{ fontWeight: '700', color: colors.fg[theme].warning }}>
+            Sample data — not a compliance record
+          </Text>
+          <Text style={{ fontSize: 13, color: colors.fg[theme].warning }}>
+            Every figure on this page is illustrative placeholder data, including the adverse-impact
+            ratios. Do not file, export, or cite these numbers.
+          </Text>
+        </Stack>
+      </Row>
+    </Card>
+  )
+}
+
 function AdverseImpactBadge({ ratio }: { ratio: number }) {
   const { theme } = useThemeContext()
   const isFlagged = ratio < 0.8
@@ -396,9 +443,18 @@ export function EEOReportScreen() {
     }
   }, [])
 
+  // The summary tile used to hardcode "0". It agreed with the ratios only by
+  // coincidence, and would have kept reading 0 once real data landed.
+  const adverseImpactFlagCount = useMemo(
+    () => Object.values(adverseImpactAnalysis).filter((ratio) => ratio < 0.8).length,
+    [adverseImpactAnalysis]
+  )
+
   return (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
       <Stack gap={24} style={{ paddingBottom: 40 }}>
+        {USES_SAMPLE_DATA && <SampleDataNotice />}
+
         {/* Header */}
         <Row justify="space-between" align="center">
           <Stack gap={4}>
@@ -407,25 +463,30 @@ export function EEOReportScreen() {
               Equal Employment Opportunity and OFCCP applicant flow reporting
             </Text>
           </Stack>
-          <Button variant="outline" size="sm" iconStart={Download}>
-            Export Report
+          {/* Export is the vector by which fabricated figures leave this screen
+              and turn into a document someone might file. Disabled until the
+              numbers are real (#535). */}
+          <Button variant="outline" size="sm" iconStart={Download} disabled={USES_SAMPLE_DATA}>
+            {USES_SAMPLE_DATA ? 'Export unavailable' : 'Export Report'}
           </Button>
         </Row>
 
         {/* Compliance Status Banner */}
-        <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].selected }}>
-          <Row gap={12} align="center">
-            <ShieldCheck size={24} color={colors.fg[theme].success} />
-            <Stack flex={1}>
-              <Text style={{ fontWeight: '600', color: colors.fg[theme].success }}>
-                Compliance Status: Active
-              </Text>
-              <Text style={{ fontSize: 13, color: colors.fg[theme].success }}>
-                All EEO-1 data collection is enabled. Next filing deadline: September 30, 2026
-              </Text>
-            </Stack>
-          </Row>
-        </Card>
+        {!USES_SAMPLE_DATA && (
+          <Card variant="glass" padding="md" style={{ backgroundColor: colors.bg[theme].selected }}>
+            <Row gap={12} align="center">
+              <ShieldCheck size={24} color={colors.fg[theme].success} />
+              <Stack flex={1}>
+                <Text style={{ fontWeight: '600', color: colors.fg[theme].success }}>
+                  Compliance Status: Active
+                </Text>
+                <Text style={{ fontSize: 13, color: colors.fg[theme].success }}>
+                  All EEO-1 data collection is enabled. Next filing deadline: September 30, 2026
+                </Text>
+              </Stack>
+            </Row>
+          </Card>
+        )}
 
         {/* Period Selector */}
         <Row gap={8}>
@@ -476,7 +537,7 @@ export function EEOReportScreen() {
           />
           <MetricCard
             label="Adverse Impact"
-            value="0"
+            value={adverseImpactFlagCount}
             sublabel="Flags detected"
             icon={ShieldCheck}
           />
