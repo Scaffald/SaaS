@@ -72,10 +72,29 @@ export const generateDashboardDrawerItems = (
     isExpandable: true,
     expandOnActive: true,
     subItems: [
-      { key: 'dashboard-index', titleKey: 'routes.dashboard.home', href: ROUTES.DASHBOARD.path, exact: true },
-      { key: 'dashboard-news', titleKey: ROUTES.DASHBOARD.NEWS.titleKey, href: ROUTES.DASHBOARD.NEWS.path },
-      { key: 'dashboard-analytics', titleKey: ROUTES.DASHBOARD.ANALYTICS.titleKey, href: ROUTES.DASHBOARD.ANALYTICS.path, icon: TrendingUp },
-      { key: 'dashboard-notifications', title: 'Notifications', href: ROUTES.DASHBOARD.NOTIFICATIONS.path, icon: BellIcon },
+      {
+        key: 'dashboard-index',
+        titleKey: 'routes.dashboard.home',
+        href: ROUTES.DASHBOARD.path,
+        exact: true,
+      },
+      {
+        key: 'dashboard-news',
+        titleKey: ROUTES.DASHBOARD.NEWS.titleKey,
+        href: ROUTES.DASHBOARD.NEWS.path,
+      },
+      {
+        key: 'dashboard-analytics',
+        titleKey: ROUTES.DASHBOARD.ANALYTICS.titleKey,
+        href: ROUTES.DASHBOARD.ANALYTICS.path,
+        icon: TrendingUp,
+      },
+      {
+        key: 'dashboard-notifications',
+        title: 'Notifications',
+        href: ROUTES.DASHBOARD.NOTIFICATIONS.path,
+        icon: BellIcon,
+      },
     ],
   })
 
@@ -89,10 +108,27 @@ export const generateDashboardDrawerItems = (
     isExpandable: true,
     expandOnActive: true,
     subItems: [
-      { key: 'communities-hub', titleKey: ROUTES.COMMUNITIES.titleKey, href: ROUTES.COMMUNITIES.path, exact: true },
-      { key: 'communities-connections', titleKey: ROUTES.COMMUNITIES.CONNECTIONS.titleKey, href: ROUTES.COMMUNITIES.CONNECTIONS.path },
-      { key: 'communities-bookmarks', titleKey: ROUTES.COMMUNITIES.BOOKMARKS.titleKey, href: ROUTES.COMMUNITIES.BOOKMARKS.path },
-      { key: 'communities-reputation', titleKey: ROUTES.COMMUNITIES.REPUTATION.titleKey, href: ROUTES.COMMUNITIES.REPUTATION.path },
+      {
+        key: 'communities-hub',
+        titleKey: ROUTES.COMMUNITIES.titleKey,
+        href: ROUTES.COMMUNITIES.path,
+        exact: true,
+      },
+      {
+        key: 'communities-connections',
+        titleKey: ROUTES.COMMUNITIES.CONNECTIONS.titleKey,
+        href: ROUTES.COMMUNITIES.CONNECTIONS.path,
+      },
+      {
+        key: 'communities-bookmarks',
+        titleKey: ROUTES.COMMUNITIES.BOOKMARKS.titleKey,
+        href: ROUTES.COMMUNITIES.BOOKMARKS.path,
+      },
+      {
+        key: 'communities-reputation',
+        titleKey: ROUTES.COMMUNITIES.REPUTATION.titleKey,
+        href: ROUTES.COMMUNITIES.REPUTATION.path,
+      },
     ],
   })
 
@@ -106,16 +142,34 @@ export const generateDashboardDrawerItems = (
     isExpandable: true,
     expandOnActive: true,
     subItems: [
-      { key: 'workers-index', titleKey: 'navigation.workersList', href: ROUTES.WORKERS.path, exact: true },
+      {
+        key: 'workers-index',
+        titleKey: 'navigation.workersList',
+        href: ROUTES.WORKERS.path,
+        exact: true,
+      },
       { key: 'workers-map', titleKey: 'navigation.discoverMap', href: ROUTES.WORKERS.MAP.path },
     ],
   })
 
   // Employers - expandable with Search, Create, Join, and per-org sub-items
   const employerSubItems: DrawerItemConfig[] = [
-    { key: 'employers-index', titleKey: 'navigation.employersList', href: ROUTES.EMPLOYERS.path, exact: true },
-    { key: 'employers-create', titleKey: 'navigation.employersCreate', href: ROUTES.EMPLOYERS.CREATE.path },
-    { key: 'employers-join', titleKey: 'navigation.employersJoin', href: ROUTES.EMPLOYERS.INVITATIONS.path },
+    {
+      key: 'employers-index',
+      titleKey: 'navigation.employersList',
+      href: ROUTES.EMPLOYERS.path,
+      exact: true,
+    },
+    {
+      key: 'employers-create',
+      titleKey: 'navigation.employersCreate',
+      href: ROUTES.EMPLOYERS.CREATE.path,
+    },
+    {
+      key: 'employers-join',
+      titleKey: 'navigation.employersJoin',
+      href: ROUTES.EMPLOYERS.INVITATIONS.path,
+    },
     ...buildOrgSubItems(memberships ?? []),
   ]
 
@@ -134,7 +188,11 @@ export const generateDashboardDrawerItems = (
   const jobSubItems: DrawerItemConfig[] = [
     { key: 'jobs-index', titleKey: ROUTES.JOBS.titleKey, href: ROUTES.JOBS.path, exact: true },
     { key: 'jobs-saved', titleKey: 'navigation.jobsSaved', href: ROUTES.JOBS.SAVED.path },
-    { key: 'jobs-applications', titleKey: ROUTES.JOBS.APPLICATIONS.titleKey, href: ROUTES.JOBS.APPLICATIONS.path },
+    {
+      key: 'jobs-applications',
+      titleKey: ROUTES.JOBS.APPLICATIONS.titleKey,
+      href: ROUTES.JOBS.APPLICATIONS.path,
+    },
   ]
   if (memberships && memberships.length > 0) {
     jobSubItems.push({
@@ -165,12 +223,36 @@ export const generateDashboardDrawerItems = (
     isExpandable: true,
     expandOnActive: true,
     subItems: [
-      { key: 'assessments-index', titleKey: ROUTES.ASSESSMENTS.ANALYTICS.titleKey, href: ROUTES.ASSESSMENTS.ANALYTICS.path },
-      { key: 'assessments-pulse', titleKey: ROUTES.ASSESSMENTS.LUSCHER.titleKey, href: ROUTES.ASSESSMENTS.LUSCHER.path },
-      { key: 'assessments-ipip', titleKey: ROUTES.ASSESSMENTS.IPIP.titleKey, href: ROUTES.ASSESSMENTS.IPIP.path },
-      { key: 'assessments-riasec', titleKey: ROUTES.ASSESSMENTS.RIASEC.titleKey, href: ROUTES.ASSESSMENTS.RIASEC.path },
-      { key: 'assessments-occupation', titleKey: ROUTES.ASSESSMENTS.OCCUPATION.titleKey, href: ROUTES.ASSESSMENTS.OCCUPATION.path },
-      { key: 'assessments-career-explorer', titleKey: ROUTES.ASSESSMENTS.CAREER_EXPLORER.titleKey, href: ROUTES.ASSESSMENTS.CAREER_EXPLORER.path },
+      {
+        key: 'assessments-index',
+        titleKey: ROUTES.ASSESSMENTS.ANALYTICS.titleKey,
+        href: ROUTES.ASSESSMENTS.ANALYTICS.path,
+      },
+      {
+        key: 'assessments-pulse',
+        titleKey: ROUTES.ASSESSMENTS.LUSCHER.titleKey,
+        href: ROUTES.ASSESSMENTS.LUSCHER.path,
+      },
+      {
+        key: 'assessments-ipip',
+        titleKey: ROUTES.ASSESSMENTS.IPIP.titleKey,
+        href: ROUTES.ASSESSMENTS.IPIP.path,
+      },
+      {
+        key: 'assessments-riasec',
+        titleKey: ROUTES.ASSESSMENTS.RIASEC.titleKey,
+        href: ROUTES.ASSESSMENTS.RIASEC.path,
+      },
+      {
+        key: 'assessments-occupation',
+        titleKey: ROUTES.ASSESSMENTS.OCCUPATION.titleKey,
+        href: ROUTES.ASSESSMENTS.OCCUPATION.path,
+      },
+      {
+        key: 'assessments-career-explorer',
+        titleKey: ROUTES.ASSESSMENTS.CAREER_EXPLORER.titleKey,
+        href: ROUTES.ASSESSMENTS.CAREER_EXPLORER.path,
+      },
     ],
   })
 
@@ -184,11 +266,32 @@ export const generateDashboardDrawerItems = (
     isExpandable: true,
     expandOnActive: true,
     subItems: [
-      { key: 'profile-overview', titleKey: ROUTES.PROFILE.OVERVIEW.titleKey, href: ROUTES.PROFILE.OVERVIEW.path, exact: true },
-      { key: 'profile-resume', titleKey: ROUTES.PROFILE.RESUME.titleKey, href: ROUTES.PROFILE.RESUME.path },
-      { key: 'profile-skills', titleKey: ROUTES.PROFILE.SKILLS.titleKey, href: ROUTES.PROFILE.SKILLS.path },
-      { key: 'profile-experience', titleKey: ROUTES.PROFILE.EXPERIENCE.titleKey, href: ROUTES.PROFILE.EXPERIENCE.path },
-      { key: 'profile-verification', titleKey: ROUTES.PROFILE.ID_VERIFICATION.titleKey, href: ROUTES.PROFILE.ID_VERIFICATION.path },
+      {
+        key: 'profile-overview',
+        titleKey: ROUTES.PROFILE.OVERVIEW.titleKey,
+        href: ROUTES.PROFILE.OVERVIEW.path,
+        exact: true,
+      },
+      {
+        key: 'profile-resume',
+        titleKey: ROUTES.PROFILE.RESUME.titleKey,
+        href: ROUTES.PROFILE.RESUME.path,
+      },
+      {
+        key: 'profile-skills',
+        titleKey: ROUTES.PROFILE.SKILLS.titleKey,
+        href: ROUTES.PROFILE.SKILLS.path,
+      },
+      {
+        key: 'profile-experience',
+        titleKey: ROUTES.PROFILE.EXPERIENCE.titleKey,
+        href: ROUTES.PROFILE.EXPERIENCE.path,
+      },
+      {
+        key: 'profile-verification',
+        titleKey: ROUTES.PROFILE.ID_VERIFICATION.titleKey,
+        href: ROUTES.PROFILE.ID_VERIFICATION.path,
+      },
     ],
   })
 
@@ -209,14 +312,48 @@ export const generateOfficeDrawerItem = (): DrawerItemConfig => ({
   isExpandable: true,
   expandOnActive: true,
   subItems: [
-    { key: 'office-cms', titleKey: 'routes.office.cms.title', href: ROUTES.OFFICE.CMS.path, icon: Users },
-    { key: 'office-ats', titleKey: 'routes.office.ats.title', href: ROUTES.OFFICE.ATS.path, icon: ClipboardCheck },
-    { key: 'office-applications', titleKey: 'routes.office.applications.title', href: ROUTES.OFFICE.APPLICATIONS.path, icon: Briefcase },
-    { key: 'office-compliance', titleKey: 'routes.office.compliance.title', href: ROUTES.OFFICE.COMPLIANCE.EEO_REPORTS.path, icon: ShieldCheck },
-    { key: 'office-integrations', titleKey: 'routes.office.integrations.title', href: ROUTES.OFFICE.INTEGRATIONS.BACKGROUND_CHECKS.path, icon: Database },
-    { key: 'office-payments', titleKey: 'routes.office.payments', href: ROUTES.OFFICE.PAYMENTS.path, icon: CreditCard },
-    { key: 'office-transactions', titleKey: 'routes.office.transactions', href: ROUTES.OFFICE.TRANSACTIONS.path, icon: FileText },
-    { key: 'office-violations', titleKey: 'routes.office.violations', href: ROUTES.OFFICE.VIOLATIONS.path, icon: AlertTriangle },
+    {
+      key: 'office-cms',
+      titleKey: 'routes.office.cms.title',
+      href: ROUTES.OFFICE.CMS.path,
+      icon: Users,
+    },
+    {
+      key: 'office-applications',
+      titleKey: 'routes.office.applications.title',
+      href: ROUTES.OFFICE.APPLICATIONS.path,
+      icon: Briefcase,
+    },
+    {
+      key: 'office-compliance',
+      titleKey: 'routes.office.compliance.title',
+      href: ROUTES.OFFICE.COMPLIANCE.EEO_REPORTS.path,
+      icon: ShieldCheck,
+    },
+    {
+      key: 'office-integrations',
+      titleKey: 'routes.office.integrations.title',
+      href: ROUTES.OFFICE.INTEGRATIONS.BACKGROUND_CHECKS.path,
+      icon: Database,
+    },
+    {
+      key: 'office-payments',
+      titleKey: 'routes.office.payments',
+      href: ROUTES.OFFICE.PAYMENTS.path,
+      icon: CreditCard,
+    },
+    {
+      key: 'office-transactions',
+      titleKey: 'routes.office.transactions',
+      href: ROUTES.OFFICE.TRANSACTIONS.path,
+      icon: FileText,
+    },
+    {
+      key: 'office-violations',
+      titleKey: 'routes.office.violations',
+      href: ROUTES.OFFICE.VIOLATIONS.path,
+      icon: AlertTriangle,
+    },
   ],
 })
 

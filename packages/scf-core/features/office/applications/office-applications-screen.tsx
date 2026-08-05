@@ -34,9 +34,19 @@ function formatPayRange(minCents?: number | null, maxCents?: number | null, type
   return `${label}${suffix}`
 }
 
-export const OfficeApplicationsScreen = () => {
+export type OfficeApplicationsView = 'kanban' | 'metrics'
+
+export interface OfficeApplicationsScreenProps {
+  /** Which view to open on. `/office/ats/metrics` passes 'metrics' — it used
+   *  to render this screen on the kanban and rely on the user finding the tab. */
+  initialView?: OfficeApplicationsView
+}
+
+export const OfficeApplicationsScreen = ({
+  initialView = 'kanban',
+}: OfficeApplicationsScreenProps = {}) => {
   const { theme } = useThemeContext()
-  const [viewMode, setViewMode] = useState<'kanban' | 'list' | 'metrics'>('kanban')
+  const [viewMode, setViewMode] = useState<OfficeApplicationsView>(initialView)
   const [filters, setFilters] = useState<{
     jobId: string | null
     status: ApplicationStatus | null
@@ -257,13 +267,6 @@ export const OfficeApplicationsScreen = () => {
           </Button>
           <Button
             size="sm"
-            onPress={() => setViewMode('list')}
-            variant={viewMode === 'list' ? 'outline' : undefined}
-          >
-            List
-          </Button>
-          <Button
-            size="sm"
             onPress={() => setViewMode('metrics')}
             variant={viewMode === 'metrics' ? 'outline' : undefined}
           >
@@ -276,14 +279,10 @@ export const OfficeApplicationsScreen = () => {
       <ApplicationsFilters filters={filters} onFiltersChange={setFilters} jobs={[]} />
 
       {/* Content */}
-      {viewMode === 'kanban' ? (
-        <ApplicationsKanbanBoard applications={filteredApplications} />
-      ) : viewMode === 'metrics' ? (
+      {viewMode === 'metrics' ? (
         <ATSMetricsDashboard applications={filteredApplications} isLoading={isLoading} />
       ) : (
-        <Stack padding="md">
-          <Text>List view coming soon...</Text>
-        </Stack>
+        <ApplicationsKanbanBoard applications={filteredApplications} />
       )}
     </Stack>
   )
