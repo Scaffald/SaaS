@@ -67,18 +67,19 @@ function getClient(): SupabaseClient<Database> {
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: Platform.OS === 'web', // Only detect URL sessions on web
-      // Web uses PKCE: OAuth returns ?code= (one-time, exchanged with a local
-      // verifier) instead of tokens in the URL fragment. Native keeps implicit
-      // — it signs in via signInWithIdToken and never parses callback URLs.
+      // NOTE: web is deliberately still on the implicit flow. Switching to
+      // `flowType: 'pkce'` is a one-line change, but it is NOT safe to ship
+      // in the same deploy as everything else: a pkce client rejects
+      // implicit-style #access_token callbacks and calls _removeSession() on
+      // the way out, which is exactly what GoTrue's {{ .ConfirmationURL }}
+      // email links produce. The prerequisite is that every emailed link is
+      // already the token_hash form (see packages/supabase/email-templates/*,
+      // which now point at /auth/confirm) AND that any link issued before
+      // that change has passed otp_expiry.
       //
-      // DEPLOY ORDER CONSTRAINT: a pkce-configured client REJECTS implicit
-      //-style #access_token callbacks (and _removeSession()s on the way out),
-      // which is what GoTrue's {{ .ConfirmationURL }} email links produce.
-      // The email templates must link to /auth/confirm?token_hash= (flow
-      // -agnostic verifyOtp) — update the HOSTED project's templates and let
-      // old links expire (otp_expiry) BEFORE shipping a web build with this
-      // flag. See packages/supabase/email-templates/*.html.
-      flowType: Platform.OS === 'web' ? 'pkce' : 'implicit',
+      // Sequence for the follow-up: templates live in the hosted project ->
+      // wait >= otp_expiry -> flip this to
+      // `Platform.OS === 'web' ? 'pkce' : 'implicit'`.
     },
   })
   return client
