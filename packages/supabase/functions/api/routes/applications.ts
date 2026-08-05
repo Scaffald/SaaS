@@ -4,6 +4,10 @@ import {
   applicationCreateSchema,
   applicationUpdateSchema,
 } from "../../_shared/application-schemas.ts";
+import {
+  PIPELINE_ROLES,
+  resolveApplicationOrgAccess,
+} from "../lib/application-access.ts";
 
 const app = new OpenAPIHono();
 
@@ -586,15 +590,23 @@ app.openapi(getApplicationRoute, async (c) => {
     return c.json({ error: error.message }, 500);
   }
 
-  // Verify user owns this application
+  // Applicant, or someone working the hiring side of this job. Narrowed to
+  // PIPELINE_ROLES because this returns the applicant's screening answers and
+  // attachment metadata, not just a status.
   if (application.user_id !== user.id) {
-    return c.json(
-      {
-        error: "Forbidden",
-        message: "You can only access your own applications",
-      },
-      403,
-    );
+    const access = await resolveApplicationOrgAccess(supabase, user.id, id, {
+      allowedRoles: PIPELINE_ROLES,
+    });
+
+    if (!access.hasOrgAccess) {
+      return c.json(
+        {
+          error: "Forbidden",
+          message: "You do not have access to this application",
+        },
+        403,
+      );
+    }
   }
 
   return c.json(withApiStatus(application), 200);
@@ -1145,11 +1157,19 @@ app.openapi(getActivityRoute, async (c) => {
     );
   }
 
+  // The activity log is how a recruiter sees stage history, so it has to admit
+  // the hiring side too — same allow-list as the detail route.
   if (application.user_id !== user.id) {
-    return c.json({
-      error: "Forbidden",
-      message: "You can only access your own applications",
-    }, 403);
+    const access = await resolveApplicationOrgAccess(supabase, user.id, id, {
+      allowedRoles: PIPELINE_ROLES,
+    });
+
+    if (!access.hasOrgAccess) {
+      return c.json({
+        error: "Forbidden",
+        message: "You do not have access to this application",
+      }, 403);
+    }
   }
 
   const { data: activity, error } = await supabase
@@ -1420,47 +1440,20 @@ app.openapi(getMessagesRoute, async (c) => {
     );
   }
 
-  const { data: application, error: appError } = await supabase
-    .schema("core")
-    .from("applications")
-    .select(
-      "id, user_id, job_id, job:jobs!job_id(organization_id, organization:organizations!organization_id(owner_user_id))",
-    )
-    .eq("id", id)
-    .single();
+  // Access unchanged from the inline block this replaces: applicant, org owner,
+  // or any org-scoped role assignment. Deliberately NOT narrowed to
+  // PIPELINE_ROLES — being party to a thread is a narrower grant than reading
+  // the whole pipeline, and tightening it here would be a silent regression.
+  const access = await resolveApplicationOrgAccess(supabase, user.id, id);
 
-  if (appError || !application) {
+  if (!access.found) {
     return c.json(
       { error: "Not Found", message: "Application not found" },
       404,
     );
   }
 
-  const isApplicant = application.user_id === user.id;
-  let hasOrgAccess = false;
-  if (!isApplicant) {
-    const orgId = (application.job as { organization_id?: string } | null)
-      ?.organization_id;
-    const ownerId = (
-      application.job as
-        | { organization?: { owner_user_id?: string } | null }
-        | null
-    )?.organization?.owner_user_id;
-    if (ownerId === user.id) {
-      hasOrgAccess = true;
-    } else if (orgId) {
-      const { data: roleAssignment } = await supabase
-        .schema("core")
-        .from("role_assignments")
-        .select("id")
-        .eq("user_id", user.id)
-        .eq("scope_org_id", orgId)
-        .maybeSingle();
-      if (roleAssignment) hasOrgAccess = true;
-    }
-  }
-
-  if (!isApplicant && !hasOrgAccess) {
+  if (!access.isApplicant && !access.hasOrgAccess) {
     return c.json(
       {
         error: "Forbidden",
@@ -1502,7 +1495,7 @@ app.openapi(getMessagesRoute, async (c) => {
       body: msg.body,
       created_at: msg.created_at,
       sender_name: msg.author?.display_name || msg.author?.username,
-      sender_role: (msg.author_user_id === application.user_id
+      sender_role: (msg.author_user_id === access.applicantUserId
         ? "applicant"
         : "recruiter") as "applicant" | "recruiter",
     }),
@@ -1563,50 +1556,19 @@ app.openapi(sendMessageRoute, async (c) => {
     );
   }
 
-  const { data: application, error: appError } = await supabase
-    .schema("core")
-    .from("applications")
-    .select(
-      "id, user_id, job_id, job:jobs!job_id(organization_id, organization:organizations!organization_id(owner_user_id))",
-    )
-    .eq("id", id)
-    .single();
+  // Allow the applicant OR org owner/role_assignee to reply. The read route
+  // permits the same set, so a recruiter previously could load the thread but
+  // not respond — every reply 403'd before this access check ran.
+  const access = await resolveApplicationOrgAccess(supabase, user.id, id);
 
-  if (appError || !application) {
+  if (!access.found) {
     return c.json(
       { error: "Not Found", message: "Application not found" },
       404,
     );
   }
 
-  // Allow the applicant OR org owner/role_assignee to reply. The read route
-  // permits the same set, so a recruiter previously could load the thread but
-  // not respond — every reply 403'd before this access check ran.
-  const isApplicant = application.user_id === user.id;
-  let hasOrgAccess = false;
-  if (!isApplicant) {
-    const orgId = (application.job as { organization_id?: string } | null)
-      ?.organization_id;
-    const ownerId = (
-      application.job as
-        | { organization?: { owner_user_id?: string } | null }
-        | null
-    )?.organization?.owner_user_id;
-    if (ownerId === user.id) {
-      hasOrgAccess = true;
-    } else if (orgId) {
-      const { data: roleAssignment } = await supabase
-        .schema("core")
-        .from("role_assignments")
-        .select("id")
-        .eq("user_id", user.id)
-        .eq("scope_org_id", orgId)
-        .maybeSingle();
-      if (roleAssignment) hasOrgAccess = true;
-    }
-  }
-
-  if (!isApplicant && !hasOrgAccess) {
+  if (!access.isApplicant && !access.hasOrgAccess) {
     return c.json(
       {
         error: "Forbidden",
