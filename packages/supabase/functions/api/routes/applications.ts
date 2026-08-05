@@ -25,7 +25,7 @@ app.use("*", authMiddleware);
 // SC-107: previously these were partial Record<string, string> maps with
 // a `?? raw` fallback, which made the namespace boundary leaky.
 
-const DB_STATUSES = [
+export const DB_STATUSES = [
   "new",
   "screen",
   "inquired",
@@ -35,9 +35,9 @@ const DB_STATUSES = [
   "rejected",
   "withdrawn",
 ] as const;
-type DbStatus = typeof DB_STATUSES[number];
+export type DbStatus = typeof DB_STATUSES[number];
 
-const API_STATUSES = [
+export const API_STATUSES = [
   "pending",
   "reviewing",
   "inquired",
@@ -49,7 +49,7 @@ const API_STATUSES = [
 ] as const;
 type ApiStatus = typeof API_STATUSES[number];
 
-const STATUS_DB_TO_API: Record<DbStatus, ApiStatus> = {
+export const STATUS_DB_TO_API: Record<DbStatus, ApiStatus> = {
   new: "pending",
   screen: "reviewing",
   inquired: "inquired",
@@ -60,7 +60,7 @@ const STATUS_DB_TO_API: Record<DbStatus, ApiStatus> = {
   withdrawn: "withdrawn",
 };
 
-const STATUS_API_TO_DB: Record<ApiStatus, DbStatus> = {
+export const STATUS_API_TO_DB: Record<ApiStatus, DbStatus> = {
   pending: "new",
   reviewing: "screen",
   inquired: "inquired",
@@ -71,7 +71,7 @@ const STATUS_API_TO_DB: Record<ApiStatus, DbStatus> = {
   withdrawn: "withdrawn",
 };
 
-function mapDbStatus(dbStatus: string): ApiStatus {
+export function mapDbStatus(dbStatus: string): ApiStatus {
   if (dbStatus in STATUS_DB_TO_API) {
     return STATUS_DB_TO_API[dbStatus as DbStatus];
   }
@@ -87,6 +87,48 @@ function mapDbStatus(dbStatus: string): ApiStatus {
     }),
   );
   return dbStatus as ApiStatus;
+}
+
+/**
+ * Return an application row with its status translated to the API surface.
+ *
+ * Every handler that returns an application must go through this. The read
+ * handlers did it inline and the write handlers did not, so POST, PATCH and
+ * withdraw all returned raw DB names (`new`, `screen`) while
+ * applicationResponseSchema declares the API enum — a response that violated
+ * its own published contract.
+ */
+export function withApiStatus<T extends { status?: unknown }>(
+  application: T,
+): T & { status: ApiStatus } {
+  return {
+    ...application,
+    status: mapDbStatus(application.status as string),
+  };
+}
+
+/**
+ * Build the column payload for an application update.
+ *
+ * Exists as a named function so the vocabulary translation is testable without
+ * standing up the Hono context. The handler used to spread the validated body
+ * straight into `.update()`, which sent an API-surface status name to a column
+ * constrained to DB names — `pending` and `reviewing` failed
+ * `applications_status_check` outright, and the rest passed only because both
+ * vocabularies spell them identically.
+ */
+export function buildApplicationUpdatePayload(
+  input: Record<string, unknown> & { status?: ApiStatus },
+  now: string,
+): Record<string, unknown> {
+  const { status: apiStatus, ...rest } = input;
+  const payload: Record<string, unknown> = { ...rest, updated_at: now };
+
+  if (apiStatus !== undefined) {
+    payload.status = STATUS_API_TO_DB[apiStatus];
+  }
+
+  return payload;
 }
 
 // Job summary embedded in application responses
@@ -253,10 +295,7 @@ app.openapi(listApplicationsRoute, async (c) => {
   }
 
   const rows = data ?? [];
-  const mapped = rows.map((row: Record<string, unknown>) => ({
-    ...row,
-    status: mapDbStatus(row.status as string),
-  }));
+  const mapped = rows.map((row: Record<string, unknown>) => withApiStatus(row));
 
   return c.json(
     {
@@ -457,7 +496,7 @@ app.openapi(createApplicationRoute, async (c) => {
   // Trigger webhook for application.created event
   await triggerWebhook("application.created", application, c);
 
-  return c.json(application, 201);
+  return c.json(withApiStatus(application), 201);
 });
 
 /**
@@ -558,13 +597,7 @@ app.openapi(getApplicationRoute, async (c) => {
     );
   }
 
-  return c.json(
-    {
-      ...application,
-      status: mapDbStatus(application.status as string),
-    },
-    200,
-  );
+  return c.json(withApiStatus(application), 200);
 });
 
 /**
@@ -696,14 +729,18 @@ app.openapi(updateApplicationRoute, async (c) => {
     );
   }
 
-  // Update application
+  // Update application. buildApplicationUpdatePayload translates the status
+  // from the API vocabulary to the DB one — see its docstring for why the
+  // previous `{ ...input }` spread was a 500 for two of the eight statuses.
+  const updatePayload = buildApplicationUpdatePayload(
+    input,
+    new Date().toISOString(),
+  );
+
   const { data: application, error } = await supabase
     .schema("core")
     .from("applications")
-    .update({
-      ...input,
-      updated_at: new Date().toISOString(),
-    })
+    .update(updatePayload)
     .eq("id", id)
     .select()
     .single();
@@ -716,7 +753,7 @@ app.openapi(updateApplicationRoute, async (c) => {
   // Trigger webhook for application.updated event
   await triggerWebhook("application.updated", application, c);
 
-  return c.json(application, 200);
+  return c.json(withApiStatus(application), 200);
 });
 
 /**
@@ -872,7 +909,7 @@ app.openapi(withdrawApplicationRoute, async (c) => {
   // Trigger webhook for application.withdrawn event
   await triggerWebhook("application.withdrawn", application, c);
 
-  return c.json(application, 200);
+  return c.json(withApiStatus(application), 200);
 });
 
 /**

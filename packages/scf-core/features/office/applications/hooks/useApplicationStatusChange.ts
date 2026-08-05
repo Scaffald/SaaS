@@ -1,10 +1,21 @@
 import { useUpdateApplicationMutation } from '@scf/core/utils/applications-sdk-hooks'
+import type { Application } from '@scaffald/sdk/resources/applications'
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useState } from 'react'
 import type { ApplicationStatus } from '../../mock-data/ats-mock-data'
 
-// Map UI status to database status
-const STATUS_MAP: Record<ApplicationStatus, string> = {
+type ApiApplicationStatus = Application['status']
+
+/**
+ * Map kanban stage to the API-surface status name.
+ *
+ * Typed against the SDK's own union rather than `string`, so the call sites
+ * below need no casts. The previous `Record<ApplicationStatus, string>` forced
+ * an inline cast at each mutation, and the two casts had drifted apart —
+ * `confirmChange` omitted `inquired`, so the one path that handles the
+ * critical hire/reject confirmations disagreed with the one that does not.
+ */
+const STATUS_MAP: Record<ApplicationStatus, ApiApplicationStatus> = {
   new: 'pending',
   screen: 'reviewing',
   inquired: 'inquired',
@@ -96,17 +107,7 @@ export const useApplicationStatusChange = (): UseApplicationStatusChangeReturn =
       try {
         await updateMutation.mutateAsync({
           id: applicationId,
-          params: {
-            status: STATUS_MAP[toStatus] as
-              | 'pending'
-              | 'reviewing'
-              | 'inquired'
-              | 'interview'
-              | 'offer'
-              | 'hired'
-              | 'rejected'
-              | 'withdrawn',
-          },
+          params: { status: STATUS_MAP[toStatus] },
         })
       } catch (err) {
         setError(err as Error)
@@ -125,16 +126,7 @@ export const useApplicationStatusChange = (): UseApplicationStatusChangeReturn =
       try {
         await updateMutation.mutateAsync({
           id: pendingChange.applicationId,
-          params: {
-            status: STATUS_MAP[pendingChange.toStatus] as
-              | 'pending'
-              | 'reviewing'
-              | 'interview'
-              | 'offer'
-              | 'hired'
-              | 'rejected'
-              | 'withdrawn',
-          },
+          params: { status: STATUS_MAP[pendingChange.toStatus] },
         })
 
         setPendingChange(null)
