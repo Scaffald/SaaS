@@ -12,7 +12,6 @@ import { ScrollView, Pressable } from 'react-native'
 import { Button, Card, H2, Row, Stack, Tabs, Text, useThemeContext } from '@scaffald/ui'
 import { colors } from '@scaffald/ui/tokens'
 import {
-  AlertTriangle,
   BarChart3,
   Download,
   FileText,
@@ -21,6 +20,7 @@ import {
   ShieldCheck,
   Users,
 } from 'lucide-react-native'
+import { SampleDataNotice } from '@scf/core/features/office/components/SampleDataNotice'
 
 // ============================================================================
 // Types
@@ -338,39 +338,6 @@ function MetricCard({
   )
 }
 
-/**
- * Persistent, non-dismissible notice that the figures below are fabricated.
- * Deliberately not dismissible — the whole point is that someone arriving at
- * a screenshot of this screen can tell it is not a filing.
- */
-function SampleDataNotice() {
-  const { theme } = useThemeContext()
-  return (
-    <Card
-      variant="glass"
-      padding="md"
-      style={{
-        backgroundColor: theme === 'dark' ? colors.warning[900] : colors.warning[50],
-        borderWidth: 1,
-        borderColor: colors.fg[theme].warning,
-      }}
-    >
-      <Row gap={12} align="center">
-        <AlertTriangle size={24} color={colors.fg[theme].warning} />
-        <Stack flex={1} gap={2}>
-          <Text style={{ fontWeight: '700', color: colors.fg[theme].warning }}>
-            Sample data — not a compliance record
-          </Text>
-          <Text style={{ fontSize: 13, color: colors.fg[theme].warning }}>
-            Every figure on this page is illustrative placeholder data, including the adverse-impact
-            ratios. Do not file, export, or cite these numbers.
-          </Text>
-        </Stack>
-      </Row>
-    </Card>
-  )
-}
-
 function AdverseImpactBadge({ ratio }: { ratio: number }) {
   const { theme } = useThemeContext()
   const isFlagged = ratio < 0.8
@@ -453,7 +420,12 @@ export function EEOReportScreen() {
   return (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
       <Stack gap={24} style={{ paddingBottom: 40 }}>
-        {USES_SAMPLE_DATA && <SampleDataNotice />}
+        {USES_SAMPLE_DATA && (
+          <SampleDataNotice
+            title="Sample data — not a compliance record"
+            description="Every figure on this page is illustrative placeholder data, including the adverse-impact ratios. Do not file, export, or cite these numbers."
+          />
+        )}
 
         {/* Header */}
         <Row justify="space-between" align="center">

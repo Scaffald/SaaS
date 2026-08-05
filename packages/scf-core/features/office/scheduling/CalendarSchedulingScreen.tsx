@@ -8,7 +8,7 @@
  * @see Issue #88 - Candidate Self-Scheduling
  */
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   Button,
   Card,
@@ -41,6 +41,7 @@ import {
 } from 'lucide-react-native'
 import { ScrollView } from 'react-native'
 import { StatusBadge } from '@scf/core/components/ui'
+import { SampleDataNotice } from '@scf/core/features/office/components/SampleDataNotice'
 
 // ============================================================================
 // Types
@@ -86,6 +87,22 @@ interface SchedulingLink {
 // ============================================================================
 // Mock Data
 // ============================================================================
+
+/**
+ * Nothing on this screen is real. The tables landed in migration
+ * 146_ats_multi_location_scheduling.sql (core.interview_slots,
+ * interview_availability, interview_bookings) and both the API route and the
+ * SDK resource exist, but no hook here calls them.
+ *
+ * The lists below are the smaller half of the problem. The larger half is that
+ * every action is inert — "Propose Time" opens a form whose submit button only
+ * closes the modal, so a user can believe they scheduled an interview with a
+ * candidate who will never hear about it. Until #540 wires this up, the write
+ * paths stay disabled rather than silently discarding input.
+ *
+ * Deleting this constant is the last step of #540.
+ */
+const USES_SAMPLE_DATA: boolean = true
 
 const MOCK_CONNECTIONS: CalendarConnection[] = [
   {
@@ -341,9 +358,27 @@ export function CalendarSchedulingScreen() {
   const [showAddSlotModal, setShowAddSlotModal] = useState(false)
   const [showCreateLinkModal, setShowCreateLinkModal] = useState(false)
 
+  const slotCounts = useMemo(
+    () => ({
+      upcoming: MOCK_SLOTS.filter(
+        (slot) => slot.status !== 'cancelled' && slot.status !== 'completed'
+      ).length,
+      confirmed: MOCK_SLOTS.filter((slot) => slot.status === 'confirmed').length,
+      completed: MOCK_SLOTS.filter((slot) => slot.status === 'completed').length,
+    }),
+    []
+  )
+
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <Stack gap={16}>
+        {USES_SAMPLE_DATA && (
+          <SampleDataNotice
+            title="Sample data — scheduling is not connected"
+            description="These calendars, availability windows, interview slots and links are placeholders. Nothing here is saved, and no candidate is contacted."
+          />
+        )}
+
         {/* Header */}
         <Row justify="space-between" align="center">
           <Stack gap={2}>
@@ -358,6 +393,7 @@ export function CalendarSchedulingScreen() {
             size="sm"
             variant="filled"
             iconStart={Plus}
+            disabled={USES_SAMPLE_DATA}
             onPress={() => setShowAddSlotModal(true)}
           >
             Propose Time
@@ -380,10 +416,22 @@ export function CalendarSchedulingScreen() {
                   </Stack>
                   <Separator />
                   <Row gap={8}>
-                    <Button size="sm" variant="outline" iconStart={Plus} onPress={() => {}}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      iconStart={Plus}
+                      disabled={USES_SAMPLE_DATA}
+                      onPress={() => {}}
+                    >
                       Connect Google
                     </Button>
-                    <Button size="sm" variant="outline" iconStart={Plus} onPress={() => {}}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      iconStart={Plus}
+                      disabled={USES_SAMPLE_DATA}
+                      onPress={() => {}}
+                    >
                       Connect Outlook
                     </Button>
                   </Row>
@@ -403,7 +451,13 @@ export function CalendarSchedulingScreen() {
                     ))}
                   </Stack>
                   <Separator />
-                  <Button size="sm" variant="outline" iconStart={Plus} onPress={() => {}}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    iconStart={Plus}
+                    disabled={USES_SAMPLE_DATA}
+                    onPress={() => {}}
+                  >
                     Add Availability
                   </Button>
                 </DashboardWidget>
@@ -423,6 +477,7 @@ export function CalendarSchedulingScreen() {
                         size="sm"
                         variant="outline"
                         iconStart={Plus}
+                        disabled={USES_SAMPLE_DATA}
                         onPress={() => setShowAddSlotModal(true)}
                       >
                         Propose Time
@@ -436,7 +491,10 @@ export function CalendarSchedulingScreen() {
                   </Stack>
                 </DashboardWidget>
 
-                {/* Stats */}
+                {/* Stats. Previously hardcoded "3" / "1" / "12" — the first two
+                    happened to match MOCK_SLOTS, and "12 completed" was invented
+                    outright. Derived so they stay honest once #540 supplies real
+                    slots. */}
                 <Row gap={12}>
                   <Card variant="glass" style={{ flex: 1 }} padding="md">
                     <Stack align="center" gap={4}>
@@ -447,7 +505,7 @@ export function CalendarSchedulingScreen() {
                           fontWeight: '700',
                         }}
                       >
-                        3
+                        {slotCounts.upcoming}
                       </Text>
                       <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>
                         Upcoming
@@ -463,7 +521,7 @@ export function CalendarSchedulingScreen() {
                           fontWeight: '700',
                         }}
                       >
-                        1
+                        {slotCounts.confirmed}
                       </Text>
                       <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>
                         Confirmed
@@ -479,7 +537,7 @@ export function CalendarSchedulingScreen() {
                           fontWeight: '700',
                         }}
                       >
-                        12
+                        {slotCounts.completed}
                       </Text>
                       <Text style={{ color: colors.text[theme].tertiary, fontSize: 12 }}>
                         Completed
@@ -503,6 +561,7 @@ export function CalendarSchedulingScreen() {
                         size="sm"
                         variant="outline"
                         iconStart={Link2}
+                        disabled={USES_SAMPLE_DATA}
                         onPress={() => setShowCreateLinkModal(true)}
                       >
                         Create Link
@@ -542,7 +601,13 @@ export function CalendarSchedulingScreen() {
                         <StatusBadge variant={link.is_active ? 'success' : 'default'}>
                           {link.is_active ? 'Active' : 'Expired'}
                         </StatusBadge>
-                        <Button size="sm" variant="outline" iconStart={Copy} onPress={() => {}}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          iconStart={Copy}
+                          disabled={USES_SAMPLE_DATA}
+                          onPress={() => {}}
+                        >
                           Copy
                         </Button>
                       </Row>
