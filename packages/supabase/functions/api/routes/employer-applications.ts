@@ -434,6 +434,23 @@ app.openapi(updateEmployerApplicationRoute, async (c) => {
     );
   }
 
+  // Marking a hire requires the upfront success fee to be settled.
+  //
+  // This rule previously lived only in the legacy tRPC `applications.update`
+  // procedure — on the *applicant's* path, which is where the self-promotion
+  // hole was. Removing status from that procedure would have dropped the rule
+  // entirely, so it moves here, to the endpoint that actually performs hires.
+  if (nextStatus === "hired" && currentStatus !== "hired") {
+    const feeError = await checkUpfrontFeeSettled(
+      access.organizationId,
+      id,
+      existing.user_id as string,
+    );
+    if (feeError) {
+      return c.json({ error: "Bad Request", message: feeError }, 400);
+    }
+  }
+
   const now = new Date().toISOString();
   const statusChanged = nextStatus !== currentStatus;
 
@@ -481,6 +498,51 @@ app.openapi(updateEmployerApplicationRoute, async (c) => {
 
   return c.json(withApiStatus(updated), 200);
 });
+
+/**
+ * Whether the upfront success fee for this hire has been paid.
+ *
+ * Returns an error message when the hire must be blocked, or null to proceed.
+ * Uses the service role: the caller is authorised for the application, but
+ * core.success_fees is a billing table they have no direct read grant on.
+ */
+async function checkUpfrontFeeSettled(
+  organizationId: string | null,
+  applicationId: string,
+  workerUserId: string,
+): Promise<string | null> {
+  if (!organizationId) {
+    return "Unable to determine organization for success fee verification.";
+  }
+
+  const { data, error } = await getServiceClient()
+    .schema("core")
+    .from("success_fees")
+    .select("id")
+    .eq("organization_id", organizationId)
+    .eq("application_id", applicationId)
+    .eq("worker_user_id", workerUserId)
+    .eq("status", "upfront_paid")
+    .maybeSingle();
+
+  if (error) {
+    console.error(
+      JSON.stringify({
+        severity: "error",
+        component: "employer_applications_success_fee",
+        message: "Failed to verify upfront success fee",
+        application_id: applicationId,
+        db_error: error.message,
+      }),
+    );
+    // Fail closed. An unverifiable payment state must not become a free hire.
+    return "Unable to verify the upfront success fee. Try again.";
+  }
+
+  return data
+    ? null
+    : "Upfront success fee payment is required before marking this hire.";
+}
 
 interface ActivityFacts {
   statusChanged: boolean;

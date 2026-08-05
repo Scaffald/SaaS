@@ -281,45 +281,18 @@ export const applicationsRouter = router({
       })
     }
 
-    let resolvedOrganizationId = application.organization_id ?? null
-    if (!resolvedOrganizationId && application.job_id) {
-      const { data: job } = await (ctx.supabaseAdmin ?? supabase)
-        .schema('core')
-        .from('jobs')
-        .select('organization_id')
-        .eq('id', application.job_id)
-        .maybeSingle()
-      resolvedOrganizationId = job?.organization_id ?? null
-    }
-
+    // NOTE: this procedure is applicant-scoped — it authorises on
+    // `application.user_id === user.id`. It used to accept `status` from
+    // applicationUpdateSchema, which meant an applicant could PATCH their own
+    // application to `hired`. That field is gone from the schema now, so the
+    // status branch that used to live here (including the upfront success-fee
+    // gate) is unreachable.
+    //
+    // The gate was not dropped: it moved to
+    // PATCH /v1/employer/applications/{id}, which is org-authorised and is
+    // where hires are actually marked. This legacy tRPC path has no remaining
+    // client callers.
     const { application_id, ...updateData } = input
-
-    if (updateData.status === 'hired') {
-      if (!resolvedOrganizationId) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Unable to determine organization for success fee verification.',
-        })
-      }
-
-      const supabaseAdmin = ctx.supabaseAdmin ?? supabase
-      const { data: successFee } = await supabaseAdmin
-        .schema('core')
-        .from('success_fees')
-        .select('id')
-        .eq('organization_id', resolvedOrganizationId)
-        .eq('application_id', application_id)
-        .eq('worker_user_id', application.user_id)
-        .eq('status', 'upfront_paid')
-        .maybeSingle()
-
-      if (!successFee) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Upfront success fee payment is required before marking this hire.',
-        })
-      }
-    }
 
     const { data: updated, error } = await supabase
       .schema('core')
