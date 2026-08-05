@@ -143,6 +143,14 @@ export const applicationSubmitSchema = applicationCreateSchema
   .extend({
     is_complete: z.literal(true),
   })
+  // Mirrors the package copy. Without this the legacy tRPC `submit` procedure
+  // accepted a submission with no resume, while the client form — which
+  // validates against the package schema — refused one. Server and client
+  // disagreed about what a complete application is.
+  .refine((data) => data.attachments?.resume !== undefined, {
+    message: 'Resume is required to submit application',
+    path: ['attachments', 'resume'],
+  })
 
 /**
  * Application withdraw schema
