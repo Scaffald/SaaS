@@ -141,14 +141,17 @@ Deno.test("update payload maps the two statuses that used to 500", () => {
 });
 
 Deno.test("update payload omits status entirely when none was sent", () => {
-  const payload = buildApplicationUpdatePayload({ years_experience: 7 }, NOW);
+  const payload = buildApplicationUpdatePayload({ completed_steps: [] }, NOW);
 
   assert(!("status" in payload), "must not write a status the caller omitted");
-  assertEquals(payload.years_experience, 7);
+  assertEquals(payload.completed_steps, []);
   assertEquals(payload.updated_at, NOW);
 });
 
-Deno.test("update payload passes non-status fields through untouched", () => {
+Deno.test("update payload maps status and folds screening in one pass", () => {
+  // This test previously asserted that current_location and
+  // willing_to_relocate passed through as columns. They are not columns — see
+  // the screening-fields section below — so it was encoding the #546 bug.
   const payload = buildApplicationUpdatePayload(
     {
       status: "interview",
@@ -161,9 +164,106 @@ Deno.test("update payload passes non-status fields through untouched", () => {
 
   assertEquals(payload, {
     status: "interview",
-    current_location: "Denver, CO",
-    willing_to_relocate: true,
     completed_steps: ["screening"],
+    screening_answers: {
+      current_location: "Denver, CO",
+      willing_to_relocate: true,
+    },
     updated_at: NOW,
   });
+});
+
+// ─────────────────────────────────────────────────────────────────────────
+// Flat screening fields (#546). The schema exposes five of them as top-level
+// fields, but they are not columns — they live inside the screening_answers
+// JSONB. The create handler folds them in; update passed them through, so
+// PATCH {"years_experience": 9} failed with "Could not find the
+// 'years_experience' column". Five advertised fields that could never be set.
+// ─────────────────────────────────────────────────────────────────────────
+
+Deno.test("a flat screening field lands inside screening_answers", () => {
+  const payload = buildApplicationUpdatePayload({ years_experience: 9 }, NOW);
+
+  assert(
+    !("years_experience" in payload),
+    "years_experience must not be written as a column",
+  );
+  assertEquals(payload.screening_answers, { years_experience: 9 });
+});
+
+Deno.test("updating one screening field preserves the others", () => {
+  // A replace here would silently drop the applicant's other answers.
+  const payload = buildApplicationUpdatePayload(
+    { years_experience: 9 },
+    NOW,
+    { current_location: "Denver, CO", is_authorized_to_work: true },
+  );
+
+  assertEquals(payload.screening_answers, {
+    current_location: "Denver, CO",
+    is_authorized_to_work: true,
+    years_experience: 9,
+  });
+});
+
+Deno.test("all five flat fields are folded, none written as columns", () => {
+  const payload = buildApplicationUpdatePayload({
+    current_location: "Denver, CO",
+    willing_to_relocate: true,
+    years_experience: 9,
+    is_authorized_to_work: true,
+    earliest_start_date: "2026-09-01",
+  }, NOW);
+
+  for (
+    const field of [
+      "current_location",
+      "willing_to_relocate",
+      "years_experience",
+      "is_authorized_to_work",
+      "earliest_start_date",
+    ]
+  ) {
+    assert(!(field in payload), `${field} leaked out as a column`);
+  }
+
+  assertEquals(
+    Object.keys(payload.screening_answers as Record<string, unknown>).sort(),
+    [
+      "current_location",
+      "earliest_start_date",
+      "is_authorized_to_work",
+      "willing_to_relocate",
+      "years_experience",
+    ],
+  );
+});
+
+Deno.test("an explicit screening_answers object still works, and flat wins", () => {
+  const payload = buildApplicationUpdatePayload(
+    {
+      screening_answers: { years_experience: 3, note: "keep" },
+      years_experience: 9,
+    },
+    NOW,
+  );
+
+  assertEquals(payload.screening_answers, {
+    years_experience: 9,
+    note: "keep",
+  });
+});
+
+Deno.test("real columns still pass straight through", () => {
+  const payload = buildApplicationUpdatePayload(
+    { completed_steps: ["screening"], is_complete: true },
+    NOW,
+  );
+
+  assertEquals(payload.completed_steps, ["screening"]);
+  assertEquals(payload.is_complete, true);
+  assert(
+    !("screening_answers" in payload),
+    "must not invent a screening write",
+  );
 });

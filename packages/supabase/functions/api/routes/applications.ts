@@ -121,13 +121,67 @@ export function withApiStatus<T extends { status?: unknown }>(
  * `applications_status_check` outright, and the rest passed only because both
  * vocabularies spell them identically.
  */
+/**
+ * The five screening answers the schema exposes as top-level fields.
+ *
+ * They are not columns — they live inside the `screening_answers` JSONB. The
+ * create handler folds them in correctly; the update handler passed them
+ * through as columns, so `PATCH {"years_experience": 9}` failed with
+ * "Could not find the 'years_experience' column". The schema advertised five
+ * fields that could never be updated.
+ */
+const FLAT_SCREENING_FIELDS = [
+  "current_location",
+  "willing_to_relocate",
+  "years_experience",
+  "is_authorized_to_work",
+  "earliest_start_date",
+] as const;
+
 export function buildApplicationUpdatePayload(
   input: Record<string, unknown> & { status?: ApiStatus },
   now: string,
+  existingScreeningAnswers: Record<string, unknown> | null = null,
 ): Record<string, unknown> {
-  const { status: apiStatus, ...rest } = input;
-  const payload: Record<string, unknown> = { ...rest, updated_at: now };
+  const { status: apiStatus, screening_answers: incomingAnswers, ...rest } =
+    input;
 
+  const payload: Record<string, unknown> = { updated_at: now };
+
+  // Anything that is not a flat screening field is a real column.
+  for (const [key, value] of Object.entries(rest)) {
+    if (
+      !FLAT_SCREENING_FIELDS.includes(
+        key as typeof FLAT_SCREENING_FIELDS[number],
+      )
+    ) {
+      payload[key] = value;
+    }
+  }
+
+  const flatAnswers: Record<string, unknown> = {};
+  for (const field of FLAT_SCREENING_FIELDS) {
+    if (rest[field] !== undefined) flatAnswers[field] = rest[field];
+  }
+
+  const explicitAnswers = (incomingAnswers ?? null) as
+    | Record<string, unknown>
+    | null;
+
+  // Merge rather than replace. A PATCH naming one screening field must not
+  // blank the rest, and PATCH is not a PUT.
+  if (Object.keys(flatAnswers).length > 0 || explicitAnswers) {
+    payload.screening_answers = {
+      ...(existingScreeningAnswers ?? {}),
+      ...(explicitAnswers ?? {}),
+      ...flatAnswers,
+    };
+  }
+
+  // Status no longer reaches here from the applicant schema — it was removed
+  // so an applicant could not promote themselves (#530). The mapping stays
+  // because this helper is the one place that owns the vocabulary boundary,
+  // and a caller passing status must never write an API-surface name.
   if (apiStatus !== undefined) {
     payload.status = STATUS_API_TO_DB[apiStatus];
   }
@@ -747,6 +801,7 @@ app.openapi(updateApplicationRoute, async (c) => {
   const updatePayload = buildApplicationUpdatePayload(
     input,
     new Date().toISOString(),
+    (existing.screening_answers ?? null) as Record<string, unknown> | null,
   );
 
   const { data: application, error } = await supabase
