@@ -35,7 +35,11 @@ const APP_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
  */
 function stubSupabase(
   // deno-lint-ignore no-explicit-any
-  opts: { application?: any; error?: { message: string }; memberUserId?: string },
+  opts: {
+    application?: any;
+    error?: { message: string };
+    memberUserId?: string;
+  },
 ) {
   return {
     schema() {
@@ -55,8 +59,13 @@ function stubSupabase(
         },
         maybeSingle() {
           if (self._table === "applications") {
-            if (opts.error) return Promise.resolve({ data: null, error: opts.error });
-            return Promise.resolve({ data: opts.application ?? null, error: null });
+            if (opts.error) {
+              return Promise.resolve({ data: null, error: opts.error });
+            }
+            return Promise.resolve({
+              data: opts.application ?? null,
+              error: null,
+            });
           }
           if (self._table === "role_assignments") {
             const match = opts.memberUserId !== undefined &&
@@ -165,12 +174,19 @@ Deno.test("access: embeds arriving as arrays still resolve the owner", async () 
       organization: [{ id: ORG, owner_user_id: OWNER }],
     }],
   });
-  const result = await checkApplicationAccess(stubSupabase({ application: row }), OWNER, APP_ID);
+  const result = await checkApplicationAccess(
+    stubSupabase({ application: row }),
+    OWNER,
+    APP_ID,
+  );
   assertEquals(result, { ok: true });
 });
 
 Deno.test("mapApplicationRecord: null in, null out", () => {
-  assertEquals(mapApplicationRecord(null), { application: null, capabilityQuestions: [] });
+  assertEquals(mapApplicationRecord(null), {
+    application: null,
+    capabilityQuestions: [],
+  });
 });
 
 Deno.test("mapApplicationRecord: maps to the camelCase shape the views read", () => {
@@ -220,7 +236,12 @@ Deno.test("mapApplicationRecord: candidate name falls back to username", () => {
     id: APP_ID,
     created_at: "2026-07-27T00:00:00Z",
     updated_at: "2026-07-27T00:00:00Z",
-    candidate: { id: APPLICANT, display_name: null, username: "ewongagent", avatar_path: null },
+    candidate: {
+      id: APPLICANT,
+      display_name: null,
+      username: "ewongagent",
+      avatar_path: null,
+    },
   });
   assertEquals(application?.candidate?.name, "ewongagent");
 });

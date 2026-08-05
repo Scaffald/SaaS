@@ -198,7 +198,9 @@ interface AuthedUser {
 }
 
 // deno-lint-ignore no-explicit-any
-function authed(c: any): { supabase: AuthedSupabase; user: AuthedUser | undefined } {
+function authed(
+  c: any,
+): { supabase: AuthedSupabase; user: AuthedUser | undefined } {
   return { supabase: c.get("supabase"), user: c.get("user") };
 }
 
@@ -282,7 +284,9 @@ export async function checkApplicationAccess(
   supabase: AuthedSupabase,
   userId: string,
   applicationId: string,
-): Promise<{ ok: true } | { ok: false; status: 403 | 404 | 500; error: string }> {
+): Promise<
+  { ok: true } | { ok: false; status: 403 | 404 | 500; error: string }
+> {
   const { data: application, error } = await supabase
     .schema("core")
     .from("applications")
@@ -326,7 +330,11 @@ export async function checkApplicationAccess(
     }
   }
 
-  return { ok: false, status: 403, error: "You do not have access to this application" };
+  return {
+    ok: false,
+    status: 403,
+    error: "You do not have access to this application",
+  };
 }
 
 /**
@@ -382,7 +390,11 @@ app.openapi(
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    const access = await checkApplicationAccess(supabase, user.id, applicationId);
+    const access = await checkApplicationAccess(
+      supabase,
+      user.id,
+      applicationId,
+    );
     if (!access.ok) {
       return c.json({ error: access.error }, access.status);
     }
@@ -458,7 +470,10 @@ app.openapi(
       .find((r) => r.error);
     if (failed?.error) {
       return c.json(
-        { error: "Failed to fetch inquiry details", message: failed.error.message },
+        {
+          error: "Failed to fetch inquiry details",
+          message: failed.error.message,
+        },
         500,
       );
     }

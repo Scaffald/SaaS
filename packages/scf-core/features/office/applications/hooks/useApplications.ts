@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import {
   useApplication as useApplicationSDK,
+  useEmployerApplications,
   useUpdateApplicationMutation,
   useWithdrawApplicationMutation,
   useGetUploadUrlMutation,
@@ -8,6 +9,7 @@ import {
 } from '@scf/core/utils/applications-sdk-hooks'
 import type {
   Application,
+  EmployerApplication,
   UpdateApplicationParams,
   WithdrawApplicationParams,
   GetUploadUrlParams,
@@ -17,38 +19,46 @@ import type {
 
 export type { Application }
 
-// Office applications list (admin context) - type for returned data
-export interface ApplicationsListItem {
-  id: string
-  status: string
-  created_at: string
-  updated_at: string
-  user_id: string
-  job_id: string
-  [key: string]: unknown
-}
+/**
+ * An application as the office pipeline sees it.
+ *
+ * This is the SDK's `EmployerApplication` verbatim. It is deliberately not a
+ * hand-maintained restatement: the previous local interface drifted from the
+ * database (it declared `applied_at` and `application_score`, neither of which
+ * is a column) and nothing caught it, because the hook it typed returned a
+ * hardcoded empty array.
+ */
+export type ApplicationsListItem = EmployerApplication
 
 export interface ApplicationsListFilters {
-  status?: 'pending' | 'reviewing' | 'interview' | 'offer' | 'hired' | 'rejected' | 'withdrawn'
+  status?: Application['status']
   limit?: number
   offset?: number
   organization_id?: string
   job_id?: string
+  assigned_to?: string
+  min_score?: number
   date_from?: string
   date_to?: string
 }
 
 /**
- * Hook to fetch applications for organization's jobs (office admin context)
- * NOTE: office.listApplications not yet migrated to REST SDK — returns empty list
+ * Applications to jobs posted by organizations the caller can act for.
+ *
+ * Was a stub returning `[]` with the filter argument discarded — a leftover
+ * from the tRPC→SDK migration that left every office ATS screen rendering zero
+ * rows. Now backed by `GET /v1/employer/applications`.
  */
-export function useApplications(_filters?: ApplicationsListFilters) {
+export function useApplications(filters?: ApplicationsListFilters) {
+  const query = useEmployerApplications(filters)
+
   return {
-    applications: [] as ApplicationsListItem[],
-    isLoading: false,
-    isError: false,
-    error: null,
-    refetch: async () => {},
+    applications: query.data?.data ?? [],
+    total: query.data?.total ?? 0,
+    isLoading: query.isLoading,
+    isError: query.isError,
+    error: query.error,
+    refetch: query.refetch,
   }
 }
 
@@ -116,7 +126,9 @@ export function useWithdrawApplication() {
 export function useSubmitApplication() {
   return {
     submit: (_params: unknown) => {},
-    submitAsync: async (_params: unknown) => { throw new Error('Not implemented') },
+    submitAsync: async (_params: unknown) => {
+      throw new Error('Not implemented')
+    },
     isLoading: false,
     isError: false,
     error: null,
@@ -130,7 +142,9 @@ export function useSubmitApplication() {
 export function useUpdateApplicationStep() {
   return {
     updateStep: (_params: unknown) => {},
-    updateStepAsync: async (_params: unknown) => { throw new Error('Not implemented') },
+    updateStepAsync: async (_params: unknown) => {
+      throw new Error('Not implemented')
+    },
     isLoading: false,
     isError: false,
     error: null,
@@ -181,7 +195,9 @@ export function useConfirmUpload() {
 export function useCalculateScore() {
   return {
     calculateScore: (_params: unknown) => {},
-    calculateScoreAsync: async (_params: unknown) => { throw new Error('Not implemented') },
+    calculateScoreAsync: async (_params: unknown) => {
+      throw new Error('Not implemented')
+    },
     isLoading: false,
     isError: false,
     error: null,
@@ -189,5 +205,11 @@ export function useCalculateScore() {
 }
 
 // Type re-exports for convenience
-export type { UpdateApplicationParams, WithdrawApplicationParams, GetUploadUrlParams, GetUploadUrlResponse, ConfirmUploadParams }
+export type {
+  UpdateApplicationParams,
+  WithdrawApplicationParams,
+  GetUploadUrlParams,
+  GetUploadUrlResponse,
+  ConfirmUploadParams,
+}
 export type Applications = Application[]

@@ -194,7 +194,6 @@ app.openapi(
       count: "exact",
     });
 
-
     if (organizationId) {
       // Check the user is a member of this organization
       const { data: memberships } = await supabase

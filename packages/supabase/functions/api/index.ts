@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import jobsRouter from "./routes/jobs.ts";
 import oauthRouter from "./routes/oauth.ts";
 import applicationsRouter from "./routes/applications.ts";
+import employerApplicationsRouter from "./routes/employer-applications.ts";
 import profilesRouter from "./routes/profiles.ts";
 import apiKeysRouter from "./routes/api-keys.ts";
 import authRouter from "./routes/auth.ts";
@@ -120,6 +121,7 @@ app.get("/v1/health", (c) =>
 app.route("/v1/jobs", jobsRouter);
 app.route("/oauth", oauthRouter); // OAuth 2.0 authorization server
 app.route("/v1/oauth", oauthManagementRouter); // OAuth app management
+app.route("/v1/employer/applications", employerApplicationsRouter); // Hiring-side pipeline
 app.route("/v1/applications", applicationsRouter);
 app.route("/v1/api-keys", apiKeysRouter); // API key management
 app.route("/v1/auth", authRouter); // Authentication endpoints

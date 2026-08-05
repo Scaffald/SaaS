@@ -107,8 +107,23 @@ export const applicationUpdateSchema = z.object({
   // Additional fields
   notes: z.record(z.string(), z.unknown()).optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),
+  // API-surface status names, not the DB values. The API layer maps these
+  // through STATUS_API_TO_DB before writing — `pending`/`reviewing` are stored
+  // as `new`/`screen`. `inquired` was missing here while the DB CHECK
+  // constraint (migration 112) and the office kanban both used it, so every
+  // attempt to move a candidate into the inquiry stage was rejected at the
+  // door with a 400.
   status: z
-    .enum(['pending', 'reviewing', 'interview', 'offer', 'hired', 'rejected', 'withdrawn'])
+    .enum([
+      'pending',
+      'reviewing',
+      'inquired',
+      'interview',
+      'offer',
+      'hired',
+      'rejected',
+      'withdrawn',
+    ])
     .optional(),
 })
 

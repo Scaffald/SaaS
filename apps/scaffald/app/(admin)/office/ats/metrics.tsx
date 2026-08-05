@@ -10,6 +10,7 @@
 import { OfficeApplicationsScreen } from '@scf/core/features/office/applications/office-applications-screen'
 
 export default function ATSMetricsRoute() {
-  // Reuses the OfficeApplicationsScreen — user can switch to Metrics tab
-  return <OfficeApplicationsScreen />
+  // Opens on the metrics view. This route previously rendered the same screen
+  // on its default kanban view and left the user to find the tab themselves.
+  return <OfficeApplicationsScreen initialView="metrics" />
 }
