@@ -3,7 +3,10 @@
  * Tests for /v1/legal (public, unauthenticated) — current legal document versions.
  */
 
-import { assert, assertEquals } from "https://deno.land/std@0.208.0/assert/mod.ts";
+import {
+  assert,
+  assertEquals,
+} from "https://deno.land/std@0.208.0/assert/mod.ts";
 import { assertStatus, createTestClient } from "../helpers/test-client.ts";
 import { markTestStart } from "../setup.ts";
 

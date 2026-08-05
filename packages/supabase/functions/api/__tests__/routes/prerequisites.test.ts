@@ -7,9 +7,12 @@
  * consent_records audit rows.
  */
 
-import { assert, assertEquals } from "https://deno.land/std@0.208.0/assert/mod.ts";
+import {
+  assert,
+  assertEquals,
+} from "https://deno.land/std@0.208.0/assert/mod.ts";
 import { assertStatus, createTestClient } from "../helpers/test-client.ts";
-import { createTestUser, cleanupCurrentTestData } from "../helpers/fixtures.ts";
+import { cleanupCurrentTestData, createTestUser } from "../helpers/fixtures.ts";
 import { createAdminClient, getAuthToken, markTestStart } from "../setup.ts";
 
 const TEST_PASSWORD = "testpassword123";
@@ -21,10 +24,18 @@ async function getCurrentVersions() {
     .from("legal_documents")
     .select("doc_type, version")
     .eq("is_current", true);
-  if (error) throw new Error(`Failed to read legal_documents: ${error.message}`);
-  const terms = data?.find((d: { doc_type: string }) => d.doc_type === "terms_of_service");
-  const privacy = data?.find((d: { doc_type: string }) => d.doc_type === "privacy_policy");
-  if (!terms || !privacy) throw new Error("legal_documents missing current rows");
+  if (error) {
+    throw new Error(`Failed to read legal_documents: ${error.message}`);
+  }
+  const terms = data?.find((d: { doc_type: string }) =>
+    d.doc_type === "terms_of_service"
+  );
+  const privacy = data?.find((d: { doc_type: string }) =>
+    d.doc_type === "privacy_policy"
+  );
+  if (!terms || !privacy) {
+    throw new Error("legal_documents missing current rows");
+  }
   return { terms: terms.version as string, privacy: privacy.version as string };
 }
 
@@ -36,7 +47,9 @@ async function getAnyIndustryId(): Promise<string> {
     .select("id")
     .limit(1)
     .single();
-  if (error || !data) throw new Error("No seeded industries — run pnpm supa db reset");
+  if (error || !data) {
+    throw new Error("No seeded industries — run pnpm supa db reset");
+  }
   return data.id;
 }
 
@@ -94,8 +107,14 @@ Deno.test("GET /v1/prerequisites/check - fresh user needs onboarding, legal stat
   assertEquals(body.needsLegalAcceptance, false);
 
   const versions = await getCurrentVersions();
-  assertEquals(body.legal.documents.terms_of_service.requiredVersion, versions.terms);
-  assertEquals(body.legal.documents.privacy_policy.requiredVersion, versions.privacy);
+  assertEquals(
+    body.legal.documents.terms_of_service.requiredVersion,
+    versions.terms,
+  );
+  assertEquals(
+    body.legal.documents.privacy_policy.requiredVersion,
+    versions.privacy,
+  );
   assertEquals(body.legal.documents.terms_of_service.needsAcceptance, true);
   assertEquals(body.hasAcceptedTerms, false);
 
@@ -111,7 +130,10 @@ Deno.test("POST /v1/prerequisites/complete - stamps the table's current versions
   const industryId = await getAnyIndustryId();
 
   const client = createTestClient({ authToken: token });
-  const response = await client.post("/v1/prerequisites/complete", completePayload(industryId));
+  const response = await client.post(
+    "/v1/prerequisites/complete",
+    completePayload(industryId),
+  );
 
   assertStatus(response, 200);
   // deno-lint-ignore no-explicit-any
@@ -122,12 +144,17 @@ Deno.test("POST /v1/prerequisites/complete - stamps the table's current versions
   const { data: prefs } = await admin
     .schema("core")
     .from("preferences")
-    .select("terms_of_service_version, privacy_policy_version, accepted_terms_of_service_at")
+    .select(
+      "terms_of_service_version, privacy_policy_version, accepted_terms_of_service_at",
+    )
     .eq("user_id", user.id)
     .single();
   assertEquals(prefs?.terms_of_service_version, versions.terms);
   assertEquals(prefs?.privacy_policy_version, versions.privacy);
-  assert(prefs?.accepted_terms_of_service_at, "acceptance timestamp must be set");
+  assert(
+    prefs?.accepted_terms_of_service_at,
+    "acceptance timestamp must be set",
+  );
 
   const { data: consents } = await admin
     .from("consent_records")
@@ -177,7 +204,10 @@ Deno.test("stale accepted version → needsLegalAcceptance; /accept-legal restor
   const industryId = await getAnyIndustryId();
 
   const client = createTestClient({ authToken: token });
-  const complete = await client.post("/v1/prerequisites/complete", completePayload(industryId));
+  const complete = await client.post(
+    "/v1/prerequisites/complete",
+    completePayload(industryId),
+  );
   assertStatus(complete, 200);
 
   // Simulate a published terms version bump for this user: their accepted
@@ -188,7 +218,9 @@ Deno.test("stale accepted version → needsLegalAcceptance; /accept-legal restor
     .from("preferences")
     .update({ terms_of_service_version: "v0.9-test-stale" })
     .eq("user_id", user.id);
-  if (staleError) throw new Error(`Failed to stale version: ${staleError.message}`);
+  if (staleError) {
+    throw new Error(`Failed to stale version: ${staleError.message}`);
+  }
 
   // deno-lint-ignore no-explicit-any
   const staleCheck = (await client.get("/v1/prerequisites/check")).body as any;
@@ -197,8 +229,14 @@ Deno.test("stale accepted version → needsLegalAcceptance; /accept-legal restor
   assertEquals(staleCheck.needsLegalAcceptance, true);
   assertEquals(staleCheck.hasAcceptedTerms, false);
   assertEquals(staleCheck.hasAcceptedPrivacy, true);
-  assertEquals(staleCheck.legal.documents.terms_of_service.needsAcceptance, true);
-  assertEquals(staleCheck.legal.documents.terms_of_service.acceptedVersion, "v0.9-test-stale");
+  assertEquals(
+    staleCheck.legal.documents.terms_of_service.needsAcceptance,
+    true,
+  );
+  assertEquals(
+    staleCheck.legal.documents.terms_of_service.acceptedVersion,
+    "v0.9-test-stale",
+  );
 
   // Re-accept via the lightweight endpoint.
   const accept = await client.post("/v1/prerequisites/accept-legal", {

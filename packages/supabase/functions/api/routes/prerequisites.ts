@@ -159,7 +159,9 @@ interface CurrentLegalDocs {
 }
 
 // deno-lint-ignore no-explicit-any
-async function getCurrentLegalDocs(supabase: any): Promise<CurrentLegalDocs | null> {
+async function getCurrentLegalDocs(
+  supabase: any,
+): Promise<CurrentLegalDocs | null> {
   const { data, error } = await supabase
     .schema("core")
     .from("legal_documents")
@@ -171,8 +173,12 @@ async function getCurrentLegalDocs(supabase: any): Promise<CurrentLegalDocs | nu
     return null;
   }
 
-  const terms = data?.find((d: LegalDocRow) => d.doc_type === "terms_of_service");
-  const privacy = data?.find((d: LegalDocRow) => d.doc_type === "privacy_policy");
+  const terms = data?.find((d: LegalDocRow) =>
+    d.doc_type === "terms_of_service"
+  );
+  const privacy = data?.find((d: LegalDocRow) =>
+    d.doc_type === "privacy_policy"
+  );
   if (!terms || !privacy) {
     console.error(
       "core.legal_documents is missing an is_current row — expected one per doc_type, got:",
@@ -432,7 +438,8 @@ app.openapi(checkRoute, async (c) => {
     const hasAcceptedTerms = !termsState.needsAcceptance;
     const hasAcceptedPrivacy = !privacyState.needsAcceptance;
 
-    const needsOnboarding = !(hasName && hasAddress && hasUserTypes && hasIndustry);
+    const needsOnboarding =
+      !(hasName && hasAddress && hasUserTypes && hasIndustry);
     const legalNeedsAcceptance = termsState.needsAcceptance ||
       privacyState.needsAcceptance;
     const needsLegalAcceptance = !needsOnboarding && legalNeedsAcceptance;
