@@ -39,6 +39,24 @@ export const LEGAL_DOCUMENTS_FALLBACK: LegalDocumentInfo[] = [
   },
 ]
 
+/**
+ * Format a document's effective date for display.
+ *
+ * Always formatted in UTC: effective_at is stored as a date-at-midnight-UTC,
+ * so local-timezone formatting shifts it a day backwards for anyone west of
+ * UTC — a document effective 2025-03-01 rendered as "February 2025" for US
+ * users. The effective date is a legal fact, not a local timestamp.
+ */
+export function formatEffectiveDate(
+  effectiveAt: string,
+  options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long' }
+): string {
+  return new Date(effectiveAt).toLocaleDateString(undefined, {
+    ...options,
+    timeZone: 'UTC',
+  })
+}
+
 export async function fetchLegalDocuments(): Promise<LegalDocumentInfo[]> {
   const base = getSupabaseApiBaseUrl()
   if (!base) return LEGAL_DOCUMENTS_FALLBACK

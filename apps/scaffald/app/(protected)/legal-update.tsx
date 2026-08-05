@@ -1,4 +1,5 @@
 import { ROUTES } from '@scf/core/constants/routes'
+import { formatEffectiveDate } from '@scf/core/utils/legal/fetchLegalDocuments'
 import { useAcceptLegalMutation, usePrerequisitesCheck } from '@scf/core/utils/prerequisites-sdk-hooks'
 import { useTranslation } from '@scf/core/utils/useTranslation'
 import { useQueryClient } from '@tanstack/react-query'
@@ -95,7 +96,11 @@ export default function LegalUpdateScreen() {
                   {label}
                   {state?.effectiveAt
                     ? ` — ${t('auth.legal.effective', {
-                        date: new Date(state.effectiveAt).toLocaleDateString(),
+                        date: formatEffectiveDate(state.effectiveAt, {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        }),
                       })}`
                     : ''}
                 </Paragraph>
