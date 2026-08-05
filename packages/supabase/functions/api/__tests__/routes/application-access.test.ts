@@ -24,6 +24,7 @@ import {
   resolveApplicationOrgAccess,
   userHasOrgAccess,
 } from "../../lib/application-access.ts";
+import { shouldApplyScoreFilter } from "../../routes/employer-applications.ts";
 
 const APPLICANT = "11111111-1111-1111-1111-111111111111";
 const OWNER = "22222222-2222-2222-2222-222222222222";
@@ -285,4 +286,24 @@ Deno.test("a user with no orgs gets an empty list, not everything", async () => 
   );
 
   assertEquals(ids, []);
+});
+
+// ─────────────────────────────────────────────────────────────────────────
+// Score filtering. Found by calling the live endpoint: `min_score=0` returned
+// zero of eight applications, because every `score_total` is NULL and
+// `NULL >= 0` is NULL rather than true. The board's slider defaults to 0, so
+// opening the pipeline showed an empty board.
+// ─────────────────────────────────────────────────────────────────────────
+
+Deno.test("a min_score of 0 applies no filter", () => {
+  assertFalse(shouldApplyScoreFilter(0));
+});
+
+Deno.test("an absent min_score applies no filter", () => {
+  assertFalse(shouldApplyScoreFilter(undefined));
+});
+
+Deno.test("a positive min_score applies a filter", () => {
+  assertEquals(shouldApplyScoreFilter(1), true);
+  assertEquals(shouldApplyScoreFilter(75), true);
 });

@@ -15,7 +15,7 @@ type ApiApplicationStatus = Application['status']
  * `confirmChange` omitted `inquired`, so the one path that handles the
  * critical hire/reject confirmations disagreed with the one that does not.
  */
-const STATUS_MAP: Record<ApplicationStatus, ApiApplicationStatus> = {
+export const STATUS_MAP: Record<ApplicationStatus, ApiApplicationStatus> = {
   new: 'pending',
   screen: 'reviewing',
   inquired: 'inquired',

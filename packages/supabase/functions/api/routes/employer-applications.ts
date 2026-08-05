@@ -104,6 +104,22 @@ const LIST_SELECT = `
   )
 `.replace(/\s+/g, " ").trim();
 
+/**
+ * Whether a `min_score` value should become a query filter at all.
+ *
+ * A floor of 0 means "no floor". `score_total` is nullable and nothing
+ * populates it yet (#534), so a plain `.gte("score_total", 0)` drops every row
+ * — `NULL >= 0` is NULL, not true. The board's score slider sits at 0 by
+ * default, so the naive version turned "show me everything" into an empty
+ * pipeline. Found by calling the endpoint, not by reading it.
+ *
+ * Above 0 the filter is deliberately exclusive of unscored applications: one
+ * with no score has not demonstrably cleared the bar.
+ */
+export function shouldApplyScoreFilter(minScore: number | undefined): boolean {
+  return minScore !== undefined && minScore > 0;
+}
+
 const listEmployerApplicationsRoute = createRoute({
   method: "get",
   path: "/",
@@ -234,7 +250,7 @@ app.openapi(listEmployerApplicationsRoute, async (c) => {
   if (query.assigned_to) {
     applicationQuery = applicationQuery.eq("assigned_to", query.assigned_to);
   }
-  if (query.min_score !== undefined) {
+  if (shouldApplyScoreFilter(query.min_score)) {
     applicationQuery = applicationQuery.gte("score_total", query.min_score);
   }
   if (query.date_from) {

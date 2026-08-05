@@ -11,6 +11,7 @@ import type {
   UpdateApplicationParams,
   WithdrawApplicationParams,
   ListApplicationsParams,
+  ListEmployerApplicationsParams,
   GetUploadUrlParams,
   GetUploadUrlResponse,
   ConfirmUploadParams,
@@ -47,6 +48,29 @@ export function useMyApplicationForJob(jobId: string | undefined, options?: { en
     },
     enabled: !!client && !!jobId && options?.enabled !== false,
     staleTime: 2 * 60 * 1000,
+  })
+}
+
+/**
+ * List applications to jobs posted by organizations the caller can act for.
+ *
+ * The employer-side counterpart to `useApplications` — that one is the
+ * candidate's own applications, which is what a recruiter calling it would get
+ * (normally none). This is what the office pipeline needs.
+ */
+export function useEmployerApplications(
+  params?: ListEmployerApplicationsParams,
+  options?: { enabled?: boolean }
+) {
+  const client = useScaffaldJobsClient()
+  return useQuery({
+    queryKey: ['applications', 'employer-list', params],
+    queryFn: async () => {
+      if (!client) throw new Error('Missing client')
+      return client.applications.listForOrganization(params)
+    },
+    enabled: !!client && options?.enabled !== false,
+    staleTime: 60 * 1000,
   })
 }
 

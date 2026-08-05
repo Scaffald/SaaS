@@ -6,6 +6,7 @@ import { ApplicationsKanbanBoard } from './components/ApplicationsKanbanBoard'
 import { ATSMetricsDashboard } from './components/ATSMetricsDashboard'
 import type { ApplicationsListItem } from './hooks/useApplications'
 import { useApplications } from './hooks/useApplications'
+import { STATUS_MAP } from './hooks/useApplicationStatusChange'
 import { colors } from '@scaffald/ui/tokens'
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
@@ -46,70 +47,52 @@ export const OfficeApplicationsScreen = () => {
     minScore: 0,
   })
 
-  // Fetch applications using tRPC
+  // Filters go to the server. `filters.status` is a kanban stage name
+  // (`new`, `screen`, …) and the API takes its own vocabulary (`pending`,
+  // `reviewing`, …), so it has to be mapped — the previous code *cast* it,
+  // which satisfied the compiler while sending a value the API enum rejects.
   const { applications, isLoading, isError, error } = useApplications({
-    status:
-      (filters.status as
-        | 'pending'
-        | 'reviewing'
-        | 'interview'
-        | 'offer'
-        | 'hired'
-        | 'rejected'
-        | 'withdrawn'
-        | undefined) || undefined,
+    status: filters.status ? STATUS_MAP[filters.status] : undefined,
+    job_id: filters.jobId ?? undefined,
+    min_score: filters.minScore > 0 ? filters.minScore : undefined,
   })
 
-  // Transform real database records to MockApplication format for UI compatibility
-  // Data comes from v_applications_with_user_profiles view with flattened fields
+  /**
+   * Map the employer API's rows onto the shape the kanban components expect.
+   *
+   * The previous version of this block was written against a
+   * `v_applications_with_user_profiles` view that does not exist in any
+   * migration, and read ~25 fields that are not columns on core.applications.
+   * Names below are the real ones:
+   *
+   *   score_total          not application_score
+   *   created_at           not applied_at
+   *   attachment_metadata  not attachments
+   *   screening_answers.*  not flat current_location / years_experience / …
+   *
+   * There is no `auto_rejected` column at all; `rejected_at` is the closest
+   * signal the database actually records.
+   */
   const transformedApplications = useMemo(() => {
     return applications.map((app: ApplicationsListItem): MockApplication => {
-      const a = app as ApplicationsListItem & {
-        applied_at?: string
-        job?: {
-          primary_team_id?: string | null
-          teamAssignments?: Array<{ teamId: string; isPrimary: boolean; team?: { name: string | null } }>
-          pay_range_min_cents?: number | null
-          pay_range_max_cents?: number | null
-          pay_range_type?: string | null
-          employment_type?: string | null
-          organization_id?: string | null
-        } | null
-        application_score?: number
-        auto_rejected?: boolean
-        custom_question_answers?: Array<{ question: string; answer: string | boolean | string[] }>
+      const screening = (app.screening_answers ?? {}) as {
         current_location?: string
         willing_to_relocate?: boolean
         years_experience?: number
         is_authorized_to_work?: boolean
         earliest_start_date?: string
-        attachments?: MockApplication['attachments']
-        candidate_id?: string
-        candidate_name?: string
-        profile_about?: string
-        profile_avatar_path?: string
-        job_id?: string
-        job_title?: string
-        job_location?: string
-        user_id?: string
-        assigned_to?: string | null
-        source?: 'scaffald' | 'referral' | 'external_board' | 'social_media' | 'company_website' | 'other'
-        union_status?: {
-          is_union_member: boolean
-          union_name?: string
-          local_number?: string
-          membership_id?: string
-          journeyman_status?: 'apprentice' | 'journeyman' | 'master'
-          prevailing_wage_eligible?: boolean
-        }
+        custom_question_answers?: Array<{
+          question?: string
+          answer?: string | boolean | string[]
+        }>
       }
-      const jobInfo = a.job ?? null
-      const assignments = jobInfo?.teamAssignments ?? []
-      const primaryAssignment =
-        assignments.find((assignment) => assignment.isPrimary) ?? assignments[0] ?? null
-      const primaryTeamId = jobInfo?.primary_team_id ?? primaryAssignment?.teamId ?? null
-      const primaryTeamName = primaryAssignment?.team?.name ?? null
 
+      const job = app.job
+      const candidate = app.candidate
+
+      // `withdrawn` is folded into `rejected` only because the board has no
+      // column for it. That conflation is wrong for funnel and EEO counts and
+      // is tracked separately (#533).
       const statusMap: Record<string, ApplicationStatus> = {
         pending: 'new',
         reviewing: 'screen',
@@ -121,90 +104,101 @@ export const OfficeApplicationsScreen = () => {
         withdrawn: 'rejected',
       }
 
-      const formatAnswer = (v: string | boolean | string[]): string =>
-        typeof v === 'string' ? v : Array.isArray(v) ? v.join(', ') : String(v)
+      const formatAnswer = (v: string | boolean | string[] | undefined): string =>
+        typeof v === 'string' ? v : Array.isArray(v) ? v.join(', ') : String(v ?? '')
+
+      const unionStatus = app.union_status as {
+        is_union_member?: boolean
+        union_name?: string
+        local_number?: string
+        membership_id?: string
+        journeyman_status?: 'apprentice' | 'journeyman' | 'master'
+        prevailing_wage_eligible?: boolean
+      } | null
 
       return {
-        id: a.id,
-        status: statusMap[a.status] ?? 'new',
-        source: a.source,
-        appliedAt: a.applied_at ?? a.updated_at,
-        updatedAt: a.updated_at,
-        score: a.application_score ?? 0,
-        autoRejected: a.auto_rejected ?? false,
+        id: app.id,
+        status: statusMap[app.status] ?? 'new',
+        source: app.source as MockApplication['source'],
+        appliedAt: app.created_at,
+        updatedAt: app.updated_at ?? app.created_at,
+        score: app.score_total ?? 0,
+        autoRejected: false,
         screeningAnswers: {
-          currentLocation: a.current_location ?? '',
-          willingToRelocate: a.willing_to_relocate ?? false,
-          yearsExperience: a.years_experience ?? 0,
-          isAuthorizedToWork: a.is_authorized_to_work ?? false,
-          earliestStartDate: a.earliest_start_date ?? '',
+          currentLocation: screening.current_location ?? '',
+          willingToRelocate: screening.willing_to_relocate ?? false,
+          yearsExperience: screening.years_experience ?? 0,
+          isAuthorizedToWork: screening.is_authorized_to_work ?? false,
+          earliestStartDate: screening.earliest_start_date ?? '',
         },
-        customAnswers: (a.custom_question_answers ?? []).map((qa) => ({
+        customAnswers: (screening.custom_question_answers ?? []).map((qa) => ({
           question: qa.question ?? '',
           answer: formatAnswer(qa.answer),
         })),
-        attachments: a.attachments ?? {},
+        attachments: (app.attachment_metadata ?? {}) as MockApplication['attachments'],
+        // Populated by #531 once stage transitions are recorded; the API does
+        // not return them yet, and pretending otherwise is what made the
+        // metrics dashboard silently compute zeroes.
         notes: [],
         messages: [],
         stageHistory: [],
         candidate: {
-          id: a.candidate_id ?? a.user_id,
-          name: a.candidate_name ?? 'Unknown',
+          id: candidate?.id ?? app.user_id,
+          name: candidate?.display_name ?? candidate?.username ?? 'Unknown',
           email: '',
           phone: '',
-          title: a.profile_about ? a.profile_about.substring(0, 50) : 'Applicant',
-          photo: a.profile_avatar_path ?? '',
-          location: a.current_location ?? '',
-          yearsExperience: a.years_experience ?? 0,
+          title: candidate?.headline ?? 'Applicant',
+          photo: candidate?.avatar_url ?? candidate?.avatar_path ?? '',
+          location: screening.current_location ?? '',
+          yearsExperience: screening.years_experience ?? 0,
           skills: [],
           certifications: [],
           experience: [],
         },
         job: {
-          id: a.job_id ?? '',
-          title: a.job_title ?? 'Position',
+          id: job?.id ?? app.job_id,
+          title: job?.title ?? 'Position',
           company: '',
-          location: a.job_location ?? '',
+          location: job?.location ?? '',
           payRange: formatPayRange(
-            jobInfo?.pay_range_min_cents,
-            jobInfo?.pay_range_max_cents,
-            jobInfo?.pay_range_type
+            job?.pay_range_min_cents,
+            job?.pay_range_max_cents,
+            job?.pay_range_type
           ),
-          organizationId: jobInfo?.organization_id ?? null,
-          payRangeMinCents: jobInfo?.pay_range_min_cents ?? null,
-          payRangeMaxCents: jobInfo?.pay_range_max_cents ?? null,
-          payRangeType: jobInfo?.pay_range_type ?? null,
-          employmentType: jobInfo?.employment_type ?? null,
+          organizationId: job?.organization_id ?? null,
+          payRangeMinCents: job?.pay_range_min_cents ?? null,
+          payRangeMaxCents: job?.pay_range_max_cents ?? null,
+          payRangeType: job?.pay_range_type ?? null,
+          employmentType: job?.employment_type ?? null,
           targetStartDate: null,
         },
-        organizationId: jobInfo?.organization_id ?? null,
-        workerUserId: a.user_id ?? null,
+        organizationId: job?.organization_id ?? null,
+        workerUserId: app.user_id,
+        // Team assignment lives in core.job_team_assignments, which the list
+        // endpoint does not join yet. Left null rather than invented.
         team: {
-          id: primaryTeamId ?? null,
-          name: primaryTeamName ?? null,
-          assignedUserId: a.assigned_to ?? null,
+          id: null,
+          name: null,
+          assignedUserId: app.assigned_to ?? null,
         },
-        unionStatus: a.union_status
+        unionStatus: unionStatus
           ? {
-              isUnionMember: a.union_status.is_union_member,
-              unionName: a.union_status.union_name,
-              localNumber: a.union_status.local_number,
-              membershipId: a.union_status.membership_id,
-              journeymanStatus: a.union_status.journeyman_status,
-              prevailingWageEligible: a.union_status.prevailing_wage_eligible,
+              isUnionMember: unionStatus.is_union_member ?? false,
+              unionName: unionStatus.union_name,
+              localNumber: unionStatus.local_number,
+              membershipId: unionStatus.membership_id,
+              journeymanStatus: unionStatus.journeyman_status,
+              prevailingWageEligible: unionStatus.prevailing_wage_eligible,
             }
           : undefined,
       }
     })
   }, [applications])
 
-  // Filter applications by score (client-side for now)
-  const filteredApplications = useMemo(() => {
-    return transformedApplications.filter((app: MockApplication) => {
-      if (app.score < filters.minScore) return false
-      return true
-    })
-  }, [transformedApplications, filters.minScore])
+  // Score, status and job are all applied by the API now. Filtering here as
+  // well would be wrong rather than merely redundant: it would run against the
+  // current page only, so a paginated board would silently drop matches.
+  const filteredApplications = transformedApplications
 
   // Loading state
   if (isLoading) {
@@ -232,11 +226,11 @@ export const OfficeApplicationsScreen = () => {
   if (isError) {
     return (
       <Stack flex={1} align="center" justify="center" padding="md">
-        <Text style={{ color: theme === "light" ? colors.error[700] : colors.error[300] }}>Error Loading Applications</Text>
+        <Text style={{ color: theme === 'light' ? colors.error[700] : colors.error[300] }}>
+          Error Loading Applications
+        </Text>
         <Stack align="center">
-          <Text style={{ color: colors.text[theme].secondary, marginTop: 8 }}>
-            {errorMessage}
-          </Text>
+          <Text style={{ color: colors.text[theme].secondary, marginTop: 8 }}>{errorMessage}</Text>
         </Stack>
       </Stack>
     )
