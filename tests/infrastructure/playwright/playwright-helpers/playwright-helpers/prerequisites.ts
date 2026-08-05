@@ -8,9 +8,11 @@ const USER_TYPE_TEST_IDS: Record<UserType, string> = {
   customer: 'checkbox-user-type-customer',
 }
 
+// Canonical ids per tests/TEST_IDS.md — rendered by the onboarding form's
+// legal block (apps/scaffald/app/(protected)/onboarding/index.tsx).
 const LEGAL_TEST_IDS = {
-  privacy: 'checkbox-legal-privacy-policy',
-  terms: 'checkbox-legal-terms-of-service',
+  privacy: 'prereq-privacy-checkbox',
+  terms: 'prereq-terms-checkbox',
 } as const
 
 export class PrerequisiteFormHelpers {

@@ -1,4 +1,5 @@
 import { ROUTES } from "@scf/core/constants/routes";
+import { useTranslation } from "@scf/core/utils/useTranslation";
 import { US_STATES } from "@scf/core/constants/us-states";
 import { ControlledAddressForm } from "@scf/core/forms";
 import { useUserLocation } from "@scf/core/hooks";
@@ -51,6 +52,7 @@ export default function OnboardingPage() {
   const { isMobile } = useResponsive();
   const toast = useToast();
   const router = useRouter();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { requestLocation } = useUserLocation();
 
@@ -437,8 +439,10 @@ export default function OnboardingPage() {
               <Separator />
 
               {/* SC-110: legal acceptance — both required, defaults false.
-                  The server now rejects submissions where either is false,
-                  so this is real validation not cosmetic. */}
+                  The server rejects submissions where either is false, so this
+                  is real validation not cosmetic. The document names link out
+                  to the full text; the version accepted is stamped server-side
+                  from core.legal_documents (migration 342). */}
               <Stack gap={12}>
                 <Controller
                   name="accepts_privacy_policy"
@@ -449,6 +453,7 @@ export default function OnboardingPage() {
                         checked={!!field.value}
                         onChange={(checked: boolean) => field.onChange(checked)}
                         size="md"
+                        testID="prereq-privacy-checkbox"
                       />
                       <Pressable
                         onPress={() => field.onChange(!field.value)}
@@ -459,14 +464,21 @@ export default function OnboardingPage() {
                         })}
                       >
                         <Text>
-                          I agree to the Privacy Policy *
+                          {t("auth.legal.onboardingAgreeTo")}
+                          <Text
+                            style={{ textDecorationLine: "underline" }}
+                            onPress={() => router.push(ROUTES.AUTH.PRIVACY.path)}
+                          >
+                            {t("auth.legal.onboardingPrivacyLink")}
+                          </Text>
+                          {" *"}
                         </Text>
                       </Pressable>
                     </Row>
                   )}
                 />
                 {errors.accepts_privacy_policy && (
-                  <Text color="red">
+                  <Text color="red" testID="privacy-error">
                     {errors.accepts_privacy_policy.message}
                   </Text>
                 )}
@@ -480,6 +492,7 @@ export default function OnboardingPage() {
                         checked={!!field.value}
                         onChange={(checked: boolean) => field.onChange(checked)}
                         size="md"
+                        testID="prereq-terms-checkbox"
                       />
                       <Pressable
                         onPress={() => field.onChange(!field.value)}
@@ -490,14 +503,21 @@ export default function OnboardingPage() {
                         })}
                       >
                         <Text>
-                          I agree to the Terms of Service *
+                          {t("auth.legal.onboardingAgreeTo")}
+                          <Text
+                            style={{ textDecorationLine: "underline" }}
+                            onPress={() => router.push(ROUTES.AUTH.TERMS.path)}
+                          >
+                            {t("auth.legal.onboardingTermsLink")}
+                          </Text>
+                          {" *"}
                         </Text>
                       </Pressable>
                     </Row>
                   )}
                 />
                 {errors.accepts_terms_of_service && (
-                  <Text color="red">
+                  <Text color="red" testID="terms-error">
                     {errors.accepts_terms_of_service.message}
                   </Text>
                 )}
@@ -512,6 +532,7 @@ export default function OnboardingPage() {
                 loading={isSubmitting}
                 size="lg"
                 style={{ marginTop: 8 }}
+                testID="prereq-submit-button"
               >
                 {isSubmitting ? "Completing..." : "Complete Profile"}
               </Button>

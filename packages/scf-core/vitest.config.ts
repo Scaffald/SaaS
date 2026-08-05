@@ -39,8 +39,7 @@ merged.test.include = ['packages/scf-core/**/*.{test,spec}.{ts,tsx}']
 // TODO: Update these tests to match the current SDK-based implementation.
 merged.test.exclude = [
   ...(merged.test.exclude ?? []),
-  // Rewritten: mock auth-sdk-hooks (useRequestMagicLinkMutation) +
-  // cookieConsent.useRecordTermsAcceptanceMutation.
+  // Rewritten: mock auth-sdk-hooks (useRequestMagicLinkMutation).
   // 'packages/scf-core/features/auth/__tests__/login-screen.test.tsx',
   // Rewritten: added useThemeContext to local mock. 1 layout test skipped
   // (component no longer uses $md responsive prop the mock translated).

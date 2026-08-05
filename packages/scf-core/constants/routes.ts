@@ -127,6 +127,15 @@ const ROUTES_CONFIG = {
     exact: true,
   },
 
+  // Blocking re-acceptance screen shown when a new legal document version is
+  // published after the user onboarded (see /v1/prerequisites/check `legal`).
+  LEGAL_UPDATE: {
+    path: '/legal-update',
+    titleKey: 'routes.legalUpdate',
+    protected: true,
+    exact: true,
+  },
+
   /** Public profile by slug - /u/:slug (no auth) */
   PUBLIC_PROFILE: {
     path: '/users/:slug',

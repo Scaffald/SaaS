@@ -1,6 +1,8 @@
 /**
  * Prerequisites Feature Exports
- * User onboarding prerequisites widget and configuration
+ * User onboarding prerequisites configuration. (PrerequisiteWidget was dead
+ * code — rendered nowhere, validated legal fields it never rendered — and was
+ * removed with the phantom SDK prerequisites endpoints.)
  */
 
 export {
@@ -10,4 +12,3 @@ export {
   USER_TYPE_OPTIONS,
   type UserType,
 } from './config/prerequisites-schema'
-export { PrerequisiteWidget } from './PrerequisiteWidget'

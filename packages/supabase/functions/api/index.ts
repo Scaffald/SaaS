@@ -54,6 +54,7 @@ import stripeSettingsRouter from "./routes/stripe-settings.ts";
 import newsRouter from "./routes/news.ts";
 import documentsStorageRouter from "./routes/documents-storage.ts";
 import legalAgreementsRouter from "./routes/legal-agreements.ts";
+import legalRouter from "./routes/legal.ts";
 import notificationsAdminRouter from "./routes/notifications-admin.ts";
 import accountDeletionRouter from "./routes/account-deletion.ts";
 import mapRouter from "./routes/map.ts";
@@ -180,6 +181,7 @@ app.route("/v1/stripe-settings", stripeSettingsRouter); // Stripe settings (offi
 app.route("/v1/news", newsRouter); // Cached news articles by industry
 app.route("/v1/documents/storage-preference", documentsStorageRouter); // User document storage preference
 app.route("/v1/legal-agreements", legalAgreementsRouter); // Legal agreements / violation reports (office)
+app.route("/v1/legal", legalRouter); // Current legal document versions (public; migration 342)
 app.route("/v1/notifications/admin", notificationsAdminRouter); // Notifications admin (office)
 app.route("/v1/account-deletion", accountDeletionRouter); // Account deletion requests
 app.route("/v1/map", mapRouter); // Map location counts and nearest results

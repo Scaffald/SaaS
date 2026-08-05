@@ -3,7 +3,6 @@ import { i18n } from '@scf/core/locales'
 import { captureEvent } from '@scf/core/utils/analytics/client'
 import { captureEventWithQueue } from '@scf/core/utils/analytics/queue'
 import { useRequestMagicLinkMutation } from '@scf/core/utils/auth-sdk-hooks'
-import { useRecordTermsAcceptanceMutation } from '@scf/core/utils/cookieConsent/useRecordConsentMutation'
 import { translateError } from '@scf/core/utils/errors/translateError'
 import { supabase } from '@scf/core/utils/supabase/client'
 import { useTranslation } from '@scf/core/utils/useTranslation'
@@ -11,12 +10,10 @@ import { applyZodErrorMap } from '@scf/core/utils/zodErrorMap'
 import {
   Button,
   Card,
-  Checkbox,
   Form,
   H5,
   Input,
   Paragraph,
-  Row,
   Stack,
   useThemeContext,
   useToast,
@@ -33,8 +30,6 @@ import { z } from 'zod'
 import { SocialLogin } from './components/SocialLogin'
 
 applyZodErrorMap()
-
-const POLICY_VERSION = '1'
 
 const LoginSchema = z.object({
   // `.trim()` first so autofill / copy-paste values with surrounding whitespace
@@ -65,12 +60,6 @@ export const LoginScreen = () => {
   useRedirectAfterSignIn()
   useSurfaceOAuthCallbackError(params)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  // SC-51: consent must be explicit — default to unchecked.
-  const [hasAgreed, setHasAgreed] = useState(false)
-  // SC-65: form fields stay enabled; consent is validated on submit.
-  // attemptedSubmit flips true the first time a user tries to submit without
-  // consent and gates the inline error display on the checkbox.
-  const [attemptedSubmit, setAttemptedSubmit] = useState(false)
   const [usePassword, setUsePassword] = useState(false)
   const requestMagicLink = useRequestMagicLinkMutation()
   const { t } = useTranslation()
@@ -193,22 +182,10 @@ export const LoginScreen = () => {
     }
   }
 
-  const innerSubmit = form.handleSubmit(usePassword ? signInWithPassword : sendMagicLink)
-
-  // SC-65: gate submission on consent without disabling the form. If the user
-  // hasn't agreed, surface the inline checkbox error and stop here; otherwise
-  // run the underlying form submit.
-  const handleSubmit = () => {
-    if (!hasAgreed) {
-      setAttemptedSubmit(true)
-      return
-    }
-    return innerSubmit()
-  }
-
-  const handleConsentMissing = () => {
-    setAttemptedSubmit(true)
-  }
+  // Sign-in is not gated on a consent checkbox anymore. The passive legal
+  // notice below the form is browsewrap; the actual clickwrap acceptance
+  // (versioned, audited) happens in onboarding / the /legal-update screen.
+  const handleSubmit = form.handleSubmit(usePassword ? signInWithPassword : sendMagicLink)
 
   return (
     <FormProvider {...form}>
@@ -316,7 +293,7 @@ export const LoginScreen = () => {
                 </Paragraph>
               </Pressable>
 
-              <SocialLogin onConsentMissing={hasAgreed ? undefined : handleConsentMissing} />
+              <SocialLogin />
               <Paragraph size="sm" style={{ color: cardTextSecondary }}>
                 {t('auth.login.socialDescription')}
               </Paragraph>
@@ -341,66 +318,40 @@ export const LoginScreen = () => {
                 </Paragraph>
               </Pressable>
 
-              {/* Legal consent checkbox — SC-65: form stays live; on submit
-                  without consent we flip attemptedSubmit and show the
-                  Checkbox's error variant inline. */}
-              <Stack gap={spacing[4]}>
-                <Pressable
-                  onPress={() => {
-                    const next = !hasAgreed
-                    setHasAgreed(next)
-                    if (next) setAttemptedSubmit(false)
+              {/* Passive legal notice (browsewrap). The versioned clickwrap
+                  acceptance lives in onboarding and the /legal-update screen;
+                  cookies are handled by the cookie banner. */}
+              <Paragraph
+                size="xs"
+                testID="login-legal-notice"
+                style={{ color: cardTextTertiary, lineHeight: 18, textAlign: 'center' }}
+              >
+                {t('auth.login.legalNotice.prefix')}
+                <Text
+                  style={{
+                    color: cardLinkColor,
+                    textDecorationLine: 'underline',
+                    fontSize: 12,
+                    lineHeight: 18,
                   }}
+                  onPress={() => router.push(ROUTES.AUTH.TERMS.path)}
                 >
-                  <Row gap={spacing[10]} align="center">
-                    <Checkbox
-                      checked={hasAgreed}
-                      onChange={(next) => {
-                        setHasAgreed(next)
-                        if (next) setAttemptedSubmit(false)
-                      }}
-                      error={attemptedSubmit && !hasAgreed}
-                      accessibilityLabel="I agree to the Terms of Service and Privacy Policy"
-                    />
-                    <Paragraph size="xs" style={{ color: cardTextTertiary, flex: 1, lineHeight: 18 }}>
-                      {'I agree to the '}
-                      <Text
-                        style={{
-                          color: cardLinkColor,
-                          textDecorationLine: 'underline',
-                          fontSize: 12,
-                          lineHeight: 18,
-                        }}
-                        onPress={() => router.push(ROUTES.AUTH.TERMS.path)}
-                      >
-                        Terms of Service
-                      </Text>
-                      {' and '}
-                      <Text
-                        style={{
-                          color: cardLinkColor,
-                          textDecorationLine: 'underline',
-                          fontSize: 12,
-                          lineHeight: 18,
-                        }}
-                        onPress={() => router.push(ROUTES.AUTH.PRIVACY.path)}
-                      >
-                        Privacy Policy
-                      </Text>
-                      {', and acknowledge the use of cookies.'}
-                    </Paragraph>
-                  </Row>
-                </Pressable>
-                {attemptedSubmit && !hasAgreed && (
-                  <Paragraph
-                    size="xs"
-                    accessibilityRole="alert"
-                    style={{ color: colors.fg.light.error }}
-                  >
-                    {t('auth.errors.mustAcceptTerms')}
-                  </Paragraph>
-                )}
-              </Stack>
+                  {t('auth.login.legalNotice.terms')}
+                </Text>
+                {t('auth.login.legalNotice.and')}
+                <Text
+                  style={{
+                    color: cardLinkColor,
+                    textDecorationLine: 'underline',
+                    fontSize: 12,
+                    lineHeight: 18,
+                  }}
+                  onPress={() => router.push(ROUTES.AUTH.PRIVACY.path)}
+                >
+                  {t('auth.login.legalNotice.privacy')}
+                </Text>
+                {t('auth.login.legalNotice.suffix')}
+              </Paragraph>
             </Stack>
           </Form>
         </Card>
@@ -415,17 +366,13 @@ export const LoginScreen = () => {
 
 function useRedirectAfterSignIn() {
   const router = useRouter()
-  const { mutate: recordTerms } = useRecordTermsAcceptanceMutation()
 
   useEffect(() => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(
-      (event: AuthChangeEvent, session: Session | null) => {
+      (event: AuthChangeEvent, _session: Session | null) => {
         if (event === 'SIGNED_IN') {
-          if (session?.user?.id) {
-            recordTerms({ userId: session.user.id, policyVersion: POLICY_VERSION })
-          }
           router.replace(ROUTES.HOME.path)
         }
       }
@@ -433,7 +380,7 @@ function useRedirectAfterSignIn() {
     return () => {
       subscription.unsubscribe()
     }
-  }, [router, recordTerms])
+  }, [router])
 }
 
 /**

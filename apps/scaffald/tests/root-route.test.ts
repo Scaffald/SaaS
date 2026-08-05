@@ -16,12 +16,16 @@ import {
 
 const NATIVE_PLATFORMS = ['ios', 'android'] as const
 
+const COMPLETE = { needsOnboarding: false, needsLegalAcceptance: false }
+const NEEDS_ONBOARDING = { needsOnboarding: true, needsLegalAcceptance: false }
+const NEEDS_LEGAL = { needsOnboarding: false, needsLegalAcceptance: true }
+
 const base: RootRouteInput = {
   platform: 'web',
   isServerRender: false,
   isPending: false,
   hasUser: false,
-  prerequisitesComplete: undefined,
+  prereqs: undefined,
 }
 
 const input = (overrides: Partial<RootRouteInput> = {}): RootRouteInput => ({
@@ -71,7 +75,7 @@ describe('resolveRootRoute — signed in', () => {
     '%s sends a complete user to the dashboard',
     (platform) => {
       expect(
-        resolveRootRoute(input({ platform, hasUser: true, prerequisitesComplete: true }))
+        resolveRootRoute(input({ platform, hasUser: true, prereqs: COMPLETE }))
       ).toEqual({ type: 'redirect', path: ROUTES.DASHBOARD.path })
     }
   )
@@ -80,22 +84,41 @@ describe('resolveRootRoute — signed in', () => {
     '%s sends an incomplete user to onboarding',
     (platform) => {
       expect(
-        resolveRootRoute(input({ platform, hasUser: true, prerequisitesComplete: false }))
+        resolveRootRoute(input({ platform, hasUser: true, prereqs: NEEDS_ONBOARDING }))
       ).toEqual({ type: 'redirect', path: ROUTES.ONBOARDING.path })
     }
   )
 
+  test.each(['web', ...NATIVE_PLATFORMS] as const)(
+    '%s sends an onboarded user with stale legal acceptance to /legal-update',
+    (platform) => {
+      expect(
+        resolveRootRoute(input({ platform, hasUser: true, prereqs: NEEDS_LEGAL }))
+      ).toEqual({ type: 'redirect', path: ROUTES.LEGAL_UPDATE.path })
+    }
+  )
+
+  test('profile gaps outrank legal staleness', () => {
+    expect(
+      resolveRootRoute(
+        input({
+          hasUser: true,
+          platform: 'ios',
+          prereqs: { needsOnboarding: true, needsLegalAcceptance: true },
+        })
+      )
+    ).toEqual({ type: 'redirect', path: ROUTES.ONBOARDING.path })
+  })
+
   test('waits while the prerequisites query is in flight', () => {
     expect(
-      resolveRootRoute(input({ hasUser: true, prerequisitesComplete: undefined }))
+      resolveRootRoute(input({ hasUser: true, prereqs: undefined }))
     ).toEqual({ type: 'wait' })
   })
 
   test('never renders marketing to a signed-in user on web', () => {
-    for (const complete of [true, false]) {
-      expect(
-        shouldRenderLanding(input({ hasUser: true, prerequisitesComplete: complete }))
-      ).toBe(false)
+    for (const prereqs of [COMPLETE, NEEDS_ONBOARDING, NEEDS_LEGAL]) {
+      expect(shouldRenderLanding(input({ hasUser: true, prereqs }))).toBe(false)
     }
   })
 })
@@ -120,20 +143,20 @@ describe('resolveRootRoute — totality', () => {
   test('every combination yields a valid decision and only web ever lands', () => {
     const platforms = ['web', 'ios', 'android'] as const
     const bools = [true, false]
-    const prereqs = [true, false, undefined]
+    const prereqStates = [COMPLETE, NEEDS_ONBOARDING, NEEDS_LEGAL, undefined]
     let cases = 0
 
     for (const platform of platforms)
       for (const isServerRender of bools)
         for (const isPending of bools)
           for (const hasUser of bools)
-            for (const prerequisitesComplete of prereqs) {
+            for (const prereqs of prereqStates) {
               const decision = resolveRootRoute({
                 platform,
                 isServerRender,
                 isPending,
                 hasUser,
-                prerequisitesComplete,
+                prereqs,
               })
               cases++
 
@@ -142,6 +165,6 @@ describe('resolveRootRoute — totality', () => {
               if (decision.type === 'landing') expect(platform).toBe('web')
             }
 
-    expect(cases).toBe(72)
+    expect(cases).toBe(96)
   })
 })

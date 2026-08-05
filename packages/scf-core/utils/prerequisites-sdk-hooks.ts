@@ -1,60 +1,25 @@
 /**
  * Prerequisites SDK hooks. Use these instead of api.prerequisites.* when migrating to REST/SDK.
  * Requires ScaffaldJobsSdkProviderFromSession (client from context).
+ *
+ * Note: the server implements exactly /check, /complete and /accept-legal —
+ * hooks for the old speculative endpoints (list/validate/missing/stats) were
+ * removed together with their SDK methods.
  */
 
-import { useMutation, useQuery, type UseMutationOptions, type UseQueryResult } from '@tanstack/react-query'
-import type { CompletePrerequisitesParams, CompletePrerequisitesResponse, PrerequisitesCheckResponse } from '@scaffald/sdk'
+import { useMutation, useQuery, type UseMutationOptions } from '@tanstack/react-query'
 import type {
-  ListPrerequisitesParams,
-  ValidatePrerequisitesParams,
-  GetMissingParams,
-  GetStatsParams,
-  PrerequisitesResponse,
-  Prerequisite,
-  PrerequisiteCheckResult,
-  PrerequisiteValidationResult,
-  CompletionStats,
-} from '@scaffald/sdk/resources/prerequisites'
+  AcceptLegalParams,
+  AcceptLegalResponse,
+  CompletePrerequisitesParams,
+  CompletePrerequisitesResponse,
+  PrerequisitesCheckResponse,
+} from '@scaffald/sdk'
 import { useScaffaldJobsClient } from './jobs-sdk-context'
 
 // ============================================================================
 // QUERY HOOKS
 // ============================================================================
-
-/** List all prerequisites */
-export function usePrerequisites(
-  params?: ListPrerequisitesParams,
-  options?: { enabled?: boolean }
-) {
-  const client = useScaffaldJobsClient()
-  return useQuery<PrerequisitesResponse>({
-    queryKey: ['prerequisites', 'list', params],
-    queryFn: async () => {
-      if (!client) throw new Error('Missing client')
-      return client.prerequisites.list(params)
-    },
-    enabled: !!client && options?.enabled !== false,
-    staleTime: 2 * 60 * 1000,
-  })
-}
-
-/** Get prerequisite by ID */
-export function usePrerequisite(
-  id: string | undefined,
-  options?: { enabled?: boolean }
-): UseQueryResult<{ data: Prerequisite }> {
-  const client = useScaffaldJobsClient()
-  return useQuery<{ data: Prerequisite }>({
-    queryKey: ['prerequisites', 'get', id],
-    queryFn: async () => {
-      if (!client || !id) throw new Error('Missing client or id')
-      return client.prerequisites.getById(id)
-    },
-    enabled: !!client && !!id && options?.enabled !== false,
-    staleTime: 2 * 60 * 1000,
-  })
-}
 
 /** Check overall prerequisites status for current user */
 export function usePrerequisitesCheck(options?: { enabled?: boolean }) {
@@ -67,68 +32,6 @@ export function usePrerequisitesCheck(options?: { enabled?: boolean }) {
     },
     enabled: !!client && options?.enabled !== false,
     staleTime: 1 * 60 * 1000, // 1 minute - onboarding status should be fresh
-  })
-}
-
-/** Check specific prerequisite completion status */
-export function usePrerequisiteCheck(id: string | undefined, options?: { enabled?: boolean }) {
-  const client = useScaffaldJobsClient()
-  return useQuery<{ data: PrerequisiteCheckResult }>({
-    queryKey: ['prerequisites', 'check-prerequisite', id],
-    queryFn: async () => {
-      if (!client || !id) throw new Error('Missing client or id')
-      return client.prerequisites.checkPrerequisite(id)
-    },
-    enabled: !!client && !!id && options?.enabled !== false,
-    staleTime: 1 * 60 * 1000,
-  })
-}
-
-/** Validate prerequisites for context */
-export function useValidatePrerequisites(
-  params?: ValidatePrerequisitesParams,
-  options?: { enabled?: boolean }
-) {
-  const client = useScaffaldJobsClient()
-  return useQuery<{ data: PrerequisiteValidationResult }>({
-    queryKey: ['prerequisites', 'validate', params],
-    queryFn: async () => {
-      if (!client) throw new Error('Missing client')
-      return client.prerequisites.validate(params)
-    },
-    enabled: !!client && options?.enabled !== false,
-    staleTime: 1 * 60 * 1000,
-  })
-}
-
-/** Get missing prerequisites */
-export function useMissingPrerequisites(
-  params?: GetMissingParams,
-  options?: { enabled?: boolean }
-) {
-  const client = useScaffaldJobsClient()
-  return useQuery<PrerequisitesResponse>({
-    queryKey: ['prerequisites', 'missing', params],
-    queryFn: async () => {
-      if (!client) throw new Error('Missing client')
-      return client.prerequisites.getMissing(params)
-    },
-    enabled: !!client && options?.enabled !== false,
-    staleTime: 1 * 60 * 1000,
-  })
-}
-
-/** Get completion statistics */
-export function usePrerequisitesStats(params?: GetStatsParams, options?: { enabled?: boolean }) {
-  const client = useScaffaldJobsClient()
-  return useQuery<{ data: CompletionStats }>({
-    queryKey: ['prerequisites', 'stats', params],
-    queryFn: async () => {
-      if (!client) throw new Error('Missing client')
-      return client.prerequisites.getCompletionStats(params)
-    },
-    enabled: !!client && options?.enabled !== false,
-    staleTime: 2 * 60 * 1000,
   })
 }
 
@@ -145,6 +48,25 @@ export function useCompletePrerequisitesMutation(
     mutationFn: async (params: CompletePrerequisitesParams) => {
       if (!client) throw new Error('Missing client')
       return client.prerequisites.complete(params)
+    },
+    ...options,
+  })
+}
+
+/**
+ * Accept the currently-published legal document versions (the /legal-update
+ * re-acceptance screen). Callers should invalidate the ['prerequisites']
+ * query-key PREFIX on success — that covers both this package's
+ * ['prerequisites','check'] and @scaffald/sdk/react's ['prerequisites'].
+ */
+export function useAcceptLegalMutation(
+  options?: UseMutationOptions<AcceptLegalResponse, Error, AcceptLegalParams>
+) {
+  const client = useScaffaldJobsClient()
+  return useMutation({
+    mutationFn: async (params: AcceptLegalParams) => {
+      if (!client) throw new Error('Missing client')
+      return client.prerequisites.acceptLegal(params)
     },
     ...options,
   })

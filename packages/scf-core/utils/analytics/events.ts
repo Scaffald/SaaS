@@ -48,6 +48,16 @@ export const eventSchemas = {
     error_code: z.string().nullable().optional(),
     error_description: z.string().nullable().optional(),
   }),
+  // Email-link confirmation lander (/auth/confirm?token_hash=...) — the
+  // flow-agnostic verifyOtp path the email templates link to (PKCE switch).
+  auth_email_confirm_succeeded: z.object({
+    otp_type: z.string(),
+  }),
+  auth_email_confirm_failed: z.object({
+    error_code: z.string().nullable().optional(),
+    message: z.string().nullable().optional(),
+    otp_type: z.string(),
+  }),
   // SC-62: manual identity-linking funnel for the connected-accounts UI.
   // `_initiated` fires when supabase-js has returned the OAuth URL and is
   // about to navigate; the matching success event comes from the callback

@@ -26,6 +26,11 @@ const prerequisitesInputSchema = z.object({
 
 /**
  * Prerequisites router - handles user onboarding prerequisites
+ *
+ * @deprecated The live app uses the REST twin at
+ * functions/api/routes/prerequisites.ts — keep the two in sync only for the
+ * legal version stamping (read from core.legal_documents, migration 342);
+ * new behavior goes to the REST route.
  */
 export const prerequisitesRouter = t.router({
   /**
@@ -158,6 +163,19 @@ export const prerequisitesRouter = t.router({
     }
 
     // 3. Update private.preferences table (user_types, prerequisites_completed_at, legal acceptance)
+    // Versions come from core.legal_documents (migration 342) — never hardcode.
+    const { data: legalDocs } = await supabase
+      .schema('core')
+      .from('legal_documents')
+      .select('doc_type, version')
+      .eq('is_current', true)
+    const currentTermsVersion = legalDocs?.find(
+      (d: { doc_type: string }) => d.doc_type === 'terms_of_service',
+    )?.version ?? null
+    const currentPrivacyVersion = legalDocs?.find(
+      (d: { doc_type: string }) => d.doc_type === 'privacy_policy',
+    )?.version ?? null
+
     const now = new Date().toISOString()
     const { error: prefsError } = await supabase
       .schema('core')
@@ -168,8 +186,8 @@ export const prerequisitesRouter = t.router({
         prerequisites_completed_at: now,
         accepted_privacy_policy_at: input.accepts_privacy_policy ? now : null,
         accepted_terms_of_service_at: input.accepts_terms_of_service ? now : null,
-        privacy_policy_version: input.accepts_privacy_policy ? 'v1.0' : null,
-        terms_of_service_version: input.accepts_terms_of_service ? 'v1.0' : null,
+        privacy_policy_version: input.accepts_privacy_policy ? currentPrivacyVersion : null,
+        terms_of_service_version: input.accepts_terms_of_service ? currentTermsVersion : null,
         updated_at: now,
       })
 

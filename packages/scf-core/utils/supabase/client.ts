@@ -67,6 +67,18 @@ function getClient(): SupabaseClient<Database> {
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: Platform.OS === 'web', // Only detect URL sessions on web
+      // Web uses PKCE: OAuth returns ?code= (one-time, exchanged with a local
+      // verifier) instead of tokens in the URL fragment. Native keeps implicit
+      // — it signs in via signInWithIdToken and never parses callback URLs.
+      //
+      // DEPLOY ORDER CONSTRAINT: a pkce-configured client REJECTS implicit
+      //-style #access_token callbacks (and _removeSession()s on the way out),
+      // which is what GoTrue's {{ .ConfirmationURL }} email links produce.
+      // The email templates must link to /auth/confirm?token_hash= (flow
+      // -agnostic verifyOtp) — update the HOSTED project's templates and let
+      // old links expire (otp_expiry) BEFORE shipping a web build with this
+      // flag. See packages/supabase/email-templates/*.html.
+      flowType: Platform.OS === 'web' ? 'pkce' : 'implicit',
     },
   })
   return client

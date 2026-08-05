@@ -1,8 +1,8 @@
 import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
 import { z } from 'zod'
 
-import { corsHeaders } from '../_shared/cors'
-import { addMonths, mergeMetadata, patchPersonaMetadata } from '../_shared/id-verification-utils'
+import { corsHeaders } from '../_shared/cors.ts'
+import { addMonths, mergeMetadata, patchPersonaMetadata } from '../_shared/id-verification-utils.ts'
 import { createServiceSupabaseClient } from '../_shared/notifications/utils.ts'
 
 const SIGNATURE_HEADER = 'persona-signature'

@@ -13,7 +13,7 @@ This document provides a comprehensive reference of all `data-testid` attributes
   - [List Views](#list-views)
   - [Kanban Board](#kanban-board)
 - [Widget Components](#widget-components)
-  - [Prerequisites Widget](#prerequisites-widget)
+  - [Prerequisites (Onboarding Form)](#prerequisites-onboarding-form)
   - [News Feed Widget](#news-feed-widget)
 - [Quick Reference](#quick-reference)
 
@@ -263,9 +263,11 @@ await expect(
 
 ## Widget Components
 
-### Prerequisites Widget
+### Prerequisites (Onboarding Form)
 
-**Location**: `packages/core/features/prerequisites/PrerequisiteWidget.tsx`
+**Location**: `apps/scaffald/app/(protected)/onboarding/index.tsx`
+(PrerequisiteWidget was dead code and has been removed; the onboarding page
+renders the legal checkboxes, errors, and submit ids listed below.)
 
 **Personal Information**:
 - `prereq-first-name-input` - First name text input
@@ -292,6 +294,22 @@ await expect(
 - `industry-error` - Industry selection validation error
 - `privacy-error` - Privacy policy agreement validation error
 - `terms-error` - Terms of service agreement validation error
+
+### Legal Re-acceptance Screen
+
+**Location**: `apps/scaffald/app/(protected)/legal-update.tsx` (blocking screen
+shown when a new legal document version is published after onboarding)
+
+- `legal-update-terms-link` - Link to the full Terms of Service
+- `legal-update-privacy-link` - Link to the full Privacy Policy
+- `legal-update-accept-button` - "Agree and continue" button
+
+### Login Legal Notice
+
+**Location**: `packages/scf-core/features/auth/login-screen.tsx`
+
+- `login-legal-notice` - Passive browsewrap notice under the login form
+  (contains the terms/privacy links; there is no consent checkbox)
 
 **Usage Example**:
 ```typescript

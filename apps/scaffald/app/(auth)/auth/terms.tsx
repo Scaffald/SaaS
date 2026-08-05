@@ -1,9 +1,11 @@
 import { LegalDocumentLayout } from './components/LegalDocumentLayout'
+import { useLegalDocumentInfo } from '@scf/core/utils/legal/useLegalDocumentInfo'
 import { Paragraph, Stack, useThemeContext } from '@scaffald/ui'
 import { colors, spacing } from '@scaffald/ui/tokens'
 
 export default function TermsScreen() {
   const { theme } = useThemeContext()
+  const docInfo = useLegalDocumentInfo('terms_of_service')
 
   const paragraphStyle = { color: colors.text[theme].secondary }
 
@@ -199,7 +201,7 @@ export default function TermsScreen() {
   return (
     <LegalDocumentLayout
       title="Terms of Service"
-      subtitle="Last updated: March 2025 · Version 1"
+      subtitle={`Last updated: ${new Date(docInfo.effective_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long' })} · Version ${docInfo.version}`}
       sections={sections}
     />
   )
