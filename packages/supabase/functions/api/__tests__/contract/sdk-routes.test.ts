@@ -188,7 +188,9 @@ async function readMounts(): Promise<Array<{ prefix: string; file: string }>> {
 
   const identToFile = new Map<string, string>();
   for (
-    const m of src.matchAll(/import\s+(\w+)\s+from\s+"\.\/routes\/([\w-]+)\.ts"/g)
+    const m of src.matchAll(
+      /import\s+(\w+)\s+from\s+"\.\/routes\/([\w-]+)\.ts"/g,
+    )
   ) {
     identToFile.set(m[1], m[2]);
   }
@@ -207,7 +209,9 @@ async function readMounts(): Promise<Array<{ prefix: string; file: string }>> {
  * (`someRouter.get("/x", ...)`) and zod-openapi (`createRoute({ method, path })`,
  * which several files import under an alias).
  */
-function readRoutesFromFile(src: string): Array<{ method: string; path: string }> {
+function readRoutesFromFile(
+  src: string,
+): Array<{ method: string; path: string }> {
   const out: Array<{ method: string; path: string }> = [];
 
   // Any identifier, not just `app`/`router` — files use `ccpaRouter.get(...)`
@@ -227,9 +231,12 @@ function readRoutesFromFile(src: string): Array<{ method: string; path: string }
   // Resolve the local name(s) of createRoute — portfolio.ts imports it as
   // createOpenAPIRoute, so a hardcoded "createRoute({" misses the whole file.
   const aliases = new Set<string>();
-  const importBlock = /import\s*\{([\s\S]*?)\}\s*from\s*"@hono\/zod-openapi"/.exec(src);
+  const importBlock = /import\s*\{([\s\S]*?)\}\s*from\s*"@hono\/zod-openapi"/
+    .exec(src);
   if (importBlock) {
-    for (const m of importBlock[1].matchAll(/\bcreateRoute\b(?:\s+as\s+(\w+))?/g)) {
+    for (
+      const m of importBlock[1].matchAll(/\bcreateRoute\b(?:\s+as\s+(\w+))?/g)
+    ) {
       aliases.add(m[1] ?? "createRoute");
     }
   }
