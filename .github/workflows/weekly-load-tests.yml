@@ -25,7 +25,7 @@ jobs:
       # the store and the step errors out. This was inverted, so the job failed
       # at setup every Monday.
       - name: Install pnpm
-        uses: pnpm/action-setup@v6
+        uses: pnpm/action-setup@v6.0.9
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
