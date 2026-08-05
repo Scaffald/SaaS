@@ -12,6 +12,8 @@ import type {
   WithdrawApplicationParams,
   ListApplicationsParams,
   ListEmployerApplicationsParams,
+  UpdateEmployerApplicationParams,
+  EmployerApplication,
   GetUploadUrlParams,
   GetUploadUrlResponse,
   ConfirmUploadParams,
@@ -149,6 +151,30 @@ export function useUpdateApplicationMutation(
     mutationFn: async ({ id, params }: { id: string; params: UpdateApplicationParams }) => {
       if (!client) throw new Error('Missing client')
       return client.applications.update(id, params)
+    },
+    ...options,
+  })
+}
+
+/**
+ * Move an application through the pipeline, or reassign it.
+ *
+ * The employer-side counterpart to `useUpdateApplicationMutation`, which is the
+ * applicant's and can no longer change status — the server strips it, because
+ * while it did not an applicant could promote themselves to `hired`.
+ */
+export function useUpdateEmployerApplicationMutation(
+  options?: UseMutationOptions<
+    EmployerApplication,
+    Error,
+    { id: string; params: UpdateEmployerApplicationParams }
+  >
+) {
+  const client = useScaffaldJobsClient()
+  return useMutation({
+    mutationFn: async ({ id, params }: { id: string; params: UpdateEmployerApplicationParams }) => {
+      if (!client) throw new Error('Missing client')
+      return client.applications.updateForOrganization(id, params)
     },
     ...options,
   })

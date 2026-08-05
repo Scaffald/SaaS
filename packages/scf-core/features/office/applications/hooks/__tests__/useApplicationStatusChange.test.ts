@@ -28,11 +28,12 @@ const mutateAsyncMock = vi.fn(async (payload: unknown) => {
   return { ok: true }
 })
 
-// The hook now uses '@scf/core/utils/applications-sdk-hooks'
-// (useUpdateApplicationMutation) + @tanstack/react-query's useQueryClient
-// for invalidation. Mock both surfaces.
+// The hook drives the *employer* mutation. It used to call
+// useUpdateApplicationMutation, which targets the applicant endpoint — that
+// endpoint no longer accepts `status`, so routing the board through it would
+// silently drop every drag.
 vi.mock('@scf/core/utils/applications-sdk-hooks', () => ({
-  useUpdateApplicationMutation: (callbacks?: typeof mutationCallbacks) => {
+  useUpdateEmployerApplicationMutation: (callbacks?: typeof mutationCallbacks) => {
     mutationCallbacks = callbacks ?? {}
     return {
       mutateAsync: mutateAsyncMock,

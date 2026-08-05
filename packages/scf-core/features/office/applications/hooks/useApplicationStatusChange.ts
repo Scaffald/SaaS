@@ -1,4 +1,4 @@
-import { useUpdateApplicationMutation } from '@scf/core/utils/applications-sdk-hooks'
+import { useUpdateEmployerApplicationMutation } from '@scf/core/utils/applications-sdk-hooks'
 import type { Application } from '@scaffald/sdk/resources/applications'
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useState } from 'react'
@@ -48,7 +48,11 @@ export const useApplicationStatusChange = (): UseApplicationStatusChangeReturn =
   const [pendingChange, setPendingChange] = useState<StatusChangeParams | null>(null)
 
   const queryClient = useQueryClient()
-  const updateMutation = useUpdateApplicationMutation({
+  // Employer endpoint, not the applicant one. That endpoint no longer accepts
+  // `status` — it authorises on row ownership, so while it did an applicant
+  // could promote themselves to `hired`. Routing the board through it would
+  // now silently drop every drag.
+  const updateMutation = useUpdateEmployerApplicationMutation({
     onSuccess: () => {
       // Invalidate applications query to refetch
       queryClient.invalidateQueries({ queryKey: ['applications'] })
@@ -68,7 +72,10 @@ export const useApplicationStatusChange = (): UseApplicationStatusChangeReturn =
 
   const isValidTransition = useCallback(
     (from: ApplicationStatus, to: ApplicationStatus): boolean => {
-      // Define valid transitions
+      // Mirrors ALLOWED_TRANSITIONS in the API's application-transitions.ts.
+      // Kept client-side to avoid a round trip for a move the server will
+      // refuse anyway — but it is no longer the only guard, so drifting from
+      // the server table costs a confusing 400 rather than an invalid write.
       const validTransitions: Record<ApplicationStatus, ApplicationStatus[]> = {
         new: ['screen', 'rejected'],
         screen: ['inquired', 'interview', 'rejected'],
