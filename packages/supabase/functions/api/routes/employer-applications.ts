@@ -179,7 +179,9 @@ app.openapi(listEmployerApplicationsRoute, async (c) => {
   // Asking for an org you cannot act for is a 403 — that is a caller error and
   // saying so is more useful than an empty list. Having no orgs at all is not:
   // a personal account browsing the office UI should see an empty pipeline.
-  if (query.organization_id && !accessibleOrgIds.includes(query.organization_id)) {
+  if (
+    query.organization_id && !accessibleOrgIds.includes(query.organization_id)
+  ) {
     return c.json(
       {
         error: "Forbidden",

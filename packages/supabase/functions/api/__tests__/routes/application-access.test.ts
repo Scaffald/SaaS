@@ -54,7 +54,9 @@ const ASSIGNMENTS: Assignment[] = [
  * applied when the chain is awaited, which is close enough to the real thing
  * for the access decisions under test.
  */
-function stubSupabase(opts: { application?: unknown; ownedOrgs?: string[] } = {}) {
+function stubSupabase(
+  opts: { application?: unknown; ownedOrgs?: string[] } = {},
+) {
   const build = (table: string) => {
     const filters: Record<string, unknown> = {};
 
