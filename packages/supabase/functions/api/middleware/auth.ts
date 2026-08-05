@@ -244,10 +244,16 @@ export async function addSupabaseAdminForUser(c: Context, next: Next) {
 }
 
 /**
- * Require specific role - throws 403 if user doesn't have required role
- * When scope is provided and user has the role, adds supabaseAdmin to context for office operations
+ * Require a specific role — 403s if the user does not have it. When `scope` is
+ * given and the role matches, attaches `supabaseAdmin` for office operations.
+ *
+ * This is a middleware *factory*: it must return the middleware synchronously.
+ * It was declared `async`, so `requireRole("office", "platform")` evaluated to
+ * a Promise, and Hono received a Promise where it expects a function — every
+ * route mounting it answered `{"error":"handler is not a function"}` for all
+ * verbs. That is twelve route files, including most of the office surface.
  */
-export async function requireRole(roleName: string, scope?: string) {
+export function requireRole(roleName: string, scope?: string) {
   return async (c: Context, next: Next) => {
     const user = c.get("user");
     const supabase = c.get("supabase");

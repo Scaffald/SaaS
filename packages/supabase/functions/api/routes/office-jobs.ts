@@ -102,6 +102,13 @@ app.get("/", zValidator("query", listJobsQuerySchema), async (c) => {
   const jobTeamsRelationship = input.team_id || input.myTeamsOnly
     ? "job_team_assignments!inner"
     : "job_team_assignments";
+  // NB: this is a PostgREST select string, not TypeScript — `--` inside it
+  // is sent to the server, not stripped. Keep explanations out here.
+  //
+  // `team:teams` must name its constraint: core.jobs has two FKs to
+  // core.teams (team_id and assigned_team_id), and an unqualified embed
+  // makes PostgREST refuse the whole query with "more than one
+  // relationship was found for 'jobs' and 'teams'".
   const selectClause = `
     id,
     title,
@@ -117,7 +124,7 @@ app.get("/", zValidator("query", listJobsQuerySchema), async (c) => {
     created_at,
     updated_at,
     organization:organizations!organization_id(id, name, slug),
-    team:teams(id, name, organization_id),
+    team:teams!jobs_team_id_fkey(id, name, organization_id),
     team_assignments:${jobTeamsRelationship}(
       team_id,
       is_primary,
